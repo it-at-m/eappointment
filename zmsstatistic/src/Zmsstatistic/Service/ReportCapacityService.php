@@ -350,6 +350,9 @@ class ReportCapacityService
         }
         $visualization['labelIntervalHours'] = $this->resolveChartLabelIntervalHours($dateRange, $period);
         $visualization['allowSparseTimeline'] = true;
+        if (!isset($visualization['allowCapacityChannel'])) {
+            $visualization['allowCapacityChannel'] = $this->exchangeSupportsCapacityChannel($chart);
+        }
         $chart['visualization'] = $visualization;
 
         return $chart;
@@ -485,10 +488,9 @@ class ReportCapacityService
                 continue;
             }
 
-            $byDate[$key][2] += $normalized[2];
-            $byDate[$key][3] += $normalized[3];
-            $byDate[$key][4] += $normalized[4];
-            $byDate[$key][5] += $normalized[5];
+            for ($column = 2; $column <= 9; $column++) {
+                $byDate[$key][$column] += $normalized[$column];
+            }
         }
 
         ksort($byDate);
@@ -548,7 +550,7 @@ class ReportCapacityService
                     $cursor->format('Y-m-d') . ' ' . $cursor->format('H') . ':00',
                     true
                 );
-                $filled[] = $byKey[$key] ?? [$subjectId, $key, 0, 0, 0, 0];
+                $filled[] = $byKey[$key] ?? $this->emptyCapacityRow($subjectId, $key);
                 $cursor = $cursor->modify('+1 hour');
             }
 
@@ -561,7 +563,7 @@ class ReportCapacityService
 
         while ($cursor <= $end) {
             $key = $cursor->format('Y-m-d');
-            $filled[] = $byKey[$key] ?? [$subjectId, $key, 0, 0, 0, 0];
+            $filled[] = $byKey[$key] ?? $this->emptyCapacityRow($subjectId, $key);
             $cursor = $cursor->modify('+1 day');
         }
 
@@ -587,8 +589,27 @@ class ReportCapacityService
     }
 
     /**
+     * @return array<int, int|string>
+     */
+    private function emptyCapacityRow(string $subjectId, string $key): array
+    {
+        return [$subjectId, $key, 0, 0, 0, 0, 0, 0, 0, 0];
+    }
+
+    public function exchangeSupportsCapacityChannel(Exchange $exchange): bool
+    {
+        foreach ($exchange->dictionary ?? [] as $entry) {
+            if (($entry['variable'] ?? null) === 'bookedcount_public') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @param array<int|string, mixed> $row
-     * @return array{0: string, 1: string, 2: int, 3: int, 4: int, 5: int}
+     * @return array{0: string, 1: string, 2: int, 3: int, 4: int, 5: int, 6: int, 7: int, 8: int, 9: int}
      */
     private function normalizeDataRow(array $row, bool $useHourlyKeys): array
     {
@@ -601,6 +622,10 @@ class ReportCapacityService
             $this->rowNumericValue($row, 'plannedcount', 3),
             $this->rowNumericValue($row, 'bookedminutes', 4),
             $this->rowNumericValue($row, 'plannedminutes', 5),
+            $this->rowNumericValue($row, 'bookedcount_public', 6),
+            $this->rowNumericValue($row, 'plannedcount_public', 7),
+            $this->rowNumericValue($row, 'bookedminutes_public', 8),
+            $this->rowNumericValue($row, 'plannedminutes_public', 9),
         ];
     }
 

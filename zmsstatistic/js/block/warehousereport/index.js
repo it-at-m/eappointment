@@ -4,12 +4,17 @@ import Chart from "chart.js/auto"
 class View extends BaseView {
     static AUTO_REFRESH_STORAGE_KEY = 'zmsstatistic.capacityAutoRefreshSeconds';
 
+    static CAPACITY_CHANNEL_STORAGE_KEY = 'zmsstatistic.capacityChannelMode';
+
     static AUTO_REFRESH_INTERVALS_SECONDS = [0, 5, 10, 30, 60];
+
+    static CAPACITY_CHANNEL_MODES = ['total', 'public', 'intern_only'];
 
     constructor (element, options) {
         super(element, options);
         this.chart = null;
         this.chartValueMode = 'slots';
+        this.chartChannelMode = 'total';
         this.chartHideEmptySlots = true;
         this.autoRefreshIntervalMs = 0;
         this.autoRefreshTimer = null;
@@ -20,6 +25,8 @@ class View extends BaseView {
         this.initCapacityTableDataFromDom();
         console.log('Component: Warehouse report', this, options);
         this.initChartFromDom();
+        this.initCapacityChannelFromDom();
+        this.syncCapacityChannelSelect();
         this.syncCapacityTableHeaders();
         this.renderCapacityTable();
         this.initAutoRefreshFromDom();
@@ -36,6 +43,10 @@ class View extends BaseView {
         });
         $(window).on('beforeunload.warehouseReport', () => {
             this.clearAutoRefreshTimer();
+        });
+        this.$main.on('change', '.report-board--capacity-channel-select', (ev) => {
+            ev.preventDefault();
+            this.setCapacityChannelMode(ev.target.value);
         });
         this.$main.on('click', '.report-board--chart-minutes', (ev) => {
             ev.preventDefault();
@@ -140,22 +151,81 @@ class View extends BaseView {
             : this.tableDataFull;
     }
 
-    getTableCapacityFields() {
-        if (this.chartValueMode === 'minutes' && this.supportsMinutesChartMode()) {
+    getCapacityMetricSpecs() {
+        const minutes = this.chartValueMode === 'minutes' && this.supportsMinutesChartMode();
+        if (minutes) {
             return {
-                plannedVariable: 'plannedminutes',
-                plannedPosition: 5,
-                bookedVariable: 'bookedminutes',
-                bookedPosition: 4,
+                booked: {
+                    totalVariable: 'bookedminutes',
+                    totalPosition: 4,
+                    publicVariable: 'bookedminutes_public',
+                    publicPosition: 8,
+                },
+                planned: {
+                    totalVariable: 'plannedminutes',
+                    totalPosition: 5,
+                    publicVariable: 'plannedminutes_public',
+                    publicPosition: 9,
+                },
             };
         }
 
         return {
-            plannedVariable: 'plannedcount',
-            plannedPosition: 3,
-            bookedVariable: 'bookedcount',
-            bookedPosition: 2,
+            booked: {
+                totalVariable: 'bookedcount',
+                totalPosition: 2,
+                publicVariable: 'bookedcount_public',
+                publicPosition: 6,
+            },
+            planned: {
+                totalVariable: 'plannedcount',
+                totalPosition: 3,
+                publicVariable: 'plannedcount_public',
+                publicPosition: 7,
+            },
         };
+    }
+
+    getCapacityChannelLabel() {
+        if (this.chartChannelMode === 'public') {
+            return 'Internet';
+        }
+        if (this.chartChannelMode === 'intern_only') {
+            return 'nur intern';
+        }
+
+        return 'insgesamt';
+    }
+
+    getChannelCapacityMetric(row, metric) {
+        const specs = this.getCapacityMetricSpecs()[metric];
+        const total = Number(this.getCapacityTableRowValue(
+            row,
+            specs.totalVariable,
+            specs.totalPosition
+        )) || 0;
+        const bookedPublic = Number(this.getCapacityTableRowValue(
+            row,
+            specs.publicVariable,
+            specs.publicPosition
+        )) || 0;
+
+        if (this.chartChannelMode === 'public') {
+            return bookedPublic;
+        }
+        if (this.chartChannelMode === 'intern_only') {
+            return Math.max(0, total - bookedPublic);
+        }
+
+        return total;
+    }
+
+    getCapacityTableHeaderLabel(kind) {
+        const showMinutes = this.chartValueMode === 'minutes' && this.supportsMinutesChartMode();
+        const unit = showMinutes ? 'Minuten' : 'Zeitschlitze';
+        const prefix = kind === 'planned' ? 'Geplante' : 'Gebuchte';
+
+        return `${prefix} Kapazität ${this.getCapacityChannelLabel()} (${unit})`;
     }
 
     syncCapacityTableHeaders() {
@@ -164,16 +234,8 @@ class View extends BaseView {
             return;
         }
 
-        const showMinutes = this.chartValueMode === 'minutes' && this.supportsMinutesChartMode();
-        const plannedLabel = showMinutes
-            ? ($table.attr('data-label-planned-minutes') || 'Geplante Kapazität (Minuten)')
-            : ($table.attr('data-label-planned-slots') || 'Geplante Kapazität (Zeitschlitze)');
-        const bookedLabel = showMinutes
-            ? ($table.attr('data-label-booked-minutes') || 'Gebuchte Kapazität (Minuten)')
-            : ($table.attr('data-label-booked-slots') || 'Gebuchte Kapazität (Zeitschlitze)');
-
-        $table.find('.report-board--capacity-planned').text(plannedLabel);
-        $table.find('.report-board--capacity-booked').text(bookedLabel);
+        $table.find('.report-board--capacity-planned').text(this.getCapacityTableHeaderLabel('planned'));
+        $table.find('.report-board--capacity-booked').text(this.getCapacityTableHeaderLabel('booked'));
     }
 
     formatCapacitySummaryNumber(value) {
@@ -233,19 +295,9 @@ class View extends BaseView {
         let totalBooked = 0;
         const $fragment = $(document.createDocumentFragment());
 
-        const fields = this.getTableCapacityFields();
-
         for (const row of rows) {
-            const planned = Number(this.getCapacityTableRowValue(
-                row,
-                fields.plannedVariable,
-                fields.plannedPosition
-            )) || 0;
-            const booked = Number(this.getCapacityTableRowValue(
-                row,
-                fields.bookedVariable,
-                fields.bookedPosition
-            )) || 0;
+            const planned = this.getChannelCapacityMetric(row, 'planned');
+            const booked = this.getChannelCapacityMetric(row, 'booked');
             totalPlanned += planned;
             totalBooked += booked;
             const utilization = planned > 0
@@ -406,6 +458,62 @@ class View extends BaseView {
         );
     }
 
+    supportsCapacityChannelMode() {
+        const visualization = this.data && this.data.visualization;
+        if (visualization && visualization.allowCapacityChannel) {
+            return true;
+        }
+
+        const rows = this.tableDataSparse || this.tableDataFull || (this.data && this.data.data);
+        if (!Array.isArray(rows) || rows.length === 0) {
+            return false;
+        }
+
+        const firstRow = rows[0];
+        if (Array.isArray(firstRow)) {
+            return firstRow.length > 6;
+        }
+
+        return firstRow.bookedcount_public !== undefined;
+    }
+
+    initCapacityChannelFromDom() {
+        const $select = this.$main.find('.report-board--capacity-channel-select').first();
+        if (!$select.length) {
+            return;
+        }
+
+        const storedValue = window.sessionStorage.getItem(View.CAPACITY_CHANNEL_STORAGE_KEY);
+        const channel = View.CAPACITY_CHANNEL_MODES.includes(storedValue) ? storedValue : 'total';
+        this.chartChannelMode = channel;
+        $select.val(channel);
+    }
+
+    setCapacityChannelMode(channel) {
+        const normalized = View.CAPACITY_CHANNEL_MODES.includes(channel) ? channel : 'total';
+        this.chartChannelMode = normalized;
+        this.$main.find('.report-board--capacity-channel-select').first().val(normalized);
+        window.sessionStorage.setItem(View.CAPACITY_CHANNEL_STORAGE_KEY, normalized);
+        this.syncCapacityChannelSelect();
+        this.syncCapacityTableHeaders();
+        this.renderChartjs();
+        this.renderCapacityTable();
+    }
+
+    syncCapacityChannelSelect() {
+        const $label = this.$main.find('.report-board--capacity-channel').first();
+        if (!$label.length) {
+            return;
+        }
+
+        if (!this.supportsCapacityChannelMode()) {
+            $label.hide();
+            return;
+        }
+
+        $label.show();
+    }
+
     supportsSparseChartTimeline() {
         if (this.chartDataSparse && this.chartDataFull) {
             return true;
@@ -469,6 +577,12 @@ class View extends BaseView {
 
     getActiveYLabels() {
         const visualization = this.data.visualization;
+        if (this.chartChannelMode === 'public') {
+            if (this.chartValueMode === 'minutes' && this.supportsMinutesChartMode()) {
+                return visualization.ylabelMinutesPublic || visualization.ylabelMinutes;
+            }
+            return visualization.ylabelPublic || visualization.ylabel;
+        }
         if (this.chartValueMode === 'minutes' && this.supportsMinutesChartMode()) {
             return visualization.ylabelMinutes;
         }
@@ -488,8 +602,8 @@ class View extends BaseView {
         }
         this.chartValueMode = this.chartValueMode === 'minutes' ? 'slots' : 'minutes';
         this.syncChartModeButton();
-        this.renderChartjs();
         this.syncCapacityTableHeaders();
+        this.renderChartjs();
         this.renderCapacityTable();
     }
 
@@ -650,6 +764,7 @@ class View extends BaseView {
 
             this.applyChartDataSelection();
             this.updateChartDataInPlace();
+            this.syncCapacityTableHeaders();
             this.renderCapacityTable();
 
             if (payload.slotTimeHint) {
@@ -672,6 +787,27 @@ class View extends BaseView {
             '#efc10f',
         ];
         const datasets = [];
+
+        if (this.supportsCapacityChannelMode() && this.chartChannelMode === 'intern_only') {
+            const series = [
+                { metric: 'booked', kind: 'Gebuchte' },
+                { metric: 'planned', kind: 'Geplante' },
+            ];
+
+            for (const entry of series) {
+                const lineColor = colorlist.shift();
+                datasets.push({
+                    label: this.getCapacityTableHeaderLabel(entry.metric === 'planned' ? 'planned' : 'booked'),
+                    data: this.data.data.map((row) => this.getChannelCapacityMetric(row, entry.metric)),
+                    borderColor: lineColor,
+                    pointBackgroundColor: lineColor,
+                    pointBorderColor: lineColor,
+                    fill: false,
+                });
+            }
+
+            return datasets;
+        }
 
         for (const datalabel of this.getActiveYLabels()) {
             const dataset = {};
@@ -931,6 +1067,8 @@ class View extends BaseView {
             this.initCapacityTableSettings();
             this.initCapacityTableDataFromDom();
             this.initChartFromDom();
+            this.initCapacityChannelFromDom();
+            this.syncCapacityChannelSelect();
             this.syncCapacityTableHeaders();
             this.renderCapacityTable();
             this.syncAutoRefreshSelect();

@@ -287,6 +287,21 @@
                 },
                 "allowSparseTimeline": {
                     "type": "boolean"
+                },
+                "ylabelPublic": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "ylabelMinutesPublic": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "allowCapacityChannel": {
+                    "type": "boolean"
                 }
             }
         }

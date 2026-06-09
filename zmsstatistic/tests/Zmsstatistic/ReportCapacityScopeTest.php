@@ -141,6 +141,9 @@ class ReportCapacityScopeTest extends Base
         $this->assertStringContainsString('report-board--chart-minutes', (string) $response->getBody());
         $this->assertStringContainsString('report-board--chart-download', (string) $response->getBody());
         $this->assertStringContainsString('report-board--auto-refresh-interval', (string) $response->getBody());
+        $this->assertStringContainsString('report-board--capacity-channel-select', (string) $response->getBody());
+        $this->assertStringContainsString('allowCapacityChannel', (string) $response->getBody());
+        $this->assertStringContainsString('ylabelPublic', (string) $response->getBody());
         $this->assertStringContainsString('report-board--chart-sparse', (string) $response->getBody());
         $this->assertStringContainsString('allowSparseTimeline', (string) $response->getBody());
         $this->assertStringContainsString('report-board--table-download', (string) $response->getBody());
@@ -297,10 +300,14 @@ class ReportCapacityScopeTest extends Base
             [
                 'Standort-ID',
                 'Datum',
-                'Gebuchte Kapazität (Zeitschlitze)',
-                'Geplante Kapazität (Zeitschlitze)',
-                'Gebuchte Kapazität (Minuten)',
-                'Geplante Kapazität (Minuten)',
+                'Gebuchte Kapazität insgesamt (Zeitschlitze)',
+                'Geplante Kapazität insgesamt (Zeitschlitze)',
+                'Gebuchte Kapazität insgesamt (Minuten)',
+                'Geplante Kapazität insgesamt (Minuten)',
+                'Gebuchte Kapazität Internet (Zeitschlitze)',
+                'Geplante Kapazität Internet (Zeitschlitze)',
+                'Gebuchte Kapazität Internet (Minuten)',
+                'Geplante Kapazität Internet (Minuten)',
             ],
             [
                 $sheet->getCell('A1')->getValue(),
@@ -309,6 +316,10 @@ class ReportCapacityScopeTest extends Base
                 $sheet->getCell('D1')->getValue(),
                 $sheet->getCell('E1')->getValue(),
                 $sheet->getCell('F1')->getValue(),
+                $sheet->getCell('G1')->getValue(),
+                $sheet->getCell('H1')->getValue(),
+                $sheet->getCell('I1')->getValue(),
+                $sheet->getCell('J1')->getValue(),
             ]
         );
         @unlink($tmp);

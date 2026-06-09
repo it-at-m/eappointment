@@ -28,35 +28,62 @@
         "position": 2,
         "variable": "bookedcount",
         "type": "number",
-        "description": "Gebuchte Kapazität (Zeitschlitze)"
+        "description": "Gebuchte Kapazität insgesamt (Zeitschlitze)"
       },
       {
         "position": 3,
         "variable": "plannedcount",
         "type": "number",
-        "description": "Geplante Kapazität (Zeitschlitze)"
+        "description": "Geplante Kapazität insgesamt (Zeitschlitze)"
       },
       {
         "position": 4,
         "variable": "bookedminutes",
         "type": "number",
-        "description": "Gebuchte Kapazität (Minuten)"
+        "description": "Gebuchte Kapazität insgesamt (Minuten)"
       },
       {
         "position": 5,
         "variable": "plannedminutes",
         "type": "number",
-        "description": "Geplante Kapazität (Minuten)"
+        "description": "Geplante Kapazität insgesamt (Minuten)"
+      },
+      {
+        "position": 6,
+        "variable": "bookedcount_public",
+        "type": "number",
+        "description": "Gebuchte Kapazität Internet (Zeitschlitze)"
+      },
+      {
+        "position": 7,
+        "variable": "plannedcount_public",
+        "type": "number",
+        "description": "Geplante Kapazität Internet (Zeitschlitze)"
+      },
+      {
+        "position": 8,
+        "variable": "bookedminutes_public",
+        "type": "number",
+        "description": "Gebuchte Kapazität Internet (Minuten)"
+      },
+      {
+        "position": 9,
+        "variable": "plannedminutes_public",
+        "type": "number",
+        "description": "Geplante Kapazität Internet (Minuten)"
       }
     ],
     "visualization": {
       "xlabel": ["date"],
       "ylabel": ["bookedcount", "plannedcount"],
-      "ylabelMinutes": ["bookedminutes", "plannedminutes"]
+      "ylabelMinutes": ["bookedminutes", "plannedminutes"],
+      "ylabelPublic": ["bookedcount_public", "plannedcount_public"],
+      "ylabelMinutesPublic": ["bookedminutes_public", "plannedminutes_public"],
+      "allowCapacityChannel": true
     },
     "data": [
-      ["141", "2016-04-01 08:00", 5, 10, 50, 100],
-      ["141", "2016-04-01 09:00", 8, 12, 80, 120]
+      ["141", "2016-04-01 08:00", 5, 10, 50, 100, 3, 6, 30, 60],
+      ["141", "2016-04-01 09:00", 8, 12, 80, 120, 5, 7, 50, 70]
     ]
   }
 }

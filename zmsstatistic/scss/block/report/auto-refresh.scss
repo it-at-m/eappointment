@@ -6,17 +6,29 @@
     margin-left: auto;
 }
 
-.board__actions .report-board--auto-refresh {
+.board__actions .report-board--auto-refresh,
+.board__actions .report-board--capacity-channel {
     display:         inline-flex;
     align-items:     center;
     justify-content: center;
-    min-width:       4.75em;
     margin-bottom:   0;
     padding:         0 1.25em 0 0.75em;
     cursor:          pointer;
     font-weight:     700;
+}
 
-    .report-board--auto-refresh-interval {
+.board__actions .report-board--auto-refresh {
+    min-width:       4.75em;
+}
+
+.board__actions .report-board--capacity-channel {
+    min-width:       6.75em;
+}
+
+.board__actions .report-board--auto-refresh,
+.board__actions .report-board--capacity-channel {
+    .report-board--auto-refresh-interval,
+    .report-board--capacity-channel-select {
         margin:      0;
         padding:     0;
         border:      0;

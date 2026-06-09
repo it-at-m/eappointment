@@ -43,8 +43,8 @@ class ReportCapacityServiceTest extends \PHPUnit\Framework\TestCase
     public function testAggregateRowsByDateSumsPerScopeMinutesWithDifferentSlotLengths(): void
     {
         $rows = [
-            ['141', '2026-06-01', 10, 20, 100, 200],
-            ['142', '2026-06-01', 4, 8, 80, 160],
+            ['141', '2026-06-01', 10, 20, 100, 200, 6, 12, 60, 120],
+            ['142', '2026-06-01', 4, 8, 80, 160, 2, 4, 40, 80],
         ];
 
         $aggregated = $this->service->aggregateRowsByDate($rows, false);
@@ -54,13 +54,17 @@ class ReportCapacityServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(28, $aggregated[0][3]);
         $this->assertSame(180, $aggregated[0][4]);
         $this->assertSame(360, $aggregated[0][5]);
+        $this->assertSame(8, $aggregated[0][6]);
+        $this->assertSame(16, $aggregated[0][7]);
+        $this->assertSame(100, $aggregated[0][8]);
+        $this->assertSame(200, $aggregated[0][9]);
     }
 
     public function testAggregateRowsByDateUsesEachScopeSlotTimeBeforeSummingMinutes(): void
     {
         $rows = [
-            ['141', '2026-06-01 08:00', 2, 4, 30, 60],
-            ['142', '2026-06-01 08:00', 2, 4, 50, 100],
+            ['141', '2026-06-01 08:00', 2, 4, 30, 60, 1, 2, 15, 30],
+            ['142', '2026-06-01 08:00', 2, 4, 50, 100, 1, 2, 25, 50],
         ];
 
         $aggregated = $this->service->aggregateRowsByDate($rows, true);
@@ -71,6 +75,8 @@ class ReportCapacityServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(8, $aggregated[0][3]);
         $this->assertSame(80, $aggregated[0][4]);
         $this->assertSame(160, $aggregated[0][5]);
+        $this->assertSame(2, $aggregated[0][6]);
+        $this->assertSame(4, $aggregated[0][7]);
         $this->assertNotSame($aggregated[0][2] * 15, $aggregated[0][4]);
         $this->assertNotSame($aggregated[0][3] * 15, $aggregated[0][5]);
     }
@@ -78,10 +84,10 @@ class ReportCapacityServiceTest extends \PHPUnit\Framework\TestCase
     public function testAggregateRowsByDateSumsDailyMinutesAcrossScopesOnSameDate(): void
     {
         $rows = [
-            ['141', '2016-04-01', 10, 20, 100, 200],
-            ['142', '2016-04-01', 5, 10, 50, 100],
-            ['141', '2016-04-02', 15, 25, 150, 250],
-            ['142', '2016-04-02', 5, 10, 50, 100],
+            ['141', '2016-04-01', 10, 20, 100, 200, 6, 12, 60, 120],
+            ['142', '2016-04-01', 5, 10, 50, 100, 2, 4, 20, 40],
+            ['141', '2016-04-02', 15, 25, 150, 250, 9, 15, 90, 150],
+            ['142', '2016-04-02', 5, 10, 50, 100, 2, 4, 20, 40],
         ];
 
         $aggregated = $this->service->aggregateRowsByDate($rows, false);
@@ -91,10 +97,14 @@ class ReportCapacityServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(30, $aggregated[0][3]);
         $this->assertSame(150, $aggregated[0][4]);
         $this->assertSame(300, $aggregated[0][5]);
+        $this->assertSame(8, $aggregated[0][6]);
+        $this->assertSame(16, $aggregated[0][7]);
         $this->assertSame(20, $aggregated[1][2]);
         $this->assertSame(35, $aggregated[1][3]);
         $this->assertSame(200, $aggregated[1][4]);
         $this->assertSame(350, $aggregated[1][5]);
+        $this->assertSame(11, $aggregated[1][6]);
+        $this->assertSame(19, $aggregated[1][7]);
     }
 
     public function testFormatScopeSlotTimeHintForSingleScope(): void

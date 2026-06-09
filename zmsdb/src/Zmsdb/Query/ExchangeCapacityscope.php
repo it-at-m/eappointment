@@ -16,14 +16,23 @@ class ExchangeCapacityscope extends Base
         SUM(slotcount),
         SUM(intern),
         SUM(slotbookedminutes),
-        SUM(slotplannedminutes)
+        SUM(slotplannedminutes),
+        SUM(slotcount_public),
+        SUM(public),
+        SUM(slotbookedminutes_public),
+        SUM(slotplannedminutes_public)
     FROM (
-        SELECT s.scopeID, s.year, s.month, s.day, s.intern, s.slotTimeInMinutes,
+        SELECT s.scopeID, s.year, s.month, s.day, s.intern, s.public, s.slotTimeInMinutes,
                COUNT(sp.slotID) as slotcount,
+               SUM(CASE WHEN ac.accesslevel = "public" THEN 1 ELSE 0 END) as slotcount_public,
                (COALESCE(s.intern, 0) * COALESCE(s.slotTimeInMinutes, 0)) as slotplannedminutes,
-               (COUNT(sp.slotID) * COALESCE(s.slotTimeInMinutes, 0)) as slotbookedminutes
+               (COUNT(sp.slotID) * COALESCE(s.slotTimeInMinutes, 0)) as slotbookedminutes,
+               (COALESCE(s.public, 0) * COALESCE(s.slotTimeInMinutes, 0)) as slotplannedminutes_public,
+               (SUM(CASE WHEN ac.accesslevel = "public" THEN 1 ELSE 0 END) * COALESCE(s.slotTimeInMinutes, 0)) as slotbookedminutes_public
         FROM slot AS s
           LEFT JOIN slot_process as sp USING(slotID)
+          LEFT JOIN buerger b ON sp.processID = b.BuergerID
+          LEFT JOIN apiclient ac ON b.apiClientID = ac.apiClientID
         WHERE s.`scopeID` = :scopeid AND s.status = "free"
         GROUP BY s.slotID
         ) AS innerquery
@@ -38,14 +47,23 @@ class ExchangeCapacityscope extends Base
         SUM(slotcount),
         SUM(intern),
         SUM(slotbookedminutes),
-        SUM(slotplannedminutes)
+        SUM(slotplannedminutes),
+        SUM(slotcount_public),
+        SUM(public),
+        SUM(slotbookedminutes_public),
+        SUM(slotplannedminutes_public)
     FROM (
-        SELECT s.scopeID, s.year, s.month, s.day, s.intern, s.slotTimeInMinutes,
+        SELECT s.scopeID, s.year, s.month, s.day, s.intern, s.public, s.slotTimeInMinutes,
                COUNT(sp.slotID) as slotcount,
+               SUM(CASE WHEN ac.accesslevel = "public" THEN 1 ELSE 0 END) as slotcount_public,
                (COALESCE(s.intern, 0) * COALESCE(s.slotTimeInMinutes, 0)) as slotplannedminutes,
-               (COUNT(sp.slotID) * COALESCE(s.slotTimeInMinutes, 0)) as slotbookedminutes
+               (COUNT(sp.slotID) * COALESCE(s.slotTimeInMinutes, 0)) as slotbookedminutes,
+               (COALESCE(s.public, 0) * COALESCE(s.slotTimeInMinutes, 0)) as slotplannedminutes_public,
+               (SUM(CASE WHEN ac.accesslevel = "public" THEN 1 ELSE 0 END) * COALESCE(s.slotTimeInMinutes, 0)) as slotbookedminutes_public
         FROM slot AS s
           LEFT JOIN slot_process as sp USING(slotID)
+          LEFT JOIN buerger b ON sp.processID = b.BuergerID
+          LEFT JOIN apiclient ac ON b.apiClientID = ac.apiClientID
         WHERE s.`scopeID` = :scopeid AND s.status = "free"
           AND CONCAT(s.year, "-", LPAD(s.month, 2, 0), "-", LPAD(s.day, 2, 0))
               BETWEEN :datestart AND :dateend
@@ -65,14 +83,23 @@ class ExchangeCapacityscope extends Base
         SUM(slotcount),
         SUM(intern),
         SUM(slotbookedminutes),
-        SUM(slotplannedminutes)
+        SUM(slotplannedminutes),
+        SUM(slotcount_public),
+        SUM(public),
+        SUM(slotbookedminutes_public),
+        SUM(slotplannedminutes_public)
     FROM (
-        SELECT s.scopeID, s.year, s.month, s.day, s.time, s.intern, s.slotTimeInMinutes,
+        SELECT s.scopeID, s.year, s.month, s.day, s.time, s.intern, s.public, s.slotTimeInMinutes,
                COUNT(sp.slotID) as slotcount,
+               SUM(CASE WHEN ac.accesslevel = "public" THEN 1 ELSE 0 END) as slotcount_public,
                (COALESCE(s.intern, 0) * COALESCE(s.slotTimeInMinutes, 0)) as slotplannedminutes,
-               (COUNT(sp.slotID) * COALESCE(s.slotTimeInMinutes, 0)) as slotbookedminutes
+               (COUNT(sp.slotID) * COALESCE(s.slotTimeInMinutes, 0)) as slotbookedminutes,
+               (COALESCE(s.public, 0) * COALESCE(s.slotTimeInMinutes, 0)) as slotplannedminutes_public,
+               (SUM(CASE WHEN ac.accesslevel = "public" THEN 1 ELSE 0 END) * COALESCE(s.slotTimeInMinutes, 0)) as slotbookedminutes_public
         FROM slot AS s
           LEFT JOIN slot_process as sp USING(slotID)
+          LEFT JOIN buerger b ON sp.processID = b.BuergerID
+          LEFT JOIN apiclient ac ON b.apiClientID = ac.apiClientID
         WHERE s.`scopeID` = :scopeid AND s.status = "free"
           AND CONCAT(s.year, "-", LPAD(s.month, 2, 0), "-", LPAD(s.day, 2, 0))
               BETWEEN :datestart AND :dateend

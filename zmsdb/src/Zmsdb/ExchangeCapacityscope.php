@@ -34,14 +34,21 @@ class ExchangeCapacityscope extends Base
         $entity->addDictionaryEntry('subjectid', 'string', 'Standort-ID', 'scope.id');
         $dateDescription = $period === 'hour' ? 'Zeitpunkt' : 'Datum';
         $entity->addDictionaryEntry('date', 'string', $dateDescription);
-        $entity->addDictionaryEntry('bookedcount', 'number', 'Gebuchte Kapazität (Zeitschlitze)');
-        $entity->addDictionaryEntry('plannedcount', 'number', 'Geplante Kapazität (Zeitschlitze)');
-        $entity->addDictionaryEntry('bookedminutes', 'number', 'Gebuchte Kapazität (Minuten)');
-        $entity->addDictionaryEntry('plannedminutes', 'number', 'Geplante Kapazität (Minuten)');
+        $entity->addDictionaryEntry('bookedcount', 'number', 'Gebuchte Kapazität insgesamt (Zeitschlitze)');
+        $entity->addDictionaryEntry('plannedcount', 'number', 'Geplante Kapazität insgesamt (Zeitschlitze)');
+        $entity->addDictionaryEntry('bookedminutes', 'number', 'Gebuchte Kapazität insgesamt (Minuten)');
+        $entity->addDictionaryEntry('plannedminutes', 'number', 'Geplante Kapazität insgesamt (Minuten)');
+        $entity->addDictionaryEntry('bookedcount_public', 'number', 'Gebuchte Kapazität Internet (Zeitschlitze)');
+        $entity->addDictionaryEntry('plannedcount_public', 'number', 'Geplante Kapazität Internet (Zeitschlitze)');
+        $entity->addDictionaryEntry('bookedminutes_public', 'number', 'Gebuchte Kapazität Internet (Minuten)');
+        $entity->addDictionaryEntry('plannedminutes_public', 'number', 'Geplante Kapazität Internet (Minuten)');
 
         $entity['visualization']['xlabel'] = ["date"];
         $entity['visualization']['ylabel'] = ["bookedcount", "plannedcount"];
         $entity['visualization']['ylabelMinutes'] = ["bookedminutes", "plannedminutes"];
+        $entity['visualization']['ylabelPublic'] = ["bookedcount_public", "plannedcount_public"];
+        $entity['visualization']['ylabelMinutesPublic'] = ["bookedminutes_public", "plannedminutes_public"];
+        $entity['visualization']['allowCapacityChannel'] = true;
 
         $queryConstant = $this->resolveQueryConstant($period, $unfiltered);
 
