@@ -1020,9 +1020,9 @@ class View extends BaseView {
 
         this.refreshInFlight = true;
 
+        $button.find('i').addClass('fa-spin');
         if (!silent) {
             $button.prop('disabled', true);
-            $button.find('i').addClass('fa-spin');
         }
 
         try {
@@ -1079,9 +1079,10 @@ class View extends BaseView {
             }
         } finally {
             this.refreshInFlight = false;
+            const $refreshButton = this.$main.find('.report-board--refresh');
+            $refreshButton.find('i').removeClass('fa-spin');
             if (!silent) {
-                this.$main.find('.report-board--refresh').prop('disabled', false)
-                    .find('i').removeClass('fa-spin');
+                $refreshButton.prop('disabled', false);
             }
         }
     }
