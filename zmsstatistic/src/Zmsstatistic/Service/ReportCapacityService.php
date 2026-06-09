@@ -421,25 +421,8 @@ class ReportCapacityService
     {
         try {
             $fetchHourly = $this->shouldFetchHourlyFromApi($dateRange, $period);
-            $params = [];
-            $urlPeriod = '_';
-
-            if ($dateRange) {
-                $params['fromDate'] = $dateRange['from'];
-                $params['toDate'] = $dateRange['to'];
-            }
-
-            if ($fetchHourly) {
-                $params['groupby'] = 'hour';
-            } elseif ($dateRange !== null || ($period !== null && $period !== '_')) {
-                $params['groupby'] = 'day';
-            }
-
-            if ($period && $period !== '_') {
-                $urlPeriod = $period;
-            } elseif ($dateRange) {
-                $urlPeriod = $dateRange['from'];
-            }
+            $params = $this->buildCapacityFetchParams($dateRange, $period, $fetchHourly);
+            $urlPeriod = $this->resolveCapacityFetchUrlPeriod($dateRange, $period);
 
             $result = \App::$http->readGetResult(
                 '/warehouse/capacityscope/' . $scopeId . '/' . $urlPeriod . '/',
@@ -454,21 +437,60 @@ class ReportCapacityService
                 return null;
             }
 
-            $exchange->data = $this->aggregateRowsByDate($exchange->data, $fetchHourly);
-
-            if (!$fetchHourly) {
-                if ($this->exchangeDataLooksHourly($exchange->data)) {
-                    $exchange->data = $this->aggregateRowsByDate($exchange->data, false);
-                }
-                $exchange->period = 'day';
-            } elseif (($exchange->period ?? 'day') === 'hour') {
-                $exchange->period = 'hour';
-            }
-
-            return $exchange;
+            return $this->normalizeFetchedCapacityExchange($exchange, $fetchHourly);
         } catch (\Throwable $exception) {
             return null;
         }
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function buildCapacityFetchParams(?array $dateRange, ?string $period, bool $fetchHourly): array
+    {
+        $params = [];
+
+        if ($dateRange) {
+            $params['fromDate'] = $dateRange['from'];
+            $params['toDate'] = $dateRange['to'];
+        }
+
+        if ($fetchHourly) {
+            $params['groupby'] = 'hour';
+        } elseif ($dateRange !== null || ($period !== null && $period !== '_')) {
+            $params['groupby'] = 'day';
+        }
+
+        return $params;
+    }
+
+    private function resolveCapacityFetchUrlPeriod(?array $dateRange, ?string $period): string
+    {
+        if ($period && $period !== '_') {
+            return $period;
+        }
+
+        if ($dateRange) {
+            return $dateRange['from'];
+        }
+
+        return '_';
+    }
+
+    private function normalizeFetchedCapacityExchange(Exchange $exchange, bool $fetchHourly): Exchange
+    {
+        $exchange->data = $this->aggregateRowsByDate($exchange->data, $fetchHourly);
+
+        if (!$fetchHourly) {
+            if ($this->exchangeDataLooksHourly($exchange->data)) {
+                $exchange->data = $this->aggregateRowsByDate($exchange->data, false);
+            }
+            $exchange->period = 'day';
+        } elseif (($exchange->period ?? 'day') === 'hour') {
+            $exchange->period = 'hour';
+        }
+
+        return $exchange;
     }
 
     /**
