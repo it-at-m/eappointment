@@ -123,6 +123,7 @@ class ReportCapacityScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/warehouse/capacityscope/141/2016-04/',
+                    'parameters' => ['groupby' => 'day'],
                     'response' => $this->readFixture("GET_slotscope_141_report.json")
                 ],
             ]
@@ -199,6 +200,7 @@ class ReportCapacityScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/warehouse/capacityscope/141,142/2016-04/',
+                    'parameters' => ['groupby' => 'day'],
                     'response' => $this->readFixture("GET_slotscope_141_142_report.json")
                 ],
             ]
@@ -274,6 +276,7 @@ class ReportCapacityScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/warehouse/capacityscope/141/2016-04/',
+                    'parameters' => ['groupby' => 'day'],
                     'response' => $this->readFixture("GET_slotscope_141_report.json")
                 ],
             ]
