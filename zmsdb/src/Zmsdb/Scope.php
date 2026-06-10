@@ -439,8 +439,14 @@ class Scope extends Base
 
     public function readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences = 0, $withEntities = [])
     {
-        $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
-        $scope = (! $timeAverage) ? (new Scope())->readEntity($scope->id) : $scope;
+        $timeAverage = (int) $scope->getPreference('queue', 'processingTimeAverage');
+        if ($timeAverage <= 0) {
+            $scope = (new Scope())->readEntity($scope->id);
+            $timeAverage = (int) $scope->getPreference('queue', 'processingTimeAverage');
+        }
+        if ($timeAverage <= 0) {
+            $timeAverage = 12;
+        }
         $queueList = $this->readQueueList([$scope->id], $dateTime, $resolveReferences, $withEntities);
         $workstationCount = $scope->getCalculatedWorkstationCount();
         return $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
@@ -457,7 +463,10 @@ class Scope extends Base
             $scopeIds[] = $scope->id;
         }
 
-        $timeAverage = $timeSum / $scopes->count();
+        $timeAverage = (int) round($timeSum / $scopes->count());
+        if ($timeAverage <= 0) {
+            $timeAverage = 12;
+        }
         $queueList = $this->readQueueList($scopeIds, $dateTime, $resolveReferences, $withEntities);
 
         return $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
