@@ -152,7 +152,7 @@ Damit gilt:
 - **Query-Mappings**: Alles camelCase (übliche PHP-Konvention)
 - **Konsistenz**: Keine Ausnahmen, einheitliches Muster
 
-# Drei Phasen:
+# Vier Phasen:
 
 1. Vollständiger Plan zur Tabellenumbenennung – alles Englisch, alles snake_case <mark>einfach</mark>
 
@@ -175,7 +175,15 @@ Damit gilt:
 - Verschachtelte Objektmuster standardisiert
 - Referenz-Mappings aktualisiert
 
-<mark>Nicht alle Tabellen, Spalten und Mappings sind hier aufgeführt. Die Liste kann unvollständig sein, ist aber ein guter Start. Ein Überblick bietet die [lokale ddev-Entwicklungsumgebung](https://zms.ddev.site:8037/index.php?route=/database/structure&db=db).</mark>
+4. Langfristige Schema-Vision (über Umbenennung hinaus) <mark>strategisch</mark>
+
+- Strukturelle Aufteilungen (`buerger`, `queue_number_statistics`, `preferences`, DLDB-`data`-Spalten)
+- Tabellen-Disposition (löschen, prüfen, neu gestalten)
+- Migrations-Benennung und Asset-Speicherung (S3 vs. `image_data`)
+
+<mark>Die Abschnitte 1–3 fokussieren Namensvereinheitlichung. Abschnitt 4 hält größere Architekturänderungen fest, die parallel oder danach umgesetzt werden können.</mark>
+
+<mark>Die Spaltenzuordnungen in Abschnitt 2 decken alle Tabellen im ZMS-Schema ab (siehe `.resources/zms.sql`). Die PHP-Variablen-Mappings in Abschnitt 3 werden weiterhin tabellenweise ergänzt.</mark>
 
 ## 1. Vollständiger Plan zur Tabellenumbenennung – alles Englisch, alles snake_case
 
@@ -193,14 +201,15 @@ Damit gilt:
 
 ### Phase 2: Benutzer- & Prozess-Tabellen
 
-| Current           | New (snake_case)   | Reason                                         |
-| ----------------- | ------------------ | ---------------------------------------------- |
-| `buergeranliegen` | `citizen_requests` | Citizen requests/issues                        |
-| `buergerarchiv`   | `citizen_archive`  | Archived citizen data                          |
-| `nutzer`          | `user`             | System users                                   |
-| `nutzerzuordnung` | `user_assignment`  | User assignments                               |
-| `kunde`           | `jurisdiction`     | Owner/jurisdiction (Entity/API today: `owner`) |
-| `kundenlinks`     | — (delete)         | Unused; drop table and related code            |
+| Current              | New (snake_case)   | Reason                                                            |
+| -------------------- | ------------------ | ----------------------------------------------------------------- |
+| `buergeranliegen`    | `citizen_requests` | Citizen requests/issues                                           |
+| `buergerarchiv`      | `citizen_archive`  | Archived citizen data                                             |
+| `buergerarchivtoday` | — (delete)         | Redundanter Snapshot; in `citizen_archive` auflösen (Abschnitt 4) |
+| `nutzer`             | `user`             | System users                                                      |
+| `nutzerzuordnung`    | `user_assignment`  | User assignments                                                  |
+| `kunde`              | `jurisdiction`     | Owner/jurisdiction (Entity/API today: `owner`)                    |
+| `kundenlinks`        | — (delete)         | Unused; drop table and related code                               |
 
 > **Hinweis:** Die Tabelle `kunde` und die Entity/API `owner` werden zu `jurisdiction` umbenannt (nicht `customer`). Die Permission `jurisdiction` (ZMSKVR-1345) führt diese Benennung im Berechtigungsmodell bereits ein; die Datenbank-Umbenennung folgt in diesem Refactor.
 >
@@ -208,57 +217,62 @@ Damit gilt:
 
 ### Phase 3: System- & Konfigurations-Tabellen
 
-| Current            | New (snake_case)          | Reason                  |
-| ------------------ | ------------------------- | ----------------------- |
-| `abrechnung`       | `billing`                 | Billing/accounting      |
-| `ipausnahmen`      | `ip_exceptions`           | IP exceptions           |
-| `kiosk`            | `kiosk`                   | Kiosk (universal term)  |
-| `wartenrstatistik` | `queue_number_statistics` | Queue number statistics |
-| `standortcluster`  | `location_cluster`        | Location clustering     |
-| `statistik`        | `statistics`              | Statistics              |
+| Current            | New (snake_case)          | Reason                                                           |
+| ------------------ | ------------------------- | ---------------------------------------------------------------- |
+| `abrechnung`       | — (delete)                | Ungenutzt; Tabelle löschen (Abschnitt 4)                         |
+| `ipausnahmen`      | `ip_exceptions`           | IP-Ausnahmen; Nutzung prüfen (Abschnitt 4)                       |
+| `kiosk`            | `kiosk`                   | Kiosk (universal term)                                           |
+| `wartenrstatistik` | `queue_number_statistics` | Wartestatistik; in kleinere Tabellen normalisieren (Abschnitt 4) |
+| `standortcluster`  | `location_cluster`        | Location clustering                                              |
+| `statistik`        | `statistics`              | Statistics                                                       |
+| `role`             | `role`                    | RBAC roles (already snake_case)                                  |
+| `permission`       | `permission`              | RBAC permissions (already snake_case)                            |
+| `role_permission`  | `role_permission`         | Role–permission mapping (already snake_case)                     |
+| `user_role`        | `user_role`               | User–role mapping (already snake_case)                           |
 
 ### Phase 4: API- & technische Tabellen
 
-| Current     | New (snake_case) | Reason     |
-| ----------- | ---------------- | ---------- |
-| `apiclient` | `api_client`     | API client |
-| `apikey`    | `api_key`        | API key    |
-| `apiquota`  | `api_quota`      | API quota  |
+| Current     | New (snake_case) | Reason                                           |
+| ----------- | ---------------- | ------------------------------------------------ |
+| `apiclient` | `api_client`     | API client                                       |
+| `apikey`    | `api_key`        | API-Key; Produktivnutzung prüfen (Abschnitt 4)   |
+| `apiquota`  | `api_quota`      | API-Quota; Produktivnutzung prüfen (Abschnitt 4) |
 
 ### Phase 5: Kommunikations-Tabellen
 
-| Current             | New (snake_case)     | Reason                     |
-| ------------------- | -------------------- | -------------------------- |
-| `email`             | `email`              | Email (already snake_case) |
-| `sms`               | `sms`                | SMS (already snake_case)   |
-| `mailpart`          | `mail_part`          | Mail part                  |
-| `mailqueue`         | `mail_queue`         | Mail queue                 |
-| `mailtemplate`      | `mail_template`      | Mail template              |
-| `notificationqueue` | `notification_queue` | Notification queue         |
+| Current             | New (snake_case) | Reason                                        |
+| ------------------- | ---------------- | --------------------------------------------- |
+| `email`             | `email`          | Email (already snake_case)                    |
+| `sms`               | `sms`            | SMS (already snake_case)                      |
+| `mailpart`          | `mail_part`      | Mail part                                     |
+| `mailqueue`         | `mail_queue`     | Mail queue                                    |
+| `mailtemplate`      | `mail_template`  | Mail template                                 |
+| `notificationqueue` | — (delete)       | Nutzung prüfen; Tabelle löschen (Abschnitt 4) |
 
 ### Phase 6: Daten- & Prozess-Tabellen
 
-| Current            | New (snake_case)   | Reason             |
-| ------------------ | ------------------ | ------------------ |
-| `closures`         | `closures`         | Already snake_case |
-| `config`           | `config`           | Already snake_case |
-| `eventlog`         | `event_log`        | Event log          |
-| `imagedata`        | `image_data`       | Image data         |
-| `log`              | `log`              | Already snake_case |
-| `migrations`       | `migrations`       | Already snake_case |
-| `preferences`      | `preferences`      | Already snake_case |
-| `process_sequence` | `process_sequence` | Already snake_case |
-| `sessiondata`      | `session_data`     | Session data       |
-| `source`           | `source`           | Already snake_case |
+| Current             | New (snake_case)            | Reason                                                                 |
+| ------------------- | --------------------------- | ---------------------------------------------------------------------- |
+| `closures`          | `closures`                  | Already snake_case                                                     |
+| `config`            | `config`                    | Already snake_case                                                     |
+| `eventlog`          | `event_log`                 | Event-Log; Nutzungsumfang prüfen (Abschnitt 4)                         |
+| `imagedata`         | `image_data`                | Bilddaten; Assets nach S3 (Abschnitt 4)                                |
+| `log`               | `log`                       | `data`-JSON für Suche aufteilen (Abschnitt 4)                          |
+| `migrations`        | `migrations`                | Already snake_case                                                     |
+| `preferences`       | `scope_preferences` / split | Scope- und Systemeinstellungen; umbenennen und aufteilen (Abschnitt 4) |
+| `process_sequence`  | `process_sequence`          | Already snake_case                                                     |
+| `sessiondata`       | `session_data`              | Session data                                                           |
+| `source`            | `source`                    | Already snake_case                                                     |
+| `overview_calendar` | `overview_calendar`         | Overview calendar (already snake_case)                                 |
 
 ### Phase 7: Leistungs- & Anbieter-Tabellen
 
-| Current            | New (snake_case)   | Reason             |
-| ------------------ | ------------------ | ------------------ |
-| `provider`         | `provider`         | Already snake_case |
-| `request`          | `request`          | Already snake_case |
-| `request_provider` | `request_provider` | Already snake_case |
-| `request_variant`  | `request_variant`  | Already snake_case |
+| Current            | New (snake_case)             | Reason                                                                 |
+| ------------------ | ---------------------------- | ---------------------------------------------------------------------- |
+| `provider`         | `office` (Kandidat)          | DLDB-Standort; an zmscitizenapi `office` anlehnen (Abschnitt 4)        |
+| `request`          | `service` (Kandidat)         | DLDB-Dienstleistung; an zmscitizenapi `service` anlehnen (Abschnitt 4) |
+| `request_provider` | `office_service` (Kandidat)  | Standort–Leistung-Verknüpfung; `data`-JSON aufteilen (Abschnitt 4)     |
+| `request_variant`  | `service_variant` (Kandidat) | Leistungsvariante; Benennung mit Citizen API abstimmen (Abschnitt 4)   |
 
 ### Phase 8: Slot-System-Tabellen
 
@@ -279,201 +293,759 @@ Damit gilt:
 
 ### Phase 1: Kerngeschäfts-Tabellen (hohe Priorität)
 
-availability (formerly oeffnungszeit)
-Current Column | New Column (snake_case) | Reason
--- | -- | --
-OeffnungszeitID | availability_id | Primary key
-StandortID | scope_id | Foreign key to scope
-BehoerdenID | department_id | Foreign key to department
-Startdatum | start_date | Start date
-Endedatum | end_date | End date
-Anfangszeit | start_time | Start time
-Endzeit | end_time | End time
-Terminanfangszeit | appointment_start_time | Appointment start time
-Terminendzeit | appointment_end_time | Appointment end time
-Wochentag | weekday | Weekday
-Timeslot | time_slot | Time slot
-kommentar | comment | Comment
-Offen_ab | open_from_days | Open from days
-Offen_bis | open_until_days | Open until days
-Anzahlterminarbeitsplaetze | appointment_workstation_count | Appointment workstation count
-reduktionTermineImInternet | internet_reduction | Internet reduction
-reduktionTermineCallcenter | callcenter_reduction | Call center reduction
-erlaubemehrfachslots | multiple_slots_allowed | Multiple slots allowed
-allexWochen | every_x_weeks | Every X weeks
-jedexteWoche | every_other_week | Every other week
-updateTimestamp | updated_at | Update timestamp
+#### availability (formerly oeffnungszeit)
 
-scope (formerly standort)
+| Aktuelle Spalte              | Neue Spalte (snake_case)        | Grund                  |
+| ---------------------------- | ------------------------------- | ---------------------- |
+| `OeffnungszeitID`            | `availability_id`               | Primär-/Fremdschlüssel |
+| `StandortID`                 | `scope_id`                      | Primär-/Fremdschlüssel |
+| `Startdatum`                 | `start_date`                    | Namensstandardisierung |
+| `Endedatum`                  | `end_date`                      | Namensstandardisierung |
+| `allexWochen`                | `every_x_weeks`                 | Namensstandardisierung |
+| `jedexteWoche`               | `every_other_week`              | Namensstandardisierung |
+| `Wochentag`                  | `weekday`                       | Namensstandardisierung |
+| `Anfangszeit`                | `start_time`                    | Namensstandardisierung |
+| `Terminanfangszeit`          | `appointment_start_time`        | Namensstandardisierung |
+| `Endzeit`                    | `end_time`                      | Namensstandardisierung |
+| `Terminendzeit`              | `appointment_end_time`          | Namensstandardisierung |
+| `Timeslot`                   | `time_slot`                     | Namensstandardisierung |
+| `Anzahlarbeitsplaetze`       | `workstation_count`             | Namensstandardisierung |
+| `Anzahlterminarbeitsplaetze` | `appointment_workstation_count` | Namensstandardisierung |
+| `kommentar`                  | `comment`                       | Namensstandardisierung |
+| `reduktionTermineImInternet` | `internet_reduction`            | Namensstandardisierung |
+| `erlaubemehrfachslots`       | `multiple_slots_allowed`        | Namensstandardisierung |
+| `reduktionTermineCallcenter` | `callcenter_reduction`          | Namensstandardisierung |
+| `Offen_ab`                   | `open_from_days`                | Namensstandardisierung |
+| `Offen_bis`                  | `open_until_days`               | Namensstandardisierung |
+| `updateZeitstempel`          | `updated_at`                    | Zeitstempel            |
 
-| Current Column               | New Column (snake_case)      | Reason                       |
-| ---------------------------- | ---------------------------- | ---------------------------- |
-| StandortID                   | scope_id                     | Primary key                  |
-| BehoerdenID                  | department_id                | Foreign key to department    |
-| Bezeichnung                  | name                         | Name/designation             |
-| standortkuerzel              | short_name                   | Short name                   |
-| Adresse                      | address                      | Address                      |
-| emailstandortadmin           | admin_email                  | Admin email                  |
-| InfoDienstleisterID          | info_provider_id             | Info provider ID             |
-| source                       | source                       | Source (already snake_case)  |
-| Termine_ab                   | appointments_from_days       | Appointments from days       |
-| Termine_bis                  | appointments_until_days      | Appointments until days      |
-| loeschdauer                  | deletion_duration            | Deletion duration            |
-| reservierungsdauer           | reservation_duration         | Reservation duration         |
-| aktivierungsdauer            | activation_duration          | Activation duration          |
-| mehrfachtermine              | multiple_appointments        | Multiple appointments        |
-| wartenummernkontingent       | queue_number_contingent      | Queue number contingent      |
-| vergebenewartenummern        | assigned_queue_numbers       | Assigned queue numbers       |
-| letztewartenr                | last_queue_number            | Last queue number            |
-| startwartenr                 | first_queue_number           | First queue number           |
-| endwartenr                   | last_queue_number            | Last queue number            |
-| anzahlwiederaufruf           | recall_count                 | Recall count                 |
-| aufrufanzeigetext            | display_text                 | Display text                 |
-| wartenrhinweis               | queue_hint                   | Queue hint                   |
-| standortinfozeile            | location_info_line           | Location info line           |
-| ausgabeschaltername          | pickup_counter_name          | Pickup counter name          |
-| defaultabholerstandort       | default_pickup_location      | Default pickup location      |
-| wartezeitveroeffentlichen    | publish_waiting_time         | Publish waiting time         |
-| ohnestatistik                | without_statistics           | Without statistics           |
-| notruffunktion               | emergency_function           | Emergency function           |
-| notrufausgeloest             | emergency_triggered          | Emergency triggered          |
-| notrufantwort                | emergency_response           | Emergency response           |
-| notrufinitiierung            | emergency_initiation         | Emergency initiation         |
-| virtuellesachbearbeiterzahl  | virtual_processor_count      | Virtual processor count      |
-| wartenrdatum                 | queue_number_date            | Queue number date            |
-| Bearbeitungszeit             | processing_time              | Processing time              |
-| emailPflichtfeld             | email_required               | Email required               |
-| telefonPflichtfeld           | phone_required               | Phone required               |
-| telefonaktiviert             | phone_enabled                | Phone enabled                |
-| anmerkungPflichtfeld         | comment_required             | Comment required             |
-| anmerkungLabel               | comment_label                | Comment label                |
-| qtv_url                      | qtv_url                      | QTV URL (already snake_case) |
-| email_confirmation_activated | email_confirmation_activated | Already snake_case           |
-| appointments_per_mail        | appointments_per_mail        | Already snake_case           |
-| slots_per_appointment        | slots_per_appointment        | Already snake_case           |
-| whitelisted_mails            | whitelisted_mails            | Already snake_case           |
-| custom_text_field_active     | custom_text_field_active     | Already snake_case           |
-| custom_text_field_required   | custom_text_field_required   | Already snake_case           |
-| custom_text_field_label      | custom_text_field_label      | Already snake_case           |
-| custom_text_field2_active    | custom_text_field2_active    | Already snake_case           |
-| custom_text_field2_required  | custom_text_field2_required  | Already snake_case           |
-| custom_text_field2_label     | custom_text_field2_label     | Already snake_case           |
-| captcha_activated_required   | captcha_activated_required   | Already snake_case           |
-| admin_mail_on_appointment    | admin_mail_on_appointment    | Already snake_case           |
-| admin_mail_on_deleted        | admin_mail_on_deleted        | Already snake_case           |
-| admin_mail_on_updated        | admin_mail_on_updated        | Already snake_case           |
-| admin_mail_on_mail_sent      | admin_mail_on_mail_sent      | Already snake_case           |
-| smsbestaetigungstext         | sms_confirmation_text        | SMS confirmation text        |
-| smsbenachrichtigungstext     | sms_notification_text        | SMS notification text        |
-| smsbenachrichtigungsfrist    | sms_notification_deadline    | SMS notification deadline    |
-| smswmsbestaetigung           | sms_wms_confirmation         | SMS WMS confirmation         |
-| smswarteschlange             | sms_queue                    | SMS queue                    |
-| smskioskangebotsfrist        | sms_kiosk_offer_deadline     | SMS kiosk offer deadline     |
-| smsnachtrag                  | sms_addition                 | SMS addition                 |
-| kundenbef_emailtext          | customer_survey_email_text   | Customer survey email text   |
-| kundenbefragung              | customer_survey              | Customer survey              |
-| kundenbef_label              | customer_survey_label        | Customer survey label        |
-| info_for_appointment         | info_for_appointment         | Already snake_case           |
-| info_for_all_appointments    | info_for_all_appointments    | Already snake_case           |
-| updateTimestamp              | updated_at                   | Update timestamp             |
+#### scope (formerly standort)
 
-citizen (formerly buerger)
+| Aktuelle Spalte                    | Neue Spalte (snake_case)       | Grund                  |
+| ---------------------------------- | ------------------------------ | ---------------------- |
+| `StandortID`                       | `scope_id`                     | Primär-/Fremdschlüssel |
+| `BehoerdenID`                      | `department_id`                | Primär-/Fremdschlüssel |
+| `InfoDienstleisterID`              | `info_provider_id`             | Primär-/Fremdschlüssel |
+| `Hinweis`                          | `hint`                         | Namensstandardisierung |
+| `Bezeichnung`                      | `name`                         | Namensstandardisierung |
+| `Adresse`                          | `address`                      | Namensstandardisierung |
+| `Stadtplanlink`                    | `city_map_link`                | Namensstandardisierung |
+| `Bearbeitungszeit`                 | `processing_time`              | Namensstandardisierung |
+| `Kennung`                          | `identifier`                   | Namensstandardisierung |
+| `Termine_ab`                       | `appointments_from_days`       | Namensstandardisierung |
+| `Termine_bis`                      | `appointments_until_days`      | Namensstandardisierung |
+| `smswarteschlange`                 | `sms_queue`                    | Namensstandardisierung |
+| `smswmsbestaetigung`               | `sms_wms_confirmation`         | Namensstandardisierung |
+| `smsbenachrichtigungsfrist`        | `sms_notification_deadline`    | Namensstandardisierung |
+| `smsbenachrichtigungstext`         | `sms_notification_text`        | Namensstandardisierung |
+| `smsbestaetigungstext`             | `sms_confirmation_text`        | Namensstandardisierung |
+| `wartenrsperre`                    | `queue_number_locked`          | Namensstandardisierung |
+| `wartenrhinweis`                   | `queue_hint`                   | Namensstandardisierung |
+| `notruffunktion`                   | `emergency_function`           | Namensstandardisierung |
+| `notrufausgeloest`                 | `emergency_triggered`          | Namensstandardisierung |
+| `notrufinitiierung`                | `emergency_initiation`         | Namensstandardisierung |
+| `notrufantwort`                    | `emergency_response`           | Namensstandardisierung |
+| `emailPflichtfeld`                 | `email_required`               | Namensstandardisierung |
+| `anmerkungPflichtfeld`             | `comment_required`             | Namensstandardisierung |
+| `anmerkungLabel`                   | `comment_label`                | Namensstandardisierung |
+| `telefonPflichtfeld`               | `phone_required`               | Namensstandardisierung |
+| `standortinfozeile`                | `location_info_line`           | Namensstandardisierung |
+| `standortkuerzel`                  | `short_name`                   | Namensstandardisierung |
+| `aufrufanzeigetext`                | `display_text`                 | Namensstandardisierung |
+| `reservierungsdauer`               | `reservation_duration`         | Namensstandardisierung |
+| `anzahlwiederaufruf`               | `recall_count`                 | Namensstandardisierung |
+| `startwartenr`                     | `first_queue_number`           | Namensstandardisierung |
+| `endwartenr`                       | `last_queue_number_limit`      | Namensstandardisierung |
+| `letztewartenr`                    | `last_queue_number`            | Namensstandardisierung |
+| `wartenrdatum`                     | `queue_number_date`            | Namensstandardisierung |
+| `mehrfachtermine`                  | `multiple_appointments`        | Namensstandardisierung |
+| `schreibschutz`                    | `write_protection`             | Namensstandardisierung |
+| `ohnestatistik`                    | `without_statistics`           | Namensstandardisierung |
+| `smskioskangebotsfrist`            | `sms_kiosk_offer_deadline`     | Namensstandardisierung |
+| `emailstandortadmin`               | `admin_email`                  | Namensstandardisierung |
+| `wartenummernkontingent`           | `queue_number_contingent`      | Namensstandardisierung |
+| `vergebenewartenummern`            | `assigned_queue_numbers`       | Namensstandardisierung |
+| `kundenbefragung`                  | `customer_survey`              | Namensstandardisierung |
+| `kundenbef_label`                  | `customer_survey_label`        | Namensstandardisierung |
+| `kundenbef_emailtext`              | `customer_survey_email_text`   | Namensstandardisierung |
+| `telefonaktiviert`                 | `phone_enabled`                | Namensstandardisierung |
+| `virtuellesachbearbeiterzahl`      | `virtual_processor_count`      | Namensstandardisierung |
+| `datumvirtuellesachbearbeiterzahl` | `virtual_processor_count_date` | Namensstandardisierung |
+| `smsnachtrag`                      | `sms_addition`                 | Namensstandardisierung |
+| `loeschdauer`                      | `deletion_duration`            | Namensstandardisierung |
+| `updateZeitstempel`                | `updated_at`                   | Zeitstempel            |
+| `source`                           | `source`                       | Bereits snake_case     |
+| `custom_text_field_label`          | `custom_text_field_label`      | Bereits snake_case     |
+| `custom_text_field_active`         | `custom_text_field_active`     | Bereits snake_case     |
+| `custom_text_field_required`       | `custom_text_field_required`   | Bereits snake_case     |
+| `admin_mail_on_appointment`        | `admin_mail_on_appointment`    | Bereits snake_case     |
+| `admin_mail_on_deleted`            | `admin_mail_on_deleted`        | Bereits snake_case     |
+| `admin_mail_on_updated`            | `admin_mail_on_updated`        | Bereits snake_case     |
+| `admin_mail_on_mail_sent`          | `admin_mail_on_mail_sent`      | Bereits snake_case     |
+| `appointments_per_mail`            | `appointments_per_mail`        | Bereits snake_case     |
+| `whitelisted_mails`                | `whitelisted_mails`            | Bereits snake_case     |
+| `slots_per_appointment`            | `slots_per_appointment`        | Bereits snake_case     |
+| `info_for_appointment`             | `info_for_appointment`         | Bereits snake_case     |
+| `aktivierungsdauer`                | `activation_duration`          | Namensstandardisierung |
+| `captcha_activated_required`       | `captcha_activated_required`   | Bereits snake_case     |
+| `email_confirmation_activated`     | `email_confirmation_activated` | Bereits snake_case     |
+| `custom_text_field2_label`         | `custom_text_field2_label`     | Bereits snake_case     |
+| `custom_text_field2_active`        | `custom_text_field2_active`    | Bereits snake_case     |
+| `custom_text_field2_required`      | `custom_text_field2_required`  | Bereits snake_case     |
+| `info_for_all_appointments`        | `info_for_all_appointments`    | Bereits snake_case     |
+| `last_display_number`              | `last_display_number`          | Bereits snake_case     |
+| `max_display_number`               | `max_display_number`           | Bereits snake_case     |
+| `display_number_prefix`            | `display_number_prefix`        | Bereits snake_case     |
 
-| Current Column     | New Column (snake_case) | Reason                      |
-| ------------------ | ----------------------- | --------------------------- |
-| BuergerID          | citizen_id              | Primary key                 |
-| StandortID         | scope_id                | Foreign key to scope        |
-| AbholortID         | pickup_location_id      | Pickup location ID          |
-| NutzerID           | user_id                 | User ID                     |
-| Name               | name                    | Name                        |
-| Email              | email                   | Email                       |
-| Telefon            | phone                   | Phone                       |
-| Anmerkung          | comment                 | Comment                     |
-| vorlaeufigeBuchung | provisional_booking     | Provisional booking         |
-| bestaetigt         | confirmed               | Confirmed                   |
-| aufruferfolgreich  | call_successful         | Call successful             |
-| aufrufzeit         | call_time               | Call time                   |
-| Abholer            | pickup_person           | Pickup person               |
-| wartenr            | queue_number            | Queue number                |
-| wartenrdatum       | queue_number_date       | Queue number date           |
-| wartezeit          | waiting_time            | Waiting time                |
-| bearbeitungszeit   | processing_time         | Processing time             |
-| parked             | parked                  | Already snake_case          |
-| wasMissed          | was_missed              | Was missed                  |
-| apiClientID        | api_client_id           | API client ID               |
-| source             | source                  | Source (already snake_case) |
-| updateTimestamp    | updated_at              | Update timestamp            |
+#### process (formerly buerger)
 
-### Phase 2: Benutzer- & Prozess-Tabellen (Medium Priority)
+| Aktuelle Spalte                  | Neue Spalte (snake_case)      | Grund                  |
+| -------------------------------- | ----------------------------- | ---------------------- |
+| `BuergerID`                      | `process_id`                  | Primär-/Fremdschlüssel |
+| `StandortID`                     | `scope_id`                    | Primär-/Fremdschlüssel |
+| `Datum`                          | `date`                        | Namensstandardisierung |
+| `Uhrzeit`                        | `time`                        | Namensstandardisierung |
+| `Name`                           | `name`                        | Namensstandardisierung |
+| `Anmerkung`                      | `comment`                     | Namensstandardisierung |
+| `Telefonnummer`                  | `phone`                       | Namensstandardisierung |
+| `EMail`                          | `email`                       | Namensstandardisierung |
+| `EMailverschickt`                | `email_sent_count`            | Namensstandardisierung |
+| `Erinnerungszeitpunkt`           | `reminder_timestamp`          | Zeitstempel            |
+| `SMSverschickt`                  | `sms_sent_count`              | Namensstandardisierung |
+| `AnzahlAufrufe`                  | `call_count`                  | Namensstandardisierung |
+| `Zeitstempel`                    | `timestamp`                   | Zeitstempel            |
+| `IPAdresse`                      | `ip_address`                  | Namensstandardisierung |
+| `IPTimeStamp`                    | `ip_timestamp`                | Zeitstempel            |
+| `NutzerID`                       | `user_id`                     | Primär-/Fremdschlüssel |
+| `aufruferfolgreich`              | `call_successful`             | Namensstandardisierung |
+| `wsm_aufnahmezeit`               | `ticket_printer_capture_time` | Namensstandardisierung |
+| `aufrufzeit`                     | `call_time`                   | Namensstandardisierung |
+| `nicht_erschienen`               | `did_not_appear`              | Namensstandardisierung |
+| `Abholer`                        | `pickup_person`               | Namensstandardisierung |
+| `AbholortID`                     | `pickup_scope_id`             | Primär-/Fremdschlüssel |
+| `wartenummer`                    | `queue_number`                | Namensstandardisierung |
+| `vorlaeufigeBuchung`             | `provisional_booking`         | Namensstandardisierung |
+| `hatFolgetermine`                | `follow_up_appointment_count` | Namensstandardisierung |
+| `istFolgeterminvon`              | `follow_up_of_process_id`     | Primär-/Fremdschlüssel |
+| `zustimmung_kundenbefragung`     | `survey_accepted`             | Namensstandardisierung |
+| `telefonnummer_fuer_rueckfragen` | `callback_phone`              | Namensstandardisierung |
+| `absagecode`                     | `auth_key`                    | Namensstandardisierung |
+| `AnzahlPersonen`                 | `person_count`                | Namensstandardisierung |
+| `updateZeitstempel`              | `updated_at`                  | Zeitstempel            |
+| `apiClientID`                    | `api_client_id`               | Primär-/Fremdschlüssel |
+| `custom_text_field`              | `custom_text_field`           | Bereits snake_case     |
+| `showUpTime`                     | `show_up_time`                | Namensstandardisierung |
+| `finishTime`                     | `finish_time`                 | Namensstandardisierung |
+| `timeoutTime`                    | `timeout_time`                | Namensstandardisierung |
+| `way_time`                       | `way_time`                    | Bereits snake_case     |
+| `parked`                         | `parked`                      | Bereits snake_case     |
+| `processing_time`                | `processing_time`             | Bereits snake_case     |
+| `bestaetigt`                     | `confirmed`                   | Namensstandardisierung |
+| `waiting_time`                   | `waiting_time`                | Bereits snake_case     |
+| `wasMissed`                      | `was_missed`                  | Namensstandardisierung |
+| `custom_text_field2`             | `custom_text_field2`          | Bereits snake_case     |
+| `status`                         | `status`                      | Bereits snake_case     |
+| `priority`                       | `priority`                    | Bereits snake_case     |
+| `external_user_id`               | `external_user_id`            | Bereits snake_case     |
+| `displayNumber`                  | `display_number`              | Namensstandardisierung |
 
-citizen_requests (formerly buergeranliegen)
-Current Column | New Column (snake_case) | Reason
--- | -- | --
-BuergeranliegenID | citizen_request_id | Primary key
-BuergerID | citizen_id | Foreign key to citizen
-StandortID | scope_id | Foreign key to scope
-Anliegen | request | Request/concern
-source | source | Source (already snake_case)
-updateTimestamp | updated_at | Update timestamp
+#### holidays (formerly feiertage)
 
-user (formerly nutzer)
-Current Column | New Column (snake_case) | Reason
--- | -- | --
-NutzerID | user_id | Primary key
-BehoerdenID | department_id | Foreign key to department
-Name | name | Name
-Email | email | Email
-Passwort | password | Password
-updateTimestamp | updated_at | Update timestamp
+| Aktuelle Spalte     | Neue Spalte (snake_case) | Grund                  |
+| ------------------- | ------------------------ | ---------------------- |
+| `FeiertagID`        | `holiday_id`             | Primär-/Fremdschlüssel |
+| `Datum`             | `date`                   | Namensstandardisierung |
+| `Feiertag`          | `name`                   | Namensstandardisierung |
+| `BehoerdenID`       | `department_id`          | Primär-/Fremdschlüssel |
+| `updateZeitstempel` | `updated_at`             | Zeitstempel            |
+
+#### calendar (formerly gesamtkalender)
+
+| Aktuelle Spalte   | Neue Spalte (snake_case) | Grund              |
+| ----------------- | ------------------------ | ------------------ |
+| `id`              | `id`                     | Bereits snake_case |
+| `scope_id`        | `scope_id`               | Bereits snake_case |
+| `availability_id` | `availability_id`        | Bereits snake_case |
+| `time`            | `time`                   | Bereits snake_case |
+| `seat`            | `seat`                   | Bereits snake_case |
+| `process_id`      | `process_id`             | Bereits snake_case |
+| `slots`           | `slots`                  | Bereits snake_case |
+| `status`          | `status`                 | Bereits snake_case |
+| `updated_at`      | `updated_at`             | Bereits snake_case |
+
+#### department (formerly behoerde)
+
+| Aktuelle Spalte   | Neue Spalte (snake_case) | Grund                  |
+| ----------------- | ------------------------ | ---------------------- |
+| `BehoerdenID`     | `department_id`          | Primär-/Fremdschlüssel |
+| `OrganisationsID` | `organization_id`        | Primär-/Fremdschlüssel |
+| `KundenID`        | `jurisdiction_id`        | Primär-/Fremdschlüssel |
+| `Name`            | `name`                   | Namensstandardisierung |
+| `Adresse`         | `address`                | Namensstandardisierung |
+| `Ansprechpartner` | `contact_person`         | Namensstandardisierung |
+| `IPProtectZeit`   | `ip_protection_time`     | Namensstandardisierung |
+
+#### organization (formerly organisation)
+
+| Aktuelle Spalte       | Neue Spalte (snake_case)    | Grund                  |
+| --------------------- | --------------------------- | ---------------------- |
+| `OrganisationsID`     | `organization_id`           | Primär-/Fremdschlüssel |
+| `InfoBezirkID`        | `info_district_id`          | Primär-/Fremdschlüssel |
+| `KundenID`            | `jurisdiction_id`           | Primär-/Fremdschlüssel |
+| `Organisationsname`   | `name`                      | Namensstandardisierung |
+| `Anschrift`           | `address`                   | Namensstandardisierung |
+| `kioskpasswortschutz` | `kiosk_password_protection` | Namensstandardisierung |
+
+### Phase 2: Benutzer- & Prozess-Tabellen (mittlere Priorität)
+
+#### citizen_requests (formerly buergeranliegen)
+
+| Aktuelle Spalte     | Neue Spalte (snake_case) | Grund                  |
+| ------------------- | ------------------------ | ---------------------- |
+| `BuergeranliegenID` | `citizen_request_id`     | Primär-/Fremdschlüssel |
+| `BuergerID`         | `process_id`             | Primär-/Fremdschlüssel |
+| `BuergerarchivID`   | `citizen_archive_id`     | Primär-/Fremdschlüssel |
+| `AnliegenID`        | `request_id`             | Primär-/Fremdschlüssel |
+| `source`            | `source`                 | Bereits snake_case     |
+
+#### citizen_archive (formerly buergerarchiv)
+
+| Aktuelle Spalte    | Neue Spalte (snake_case) | Grund                  |
+| ------------------ | ------------------------ | ---------------------- |
+| `BuergerarchivID`  | `citizen_archive_id`     | Primär-/Fremdschlüssel |
+| `StandortID`       | `scope_id`               | Primär-/Fremdschlüssel |
+| `Datum`            | `date`                   | Namensstandardisierung |
+| `mitTermin`        | `with_appointment`       | Namensstandardisierung |
+| `nicht_erschienen` | `did_not_appear`         | Namensstandardisierung |
+| `Zeitstempel`      | `timestamp`              | Zeitstempel            |
+| `waiting_time`     | `waiting_time`           | Bereits snake_case     |
+| `AnzahlPersonen`   | `person_count`           | Namensstandardisierung |
+| `processing_time`  | `processing_time`        | Bereits snake_case     |
+| `name`             | `name`                   | Bereits snake_case     |
+| `dienstleistungen` | `services`               | Namensstandardisierung |
+| `way_time`         | `way_time`               | Bereits snake_case     |
+
+#### citizen_archive_today (formerly buergerarchivtoday)
+
+| Aktuelle Spalte    | Neue Spalte (snake_case) | Grund                  |
+| ------------------ | ------------------------ | ---------------------- |
+| `BuergerarchivID`  | `citizen_archive_id`     | Primär-/Fremdschlüssel |
+| `StandortID`       | `scope_id`               | Primär-/Fremdschlüssel |
+| `Datum`            | `date`                   | Namensstandardisierung |
+| `mitTermin`        | `with_appointment`       | Namensstandardisierung |
+| `nicht_erschienen` | `did_not_appear`         | Namensstandardisierung |
+| `Zeitstempel`      | `timestamp`              | Zeitstempel            |
+| `waiting_time`     | `waiting_time`           | Bereits snake_case     |
+| `AnzahlPersonen`   | `person_count`           | Namensstandardisierung |
+| `processing_time`  | `processing_time`        | Bereits snake_case     |
+| `name`             | `name`                   | Bereits snake_case     |
+| `dienstleistungen` | `services`               | Namensstandardisierung |
+| `way_time`         | `way_time`               | Bereits snake_case     |
+
+#### user (formerly nutzer)
+
+| Aktuelle Spalte     | Neue Spalte (snake_case) | Grund                  |
+| ------------------- | ------------------------ | ---------------------- |
+| `NutzerID`          | `user_id`                | Primär-/Fremdschlüssel |
+| `Name`              | `name`                   | Namensstandardisierung |
+| `Passworthash`      | `password_hash`          | Namensstandardisierung |
+| `Frage`             | `security_question`      | Namensstandardisierung |
+| `Antworthash`       | `answer_hash`            | Namensstandardisierung |
+| `Berechtigung`      | `permission_level`       | Namensstandardisierung |
+| `KundenID`          | `jurisdiction_id`        | Primär-/Fremdschlüssel |
+| `BehoerdenID`       | `department_id`          | Primär-/Fremdschlüssel |
+| `SessionID`         | `session_id`             | Primär-/Fremdschlüssel |
+| `StandortID`        | `scope_id`               | Primär-/Fremdschlüssel |
+| `Arbeitsplatznr`    | `workstation_number`     | Namensstandardisierung |
+| `Datum`             | `date`                   | Namensstandardisierung |
+| `Kalenderansicht`   | `calendar_view`          | Namensstandardisierung |
+| `clusteransicht`    | `cluster_view`           | Namensstandardisierung |
+| `notrufinitiierung` | `emergency_initiation`   | Namensstandardisierung |
+| `notrufantwort`     | `emergency_response`     | Namensstandardisierung |
+| `aufrufzusatz`      | `call_suffix`            | Namensstandardisierung |
+| `lastUpdate`        | `last_update`            | Namensstandardisierung |
+| `sessionExpiry`     | `session_expiry`         | Namensstandardisierung |
+
+#### user_assignment (formerly nutzerzuordnung)
+
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund                  |
+| --------------- | ------------------------ | ---------------------- |
+| `nutzerid`      | `user_id`                | Primär-/Fremdschlüssel |
+| `behoerdenid`   | `department_id`          | Primär-/Fremdschlüssel |
+
+#### jurisdiction (formerly kunde)
+
+| Aktuelle Spalte   | Neue Spalte (snake_case) | Grund                  |
+| ----------------- | ------------------------ | ---------------------- |
+| `KundenID`        | `jurisdiction_id`        | Primär-/Fremdschlüssel |
+| `Kundenname`      | `name`                   | Namensstandardisierung |
+| `Anschrift`       | `address`                | Namensstandardisierung |
+| `Module`          | `modules`                | Namensstandardisierung |
+| `Startkennung`    | `start_identifier`       | Namensstandardisierung |
+| `Anzahlkennungen` | `identifier_count`       | Namensstandardisierung |
+| `TerminURL`       | `appointment_url`        | Namensstandardisierung |
+
+#### customer_links (formerly kundenlinks)
+
+| Aktuelle Spalte   | Neue Spalte (snake_case) | Grund                  |
+| ----------------- | ------------------------ | ---------------------- |
+| `linkid`          | `link_id`                | Primär-/Fremdschlüssel |
+| `kundenid`        | `jurisdiction_id`        | Primär-/Fremdschlüssel |
+| `organisationsid` | `organization_id`        | Primär-/Fremdschlüssel |
+| `behoerdenid`     | `department_id`          | Primär-/Fremdschlüssel |
+| `beschreibung`    | `description`            | Namensstandardisierung |
+| `link`            | `link`                   | Bereits snake_case     |
+| `oeffentlich`     | `public`                 | Namensstandardisierung |
+| `neuerFrame`      | `new_frame`              | Namensstandardisierung |
 
 ### Phase 3: System- & Konfigurations-Tabellen (niedrigere Priorität)
 
-api_client (formerly apiclient)
-Current Column | New Column (snake_case) | Reason
--- | -- | --
-apiClientID | api_client_id | Primary key
-clientKey | client_key | Client key
-shortname | short_name | Short name
-accesslevel | access_level | Access level
-updateTimestamp | updated_at | Update timestamp
+#### billing (formerly abrechnung)
 
-api_key (formerly apikey)
-Current Column | New Column (snake_case) | Reason
--- | -- | --
-apiKeyID | api_key_id | Primary key
-apiClientID | api_client_id | Foreign key to api_client
-key | key | Key (already snake_case)
-updateTimestamp | updated_at | Update timestamp
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund                  |
+| --------------- | ------------------------ | ---------------------- |
+| `AbrechnungsID` | `billing_id`             | Primär-/Fremdschlüssel |
+| `StandortID`    | `scope_id`               | Primär-/Fremdschlüssel |
+| `Telefonnummer` | `phone`                  | Namensstandardisierung |
+| `Datum`         | `date`                   | Namensstandardisierung |
+| `gesendet`      | `sent`                   | Namensstandardisierung |
 
-### Phase 4: Slot System Tables
+#### ip_exceptions (formerly ipausnahmen)
 
-slot
-Current Column | New Column (snake_case) | Reason
--- | -- | --
-slotID | slot_id | Primary key
-scopeID | scope_id | Foreign key to scope
-availabilityID | availability_id | Foreign key to availability
-year | year | Year (already snake_case)
-month | month | Month (already snake_case)
-day | day | Day (already snake_case)
-time | time | Time (already snake_case)
-public | public | Public (already snake_case)
-callcenter | callcenter | Call center (already snake_case)
-intern | intern | Internal (already snake_case)
-status | status | Status (already snake_case)
-slotTimeInMinutes | slot_time_in_minutes | Slot time in minutes
-createTimestamp | created_at | Create timestamp
-updateTimestamp | updated_at | Update timestamp
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund                  |
+| --------------- | ------------------------ | ---------------------- |
+| `IPID`          | `ip_exception_id`        | Primär-/Fremdschlüssel |
+| `BehoerdenID`   | `department_id`          | Primär-/Fremdschlüssel |
+| `IPAdresse`     | `ip_address`             | Namensstandardisierung |
 
-### Phase 4: Fremdschlüssel-Standardisierung
+#### kiosk
 
-| Current Pattern | New Pattern     | Example                           |
-| --------------- | --------------- | --------------------------------- |
-| StandortID      | scope_id        | Foreign key to scope table        |
-| BehoerdenID     | department_id   | Foreign key to department table   |
-| BuergerID       | citizen_id      | Foreign key to citizen table      |
-| NutzerID        | user_id         | Foreign key to user table         |
-| OeffnungszeitID | availability_id | Foreign key to availability table |
+| Aktuelle Spalte   | Neue Spalte (snake_case) | Grund                  |
+| ----------------- | ------------------------ | ---------------------- |
+| `kioskid`         | `kiosk_id`               | Primär-/Fremdschlüssel |
+| `kundenid`        | `jurisdiction_id`        | Primär-/Fremdschlüssel |
+| `organisationsid` | `organization_id`        | Primär-/Fremdschlüssel |
+| `timestamp`       | `timestamp`              | Bereits snake_case     |
+| `cookiecode`      | `cookie_code`            | Namensstandardisierung |
+| `name`            | `name`                   | Bereits snake_case     |
+| `zugelassen`      | `allowed`                | Namensstandardisierung |
+
+#### queue_number_statistics (formerly wartenrstatistik)
+
+| Aktuelle Spalte                              | Neue Spalte (snake_case)                     | Grund                                                     |
+| -------------------------------------------- | -------------------------------------------- | --------------------------------------------------------- |
+| `datum`                                      | `date`                                       | Datum                                                     |
+| `standortid`                                 | `scope_id`                                   | Fremdschlüssel zu scope                                   |
+| `wartenrstatistikid`                         | `queue_number_statistics_id`                 | Primärschlüssel                                           |
+| `hour_##_waiting_time_spontaneous`           | `hour_##_waiting_time_spontaneous`           | Per-hour actual waiting time (spontaneous); ## = 00–23    |
+| `hour_##_waiting_time_appointment`           | `hour_##_waiting_time_appointment`           | Per-hour actual waiting time (appointment); ## = 00–23    |
+| `hour_##_way_time_spontaneous`               | `hour_##_way_time_spontaneous`               | Per-hour way time (spontaneous); ## = 00–23               |
+| `hour_##_way_time_appointment`               | `hour_##_way_time_appointment`               | Per-hour way time (appointment); ## = 00–23               |
+| `hour_##_estimated_waiting_time_spontaneous` | `hour_##_estimated_waiting_time_spontaneous` | Per-hour estimated waiting time (spontaneous); ## = 00–23 |
+| `hour_##_estimated_waiting_time_appointment` | `hour_##_estimated_waiting_time_appointment` | Per-hour estimated waiting time (appointment); ## = 00–23 |
+| `hour_##_waiting_count_spontaneous`          | `hour_##_waiting_count_spontaneous`          | Per-hour waiting count (spontaneous); ## = 00–23          |
+| `hour_##_waiting_count_appointment`          | `hour_##_waiting_count_appointment`          | Per-hour waiting count (appointment); ## = 00–23          |
+
+> Legacy columns `echte_zeit_ab_##_*`, `wegezeit_ab_##_*`, `zeit_ab_##_*`, and `wartende_ab_##_*` map to the `hour_##_*` names above (see migration `91775568666-rename-waiting-way-processing-columns.sql`).
+
+#### location_cluster (formerly standortcluster)
+
+| Aktuelle Spalte           | Neue Spalte (snake_case) | Grund                  |
+| ------------------------- | ------------------------ | ---------------------- |
+| `clusterID`               | `cluster_id`             | Primär-/Fremdschlüssel |
+| `name`                    | `name`                   | Bereits snake_case     |
+| `clusterinfozeile1`       | `cluster_info_line_1`    | Namensstandardisierung |
+| `clusterinfozeile2`       | `cluster_info_line_2`    | Namensstandardisierung |
+| `stadtplanlink`           | `city_map_link`          | Namensstandardisierung |
+| `aufrufanzeigetext`       | `display_text`           | Namensstandardisierung |
+| `standortkuerzelanzeigen` | `show_scope_short_name`  | Namensstandardisierung |
+
+#### statistics (formerly statistik)
+
+| Aktuelle Spalte       | Neue Spalte (snake_case)  | Grund                  |
+| --------------------- | ------------------------- | ---------------------- |
+| `statistikid`         | `statistics_id`           | Primär-/Fremdschlüssel |
+| `kundenid`            | `jurisdiction_id`         | Primär-/Fremdschlüssel |
+| `organisationsid`     | `organization_id`         | Primär-/Fremdschlüssel |
+| `behoerdenid`         | `department_id`           | Primär-/Fremdschlüssel |
+| `clusterid`           | `cluster_id`              | Primär-/Fremdschlüssel |
+| `standortid`          | `scope_id`                | Primär-/Fremdschlüssel |
+| `anliegenid`          | `request_id`              | Primär-/Fremdschlüssel |
+| `datum`               | `datum`                   | Bereits snake_case     |
+| `lastbuergerarchivid` | `last_citizen_archive_id` | Primär-/Fremdschlüssel |
+| `termin`              | `with_appointment`        | Namensstandardisierung |
+| `info_dl_id`          | `info_provider_id`        | Primär-/Fremdschlüssel |
+| `processing_time`     | `processing_time`         | Bereits snake_case     |
+
+#### api_client (formerly apiclient)
+
+| Aktuelle Spalte     | Neue Spalte (snake_case) | Grund                  |
+| ------------------- | ------------------------ | ---------------------- |
+| `apiClientID`       | `api_client_id`          | Primär-/Fremdschlüssel |
+| `clientKey`         | `client_key`             | Namensstandardisierung |
+| `shortname`         | `short_name`             | Namensstandardisierung |
+| `accesslevel`       | `access_level`           | Namensstandardisierung |
+| `updateZeitstempel` | `updated_at`             | Zeitstempel            |
+
+#### api_key (formerly apikey)
+
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund                  |
+| --------------- | ------------------------ | ---------------------- |
+| `key`           | `key`                    | Bereits snake_case     |
+| `createIP`      | `create_ip`              | Namensstandardisierung |
+| `ts`            | `ts`                     | Bereits snake_case     |
+| `apiClientID`   | `api_client_id`          | Primär-/Fremdschlüssel |
+
+#### api_quota (formerly apiquota)
+
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund                  |
+| --------------- | ------------------------ | ---------------------- |
+| `quotaid`       | `quota_id`               | Primär-/Fremdschlüssel |
+| `key`           | `key`                    | Bereits snake_case     |
+| `route`         | `route`                  | Bereits snake_case     |
+| `period`        | `period`                 | Bereits snake_case     |
+| `requests`      | `requests`               | Bereits snake_case     |
+| `ts`            | `ts`                     | Bereits snake_case     |
+
+#### role
+
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund              |
+| --------------- | ------------------------ | ------------------ |
+| `id`            | `id`                     | Bereits snake_case |
+| `name`          | `name`                   | Bereits snake_case |
+| `description`   | `description`            | Bereits snake_case |
+
+#### permission
+
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund              |
+| --------------- | ------------------------ | ------------------ |
+| `id`            | `id`                     | Bereits snake_case |
+| `name`          | `name`                   | Bereits snake_case |
+| `description`   | `description`            | Bereits snake_case |
+
+#### role_permission
+
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund              |
+| --------------- | ------------------------ | ------------------ |
+| `role_id`       | `role_id`                | Bereits snake_case |
+| `permission_id` | `permission_id`          | Bereits snake_case |
+
+#### user_role
+
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund              |
+| --------------- | ------------------------ | ------------------ |
+| `user_id`       | `user_id`                | Bereits snake_case |
+| `role_id`       | `role_id`                | Bereits snake_case |
+
+### Phase 4: Kommunikations-Tabellen
+
+#### email
+
+| Aktuelle Spalte                | Neue Spalte (snake_case)       | Grund                  |
+| ------------------------------ | ------------------------------ | ---------------------- |
+| `emailID`                      | `email_id`                     | Primär-/Fremdschlüssel |
+| `BehoerdenID`                  | `department_id`                | Primär-/Fremdschlüssel |
+| `serveradresse`                | `server_address`               | Namensstandardisierung |
+| `authentication`               | `authentication`               | Bereits snake_case     |
+| `username`                     | `username`                     | Bereits snake_case     |
+| `password`                     | `password`                     | Bereits snake_case     |
+| `ssl_coding`                   | `ssl_encoding`                 | Namensstandardisierung |
+| `absenderadresse`              | `sender_address`               | Namensstandardisierung |
+| `send_reminder`                | `send_reminder`                | Bereits snake_case     |
+| `send_reminder_minutes_before` | `send_reminder_minutes_before` | Bereits snake_case     |
+
+#### sms
+
+| Aktuelle Spalte        | Neue Spalte (snake_case) | Grund                  |
+| ---------------------- | ------------------------ | ---------------------- |
+| `smsID`                | `sms_id`                 | Primär-/Fremdschlüssel |
+| `BehoerdenID`          | `department_id`          | Primär-/Fremdschlüssel |
+| `enabled`              | `enabled`                | Bereits snake_case     |
+| `Absender`             | `sender`                 | Namensstandardisierung |
+| `interneterinnerung`   | `internet_reminder`      | Namensstandardisierung |
+| `internetbestaetigung` | `internet_confirmation`  | Namensstandardisierung |
+
+#### mail_part (formerly mailpart)
+
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund                  |
+| --------------- | ------------------------ | ---------------------- |
+| `id`            | `id`                     | Bereits snake_case     |
+| `queueId`       | `queue_id`               | Primär-/Fremdschlüssel |
+| `mime`          | `mime`                   | Bereits snake_case     |
+| `content`       | `content`                | Bereits snake_case     |
+| `base64`        | `base64`                 | Bereits snake_case     |
+
+#### mail_queue (formerly mailqueue)
+
+| Aktuelle Spalte     | Neue Spalte (snake_case) | Grund                  |
+| ------------------- | ------------------------ | ---------------------- |
+| `id`                | `id`                     | Bereits snake_case     |
+| `processID`         | `process_id`             | Primär-/Fremdschlüssel |
+| `departmentID`      | `department_id`          | Primär-/Fremdschlüssel |
+| `createIP`          | `create_ip`              | Namensstandardisierung |
+| `createZeitstempel` | `created_at`             | Zeitstempel            |
+| `subject`           | `subject`                | Bereits snake_case     |
+| `clientFamilyName`  | `client_family_name`     | Namensstandardisierung |
+| `clientEmail`       | `client_email`           | Namensstandardisierung |
+
+#### mail_template (formerly mailtemplate)
+
+| Aktuelle Spalte     | Neue Spalte (snake_case) | Grund              |
+| ------------------- | ------------------------ | ------------------ |
+| `id`                | `id`                     | Bereits snake_case |
+| `name`              | `name`                   | Bereits snake_case |
+| `value`             | `value`                  | Bereits snake_case |
+| `provider`          | `provider`               | Bereits snake_case |
+| `changeZeitstempel` | `changed_at`             | Zeitstempel        |
+
+#### notification_queue (formerly notificationqueue)
+
+| Aktuelle Spalte     | Neue Spalte (snake_case) | Grund                  |
+| ------------------- | ------------------------ | ---------------------- |
+| `id`                | `id`                     | Bereits snake_case     |
+| `processID`         | `process_id`             | Primär-/Fremdschlüssel |
+| `departmentID`      | `department_id`          | Primär-/Fremdschlüssel |
+| `createIP`          | `create_ip`              | Namensstandardisierung |
+| `createZeitstempel` | `created_at`             | Zeitstempel            |
+| `message`           | `message`                | Bereits snake_case     |
+| `clientFamilyName`  | `client_family_name`     | Namensstandardisierung |
+| `clientTelephone`   | `client_phone`           | Namensstandardisierung |
+| `scopeID`           | `scope_id`               | Primär-/Fremdschlüssel |
+
+### Phase 5: Datumn- & Prozess-Tabellen
+
+#### closures
+
+| Aktuelle Spalte     | Neue Spalte (snake_case) | Grund                  |
+| ------------------- | ------------------------ | ---------------------- |
+| `id`                | `id`                     | Bereits snake_case     |
+| `year`              | `year`                   | Bereits snake_case     |
+| `month`             | `month`                  | Bereits snake_case     |
+| `day`               | `day`                    | Bereits snake_case     |
+| `StandortID`        | `scope_id`               | Primär-/Fremdschlüssel |
+| `updateZeitstempel` | `updated_at`             | Zeitstempel            |
+
+#### config
+
+| Aktuelle Spalte     | Neue Spalte (snake_case) | Grund              |
+| ------------------- | ------------------------ | ------------------ |
+| `name`              | `name`                   | Bereits snake_case |
+| `value`             | `value`                  | Bereits snake_case |
+| `changeZeitstempel` | `changed_at`             | Zeitstempel        |
+
+#### event_log (formerly eventlog)
+
+| Aktuelle Spalte       | Neue Spalte (snake_case) | Grund                  |
+| --------------------- | ------------------------ | ---------------------- |
+| `eventId`             | `event_id`               | Primär-/Fremdschlüssel |
+| `eventName`           | `event_name`             | Namensstandardisierung |
+| `origin`              | `origin`                 | Bereits snake_case     |
+| `referenceType`       | `reference_type`         | Namensstandardisierung |
+| `reference`           | `reference`              | Bereits snake_case     |
+| `sessionid`           | `session_id`             | Primär-/Fremdschlüssel |
+| `contextjson`         | `context_json`           | Namensstandardisierung |
+| `creationDatumTime`   | `created_at`             | Zeitstempel            |
+| `expirationDatumTime` | `expires_at`             | Zeitstempel            |
+
+#### image_data (formerly imagedata)
+
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund                  |
+| --------------- | ------------------------ | ---------------------- |
+| `imagename`     | `image_name`             | Namensstandardisierung |
+| `imagecontent`  | `image_content`          | Namensstandardisierung |
+| `ts`            | `ts`                     | Bereits snake_case     |
+
+#### log
+
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund              |
+| --------------- | ------------------------ | ------------------ |
+| `log_id`        | `log_id`                 | Bereits snake_case |
+| `type`          | `type`                   | Bereits snake_case |
+| `reference_id`  | `reference_id`           | Bereits snake_case |
+| `ts`            | `ts`                     | Bereits snake_case |
+| `message`       | `message`                | Bereits snake_case |
+| `scope_id`      | `scope_id`               | Bereits snake_case |
+| `data`          | `data`                   | Bereits snake_case |
+| `user_id`       | `user_id`                | Bereits snake_case |
+
+#### migrations
+
+| Aktuelle Spalte     | Neue Spalte (snake_case) | Grund              |
+| ------------------- | ------------------------ | ------------------ |
+| `filename`          | `filename`               | Bereits snake_case |
+| `changeZeitstempel` | `changed_at`             | Zeitstempel        |
+
+#### preferences
+
+| Aktuelle Spalte     | Neue Spalte (snake_case) | Grund                  |
+| ------------------- | ------------------------ | ---------------------- |
+| `entity`            | `entity`                 | Bereits snake_case     |
+| `id`                | `id`                     | Bereits snake_case     |
+| `groupName`         | `group_name`             | Namensstandardisierung |
+| `name`              | `name`                   | Bereits snake_case     |
+| `value`             | `value`                  | Bereits snake_case     |
+| `updateZeitstempel` | `updated_at`             | Zeitstempel            |
+
+#### process_sequence
+
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund                  |
+| --------------- | ------------------------ | ---------------------- |
+| `processId`     | `process_id`             | Primär-/Fremdschlüssel |
+
+#### session_data (formerly sessiondata)
+
+| Aktuelle Spalte  | Neue Spalte (snake_case) | Grund                  |
+| ---------------- | ------------------------ | ---------------------- |
+| `sessionid`      | `session_id`             | Primär-/Fremdschlüssel |
+| `sessionname`    | `session_name`           | Namensstandardisierung |
+| `sessioncontent` | `session_content`        | Namensstandardisierung |
+| `ts`             | `ts`                     | Bereits snake_case     |
+
+#### source
+
+| Aktuelle Spalte  | Neue Spalte (snake_case) | Grund                  |
+| ---------------- | ------------------------ | ---------------------- |
+| `source`         | `source`                 | Bereits snake_case     |
+| `label`          | `label`                  | Bereits snake_case     |
+| `editable`       | `editable`               | Bereits snake_case     |
+| `contact__name`  | `contact__name`          | Bereits snake_case     |
+| `contact__email` | `contact__email`         | Bereits snake_case     |
+| `lastChange`     | `last_change`            | Namensstandardisierung |
+
+#### overview_calendar
+
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund              |
+| --------------- | ------------------------ | ------------------ |
+| `id`            | `id`                     | Bereits snake_case |
+| `scope_id`      | `scope_id`               | Bereits snake_case |
+| `process_id`    | `process_id`             | Bereits snake_case |
+| `status`        | `status`                 | Bereits snake_case |
+| `starts_at`     | `starts_at`              | Bereits snake_case |
+| `ends_at`       | `ends_at`                | Bereits snake_case |
+| `updated_at`    | `updated_at`             | Bereits snake_case |
+
+### Phase 6: Leistungs- & Anbieter-Tabellen
+
+#### provider
+
+| Aktuelle Spalte         | Neue Spalte (snake_case) | Grund              |
+| ----------------------- | ------------------------ | ------------------ |
+| `source`                | `source`                 | Bereits snake_case |
+| `id`                    | `id`                     | Bereits snake_case |
+| `name`                  | `name`                   | Bereits snake_case |
+| `contact__city`         | `contact__city`          | Bereits snake_case |
+| `contact__country`      | `contact__country`       | Bereits snake_case |
+| `contact__lat`          | `contact__lat`           | Bereits snake_case |
+| `contact__lon`          | `contact__lon`           | Bereits snake_case |
+| `contact__postalCode`   | `contact__postalCode`    | Bereits snake_case |
+| `contact__region`       | `contact__region`        | Bereits snake_case |
+| `contact__street`       | `contact__street`        | Bereits snake_case |
+| `contact__streetNumber` | `contact__streetNumber`  | Bereits snake_case |
+| `link`                  | `link`                   | Bereits snake_case |
+| `data`                  | `data`                   | Bereits snake_case |
+| `display_name`          | `display_name`           | Bereits snake_case |
+| `parent_id`             | `parent_id`              | Bereits snake_case |
+
+#### request
+
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund              |
+| --------------- | ------------------------ | ------------------ |
+| `source`        | `source`                 | Bereits snake_case |
+| `id`            | `id`                     | Bereits snake_case |
+| `name`          | `name`                   | Bereits snake_case |
+| `link`          | `link`                   | Bereits snake_case |
+| `group`         | `group`                  | Bereits snake_case |
+| `data`          | `data`                   | Bereits snake_case |
+| `parent_id`     | `parent_id`              | Bereits snake_case |
+| `variant_id`    | `variant_id`             | Bereits snake_case |
+
+#### request_provider
+
+| Aktuelle Spalte     | Neue Spalte (snake_case) | Grund              |
+| ------------------- | ------------------------ | ------------------ |
+| `source`            | `source`                 | Bereits snake_case |
+| `request__id`       | `request__id`            | Bereits snake_case |
+| `provider__id`      | `provider__id`           | Bereits snake_case |
+| `slots`             | `slots`                  | Bereits snake_case |
+| `bookable`          | `bookable`               | Bereits snake_case |
+| `max_quantity`      | `max_quantity`           | Bereits snake_case |
+| `public_visibility` | `public_visibility`      | Bereits snake_case |
+
+#### request_variant
+
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund              |
+| --------------- | ------------------------ | ------------------ |
+| `id`            | `id`                     | Bereits snake_case |
+| `name`          | `name`                   | Bereits snake_case |
+
+### Phase 7: Slot-System-Tabellen
+
+#### slot
+
+| Aktuelle Spalte     | Neue Spalte (snake_case) | Grund                  |
+| ------------------- | ------------------------ | ---------------------- |
+| `slotID`            | `slot_id`                | Primär-/Fremdschlüssel |
+| `scopeID`           | `scope_id`               | Primär-/Fremdschlüssel |
+| `year`              | `year`                   | Bereits snake_case     |
+| `month`             | `month`                  | Bereits snake_case     |
+| `day`               | `day`                    | Bereits snake_case     |
+| `time`              | `time`                   | Bereits snake_case     |
+| `availabilityID`    | `availability_id`        | Primär-/Fremdschlüssel |
+| `public`            | `public`                 | Bereits snake_case     |
+| `callcenter`        | `callcenter`             | Bereits snake_case     |
+| `intern`            | `intern`                 | Bereits snake_case     |
+| `status`            | `status`                 | Bereits snake_case     |
+| `slotTimeInMinutes` | `slot_time_in_minutes`   | Namensstandardisierung |
+| `createZeitstempel` | `created_at`             | Zeitstempel            |
+| `updateZeitstempel` | `updated_at`             | Zeitstempel            |
+
+#### slot_hierarchy (formerly slot_hiera)
+
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund                  |
+| --------------- | ------------------------ | ---------------------- |
+| `slothieraID`   | `slot_hierarchy_id`      | Primär-/Fremdschlüssel |
+| `slotID`        | `slot_id`                | Primär-/Fremdschlüssel |
+| `ancestorID`    | `ancestor_id`            | Primär-/Fremdschlüssel |
+| `ancestorLevel` | `ancestor_level`         | Namensstandardisierung |
+
+#### slot_process
+
+| Aktuelle Spalte     | Neue Spalte (snake_case) | Grund                  |
+| ------------------- | ------------------------ | ---------------------- |
+| `slotID`            | `slot_id`                | Primär-/Fremdschlüssel |
+| `processID`         | `process_id`             | Primär-/Fremdschlüssel |
+| `updateZeitstempel` | `updated_at`             | Zeitstempel            |
+
+#### slot_sequence
+
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund                  |
+| --------------- | ------------------------ | ---------------------- |
+| `slotsequence`  | `slot_sequence`          | Namensstandardisierung |
+
+### Phase 8: Zuweisungs- & Clustering-Tabellen
+
+#### cluster_assignment (formerly clusterzuordnung)
+
+| Aktuelle Spalte | Neue Spalte (snake_case) | Grund                  |
+| --------------- | ------------------------ | ---------------------- |
+| `clusterID`     | `cluster_id`             | Primär-/Fremdschlüssel |
+| `standortID`    | `scope_id`               | Primär-/Fremdschlüssel |
+
+### Phase 9: Fremdschlüssel-Standardisierung
+
+| Aktuelles Muster  | Neues Muster      | Beispiel                                          |
+| ----------------- | ----------------- | ------------------------------------------------- |
+| `StandortID`      | `scope_id`        | Fremdschlüssel zur scope-Tabelle                  |
+| `BehoerdenID`     | `department_id`   | Fremdschlüssel zur department-Tabelle             |
+| `BuergerID`       | `process_id`      | Fremdschlüssel zur process-Tabelle (`buerger`)    |
+| `NutzerID`        | `user_id`         | Fremdschlüssel zur user-Tabelle                   |
+| `KundenID`        | `jurisdiction_id` | Fremdschlüssel zur jurisdiction-Tabelle (`kunde`) |
+| `OrganisationsID` | `organization_id` | Fremdschlüssel zur organization-Tabelle           |
+| `OeffnungszeitID` | `availability_id` | Fremdschlüssel zur availability-Tabelle           |
+| `apiClientID`     | `api_client_id`   | Fremdschlüssel zur api_client-Tabelle             |
+| `clusterID`       | `cluster_id`      | Fremdschlüssel zur location_cluster-Tabelle       |
+
+> Die Spaltenzuordnungen in Abschnitt 2 basieren auf `.resources/zms.sql` und aktuellen Migrationen. Einige Spalten (z. B. `provider.contact__*`) sind JSON-Pfad-Schlüssel in relationalen Spalten und bleiben vorerst unverändert, bis der PHP-Mapping-Refactor (Abschnitt 3) sie in camelCase-Entity-Felder überführt.
 
 ## 3. Vollständiger Plan zur Umbenennung der PHP-Variablen-Mappings – alles Englisch, alles camelCase
 
@@ -663,3 +1235,109 @@ Current Mapping | New Mapping (camelCase) | Database Column (snake_case)
 'displayName' | 'displayName' | provider.display_name
 'source' | 'source' | provider.source
 'data' | 'data' | provider.data
+
+## 4. Langfristige Schema-Vision (über Umbenennung hinaus)
+
+Die Abschnitte 1–3 standardisieren **Namen**. Dieser Abschnitt dokumentiert **strukturelle** Änderungen für ein gesünderes Langzeit-Schema. Es handelt sich um Planungsnotizen, keine festen Zeitpläne.
+
+### 4.1 Größere strukturelle Refactorings
+
+#### Aufteilung von `buerger` in citizen und process (oder citizen und appointment)
+
+Heute ist `buerger` die physische Tabelle der `process`-Entity. Sie vermischt gewachsene Concerns:
+
+- Bürger-/Kunden-PII (`Name`, `EMail`, `Telefonnummer`, Custom Fields)
+- Terminplanung (`Datum`, `Uhrzeit`, Standortbezug, Slot-Verknüpfung)
+- Warteschlangen-Laufzeit (`wartenummer`, `status`, `waiting_time`, Aufruf-Metadaten)
+- Archiv- und Statistik-Eingaben
+
+**Zielmodelle (Kandidaten):**
+
+| Option | Tabellen                  | Passt wenn                                                 |
+| ------ | ------------------------- | ---------------------------------------------------------- |
+| A      | `citizen` + `process`     | Warteschlangen-zentriert; Process als Arbeitseinheit       |
+| B      | `citizen` + `appointment` | Termin-zentriert; klare Trennung Buchung vs. Warteschlange |
+
+Die kurzfristige Umbenennung in Abschnitt 1 kann `buerger` → `process` vorsehen. Die Aufteilung hier ist eine **spätere** Migration, sobald API, Statistik und Archiv-Pfade entflochten sind.
+
+#### Entfernen von `buergerarchivtoday` / `citizen_archive_today`
+
+`buergerarchivtoday` ist ein Tages-Snapshot von `buergerarchiv` — redundant und wartungsintensiv. Stattdessen:
+
+- `citizen_archive` mit Datumsfilter und passenden Indizes, oder
+- View / materialisierte View bei Performance-Bedarf
+
+Tabelle entfernen, sobald Abfragen und Dashboards ohne sie auskommen.
+
+#### Normalisierung von `queue_number_statistics` (`wartenrstatistik`)
+
+Die Tabelle ist extrem breit: stündliche Spalten für geschätzte Wartezeit, echte Wartezeit, Wegezeit und Wartende — jeweils Spontan vs. Termin (96+ Spalten pro Metrik-Familie). Zwischen-Umbenennungen: Migration `91775568666-rename-waiting-way-processing-columns.sql`.
+
+**Langfristig:** Fact-Tabellen, z. B. `queue_statistics_hourly` mit `(scope_id, date, hour, metric, channel, value)` — `channel`: `spontaneous` | `appointment`.
+
+#### Normalisierung von `log.data` (JSON)
+
+Neben indexierten Spalten (`type`, `scope_id`, `user_id`, `reference_id`) liegt ein JSON-Blob `data`. Suche darin ist langsam.
+
+**Richtung:** häufig gefilterte Felder als typisierte Spalten; `data` nur noch für Debug oder entfernen.
+
+#### Aufteilen und umbenennen von `preferences`
+
+`preferences` nutzt `(entity, id, groupName, name)`, mischt aber:
+
+- **Scope-Einstellungen** (entity `scope`, aus `standort` migriert)
+- **System-/Admin-Konfiguration** (zmsadmin Config-Bereich)
+
+**Richtung:** `scope_preference` / `scope_setting` plus `system_setting` (oder Abgrenzung zu `config`); generischen Namen `preferences` für Scope-Daten vermeiden.
+
+#### DLDB-Tabellen: `provider`, `request`, `request_provider`, `request_variant`
+
+DLDB-synchronisiert; mehrere Tabellen mit `data`-JSON. `zmscitizenapi` spricht von **offices** und **services** (`officeId`, `serviceId`, `OfficeServiceRelation`).
+
+| Aktuell            | Citizen-API       | Kandidat Tabellenname |
+| ------------------ | ----------------- | --------------------- |
+| `provider`         | office            | `office`              |
+| `request`          | service           | `service`             |
+| `request_provider` | Standort–Leistung | `office_service`      |
+| `request_variant`  | Leistungsvariante | `service_variant`     |
+
+**Struktur:** `data` in relationale Spalten überführen, wo abgefragt; JSON nur für seltene DLDB-Felder.
+
+### 4.2 Tabellen-Disposition
+
+| Tabelle (aktuell)    | Geplante Disposition            | Hinweise                                                                                                                                                                                   |
+| -------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `abrechnung`         | **Löschen**                     | Ungenutzt. Migration `91772633097-drop-abrechnung.sql` löscht die Tabelle bereits.                                                                                                         |
+| `ipausnahmen`        | **Prüfen → vermutlich löschen** | Keine PHP-Referenzen zum Zeitpunkt der Dokumentation.                                                                                                                                      |
+| `apikey`             | **Prüfen**                      | Routen in `zmsapi`; klären ob Produktion noch API-Keys nutzt.                                                                                                                              |
+| `apiquota`           | **Prüfen**                      | An `apikey` gekoppelt.                                                                                                                                                                     |
+| `notificationqueue`  | **Löschen**                     | SMS-/Notification-Abbau. Migration `91772633137-drop-notifcationqueue.sql`.                                                                                                                |
+| `eventlog`           | **Prüfen**                      | Noch in Nutzung (z. B. `ProcessListSummaryMail`); ggf. mit `log` zusammenführen.                                                                                                           |
+| `imagedata`          | **Neu gestalten**               | Nur URL in DB; Binärdaten in RefArch-S3 via zmsadmin. Admin-Logo aktuell statisch unter `terminvereinbarung/admin/_css/images/muc_logo_head2.png` — DB-Upload vermutlich ungenutzt/defekt. |
+| `kundenlinks`        | **Löschen**                     | Bereits in Abschnitt 1 als ungenutzt markiert.                                                                                                                                             |
+| `buergerarchivtoday` | **Löschen**                     | Siehe §4.1; redundant zu `buergerarchiv`.                                                                                                                                                  |
+
+### 4.3 Assets, Migrationen und Betrieb
+
+#### `image_data` → Object Storage
+
+- Logos und Calldisplay-Bilder über zmsadmin in **RefArch-S3** (oder kompatiblen Store) hochladen.
+- In der DB nur `bucket`, `object_key` und/oder HTTPS-URL speichern.
+- `imagecontent`-BLOB/TEXT nach Migration entfernen.
+- Alle Consumer prüfen: `FileUploader`, Calldisplay-Routen, Cluster/Scope-Bilder.
+
+#### Migrations-Dateinamen
+
+Viele Dateien beginnen mit `917…` — chronologische Sortierung und Review erschwert.
+
+**Vorschlag für neue Migrationen:**
+
+```
+{YYYYMMDD}-{HHMMSS}-{ticket-oder-kurzbeschreibung}.sql
+```
+
+Beispiel: `20260302-143000-ZMS-1234-split-buerger.sql`. Historische Dateien nur umbenennen, wenn der Aufwand gerechtfertigt ist.
+
+#### Tabelle `migrations`
+
+Die Tabelle selbst ist in Ordnung; Ziel ist die **Dateikonvention** im Dateisystem, nicht ein Tabellenumbenennung.
