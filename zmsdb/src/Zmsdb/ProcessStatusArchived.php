@@ -121,6 +121,10 @@ class ProcessStatusArchived extends Process
         bool $calculateStatistic = false,
         ?\BO\Zmsentities\Useraccount $useraccount = null
     ) {
+        if ($process->isDereferenced() || !$process->getScopeId()) {
+            return null;
+        }
+
         $process = $this->updateEntity(
             $process,
             $now,
