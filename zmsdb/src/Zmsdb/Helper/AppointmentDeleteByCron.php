@@ -134,7 +134,7 @@ class AppointmentDeleteByCron
             if (in_array($process->status, $this->archivelist)) {
                 $this->log("INFO: $processCount. Archive $process");
                 $process = $this->updateProcessStatus($process);
-                if ($commit) {
+                if ($commit && $this->shouldArchiveProcess($process)) {
                     $this->archiveProcess($process);
                 }
             }
@@ -155,6 +155,19 @@ class AppointmentDeleteByCron
             $process->status = 'missed';
         }
         return $process;
+    }
+
+    protected function shouldArchiveProcess(\BO\Zmsentities\Process $process): bool
+    {
+        if ($process->isDereferenced()) {
+            $this->log("WARN: Skip archive for dereferenced process {$process->id}, delete only", 'warning');
+            return false;
+        }
+        if (!$process->getScopeId()) {
+            $this->log("WARN: Skip archive for process {$process->id} without scope, delete only", 'warning');
+            return false;
+        }
+        return true;
     }
 
     protected function archiveProcess(\BO\Zmsentities\Process $process)
