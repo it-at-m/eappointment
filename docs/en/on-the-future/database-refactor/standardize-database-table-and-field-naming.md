@@ -449,6 +449,47 @@ This approach ensures:
 | `external_user_id`               | `external_user_id`            | Already snake_case  |
 | `displayNumber`                  | `display_number`              | Standardize naming  |
 
+##### Dereference payload in `Anmerkung` / custom text fields (technical debt)
+
+When a process is finished or soft-deleted, `Process::writeBlockedEntity()` runs `QUERY_DEREFERENCED` (`zmsdb/src/Zmsdb/Query/Process.php`). That update clears PII and sets `StandortID = 0`, `Name = 'dereferenced'`, and `status = 'blocked'`. Because the row no longer has a usable `scope_id`, the original scope and metadata are **serialized into free-text columns** using PHP `var_export()`:
+
+| Column               | Written by                                | Payload shape                                                       |
+| -------------------- | ----------------------------------------- | ------------------------------------------------------------------- |
+| `Anmerkung`          | `Process::toDerefencedAmendment()`        | `BuergerID`, `StandortID`, `Anmerkung`, `IPTimeStamp`, `LastChange` |
+| `custom_text_field`  | `Process::toDerefencedCustomTextfield()`  | same pattern with `CustomTextfield`                                 |
+| `custom_text_field2` | `Process::toDerefencedCustomTextfield2()` | same pattern with `CustomTextfield2`                                |
+
+Example (what remains in `Anmerkung` after dereference):
+
+```
+array (
+  'BuergerID' => 100000,
+  'StandortID' => 1,
+  'Anmerkung' => NULL,
+  'IPTimeStamp' => 0,
+  'LastChange' => '1970-01-01T01:00:00+01:00',
+)
+```
+
+**Where this payload is read back (string parsing, not typed columns):**
+
+- `CalculateDailyWaitingStatisticByCron::extractScopeFromAnmerkung()` — regex on all three columns when `StandortID = 0` (`zmsdb/src/Zmsdb/Helper/CalculateDailyWaitingStatisticByCron.php`)
+- Ad-hoc SQL in maintenance migrations (e.g. `SUBSTRING_INDEX` / `LIKE` on `'StandortID' =>` in `Anmerkung` and custom text fields)
+- Any code path that must resolve scope on a dereferenced shell row before the cron deletes it
+
+**Why this is bad practice and must not be copied in new schema:**
+
+- **Wrong column semantics:** `Anmerkung` / custom text fields are user-facing comment fields, not an archive or audit store.
+- **Fragile parsing:** Scope and IDs are recovered with regex/`SUBSTRING_INDEX` on `var_export` output; a `NULL` or overwritten `StandortID` in the string breaks downstream jobs (e.g. archive cron inserting `NULL` into `buergerarchivtoday.StandortID`).
+- **Duplicated payload:** The same structural array is written to three unrelated columns.
+- **No schema enforcement:** Nothing prevents post-finish updates from corrupting the string or flipping `status` while `StandortID` stays `0`.
+
+**Target direction (when refactoring `process` / archive):**
+
+- Persist dereference metadata in **typed columns or a dedicated `process_dereference` / audit table** (`process_id`, `scope_id`, `archived_at`, …).
+- Stop writing `var_export` arrays into `comment` / custom text fields.
+- Remove regex-based scope recovery from cron and statistics paths once shells expose a real FK or archive link.
+
 #### holidays (formerly feiertage)
 
 | Current Column    | New Column (snake_case) | Reason              |
