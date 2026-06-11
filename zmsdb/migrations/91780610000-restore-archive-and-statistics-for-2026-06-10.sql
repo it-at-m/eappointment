@@ -125,8 +125,14 @@ SELECT
             ELSE b.Uhrzeit
         END
     ) AS arrival_timestamp,
-    GREATEST(COALESCE(b.waiting_time, 0), 0) AS waiting_time,
-    GREATEST(COALESCE(b.way_time, 0), 0) AS way_time,
+    CASE
+        WHEN b.waiting_time IS NULL OR b.waiting_time = '00:00:00' THEN 0
+        ELSE ROUND(TIME_TO_SEC(b.waiting_time) / 60, 2)
+    END AS waiting_time,
+    CASE
+        WHEN b.way_time IS NULL OR b.way_time = '00:00:00' THEN 0
+        ELSE ROUND(TIME_TO_SEC(b.way_time) / 60, 2)
+    END AS way_time,
     CASE
         WHEN b.processing_time IS NULL OR b.processing_time = '00:00:00' THEN 0
         ELSE ROUND(TIME_TO_SEC(b.processing_time) / 60, 2)
