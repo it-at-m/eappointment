@@ -1,9 +1,11 @@
 -- Restore archive and customer statistics for 2026-06-10 after deleteAppointmentData cron failure.
 --
 -- 1) Fix dereference payload with StandortID NULL on the fix date (single known row)
--- 2) Remove partial buergerarchivtoday rows (~29) that already exist in buergerarchiv
--- 3) Insert remaining stranded buerger into buergerarchiv (skip rows already archived)
--- 4) Relink buergeranliegen and delete processed buerger rows
+-- 2) Remove buergerarchivtoday duplicates (~29) of rows that already exist in buergerarchiv
+-- 3) Insert remaining stranded buerger into buergerarchiv (skip rows already archived,
+--    skip dereferenced shells whose archive entry was written at finish time)
+-- 4) Relink buergeranliegen and delete processed buerger rows including their
+--    follow-up rows and already-archived dereferenced shells
 -- 5) Rebuild statistik for the fix date from buergerarchiv (ArchivedDataIntoStatisticByCron rules)
 
 SET @fix_date := '2026-06-10';
@@ -36,6 +38,7 @@ CREATE TEMPORARY TABLE tmp_buerger_archive_source (
     processing_time DOUBLE DEFAULT 0,
     anzahl_personen TINYINT UNSIGNED NOT NULL DEFAULT 1,
     is_ticketprinter TINYINT(1) NOT NULL DEFAULT 0,
+    is_shell TINYINT(1) NOT NULL DEFAULT 0,
     existing_archive_id INT UNSIGNED DEFAULT NULL,
     PRIMARY KEY (buerger_id)
 ) ENGINE=Aria;
@@ -53,7 +56,8 @@ INSERT INTO tmp_buerger_archive_source (
     way_time,
     processing_time,
     anzahl_personen,
-    is_ticketprinter
+    is_ticketprinter,
+    is_shell
 )
 SELECT
     b.BuergerID AS buerger_id,
@@ -128,7 +132,8 @@ SELECT
         ELSE ROUND(TIME_TO_SEC(b.processing_time) / 60, 2)
     END AS processing_time,
     GREATEST(COALESCE(b.AnzahlPersonen, 1), 1) AS anzahl_personen,
-    COALESCE(b.is_ticketprinter, 0) AS is_ticketprinter
+    COALESCE(b.is_ticketprinter, 0) AS is_ticketprinter,
+    CASE WHEN b.Name = 'dereferenced' THEN 1 ELSE 0 END AS is_shell
 FROM buerger b
 LEFT JOIN (
     SELECT
@@ -147,12 +152,6 @@ WHERE b.Datum = @fix_date
   AND (
       b.status IN ('confirmed', 'queued', 'called', 'missed', 'parked', 'processing', 'pending')
       OR (b.status = 'blocked' AND b.Name = 'dereferenced')
-  )
-  AND EXISTS (
-      SELECT 1
-      FROM buergeranliegen ban
-      WHERE ban.BuergerID = b.BuergerID
-        AND COALESCE(ban.BuergerarchivID, 0) = 0
   );
 
 UPDATE tmp_buerger_archive_source src
@@ -165,7 +164,8 @@ SET src.existing_archive_id = (
       AND ba.Timestamp = src.arrival_timestamp
       AND ba.mitTermin = src.mit_termin
       AND ba.nicht_erschienen = src.nicht_erschienen
-);
+)
+WHERE src.is_shell = 0;
 
 DELETE bat
 FROM buergerarchivtoday bat
@@ -211,6 +211,7 @@ SELECT
 FROM tmp_buerger_archive_source
 WHERE scope_id > 0
   AND existing_archive_id IS NULL
+  AND is_shell = 0
 ORDER BY buerger_id;
 
 SET @first_archive_id := LAST_INSERT_ID();
@@ -227,7 +228,8 @@ SELECT
     @first_archive_id + ROW_NUMBER() OVER (ORDER BY src.buerger_id) - 1 AS archive_id
 FROM tmp_buerger_archive_source src
 WHERE src.scope_id > 0
-  AND src.existing_archive_id IS NULL;
+  AND src.existing_archive_id IS NULL
+  AND src.is_shell = 0;
 
 INSERT INTO tmp_archive_map (buerger_id, archive_id)
 SELECT
@@ -244,7 +246,19 @@ SET
 
 DELETE b
 FROM buerger b
-JOIN tmp_archive_map m ON m.buerger_id = b.BuergerID;
+JOIN tmp_archive_map m
+    ON m.buerger_id = b.BuergerID
+    OR m.buerger_id = b.istFolgeterminvon;
+
+-- Dereferenced shells were already archived and relinked at finish time
+-- (writeEntityFinished); drop them and their follow-up rows like the
+-- cron's blocked pass would, without creating a second archive entry.
+DELETE b
+FROM buerger b
+JOIN tmp_buerger_archive_source src
+    ON src.buerger_id = b.BuergerID
+    OR src.buerger_id = b.istFolgeterminvon
+WHERE src.is_shell = 1;
 
 CREATE TEMPORARY TABLE tmp_statistik_rebuild (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
