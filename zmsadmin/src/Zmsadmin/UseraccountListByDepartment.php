@@ -8,6 +8,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Collection\UseraccountList as Collection;
+use BO\Zmsentities\Collection\RoleList;
 use BO\Zmsentities\Exception\UserAccountMissingRights;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -38,6 +39,21 @@ class UseraccountListByDepartment extends BaseController
 
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
 
+        $roleList = new RoleList();
+        $roleMap = [];
+
+        $roleResult = \App::$http->readGetResult('/roles/', []);
+        if ($roleResult) {
+            $loadedRoleList = $roleResult->getCollection();
+
+            if ($loadedRoleList !== null) {
+                $roleList = $loadedRoleList;
+
+                foreach ($roleList as $role) {
+                    $roleMap[$role->name] = $role->description ?: $role->name;
+                }
+            }
+        }
         return \BO\Slim\Render::withHtml(
             $response,
             'page/useraccountList.twig',
@@ -49,6 +65,8 @@ class UseraccountListByDepartment extends BaseController
                 'useraccountListByDepartment' => $useraccountList,
                 'ownerlist' => $ownerList,
                 'success' => $success,
+                'roleMap' => $roleMap,
+                'roleList' => $roleList
             )
         );
     }
