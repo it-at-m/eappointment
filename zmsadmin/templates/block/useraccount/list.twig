@@ -1,11 +1,12 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'useraccount-list board--spaceless', 'messages': 'hide'} %}
     {% from 'element/helper/form.twig' import custombutton, inputfield %}
-
+    {% set superuserOnlyRoles = ['system_admin', 'audit_viewer'] %}
+    {% set isSuperUser = workstation.useraccount.permissions.superuser|default(false)%}
     {% block board_title %}
         {% if searchUserQuery %}
             {% trans %}Suchergebnisse für {% endtrans %} "{{ searchUserQuery }}"
         {% else %}
-        {% if workstation.useraccount.rights.superuser %}
+        {% if isSuperUser %}
             Gesamtnutzerliste
         {% else %}
             Gesamtnutzerliste für Ihren Bereich {% if department.name %}: {{ department.name }}{% endif %}
@@ -37,7 +38,7 @@
                     <thead>
                         <tr>
                             <th>Loginname</th>
-                            <th>Berechtigung</th>
+                            <th>Rolle</th>
                             <th>Letzter Login</th>
                             <th>Aktion</th>
                         </tr>
@@ -45,28 +46,34 @@
                     <tbody>
                     {% for useraccount in useraccountList %}
                         <tr>
-                            <td><a href="{{ urlGet('useraccountEdit', {'loginname':useraccount.id}, {}) }}">{{ useraccount.id }}</a></td>
-                            {% set rights = useraccount.rights|default({}) %} 
-                            {% set roles = ['Sachbearbeitung'] %} 
-                            {% if rights.audit|default(false) %}
-                                {% set roles = roles|merge(['Innenrevision']) %}
-                            {% endif %}
-
-                            {% if rights.scope|default(false) %}
-                                {% set roles = roles|merge(['Terminadministration']) %}  
-                            {% endif %}
-
-                            {% if rights.cluster|default(false) %}
-                                {% set roles = roles|merge(['Fachliche Administration']) %}
-                            {% endif %}
-
-                            {% if rights.superuser|default(false) %}
-                                {% set roles = roles|merge(['Technische Administration']) %}
-                            {% endif %}
-                            <td>{{ roles|join('<br>')|raw  }} </td>
+                            {% set userRoles = useraccount.roles|default([]) %}
+                            {% set hasSuperuserOnlyRole = (userRoles|filter(roleName => roleName in superuserOnlyRoles)|length) > 0 %}
+                            {% set canEditUser = isSuperUser or not hasSuperuserOnlyRole %}
+                            <td>
+                                {% if canEditUser %}
+                                    <a href="{{ urlGet('useraccountEdit', {'loginname':useraccount.id}, {}) }}">{{ useraccount.id }}</a>
+                                {% else %}
+                                    {{ useraccount.id }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if userRoles|length > 0 %}
+                                    {% for roleName in userRoles %}
+                                        {{ roleMap[roleName]|default(roleName) }}{% if not loop.last %}<br>{% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
                             <td>{% if useraccount.lastLogin %}{{ useraccount.lastLogin|date("Y-m-d") }}{% endif %}</td>
                             <td>
-                                {{ custombutton({ "type":"edit", "class":"link" ,"target": urlGet('useraccountEdit', {'loginname':useraccount.id}, {}), "label":'<i class="fas fa-user-edit" aria-hidden="true"></i> bearbeiten' }) }}
+                                {% if canEditUser %}
+                                    {{ custombutton({ "type":"edit", "class":"link" ,"target": urlGet('useraccountEdit', {'loginname':useraccount.id}, {}), "label":'<i class="fas fa-user-edit" aria-hidden="true"></i> bearbeiten' }) }}
+                                {% else %}
+                                    <span class="disabled" title="Keine Berechtigung">
+                                        <i class="fas fa-user-edit" aria-hidden="true"></i> bearbeiten
+                                    </span>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
