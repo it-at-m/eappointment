@@ -37,6 +37,7 @@ class UseraccountUpdate extends BaseController
         }
 
         $this->testEntity($entity, $input, $args);
+        Helper\User::testWorkstationAssignedRoles($entity);
 
         if (isset($entity->changePassword)) {
             $entity->password = $entity->getHash(reset($entity->changePassword));
