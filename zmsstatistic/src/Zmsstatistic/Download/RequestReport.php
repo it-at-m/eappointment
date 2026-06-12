@@ -98,7 +98,7 @@ class RequestReport extends Base
                 if ($name === 'uncategorized') {
                     $rowData[] = 'Dienstleistung wurde nicht erfasst';
                 } elseif ($name === 'nonexistent') {
-                    $rowData[] = 'Dienstleistung konnte nicht erbracht werden'
+                    $rowData[] = 'Dienstleistung konnte nicht erbracht werden';
                 } else {
                     $rowData = $name;
                 }
