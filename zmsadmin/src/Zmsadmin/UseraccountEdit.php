@@ -63,19 +63,12 @@ class UseraccountEdit extends BaseController
         $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider') ?? '');
 
-        $roleList = new RoleList();
-
-        $roleResult = \App::$http->readGetResult('/roles/', []);
-        if ($roleResult) {
-            $loaded = $roleResult->getCollection();
-            if ($loaded !== null) {
-                $roleList = $loaded;
-            }
-        }
+        $roleList = $this->loadRoleList();
 
         $userAccountRoles = (isset($userAccount->roles) && is_array($userAccount->roles))
             ? $userAccount->roles
             : [];
+
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -107,6 +100,21 @@ class UseraccountEdit extends BaseController
                 ->readPostResult('/useraccount/' . $userAccountName . '/', $entity)
                 ->getEntity();
         });
+    }
+
+    private function loadRoleList(): RoleList
+    {
+        $roleList = new RoleList();
+
+        $roleResult = \App::$http->readGetResult('/roles/', []);
+        if ($roleResult) {
+            $loaded = $roleResult->getCollection();
+            if ($loaded !== null) {
+                $roleList = $loaded;
+            }
+        }
+
+        return $roleList;
     }
 
     protected function hasSuperuserOnlyRole(Entity $userAccount): bool
