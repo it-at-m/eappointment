@@ -41,12 +41,20 @@ class UseraccountByDepartmentTest extends Base
                     'url' => '/owner/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_ownerlist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture("GET_rolelist.json"),
                 ]
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString('useraccount-list', (string)$response->getBody());
         $this->assertStringContainsString('/users/testuser/', (string)$response->getBody());
+        $this->assertStringContainsString('Rolle', (string)$response->getBody());
+        $this->assertStringContainsString('Agenten-Queue Rolle', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -67,3 +75,4 @@ class UseraccountByDepartmentTest extends Base
         $this->render($this->arguments, $this->parameters, []);
     }
 }
+
