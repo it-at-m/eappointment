@@ -9,132 +9,61 @@
     "data": {
         "0": {
             "$schema": "https://schema.berlin.de/queuemanagement/useraccount.json",
-            "rights": {
-                "availability": "1",
-                "basic": "1",
-                "cluster": "1",
-                "department": "1",
-                "organisation": "1",
-                "scope": "1",
-                "sms": "1",
-                "superuser": "1",
-                "ticketprinter": "1",
-                "useraccount": "1"
-            },
             "id": "berlinonline",
-            "lastLogin": 1459461600
-        },
-        "1": {
-            "$schema": "https://schema.berlin.de/queuemanagement/useraccount.json",
-            "rights": {
-                "availability": "1",
-                "basic": "1",
-                "cluster": "1",
-                "department": "1",
-                "organisation": "1",
-                "scope": "1",
-                "sms": "1",
-                "superuser": "1",
-                "ticketprinter": "1",
-                "useraccount": "1"
+      "lastLogin": 1459461600,
+      "roles": [
+        "system_admin"
+      ]
             },
-            "id": "Wacek"
-        },
-        "2": {
+    "1": {
             "$schema": "https://schema.berlin.de/queuemanagement/useraccount.json",
-            "rights": {
-                "availability": "1",
-                "basic": "1",
-                "cluster": "1",
-                "department": "1",
-                "organisation": "1",
-                "scope": "1",
-                "sms": "1",
-                "superuser": "1",
-                "ticketprinter": "1",
-                "useraccount": "1"
+      "id": "Wacek",
+      "roles": [
+        "agent_queue"
+      ]
             },
-            "id": "ralf_adm"
-        },
-        "3": {
+    "2": {
             "$schema": "https://schema.berlin.de/queuemanagement/useraccount.json",
-            "rights": {
-                "availability": "1",
-                "basic": "1",
-                "cluster": "1",
-                "department": "1",
-                "organisation": "1",
-                "scope": "1",
-                "sms": "1",
-                "superuser": "1",
-                "ticketprinter": "1",
-                "useraccount": "1"
+      "id": "ralf_adm",
+      "roles": [
+        "system_admin"
+      ]
             },
-            "id": "daniel_adm"
-        },
-        "4": {
+    "3": {
             "$schema": "https://schema.berlin.de/queuemanagement/useraccount.json",
-            "rights": {
-                "availability": "1",
-                "basic": "1",
-                "cluster": "1",
-                "department": "1",
-                "organisation": "1",
-                "scope": "1",
-                "sms": "1",
-                "superuser": "1",
-                "ticketprinter": "1",
-                "useraccount": "1"
+      "id": "daniel_adm",
+      "roles": [
+        "agent_queue"
+      ]
             },
-            "id": "sven_adm"
-        },
-        "5": {
+    "4": {
             "$schema": "https://schema.berlin.de/queuemanagement/useraccount.json",
-            "rights": {
-                "availability": "1",
-                "basic": "1",
-                "cluster": "1",
-                "department": "1",
-                "organisation": "1",
-                "scope": "1",
-                "sms": "1",
-                "superuser": "1",
-                "ticketprinter": "1",
-                "useraccount": "1"
+      "id": "sven_adm",
+      "roles": [
+        "agent_queue"
+      ]
             },
-            "id": "eilenberger"
-        },
-        "6": {
+    "5": {
             "$schema": "https://schema.berlin.de/queuemanagement/useraccount.json",
-            "rights": {
-                "availability": "1",
-                "basic": "1",
-                "cluster": "1",
-                "department": "1",
-                "organisation": "1",
-                "scope": "1",
-                "sms": "1",
-                "superuser": "1",
-                "ticketprinter": "1",
-                "useraccount": "1"
+      "id": "eilenberger",
+      "roles": [
+        "agent_queue"
+      ]
             },
-            "id": "tim_adm"
-        },
-        "7": {
+    "6": {
             "$schema": "https://schema.berlin.de/queuemanagement/useraccount.json",
-            "rights": {
-                "availability": "1",
-                "basic": "1",
-                "cluster": "1",
-                "department": "1",
-                "organisation": "1",
-                "scope": "1",
-                "sms": "1",
-                "superuser": "1",
-                "ticketprinter": "1",
-                "useraccount": "1"
+      "id": "tim_adm",
+      "roles": [
+        "system_admin"
+      ]
             },
-            "id": "_system_messenger"
-        }
+    "7": {
+      "$schema": "https://schema.berlin.de/queuemanagement/useraccount.json",
+      "id": "_system_messenger",
+      "roles": [
+        "agent_queue"
+      ]
     }
 }
+}
+

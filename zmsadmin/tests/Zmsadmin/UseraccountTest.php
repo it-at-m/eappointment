@@ -33,12 +33,24 @@ class UseraccountTest extends Base
                     'url' => '/owner/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_ownerlist.json")
+                ],
+                // Neu: Rollenliste für roleMap
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture("GET_rolelist.json"),
                 ]
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString('Gesamtnutzerliste', (string)$response->getBody());
-        $this->assertStringContainsString('/users/berlinonline', (string)$response->getBody());
+        $body = (string)$response->getBody();
+
+        $this->assertStringContainsString('Gesamtnutzerliste', $body);
+        $this->assertStringContainsString('berlinonline', $body);
+        $this->assertStringContainsString('Rolle', $body);
+        $this->assertStringContainsString('Technische Administration', $body);
+        $this->assertStringContainsString('Agenten-Queue Rolle', $body);
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -69,12 +81,23 @@ class UseraccountTest extends Base
                     'url' => '/owner/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_ownerlist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture("GET_rolelist.json"),
                 ]
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string)$response->getBody());
-        $this->assertStringNotContainsString('/users/berlinonline', (string)$response->getBody());
+        $body = (string)$response->getBody();
+
+        $this->assertStringContainsString('Charlottenburg-Wilmersdorf', $body);
+        $this->assertStringContainsString('Rolle', $body);
+        $this->assertStringContainsString('Agenten-Queue Rolle', $body);
+        $this->assertStringContainsString('testuser', $body);
+        $this->assertStringNotContainsString('/users/berlinonline', $body);
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -95,3 +118,4 @@ class UseraccountTest extends Base
         $this->render($this->arguments, $this->parameters, []);
     }
 }
+
