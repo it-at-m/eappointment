@@ -15,7 +15,6 @@ use BO\Zmsentities\Exception\UserAccountMissingRights;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-
 class UseraccountList extends BaseController
 {
     /**
