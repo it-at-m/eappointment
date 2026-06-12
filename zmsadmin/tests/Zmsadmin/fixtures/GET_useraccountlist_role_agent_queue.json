@@ -1,0 +1,19 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2026-05-13T12:00:00+02:00",
+    "server": "Zmsapi-ENV"
+  },
+  "data": {
+    "0": {
+      "$schema": "https://schema.berlin.de/queuemanagement/useraccount.json",
+      "id": "testadmin",
+      "lastLogin": 1459461600,
+      "roles": [
+        "agent_queue"
+      ]
+    }
+  }
+}
