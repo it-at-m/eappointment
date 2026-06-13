@@ -87,6 +87,22 @@ Unlike **`DEBUGLEVEL`** (one value for all Slim modules), **HTTP request/respons
 
 Modules that register `RequestLoggingMiddleware` (via `BO\Slim\Helper\ModuleLoggerInitializer` or their own bootstrap) emit one structured **`HTTP Request`** line per handled request through `BO\Slim\LoggerService::logRequest()` → `App::$log`.
 
+### Request log throttling only
+
+`…_LOGGER_MAX_REQUESTS` and `…_LOGGER_MAX_ERROR_REQUESTS` are **access-log throttles**. They cap how many **`HTTP Request`** lines `LoggerService::logRequest()` writes per time window. They do **not** limit general application logging.
+
+| Logging path                                                     | Throttled by `LOGGER_MAX_*`?                 | Controlled by                            |
+| ---------------------------------------------------------------- | -------------------------------------------- | ---------------------------------------- |
+| `HTTP Request` (status &lt; 400)                                 | Yes — `…_LOGGER_MAX_REQUESTS`                | Per-module env + `…_LOGGER_CACHE_TTL`    |
+| `HTTP Request` (status ≥ 400)                                    | Only if `…_LOGGER_MAX_ERROR_REQUESTS` &gt; 0 | Per-module env (default `0` = unlimited) |
+| `LoggerService::logError()` (exceptions)                         | No                                           | —                                        |
+| `LoggerService::logWarning()` / `logInfo()`                      | No                                           | —                                        |
+| Direct `App::$log->info()` / `warning()` / `error()` in app code | No                                           | `DEBUGLEVEL`                             |
+
+So: **`DEBUGLEVEL`** sets how verbose application logs are globally; **`LOGGER_MAX_*`** only prevents high-frequency modules (especially calldisplay and ticket printers) from flooding logs with routine successful requests.
+
+Successful and failed request logs use **separate counters** and the same window length (`…_LOGGER_CACHE_TTL`, default 60 seconds). Throttling a successful poll does not block logging a later 500 on the same module.
+
 | Module           | Env prefix                   | Typical traffic                     |
 | ---------------- | ---------------------------- | ----------------------------------- |
 | zmscitizenapi    | `ZMS_CITIZENAPI_LOGGER_*`    | Public booking API                  |
@@ -130,7 +146,7 @@ ZMS_API_LOGGER_MAX_REQUESTS=1000
 
 Lowering `…_LOGGER_MAX_REQUESTS` throttles only **successful** `HTTP Request` lines (Monolog `info`, status &lt; 400). Failed requests (status ≥ 400, Monolog `error`) use `…_LOGGER_MAX_ERROR_REQUESTS` instead; the default `0` means no cap.
 
-`LoggerService::logError()`, `logWarning()`, and `logInfo()` are not rate-limited. Direct `App::$log->…` calls elsewhere in application code also bypass these caps. Use `DEBUGLEVEL` to control general application log verbosity.
+These variables do not affect exceptions, warnings, info messages from other `LoggerService` methods, or direct `App::$log->…` calls elsewhere in the codebase.
 
 ## How to log
 

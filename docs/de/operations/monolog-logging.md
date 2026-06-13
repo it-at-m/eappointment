@@ -87,6 +87,22 @@ Anders als **`DEBUGLEVEL`** (ein Wert für alle Slim-Module) wird **HTTP-Request
 
 Module mit `RequestLoggingMiddleware` (über `BO\Slim\Helper\ModuleLoggerInitializer` oder eigenes Bootstrap) schreiben pro verarbeitetem Request eine strukturierte **`HTTP Request`**-Zeile über `BO\Slim\LoggerService::logRequest()` → `App::$log`.
 
+### Nur Request-Log-Drosselung
+
+`…_LOGGER_MAX_REQUESTS` und `…_LOGGER_MAX_ERROR_REQUESTS` sind **Access-Log-Drosseln**. Sie begrenzen, wie viele **`HTTP Request`**-Zeilen `LoggerService::logRequest()` pro Zeitfenster schreibt. Sie begrenzen **kein** allgemeines Anwendungs-Logging.
+
+| Logging-Pfad                                                      | Durch `LOGGER_MAX_*` gedrosselt?              | Gesteuert über                            |
+| ----------------------------------------------------------------- | --------------------------------------------- | ----------------------------------------- |
+| `HTTP Request` (Status &lt; 400)                                  | Ja — `…_LOGGER_MAX_REQUESTS`                  | Env pro Modul + `…_LOGGER_CACHE_TTL`      |
+| `HTTP Request` (Status ≥ 400)                                     | Nur wenn `…_LOGGER_MAX_ERROR_REQUESTS` &gt; 0 | Env pro Modul (Standard `0` = unbegrenzt) |
+| `LoggerService::logError()` (Exceptions)                          | Nein                                          | —                                         |
+| `LoggerService::logWarning()` / `logInfo()`                       | Nein                                          | —                                         |
+| Direkte `App::$log->info()` / `warning()` / `error()` im App-Code | Nein                                          | `DEBUGLEVEL`                              |
+
+Kurz: **`DEBUGLEVEL`** steuert global die Ausführlichkeit von Anwendungs-Logs; **`LOGGER_MAX_*`** verhindert nur, dass hochfrequente Module (v. a. Calldisplay und Ticketdrucker) den Log mit routinemäßigen erfolgreichen Requests überfluten.
+
+Erfolgreiche und fehlgeschlagene Request-Logs nutzen **getrennte Zähler** und dieselbe Fensterlänge (`…_LOGGER_CACHE_TTL`, Standard 60 Sekunden). Eine gedrosselte erfolgreiche Poll-Antwort blockiert nicht das spätere Loggen eines 500ers desselben Moduls.
+
 | Modul            | Env-Präfix                   | Typischer Traffic                 |
 | ---------------- | ---------------------------- | --------------------------------- |
 | zmscitizenapi    | `ZMS_CITIZENAPI_LOGGER_*`    | Öffentliche Buchungs-API          |
@@ -130,7 +146,7 @@ ZMS_API_LOGGER_MAX_REQUESTS=1000
 
 Ein niedrigeres `…_LOGGER_MAX_REQUESTS` drosselt nur **erfolgreiche** `HTTP Request`-Zeilen (Monolog `info`, Status &lt; 400). Fehlgeschlagene Requests (Status ≥ 400, Monolog `error`) nutzen `…_LOGGER_MAX_ERROR_REQUESTS`; Standard `0` bedeutet kein Limit.
 
-`LoggerService::logError()`, `logWarning()` und `logInfo()` werden nicht gedrosselt. Direkte `App::$log->…`-Aufrufe im restlichen Anwendungscode umgehen diese Limits ebenfalls. Für allgemeine Log-Ausführlichkeit `DEBUGLEVEL` verwenden.
+Diese Variablen betreffen keine Exceptions, Warnungen oder Info-Meldungen aus anderen `LoggerService`-Methoden und keine direkten `App::$log->…`-Aufrufe im restlichen Code.
 
 ## Logging im Code
 
