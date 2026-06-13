@@ -226,6 +226,9 @@
               <includes>
                 <include>**/ApiTestRunner.java</include>
               </includes>
+              <systemPropertyVariables>
+                <cucumber.features>src/test/resources/features/rest</cucumber.features>
+              </systemPropertyVariables>
             </configuration>
           </plugin>
         </plugins>
@@ -310,6 +313,9 @@
               <includes>
                 <include>**/UiTestRunner.java</include>
               </includes>
+              <systemPropertyVariables>
+                <cucumber.features>src/test/resources/features/ui</cucumber.features>
+              </systemPropertyVariables>
             </configuration>
           </plugin>
         </plugins>
