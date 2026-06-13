@@ -104,23 +104,24 @@ class Mail extends Base
 
 
 
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $mail, $resolveReferences)
+    #[\Override]
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
-        $multiPart = $this->readMultiPartByQueueId($mail->id);
-        $mail->addMultiPart($multiPart);
+        $multiPart = $this->readMultiPartByQueueId($entity->id);
+        $entity->addMultiPart($multiPart);
         if (1 <= $resolveReferences) {
             $processQuery = new \BO\Zmsdb\Process();
-            $authData = $processQuery->readAuthKeyByProcessId($mail->process['id']);
-            $mail->process = $processQuery
+            $authData = $processQuery->readAuthKeyByProcessId($entity->process['id']);
+            $entity->process = $processQuery
                 ->readEntity(
-                    $mail->process['id'],
+                    $entity->process['id'],
                     is_array($authData) ? $authData['authKey'] : null,
                     $resolveReferences - 1
                 );
-            $mail->department = (new \BO\Zmsdb\Department())
-                ->readEntity($mail->department['id'], $resolveReferences - 1);
+            $entity->department = (new \BO\Zmsdb\Department())
+                ->readEntity($entity->department['id'], $resolveReferences - 1);
         }
-        return $mail;
+        return $entity;
     }
 
     public function writeInQueueWithAdmin(Entity $mail)

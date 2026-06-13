@@ -6,6 +6,8 @@
     "docs:build": "vitepress build .",
     "docs:preview": "vitepress preview .",
     "docs:log-inventory": "node scripts/generate-log-inventory.mjs",
+    "docs:department-explorers": "node .vitepress/scripts/generate-department-explorers.mjs",
+    "docs:thinned-process-explorers": "node .vitepress/scripts/generate-thinned-process-explorers.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -19,6 +21,6 @@
   "overrides": {
     "uuid": "^11.1.1",
     "vite": "^6.4.2",
-    "esbuild": "^0.25.0"
+    "esbuild": "^0.28.1"
   }
 }

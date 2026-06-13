@@ -16,6 +16,7 @@ class DayoffByYear extends BaseController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -36,7 +37,6 @@ class DayoffByYear extends BaseController
             $data = (array_key_exists('dayoff', $input)) ? $input['dayoff'] : [];
             $collection = (new Collection($data))->withTimestampFromDateformat();
             \App::$http->readPostResult('/dayoff/' . $year . '/', $collection);
-            $updated = true;
             return \BO\Slim\Render::redirect('dayoffByYear', ['year' => $year], [
                 'success' => 'dayoff_saved'
             ]);

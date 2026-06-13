@@ -31,6 +31,7 @@ class Process extends Schema\Entity
     public const STATUS_BLOCKED = 'blocked';
     public const STATUS_CONFLICT = 'conflict';
     public static $schema = "process.json";
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -343,6 +344,15 @@ class Process extends Schema\Entity
         return $this->toProperty()->scope->id->get();
     }
 
+    public function isDereferenced(): bool
+    {
+        if ($this->authKey === 'deref!0') {
+            return true;
+        }
+        $client = $this->getFirstClient();
+        return $client && isset($client->familyName) && $client->familyName === 'dereferenced';
+    }
+
     public function getCurrentScope(): Scope
     {
         return $this->getProperty('scope');
@@ -522,6 +532,7 @@ class Process extends Schema\Entity
      * Reduce data of dereferenced entities to a required minimum
      *
      */
+    #[\Override]
     public function withLessData(array $keepArray = [])
     {
         $entity = clone $this;
@@ -608,7 +619,6 @@ class Process extends Schema\Entity
 
     public function hasArrivalTime()
     {
-        $arrivalTime = 0;
         if ($this->isWithAppointment()) {
             $arrivalTime = $this->getFirstAppointment()->date;
         } else {

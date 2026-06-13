@@ -1,0 +1,361 @@
+// Calendar
+$color-calendar-today-marker:       #0053B4!default;
+$color-calendar-selected-marker:    #830B70!default;
+//$color-calendar-today-bg:           #E6CEE2 !default;
+$color-calendar-destructive-marker: #D52F2E !default;
+$color-calendar-destructive-bg:     #F9E2E1 !default;
+$color-calendar-dayoff-marker:      #0053B4  !default;
+$color-calendar-dayoff-bg:          #E9F7FF !default;
+$color-calendar-positive:           #15846E !default;
+$color-calendar-disabled:           #F2F2F2 !default; 
+$color-calendar-mark-conflict:   $color-calendar-destructive-marker !default;
+$color-calendar-mark-default:    $color-decorative-primary !default;
+$color-calendar-mark-positive:   $color-calendar-positive !default; 
+
+table.calendar {
+    border-collapse:                        collapse;
+    border-spacing:                         0;
+    background-color:                       $color-white;
+    width:                                  100%;
+    height:                                 100%; // important for inner tile height
+    td, th {
+        width:                              14.2%; // 7 columns
+        padding:                            0; // td padding moved to tile
+        border:                             1px solid $color-border;
+        vertical-align:                     top;
+    }
+    th {
+        color:                  $color-text-seperationheading;
+        background-color:       $color-block-seperationheading;
+        font-weight:            bold;
+        padding:                $table-cell-padding;
+        a {
+            color:              $color-text-seperationheading;
+        }
+        .day {
+            margin-bottom:                  0;
+        }
+    }
+    .day {
+        font-size:                      1rem;
+        display:                        block;
+        text-align:                     right;
+        margin-bottom:                  0.5em;
+        color:                          $color-text-base;
+        margin-top:                     4px;
+    }
+    .row {
+        display:                        flex; // flex is important here
+        justify-content:                flex-end;
+        flex-wrap:                      wrap;
+        margin-bottom:                  0.5em;
+        text-decoration:                none;
+        min-height:                     1em;
+        color:                          $color-text-base;
+        *:hover {
+            text-decoration: none;
+        }
+        &.icons {
+            i {
+                margin-left:            4px;
+                &:before {
+                    display:            inline-block; // remove underline
+                }
+            }
+        }
+    }
+    &.calendar--tiny {
+        width:                              auto;
+        th {
+            padding:                            0px; // td padding moved to tile
+        }
+        .calendar__tile {
+            vertical-align:                 middle;
+            text-align:                     center;
+            padding:                        0.5em 0.5em;
+            &.mark {
+                :before {
+                    height:                     3px;
+                }
+                &.mark--dayoff {
+                    padding:                0;
+                    .day {
+                        width:              27px;
+                        height:             27px;
+                        margin-top:         4px;
+                    }
+                }
+            }
+        }
+        .day {
+            font-size:                      1em;
+            margin-bottom:                  0;
+            text-align:                     center;
+            margin-top:                     2px;
+        }
+    }
+}
+
+// A calendar tile (a day). 
+// Can be marked with a thin top border and a background-color
+.calendar__tile {
+    position:                       relative;
+    padding:                        $table-cell-padding;
+    vertical-align:                 top;
+    text-align:                     right;
+    height:                         100%;
+    a {
+        display:                    block;
+    }
+    &.mark {
+        position:                   relative;
+        &:before {
+            content:                '';
+            position:               absolute;
+            top:                    0;
+            left:                   0;
+            display:                block;
+            width:                  100%;
+            height:                 5px;
+        }
+        &.mark--positive:before {
+            background-color:   $color-calendar-positive;
+        }
+        &.mark--destructive {
+            background-color:   $color-calendar-destructive-bg;
+            border-top:         5px solid $color-calendar-destructive-marker;
+            //box-shadow:         inset 0px 5px 0 $color-calendar-destructive-marker;
+            &:before {
+                content:        none; // deactivate 
+                //background-color:   $color-calendar-destructive-marker;
+                background-color:   transparent;
+            }
+            .day {
+                margin-top:         -3px;
+            }
+        }
+        &.mark--dayoff {
+            .day {
+                border:                 3px solid $color-calendar-dayoff-marker;
+                border-radius:          50%;
+                display:                inline-block;
+                padding:                2px;
+                width:                  30px;
+                height:                 30px;
+                text-align:             center;
+                margin-top:             0px;
+            }
+        }
+    }
+    &.closed,
+    &.disabled {
+        background-color:           $color-calendar-disabled;
+        color:                      $color-text-lightest;
+        a, 
+        .day {
+            color:                  $color-text-lightest;
+        }
+    }
+    &.closed .day {
+        text-decoration:            line-through;
+    }
+    &.today {
+        //background-color:           $color-calendar-today-bg;
+        //border-right:                6px solid $color-calendar-today-marker;
+        position:                   relative;
+        &:after {
+            content: '';
+            position: absolute;
+            top: -1px;
+            right: -1px;
+            border-top: 16px solid $color-calendar-today-marker;
+            border-left: 16px solid transparent;
+            width: 0;
+        }
+        .day {
+            font-weight:            bold;
+        }
+        a {
+            color:                  $color-text-link;
+        }
+    }
+    &.selected {
+        border-left:                6px solid $color-calendar-selected-marker;
+        .day {
+            margin-left:            -4px;
+            color:                  $color-calendar-selected-marker;
+            font-weight:            bold;
+        }
+    }
+}
+
+
+// Legend
+.calendar-legend {
+    .square {
+        border:                     1px solid $color-border;
+        width:                      1.6em;
+        height:                     1.6em;
+        display:                    inline-block;
+        text-align:                 center;
+        vertical-align:             bottom;
+        line-height:                1.6;
+    }
+    .mark {
+        position:                   relative;
+        border:                     1px solid $color-border;
+        width:                      1.6em;
+        height:                     1.6em;
+        display:                    inline-block;
+        text-align:                 center;
+        //vertical-align:             2px;
+        &:before {
+            content:                '';
+            position:               absolute;
+            top:                    0;
+            left:                   0;
+            display:                block;
+            width:                  100%;
+            height:                 5px;
+        }
+        &.mark--positive:before {
+            background-color:   $color-calendar-positive;
+        }
+        &.mark--destructive {
+            border-top:         5px solid $color-calendar-destructive-marker;
+            background-color:   $color-calendar-destructive-bg;
+            &:before {
+                //background-color:   $color-calendar-destructive-marker;
+                background-color:   transparent;
+            }
+        }
+        &.mark--dayoff {
+                border:                 3px solid $color-calendar-dayoff-marker;
+                border-radius:          50%;
+                display:                inline-block;
+                padding:                2px;
+                width:                  1.9em;
+                height:                 1.9em;
+                text-align:             center;
+            
+        }
+    }
+    .today {
+        //background-color:           $color-calendar-today-bg;
+        //border-right:                6px solid $color-calendar-today-marker;
+        position:                   relative;
+        font-weight:                bold;
+        &::after {
+            content: '';
+            position: absolute;
+            top: -1px;
+            right: -1px;
+            border-top: 13px solid $color-calendar-today-marker;
+            border-left: 13px solid transparent;
+            width: 0;
+        }
+    }
+    .selected {
+        font-weight:                bold;
+        border-left:                6px solid $color-calendar-selected-marker;
+        color:                      $color-calendar-selected-marker;
+        font-weight:                bold;
+    }
+    .closed,
+    .disabled {
+        background-color:           $color-calendar-disabled;
+    }
+    .closed {
+        text-decoration:            line-through;
+        color:                      #555555;
+    }
+    @include media-query('lap-and-up') {
+        // Display Legend lists side by side 
+        ul {
+            float: left;
+            margin-right:   4em;
+        }
+    }
+}
+
+
+
+
+// ZMS: Wochenkalender (calendar-weektable)
+table.calendar.calendar-weektable_calendar {
+    th {
+        width:                  auto;
+    }
+    td {
+        width:                  13.5%;
+    }
+    .timeslot {
+        display:                block;
+        margin-bottom:          0.75em;
+        background:             $color-grey;
+        padding:                0.75em 0.5em 0.5em 0.5em;
+        height:                 auto;
+        .timeslot__time {
+            margin-bottom:      0.25em;
+            display:            inline-block;
+        }
+        .item {
+            display:            block;
+            margin-bottom:      0.25em;
+        }
+    }
+}    
+
+// monthtable - character on a colored circle
+.icon-char-circle {
+    border-radius: 50%;
+    border: 1px solid transparent; // Barrierefreiheit Kontrastmodus
+    min-width: 1.2em;
+    min-height: 1.2em;
+    text-align: center;
+    font-size: 1em;
+    margin-left:    0.25em;
+    display:    inline-flex;
+    position:   relative;
+    .char {
+        position: absolute;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+        font-size: 0.95em;
+        width: 100%;
+        height: 100%;
+        line-height: 1.3;
+        background-color: transparent !important;
+    }
+    &.red {
+        background-color: $color-red;
+        border-color:  $color-red;
+    }
+    &.green {
+        background-color: $color-green;
+        border-color:  $color-green;
+    }
+    &.blue-light {
+        background-color: $color-blue-light;
+        border-color:  $color-blue-light;
+    }
+    &.blue {
+        background-color: $color-blue-button;
+        border-color:  $color-blue-button;
+    }
+    &.disabled {
+        background-color: $color-disabled;
+        border-color:  transparent;
+        border: 0 none;
+    }
+}
+
+.calendar-navigation {
+    // bigger items
+    .fa, .fas, .far {
+        font-size:      $icon-size-big;
+    }
+}

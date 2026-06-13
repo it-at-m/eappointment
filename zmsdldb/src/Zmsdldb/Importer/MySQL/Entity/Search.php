@@ -12,6 +12,7 @@ class Search extends Base
         'search_value' => 'search_value',
     ];
 
+    #[\Override]
     public function postSetupFields()
     {
         if (isset($this->fields['search_value']) && !empty($this->fields['search_value'])) {
@@ -22,6 +23,7 @@ class Search extends Base
         $this->fields['search_value'] = trim($this->fields['search_value'] ?? '');
     }
 
+    #[\Override]
     public function postSetup()
     {
         $val = trim($this->fields['search_value']);
@@ -30,6 +32,7 @@ class Search extends Base
         }
     }
 
+    #[\Override]
     public function deleteEntity(): bool
     {
         try {
@@ -44,6 +47,7 @@ class Search extends Base
         }
     }
 
+    #[\Override]
     public function clearEntity(array $addWhere = []): bool
     {
         try {

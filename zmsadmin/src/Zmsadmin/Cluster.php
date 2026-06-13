@@ -16,6 +16,7 @@ class Cluster extends BaseController
      * @SuppressWarnings(Param)
      * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -45,7 +46,7 @@ class Cluster extends BaseController
         if (is_array($input) && array_key_exists('save', $input)) {
             $entity = (new Entity($input))->withCleanedUpFormData();
             $entity->id = $entityId;
-            $entity = \App::$http->readPostResult('/cluster/' . $entity->id . '/', $entity)->getEntity();
+            \App::$http->readPostResult('/cluster/' . $entity->id . '/', $entity)->getEntity();
             if (isset($input['removeImage']) && $input['removeImage']) {
                 \App::$http->readDeleteResult('/cluster/' . $entityId . '/imagedata/calldisplay/');
             } else {

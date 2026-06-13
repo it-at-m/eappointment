@@ -11,6 +11,7 @@ use DateTimeImmutable;
 
 class OverallCalendarRead extends BaseController
 {
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -35,7 +36,7 @@ class OverallCalendarRead extends BaseController
 
         $deletedProcessIds = [];
         if ($updateAfter !== null) {
-            $changedPids = $bookingDb->readChangedProcessIdsSince($scopeIds, $updateAfter) ?? [];
+            $changedPids = $bookingDb->readChangedProcessIdsSince($scopeIds, $updateAfter);
             $processIdsInWindow = array_unique(array_map(fn($r) => (int)$r['process_id'], $bookings));
             $deletedProcessIds   = array_values(array_diff($changedPids, $processIdsInWindow));
         }

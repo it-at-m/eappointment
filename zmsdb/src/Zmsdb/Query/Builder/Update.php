@@ -28,6 +28,7 @@ class Update extends Query
      *
      * @return  string
      */
+    #[\Override]
     public function sql()
     {
         if ($this->table === null) {
@@ -69,6 +70,7 @@ class Update extends Query
      *
      * @return  array
      */
+    #[\Override]
     public function params()
     {
         return array_merge(array_values($this->values), $this->getWhereParams());
@@ -79,6 +81,7 @@ class Update extends Query
      *
      * @return  $this
      */
+    #[\Override]
     public function reset()
     {
         $this->table = null;
@@ -96,6 +99,7 @@ class Update extends Query
      *
      * @return  array
      */
+    #[\Override]
     public function allTablesReferenced()
     {
         if ($this->table()) {

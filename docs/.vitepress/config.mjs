@@ -257,6 +257,7 @@ const sidebarLabels = {
     localHttpsDdev: "Local HTTPS SSL (DDEV)",
     keycloakLocal: "Local Keycloak Setup",
     codeFormatting: "Code Formatting",
+    gitHooks: "Git Hooks (Husky)",
     localDbCache: "Local Database and Cache Operations",
     dependencyUpgrade: "Dependency Upgrade Check",
     phpBaseImages: "PHP Base Images",
@@ -273,7 +274,9 @@ const sidebarLabels = {
     onTheFuture: "On the Future",
     databaseRefactor: "Database Refactor",
     standardizeDb: "Standardize Database Table and Field Naming",
+    refarchRoadmap: "RefArch Roadmap",
     modernizeArch: "Modernize ZMS Architecture (3-5 Year Plan)",
+    backendMergeRefarch: "Refactoring ZMS Backends into Spring RefArch",
     dynamicCache: "Dynamic Cache Layer and Bulk Queries",
   },
   de: {
@@ -303,6 +306,7 @@ const sidebarLabels = {
     localHttpsDdev: "Lokales HTTPS-SSL (DDEV)",
     keycloakLocal: "Lokale Keycloak-Einrichtung",
     codeFormatting: "Code-Formatierung",
+    gitHooks: "Git-Hooks (Husky)",
     localDbCache: "Lokale Datenbank- und Cache-Operationen",
     dependencyUpgrade: "Abhängigkeits-Aktualisierungsprüfung",
     phpBaseImages: "PHP-Basis-Images",
@@ -319,7 +323,9 @@ const sidebarLabels = {
     onTheFuture: "Ausblick",
     databaseRefactor: "Datenbank-Refactoring",
     standardizeDb: "Datenbanktabellen- und Feldbenennung standardisieren",
+    refarchRoadmap: "RefArch-Roadmap",
     modernizeArch: "ZMS-Architektur modernisieren (3-5-Jahresplan)",
+    backendMergeRefarch: "Refactoring ZMS Backends in Spring RefArch",
     dynamicCache: "Dynamische Cache-Schicht und Bulk-Queries",
   },
 };
@@ -356,7 +362,7 @@ const buildSidebar = (prefix, lang) => {
             },
             {
               text: t.codeOfConduct,
-              link: `${GH_REPO}/blob/main/CODE_OF_CONDUCT.md`,
+              link: `${GH_REPO}/blob/main/.github/CODE_OF_CONDUCT.md`,
             },
             {
               text: t.contributing,
@@ -379,6 +385,14 @@ const buildSidebar = (prefix, lang) => {
             {
               text: t.ddevAndDevcontainer,
               link: `${prefix}/setup-and-development/getting-started/ddev-and-devcontainer`,
+            },
+            {
+              text: t.codeFormatting,
+              link: `${prefix}/setup-and-development/code-formatting`,
+            },
+            {
+              text: t.gitHooks,
+              link: `${prefix}/setup-and-development/git-hooks`,
             },
             {
               text: t.quickReset,
@@ -415,10 +429,6 @@ const buildSidebar = (prefix, lang) => {
         {
           text: t.keycloakLocal,
           link: `${prefix}/setup-and-development/local-keycloak-setup`,
-        },
-        {
-          text: t.codeFormatting,
-          link: `${prefix}/setup-and-development/code-formatting`,
         },
         {
           text: t.localDbCache,
@@ -499,8 +509,18 @@ const buildSidebar = (prefix, lang) => {
           ],
         },
         {
-          text: t.modernizeArch,
-          link: `${prefix}/on-the-future/product-oriented-refarch-roadmap`,
+          text: t.refarchRoadmap,
+          collapsed: false,
+          items: [
+            {
+              text: t.modernizeArch,
+              link: `${prefix}/on-the-future/refarch-roadmap/product-oriented-refarch-roadmap`,
+            },
+            {
+              text: t.backendMergeRefarch,
+              link: `${prefix}/on-the-future/refarch-roadmap/backend-merge-spring-refarch-example`,
+            },
+          ],
         },
         {
           text: t.dynamicCache,
@@ -582,6 +602,11 @@ export default {
   description: "Technical documentation for it-at-m/eappointment",
   base: SITE_BASE,
   lang: "en-US",
+  vite: {
+    build: {
+      target: "es2022",
+    },
+  },
   rewrites: buildEnRewrites(),
   sitemap: {
     // hostname must include the base path so emitted <loc> URLs are absolute

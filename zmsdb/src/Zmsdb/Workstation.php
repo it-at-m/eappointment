@@ -29,28 +29,29 @@ class Workstation extends Base
         return $this->readResolvedReferences($workstation, $resolveReferences);
     }
 
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $workstation, $resolveReferences)
+    #[\Override]
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
         if (0 < $resolveReferences) {
-            $workstation->useraccount = (new Useraccount())
+            $entity->useraccount = (new Useraccount())
                 ->readResolvedReferences(
-                    new UseraccountEntity($workstation->useraccount),
+                    new UseraccountEntity($entity->useraccount),
                     $resolveReferences - 1
                 );
-            if ($workstation->scope['id']) {
-                $workstation->scope = (new Scope())->readResolvedReferences(
-                    new ScopeEntity($workstation->scope),
+            if ($entity->scope['id']) {
+                $entity->scope = (new Scope())->readResolvedReferences(
+                    new ScopeEntity($entity->scope),
                     $resolveReferences - 1
                 );
-                $workstation->scope->cluster = (new Cluster())->readByScopeId($workstation->scope->id);
-                $department = (new Department())->readByScopeId($workstation->scope['id']);
-                $workstation->linkList = (new Link())->readByDepartmentId($department->getId());
+                $entity->scope->cluster = (new Cluster())->readByScopeId($entity->scope->id);
+                $department = (new Department())->readByScopeId($entity->scope['id']);
+                $entity->linkList = (new Link())->readByDepartmentId($department->getId());
             }
-            $workstation->process = (new Process())->readByWorkstation($workstation, $resolveReferences - 1);
+            $entity->process = (new Process())->readByWorkstation($entity, $resolveReferences - 1);
             $config = (new Config())->readEntity();
-            $workstation->support = $config->support;
+            $entity->support = $config->support;
         }
-        return $workstation;
+        return $entity;
     }
 
     public function readLoggedInHashByName($loginName)
@@ -193,10 +194,10 @@ class Workstation extends Base
      *
      * assign a process to workstation
      *
-     * @param
-     *            workstation
+     * @param \BO\Zmsentities\Workstation $workstation
+     * @param \BO\Zmsentities\Process $process
      *
-     * @return Resource Process
+     * @return ProcessEntity
      */
     public function writeAssignedProcess(
         \BO\Zmsentities\Workstation $workstation,
@@ -240,10 +241,9 @@ class Workstation extends Base
      *
      * remove a process from workstation
      *
-     * @param
-     *            workstation
+     * @param \BO\Zmsentities\Workstation $workstation
      *
-     * @return Boolean
+     * @return bool
      */
     public function writeRemovedProcess(\BO\Zmsentities\Workstation $workstation)
     {
@@ -272,8 +272,7 @@ class Workstation extends Base
     /**
      * update a workstation
      *
-     * @param
-     * useraccountId
+     * @param int|string $useraccountId
      *
      * @return Entity
      */
@@ -293,8 +292,7 @@ class Workstation extends Base
     /**
      * update a workstations authkey - is needed for openid login
      *
-     * @param
-     * useraccountId
+     * @param int|string $useraccountId
      *
      * @return Entity
      */

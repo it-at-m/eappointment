@@ -17,8 +17,9 @@ class Authority extends Base
     /**
      * fetch locations for a list of service and group by authority
      *
-     * @return Collection\Authorities
+     * @return Collection
      */
+    #[\Override]
     public function fetchList($servicelist = [])
     {
         try {
@@ -102,19 +103,17 @@ class Authority extends Base
     /**
      * fetch locations for a list of service and group by authority
      *
-     * @return Collection\Authorities
+     * @return Collection
      */
-    public function fetchId($authorityid)
+    #[\Override]
+    public function fetchId($itemId)
     {
         try {
-            $sqlArgs = [$this->locale, $authorityid];
-            $sqlArgs = ['de', $authorityid];
+            $sqlArgs = [$this->locale, $itemId];
 
             $sql = 'SELECT data_json FROM authority WHERE locale = ? AND id = ?';
             $stm = $this->access()->prepare($sql);
             $stm->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\\BO\\Zmsdldb\\MySQL\\Entity\\Authority');
-            $stm->execute($sqlArgs);
-
             $stm->execute($sqlArgs);
             if (!$stm || ($stm && $stm->rowCount() == 0)) {
                 return false;
@@ -130,6 +129,7 @@ class Authority extends Base
      *
      * @return Collection
      */
+    #[\Override]
     public function readListByOfficePath($officepath)
     {
         $authorityList = new Collection();

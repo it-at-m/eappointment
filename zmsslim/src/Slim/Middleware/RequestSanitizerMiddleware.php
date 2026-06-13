@@ -30,6 +30,7 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
         $this->maxStringLength = $maxStringLength;
     }
 
+    #[\Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {

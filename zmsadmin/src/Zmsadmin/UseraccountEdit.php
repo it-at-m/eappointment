@@ -22,6 +22,7 @@ class UseraccountEdit extends BaseController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -65,7 +66,9 @@ class UseraccountEdit extends BaseController
                     $roleList = $loaded;
                 }
             }
-            $userAccountRoles = $userAccount->roles ?? [];
+            $userAccountRoles = (isset($userAccount->roles) && is_array($userAccount->roles))
+                ? $userAccount->roles
+                : [];
         }
 
         return \BO\Slim\Render::withHtml(

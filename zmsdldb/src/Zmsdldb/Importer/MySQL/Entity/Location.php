@@ -25,6 +25,7 @@ class Location extends Base
     /**
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
+    #[\Override]
     protected function setupMapping()
     {
         $this->referanceMapping = [
@@ -157,6 +158,7 @@ class Location extends Base
         ];
     }
 
+    #[\Override]
     public function preSetupFields()
     {
         #$this->dataRaw['payment'] = [
@@ -170,6 +172,7 @@ class Location extends Base
         #unset($this->dataRaw['paymentcode']);
     }
 
+    #[\Override]
     public function preSetup()
     {
         try {
@@ -187,6 +190,7 @@ class Location extends Base
         }
     }
 
+    #[\Override]
     public function deleteEntity(): bool
     {
         try {
@@ -198,6 +202,7 @@ class Location extends Base
         }
     }
 
+    #[\Override]
     public function clearEntity(array $addWhere = []): bool
     {
         try {

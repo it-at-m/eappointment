@@ -1,71 +1,74 @@
-//@import "bo-layout-admin-scss/zms-styles.scss"; // <- ToDo: do this work again
+//@import "bo-zms-layout-scss/zms-styles.scss"; // <- ToDo: do this work again
 
 // Settings & Mixins
 @import "muenchen.scss";
-@import "bo-layout-admin-scss/default-settings"; 
-@import "bo-layout-admin-scss/zms-settings"; 
-@import "bo-layout-admin-scss/mixins";
+@import "bo-zms-layout-scss/default-settings"; 
+@import "bo-zms-layout-scss/zms-settings"; 
+@import "bo-zms-layout-scss/mixins";
  
 // Template 
-//@import "bo-layout-admin-scss/template/**/*.scss";
-@import 'bo-layout-admin-scss/template/aural.scss';
-@import 'bo-layout-admin-scss/template/body.scss';
-@import 'bo-layout-admin-scss/template/content-wrapper.scss';
-@import 'bo-layout-admin-scss/template/flatpickr.scss';
+//@import "bo-zms-layout-scss/template/**/*.scss";
+@import 'bo-zms-layout-scss/template/aural.scss';
+@import 'bo-zms-layout-scss/template/body.scss';
+@import 'bo-zms-layout-scss/template/content-wrapper.scss';
+@import 'bo-zms-layout-scss/template/flatpickr.scss';
 $fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
-@import 'bo-layout-admin-scss/template/font.scss';
-@import 'bo-layout-admin-scss/template/grids.scss';
-@import 'bo-layout-admin-scss/template/html.scss';
-@import 'bo-layout-admin-scss/template/js-collapse-me.scss';
-@import 'bo-layout-admin-scss/template/js-is_palm.scss';
-@import 'bo-layout-admin-scss/template/normalize.scss';
-@import 'bo-layout-admin-scss/template/page-wrapper.scss';
-@import 'bo-layout-admin-scss/template/print.scss';
-@import 'bo-layout-admin-scss/template/responsive-tools.scss';
+@import "@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "@fortawesome/fontawesome-free/scss/regular.scss";
+@import "@fortawesome/fontawesome-free/scss/solid.scss";
+@import 'bo-zms-layout-scss/template/font.scss';
+@import 'bo-zms-layout-scss/template/grids.scss';
+@import 'bo-zms-layout-scss/template/html.scss';
+@import 'bo-zms-layout-scss/template/js-collapse-me.scss';
+@import 'bo-zms-layout-scss/template/js-is_palm.scss';
+@import 'bo-zms-layout-scss/template/normalize.scss';
+@import 'bo-zms-layout-scss/template/page-wrapper.scss';
+@import 'bo-zms-layout-scss/template/print.scss';
+@import 'bo-zms-layout-scss/template/responsive-tools.scss';
 
 // Atoms
-//@import "bo-layout-admin-scss/atoms/**/*.scss";
-@import 'bo-layout-admin-scss/atoms/blockquote.scss';
-@import 'bo-layout-admin-scss/atoms/button.scss';
-@import 'bo-layout-admin-scss/atoms/headings.scss';
-@import 'bo-layout-admin-scss/atoms/icons.scss';
-@import 'bo-layout-admin-scss/atoms/image.scss';
-@import 'bo-layout-admin-scss/atoms/links.scss';
-@import 'bo-layout-admin-scss/atoms/list.scss';
-@import 'bo-layout-admin-scss/atoms/paragraph.scss';
-@import 'bo-layout-admin-scss/atoms/table.scss';
-@import 'bo-layout-admin-scss/atoms/spinner.scss';
+//@import "bo-zms-layout-scss/atoms/**/*.scss";
+@import 'bo-zms-layout-scss/atoms/blockquote.scss';
+@import 'bo-zms-layout-scss/atoms/button.scss';
+@import 'bo-zms-layout-scss/atoms/headings.scss';
+@import 'bo-zms-layout-scss/atoms/icons.scss';
+@import 'bo-zms-layout-scss/atoms/image.scss';
+@import 'bo-zms-layout-scss/atoms/links.scss';
+@import 'bo-zms-layout-scss/atoms/list.scss';
+@import 'bo-zms-layout-scss/atoms/paragraph.scss';
+@import 'bo-zms-layout-scss/atoms/table.scss';
+@import 'bo-zms-layout-scss/atoms/spinner.scss';
 
 // Molecules
-//@import "bo-layout-admin-scss/molecules/**/*.scss";
-@import 'bo-layout-admin-scss/molecules/block/accordion.scss';
-@import 'bo-layout-admin-scss/molecules/block/tabs.scss';
-@import 'bo-layout-admin-scss/molecules/block/block.scss';
-@import 'bo-layout-admin-scss/molecules/block/calendar.scss';
-@import 'bo-layout-admin-scss/molecules/block/panel.scss';
-@import 'bo-layout-admin-scss/molecules/block/board.scss';
-@import 'bo-layout-admin-scss/molecules/block/legend.scss';
-@import 'bo-layout-admin-scss/molecules/block/message.scss';
-@import 'bo-layout-admin-scss/molecules/block/searchfilter.scss';
-@import 'bo-layout-admin-scss/molecules/form/extended-search.scss';
-@import 'bo-layout-admin-scss/molecules/form/form--profile.scss';
-@import 'bo-layout-admin-scss/molecules/form/form--search.scss';
-@import 'bo-layout-admin-scss/molecules/form/form-actions--sticky.scss';
-@import 'bo-layout-admin-scss/molecules/form/form-alerts.scss';
-@import 'bo-layout-admin-scss/molecules/form/form-infotext.scss';
-@import 'bo-layout-admin-scss/molecules/form/form.scss';
-@import 'bo-layout-admin-scss/molecules/navigation/breadcrumb.scss';
-@import 'bo-layout-admin-scss/molecules/navigation/footer-servicelinks.scss';
-@import 'bo-layout-admin-scss/molecules/navigation/header-hamburger.scss';
-//@import 'bo-layout-admin-scss/molecules/navigation/metanavi-popup.scss';
-@import 'bo-layout-admin-scss/molecules/navigation/navigation-primary.scss';
-@import 'bo-layout-admin-scss/molecules/navigation/pagination.scss';
-//@import 'bo-layout-admin-scss/molecules/swiper/swiper.scss';
+//@import "bo-zms-layout-scss/molecules/**/*.scss";
+@import 'bo-zms-layout-scss/molecules/block/accordion.scss';
+@import 'bo-zms-layout-scss/molecules/block/tabs.scss';
+@import 'bo-zms-layout-scss/molecules/block/block.scss';
+@import 'bo-zms-layout-scss/molecules/block/calendar.scss';
+@import 'bo-zms-layout-scss/molecules/block/panel.scss';
+@import 'bo-zms-layout-scss/molecules/block/board.scss';
+@import 'bo-zms-layout-scss/molecules/block/legend.scss';
+@import 'bo-zms-layout-scss/molecules/block/message.scss';
+@import 'bo-zms-layout-scss/molecules/block/searchfilter.scss';
+@import 'bo-zms-layout-scss/molecules/form/extended-search.scss';
+@import 'bo-zms-layout-scss/molecules/form/form--profile.scss';
+@import 'bo-zms-layout-scss/molecules/form/form--search.scss';
+@import 'bo-zms-layout-scss/molecules/form/form-actions--sticky.scss';
+@import 'bo-zms-layout-scss/molecules/form/form-alerts.scss';
+@import 'bo-zms-layout-scss/molecules/form/form-infotext.scss';
+@import 'bo-zms-layout-scss/molecules/form/form.scss';
+@import 'bo-zms-layout-scss/molecules/navigation/breadcrumb.scss';
+@import 'bo-zms-layout-scss/molecules/navigation/footer-servicelinks.scss';
+@import 'bo-zms-layout-scss/molecules/navigation/header-hamburger.scss';
+//@import 'bo-zms-layout-scss/molecules/navigation/metanavi-popup.scss';
+@import 'bo-zms-layout-scss/molecules/navigation/navigation-primary.scss';
+@import 'bo-zms-layout-scss/molecules/navigation/pagination.scss';
+//@import 'bo-zms-layout-scss/molecules/swiper/swiper.scss';
 
 // Organisms
-//@import "bo-layout-admin-scss/organisms/**/*.scss";
-@import 'bo-layout-admin-scss/organisms/page-footer.scss';
-@import 'bo-layout-admin-scss/organisms/page-header.scss';
+//@import "bo-zms-layout-scss/organisms/**/*.scss";
+@import 'bo-zms-layout-scss/organisms/page-footer.scss';
+@import 'bo-zms-layout-scss/organisms/page-header.scss';
 
 body.zms-env-dev #page-header {
     background-color: #2ECC40;
@@ -80,17 +83,18 @@ body.zms-env-stage #page-header {
 
 
 // ZMS special css
-@import 'bo-layout-admin-scss/themes/zms/availability-timetable.scss';
-@import 'bo-layout-admin-scss/themes/zms/form-input-counter.scss';
-@import 'bo-layout-admin-scss/themes/zms/emergency.scss';
-@import 'bo-layout-admin-scss/themes/zms/button-callnextclient.scss';
-@import 'bo-layout-admin-scss/themes/zms/queue-table.scss';
-@import 'bo-layout-admin-scss/themes/zms/queue-info.scss';
-@import 'bo-layout-admin-scss/themes/zms/owner-list.scss';
-@import 'bo-layout-admin-scss/themes/zms/checkboxselect.scss';
-@import 'bo-layout-admin-scss/themes/zms/lightbox.scss';
-@import 'bo-layout-admin-scss/themes/zms/add-date-picker.scss';
-@import 'bo-layout-admin-scss/themes/zms/form.scss';
+@import 'bo-zms-layout-scss/themes/zms/availability-timetable.scss';
+@import 'bo-zms-layout-scss/themes/zms/form-input-counter.scss';
+@import 'bo-zms-layout-scss/themes/zms/emergency.scss';
+@import 'bo-zms-layout-scss/themes/zms/button-callnextclient.scss';
+@import 'bo-zms-layout-scss/themes/zms/queue-table.scss';
+@import 'bo-zms-layout-scss/themes/zms/queue-info.scss';
+@import 'bo-zms-layout-scss/themes/zms/owner-list.scss';
+@import 'bo-zms-layout-scss/themes/zms/checkboxselect.scss';
+@import 'bo-zms-layout-scss/themes/zms/lightbox.scss';
+@import "react-datepicker/src/stylesheets/datepicker";
+@import 'bo-zms-layout-scss/themes/zms/add-date-picker.scss';
+@import 'bo-zms-layout-scss/themes/zms/form.scss';
 
 // Inserting CSS styles for accessibility
-@import 'bo-layout-admin-scss/themes/zms/accessibility.scss';
+@import 'bo-zms-layout-scss/themes/zms/accessibility.scss';

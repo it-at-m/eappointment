@@ -17,6 +17,7 @@ class LocationService extends Base
         'contact' => 'contact_json'
     ];
 
+    #[\Override]
     public function deleteEntity(): bool
     {
         try {

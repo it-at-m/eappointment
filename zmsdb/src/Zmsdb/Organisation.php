@@ -25,6 +25,7 @@ class Organisation extends Base
         return array();
     }
 
+    #[\Override]
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
         if (0 < $resolveReferences && $entity->hasId()) {
@@ -103,10 +104,8 @@ class Organisation extends Base
         if (count($result)) {
             foreach ($result as $organisation) {
                 $entity = new Entity($organisation);
-                if ($entity instanceof Entity) {
-                    $entity = $this->readResolvedReferences($entity, $resolveReferences);
-                    $organisationList->addEntity($entity);
-                }
+                $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                $organisationList->addEntity($entity);
             }
         }
         return $organisationList;

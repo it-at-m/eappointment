@@ -117,6 +117,7 @@ class Process extends Base implements MappingInterface
             FOR UPDATE';
     }
 
+    #[\Override]
     public function addJoin()
     {
         $joins = [];
@@ -250,6 +251,7 @@ class Process extends Base implements MappingInterface
         return null;
     }
 
+    #[\Override]
     public function getEntityMapping()
     {
         $status_expression = self::expression(
@@ -804,11 +806,9 @@ class Process extends Base implements MappingInterface
     ) {
         $data = array();
         $appointment = $process->getFirstAppointment();
-        if (null !== $appointment) {
-            $datetime = $appointment->toDateTime();
-            $data['Datum'] = $datetime->format('Y-m-d');
-            $data['Uhrzeit'] = $datetime->format('H:i:s');
-        }
+        $datetime = $appointment->toDateTime();
+        $data['Datum'] = $datetime->format('Y-m-d');
+        $data['Uhrzeit'] = $datetime->format('H:i:s');
         $this->addValues($data);
     }
 
@@ -899,7 +899,6 @@ class Process extends Base implements MappingInterface
     {
         $data = array();
         $timeoutTime = null;
-        $showUpTime = null;
         $finishTime = null;
 
         if (
@@ -1103,6 +1102,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    #[\Override]
     public function postProcess($data)
     {
         $data[$this->getPrefixed("appointments__0__date")] =
@@ -1153,6 +1153,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    #[\Override]
     protected function addRequiredJoins()
     {
         if ($this->shouldLoadEntity('processuser')) {

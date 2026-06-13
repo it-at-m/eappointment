@@ -16,14 +16,15 @@ use BO\Zmsdldb\File\Topic as Base;
   */
 class Topic extends Base
 {
-    public function readSearchResultList($query)
+    #[\Override]
+    public function readSearchResultList($querystring)
     {
         $boolquery = Helper::boolFilteredQuery();
         $searchquery = new \Elastica\Query\QueryString();
-        if ('' === trim($query)) {
+        if ('' === trim($querystring)) {
             $searchquery->setQuery('*');
         } else {
-            $searchquery->setQuery($query);
+            $searchquery->setQuery($querystring);
         }
         $searchquery->setFields([
             'name^9',

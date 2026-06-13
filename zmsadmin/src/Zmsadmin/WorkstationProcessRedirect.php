@@ -16,6 +16,7 @@ class WorkstationProcessRedirect extends BaseController
      * @SuppressWarnings(Param)
      * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -28,7 +29,6 @@ class WorkstationProcessRedirect extends BaseController
                 ['resolveReferences' => 2]
             )->getEntity();
         $input = $request->getParsedBody();
-        $process = $workstation->process;
 
         if ($request->getMethod() === 'POST') {
             $validator = $request->getAttribute('validator');
@@ -52,12 +52,12 @@ class WorkstationProcessRedirect extends BaseController
                     ['resolveReferences' => 2]
                 )->getEntity();
 
-            $newProcess = clone $process;
+            $newProcess = clone $workstation->process;
             $newProcess->scope = $scope;
             $newProcess->appointments[0]->scope = $scope;
             $newProcess->amendment = ProcessPlainText::normalize($input['amendment'] ?? '');
 
-            $process = \App::$http->readPostResult('/process/status/redirect/', $newProcess)->getEntity();
+            \App::$http->readPostResult('/process/status/redirect/', $newProcess)->getEntity();
 
             return \BO\Slim\Render::redirect(
                 $workstation->getVariantName(),

@@ -16,6 +16,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 abstract class BaseController extends Helper\Access
 {
+    #[\Override]
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
         $request = $this->initRequest($request);

@@ -38,6 +38,7 @@ class ProcessListSummaryMail extends BaseController
      * @param ResponseInterface $response
      * @param array $args
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
@@ -92,8 +93,11 @@ class ProcessListSummaryMail extends BaseController
     {
         $process = new Process();
         $client = $entity->getClient();
-        $client = ($client->hasEmail()) ? $client : $process->getFirstClient()->email = $mailAddress;
+        if ($client === null || !$client->hasEmail()) {
+            $process->getFirstClient()->email = $mailAddress;
+        }
         $entity->process = $process ;
+
         return $entity;
     }
 

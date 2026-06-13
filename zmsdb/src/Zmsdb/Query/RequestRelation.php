@@ -8,6 +8,7 @@ class RequestRelation extends Base implements MappingInterface
 
     const ALIAS = 'request_provider';
 
+    #[\Override]
     public function getEntityMapping()
     {
         return [
@@ -20,6 +21,7 @@ class RequestRelation extends Base implements MappingInterface
         ];
     }
 
+    #[\Override]
     public function getReferenceMapping()
     {
         return [

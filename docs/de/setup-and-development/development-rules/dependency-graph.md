@@ -12,7 +12,7 @@ Der Graph zeigt zusätzlich die zur Laufzeit benötigten Dienste jedes Deploymen
 **Lesart der Kanten**
 
 - Durchgezogener Pfeil (`A --> B`): A hat B als Code-Abhängigkeit (Composer).
-- Gestrichelter Pfeil (`A -.-> B`): Build-/Integrationsabhängigkeit. A wird auf B aufgebaut und gegen B deployt, zieht es aber nicht als Code-Abhängigkeit.
+- Gestrichelter Pfeil (`A -.-> B`): Build-/Integrationsabhängigkeit oder npm-`file:`-Abhängigkeit (z. B. `zmsadmin` → `zmslayout`). A wird auf B aufgebaut und gegen B deployt, zieht es aber nicht als Composer-Abhängigkeit.
 - Dicker Pfeil (`A ==> B`): Laufzeit-/Infrastruktur-Abhängigkeit. A spricht zur Laufzeit mit B, oder B stellt die Laufzeitumgebung von A bereit.
 
 Nur im Subgraph **Testautomatisierung**: Der gestrichelte Pfeil **`ataf -.-> zmsautomation`** bedeutet _Framework → Nutzer_ ([ATAF](https://it-at-m.github.io/agile-test-automation-framework/) liefert Cucumber sowie REST Assured für API und Selenium für UI an `zmsautomation`), nicht die Composer-Lesart „A auf B aufgebaut“ von oben.
@@ -34,6 +34,10 @@ graph TD;
     zmsslim --> mellon;
 
     zmscitizenapi --> mellon & zmsslim & zmsclient & zmsentities;
+
+    %% npm-file:-Abhängigkeiten (gestrichelt)
+    zmsadmin -.-> zmslayout;
+    zmsstatistic -.-> zmslayout;
 
     %% Build-/Integrationsabhängigkeiten (gestrichelt)
     zmscitizenapi -.-> zmsapi;
@@ -90,6 +94,11 @@ graph TD;
         zmsautomation
     end
 
+    subgraph shared_frontend [Gemeinsame Layout-Assets]
+        style shared_frontend stroke-dasharray: 5, 2, 1, 2
+        zmslayout["zmslayout<br>eingebettetes SCSS/JS"]
+    end
+
     %% Stilisierung
     classDef citizenapi fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
     classDef gateway fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
@@ -97,6 +106,7 @@ graph TD;
     classDef runtimeSvc fill:#fff3e0,stroke:#e65100,stroke-width:2px;
     classDef infra fill:#e3f2fd,stroke:#0277bd,stroke-width:3px;
     classDef automation fill:#fce4ec,stroke:#880e4f,stroke-width:2px;
+    classDef layout fill:#fff8e1,stroke:#f9a825,stroke-width:2px;
 
     class zmscitizenapi citizenapi;
     class refarch-gateway gateway;
@@ -106,6 +116,7 @@ graph TD;
     class phpbase infra;
     class zmsautomation automation;
     class ataf automation;
+    class zmslayout layout;
 ```
 
 ## Frontend- vs. Backend-Module
@@ -118,6 +129,10 @@ graph TD;
 - `zmsstatistic`: Statistik-/Reporting-UI-Modul (mit Backend-/API-Anbindung).
 - `zmscalldisplay`: UI-Modul für die Aufrufanzeige.
 - `zmsticketprinter`: UI-/Laufzeit-Modul für den Ticketdrucker.
+
+### Gemeinsame Layout-Assets
+
+- `zmslayout`: eingebettetes Berlin-Online-Layout-SCSS und -JavaScript (`bo-zms-layout-js`, `bo-zms-layout-scss`), von `zmsadmin` und `zmsstatistic` per npm-`file:`-Abhängigkeit genutzt. `zmscalldisplay` und `zmsticketprinter` haben eigene PHP/Twig-UI-Stacks und hängen heute nicht von `zmslayout` ab. Ein RefArch-/Vue-Refactoring von `zmsadmin`, `zmsstatistic` und den übrigen internen PHP-Frontends (siehe [Produktorientierte RefArch-Roadmap](/on-the-future/refarch-roadmap/product-oriented-refarch-roadmap)) würde `zmslayout` durch Vue/Vuetify ersetzen, statt es auszubauen.
 
 `zmscitizenview` folgt den RefArch-Referenzarchitekturmustern und nutzt `refarch-gateway` als Gateway-Schicht.
 Das bedeutet, Anfragen aus `zmscitizenview` werden zunächst über `refarch-gateway` geleitet, bevor sie `zmscitizenapi` erreichen.

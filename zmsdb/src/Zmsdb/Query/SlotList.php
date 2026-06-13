@@ -157,13 +157,13 @@ class SlotList extends Base
 
     /**
      *
-     * @var \BO\Zmsentities\Scope $scope
+     * @var \BO\Zmsentities\Scope|null $scope
      */
     protected $scope = null;
 
     /**
      *
-     * @var \BO\Zmsentities\Availability $availability
+     * @var \BO\Zmsentities\Availability|null $availability
      */
     protected $availability = null;
 
@@ -404,6 +404,7 @@ class SlotList extends Base
         return $this;
     }
 
+    #[\Override]
     public function postProcess($data)
     {
         $data[$this->getPrefixed("appointment__date")] = strtotime($data[$this->getPrefixed("appointment__date")]);

@@ -21,6 +21,7 @@ class AvailabilityConflicts extends BaseController
      * @SuppressWarnings(Param)
      * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -37,7 +38,6 @@ class AvailabilityConflicts extends BaseController
 
     protected static function getAvailabilityData($input)
     {
-        $conflictList = new \BO\Zmsentities\Collection\ProcessList();
         $availabilityList = (new AvailabilityList())->addData($input['availabilityList']);
         $conflictedList = [];
 

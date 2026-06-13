@@ -13,9 +13,8 @@ class WorkstationProcessNext extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return int|null
      */
-
     public function timeToUnix($timeValue): ?int
     {
         if ($timeValue === null) {
@@ -30,6 +29,7 @@ class WorkstationProcessNext extends BaseController
         return $unixTimestamp !== false ? $unixTimestamp : null;
     }
 
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,

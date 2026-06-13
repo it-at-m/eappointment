@@ -8,6 +8,7 @@ class Cluster extends Schema\Entity implements Useraccount\AccessInterface
 
     public static $schema = "cluster.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [

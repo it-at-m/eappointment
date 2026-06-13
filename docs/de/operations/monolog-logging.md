@@ -87,27 +87,27 @@ Anders als **`DEBUGLEVEL`** (ein Wert für alle Slim-Module) wird **HTTP-Request
 
 Module mit `RequestLoggingMiddleware` (über `BO\Slim\Helper\ModuleLoggerInitializer` oder eigenes Bootstrap) schreiben pro verarbeitetem Request eine strukturierte **`HTTP Request`**-Zeile über `BO\Slim\LoggerService::logRequest()` → `App::$log`.
 
-| Modul | Env-Präfix | Typischer Traffic |
-| ----- | ---------- | ----------------- |
-| zmscitizenapi | `ZMS_CITIZENAPI_LOGGER_*` | Öffentliche Buchungs-API |
-| zmsapi | `ZMS_API_LOGGER_*` | Interne REST-API |
-| zmsadmin | `ZMS_ADMIN_LOGGER_*` | Mitarbeiter-UI |
-| zmscalldisplay | `ZMS_CALLDISPLAY_LOGGER_*` | Aufrufmonitore (häufiges Polling) |
-| zmsstatistic | `ZMS_STATISTIC_LOGGER_*` | Statistik-UI |
-| zmsticketprinter | `ZMS_TICKETPRINTER_LOGGER_*` | Ticketdrucker (häufiges Polling) |
+| Modul            | Env-Präfix                   | Typischer Traffic                 |
+| ---------------- | ---------------------------- | --------------------------------- |
+| zmscitizenapi    | `ZMS_CITIZENAPI_LOGGER_*`    | Öffentliche Buchungs-API          |
+| zmsapi           | `ZMS_API_LOGGER_*`           | Interne REST-API                  |
+| zmsadmin         | `ZMS_ADMIN_LOGGER_*`         | Mitarbeiter-UI                    |
+| zmscalldisplay   | `ZMS_CALLDISPLAY_LOGGER_*`   | Aufrufmonitore (häufiges Polling) |
+| zmsstatistic     | `ZMS_STATISTIC_LOGGER_*`     | Statistik-UI                      |
+| zmsticketprinter | `ZMS_TICKETPRINTER_LOGGER_*` | Ticketdrucker (häufiges Polling)  |
 
 ### LoggerService-Variablen
 
-| Variable | Standard | Rolle |
-| -------- | -------- | ----- |
-| `…_LOGGER_MAX_REQUESTS` | `1000` | Max. HTTP-Logzeilen pro Rate-Limit-Fenster; danach werden weitere Request-Logs in diesem Fenster unterdrückt |
-| `…_LOGGER_RESPONSE_LENGTH` | `1048576` | Max. Response-Body-Bytes bei Fehler-Logs |
-| `…_LOGGER_STACK_LINES` | `20` | Stacktrace-Zeilen bei geloggten Exceptions |
-| `…_LOGGER_MESSAGE_SIZE` | `8192` | Max. Größe einer einzelnen Log-Nachricht |
-| `…_LOGGER_CACHE_TTL` | `60` | Rate-Limit-Fenster in Sekunden (nutzt `CACHE_DIR`) |
-| `…_LOGGER_MAX_RETRIES` | `3` | Cache-Lock-Wiederholungen für Rate Limiting |
-| `…_LOGGER_BACKOFF_MIN` / `…_LOGGER_BACKOFF_MAX` | `100` / `1000` | Backoff zwischen Wiederholungen (ms) |
-| `…_LOGGER_LOCK_TIMEOUT` | `5` | Cache-Lock-Timeout (Sekunden) |
+| Variable                                        | Standard       | Rolle                                                                                                        |
+| ----------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------ |
+| `…_LOGGER_MAX_REQUESTS`                         | `1000`         | Max. HTTP-Logzeilen pro Rate-Limit-Fenster; danach werden weitere Request-Logs in diesem Fenster unterdrückt |
+| `…_LOGGER_RESPONSE_LENGTH`                      | `1048576`      | Max. Response-Body-Bytes bei Fehler-Logs                                                                     |
+| `…_LOGGER_STACK_LINES`                          | `20`           | Stacktrace-Zeilen bei geloggten Exceptions                                                                   |
+| `…_LOGGER_MESSAGE_SIZE`                         | `8192`         | Max. Größe einer einzelnen Log-Nachricht                                                                     |
+| `…_LOGGER_CACHE_TTL`                            | `60`           | Rate-Limit-Fenster in Sekunden (nutzt `CACHE_DIR`)                                                           |
+| `…_LOGGER_MAX_RETRIES`                          | `3`            | Cache-Lock-Wiederholungen für Rate Limiting                                                                  |
+| `…_LOGGER_BACKOFF_MIN` / `…_LOGGER_BACKOFF_MAX` | `100` / `1000` | Backoff zwischen Wiederholungen (ms)                                                                         |
+| `…_LOGGER_LOCK_TIMEOUT`                         | `5`            | Cache-Lock-Timeout (Sekunden)                                                                                |
 
 Vollständige Beispiele stehen in `.ddev/.env.template` bzw. `.devcontainer/.env.template`.
 

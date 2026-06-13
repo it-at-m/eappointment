@@ -26,17 +26,18 @@ The response follows [`status.json`](https://github.com/it-at-m/eappointment/blo
 Use `includeProcessStats=0` for high-frequency liveness probes; use `1` for dashboards that track appointment volumes.
 
 To include the `processes` aggregates in the response, call the endpoint with `includeProcessStats=1` (default). The aggregates are available under `.data.processes`.
+
 ### `processes` metrics (high level)
 
 Counts are for non-follow-up rows in `buerger` (`istFolgeterminvon` empty), same filter as the status SQL.
 
-| Field                                                                                  | Meaning                                                           |
-| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `confirmed`, `reserved`, `called`, `parked`, `missed`, `deleted`, `blocked`, `pending` | Count per `buerger.status`                                        |
-| `withExternalUserId`                                                                   | Processes with OIDC / citizen `external_user_id` set (any status) |
+| Field                                                                                  | Meaning                                                                                                             |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `confirmed`, `reserved`, `called`, `parked`, `missed`, `deleted`, `blocked`, `pending` | Count per `buerger.status`                                                                                          |
+| `withExternalUserId`                                                                   | Processes with OIDC / citizen `external_user_id` set (any status)                                                   |
 | `confirmedWithExternalUserId`                                                          | Confirmed appointments linked to an external user (set on appointment update in `zmscitizenapi`, after reservation) |
-| `sinceMidnight`, `last7days`, `lastInsert`                                             | Booking activity (not a total of all processes)                   |
-| `outdated`, `outdatedOldest`, `freeSlots`, `lastCalculate`                             | Slot maintenance (added when stats are included)                  |
+| `sinceMidnight`, `last7days`, `lastInsert`                                             | Booking activity (not a total of all processes)                                                                     |
+| `outdated`, `outdatedOldest`, `freeSlots`, `lastCalculate`                             | Slot maintenance (added when stats are included)                                                                    |
 
 OIDC-linked counts help track adoption of citizen login and “my appointments” flows (`zmscitizenapi`).
 

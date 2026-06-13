@@ -22,6 +22,15 @@ class RequestLoggingMiddleware implements MiddlewareInterface
         $this->logger = $logger;
     }
 
+    /**
+     * Process an incoming server request and log its details
+     *
+     * @param ServerRequestInterface $request The request to process
+     * @param RequestHandlerInterface $handler The handler to process the request
+     * @return ResponseInterface The resulting response
+     * @throws \Throwable If an error occurs during request handling
+     */
+    #[\Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {

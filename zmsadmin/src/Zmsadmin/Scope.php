@@ -18,6 +18,7 @@ class Scope extends BaseController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -96,7 +97,7 @@ class Scope extends BaseController
 
     /**
      * @param \BO\Zmsentities\Scope $input scope entity, if used without ID, a new scope is created
-     * @param Number $entityId Might be the entity scope or department if called from DepartmentAddScope
+     * @param int|null $entityId Might be the entity scope or department if called from DepartmentAddScope
      */
     protected function writeUpdatedEntity($input, $entityId = null)
     {

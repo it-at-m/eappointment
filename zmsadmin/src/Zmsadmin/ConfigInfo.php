@@ -15,6 +15,7 @@ class ConfigInfo extends BaseController
      * @SuppressWarnings(Param)
      * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -49,7 +50,7 @@ class ConfigInfo extends BaseController
             $input = $request->getParsedBody();
             $entity = clone $config;
             $entity->setPreference($input['key'], $input['property'], $input['value']);
-            $entity = \App::$http->readPostResult(
+            \App::$http->readPostResult(
                 '/config/',
                 $entity
             )->getEntity();

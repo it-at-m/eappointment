@@ -87,27 +87,27 @@ Unlike **`DEBUGLEVEL`** (one value for all Slim modules), **HTTP request/respons
 
 Modules that register `RequestLoggingMiddleware` (via `BO\Slim\Helper\ModuleLoggerInitializer` or their own bootstrap) emit one structured **`HTTP Request`** line per handled request through `BO\Slim\LoggerService::logRequest()` → `App::$log`.
 
-| Module | Env prefix | Typical traffic |
-| ------ | ---------- | --------------- |
-| zmscitizenapi | `ZMS_CITIZENAPI_LOGGER_*` | Public booking API |
-| zmsapi | `ZMS_API_LOGGER_*` | Internal REST API |
-| zmsadmin | `ZMS_ADMIN_LOGGER_*` | Staff UI |
-| zmscalldisplay | `ZMS_CALLDISPLAY_LOGGER_*` | Display monitors (frequent polling) |
-| zmsstatistic | `ZMS_STATISTIC_LOGGER_*` | Statistics UI |
-| zmsticketprinter | `ZMS_TICKETPRINTER_LOGGER_*` | Ticket printers (frequent polling) |
+| Module           | Env prefix                   | Typical traffic                     |
+| ---------------- | ---------------------------- | ----------------------------------- |
+| zmscitizenapi    | `ZMS_CITIZENAPI_LOGGER_*`    | Public booking API                  |
+| zmsapi           | `ZMS_API_LOGGER_*`           | Internal REST API                   |
+| zmsadmin         | `ZMS_ADMIN_LOGGER_*`         | Staff UI                            |
+| zmscalldisplay   | `ZMS_CALLDISPLAY_LOGGER_*`   | Display monitors (frequent polling) |
+| zmsstatistic     | `ZMS_STATISTIC_LOGGER_*`     | Statistics UI                       |
+| zmsticketprinter | `ZMS_TICKETPRINTER_LOGGER_*` | Ticket printers (frequent polling)  |
 
 ### LoggerService variables
 
-| Variable | Default | Role |
-| -------- | ------- | ---- |
-| `…_LOGGER_MAX_REQUESTS` | `1000` | Maximum HTTP log lines per rate-limit window before further request logs in that window are suppressed |
-| `…_LOGGER_RESPONSE_LENGTH` | `1048576` | Max response body bytes considered when logging errors |
-| `…_LOGGER_STACK_LINES` | `20` | Stack trace lines on logged exceptions |
-| `…_LOGGER_MESSAGE_SIZE` | `8192` | Max size of a single log message |
-| `…_LOGGER_CACHE_TTL` | `60` | Rate-limit window in seconds (uses `CACHE_DIR`) |
-| `…_LOGGER_MAX_RETRIES` | `3` | Cache lock retries for rate limiting |
-| `…_LOGGER_BACKOFF_MIN` / `…_LOGGER_BACKOFF_MAX` | `100` / `1000` | Backoff between retries (ms) |
-| `…_LOGGER_LOCK_TIMEOUT` | `5` | Cache lock timeout (seconds) |
+| Variable                                        | Default        | Role                                                                                                   |
+| ----------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------ |
+| `…_LOGGER_MAX_REQUESTS`                         | `1000`         | Maximum HTTP log lines per rate-limit window before further request logs in that window are suppressed |
+| `…_LOGGER_RESPONSE_LENGTH`                      | `1048576`      | Max response body bytes considered when logging errors                                                 |
+| `…_LOGGER_STACK_LINES`                          | `20`           | Stack trace lines on logged exceptions                                                                 |
+| `…_LOGGER_MESSAGE_SIZE`                         | `8192`         | Max size of a single log message                                                                       |
+| `…_LOGGER_CACHE_TTL`                            | `60`           | Rate-limit window in seconds (uses `CACHE_DIR`)                                                        |
+| `…_LOGGER_MAX_RETRIES`                          | `3`            | Cache lock retries for rate limiting                                                                   |
+| `…_LOGGER_BACKOFF_MIN` / `…_LOGGER_BACKOFF_MAX` | `100` / `1000` | Backoff between retries (ms)                                                                           |
+| `…_LOGGER_LOCK_TIMEOUT`                         | `5`            | Cache lock timeout (seconds)                                                                           |
 
 See `.ddev/.env.template` / `.devcontainer/.env.template` for full examples per module.
 

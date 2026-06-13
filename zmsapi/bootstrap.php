@@ -46,8 +46,10 @@ $requestLimits = \App::getRequestLimits();
 \App::$slim->add(new \BO\Zmsapi\Helper\LogOperatorMiddleware());
 
 // add slim error middleware
-$errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
-$errorMiddleware->setDefaultErrorHandler(new \BO\Zmsapi\Helper\ErrorHandler());
+if (\App::$slim->getContainer()->has('errorMiddleware')) {
+    $errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
+    $errorMiddleware->setDefaultErrorHandler(new \BO\Zmsapi\Helper\ErrorHandler());
+}
 
 // DLDB data loader
 \BO\Zmsdb\Source\Zmsdldb::$importPath = \App::APP_PATH . \App::$data;

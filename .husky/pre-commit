@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Checks run in commit-msg (message first, then Vue/docs/PHP).
+# Git always invokes pre-commit before commit-msg; this hook is intentionally empty.

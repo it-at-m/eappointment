@@ -45,6 +45,7 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         $this->errorResponseBuilder = $errorResponseBuilder;
     }
 
+    #[\Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {

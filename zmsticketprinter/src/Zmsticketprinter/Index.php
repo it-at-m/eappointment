@@ -23,6 +23,7 @@ class Index extends BaseController
      * @SuppressWarnings(UnusedFormalParameter)
      * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
         Helper\HomeUrl::create($request);
@@ -111,7 +112,7 @@ class Index extends BaseController
         if (!strpos($queryString, 'lang=')) {
             $queryString .= '&lang=de';
         }
-        return str_replace('/&', '', $queryString ?? '');
+        return str_replace('/&', '', $queryString);
     }
 
     private function getTranslations($languageConfig, $currentLang)

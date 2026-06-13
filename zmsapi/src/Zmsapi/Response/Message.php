@@ -4,6 +4,7 @@ namespace BO\Zmsapi\Response;
 
 use BO\Zmsdb\Connection\Select;
 use BO\Zmsclient\GraphQL\GraphQLInterpreter;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * example class to generate a response
@@ -26,13 +27,9 @@ class Message implements \JsonSerializable
     public $statuscode = 200;
 
 
-    /**
-     * @var \Psr\Http\Message\RequestInterface $request;
-     *
-     */
-    protected $request = null;
+    protected RequestInterface $request;
 
-    protected function __construct(\Psr\Http\Message\RequestInterface $request)
+    protected function __construct(RequestInterface $request)
     {
         $this->request = $request;
         $this->meta = new \BO\Zmsentities\Metaresult();
@@ -41,7 +38,7 @@ class Message implements \JsonSerializable
         $this->setUpdatedMetaData();
     }
 
-    public static function create(\Psr\Http\Message\RequestInterface $request)
+    public static function create(RequestInterface $request)
     {
         return new self($request);
     }
@@ -107,6 +104,7 @@ class Message implements \JsonSerializable
         return $this->statuscode;
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         $schema = $this->request->getUri()->getScheme();

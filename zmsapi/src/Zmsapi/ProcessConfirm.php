@@ -20,8 +20,9 @@ class ProcessConfirm extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -84,8 +85,6 @@ class ProcessConfirm extends BaseController
 
         $timezone = new \DateTimeZone(\BO\Zmsdb\Connection\Select::$connectionTimezone);
         $startsAt = (new \DateTimeImmutable('@' . $appointment->date))->setTimezone($timezone);
-
-        $durationMinutes = null;
 
         $slotCount = (int)($appointment->slotCount ?? 0);
         $slotTimeInMinutes = (int)($appointment->availability->slotTimeInMinutes ?? 0);
