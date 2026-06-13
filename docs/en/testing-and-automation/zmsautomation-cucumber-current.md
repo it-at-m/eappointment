@@ -1141,9 +1141,9 @@ Funktionalität: Default
 		Dann wird die Seite Tresen geöffnet.
 		Wenn Sie einen Spontankunden für die Dienstleistung "<beliebig>" buchen.
 		Dann wird der Spontankunden in der Warteschlange angezeigt.
-		Wenn sie einen Terminkunden mit ausgewählter Dienstleistung, Uhrzeit, name und gültige E-Mail-Adresse buchen.
+		Wenn Sie einen Terminkunden mit ausgewählter Dienstleistung, Uhrzeit, name und gültige E-Mail-Adresse buchen.
 		Dann Es erscheint ein Pop-Up-Fenster "Termin erfolgreich eingetragen" und der Termin ist auch in der Warteschlange sichtbar.
-		Wenn sie einen Terminkunden mit ausgewählter Dienstleistung und Uhrzeit buchen.
+		Wenn Sie einen Terminkunden mit ausgewählter Dienstleistung und Uhrzeit buchen.
 		Dann erscheinen zwei Fehlermeldungen die bei Name und E-Mail-Adresse rot hinterlegt sind.
 ```
 
@@ -1165,7 +1165,7 @@ Funktionalität: Default
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
 		Dann wird die Seite Sachbearbeiterplatz angezeigt.
 #Kunde a Zulassung Taxi oder Mietwagen, Taxi oder Mietwagen – Unterlagen nachreichen
-		Wenn sie einen Terminkunden mit der Dienstleistung "Zulassung Taxi oder Mietwagen, Taxi oder Mietwagen – Unterlagen nachreichen", Uhrzeit, name, gültige E-Mail-Adresse und die Anmerkung "Kundenstatistik1" buchen.
+		Wenn Sie einen Terminkunden mit der Dienstleistung "Zulassung Taxi oder Mietwagen, Taxi oder Mietwagen – Unterlagen nachreichen", Uhrzeit, name, gültige E-Mail-Adresse und die Anmerkung "Kundenstatistik1" buchen.
 		Dann Es erscheint ein Pop-Up-Fenster "Termin erfolgreich eingetragen" und der Termin ist auch in der Warteschlange sichtbar.
 		Wenn Der Sachbearbeiter den Terminkunden mit der Anmerkung "Kundenstatistik1" aufruft.
 		Dann wird der wartende Kunde aufgerufen.
@@ -1181,7 +1181,7 @@ Funktionalität: Default
 		Wenn Der Sachbearbeiter den wartenden Kunden aufruft.
 		Dann sollte der Kunde nicht erschienen sein.
 #Kunde c Zulassung Taxi oder Mietwagen
-		Wenn sie einen Terminkunden mit der Dienstleistung "Zulassung Taxi oder Mietwagen", Uhrzeit, name, gültige E-Mail-Adresse und die Anmerkung "Kundenstatistik2" buchen.
+		Wenn Sie einen Terminkunden mit der Dienstleistung "Zulassung Taxi oder Mietwagen", Uhrzeit, name, gültige E-Mail-Adresse und die Anmerkung "Kundenstatistik2" buchen.
 		Dann Es erscheint ein Pop-Up-Fenster "Termin erfolgreich eingetragen" und der Termin ist auch in der Warteschlange sichtbar.
 		Wenn Der Sachbearbeiter den Terminkunden mit der Anmerkung "Kundenstatistik2" aufruft.
 		Dann wird der wartende Kunde aufgerufen.
