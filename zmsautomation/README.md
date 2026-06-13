@@ -35,20 +35,21 @@ The `zmsautomation-test` script handles database setup, migrations, and test exe
 # Run all ATAF tests (API + UI)
 ./zmsautomation/zmsautomation-test -Pataf-api -Pataf-ui
 
-# Run specific tags (scenarios tagged @ignore are excluded unless you add @ignore to the expression)
-./zmsautomation/zmsautomation-test -Dcucumber.filter.tags="@smoke"
-# Run including ignored scenarios, e.g.:
-# ./zmsautomation/zmsautomation-test -Dcucumber.filter.tags="@ignore and @web"
-
-# Run specific API feature (path is relative to the zmsautomation module; use -Pataf-api for API-only runner)
-./zmsautomation/zmsautomation-test -Pataf-api -Dcucumber.features="src/test/resources/features/rest/zmsapi/status.feature"
-
-# Run only API tests (no Selenium)
+# Run only API tests (REST, features/rest)
 ./zmsautomation/zmsautomation-test -Pataf-api
 
-# Run only UI tests (Selenium/ATAF web)
+# Run only UI tests (Selenium, features/ui)
 ./zmsautomation/zmsautomation-test -Pataf-ui
+
+# Filter by tag (pass the Maven profile for the layer you want)
+./zmsautomation/zmsautomation-test -Pataf-ui -Dcucumber.filter.tags="@ZMSKVR-1328"
+./zmsautomation/zmsautomation-test -Pataf-api -Dcucumber.filter.tags="@ZMSKVR-1328"
+
+# Run specific API feature file
+./zmsautomation/zmsautomation-test -Pataf-api -Dcucumber.features="src/test/resources/features/rest/zmsapi/status.feature"
 ```
+
+Use `-Pataf-api` and/or `-Pataf-ui` to select the test layer. Each profile runs its own Cucumber runner (`ApiTestRunner` / `UiTestRunner`). When a Jira tag exists on both API and UI features, pass the profile for the layer you want — the script adds `not @web` / `not @rest` to the tag filter automatically.
 
 The script will:
 1. Backup the database
