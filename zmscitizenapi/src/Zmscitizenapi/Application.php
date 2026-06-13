@@ -28,6 +28,7 @@ class Application extends \BO\Slim\Application
     // Logger config
 
     public static int $LOGGER_MAX_REQUESTS;
+    public static int $LOGGER_MAX_ERROR_REQUESTS;
     public static int $LOGGER_RESPONSE_LENGTH;
     public static int $LOGGER_STACK_LINES;
     public static int $LOGGER_MESSAGE_SIZE;
@@ -81,6 +82,7 @@ class Application extends \BO\Slim\Application
     private static function initializeLogger(): void
     {
         self::$LOGGER_MAX_REQUESTS = (int) (getenv('ZMS_CITIZENAPI_LOGGER_MAX_REQUESTS') ?: 1000);
+        self::$LOGGER_MAX_ERROR_REQUESTS = (int) (getenv('ZMS_CITIZENAPI_LOGGER_MAX_ERROR_REQUESTS') ?: 0);
         self::$LOGGER_RESPONSE_LENGTH = (int) (getenv('ZMS_CITIZENAPI_LOGGER_RESPONSE_LENGTH') ?: 1048576);
         // 1MB
         self::$LOGGER_STACK_LINES = (int) (getenv('ZMS_CITIZENAPI_LOGGER_STACK_LINES') ?: 20);
@@ -169,6 +171,7 @@ class Application extends \BO\Slim\Application
     {
         return [
             'maxRequests' => self::$LOGGER_MAX_REQUESTS,
+            'maxErrorRequests' => self::$LOGGER_MAX_ERROR_REQUESTS,
             'responseLength' => self::$LOGGER_RESPONSE_LENGTH,
             'stackLines' => self::$LOGGER_STACK_LINES,
             'messageSize' => self::$LOGGER_MESSAGE_SIZE,

@@ -21,6 +21,7 @@ final class ModuleLoggerInitializer
     {
         LoggerService::configure([
             'maxRequests' => (int) (getenv("{$envPrefix}_LOGGER_MAX_REQUESTS") ?: 1000),
+            'maxErrorRequests' => (int) (getenv("{$envPrefix}_LOGGER_MAX_ERROR_REQUESTS") ?: 0),
             'responseLength' => (int) (getenv("{$envPrefix}_LOGGER_RESPONSE_LENGTH") ?: 1048576),
             'stackLines' => (int) (getenv("{$envPrefix}_LOGGER_STACK_LINES") ?: 20),
             'messageSize' => (int) (getenv("{$envPrefix}_LOGGER_MESSAGE_SIZE") ?: 8192),

@@ -98,16 +98,17 @@ Modules that register `RequestLoggingMiddleware` (via `BO\Slim\Helper\ModuleLogg
 
 ### LoggerService variables
 
-| Variable                                        | Default        | Role                                                                                                                                           |
-| ----------------------------------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `…_LOGGER_MAX_REQUESTS`                         | `1000`         | Shared LoggerService rate-limit budget per window (`CACHE_TTL`); counts `logRequest()`, `logError()`, `logWarning()`, and `logInfo()` together |
-| `…_LOGGER_RESPONSE_LENGTH`                      | `1048576`      | Max response body bytes considered when logging errors                                                                                         |
-| `…_LOGGER_STACK_LINES`                          | `20`           | Stack trace lines on logged exceptions                                                                                                         |
-| `…_LOGGER_MESSAGE_SIZE`                         | `8192`         | Max size of a single log message                                                                                                               |
-| `…_LOGGER_CACHE_TTL`                            | `60`           | Rate-limit window in seconds (uses `CACHE_DIR`)                                                                                                |
-| `…_LOGGER_MAX_RETRIES`                          | `3`            | Cache lock retries for rate limiting                                                                                                           |
-| `…_LOGGER_BACKOFF_MIN` / `…_LOGGER_BACKOFF_MAX` | `100` / `1000` | Backoff between retries (ms)                                                                                                                   |
-| `…_LOGGER_LOCK_TIMEOUT`                         | `5`            | Cache lock timeout (seconds)                                                                                                                   |
+| Variable                                        | Default        | Role                                                                                      |
+| ----------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------- |
+| `…_LOGGER_MAX_REQUESTS`                         | `1000`         | Max successful `HTTP Request` lines (status &lt; 400) per rate-limit window (`CACHE_TTL`) |
+| `…_LOGGER_MAX_ERROR_REQUESTS`                   | `0`            | Max failed `HTTP Request` lines (status ≥ 400) per window; `0` = unlimited                |
+| `…_LOGGER_RESPONSE_LENGTH`                      | `1048576`      | Max response body bytes considered when logging errors                                    |
+| `…_LOGGER_STACK_LINES`                          | `20`           | Stack trace lines on logged exceptions                                                    |
+| `…_LOGGER_MESSAGE_SIZE`                         | `8192`         | Max size of a single log message                                                          |
+| `…_LOGGER_CACHE_TTL`                            | `60`           | Rate-limit window in seconds (uses `CACHE_DIR`)                                           |
+| `…_LOGGER_MAX_RETRIES`                          | `3`            | Cache lock retries for rate limiting                                                      |
+| `…_LOGGER_BACKOFF_MIN` / `…_LOGGER_BACKOFF_MAX` | `100` / `1000` | Backoff between retries (ms)                                                              |
+| `…_LOGGER_LOCK_TIMEOUT`                         | `5`            | Cache lock timeout (seconds)                                                              |
 
 See `.ddev/.env.template` / `.devcontainer/.env.template` for full examples per module.
 
@@ -127,11 +128,9 @@ ZMS_ADMIN_LOGGER_MAX_REQUESTS=1000
 ZMS_API_LOGGER_MAX_REQUESTS=1000
 ```
 
-Lowering `…_LOGGER_MAX_REQUESTS` throttles **all** `LoggerService` output in that module — HTTP request lines **and** messages written through `LoggerService::logError()`, `logWarning()`, or `logInfo()` (for example exceptions caught in `RequestLoggingMiddleware`). Once the window budget is exhausted, further `LoggerService` writes are dropped until the cache entry expires.
+Lowering `…_LOGGER_MAX_REQUESTS` throttles only **successful** `HTTP Request` lines (Monolog `info`, status &lt; 400). Failed requests (status ≥ 400, Monolog `error`) use `…_LOGGER_MAX_ERROR_REQUESTS` instead; the default `0` means no cap.
 
-It does **not** change `DEBUGLEVEL` or suppress direct `App::$log->…` calls elsewhere in application code. Those bypass `LoggerService::checkRateLimit()` entirely.
-
-Because the limit is shared, heavy HTTP traffic (for example calldisplay or ticket-printer polling) can crowd out `LoggerService` error logs. For high-frequency modules, lower `…_LOGGER_MAX_REQUESTS`; splitting access and error budgets would be a sensible follow-up improvement.
+`LoggerService::logError()`, `logWarning()`, and `logInfo()` are not rate-limited. Direct `App::$log->…` calls elsewhere in application code also bypass these caps. Use `DEBUGLEVEL` to control general application log verbosity.
 
 ## How to log
 

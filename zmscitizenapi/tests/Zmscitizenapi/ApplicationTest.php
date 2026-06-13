@@ -43,6 +43,7 @@ class ApplicationTest extends TestCase
     {
         // Test with custom values
         putenv('ZMS_CITIZENAPI_LOGGER_MAX_REQUESTS=500');
+        putenv('ZMS_CITIZENAPI_LOGGER_MAX_ERROR_REQUESTS=250');
         putenv('ZMS_CITIZENAPI_LOGGER_RESPONSE_LENGTH=2097152');
         putenv('ZMS_CITIZENAPI_LOGGER_STACK_LINES=30');
         putenv('ZMS_CITIZENAPI_LOGGER_MESSAGE_SIZE=16384');
@@ -56,6 +57,7 @@ class ApplicationTest extends TestCase
         $config = Application::getLoggerConfig();
 
         $this->assertEquals(500, $config['maxRequests']);
+        $this->assertEquals(250, $config['maxErrorRequests']);
         $this->assertEquals(2097152, $config['responseLength']);
         $this->assertEquals(30, $config['stackLines']);
         $this->assertEquals(16384, $config['messageSize']);
@@ -67,6 +69,7 @@ class ApplicationTest extends TestCase
 
         // Test default values
         putenv('ZMS_CITIZENAPI_LOGGER_MAX_REQUESTS');
+        putenv('ZMS_CITIZENAPI_LOGGER_MAX_ERROR_REQUESTS');
         putenv('ZMS_CITIZENAPI_LOGGER_RESPONSE_LENGTH');
         putenv('ZMS_CITIZENAPI_LOGGER_STACK_LINES');
         putenv('ZMS_CITIZENAPI_LOGGER_MESSAGE_SIZE');
@@ -80,6 +83,7 @@ class ApplicationTest extends TestCase
         $config = Application::getLoggerConfig();
 
         $this->assertEquals(1000, $config['maxRequests']);
+        $this->assertEquals(0, $config['maxErrorRequests']);
         $this->assertEquals(1048576, $config['responseLength']);
         $this->assertEquals(20, $config['stackLines']);
         $this->assertEquals(8192, $config['messageSize']);
@@ -182,6 +186,7 @@ class ApplicationTest extends TestCase
         // Reset environment variables
         putenv('MAINTENANCE_ENABLED');
         putenv('ZMS_CITIZENAPI_LOGGER_MAX_REQUESTS');
+        putenv('ZMS_CITIZENAPI_LOGGER_MAX_ERROR_REQUESTS');
         putenv('ZMS_CITIZENAPI_LOGGER_RESPONSE_LENGTH');
         putenv('ZMS_CITIZENAPI_LOGGER_STACK_LINES');
         putenv('ZMS_CITIZENAPI_LOGGER_MESSAGE_SIZE');

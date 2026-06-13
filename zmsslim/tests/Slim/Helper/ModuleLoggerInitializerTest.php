@@ -13,11 +13,13 @@ class ModuleLoggerInitializerTest extends TestCase
     protected function tearDown(): void
     {
         putenv('ZMS_ADMIN_LOGGER_MAX_REQUESTS');
+        putenv('ZMS_ADMIN_LOGGER_MAX_ERROR_REQUESTS');
         LoggerService::$cache = null;
         LoggerService::$requestContextEnricher = null;
         LoggerService::$errorCodeResolver = null;
         LoggerService::configure([
             'maxRequests' => 1000,
+            'maxErrorRequests' => 0,
             'responseLength' => 1048576,
             'stackLines' => 10,
             'cacheTtl' => 60,
@@ -31,10 +33,12 @@ class ModuleLoggerInitializerTest extends TestCase
     public function testConfigureUsesModuleEnvPrefix(): void
     {
         putenv('ZMS_ADMIN_LOGGER_MAX_REQUESTS=42');
+        putenv('ZMS_ADMIN_LOGGER_MAX_ERROR_REQUESTS=7');
 
         ModuleLoggerInitializer::configure('ZMS_ADMIN');
 
         $this->assertSame(42, LoggerService::$maxRequests);
+        $this->assertSame(7, LoggerService::$maxErrorRequests);
     }
 
     public function testGetRequestLimitsUsesDefaults(): void

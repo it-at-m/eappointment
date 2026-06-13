@@ -35,7 +35,8 @@ class LoggerService
     ];
 
     private const CACHE_KEY_PREFIX = 'logger.';
-    private const CACHE_COUNTER_KEY = self::CACHE_KEY_PREFIX . 'counter';
+    private const CACHE_REQUEST_COUNTER_KEY = self::CACHE_KEY_PREFIX . 'request';
+    private const CACHE_ERROR_REQUEST_COUNTER_KEY = self::CACHE_KEY_PREFIX . 'request_error';
 
     public static ?CacheInterface $cache = null;
 
@@ -46,6 +47,7 @@ class LoggerService
     public static $errorCodeResolver = null;
 
     public static int $maxRequests = 1000;
+    public static int $maxErrorRequests = 0;
     public static int $responseLength = 1048576;
     public static int $stackLines = 10;
     public static int $cacheTtl = 60;
@@ -56,6 +58,7 @@ class LoggerService
     /**
      * @param array{
      *   maxRequests?: int,
+     *   maxErrorRequests?: int,
      *   responseLength?: int,
      *   stackLines?: int,
      *   messageSize?: int,
@@ -70,6 +73,9 @@ class LoggerService
     {
         if (isset($config['maxRequests'])) {
             self::$maxRequests = (int) $config['maxRequests'];
+        }
+        if (isset($config['maxErrorRequests'])) {
+            self::$maxErrorRequests = (int) $config['maxErrorRequests'];
         }
         if (isset($config['responseLength'])) {
             self::$responseLength = (int) $config['responseLength'];
@@ -91,25 +97,28 @@ class LoggerService
         }
     }
 
-    private static function checkRateLimit(): bool
+    private static function checkRateLimit(int $maxAllowed, string $counterKey): bool
     {
+        if ($maxAllowed <= 0) {
+            return true;
+        }
+
         if (self::$cache === null) {
             \App::$log->notice('Cache not available for rate limiting');
             return true;
         }
 
         $attempt = 0;
-        $key = self::CACHE_COUNTER_KEY;
-        $lockKey = $key . '_lock';
+        $lockKey = $counterKey . '_lock';
 
         while ($attempt < self::$maxRetries) {
             try {
                 if (!self::$cache->has($lockKey)) {
                     if (self::$cache->set($lockKey, true, self::$lockTimeout)) {
                         try {
-                            $data = self::$cache->get($key);
+                            $data = self::$cache->get($counterKey);
                             if ($data === null) {
-                                self::$cache->set($key, [
+                                self::$cache->set($counterKey, [
                                     'count' => 1,
                                     'timestamp' => time(),
                                 ], self::$cacheTtl);
@@ -117,17 +126,17 @@ class LoggerService
                             }
 
                             if (!is_array($data) || !isset($data['count'])) {
-                                self::$cache->delete($key);
+                                self::$cache->delete($counterKey);
                                 return true;
                             }
 
                             $count = (int) $data['count'];
-                            if ($count >= self::$maxRequests) {
+                            if ($count >= $maxAllowed) {
                                 return false;
                             }
 
                             $data['count'] = $count + 1;
-                            self::$cache->set($key, $data, self::$cacheTtl);
+                            self::$cache->set($counterKey, $data, self::$cacheTtl);
                             return true;
                         } finally {
                             self::$cache->delete($lockKey);
@@ -151,10 +160,6 @@ class LoggerService
         ?ResponseInterface $response = null,
         array $context = []
     ): void {
-        if (!self::checkRateLimit()) {
-            return;
-        }
-
         $data = [
             'exception' => get_class($exception),
             'message' => $exception->getMessage(),
@@ -184,17 +189,11 @@ class LoggerService
 
     public static function logWarning(string $message, array $context = []): void
     {
-        if (!self::checkRateLimit()) {
-            return;
-        }
         \App::$log->warning($message, $context);
     }
 
     public static function logInfo(string $message, array $context = []): void
     {
-        if (!self::checkRateLimit()) {
-            return;
-        }
         \App::$log->info($message, $context);
     }
 
@@ -203,7 +202,15 @@ class LoggerService
      */
     public static function logRequest(ServerRequestInterface $request, ResponseInterface $response): void
     {
-        if (!self::checkRateLimit()) {
+        $statusCode = $response->getStatusCode();
+        $rateLimitKey = $statusCode >= 400
+            ? self::CACHE_ERROR_REQUEST_COUNTER_KEY
+            : self::CACHE_REQUEST_COUNTER_KEY;
+        $rateLimitMax = $statusCode >= 400
+            ? self::$maxErrorRequests
+            : self::$maxRequests;
+
+        if (!self::checkRateLimit($rateLimitMax, $rateLimitKey)) {
             return;
         }
 

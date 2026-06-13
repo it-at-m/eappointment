@@ -51,7 +51,8 @@ sequenceDiagram
 | SOURCE_CACHE_TTL | Cache lifetime in seconds | 3600 |
 | MAINTENANCE_MODE_ENABLED | Enable maintenance mode | false |
 | **Logger Configuration** |
-| ZMS_CITIZENAPI_LOGGER_MAX_REQUESTS | Maximum log requests per minute | 1000 |
+| ZMS_CITIZENAPI_LOGGER_MAX_REQUESTS | Maximum successful HTTP request logs per window | 1000 |
+| ZMS_CITIZENAPI_LOGGER_MAX_ERROR_REQUESTS | Maximum failed HTTP request logs per window (`0` = unlimited) | 0 |
 | ZMS_CITIZENAPI_LOGGER_RESPONSE_LENGTH | Maximum response length to log in bytes | 1048576 (1MB) |
 | ZMS_CITIZENAPI_LOGGER_STACK_LINES | Maximum stack trace lines to log | 20 |
 | ZMS_CITIZENAPI_LOGGER_MESSAGE_SIZE | Maximum log message size in bytes | 8192 (8KB) |
