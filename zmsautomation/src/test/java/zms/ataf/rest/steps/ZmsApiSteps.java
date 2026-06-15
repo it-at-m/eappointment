@@ -378,10 +378,8 @@ public class ZmsApiSteps {
 
         String body = loginResponse.asString();
         ScenarioLogManager.getLogger().info(String.format(
-            "ZMS API /workstation/login/ (auto X-AuthKey) status=%d user=%s body=%s",
-            loginResponse.getStatusCode(),
-            credentials[0],
-            body.length() > 500 ? body.substring(0, 500) + "..." : body
+            "ZMS API /workstation/login/ (auto X-AuthKey) status=%d",
+            loginResponse.getStatusCode()
         ));
 
         if (loginResponse.getStatusCode() < 200 || loginResponse.getStatusCode() >= 300) {
