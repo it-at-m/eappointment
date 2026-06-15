@@ -14,6 +14,7 @@ class UseraccountListByRoleTest extends Base
         $body = (string) $response->getBody();
 
         $this->assertStringContainsString('agent_queue', $body);
+        $this->assertStringContainsString('testuser', $body);
         $this->assertEquals(200, $response->getStatusCode());
     }
 
