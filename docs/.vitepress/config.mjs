@@ -602,6 +602,11 @@ export default {
   description: "Technical documentation for it-at-m/eappointment",
   base: SITE_BASE,
   lang: "en-US",
+  vite: {
+    build: {
+      target: "es2022",
+    },
+  },
   rewrites: buildEnRewrites(),
   sitemap: {
     // hostname must include the base path so emitted <loc> URLs are absolute
