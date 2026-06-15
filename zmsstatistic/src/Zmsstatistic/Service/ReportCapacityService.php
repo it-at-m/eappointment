@@ -502,7 +502,7 @@ class ReportCapacityService
      */
     public function aggregateRowsByDate(array $rows, bool $useHourlyKeys): array
     {
-        $byDate = [];
+        $capacityRowsByTimelineKey = [];
 
         foreach ($rows as $row) {
             if (!is_array($row)) {
@@ -510,24 +510,24 @@ class ReportCapacityService
             }
 
             $normalized = $this->normalizeDataRow($row, $useHourlyKeys);
-            $key = $normalized[1];
-            if ($key === '') {
+            $timelineKey = $normalized[1];
+            if ($timelineKey === '') {
                 continue;
             }
 
-            if (!isset($byDate[$key])) {
-                $byDate[$key] = $normalized;
+            if (!isset($capacityRowsByTimelineKey[$timelineKey])) {
+                $capacityRowsByTimelineKey[$timelineKey] = $normalized;
                 continue;
             }
 
             for ($column = 2; $column <= 9; $column++) {
-                $byDate[$key][$column] += $normalized[$column];
+                $capacityRowsByTimelineKey[$timelineKey][$column] += $normalized[$column];
             }
         }
 
-        ksort($byDate);
+        ksort($capacityRowsByTimelineKey);
 
-        return array_values($byDate);
+        return array_values($capacityRowsByTimelineKey);
     }
 
     /**
@@ -543,13 +543,13 @@ class ReportCapacityService
         ?string $period,
         bool $useHourlyTimeline
     ): array {
-        $bounds = $this->resolveTimelineBounds($dateRange, $period);
-        if (!$bounds) {
+        $timelineBounds = $this->resolveTimelineBounds($dateRange, $period);
+        if (!$timelineBounds) {
             return $rows;
         }
 
-        $byKey = [];
-        $subjectId = '';
+        $capacityRowsByTimelineKey = [];
+        $defaultSubjectId = '';
 
         foreach ($rows as $row) {
             if (!is_array($row)) {
@@ -557,56 +557,58 @@ class ReportCapacityService
             }
 
             $normalized = $this->normalizeDataRow($row, $useHourlyTimeline);
-            $key = $normalized[1];
-            if ($key === '') {
+            $timelineKey = $normalized[1];
+            if ($timelineKey === '') {
                 continue;
             }
 
-            if (!isset($byKey[$key])) {
-                $byKey[$key] = $normalized;
-                if ($subjectId === '' && $normalized[0] !== '') {
-                    $subjectId = $normalized[0];
+            if (!isset($capacityRowsByTimelineKey[$timelineKey])) {
+                $capacityRowsByTimelineKey[$timelineKey] = $normalized;
+                if ($defaultSubjectId === '' && $normalized[0] !== '') {
+                    $defaultSubjectId = $normalized[0];
                 }
                 continue;
             }
 
             for ($column = 2; $column <= 9; $column++) {
-                $byKey[$key][$column] += $normalized[$column];
+                $capacityRowsByTimelineKey[$timelineKey][$column] += $normalized[$column];
             }
         }
 
-        $from = $bounds['from'];
-        $to = $bounds['to'];
-        $filled = [];
+        $rangeStartDate = $timelineBounds['from'];
+        $rangeEndDate = $timelineBounds['to'];
+        $filledTimelineRows = [];
 
         if ($useHourlyTimeline) {
-            $start = new DateTimeImmutable($from . ' 00:00:00');
-            $end = new DateTimeImmutable($to . ' 23:00:00');
+            $start = new DateTimeImmutable($rangeStartDate . ' 00:00:00');
+            $end = new DateTimeImmutable($rangeEndDate . ' 23:00:00');
             $cursor = $start;
 
             while ($cursor <= $end) {
-                $key = $this->normalizeTimelineKey(
+                $timelineKey = $this->normalizeTimelineKey(
                     $cursor->format('Y-m-d') . ' ' . $cursor->format('H') . ':00',
                     true
                 );
-                $filled[] = $byKey[$key] ?? $this->emptyCapacityRow($subjectId, $key);
+                $filledTimelineRows[] = $capacityRowsByTimelineKey[$timelineKey]
+                    ?? $this->emptyCapacityRow($defaultSubjectId, $timelineKey);
                 $cursor = $cursor->modify('+1 hour');
             }
 
-            return $filled;
+            return $filledTimelineRows;
         }
 
-        $start = new DateTimeImmutable($from);
-        $end = new DateTimeImmutable($to);
+        $start = new DateTimeImmutable($rangeStartDate);
+        $end = new DateTimeImmutable($rangeEndDate);
         $cursor = $start;
 
         while ($cursor <= $end) {
-            $key = $cursor->format('Y-m-d');
-            $filled[] = $byKey[$key] ?? $this->emptyCapacityRow($subjectId, $key);
+            $timelineKey = $cursor->format('Y-m-d');
+            $filledTimelineRows[] = $capacityRowsByTimelineKey[$timelineKey]
+                ?? $this->emptyCapacityRow($defaultSubjectId, $timelineKey);
             $cursor = $cursor->modify('+1 day');
         }
 
-        return $filled;
+        return $filledTimelineRows;
     }
 
     /**

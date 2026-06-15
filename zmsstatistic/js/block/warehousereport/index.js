@@ -71,31 +71,34 @@ class View extends BaseView {
         this.chartHideEmptySlots = $button.attr('aria-pressed') !== 'false';
     }
 
-    readJsonPayload($root, scriptSelector, attributeName, label) {
+    readJsonPayload($root, scriptSelector, fallbackDomAttributeName, parseContextLabel) {
         const $script = $root.find(scriptSelector).first();
         if ($script.length) {
-            const parsed = parseJsonText($script.text(), label);
-            if (parsed !== null) {
+            const jsonPayload = parseJsonText($script.text(), parseContextLabel);
+            if (jsonPayload !== null) {
                 $script.remove();
-                return parsed;
+                return jsonPayload;
             }
         }
 
-        if (!attributeName) {
+        if (!fallbackDomAttributeName) {
             return null;
         }
 
-        const $host = $root.find(`[${attributeName}]`).first();
-        if (!$host.length) {
+        const $legacyPayloadHost = $root.find(`[${fallbackDomAttributeName}]`).first();
+        if (!$legacyPayloadHost.length) {
             return null;
         }
 
-        const parsed = parseJsonText($host.attr(attributeName), label);
-        if (parsed !== null) {
-            $host.attr(attributeName, '');
+        const jsonPayload = parseJsonText(
+            $legacyPayloadHost.attr(fallbackDomAttributeName),
+            parseContextLabel
+        );
+        if (jsonPayload !== null) {
+            $legacyPayloadHost.attr(fallbackDomAttributeName, '');
         }
 
-        return parsed;
+        return jsonPayload;
     }
 
     initChartFromDom() {

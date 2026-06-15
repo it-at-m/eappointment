@@ -17,28 +17,28 @@ class View extends BaseView {
     }
 
     parseScopeDateBounds() {
-        const raw = this.$main.attr('data-scope-date-bounds');
-        if (!raw) {
+        const serializedScopeDateBounds = this.$main.attr('data-scope-date-bounds');
+        if (!serializedScopeDateBounds) {
             return null;
         }
-        const parsed = parseJsonText(raw, 'scope-date-bounds');
-        if (parsed === null) {
+        const scopeDateBoundsByScopeId = parseJsonText(serializedScopeDateBounds, 'scope-date-bounds');
+        if (scopeDateBoundsByScopeId === null) {
             console.warn('ReportFilter: invalid scope date bounds');
         }
-        return parsed;
+        return scopeDateBoundsByScopeId;
     }
 
     parsePickerScopeIds() {
-        const raw = this.$main.attr('data-picker-scope-ids');
-        if (!raw) {
+        const serializedPickerScopeIds = this.$main.attr('data-picker-scope-ids');
+        if (!serializedPickerScopeIds) {
             return [];
         }
-        const ids = parseJsonText(raw, 'picker-scope-ids');
-        if (!Array.isArray(ids)) {
+        const pickerScopeIds = parseJsonText(serializedPickerScopeIds, 'picker-scope-ids');
+        if (!Array.isArray(pickerScopeIds)) {
             console.warn('ReportFilter: invalid picker scope ids');
             return [];
         }
-        return ids.map(String);
+        return pickerScopeIds.map(String);
     }
 
     /**
@@ -155,122 +155,155 @@ class View extends BaseView {
             return null;
         }
 
-        let min = null;
-        let max = null;
+        let earliestSelectableDate = null;
+        let latestSelectableDate = null;
 
         scopeIds.forEach((scopeId) => {
-            const entry = this.scopeDateBounds[String(scopeId)];
-            if (!entry || !entry.min || !entry.max) {
+            const scopeDateBounds = this.scopeDateBounds[String(scopeId)];
+            if (!scopeDateBounds || !scopeDateBounds.min || !scopeDateBounds.max) {
                 return;
             }
-            min = min === null ? entry.min : moment.max(moment(min), moment(entry.min)).format('YYYY-MM-DD');
-            max = max === null ? entry.max : moment.min(moment(max), moment(entry.max)).format('YYYY-MM-DD');
+            earliestSelectableDate = earliestSelectableDate === null
+                ? scopeDateBounds.min
+                : moment.max(moment(earliestSelectableDate), moment(scopeDateBounds.min)).format('YYYY-MM-DD');
+            latestSelectableDate = latestSelectableDate === null
+                ? scopeDateBounds.max
+                : moment.min(moment(latestSelectableDate), moment(scopeDateBounds.max)).format('YYYY-MM-DD');
         });
 
-        if (min === null || max === null) {
+        if (earliestSelectableDate === null || latestSelectableDate === null) {
             return null;
         }
 
-        if (moment(min).isAfter(moment(max))) {
+        if (moment(earliestSelectableDate).isAfter(moment(latestSelectableDate))) {
             return null;
         }
 
-        return { min, max };
+        return {
+            earliestSelectableDate,
+            latestSelectableDate,
+        };
     }
 
-    setDateInputBound($input, attribute, value) {
+    setDateInputBound($input, htmlAttributeName, value) {
         if (value) {
-            $input.attr(attribute, value);
+            $input.attr(htmlAttributeName, value);
         } else {
-            $input.removeAttr(attribute);
+            $input.removeAttr(htmlAttributeName);
         }
     }
 
-    clampIso(iso, minIso, maxIso) {
-        let value = moment(iso, 'YYYY-MM-DD');
-        if (minIso) {
-            value = moment.max(value, moment(minIso, 'YYYY-MM-DD'));
+    clampIsoDate(dateIso, minimumDateIso, maximumDateIso) {
+        let clampedDate = moment(dateIso, 'YYYY-MM-DD');
+        if (minimumDateIso) {
+            clampedDate = moment.max(clampedDate, moment(minimumDateIso, 'YYYY-MM-DD'));
         }
-        if (maxIso) {
-            value = moment.min(value, moment(maxIso, 'YYYY-MM-DD'));
+        if (maximumDateIso) {
+            clampedDate = moment.min(clampedDate, moment(maximumDateIso, 'YYYY-MM-DD'));
         }
-        return value.format('YYYY-MM-DD');
+        return clampedDate.format('YYYY-MM-DD');
     }
 
     updateDateRangeLimits() {
         const fromInput = this.$main.find('#calendar-date-from');
         const toInput = this.$main.find('#calendar-date-until');
         const todayIso = this.getTodayIso();
-        const apiBounds = this.allowFutureDates ? this.getActiveScopeDateBounds() : null;
-        const apiMin = apiBounds ? apiBounds.min : null;
-        const apiMax = apiBounds ? apiBounds.max : null;
-        let globalMax = this.allowFutureDates
-            ? (apiMax || null)
-            : (apiMax ? moment.min(moment(apiMax), moment(todayIso)).format('YYYY-MM-DD') : todayIso);
-        const globalMin = apiMin || null;
+        const combinedScopeDateBounds = this.allowFutureDates ? this.getActiveScopeDateBounds() : null;
+        const earliestWarehouseBoundDate = combinedScopeDateBounds
+            ? combinedScopeDateBounds.earliestSelectableDate
+            : null;
+        const latestWarehouseBoundDate = combinedScopeDateBounds
+            ? combinedScopeDateBounds.latestSelectableDate
+            : null;
+        let pickerMaximumDate = this.allowFutureDates
+            ? (latestWarehouseBoundDate || null)
+            : (latestWarehouseBoundDate
+                ? moment.min(moment(latestWarehouseBoundDate), moment(todayIso)).format('YYYY-MM-DD')
+                : todayIso);
+        const pickerMinimumDate = earliestWarehouseBoundDate || null;
 
-        if (this.allowFutureDates && !globalMax) {
-            globalMax = null;
+        if (this.allowFutureDates && !pickerMaximumDate) {
+            pickerMaximumDate = null;
         }
 
-        this.setDateInputBound(fromInput, 'min', globalMin);
-        this.setDateInputBound(fromInput, 'max', globalMax);
-        this.setDateInputBound(toInput, 'min', globalMin);
-        this.setDateInputBound(toInput, 'max', globalMax);
+        this.setDateInputBound(fromInput, 'min', pickerMinimumDate);
+        this.setDateInputBound(fromInput, 'max', pickerMaximumDate);
+        this.setDateInputBound(toInput, 'min', pickerMinimumDate);
+        this.setDateInputBound(toInput, 'max', pickerMaximumDate);
 
         if (fromInput.val()) {
-            const maxToIso = this.getMaxRangeEndIso(fromInput.val());
-            let maxAllowedIso = this.allowFutureDates
-                ? maxToIso
-                : moment.min(moment(maxToIso), moment(todayIso)).format('YYYY-MM-DD');
-            if (globalMax) {
-                maxAllowedIso = moment.min(moment(maxAllowedIso), moment(globalMax)).format('YYYY-MM-DD');
+            const maxToDateIso = this.getMaxRangeEndIso(fromInput.val());
+            let maximumAllowedToDateIso = this.allowFutureDates
+                ? maxToDateIso
+                : moment.min(moment(maxToDateIso), moment(todayIso)).format('YYYY-MM-DD');
+            if (pickerMaximumDate) {
+                maximumAllowedToDateIso = moment.min(
+                    moment(maximumAllowedToDateIso),
+                    moment(pickerMaximumDate)
+                ).format('YYYY-MM-DD');
             }
 
-            let minToIso = fromInput.val();
-            if (globalMin) {
-                minToIso = moment.max(moment(minToIso), moment(globalMin)).format('YYYY-MM-DD');
+            let minimumAllowedToDateIso = fromInput.val();
+            if (pickerMinimumDate) {
+                minimumAllowedToDateIso = moment.max(
+                    moment(minimumAllowedToDateIso),
+                    moment(pickerMinimumDate)
+                ).format('YYYY-MM-DD');
             }
 
-            this.setDateInputBound(toInput, 'min', minToIso);
-            this.setDateInputBound(toInput, 'max', maxAllowedIso);
+            this.setDateInputBound(toInput, 'min', minimumAllowedToDateIso);
+            this.setDateInputBound(toInput, 'max', maximumAllowedToDateIso);
 
             if (toInput.val()) {
-                toInput.val(this.clampIso(toInput.val(), minToIso, maxAllowedIso));
+                toInput.val(this.clampIsoDate(
+                    toInput.val(),
+                    minimumAllowedToDateIso,
+                    maximumAllowedToDateIso
+                ));
             }
         } else {
-            this.setDateInputBound(toInput, 'min', globalMin);
-            this.setDateInputBound(toInput, 'max', globalMax);
+            this.setDateInputBound(toInput, 'min', pickerMinimumDate);
+            this.setDateInputBound(toInput, 'max', pickerMaximumDate);
         }
 
         if (toInput.val()) {
-            let minFromIso = this.getMinRangeStartIso(toInput.val());
-            if (globalMin) {
-                minFromIso = moment.max(moment(minFromIso), moment(globalMin)).format('YYYY-MM-DD');
+            let minimumAllowedFromDateIso = this.getMinRangeStartIso(toInput.val());
+            if (pickerMinimumDate) {
+                minimumAllowedFromDateIso = moment.max(
+                    moment(minimumAllowedFromDateIso),
+                    moment(pickerMinimumDate)
+                ).format('YYYY-MM-DD');
             }
 
-            let maxFromIso = toInput.val();
-            if (globalMax) {
-                maxFromIso = moment.min(moment(maxFromIso), moment(globalMax)).format('YYYY-MM-DD');
+            let maximumAllowedFromDateIso = toInput.val();
+            if (pickerMaximumDate) {
+                maximumAllowedFromDateIso = moment.min(
+                    moment(maximumAllowedFromDateIso),
+                    moment(pickerMaximumDate)
+                ).format('YYYY-MM-DD');
             }
 
-            this.setDateInputBound(fromInput, 'min', minFromIso);
-            this.setDateInputBound(fromInput, 'max', maxFromIso);
+            this.setDateInputBound(fromInput, 'min', minimumAllowedFromDateIso);
+            this.setDateInputBound(fromInput, 'max', maximumAllowedFromDateIso);
 
             if (fromInput.val()) {
-                fromInput.val(this.clampIso(fromInput.val(), minFromIso, maxFromIso));
+                fromInput.val(this.clampIsoDate(
+                    fromInput.val(),
+                    minimumAllowedFromDateIso,
+                    maximumAllowedFromDateIso
+                ));
             }
         } else {
-            this.setDateInputBound(fromInput, 'min', globalMin);
-            this.setDateInputBound(fromInput, 'max', globalMax);
+            this.setDateInputBound(fromInput, 'min', pickerMinimumDate);
+            this.setDateInputBound(fromInput, 'max', pickerMaximumDate);
         }
 
-        if (globalMin || globalMax) {
+        if (pickerMinimumDate || pickerMaximumDate) {
             if (fromInput.val()) {
-                fromInput.val(this.clampIso(fromInput.val(), globalMin, globalMax));
+                fromInput.val(this.clampIsoDate(fromInput.val(), pickerMinimumDate, pickerMaximumDate));
             }
             if (toInput.val()) {
-                toInput.val(this.clampIso(toInput.val(), globalMin, globalMax));
+                toInput.val(this.clampIsoDate(toInput.val(), pickerMinimumDate, pickerMaximumDate));
             }
         }
     }
@@ -312,11 +345,17 @@ class View extends BaseView {
                 dateError.text('Der gewählte Zeitraum darf höchstens 366 Tage umfassen.').show();
                 hasDateErrors = true;
             } else if (this.allowFutureDates) {
-                const apiBounds = this.getActiveScopeDateBounds();
-                if (apiBounds && (fromDate < apiBounds.min || toDate > apiBounds.max)) {
+                const combinedScopeDateBounds = this.getActiveScopeDateBounds();
+                if (
+                    combinedScopeDateBounds
+                    && (
+                        fromDate < combinedScopeDateBounds.earliestSelectableDate
+                        || toDate > combinedScopeDateBounds.latestSelectableDate
+                    )
+                ) {
                     dateError.text(
-                        `Der Zeitraum muss zwischen ${moment(apiBounds.min).format('DD.MM.YYYY')} `
-                        + `und ${moment(apiBounds.max).format('DD.MM.YYYY')} liegen.`
+                        `Der Zeitraum muss zwischen ${moment(combinedScopeDateBounds.earliestSelectableDate).format('DD.MM.YYYY')} `
+                        + `und ${moment(combinedScopeDateBounds.latestSelectableDate).format('DD.MM.YYYY')} liegen.`
                     ).show();
                     hasDateErrors = true;
                 }
