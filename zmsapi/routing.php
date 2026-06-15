@@ -1580,7 +1580,7 @@
  *                  description: "role does not exist"
  */
 \App::$slim->get(
-    '/role/{roleName:[a-z_]+}/useraccount/',
+    '/role/{roleName:[a-z][a-z0-9_]{0,99}}/useraccount/'
     '\BO\Zmsapi\UseraccountListByRole'
 )
     ->setName("UseraccountListByRole");
@@ -1636,7 +1636,7 @@
  *                  description: "role or department does not exist"
  */
 \App::$slim->get(
-    '/role/{roleName:[a-z_]+}/department/{ids:\d{1,11}(?:,\d{1,11})*}/useraccount/',
+    '/role/{roleName:[a-z][a-z0-9_]{0,99}}/department/{ids:\d{1,11}(?:,\d{1,11})*}/useraccount/'
     '\BO\Zmsapi\UseraccountListByRoleAndDepartments'
 )
     ->setName("UseraccountListByRoleAndDepartments");
