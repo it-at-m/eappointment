@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace BO\Zmscitizenapi\Middleware;
+namespace BO\Slim\Middleware;
 
-use BO\Zmscitizenapi\Services\Core\LoggerService;
+use BO\Slim\LoggerService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -16,9 +16,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 class RequestLoggingMiddleware implements MiddlewareInterface
 {
     private LoggerService $logger;
-/**
-     * @param LoggerService $logger Service for logging requests and responses
-     */
+
     public function __construct(LoggerService $logger)
     {
         $this->logger = $logger;
