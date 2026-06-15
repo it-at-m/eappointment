@@ -9,6 +9,9 @@
 
 namespace BO\Zmscalldisplay;
 
+use BO\Slim\Helper\ModuleLoggerInitializer;
+use Psr\SimpleCache\CacheInterface;
+
 if (($token = getenv('ZMS_CONFIG_SECURE_TOKEN')) === false || $token === '') {
     throw new \RuntimeException('ZMS_CONFIG_SECURE_TOKEN environment variable must be set');
 }
@@ -27,6 +30,9 @@ class Application extends \BO\Slim\Application
      */
     const IDENTIFIER = 'zms';
     const MODULE_NAME = 'zmscalldisplay';
+
+    public static ?CacheInterface $cache = null;
+
     const DEBUG = false;
     const TWIG_CACHE = ZMS_CALLDISPLAY_TWIG_CACHE;
 
@@ -77,4 +83,12 @@ class Application extends \BO\Slim\Application
      * signature key for url signature to save query paramter with hash
      */
     public static $urlSignatureSecret = ZMS_CONFIG_SECURE_TOKEN;
+
+    public static function initialize(): void
+    {
+        ModuleLoggerInitializer::configure('ZMS_CALLDISPLAY');
+        self::$cache = ModuleLoggerInitializer::tryInitializeCache();
+    }
 }
+
+Application::initialize();
