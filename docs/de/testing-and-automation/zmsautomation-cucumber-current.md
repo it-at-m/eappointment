@@ -45,6 +45,79 @@ Feature: ZMS API Status Endpoint
     And the response should contain status information
 ```
 
+#### `workstation-login.feature`
+
+Quelle: [workstation-login.feature](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/src/test/resources/features/rest/zmsapi/workstation-login.feature)
+
+```gherkin
+@rest @zmsapi @smoke
+Feature: ZMS API workstation login
+  As a client application
+  I want to authenticate against the ZMS API workstation endpoints
+  So that login behaviour is verified independently from business flows
+
+  Background:
+    Given the ZMS API is available
+
+  Scenario: Unauthenticated workstation access is rejected
+    When I make a GET request to "/workstation/"
+    Then the response status code should be 401
+    And the response meta should contain exception "UserAccountMissingLogin"
+
+  Scenario: Workstation login establishes a session
+    Given the ZMS API workstation user is "agent_basic"
+    When I make a POST request to "/workstation/login/" with valid id and password
+    Then the response status code should be 200
+    And the response should contain workstation information
+    When I make a GET request to "/config/" with the X-AuthKey
+    Then the response status code should be 200
+    And the response should contain config information
+```
+
+#### `ZMSKVR-1328.feature`
+
+Quelle: [ZMSKVR-1328.feature](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/src/test/resources/features/rest/zmsapi/ZMSKVR-1328.feature)
+
+```gherkin
+@rest @zmsapi @ZMSKVR-1328
+Feature: A scheduled appointment is created, called up and completed at the counter
+  As a client application
+  I want to use the ZMS API workstation endpoints
+  So that I can verify core admin flows via API responses
+
+  Background:
+    Given the ZMS API is available
+    And I am logged in to the ZMS API as "appointment_admin"
+
+  Scenario: A scheduled appointment is created, called up and completed at the counter
+    # Selecting a workstation (Bürgerbüro Forstenrieder Allee / Tresen 4)
+    When I update the workstation with scope 169 and counter "4" with the X-AuthKey
+    Then the response status code should be 200
+    And the response should contain workstation information
+
+    # Book appointment (admin: POST /process/status/reserved/ + /process/status/confirmed/)
+    When I reserve an appointment at scope 169 with service "Führungszeugnis" and amendment "Terminkunde1" with the X-AuthKey
+    Then the response status code should be 200
+    And the response should contain process information
+    And the process status should be "confirmed"
+
+    # Call customer (admin: POST /workstation/process/called/)
+    When I call the last process at the workstation with the X-AuthKey
+    Then the response status code should be 200
+    And the response should contain workstation information
+
+    # Processing (admin: POST /process/{id}/{authKey}/)
+    When I set the assigned process status to processing with the X-AuthKey
+    Then the response status code should be 200
+    And the response should contain process information
+
+    # Finish (admin: POST /process/status/finished/)
+    When I finish the assigned process with the X-AuthKey
+    Then the response status code should be 200
+    And the response should contain process information
+    And the process status should be "finished"
+```
+
 ### zmscitizenapi
 
 #### `zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature`
