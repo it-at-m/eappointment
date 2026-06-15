@@ -1,6 +1,5 @@
 -- Flyway migration: Add workstation test users per role (login test_role_<role>, password vorschau)
 -- role/user_role are not in .resources/zms.sql; bootstrap them here so Flyway can run before zmsapi migrate
--- Berechtigung 1 avoids extra user_role rows from migrate-users-to-new-roles.
 
 CREATE TABLE IF NOT EXISTS role
 (
