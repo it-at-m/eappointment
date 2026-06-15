@@ -65,7 +65,7 @@ class AvailabilityPage extends Component {
         window.addEventListener('beforeunload', this.unloadHandler)
     }
 
-    componentWillunMount() {
+    componentWillUnmount() {
         window.removeEventListener('beforeunload', this.unloadHandler)
     }
 
