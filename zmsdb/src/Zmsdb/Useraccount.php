@@ -757,10 +757,19 @@ class Useraccount extends Base
     public function writeUpdatedEntity($loginName, Entity $entity, $resolveReferences = 0)
     {
         $previousDepartmentIds = $this->readDepartmentIdsForLoginName($loginName);
+        $userId = null;
+        $roleNames = [];
 
-        // Temporary migration bridge: keep nutzer.Berechtigung in sync with the selected role
-        // until legacy rights handling is removed in ZMSKVR-1173.
-        $this->applyLegacyRightsFromRole($entity);
+        // Extract requested role names (if present)
+        $requestedRoles = $this->extractRequestedRoleNames($entity);
+
+        if (count($requestedRoles) > 0) {
+            // Temporary migration bridge: keep nutzer.Berechtigung in sync with the selected role
+            // until legacy rights handling is removed in ZMSKVR-1173.
+            $this->applyLegacyRightsFromRole($entity);
+            $userId = (int) $this->readEntityIdByLoginName($loginName);
+            $roleNames = $requestedRoles;
+        }
 
         $query = new Query\Useraccount(Query\Base::UPDATE);
         $query->addConditionLoginName($loginName);
@@ -769,10 +778,8 @@ class Useraccount extends Base
         $this->writeItem($query);
         $this->updateAssignedDepartments($entity);
 
-        if ($entity->offsetExists('roles')) {
+        if (count($roleNames) > 0) {
             try {
-                $userId = (int) $this->readEntityIdByLoginName($loginName);
-                $roleNames = $this->extractRequestedRoleNames($entity);
                 $this->replaceUserRoles($userId, $roleNames);
             } catch (\Throwable $e) {
                 if (App::$log) {
