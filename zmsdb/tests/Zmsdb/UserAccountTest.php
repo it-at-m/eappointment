@@ -209,25 +209,17 @@ class UserAccountTest extends Base
     {
         $query = new Query();
 
-        // Simulate a user with old Berechtigung level 30 ("appointment_admin")
         $scopeUser = $this->getTestEntity();
         $scopeUser->id = $scopeUser->id . rand();
-        foreach (array_keys($scopeUser->rights) as $rightName) {
-            $scopeUser->rights[$rightName] = false;
-        }
-        $scopeUser->rights['scope'] = true;
+        $scopeUser['roles'] = ['appointment_admin'];
         $createdScopeUser = $query->writeEntity($scopeUser);
         $this->assertIsArray($createdScopeUser->roles);
         $this->assertCount(1, $createdScopeUser->roles);
         $this->assertSame(['appointment_admin'], $createdScopeUser->roles);
 
-        // Simulate a user with old Berechtigung level 0 ("agent_queue")
         $basicUser = $this->getTestEntity();
         $basicUser->id = $basicUser->id . rand();
-        foreach (array_keys($basicUser->rights) as $rightName) {
-            $basicUser->rights[$rightName] = false;
-        }
-        $basicUser->rights['basic'] = true;
+        $basicUser['roles'] = ['agent_queue'];
         $createdBasicUser = $query->writeEntity($basicUser);
         $this->assertIsArray($createdBasicUser->roles);
         $this->assertCount(1, $createdBasicUser->roles);
