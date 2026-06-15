@@ -81,7 +81,6 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
         $waitingTime = 0;
         $waitingTimeOpt = 0;
-        $waitingTimePes = 0;
         $timeSlot = ($workstationCount) ? $processTimeAverage * 60 / $workstationCount : $processTimeAverage * 60;
         $timeSlotOptimistic = $timeSlot * 0.8;
         $timeSlotPessimistic = $timeSlot * 1.0;

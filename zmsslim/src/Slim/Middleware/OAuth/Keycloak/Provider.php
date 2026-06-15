@@ -51,7 +51,7 @@ class Provider extends Keycloak
      *
      * @param array $response
      * @param AccessToken $token
-     * @return \League\OAuth2\Client\Provider\ResourceOwnerInterface
+     * @return ResourceOwner
      */
     #[\Override]
     protected function createResourceOwner(array $response, AccessToken $token): ResourceOwner

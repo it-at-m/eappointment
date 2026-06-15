@@ -50,7 +50,7 @@ class ConfigInfo extends BaseController
             $input = $request->getParsedBody();
             $entity = clone $config;
             $entity->setPreference($input['key'], $input['property'], $input['value']);
-            $entity = \App::$http->readPostResult(
+            \App::$http->readPostResult(
                 '/config/',
                 $entity
             )->getEntity();

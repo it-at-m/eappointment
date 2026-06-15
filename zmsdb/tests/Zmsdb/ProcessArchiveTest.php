@@ -120,6 +120,21 @@ class ProcessArchiveTest extends Base
         $this->assertTrue((new ProcessStatusArchived())->writeBlockedEntity($entity));
     }
 
+    public function testWriteEntityFinishedSkipsDereferencedProcess()
+    {
+        $queryArchived = new ProcessStatusArchived();
+        $now = new \DateTimeImmutable("2016-04-18 11:55");
+        $entity = (new Query)->readEntity(10029, '1c56');
+        $entity->status = 'finished';
+        $queryArchived->writeEntityFinished($entity, $now);
+
+        $dereferenced = (new Query)->readEntity(10029, 'deref!0', 0);
+        $dereferenced->status = 'confirmed';
+
+        $this->assertTrue($dereferenced->isDereferenced());
+        $this->assertNull($queryArchived->writeEntityFinished($dereferenced, $now));
+    }
+
     public function testWriteNewArchivedWithoutAppointment()
     {
         $queryArchived = new ProcessStatusArchived();

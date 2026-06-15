@@ -2,6 +2,9 @@
 
 namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
+/**
+ * @implements \ArrayAccess<int|string, Base>
+ */
 class Collection implements \Countable, \ArrayAccess
 {
     protected $entities = [];

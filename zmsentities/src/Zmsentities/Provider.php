@@ -20,26 +20,26 @@ class Provider extends Schema\Entity
     }
 
     #[\Override]
-    public function addData($input)
+    public function addData($mergeData)
     {
         $refString = '$ref';
         if (
-            (is_array($input) || $input instanceof \ArrayAccess)
-            && isset($input[$refString])
-            && (!isset($input['id']) || !isset($input['source']))
+            (is_array($mergeData) || $mergeData instanceof \ArrayAccess)
+            && isset($mergeData[$refString])
+            && (!isset($mergeData['id']) || !isset($mergeData['source']))
         ) {
-            $providerRef = $input[$refString];
+            $providerRef = $mergeData[$refString];
             $providerId = preg_replace('#^.*/(\d+)/$#', '$1', $providerRef);
-            $input['id'] = $providerId;
-            $input['source'] = preg_replace('#^.*provider/([^/]+)/\d+/$#', '$1', $providerRef);
+            $mergeData['id'] = $providerId;
+            $mergeData['source'] = preg_replace('#^.*provider/([^/]+)/\d+/$#', '$1', $providerRef);
         }
-        if (isset($input[$refString])) {
-            unset($input[$refString]);
+        if (isset($mergeData[$refString])) {
+            unset($mergeData[$refString]);
         }
-        if (isset($input['parent_id'])) {
-            $this['parent_id'] = $input['parent_id'];
+        if (isset($mergeData['parent_id'])) {
+            $this['parent_id'] = $mergeData['parent_id'];
         }
-        return parent::addData($input);
+        return parent::addData($mergeData);
     }
 
     public function hasRequest($requestId)

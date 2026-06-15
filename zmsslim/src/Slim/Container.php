@@ -18,30 +18,30 @@ use BO\Slim\Exception\UnknownIdentifierException;
 class Container extends \ArrayObject implements ContainerInterface
 {
     /**
-     * @param string $identifier
+     * @param string $id
      * @return mixed
      *
      * @throws NotFoundExceptionInterface
      */
     #[\Override]
-    public function get(string $identifier)
+    public function get(string $id)
     {
-        if (!$this->has($identifier)) {
-            throw new UnknownIdentifierException('The container has no value identified by ' . $identifier);
+        if (!$this->has($id)) {
+            throw new UnknownIdentifierException('The container has no value identified by ' . $id);
         }
 
-        return $this->offsetGet($identifier);
+        return $this->offsetGet($id);
     }
 
     /**
-     * @param string $identifier The value identifier
+     * @param string $id The value identifier
      *
      * @return bool
      */
     #[\Override]
-    public function has(string $identifier): bool
+    public function has(string $id): bool
     {
-        return $this->offsetExists($identifier);
+        return $this->offsetExists($id);
     }
 
     /**

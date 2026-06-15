@@ -180,11 +180,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-feature-zmskvr-implement-php-code-scanning-with-psalm",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "0d46775dba0ed63865729096837616ebb05961df"
+                "reference": "56a96a21f59476386e0604378dfbf249baedc26e"
             },
             "require": {
                 "ext-json": ">=0",
@@ -230,7 +230,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-feature-zmskvr-implement-php-code-scanning-with-psalm",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -290,11 +290,11 @@
         },
         {
             "name": "eappointment/zmsdb",
-            "version": "dev-feature-zmskvr-implement-php-code-scanning-with-psalm",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsdb",
-                "reference": "0d46775dba0ed63865729096837616ebb05961df"
+                "reference": "fb61e03cded25fc5514767e980dac60a5621f979"
             },
             "require": {
                 "aura/sql": "^5",
@@ -379,11 +379,11 @@
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "dev-feature-zmskvr-implement-php-code-scanning-with-psalm",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "0d46775dba0ed63865729096837616ebb05961df"
+                "reference": "3fd2ed5cdf4b2279690ac441d533e93ab92f3160"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -458,11 +458,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-feature-zmskvr-implement-php-code-scanning-with-psalm",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "0d46775dba0ed63865729096837616ebb05961df"
+                "reference": "3b064145bcaa7f64c4a42eea05d1beca82f736c9"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -516,11 +516,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-feature-zmskvr-implement-php-code-scanning-with-psalm",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "0d46775dba0ed63865729096837616ebb05961df"
+                "reference": "df966191e66a04679db2fbff4a04d81ad8dce10f"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -1160,16 +1160,16 @@
         },
         {
             "name": "league/climate",
-            "version": "3.10.1",
+            "version": "3.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/climate.git",
-                "reference": "f2d78fbc504740bcd0209e40a4586c886567ddc9"
+                "reference": "66f14fb99570673597856575dfd9a48984fe49b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/climate/zipball/f2d78fbc504740bcd0209e40a4586c886567ddc9",
-                "reference": "f2d78fbc504740bcd0209e40a4586c886567ddc9",
+                "url": "https://api.github.com/repos/thephpleague/climate/zipball/66f14fb99570673597856575dfd9a48984fe49b0",
+                "reference": "66f14fb99570673597856575dfd9a48984fe49b0",
                 "shasum": ""
             },
             "require": {
@@ -1220,9 +1220,9 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/climate/issues",
-                "source": "https://github.com/thephpleague/climate/tree/3.10.1"
+                "source": "https://github.com/thephpleague/climate/tree/3.11.0"
             },
-            "time": "2026-03-19T19:32:55+00:00"
+            "time": "2026-06-09T11:34:50+00:00"
         },
         {
             "name": "league/html-to-markdown",

@@ -76,7 +76,6 @@ class Db
         }
         \BO\Zmsdb\Connection\Select::closeWriteConnection();
         if ($dbname === null) {
-            $dbname =& \BO\Zmsdb\Connection\Select::$dbname_zms;
             \BO\Zmsdb\Connection\Select::$writeSourceName = self::$baseDSN;
         } else {
             $dbname_zms =& \BO\Zmsdb\Connection\Select::$dbname_zms;

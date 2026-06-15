@@ -13,9 +13,8 @@ class WorkstationProcessNext extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return int|null
      */
-
     public function timeToUnix($timeValue): ?int
     {
         if ($timeValue === null) {

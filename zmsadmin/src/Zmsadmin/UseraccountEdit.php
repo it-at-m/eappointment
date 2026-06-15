@@ -66,7 +66,9 @@ class UseraccountEdit extends BaseController
                     $roleList = $loaded;
                 }
             }
-            $userAccountRoles = $userAccount->roles ?? [];
+            $userAccountRoles = (isset($userAccount->roles) && is_array($userAccount->roles))
+                ? $userAccount->roles
+                : [];
         }
 
         return \BO\Slim\Render::withHtml(

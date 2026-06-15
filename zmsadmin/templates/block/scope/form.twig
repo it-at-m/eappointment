@@ -165,7 +165,9 @@
                                 "name": "preferences[appointment][startInDaysDefault]",
                                 "value": scope.preferences.appointment.startInDaysDefault|default(2),
                                 "maxlength": 2,
-                                "width": 1
+                                "max": 99,
+                                "width": 1,
+                                "integer": true
                             }
                         }]
                     ) }}
@@ -178,7 +180,9 @@
                                 "name": "preferences[appointment][endInDaysDefault]",
                                 "value": scope.preferences.appointment.endInDaysDefault|default(60),
                                 "maxlength": 3,
-                                "width": 1
+                                "max": 999,
+                                "width": 1,
+                                "integer": true
                             }
                         }]
                     ) }}
@@ -191,7 +195,9 @@
                                 "name": "preferences[appointment][reservationDuration]",
                                 "value": scope.preferences.appointment.reservationDuration|default(15),
                                 "maxlength": 2,
-                                "width": 1
+                                "max": 99,
+                                "width": 1,
+                                "integer": true
                             }
                         }]
                     ) }}
@@ -204,34 +210,41 @@
                                 "name": "preferences[appointment][activationDuration]",
                                 "value": scope.preferences.appointment.activationDuration|default(60),
                                 "maxlength": 4,
-                                "width": 1
+                                "max": 9999,
+                                "width": 1,
+                                "integer": true
                             }
                         }]
                     ) }}
 
 					{{ formgroup(
-                        {"label": "Löschverzögerung:", "description": "In Minuten. Nach Ablauf dieser Zeit werden abgesagte Termine freigegeben."},
+                        {"label": "Löschverzögerung:", "description": "In Minuten. Nach Ablauf dieser Zeit werden abgesagte Termine freigegeben. Wird 0 eingestellt, so gibt es keine zusätzliche Löschverzögerung"},
                         [{
                             "type":"input",
                             "parameter": {
                                 "name": "preferences[appointment][deallocationDuration]",
                                 "value": scope.preferences.appointment.deallocationDuration|default(15),
                                 "maxlength": 5,
-                                "width": 1
+                                "max": 99999,
+                                "width": 1,
+                                "integer": true
                             }
                         }]
                     ) }}
 
                     {{ formgroup(
                         {
-                            "label": "Maximale Anzahl an Terminen pro E-Mail-Adresse:"
+                            "label": "Maximale Anzahl an Terminen pro E-Mail-Adresse:", "description": "Wird 1 eingestellt, können Bürger*innen ihre Termine nicht selbständig umbuchen."
                         },
                         [{
                             "type":"input",
                             "parameter": {
                                 "name": "preferences[client][appointmentsPerMail]",
                                 "value": scope.preferences.client.appointmentsPerMail,
-                                "maxlength": 2
+                                "maxlength": 2,
+                                "max": 99,
+                                "integer": true,
+                                "integerNullable": true
                             }
                         }]
                     ) }}
@@ -260,7 +273,10 @@
                             "parameter": {
                                 "name": "preferences[client][slotsPerAppointment]",
                                 "value": scope.preferences.client.slotsPerAppointment,
-                                "maxlength": 2
+                                "maxlength": 2,
+                                "max": 99,
+                                "integer": true,
+                                "integerNullable": true
                             }
                         }]
                     ) }}
@@ -566,7 +582,9 @@
                                 "name": "preferences[queue][callCountMax]",
                                 "value": scope.preferences.queue.callCountMax|default(0),
                                 "maxlength": 1,
-                                "width": 1
+                                "max": 9,
+                                "width": 1,
+                                "integer": true
                             }
                         }]
                     ) }}
@@ -584,7 +602,9 @@
                                         "name": "preferences[queue][firstNumber]",
                                         "value": scope.preferences.queue.firstNumber|default(1),
                                         "maxlength": 8,
-                                        "width": 1
+                                        "max": 99999999,
+                                        "width": 1,
+                                        "integer": true
                                     }
                                 }]
                             ) }}
@@ -598,7 +618,9 @@
                                         "name": "preferences[queue][lastNumber]",
                                         "value": scope.preferences.queue.lastNumber|default(999),
                                         "maxlength": 8,
-                                        "width": 1
+                                        "max": 99999999,
+                                        "width": 1,
+                                        "integer": true
                                     }
                                 }]
                             ) }}
@@ -614,7 +636,9 @@
                                 "name": "preferences[queue][maxNumberContingent]",
                                 "value": scope.preferences.queue.maxNumberContingent|default(999),
                                 "maxlength": 8,
-                                "width": 1
+                                "max": 99999999,
+                                "width": 1,
+                                "integer": true
                             }
                         }]
                     ) }}
@@ -640,7 +664,9 @@
                                 "name": "preferences[queue][processingTimeAverage]",
                                 "value": scope.preferences.queue.processingTimeAverage|default(12),
                                 "maxlength": 2,
-                                "width": 1
+                                "max": 99,
+                                "width": 1,
+                                "integer": true
                             }
                         }]
                     ) }}

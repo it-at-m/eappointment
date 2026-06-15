@@ -65,12 +65,12 @@ class Select
     public static $galeraConnection = false;
 
     /**
-     * @var PdoInterface $readConnection for read only requests
+     * @var PdoInterface|null $readConnection for read only requests
      */
     protected static $readConnection = null;
 
     /**
-     * @var PdoInterface $writeConnection for write only requests
+     * @var PdoInterface|null $writeConnection for write only requests
      */
     protected static $writeConnection = null;
 

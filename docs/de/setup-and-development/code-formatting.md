@@ -2,7 +2,7 @@
 
 Diese Seite fasst die Formatierungs- und Codequalitäts-Prüfungen zusammen, die in den eappointment-Modulen verwendet werden.
 Da das Repository PHP-, JavaScript-/TypeScript- und Java-Komponenten enthält, nutzt jeder Modulbereich eigene Werkzeuge und Befehle.
-Wir planen außerdem, in Kürze Git-Hooks zu ergänzen, damit diese Prüfungen automatisch vor Commits laufen.
+Git-Hooks ([Git-Hooks (Husky)](./git-hooks.md)) führen viele dieser Prüfungen vor jedem Commit automatisch aus, wenn Husky eingerichtet ist.
 
 ## PHP-Formatierung
 
@@ -36,6 +36,17 @@ cd zmscitizenview
 
 ```bash
 npm run format
+```
+
+## VitePress-Docs-Formatierung
+
+Die `docs/`-Site nutzt Prettier (`@muenchen/prettier-codeformat`). Der Pre-Commit-Hook führt `npm run format:check` aus, wenn Husky aktiv ist.
+
+```bash
+cd docs
+npm install   # einmal pro Rechner
+npm run format:check
+npm run format   # Korrekturen anwenden
 ```
 
 ## Maven-Formatierung von zmsautomation

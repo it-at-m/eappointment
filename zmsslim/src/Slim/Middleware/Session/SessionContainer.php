@@ -27,15 +27,15 @@ class SessionContainer implements SessionInterface
     }
 
     #[\Override]
-    public function set($key, $value, $index = null)
+    public function set($key, $value, $groupIndex = null)
     {
-        $this->getSession()->set($key, $value, $index);
+        $this->getSession()->set($key, $value, $groupIndex);
     }
 
     #[\Override]
-    public function get($key, $index = null, $default = null)
+    public function get($key, $groupIndex = null, $default = null)
     {
-        return $this->getSession()->get($key, $index, $default);
+        return $this->getSession()->get($key, $groupIndex, $default);
     }
 
     #[\Override]

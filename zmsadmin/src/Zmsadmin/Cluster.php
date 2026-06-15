@@ -46,7 +46,7 @@ class Cluster extends BaseController
         if (is_array($input) && array_key_exists('save', $input)) {
             $entity = (new Entity($input))->withCleanedUpFormData();
             $entity->id = $entityId;
-            $entity = \App::$http->readPostResult('/cluster/' . $entity->id . '/', $entity)->getEntity();
+            \App::$http->readPostResult('/cluster/' . $entity->id . '/', $entity)->getEntity();
             if (isset($input['removeImage']) && $input['removeImage']) {
                 \App::$http->readDeleteResult('/cluster/' . $entityId . '/imagedata/calldisplay/');
             } else {

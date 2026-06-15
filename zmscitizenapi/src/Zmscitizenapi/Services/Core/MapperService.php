@@ -87,7 +87,7 @@ class MapperService
             $reservationDuration = $scope->getReservationDuration();
             return $reservationDuration !== null ? (int) $reservationDuration : null;
         }
-        $reservationDuration = $scope?->toProperty()?->preferences?->appointment?->reservationDuration?->get();
+        $reservationDuration = $scope->toProperty()?->preferences?->appointment?->reservationDuration?->get();
         return $reservationDuration !== null ? (int) $reservationDuration : null;
     }
 
@@ -105,7 +105,7 @@ class MapperService
             return (int) $activationDuration;
         }
 
-        $activationDuration = $scope?->toProperty()?->preferences?->appointment?->activationDuration?->get();
+        $activationDuration = $scope->toProperty()?->preferences?->appointment?->activationDuration?->get();
         if ($activationDuration === null || $activationDuration === '') {
             return null;
         }
@@ -322,7 +322,7 @@ class MapperService
             id: (int) ($scope->id ?? 0),
             provider: $thinnedProvider,
             shortName: isset($scope->shortName) ? (string) $scope->shortName : null,
-            emailFrom: (string) $scope->getEmailFrom() ?? null,
+            emailFrom: (string) $scope->getEmailFrom(),
             emailRequired: $scope->getEmailRequired() === null
                 ? null
                 : (bool) $scope->getEmailRequired(),
@@ -389,27 +389,24 @@ class MapperService
         $mainServiceId = null;
         $mainServiceName = null;
         $mainServiceCount = 0;
-        $requests = $myProcess->getRequests() ?? [];
-        if ($requests) {
-            $requests = is_array($requests) ? $requests : iterator_to_array($requests);
-            if (count($requests) > 0) {
-                $mainServiceId = $requests[0]->id;
-                foreach ($requests as $request) {
-                    if ($request->id === $mainServiceId) {
-                        $mainServiceCount++;
-                        if (!$mainServiceName && isset($request->name)) {
-                            $mainServiceName = $request->name;
-                        }
-                    } else {
-                        if (!isset($subRequestCounts[$request->id])) {
-                            $subRequestCounts[$request->id] = [
-                                'id' => (int) $request->id,
-                                'name'  => $request->name,
-                                'count' => 0,
-                            ];
-                        }
-                        $subRequestCounts[$request->id]['count']++;
+        $requests = iterator_to_array($myProcess->getRequests());
+        if (count($requests) > 0) {
+            $mainServiceId = $requests[0]->id;
+            foreach ($requests as $request) {
+                if ($request->id === $mainServiceId) {
+                    $mainServiceCount++;
+                    if (!$mainServiceName && isset($request->name)) {
+                        $mainServiceName = $request->name;
                     }
+                } else {
+                    if (!isset($subRequestCounts[$request->id])) {
+                        $subRequestCounts[$request->id] = [
+                            'id' => (int) $request->id,
+                            'name'  => $request->name,
+                            'count' => 0,
+                        ];
+                    }
+                    $subRequestCounts[$request->id]['count']++;
                 }
             }
         }
@@ -430,10 +427,10 @@ class MapperService
             officeName: (isset($myProcess->scope->contact) && isset($myProcess->scope->contact->name)) ? $myProcess->scope->contact->name : null,
             officeId: (isset($myProcess->scope->provider) && isset($myProcess->scope->provider->id)) ? (int) $myProcess->scope->provider->id : 0,
             scope: isset($myProcess->scope) ? self::scopeToThinnedScope($myProcess->scope) : null,
-            subRequestCounts: isset($subRequestCounts) ? array_values($subRequestCounts) : [],
+            subRequestCounts: array_values($subRequestCounts),
             serviceId: isset($mainServiceId) ? (int) $mainServiceId : 0,
             serviceName: isset($mainServiceName) ? $mainServiceName : null,
-            serviceCount: isset($mainServiceCount) ? $mainServiceCount : 0,
+            serviceCount: $mainServiceCount,
             status: (isset($myProcess->queue) && isset($myProcess->queue->status)) ? $myProcess->queue->status : null,
             slotCount: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->slotCount)) ? (int) $myProcess->appointments[0]->slotCount : null,
             displayNumber: ($myProcess->getDisplayNumber() ?: null),

@@ -60,7 +60,15 @@ jobs:
             --tag "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
             --build-arg "MODULE=${{ matrix.module }}" \
             --build-arg "PHP_VERSION=${{ matrix.php_version }}"
-          docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
+          echo "IMAGE_TAG=$tag" >> "$GITHUB_ENV"
+
+      - name: Push Image to GHCR
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 5
+          retry_wait_seconds: 30
+          timeout_minutes: 10
+          command: docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:${{ env.IMAGE_TAG }}"
     strategy:
       matrix:
         include:

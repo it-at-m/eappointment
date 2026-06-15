@@ -10,41 +10,81 @@
 >
     <projectFiles>
         <directory name="mellon/src" />
+        <directory name="mellon/bin" />
+        <directory name="mellon/tests" />
         <directory name="zmsadmin/src" />
+        <directory name="zmsadmin/bin" />
+        <directory name="zmsadmin/tests" />
         <file name="zmsadmin/config.example.php" />
         <file name="zmsadmin/bootstrap.php" />
         <file name="zmsadmin/routing.php" />
+        <file name="zmsadmin/tests/Zmsadmin/bootstrap.php" />
         <directory name="zmsapi/src" />
+        <directory name="zmsapi/bin" />
+        <directory name="zmsapi/cron" />
+        <directory name="zmsapi/tests" />
         <file name="zmsapi/config.example.php" />
         <file name="zmsapi/bootstrap.php" />
         <file name="zmsapi/routing.php" />
+        <file name="zmsapi/tests/Zmsapi/bootstrap.php" />
         <directory name="zmscalldisplay/src" />
+        <directory name="zmscalldisplay/bin" />
+        <directory name="zmscalldisplay/tests" />
         <file name="zmscalldisplay/config.example.php" />
         <file name="zmscalldisplay/bootstrap.php" />
         <file name="zmscalldisplay/routing.php" />
+        <file name="zmscalldisplay/tests/Zmscalldisplay/bootstrap.php" />
         <directory name="zmscitizenapi/src" />
+        <directory name="zmscitizenapi/bin" />
+        <directory name="zmscitizenapi/tests" />
         <file name="zmscitizenapi/config.example.php" />
         <file name="zmscitizenapi/bootstrap.php" />
         <file name="zmscitizenapi/routing.php" />
+        <file name="zmscitizenapi/tests/Zmscitizenapi/bootstrap.php" />
         <directory name="zmsclient/src" />
+        <directory name="zmsclient/bin" />
+        <directory name="zmsclient/tests" />
+        <file name="zmsclient/tests/bootstrap.php" />
         <directory name="zmsdb/src" />
+        <directory name="zmsdb/bin" />
+        <directory name="zmsdb/tests" />
         <file name="zmsdb/config.example.php" />
+        <file name="zmsdb/tests/Zmsdb/bootstrap.php" />
         <directory name="zmsdldb/src" />
+        <directory name="zmsdldb/bin" />
+        <directory name="zmsdldb/tests" />
         <file name="zmsdldb/config.example.php" />
         <file name="zmsdldb/bootstrap.php" />
+        <file name="zmsdldb/tests/bootstrap.php" />
         <directory name="zmsentities/src" />
+        <directory name="zmsentities/bin" />
+        <directory name="zmsentities/tests" />
+        <file name="zmsentities/tests/bootstrap.php" />
         <directory name="zmsmessaging/src" />
+        <directory name="zmsmessaging/bin" />
+        <directory name="zmsmessaging/cron" />
+        <directory name="zmsmessaging/tests" />
         <file name="zmsmessaging/config.example.php" />
         <file name="zmsmessaging/bootstrap.php" />
+        <file name="zmsmessaging/tests/bootstrap.php" />
         <directory name="zmsslim/src" />
+        <directory name="zmsslim/bin" />
+        <directory name="zmsslim/tests" />
+        <file name="zmsslim/tests/bootstrap.php" />
         <directory name="zmsstatistic/src" />
+        <directory name="zmsstatistic/bin" />
+        <directory name="zmsstatistic/tests" />
         <file name="zmsstatistic/config.example.php" />
         <file name="zmsstatistic/bootstrap.php" />
         <file name="zmsstatistic/routing.php" />
+        <file name="zmsstatistic/tests/Zmsstatistic/bootstrap.php" />
         <directory name="zmsticketprinter/src" />
+        <directory name="zmsticketprinter/bin" />
+        <directory name="zmsticketprinter/tests" />
         <file name="zmsticketprinter/config.example.php" />
         <file name="zmsticketprinter/bootstrap.php" />
         <file name="zmsticketprinter/routing.php" />
+        <file name="zmsticketprinter/tests/bootstrap.php" />
         <ignoreFiles>
             <directory name="mellon/vendor" />
             <directory name="zmsadmin/vendor" />
@@ -61,6 +101,742 @@
             <directory name="zmsticketprinter/vendor" />
         </ignoreFiles>
     </projectFiles>
+    <issueHandlers>
+        <!-- PHPUnit loads test classes/methods by name; dead-code rules are false positives in */tests. -->
+        <UnusedClass>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </UnusedClass>
+        <UnusedMethod>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </UnusedMethod>
+        <PossiblyUnusedMethod>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </PossiblyUnusedMethod>
+        <UnusedVariable>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </UnusedVariable>
+        <PossiblyUnusedProperty>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </PossiblyUnusedProperty>
+        <PossiblyUnusedParam>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </PossiblyUnusedParam>
+        <UnusedMethodCall>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </UnusedMethodCall>
+        <UnusedForeachValue>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </UnusedForeachValue>
+        <UnusedClosureParam>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </UnusedClosureParam>
+        <!-- Legacy test suites: typing debt deferred; production src remains strict. -->
+        <MissingReturnType>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </MissingReturnType>
+        <MissingPropertyType>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </MissingPropertyType>
+        <MissingParamType>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </MissingParamType>
+        <MissingClassConstType>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </MissingClassConstType>
+        <!-- PHPUnit mocks, dynamic entities, and loose test assertions. -->
+        <ArgumentTypeCoercion>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </ArgumentTypeCoercion>
+        <InvalidScalarArgument>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </InvalidScalarArgument>
+        <PossiblyFalseArgument>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </PossiblyFalseArgument>
+        <PossiblyFalseOperand>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </PossiblyFalseOperand>
+        <PossiblyFalseReference>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </PossiblyFalseReference>
+        <PossiblyNullArgument>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </PossiblyNullArgument>
+        <PossiblyNullPropertyFetch>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </PossiblyNullPropertyFetch>
+        <PossiblyNullReference>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </PossiblyNullReference>
+        <PossiblyNullArrayAccess>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </PossiblyNullArrayAccess>
+        <PossiblyInvalidArrayAccess>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </PossiblyInvalidArrayAccess>
+        <UndefinedPropertyFetch>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </UndefinedPropertyFetch>
+        <UndefinedPropertyAssignment>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </UndefinedPropertyAssignment>
+        <UndefinedDocblockClass>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </UndefinedDocblockClass>
+        <UndefinedMethod>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </UndefinedMethod>
+        <UndefinedClass>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </UndefinedClass>
+        <InternalMethod>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </InternalMethod>
+        <RedundantCondition>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </RedundantCondition>
+        <RedundantConditionGivenDocblockType>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </RedundantConditionGivenDocblockType>
+        <MixedClone>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </MixedClone>
+        <UndefinedInterfaceMethod>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </UndefinedInterfaceMethod>
+        <TooManyArguments>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </TooManyArguments>
+        <InvalidArgument>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </InvalidArgument>
+        <InvalidCast>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </InvalidCast>
+        <InvalidPropertyFetch>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </InvalidPropertyFetch>
+        <DuplicateClass>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </DuplicateClass>
+        <UnevaluatedCode>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </UnevaluatedCode>
+        <MissingFile>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </MissingFile>
+        <DuplicateArrayKey>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </DuplicateArrayKey>
+        <NamedArgumentNotAllowed>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </NamedArgumentNotAllowed>
+        <UndefinedVariable>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </UndefinedVariable>
+    </issueHandlers>
     <stubs>
         <file name="zmsdldb/stubs/elastica.php" />
     </stubs>

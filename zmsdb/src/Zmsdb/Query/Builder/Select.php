@@ -82,7 +82,7 @@ class Select extends Query
             foreach ($columns as $k => $v) {
                 $this->selectColumns[] = [
                     'column'    => $v,
-                    'alias'     => (is_numeric($k) || is_null($k)) ? null : $k,
+                    'alias'     => is_numeric($k) ? null : $k,
                 ];
             }
         }

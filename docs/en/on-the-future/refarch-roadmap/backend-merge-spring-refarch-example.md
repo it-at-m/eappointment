@@ -2,7 +2,7 @@
 outline: deep
 ---
 
-# Merging ZMS PHP Backends into Spring RefArch
+# Refactoring ZMS PHP Backends into Spring RefArch
 
 ## Introduction
 
@@ -62,6 +62,12 @@ Benefits of merging `zmsdb`, `zmsapi`, and server-side `zmsentities` usage into 
 11. **No more `zmsslim` routing framework** — Today, `zmsapi` (and other PHP modules) bind HTTP routes through **`routing.php`**, Slim middleware (`Route`, `OAuthMiddleware`, …), and `BaseController` patterns from **`zmsslim`**. Spring Boot maps endpoints with **`@RestController`** / **`@RequestMapping`** (or RefArch route registries like `DepartmentRouteRegistry`) — standard Spring MVC, IDE-friendly, no custom Slim bootstrap to maintain.
 
 12. **SLF4J/Logback instead of centralized Monolog in `zmsslim`** — PHP backends log via **`App::$log`**, wired once in **`zmsslim`**'s `Bootstrap::configureLogger()` (Monolog, JSON to stdout). Spring Boot does **not** use Monolog; it ships with **SLF4J + Logback** and RefArch logging config for structured JSON — drop the shared Monolog bootstrap and PSR-3 plumbing from the backend stack.
+
+13. **No giant `routing.php` — routes live on controllers** — Today, `zmsapi/routing.php` is **~6,600 lines** of URL-to-controller mappings in one file, far from the handler code. In `zmsbackend`, each endpoint is declared on its **`@RestController`** (`@GetMapping`, `@PostMapping`, …) next to the method that handles it — the IDE jumps straight from route to implementation, and domain slices stay self-contained.
+
+14. **No custom Swagger pipeline to maintain** — Today, **`zmsapi`** and **`zmscitizenapi`** each run their own doc toolchain: **`@swagger`** blocks in **`routing.php`**, **`build_swagger.js`**, **`swagger-jsdoc`**, YAML partials under **`public/doc/`**, npm scripts (`npm run doc`), and CI steps to bundle **`swagger.json`** and ship Swagger UI assets. That must be kept working **per PHP API**. **`zmsbackend`** and **`zmscitizenbackend`** use **Spring's OpenAPI support** (springdoc-openapi on the RefArch stack): annotate controllers, run locally, open **Swagger UI** at **`/swagger-ui.html`**, and try endpoints interactively — no separate npm build or hand-rolled doc generator per service.
+
+15. **Domain controllers instead of ~166 single-action classes** — `zmsapi` implements almost every HTTP action as its **own PHP class** (`DepartmentGet`, `DepartmentList`, `ProcessFree`, …), each repeating Mellon parsing, permission checks, `Response\Message::create()`, and a hand-off to `zmsdb`. In `zmsbackend`, a **`@RestController` per domain** groups related endpoints, shares security and exception handling, and keeps request/response mapping next to the service layer — less copy-paste and far fewer files to open when changing one feature.
 
 ### Worked example: `Department` (`behoerde` → `department`)
 
