@@ -6,7 +6,9 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Helper\ModuleLoggerInitializer;
 use BO\Zmsclient\Http;
+use Psr\SimpleCache\CacheInterface;
 
 define(
     'ZMS_ADMIN_TEMPLATE_FOLDER',
@@ -38,6 +40,8 @@ class Application extends \BO\Slim\Application
     const IDENTIFIER = 'zms';
 
     const MODULE_NAME = 'zmsadmin';
+
+    public static ?CacheInterface $cache = null;
 
     const DEBUG = false;
 
@@ -108,4 +112,12 @@ class Application extends \BO\Slim\Application
      * HTTP url for api
      */
     const HTTP_BASE_URL = 'http://user:pass@host.tdl';
+
+    public static function initialize(): void
+    {
+        ModuleLoggerInitializer::configure('ZMS_ADMIN');
+        self::$cache = ModuleLoggerInitializer::tryInitializeCache();
+    }
 }
+
+Application::initialize();

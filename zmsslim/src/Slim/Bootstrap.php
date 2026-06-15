@@ -8,6 +8,7 @@ use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Slim\HttpCache\CacheProvider;
+use BO\Slim\Helper\PhpErrorHandler;
 use BO\Slim\Factory\ResponseFactory;
 use BO\Slim\Factory\ServerRequestFactory;
 use Slim\Views\Twig;
@@ -200,6 +201,8 @@ class Bootstrap
         App::$log->pushHandler($handler);
 
         App::$log = App::$log;
+
+        PhpErrorHandler::register();
     }
 
     protected function configureSlim()

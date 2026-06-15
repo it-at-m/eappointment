@@ -18,6 +18,7 @@ require(APP_PATH . '/config.php');
 
 // Set option for environment, routing, logging and templating
 \BO\Slim\Bootstrap::init();
+\BO\Slim\Helper\ModuleLoggerInitializer::registerHttpMiddleware(false);
 \BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extra\Intl\IntlExtension());
 
 \BO\Mellon\ValidMail::$disableDnsChecks = true;

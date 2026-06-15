@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace BO\Zmscitizenapi\Middleware;
+namespace BO\Slim\Middleware;
 
-use BO\Zmscitizenapi\Services\Core\LoggerService;
+use BO\Slim\LoggerService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -15,12 +15,19 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
     private int $maxRecursionDepth;
     private int $maxStringLength;
     private LoggerService $logger;
-    public function __construct(LoggerService $logger)
+
+    public function __construct(LoggerService $logger, int $maxRecursionDepth = 10, int $maxStringLength = 32768)
     {
+        if ($maxRecursionDepth < 1) {
+            throw new \InvalidArgumentException('maxRecursionDepth must be greater than 0');
+        }
+        if ($maxStringLength < 1) {
+            throw new \InvalidArgumentException('maxStringLength must be greater than 0');
+        }
+
         $this->logger = $logger;
-        $config = \App::getRequestLimits();
-        $this->maxRecursionDepth = $config['maxRecursionDepth'];
-        $this->maxStringLength = $config['maxStringLength'];
+        $this->maxRecursionDepth = $maxRecursionDepth;
+        $this->maxStringLength = $maxStringLength;
     }
 
     #[\Override]
@@ -28,9 +35,6 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
     {
         try {
             $request = $this->sanitizeRequest($request);
-/*$this->logger->logInfo('Request sanitized', [
-                'uri' => (string) $request->getUri()
-            ]);*/
 
             return $handler->handle($request);
         } catch (\Throwable $e) {
@@ -41,11 +45,10 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
 
     private function sanitizeRequest(ServerRequestInterface $request): ServerRequestInterface
     {
-        // Sanitize query parameters
         $queryParams = $request->getQueryParams();
         $sanitizedQueryParams = $this->sanitizeData($queryParams);
         $request = $request->withQueryParams($sanitizedQueryParams);
-// Sanitize parsed body
+
         $parsedBody = $request->getParsedBody();
         if (is_array($parsedBody)) {
             $sanitizedParsedBody = $this->sanitizeData($parsedBody);
