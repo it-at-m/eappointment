@@ -65,7 +65,7 @@ class AvailabilityPage extends Component {
         window.addEventListener('beforeunload', this.unloadHandler)
     }
 
-    componentDidUnMount() {
+    componentWillUnMount() {
         window.removeEventListener('beforeunload', this.unloadHandler)
     }
 
@@ -120,7 +120,7 @@ class AvailabilityPage extends Component {
                 })
 
             }).fail(err => {
-                console.log('refreshData error', err)
+                console.error('refreshData error', err)
                 resolve(null)
             })
         })
@@ -676,7 +676,30 @@ class AvailabilityPage extends Component {
         const url = `${this.props.links.includeurl}/availability/conflicts/`;
 
         return fetch(url, requestOptions)
-            .then(res => res.json())
+            .then(async (res) => {
+                const responseText = await res.text();
+                let data = {};
+
+                try {
+                    data = responseText ? JSON.parse(responseText) : {};
+                } catch (parseError) {
+                    const error = new Error(responseText || res.statusText || 'Invalid JSON response');
+                    error.status = res.status;
+                    error.responseText = responseText;
+                    error.originalError = parseError;
+                    throw error;
+                }
+
+                if (!res.ok) {
+                    const error = new Error(data.message || responseText || res.statusText);
+                    error.status = res.status;
+                    error.responseText = responseText;
+                    error.data = data;
+                    throw error;
+                }
+
+                return data;
+            })
             .then((data) => {
                 const conflictList = {
                     itemList: Object.assign({}, data.conflictList),
@@ -699,7 +722,7 @@ class AvailabilityPage extends Component {
             })
             .catch((err) => {
                 const responseText = err.responseText || '';
-                let isException = responseText.toLowerCase().includes('exception');
+                const isException = responseText.toLowerCase().includes('exception');
 
                 if (err.status >= 400 && isException) {
                     new ExceptionHandler($('.opened'), {
@@ -707,15 +730,12 @@ class AvailabilityPage extends Component {
                         message: responseText
                     });
                 } else {
-                    console.log('conflict error', err);
+                    console.error('conflict error', err);
                 }
 
                 hideSpinner();
 
-                return {
-                    itemList: {},
-                    conflictIdList: []
-                };
+                throw err;
             });
     }
 
