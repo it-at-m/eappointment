@@ -122,3 +122,22 @@ VALUES
 UPDATE `buerger` SET `displayNumber` = 'TT1201' WHERE `BuergerID` = 972201;
 
 UNLOCK TABLES;
+
+/* ------------------------------------------------------------------
+   Test-Daten UseraccountListByRoleAndDepartmentsTest
+-------------------------------------------------------------------*/
+
+LOCK TABLES `nutzer` READ, `role` READ, `user_role` WRITE, `nutzerzuordnung` WRITE;
+
+REPLACE INTO `nutzerzuordnung` (`nutzerid`, `behoerdenid`)
+SELECT `nutzer`.`NutzerID`, 74
+FROM `nutzer`
+WHERE `nutzer`.`Name` = 'testuser';
+
+INSERT IGNORE INTO `user_role` (`user_id`, `role_id`)
+SELECT `nutzer`.`NutzerID`, `role`.`id`
+FROM `nutzer`
+JOIN `role` ON `role`.`name` = 'agent_queue'
+WHERE `nutzer`.`Name` = 'testuser';
+
+UNLOCK TABLES;
