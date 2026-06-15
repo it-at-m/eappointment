@@ -22,7 +22,8 @@
                             "label": "freigeben",
                             "name": "kioskausgabe",
                             "value": "0",
-                            "checked": (scope.status.ticketprinter.deactivated == 0)
+                            "checked": (scope.status.ticketprinter.deactivated == 0),
+                            "inline": false
                         }
                     },{
                         "type":"radio",
@@ -32,7 +33,8 @@
                             "id": "kioskausgabesperren",
                             "describedby": "help_ticketprinterStatus",
                             "value": "1",
-                            "checked": (scope.status.ticketprinter.deactivated == 1)
+                            "checked": (scope.status.ticketprinter.deactivated == 1),
+                            "inline": false
                         }
                     }]
                 ) }}
