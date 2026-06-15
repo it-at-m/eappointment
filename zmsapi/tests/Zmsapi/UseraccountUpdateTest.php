@@ -36,12 +36,12 @@ class UseraccountUpdateTest extends Base
 
         $response = $this->render(['loginname' => 'testadmin'], [
             '__body' => '{
-                "roles": ["agent_queue"],
+                "roles": ["user_admin"],
                 "departments": [
                     {"id": 74}
                 ],
                 "email": "unittest@berlinonline.de",
-                "id": "testadmin",
+                "id": "unittest",
                 "changePassword": ["newpassword", "newpassword"]
             }'
         ], []);
@@ -51,7 +51,7 @@ class UseraccountUpdateTest extends Base
 
         $this->assertTrue(password_verify('newpassword', $decoded['data']['password']));
         $this->assertStringContainsString('useraccount.json', $body);
-        $this->assertStringContainsString('testadmin', $body);
+        $this->assertStringContainsString('unittest', $body);
         $this->assertEquals(200, $response->getStatusCode());
     }
 
