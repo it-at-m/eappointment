@@ -28,13 +28,17 @@ public class ZmsApiSteps {
 
     private Response response;
     private String baseUri;
-    private static String cachedXAuthKey;
+    private String cachedXAuthKey;
+    private String scenarioLoginUsername;
+    private String scenarioLoginPassword;
     private JsonNode lastProcess;
 
     @Before
     public void resetProcessContext() {
         lastProcess = null;
         cachedXAuthKey = null;
+        scenarioLoginUsername = null;
+        scenarioLoginPassword = null;
     }
     
     @Given("the ZMS API is available")
@@ -69,27 +73,28 @@ public class ZmsApiSteps {
         CommonApiSteps.setResponse(response);
     }
 
+    @Given("the ZMS API workstation user is {string}")
+    public void theZmsApiWorkstationUserIs(String usernameOrRole) {
+        scenarioLoginUsername = usernameOrRole;
+        scenarioLoginPassword = null;
+        cachedXAuthKey = null;
+    }
+
+    @Given("I am logged in to the ZMS API as {string}")
+    public void iAmLoggedInToTheZmsApiAs(String usernameOrRole) {
+        theZmsApiWorkstationUserIs(usernameOrRole);
+        cachedXAuthKey = loginAndExtractAuthKey(workstationLoginCredentials());
+    }
+
     @When("I make a POST request to {string} with valid id and password")
     public void iMakeAPostRequestToWithValidIdAndPassword(String endpoint) {
-        String[] credentials = workstationLoginCredentials();
+        postWorkstationLogin(endpoint);
+    }
 
-        cachedXAuthKey = null;
-        response = given()
-            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
-            .contentType("application/json")
-            .body(java.util.Map.of("id", credentials[0], "password", credentials[1]))
-        .when()
-            .post(endpoint);
-        CommonApiSteps.setResponse(response);
-
-        if (response.getStatusCode() < 200 || response.getStatusCode() >= 300) {
-            return;
-        }
-        String key = extractAuthKeyFromBody(response.asString());
-        if (key == null || key.isBlank()) {
-            throw new IllegalStateException("Login succeeded but response did not contain data.authkey/authKey");
-        }
-        cachedXAuthKey = key;
+    @When("I make a POST request to {string} as {string}")
+    public void iMakeAPostRequestToAs(String endpoint, String usernameOrRole) {
+        theZmsApiWorkstationUserIs(usernameOrRole);
+        postWorkstationLogin(endpoint);
     }
 
     @Then("the response meta should contain exception {string}")
@@ -349,28 +354,41 @@ public class ZmsApiSteps {
             return cachedXAuthKey;
         }
 
-        // Login via /workstation/login/ and extract authkey/authKey from response.
-        String[] credentials = workstationLoginCredentials();
+        cachedXAuthKey = loginAndExtractAuthKey(workstationLoginCredentials());
+        return cachedXAuthKey;
+    }
 
-        Response loginResponse = given()
-            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
-            .contentType("application/json")
-            .body(java.util.Map.of("id", credentials[0], "password", credentials[1]))
-        .when()
-            .post("/workstation/login/");
+    private void postWorkstationLogin(String endpoint) {
+        cachedXAuthKey = null;
+        response = executeWorkstationLogin(endpoint, workstationLoginCredentials());
+        CommonApiSteps.setResponse(response);
 
+        if (response.getStatusCode() < 200 || response.getStatusCode() >= 300) {
+            return;
+        }
+        cachedXAuthKey = extractAuthKeyFromBody(response.asString());
+        if (cachedXAuthKey == null || cachedXAuthKey.isBlank()) {
+            throw new IllegalStateException("Login succeeded but response did not contain data.authkey/authKey");
+        }
+    }
+
+    private String loginAndExtractAuthKey(String[] credentials) {
+        Response loginResponse = executeWorkstationLogin("/workstation/login/", credentials);
         CommonApiSteps.setResponse(loginResponse);
 
         String body = loginResponse.asString();
         ScenarioLogManager.getLogger().info(String.format(
-            "ZMS API /workstation/login/ (auto X-AuthKey) status=%d body=%s",
+            "ZMS API /workstation/login/ (auto X-AuthKey) status=%d user=%s body=%s",
             loginResponse.getStatusCode(),
+            credentials[0],
             body.length() > 500 ? body.substring(0, 500) + "..." : body
         ));
 
         if (loginResponse.getStatusCode() < 200 || loginResponse.getStatusCode() >= 300) {
             throw new IllegalStateException(
-                "Unable to auto-login to obtain X-AuthKey. Ensure zmsapiUserName/zmsapiUserPassword can login to /workstation/login/. HTTP "
+                "Unable to auto-login to obtain X-AuthKey for user "
+                    + credentials[0]
+                    + ". Ensure the user can login to /workstation/login/ (see V22__add_role_test_users.sql). HTTP "
                     + loginResponse.getStatusCode());
         }
 
@@ -378,19 +396,46 @@ public class ZmsApiSteps {
         if (key == null || key.isBlank()) {
             throw new IllegalStateException("Login succeeded but response did not contain data.authkey/authKey");
         }
-        cachedXAuthKey = key;
         return key;
     }
 
+    private Response executeWorkstationLogin(String endpoint, String[] credentials) {
+        return given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .contentType("application/json")
+            .body(java.util.Map.of("id", credentials[0], "password", credentials[1]))
+        .when()
+            .post(endpoint);
+    }
+
     private String[] workstationLoginCredentials() {
+        if (scenarioLoginUsername != null && !scenarioLoginUsername.isBlank()) {
+            String password = scenarioLoginPassword != null && !scenarioLoginPassword.isBlank()
+                ? scenarioLoginPassword
+                : defaultWorkstationPassword();
+            return new String[] { resolveWorkstationUsername(scenarioLoginUsername), password };
+        }
+
         String username = TestPropertiesHelper.getPropertyAsString("zmsapiUserName", true);
         String password = TestPropertiesHelper.getPropertyAsString("zmsapiUserPassword", true);
         if (username.isBlank() || password.isBlank()) {
             throw new IllegalStateException(
-                "Set testautomation.zmsapiUserName and testautomation.zmsapiUserPassword in testautomation.properties "
-                    + "(see V22__add_role_test_users.sql)");
+                "Set testautomation.zmsapiUserName and testautomation.zmsapiUserPassword in testautomation.properties, "
+                    + "or use 'Given the ZMS API workstation user is \"<role>\"' in the scenario");
         }
         return new String[] { username, password };
+    }
+
+    private String defaultWorkstationPassword() {
+        String password = TestPropertiesHelper.getPropertyAsString("zmsapiUserPassword", true, "vorschau");
+        return password.isBlank() ? "vorschau" : password;
+    }
+
+    private String resolveWorkstationUsername(String usernameOrRole) {
+        if (usernameOrRole.startsWith("test_role_")) {
+            return usernameOrRole;
+        }
+        return "test_role_" + usernameOrRole;
     }
 
     private String extractAuthKeyFromBody(String body) {
