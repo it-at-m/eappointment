@@ -55,9 +55,9 @@ public class ZmsApiMailSteps {
             Integer processId = booking.getProcessId();
             ScenarioLogManager.getLogger().info("zmsapi: looking for newest mail (max id) matching process {}", processId);
             for (MailListItem mail : mails) {
-                MailProcessRef proc = mail.getProcess();
-                if (proc != null && processId.equals(proc.getId())) {
-                    if (match == null || (mail.getId() != null && (match.getId() == null || mail.getId() > match.getId()))) {
+                MailProcessRef proc = mail.process();
+                if (proc != null && processId.equals(proc.id())) {
+                    if (match == null || (mail.id() != null && (match.id() == null || mail.id() > match.id()))) {
                         match = mail;
                     }
                 }
@@ -69,33 +69,33 @@ public class ZmsApiMailSteps {
         if (booking == null && !mails.isEmpty()) {
             ScenarioLogManager.getLogger().info("zmsapi: no booking process (citizenview fallback); using newest mail (max id) with process id");
             for (MailListItem mail : mails) {
-                MailProcessRef proc = mail.getProcess();
-                if (proc != null && proc.getId() != null && proc.getAuthKey() != null && !proc.getAuthKey().isBlank()) {
-                    if (match == null || (mail.getId() != null && (match.getId() == null || mail.getId() > match.getId()))) {
+                MailProcessRef proc = mail.process();
+                if (proc != null && proc.id() != null && proc.authKey() != null && !proc.authKey().isBlank()) {
+                    if (match == null || (mail.id() != null && (match.id() == null || mail.id() > match.id()))) {
                         match = mail;
                     }
                 }
             }
         }
-        if (match == null || match.getProcess() == null) {
+        if (match == null || match.process() == null) {
             throw new IllegalStateException(
                 "Preconfirmation mail not found. Ensure preconfirm was called and mail is sent (GET /mails/ returned " + mails.size() + " mail(s)).");
         }
-        String confirmProcessId = String.valueOf(match.getProcess().getId());
-        String confirmAuthKey = match.getProcess().getAuthKey();
+        String confirmProcessId = String.valueOf(match.process().id());
+        String confirmAuthKey = match.process().authKey();
         CitizenApiSteps.setBookingConfirmCredentials(confirmProcessId, confirmAuthKey != null ? confirmAuthKey : "");
         if (booking == null) {
             ThinnedProcess p = new ThinnedProcess();
-            p.setProcessId(match.getProcess().getId());
+            p.setProcessId(match.process().id());
             p.setAuthKey(confirmAuthKey);
             CitizenApiSteps.setBookingProcess(p);
         }
-        String confirmUrl = extractConfirmUrlFromMailResponse(response.asString(), match.getProcess().getId());
+        String confirmUrl = extractConfirmUrlFromMailResponse(response.asString(), match.process().id());
         if (confirmUrl != null) {
             CitizenApiSteps.setBookingConfirmUrl(confirmUrl);
-            ScenarioLogManager.getLogger().info("zmsapi: confirm URL extracted from mail body for process {}", match.getProcess().getId());
+            ScenarioLogManager.getLogger().info("zmsapi: confirm URL extracted from mail body for process {}", match.process().id());
         }
-        ScenarioLogManager.getLogger().info("zmsapi: preconfirmation mail found for process {}, confirm credentials set for deep link", match.getProcess().getId());
+        ScenarioLogManager.getLogger().info("zmsapi: preconfirmation mail found for process {}, confirm credentials set for deep link", match.process().id());
     }
 
     /** Second mail fetch: run after the user has opened the /appointment/confirm/*** link. The confirmation mail (with link to /appointment/***) is only sent once the appointment is confirmed. */
