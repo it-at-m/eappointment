@@ -94,13 +94,12 @@ class RequestReport extends Base
 
         foreach ($report->data as $name => $entry) {
             if ($name !== 'sum' && $name !== 'average_processingtime') {
-                $rowData = [];
-                if ($name === 'uncategorized') {
-                    $rowData[] = 'Dienstleistung wurde nicht erfasst';
-                } elseif ($name === 'nonexistent') {
-                    $rowData[] = 'Dienstleistung konnte nicht erbracht werden';
-                } else {
-                    $rowData = $name;
+               $serviceLabel = match ($name) {
+                'uncategorized' => 'Dienstleistung wurde nicht erfasst',
+                'nonexistent' => 'Dienstleistung konnte nicht erbracht werden',
+                default => $name,
+               };
+               $rowData = [$serviceLabel];
                 }
                 $rowData[] = $name;
                 $rowData[] = isset($report->data['average_processingtime'][$name])
