@@ -81,6 +81,73 @@ const DEBUGLEVEL = ZMS_DEBUGLEVEL;
 
 Invalid values fall back to **DEBUG** (permissive) in `Bootstrap::parseDebugLevel()`.
 
+## Per-module HTTP request logging
+
+Unlike **`DEBUGLEVEL`** (one value for all Slim modules), **HTTP request/response logging** is configured **per module** via `ZMS_<MODULE>_LOGGER_*` environment variables — the same naming pattern as `ZMS_ADMIN_TWIG_CACHE`, `ZMS_API_TWIG_CACHE`, and so on.
+
+Modules that register `RequestLoggingMiddleware` (via `BO\Slim\Helper\ModuleLoggerInitializer` or their own bootstrap) emit one structured **`HTTP Request`** line per handled request through `BO\Slim\LoggerService::logRequest()` → `App::$log`.
+
+### Request log throttling only
+
+`…_LOGGER_MAX_REQUESTS` and `…_LOGGER_MAX_ERROR_REQUESTS` are **access-log throttles**. They cap how many **`HTTP Request`** lines `LoggerService::logRequest()` writes per time window. They do **not** limit general application logging.
+
+| Logging path                                                     | Throttled by `LOGGER_MAX_*`?                 | Controlled by                            |
+| ---------------------------------------------------------------- | -------------------------------------------- | ---------------------------------------- |
+| `HTTP Request` (status &lt; 400)                                 | Yes — `…_LOGGER_MAX_REQUESTS`                | Per-module env + `…_LOGGER_CACHE_TTL`    |
+| `HTTP Request` (status ≥ 400)                                    | Only if `…_LOGGER_MAX_ERROR_REQUESTS` &gt; 0 | Per-module env (default `0` = unlimited) |
+| `LoggerService::logError()` (exceptions)                         | No                                           | —                                        |
+| `LoggerService::logWarning()` / `logInfo()`                      | No                                           | —                                        |
+| Direct `App::$log->info()` / `warning()` / `error()` in app code | No                                           | `DEBUGLEVEL`                             |
+
+So: **`DEBUGLEVEL`** sets how verbose application logs are globally; **`LOGGER_MAX_*`** only prevents high-frequency modules (especially calldisplay and ticket printers) from flooding logs with routine successful requests.
+
+Successful and failed request logs use **separate counters** and the same window length (`…_LOGGER_CACHE_TTL`, default 60 seconds). Throttling a successful poll does not block logging a later 500 on the same module.
+
+| Module           | Env prefix                   | Typical traffic                     |
+| ---------------- | ---------------------------- | ----------------------------------- |
+| zmscitizenapi    | `ZMS_CITIZENAPI_LOGGER_*`    | Public booking API                  |
+| zmsapi           | `ZMS_API_LOGGER_*`           | Internal REST API                   |
+| zmsadmin         | `ZMS_ADMIN_LOGGER_*`         | Staff UI                            |
+| zmscalldisplay   | `ZMS_CALLDISPLAY_LOGGER_*`   | Display monitors (frequent polling) |
+| zmsstatistic     | `ZMS_STATISTIC_LOGGER_*`     | Statistics UI                       |
+| zmsticketprinter | `ZMS_TICKETPRINTER_LOGGER_*` | Ticket printers (frequent polling)  |
+
+### LoggerService variables
+
+| Variable                                        | Default        | Role                                                                                      |
+| ----------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------- |
+| `…_LOGGER_MAX_REQUESTS`                         | `1000`         | Max successful `HTTP Request` lines (status &lt; 400) per rate-limit window (`CACHE_TTL`) |
+| `…_LOGGER_MAX_ERROR_REQUESTS`                   | `0`            | Max failed `HTTP Request` lines (status ≥ 400) per window; `0` = unlimited                |
+| `…_LOGGER_RESPONSE_LENGTH`                      | `1048576`      | Max response body bytes considered when logging errors                                    |
+| `…_LOGGER_STACK_LINES`                          | `20`           | Stack trace lines on logged exceptions                                                    |
+| `…_LOGGER_MESSAGE_SIZE`                         | `8192`         | Max size of a single log message                                                          |
+| `…_LOGGER_CACHE_TTL`                            | `60`           | Rate-limit window in seconds (uses `CACHE_DIR`)                                           |
+| `…_LOGGER_MAX_RETRIES`                          | `3`            | Cache lock retries for rate limiting                                                      |
+| `…_LOGGER_BACKOFF_MIN` / `…_LOGGER_BACKOFF_MAX` | `100` / `1000` | Backoff between retries (ms)                                                              |
+| `…_LOGGER_LOCK_TIMEOUT`                         | `5`            | Cache lock timeout (seconds)                                                              |
+
+See `.ddev/.env.template` / `.devcontainer/.env.template` for full examples per module.
+
+### Tuning high-frequency modules
+
+**zmscalldisplay** and **zmsticketprinter** are special: every monitor or ticket printer typically polls the server **every few seconds**. With default `LOGGER_MAX_REQUESTS=1000`, a handful of devices can produce large, repetitive log volume even at `DEBUGLEVEL=INFO`.
+
+For those modules, consider **lowering** `ZMS_CALLDISPLAY_LOGGER_MAX_REQUESTS` and/or `ZMS_TICKETPRINTER_LOGGER_MAX_REQUESTS` so routine poll traffic does not dominate your log stream. Admin, API, and citizen modules usually keep the defaults.
+
+```bash
+# Example: cap display/printer poll logging without affecting other modules
+ZMS_CALLDISPLAY_LOGGER_MAX_REQUESTS=120
+ZMS_TICKETPRINTER_LOGGER_MAX_REQUESTS=120
+
+# Other modules can stay at the template default (1000)
+ZMS_ADMIN_LOGGER_MAX_REQUESTS=1000
+ZMS_API_LOGGER_MAX_REQUESTS=1000
+```
+
+Lowering `…_LOGGER_MAX_REQUESTS` throttles only **successful** `HTTP Request` lines (Monolog `info`, status &lt; 400). Failed requests (status ≥ 400, Monolog `error`) use `…_LOGGER_MAX_ERROR_REQUESTS` instead; the default `0` means no cap.
+
+These variables do not affect exceptions, warnings, info messages from other `LoggerService` methods, or direct `App::$log->…` calls elsewhere in the codebase.
+
 ## How to log
 
 After `bootstrap.php` or `script_bootstrap.php`:
@@ -166,4 +233,6 @@ It updates when you run `npm run docs:dev` or `docs:build` (VitePress config run
 
 - `zmsslim/src/Slim/Application.php` — `ZMS_DEBUGLEVEL`, `DEBUGLEVEL`, `public static $log`
 - `zmsslim/src/Slim/Bootstrap.php` — `configureLogger()`, `ensureLogger()`, `normalizeLogLevelName()`
+- `zmsslim/src/Slim/LoggerService.php` — HTTP request logging, rate limiting
+- `zmsslim/src/Slim/Helper/ModuleLoggerInitializer.php` — per-module logger env wiring and middleware registration
 - `zmsslim/README.md` — Slim bootstrap overview
