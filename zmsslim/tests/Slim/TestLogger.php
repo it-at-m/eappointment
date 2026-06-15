@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace BO\Zmscitizenapi\Tests;
+namespace BO\Slim\Tests;
 
 use BO\Slim\LoggerService;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class TestLogger extends LoggerService
 {
@@ -16,7 +17,6 @@ class TestLogger extends LoggerService
 
     public static function init(): void
     {
-        // Don't initialize syslog for tests
     }
 
     public static function initTest(TestCase $testCase): void
@@ -35,13 +35,6 @@ class TestLogger extends LoggerService
         self::$expectedLogs[] = ['error', $exception];
     }
 
-    /**
-     * Validates and logs an info message during testing
-     * 
-     * @param string $message The message to log
-     * @param array<string, mixed> $context Additional context data
-     * @throws \RuntimeException When test case is not initialized
-     */
     public static function logInfo(string $message, array $context = []): void
     {
         if (self::$testCase === null) {
@@ -70,12 +63,33 @@ class TestLogger extends LoggerService
         ?ResponseInterface $response = null,
         array $context = []
     ): void {
+        if (self::$testCase === null) {
+            throw new \RuntimeException('Test case not initialized. Call initTest() first.');
+        }
+
         $expected = array_shift(self::$expectedLogs);
         if (!$expected) {
             self::$testCase->fail('Unexpected log error: ' . $exception->getMessage());
         }
         self::$testCase->assertEquals('error', $expected[0]);
         self::$testCase->assertInstanceOf(get_class($expected[1]), $exception);
+        if ($expected[1] instanceof \Throwable) {
+            self::$testCase->assertSame($expected[1]->getMessage(), $exception->getMessage());
+        }
+        if (!empty($expected[2])) {
+            foreach ($expected[2] as $key => $value) {
+                self::$testCase->assertArrayHasKey($key, $context);
+                self::$testCase->assertEquals($value, $context[$key]);
+            }
+        }
+    }
+
+    public static function logRequest(ServerRequestInterface $request, ResponseInterface $response): void
+    {
+    }
+
+    public static function logWarning(string $message, array $context = []): void
+    {
     }
 
     public static function verifyNoMoreLogs(): void
