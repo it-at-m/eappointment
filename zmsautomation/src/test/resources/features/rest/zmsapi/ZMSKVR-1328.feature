@@ -6,21 +6,9 @@ Feature: A scheduled appointment is created, called up and completed at the coun
 
   Background:
     Given the ZMS API is available
+    And I am logged in to the ZMS API as "appointment_admin"
 
   Scenario: A scheduled appointment is created, called up and completed at the counter
-    # Navigating to the admin module
-    When I make a GET request to "/workstation/"
-    Then the response status code should be 401
-    And the response meta should contain exception "UserAccountMissingLogin"
-    When I make a GET request to "/config/" with the X-AuthKey
-    Then the response status code should be 200
-    And the response should contain config information
-
-    # Logging into the admin module
-    When I make a POST request to "/workstation/login/" with valid id and password
-    Then the response status code should be 200
-    And the response should contain workstation information
-
     # Selecting a workstation (Bürgerbüro Forstenrieder Allee / Tresen 4)
     When I update the workstation with scope 169 and counter "4" with the X-AuthKey
     Then the response status code should be 200
@@ -47,4 +35,3 @@ Feature: A scheduled appointment is created, called up and completed at the coun
     Then the response status code should be 200
     And the response should contain process information
     And the process status should be "finished"
-
