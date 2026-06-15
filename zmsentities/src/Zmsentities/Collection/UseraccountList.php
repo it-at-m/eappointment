@@ -33,8 +33,6 @@ class UseraccountList extends Base
         $collection = new self();
         $departmentList = $workstation->getDepartmentList();
         foreach ($this as $useraccount) {
-            $accessedList = $departmentList->withAccess($useraccount);
-
             if ($useraccount->hasRights(['department'])) {
                 $accessedList = $departmentList;
             } else {

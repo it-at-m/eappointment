@@ -344,6 +344,15 @@ class Process extends Schema\Entity
         return $this->toProperty()->scope->id->get();
     }
 
+    public function isDereferenced(): bool
+    {
+        if ($this->authKey === 'deref!0') {
+            return true;
+        }
+        $client = $this->getFirstClient();
+        return $client && isset($client->familyName) && $client->familyName === 'dereferenced';
+    }
+
     public function getCurrentScope(): Scope
     {
         return $this->getProperty('scope');
@@ -610,7 +619,6 @@ class Process extends Schema\Entity
 
     public function hasArrivalTime()
     {
-        $arrivalTime = 0;
         if ($this->isWithAppointment()) {
             $arrivalTime = $this->getFirstAppointment()->date;
         } else {

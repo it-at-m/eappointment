@@ -16,8 +16,8 @@ abstract class Parameter
     /**
       * value of parameter
       *
-      * @var String $value
-      */
+      * @var string|null $value
+     */
     protected $value = '';
 
     /**

@@ -45,18 +45,18 @@ class Process extends Base implements Interfaces\ResolveReferences
     }
 
     #[\Override]
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $process, $resolveReferences)
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
         if (0 <= $resolveReferences) {
-            if ($process->archiveId) {
-                $process->requests = (new Request())
-                    ->readRequestByArchiveId($process->archiveId, $resolveReferences - 1);
+            if ($entity->archiveId) {
+                $entity->requests = (new Request())
+                    ->readRequestByArchiveId($entity->archiveId, $resolveReferences - 1);
             } else {
-                $process->requests = (new Request())
-                    ->readRequestByProcessId($process->id, $resolveReferences - 1);
+                $entity->requests = (new Request())
+                    ->readRequestByProcessId($entity->id, $resolveReferences - 1);
             }
         }
-        return $process;
+        return $entity;
     }
 
 
@@ -605,7 +605,7 @@ class Process extends Base implements Interfaces\ResolveReferences
      * Regulär sollte aber ProcessStatusArchived::writeEntityFinished()
      * oder self::writeBlockedEntity() verwendet werden.
      *
-     * @return Entity|null
+     * @return bool
      */
     public function writeDeletedEntity($processId): bool
     {

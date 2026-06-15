@@ -25,15 +25,13 @@ class Git
 
     public static function readCurrentHash()
     {
-        $githash = false;
         $headString = static::readCurrentHead();
         $githashFile = \App::APP_PATH . '/.git/' . $headString;
         if (is_readable($githashFile)) {
-            $githash = trim(fgets(fopen($githashFile, 'r')));
-        } else {
-            $githash = $headString;
+            return trim(fgets(fopen($githashFile, 'r')));
         }
-        return $githash;
+
+        return $headString;
     }
 
     public static function readCurrentVersion()

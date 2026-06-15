@@ -2,7 +2,7 @@
 outline: deep
 ---
 
-# ZMS PHP Backends in Spring RefArch zusammenführen
+# Refactoring der ZMS PHP Backends in Spring RefArch
 
 ## Einführung
 
@@ -62,6 +62,12 @@ Vorteile der Zusammenführung von `zmsdb`, `zmsapi` und der serverseitigen Nutzu
 11. **Kein `zmsslim`-Routing-Framework mehr** — Heute bindet `zmsapi` (und andere PHP-Module) HTTP-Routen über **`routing.php`**, Slim-Middleware (`Route`, `OAuthMiddleware`, …) und `BaseController`-Muster aus **`zmsslim`**. Spring Boot mappt Endpoints mit **`@RestController`** / **`@RequestMapping`** (oder RefArch-Route-Registries wie `DepartmentRouteRegistry`) — Standard-Spring-MVC, IDE-freundlich, kein eigener Slim-Bootstrap mehr zu pflegen.
 
 12. **SLF4J/Logback statt zentralisiertem Monolog in `zmsslim`** — PHP-Backends loggen über **`App::$log`**, einmal verdrahtet in **`zmsslim`**s `Bootstrap::configureLogger()` (Monolog, JSON nach stdout). Spring Boot nutzt **kein Monolog**; es bringt **SLF4J + Logback** und RefArch-Logging-Konfiguration für strukturiertes JSON mit — der gemeinsame Monolog-Bootstrap und PSR-3-Plumbing entfallen im Backend-Stack.
+
+13. **Keine riesige `routing.php` — Routen sitzen an den Controllern** — Heute ist `zmsapi/routing.php` **~6.600 Zeilen** URL-zu-Controller-Zuordnungen in einer Datei, fern vom Handler-Code. In `zmsbackend` steht jeder Endpoint am **`@RestController`** (`@GetMapping`, `@PostMapping`, …) direkt neben der Handler-Methode — die IDE springt von der Route zur Implementierung, und Domain-Slices bleiben in sich geschlossen.
+
+14. **Keine eigene Swagger-Pipeline mehr pflegen** — Heute betreiben **`zmsapi`** und **`zmscitizenapi`** jeweils eine eigene Doc-Toolchain: **`@swagger`**-Blöcke in **`routing.php`**, **`build_swagger.js`**, **`swagger-jsdoc`**, YAML-Partials unter **`public/doc/`**, npm-Skripte (`npm run doc`) und CI-Schritte zum Bündeln von **`swagger.json`** und Ausliefern von Swagger-UI-Assets. Das muss **pro PHP-API** funktionsfähig bleiben. **`zmsbackend`** und **`zmscitizenbackend`** nutzen **Spring OpenAPI** (springdoc-openapi im RefArch-Stack): Controller annotieren, lokal starten, **Swagger UI** unter **`/swagger-ui.html`** öffnen und Endpoints interaktiv testen — kein separates npm-Build oder handgebauter Doc-Generator pro Service.
+
+15. **Domain-Controller statt ~166 Einzelaktions-Klassen** — `zmsapi` implementiert fast jede HTTP-Aktion als **eigene PHP-Klasse** (`DepartmentGet`, `DepartmentList`, `ProcessFree`, …), jeweils mit wiederholtem Mellon-Parsing, Berechtigungsprüfung, `Response\Message::create()` und Übergabe an `zmsdb`. In `zmsbackend` bündelt ein **`@RestController` pro Domain** verwandte Endpoints, teilt Security und Exception-Handling und hält Request/Response-Mapping neben der Service-Schicht — weniger Copy-Paste und deutlich weniger Dateien, wenn ein Feature geändert wird.
 
 ### Beispiel: `Department` (`behoerde` → `department`)
 

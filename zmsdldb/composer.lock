@@ -180,11 +180,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-feature-zmskvr-implement-php-code-scanning-with-psalm",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "0d46775dba0ed63865729096837616ebb05961df"
+                "reference": "56a96a21f59476386e0604378dfbf249baedc26e"
             },
             "require": {
                 "ext-json": ">=0",
@@ -230,11 +230,11 @@
         },
         {
             "name": "eappointment/zmsapi",
-            "version": "dev-feature-zmskvr-implement-php-code-scanning-with-psalm",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsapi",
-                "reference": "0d46775dba0ed63865729096837616ebb05961df"
+                "reference": "3512dbf7503d7837d0203a075ae4eb94bbe5793b"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -310,7 +310,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-feature-zmskvr-implement-php-code-scanning-with-psalm",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -370,11 +370,11 @@
         },
         {
             "name": "eappointment/zmsdb",
-            "version": "dev-feature-zmskvr-implement-php-code-scanning-with-psalm",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsdb",
-                "reference": "0d46775dba0ed63865729096837616ebb05961df"
+                "reference": "fb61e03cded25fc5514767e980dac60a5621f979"
             },
             "require": {
                 "aura/sql": "^5",
@@ -459,11 +459,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-feature-zmskvr-implement-php-code-scanning-with-psalm",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "0d46775dba0ed63865729096837616ebb05961df"
+                "reference": "3b064145bcaa7f64c4a42eea05d1beca82f736c9"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -517,11 +517,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-feature-zmskvr-implement-php-code-scanning-with-psalm",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "0d46775dba0ed63865729096837616ebb05961df"
+                "reference": "df966191e66a04679db2fbff4a04d81ad8dce10f"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -9419,16 +9419,16 @@
         },
         {
             "name": "seld/jsonlint",
-            "version": "1.11.0",
+            "version": "1.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/jsonlint.git",
-                "reference": "1748aaf847fc731cfad7725aec413ee46f0cc3a2"
+                "reference": "d95c42df9c4a713ca1d4a45b37f0416dee1ea73a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/jsonlint/zipball/1748aaf847fc731cfad7725aec413ee46f0cc3a2",
-                "reference": "1748aaf847fc731cfad7725aec413ee46f0cc3a2",
+                "url": "https://api.github.com/repos/Seldaek/jsonlint/zipball/d95c42df9c4a713ca1d4a45b37f0416dee1ea73a",
+                "reference": "d95c42df9c4a713ca1d4a45b37f0416dee1ea73a",
                 "shasum": ""
             },
             "require": {
@@ -9467,7 +9467,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Seldaek/jsonlint/issues",
-                "source": "https://github.com/Seldaek/jsonlint/tree/1.11.0"
+                "source": "https://github.com/Seldaek/jsonlint/tree/1.12.0"
             },
             "funding": [
                 {
@@ -9479,7 +9479,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-07-11T14:55:45+00:00"
+            "time": "2026-06-11T13:43:55+00:00"
         },
         {
             "name": "spatie/array-to-xml",
