@@ -50,5 +50,8 @@
     "qrcode-generator": "2.0.4",
     "sass": "^1.100.0",
     "svgo": "^4.0.1"
+  },
+  "overrides": {
+    "js-yaml": "^4.2.0"
   }
 }
