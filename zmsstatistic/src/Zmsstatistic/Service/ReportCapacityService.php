@@ -18,9 +18,6 @@ class ReportCapacityService
     /** Above this count, slot-time hints group by duration instead of listing scope names. */
     private const SLOT_TIME_HINT_MAX_NAMED_SCOPES = 4;
 
-    /**
-     * Get exchange slot capacity data for period or custom date range.
-     */
     public function getExchangeCapacityData(string $scopeId, ?array $dateRange, array $args): mixed
     {
         if ($scopeId === '') {
@@ -38,11 +35,7 @@ class ReportCapacityService
         return null;
     }
 
-    /**
-     * Available date range per scope from warehouse subject list (periodstart / periodend).
-     *
-     * @return array<string, array{min: string, max: string}>
-     */
+    /** Available date range per scope from warehouse subject list (periodstart / periodend). */
     public function getScopeDateBoundsByScopeId(): array
     {
         try {
@@ -85,10 +78,6 @@ class ReportCapacityService
         }
     }
 
-    /**
-     * @param array<int, string|int> $scopeIds
-     * @return array<int, array{id: string, name: string, slotTimeInMinutes: ?int}>
-     */
     public function getSelectedScopeSlotTimes(array $scopeIds): array
     {
         if ($scopeIds === []) {
@@ -135,9 +124,6 @@ class ReportCapacityService
         }
     }
 
-    /**
-     * @param array<int, array{id: string, name: string, slotTimeInMinutes: ?int}> $scopeSlotTimes
-     */
     public function formatScopeSlotTimeHint(array $scopeSlotTimes): ?string
     {
         if ($scopeSlotTimes === []) {
@@ -193,9 +179,6 @@ class ReportCapacityService
             : 'Zeitschlitzdauer laut Öffnungszeit: ' . implode('; ', $hintParts);
     }
 
-    /**
-     * @param array<int, array{id: string, name: string, slotTimeInMinutes: ?int}> $scopeSlotTimes
-     */
     private function formatGroupedScopeSlotTimeHint(array $scopeSlotTimes): ?string
     {
         $scopeCountBySlotMinutes = [];
@@ -401,9 +384,7 @@ class ReportCapacityService
         return false;
     }
 
-    /**
-     * @return float|null Length of selected range in hours (inclusive end day).
-     */
+    /** Length of selected range in hours (inclusive end day). */
     public function resolveRangeDurationHours(?array $dateRange, ?string $period): ?float
     {
         $bounds = $this->resolveTimelineBounds($dateRange, $period);
@@ -443,9 +424,6 @@ class ReportCapacityService
         }
     }
 
-    /**
-     * @return array<string, string>
-     */
     private function buildCapacityFetchParams(?array $dateRange, ?string $period, bool $useHourlyGrouping): array
     {
         $warehouseFetchParams = [];
@@ -493,13 +471,7 @@ class ReportCapacityService
         return $exchange;
     }
 
-    /**
-     * Sum booked/planned counts per date (or hour) across multiple scopes.
-     *
-     * @param array<int, array<int, mixed>> $rows
-     * @param bool $useHourlyKeys true = one row per clock hour, false = per calendar day
-     * @return array<int, array<int, mixed>>
-     */
+    /** Sum booked/planned counts per date (or hour) across multiple scopes. */
     public function aggregateRowsByDate(array $rows, bool $useHourlyKeys): array
     {
         $rowsByTimelineKey = [];
@@ -533,9 +505,6 @@ class ReportCapacityService
     /**
      * Insert zero rows for each hour or day in the selected range so the chart shows
      * closed periods and gaps between days (not only timestamps with slot data).
-     *
-     * @param array<int, array<int, mixed>> $rows
-     * @return array<int, array<int, mixed>>
      */
     private function fillMissingTimeline(
         array $rows,
@@ -611,9 +580,6 @@ class ReportCapacityService
         return $completeTimelineRows;
     }
 
-    /**
-     * @param array<int, array<int, mixed>> $rows
-     */
     private function exchangeDataLooksHourly(array $rows): bool
     {
         foreach ($rows as $row) {
@@ -648,9 +614,6 @@ class ReportCapacityService
         return (int) ($row[$position] ?? 0);
     }
 
-    /**
-     * @return array<int, int|string>
-     */
     private function emptyCapacityRow(string $subjectId, string $timelineKey): array
     {
         return [$subjectId, $timelineKey, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -667,10 +630,6 @@ class ReportCapacityService
         return false;
     }
 
-    /**
-     * @param array<int|string, mixed> $row
-     * @return array{0: string, 1: string, 2: int, 3: int, 4: int, 5: int, 6: int, 7: int, 8: int, 9: int}
-     */
     private function normalizeDataRow(array $row, bool $useHourlyKeys): array
     {
         $rowDateValue = $this->rowDateValue($row);
@@ -707,9 +666,6 @@ class ReportCapacityService
         return date('Y-m-d H', $timestamp) . ':00';
     }
 
-    /**
-     * @return array{from: string, to: string}|null
-     */
     private function resolveTimelineBounds(?array $dateRange, ?string $period): ?array
     {
         if ($dateRange && isset($dateRange['from'], $dateRange['to'])) {
@@ -747,11 +703,6 @@ class ReportCapacityService
         return null;
     }
 
-    /**
-     * @param array<int, array<int, mixed>> $rows
-     * @param array{from: string, to: string} $bounds
-     * @return array<int, array<int, mixed>>
-     */
     private function filterRowsByBounds(array $rows, array $bounds): array
     {
         $rangeStart = $bounds['from'];
