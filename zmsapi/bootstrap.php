@@ -32,6 +32,16 @@ require_once(APP_PATH . '/config.php');
 ];
 \BO\Zmsdb\Connection\Select::$connectionTimezone = ' ' . \App::$now->getTimezone()->getName();
 
+$logger = new \BO\Slim\LoggerService();
+$requestLimits = \App::getRequestLimits();
+
+\App::$slim->add(new \BO\Slim\Middleware\RequestLoggingMiddleware($logger));
+\App::$slim->add(new \BO\Slim\Middleware\SecurityHeadersMiddleware($logger));
+\App::$slim->add(new \BO\Slim\Middleware\RequestSanitizerMiddleware(
+    $logger,
+    $requestLimits['maxRecursionDepth'],
+    $requestLimits['maxStringLength']
+));
 \App::$slim->add(new \BO\Zmsapi\Helper\TransactionMiddleware());
 \App::$slim->add(new \BO\Zmsapi\Helper\LogOperatorMiddleware());
 
