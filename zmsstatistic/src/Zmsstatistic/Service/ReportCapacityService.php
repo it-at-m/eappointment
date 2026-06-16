@@ -57,7 +57,7 @@ class ReportCapacityService
                 return [];
             }
 
-            $bounds = [];
+            $dateBoundsByScopeId = [];
             foreach ($subjectList->data as $row) {
                 $scopeId = (string) ($row[0] ?? '');
                 $periodStart = (string) ($row[1] ?? '');
@@ -67,19 +67,19 @@ class ReportCapacityService
                     continue;
                 }
 
-                if (!isset($bounds[$scopeId])) {
-                    $bounds[$scopeId] = [
+                if (!isset($dateBoundsByScopeId[$scopeId])) {
+                    $dateBoundsByScopeId[$scopeId] = [
                         'min' => $periodStart,
                         'max' => $periodEnd,
                     ];
                     continue;
                 }
 
-                $bounds[$scopeId]['min'] = min($bounds[$scopeId]['min'], $periodStart);
-                $bounds[$scopeId]['max'] = max($bounds[$scopeId]['max'], $periodEnd);
+                $dateBoundsByScopeId[$scopeId]['min'] = min($dateBoundsByScopeId[$scopeId]['min'], $periodStart);
+                $dateBoundsByScopeId[$scopeId]['max'] = max($dateBoundsByScopeId[$scopeId]['max'], $periodEnd);
             }
 
-            return $bounds;
+            return $dateBoundsByScopeId;
         } catch (\Throwable $exception) {
             return [];
         }
@@ -114,7 +114,7 @@ class ReportCapacityService
                 }
             }
 
-            $items = [];
+            $scopeSlotTimeEntries = [];
             foreach ($scopeIds as $scopeId) {
                 $id = (string) $scopeId;
                 if (!isset($scopeById[$id])) {
@@ -122,14 +122,14 @@ class ReportCapacityService
                 }
 
                 $scope = $scopeById[$id];
-                $items[] = [
+                $scopeSlotTimeEntries[] = [
                     'id' => $id,
                     'name' => $this->resolveScopeDisplayName($scope, $id),
                     'slotTimeInMinutes' => $this->resolveScopeSlotTimeMinutes($scope),
                 ];
             }
 
-            return $items;
+            return $scopeSlotTimeEntries;
         } catch (\Throwable $exception) {
             return [];
         }
@@ -144,7 +144,7 @@ class ReportCapacityService
             return null;
         }
 
-        $knownTimes = array_values(array_filter(
+        $slotTimeMinutesList = array_values(array_filter(
             array_map(
                 static fn (array $item): ?int => $item['slotTimeInMinutes'] ?? null,
                 $scopeSlotTimes
@@ -152,22 +152,22 @@ class ReportCapacityService
             static fn (?int $minutes): bool => $minutes !== null
         ));
 
-        if ($knownTimes === []) {
+        if ($slotTimeMinutesList === []) {
             return null;
         }
 
         if (count($scopeSlotTimes) === 1) {
             return sprintf(
                 'Zeitschlitzdauer laut Öffnungszeit: %d Min.',
-                $knownTimes[0]
+                $slotTimeMinutesList[0]
             );
         }
 
-        $uniqueTimes = array_values(array_unique($knownTimes));
-        if (count($uniqueTimes) === 1 && count($knownTimes) === count($scopeSlotTimes)) {
+        $uniqueSlotTimeMinutes = array_values(array_unique($slotTimeMinutesList));
+        if (count($uniqueSlotTimeMinutes) === 1 && count($slotTimeMinutesList) === count($scopeSlotTimes)) {
             return sprintf(
                 'Zeitschlitzdauer laut Öffnungszeit: %d Min. (alle ausgewählten Standorte)',
-                $uniqueTimes[0]
+                $uniqueSlotTimeMinutes[0]
             );
         }
 
@@ -175,22 +175,22 @@ class ReportCapacityService
             return $this->formatGroupedScopeSlotTimeHint($scopeSlotTimes);
         }
 
-        $parts = [];
+        $hintParts = [];
         foreach ($scopeSlotTimes as $item) {
             if (($item['slotTimeInMinutes'] ?? null) === null) {
                 continue;
             }
 
-            $parts[] = sprintf(
+            $hintParts[] = sprintf(
                 '%s: %d Min.',
                 $item['name'],
                 $item['slotTimeInMinutes']
             );
         }
 
-        return $parts === []
+        return $hintParts === []
             ? null
-            : 'Zeitschlitzdauer laut Öffnungszeit: ' . implode('; ', $parts);
+            : 'Zeitschlitzdauer laut Öffnungszeit: ' . implode('; ', $hintParts);
     }
 
     /**
@@ -198,33 +198,33 @@ class ReportCapacityService
      */
     private function formatGroupedScopeSlotTimeHint(array $scopeSlotTimes): ?string
     {
-        $byMinutes = [];
+        $scopeCountBySlotMinutes = [];
         foreach ($scopeSlotTimes as $item) {
             $minutes = $item['slotTimeInMinutes'] ?? null;
             if ($minutes === null) {
                 continue;
             }
 
-            $byMinutes[$minutes] = ($byMinutes[$minutes] ?? 0) + 1;
+            $scopeCountBySlotMinutes[$minutes] = ($scopeCountBySlotMinutes[$minutes] ?? 0) + 1;
         }
 
-        if ($byMinutes === []) {
+        if ($scopeCountBySlotMinutes === []) {
             return null;
         }
 
-        ksort($byMinutes, SORT_NUMERIC);
+        ksort($scopeCountBySlotMinutes, SORT_NUMERIC);
 
-        $parts = [];
-        foreach ($byMinutes as $minutes => $count) {
-            $parts[] = sprintf(
+        $hintParts = [];
+        foreach ($scopeCountBySlotMinutes as $minutes => $scopeCount) {
+            $hintParts[] = sprintf(
                 '%d Min. (%d %s)',
                 $minutes,
-                $count,
-                $count === 1 ? 'Standort' : 'Standorte'
+                $scopeCount,
+                $scopeCount === 1 ? 'Standort' : 'Standorte'
             );
         }
 
-        return 'Zeitschlitzdauer laut Öffnungszeit: ' . implode(', ', $parts);
+        return 'Zeitschlitzdauer laut Öffnungszeit: ' . implode(', ', $hintParts);
     }
 
     private function resolveScopeDisplayName(mixed $scope, string $id): string
@@ -301,9 +301,9 @@ class ReportCapacityService
             return null;
         }
 
-        $bounds = $this->resolveTimelineBounds(null, $period);
-        if ($bounds) {
-            $exchange->data = $this->filterRowsByBounds($exchange->data, $bounds);
+        $timelineBounds = $this->resolveTimelineBounds(null, $period);
+        if ($timelineBounds) {
+            $exchange->data = $this->filterRowsByBounds($exchange->data, $timelineBounds);
         }
 
         if (empty($exchange->data)) {
@@ -326,36 +326,36 @@ class ReportCapacityService
      */
     public function buildChartExchange(Exchange $exchange, ?array $dateRange, ?string $period): Exchange
     {
-        $chart = clone $exchange;
+        $chartExchange = clone $exchange;
         $useHourlyTimeline = $this->shouldFetchHourlyFromApi($dateRange, $period);
 
-        $chart->data = $this->fillMissingTimeline(
-            $chart->data,
+        $chartExchange->data = $this->fillMissingTimeline(
+            $chartExchange->data,
             $dateRange,
             $period,
             $useHourlyTimeline
         );
 
-        return $this->applyChartVisualizationSettings($chart, $dateRange, $period);
+        return $this->applyChartVisualizationSettings($chartExchange, $dateRange, $period);
     }
 
     private function applyChartVisualizationSettings(
-        Exchange $chart,
+        Exchange $chartExchange,
         ?array $dateRange,
         ?string $period
     ): Exchange {
-        $visualization = $chart['visualization'] ?? [];
+        $visualization = $chartExchange['visualization'] ?? [];
         if (!is_array($visualization)) {
             $visualization = [];
         }
         $visualization['labelIntervalHours'] = $this->resolveChartLabelIntervalHours($dateRange, $period);
         $visualization['allowSparseTimeline'] = true;
         if (!isset($visualization['allowCapacityChannel'])) {
-            $visualization['allowCapacityChannel'] = $this->exchangeSupportsCapacityChannel($chart);
+            $visualization['allowCapacityChannel'] = $this->exchangeSupportsCapacityChannel($chartExchange);
         }
-        $chart['visualization'] = $visualization;
+        $chartExchange['visualization'] = $visualization;
 
-        return $chart;
+        return $chartExchange;
     }
 
     /**
@@ -363,24 +363,24 @@ class ReportCapacityService
      */
     public function resolveChartLabelIntervalHours(?array $dateRange, ?string $period): ?int
     {
-        $hours = $this->resolveRangeDurationHours($dateRange, $period);
-        if ($hours === null) {
+        $rangeDurationHours = $this->resolveRangeDurationHours($dateRange, $period);
+        if ($rangeDurationHours === null) {
             return null;
         }
 
-        if ($hours <= 24) {
+        if ($rangeDurationHours <= 24) {
             return 1;
         }
 
-        if ($hours <= 48) {
+        if ($rangeDurationHours <= 48) {
             return 2;
         }
 
-        if ($hours <= 168) {
+        if ($rangeDurationHours <= 168) {
             return 6;
         }
 
-        if ($hours <= self::MAX_HOURLY_FETCH_HOURS) {
+        if ($rangeDurationHours <= self::MAX_HOURLY_FETCH_HOURS) {
             return 12;
         }
 
@@ -389,9 +389,9 @@ class ReportCapacityService
 
     public function shouldFetchHourlyFromApi(?array $dateRange, ?string $period): bool
     {
-        $hours = $this->resolveRangeDurationHours($dateRange, $period);
-        if ($hours !== null) {
-            return $hours <= self::MAX_HOURLY_FETCH_HOURS;
+        $rangeDurationHours = $this->resolveRangeDurationHours($dateRange, $period);
+        if ($rangeDurationHours !== null) {
+            return $rangeDurationHours <= self::MAX_HOURLY_FETCH_HOURS;
         }
 
         if ($period && $period !== '_' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $period)) {
@@ -411,22 +411,22 @@ class ReportCapacityService
             return null;
         }
 
-        $from = new DateTimeImmutable($bounds['from'] . ' 00:00:00');
-        $to = new DateTimeImmutable($bounds['to'] . ' 23:59:59');
+        $rangeStart = new DateTimeImmutable($bounds['from'] . ' 00:00:00');
+        $rangeEnd = new DateTimeImmutable($bounds['to'] . ' 23:59:59');
 
-        return ($to->getTimestamp() - $from->getTimestamp()) / 3600;
+        return ($rangeEnd->getTimestamp() - $rangeStart->getTimestamp()) / 3600;
     }
 
     private function fetchAggregatedReport(string $scopeId, ?array $dateRange, ?string $period): ?Exchange
     {
         try {
-            $fetchHourly = $this->shouldFetchHourlyFromApi($dateRange, $period);
-            $params = $this->buildCapacityFetchParams($dateRange, $period, $fetchHourly);
-            $urlPeriod = $this->resolveCapacityFetchUrlPeriod($dateRange, $period);
+            $useHourlyGrouping = $this->shouldFetchHourlyFromApi($dateRange, $period);
+            $warehouseFetchParams = $this->buildCapacityFetchParams($dateRange, $period, $useHourlyGrouping);
+            $warehouseUrlPeriodSegment = $this->resolveCapacityFetchUrlPeriod($dateRange, $period);
 
             $result = \App::$http->readGetResult(
-                '/warehouse/capacityscope/' . $scopeId . '/' . $urlPeriod . '/',
-                $params === [] ? null : $params
+                '/warehouse/capacityscope/' . $scopeId . '/' . $warehouseUrlPeriodSegment . '/',
+                $warehouseFetchParams === [] ? null : $warehouseFetchParams
             );
             if (!$result) {
                 return null;
@@ -437,7 +437,7 @@ class ReportCapacityService
                 return null;
             }
 
-            return $this->normalizeFetchedCapacityExchange($exchange, $fetchHourly);
+            return $this->normalizeFetchedCapacityExchange($exchange, $useHourlyGrouping);
         } catch (\Throwable $exception) {
             return null;
         }
@@ -446,22 +446,22 @@ class ReportCapacityService
     /**
      * @return array<string, string>
      */
-    private function buildCapacityFetchParams(?array $dateRange, ?string $period, bool $fetchHourly): array
+    private function buildCapacityFetchParams(?array $dateRange, ?string $period, bool $useHourlyGrouping): array
     {
-        $params = [];
+        $warehouseFetchParams = [];
 
         if ($dateRange) {
-            $params['fromDate'] = $dateRange['from'];
-            $params['toDate'] = $dateRange['to'];
+            $warehouseFetchParams['fromDate'] = $dateRange['from'];
+            $warehouseFetchParams['toDate'] = $dateRange['to'];
         }
 
-        if ($fetchHourly) {
-            $params['groupby'] = 'hour';
+        if ($useHourlyGrouping) {
+            $warehouseFetchParams['groupby'] = 'hour';
         } elseif ($dateRange !== null || ($period !== null && $period !== '_')) {
-            $params['groupby'] = 'day';
+            $warehouseFetchParams['groupby'] = 'day';
         }
 
-        return $params;
+        return $warehouseFetchParams;
     }
 
     private function resolveCapacityFetchUrlPeriod(?array $dateRange, ?string $period): string
@@ -477,11 +477,11 @@ class ReportCapacityService
         return '_';
     }
 
-    private function normalizeFetchedCapacityExchange(Exchange $exchange, bool $fetchHourly): Exchange
+    private function normalizeFetchedCapacityExchange(Exchange $exchange, bool $useHourlyGrouping): Exchange
     {
-        $exchange->data = $this->aggregateRowsByDate($exchange->data, $fetchHourly);
+        $exchange->data = $this->aggregateRowsByDate($exchange->data, $useHourlyGrouping);
 
-        if (!$fetchHourly) {
+        if (!$useHourlyGrouping) {
             if ($this->exchangeDataLooksHourly($exchange->data)) {
                 $exchange->data = $this->aggregateRowsByDate($exchange->data, false);
             }
@@ -502,32 +502,32 @@ class ReportCapacityService
      */
     public function aggregateRowsByDate(array $rows, bool $useHourlyKeys): array
     {
-        $capacityRowsByTimelineKey = [];
+        $rowsByTimelineKey = [];
 
         foreach ($rows as $row) {
             if (!is_array($row)) {
                 continue;
             }
 
-            $normalized = $this->normalizeDataRow($row, $useHourlyKeys);
-            $timelineKey = $normalized[1];
+            $normalizedRow = $this->normalizeDataRow($row, $useHourlyKeys);
+            $timelineKey = $normalizedRow[1];
             if ($timelineKey === '') {
                 continue;
             }
 
-            if (!isset($capacityRowsByTimelineKey[$timelineKey])) {
-                $capacityRowsByTimelineKey[$timelineKey] = $normalized;
+            if (!isset($rowsByTimelineKey[$timelineKey])) {
+                $rowsByTimelineKey[$timelineKey] = $normalizedRow;
                 continue;
             }
 
-            for ($column = 2; $column <= 9; $column++) {
-                $capacityRowsByTimelineKey[$timelineKey][$column] += $normalized[$column];
+            for ($metricColumnIndex = 2; $metricColumnIndex <= 9; $metricColumnIndex++) {
+                $rowsByTimelineKey[$timelineKey][$metricColumnIndex] += $normalizedRow[$metricColumnIndex];
             }
         }
 
-        ksort($capacityRowsByTimelineKey);
+        ksort($rowsByTimelineKey);
 
-        return array_values($capacityRowsByTimelineKey);
+        return array_values($rowsByTimelineKey);
     }
 
     /**
@@ -548,7 +548,7 @@ class ReportCapacityService
             return $rows;
         }
 
-        $capacityRowsByTimelineKey = [];
+        $rowsByTimelineKey = [];
         $defaultSubjectId = '';
 
         foreach ($rows as $row) {
@@ -556,59 +556,59 @@ class ReportCapacityService
                 continue;
             }
 
-            $normalized = $this->normalizeDataRow($row, $useHourlyTimeline);
-            $timelineKey = $normalized[1];
+            $normalizedRow = $this->normalizeDataRow($row, $useHourlyTimeline);
+            $timelineKey = $normalizedRow[1];
             if ($timelineKey === '') {
                 continue;
             }
 
-            if (!isset($capacityRowsByTimelineKey[$timelineKey])) {
-                $capacityRowsByTimelineKey[$timelineKey] = $normalized;
-                if ($defaultSubjectId === '' && $normalized[0] !== '') {
-                    $defaultSubjectId = $normalized[0];
+            if (!isset($rowsByTimelineKey[$timelineKey])) {
+                $rowsByTimelineKey[$timelineKey] = $normalizedRow;
+                if ($defaultSubjectId === '' && $normalizedRow[0] !== '') {
+                    $defaultSubjectId = $normalizedRow[0];
                 }
                 continue;
             }
 
-            for ($column = 2; $column <= 9; $column++) {
-                $capacityRowsByTimelineKey[$timelineKey][$column] += $normalized[$column];
+            for ($metricColumnIndex = 2; $metricColumnIndex <= 9; $metricColumnIndex++) {
+                $rowsByTimelineKey[$timelineKey][$metricColumnIndex] += $normalizedRow[$metricColumnIndex];
             }
         }
 
         $rangeStartDate = $timelineBounds['from'];
         $rangeEndDate = $timelineBounds['to'];
-        $filledTimelineRows = [];
+        $completeTimelineRows = [];
 
         if ($useHourlyTimeline) {
-            $start = new DateTimeImmutable($rangeStartDate . ' 00:00:00');
-            $end = new DateTimeImmutable($rangeEndDate . ' 23:00:00');
-            $cursor = $start;
+            $timelineStart = new DateTimeImmutable($rangeStartDate . ' 00:00:00');
+            $timelineEnd = new DateTimeImmutable($rangeEndDate . ' 23:00:00');
+            $timelineCursor = $timelineStart;
 
-            while ($cursor <= $end) {
+            while ($timelineCursor <= $timelineEnd) {
                 $timelineKey = $this->normalizeTimelineKey(
-                    $cursor->format('Y-m-d') . ' ' . $cursor->format('H') . ':00',
+                    $timelineCursor->format('Y-m-d') . ' ' . $timelineCursor->format('H') . ':00',
                     true
                 );
-                $filledTimelineRows[] = $capacityRowsByTimelineKey[$timelineKey]
+                $completeTimelineRows[] = $rowsByTimelineKey[$timelineKey]
                     ?? $this->emptyCapacityRow($defaultSubjectId, $timelineKey);
-                $cursor = $cursor->modify('+1 hour');
+                $timelineCursor = $timelineCursor->modify('+1 hour');
             }
 
-            return $filledTimelineRows;
+            return $completeTimelineRows;
         }
 
-        $start = new DateTimeImmutable($rangeStartDate);
-        $end = new DateTimeImmutable($rangeEndDate);
-        $cursor = $start;
+        $timelineStart = new DateTimeImmutable($rangeStartDate);
+        $timelineEnd = new DateTimeImmutable($rangeEndDate);
+        $timelineCursor = $timelineStart;
 
-        while ($cursor <= $end) {
-            $timelineKey = $cursor->format('Y-m-d');
-            $filledTimelineRows[] = $capacityRowsByTimelineKey[$timelineKey]
+        while ($timelineCursor <= $timelineEnd) {
+            $timelineKey = $timelineCursor->format('Y-m-d');
+            $completeTimelineRows[] = $rowsByTimelineKey[$timelineKey]
                 ?? $this->emptyCapacityRow($defaultSubjectId, $timelineKey);
-            $cursor = $cursor->modify('+1 day');
+            $timelineCursor = $timelineCursor->modify('+1 day');
         }
 
-        return $filledTimelineRows;
+        return $completeTimelineRows;
     }
 
     /**
@@ -621,8 +621,8 @@ class ReportCapacityService
                 continue;
             }
 
-            $date = $this->rowDateValue($row);
-            if ($date !== '' && preg_match('/\d{2}:\d{2}/', $date)) {
+            $dateValue = $this->rowDateValue($row);
+            if ($dateValue !== '' && preg_match('/\d{2}:\d{2}/', $dateValue)) {
                 return true;
             }
         }
@@ -651,9 +651,9 @@ class ReportCapacityService
     /**
      * @return array<int, int|string>
      */
-    private function emptyCapacityRow(string $subjectId, string $key): array
+    private function emptyCapacityRow(string $subjectId, string $timelineKey): array
     {
-        return [$subjectId, $key, 0, 0, 0, 0, 0, 0, 0, 0];
+        return [$subjectId, $timelineKey, 0, 0, 0, 0, 0, 0, 0, 0];
     }
 
     public function exchangeSupportsCapacityChannel(Exchange $exchange): bool
@@ -673,11 +673,11 @@ class ReportCapacityService
      */
     private function normalizeDataRow(array $row, bool $useHourlyKeys): array
     {
-        $date = $this->rowDateValue($row);
+        $rowDateValue = $this->rowDateValue($row);
 
         return [
             (string) ($row['subjectid'] ?? $row[0] ?? ''),
-            $this->normalizeTimelineKey($date, $useHourlyKeys),
+            $this->normalizeTimelineKey($rowDateValue, $useHourlyKeys),
             $this->rowNumericValue($row, 'bookedcount', 2),
             $this->rowNumericValue($row, 'plannedcount', 3),
             $this->rowNumericValue($row, 'bookedminutes', 4),
@@ -689,19 +689,19 @@ class ReportCapacityService
         ];
     }
 
-    private function normalizeTimelineKey(string $date, bool $useHourlyKeys): string
+    private function normalizeTimelineKey(string $rowDateValue, bool $useHourlyKeys): string
     {
-        if ($date === '') {
+        if ($rowDateValue === '') {
             return '';
         }
 
         if (!$useHourlyKeys) {
-            return substr($date, 0, 10);
+            return substr($rowDateValue, 0, 10);
         }
 
-        $timestamp = strtotime($date);
+        $timestamp = strtotime($rowDateValue);
         if ($timestamp === false) {
-            return $date;
+            return $rowDateValue;
         }
 
         return date('Y-m-d H', $timestamp) . ':00';
@@ -754,10 +754,10 @@ class ReportCapacityService
      */
     private function filterRowsByBounds(array $rows, array $bounds): array
     {
-        $from = $bounds['from'];
-        $to = $bounds['to'];
+        $rangeStart = $bounds['from'];
+        $rangeEnd = $bounds['to'];
 
-        return array_values(array_filter($rows, static function ($row) use ($from, $to) {
+        return array_values(array_filter($rows, static function ($row) use ($rangeStart, $rangeEnd) {
             $date = (string) ($row[1] ?? '');
             if ($date === '') {
                 return false;
@@ -765,7 +765,7 @@ class ReportCapacityService
 
             $day = substr($date, 0, 10);
 
-            return $day >= $from && $day <= $to;
+            return $day >= $rangeStart && $day <= $rangeEnd;
         }));
     }
 
@@ -775,10 +775,10 @@ class ReportCapacityService
             $exchange->firstDay = $this->dayFromString($fromDate);
             $exchange->lastDay = $this->dayFromString($toDate);
         } elseif (!empty($exchange->data)) {
-            $first = (string) $exchange->data[0][1];
-            $last = (string) $exchange->data[count($exchange->data) - 1][1];
-            $exchange->firstDay = $this->dayFromString(substr($first, 0, 10));
-            $exchange->lastDay = $this->dayFromString(substr($last, 0, 10));
+            $firstRowDate = (string) $exchange->data[0][1];
+            $lastRowDate = (string) $exchange->data[count($exchange->data) - 1][1];
+            $exchange->firstDay = $this->dayFromString(substr($firstRowDate, 0, 10));
+            $exchange->lastDay = $this->dayFromString(substr($lastRowDate, 0, 10));
         }
 
         return $exchange;
@@ -814,13 +814,13 @@ class ReportCapacityService
         $months = [];
 
         foreach ($exchange->data as $row) {
-            $date = (string) ($row[1] ?? '');
-            if ($date === '') {
+            $rowDateValue = (string) ($row[1] ?? '');
+            if ($rowDateValue === '') {
                 continue;
             }
 
-            $year = substr($date, 0, 4);
-            $month = substr($date, 0, 7);
+            $year = substr($rowDateValue, 0, 4);
+            $month = substr($rowDateValue, 0, 7);
 
             if (!in_array($year, $years, true)) {
                 $years[] = $year;
