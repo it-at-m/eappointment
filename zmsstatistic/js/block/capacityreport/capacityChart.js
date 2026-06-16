@@ -11,6 +11,7 @@ import {
 import {
     getChartDateRangeLabel,
     getChartDownloadFilename,
+    syncCapacityTableDownloadHref,
 } from './formatting';
 import { CAPACITY_CHANNEL_MODES, CAPACITY_CHANNEL_STORAGE_KEY } from './constants';
 
@@ -81,6 +82,7 @@ export default class CapacityChart {
         this.syncModeButton();
         this.syncSparseTimelineButton();
         this.syncDownloadButton();
+        this.syncTableDownloadLink();
         this.render();
     }
 
@@ -188,6 +190,7 @@ export default class CapacityChart {
         }
         this.view.chartValueMode = this.view.chartValueMode === 'minutes' ? 'slots' : 'minutes';
         this.syncModeButton();
+        this.syncTableDownloadLink();
         this.view.tableController.syncHeaders();
         this.render();
         this.view.tableController.render();
@@ -236,6 +239,14 @@ export default class CapacityChart {
         $button.attr(
             'aria-label',
             showMinutes ? 'Als Terminanzahl anzeigen' : 'Als Slotzeit in Minuten anzeigen'
+        );
+        this.syncTableDownloadLink();
+    }
+
+    syncTableDownloadLink() {
+        syncCapacityTableDownloadHref(
+            this.view.$main.find('.report-board--table-download').first(),
+            this.view.chartValueMode
         );
     }
 

@@ -834,7 +834,8 @@ class ReportCapacityService
         string $scopeId,
         mixed $exchangeCapacity,
         ?array $dateRange,
-        array $selectedScopes = []
+        array $selectedScopes = [],
+        string $valueMode = 'slots'
     ): array {
         $args['category'] = 'raw-capacityscope';
         $args['subject'] = 'capacityscope';
@@ -848,7 +849,8 @@ class ReportCapacityService
 
         $args['downloadTitle'] = $this->buildDownloadFilename(
             $dateRange,
-            $args['period'] ?? null
+            $args['period'] ?? null,
+            $valueMode
         );
 
         if (!empty($selectedScopes)) {

@@ -119,12 +119,17 @@ class ReportCapacityIndex extends BaseController
             $reportCapacityService = new ReportCapacityService();
         }
 
+        $validator = $request->getAttribute('validator');
+        $valueMode = $validator->getParameter('valueMode')->isString()->getValue();
+        $valueMode = $valueMode === 'minutes' ? 'minutes' : 'slots';
+
         $args = $reportCapacityService->prepareDownloadArgs(
             $args,
             $scopeId,
             $exchangeCapacity,
             $dateRange,
-            $selectedScopes
+            $selectedScopes,
+            $valueMode
         );
 
         return (new Download\WarehouseReport(\App::$slim->getContainer()))

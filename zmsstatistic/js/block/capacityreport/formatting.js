@@ -89,3 +89,23 @@ export function getCapacityDownloadBasename(chartValueMode, chartDateFrom, chart
 export function getChartDownloadFilename(chartValueMode, chartDateFrom, chartDateTo, chartPeriod) {
     return `${getCapacityDownloadBasename(chartValueMode, chartDateFrom, chartDateTo, chartPeriod)}.png`;
 }
+
+export function syncCapacityTableDownloadHref($link, chartValueMode) {
+    if (!$link || !$link.length) {
+        return;
+    }
+
+    const href = $link.attr('href');
+    if (!href) {
+        return;
+    }
+
+    const url = new URL(href, window.location.origin);
+    if (chartValueMode === 'minutes') {
+        url.searchParams.set('valueMode', 'minutes');
+    } else {
+        url.searchParams.delete('valueMode');
+    }
+
+    $link.attr('href', `${url.pathname}${url.search}`);
+}
