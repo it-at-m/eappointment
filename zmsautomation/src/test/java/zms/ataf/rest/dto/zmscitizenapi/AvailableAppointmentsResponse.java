@@ -3,7 +3,8 @@ package zms.ataf.rest.dto.zmscitizenapi;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
 
 /**
  * Response data for GET /available-appointments/ and GET /available-appointments-by-office/.
@@ -13,30 +14,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * Use {@link #getFirstAppointmentTimestamp()} to obtain a timestamp for the next step.
  */
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AvailableAppointmentsResponse {
 
-    @JsonProperty("appointmentTimestamps")
     private List<Long> appointmentTimestamps;
-
-    @JsonProperty("offices")
     private List<OfficeAppointments> offices;
-
-    public List<Long> getAppointmentTimestamps() {
-        return appointmentTimestamps;
-    }
-
-    public void setAppointmentTimestamps(List<Long> appointmentTimestamps) {
-        this.appointmentTimestamps = appointmentTimestamps;
-    }
-
-    public List<OfficeAppointments> getOffices() {
-        return offices;
-    }
-
-    public void setOffices(List<OfficeAppointments> offices) {
-        this.offices = offices;
-    }
 
     /**
      * Returns the first appointment timestamp for use in the reserve step.
@@ -85,28 +68,10 @@ public class AvailableAppointmentsResponse {
         return getFirstAppointmentTimestamp();
     }
 
+    @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class OfficeAppointments {
-        @JsonProperty("officeId")
         private Integer officeId;
-
-        @JsonProperty("appointments")
         private List<Long> appointments;
-
-        public Integer getOfficeId() {
-            return officeId;
-        }
-
-        public void setOfficeId(Integer officeId) {
-            this.officeId = officeId;
-        }
-
-        public List<Long> getAppointments() {
-            return appointments;
-        }
-
-        public void setAppointments(List<Long> appointments) {
-            this.appointments = appointments;
-        }
     }
 }
