@@ -50,7 +50,7 @@ class ExchangeCapacityscope extends Base
         $entity['visualization']['ylabelMinutesPublic'] = ["bookedminutes_public", "plannedminutes_public"];
         $entity['visualization']['allowCapacityChannel'] = true;
 
-        $queryConstant = $this->resolveQueryConstant($period, $unfiltered);
+        $query = $this->resolveMetricsQuery($period, $unfiltered);
 
         foreach ($subjectIdList as $scopeId) {
             $parameters = ['scopeid' => $scopeId];
@@ -59,7 +59,7 @@ class ExchangeCapacityscope extends Base
                 $parameters['dateend'] = $dateend->format('Y-m-d');
             }
 
-            $raw = $this->fetchAll(constant($queryConstant), $parameters);
+            $raw = $this->fetchAll($query, $parameters);
             foreach ($raw as $entry) {
                 $entity->addDataSet(array_values($entry));
             }
@@ -68,22 +68,25 @@ class ExchangeCapacityscope extends Base
         return $entity;
     }
 
-    private function resolveQueryConstant(string $period, bool $unfiltered): string
+    private function resolveMetricsQuery(string $period, bool $unfiltered): string
     {
         if ($unfiltered) {
-            return '\BO\Zmsdb\Query\ExchangeCapacityscope::QUERY_READ_REPORT';
+            return Query\ExchangeCapacityscope::QUERY_CAPACITY_METRICS_BY_DAY_ALL_DATES;
         }
 
         if ($period === 'hour') {
-            return '\BO\Zmsdb\Query\ExchangeCapacityscope::QUERY_READ_REPORT_HOURLY';
+            return Query\ExchangeCapacityscope::QUERY_CAPACITY_METRICS_BY_HOUR_IN_DATE_RANGE;
         }
 
-        return '\BO\Zmsdb\Query\ExchangeCapacityscope::QUERY_READ_REPORT_FILTERED';
+        return Query\ExchangeCapacityscope::QUERY_CAPACITY_METRICS_BY_DAY_IN_DATE_RANGE;
     }
 
     public function readSubjectList(): Exchange
     {
-        $raw = $this->getReader()->fetchAll(Query\ExchangeCapacityscope::QUERY_SUBJECTS, []);
+        $raw = $this->getReader()->fetchAll(
+            Query\ExchangeCapacityscope::QUERY_CAPACITY_REPORT_SCOPE_SUBJECT_LIST,
+            []
+        );
         $entity = new Exchange();
         $entity['title'] = "Terminkapazität ";
         $entity->addDictionaryEntry('subject', 'string', 'Standort ID', 'scope.id');

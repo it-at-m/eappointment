@@ -9,7 +9,10 @@ class ExchangeCapacityscope extends Base
      */
     const TABLE = 'slot_process';
 
-    const QUERY_READ_REPORT = '
+    /**
+     * Time-series metrics for one scope: booked/planned capacity per day, all dates.
+     */
+    const QUERY_CAPACITY_METRICS_BY_DAY_ALL_DATES = '
     SELECT
         `scopeID` as subjectid,
         CONCAT(year, "-", LPAD(month, 2, 0), "-", LPAD(day, 2, 0)) as date,
@@ -40,7 +43,10 @@ class ExchangeCapacityscope extends Base
     ORDER BY date ASC
     ';
 
-    const QUERY_READ_REPORT_FILTERED = '
+    /**
+     * Time-series metrics for one scope: booked/planned capacity per day, within a date range.
+     */
+    const QUERY_CAPACITY_METRICS_BY_DAY_IN_DATE_RANGE = '
     SELECT
         `scopeID` as subjectid,
         CONCAT(year, "-", LPAD(month, 2, 0), "-", LPAD(day, 2, 0)) as date,
@@ -74,9 +80,9 @@ class ExchangeCapacityscope extends Base
     ';
 
     /**
-     * Buckets by clock hour (HOUR(time)), not by slot grid length.
+     * Time-series metrics for one scope: booked/planned capacity per clock hour, within a date range.
      */
-    const QUERY_READ_REPORT_HOURLY = '
+    const QUERY_CAPACITY_METRICS_BY_HOUR_IN_DATE_RANGE = '
     SELECT
         `scopeID` as subjectid,
         CONCAT(year, "-", LPAD(month, 2, 0), "-", LPAD(day, 2, 0), " ", LPAD(HOUR(`time`), 2, "0"), ":00") as date,
@@ -110,9 +116,9 @@ class ExchangeCapacityscope extends Base
     ';
 
     /**
-     * Date bounds from all generated slots (incl. future planned), not only booked ones.
+     * Scope picker list: one row per scope with min/max slot dates and description (no capacity numbers).
      */
-    const QUERY_SUBJECTS = '
+    const QUERY_CAPACITY_REPORT_SCOPE_SUBJECT_LIST = '
       SELECT
           scope.`StandortID` as subject,
           MIN(CONCAT(s.year, "-", LPAD(s.month, 2, 0), "-", LPAD(s.day, 2, 0))) AS periodstart,
