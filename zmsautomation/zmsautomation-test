@@ -7,6 +7,24 @@ MAVEN_ARGS=("$@")
 info() { echo "[INFO] $*"; }
 warn() { echo "[WARN] $*"; }
 
+# Maven accepts -Pataf-api,ataf-ui as well as separate -Pataf-api -Pataf-ui flags.
+resolve_ataf_maven_profiles() {
+  HAS_ATAF_API=false
+  HAS_ATAF_UI=false
+  for arg in "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; do
+    if [[ "$arg" == -P* ]]; then
+      profiles="${arg#-P}"
+      IFS=',' read -r -a profile_list <<< "$profiles"
+      for profile in "${profile_list[@]}"; do
+        profile="${profile#"${profile%%[![:space:]]*}"}"
+        profile="${profile%"${profile##*[![:space:]]}"}"
+        [[ "$profile" == "ataf-api" ]] && HAS_ATAF_API=true
+        [[ "$profile" == "ataf-ui" ]] && HAS_ATAF_UI=true
+      done
+    fi
+  done
+}
+
 SECTION_BAR="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 SECTION_COLOR_RESET=$'\033[0m'
 SECTION_COLOR_INDEX=0
@@ -505,8 +523,9 @@ info "All health checks passed."
 
 # 10. Browser Setup (for UI tests)
 MAVEN_ARGS_STR="${MAVEN_ARGS[*]:-}"
+resolve_ataf_maven_profiles
 RUN_UI_TESTS=true
-if [[ "$MAVEN_ARGS_STR" == *"-Pataf-api"* ]] && [[ "$MAVEN_ARGS_STR" != *"-Pataf-ui"* ]]; then
+if [[ "$HAS_ATAF_API" == true && "$HAS_ATAF_UI" != true ]]; then
   RUN_UI_TESTS=false
 fi
 
@@ -604,8 +623,6 @@ cd "$PROJECT_ROOT/zmsautomation"
 ATAF_MAVEN_ARGS=()
 HAS_TAG_FILTER=false
 HAS_CUCUMBER_FEATURES=false
-HAS_ATAF_API=false
-HAS_ATAF_UI=false
 for arg in "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; do
   if [[ "$arg" == -Dcucumber.filter.tags=* ]]; then
     HAS_TAG_FILTER=true
@@ -618,11 +635,7 @@ for arg in "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; do
   elif [[ "$arg" == -Dcucumber.features=* ]]; then
     HAS_CUCUMBER_FEATURES=true
     ATAF_MAVEN_ARGS+=("$arg")
-  elif [[ "$arg" == -Pataf-api* ]]; then
-    HAS_ATAF_API=true
-    ATAF_MAVEN_ARGS+=("$arg")
-  elif [[ "$arg" == -Pataf-ui* ]]; then
-    HAS_ATAF_UI=true
+  elif [[ "$arg" == -P* ]]; then
     ATAF_MAVEN_ARGS+=("$arg")
   else
     ATAF_MAVEN_ARGS+=("$arg")
