@@ -79,11 +79,6 @@ class Warehouse extends Base
             'right' => 'superuser'
         ],
         [
-            'subject' => 'capacityscope',
-            'description' => 'Terminkapazität (geplant/gebucht) Standort',
-            'right' => 'capacityreport'
-        ],
-        [
             'subject' => 'unassignedscope',
             'description' => 'Standorte ohne Zuordnung zur DLDB mit Terminen',
             'right' => 'superuser'
