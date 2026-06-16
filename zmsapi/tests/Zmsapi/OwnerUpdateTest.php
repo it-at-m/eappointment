@@ -15,7 +15,7 @@ class OwnerUpdateTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('jurisdiction', 'superuser');
         $response = $this->render(['id' => 99], [
             '__body' => $this->readFixture("GetOwner.json")
         ], []);
@@ -25,14 +25,14 @@ class OwnerUpdateTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('jurisdiction', 'superuser');
         $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
 
     public function testInputInvalid()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('jurisdiction', 'superuser');
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
         $this->render(["id" => 99], [
@@ -42,7 +42,7 @@ class OwnerUpdateTest extends Base
 
     public function testNotFound()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('jurisdiction', 'superuser');
         $this->expectException('\BO\Zmsapi\Exception\Owner\OwnerNotFound');
         $this->expectExceptionCode(404);
         $this->render(["id" => 9999], [

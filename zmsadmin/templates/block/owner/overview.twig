@@ -5,7 +5,7 @@
 {% for owner in ownerList %}
 <div class="owner-list owner-overview">
     <h2 class="owner-title">{{ owner.name }}
-        {% if permissions.superuser %}
+        {% if permissions.jurisdiction %}
             <a class="float-right" href="{{ urlGet('owner', {'id':owner.id}, {}) }}" title="Bearbeiten"><i class="fas fa-edit" aria-hidden="true"></i> <span class="aural">Bearbeiten</span></a>
         {% endif %}
     </h2>
