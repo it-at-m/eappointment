@@ -335,8 +335,11 @@ jobs:
           else
             TAG_LINES=()
             while IFS= read -r line; do
-              TAG_LINES+=("$line")
+              line="$(printf '%s' "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+              [[ -n "$line" ]] && TAG_LINES+=("$line")
             done <<< "$TAG_INPUT"
+            # If all lines were empty/whitespace, default to running all tests
+            [[ ${`#TAG_LINES`[@]} -eq 0 ]] && TAG_LINES=("")
           fi
 
           fail_any=0
