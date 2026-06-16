@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsdb\Query\ExchangeCapacityscope as ExchangeCapacityscopeQuery;
 use BO\Zmsentities\Exchange;
 
 class ExchangeCapacityscope extends Base
@@ -71,20 +72,20 @@ class ExchangeCapacityscope extends Base
     private function resolveMetricsQuery(string $period, bool $unfiltered): string
     {
         if ($unfiltered) {
-            return Query\ExchangeCapacityscope::QUERY_CAPACITY_METRICS_BY_DAY_ALL_DATES;
+            return ExchangeCapacityscopeQuery::QUERY_CAPACITY_METRICS_BY_DAY_ALL_DATES;
         }
 
         if ($period === 'hour') {
-            return Query\ExchangeCapacityscope::QUERY_CAPACITY_METRICS_BY_HOUR_IN_DATE_RANGE;
+            return ExchangeCapacityscopeQuery::QUERY_CAPACITY_METRICS_BY_HOUR_IN_DATE_RANGE;
         }
 
-        return Query\ExchangeCapacityscope::QUERY_CAPACITY_METRICS_BY_DAY_IN_DATE_RANGE;
+        return ExchangeCapacityscopeQuery::QUERY_CAPACITY_METRICS_BY_DAY_IN_DATE_RANGE;
     }
 
     public function readSubjectList(): Exchange
     {
         $raw = $this->getReader()->fetchAll(
-            Query\ExchangeCapacityscope::QUERY_CAPACITY_REPORT_SCOPE_SUBJECT_LIST,
+            ExchangeCapacityscopeQuery::QUERY_CAPACITY_REPORT_SCOPE_SUBJECT_LIST,
             []
         );
         $entity = new Exchange();

@@ -7,10 +7,12 @@
 
 namespace BO\Zmsstatistic\Download;
 
+use BO\Zmsentities\Exchange;
+use BO\Zmsstatistic\BaseController;
 use Exception;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
-class Base extends \BO\Zmsstatistic\BaseController
+class Base extends BaseController
 {
     public static $ignoreColumns = [
         'subjectid',
@@ -78,7 +80,7 @@ class Base extends \BO\Zmsstatistic\BaseController
         return (string) $variable;
     }
 
-    protected function writeRawReport(\BO\Zmsentities\Exchange $report, Spreadsheet $spreadsheet): Spreadsheet
+    protected function writeRawReport(Exchange $report, Spreadsheet $spreadsheet): Spreadsheet
     {
         $sheet = $spreadsheet->getActiveSheet();
         $reportData = [];
