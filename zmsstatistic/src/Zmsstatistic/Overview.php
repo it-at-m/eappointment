@@ -35,7 +35,11 @@ class Overview extends BaseController
         $requestPeriod = \App::$http
             ->readGetResult('/warehouse/requestscope/' . $this->workstation->scope['id'] . '/')
             ->getEntity();
-        $capacityPeriod = (new ReportCapacityService())->getCapacityPeriod($this->workstation->scope['id']);
+        $useraccount = $this->workstation->getUseraccount();
+        $showCapacityReport = $useraccount->hasPermissions(['statistic', 'capacityreport']);
+        $capacityPeriod = $showCapacityReport
+            ? (new ReportCapacityService())->getCapacityPeriod($this->workstation->scope['id'])
+            : null;
 
         return Render::withHtml(
             $response,
@@ -49,6 +53,7 @@ class Overview extends BaseController
                 'clientPeriod' => $clientPeriod,
                 'requestPeriod' => $requestPeriod,
                 'capacityPeriod' => $capacityPeriod,
+                'showCapacityReport' => $showCapacityReport,
                 'scopeId' => $this->workstation->scope['id'],
                 'showAll' => 0
             )
