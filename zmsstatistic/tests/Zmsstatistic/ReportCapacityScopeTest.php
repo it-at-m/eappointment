@@ -415,6 +415,11 @@ class ReportCapacityScopeTest extends Base
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture('GET_Workstation_statistic_only.json'),
                 ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture('GET_department_74.json'),
+                ],
             ]
         );
         $this->render([], ['__uri' => '/report/capacity/scope/'], []);
