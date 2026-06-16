@@ -1,0 +1,23 @@
+{
+    "challenge": {
+        "parameters": {
+            "algorithm": "SHA-256",
+            "nonce": "5808c72adc97dfdeb0146f0c24eac1d2073daf3ae1cdd7debbbed23462e7d03c",
+            "salt": "d065c7a20ad6e4920f567df4",
+            "cost": 1000,
+            "keyLength": 32,
+            "keyPrefix": "00",
+            "keySignature": null,
+            "memoryCost": null,
+            "parallelism": null,
+            "expiresAt": 1778916660,
+            "data": null
+        },
+        "signature": "0a706f95851b6a5803771d7c301a2b3ea9f8980ae4812c2e8ef80fa2ca081bfb"
+    },
+    "solution": {
+        "counter": 12,
+        "derivedKey": "00a1b2c3d4e5f6789abcdef0123456789abcdef",
+        "time": 47
+    }
+}
