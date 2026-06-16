@@ -56,7 +56,7 @@ class ErrorMessages
             'errorCode' => 'captchaVerificationFailed',
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorMessage' => 'Captcha verification failed.',
-            'errorType' => 'warning'
+            'errorType' => 'error'
         ],
         'invalidLocationAndServiceCombination' => [
             'errorCode' => 'invalidLocationAndServiceCombination',
@@ -187,25 +187,25 @@ class ErrorMessages
         'captchaVerificationError' => [
             'errorCode' => 'captchaVerificationError',
             'statusCode' => self::HTTP_BAD_REQUEST,
-            'errorType' => 'warning',
+            'errorType' => 'error',
             'errorMessage' => 'An error occurred during captcha verification.'
         ],
         'captchaMissing' => [
             'errorCode' => 'captchaMissing',
             'statusCode' => self::HTTP_BAD_REQUEST,
-            'errorType' => 'warning',
+            'errorType' => 'error',
             'errorMessage' => 'Missing captcha token.',
         ],
         'captchaInvalid' => [
             'errorCode' => 'captchaInvalid',
             'statusCode' => self::HTTP_BAD_REQUEST,
-            'errorType' => 'warning',
+            'errorType' => 'error',
             'errorMessage' => 'Invalid captcha token.',
         ],
         'captchaExpired' => [
             'errorCode' => 'captchaExpired',
             'statusCode' => self::HTTP_BAD_REQUEST,
-            'errorType' => 'warning',
+            'errorType' => 'error',
             'errorMessage' => 'Captcha token expired.',
         ],
         'serviceUnavailable' => [
