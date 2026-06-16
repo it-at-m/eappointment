@@ -10,42 +10,112 @@
             "type": "string",
             "description": "Site secret for AltchaCaptcha integration"
         },
+        "clientAddress": {
+            "type": "string",
+            "description": "Source IP address of the end user"
+        },
         "payload": {
             "type": "object",
             "properties": {
-                "algorithm": {
-                    "type": "string",
-                    "description": "The algorithm used for HMAC signature"
-                },
                 "challenge": {
-                    "type": "string",
-                    "description": "The challenge itself"
+                    "type": "object",
+                    "properties": {
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "algorithm": {
+                                    "type": "string",
+                                    "description": "Key-derivation algorithm used for the proof of work"
+                                },
+                                "nonce": {
+                                    "type": "string",
+                                    "description": "Random server-issued nonce from the challenge"
+                                },
+                                "salt": {
+                                    "type": "string",
+                                    "minLength": 10,
+                                    "description": "Salt from the challenge"
+                                },
+                                "cost": {
+                                    "type": "number",
+                                    "description": "Work factor from the challenge"
+                                },
+                                "keyLength": {
+                                    "type": "number",
+                                    "description": "Length of the derived key in bytes"
+                                },
+                                "keyPrefix": {
+                                    "type": "string",
+                                    "description": "Hex prefix the derived key must start with"
+                                },
+                                "keySignature": {
+                                    "type": ["string", "null"]
+                                },
+                                "memoryCost": {
+                                    "type": ["number", "null"]
+                                },
+                                "parallelism": {
+                                    "type": ["number", "null"]
+                                },
+                                "expiresAt": {
+                                    "type": ["number", "null"]
+                                },
+                                "data": {
+                                    "type": ["object", "null"]
+                                }
+                            },
+                            "required": [
+                                "algorithm",
+                                "nonce",
+                                "salt",
+                                "cost",
+                                "keyLength",
+                                "keyPrefix"
+                            ]
+                        },
+                        "signature": {
+                            "type": "string",
+                            "description": "HMAC signature from the challenge"
+                        }
+                    },
+                    "required": [
+                        "parameters",
+                        "signature"
+                    ]
                 },
-                "number": {
-                    "type": "number",
-                    "description": "The solution to the challenge"
-                },
-                "salt": {
-                    "type": "string",
-                    "minLength": 10,
-                    "description": "Random string as part of the challenge"
-                },
-                "signature": {
-                    "type": "string",
-                    "description": "HMAC signature of the verification data"
-                },
-                "took": {
-                    "type": "number",
-                    "description": "Time of challenge completion in milliseconds"
+                "solution": {
+                    "type": "object",
+                    "properties": {
+                        "counter": {
+                            "type": "number",
+                            "description": "Brute-forced integer that satisfies the proof of work"
+                        },
+                        "derivedKey": {
+                            "type": "string",
+                            "description": "Lowercase hex of the derived key for counter"
+                        },
+                        "time": {
+                            "type": "number",
+                            "description": "Time of challenge completion in milliseconds"
+                        }
+                    },
+                    "required": [
+                        "counter",
+                        "derivedKey"
+                    ]
                 }
-            }
+            },
+            "required": [
+                "challenge",
+                "solution"
+            ]
         }
     },
     "required": [
         "siteKey",
         "siteSecret",
+        "clientAddress",
         "payload"
     ],
-    "description": "Schema definition for an AltchaCaptcha solution request"
+    "description": "Schema definition for an AltchaCaptcha v2 solution request"
 }
-    
