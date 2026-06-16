@@ -455,8 +455,9 @@ aria-describedby="{%
 {% endmacro %}
 
 {% macro radiobuttonfield(args, fieldId, groupargs) %}
-    <div class="form-check form-check-inline">
-        <label class="form-check-label radio-label{% if args.inline %} radio-inline{% endif %}">
+    {% set inline = args.inline is defined ? args.inline : true %}
+    <div class="form-check{% if inline %} form-check-inline{% endif %}">
+        <label class="form-check-label radio-label{% if inline %} radio-inline{% endif %}">
             <input
                 className="form-check-input"
                 type="radio"

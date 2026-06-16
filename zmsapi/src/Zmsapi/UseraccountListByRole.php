@@ -24,14 +24,10 @@ class UseraccountListByRole extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $roleLevel = $args['level'];
+        $roleName = $args['roleName'];
         $workstation = (new Helper\User($request, 1))->checkPermissions('useraccount');
 
-        $useraccountList = (new Useraccount())->readListRole($roleLevel, 0, $workstation);
-
-        if (! $useraccountList or count($useraccountList) === 0) {
-            throw new \BO\Zmsapi\Exception\Useraccount\UserRoleNotFound();
-        }
+        $useraccountList = (new Useraccount())->readListRole($roleName, 0, $workstation);
 
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
