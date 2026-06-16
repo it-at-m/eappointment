@@ -176,44 +176,56 @@ class AvailabilityPage extends Component {
                 showSpinner();
 
                 $.ajax(`${this.props.links.includeurl}/availability/`, {
-                method: 'POST',
-                data: JSON.stringify(payload),
-                contentType: 'application/json'
-            }).done((success) => {
-                this.refreshData()
-                    .then(() => this.getConflictList({ scrollToErrors: false }))
-                    .then((conflictList) => {
-                        const firstConflictedAvailability = this.findFirstConflictedAvailability(
-                            conflictList,
-                            this.state.availabilitylist
-                        );
+                    method: 'POST',
+                    data: JSON.stringify(payload),
+                    contentType: 'application/json'
+                }).done((success) => {
+                    this.refreshData()
+                        .then(() => this.getConflictList({ scrollToErrors: false }))
+                        .then((conflictList) => {
+                            const firstConflictedAvailability = this.findFirstConflictedAvailability(
+                                conflictList,
+                                this.state.availabilitylist
+                            );
 
-                        this.setState({
-                            errorList: [],
-                            selectedAvailability: firstConflictedAvailability || null,
-                            lastSave: new Date().getTime(),
-                            saveSuccess: true,
-                            saveType: 'save'
-                        }, () => {
-                            if (this.successElement) {
-                                this.successElement.scrollIntoView();
-                            }
-                            hideSpinner();
+                            this.setState({
+                                errorList: [],
+                                selectedAvailability: firstConflictedAvailability || null,
+                                lastSave: new Date().getTime(),
+                                saveSuccess: true,
+                                saveType: 'save'
+                            }, () => {
+                                this.scrollToSuccessMessage();
+                                hideSpinner();
+                            });
+                        })
+                        .catch((err) => {
+                            console.error('conflict check after save failed', err);
+
+                            this.setState({
+                                errorList: [],
+                                selectedAvailability: null,
+                                lastSave: new Date().getTime(),
+                                saveSuccess: true,
+                                saveType: 'save'
+                            }, () => {
+                                this.scrollToSuccessMessage();
+                                hideSpinner();
+                            });
                         });
-                    });
-            }).fail((err) => {
-                let isException = err.responseText?.toLowerCase().includes('exception');
-                if (err.status >= 400 && isException) {
-                    new ExceptionHandler($('.opened'), {
-                        code: err.status,
-                        message: err.responseText
-                    });
-                } else {
-                    console.error('save error', err);
-                }
-                this.updateSaveBarState('save', false);
-                hideSpinner();
-            });
+                }).fail((err) => {
+                    let isException = err.responseText?.toLowerCase().includes('exception');
+                    if (err.status >= 400 && isException) {
+                        new ExceptionHandler($('.opened'), {
+                            code: err.status,
+                            message: err.responseText
+                        });
+                    } else {
+                        console.error('save error', err);
+                    }
+                    this.updateSaveBarState('save', false);
+                    hideSpinner();
+                });
             },
             () => {},
             { $main: $('body') }
@@ -268,6 +280,19 @@ class AvailabilityPage extends Component {
 
         });
 
+    }
+
+    scrollToSuccessMessage() {
+        if (!this.successElement) {
+            return;
+        }
+
+        window.requestAnimationFrame(() => {
+            this.successElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        });
     }
 
     onRevertUpdates() {
@@ -969,13 +994,13 @@ class AvailabilityPage extends Component {
         />
     }
 
-    renderSaveBar() {
+    renderSaveBar({ setSuccessRef = false } = {}) {
         if (this.state.lastSave) {
             return (
                 <SaveBar
                     lastSave={this.state.lastSave}
                     success={this.state.saveSuccess}
-                    setSuccessRef={this.setSuccessRef}
+                    setSuccessRef={setSuccessRef ? this.setSuccessRef : null}
                     type={this.state.saveType}
                 />
             )
@@ -987,8 +1012,9 @@ class AvailabilityPage extends Component {
             <PageLayout
                 tabs={<TabsBar selected={this.state.selectedTab} tabs={this.props.tabs} onSelect={this.onTabSelect.bind(this)} />}
                 timeTable={this.renderTimeTable()}
-                saveBar={this.renderSaveBar()}
+                saveBarTop={this.renderSaveBar({ setSuccessRef: true })}
                 accordion={this.renderAvailabilityAccordion()}
+                saveBarBottom={this.renderSaveBar({ setSuccessRef: false })}
                 conflicts={<Conflicts conflicts={this.state.conflicts} onSelect={this.onConflictedIdSelect.bind(this)} />}
             />
         )
