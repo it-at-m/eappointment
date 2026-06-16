@@ -242,6 +242,7 @@
               </includes>
               <systemPropertyVariables>
                 <cucumber.features>src/test/resources/features/rest</cucumber.features>
+                <cucumber.filter.tags>not @ignore</cucumber.filter.tags>
               </systemPropertyVariables>
             </configuration>
           </plugin>
@@ -329,6 +330,7 @@
               </includes>
               <systemPropertyVariables>
                 <cucumber.features>src/test/resources/features/ui</cucumber.features>
+                <cucumber.filter.tags>not @ignore</cucumber.filter.tags>
               </systemPropertyVariables>
             </configuration>
           </plugin>
