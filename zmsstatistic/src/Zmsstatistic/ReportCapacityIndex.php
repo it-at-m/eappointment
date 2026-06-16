@@ -28,6 +28,8 @@ class ReportCapacityIndex extends BaseController
         ResponseInterface $response,
         array $args
     ) {
+        $this->workstation->getUseraccount()->testPermissions(['statistic', 'capacityreport']);
+
         $validator = $request->getAttribute('validator');
         $reportCapacityService = new ReportCapacityService();
         $reportHelper = new ReportHelper();

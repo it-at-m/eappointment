@@ -81,7 +81,7 @@ class Warehouse extends Base
         [
             'subject' => 'capacityscope',
             'description' => 'Terminkapazität (geplant/gebucht) Standort',
-            'right' => 'scope'
+            'right' => 'capacityreport'
         ],
         [
             'subject' => 'unassignedscope',

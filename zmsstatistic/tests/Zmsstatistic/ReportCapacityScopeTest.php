@@ -403,4 +403,20 @@ class ReportCapacityScopeTest extends Base
         $this->assertStringContainsString('report-board--chart-data-full', $body);
         $this->assertStringContainsString('50 %', $body);
     }
+
+    public function testWithoutCapacityReportPermission()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture('GET_Workstation_statistic_only.json'),
+                ],
+            ]
+        );
+        $this->render([], ['__uri' => '/report/capacity/scope/'], []);
+    }
 }
