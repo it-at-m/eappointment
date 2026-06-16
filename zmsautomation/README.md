@@ -153,6 +153,8 @@ Required environment variables for ATAF tests:
 ### UI tests (SSO)
 For local UI tests (Statistik, Admin), the default SSO user is the Keycloak `ataf` user (password `vorschau`), created by Keycloak migration `.resources/keycloak/migration/07_add-system-users.yml` and related DB data in Flyway (e.g. `V16__add_keycloak_system_users.sql`). Credentials are set in `testautomation.properties` (`testautomation.userName` / `testautomation.userPassword`) or via ATAF environment variables. For other environments (e.g. ssodev.muenchen.de), override with the appropriate credentials.
 
+For role-specific local dev and API tests, use Keycloak users named after the role (password `vorschau`), e.g. `agent_basic`, from `.resources/keycloak/migration/08_add-role-test-users.yml` with matching ZMS accounts `<role>@keycloak` in Flyway `V22__add_role_test_users.sql`. Roles: `agent_basic`, `agent_queue`, `agent_queue_plus`, `appointment_admin`, `reporting_viewer`, `user_admin`, `audit_viewer`, `system_admin`.
+
 ### Example
 
 ```bash
