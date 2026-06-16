@@ -1,0 +1,123 @@
+id: add role test users
+author: ZMS Development
+realm: zms
+changes:
+  - addUser:
+      name: agent_basic
+      lastName: Basic
+      firstName: Agent
+      enabled: true
+      emailVerified: true
+      email: agent_basic@localhost
+  - updateUserPassword:
+      name: agent_basic
+      password: "vorschau"
+  - assignRole:
+      user: agent_basic
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: agent_queue
+      lastName: Queue
+      firstName: Agent
+      enabled: true
+      emailVerified: true
+      email: agent_queue@localhost
+  - updateUserPassword:
+      name: agent_queue
+      password: "vorschau"
+  - assignRole:
+      user: agent_queue
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: agent_queue_plus
+      lastName: Queue Plus
+      firstName: Agent
+      enabled: true
+      emailVerified: true
+      email: agent_queue_plus@localhost
+  - updateUserPassword:
+      name: agent_queue_plus
+      password: "vorschau"
+  - assignRole:
+      user: agent_queue_plus
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: appointment_admin
+      lastName: Admin
+      firstName: Appointment
+      enabled: true
+      emailVerified: true
+      email: appointment_admin@localhost
+  - updateUserPassword:
+      name: appointment_admin
+      password: "vorschau"
+  - assignRole:
+      user: appointment_admin
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: reporting_viewer
+      lastName: Viewer
+      firstName: Reporting
+      enabled: true
+      emailVerified: true
+      email: reporting_viewer@localhost
+  - updateUserPassword:
+      name: reporting_viewer
+      password: "vorschau"
+  - assignRole:
+      user: reporting_viewer
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: user_admin
+      lastName: Admin
+      firstName: User
+      enabled: true
+      emailVerified: true
+      email: user_admin@localhost
+  - updateUserPassword:
+      name: user_admin
+      password: "vorschau"
+  - assignRole:
+      user: user_admin
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: audit_viewer
+      lastName: Viewer
+      firstName: Audit
+      enabled: true
+      emailVerified: true
+      email: audit_viewer@localhost
+  - updateUserPassword:
+      name: audit_viewer
+      password: "vorschau"
+  - assignRole:
+      user: audit_viewer
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: system_admin
+      lastName: Admin
+      firstName: System
+      enabled: true
+      emailVerified: true
+      email: system_admin@localhost
+  - updateUserPassword:
+      name: system_admin
+      password: "vorschau"
+  - assignRole:
+      user: system_admin
+      role: user
+      clientId: zms

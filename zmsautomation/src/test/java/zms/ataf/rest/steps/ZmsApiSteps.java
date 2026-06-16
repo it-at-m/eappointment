@@ -421,7 +421,7 @@ public class ZmsApiSteps {
                 "Set testautomation.zmsapiUserName and testautomation.zmsapiUserPassword in testautomation.properties, "
                     + "or use 'Given the ZMS API workstation user is \"<role>\"' in the scenario");
         }
-        return new String[] { username, password };
+        return new String[] { resolveWorkstationUsername(username), password };
     }
 
     private String defaultWorkstationPassword() {
@@ -430,10 +430,7 @@ public class ZmsApiSteps {
     }
 
     private String resolveWorkstationUsername(String usernameOrRole) {
-        if (usernameOrRole.startsWith("test_role_")) {
-            return usernameOrRole;
-        }
-        return "test_role_" + usernameOrRole;
+        return usernameOrRole.endsWith("@keycloak") ? usernameOrRole : usernameOrRole + "@keycloak";
     }
 
     private String extractAuthKeyFromBody(String body) {
