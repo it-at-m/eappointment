@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace BO\Zmscitizenapi\Tests\Middleware;
+namespace BO\Slim\Tests\Middleware;
 
-use BO\Zmscitizenapi\Utils\ErrorMessages;
-use BO\Zmscitizenapi\Middleware\RequestSanitizerMiddleware;
-use BO\Zmscitizenapi\Tests\MiddlewareTestCase;
+use BO\Slim\Middleware\RequestSanitizerMiddleware;
+use BO\Slim\Tests\TestLogger;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Psr7\Response;
@@ -18,12 +17,7 @@ class RequestSanitizerMiddlewareTest extends MiddlewareTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        \App::$source_name = 'unittest';
-
-        if (\App::$cache) {
-            \App::$cache->clear();
-        }
-        $this->middleware = new RequestSanitizerMiddleware($this->logger);
+        $this->middleware = new RequestSanitizerMiddleware($this->logger, 10, 32768);
     }
 
     public function testSanitizesQueryParams(): void
@@ -38,14 +32,10 @@ class RequestSanitizerMiddlewareTest extends MiddlewareTestCase
             ->willReturnSelf();
         $request->expects($this->any())
             ->method('getUri')
-            ->willReturn(new \BO\Zmsclient\Psr7\Uri('http://localhost/test'));
-        
+            ->willReturn(new \Slim\Psr7\Uri('http', 'localhost', 80, '/test'));
+
         $response = new Response();
         $handler = $this->createHandler($response);
-
-        /*$this->logger->expectLogInfo('Request sanitized', [
-            'uri' => 'http://localhost/test'
-        ]);*/
 
         $result = $this->middleware->process($request, $handler);
         $this->assertSame($response, $result);
@@ -60,16 +50,24 @@ class RequestSanitizerMiddlewareTest extends MiddlewareTestCase
             ->willThrowException(new \RuntimeException('Sanitization error'));
         $request->expects($this->any())
             ->method('getUri')
-            ->willReturn(new \BO\Zmsclient\Psr7\Uri('http://localhost/test'));
-            
+            ->willReturn(new \Slim\Psr7\Uri('http', 'localhost', 80, '/test'));
+
         $response = new Response();
         $handler = $this->createHandler($response);
-    
-        $this->logger->expectLogError(new \RuntimeException('Sanitization error'));
-    
+
+        TestLogger::expectLogError(new \RuntimeException('Sanitization error'));
+
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Sanitization error');
-        
+
         $this->middleware->process($request, $handler);
+    }
+
+    public function testRejectsNonPositiveLimits(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('maxRecursionDepth must be greater than 0');
+
+        new RequestSanitizerMiddleware($this->logger, 0, 32768);
     }
 }
