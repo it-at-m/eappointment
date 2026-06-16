@@ -603,6 +603,9 @@ cd "$PROJECT_ROOT/zmsautomation"
 # Optional -Dcucumber.filter.tags narrows within that layer. @ignore is excluded by default.
 ATAF_MAVEN_ARGS=()
 HAS_TAG_FILTER=false
+HAS_CUCUMBER_FEATURES=false
+HAS_ATAF_API=false
+HAS_ATAF_UI=false
 for arg in "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; do
   if [[ "$arg" == -Dcucumber.filter.tags=* ]]; then
     HAS_TAG_FILTER=true
@@ -612,12 +615,31 @@ for arg in "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; do
     else
       ATAF_MAVEN_ARGS+=("-Dcucumber.filter.tags=($value) and not @ignore")
     fi
+  elif [[ "$arg" == -Dcucumber.features=* ]]; then
+    HAS_CUCUMBER_FEATURES=true
+    ATAF_MAVEN_ARGS+=("$arg")
+  elif [[ "$arg" == -Pataf-api* ]]; then
+    HAS_ATAF_API=true
+    ATAF_MAVEN_ARGS+=("$arg")
+  elif [[ "$arg" == -Pataf-ui* ]]; then
+    HAS_ATAF_UI=true
+    ATAF_MAVEN_ARGS+=("$arg")
   else
     ATAF_MAVEN_ARGS+=("$arg")
   fi
 done
 if [[ "$HAS_TAG_FILTER" != true ]]; then
   ATAF_MAVEN_ARGS+=("-Dcucumber.filter.tags=not @ignore")
+fi
+# ATAF reads cucumber.properties before profile overrides apply; pass feature paths via -D.
+if [[ "$HAS_CUCUMBER_FEATURES" != true ]]; then
+  if [[ "$HAS_ATAF_API" == true && "$HAS_ATAF_UI" != true ]]; then
+    ATAF_MAVEN_ARGS+=("-Dcucumber.features=src/test/resources/features/rest")
+  elif [[ "$HAS_ATAF_UI" == true && "$HAS_ATAF_API" != true ]]; then
+    ATAF_MAVEN_ARGS+=("-Dcucumber.features=src/test/resources/features/ui")
+  elif [[ "$HAS_ATAF_API" == true && "$HAS_ATAF_UI" == true ]]; then
+    ATAF_MAVEN_ARGS+=("-Dcucumber.features=src/test/resources/features")
+  fi
 fi
 
 # SSO credentials for UI tests (default: ataf/vorschau for local Keycloak, override via SSO_USER/SSO_PASSWORD env vars)
