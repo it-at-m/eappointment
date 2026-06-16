@@ -7,7 +7,7 @@
 
 {% block content %}
     <div class="counter-view" data-includeurl="{{ includeUrl }}">
-        <div class="report-index warehouse-report">
+        <div class="report-index capacity-report">
             {% embed "block/report/period.twig" with {"source":source, "items": capacityPeriod, "selected": period} %}
             {% endembed %}
 
