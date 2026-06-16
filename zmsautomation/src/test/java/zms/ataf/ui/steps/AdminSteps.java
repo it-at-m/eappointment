@@ -612,7 +612,7 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(TestDataHelper.getTestData("new_waiting_number"), true);
     }
 
-    @Wenn("sie einen Terminkunden mit ausgewählter Dienstleistung, Uhrzeit, name und gültige E-Mail-Adresse buchen.")
+    @Wenn("Sie einen Terminkunden mit ausgewählter Dienstleistung, Uhrzeit, name und gültige E-Mail-Adresse buchen.")
     public void wenn_sie_einen_terminkunden_mit_ausgewaehlter_dienstleistung_uhrzeit_name_und_gueltige_email_adresse_buchen() {
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen("<beliebig>");
         COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<beliebig>");
@@ -628,7 +628,7 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
     }
 
-    @Wenn("sie einen Terminkunden mit der Dienstleistung {string}, Uhrzeit, name und gültige E-Mail-Adresse buchen.")
+    @Wenn("Sie einen Terminkunden mit der Dienstleistung {string}, Uhrzeit, name und gültige E-Mail-Adresse buchen.")
     public void wenn_sie_einen_terminkunden_mit_der_dienstleistung_uhrzeit_name_und_gueltige_email_adresse_buchen(String dienstleistungen) {
         List<String> services = Arrays.asList(dienstleistungen.split(",\\s*"));
         services.forEach(this::wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen);
@@ -645,7 +645,7 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
     }
 
-    @Wenn("sie einen Terminkunden mit der Dienstleistung {string}, Uhrzeit, name, gültige E-Mail-Adresse und die Anmerkung {string} buchen.")
+    @Wenn("Sie einen Terminkunden mit der Dienstleistung {string}, Uhrzeit, name, gültige E-Mail-Adresse und die Anmerkung {string} buchen.")
     public void wenn_sie_einen_terminkunden_mit_der_dienstleistung_uhrzeit_name_gueltige_email_adresse_und_die_anmerkung_buchen(String dienstleistungen,
             String anmerkung) {
         List<String> services = Arrays.asList(dienstleistungen.split(",\\s*"));
@@ -676,7 +676,7 @@ public class AdminSteps {
 
     }
 
-    @Wenn("sie einen Terminkunden mit ausgewählter Dienstleistung und Uhrzeit buchen.")
+    @Wenn("Sie einen Terminkunden mit ausgewählter Dienstleistung und Uhrzeit buchen.")
     public void wenn_sie_einen_terminkunden_mit_ausgewaehlter_dienstleistung_und_uhrzeit_buchen_erscheinen_zwei_fehlermeldungen() {
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen("<beliebig>");
         COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<beliebig>");

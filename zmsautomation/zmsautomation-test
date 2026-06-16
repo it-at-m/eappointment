@@ -1,11 +1,29 @@
 #!/usr/bin/env bash
-  set -euo pipefail
+set -euo pipefail
 
 # Capture Maven arguments (e.g., -Dcucumber.filter.tags="@smoke" to run specific tags)
 MAVEN_ARGS=("$@")
 
 info() { echo "[INFO] $*"; }
 warn() { echo "[WARN] $*"; }
+
+# Maven accepts -Pataf-api,ataf-ui as well as separate -Pataf-api -Pataf-ui flags.
+resolve_ataf_maven_profiles() {
+  HAS_ATAF_API=false
+  HAS_ATAF_UI=false
+  for arg in "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; do
+    if [[ "$arg" == -P* ]]; then
+      profiles="${arg#-P}"
+      IFS=',' read -r -a profile_list <<< "$profiles"
+      for profile in "${profile_list[@]}"; do
+        profile="${profile#"${profile%%[![:space:]]*}"}"
+        profile="${profile%"${profile##*[![:space:]]}"}"
+        [[ "$profile" == "ataf-api" ]] && HAS_ATAF_API=true
+        [[ "$profile" == "ataf-ui" ]] && HAS_ATAF_UI=true
+      done
+    fi
+  done
+}
 
 SECTION_BAR="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 SECTION_COLOR_RESET=$'\033[0m'
@@ -98,6 +116,7 @@ BACKUP_FILE="/tmp/zms_backup_$(date +%s).sql.gz"
 SKIP_DB_RESTORE="${SKIP_DB_RESTORE:-0}"
 BASE_SQL_FILE="$PROJECT_ROOT/.resources/zms.sql"
 FLYWAY_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/db/migration"
+DLDB_FIXTURE_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/dldb"
 
 info "Test URLs: BASE_URI=$BASE_URI"
 info "Test URLs: CITIZEN_API_BASE_URI=$CITIZEN_API_BASE_URI"
@@ -274,11 +293,35 @@ SET FOREIGN_KEY_CHECKS = 1;"
   info "Tables dropped."
 }
 
+install_dldb_bundled_fixtures() {
+  # Offline copy of a Munich SADB export (same shape as cronjob.hourly → updateDldbData).
+  info "Installing bundled DLDB fixtures from $DLDB_FIXTURE_DIR ..."
+  if [[ ! -f "$DLDB_FIXTURE_DIR/services_de.json" || ! -f "$DLDB_FIXTURE_DIR/locations_de.json" ]]; then
+    warn "Bundled DLDB fixtures are missing under $DLDB_FIXTURE_DIR"
+    return 1
+  fi
+  mkdir -p "$PROJECT_ROOT/zmsapi/data"
+  for f in services_de.json locations_de.json topic_de.json services_en.json locations_en.json authority_de.json settings.json; do
+    if [[ -f "$DLDB_FIXTURE_DIR/$f" ]]; then
+      cp -f "$DLDB_FIXTURE_DIR/$f" "$PROJECT_ROOT/zmsapi/data/$f"
+    fi
+  done
+  (
+    cd "$PROJECT_ROOT/zmsapi"
+    vendor/bin/updateDldbData --commit
+  ) || {
+    warn "updateDldbData failed after copying bundled DLDB fixtures"
+    return 1
+  }
+  info "Bundled DLDB fixtures installed."
+  return 0
+}
+
 run_hourly_with_retries() {
-  # Run hourly cronjob with up to 5 retries (6 attempts total)
-  # Waits between attempts: 1, 2, 3, 5, 10 seconds
+  # Run hourly cronjob with up to 5 retries (6 attempts total).
+  # Munich index fetch uses a 45s HTTP timeout — short delays rarely help; use longer backoff.
   local cmd=("$PROJECT_ROOT/zmsapi/cron/cronjob.hourly" --city=munich)
-  local delays=(0 1 2 3 5 10) # initial attempt has no delay
+  local delays=(0 15 30 45 60 90) # initial attempt has no delay
   local max_attempts=${#delays[@]}
   local attempt delay
 
@@ -302,7 +345,7 @@ run_hourly_with_retries() {
     fi
   done
 
-  warn "Hourly cronjob failed after ${max_attempts} attempts; continuing."
+  warn "Hourly cronjob failed after ${max_attempts} attempts."
   return 1
 }
 
@@ -374,7 +417,14 @@ section "6. PHP Migrations"
 section "7. Hourly Cronjob"
 export ZMS_CRONROOT=1
 export ZMS_ENV="${ZMS_ENV:-dev}"
-run_hourly_with_retries || true
+if ! run_hourly_with_retries; then
+  if [[ "${SKIP_DDLDB_FALLBACK:-}" == "1" ]]; then
+    warn "SKIP_DDLDB_FALLBACK=1 — hourly DLDB import failed and bundled fixtures are disabled"
+    exit 1
+  fi
+  warn "Live Munich SADB import failed; falling back to bundled DLDB fixtures."
+  install_dldb_bundled_fixtures || exit 1
+fi
 clear_caches
 
 section "8. Minutly Cronjob"
@@ -449,6 +499,13 @@ wait_http_direct() { # name url
 }
 
 fail=false
+
+DLDB_SERVICES_JSON="$PROJECT_ROOT/zmsapi/data/services_de.json"
+if [[ ! -f "$DLDB_SERVICES_JSON" ]]; then
+  warn "Missing $DLDB_SERVICES_JSON after hourly cron — Munich SADB fetch/import failed."
+  warn "citizenapi-available-days needs DLDB data (officeId=10502, serviceId=1063441); health checks will fail until import succeeds."
+  fail=true
+fi
 wait_http "zmsapi"                     "$ZMS_API_HEALTH_URL"          || fail=true
 info "citizenapi ping uses direct PHP route (not gateway): ${CITIZEN_API_HEALTH_URL}"
 wait_http "citizenapi"                 "$CITIZEN_API_HEALTH_URL"      || fail=true
@@ -465,6 +522,14 @@ $fail && { warn "One or more health checks failed"; exit 1; }
 info "All health checks passed."
 
 # 10. Browser Setup (for UI tests)
+MAVEN_ARGS_STR="${MAVEN_ARGS[*]:-}"
+resolve_ataf_maven_profiles
+RUN_UI_TESTS=true
+if [[ "$HAS_ATAF_API" == true && "$HAS_ATAF_UI" != true ]]; then
+  RUN_UI_TESTS=false
+fi
+
+if [[ "$RUN_UI_TESTS" == true ]]; then
 section "10. Browser Setup"
 info "Setting up browsers and Xvfb for UI tests..."
 
@@ -519,22 +584,13 @@ else
     warn "Failed to start Xvfb - UI tests may fail"
   fi
 fi
+fi
 
 # 11. Running Tests
 section "11. Running ATAF Tests"
-info "Running Cucumber/ATAF tests with default ataf profile..."
-info "Note: You can filter tests by tags using: -Dcucumber.filter.tags=@tagName"
-info "Example: bash zmsautomation-test -Dcucumber.filter.tags=@smoke"
 
 # Keycloak swap for UI tests: rewrite redirect URLs 8090→80 so login works from inside container.
 # Trigger only when UI tests run (not when only API tests: -Pataf-api without -Pataf-ui).
-# Swap only the app(s) whose UI tests run (infer from -Dcucumber.filter.tags); if unclear, swap both.
-# When we move to GitHub cloud we can add a host here instead of localhost port swap.
-MAVEN_ARGS_STR="${MAVEN_ARGS[*]:-}"
-RUN_UI_TESTS=true
-if [[ "$MAVEN_ARGS_STR" == *"-Pataf-api"* ]] && [[ "$MAVEN_ARGS_STR" != *"-Pataf-ui"* ]]; then
-  RUN_UI_TESTS=false
-fi
 SWAP_STATISTIC=false
 SWAP_ADMIN=false
 if [[ "$RUN_UI_TESTS" == true ]]; then
@@ -562,26 +618,41 @@ rm -rf "$PROJECT_ROOT/zmsautomation/target/site/cucumber-pretty" 2>/dev/null || 
 TEST_EXIT=0
 cd "$PROJECT_ROOT/zmsautomation"
 
-# Run with default ataf profile
-# Maven arguments (e.g., -Dcucumber.filter.tags="@smoke") are passed through via MAVEN_ARGS.
-# Scenarios tagged @ignore are excluded unless @ignore is explicitly in the tag expression.
+# API vs UI is selected by -Pataf-api / -Pataf-ui (feature paths in pom.xml).
+# Optional -Dcucumber.filter.tags narrows within that layer. @ignore is excluded by default.
 ATAF_MAVEN_ARGS=()
-HAS_CUCUMBER_TAGS=false
+HAS_TAG_FILTER=false
+HAS_CUCUMBER_FEATURES=false
 for arg in "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; do
   if [[ "$arg" == -Dcucumber.filter.tags=* ]]; then
-    HAS_CUCUMBER_TAGS=true
+    HAS_TAG_FILTER=true
     value="${arg#-Dcucumber.filter.tags=}"
-    if [[ "$value" != *@ignore* ]]; then
-      ATAF_MAVEN_ARGS+=("-Dcucumber.filter.tags=($value) and not @ignore")
-    else
+    if [[ "$value" == *@ignore* ]]; then
       ATAF_MAVEN_ARGS+=("$arg")
+    else
+      ATAF_MAVEN_ARGS+=("-Dcucumber.filter.tags=($value) and not @ignore")
     fi
+  elif [[ "$arg" == -Dcucumber.features=* ]]; then
+    HAS_CUCUMBER_FEATURES=true
+    ATAF_MAVEN_ARGS+=("$arg")
+  elif [[ "$arg" == -P* ]]; then
+    ATAF_MAVEN_ARGS+=("$arg")
   else
     ATAF_MAVEN_ARGS+=("$arg")
   fi
 done
-if [[ "$HAS_CUCUMBER_TAGS" != true ]]; then
+if [[ "$HAS_TAG_FILTER" != true ]]; then
   ATAF_MAVEN_ARGS+=("-Dcucumber.filter.tags=not @ignore")
+fi
+# ATAF reads cucumber.properties before profile overrides apply; pass feature paths via -D.
+if [[ "$HAS_CUCUMBER_FEATURES" != true ]]; then
+  if [[ "$HAS_ATAF_API" == true && "$HAS_ATAF_UI" != true ]]; then
+    ATAF_MAVEN_ARGS+=("-Dcucumber.features=src/test/resources/features/rest")
+  elif [[ "$HAS_ATAF_UI" == true && "$HAS_ATAF_API" != true ]]; then
+    ATAF_MAVEN_ARGS+=("-Dcucumber.features=src/test/resources/features/ui")
+  elif [[ "$HAS_ATAF_API" == true && "$HAS_ATAF_UI" == true ]]; then
+    ATAF_MAVEN_ARGS+=("-Dcucumber.features=src/test/resources/features")
+  fi
 fi
 
 # SSO credentials for UI tests (default: ataf/vorschau for local Keycloak, override via SSO_USER/SSO_PASSWORD env vars)

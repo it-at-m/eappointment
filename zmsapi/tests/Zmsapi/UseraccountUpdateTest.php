@@ -10,64 +10,49 @@ class UseraccountUpdateTest extends Base
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
         $this->setDepartment(74);
+
         $response = $this->render(['loginname' => 'testadmin'], [
             '__body' => '{
-                "rights": {
-                "availability": 0,
-                "basic": 0,
-                "cluster": 0,
-                "department": 0,
-                "organisation": 0,
-                "scope": 0,
-                "superuser": 0,
-                "ticketprinter": 0,
-                "useraccount": 1
-              },
-              "departments": [
-                  {"id": 74}
-              ],
-              "email": "unittest@berlinonline.de",
-              "id": "unittest",
-              "password": "unittest"
+                "roles": ["agent_queue"],
+                "departments": [
+                    {"id": 74}
+                ],
+                "email": "unittest@berlinonline.de",
+                "id": "testadmin"
             }'
         ], []);
-        $this->assertStringContainsString('useraccount.json', (string)$response->getBody());
-        $this->assertStringContainsString('unittest', (string)$response->getBody());
-        $this->assertTrue(200 == $response->getStatusCode());
+
+        $body = (string) $response->getBody();
+
+        $this->assertStringContainsString('useraccount.json', $body);
+        $this->assertStringContainsString('testadmin', $body);
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testChangePassword()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
         $this->setDepartment(74);
+
         $response = $this->render(['loginname' => 'testadmin'], [
             '__body' => '{
-                "rights": {
-                "availability": 0,
-                "basic": 0,
-                "cluster": 0,
-                "department": 0,
-                "organisation": 0,
-                "scope": 0,
-                "superuser": 0,
-                "ticketprinter": 0,
-                "useraccount": 1
-              },
-              "departments": [
-                  {"id": 74}
-              ],
-              "email": "unittest@berlinonline.de",
-              "id": "unittest",
-              "changePassword": ["newpassword", "newpassword"]
+                "roles": ["user_admin"],
+                "departments": [
+                    {"id": 74}
+                ],
+                "email": "unittest@berlinonline.de",
+                "id": "unittest",
+                "changePassword": ["newpassword", "newpassword"]
             }'
         ], []);
-        $this->assertTrue(password_verify(
-            'newpassword',
-            json_decode((string)$response->getBody(), 1)['data']['password']
-        ));
-        $this->assertStringContainsString('useraccount.json', (string)$response->getBody());
-        $this->assertStringContainsString('unittest', (string)$response->getBody());
-        $this->assertTrue(200 == $response->getStatusCode());
+
+        $body = (string) $response->getBody();
+        $decoded = json_decode($body, true);
+
+        $this->assertTrue(password_verify('newpassword', $decoded['data']['password']));
+        $this->assertStringContainsString('useraccount.json', $body);
+        $this->assertStringContainsString('unittest', $body);
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testMissingLogin()
@@ -121,21 +106,11 @@ class UseraccountUpdateTest extends Base
         $this->expectExceptionCode(404);
         $this->render(['loginname' => 'testuser'], [
             '__body' => '{
-                "rights": {
-                "availability": 1,
-                "basic": 1,
-                "cluster": 1,
-                "department": 1,
-                "organisation": 1,
-                "scope": 1,
-                "superuser": 1,
-                "ticketprinter": 1,
-                "useraccount": 1
-              },
-              "departments": [
-                  {"id": 74}
-              ],
-              "id": "testadmin"
+                "roles": ["agent_queue"],
+                "departments": [
+                    {"id": 74}
+                ],
+                "id": "testadmin"
             }'
         ], []);
     }
@@ -147,27 +122,17 @@ class UseraccountUpdateTest extends Base
         $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
         $response = $this->render(['loginname' => 'testadmin'], [
             '__body' => '{
-                "rights": {
-                "availability": "0",
-                "basic": "0",
-                "cluster": "0",
-                "department": "0",
-                "organisation": "0",
-                "scope": "0",
-                "superuser": "0",
-                "ticketprinter": "0",
-                "useraccount": "2"
-              },
-              "departments": [
-                  {"id": 74}
-              ],
+                "roles": ["agent_queue"],
+                "departments": [
+                    {"id": 74}
+                ],
               "email": "unittest@berlinonline.de",
               "test": "unittest"
             }'
         ], []);
     }
 
-    public function testMissingAssignedRights()
+    public function testSuperuserOnlyRoleRequiresSuperuser()
     {
         $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->expectExceptionCode(403);
@@ -175,23 +140,32 @@ class UseraccountUpdateTest extends Base
         $this->setDepartment(74);
         $response = $this->render(['loginname' => 'testadmin'], [
             '__body' => '{
-                "rights": {
-                "availability": 0,
-                "basic": 0,
-                "cluster": 0,
-                "department": 0,
-                "organisation": 1,
-                "scope": 0,
-                "superuser": 0,
-                "ticketprinter": 0,
-                "useraccount": 1
-              },
-              "departments": [
-                  {"id": 74}
-              ],
-              "email": "unittest@berlinonline.de",
-              "id": "unittest"
+                "roles": ["system_admin"],
+                "departments": [
+                    {"id": 74}
+                ],
+                "email": "unittest@berlinonline.de",
+                "id": "unittest"
+            }'
+        ], []);
+    }
+
+    public function testInvalidRoleAssignment()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountInvalidRoleAssignment');
+        $this->expectExceptionCode(400);
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
+        $this->setDepartment(74);
+        $this->render(['loginname' => 'testadmin'], [
+            '__body' => '{
+                "roles": [],
+                "departments": [
+                    {"id": 74}
+                ],
+                "email": "unittest@berlinonline.de",
+                "id": "unittest"
             }'
         ], []);
     }
 }
+

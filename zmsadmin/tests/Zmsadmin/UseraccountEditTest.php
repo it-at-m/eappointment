@@ -3,6 +3,7 @@
 namespace BO\Zmsadmin\Tests;
 
 use BO\Zmsentities\Exception\UserAccountMissingRights;
+use BO\Zmsentities\Exception\UserAccountAccessRightsFailed;
 
 class UseraccountEditTest extends Base
 {
@@ -51,16 +52,21 @@ class UseraccountEditTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString('value="testuser"', (string)$response->getBody());
-        $this->assertStringContainsString('Nutzer: Einrichtung und Administration', (string)$response->getBody());
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('value="testuser"', $body);
+        $this->assertStringContainsString('Nutzer: Einrichtung und Administration', $body);
         $this->assertStringNotContainsString(
             'Dieser Nutzer wurde über einen OpenID Connect Anbieter angelegt.',
-            (string)$response->getBody()
+            $body
         );
         $this->assertStringContainsString(
             'Passwortwiederholung',
-            (string)$response->getBody()
+            $body
         );
+
+        $this->assertStringContainsString('name="roles[]"', $body);
+        $this->assertStringContainsString('value="agent_queue"', $body);
+
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -103,10 +109,8 @@ class UseraccountEditTest extends Base
                 ['id' => 74],
                 ['id' => 57],
             ),
-            'rights' => array(
-                'ticketprinter' => '1',
-                'availability' => '1',
-                'scope' => '1'
+            'roles' => array(
+                'agent_queue',
             ),
             'save' => 'save'
         ], [], 'POST');
@@ -171,10 +175,8 @@ class UseraccountEditTest extends Base
                 ['id' => 74],
                 ['id' => 57],
             ),
-            'rights' => array(
-                'ticketprinter' => '1',
-                'availability' => '1',
-                'scope' => '1'
+            'roles' => array(
+                'agent_queue',
             ),
             'save' => 'save'
         ], [], 'POST');
@@ -238,10 +240,8 @@ class UseraccountEditTest extends Base
                 '',
                 '',
             ),
-            'rights' => array(
-                'ticketprinter' => '1',
-                'availability' => '1',
-                'scope' => '1'
+            'roles' => array(
+                'agent_queue',
             ),
             'save' => 'save'
         ], [], 'POST');
@@ -291,10 +291,8 @@ class UseraccountEditTest extends Base
                 '',
                 '',
             ),
-            'rights' => array(
-                'ticketprinter' => '1',
-                'availability' => '1',
-                'scope' => '1'
+            'roles' => array(
+                'agent_queue',
             ),
             'save' => 'save'
         ], [], 'POST');
@@ -316,4 +314,27 @@ class UseraccountEditTest extends Base
         $this->expectException(UserAccountMissingRights::class);
         $this->render($this->arguments, $this->parameters, []);
     }
+
+    public function testAccessDeniedForSuperuserOnlyRole()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved1.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/useraccount/testuser/',
+                    'response' => $this->readFixture("GET_useraccount_testuser_system_admin.json")
+                ]
+            ]
+        );
+
+        $this->expectException(UserAccountAccessRightsFailed::class);
+        $this->render($this->arguments, $this->parameters, []);
+    }
 }
+

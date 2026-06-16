@@ -17,7 +17,8 @@ class DepartmentUpdateTest extends Base
         $response = $this->render(["id"=> 999], [
             '__body' => '{
                   "id": 999,
-                  "name": "Test Department Update"
+                  "name": "Test Department Update",
+                  "email": "test@example.com"
               }'
         ], []);
         $this->assertStringContainsString('Test Department Update', (string)$response->getBody());

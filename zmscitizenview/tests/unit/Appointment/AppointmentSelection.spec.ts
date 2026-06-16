@@ -1700,7 +1700,7 @@ describe("AppointmentSelection", () => {
   });
 
   describe("Error States Integration", () => {
-    it('shows captcha error warning callout when captcha error is set', async () => {
+    it('shows captcha error callout when captcha error is set', async () => {
       const wrapper = createWrapper({
         selectedService: {
           id: "service1",
@@ -1712,7 +1712,7 @@ describe("AppointmentSelection", () => {
         props: {
           bookingError: true,
           bookingErrorKey: "apiErrorCaptchaInvalid",
-          errorType: "warning"
+          errorType: "error"
         }
       });
 
@@ -1730,13 +1730,13 @@ describe("AppointmentSelection", () => {
       wrapper.vm.isSwitchingProvider = false;
       await nextTick();
 
-      // Find all callouts and get the warning one
+      // Find all callouts and get the error one
       const callouts = wrapper.findAll('[data-test="muc-callout"]');
-      const warningCallout = callouts.find(c => c.attributes('data-type') === 'warning');
+      const errorCallout = callouts.find(c => c.attributes('data-type') === 'error');
 
-      expect(warningCallout).toBeDefined();
-      expect(warningCallout!.html()).toContain("apiErrorCaptchaInvalidHeader");
-      expect(warningCallout!.html()).toContain("apiErrorCaptchaInvalidText");
+      expect(errorCallout).toBeDefined();
+      expect(errorCallout!.html()).toContain("apiErrorCaptchaInvalidHeader");
+      expect(errorCallout!.html()).toContain("apiErrorCaptchaInvalidText");
     });
 
     it('shows no appointment error info callout when no appointment error is set', async () => {

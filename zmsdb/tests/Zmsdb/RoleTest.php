@@ -148,6 +148,30 @@ class RoleTest extends Base
         $this->assertNull($missing);
     }
 
+    /**
+     * Replace the database user_role relation for a user by loginname with the specified role id.
+     *
+     * This bypasses Useraccount::writeUpdatedEntity() intentionally because these tests use
+     * dynamic test roles that are not part of the temporary LEGACY_LEVEL_BY_ROLE bridge.
+     *
+     * TODO ZMSKVR-1173: Remove this direct user_role setup once the legacy nutzer.Berechtigung
+     * bridge is removed and role assignment no longer depends on legacy rights mapping.
+     */
+    private function replaceUserRoleDirectly(\BO\Zmsdb\Useraccount $userQuery, string $loginName, int $roleId): void
+    {
+        $userQuery->perform(
+            'DELETE FROM user_role
+             WHERE user_id = (SELECT NutzerID FROM nutzer WHERE Name = ? LIMIT 1)',
+            [$loginName]
+        );
+
+        $userQuery->perform(
+            'INSERT INTO user_role (user_id, role_id)
+             SELECT NutzerID, ? FROM nutzer WHERE Name = ?',
+            [$roleId, $loginName]
+        );
+    }
+
     public function testUpdateRoleInvalidatesCachedUserRoleNames()
     {
         $roleQuery = new Query();
@@ -162,9 +186,12 @@ class RoleTest extends Base
         $user = (new \BO\Zmsentities\Useraccount())->getExample();
         $user->id = $user->id . rand();
         $createdUser = $userQuery->writeEntity($user);
-        $createdUser->roles = [$createdRole->name];
-        $userQuery->writeUpdatedEntity($createdUser->id, $createdUser, 1);
 
+        $this->replaceUserRoleDirectly(
+            $userQuery,
+            $createdUser->id,
+            (int) $createdRole->id
+        );
         $cached = $userQuery->readEntity($createdUser->id, 1, false);
         $this->assertSame(['test_role_cache_before'], $cached->roles);
 
@@ -173,7 +200,6 @@ class RoleTest extends Base
             'description' => 'Cached role name',
             'permissions' => ['useraccount'],
         ]));
-
         $refreshed = $userQuery->readEntity($createdUser->id, 1, false);
         $this->assertSame(['test_role_cache_after'], $refreshed->roles);
     }
@@ -195,15 +221,21 @@ class RoleTest extends Base
         $user->id = $user->id . rand();
         $createdUser = $userQuery->writeEntity($user);
 
-        $createdUser->roles = [$createdRole->name];
-        $updatedUser = $userQuery->writeUpdatedEntity($createdUser->id, $createdUser, 1);
-        $this->assertSame([$createdRole->name], $updatedUser->roles);
+        $this->replaceUserRoleDirectly(
+            $userQuery,
+            $createdUser->id,
+            (int) $createdRole->id
+        );
+
+        $reloadedUser = $userQuery->readEntity($createdUser->id, 1, true);
+        $this->assertIsArray($reloadedUser->roles);
+        $this->assertContains($createdRole->name, $reloadedUser->roles);
 
         $deleted = $roleQuery->deleteRole((int) $createdRole->id);
         $this->assertEntity("\\BO\\Zmsentities\\Role", $deleted);
 
-        $reloadedUser = $userQuery->readEntity($createdUser->id, 1, true);
-        $this->assertIsArray($reloadedUser->roles);
-        $this->assertNotContains($createdRole->name, $reloadedUser->roles);
+        $reloadedUserAfterDelete = $userQuery->readEntity($createdUser->id, 1, true);
+        $this->assertIsArray($reloadedUserAfterDelete->roles);
+        $this->assertNotContains($createdRole->name, $reloadedUserAfterDelete->roles);
     }
 }

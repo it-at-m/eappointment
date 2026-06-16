@@ -15,11 +15,10 @@
     <link rel="stylesheet" media="all" type="text/css" href="{{ includeUrl }}/_css/admin.css?version={{ currentVersion() }}&ts={{ getNow()|date("U") }}">
     {#<link rel="stylesheet" media="print" type="text/css" href="{{ includeUrl }}/_css/print.css">#}
 </head>
-<body>
+<body{% if getSystemStatus('ZMS_ENV') == 'dev' %} class="zms-env-dev"{% elseif getSystemStatus('ZMS_ENV') == 'stage' %} class="zms-env-stage"{% endif %}>
     <span id="js-is_palm"></span>
     <div id="page-wrapper">
-        <header id="page-header" style="{% if getSystemStatus('ZMS_ENV') == 'dev' %}background-color: #2ECC40;
-            {% elseif getSystemStatus('ZMS_ENV') == 'stage' %}background-color: #7FDBFF;{% endif %}">
+        <header id="page-header">
             {% block pageheader %}
                 {{ parent() }}
             {%- endblock %}

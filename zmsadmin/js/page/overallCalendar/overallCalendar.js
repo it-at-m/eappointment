@@ -547,19 +547,19 @@ function renderMultiDayCalendar(days) {
     });
 
     const parent = container.parentNode;
-    const next = container.cloneNode(false);
     const oldId = container.id;
 
-    next.removeAttribute('id');
+    const next = document.createElement('div');
+    next.className = container.className;
     next.style.display = 'grid';
     next.style.gridTemplateColumns = templateCols.join(' ');
     next.style.minWidth = 'fit-content';
     next.appendChild(fragment);
 
-    parent.insertBefore(next, container);
-
     container.id = oldId + '__old__' + Date.now();
     next.id = oldId;
+
+    parent.insertBefore(next, container);
 
     container.style.display = 'none';
     deferredRemove(container);

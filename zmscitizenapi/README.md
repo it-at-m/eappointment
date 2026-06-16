@@ -51,15 +51,16 @@ sequenceDiagram
 | SOURCE_CACHE_TTL | Cache lifetime in seconds | 3600 |
 | MAINTENANCE_MODE_ENABLED | Enable maintenance mode | false |
 | **Logger Configuration** |
-| LOGGER_MAX_REQUESTS | Maximum log requests per minute | 1000 |
-| LOGGER_RESPONSE_LENGTH | Maximum response length to log in bytes | 1048576 (1MB) |
-| LOGGER_STACK_LINES | Maximum stack trace lines to log | 20 |
-| LOGGER_MESSAGE_SIZE | Maximum log message size in bytes | 8192 (8KB) |
-| LOGGER_CACHE_TTL | Logger cache TTL in seconds | 60 |
-| LOGGER_MAX_RETRIES | Maximum retry attempts | 3 |
-| LOGGER_BACKOFF_MIN | Minimum backoff time in milliseconds | 100 |
-| LOGGER_BACKOFF_MAX | Maximum backoff time in milliseconds | 1000 |
-| LOGGER_LOCK_TIMEOUT | Lock timeout in seconds | 5 |
+| ZMS_CITIZENAPI_LOGGER_MAX_REQUESTS | Maximum successful HTTP request logs per window | 1000 |
+| ZMS_CITIZENAPI_LOGGER_MAX_ERROR_REQUESTS | Maximum failed HTTP request logs per window (`0` = unlimited) | 0 |
+| ZMS_CITIZENAPI_LOGGER_RESPONSE_LENGTH | Maximum response length to log in bytes | 1048576 (1MB) |
+| ZMS_CITIZENAPI_LOGGER_STACK_LINES | Maximum stack trace lines to log | 20 |
+| ZMS_CITIZENAPI_LOGGER_MESSAGE_SIZE | Maximum log message size in bytes | 8192 (8KB) |
+| ZMS_CITIZENAPI_LOGGER_CACHE_TTL | Logger cache TTL in seconds | 60 |
+| ZMS_CITIZENAPI_LOGGER_MAX_RETRIES | Maximum retry attempts | 3 |
+| ZMS_CITIZENAPI_LOGGER_BACKOFF_MIN | Minimum backoff time in milliseconds | 100 |
+| ZMS_CITIZENAPI_LOGGER_BACKOFF_MAX | Maximum backoff time in milliseconds | 1000 |
+| ZMS_CITIZENAPI_LOGGER_LOCK_TIMEOUT | Lock timeout in seconds | 5 |
 | **Captcha Configuration** |
 | CAPTCHA_ENABLED | Enable captcha globally | false |
 | CAPTCHA_TOKEN_SECRET | Secret key for signing and validating captcha token | "" |

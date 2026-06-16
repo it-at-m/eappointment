@@ -9,6 +9,7 @@ namespace BO\Zmsapi;
 
 use BO\Slim\Render;
 use BO\Zmsdb\Status as Query;
+use BO\Zmsentities\Status;
 
 class Healthcheck extends BaseController
 {
@@ -21,7 +22,7 @@ class Healthcheck extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $response = \BO\Zmsclient\Status::testStatus($response, function () {
+        $response = \BO\Zmsclient\Status::testStatus($response, function (): Status {
             return (new Query())->readEntity(\App::$now, false);
         });
         $response = \BO\Slim\Render::withLastModified($response, time(), '0');

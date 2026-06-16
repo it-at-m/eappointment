@@ -14,10 +14,14 @@ use BO\Zmsentities\Exception\UserAccountMissingRights;
 use BO\Zmsentities\Schema\Loader;
 use BO\Zmsentities\Useraccount as Entity;
 use BO\Mellon\Validator;
-use BO\Zmsclient\Auth;
 
 class UseraccountEdit extends BaseController
 {
+    private const SUPERUSER_ONLY_ROLES = [
+        'system_admin',
+        'audit_viewer',
+    ];
+
     /**
      *
      * @return \Psr\Http\Message\ResponseInterface
@@ -36,6 +40,12 @@ class UseraccountEdit extends BaseController
         $userAccountName = Validator::value($args['loginname'])->isString()->getValue();
         $confirmSuccess = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $userAccount = \App::$http->readGetResult('/useraccount/' . $userAccountName . '/')->getEntity();
+        if (
+            ! $workstation->getUseraccount()->isSuperUser()
+            && $this->hasSuperuserOnlyRole($userAccount)
+        ) {
+            throw new \BO\Zmsentities\Exception\UserAccountAccessRightsFailed();
+        }
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
 
         if ($request->getMethod() === 'POST') {
@@ -53,21 +63,12 @@ class UseraccountEdit extends BaseController
         $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider') ?? '');
 
-        $roleList = new RoleList();
-        $userAccountRoles = [];
+        $roleList = $this->loadRoleList();
 
-        // Until all controllers have been updated, only superusers should be allowed to assign the new roles
-        // @todo: remove isSuperUser() and replace with hasPermissions(['useraccount']) with ZMSKVR-1173
-        if ($workstation->getUseraccount()->isSuperUser()) {
-            $roleResult = \App::$http->readGetResult('/roles/', []);
-            if ($roleResult) {
-                $loaded = $roleResult->getCollection();
-                if ($loaded !== null) {
-                    $roleList = $loaded;
-                }
-            }
-            $userAccountRoles = $userAccount->roles ?? [];
-        }
+        $userAccountRoles = (isset($userAccount->roles) && is_array($userAccount->roles))
+            ? $userAccount->roles
+            : [];
+
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -99,5 +100,31 @@ class UseraccountEdit extends BaseController
                 ->readPostResult('/useraccount/' . $userAccountName . '/', $entity)
                 ->getEntity();
         });
+    }
+
+    private function loadRoleList(): RoleList
+    {
+        $roleList = new RoleList();
+
+        $roleResult = \App::$http->readGetResult('/roles/', []);
+        if ($roleResult) {
+            $loaded = $roleResult->getCollection();
+            if ($loaded !== null) {
+                $roleList = $loaded;
+            }
+        }
+
+        return $roleList;
+    }
+
+    protected function hasSuperuserOnlyRole(Entity $userAccount): bool
+    {
+        $roles = $userAccount->roles ?? [];
+
+        if (! is_array($roles)) {
+            return false;
+        }
+
+        return (bool) array_intersect($roles, self::SUPERUSER_ONLY_ROLES);
     }
 }
