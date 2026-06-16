@@ -44,6 +44,7 @@ class Useraccount extends Schema\Entity
                 "emergency" => false,
                 "finishedqueue" => false,
                 "finishedqueuepast" => false,
+                "jurisdiction" => false,
                 "logs" => false,
                 "mailtemplates" => false,
                 "missedqueue" => false,
