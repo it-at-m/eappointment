@@ -9,6 +9,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Collection\RoleList;
 use BO\Zmsentities\Collection\UseraccountList as Collection;
 use BO\Zmsentities\Exception\UserAccountMissingRights;
 use Psr\Http\Message\RequestInterface;
@@ -39,7 +40,7 @@ class UseraccountList extends BaseController
             ->getValue();
 
         $useraccountList = new Collection();
-        if ($workstation->hasSuperUseraccount()) {
+        if ($workstation->getUseraccount()->isSuperUser()) {
             $params = ["resolveReferences" => 0];
             if ($queryString !== null && $queryString !== '') {
                 $params['query'] = $queryString;
@@ -61,6 +62,22 @@ class UseraccountList extends BaseController
             }
         }
 
+        $roleList = new RoleList();
+        $roleMap = [];
+
+        $roleResult = \App::$http->readGetResult('/roles/', []);
+        if ($roleResult) {
+            $loadedRoleList = $roleResult->getCollection();
+
+            if ($loadedRoleList !== null) {
+                $roleList = $loadedRoleList;
+
+                foreach ($roleList as $role) {
+                    $roleMap[$role->name] = $role->description ?: $role->name;
+                }
+            }
+        }
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/useraccountList.twig',
@@ -72,6 +89,8 @@ class UseraccountList extends BaseController
                 'searchUserQuery' => $queryString,
                 'ownerlist' => $ownerList,
                 'success' => $success,
+                'roleMap' => $roleMap,
+                'roleList' => $roleList
             )
         );
     }

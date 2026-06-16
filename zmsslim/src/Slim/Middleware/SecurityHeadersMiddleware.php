@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace BO\Zmscitizenapi\Middleware;
+namespace BO\Slim\Middleware;
 
-use BO\Zmscitizenapi\Utils\ErrorMessages;
-use BO\Zmscitizenapi\Services\Core\LoggerService;
+use BO\Slim\LoggerService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -13,8 +12,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class SecurityHeadersMiddleware implements MiddlewareInterface
 {
-    private const ERROR_SECURITY_VIOLATION = 'securityHeaderViolation';
-    private array $securityHeaders = [
+    private const DEFAULT_SECURITY_HEADERS = [
         'X-Frame-Options' => 'DENY',
         'X-Content-Type-Options' => 'nosniff',
         'X-XSS-Protection' => '1; mode=block',
@@ -22,12 +20,29 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         'Content-Security-Policy' => "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'",
         'Referrer-Policy' => 'strict-origin-when-cross-origin',
         'Permissions-Policy' => 'geolocation=(), microphone=(), camera=()',
-        'X-Permitted-Cross-Domain-Policies' => 'none'
+        'X-Permitted-Cross-Domain-Policies' => 'none',
     ];
+
+    /** @var array<string, string> */
+    private array $securityHeaders;
+
     private LoggerService $logger;
-    public function __construct(LoggerService $logger)
-    {
+
+    /** @var callable(\Throwable, ServerRequestInterface): ResponseInterface|null */
+    private $errorResponseBuilder;
+
+    /**
+     * @param array<string, string>|null $securityHeaders
+     * @param callable(\Throwable, ServerRequestInterface): ResponseInterface|null $errorResponseBuilder
+     */
+    public function __construct(
+        LoggerService $logger,
+        ?array $securityHeaders = null,
+        $errorResponseBuilder = null
+    ) {
         $this->logger = $logger;
+        $this->securityHeaders = $securityHeaders ?? self::DEFAULT_SECURITY_HEADERS;
+        $this->errorResponseBuilder = $errorResponseBuilder;
     }
 
     #[\Override]
@@ -39,20 +54,16 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
                 $response = $response->withHeader($header, $value);
             }
 
-            /*$this->logger->logInfo('Security headers added', [
-                'uri' => (string)$request->getUri()
-            ]);*/
-
             return $response;
         } catch (\Throwable $e) {
             $this->logger->logError($e, $request);
-            $response = \App::$slim->getResponseFactory()->createResponse();
-            $response = $response->withStatus(ErrorMessages::get('securityHeaderViolation')['statusCode'])
-                ->withHeader('Content-Type', 'application/json');
-            $response->getBody()->write(json_encode([
-                'errors' => [ErrorMessages::get('securityHeaderViolation')]
-            ]));
-            return $response;
+            if ($this->errorResponseBuilder !== null) {
+                $response = ($this->errorResponseBuilder)($e, $request);
+                if ($response !== null) {
+                    return $response;
+                }
+            }
+            throw $e;
         }
     }
 }

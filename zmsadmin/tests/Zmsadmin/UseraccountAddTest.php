@@ -18,11 +18,8 @@ class UseraccountAddTest extends Base
             ['id' => 74],
             ['id' => 57],
         ),
-        'rights' => array(
-            'sms' => '1',
-            'ticketprinter' => '1',
-            'availability' => '1',
-            'scope' => '1'
+        'roles' => array(
+            'agent_queue'
         ),
         'save' => 'save'
     ];
@@ -61,8 +58,13 @@ class UseraccountAddTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString('Nutzer: Einrichtung und Administration', (string)$response->getBody());
-        $this->assertStringContainsString('Nutzer anlegen', (string)$response->getBody());
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('Nutzer: Einrichtung und Administration', $body);
+        $this->assertStringContainsString('Nutzer anlegen', $body);
+
+        $this->assertStringContainsString('Rollen', $body);
+        $this->assertStringContainsString('name="roles[]"', $body);
+        $this->assertStringContainsString('value="agent_queue"', $body);
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -137,11 +139,14 @@ class UseraccountAddTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertStringContainsString(
-            'Das Passwort muss mindestens 6 Zeichen lang sein.',
-            (string)$response->getBody()
-        );
+        $body = (string)$response->getBody();
+
+        $this->assertStringContainsString('Das Passwort muss mindestens 6 Zeichen lang sein.', $body);
         $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertStringContainsString('Rollen', $body);
+        $this->assertStringContainsString('name="roles[]"', $body);
+        $this->assertStringContainsString('value="agent_queue"', $body);
     }
 
     public function testUnkownException()
