@@ -45,5 +45,8 @@
     "jquery": "^4.0.0",
     "parcel": "^2.16.4",
     "js-cookie": "^3.0.7"
+  },
+  "overrides": {
+    "js-yaml": "^4.2.0"
   }
 }

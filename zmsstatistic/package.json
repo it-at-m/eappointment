@@ -48,5 +48,8 @@
     "bo-zms-layout-scss": "file:../zmslayout/scss",
     "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities/-/archive/2.24.14/zmsentities-2.24.14.tar.gz",
     "moment": "^2.30.1"
+  },
+  "overrides": {
+    "js-yaml": "^4.2.0"
   }
 }
