@@ -170,104 +170,59 @@
             {{ inputfield({ "name":"departments[][id]", "type":"hidden", "value":selectedDepartment }) }}
         {% endif %}
 
-        {% set rightsCheckboxes = [
-            {
-                "type":"checkbox",
-                "parameter": {
-                    "label": "Sachbearbeitung (Rolle: 0)",
-                    "name": "rights[basic]",
-                    "value": 1,
-                    "checked" : 1,
-                    "disabled" : 1,
-                    "id": "check_rights_1"
-                }
-            }
-        ] %}
+        {# Roles from the user_role table. Radio buttons: exactly one role should be selected. #}
+        {% set userAccountRoles = userAccountRoles|default([]) %}
 
-        {% if workstation.useraccount.permissions.useraccount %}
-            {% set rightsCheckboxes = rightsCheckboxes|merge([
-                {
-                    "type":"checkbox",
-                    "parameter": {
-                    "label": "Innenrevision (Rolle: 5)",
-                    "name": "rights[audit]",
-                    "value": 1,
-                    "checked" : userAccountRights.audit|default(0),
-                    "id": "check_rights_15"
-                }
-                },
-                {
-                    "type":"checkbox",
-                    "parameter": {
-                        "label": "Terminadministration (Rolle: 30)",
-                        "name": "rights[scope]",
-                        "value": 1,
-                            "checked" : userAccountRights.scope|default(0),
-                        "id": "check_rights_5"
-                    }
-                }
-            ]) %}
+        {% set selectedRoleName = '' %}
+
+        {% if userAccountRoles|length > 0 %}
+            {% set selectedRoleName = userAccountRoles|first %}
+        {% elseif action == "add" %}
+            {% set selectedRoleName = 'agent_queue' %}
+        {% elseif userAccountRights.superuser|default(false) %}
+            {% set selectedRoleName = 'system_admin' %}
+        {% elseif userAccountRights.cluster|default(false) %}
+            {% set selectedRoleName = 'user_admin' %}
+        {% elseif userAccountRights.scope|default(false) %}
+            {% set selectedRoleName = 'appointment_admin' %}
+        {% elseif userAccountRights.audit|default(false) %}
+            {% set selectedRoleName = 'audit_viewer' %}
+        {% else %}
+            {% set selectedRoleName = 'agent_queue' %}
         {% endif %}
 
-        {% if workstation.useraccount.permissions.useraccount %}
-            {% set rightsCheckboxes = rightsCheckboxes|merge([
-                {
-                    "type":"checkbox",
-                    "parameter": {
-                        "label": "Fachliche Administration (Rolle: 40)",
-                        "name": "rights[cluster]",
-                        "value": 1,
-                            "checked" : userAccountRights.cluster|default(0),
-                        "id": "check_rights_7"
-                    }
-                }
-            ]) %}
-        {% endif %}
-
-        {% if workstation.useraccount.permissions.superuser %}
-            {% set rightsCheckboxes = rightsCheckboxes|merge([
-                {
-                    "type":"checkbox",
-                    "parameter": {
-                        "label": "Technische Administration (Rolle: 90)",
-                        "name": "rights[superuser]",
-                        "value": 1,
-                            "checked" : userAccountRights.superuser|default(0),
-                    "id": "check_rights_10"
-                    }
-                }
-            ]) %}
-        {% endif %}
-
-        {# Roles from the user_role table; independent of legacy Berechtigungen above #}
-        {% set roleCheckboxes = [] %}
+        {% set roleRadios = [] %}
+        {% set isSuperUser = workstation.useraccount.permissions.superuser|default(false)%}
+        {% set superuserOnlyRoles = ['system_admin', 'audit_viewer'] %}
         {% for role in roleList|default([]) %}
-            {% set checked = role.name in userAccountRoles|default([]) %}
-            {% set roleLabel = (role.description|default('')|trim) ? role.description : role.name %}
-            {% set roleCheckboxes = roleCheckboxes|merge([{
-                "type": "checkbox",
-                "parameter": {
-                    "label": roleLabel,
-                    "name": "roles[]",
-                    "value": role.name,
-                    "checked": checked ? 1 : 0,
-                    "id": "check_role_" ~ role.id
-                }
-            }]) %}
+            {% if isSuperUser or role.name not in superuserOnlyRoles %}
+                {% set roleLabel = (role.description|default('')|trim) ? role.description : role.name %}
+                {% set roleRadios = roleRadios|merge([{
+                    "type": "radio",
+                    "parameter": {
+                        "label": roleLabel,
+                        "name": "roles[]",
+                        "value": role.name,
+                        "checked": role.name == selectedRoleName ? 1 : 0,
+                        "id": "check_role_" ~ role.id,
+                        "inline": false
+                    }
+                }]) %}
+            {% endif %}
         {% endfor %}
             <small>*) Felder mit einem Stern müssen ausgefüllt werden.</small>
         </div>
     </div>
-    
-    {{ formgroup(
-        {"groupTag": "fieldset", "legend": "Berechtigungen", "controlgroupclass": "panel--heavy"},
-        rightsCheckboxes
-    ) }}
 
-    {% if roleCheckboxes|length > 0 %}
+    {% if roleRadios|length > 0 %}
     {{ formgroup(
-        {"groupTag": "fieldset", "legend": "Rollen", "controlgroupclass": "panel--heavy"},
-        roleCheckboxes
+        {
+            "groupTag": "fieldset",
+            "legend": "Rollen",
+            "controlgroupclass": "panel--heavy role-radio-list",
+            "required": true
+        },
+        roleRadios
     ) }}
     {% endif %}
 

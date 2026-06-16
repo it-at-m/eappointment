@@ -12,11 +12,7 @@
     } %}
     
     {% block board_title %}
-        {% if roleTitles[roleLevel] is defined %}
-            Nutzerliste: {{ roleTitles[roleLevel] }} (Rolle: {{ roleLevel }}) 
-        {% else %}
-            Nutzerliste: Unbekannte Rolle ({{ roleLevel }})
-        {% endif %}
+        Nutzerliste: {{ roleLabel|default(roleName|default('Unbekannte Rolle')) }}
     {% endblock %}    
 
     {% block board_body %}

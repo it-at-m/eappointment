@@ -20,6 +20,11 @@ class User
 
     public static $request = null;
 
+    private const SUPERUSER_ONLY_ROLES = [
+        'system_admin',
+        'audit_viewer',
+    ];
+
     public function __construct($request, $resolveReferences = 0)
     {
         static::$request = $request;
@@ -108,6 +113,33 @@ class User
                     })
                 )
             );
+    }
+
+    public static function testWorkstationAssignedRoles($useraccount): void
+    {
+        if (! $useraccount->offsetExists('roles') || ! is_array($useraccount['roles'])) {
+            throw new \BO\Zmsapi\Exception\Useraccount\UseraccountInvalidRoleAssignment();
+        }
+
+        $roleNames = array_values(array_unique(array_filter(
+            array_map(
+                static fn ($roleName) => is_string($roleName) ? trim($roleName) : '',
+                $useraccount['roles']
+            )
+        )));
+
+        if (count($roleNames) !== 1) {
+            throw new \BO\Zmsapi\Exception\Useraccount\UseraccountInvalidRoleAssignment();
+        }
+
+        if (
+            ! static::$workstation->getUseraccount()->isSuperUser()
+            && array_intersect($roleNames, self::SUPERUSER_ONLY_ROLES)
+        ) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
+
+        $useraccount['roles'] = $roleNames;
     }
 
     /**

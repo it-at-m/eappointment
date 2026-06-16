@@ -16,6 +16,14 @@
                 "superuser"
             ],
             "assignedUserCount": 0
+        },
+        "1": {
+            "$schema": "https://schema.berlin.de/queuemanagement/role.json",
+            "id": 2,
+            "name": "agent_queue",
+            "description": "Agenten-Queue Rolle",
+            "permissions": [],
+            "assignedUserCount": 0
         }
     }
 }

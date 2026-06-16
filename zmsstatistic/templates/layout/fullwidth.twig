@@ -12,11 +12,10 @@
     <link rel="stylesheet" type="text/css" href="{{ includeUrl }}/_css/admin.css" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 </head>
-<body>
+<body{% if getSystemStatus('ZMS_ENV') == 'dev' %} class="zms-env-dev"{% elseif getSystemStatus('ZMS_ENV') == 'stage' %} class="zms-env-stage"{% endif %}>
     <span id="js-is_palm"></span>
     <div id="page-wrapper" class="handheld">
-        <header id="page-header" style="{% if getSystemStatus('ZMS_ENV') == 'dev' %}background-color: #2ECC40;
-            {% elseif getSystemStatus('ZMS_ENV') == 'stage' %}background-color: #7FDBFF;{% endif %}">
+        <header id="page-header">
             {% block pageheader %}
                 {{ parent() }}
             {%- endblock %}
