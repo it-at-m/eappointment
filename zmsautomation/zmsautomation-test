@@ -599,37 +599,24 @@ rm -rf "$PROJECT_ROOT/zmsautomation/target/site/cucumber-pretty" 2>/dev/null || 
 TEST_EXIT=0
 cd "$PROJECT_ROOT/zmsautomation"
 
-# Run with default ataf profile
-# Maven arguments (e.g., -Dcucumber.filter.tags="@smoke") are passed through via MAVEN_ARGS.
-# Scenarios tagged @ignore are excluded unless @ignore is explicitly in the tag expression.
+# API vs UI is selected by -Pataf-api / -Pataf-ui (feature paths in pom.xml).
+# Optional -Dcucumber.filter.tags narrows within that layer. @ignore is excluded by default.
 ATAF_MAVEN_ARGS=()
-HAS_CUCUMBER_TAGS=false
-HAS_ATAF_API=false
-HAS_ATAF_UI=false
-[[ "$MAVEN_ARGS_STR" == *"-Pataf-api"* ]] && HAS_ATAF_API=true
-[[ "$MAVEN_ARGS_STR" == *"-Pataf-ui"* ]] && HAS_ATAF_UI=true
-
+HAS_TAG_FILTER=false
 for arg in "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; do
   if [[ "$arg" == -Dcucumber.filter.tags=* ]]; then
-    HAS_CUCUMBER_TAGS=true
+    HAS_TAG_FILTER=true
     value="${arg#-Dcucumber.filter.tags=}"
-    if [[ "$value" != *@ignore* ]]; then
-      filter="($value) and not @ignore"
-      if [[ "$HAS_ATAF_API" == true && "$HAS_ATAF_UI" != true && "$value" != *@web* ]]; then
-        filter="$filter and not @web"
-      elif [[ "$HAS_ATAF_UI" == true && "$HAS_ATAF_API" != true \
-        && "$value" != *@rest* && "$value" != *@zmsapi* && "$value" != *@zmscitizenapi* ]]; then
-        filter="$filter and not @rest"
-      fi
-      ATAF_MAVEN_ARGS+=("-Dcucumber.filter.tags=${filter}")
-    else
+    if [[ "$value" == *@ignore* ]]; then
       ATAF_MAVEN_ARGS+=("$arg")
+    else
+      ATAF_MAVEN_ARGS+=("-Dcucumber.filter.tags=($value) and not @ignore")
     fi
   else
     ATAF_MAVEN_ARGS+=("$arg")
   fi
 done
-if [[ "$HAS_CUCUMBER_TAGS" != true ]]; then
+if [[ "$HAS_TAG_FILTER" != true ]]; then
   ATAF_MAVEN_ARGS+=("-Dcucumber.filter.tags=not @ignore")
 fi
 
