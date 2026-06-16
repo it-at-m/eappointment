@@ -81,7 +81,11 @@ export function getChartDateRangeSuffix(chartDateFrom, chartDateTo, chartPeriod)
     return `_${rangePart}`;
 }
 
-export function getChartDownloadFilename(chartValueMode, chartDateFrom, chartDateTo, chartPeriod) {
+export function getCapacityDownloadBasename(chartValueMode, chartDateFrom, chartDateTo, chartPeriod) {
     const suffix = chartValueMode === 'minutes' ? '-minuten' : '-zeitschlitze';
-    return `terminkapazitaet${suffix}${getChartDateRangeSuffix(chartDateFrom, chartDateTo, chartPeriod)}.png`;
+    return `terminkapazitaet${suffix}${getChartDateRangeSuffix(chartDateFrom, chartDateTo, chartPeriod)}`;
+}
+
+export function getChartDownloadFilename(chartValueMode, chartDateFrom, chartDateTo, chartPeriod) {
+    return `${getCapacityDownloadBasename(chartValueMode, chartDateFrom, chartDateTo, chartPeriod)}.png`;
 }

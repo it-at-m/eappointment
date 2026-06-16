@@ -290,7 +290,7 @@ class ReportCapacityScopeTest extends Base
             []
         );
         $this->assertStringContainsString(
-            'raw_statistic_capacityscope_141_2016-04.xlsx',
+            'terminkapazitaet-zeitschlitze_2016-04.xlsx',
             $response->getHeaderLine('Content-Disposition')
         );
 

@@ -796,6 +796,36 @@ class ReportCapacityService
         return $periodList;
     }
 
+    public function buildDownloadFilename(?array $dateRange, ?string $period, string $valueMode = 'slots'): string
+    {
+        $valueSuffix = $valueMode === 'minutes' ? '-minuten' : '-zeitschlitze';
+        $rangePart = $this->buildDownloadDateRangePart($dateRange, $period);
+        $baseName = 'terminkapazitaet' . $valueSuffix;
+
+        if ($rangePart === '') {
+            return $baseName;
+        }
+
+        return $baseName . '_' . $rangePart;
+    }
+
+    private function buildDownloadDateRangePart(?array $dateRange, ?string $period): string
+    {
+        if ($dateRange !== null && !empty($dateRange['from']) && !empty($dateRange['to'])) {
+            return $dateRange['from'] . '-bis-' . $dateRange['to'];
+        }
+
+        if ($period === null || $period === '' || $period === '_') {
+            return '';
+        }
+
+        if (preg_match('/^(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})$/', $period, $matches)) {
+            return $matches[1] . '-bis-' . $matches[2];
+        }
+
+        return preg_replace('/[^0-9-]/', '', $period);
+    }
+
     /**
      * Prepare download arguments for capacity report Excel export.
      */
@@ -815,6 +845,11 @@ class ReportCapacityService
         } elseif (!isset($args['period']) || $args['period'] === null || $args['period'] === '') {
             $args['period'] = '_';
         }
+
+        $args['downloadTitle'] = $this->buildDownloadFilename(
+            $dateRange,
+            $args['period'] ?? null
+        );
 
         if (!empty($selectedScopes)) {
             $args['selectedScopes'] = $selectedScopes;
