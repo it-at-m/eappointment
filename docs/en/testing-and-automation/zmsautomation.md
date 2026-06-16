@@ -3,7 +3,7 @@
 ## ZMS Automation - [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) Integration
 
 This module contains API and UI tests for ZMS using [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) (Test Automation Framework) with Cucumber.
-`zmsautomation` is built on [it-at-m/agile-test-automation-framework](https://it-at-m.github.io/agile-test-automation-framework/).
+`zmsautomation` is built on [it-at-m/agile-test-automation-framework](https://it-at-m.github.io/agile-test-automation-framework/). It uses ATAF **without Jira** (features in Git) and **local Keycloak** for SSO — see [Local Keycloak setup](#local-keycloak-setup) and the ATAF guide [Standalone Usage (No Jira, Local Keycloak)](https://it-at-m.github.io/agile-test-automation-framework/usage/standalone-without-jira.html).
 
 ## Prerequisites
 
@@ -156,6 +156,60 @@ Use `--browser safari` (or `chrome`, `firefox`, `edge`, `safari`) as needed.
 ### UI tests (SSO)
 
 For local UI tests (Statistik, Admin), the default SSO user is Keycloak `ataf` (password `vorschau`) from Keycloak migration data.
+
+## Local Keycloak setup
+
+`zmsautomation` uses [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) **without Jira**: all Cucumber features live under `src/test/resources/features/`, and UI tests authenticate against a **local Keycloak** — the same [keycloakmigration](https://github.com/klg71/keycloakmigration) pattern as the [RefArch stack](https://github.com/it-at-m/refarch-templates/tree/main/stack/keycloak/migration). You do not need corporate or government SSO (`ssodev`) for local runs.
+
+See also the ATAF handbook: [Standalone Usage (No Jira, Local Keycloak)](https://it-at-m.github.io/agile-test-automation-framework/usage/standalone-without-jira.html).
+
+### Docker Compose services
+
+Keycloak and the migration sidecar are defined in:
+
+- [`.ddev/docker-compose.keycloak.yaml`](https://github.com/it-at-m/eappointment/blob/main/.ddev/docker-compose.keycloak.yaml) (DDEV)
+- [`.devcontainer/docker-compose.yaml`](https://github.com/it-at-m/eappointment/blob/main/.devcontainer/docker-compose.yaml) (devcontainer / Podman)
+
+Both stacks run:
+
+| Service         | Role                                                                                        |
+| --------------- | ------------------------------------------------------------------------------------------- |
+| `keycloak`      | `quay.io/keycloak/keycloak:26.6.3`, `start-dev`, `KC_HTTP_RELATIVE_PATH=/auth`, port `8080` |
+| `init-keycloak` | `klg71/keycloakmigration:0.2.129`, applies migrations once Keycloak is up                   |
+
+`init-keycloak` mounts [`.resources/keycloak/migration/`](https://github.com/it-at-m/eappointment/tree/main/.resources/keycloak/migration) and reads `KEYCLOAK_CHANGELOG=/migration/keycloak-changelog.yml`.
+
+### Migration changelog
+
+The changelog applies realm configuration in order:
+
+```yaml
+includes:
+  - path: 01_init-realm.yml # realm zms
+  - path: 02_add-clients.yml # OIDC client zms, redirect URIs for admin/statistic
+  - path: 03_add-roles.yml
+  - path: 04_add-users.yml
+  - path: 05_assign-roles.yml
+  - path: 06_zms-audience.yml
+  - path: 07_add-system-users.yml # test user ataf (password vorschau)
+  - path: 08_add-role-test-users.yml
+```
+
+This mirrors the RefArch approach ([`stack/docker-compose.yml`](https://github.com/it-at-m/refarch-templates/blob/4735e9f425a29e9cd38eafc6cd34b5da705f0574/stack/docker-compose.yml#L52)) but uses a ZMS-specific realm, clients, and users.
+
+### Hostname `keycloak`
+
+Applications and browser redirects expect the hostname `keycloak`, not `localhost`. Add `127.0.0.1 keycloak` to your hosts file and restart the stack — see [Local Keycloak Setup](../setup-and-development/local-keycloak-setup.md).
+
+### ATAF test properties
+
+`zmsautomation/src/test/resources/testautomation.properties` maps ATAF to the migrated user and bypasses the corporate proxy for Docker hostnames:
+
+```properties
+testautomation.userName=ataf
+testautomation.userPassword=vorschau
+testautomation.noProxy=keycloak,citizenview,refarch-gateway,localhost,127.0.0.1
+```
 
 ## Example
 
