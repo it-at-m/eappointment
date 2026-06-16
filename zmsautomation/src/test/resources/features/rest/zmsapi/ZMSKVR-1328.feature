@@ -6,7 +6,7 @@ Feature: A scheduled appointment is created, called up and completed at the coun
 
   Background:
     Given the ZMS API is available
-    And I am logged in to the ZMS API as "appointment_admin"
+    And I am logged in to the ZMS API as "agent_queue"
 
   Scenario: A scheduled appointment is created, called up and completed at the counter
     # Selecting a workstation (Bürgerbüro Forstenrieder Allee / Tresen 4)
