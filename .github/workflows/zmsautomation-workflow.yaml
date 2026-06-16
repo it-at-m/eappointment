@@ -339,7 +339,7 @@ jobs:
               [[ -n "$line" ]] && TAG_LINES+=("$line")
             done <<< "$TAG_INPUT"
             # If all lines were empty/whitespace, default to running all tests
-            [[ ${`#TAG_LINES`[@]} -eq 0 ]] && TAG_LINES=("")
+            [[ ${#TAG_LINES[@]} -eq 0 ]] && TAG_LINES=("")
           fi
 
           fail_any=0
