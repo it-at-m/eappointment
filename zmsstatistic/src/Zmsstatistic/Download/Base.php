@@ -66,6 +66,11 @@ class Base extends BaseController
         'plannedminutes' => 'Geplante Kapazität (Minuten)',
     ];
 
+    protected function sanitizeDownloadFilenamePart(string $part): string
+    {
+        return str_replace(',', '_', $part);
+    }
+
     protected function resolveDictionaryHeader(array $item): string
     {
         if (!empty($item['description'])) {

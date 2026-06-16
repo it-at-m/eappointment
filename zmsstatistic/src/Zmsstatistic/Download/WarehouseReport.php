@@ -23,7 +23,9 @@ class WarehouseReport extends Base
         ResponseInterface $response,
         array $args
     ) {
-        $title = 'raw_statistic_' . $args['subject'] . '_' . $args['subjectid'] . '_' . $args['period'];
+        $subjectId = $this->sanitizeDownloadFilenamePart((string) $args['subjectid']);
+        $period = $this->sanitizeDownloadFilenamePart((string) $args['period']);
+        $title = 'raw_statistic_' . $args['subject'] . '_' . $subjectId . '_' . $period;
         $download = (new Download($request))->setSpreadSheet($title);
 
         $this->writeRawReport($args['report'], $download->getSpreadSheet());

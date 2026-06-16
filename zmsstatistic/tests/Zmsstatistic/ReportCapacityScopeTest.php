@@ -289,7 +289,10 @@ class ReportCapacityScopeTest extends Base
             ],
             []
         );
-        $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
+        $this->assertStringContainsString(
+            'raw_statistic_capacityscope_141_2016-04.xlsx',
+            $response->getHeaderLine('Content-Disposition')
+        );
 
         if (method_exists($response->getBody(), 'rewind')) {
             $response->getBody()->rewind();
