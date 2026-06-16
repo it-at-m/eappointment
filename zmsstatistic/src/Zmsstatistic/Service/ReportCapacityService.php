@@ -10,6 +10,9 @@ namespace BO\Zmsstatistic\Service;
 use BO\Zmsentities\Exchange;
 use DateTimeImmutable;
 
+/**
+ * @SuppressWarnings(TooManyMethods)
+ */
 class ReportCapacityService
 {
     /** Fetch hour-level warehouse data up to this range length (chart buckets are derived in PHP). */
