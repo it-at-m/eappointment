@@ -23,8 +23,10 @@ class DepartmentAddScope extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $user = new Helper\User($request, 2);
+        $user->checkPermissions('scope');
         $department = (new \BO\Zmsdb\Department())->readEntity($args['id'], 1);
-        (new Helper\User($request, 2))->checkRights(
+        $user->checkRights(
             'department',
             new \BO\Zmsentities\Useraccount\EntityAccess($department)
         );

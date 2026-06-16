@@ -51,7 +51,7 @@ class Scope extends BaseController
         $callDisplayImage = \App::$http->readGetResult('/scope/' . $entityId . '/imagedata/calldisplay/')->getEntity();
         $input = $request->getParsedBody();
         if ($request->getMethod() === 'POST') {
-            $result = $this->writeUpdatedEntity($input, $entityId);
+            $result = $this->writeUpdatedEntity($input, $entityId, $entity, $workstation);
             if ($result instanceof Entity) {
                 if ($workstation->getUseraccount()->hasPermissions(['scope'])) {
                     $this->writeUploadedImage($request, $entityId, $input);
@@ -99,11 +99,17 @@ class Scope extends BaseController
      * @param \BO\Zmsentities\Scope $input scope entity, if used without ID, a new scope is created
      * @param int|null $entityId Might be the entity scope or department if called from DepartmentAddScope
      */
-    protected function writeUpdatedEntity($input, $entityId = null)
+    protected function writeUpdatedEntity($input, $entityId = null, Entity $existingScope = null, $workstation = null)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
-        return $this->handleEntityWrite(function () use ($entity, $entityId) {
-            if ($entity->id) {
+        if ($workstation && !$workstation->getUseraccount()->hasPermissions(['scope'])) {
+            if (!$existingScope) {
+                throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+            }
+            $entity = $entity->withProviderSourceFrom($existingScope);
+        }
+        return $this->handleEntityWrite(function () use ($entity, $entityId, $existingScope) {
+            if ($existingScope) {
                 $entity->id = $entityId;
                 return \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)->getEntity();
             }

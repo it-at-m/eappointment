@@ -8,7 +8,7 @@ class OwnerGetTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('jurisdiction', 'superuser');
         $response = $this->render(['id' => 99], ['resolveReferences' => 1], []);
         $this->assertStringContainsString('owner.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
