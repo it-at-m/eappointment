@@ -145,16 +145,12 @@ class IpFilterMiddlewareTest extends MiddlewareTestCase
         \App::reinitializeMiddlewareConfig();
         $_SERVER['REMOTE_ADDR'] = 'invalid-ip';
         $middleware = new IpFilterMiddleware($this->logger);
-        
+
         $request = $this->createRequest(['REMOTE_ADDR' => 'invalid-ip']);
         $response = new Response();
         $handler = $this->createHandler($response);
 
-        $this->logger->expectLogInfo('Invalid IP address detected', [
-            'ip' => 'invalid-ip',
-            'uri' => 'http://localhost/test'
-        ]);
-
+        // Invalid REMOTE_ADDR is skipped by ClientIp; fallback is 127.0.0.1
         $result = $middleware->process($request, $handler);
         $this->assertSame($response, $result);
     }

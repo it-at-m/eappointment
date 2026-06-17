@@ -5,6 +5,7 @@ import TicketPrinterConfigView from './block/ticketprinter/config'
 import CallDisplayConfigView from './block/calldisplay/config'
 import SourceView from './page/sourceEdit'
 import ScopeView from './page/scopeEdit'
+import ScopeRestrictedView from './page/scopeEdit/indexRestricted'
 import './block/confirm-popup.js'
 import bindReact from './lib/bindReact.js'
 
@@ -14,6 +15,7 @@ bindReact('[data-department-links]', DepartmentLinksView)
 bindReact('[data-ticketprinter-config]', TicketPrinterConfigView)
 bindReact('[data-calldisplay-config]', CallDisplayConfigView)
 bindReact('.source-form-edit', SourceView)
-bindReact('.scope-form-sources', ScopeView)
+bindReact('.scope-form-view', ScopeView)
+bindReact('.scope-form-restricted-view', ScopeRestrictedView)
 
 console.log("Loaded react components...");

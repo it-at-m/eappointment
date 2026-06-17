@@ -231,6 +231,10 @@
               "description": "View completed appointments from the past",
               "type": "boolean"
             },
+            "jurisdiction": {
+              "description": "Create, update, and delete owners (customers)",
+              "type": "boolean"
+            },
             "logs": {
               "description": "View system logs",
               "type": "boolean"

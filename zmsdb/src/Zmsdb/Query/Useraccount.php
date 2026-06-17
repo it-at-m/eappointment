@@ -20,6 +20,7 @@ class Useraccount extends Base implements MappingInterface
         'emergency',
         'finishedqueue',
         'finishedqueuepast',
+        'jurisdiction',
         'logs',
         'mailtemplates',
         'missedqueue',
@@ -159,6 +160,7 @@ class Useraccount extends Base implements MappingInterface
             'permissions__emergency' => $this->permissionExists('emergency'),
             'permissions__finishedqueue' => $this->permissionExists('finishedqueue'),
             'permissions__finishedqueuepast' => $this->permissionExists('finishedqueuepast'),
+            'permissions__jurisdiction' => $this->permissionExists('jurisdiction'),
             'permissions__logs' => $this->permissionExists('logs'),
             'permissions__mailtemplates' => $this->permissionExists('mailtemplates'),
             'permissions__missedqueue' => $this->permissionExists('missedqueue'),
@@ -202,9 +204,26 @@ class Useraccount extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionRoleLevel($roleLevel)
+    public function addConditionRoleName(string $roleName): self
     {
-        $this->query->where('useraccount.Berechtigung', '=', $roleLevel);
+        $this->setDistinctSelect();
+
+        $this->innerJoin(
+            new Alias('user_role', 'useraccount_role'),
+            'useraccount.NutzerID',
+            '=',
+            'useraccount_role.user_id'
+        );
+
+        $this->innerJoin(
+            new Alias('role', 'useraccount_role_name'),
+            'useraccount_role.role_id',
+            '=',
+            'useraccount_role_name.id'
+        );
+
+        $this->query->where('useraccount_role_name.name', '=', $roleName);
+
         return $this;
     }
 
@@ -296,7 +315,24 @@ class Useraccount extends Base implements MappingInterface
 
     public function addConditionExcludeSuperusers(): self
     {
-        $this->query->where('useraccount.Berechtigung', '!=', 90);
+        $this->setDistinctSelect();
+
+        $this->innerJoin(
+            new Alias('user_role', 'exclude_superuser_user_role'),
+            'useraccount.NutzerID',
+            '=',
+            'exclude_superuser_user_role.user_id'
+        );
+
+        $this->innerJoin(
+            new Alias('role', 'exclude_superuser_role'),
+            'exclude_superuser_user_role.role_id',
+            '=',
+            'exclude_superuser_role.id'
+        );
+
+        $this->query->where('exclude_superuser_role.name', '!=', 'system_admin');
+
         return $this;
     }
 
@@ -316,8 +352,7 @@ class Useraccount extends Base implements MappingInterface
             return $this;
         }
 
-        // Always exclude superusers for non-superuser workstation users
-        $this->query->where('useraccount.Berechtigung', '!=', 90);
+        $this->addConditionExcludeSuperusers();
 
         // If no departments, only exclude superusers (already done above)
         if (empty($workstationDepartmentIds)) {

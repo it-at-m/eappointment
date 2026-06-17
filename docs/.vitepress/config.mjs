@@ -209,11 +209,15 @@ const navLabels = {
     overview: "Overview",
     releases: "Releases",
     openSource: "Open Source",
+    openSourceUrl:
+      "https://opensource.muenchen.de/software/zeitmanagementsystem.html",
   },
   de: {
     overview: "Übersicht",
     releases: "Releases",
     openSource: "Open Source",
+    openSourceUrl:
+      "https://opensource.muenchen.de/de/software/zeitmanagementsystem.html",
   },
 };
 
@@ -224,7 +228,7 @@ const buildNav = (prefix, lang) => {
     { text: t.releases, link: `${GH_REPO}/releases` },
     {
       text: t.openSource,
-      link: "https://opensource.muenchen.de/software/zeitmanagementsystem.html",
+      link: t.openSourceUrl,
     },
   ];
 };
@@ -602,6 +606,11 @@ export default {
   description: "Technical documentation for it-at-m/eappointment",
   base: SITE_BASE,
   lang: "en-US",
+  vite: {
+    build: {
+      target: "es2022",
+    },
+  },
   rewrites: buildEnRewrites(),
   sitemap: {
     // hostname must include the base path so emitted <loc> URLs are absolute

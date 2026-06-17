@@ -25,6 +25,9 @@ class Owner extends BaseController
         array $args
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['jurisdiction'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/owner/' . $entityId . '/')->getEntity();

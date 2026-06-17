@@ -65,4 +65,43 @@ class ScopeUpdateTest extends Base
             '__body' => $this->readFixture('GetScope_lessData.json')
         ], []);
     }
+
+    public function testRouteIdNotOverriddenByBody()
+    {
+        $department = (new \BO\Zmsentities\Department());
+        $department->scopes[] = new \BO\Zmsentities\Scope(['id' => 141]);
+        $this->setWorkstation()->getUseraccount()->setPermissions('scope')->addDepartment($department);
+
+        $body = json_decode($this->readFixture('GetScope_lessData.json'), true);
+        $body['id'] = 999;
+
+        $response = $this->render(['id' => 141], [
+            '__body' => json_encode($body)
+        ], []);
+        $responseData = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(141, $responseData['data']['id']);
+    }
+
+    public function testProviderSourceNotChangedForRestrictedScope()
+    {
+        $department = (new \BO\Zmsentities\Department());
+        $department->scopes[] = new \BO\Zmsentities\Scope(['id' => 141]);
+        $this->setWorkstation()->getUseraccount()->setPermissions('restrictedscope')->addDepartment($department);
+
+        $body = json_decode($this->readFixture('GetScope_lessData.json'), true);
+        $originalProviderId = $body['provider']['id'];
+        $body['provider']['id'] = 999999;
+        $body['provider']['source'] = 'unittest';
+
+        $response = $this->render(['id' => 141], [
+            '__body' => json_encode($body)
+        ], []);
+        $responseData = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals($originalProviderId, $responseData['data']['provider']['id']);
+        $this->assertEquals('dldb', $responseData['data']['provider']['source']);
+    }
 }

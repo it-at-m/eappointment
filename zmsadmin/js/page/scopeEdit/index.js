@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { deepMerge, makeNestedObj, getFieldList } from '../../lib/utils'
 import { getEntity } from '../../lib/schema'
-import SourceView from '../../block/scope/sourcesselectform'
+import SourceSelectView from '../../block/scope/sourceSelectForm'
+import SourceReadView from '../../block/scope/sourceReadForm'
 import $ from "jquery"
 
 class ScopeView extends Component {
@@ -41,23 +42,22 @@ class ScopeView extends Component {
         })
     }
 
-    componentDidMount() {
-        //console.log("mounted scopeEdit component", this.state)
-    }
-
-    componentDidUpdate() {
-        //console.log("updated source component", this.state)
-    }
-
     render() {
+        const props = {
+            labels: this.props.labels,
+            scopestate: this.state.scopestate,
+            permissions: this.props.permissions,
+        }
+
         return (
-            <div>
-                <SourceView
-                    {...this.props}
+            <fieldset className="panel--heavy">
+                <SourceSelectView
+                    {...props}
                     changeHandler={this.changeHandler}
                     onChangeSourceHandler={this.onChangeSourceHandler}
                 />
-            </div>
+                <SourceReadView {...props} standalone={false} />
+            </fieldset>
         );
     }
 }

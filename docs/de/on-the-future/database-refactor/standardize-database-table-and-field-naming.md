@@ -449,6 +449,47 @@ Damit gilt:
 | `external_user_id`               | `external_user_id`            | Bereits snake_case     |
 | `displayNumber`                  | `display_number`              | Namensstandardisierung |
 
+##### Dereference-Payload in `Anmerkung` / Custom-Text-Feldern (technische Schuld)
+
+Wenn ein Vorgang abgeschlossen oder soft-gelöscht wird, führt `Process::writeBlockedEntity()` `QUERY_DEREFERENCED` aus (`zmsdb/src/Zmsdb/Query/Process.php`). Dabei werden PII entfernt und `StandortID = 0`, `Name = 'dereferenced'` sowie `status = 'blocked'` gesetzt. Weil die Zeile danach keine nutzbare `scope_id` mehr hat, werden ursprünglicher Standort und Metadaten **in Freitextspalten per PHP `var_export()` serialisiert**:
+
+| Spalte               | Geschrieben von                           | Payload-Struktur                                                    |
+| -------------------- | ----------------------------------------- | ------------------------------------------------------------------- |
+| `Anmerkung`          | `Process::toDerefencedAmendment()`        | `BuergerID`, `StandortID`, `Anmerkung`, `IPTimeStamp`, `LastChange` |
+| `custom_text_field`  | `Process::toDerefencedCustomTextfield()`  | gleiches Muster mit `CustomTextfield`                               |
+| `custom_text_field2` | `Process::toDerefencedCustomTextfield2()` | gleiches Muster mit `CustomTextfield2`                              |
+
+Beispiel (Inhalt von `Anmerkung` nach Dereferenzierung):
+
+```
+array (
+  'BuergerID' => 100000,
+  'StandortID' => 1,
+  'Anmerkung' => NULL,
+  'IPTimeStamp' => 0,
+  'LastChange' => '1970-01-01T01:00:00+01:00',
+)
+```
+
+**Wo diese Payload wieder ausgelesen wird (String-Parsing, keine typisierten Spalten):**
+
+- `CalculateDailyWaitingStatisticByCron::extractScopeFromAnmerkung()` — Regex über alle drei Spalten, wenn `StandortID = 0` (`zmsdb/src/Zmsdb/Helper/CalculateDailyWaitingStatisticByCron.php`)
+- Ad-hoc-SQL in Wartungs-Migrationen (z. B. `SUBSTRING_INDEX` / `LIKE` auf `'StandortID' =>` in `Anmerkung` und Custom-Text-Feldern)
+- Jeder Code-Pfad, der auf dereferenzierten Shell-Zeilen noch eine Standort-ID braucht, bevor der Cron sie löscht
+
+**Warum das schlechte Praxis ist und im neuen Schema nicht fortgeschrieben werden darf:**
+
+- **Falsche Spaltensemantik:** `Anmerkung` / Custom-Text-Felder sind nutzersichtbare Kommentare, kein Archiv oder Audit-Store.
+- **Fragiles Parsing:** Standort und IDs werden per Regex/`SUBSTRING_INDEX` aus `var_export`-Text gewonnen; `NULL` oder überschriebene `StandortID` in der Zeichenkette bricht Folge-Jobs (z. B. Archive-Cron mit `NULL` in `buergerarchivtoday.StandortID`).
+- **Dreifach redundante Payload:** dieselbe Array-Struktur in drei unabhängigen Spalten.
+- **Keine Schema-Integrität:** Nichts verhindert Updates nach dem Finish, die den String zerstören oder `status` zurückdrehen, während `StandortID` bei `0` bleibt.
+
+**Zielrichtung (beim Refactor von `process` / Archiv):**
+
+- Dereference-Metadaten in **typisierten Spalten oder eigener Tabelle** (`process_dereference` / Audit: `process_id`, `scope_id`, `archived_at`, …).
+- Kein `var_export`-Array mehr in `comment` / Custom-Text-Felder schreiben.
+- Regex-basierte Standort-Wiederherstellung in Cron- und Statistik-Pfaden entfernen, sobald Shells echte FK- oder Archiv-Verknüpfung haben.
+
 #### holidays (formerly feiertage)
 
 | Aktuelle Spalte     | Neue Spalte (snake_case) | Grund                  |

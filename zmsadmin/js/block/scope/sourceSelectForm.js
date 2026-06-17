@@ -5,17 +5,8 @@ import { loopWithCallback } from '../../lib/utils'
 import { sortByName } from '../../lib/sort'
 
 class SourceSelectView extends Component {
-    constructor(props) {
-        super(props)
-    }
-
-    componentDidUpdate() {
-        //console.log("updated component", this.props.scopestate.provider)
-    }
-
     render() {
         const providerList = Object.values(this.props.scopestate.providerList)
-
         const sourceList = Object.values(this.props.scopestate.sourcelist)
 
         const sourceOptions = [{
@@ -68,12 +59,8 @@ class SourceSelectView extends Component {
         }
 
         return (
-            <fieldset className="panel--heavy">
+            <>
                 <div>
-                    <Inputs.Hidden
-                        name="id"
-                        value={(this.props.scopestate.scope) ? this.props.scopestate.scope.id : 0}
-                    />
                     <Inputs.FormGroup>
                         <Inputs.Label
                             value={this.props.labels.sources}
@@ -88,16 +75,15 @@ class SourceSelectView extends Component {
                                 attributes={{ "id": "scopeProviderSource", "disabled": !this.props.permissions.scope }}
                             />
                             {!this.props.permissions.scope && (
-                            <Inputs.Hidden
-                                name="provider[source]"
-                                value={(hasSource()) ? this.props.scopestate.source.source : ''}
-                            />
-                        )}
+                                <Inputs.Hidden
+                                    name="provider[source]"
+                                    value={(hasSource()) ? this.props.scopestate.source.source : ''}
+                                />
+                            )}
                         </Inputs.Controls>
                     </Inputs.FormGroup>
                 </div>
                 <div>
-
                     <Inputs.FormGroup>
                         <Inputs.Label
                             value={this.props.labels.providers}
@@ -123,41 +109,7 @@ class SourceSelectView extends Component {
                         </Inputs.Controls>
                     </Inputs.FormGroup>
                 </div>
-                <div>
-                    <Inputs.FormGroup>
-                        <Inputs.Label
-                            value={this.props.labels.name}
-                            attributes={{ "htmlFor": "scopeProviderName" }}
-                        />
-                        <Inputs.Controls>
-                            <Inputs.Text
-                                attributes={{ "id": "scopeProviderName", "readOnly": true, "maxLength": 40 }}
-                                name="contact[name]"
-                                value={(hasProvider()) ? this.props.scopestate.provider.contact.name : this.props.labels.notDeclared}
-                            />
-                        </Inputs.Controls>
-                        <Inputs.Hidden
-                            name="provider[name]"
-                            value={(hasProvider()) ? this.props.scopestate.provider.name : this.props.labels.notDeclared}
-                        />
-                    </Inputs.FormGroup>
-                </div>
-                <div>
-                    <Inputs.FormGroup>
-                        <Inputs.Label
-                            value={this.props.labels.address}
-                            attributes={{ "htmlFor": "scopeProviderStreet" }}
-                        />
-                        <Inputs.Controls>
-                            <Inputs.Text
-                                attributes={{ "id": "scopeProviderStreet", "readOnly": true, "maxLength": 70 }}
-                                name="contact[street]"
-                                value={(hasProvider()) ? this.props.scopestate.provider.contact.street + " " + this.props.scopestate.provider.contact.streetNumber : this.props.labels.notDeclared}
-                            />
-                        </Inputs.Controls>
-                    </Inputs.FormGroup>
-                </div>
-            </fieldset>
+            </>
         )
     }
 }
@@ -165,8 +117,9 @@ class SourceSelectView extends Component {
 SourceSelectView.propTypes = {
     labels: PropTypes.object.isRequired,
     scopestate: PropTypes.object.isRequired,
-    changeHandler: PropTypes.func,
-    onChangeSourceHandler: PropTypes.func,
+    permissions: PropTypes.object.isRequired,
+    changeHandler: PropTypes.func.isRequired,
+    onChangeSourceHandler: PropTypes.func.isRequired,
 }
 
 export default SourceSelectView

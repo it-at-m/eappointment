@@ -3,11 +3,12 @@
 namespace BO\Zmsadmin\Tests;
 
 use BO\Zmsentities\Exception\UserAccountMissingRights;
+use BO\Zmsentities\Exception\UserAccountAccessRightsFailed;
 
 class UseraccountListByRoleTest extends Base
 {
     protected $arguments = [
-        'level' => 50,
+        'roleName' => 'agent_queue',
     ];
 
     protected $parameters = [];
@@ -32,14 +33,25 @@ class UseraccountListByRoleTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/role/50/useraccount/',
-                    'response' => $this->readFixture('GET_useraccountlist_role_50.json'),
+                    'url' => '/role/agent_queue/useraccount/',
+                    'parameters' => ['resolveReferences' => 0],
+                    'response' => $this->readFixture('GET_useraccountlist_role_agent_queue.json'),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture('GET_rolelist.json'),
                 ],
             ]
         );
 
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString('useraccount-list', (string) $response->getBody());
+        $body = (string) $response->getBody();
+
+        $this->assertStringContainsString('useraccount-list', $body);
+        $this->assertStringContainsString('testadmin', $body);
+        $this->assertStringContainsString('Agenten-Queue Rolle', $body);
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -59,4 +71,24 @@ class UseraccountListByRoleTest extends Base
         $this->expectException(UserAccountMissingRights::class);
         $this->render($this->arguments, $this->parameters, []);
     }
+
+    public function testSuperuserOnlyRoleRequiresSuperuser()
+    {
+        $this->arguments = ['roleName' => 'system_admin'];
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture('GET_Workstation_Resolved1.json'),
+                ],
+            ]
+        );
+
+        $this->expectException(UserAccountAccessRightsFailed::class);
+        $this->render($this->arguments, $this->parameters, []);
+    }
 }
+
