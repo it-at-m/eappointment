@@ -868,10 +868,8 @@ class ReportClientScopeTest extends Base
         );
     }
 
-    /*
     public function testWithoutSelectedScope()
     {
-        $this->expectException('\BO\Zmsentities\Exception\WorkstationMissingScope');
         $this->setApiCalls(
             [
               [
@@ -882,6 +880,11 @@ class ReportClientScopeTest extends Base
               ]
             ]
         );
-        $this->render([ ], [ ], [ ]);
-    }*/
+        $response = $this->render([], ['__uri' => '/report/client/scope/'], []);
+        $body = (string) $response->getBody();
+        $this->assertStringContainsString('Kundenstatistik Standort', $body);
+        $this->assertStringContainsString('>Kundenstatistik</a>', $body);
+        $this->assertStringContainsString('Standort auswählen', $body);
+        $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', $body);
+    }
 }

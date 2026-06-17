@@ -9,7 +9,7 @@ use BO\Zmsentities\Helper\Property;
  * @SuppressWarnings(Complexity)
  * @SuppressWarnings(Coupling)
  * @SuppressWarnings(Public)
- *
+ * @SuppressWarnings(TooManyMethods)
  */
 class Process extends Schema\Entity
 {

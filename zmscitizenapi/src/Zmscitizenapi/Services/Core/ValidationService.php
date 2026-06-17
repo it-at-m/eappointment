@@ -17,6 +17,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
  * @TODO: Split this service into domain-specific validation services
  */
 class ValidationService

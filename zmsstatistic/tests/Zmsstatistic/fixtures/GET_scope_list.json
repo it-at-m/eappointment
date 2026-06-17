@@ -307,6 +307,23 @@
                     "name": "Personalversammlung"
                 }
             ]
+        },
+        "1": {
+            "$schema": "https://schema.berlin.de/queuemanagement/scope.json",
+            "id": "142",
+            "shortName": "",
+            "contact": {
+                "name": "Bürgeramt Wilmersdorfer Straße",
+                "country": "Germany"
+            },
+            "provider": {
+                "id": "122227",
+                "name": "Bürgeramt Wilmersdorfer Straße",
+                "source": "dldb",
+                "data": {
+                    "slotTimeInMinutes": 12
+                }
+            }
         }
     }
 }
