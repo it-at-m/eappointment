@@ -102,7 +102,7 @@ class RequestReport extends Base
                 } else {
                     $rowData[] = $name;
                 }
-                $rowData[] = $name;
+                
                 $rowData[] = isset($report->data['average_processingtime'][$name])
                     && is_numeric($report->data['average_processingtime'][$name])
                     ? ReportHelper::formatTimeValue($report->data['average_processingtime'][$name])
