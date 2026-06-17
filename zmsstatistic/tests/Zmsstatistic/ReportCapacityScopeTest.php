@@ -235,6 +235,7 @@ class ReportCapacityScopeTest extends Base
     {
         ob_start();
 
+        try {
         $this->setApiCalls(
             [
                 [
@@ -328,12 +329,16 @@ class ReportCapacityScopeTest extends Base
             ]
         );
         $this->assertSame('01.04.2016', $sheet->getCell('A6')->getValue());
-        $this->assertSame('20', $sheet->getCell('B6')->getValue());
-        $this->assertSame('10', $sheet->getCell('C6')->getValue());
+        $this->assertSame(20, $sheet->getCell('B6')->getValue());
+        $this->assertSame(10, $sheet->getCell('C6')->getValue());
         $this->assertSame('50 %', $sheet->getCell('D6')->getValue());
         $this->assertSame('Summe', $sheet->getCell('A8')->getValue());
         @unlink($tmp);
-        ob_end_clean();
+        } finally {
+            if (ob_get_level() > 0) {
+                ob_end_clean();
+            }
+        }
     }
 
     public function testWithDownloadXlsxMinutesMode()
@@ -412,6 +417,7 @@ class ReportCapacityScopeTest extends Base
     {
         ob_start();
 
+        try {
         $this->setApiCalls(
             [
                 [
@@ -485,11 +491,15 @@ class ReportCapacityScopeTest extends Base
             'Geplante Kapazität nur intern (Zeitschlitze)',
             $sheet->getCell('B5')->getValue()
         );
-        $this->assertSame('8', $sheet->getCell('B6')->getValue());
-        $this->assertSame('4', $sheet->getCell('C6')->getValue());
+        $this->assertSame(8, $sheet->getCell('B6')->getValue());
+        $this->assertSame(4, $sheet->getCell('C6')->getValue());
         $this->assertSame('50 %', $sheet->getCell('D6')->getValue());
         @unlink($tmp);
-        ob_end_clean();
+        } finally {
+            if (ob_get_level() > 0) {
+                ob_end_clean();
+            }
+        }
     }
 
     public function testHourlyDateRange()
