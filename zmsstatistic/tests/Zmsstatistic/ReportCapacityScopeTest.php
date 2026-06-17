@@ -260,6 +260,11 @@ class ReportCapacityScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
+                    'url' => '/scope/',
+                    'response' => $this->readFixture("GET_scope_list.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/warehouse/capacityscope/141/',
                     'response' => $this->readFixture("GET_slotscope_141.json")
                 ],
@@ -302,9 +307,14 @@ class ReportCapacityScopeTest extends Base
         file_put_contents($tmp, (string) $response->getBody());
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($tmp);
         $sheet = $spreadsheet->getActiveSheet();
+        $this->assertSame('Terminkapazität', $sheet->getCell('A1')->getValue());
+        $this->assertSame('Bürgeramt Heerstraße ', $sheet->getCell('A2')->getValue());
+        $this->assertSame('Zeitraum:', $sheet->getCell('A3')->getValue());
+        $this->assertSame('01.04.2016', $sheet->getCell('B3')->getValue());
+        $this->assertSame('bis', $sheet->getCell('C3')->getValue());
+        $this->assertSame('15.03.2016', $sheet->getCell('D3')->getValue());
         $this->assertSame(
             [
-                'Standort-ID',
                 'Datum',
                 'Gebuchte Kapazität insgesamt (Zeitschlitze)',
                 'Geplante Kapazität insgesamt (Zeitschlitze)',
@@ -316,16 +326,15 @@ class ReportCapacityScopeTest extends Base
                 'Geplante Kapazität Internet (Minuten)',
             ],
             [
-                $sheet->getCell('A1')->getValue(),
-                $sheet->getCell('B1')->getValue(),
-                $sheet->getCell('C1')->getValue(),
-                $sheet->getCell('D1')->getValue(),
-                $sheet->getCell('E1')->getValue(),
-                $sheet->getCell('F1')->getValue(),
-                $sheet->getCell('G1')->getValue(),
-                $sheet->getCell('H1')->getValue(),
-                $sheet->getCell('I1')->getValue(),
-                $sheet->getCell('J1')->getValue(),
+                $sheet->getCell('A5')->getValue(),
+                $sheet->getCell('B5')->getValue(),
+                $sheet->getCell('C5')->getValue(),
+                $sheet->getCell('D5')->getValue(),
+                $sheet->getCell('E5')->getValue(),
+                $sheet->getCell('F5')->getValue(),
+                $sheet->getCell('G5')->getValue(),
+                $sheet->getCell('H5')->getValue(),
+                $sheet->getCell('I5')->getValue(),
             ]
         );
         @unlink($tmp);
@@ -358,6 +367,11 @@ class ReportCapacityScopeTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/organisation/71/owner/',
                     'response' => $this->readFixture("GET_owner_23.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/',
+                    'response' => $this->readFixture("GET_scope_list.json")
                 ],
                 [
                     'function' => 'readGetResult',

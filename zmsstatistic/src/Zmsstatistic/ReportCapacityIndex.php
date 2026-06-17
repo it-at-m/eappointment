@@ -132,7 +132,7 @@ class ReportCapacityIndex extends BaseController
             $valueMode
         );
 
-        return (new Download\WarehouseReport(\App::$slim->getContainer()))
+        return (new Download\CapacityReport(\App::$slim->getContainer()))
             ->readResponse($request, $response, $args);
     }
 

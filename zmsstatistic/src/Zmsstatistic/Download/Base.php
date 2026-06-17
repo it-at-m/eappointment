@@ -41,6 +41,7 @@ class Base extends BaseController
         'raw-requestscope' => 'Rohdaten Dienstleistungsstatistik',
         'raw-requestdepartment' => 'Rohdaten Dienstleistungsstatistik',
         'raw-requestorganisation' => 'Rohdaten Dienstleistungsstatistik',
+        'capacityscope' => 'Terminkapazität',
         'raw-capacityscope' => 'Rohdaten Terminkapazität'
     ];
 
@@ -98,6 +99,38 @@ class Base extends BaseController
             }
         }
         $sheet->fromArray($reportData, null, 'A' . ($sheet->getHighestRow()));
+
+        return $spreadsheet;
+    }
+
+    protected function writeFilteredExchangeReport(
+        Exchange $report,
+        Spreadsheet $spreadsheet,
+        array $skipVariables = [],
+        int $rowGap = 0
+    ): Spreadsheet {
+        $sheet = $spreadsheet->getActiveSheet();
+        $columnIndexes = [];
+        $reportData = [];
+
+        foreach ($report->dictionary as $index => $item) {
+            $variable = $item['variable'] ?? '';
+            if (in_array($variable, $skipVariables, true)) {
+                continue;
+            }
+            $columnIndexes[] = $index;
+            $reportData['header'][] = $this->resolveDictionaryHeader($item);
+        }
+
+        foreach ($report->data as $row => $entry) {
+            foreach ($columnIndexes as $index) {
+                $value = $entry[$index] ?? '';
+                $reportData[$row][] = is_numeric($value) ? (string) $value : $value;
+            }
+        }
+
+        $startRow = $sheet->getHighestRow() + $rowGap;
+        $sheet->fromArray($reportData, null, 'A' . $startRow);
 
         return $spreadsheet;
     }

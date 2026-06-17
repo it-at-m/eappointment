@@ -840,7 +840,7 @@ class ReportCapacityService
         array $selectedScopes = [],
         string $valueMode = 'slots'
     ): array {
-        $args['category'] = 'raw-capacityscope';
+        $args['category'] = 'capacityscope';
         $args['subject'] = 'capacityscope';
         $args['subjectid'] = $scopeId;
 
@@ -858,10 +858,13 @@ class ReportCapacityService
 
         if (!empty($selectedScopes)) {
             $args['selectedScopes'] = $selectedScopes;
+        } elseif ($scopeId !== '') {
+            $args['selectedScopes'] = array_values(array_filter(explode(',', $scopeId)));
         }
 
         if ($exchangeCapacity instanceof Exchange) {
             $args['report'] = $exchangeCapacity;
+            $args['reports'] = [$exchangeCapacity];
         }
 
         return $args;
