@@ -312,7 +312,7 @@ class ReportCapacityScopeTest extends Base
         $this->assertSame('Zeitraum:', $sheet->getCell('A3')->getValue());
         $this->assertSame('01.04.2016', $sheet->getCell('B3')->getValue());
         $this->assertSame('bis', $sheet->getCell('C3')->getValue());
-        $this->assertSame('15.03.2016', $sheet->getCell('D3')->getValue());
+        $this->assertSame('30.04.2016', $sheet->getCell('D3')->getValue());
         $this->assertSame(
             [
                 'Datum',

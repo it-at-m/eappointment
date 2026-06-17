@@ -296,6 +296,14 @@ class ReportCapacityService
             return null;
         }
 
+        if ($timelineBounds) {
+            return $this->finalizeExchange(
+                $exchange,
+                $timelineBounds['from'],
+                $timelineBounds['to']
+            );
+        }
+
         return $this->finalizeExchange($exchange);
     }
 
