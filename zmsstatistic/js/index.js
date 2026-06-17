@@ -11,6 +11,7 @@ import 'moment/locale/de';
 import { getDataAttributes } from './lib/utils'
 import PeriodListView from './block/periodlist'
 import WarehouseReportView from './block/warehousereport'
+import CapacityReportView from './block/capacityreport'
 import ReportFilterView from './block/reportfilter'
 
 // Bind jQuery on $ for testing
@@ -27,6 +28,10 @@ $('.report-index').each(function () {
 
 $('.warehouse-report').each(function () {
     new WarehouseReportView(this, getDataAttributes(this));
+})
+
+$('.capacity-report').each(function () {
+    new CapacityReportView(this, getDataAttributes(this));
 })
 
 $('[data-report-filter]').each(function () {

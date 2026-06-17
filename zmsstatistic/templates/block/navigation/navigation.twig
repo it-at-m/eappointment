@@ -14,7 +14,6 @@
                     <a title="{% trans %}Wählen Sie hier den Standort für Ihre Statistikabfragen{% endtrans %}" href="{{ urlGet('workstationSelect', {}, {}) }}"{{ menuActive == 'select'? ' aria-current="page"' }}>Standort auswählen</a>
                 </li>
             {% endif %}
-            {% if workstation.scope.id %}
                 <li class="nav__link">
                     <ul class="nav__list">
                         <li class="nav__link{{ menuActive == 'client'? ' active' }}">
@@ -26,10 +25,15 @@
                         <li class="nav__link{{ menuActive == 'waiting'? ' active' }}">
                             <a title="{% trans %}Ausgabe der Wartestatistik{% endtrans %}" href="{{ urlGet('ReportWaitingIndex', {}, {}) }}">Wartestatistik</a>
                         </li>
+                        {% if permissions.statistic and permissions.capacityreport %}
+                        <li class="nav__link{{ menuActive == 'capacity'? ' active' }}">
+                            <a title="{% trans %}Ausgabe der Terminkapazität (geplante und gebuchte Kapazitäten){% endtrans %}" href="{{ urlGet('ReportCapacityIndex', {}, {}) }}">Terminkapazität</a>
+                        </li>
+                        {% endif %}
                     </ul>
                 </li>
-            {% endif %}
-        <li>
+            </ul>
+        </li>
 
         {% if permissions.superuser %}
             <li class="nav__block">

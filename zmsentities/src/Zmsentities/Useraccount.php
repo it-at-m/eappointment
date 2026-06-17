@@ -34,6 +34,7 @@ class Useraccount extends Schema\Entity
                 "appointment" => false,
                 "availability" => false,
                 "calldisplay" => false,
+                "capacityreport" => false,
                 "cherrypick" => false,
                 "cluster" => false,
                 "config" => false,

@@ -30,6 +30,10 @@ class ReportRequestService
      */
     public function getExchangeRequestData(string $scopeId, ?array $dateRange, array $args): mixed
     {
+        if ($scopeId === '') {
+            return null;
+        }
+
         if ($dateRange) {
             return $this->getExchangeRequestForDateRange($scopeId, $dateRange);
         }
