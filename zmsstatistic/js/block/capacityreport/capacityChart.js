@@ -247,7 +247,8 @@ export default class CapacityChart {
     syncTableDownloadLink() {
         syncCapacityTableDownloadHref(
             this.view.$main.find('.report-board--table-download').first(),
-            this.view.chartValueMode
+            this.view.chartValueMode,
+            this.view.chartChannelMode
         );
     }
 

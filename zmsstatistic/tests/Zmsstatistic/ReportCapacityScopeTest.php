@@ -316,27 +316,22 @@ class ReportCapacityScopeTest extends Base
         $this->assertSame(
             [
                 'Datum',
-                'Gebuchte Kapazität insgesamt (Zeitschlitze)',
                 'Geplante Kapazität insgesamt (Zeitschlitze)',
-                'Gebuchte Kapazität insgesamt (Minuten)',
-                'Geplante Kapazität insgesamt (Minuten)',
-                'Gebuchte Kapazität Internet (Zeitschlitze)',
-                'Geplante Kapazität Internet (Zeitschlitze)',
-                'Gebuchte Kapazität Internet (Minuten)',
-                'Geplante Kapazität Internet (Minuten)',
+                'Gebuchte Kapazität insgesamt (Zeitschlitze)',
+                'Auslastung',
             ],
             [
                 $sheet->getCell('A5')->getValue(),
                 $sheet->getCell('B5')->getValue(),
                 $sheet->getCell('C5')->getValue(),
                 $sheet->getCell('D5')->getValue(),
-                $sheet->getCell('E5')->getValue(),
-                $sheet->getCell('F5')->getValue(),
-                $sheet->getCell('G5')->getValue(),
-                $sheet->getCell('H5')->getValue(),
-                $sheet->getCell('I5')->getValue(),
             ]
         );
+        $this->assertSame('01.04.2016', $sheet->getCell('A6')->getValue());
+        $this->assertSame('20', $sheet->getCell('B6')->getValue());
+        $this->assertSame('10', $sheet->getCell('C6')->getValue());
+        $this->assertSame('50 %', $sheet->getCell('D6')->getValue());
+        $this->assertSame('Summe', $sheet->getCell('A8')->getValue());
         @unlink($tmp);
         ob_end_clean();
     }
@@ -410,6 +405,90 @@ class ReportCapacityScopeTest extends Base
             $response->getHeaderLine('Content-Disposition')
         );
 
+        ob_end_clean();
+    }
+
+    public function testWithDownloadXlsxInternOnlyChannel()
+    {
+        ob_start();
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/74/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture("GET_owner_23.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/',
+                    'response' => $this->readFixture("GET_scope_list.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/141/',
+                    'response' => $this->readFixture("GET_slotscope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/141/_/',
+                    'response' => $this->readFixture("GET_slotscope_141_report.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/',
+                    'response' => $this->readFixture("GET_warehouse_slotscope.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/141/2016-04/',
+                    'parameters' => ['groupby' => 'day'],
+                    'response' => $this->readFixture("GET_slotscope_141_report.json")
+                ],
+            ]
+        );
+        $response = $this->render(
+            ['period' => '2016-04'],
+            [
+                '__uri' => '/report/capacity/scope/2016-04/',
+                'type' => 'xlsx',
+                'channelMode' => 'intern_only',
+            ],
+            []
+        );
+
+        if (method_exists($response->getBody(), 'rewind')) {
+            $response->getBody()->rewind();
+        }
+
+        $tmp = tempnam(sys_get_temp_dir(), 'capacity_xlsx_intern_');
+        file_put_contents($tmp, (string) $response->getBody());
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($tmp);
+        $sheet = $spreadsheet->getActiveSheet();
+        $this->assertSame(
+            'Geplante Kapazität nur intern (Zeitschlitze)',
+            $sheet->getCell('B5')->getValue()
+        );
+        $this->assertSame('8', $sheet->getCell('B6')->getValue());
+        $this->assertSame('4', $sheet->getCell('C6')->getValue());
+        $this->assertSame('50 %', $sheet->getCell('D6')->getValue());
+        @unlink($tmp);
         ob_end_clean();
     }
 

@@ -122,6 +122,10 @@ class ReportCapacityIndex extends BaseController
         $validator = $request->getAttribute('validator');
         $valueMode = $validator->getParameter('valueMode')->isString()->getValue();
         $valueMode = $valueMode === 'minutes' ? 'minutes' : 'slots';
+        $channelMode = $validator->getParameter('channelMode')->isString()->getValue();
+        $channelMode = in_array($channelMode, ['total', 'public', 'intern_only'], true)
+            ? $channelMode
+            : 'total';
 
         $args = $reportCapacityService->prepareDownloadArgs(
             $args,
@@ -129,7 +133,8 @@ class ReportCapacityIndex extends BaseController
             $exchangeCapacity,
             $dateRange,
             $selectedScopes,
-            $valueMode
+            $valueMode,
+            $channelMode
         );
 
         return (new Download\CapacityReport(\App::$slim->getContainer()))

@@ -33,7 +33,7 @@ class CapacityReport extends Base
         $this->writeFilteredExchangeReport(
             $args['report'],
             $spreadsheet,
-            static::$ignoreColumns,
+            [],
             2
         );
 

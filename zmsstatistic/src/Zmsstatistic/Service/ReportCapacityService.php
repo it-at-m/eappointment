@@ -837,6 +837,148 @@ class ReportCapacityService
         return preg_replace('/[^0-9-]/', '', $period);
     }
 
+    public function buildDownloadExchange(
+        Exchange $exchange,
+        string $channelMode = 'total',
+        string $valueMode = 'slots'
+    ): Exchange {
+        $channelMode = in_array($channelMode, ['total', 'public', 'intern_only'], true)
+            ? $channelMode
+            : 'total';
+        $useMinutes = $valueMode === 'minutes' && $this->exchangeSupportsMinutes($exchange);
+        $isHourly = ($exchange->period ?? '') === 'hour';
+
+        $download = new Exchange();
+        $download->addDictionaryEntry(
+            'date',
+            'string',
+            $isHourly ? 'Zeitpunkt' : 'Datum'
+        );
+        $download->addDictionaryEntry(
+            'planned',
+            'number',
+            $this->buildCapacityMetricLabel('planned', $channelMode, $useMinutes)
+        );
+        $download->addDictionaryEntry(
+            'booked',
+            'number',
+            $this->buildCapacityMetricLabel('booked', $channelMode, $useMinutes)
+        );
+        $download->addDictionaryEntry('utilization', 'string', 'Auslastung');
+
+        $totalPlanned = 0;
+        $totalBooked = 0;
+
+        foreach ($exchange->data as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+
+            $normalizedRow = $this->normalizeDataRow($row, $isHourly);
+            $planned = $this->resolveChannelMetric($normalizedRow, 'planned', $channelMode, $useMinutes);
+            $booked = $this->resolveChannelMetric($normalizedRow, 'booked', $channelMode, $useMinutes);
+            $totalPlanned += $planned;
+            $totalBooked += $booked;
+            $utilization = $planned > 0 ? round(($booked / $planned) * 1000) / 10 : 0;
+
+            $download->addDataSet([
+                $this->formatDownloadDate((string) $normalizedRow[1], $isHourly),
+                (string) $planned,
+                (string) $booked,
+                $this->formatUtilizationPercent($utilization),
+            ]);
+        }
+
+        $totalUtilization = $totalPlanned > 0
+            ? round(($totalBooked / $totalPlanned) * 1000) / 10
+            : 0;
+        $download->addDataSet([
+            'Summe',
+            (string) $totalPlanned,
+            (string) $totalBooked,
+            $this->formatUtilizationPercent($totalUtilization),
+        ]);
+
+        return $download;
+    }
+
+    private function exchangeSupportsMinutes(Exchange $exchange): bool
+    {
+        foreach ($exchange->dictionary ?? [] as $entry) {
+            if (($entry['variable'] ?? null) === 'bookedminutes') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function buildCapacityMetricLabel(string $kind, string $channelMode, bool $useMinutes): string
+    {
+        $unit = $useMinutes ? 'Minuten' : 'Zeitschlitze';
+        $prefix = $kind === 'planned' ? 'Geplante' : 'Gebuchte';
+
+        return $prefix . ' Kapazität ' . $this->resolveCapacityChannelLabel($channelMode) . ' (' . $unit . ')';
+    }
+
+    private function resolveCapacityChannelLabel(string $channelMode): string
+    {
+        if ($channelMode === 'public') {
+            return 'Internet';
+        }
+        if ($channelMode === 'intern_only') {
+            return 'nur intern';
+        }
+
+        return 'insgesamt';
+    }
+
+    private function resolveChannelMetric(
+        array $normalizedRow,
+        string $metric,
+        string $channelMode,
+        bool $useMinutes
+    ): int {
+        if ($useMinutes) {
+            $totalPosition = $metric === 'planned' ? 5 : 4;
+            $publicPosition = $metric === 'planned' ? 9 : 8;
+        } else {
+            $totalPosition = $metric === 'planned' ? 3 : 2;
+            $publicPosition = $metric === 'planned' ? 7 : 6;
+        }
+
+        $total = (int) ($normalizedRow[$totalPosition] ?? 0);
+        $public = (int) ($normalizedRow[$publicPosition] ?? 0);
+
+        if ($channelMode === 'public') {
+            return $public;
+        }
+        if ($channelMode === 'intern_only') {
+            return max(0, $total - $public);
+        }
+
+        return $total;
+    }
+
+    private function formatDownloadDate(string $dateValue, bool $isHourly): string
+    {
+        if ($isHourly || !preg_match('/^(\d{4})-(\d{2})-(\d{2})/', $dateValue, $matches)) {
+            return $dateValue;
+        }
+
+        return $matches[3] . '.' . $matches[2] . '.' . $matches[1];
+    }
+
+    private function formatUtilizationPercent(float $utilization): string
+    {
+        $formatted = number_format($utilization, 1, ',', '.');
+        if (str_ends_with($formatted, ',0')) {
+            $formatted = substr($formatted, 0, -2);
+        }
+
+        return $formatted . ' %';
+    }
+
     /**
      * Prepare download arguments for capacity report Excel export.
      */
@@ -846,7 +988,8 @@ class ReportCapacityService
         mixed $exchangeCapacity,
         ?array $dateRange,
         array $selectedScopes = [],
-        string $valueMode = 'slots'
+        string $valueMode = 'slots',
+        string $channelMode = 'total'
     ): array {
         $args['category'] = 'capacityscope';
         $args['subject'] = 'capacityscope';
@@ -871,8 +1014,12 @@ class ReportCapacityService
         }
 
         if ($exchangeCapacity instanceof Exchange) {
-            $args['report'] = $exchangeCapacity;
             $args['reports'] = [$exchangeCapacity];
+            $args['report'] = $this->buildDownloadExchange(
+                $exchangeCapacity,
+                $channelMode,
+                $valueMode
+            );
         }
 
         return $args;
