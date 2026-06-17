@@ -19,11 +19,11 @@
                     "description": "Random salt for key derivation"
                 },
                 "cost": {
-                    "type": "number",
+                    "type": "integer",
                     "description": "Work factor (KDF iterations). Larger values are harder to solve"
                 },
                 "keyLength": {
-                    "type": "number",
+                    "type": "integer",
                     "description": "Length of the derived key in bytes"
                 },
                 "keyPrefix": {
@@ -35,15 +35,15 @@
                     "description": "Optional HMAC of the expected derived key"
                 },
                 "memoryCost": {
-                    "type": ["number", "null"],
+                    "type": ["integer", "null"],
                     "description": "Memory cost for memory-hard algorithms"
                 },
                 "parallelism": {
-                    "type": ["number", "null"],
+                    "type": ["integer", "null"],
                     "description": "Parallelism for memory-hard algorithms"
                 },
                 "expiresAt": {
-                    "type": ["number", "null"],
+                    "type": ["integer", "null"],
                     "description": "Unix timestamp (seconds) after which verification fails"
                 },
                 "data": {
