@@ -5,6 +5,7 @@ import {
     supportsMinutesChartMode,
     supportsCapacityChannelMode,
     getActiveYLabels,
+    getChartDatasetYLabels,
     getYAxisTitle,
     getChannelCapacityMetric,
 } from './capacityMetrics';
@@ -318,15 +319,15 @@ export default class CapacityChart {
 
         if (this.supportsCapacityChannelMode() && this.view.chartChannelMode === 'intern_only') {
             const series = [
-                { metric: 'booked' },
                 { metric: 'planned' },
+                { metric: 'booked' },
             ];
 
             for (const entry of series) {
                 const lineColor = colorlist.shift();
                 datasets.push({
                     label: getCapacityTableHeaderLabel(
-                        entry.metric === 'planned' ? 'planned' : 'booked',
+                        entry.metric,
                         this.view.chartChannelMode,
                         this.view.chartValueMode,
                         supportsMinutes
@@ -348,12 +349,12 @@ export default class CapacityChart {
             return datasets;
         }
 
-        const activeYLabels = getActiveYLabels(
+        const activeYLabels = getChartDatasetYLabels(getActiveYLabels(
             this.view.data,
             this.view.chartChannelMode,
             this.view.chartValueMode,
             supportsMinutes
-        );
+        ));
 
         for (const datalabel of activeYLabels) {
             const lineColor = colorlist.shift();

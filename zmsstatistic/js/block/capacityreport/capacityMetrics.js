@@ -123,6 +123,10 @@ export function getActiveYLabels(data, chartChannelMode, chartValueMode, support
     return visualization.ylabel;
 }
 
+export function getChartDatasetYLabels(activeYLabels) {
+    return Array.isArray(activeYLabels) ? [...activeYLabels].reverse() : activeYLabels;
+}
+
 export function getYAxisTitle(chartValueMode, supportsMinutes) {
     if (chartValueMode === 'minutes' && supportsMinutes) {
         return 'Minuten';
