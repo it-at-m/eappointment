@@ -17,7 +17,7 @@
     },
     "solution": {
         "counter": 12,
-        "derivedKey": "00a1b2c3d4e5f6789abcdef0123456789abcdef",
+        "derivedKey": "001234567890abcdef1234567890abcdef1234567890abcdef1234567890abcd",
         "time": 47
     }
 }
