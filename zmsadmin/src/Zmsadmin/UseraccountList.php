@@ -37,6 +37,10 @@ class UseraccountList extends BaseController
         $queryString = $validator->getParameter('query')
             ->isString()
             ->getValue();
+        $hideNavigation = $validator->getParameter('hideNavigation')
+            ->isNumber()
+            ->setDefault(0)
+            ->getValue();
 
         $useraccountList = new Collection();
         if ($workstation->hasSuperUseraccount()) {
@@ -72,6 +76,7 @@ class UseraccountList extends BaseController
                 'searchUserQuery' => $queryString,
                 'ownerlist' => $ownerList,
                 'success' => $success,
+                'hideNavigation' => (bool) $hideNavigation
             )
         );
     }
