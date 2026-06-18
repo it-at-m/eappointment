@@ -9,7 +9,6 @@ namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Collection\LogList;
 use BO\Zmsentities\Collection\ProcessList;
-use DateTime;
 
 /**
   * Handle requests concerning services
@@ -31,7 +30,7 @@ class ProcessSearch extends BaseController
         $validator = $request->getAttribute('validator');
         $queryString = $validator->getParameter('query')
             ->isString()
-            ->getValue();
+            ->getValue() ?? '';
         $page = $validator->getParameter('page')
             ->isNumber()
             ->setDefault(1)
@@ -39,15 +38,15 @@ class ProcessSearch extends BaseController
         $service = $validator->getParameter('service')
             ->isString()
             ->setDefault('')
-            ->getValue();
+            ->getValue() ?? '';
         $provider = $validator->getParameter('provider')
             ->isString()
             ->setDefault('')
-            ->getValue();
+            ->getValue() ?? '';
         $date = $validator->getParameter('date')
             ->isString()
-            ->setDefault(null)
-            ->getValue();
+            ->setDefault('')
+            ->getValue() ?? '';
         $userAction = $validator->getParameter('user')
             ->isNumber()
             ->setDefault(0)
@@ -56,17 +55,33 @@ class ProcessSearch extends BaseController
             ->isNumber()
             ->setDefault(100)
             ->getValue();
-        $processList = !empty($queryString) ? \App::$http->readGetResult('/process/search/', [
-            'query' => $queryString,
-            'resolveReferences' => 1,
-        ])->getCollection() : new ProcessList();
+        $hideNavigation = $validator->getParameter('hideNavigation')
+            ->isNumber()
+            ->setDefault(0)
+            ->getValue();
+
+        $isSearchRequested = (
+            trim($queryString) !== ''
+            || trim($service) !== ''
+            || trim($provider) !== ''
+            || trim($date) !== ''
+            || (int) $userAction !== 0
+        );
+
+        $processList = new ProcessList();
+        if ($isSearchRequested && '' !== trim((string) $queryString)) {
+            $processList = \App::$http->readGetResult('/process/search/', [
+                'query' => $queryString,
+                'resolveReferences' => 1,
+            ])->getCollection();
+        }
 
         $scopeIds = $workstation->getUseraccount()->getDepartmentList()->getUniqueScopeList()->getIds();
         if (!empty($processList) && !$workstation->hasSuperUseraccount()) {
             $processList = $this->filterProcessListForUserRights($processList, $scopeIds);
         }
 
-        if ($workstation->hasAuditAccount()) {
+        if ($workstation->hasAuditAccount() && $isSearchRequested) {
             $queryString = urlencode($queryString);
             $logList = \App::$http
                 ->readGetResult("/log/process/", [
@@ -93,6 +108,7 @@ class ProcessSearch extends BaseController
             'page/search.twig',
             array(
                 'title' => 'Suche',
+                'hideNavigation' => (bool) $hideNavigation,
                 'service' => $service ? trim($service) : null,
                 'provider' => $provider ? trim($provider) : null,
                 'userAction' => (int) $userAction,
@@ -103,7 +119,7 @@ class ProcessSearch extends BaseController
                 'processList' => $processList,
                 'processListOther' => $processListOther,
                 'logList' => $logList ?? [],
-                'searchProcessQuery' => urldecode($queryString),
+                'searchProcessQuery' => urldecode((string) $queryString),
                 'menuActive' => 'search'
             )
         );
