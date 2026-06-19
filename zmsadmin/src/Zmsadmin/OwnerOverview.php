@@ -7,6 +7,9 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Render;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
+
 class OwnerOverview extends BaseController
 {
     /**
@@ -21,13 +24,13 @@ class OwnerOverview extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         if (!$workstation->getUseraccount()->hasAnyPermission(['restrictedscope','scope','organisation','department','cluster','jurisdiction'])) {
-            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+            throw new UserAccountMissingRights();
         }
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 4))->getCollection();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->setDefault('')->getValue();
         $scopeName = $request->getAttribute('validator')->getParameter('scopeName')->isString()->setDefault('')->getValue();
         $departmentName = $request->getAttribute('validator')->getParameter('departmentName')->isString()->setDefault('')->getValue();
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/ownerOverview.twig',
             array(

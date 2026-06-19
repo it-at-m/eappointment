@@ -9,8 +9,9 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Scope as Entity;
 use BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Zmsentities\Scope as Entity;
 
 class Scope extends BaseController
 {
@@ -56,13 +57,13 @@ class Scope extends BaseController
                 if ($workstation->getUseraccount()->hasPermissions(['scope'])) {
                     $this->writeUploadedImage($request, $entityId, $input);
                 }
-                return \BO\Slim\Render::redirect('scope', ['id' => $entityId], [
+                return Render::redirect('scope', ['id' => $entityId], [
                     'success' => 'scope_saved'
                 ]);
             }
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/scope.twig',
             array(
@@ -95,10 +96,6 @@ class Scope extends BaseController
         return $source;
     }
 
-    /**
-     * @param \BO\Zmsentities\Scope $input scope entity, if used without ID, a new scope is created
-     * @param int|null $entityId Might be the entity scope or department if called from DepartmentAddScope
-     */
     protected function writeUpdatedEntity($input, $entityId = null, Entity $existingScope = null, $workstation = null)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();

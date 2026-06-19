@@ -3,8 +3,9 @@
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
+use BO\Slim\Render;
 use BO\Zmsentities\Exception\UserAccountMissingRights;
-use BO\Zmsentities\Role as RoleEntity;
+use BO\Zmsentities\Role;
 
 class RoleEdit extends BaseController
 {
@@ -25,7 +26,7 @@ class RoleEdit extends BaseController
 
         $role = \App::$http->readGetResult('/roles/' . $roleId . '/', [])->getEntity();
         if (!$role->hasId()) {
-            return \BO\Slim\Render::redirect('roles', [], []);
+            return Render::redirect('roles', [], []);
         }
 
         $submitted = null;
@@ -34,8 +35,8 @@ class RoleEdit extends BaseController
             $input = $request->getParsedBody();
             $submitted = is_array($input) ? $input : [];
             $result = $this->writeUpdatedRole($roleId, $role->name, $submitted);
-            if ($result instanceof RoleEntity) {
-                return \BO\Slim\Render::redirect(
+            if ($result instanceof Role) {
+                return Render::redirect(
                     'roleEdit',
                     ['id' => $roleId],
                     ['success' => 'role_updated']
@@ -43,7 +44,7 @@ class RoleEdit extends BaseController
             }
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/roleForm.twig',
             [
@@ -60,7 +61,7 @@ class RoleEdit extends BaseController
         );
     }
 
-    protected function writeUpdatedRole(int $roleId, string $currentRoleName, array $input): RoleEntity|array|null
+    protected function writeUpdatedRole(int $roleId, string $currentRoleName, array $input): Role|array|null
     {
         $data = $input;
         unset($data['id'], $data['assignedUserCount']);
@@ -68,7 +69,7 @@ class RoleEdit extends BaseController
         $data['permissions'] = is_array($permissions)
             ? array_values(array_unique($permissions))
             : [];
-        $entity = (new RoleEntity($data))->withCleanedUpFormData();
+        $entity = (new Role($data))->withCleanedUpFormData();
 
         if ($entity->name !== $currentRoleName) {
             $roles = \App::$http->readGetResult('/roles/', [])->getCollection();

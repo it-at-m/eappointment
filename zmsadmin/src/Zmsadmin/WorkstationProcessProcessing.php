@@ -7,6 +7,9 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Render;
+use BO\Zmsentities\Exception\WorkstationMissingAssignedProcess;
+
 class WorkstationProcessProcessing extends BaseController
 {
     /**
@@ -23,7 +26,7 @@ class WorkstationProcessProcessing extends BaseController
         $workstation->process->status = 'processing';
         $workstation->process->parkedBy = null;
         if (! $workstation->process->hasId()) {
-            throw new \BO\Zmsentities\Exception\WorkstationMissingAssignedProcess();
+            throw new WorkstationMissingAssignedProcess();
         }
         $workstation->process = \App::$http->readPostResult(
             '/process/' . $workstation->process->id . '/' . $workstation->process->authKey . '/',
@@ -34,7 +37,7 @@ class WorkstationProcessProcessing extends BaseController
         $validator = $request->getAttribute('validator');
         $error = $validator->getParameter('error')->isString()->getValue();
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'block/process/info.twig',
             array(

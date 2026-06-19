@@ -9,8 +9,11 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Owner as Entity;
 use BO\Mellon\Validator;
+use BO\Zmsentities\Owner as Entity;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
+use BO\Slim\Render;
+
 
 class Owner extends BaseController
 {
@@ -26,7 +29,7 @@ class Owner extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         if (!$workstation->getUseraccount()->hasPermissions(['jurisdiction'])) {
-            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+            throw new UserAccountMissingRights();
         }
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
@@ -38,7 +41,7 @@ class Owner extends BaseController
             $entity->id = $entityId;
             \App::$http->readPostResult('/owner/' . $entity->id . '/', $entity)
                 ->getEntity();
-            return \BO\Slim\Render::redirect(
+            return Render::redirect(
                 'owner',
                 [
                     'id' => $entityId
@@ -49,7 +52,7 @@ class Owner extends BaseController
             );
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/owner.twig',
             array(

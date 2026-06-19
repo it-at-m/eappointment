@@ -9,6 +9,9 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Render;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
+
 class SourceIndex extends BaseController
 {
     /**
@@ -23,11 +26,11 @@ class SourceIndex extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         if (!$workstation->getUseraccount()->hasPermissions(['source'])) {
-            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+            throw new UserAccountMissingRights();
         }
         $sourceList = \App::$http->readGetResult('/source/', ['resolveReferences' => 0])->getCollection();
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/sourceindex.twig',
             array(

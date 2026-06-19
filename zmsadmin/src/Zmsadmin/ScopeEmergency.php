@@ -8,6 +8,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
+use BO\Zmsentities\Scope;
 
 class ScopeEmergency extends BaseController
 {
@@ -26,7 +27,7 @@ class ScopeEmergency extends BaseController
 
         switch ($request->getMethod()) {
             case 'POST':
-                $result = \App::$http->readPostResult($url, new \BO\Zmsentities\Scope());
+                $result = \App::$http->readPostResult($url, new Scope());
                 break;
             case 'GET':
                 $result = \App::$http->readDeleteResult($url);

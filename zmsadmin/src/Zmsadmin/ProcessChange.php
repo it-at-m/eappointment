@@ -37,7 +37,7 @@ class ProcessChange extends BaseController
         $newProcess = $this->getNewProcess($input, $oldProcess, $scope);
         $validatedForm = static::getValidatedForm($request->getAttribute('validator'), $newProcess);
         if ($validatedForm['failed']) {
-            return \BO\Slim\Render::withJson(
+            return Render::withJson(
                 $response,
                 $validatedForm
             );
@@ -48,7 +48,7 @@ class ProcessChange extends BaseController
             ['selectedprocess' => $process, 'success' => 'process_changed'] :
             [];
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'element/helper/messageHandler.twig',
             $queryParams

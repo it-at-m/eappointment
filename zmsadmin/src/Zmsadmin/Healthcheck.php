@@ -8,7 +8,9 @@
 namespace BO\Zmsadmin;
 
 use BO\Slim\Render;
+use BO\Zmsclient\Status;
 use BO\Zmsentities\Schema\Entity;
+
 
 /**
   * Handle requests concerning services
@@ -25,10 +27,10 @@ class Healthcheck extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $response = \BO\Zmsclient\Status::testStatus($response, function (): Entity|false|null {
+        $response = Status::testStatus($response, function (): Entity|false|null {
             return \App::$http->readGetResult('/status/', ['includeProcessStats' => 0])->getEntity();
         });
-        $response = \BO\Slim\Render::withLastModified($response, time(), '0');
+        $response = Render::withLastModified($response, time(), '0');
         return $response;
     }
 }
