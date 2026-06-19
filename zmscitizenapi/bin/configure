@@ -29,6 +29,4 @@ fi
 
 
 #VERSION=`git symbolic-ref -q --short HEAD || git describe --tags --exact-match`
-VERSION=`git describe --tags --always`
-echo $VERSION > $ROOT/VERSION
-echo " $VERSION"
+"$($REALPATH "$DIR/../../.resources/scripts/write-version.sh")" "$ROOT"

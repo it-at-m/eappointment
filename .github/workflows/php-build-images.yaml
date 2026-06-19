@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - name: Configure Git Safe Directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Install python3
@@ -55,11 +57,13 @@ jobs:
             # Sanitize the tag by replacing invalid characters with a hyphen
             tag="branch-$(echo "$tag" | sed 's/[\/:]/-/g')"
           fi
+          app_version="$(git describe --tags --always)"
           docker build . \
             --file ".resources/Containerfile" \
             --tag "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
             --build-arg "MODULE=${{ matrix.module }}" \
-            --build-arg "PHP_VERSION=${{ matrix.php_version }}"
+            --build-arg "PHP_VERSION=${{ matrix.php_version }}" \
+            --build-arg "APP_VERSION=${app_version}"
           echo "IMAGE_TAG=$tag" >> "$GITHUB_ENV"
 
       - name: Push Image to GHCR
