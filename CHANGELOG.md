@@ -1,3 +1,31 @@
+## Release Muc-43 (19.06.2026) 
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1321'>ZMSKVR-1321</a>] -         Entkopplung von Berliner Layout-Dependencies wegen kritischer Sicherheitslücke und fehlender Wartbarkeit
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1392'>ZMSKVR-1392</a>] -         Ungünstige Validierung bei Standort- und Behördenkonfiguration
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1449'>ZMSKVR-1449</a>] -         Callout-Box für Captcha: &quot;Ihre Sitzung ist abgelaufen&quot; Warning statt Error-Box (Farbe)
+</li>
+</ul>
+                                                                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1042'>ZMSKVR-1042</a>] -         Gesamtübersicht: Reihenfolge Terminkacheln in einem Standort ändern sich nach Datenaktualisierung nicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1328'>ZMSKVR-1328</a>] -         Testautomatisierung: Interner Terminkunde – Aufruf und Abschluss über ZMS Admin
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1345'>ZMSKVR-1345</a>] -         Sicherheitslücke: Unberechtigter Zugriff auf Standortdaten (nur technische Admins erlauben)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1378'>ZMSKVR-1378</a>] -         Neue Statistik: Auswertung von geplanten und gebuchten Terminkapazitäten MVP
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1400'>ZMSKVR-1400</a>] -         Finale UI-Umstellung Nutzerverwaltung auf neues Rollenmodell
+</li>
+</ul>
+
 ## Release Muc-42 (29.05.2026) 
                               
 <h2>        Bug
