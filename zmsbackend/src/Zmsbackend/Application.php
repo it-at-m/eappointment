@@ -100,18 +100,30 @@ class Application extends \BO\Slim\Application
         self::setupCache();
     }
 
+    private static function envInt(string $primaryKey, string $fallbackKey, int $default): int
+    {
+        foreach ([$primaryKey, $fallbackKey] as $key) {
+            $value = getenv($key);
+            if ($value !== false && $value !== '') {
+                return (int) $value;
+            }
+        }
+
+        return $default;
+    }
+
     private static function initializeLogger(): void
     {
-        self::$LOGGER_MAX_REQUESTS = (int) (getenv('ZMS_BACKEND_LOGGER_MAX_REQUESTS') ?: getenv('ZMS_API_LOGGER_MAX_REQUESTS') ?: 1000);
-        self::$LOGGER_MAX_ERROR_REQUESTS = (int) (getenv('ZMS_BACKEND_LOGGER_MAX_ERROR_REQUESTS') ?: getenv('ZMS_API_LOGGER_MAX_ERROR_REQUESTS') ?: 0);
-        self::$LOGGER_RESPONSE_LENGTH = (int) (getenv('ZMS_BACKEND_LOGGER_RESPONSE_LENGTH') ?: getenv('ZMS_API_LOGGER_RESPONSE_LENGTH') ?: 1048576);
-        self::$LOGGER_STACK_LINES = (int) (getenv('ZMS_BACKEND_LOGGER_STACK_LINES') ?: getenv('ZMS_API_LOGGER_STACK_LINES') ?: 20);
-        self::$LOGGER_MESSAGE_SIZE = (int) (getenv('ZMS_BACKEND_LOGGER_MESSAGE_SIZE') ?: getenv('ZMS_API_LOGGER_MESSAGE_SIZE') ?: 8192);
-        self::$LOGGER_CACHE_TTL = (int) (getenv('ZMS_BACKEND_LOGGER_CACHE_TTL') ?: getenv('ZMS_API_LOGGER_CACHE_TTL') ?: 60);
-        self::$LOGGER_MAX_RETRIES = (int) (getenv('ZMS_BACKEND_LOGGER_MAX_RETRIES') ?: getenv('ZMS_API_LOGGER_MAX_RETRIES') ?: 3);
-        self::$LOGGER_BACKOFF_MIN = (int) (getenv('ZMS_BACKEND_LOGGER_BACKOFF_MIN') ?: getenv('ZMS_API_LOGGER_BACKOFF_MIN') ?: 100);
-        self::$LOGGER_BACKOFF_MAX = (int) (getenv('ZMS_BACKEND_LOGGER_BACKOFF_MAX') ?: getenv('ZMS_API_LOGGER_BACKOFF_MAX') ?: 1000);
-        self::$LOGGER_LOCK_TIMEOUT = (int) (getenv('ZMS_BACKEND_LOGGER_LOCK_TIMEOUT') ?: getenv('ZMS_API_LOGGER_LOCK_TIMEOUT') ?: 5);
+        self::$LOGGER_MAX_REQUESTS = self::envInt('ZMS_BACKEND_LOGGER_MAX_REQUESTS', 'ZMS_API_LOGGER_MAX_REQUESTS', 1000);
+        self::$LOGGER_MAX_ERROR_REQUESTS = self::envInt('ZMS_BACKEND_LOGGER_MAX_ERROR_REQUESTS', 'ZMS_API_LOGGER_MAX_ERROR_REQUESTS', 0);
+        self::$LOGGER_RESPONSE_LENGTH = self::envInt('ZMS_BACKEND_LOGGER_RESPONSE_LENGTH', 'ZMS_API_LOGGER_RESPONSE_LENGTH', 1048576);
+        self::$LOGGER_STACK_LINES = self::envInt('ZMS_BACKEND_LOGGER_STACK_LINES', 'ZMS_API_LOGGER_STACK_LINES', 20);
+        self::$LOGGER_MESSAGE_SIZE = self::envInt('ZMS_BACKEND_LOGGER_MESSAGE_SIZE', 'ZMS_API_LOGGER_MESSAGE_SIZE', 8192);
+        self::$LOGGER_CACHE_TTL = self::envInt('ZMS_BACKEND_LOGGER_CACHE_TTL', 'ZMS_API_LOGGER_CACHE_TTL', 60);
+        self::$LOGGER_MAX_RETRIES = self::envInt('ZMS_BACKEND_LOGGER_MAX_RETRIES', 'ZMS_API_LOGGER_MAX_RETRIES', 3);
+        self::$LOGGER_BACKOFF_MIN = self::envInt('ZMS_BACKEND_LOGGER_BACKOFF_MIN', 'ZMS_API_LOGGER_BACKOFF_MIN', 100);
+        self::$LOGGER_BACKOFF_MAX = self::envInt('ZMS_BACKEND_LOGGER_BACKOFF_MAX', 'ZMS_API_LOGGER_BACKOFF_MAX', 1000);
+        self::$LOGGER_LOCK_TIMEOUT = self::envInt('ZMS_BACKEND_LOGGER_LOCK_TIMEOUT', 'ZMS_API_LOGGER_LOCK_TIMEOUT', 5);
         LoggerService::configure(self::getLoggerConfig());
     }
 
