@@ -12,6 +12,9 @@ on:
       zmsdb-test-result:
         description: "ZMSDB test result"
         value: ${{ jobs.zmsdb-test.outputs.result }}
+      zmsbackend-test-result:
+        description: "ZMSBACKEND test result"
+        value: ${{ jobs.zmsbackend-test.outputs.result }}
       zmsclient-test-result:
         description: "ZMSClient test result"
         value: ${{ jobs.zmsclient-test.outputs.result }}
@@ -242,6 +245,82 @@ jobs:
         with:
           name: coverage-zmsdb
           path: zmsdb/coverage/
+          retention-days: 1
+      - name: Set job result
+        id: set-result
+        if: always()
+        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
+
+  zmsbackend-test:
+    runs-on: ubuntu-latest
+    container:
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev"
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MYSQL_ROOT_PASSWORD: zmsbackend
+          MYSQL_DATABASE: zmsbo
+          MYSQL_CHARACTER_SET: utf8mb4
+          MYSQL_COLLATION: utf8mb4_unicode_ci
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 10s
+          --health-retries 5
+          --memory=1g
+          --cpus=1
+    outputs:
+      result: ${{ steps.set-result.outputs.result }}
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+      - name: Configure Git Safe Directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsdb' 'zmsbackend')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+        shell: bash
+
+      - name: Import Test Data and Run Unit Tests
+        env:
+          MYSQL_PORT: "tcp://mariadb:3306"
+          MYSQL_DATABASE: zmsbo
+          MYSQL_ROOT_PASSWORD: zmsbackend
+          MYSQL_USER: root
+          MYSQL_PASSWORD: zmsbackend
+          CACHE_DIR: /tmp/cache
+          ZMS_CONFIG_SECURE_TOKEN: secure-token
+          SKIP_DNS_VALIDATION: 1
+        run: |
+          set -e
+          mkdir -p /tmp/cache
+          mkdir -p zmsbackend/data
+          cp zmsdb/tests/Zmsdb/fixtures/*.json zmsbackend/data/
+          if [[ ! -f zmsbackend/config.php ]]; then
+            cp zmsbackend/config.example.php zmsbackend/config.php
+          fi
+          cd zmsdb
+          bin/importTestData --commit
+          cd ../zmsbackend
+          mkdir -p coverage
+          php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=2G -dopcache.enable=1 -dopcache.memory_consumption=128 \
+            ./vendor/bin/phpunit -c phpunit.xml \
+            --coverage-html coverage/html \
+            --coverage-clover coverage/clover.xml \
+            --log-junit coverage/junit.xml \
+            --display-deprecations --display-warnings
+      - name: Upload Coverage
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-zmsbackend
+          path: zmsbackend/coverage/
           retention-days: 1
       - name: Set job result
         id: set-result
