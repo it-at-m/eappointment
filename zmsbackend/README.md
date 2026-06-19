@@ -32,6 +32,10 @@ podman exec -it zms-web bash -lc "./zmsbackend/zmsbackend-test"
 
 Point your web server at `zmsbackend/public/` (same pattern as `zmsapi`).
 
+OpenAPI documentation: https://it-at-m.github.io/eappointment/zmsbackend/public/doc/index.html
+
+Legacy `zmsapi` docs remain at https://it-at-m.github.io/eappointment/zmsapi/public/doc/index.html during migration.
+
 ## Tests
 
 ```bash

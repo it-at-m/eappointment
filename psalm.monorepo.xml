@@ -27,6 +27,14 @@
         <file name="zmsapi/bootstrap.php" />
         <file name="zmsapi/routing.php" />
         <file name="zmsapi/tests/Zmsapi/bootstrap.php" />
+        <directory name="zmsbackend/src" />
+        <directory name="zmsbackend/bin" />
+        <directory name="zmsbackend/cron" />
+        <directory name="zmsbackend/tests" />
+        <file name="zmsbackend/config.example.php" />
+        <file name="zmsbackend/bootstrap.php" />
+        <file name="zmsbackend/routing.php" />
+        <file name="zmsbackend/tests/Zmsbackend/bootstrap.php" />
         <directory name="zmscalldisplay/src" />
         <directory name="zmscalldisplay/bin" />
         <directory name="zmscalldisplay/tests" />
@@ -89,6 +97,7 @@
             <directory name="mellon/vendor" />
             <directory name="zmsadmin/vendor" />
             <directory name="zmsapi/vendor" />
+            <directory name="zmsbackend/vendor" />
             <directory name="zmscalldisplay/vendor" />
             <directory name="zmscitizenapi/vendor" />
             <directory name="zmsclient/vendor" />
@@ -108,6 +117,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -125,6 +135,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -142,6 +153,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -159,6 +171,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -176,6 +189,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -193,6 +207,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -210,6 +225,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -227,6 +243,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -244,6 +261,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -262,6 +280,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -279,6 +298,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -296,6 +316,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -313,6 +334,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -331,6 +353,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -348,6 +371,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -365,6 +389,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -382,6 +407,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -399,6 +425,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -416,6 +443,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -433,6 +461,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -450,6 +479,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -467,6 +497,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -484,6 +515,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -501,6 +533,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -518,6 +551,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -535,6 +569,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -552,6 +587,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -569,6 +605,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -586,6 +623,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -603,6 +641,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -620,6 +659,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -637,6 +677,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -654,6 +695,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -671,6 +713,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -688,6 +731,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -705,6 +749,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -722,6 +767,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -739,6 +785,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -756,6 +803,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -773,6 +821,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -790,6 +839,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -807,6 +857,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />
@@ -824,6 +875,7 @@
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsapi/tests" />
+                <directory name="zmsbackend/tests" />
                 <directory name="zmscalldisplay/tests" />
                 <directory name="zmscitizenapi/tests" />
                 <directory name="zmsclient/tests" />

@@ -7,4 +7,5 @@
 
 # Ensure these bash entrypoints are LF
 zmsapi/zmsapi-test text eol=lf
+zmsbackend/zmsbackend-test text eol=lf
 zmsdb/zmsdb-test text eol=lf
