@@ -97,6 +97,9 @@ class Application extends \BO\Slim\Application
         self::setupCache();
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     private static function initializeLogger(): void
     {
         self::$LOGGER_MAX_REQUESTS = (int) (getenv('ZMS_BACKEND_LOGGER_MAX_REQUESTS') ?: 1000);
