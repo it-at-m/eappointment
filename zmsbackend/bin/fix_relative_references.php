@@ -24,7 +24,7 @@ foreach ($roots as $root) {
     }
 }
 
-$fixturesFrom = $GLOBALS['zapi'] . '/tests/Zmsapi/fixtures';
+$fixturesFrom = $GLOBALS['zapi'] . '/tests/Zmsbackend/fixtures';
 $fixturesTo = $GLOBALS['zb'] . '/tests/Zmsbackend/fixtures';
 if (is_dir($fixturesFrom)) {
     ensureDir($fixturesTo);

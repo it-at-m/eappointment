@@ -127,7 +127,7 @@ class Select
         } catch (\Exception $exception) {
             $sanitizedDsn     = self::sanitizeStackTrace($dataSourceName);
             $sanitizedMessage = self::sanitizeStackTrace($exception->getMessage());
-            throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
+            throw new \BO\Zmsbackend\Exception\Pdo\PDOFailed(
                 $sanitizedDsn . ': ' . $sanitizedMessage,
             );
         }

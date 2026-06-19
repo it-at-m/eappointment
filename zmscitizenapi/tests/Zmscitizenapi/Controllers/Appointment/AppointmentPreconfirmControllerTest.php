@@ -252,7 +252,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
     public function testPreconfirmationExpired()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\PreconfirmationExpired';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\PreconfirmationExpired';
     
         $this->setApiCalls([
             [
@@ -299,7 +299,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
     public function testAppointmentNotFoundException()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ProcessNotFound';
 
         $this->setApiCalls([
             [
@@ -329,7 +329,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
     public function testAuthKeyMismatch()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\AuthKeyMatchFailed';
 
         $this->setApiCalls([
             [
@@ -359,7 +359,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
     public function testTooManyEmailsAtLocation()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\MoreThanAllowedAppointmentsPerMail';
 
         $this->setApiCalls([
             [
@@ -407,7 +407,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
     public function testEmailRequired()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\EmailRequired';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\EmailRequired';
     
         $this->setApiCalls([
             [
@@ -455,7 +455,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
     public function testTelephoneRequired()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\TelephoneRequired';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\TelephoneRequired';
     
         $this->setApiCalls([
             [
@@ -503,7 +503,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
     public function testProcessNotReservedAnymore()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessNotReservedAnymore';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ProcessNotReservedAnymore';
     
         $this->setApiCalls([
             [

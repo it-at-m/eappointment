@@ -164,7 +164,7 @@ class UserAccountTest extends Base
     {
         $query = new Query();
         $input = $this->getTestEntity();
-        $this->expectException('\BO\Zmsdb\Exception\Useraccount\DuplicateEntry');
+        $this->expectException('\BO\Zmsbackend\Useraccount\Exception\DuplicateEntry');
         $userAccount = $query->writeEntity($input);
         $userAccount = $query->writeEntity($input);
     }
@@ -172,7 +172,7 @@ class UserAccountTest extends Base
     public function testLoginFailed()
     {
         $now = static::$now;
-        $this->expectException('\BO\Zmsdb\Exception\Useraccount\InvalidCredentials');
+        $this->expectException('\BO\Zmsbackend\Useraccount\Exception\InvalidCredentials');
         (new Workstation())->writeEntityLoginByName('johndoe', 'secret',$now, (new \DateTime())->setTimestamp($now->getTimestamp() + 28800));
     }
 

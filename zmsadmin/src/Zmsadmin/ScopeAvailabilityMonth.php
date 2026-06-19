@@ -99,7 +99,7 @@ class ScopeAvailabilityMonth extends BaseController
                 )
                 ->getCollection();
         } catch (\BO\Zmsclient\Exception $exception) {
-            if ($exception->template != 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound') {
+            if ($exception->template != 'BO\Zmsbackend\Availability\Exception\AvailabilityNotFound') {
                 throw $exception;
             }
             $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();

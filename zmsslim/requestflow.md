@@ -7,7 +7,7 @@ sequenceDiagram
     actor User
     participant Client as Zmsadmin
     participant OIDC as OpenID Provider
-    participant API as Zmsapi
+    participant API as Zmsbackend
     participant DB as Zmsdb    
 
     %% login sequence

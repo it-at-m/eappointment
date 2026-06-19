@@ -220,7 +220,7 @@ function fixRelativeReferences(string $content): string
         'CalendarWithoutScopes' => 'Calendar',
     ] as $exceptionClass => $domain) {
         $content = str_replace(
-            '\\BO\\Zmsdb\\Exception\\' . $exceptionClass,
+            '\\BO\\Zmsbackend\\Exception\\' . $exceptionClass,
             '\\BO\\Zmsbackend\\' . $domain . '\\Exception\\' . $exceptionClass,
             $content
         );
@@ -249,8 +249,8 @@ function transformPhp(string $content, ?string $contextDomain = null, string $la
         'BO\\Zmsdb\\Query\\MappingInterface' => 'BO\\Zmsbackend\\Query\\MappingInterface',
         '\\BO\\Zmsdb\\Interfaces\\' => '\\BO\\Zmsbackend\\Interfaces\\',
         'BO\\Zmsdb\\Interfaces\\' => 'BO\\Zmsbackend\\Interfaces\\',
-        '\\BO\\Zmsdb\\Exception\\Pdo\\' => '\\BO\\Zmsbackend\\Exception\\Pdo\\',
-        'BO\\Zmsdb\\Exception\\Pdo\\' => 'BO\\Zmsbackend\\Exception\\Pdo\\',
+        '\\BO\\Zmsbackend\\Exception\\Pdo\\' => '\\BO\\Zmsbackend\\Exception\\Pdo\\',
+        'BO\\Zmsbackend\\Exception\\Pdo\\' => 'BO\\Zmsbackend\\Exception\\Pdo\\',
         '\\BO\\Zmsdb\\Application' => '\\BO\\Zmsbackend\\Application',
         'BO\\Zmsdb\\Application' => 'BO\\Zmsbackend\\Application',
         '\\BO\\Zmsapi\\Application' => '\\BO\\Zmsbackend\\Application',

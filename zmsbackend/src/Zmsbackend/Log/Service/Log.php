@@ -225,7 +225,7 @@ class Log extends \BO\Zmsbackend\Base
             if (
                 isset($step['file'])
                 && isset($step['line'])
-                && !strpos($step['file'], 'Zmsdb')
+                && !strpos($step['file'], 'Zmsbackend')
             ) {
                 return ' (' . basename($step['file'], '.php') . ')';
             }

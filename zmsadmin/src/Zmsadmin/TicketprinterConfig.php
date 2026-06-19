@@ -8,7 +8,6 @@
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
-use BO\Zmsdb\Request;
 use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Department as DepartmentEntity;
 use BO\Zmsentities\Collection\DepartmentList;

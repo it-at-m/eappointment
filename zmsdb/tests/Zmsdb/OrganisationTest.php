@@ -61,7 +61,7 @@ class OrganisationTest extends Base
     public function testReadByClusterIdFailed()
     {
         $query = new Query();
-        $this->expectException('\BO\Zmsdb\Exception\ClusterWithoutScopes');
+        $this->expectException('\BO\Zmsbackend\Cluster\Exception\ClusterWithoutScopes');
         $query->readByClusterId(999);
     }
 
@@ -108,7 +108,7 @@ class OrganisationTest extends Base
 
     public function testDeleteWithChildren()
     {
-        $this->expectException('\BO\Zmsdb\Exception\Organisation\DepartmentListNotEmpty');
+        $this->expectException('\BO\Zmsbackend\Organisation\Exception\DepartmentListNotEmpty');
         $query = new Query();
         $this->assertFalse($query->deleteEntity(54)); //Pankow
     }

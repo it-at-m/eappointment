@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsdb\Exception\Source;
+namespace BO\Zmsbackend\Source\Exception;
 
 class UnknownDataSource extends \Exception
 {

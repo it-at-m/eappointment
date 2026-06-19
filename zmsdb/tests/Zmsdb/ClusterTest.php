@@ -122,7 +122,7 @@ class ClusterTest extends Base
 
     public function testReadScopeWithShortestWaitingTimeFailed()
     {
-        $this->expectException('\BO\Zmsdb\Exception\Cluster\ScopesWithoutWorkstationCount');
+        $this->expectException('\BO\Zmsbackend\Cluster\Exception\ScopesWithoutWorkstationCount');
         $this->expectExceptionCode('404');
         $query = new Query();
         $now = static::$now;

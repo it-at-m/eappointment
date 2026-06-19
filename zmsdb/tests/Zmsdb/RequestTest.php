@@ -31,13 +31,13 @@ class RequestTest extends Base
 
     public function testUnknowSource()
     {
-        $this->expectException('BO\Zmsdb\Exception\Source\UnknownDataSource');
+        $this->expectException('BO\Zmsbackend\Source\Exception\UnknownDataSource');
         (new Query())->readEntity('xxx', 122280, 1);
     }
 
     public function testExceptionRequestNotFound()
     {
-        $this->expectException("\\BO\\Zmsdb\\Exception\\Request\\RequestNotFound");
+        $this->expectException("\\BO\\Zmsbackend\\Request\\Exception\\RequestNotFound");
         (new Query())->readEntity('dldb', 999999);
     }
 
@@ -74,7 +74,7 @@ class RequestTest extends Base
 
     public function testWriteEntityFailed()
     {
-        $this->expectException('BO\Zmsdb\Exception\Request\RequestNotFound');
+        $this->expectException('BO\Zmsbackend\Request\Exception\RequestNotFound');
         $query = new Query();
         $entity = (new \BO\Zmsentities\Request())->getExample();
         unset($entity['id']);

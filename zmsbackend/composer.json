@@ -1,6 +1,6 @@
 {
     "name": "eappointment/zmsbackend",
-    "description": "Unified REST API and database access layer for ZMS (merging zmsapi and zmsdb).",
+    "description": "Unified REST API and database access layer for ZMS (merging zmsbackend and zmsbackend).",
     "license": "EUPL-1.2",
     "authors": [
         {

@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsdb\Exception\Request;
+namespace BO\Zmsbackend\Request\Exception;
 
 class RequestNotFound extends \Exception
 {

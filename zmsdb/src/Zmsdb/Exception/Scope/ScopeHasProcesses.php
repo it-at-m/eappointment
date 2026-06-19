@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsdb\Exception\Scope;
+namespace BO\Zmsbackend\Scope\Exception;
 
 /**
  * class to generate an exception if children exists

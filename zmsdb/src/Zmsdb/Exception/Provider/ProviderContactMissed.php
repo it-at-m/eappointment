@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsdb\Exception\Provider;
+namespace BO\Zmsbackend\Provider\Exception;
 
 class ProviderContactMissed extends \Exception
 {

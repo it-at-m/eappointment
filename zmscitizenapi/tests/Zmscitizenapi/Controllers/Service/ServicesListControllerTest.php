@@ -68,7 +68,7 @@ class ServicesListControllerTest extends ControllerTestCase
     public function testServicesNotFound()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Request\\RequestNotFound';
+        $exception->template = 'BO\\Zmsbackend\\Request\\Exception\\RequestNotFound';
 
         $this->setApiCalls([
             [

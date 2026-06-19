@@ -239,7 +239,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
     public function testAppointmentNotFound()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ProcessNotFound';
         
         $this->setApiCalls([
             [
@@ -272,7 +272,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
     public function testAuthKeyMismatchException()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\AuthKeyMatchFailed';
     
         $this->setApiCalls(
             [
@@ -306,7 +306,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
     public function testInvalidApiClientException()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ApiclientInvalid';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ApiclientInvalid';
         
         $this->setApiCalls([
             [
@@ -338,7 +338,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
     public function testDepartmentNotFoundException()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Department\\DepartmentNotFound';
+        $exception->template = 'BO\\Zmsbackend\\Department\\Exception\\DepartmentNotFound';
         
         $this->setApiCalls([
             [
@@ -371,7 +371,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
     public function testMailNotFoundException()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Mail\\MailNotFound';
+        $exception->template = 'BO\\Zmsbackend\\Mail\\Exception\\MailNotFound';
         
         $this->setApiCalls([
             [
@@ -404,7 +404,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
     public function testOrganisationNotFoundException()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Organisation\\OrganisationNotFound';
+        $exception->template = 'BO\\Zmsbackend\\Organisation\\Exception\\OrganisationNotFound';
         
         $this->setApiCalls([
             [
@@ -437,7 +437,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
     public function testProviderNotFoundException()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Provider\\ProviderNotFound';
+        $exception->template = 'BO\\Zmsbackend\\Provider\\Exception\\ProviderNotFound';
         
         $this->setApiCalls([
             [
@@ -470,7 +470,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
     public function testRequestNotFoundException()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Request\\RequestNotFound';
+        $exception->template = 'BO\\Zmsbackend\\Request\\Exception\\RequestNotFound';
         
         $this->setApiCalls([
             [
@@ -503,7 +503,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
     public function testScopeNotFoundException()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Scope\\ScopeNotFound';
+        $exception->template = 'BO\\Zmsbackend\\Scope\\Exception\\ScopeNotFound';
         
         $this->setApiCalls([
             [
@@ -536,7 +536,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
     public function testProcessInvalidException()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessInvalid';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ProcessInvalid';
         
         $this->setApiCalls([
             [

@@ -28,7 +28,7 @@ class DepartmentTest extends Base
 
     public function testDeleteWithChildren()
     {
-        $this->expectException('\BO\Zmsdb\Exception\Department\ScopeListNotEmpty');
+        $this->expectException('\BO\Zmsbackend\Department\Exception\ScopeListNotEmpty');
         $query = new Query();
         $this->assertFalse($query->deleteEntity(72)); //Bürgeramt Egon-Erwin-Kirsch-Straße
     }

@@ -31,7 +31,7 @@ class RoutingTest extends Base
     {
         $request = static::createBasicRequest('GET', '/');
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\Zmsapi\Exception\Organisation\OrganisationNotFound';
+        $exception->template = 'BO\Zmsbackend\Organisation\Exception\OrganisationNotFound';
         $exception->data = ['scope' => new \BO\Zmsentities\Scope(['id' => 141])];
         $errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
         $errorHandler = $errorMiddleware->getDefaultErrorHandler();
