@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
-/** today: zmsdb\\Scope::readByDepartmentId, writeEntity */
+/** today: zmsbackend\\Scope\\Service\\Scope::readByDepartmentId, writeEntity */
 public interface DepartmentScopeRepository extends Repository<Object, Long> {
 
     @Query("""

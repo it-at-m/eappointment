@@ -9,7 +9,7 @@ import java.time.LocalTime;
 
 /**
  * JPA entity for the process (appointment) row.
- * today: zmsdb\\Query\\Process::TABLE = {@code buerger}
+ * today: zmsbackend\\Process\\Repository\\Process::TABLE = {@code buerger}
  * future rename: {@code process} per database refactor (citizen table)
  */
 @Entity
