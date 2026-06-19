@@ -259,7 +259,7 @@ class IndexTest extends Base
         $this->assertStringContainsString('form-group has-error', (string)$response->getBody());
     }
 
-     public function testUserAdminRedirectsToUseraccountListAfterLogin(): void
+    public function testUserAdminRedirectsToUseraccountListAfterLogin(): void
     {
         $this->setApiCalls(
             [
@@ -286,7 +286,9 @@ class IndexTest extends Base
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
 
         $this->assertEquals(302, $response->getStatusCode());
-        $this->assertStringContainsString('/users/', $response->getHeaderLine('Location'));
+        $location = $response->getHeaderLine('Location');
+        $this->assertStringContainsString('/users/', $location);
+        $this->assertStringContainsString('hideNavigation=1', $location);
     }
 
     public function testAuditViewerRedirectsToSearchAfterLogin(): void
@@ -315,10 +317,9 @@ class IndexTest extends Base
 
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
 
-        if ($response->getStatusCode() === 302) {
-            $this->assertStringContainsString('/search/', $response->getHeaderLine('Location'));
-        } else {
-            $this->assertEquals(403, $response->getStatusCode());
-        }
+        $this->assertEquals(302, $response->getStatusCode());
+        $location = $response->getHeaderLine('Location');
+        $this->assertStringContainsString('/search/', $location);
+        $this->assertStringContainsString('hideNavigation=1', $location);
     }
 }
