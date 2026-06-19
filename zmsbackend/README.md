@@ -6,12 +6,6 @@ Unified REST API and database access module ([GH-2604](https://github.com/it-at-
 
 All domains from `zmsapi` / `zmsdb` live in domain folders (`Api`, `Service`, `Repository`, `Exception`).
 
-Re-run migration from sources:
-
-```bash
-php zmsbackend/bin/migrate_all.php --force
-```
-
 ## Setup
 
 ```bash
