@@ -24,6 +24,4 @@ else
     echo "Warning: Cache directory does not exist at $ROOT/cache"
 fi
 
-VERSION=`git describe --tags --always`
-echo $VERSION > $ROOT/VERSION
-echo " $VERSION"
+"$($REALPATH "$DIR/../../.resources/scripts/write-version.sh")" "$ROOT"
