@@ -6,7 +6,7 @@
 
 # ZMS Administration
 
-This application offers an administrative web frontend as well as queue management for managing appointments by using the zmsapi.
+This application offers an administrative web frontend as well as queue management for managing appointments by using the zmsbackend REST API.
 
 ## Requirements
 

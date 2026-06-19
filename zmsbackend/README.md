@@ -1,10 +1,10 @@
 # zmsbackend
 
-Unified REST API and database access module ([GH-2604](https://github.com/it-at-m/eappointment/issues/2604)). Runs **parallel** to `zmsapi` and `zmsdb` during migration.
+Unified REST API and database access module ([GH-2604](https://github.com/it-at-m/eappointment/issues/2604)). Replaces the former `zmsapi` and `zmsdb` modules.
 
 ## Status
 
-All domains migrated from `zmsapi` / `zmsdb` into domain folders (`Api`, `Service`, `Repository`, `Exception`). `zmsapi` and `zmsdb` remain in the repo until cutover.
+All domains from `zmsapi` / `zmsdb` live in domain folders (`Api`, `Service`, `Repository`, `Exception`).
 
 Re-run migration from sources:
 
@@ -30,11 +30,9 @@ podman exec -it zms-web bash -lc "./zmsbackend/zmsbackend-test"
 
 ## Run API (local)
 
-Point your web server at `zmsbackend/public/` (same pattern as `zmsapi`).
+Point your web server at `zmsbackend/public/`.
 
 OpenAPI documentation: https://it-at-m.github.io/eappointment/zmsbackend/public/doc/index.html
-
-Legacy `zmsapi` docs remain at https://it-at-m.github.io/eappointment/zmsapi/public/doc/index.html during migration.
 
 ## Tests
 
@@ -56,7 +54,7 @@ src/Zmsbackend/
   Helper/
   Availability/
     Api/              # HTTP controllers
-    Service/          # business logic (former zmsdb services)
-    Repository/       # SQL/query code (former zmsdb Query/*)
+    Service/          # business logic
+    Repository/       # SQL/query code
     Exception/
 ```

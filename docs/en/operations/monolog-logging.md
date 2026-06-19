@@ -1,6 +1,6 @@
 # Monolog logging (zmsslim)
 
-ZMS applications use a single PSR-3 logger on the global `App` class: **`App::$log`**. It is configured in [`zmsslim`](https://github.com/it-at-m/eappointment/tree/main/zmsslim) by `BO\Slim\Bootstrap` and shared by all Slim-based modules (`zmsapi`, `zmsadmin`, `zmscitizenapi`, …).
+ZMS applications use a single PSR-3 logger on the global `App` class: **`App::$log`**. It is configured in [`zmsslim`](https://github.com/it-at-m/eappointment/tree/main/zmsslim) by `BO\Slim\Bootstrap` and shared by all Slim-based modules (`zmsbackend`, `zmsadmin`, `zmscitizenapi`, …).
 
 The **minimum log level** is also centralized in zmsslim: you set **`DEBUGLEVEL`** once in the environment; zmsslim exposes it as **`ZMS_DEBUGLEVEL`**, and every module’s `App::DEBUGLEVEL` inherits that value for `Bootstrap::configureLogger()`.
 
@@ -35,10 +35,10 @@ flowchart LR
 
 1. **Operations** set `DEBUGLEVEL` (for example `INFO` or `WARNING`) in `.env`, DDEV, or deployment config.
 2. When `zmsslim/src/Slim/Application.php` is loaded, it defines **`ZMS_DEBUGLEVEL`** from that env var (default `INFO` if unset).
-3. `\BO\Slim\Application` declares **`const DEBUGLEVEL = ZMS_DEBUGLEVEL`**. Each module’s `class App extends \BO\Zmsapi\Application` (etc.) inherits the same constant unless you override it locally.
+3. `\BO\Slim\Application` declares **`const DEBUGLEVEL = ZMS_DEBUGLEVEL`**. Each module’s `class App extends \BO\Zmsbackend\Application` (etc.) inherits the same constant unless you override it locally.
 4. On bootstrap, **`Bootstrap::init()`** / **`ensureLogger()`** / **`initForCli()`** call **`configureLogger(App::DEBUGLEVEL, App::IDENTIFIER)`**. The level is shared; only **`App::IDENTIFIER`** and **`App::MODULE_NAME`** differ per module in the JSON output.
 
-So **`ZMS_DEBUGLEVEL` is the single zmsslim source of truth** for how verbose logging is across zmsapi, zmsadmin, zmscitizenapi, zmsmessaging, cron scripts, and the other Slim apps.
+So **`ZMS_DEBUGLEVEL` is the single zmsslim source of truth** for how verbose logging is across zmsbackend, zmsadmin, zmscitizenapi, zmsmessaging, cron scripts, and the other Slim apps.
 
 **What you configure:** `DEBUGLEVEL` in the environment (not a separate `ZMS_DEBUGLEVEL` env name).
 
@@ -106,7 +106,7 @@ Successful and failed request logs use **separate counters** and the same window
 | Module           | Env prefix                   | Typical traffic                     |
 | ---------------- | ---------------------------- | ----------------------------------- |
 | zmscitizenapi    | `ZMS_CITIZENAPI_LOGGER_*`    | Public booking API                  |
-| zmsapi           | `ZMS_API_LOGGER_*`           | Internal REST API                   |
+| zmsbackend       | `ZMS_BACKEND_LOGGER_*`       | Internal REST API                   |
 | zmsadmin         | `ZMS_ADMIN_LOGGER_*`         | Staff UI                            |
 | zmscalldisplay   | `ZMS_CALLDISPLAY_LOGGER_*`   | Display monitors (frequent polling) |
 | zmsstatistic     | `ZMS_STATISTIC_LOGGER_*`     | Statistics UI                       |
@@ -141,7 +141,7 @@ ZMS_TICKETPRINTER_LOGGER_MAX_REQUESTS=120
 
 # Other modules can stay at the template default (1000)
 ZMS_ADMIN_LOGGER_MAX_REQUESTS=1000
-ZMS_API_LOGGER_MAX_REQUESTS=1000
+ZMS_BACKEND_LOGGER_MAX_REQUESTS=1000
 ```
 
 Lowering `…_LOGGER_MAX_REQUESTS` throttles only **successful** `HTTP Request` lines (Monolog `info`, status &lt; 400). Failed requests (status ≥ 400, Monolog `error`) use `…_LOGGER_MAX_ERROR_REQUESTS` instead; the default `0` means no cap.
@@ -180,9 +180,9 @@ Prefer structured context (second argument) over string concatenation. The JSON 
 
 ### Cron logging
 
-Cron entrypoints export `ZMS_CRON_LOG=1` and `ZMS_CRON_NAME=zmsapi_hourly` (example). `Bootstrap::isCronLogging()` adds searchable `cron` / `cron_name` fields to each JSON line.
+Cron entrypoints export `ZMS_CRON_LOG=1` and `ZMS_CRON_NAME=zmsbackend_hourly` (example). `Bootstrap::isCronLogging()` adds searchable `cron` / `cron_name` fields to each JSON line.
 
-Helpers such as `zmsdb`’s `VerboseCronLogTrait` use `Bootstrap::normalizeLogLevelName()` for configurable cron verbosity.
+Helpers such as `zmsbackend`’s `VerboseCronLogTrait` use `Bootstrap::normalizeLogLevelName()` for configurable cron verbosity.
 
 ### Libraries without full bootstrap
 
@@ -202,10 +202,10 @@ Do **not** use `isset(\App::$log)` alone — PHP will fatal if `App` is not load
 {
   "time_local": "2026-05-26T12:00:00+02:00",
   "client_ip": "127.0.0.1",
-  "application": "zmsapi",
-  "module": "zmsapi",
+  "application": "zmsbackend",
+  "module": "zmsbackend",
   "cron": true,
-  "cron_name": "zmsapi_hourly",
+  "cron_name": "zmsbackend_hourly",
   "message": "Migration check finished",
   "level": "INFO",
   "context": { "pending": 0 },
