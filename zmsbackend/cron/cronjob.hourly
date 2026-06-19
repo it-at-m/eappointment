@@ -1,7 +1,8 @@
 #!/bin/bash
 DIR=$(dirname ${BASH_SOURCE[0]})
 BIN=$DIR/../bin
-CRON_LOG=$DIR/../bin/cronLog
+VENDOR_BIN=$DIR/../vendor/bin
+CRON_LOG=$BIN/cronLog
 EXPORT=$DIR/../data/
 
 cron_log() {
@@ -45,7 +46,7 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
         fi
         cron_log info "Using Munich transformer" "{\"city\":\"$CITY\"}"
         cron_log info "DLDB source URL" "{\"url\":\"$ZMS_SOURCE_DLDB_MUNICH\"}"
-        if ! $BIN/dldbget-munich -o $EXPORT -b "$ZMS_SOURCE_DLDB_MUNICH"; then
+        if ! $VENDOR_BIN/dldbget-munich -o $EXPORT -b "$ZMS_SOURCE_DLDB_MUNICH"; then
             cron_log error "Munich DLDB fetch/transform failed; skipping import"
             exit 1
         fi
@@ -58,7 +59,7 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
         fi
         cron_log info "Using Berlin API transformer" "{\"city\":\"$CITY\"}"
         cron_log info "DLDB source URL" "{\"url\":\"$ZMS_SOURCE_DLDB_BERLIN\"}"
-        if ! $BIN/dldbget -o $EXPORT -b "$ZMS_SOURCE_DLDB_BERLIN" -q "$ZMS_ENV"; then
+        if ! $VENDOR_BIN/dldbget -o $EXPORT -b "$ZMS_SOURCE_DLDB_BERLIN" -q "$ZMS_ENV"; then
             cron_log error "Berlin DLDB fetch failed; skipping import"
             exit 1
         fi
@@ -70,7 +71,7 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
         fi
         cron_log info "Using default API transformer"
         cron_log info "DLDB source URL" "{\"url\":\"$ZMS_SOURCE_DLDB\"}"
-        if ! $BIN/dldbget -o $EXPORT -b "$ZMS_SOURCE_DLDB" -q "$ZMS_ENV"; then
+        if ! $VENDOR_BIN/dldbget -o $EXPORT -b "$ZMS_SOURCE_DLDB" -q "$ZMS_ENV"; then
             cron_log error "DLDB fetch failed; skipping import"
             exit 1
         fi

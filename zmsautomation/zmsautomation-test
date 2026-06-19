@@ -310,7 +310,7 @@ install_dldb_bundled_fixtures() {
   done
   (
     cd "$ZMS_REST_DIR"
-    vendor/bin/updateDldbData --commit
+    bin/updateDldbData --commit
   ) || {
     warn "updateDldbData failed after copying bundled DLDB fixtures"
     return 1
@@ -441,7 +441,7 @@ info "Running minutly cron with ZMS_TIMEADJUST=$ZMS_TIMEADJUST ..."
 info "Forcing slot calculation fallback (mocked time) ..."
 (
   cd "$ZMS_REST_DIR" \
-  && ZMS_TIMEADJUST="$ZMS_TIMEADJUST" php vendor/bin/calculateSlots --commit --delete
+  && ZMS_TIMEADJUST="$ZMS_TIMEADJUST" php bin/calculateSlots --commit --delete
 ) || true
 
 # 9. Health Checks (5 min total; 15s per try; curl uses explicit --noproxy)
