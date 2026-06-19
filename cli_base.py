@@ -37,6 +37,9 @@ class EappointmentCli:
     "zmsticketprinter",
   ]
 
+  # Module used for local REST API, migrations, and cron (see root .htaccess).
+  REST_MODULE = "zmsbackend"
+
   def __init__(self, repo_dir: str):
     self.repo_dir = repo_dir
 
@@ -305,7 +308,7 @@ SET FOREIGN_KEY_CHECKS = 1;"""
       )
       host, port, name, user, password = app.db_env(**db_kw)
       base_sql = os.path.join(app.repo_dir, ".resources", "zms.sql")
-      zmsapi_dir = os.path.join(app.repo_dir, "zmsapi")
+      rest_dir = os.path.join(app.repo_dir, app.REST_MODULE)
       run_env = os.environ.copy()
       run_env.setdefault("ZMS_CRONROOT", "1")
       run_env.setdefault("ZMS_ENV", "dev")
@@ -339,13 +342,14 @@ SET FOREIGN_KEY_CHECKS = 1;"""
         )
 
       if not skip_php_migrate:
-        app.run_cmd(["vendor/bin/migrate", "--update"], cwd=zmsapi_dir, env=run_env)
+        app.run_cmd(["bin/configure"], cwd=rest_dir, env=run_env)
+        app.run_cmd(["vendor/bin/migrate", "--update"], cwd=rest_dir, env=run_env)
 
       if not skip_hourly:
-        app.run_cmd(["./cron/cronjob.hourly", f"--city={city}"], cwd=zmsapi_dir, env=run_env)
+        app.run_cmd(["./cron/cronjob.hourly", f"--city={city}"], cwd=rest_dir, env=run_env)
 
       if not skip_minutly:
-        app.run_cmd(["./cron/cronjob.minutly"], cwd=zmsapi_dir, env=run_env)
+        app.run_cmd(["./cron/cronjob.minutly"], cwd=rest_dir, env=run_env)
 
       if not skip_clear_cache:
         app.clear_local_cache_folder()

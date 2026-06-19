@@ -20,7 +20,11 @@ define('ZMS_CONFIG_SECURE_TOKEN', getenv('ZMS_CONFIG_SECURE_TOKEN'));
 
 if (!defined('ZMS_BACKEND_TWIG_CACHE')) {
     $value = getenv('ZMS_BACKEND_TWIG_CACHE');
-    define('ZMS_BACKEND_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '/cache/'));
+    if ($value === false || $value === '' || $value === 'false') {
+        define('ZMS_BACKEND_TWIG_CACHE', false);
+    } else {
+        define('ZMS_BACKEND_TWIG_CACHE', $value);
+    }
 }
 
 define(
