@@ -24,7 +24,8 @@ jobs:
         package: [
           "zmsbase",
           "zmsmessaging",
-          "zmsapi",
+          "zmsapi", # TODO: remove after all packages are deleted
+          "zmsdb", # TODO: remove after all packages are deleted
           "zmsbackend",
           "zmscalldisplay",
           "zmsadmin",
