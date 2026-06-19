@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "897c21acfe0ae1484d32a6f24353b577",
+    "content-hash": "e8c7c8459ff3e5d830500064481c19e3",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -184,7 +184,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "fa993f7010dc595e9bf95a9fdb0099b16a833cee"
+                "reference": "c736cd0d14b67ac5272df9fd983987cfcd922684"
             },
             "require": {
                 "ext-json": ">=0",
@@ -234,7 +234,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsbackend",
-                "reference": "fa993f7010dc595e9bf95a9fdb0099b16a833cee"
+                "reference": "c736cd0d14b67ac5272df9fd983987cfcd922684"
             },
             "require": {
                 "aura/sql": "^5",
@@ -323,7 +323,7 @@
                     "email": "mathias.fischer@berlinonline.de"
                 }
             ],
-            "description": "Unified REST API and database access layer for ZMS (merging zmsapi and zmsdb).",
+            "description": "Unified REST API and database access layer for ZMS (merging zmsbackend and zmsbackend).",
             "transport-options": {
                 "symlink": true,
                 "relative": true
@@ -395,7 +395,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "fa993f7010dc595e9bf95a9fdb0099b16a833cee"
+                "reference": "c736cd0d14b67ac5272df9fd983987cfcd922684"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -453,7 +453,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "fa993f7010dc595e9bf95a9fdb0099b16a833cee"
+                "reference": "c736cd0d14b67ac5272df9fd983987cfcd922684"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -4350,27 +4350,28 @@
         },
         {
             "name": "symfony/intl",
-            "version": "v8.1.0",
+            "version": "v7.4.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/intl.git",
-                "reference": "7822dffb3e2128501a1ac781db5d8217fc9caac1"
+                "reference": "7cfb7792d580dea833647420afd5f2f98df8457b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/intl/zipball/7822dffb3e2128501a1ac781db5d8217fc9caac1",
-                "reference": "7822dffb3e2128501a1ac781db5d8217fc9caac1",
+                "url": "https://api.github.com/repos/symfony/intl/zipball/7cfb7792d580dea833647420afd5f2f98df8457b",
+                "reference": "7cfb7792d580dea833647420afd5f2f98df8457b",
                 "shasum": ""
             },
             "require": {
-                "php": ">=8.4.1"
+                "php": ">=8.2",
+                "symfony/deprecation-contracts": "^2.5|^3"
             },
             "conflict": {
-                "symfony/string": "<7.4"
+                "symfony/string": "<7.1"
             },
             "require-dev": {
-                "symfony/filesystem": "^7.4|^8.0",
-                "symfony/var-exporter": "^7.4|^8.0"
+                "symfony/filesystem": "^6.4|^7.0|^8.0",
+                "symfony/var-exporter": "^6.4|^7.0|^8.0"
             },
             "type": "library",
             "autoload": {
@@ -4415,7 +4416,7 @@
                 "localization"
             ],
             "support": {
-                "source": "https://github.com/symfony/intl/tree/v8.1.0"
+                "source": "https://github.com/symfony/intl/tree/v7.4.8"
             },
             "funding": [
                 {
@@ -4435,24 +4436,24 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-05-29T05:06:50+00:00"
+            "time": "2026-03-30T12:55:43+00:00"
         },
         {
             "name": "symfony/options-resolver",
-            "version": "v8.1.0",
+            "version": "v7.4.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/options-resolver.git",
-                "reference": "88f9c561f678a02d54b897014049fa839e33ff82"
+                "reference": "2888fcdc4dc2fd5f7c7397be78631e8af12e02b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/88f9c561f678a02d54b897014049fa839e33ff82",
-                "reference": "88f9c561f678a02d54b897014049fa839e33ff82",
+                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/2888fcdc4dc2fd5f7c7397be78631e8af12e02b4",
+                "reference": "2888fcdc4dc2fd5f7c7397be78631e8af12e02b4",
                 "shasum": ""
             },
             "require": {
-                "php": ">=8.4.1",
+                "php": ">=8.2",
                 "symfony/deprecation-contracts": "^2.5|^3"
             },
             "type": "library",
@@ -4486,7 +4487,7 @@
                 "options"
             ],
             "support": {
-                "source": "https://github.com/symfony/options-resolver/tree/v8.1.0"
+                "source": "https://github.com/symfony/options-resolver/tree/v7.4.8"
             },
             "funding": [
                 {
@@ -4506,7 +4507,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-05-29T05:06:50+00:00"
+            "time": "2026-03-24T13:12:05+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -10480,5 +10481,8 @@
         "ext-pcre": ">=0"
     },
     "platform-dev": {},
+    "platform-overrides": {
+        "php": "8.3.0"
+    },
     "plugin-api-version": "2.9.0"
 }
