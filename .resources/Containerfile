@@ -5,7 +5,10 @@ COPY --chown=build:build . /build
 ARG MODULE
 WORKDIR /build/${MODULE}
 USER build:build
+ARG APP_VERSION=version.unknown
 ENV COMPOSER_MIRROR_PATH_REPOS=1
+ENV ZMS_VERSION=${APP_VERSION}
+RUN echo "${APP_VERSION}" > VERSION
 RUN make live
 
 ARG PHP_VERSION
