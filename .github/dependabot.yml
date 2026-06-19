@@ -46,6 +46,14 @@ updates:
     target-branch: "next"
 
   - package-ecosystem: "npm"
+    directory: "/zmsbackend"
+    schedule:
+      interval: "daily"
+      time: "04:00"
+      timezone: "Europe/Berlin"
+    target-branch: "next"
+
+  - package-ecosystem: "npm"
     directory: "/zmsstatistic"
     schedule:
       interval: "daily"
@@ -115,6 +123,14 @@ updates:
 
   - package-ecosystem: "composer"
     directory: "/zmsclient"
+    schedule:
+      interval: "daily"
+      time: "04:00"
+      timezone: "Europe/Berlin"
+    target-branch: "next"
+
+  - package-ecosystem: "composer"
+    directory: "/zmsbackend"
     schedule:
       interval: "daily"
       time: "04:00"
