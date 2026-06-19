@@ -17,7 +17,7 @@ This module contains **API and UI tests** for ZMS using the ATAF (Test Automatio
   - `zms/ataf/ui/steps/` - UI step definitions (Selenium/ATAF web)  
   - `zms/ataf/ui/pages/**` - Page objects for Admin, Statistik, Bürgeransicht, Mailinator  
 - `src/test/resources/features/` - Cucumber feature files  
-  - `rest/zmsapi/` - ZMS REST API features  
+  - `rest/zmsapi/` - ZMS REST API features (legacy folder/tag name; targets `zmsbackend` at `/terminvereinbarung/api/2`)  
   - `rest/zmscitizenapi/` - Citizen REST API features  
   - `ui/zmsadmin/` - Admin UI features  
   - `ui/buergeransicht/` - Legacy eappointment citizen view UI features  
@@ -177,7 +177,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 
 - **API tags**
   - `@rest` - All REST API tests
-  - `@zmsapi` - ZMS API tests (`features/rest/zmsapi/**`)
+  - `@zmsapi` - REST API tests (`features/rest/zmsapi/**`; served by `zmsbackend`)
   - `@zmscitizenapi` - Citizen API tests (`features/rest/zmscitizenapi/**`)
 - **UI tags**
   - `@web` - All web UI tests
@@ -201,7 +201,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 
 ### API Features (`src/test/resources/features/rest/`)
 
-#### ZMS API (`rest/zmsapi/`)
+#### REST API (`rest/zmsapi/`, served by `zmsbackend`)
 - `status.feature` - Status endpoint tests (converted from `StatusEndpointTest`)
 
 #### Citizen API (`rest/zmscitizenapi/`)

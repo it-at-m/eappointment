@@ -43,7 +43,7 @@ Nützliche Flags für `./vendor/bin/phpunit`:
 --debug
 ```
 
-### Sonderfälle (zmsapi, zmsdb & zmsclient)
+### Sonderfälle (zmsbackend & zmsclient)
 
 **zmsclient:**
 
@@ -68,9 +68,9 @@ Das Skript `zmsclient-test` erkennt und nutzt automatisch Docker oder Podman, st
 
 #### Traditionelle Methode (überschreibt lokale DB)
 
-Für die Module **zmsbackend**, **zmsapi** und **zmsdb** müssen Testdaten importiert werden. Beachte, dass dabei deine lokale Datenbank überschrieben wird.
+Für **zmsbackend** müssen Testdaten importiert werden. Beachte, dass dabei deine lokale Datenbank überschrieben wird.
 
-**zmsbackend** (lokales REST-API-Modul; bevorzugt für `/terminvereinbarung/api/2`):
+**zmsbackend** (einheitliches REST-API- und Datenbankmodul für `/terminvereinbarung/api/2`):
 
 Mit DDEV oder Podman:
 
@@ -81,54 +81,8 @@ Mit DDEV oder Podman:
 Oder manuell (in `zms-web` / `ddev ssh`):
 
 ```bash
-cd zmsdb && bin/importTestData --commit
-cd ../zmsbackend && bin/configure && ./vendor/bin/phpunit
-```
-
-**zmsapi** (Legacy-Modul, parallel während GH-2604):
-
-Mit DDEV:
-
-```bash
-cd zmsapi
-rm -rf data
-ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
-ddev ssh
-cd zmsapi
-vendor/bin/importTestData --commit
-./vendor/bin/phpunit
-```
-
-Mit Podman:
-
-```bash
-cd zmsapi
-rm -rf data
-ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
-podman exec -it zms-web bash
-cd zmsapi
-vendor/bin/importTestData --commit
-./vendor/bin/phpunit
-```
-
-**zmsdb:**
-
-Mit DDEV:
-
-```bash
-ddev ssh
-cd zmsdb
-bin/importTestData --commit
-./vendor/bin/phpunit
-```
-
-Mit Podman:
-
-```bash
-podman exec -it zms-web bash
-cd zmsdb
-bin/importTestData --commit
-./vendor/bin/phpunit
+cd zmsbackend && bin/importTestData --commit
+cd zmsbackend && bin/configure && ./vendor/bin/phpunit
 ```
 
 ## PHP-Unit-Tests im Container (empfohlen – isolierte Umgebung)
@@ -140,13 +94,10 @@ Führe deine Tests in sauberen, wegwerfbaren Containern aus, damit sie weder dei
 podman exec -it zms-web bash  # Podman
 ddev ssh                      # DDEV
 
-# zmsdb-Tests ausführen
-./zmsdb/zmsdb-test                    # alle Tests
-./zmsdb/zmsdb-test --filter="StatusTest::testBasic"  # spezifischen Test
-
-# zmsapi-Tests ausführen
-./zmsapi/zmsapi-test                   # alle Tests
-./zmsapi/zmsapi-test --filter="StatusGetTest::testRendering"  # spezifischen Test
+# zmsbackend-Tests ausführen
+./zmsbackend/zmsbackend-test                    # alle Tests
+./zmsbackend/zmsbackend-test --filter="StatusTest::testBasic"  # spezifischen Test
+./zmsbackend/zmsbackend-test --filter="StatusGetTest::testRendering"  # spezifischen Test
 ```
 
 **Verfügbare PHPUnit-Flags:**
@@ -180,16 +131,13 @@ ddev ssh                      # DDEV
 
 ```bash
 # spezifischen Test mit ausführlicher Ausgabe ausführen
-bash zmsdb-test --filter="StatusTest::testBasic" --verbose
+./zmsbackend/zmsbackend-test --filter="StatusTest::testBasic" --verbose
 
-# alle Tests einer Klasse, beim ersten Fehler stoppen
-bash zmsapi-test --filter="StatusGetTest" --stop-on-failure
+./zmsbackend/zmsbackend-test --filter="StatusGetTest" --stop-on-failure
 
-# Tests mit Coverage-Bericht ausführen
-bash zmsdb-test --coverage-text
+./zmsbackend/zmsbackend-test --coverage-text
 
-# Tests ausführen und eine Gruppe ausschließen
-bash zmsapi-test --exclude-group="slow"
+./zmsbackend/zmsbackend-test --exclude-group="slow"
 ```
 
 ## Unit-Tests von zmscitizenview
