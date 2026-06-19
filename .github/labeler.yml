@@ -103,10 +103,6 @@
   - changed-files:
     - any-glob-to-any-file: ['zmsclient/**']
 
-"Module: zmsbackend":
-  - changed-files:
-    - any-glob-to-any-file: ['zmsbackend/**']
-
 "Module: zmsdldb":
   - changed-files:
     - any-glob-to-any-file: ['zmsdldb/**']

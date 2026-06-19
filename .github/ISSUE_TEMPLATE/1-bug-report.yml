@@ -65,7 +65,6 @@ body:
         - zmscitizenapi
         - zmscitizenview
         - zmsclient
-        - zmsbackend
         - zmsdldb
         - zmsentities
         - zmslayout

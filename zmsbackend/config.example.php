@@ -5,7 +5,7 @@ if (!defined('MYSQL_USER')) {
     define('MYSQL_USER', getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root');
 }
 if (!defined('MYSQL_PASSWORD')) {
-    define('MYSQL_PASSWORD', getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') : 'zmsapi');
+    define('MYSQL_PASSWORD', getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') : 'zmsbackend');
 }
 if (!defined('MYSQL_DATABASE')) {
     define('MYSQL_DATABASE', getenv('MYSQL_DATABASE') ? getenv('MYSQL_DATABASE') : 'zmsbo');
