@@ -36,8 +36,19 @@ class Index extends BaseController
             $loginData = $this->testLogin($input);
             if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
                 \BO\Zmsclient\Auth::setKey($loginData->authkey, time() + \App::SESSION_DURATION);
-                return ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_ADMIN, $loginData, $response)
-                    ?? \BO\Slim\Render::redirect('workstationSelect', array(), array());
+
+                if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_ADMIN, $loginData, $response)) {
+                    return $wrongModuleResponse;
+                }
+
+                $useraccount = $loginData->getUseraccount();
+                if ($useraccount->hasRole('user_admin')) {
+                    return \BO\Slim\Render::redirect('useraccountList', [], ['hideNavigation' => 1]);
+                }
+                if ($useraccount->hasRole('audit_viewer')) {
+                    return \BO\Slim\Render::redirect('search', [], ['hideNavigation' => 1]);
+                }
+                return \BO\Slim\Render::redirect('workstationSelect', [], []);
             }
             return \BO\Slim\Render::withHtml(
                 $response,
