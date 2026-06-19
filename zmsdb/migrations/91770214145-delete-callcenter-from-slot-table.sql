@@ -1,1 +1,0 @@
-ALTER TABLE slot DROP COLUMN callcenter;

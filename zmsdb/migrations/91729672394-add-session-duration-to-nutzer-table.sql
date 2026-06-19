@@ -1,2 +1,0 @@
-ALTER TABLE `nutzer`
-    ADD COLUMN `sessionExpiry` DATETIME DEFAULT NULL;

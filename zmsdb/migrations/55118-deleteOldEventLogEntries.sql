@@ -1,1 +1,0 @@
-INSERT INTO `config` SET `name` = "cron__deleteOldEventLogEntries", `value` = "none";

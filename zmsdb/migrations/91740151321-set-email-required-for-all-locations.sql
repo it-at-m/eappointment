@@ -1,1 +1,0 @@
-UPDATE standort SET emailPflichtfeld = 1 WHERE 1;
