@@ -390,11 +390,14 @@ SET FOREIGN_KEY_CHECKS = 1;"""
       for module in module_dependencies:
         module_dir = os.path.join(app.repo_dir, module)
         deps = module_dependencies[module]
-        print_info(f"Updating {module}: {' '.join(deps)}")
-        result = subprocess.run(
-          ["composer", "update", *deps, "--no-scripts", "--no-plugins"],
-          cwd=module_dir,
-        )
+        lock_file = os.path.join(module_dir, "composer.lock")
+        if os.path.isfile(lock_file):
+          print_info(f"Updating {module}: {' '.join(deps)}")
+          cmd = ["composer", "update", *deps, "--no-scripts", "--no-plugins"]
+        else:
+          print_info(f"Updating {module} (full update, no composer.lock)")
+          cmd = ["composer", "update", "--no-scripts", "--no-plugins"]
+        result = subprocess.run(cmd, cwd=module_dir)
         if result.returncode != 0:
           print_info(f"composer update failed in {module} (exit {result.returncode})")
           sys.exit(result.returncode)
