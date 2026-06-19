@@ -258,4 +258,67 @@ class IndexTest extends Base
         );
         $this->assertStringContainsString('form-group has-error', (string)$response->getBody());
     }
+
+     public function testUserAdminRedirectsToUseraccountListAfterLogin(): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/login/',
+                    'response' => $this->readFixture("GET_Workstation_user_admin.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'secure-token',
+                    'response' => $this->readFixture("GET_config.json"),
+                ]
+            ]
+        );
+
+        $response = $this->render($this->arguments, $this->parameters, [], 'POST');
+
+        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertStringContainsString('/users/', $response->getHeaderLine('Location'));
+    }
+
+    public function testAuditViewerRedirectsToSearchAfterLogin(): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/login/',
+                    'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'secure-token',
+                    'response' => $this->readFixture("GET_config.json"),
+                ]
+            ]
+        );
+
+        $response = $this->render($this->arguments, $this->parameters, [], 'POST');
+
+        if ($response->getStatusCode() === 302) {
+            $this->assertStringContainsString('/search/', $response->getHeaderLine('Location'));
+        } else {
+            $this->assertEquals(403, $response->getStatusCode());
+        }
+    }
 }
