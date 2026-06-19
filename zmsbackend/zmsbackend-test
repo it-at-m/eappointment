@@ -95,7 +95,7 @@ done
 [ -f "$DATA_DIR/.gitignore" ] || printf "*\n!.gitignore\n" > "$DATA_DIR/.gitignore"
 
 if [[ ! -f "$MODULE_DIR/config.php" ]]; then
-  cp "$MODULE_DIR/config.example.php" "$MODULE_DIR/config.php"
+  "$MODULE_DIR/bin/configure"
   info "Created $MODULE_DIR/config.php from config.example.php"
 fi
 

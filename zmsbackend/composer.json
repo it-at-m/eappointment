@@ -58,6 +58,7 @@
         "roave/security-advisories": "dev-latest"
     },
     "scripts": {
+        "command": "bin/configure",
         "prepare-dirs": "mkdir -p public/_test/assets && mkdir -p public/doc/assets",
         "post-install-cmd": [
             "@prepare-dirs"
