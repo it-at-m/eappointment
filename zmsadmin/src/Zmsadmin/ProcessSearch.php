@@ -60,12 +60,12 @@ class ProcessSearch extends BaseController
             ->setDefault(0)
             ->getValue();
 
-        $isSearchRequested = (
-            trim($queryString) !== ''
-            || trim($service) !== ''
-            || trim($provider) !== ''
-            || trim($date) !== ''
-            || (int) $userAction !== 0
+        $isSearchRequested = $this->hasSearchParameters(
+            $queryString,
+            $service,
+            $provider,
+            $date,
+            (int) $userAction
         );
 
         $processList = new ProcessList();
@@ -123,6 +123,20 @@ class ProcessSearch extends BaseController
                 'menuActive' => 'search'
             )
         );
+    }
+
+    private function hasSearchParameters(
+        string $queryString,
+        string $service,
+        string $provider,
+        string $date,
+        int $userAction
+    ): bool {
+        return trim($queryString) !== ''
+            || trim($service) !== ''
+            || trim($provider) !== ''
+            || trim($date) !== ''
+            || $userAction !== 0;
     }
 
     private function filterProcessListForUserRights(?ProcessList $processList, array $scopeIds)
