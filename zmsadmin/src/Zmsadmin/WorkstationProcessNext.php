@@ -7,6 +7,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Render;
 use BO\Zmsentities\Collection\ProcessList;
 
 class WorkstationProcessNext extends BaseController
@@ -76,7 +77,7 @@ class WorkstationProcessNext extends BaseController
         $process = (new Helper\ClusterHelper($workstation))->getNextProcess($excludedIds);
 
         if (!$process || ! $process->hasId() || $process->getFirstAppointment()->date > \App::$now->getTimestamp()) {
-            return \BO\Slim\Render::withHtml(
+            return Render::withHtml(
                 $response,
                 'block/process/next.twig',
                 array(
@@ -87,7 +88,7 @@ class WorkstationProcessNext extends BaseController
             );
         }
         if ($process->toProperty()->amendment->get()) {
-            return \BO\Slim\Render::redirect(
+            return Render::redirect(
                 'workstationProcessPreCall',
                 array(
                     'id' => $process->id,
@@ -98,7 +99,7 @@ class WorkstationProcessNext extends BaseController
                 )
             );
         }
-        return \BO\Slim\Render::redirect(
+        return Render::redirect(
             'workstationProcessCalled',
             array(
                 'id' => $process->id

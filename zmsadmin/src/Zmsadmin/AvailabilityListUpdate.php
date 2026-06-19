@@ -9,7 +9,6 @@ namespace BO\Zmsadmin;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use BO\Zmsentities\Availability;
 use BO\Zmsentities\Collection\AvailabilityList;
 use BO\Slim\Render;
 

@@ -7,6 +7,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 use BO\Mellon\Validator;
 use BO\Slim\Render;
 
@@ -27,7 +28,7 @@ class OwnerDelete extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         if (!$workstation->getUseraccount()->hasPermissions(['jurisdiction'])) {
-            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+            throw new UserAccountMissingRights();
         }
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         \App::$http->readDeleteResult('/owner/' . $entityId . '/')->getEntity();
