@@ -42,13 +42,28 @@ export const getDataAttributes = (element) => {
         }, {})
 }
 
-export const tryJson = (input) => {
-    try {
-        return JSON.parse(input)
-    } catch (e) {
-        return input
+export const parseJsonText = (input, label = 'json') => {
+    if (input === undefined || input === null) {
+        return null;
     }
-}
+
+    const trimmed = String(input).trim();
+    if (trimmed === '' || trimmed === 'undefined' || trimmed === 'null') {
+        return null;
+    }
+
+    try {
+        return JSON.parse(trimmed);
+    } catch (error) {
+        console.error(`Failed to parse JSON (${label})`, error);
+        return null;
+    }
+};
+
+export const tryJson = (input) => {
+    const parsed = parseJsonText(input, 'data-attribute');
+    return parsed === null ? input : parsed;
+};
 
 const lightboxHtml = '<div class="lightbox"><div class="lightbox__content"></div></div>'
 

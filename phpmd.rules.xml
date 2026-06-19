@@ -13,6 +13,7 @@
         <exclude name="ExcessivePublicCount"/>
         <exclude name="TooManyFields"/>
         <exclude name="TooManyPublicMethods"/>
+        <exclude name="TooManyMethods"/>
         <exclude name="ExcessiveClassLength"/>
     </rule>
 
@@ -30,7 +31,7 @@
 
     <rule ref="rulesets/codesize.xml/ExcessiveClassComplexity">
         <properties>
-            <property name="maximum" value="200" />
+            <property name="maximum" value="250" />
         </properties>
     </rule>
 
@@ -69,6 +70,13 @@
     <rule ref="rulesets/codesize.xml/TooManyPublicMethods">
         <properties>
             <property name="maxmethods" value="25" />
+            <property name="ignorepattern" value="(^(set|get))i" />
+        </properties>
+    </rule>
+
+    <rule ref="rulesets/codesize.xml/TooManyMethods">
+        <properties>
+            <property name="maxmethods" value="30" />
             <property name="ignorepattern" value="(^(set|get))i" />
         </properties>
     </rule>

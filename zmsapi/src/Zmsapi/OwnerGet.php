@@ -33,6 +33,7 @@ class OwnerGet extends BaseController
         $message = Response\Message::create($request);
 
         if ($workstation->hasRights()) {
+            $workstation->checkPermissions('jurisdiction');
             $workstation->checkRights(
                 new \BO\Zmsentities\Useraccount\EntityAccess($owner)
             );

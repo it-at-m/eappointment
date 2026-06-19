@@ -328,7 +328,7 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->get('/users/department/{id:\d+}/', \BO\Zmsadmin\UseraccountListByDepartment::class)
     ->setName("useraccountListByDepartment");
 
-\App::$slim->get('/users/role/{level:\d+}/', \BO\Zmsadmin\UseraccountListByRole::class)
+\App::$slim->get('/users/role/{roleName:[a-z_]+}/', \BO\Zmsadmin\UseraccountListByRole::class)
     ->setName("useraccountListByRole");
 
 \App::$slim->get('/roles/', \BO\Zmsadmin\Roles::class)

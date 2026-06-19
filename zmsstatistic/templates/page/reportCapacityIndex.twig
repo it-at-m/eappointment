@@ -1,0 +1,184 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block headline %}
+    {{ headline1("Terminkapazität") }}
+{% endblock %}
+
+{% block content %}
+    <div class="counter-view" data-includeurl="{{ includeUrl }}">
+        <div class="report-index capacity-report">
+            {% embed "block/report/period.twig" with {"source":source, "items": capacityPeriod, "selected": period} %}
+            {% endembed %}
+
+            <form class="form--base panel--heavy">
+            {% embed "block/report/reportFilter.twig" with {
+                allowFutureDates: true,
+                scopeDateBounds: scopeDateBounds,
+                defaultScopeId: workstation.scope.id|default(null),
+                selectedScopeIds: selectedScopeIds is not empty ? selectedScopeIds : (workstation.scope.id ? [workstation.scope.id] : []),
+                dateRange: dateRange
+            } %}
+            {% endembed %}
+            </form>
+
+            {% embed "block/report/board.twig" with {
+                'class': 'board--spaceless',
+                'source': source,
+                'selected': period,
+                'dateRange': dateRange,
+                'selectedScopeIds': selectedScopeIds
+            } %}
+                {% block board_title %}
+                    {% set tableName = workstation.scope.contact.name %}
+                    {% set tablePeriod = period|format_date(pattern="MMMM y") %}
+                    {% if 4 == period|length %}
+                        {% set tablePeriod = 'Kalenderjahr ' ~ period %}
+                    {% endif %}
+                    {% if dateRange %}
+                        {% set tablePeriod = dateRange.from|date('d.m.Y') ~ ' bis ' ~ dateRange.to|date('d.m.Y') %}
+                    {% endif %}
+                    {% if dateRange %}
+                        Kapazität laut Öffnungszeiten – Auswertung für die ausgewählten Standorte im Zeitraum {{ tablePeriod }}
+                    {% elseif selected %}
+                        Kapazität laut Öffnungszeiten – Auswertung für {{ tableName }} im Zeitraum {{ tablePeriod }}
+                    {% endif %}
+                {% endblock %}
+                {% block board_header_right %}
+                    {% if selected or dateRange %}
+                        {% set downloadParams = {'type': 'xlsx'} %}
+                        {% if dateRange %}
+                            {% set downloadParams = downloadParams|merge({'from': dateRange.from, 'to': dateRange.to}) %}
+                        {% endif %}
+                        {% if selectedScopeIds is defined and selectedScopeIds %}
+                            {% set downloadParams = downloadParams|merge({'scopes': selectedScopeIds}) %}
+                        {% endif %}
+                        <a href="{{ urlGet(currentRoute().name, currentRoute().params, downloadParams) }}" class="button button--diamond report-board--table-download" title="Tabelle als Excel-Datei herunterladen" aria-label="Tabelle als Excel-Datei herunterladen">
+                            <i class="fas fa-file-excel" aria-hidden="true"></i>
+                        </a>
+                        <button type="button" class="button button--diamond report-board--chart-download" title="Diagramm als Bild herunterladen" aria-label="Diagramm als Bild herunterladen">
+                            <i class="fas fa-image" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="button button--diamond report-board--chart-sparse is-active" title="{% trans %}Leere Zeiten ausblenden{% endtrans %}" aria-label="{% trans %}Leere Zeiten ausblenden{% endtrans %}" aria-pressed="true">
+                            <i class="fas fa-filter" aria-hidden="true"></i>
+                        </button>
+                        <label class="report-board--capacity-channel button button--diamond" title="Kapazitätskanal">
+                            <select class="report-board--capacity-channel-select" aria-label="Kapazitätskanal">
+                                <option value="total">Insgesamt</option>
+                                <option value="public">Internet</option>
+                                <option value="intern_only">Nur intern</option>
+                            </select>
+                        </label>
+                        <button type="button" class="button button--diamond report-board--chart-minutes" title="{% trans %}Als Slotzeit in Minuten anzeigen{% endtrans %}" aria-label="{% trans %}Als Slotzeit in Minuten anzeigen{% endtrans %}" aria-pressed="false">
+                            <i class="fas fa-clock" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="button button--diamond report-board--refresh" title="{% trans %}Daten aktualisieren{% endtrans %}" aria-label="{% trans %}Daten aktualisieren{% endtrans %}">
+                            <i class="fas fa-sync" aria-hidden="true"></i>
+                        </button>
+                        <label class="report-board--auto-refresh button button--diamond" title="Automatisch aktualisieren">
+                            <select class="report-board--auto-refresh-interval" aria-label="Automatisch aktualisieren">
+                                <option value="0">Aus</option>
+                                <option value="5">5 s</option>
+                                <option value="10">10 s</option>
+                                <option value="30">30 s</option>
+                                <option value="60">60 s</option>
+                            </select>
+                        </label>
+                    {% endif %}
+                {% endblock %}
+                {% block board_body %}
+                {% if selected or dateRange %}
+                    {% set hasCapacityChart = (exchangeCapacityChartSparse and exchangeCapacityChart and exchangeCapacityChartSparse.visualization)
+                        or (exchangeCapacityChart and exchangeCapacityChart.visualization)
+                        or (exchangeCapacity and exchangeCapacity.visualization) %}
+                    {% if exchangeCapacityChartSparse and exchangeCapacityChart and exchangeCapacityChartSparse.visualization %}
+                        <script type="application/json" class="report-board--chart-data-sparse">{{ exchangeCapacityChartSparse|json_encode(64)|raw }}</script>
+                        <script type="application/json" class="report-board--chart-data-full">{{ exchangeCapacityChart|json_encode(64)|raw }}</script>
+                        <div class="chartist table--base" data-chart-period="{{ selected|default('')|e('html_attr') }}"{% if dateRange %} data-chart-date-from="{{ dateRange.from|e('html_attr') }}" data-chart-date-to="{{ dateRange.to|e('html_attr') }}"{% endif %}>(loading chart...)</div>
+                    {% elseif exchangeCapacityChart and exchangeCapacityChart.visualization %}
+                        <script type="application/json" class="report-board--chart-data">{{ exchangeCapacityChart|json_encode(64)|raw }}</script>
+                        <div class="chartist table--base" data-chart-period="{{ selected|default('')|e('html_attr') }}"{% if dateRange %} data-chart-date-from="{{ dateRange.from|e('html_attr') }}" data-chart-date-to="{{ dateRange.to|e('html_attr') }}"{% endif %}>(loading chart...)</div>
+                    {% elseif exchangeCapacity and exchangeCapacity.visualization %}
+                        <script type="application/json" class="report-board--chart-data">{{ exchangeCapacity|json_encode(64)|raw }}</script>
+                        <div class="chartist table--base" data-chart-period="{{ selected|default('')|e('html_attr') }}"{% if dateRange %} data-chart-date-from="{{ dateRange.from|e('html_attr') }}" data-chart-date-to="{{ dateRange.to|e('html_attr') }}"{% endif %}>(loading chart...)</div>
+                    {% endif %}
+                    {% if hasCapacityChart or scopeSlotTimeHint %}
+                        <p class="report-board--chart-hint">
+                            <span class="color-blue report-board--chart-hint-icon" aria-hidden="true"><i class="fas fa-info-circle"></i></span>
+                            <span class="report-board--chart-hint-text">
+                                {% if hasCapacityChart %}
+                                    Ein <strong>Zeitschlitz</strong> ist die kleinste buchbare Zeiteinheit laut Öffnungszeit.
+                                    Geplante und gebuchte Kapazität zählen Zeitschlitze, nicht Termine — ein Termin kann mehrere Zeitschlitze belegen.
+                                {% endif %}
+                                {% if scopeSlotTimeHint %}
+                                    <span class="report-board--chart-hint-slot-times">{{ scopeSlotTimeHint }}</span>
+                                {% endif %}
+                            </span>
+                        </p>
+                    {% endif %}
+                    {% set isHourly = exchangeCapacity.period is defined and exchangeCapacity.period == 'hour' %}
+                    {% if dateRange %}
+                        {% set capacitySummaryLabel = 'Summe · Zeitraum ' ~ dateRange.from|date('d.m.Y') ~ ' – ' ~ dateRange.to|date('d.m.Y') %}
+                    {% elseif period %}
+                        {% set capacitySummaryLabel = 'Summe · ' ~ period|format_date(pattern='MMMM y') %}
+                    {% else %}
+                        {% set capacitySummaryLabel = 'Summe' %}
+                    {% endif %}
+                    {% if exchangeCapacity.data and exchangeCapacityChart and exchangeCapacityChart.data %}
+                        <script type="application/json" class="report-board--table-data-sparse">{{ exchangeCapacity.data|json_encode(64)|raw }}</script>
+                        <script type="application/json" class="report-board--table-data-full">{{ exchangeCapacityChart.data|json_encode(64)|raw }}</script>
+                    {% endif %}
+                    <table class="table--base report-board--capacity-table" data-table-is-hourly="{{ isHourly ? '1' : '0' }}" data-label-summary="{{ capacitySummaryLabel|e('html_attr') }}" data-label-empty="{% trans %}Es wurden keine Daten gefunden{% endtrans %}" data-label-planned-slots="Geplante Kapazität (Zeitschlitze)" data-label-booked-slots="Gebuchte Kapazität (Zeitschlitze)" data-label-planned-minutes="Geplante Kapazität (Minuten)" data-label-booked-minutes="Gebuchte Kapazität (Minuten)">
+                        <thead>
+                            <tr>
+                                <th>{% if isHourly %}{% trans %}Zeitpunkt{% endtrans %}{% else %}{% trans %}Datum{% endtrans %}{% endif %}</th>
+                                <th class="report-board--capacity-planned">Geplante Kapazität (Zeitschlitze)</th>
+                                <th class="report-board--capacity-booked">Gebuchte Kapazität (Zeitschlitze)</th>
+                                <th>{% trans %}Auslastung{% endtrans %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if exchangeCapacity.data %}
+                                {% set totalPlanned = 0 %}
+                                {% set totalBooked = 0 %}
+                                {% for row in exchangeCapacity.data %}
+                                    {% set planned = row[3]|default(0) %}
+                                    {% set booked = row[2]|default(0) %}
+                                    {% set totalPlanned = totalPlanned + planned %}
+                                    {% set totalBooked = totalBooked + booked %}
+                                    {% set utilization = planned > 0 ? ((booked / planned) * 100)|round(1) : 0 %}
+                                    <tr>
+                                        <td class="colDatumTag statistik">
+                                            {% if isHourly %}
+                                                {{ row[1] }}
+                                            {% else %}
+                                                {{ row[1]|date("d.m.Y") }}
+                                            {% endif %}
+                                        </td>
+                                        <td class="statistik">{{ planned }}</td>
+                                        <td class="statistik">{{ booked }}</td>
+                                        <td class="statistik">{{ utilization }} %</td>
+                                    </tr>
+                                {% endfor %}
+                                {% set totalUtilization = totalPlanned > 0 ? ((totalBooked / totalPlanned) * 100)|round(1) : 0 %}
+                                <tr class="report-board--capacity-summary">
+                                    <td class="report-board--summary report-board--capacity-summary-label">{{ capacitySummaryLabel }}</td>
+                                    <td class="report-board--summary report-board--capacity-summary-value">{{ totalPlanned|number_format(0, ',', '.') }}</td>
+                                    <td class="report-board--summary report-board--capacity-summary-value">{{ totalBooked|number_format(0, ',', '.') }}</td>
+                                    <td class="report-board--summary report-board--capacity-summary-value" title="Gesamtauslastung über den Zeitraum">{{ totalUtilization|replace({'.': ','}) }} %</td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="4">{% trans %}Es wurden keine Daten gefunden{% endtrans %}</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    {{ block("board_body_noperiod") }}
+                {% endif %}
+                {% endblock %}
+            {% endembed %}
+        </div>
+    </div>
+{% endblock %}

@@ -1538,7 +1538,7 @@
 
 /**
  *  @swagger
- *  "/role/{level}/useraccount/":
+ *  "/role/{roleName}/useraccount/":
  *      get:
  *          summary: Get a list of useraccounts for a role
  *          x-since: 2.10
@@ -1546,11 +1546,11 @@
  *              - role
  *              - useraccount
  *          parameters:
- *              -   name: level
- *                  description: role number
+ *              -   name: roleName
+ *                  description: role name
  *                  in: path
  *                  required: true
- *                  type: integer
+ *                  type: string
  *              -   name: X-Authkey
  *                  required: true
  *                  description: authentication key to identify user for testing access rights
@@ -1574,13 +1574,13 @@
  *                                  $ref: "schema/useraccount.json"
  *              403:
  *                  x-since: 2.12
- *                  description: "role is not assigned to logged in useraccount"
+ *                  description: "missing or wrong access rights"
  *              404:
  *                  x-since: 2.12
  *                  description: "role does not exist"
  */
 \App::$slim->get(
-    '/role/{level:\d{1,11}}/useraccount/',
+    '/role/{roleName:[a-z][a-z0-9_]{0,99}}/useraccount/',
     '\BO\Zmsapi\UseraccountListByRole'
 )
     ->setName("UseraccountListByRole");
@@ -1588,7 +1588,7 @@
 
 /**
  *  @swagger
- *  "/role/{level}/department/{ids}/useraccount/":
+ *  "/role/{roleName}/department/{ids}/useraccount/":
  *      get:
  *          summary: Get a list of useraccounts for a role and departments
  *          x-since: 2.25
@@ -1597,11 +1597,11 @@
  *              - department
  *              - useraccount
  *          parameters:
- *              -   name: level
- *                  description: role number
+ *              -   name: roleName
+ *                  description: role name
  *                  in: path
  *                  required: true
- *                  type: integer
+ *                  type: string
  *              -   name: ids
  *                  description: department numbers (comma-separated)
  *                  in: path
@@ -1630,13 +1630,13 @@
  *                                  $ref: "schema/useraccount.json"
  *              403:
  *                  x-since: 2.12
- *                  description: "role is not assigned to logged in useraccount"
+ *                  description: "department is not assigned to logged in useraccount or missing access rights"
  *              404:
  *                  x-since: 2.12
- *                  description: "role does not exist"
+ *                  description: "role or department does not exist"
  */
 \App::$slim->get(
-    '/role/{level:\d{1,11}}/department/{ids:\d{1,11}(?:,\d{1,11})*}/useraccount/',
+    '/role/{roleName:[a-z][a-z0-9_]{0,99}}/department/{ids:\d{1,11}(?:,\d{1,11})*}/useraccount/',
     '\BO\Zmsapi\UseraccountListByRoleAndDepartments'
 )
     ->setName("UseraccountListByRoleAndDepartments");

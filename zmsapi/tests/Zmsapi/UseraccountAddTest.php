@@ -12,22 +12,12 @@ class UseraccountAddTest extends Base
         $this->setDepartment(74);
         $response = $this->render([], [
             '__body' => '{
-                "rights": {
-                "availability": 0,
-                "basic": 0,
-                "cluster": 0,
-                "department": 0,
-                "organisation": 0,
-                "scope": 0,
-                "superuser": 0,
-                "ticketprinter": 0,
-                "useraccount": 1
-              },
-              "departments": [
-                  {"id": 74}
-              ],
-              "id": "unittest",
-              "password": "unittest",
+                "roles": ["agent_queue"],
+                "departments": [
+                    {"id": 74}
+                ],
+                "id": "unittest",
+                "password": "unittest",
               "email": "unittest@berlinonline.de",
               "lastLogin": 1459461600
             }'
@@ -45,47 +35,27 @@ class UseraccountAddTest extends Base
         $this->setDepartment(74);
         $this->render([], [
             '__body' => '{
-                "rights": {
-                "availability": 0,
-                "basic": 1,
-                "cluster": 0,
-                "department": 0,
-                "organisation": 0,
-                "scope": 0,
-                "superuser": 0,
-                "ticketprinter": 0,
-                "useraccount": 0
-              },
-              "departments": [
-                  {"id": 74}
-              ],
-              "id": "testuser",
-              "password": "unittest"
+                "roles": ["agent_queue"],
+                "departments": [
+                    {"id": 74}
+                ],
+                "id": "testuser",
+                "password": "unittest"
             }'
         ], []);
     }
 
-    public function testRightsFailed()
+    public function testSuperuserOnlyRoleRequiresSuperuser()
     {
-        $this->expectException('\BO\Zmsentities\Exception\UserAccountAccessRightsFailed');
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->expectExceptionCode(403);
         $this->setWorkstation(137, "testadmin")->getUseraccount()->setPermissions('useraccount');
         $this->render([], [
             '__body' => '{
-                "rights": {
-                "availability": 0,
-                "basic": 1,
-                "cluster": 0,
-                "department": 0,
-                "organisation": 0,
-                "scope": 0,
-                "superuser": 1,
-                "ticketprinter": 0,
-                "useraccount": 0
-              },
-              "departments": [
-                  {"id": 74}
-              ],
+                "roles": ["system_admin"],
+                "departments": [
+                    {"id": 74}
+                ],
               "id": "unittest-rights-failed",
               "password": "unittest"
             }'
@@ -99,48 +69,28 @@ class UseraccountAddTest extends Base
         $this->setWorkstation(137, "testadmin")->getUseraccount()->setPermissions('useraccount');
         $this->render([], [
             '__body' => '{
-                "rights": {
-                "availability": 0,
-                "basic": 1,
-                "cluster": 0,
-                "department": 0,
-                "organisation": 0,
-                "scope": 0,
-                "superuser": 1,
-                "ticketprinter": 0,
-                "useraccount": 0
-              },
-              "departments": [
-                  {"id": 74}
-              ],
+                "roles": ["agent_queue"],
+                "departments": [
+                    {"id": 74}
+                ],
               "id": "äas#d wrong user name",
               "password": "unittest"
             }'
         ], []);
     }
 
-    public function testSuperuserAddRights()
+    public function testSuperuserCanAddSystemAdminRole()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
         $this->setDepartment(74);
         $response = $this->render([], [
             '__body' => '{
-                "rights": {
-                "availability": 1,
-                "basic": 1,
-                "cluster": 1,
-                "department": 1,
-                "organisation": 1,
-                "scope": 1,
-                "superuser": 1,
-                "ticketprinter": 1,
-                "useraccount": 1
-              },
-              "departments": [
-                  {"id": 74}
-              ],
-              "id": "unittest-superuser",
-              "email": "test@zms.de",
+                "roles": ["system_admin"],
+                "departments": [
+                    {"id": 74}
+                ],
+                "id": "unittest-superuser",
+                "email": "test@zms.de",
               "password": "unittest"
             }'
         ], []);
@@ -156,25 +106,32 @@ class UseraccountAddTest extends Base
         $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
         $this->render([], [
             '__body' => '{
-                "rights": {
-                "availability": "0",
-                "basic": "0",
-                "cluster": "0",
-                "department": "0",
-                "organisation": "0",
-                "scope": "0",
-                "superuser": "0",
-                "ticketprinter": "0",
-                "useraccount": "2"
-              },
-              "departments": [
-                  {"id": 74}
-              ],
-              "id": "unittest",
+                "roles": ["agent_queue"],
+                "departments": [
+                    {"id": 74}
+                ],
+                "id": "unittest",
               "email": "unittest@berlinonline.de",
-              "lastLogin": 1459461600,
+                "lastLogin": "invalid-timestamp",
               "test": "unittest",
               "password": "unittest"
+            }'
+        ], []);
+    }
+
+    public function testInvalidRoleAssignment()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
+        $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountInvalidRoleAssignment');
+        $this->expectExceptionCode(400);
+        $this->render([], [
+            '__body' => '{
+                "roles": [],
+                "departments": [
+                    {"id": 74}
+                ],
+                "id": "unittest-invalid-role",
+                "password": "unittest"
             }'
         ], []);
     }
@@ -211,3 +168,4 @@ class UseraccountAddTest extends Base
         ], []);
     }
 }
+
