@@ -6,38 +6,41 @@ outline: deep
 
 ## Einführung
 
-Teil der [produitorientierten RefArch-Roadmap](./product-oriented-refarch-roadmap.md): die geteilten PHP-Backend-Pakete werden durch **zwei Spring-Boot-Services** ersetzt, die dasselbe MySQL-Schema nutzen.
+Teil der [produitorientierten RefArch-Roadmap](./product-oriented-refarch-roadmap.md): das **PHP**-Admin-Backend wird durch einen **Spring-Boot**-Service ersetzt, der dasselbe MySQL-Schema wie das künftige Citizen-Backend nutzt.
 
-| Ziel-Service        | Ersetzt (heute)                                            |
-| ------------------- | ---------------------------------------------------------- |
-| `zmsbackend`        | `zmsdb`, `zmsapi`, serverseitige Nutzung von `zmsentities` |
-| `zmscitizenbackend` | `zmscitizenapi`                                            |
+> **Status ([GH-2604](https://github.com/it-at-m/eappointment/issues/2604)):** Admin-API und Datenbankzugriff liegen bereits in **PHP `zmsbackend`** (Slim, vertikale Slices unter `src/Zmsbackend/<Domain>/`). Diese Seite beschreibt den **nächsten** Schritt — dasselbe Domain-Layout auf dem RefArch-**Spring**-Stack. Der Name `zmsbackend` wird wiederverwendet; unten bedeutet **PHP `zmsbackend`** das aktuelle Modul, **Spring `zmsbackend`** den Ziel-Service.
+
+| Ziel-Service               | Ersetzt (heute)                                                                                              |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Spring `zmsbackend`        | PHP **`zmsbackend`** (Admin-REST-API + DB; zusammengeführt aus `zmsapi`/`zmsdb`), serverseitige `zmsentities`-Nutzung |
+| Spring `zmscitizenbackend` | PHP **`zmscitizenapi`**                                                                                      |
 
 **`zmsentities` bleibt im Monorepo** als gemeinsame Vertragsschicht: JSON-Schemas, Validierungshilfen und typisierte Objekte. **Frontend-Module** wie `zmsadmin` und `zmsstatistic` hängen weiter daran für API-Antwortformen und clientseitige Validierung.
 
 ---
 
-## `zmsbackend`
+## Spring `zmsbackend`
 
-Fusioniert **`zmsdb`**, **`zmsapi`** und die serverseitige Nutzung von **`zmsentities`** in einen Backend-Service.
+Ersetzt **PHP `zmsbackend`** (und historisch die früher getrennten Pakete **`zmsdb`** + **`zmsapi`**) durch einen **Spring-Boot**-Service.
 
-### Heute
+### Heute (PHP)
 
-| Paket         | Rolle                                                                               |
-| ------------- | ----------------------------------------------------------------------------------- |
-| `zmsentities` | Schema-basierte Domain-Objekte (`Department`, `Scope`, …), Validierung, Collections |
-| `zmsdb`       | SQL-Queries, Tabellen-Mappings, Caching, Schreibpfade                               |
-| `zmsapi`      | HTTP-Controller, Berechtigungen, JSON-Hülle (`Message`)                             |
+| Paket / Modul    | Rolle                                                                                                    |
+| ---------------- | -------------------------------------------------------------------------------------------------------- |
+| `zmsentities`    | Schema-basierte Domain-Objekte (`Department`, `Scope`, …), Validierung, Collections                        |
+| **`zmsbackend`** | Einheitliche Admin-REST-API + SQL-Schicht — `Api/`, `Service/`, `Repository/`, `Exception/` pro Domain ([GH-2604](https://github.com/it-at-m/eappointment/issues/2604)) |
 
-### Ziel
+Vor GH-2604 lagen dieselben Verantwortlichkeiten in getrennten **`zmsapi`**- (HTTP) und **`zmsdb`**- (Queries) Composer-Paketen; die Code-Explorer unten zeigen das **aktuelle PHP-`zmsbackend`**-Layout.
+
+### Ziel (Spring)
 
 Jede Domain erhält einen **vertikalen Schnitt**: Pakete `api/`, `model/`, `repository/`, `service/`, `view/` und `exception/`. Services sind **nach Operation getrennt** (Fetch, Create, Update, Delete) statt einer Klasse pro PHP-Modul.
 
-API-Typen liegen in `view/` und bleiben **kompatibel** zu **`zmsentities`-JSON-Schemas** (z. B. `department.json`) für Frontends — **`zmsbackend` führt aber keine JSON-Schema-Validierung aus**. Validierung erfolgt in Java auf `view/`-Typen (RefArch-Validatoren). JPA-Typen in `model/` mappen auf umbenannte DB-Tabellen (siehe [Datenbank-Refactor](../database-refactor/standardize-database-table-and-field-naming.md)).
+API-Typen liegen in `view/` und bleiben **kompatibel** zu **`zmsentities`-JSON-Schemas** (z. B. `department.json`) für Frontends — **Spring `zmsbackend` führt aber keine JSON-Schema-Validierung aus**. Validierung erfolgt in Java auf `view/`-Typen (RefArch-Validatoren). JPA-Typen in `model/` mappen auf umbenannte DB-Tabellen (siehe [Datenbank-Refactor](../database-refactor/standardize-database-table-and-field-naming.md)).
 
-### Warum `zmsbackend`?
+### Warum Spring `zmsbackend`?
 
-Vorteile der Zusammenführung von `zmsdb`, `zmsapi` und der serverseitigen Nutzung von `zmsentities` in einem Spring-Boot-Service auf dem [RefArch](https://refarch.oss.muenchen.de/)-Stack:
+PHP **`zmsbackend`** hat die **`zmsdb`- vs. `zmsapi`-Trennung** bereits entfernt ([GH-2604](https://github.com/it-at-m/eappointment/issues/2604)). Vorteile, dieses vereinheitlichte Domain-Modell auf **Spring Boot** auf dem [RefArch](https://refarch.oss.muenchen.de/)-Stack zu bringen:
 
 1. **Validierung an einem Ort, weniger Verwirrung** — Heute liegen Regeln verteilt in Controllern, Mellon-Request-Parsing, Opis-JSON-Schema-Dateien, `Entity::testValid()` und Ad-hoc-Checks. Schemas sind zu großen, schwer wartbaren JSON-Dateien mit `oneOf`-Zahl/String-Vereinigungen und `$ref`-Ketten gewachsen, die kaum noch jemand vollständig durchschaut. In `zmsbackend` validiert jede Domain in **`validation/`** gegen ihre **`view/`**-Typen — ein klarer Ort zum Nachschlagen und Ändern.
 
@@ -77,10 +80,10 @@ Illustratives Spring-Boot-Layout. Tabellenumbenennung: `behoerde` → `departmen
 
 ```
 src/main/java/de/muenchen/zms/department/
-├── api/                    # heute: zmsapi-Controller + routing.php
+├── api/                    # heute: zmsbackend Department/Api + routing.php
 ├── exception/
-├── model/                  # heute: zmsdb-Tabellen-Mappings (behoerde → department)
-├── repository/             # heute: zmsdb Query\* + readByDepartmentId-Helfer
+├── model/                  # heute: zmsbackend Repository/ Tabellen-Mappings (behoerde → department)
+├── repository/             # heute: zmsbackend Repository/* + readByDepartmentId-Helfer
 ├── service/                # ein Service pro Operation (nicht eine Klasse pro PHP-Modul)
 ├── validation/             # RefArch: imperative Validatoren auf view/-Typen
 └── view/                   # API-Payloads (Form kompatibel zu zmsentities-Schemas)
@@ -88,35 +91,35 @@ src/main/java/de/muenchen/zms/department/
 
 #### PHP heute → Java Ziel (vollständiger `Department`-Slice)
 
-| PHP (heute)                                                               | Java (Ziel)                                          |
-| ------------------------------------------------------------------------- | ---------------------------------------------------- |
-| `zmsapi/routing.php` (`/department/*`, …)                                 | `api/DepartmentRouteRegistry` + Controller           |
-| `zmsapi\DepartmentGet`                                                    | `api/DepartmentController.getDepartment`             |
-| `zmsapi\DepartmentList`                                                   | `api/DepartmentController.listDepartments`           |
-| `zmsapi\DepartmentUpdate`                                                 | `api/DepartmentController.updateDepartment`          |
-| `zmsapi\DepartmentDelete`                                                 | `api/DepartmentController.deleteDepartment`          |
-| `zmsapi\DepartmentAddScope`                                               | `api/DepartmentController.addScope`                  |
-| `zmsapi\DepartmentAddCluster`                                             | `api/DepartmentController.addCluster`                |
-| `zmsapi\OrganisationByDepartment`                                         | `api/DepartmentController.getOrganisation`           |
-| `zmsapi\DepartmentWorkstationList`                                        | `api/DepartmentController.listWorkstations`          |
-| `zmsapi\OrganisationAddDepartment`                                        | `api/OrganisationDepartmentController.addDepartment` |
-| `zmsapi\DepartmentByScopeId`                                              | `api/ScopeDepartmentController.getDepartmentByScope` |
-| `zmsapi\UseraccountListByDepartments`                                     | `api/DepartmentUseraccountController`                |
-| `zmsapi\UseraccountListByRoleAndDepartments`                              | `api/DepartmentUseraccountController`                |
-| `zmsdb\Department` + `Query\Department`                                   | `model/`, `repository/DepartmentRepository`          |
-| `zmsdb\Link`, `DayOff`, `Scope`, `Cluster`, `Workstation`, `Organisation` | passende `repository/Department*`                    |
-| `zmsdb\Useraccount` (Department-Queries)                                  | `repository/DepartmentUseraccountRepository`         |
+| PHP (heute — **`zmsbackend`**)                                              | Java (Spring-Ziel)                                   |
+| --------------------------------------------------------------------------- | ---------------------------------------------------- |
+| `zmsbackend/routing.php` (`/department/*`, …)                               | `api/DepartmentRouteRegistry` + Controller           |
+| `Department\Api\DepartmentGet`                                                | `api/DepartmentController.getDepartment`             |
+| `Department\Api\DepartmentList`                                             | `api/DepartmentController.listDepartments`           |
+| `Department\Api\DepartmentUpdate`                                           | `api/DepartmentController.updateDepartment`          |
+| `Department\Api\DepartmentDelete`                                           | `api/DepartmentController.deleteDepartment`          |
+| `Department\Api\DepartmentAddScope`                                           | `api/DepartmentController.addScope`                  |
+| `Department\Api\DepartmentAddCluster`                                         | `api/DepartmentController.addCluster`                |
+| `Organisation\Api\OrganisationByDepartment`                                 | `api/DepartmentController.getOrganisation`           |
+| `Department\Api\DepartmentWorkstationList`                                  | `api/DepartmentController.listWorkstations`          |
+| `Organisation\Api\OrganisationAddDepartment`                                | `api/OrganisationDepartmentController.addDepartment` |
+| `Department\Api\DepartmentByScopeId`                                        | `api/ScopeDepartmentController.getDepartmentByScope` |
+| `Useraccount\Api\UseraccountListByDepartments`                              | `api/DepartmentUseraccountController`                |
+| `Useraccount\Api\UseraccountListByRoleAndDepartments`                        | `api/DepartmentUseraccountController`                |
+| `Department\Service\Department` + `Department\Repository\Department`        | `model/`, `repository/DepartmentRepository`          |
+| `Link`, `Dayoff`, `Scope`, `Cluster`, `Workstation`, `Organisation` Domains | passende `repository/Department*`                    |
+| `Useraccount\Service\Useraccount` (Department-Queries)                      | `repository/DepartmentUseraccountRepository`         |
 | `zmsentities\Department` + `department.json`                              | `view/DepartmentView`                                |
 | `zmsentities\Schema\Validator` + `Department::testValid()`                | `validation/ValidateDepartment`                      |
 | —                                                                         | `validation/DepartmentValidationService`             |
 
 #### Heute — PHP-Stack durchklicken
 
-Den **vollständigen Department-Slice** im Monorepo: **`zmsentities`**-Schema und -Entity, alle **`zmsdb`**-Query-Klassen für CRUD und Resolved References, alle **`zmsapi`**-Controller und den **`routing.php`**-Auszug mit jedem Department-Endpoint.
+Den **vollständigen Department-Slice** im Monorepo: **`zmsentities`**-Schema und -Entity, PHP-**`zmsbackend`**-`Department/`- und verwandte Domain-Klassen (`Service/`, `Repository/`, `Api/`) sowie den **`routing.php`**-Auszug mit jedem Department-Endpoint.
 
 <DepartmentCodeExplorerToday />
 
-#### Ziel — Spring-Boot-Modul in `zmsbackend`
+#### Ziel — Spring-Boot-Modul (Spring `zmsbackend`)
 
 Das **vollständig übersetzte Modul** durchklicken: **`api/`**-Controller für jeden Endpoint, **`repository/`**-Klassen für jede Query-Schicht, **`model/`**-JPA-Entities, **`view/`**-API-Typen, **`service/`** (ein Service pro Operation) und **`validation/`**-Java-Validatoren (kein JSON Schema auf dem Server).
 
@@ -137,16 +140,16 @@ Eigenes **bürgerorientiertes** Backend (heute: PHP-Modul **`zmscitizenapi`**).
 | Paket                 | Rolle                                                                                                  |
 | --------------------- | ------------------------------------------------------------------------------------------------------ |
 | `zmscitizenapi`       | Controller, Services, Citizen-Modelle (`Office`, `Service`, `ThinnedScope`, …)                         |
-| `ZmsApiClientService` | HTTP-Client zu **`zmsapi`** — lädt volle **`zmsentities`**-Graphen (`Provider`, `Scope`, `Process`, …) |
-| `ZmsApiFacadeService` | Orchestriert mehrere **`zmsapi`**-Aufrufe, merged Listen, Second-Level-Cache                           |
+| `ZmsApiClientService` | HTTP-Client zu **PHP `zmsbackend`** — lädt volle **`zmsentities`**-Graphen (`Provider`, `Scope`, `Process`, …) |
+| `ZmsApiFacadeService` | Orchestriert mehrere **PHP-`zmsbackend`**-Aufrufe, merged Listen, Second-Level-Cache                         |
 | `MapperService`       | Mappt große **`zmsentities`**-Payloads auf schlanke Citizen-Modelle                                    |
 | `zmsentities`         | Teilweise gemeinsame Typen; Citizen-Modelle überwiegend separat                                        |
 
-Kerndaten werden **über HTTP-Aufrufe an `zmsapi`** geladen, nicht über eine eigene Query-Schicht. Typische Flows holen **überdimensionierte Admin-Entitäten**, dann projiziert **`MapperService`** sie in **`Office`**, **`ThinnedScope`**, **`Service`** und ähnliche Citizen-DTOs — oft nach **mehreren Roundtrips** über **`ZmsApiFacadeService`** (~900 Zeilen heute).
+Kerndaten werden **über HTTP-Aufrufe an PHP `zmsbackend`** geladen, nicht über eine eigene Query-Schicht. Typische Flows holen **überdimensionierte Admin-Entitäten**, dann projiziert **`MapperService`** sie in **`Office`**, **`ThinnedScope`**, **`Service`** und ähnliche Citizen-DTOs — oft nach **mehreren Roundtrips** über **`ZmsApiFacadeService`** (~900 Zeilen heute).
 
 ### Ziel
 
-`zmscitizenbackend` behält **eigene bürgerorientierte Modelle** (`Office`, `Service`, `ThinnedScope`, …) in `model/` und `view/`. Es **ruft `zmsbackend` (früher `zmsapi`) nicht per HTTP auf**, sondern nutzt eine **eigene Repository-Schicht** — dasselbe Prinzip wie `zmsdb` im PHP-Stack heute: SQL- (bzw. JPA-) Queries im Besitz des Citizen-Backends, gegen das **gemeinsame MySQL-Schema**.
+`zmscitizenbackend` behält **eigene bürgerorientierte Modelle** (`Office`, `Service`, `ThinnedScope`, …) in `model/` und `view/`. Es **ruft PHP `zmsbackend` nicht per HTTP auf**, sondern nutzt eine **eigene Repository-Schicht** — SQL- (bzw. JPA-) Queries im Besitz des Citizen-Backends, gegen das **gemeinsame MySQL-Schema**.
 
 Gleiches Vertical-Slice-Layout wie `zmsbackend`: `api/`, `model/`, `repository/`, `service/`, `view/`, `exception/` pro Domain (z. B. `office/`, `thinnedprocess/`, `availability/`).
 
@@ -154,25 +157,25 @@ Citizen-Modelle bleiben **schlank und API-spezifisch**. Sie müssen `zmsentities
 
 ### Warum `zmscitizenbackend`?
 
-Vorteile, **`zmscitizenapi`** und den **`zmsapi`**-Client-Stack durch einen Spring-Boot-Service mit eigener Persistenz zu ersetzen:
+Vorteile, **`zmscitizenapi`** und den **PHP-`zmsbackend`**-HTTP-Client-Stack durch einen Spring-Boot-Service mit eigener Persistenz zu ersetzen:
 
 1. **Kein Mapping mehr: kleine Citizen-Modelle aus riesigen Admin-Entitäten** — Heute durchläuft **`MapperService`** (~640 Zeilen) volle **`zmsentities`**-Graphen (`Provider`, `Scope`, `Process`, `Request`, …) und kopiert Felder manuell in **`Office`**, **`ThinnedScope`**, **`ThinnedProcess`** usw. In **`zmscitizenbackend`** laden Repositories und **`view/`**-Typen **nur das, was die Citizen-API exponiert** — Mapping ist Query-Design, keine wartungsintensive Übersetzungsschicht.
 
-2. **Weg mit dem zweiten API-Hop** — Jeder Citizen-Lese-/Schreibzugriff läuft heute **`zmscitizenapi` → HTTP → `zmsapi` → `zmsdb` → MySQL**, mit JSON en-/decodieren auf beiden Seiten. **`zmscitizenbackend`** spricht **direkt** mit der Datenbank (`service/` → `repository/` → `model/`). Weniger Netzwerk-Hops, weniger Serialisierung, geringere Latenz auf Buchungs- und Verfügbarkeits-Hotpaths.
+2. **Weg mit dem zweiten API-Hop** — Jeder Citizen-Lese-/Schreibzugriff läuft heute **`zmscitizenapi` → HTTP → PHP `zmsbackend` → MySQL**, mit JSON en-/decodieren auf beiden Seiten. **`zmscitizenbackend`** spricht **direkt** mit der Datenbank (`service/` → `repository/` → `model/`). Weniger Netzwerk-Hops, weniger Serialisierung, geringere Latenz auf Buchungs- und Verfügbarkeits-Hotpaths.
 
-3. **Maßgeschneiderte Queries statt „alles laden, in PHP filtern“** — **`ZmsApiFacadeService`** holt oft **komplette Provider- und Scope-Listen** von **`zmsapi`**, merged sie im Speicher und cached das Ergebnis. Citizen-Backends können **fokussiertes JPA/SQL** (Joins, Projektionen, Pagination) für Offices-by-Service, verfügbare Tage und Slots nutzen — **weniger Daten, weniger CPU fürs DTO-Formen**.
+3. **Maßgeschneiderte Queries statt „alles laden, in PHP filtern“** — **`ZmsApiFacadeService`** holt oft **komplette Provider- und Scope-Listen** von **PHP `zmsbackend`**, merged sie im Speicher und cached das Ergebnis. Citizen-Backends können **fokussiertes JPA/SQL** (Joins, Projektionen, Pagination) für Offices-by-Service, verfügbare Tage und Slots nutzen — **weniger Daten, weniger CPU fürs DTO-Formen**.
 
-4. **Weniger Klebe-Code** — **`ZmsApiClientService`**, **`ZmsApiFacadeService`** und **`MapperService`** hängen eng an **`zmsapi`**-Routen und **`zmsentities`**-Formen. Schema- oder Endpoint-Änderungen in der Admin-API wirken in Citizen-Mapping und Cache-Keys nach. Eigene Repositories **entkoppeln** den öffentlichen Citizen-Vertrag von der internen Admin-API-Evolution.
+4. **Weniger Klebe-Code** — **`ZmsApiClientService`**, **`ZmsApiFacadeService`** und **`MapperService`** hängen eng an **PHP-`zmsbackend`**-Routen und **`zmsentities`**-Formen. Schema- oder Endpoint-Änderungen in der Admin-API wirken in Citizen-Mapping und Cache-Keys nach. Eigene Repositories **entkoppeln** den öffentlichen Citizen-Vertrag von der internen Admin-API-Evolution.
 
 5. **Einfachere Cache-Strategie** — Second-Level-Caches (`processed_offices`, `processed_scopes`, …) amortisieren vor allem **HTTP + Mapping**. Direkte Reads machen Caching **optional und gezielt** (z. B. heiße Office-Listen) statt Pflicht für akzeptable Antwortzeiten.
 
-6. **Weniger Fehlerquellen für Bürger:innen** — Citizen-Buchung hängt nicht mehr davon ab, dass **`zmsapi`** unter Admin-Last (Reports, Massenbearbeitung, Statistik) schnell und verfügbar bleibt. **`zmscitizenbackend`** skaliert und fällt auf seinen Lese-/Schreibpfaden unabhängig aus.
+6. **Weniger Fehlerquellen für Bürger:innen** — Citizen-Buchung hängt nicht mehr davon ab, dass **PHP `zmsbackend`** unter Admin-Last (Reports, Massenbearbeitung, Statistik) schnell und verfügbar bleibt. **`zmscitizenbackend`** skaliert und fällt auf seinen Lese-/Schreibpfaden unabhängig aus.
 
 7. **Gleicher RefArch-Stack wie `zmsbackend` und `refarch-gateway`** — Ein Maven-Projekt, JUnit/Spring Boot Test, Actuator-Metriken, gemeinsame Münchner CI/Container-Muster — kein separates PHP-Modul plus HTTP-Client-Konfiguration (`ZMS_API_URL`, **`zmsclient`**-artige Plumbing).
 
 8. **Klare Verantwortung für die Citizen-Domain** — Vertical Slices (`office/`, `thinnedprocess/`, `availability/`) ersetzen eine monolithische Fassade. Jedes Feature besitzt **API, Service, Repository und View** statt neue Zweige in gemeinsamen Mapper-/Facade-Klassen.
 
-9. **Hotpaths gezielt optimierbar** — Verfügbarkeits- und Reservierungsflows können **eigene Read-Modelle und Indizes** bekommen, ohne neue **`zmsapi`**-Endpoints oder aufgeblähte Admin-Entitäten, die Frontends nie sehen.
+9. **Hotpaths gezielt optimierbar** — Verfügbarkeits- und Reservierungsflows können **eigene Read-Modelle und Indizes** bekommen, ohne neue **PHP-`zmsbackend`**-Endpoints oder aufgeblähte Admin-Entitäten, die Frontends nie sehen.
 
 10. **Einfacher testbar** — Repository- und Service-Tests gegen das gemeinsame Schema ersetzen aufwändiges Mocken von **`ZmsApiClientService`**-HTTP-Antworten und Mapper-Randfällen; ATAF/REST Assured können einen Citizen-Spring-Service End-to-End ansprechen.
 
@@ -185,7 +188,7 @@ Illustratives Spring-Boot-Layout für die bürgerorientierte **`ThinnedProcess`*
 PHP **`zmscitizenapi`** mischt Namen: Controller heißen **`Appointment*Controller`**, jede Antwort ist aber ein **`ThinnedProcess`**. In **`zmscitizenbackend`** heißt der Vertical Slice durchgängig **`thinnedprocess/`** — **`ThinnedProcessController`**, **`ThinnedProcessFetchService`**, **`ThinnedProcessView`** — damit Code und Citizen-Vertrag zusammenpassen.
 
 - **HTTP-Pfade bleiben `/appointment`, `/reserve-appointment`, …** — unverändert für `zmscitizenview` und bestehende Clients.
-- **Alle Slice-Typen nutzen das Präfix `ThinnedProcess`** — `ThinnedProcessRepository`, `ThinnedProcessValidationException`, … — keine Verwechslung mit Admin-**`zmsentities\Process`** oder **`zmsdb\Process`**.
+- **Alle Slice-Typen nutzen das Präfix `ThinnedProcess`** — … — keine Verwechslung mit Admin-**`zmsentities\Process`** oder **PHP `zmsbackend\Process`**.
 - **JPA-Typen bleiben `ThinnedProcessRecord`** auf `buerger` — nur Persistenzschicht; nicht als Admin-**`zmsentities\Process`**-Graph exponiert.
 
 #### Ordnerstruktur
@@ -195,7 +198,7 @@ src/main/java/de/muenchen/zms/citizen/thinnedprocess/
 ├── api/                    # heute: zmscitizenapi Appointment*Controller + routing.php
 ├── exception/
 ├── model/                  # JPA → buerger (ThinnedProcessRecord); nicht das öffentliche ThinnedProcess-DTO
-├── repository/             # heute: ZmsApiClientService HTTP → zmsapi Process*
+├── repository/             # heute: ZmsApiClientService HTTP → PHP zmsbackend Process/Api/*
 ├── service/                # heute: Appointment*Service, ZmsApiFacadeService, MapperService
 ├── validation/
 └── view/                   # ThinnedProcessView — Citizen-API-Payload
@@ -233,7 +236,7 @@ src/main/java/de/muenchen/zms/citizen/thinnedprocess/
 
 #### Heute — PHP-Stack durchklicken
 
-Durchsuchen Sie den **vollen Appointment- / `ThinnedProcess`-Slice** über drei Schichten: **`zmscitizenapi`** (Citizen-Schemas, **`ThinnedProcess`**-Modell, **`Appointment*`**-Controller/Services, **`MapperService`** / Facade / Client), **`zmsapi`** (**`Process*`**-Controller und **`routing.php`**-Auszug — die HTTP-Schicht, die **`ZmsApiClientService`** aufruft) und **`zmsdb`** (**`Process`**-Query-Schicht auf **`buerger`**). Zeigt den vollen **`zmscitizenapi` → `zmsapi` → `zmsdb`**-Hop, bevor riesige **`Process`**-Entitäten in **`ThinnedProcess`** gemappt werden.
+Durchsuchen Sie den **vollen Appointment- / `ThinnedProcess`-Slice** über **`zmscitizenapi`** (Citizen-Schemas, **`ThinnedProcess`**-Modell, **`Appointment*`**-Controller/Services, **`MapperService`** / Facade / Client) und **PHP `zmsbackend`** (**`Process/Api/*`**-Controller und **`routing.php`**-Auszug — die HTTP-Schicht, die **`ZmsApiClientService`** aufruft, plus **`Process/Service`** und **`Process/Repository`** auf **`buerger`**). Zeigt den **`zmscitizenapi` → PHP `zmsbackend`**-Hop, bevor riesige **`Process`**-Entitäten in **`ThinnedProcess`** gemappt werden.
 
 <ThinnedProcessCodeExplorerToday />
 
@@ -251,7 +254,7 @@ Citizen-Frontends (`zmscitizenview`) konsumieren weiter **`ThinnedProcess`**-JSO
 
 ## Migrationshinweise
 
-1. **Domain für Domain** — zuerst `Department*`-Endpoints auf `zmsbackend` migrieren; PHP-Controller bis Parity-Tests behalten.
+1. **Domain für Domain** — zuerst `Department*`-Endpoints auf **Spring `zmsbackend`** migrieren; **PHP-`zmsbackend`**-Controller bis Parity-Tests behalten.
 2. **Eine Datenbank** — beide Backends lesen dasselbe Schema; Tabellenumbenennungen laufen über Migrationen (siehe Datenbank-Refactor-Dokument).
 3. **`zmsentities`-Schemas für Frontends behalten** — `zmsbackend` validiert mit Java auf `view/`-Typen, kein JSON Schema in Spring.
 4. **Paket-Layout** — pro Domain auf beiden Backends: `api/` → `service/` → `repository/` → `model/`, API-Typen in `view/`.
