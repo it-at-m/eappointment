@@ -8,7 +8,7 @@ class DepartmentAddScopeTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department')
+        $this->setWorkstation()->getUseraccount()->setPermissions('scope', 'department')
             ->addDepartment([
                 'id' => 72
             ]);
@@ -29,7 +29,7 @@ class DepartmentAddScopeTest extends Base
 
     public function testUnvalidScope()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department')
+        $this->setWorkstation()->getUseraccount()->setPermissions('scope', 'department')
             ->addDepartment([
                 'id' => 72
             ]);
@@ -37,9 +37,9 @@ class DepartmentAddScopeTest extends Base
         $this->render(['id' => 72], [], []);
     }
 
-    public function testNoRights()
+    public function testNoDepartmentPermission()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->setWorkstation()->getUseraccount()->setPermissions('scope');
         $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->expectExceptionCode(403);
         $this->render(['id' => 72], [
@@ -50,6 +50,38 @@ class DepartmentAddScopeTest extends Base
                       "displayName": "B\u00fcrgeramt Heerstra\u00dfe"
                   }
               }'
+        ], []);
+    }
+
+    public function testNoScopePermission()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('department');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectExceptionCode(403);
+        $this->render(['id' => 72], [
+            '__body' => '{
+                "shortName": "Test Scope",
+                "provider": {
+                    "id": 122217,
+                    "displayName": "B\u00fcrgeramt Heerstra\u00dfe"
+                }
+            }'
+        ], []);
+    }
+
+    public function testNoDepartmentAndScopePermission()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('statistic');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectExceptionCode(403);
+        $this->render(['id' => 72], [
+            '__body' => '{
+                "shortName": "Test Scope",
+                "provider": {
+                    "id": 122217,
+                    "displayName": "B\u00fcrgeramt Heerstra\u00dfe"
+                }
+            }'
         ], []);
     }
 }

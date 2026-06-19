@@ -1,0 +1,26 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2018-03-09T13:47:45+01:00",
+    "server": "Zmsapi-ENV (v2.15.03)"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/exchange.json",
+    "title": "Slotbelegung ",
+    "period": "day",
+    "dictionary": [
+      {
+        "position": 0,
+        "variable": "id",
+        "type": "string",
+        "description": "Gesamter Zeitraum",
+        "reference": "useraccount.rights.superuser"
+      }
+    ],
+    "data": [
+      ["_"]
+    ]
+  }
+}

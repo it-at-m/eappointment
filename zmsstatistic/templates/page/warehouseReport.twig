@@ -21,7 +21,8 @@
             {% endblock %}
             {% block board_body %}
                 {% if report.visualization %}
-                    <div class="chartist table--base" data-chartist="{{ report|json_encode }}">(loading chart...)</div>
+                    <script type="application/json" class="report-board--chart-data">{{ report|json_encode(64)|raw }}</script>
+                    <div class="chartist table--base">(loading chart...)</div>
                 {% endif %}
                 <table class="table--base">
                     <thead>

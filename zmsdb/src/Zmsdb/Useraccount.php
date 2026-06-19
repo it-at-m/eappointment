@@ -17,12 +17,22 @@ class Useraccount extends Base
     private const CACHE_VERSION_KEY = 'useraccountCacheVersion';
     private const CACHE_INDEX_PREFIX = 'useraccountCacheIndex-';
     private const CACHE_INDEX_GLOBAL = 'all';
-    private const TEMP_ROLE_MAP_BY_BERECHTIGUNG = [
-        90 => 'system_admin',
-        40 => 'user_admin',
-        30 => 'appointment_admin',
-        5  => 'audit_viewer',
-        0  => 'agent_queue',
+
+    /**
+     * Temporary bridge for the roles migration.
+     *
+     * Derives the legacy nutzer.Berechtigung level from the selected role so old
+     * rights-based checks keep working until ZMSKVR-1173 removes the legacy rights path.
+     */
+    private const LEGACY_LEVEL_BY_ROLE = [
+        'system_admin'      => 90,
+        'user_admin'        => 40,
+        'appointment_admin' => 30,
+        'reporting_viewer'  => 25,
+        'audit_viewer'      => 5,
+        'agent_basic'       => 0,
+        'agent_queue'       => 0,
+        'agent_queue_plus'  => 0,
     ];
 
     /**
@@ -653,63 +663,21 @@ class Useraccount extends Base
         if ($this->readIsUserExisting($entity->id)) {
             throw new Exception\Useraccount\DuplicateEntry();
         }
+        $this->applyLegacyRightsFromRole($entity);
+
         $query = new Query\Useraccount(Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query);
-        $this->assignTemporaryRoleForNewUser($entity);
+
+        $userId = (int) $this->readEntityIdByLoginName($entity->id);
+        $roleNames = $this->extractRequestedRoleNames($entity);
+        $this->replaceUserRoles($userId, $roleNames);
         $this->updateAssignedDepartments($entity);
 
         $this->removeCache($entity);
 
         return $this->readEntity($entity->getId(), $resolveReferences, true);
-    }
-
-    /**
-     * Temporary bridge while roles/permissions UI is missing.
-     * Mirrors the logic from migration 91771576480-migrate-users-to-new-roles.sql
-     * so newly created users get a role entry in user_role.
-     *
-     * @todo Remove legacy Berechtigung->role mapping after full roles/permissions rollout.
-     */
-    protected function assignTemporaryRoleForNewUser(\BO\Zmsentities\Useraccount $entity): void
-    {
-        $berechtigung = (int) $entity->getRightsLevel();
-        $roleName = self::TEMP_ROLE_MAP_BY_BERECHTIGUNG[$berechtigung] ?? null;
-        if (!$roleName) {
-            return;
-        }
-
-        try {
-            $userId = (int) $this->readEntityIdByLoginName($entity->id);
-            $roleId = $this->readRoleIdByName($roleName);
-            $this->perform(
-                'INSERT IGNORE INTO user_role (user_id, role_id) VALUES (?, ?)',
-                [$userId, $roleId]
-            );
-        } catch (\Throwable $e) {
-            if (App::$log) {
-                App::$log->warning('Temporary user_role assignment failed', [
-                    'useraccount' => $entity->id ?? null,
-                    'berechtigung' => $berechtigung,
-                    'role_name' => $roleName,
-                    'exception' => get_class($e),
-                    'message' => $e->getMessage(),
-                ]);
-            }
-        }
-    }
-
-    protected function readRoleIdByName(string $roleName): int
-    {
-        $row = $this->getReader()->fetchOne(
-            'SELECT id FROM role WHERE name = ?',
-            [$roleName]
-        );
-        if (!$row || !isset($row['id'])) {
-            throw new \RuntimeException('Role not found: ' . $roleName);
-        }
-        return (int) $row['id'];
     }
 
     protected function extractRequestedRoleNames(Entity $entity): array
@@ -736,6 +704,44 @@ class Useraccount extends Base
         return array_keys($requestedRoles);
     }
 
+    /**
+     * Applies legacy rights derived from the selected role.
+     *
+     * This is needed while old code still writes nutzer.Berechtigung through
+     * Query\Useraccount::reverseEntityMapping(). Remove with ZMSKVR-1173 once
+     * legacy rights/Berechtigung are fully retired.
+     */
+    protected function applyLegacyRightsFromRole(Entity $entity): void
+    {
+        $roleNames = $this->extractRequestedRoleNames($entity);
+
+        if (count($roleNames) !== 1) {
+            throw new \InvalidArgumentException('Exactly one role is required.');
+        }
+
+        $roleName = $roleNames[0];
+
+        if (!isset(self::LEGACY_LEVEL_BY_ROLE[$roleName])) {
+            throw new \InvalidArgumentException('Unknown role: ' . $roleName);
+        }
+
+        $legacyLevel = self::LEGACY_LEVEL_BY_ROLE[$roleName];
+
+        $entity->rights = [
+            'basic' => true,
+            'audit' => in_array($legacyLevel, [5, 90], true),
+            'ticketprinter' => $legacyLevel >= 15,
+            'availability' => $legacyLevel >= 20,
+            'departmentStats' => $legacyLevel >= 25,
+            'scope' => $legacyLevel >= 30,
+            'useraccount' => $legacyLevel >= 40,
+            'cluster' => $legacyLevel >= 40,
+            'department' => $legacyLevel >= 50,
+            'organisation' => $legacyLevel >= 70,
+            'superuser' => $legacyLevel >= 90,
+        ];
+    }
+
     protected function replaceUserRoles(int $userId, array $roleNames): void
     {
         $this->perform(Query\Useraccount::QUERY_DELETE_USER_ROLES, [$userId]);
@@ -751,6 +757,20 @@ class Useraccount extends Base
     public function writeUpdatedEntity($loginName, Entity $entity, $resolveReferences = 0)
     {
         $previousDepartmentIds = $this->readDepartmentIdsForLoginName($loginName);
+        $userId = null;
+        $roleNames = [];
+
+        // Extract requested role names (if present)
+        $requestedRoles = $this->extractRequestedRoleNames($entity);
+
+        if (count($requestedRoles) > 0) {
+            // Temporary migration bridge: keep nutzer.Berechtigung in sync with the selected role
+            // until legacy rights handling is removed in ZMSKVR-1173.
+            $this->applyLegacyRightsFromRole($entity);
+            $userId = (int) $this->readEntityIdByLoginName($loginName);
+            $roleNames = $requestedRoles;
+        }
+
         $query = new Query\Useraccount(Query\Base::UPDATE);
         $query->addConditionLoginName($loginName);
         $values = $query->reverseEntityMapping($entity);
@@ -758,10 +778,8 @@ class Useraccount extends Base
         $this->writeItem($query);
         $this->updateAssignedDepartments($entity);
 
-        if ($entity->offsetExists('roles')) {
+        if (count($roleNames) > 0) {
             try {
-                $userId = (int) $this->readEntityIdByLoginName($loginName);
-                $roleNames = $this->extractRequestedRoleNames($entity);
                 $this->replaceUserRoles($userId, $roleNames);
             } catch (\Throwable $e) {
                 if (App::$log) {
@@ -998,14 +1016,17 @@ class Useraccount extends Base
         return $result;
     }
 
-    public function readListRole($roleLevel, $resolveReferences = 0, $workstation = null)
+    public function readListRole($roleName, $resolveReferences = 0, $workstation = null)
     {
         $version = $this->getUseraccountCacheVersion();
         $workstationKey = '';
         if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
             $workstationKey = '-workstation-' . $workstation->getUseraccount()->id;
         }
-        $cacheKey = "useraccountReadByRole-v{$version}-" . ($roleLevel ?? 'null') . "-$resolveReferences$workstationKey";
+
+        $cacheKey = $this->sanitizeCacheKey(
+            "useraccountReadByRole-v{$version}-" . ($roleName ?? 'null') . "-$resolveReferences$workstationKey"
+        );
         $result = null;
 
         if (App::$cache && App::$cache->has($cacheKey)) {
@@ -1013,7 +1034,7 @@ class Useraccount extends Base
             if ($result && App::$log) {
                 App::$log->info('Useraccount role list cache hit', [
                     'cache_key' => $cacheKey,
-                    'role_level' => $roleLevel,
+                    'role_name' => $roleName,
                     'resolveReferences' => $resolveReferences,
                     'count' => $result->count()
                 ]);
@@ -1023,14 +1044,13 @@ class Useraccount extends Base
         if (empty($result)) {
             $query = new Query\Useraccount(Query\Base::SELECT);
             $query->addResolvedReferences($resolveReferences)
-            ->addEntityMapping()
-            ->addOrderByName();
+                ->addEntityMapping()
+                ->addOrderByName();
 
-            if (isset($roleLevel)) {
-                $query->addConditionRoleLevel($roleLevel);
+            if (!empty($roleName)) {
+                $query->addConditionRoleName($roleName);
             }
 
-            // Apply workstation access filtering if provided
             if (!$this->applyWorkstationAccessFilter($query, $workstation)) {
                 return new Collection();
             }
@@ -1044,7 +1064,7 @@ class Useraccount extends Base
                 if (App::$log) {
                     App::$log->info('Useraccount role list cache set', [
                         'cache_key' => $cacheKey,
-                        'role_level' => $roleLevel,
+                        'role_name' => $roleName,
                         'resolveReferences' => $resolveReferences,
                         'count' => $result->count()
                     ]);
@@ -1058,7 +1078,7 @@ class Useraccount extends Base
     /**
      * @SuppressWarnings(NPathComplexity)
      */
-    public function readListByRoleAndDepartmentIds($roleLevel, array $departmentIds, $resolveReferences = 0, $disableCache = false, $workstation = null)
+    public function readListByRoleAndDepartmentIds($roleName, array $departmentIds, $resolveReferences = 0, $disableCache = false, $workstation = null)
     {
         sort($departmentIds);
         $version = $this->getUseraccountCacheVersion();
@@ -1066,7 +1086,10 @@ class Useraccount extends Base
         if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
             $workstationKey = '-workstation-' . $workstation->getUseraccount()->id;
         }
-        $cacheKey = "useraccountReadByRoleAndDepartmentIds-v{$version}-$roleLevel-" . implode(',', $departmentIds) . "-$resolveReferences$workstationKey";
+
+        $cacheKey = $this->sanitizeCacheKey(
+            "useraccountReadByRoleAndDepartmentIds-v{$version}-$roleName-" . implode(',', $departmentIds) . "-$resolveReferences$workstationKey"
+        );
         $result = null;
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
@@ -1074,7 +1097,7 @@ class Useraccount extends Base
             if ($result && App::$log) {
                 App::$log->info('Useraccount role and department list cache hit', [
                     'cache_key' => $cacheKey,
-                    'role_level' => $roleLevel,
+                    'role_name' => $roleName,
                     'department_ids' => $departmentIds,
                     'resolveReferences' => $resolveReferences,
                     'count' => $result->count()
@@ -1083,17 +1106,18 @@ class Useraccount extends Base
         }
 
         if (empty($result)) {
-            $query = new Query\Useraccount(Query\Base::SELECT);
-            $query->addResolvedReferences($resolveReferences)
-              ->addEntityMapping()
-              ->addOrderByName();
-
-            if (isset($roleLevel) && !empty($departmentIds)) {
-                $query->addConditionRoleLevel($roleLevel);
-                $query->addConditionDepartmentIds($departmentIds);
+            if (empty($roleName) || empty($departmentIds)) {
+                return new Collection();
             }
 
-            // Exclude superusers if workstation user is not superuser
+            $query = new Query\Useraccount(Query\Base::SELECT);
+            $query->addResolvedReferences($resolveReferences)
+                ->addEntityMapping()
+                ->addOrderByName();
+
+            $query->addConditionRoleName($roleName);
+            $query->addConditionDepartmentIds($departmentIds);
+
             if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
                 $query->addConditionExcludeSuperusers();
             }
@@ -1107,7 +1131,7 @@ class Useraccount extends Base
                 if (App::$log) {
                     App::$log->info('Useraccount role and department list cache set', [
                         'cache_key' => $cacheKey,
-                        'role_level' => $roleLevel,
+                        'role_name' => $roleName,
                         'department_ids' => $departmentIds,
                         'resolveReferences' => $resolveReferences,
                         'count' => $result->count()

@@ -7,6 +7,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 use BO\Zmsentities\Owner as Entity;
 use BO\Mellon\Validator;
 
@@ -23,6 +24,9 @@ class OwnerAdd extends BaseController
         array $args
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['jurisdiction'])) {
+            throw new UserAccountMissingRights();
+        }
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
             $entity = (new Entity($input))->withCleanedUpFormData();

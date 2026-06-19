@@ -31,6 +31,10 @@ class ReportClientService
      */
     public function getExchangeClientData(string $scopeId, ?array $dateRange, array $args): mixed
     {
+        if ($scopeId === '') {
+            return null;
+        }
+
         if ($dateRange) {
             return $this->getExchangeClientForDateRange($scopeId, $dateRange);
         }

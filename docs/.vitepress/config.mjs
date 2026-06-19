@@ -209,11 +209,15 @@ const navLabels = {
     overview: "Overview",
     releases: "Releases",
     openSource: "Open Source",
+    openSourceUrl:
+      "https://opensource.muenchen.de/software/zeitmanagementsystem.html",
   },
   de: {
     overview: "Übersicht",
     releases: "Releases",
     openSource: "Open Source",
+    openSourceUrl:
+      "https://opensource.muenchen.de/de/software/zeitmanagementsystem.html",
   },
 };
 
@@ -224,7 +228,7 @@ const buildNav = (prefix, lang) => {
     { text: t.releases, link: `${GH_REPO}/releases` },
     {
       text: t.openSource,
-      link: "https://opensource.muenchen.de/software/zeitmanagementsystem.html",
+      link: t.openSourceUrl,
     },
   ];
 };

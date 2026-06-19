@@ -1,5 +1,5 @@
 name: ⚙️ zmsautomation
-run-name: ${{ github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | 🦊 firefox + 🌐 chrome | default tags | branches main + next' || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix && 'zmsautomation | ▶️ manual | main + next matrix | 🦊 firefox + 🌐 chrome | default tags') || format('zmsautomation | {0} | {1}', ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && (contains(inputs.cucumber_tag_expressions, '@web') || contains(inputs.cucumber_tag_expressions, '@zmsadmin') || contains(inputs.cucumber_tag_expressions, '@zmscitizenview') || contains(inputs.cucumber_tag_expressions, '@zmsstatistic') || contains(inputs.cucumber_tag_expressions, '@zmsticketprinter') || contains(inputs.cucumber_tag_expressions, '@zmscalldisplay') || contains(inputs.cucumber_tag_expressions, '@buergeransicht'))) && format('{0} + 🔌 api', inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome')) || ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && '🔌 api' || (inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'))), inputs.cucumber_tag_expressions) }}
+run-name: ${{ github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | api+ui | 🦊 firefox + 🌐 chrome | main + next' || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix && 'zmsautomation | ▶️ manual | api+ui | main + next matrix | 🦊 firefox + 🌐 chrome') || format('zmsautomation | ▶️ manual | {0} | {1} | {2}', inputs.test_layer, inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'), inputs.cucumber_tag_expressions) }}
 
 on:
   workflow_dispatch:
@@ -7,28 +7,34 @@ on:
       run_main_next_matrix:
         description: |
           Run the full scheduled matrix: branches main + next, browsers chrome + firefox,
-          default tags (@rest or @web) and not @ignore. Ignores browser and tag inputs below.
+          all API + UI tests (minus @ignore). Ignores test layer, browser, and tag inputs below.
         required: true
         type: boolean
         default: false
+      test_layer:
+        description: |
+          Primary test selector. API = REST (features/rest), UI = Selenium (features/ui),
+          both = full suite in one run.
+        required: true
+        type: choice
+        options:
+          - both
+          - api
+          - ui
+        default: both
       cucumber_tag_expressions:
         description: |
-          Newline-separated Cucumber tag expressions. Each line is executed sequentially.
+          Optional. Newline-separated Cucumber tag expressions; each line runs sequentially
+          within the selected layer(s). @ignore is excluded automatically.
           ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
           Examples:⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-          - @web and not @ignore 
-          - @rest and @zmsapi and not @ignore 
-          - @web and @zmscitizenview and @ZMSKVR-1124 
-          - @rest and @zmscitizenapi and @ZMSKVR-1124 
-          - (@rest or @web) and not @ignore 
+          - @ZMSKVR-1328
+          - @smoke
+          - @zmsadmin
           ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-          Available tags: ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-          - @web @rest 
-          - @zmsadmin @zmsstatistic @zmscitizenview 
-          - @zmsapi @zmscitizenapi
-        required: true
-        default: |
-          (@rest or @web) and not @ignore
+          Leave empty to run all tests in the selected layer(s).
+        required: false
+        default: ""
       browser:
         description: Choose browser for UI tests
         required: true
@@ -304,22 +310,49 @@ jobs:
           WEB_CONT="zms-web"
           BROWSER="${{ matrix.browser }}"
           SCREENSHOT="${{ inputs.per_step_screenshots }}"
-          INPUTS="${{ (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix)) && '(@rest or @web) and not @ignore' || inputs.cucumber_tag_expressions }}"
 
-          # Split by newlines and run sequentially.
+          if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix }}" == "true" ]]; then
+            TEST_LAYER="both"
+            TAG_INPUT=""
+          else
+            TEST_LAYER="${{ inputs.test_layer }}"
+            TAG_INPUT="${{ inputs.cucumber_tag_expressions }}"
+          fi
+
+          case "$TEST_LAYER" in
+            api) PROFILES=(-Pataf-api) ;;
+            ui) PROFILES=(-Pataf-ui) ;;
+            both) PROFILES=(-Pataf-api -Pataf-ui) ;;
+            *)
+              echo "Unknown test layer: $TEST_LAYER"
+              exit 1
+              ;;
+          esac
+
+          # One empty line when no tag filter → run all tests in the selected layer(s).
+          if [[ -z "$(printf '%s' "$TAG_INPUT" | tr -d '[:space:]')" ]]; then
+            TAG_LINES=("")
+          else
+            TAG_LINES=()
+            while IFS= read -r line; do
+              line="$(printf '%s' "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+              [[ -n "$line" ]] && TAG_LINES+=("$line")
+            done <<< "$TAG_INPUT"
+            # If all lines were empty/whitespace, default to running all tests
+            [[ ${#TAG_LINES[@]} -eq 0 ]] && TAG_LINES=("")
+          fi
+
           fail_any=0
-          while IFS= read -r line; do
-            # Normalize input:
-            # - strip possible Windows CR (\r)
-            # - trim leading/trailing whitespace
-            expr="$(printf '%s' "$line" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-            if [ -z "$expr" ]; then
-              continue
+          for expr in "${TAG_LINES[@]}"; do
+            expr="$(printf '%s' "$expr" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+
+            if [[ -n "$expr" ]]; then
+              echo "Running zmsautomation-test (${TEST_LAYER}) with tags: $expr"
+            else
+              echo "Running zmsautomation-test (${TEST_LAYER}), all tests"
             fi
 
-            echo "Running zmsautomation-test for tags: $expr"
             set +e
-            # Pass arguments positionally to avoid accidental quoting issues with -Dcucumber.filter.tags.
             docker exec -u root "$WEB_CONT" bash -lc '
               set -euo pipefail
               set -a
@@ -327,40 +360,32 @@ jobs:
               tags="$1"
               SCREENSHOT_EVERY_STEP="$2"
               ZMS_BROWSER="$3"
+              shift 3
               WEBDRIVER_RETRY_MAX_ATTEMPTS="${WEBDRIVER_RETRY_MAX_ATTEMPTS:-4}"
               WEBDRIVER_RETRY_DELAY_SECONDS="${WEBDRIVER_RETRY_DELAY_SECONDS:-30}"
 
-              # The zmsautomation pom enables Cucumber runners per profile:
-              # - `ataf-ui` runs `UiTestRunner`
-              # - `ataf-api` runs `ApiTestRunner`
-              # The base `ataf` profile can result in 0 discovered tests, so we
-              # activate the matching runner profile(s) based on the tag expression.
-              profiles=()
-              if [[ "$tags" == *"@web"* ]]; then
-                profiles+=("-Pataf-ui")
-              fi
-              if [[ "$tags" == *"@rest"* || "$tags" == *"@zmsapi"* || "$tags" == *"@zmscitizenapi"* ]]; then
-                profiles+=("-Pataf-api")
-              fi
-              if [ "${#profiles[@]}" -eq 0 ]; then
-                profiles=("-Pataf-ui")
+              args=("$@")
+              if [[ -n "$tags" ]]; then
+                args+=("-Dcucumber.filter.tags=$tags")
               fi
 
-              bash /var/www/html/zmsautomation/zmsautomation-test \
-                "${profiles[@]}" \
-                -Dcucumber.filter.tags="$tags"
-            ' -- "$expr" "$SCREENSHOT" "$BROWSER"
+              bash /var/www/html/zmsautomation/zmsautomation-test "${args[@]}"
+            ' -- "$expr" "$SCREENSHOT" "$BROWSER" "${PROFILES[@]}"
             rc=$?
             set -e
 
             if [ "$rc" -ne 0 ]; then
-              echo "Tag run failed (exit $rc): $expr"
+              if [[ -n "$expr" ]]; then
+                echo "Run failed (exit $rc): layer=${TEST_LAYER}, tags=${expr}"
+              else
+                echo "Run failed (exit $rc): layer=${TEST_LAYER}, all tests"
+              fi
               fail_any=1
             fi
-          done <<< "$INPUTS"
+          done
 
           if [ "$fail_any" -ne 0 ]; then
-            echo "At least one tag expression run failed."
+            echo "At least one test run failed."
             exit 1
           fi
 

@@ -107,6 +107,7 @@ class Access extends \BO\Slim\Controller
         return (false === strpos($path, 'select')
             && false === strpos($path, 'warehouse')
             && false === strpos($path, 'logout')
+            && false === strpos($path, 'report')
         );
     }
 

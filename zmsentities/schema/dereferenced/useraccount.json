@@ -191,6 +191,10 @@
               "description": "Configure and customize call display layouts",
               "type": "boolean"
             },
+            "capacityreport": {
+              "description": "View and export planned/booked capacity statistics",
+              "type": "boolean"
+            },
             "cherrypick": {
               "description": "Directly call appointments from the queue (requires queue access)",
               "type": "boolean"
@@ -229,6 +233,10 @@
             },
             "finishedqueuepast": {
               "description": "View completed appointments from the past",
+              "type": "boolean"
+            },
+            "jurisdiction": {
+              "description": "Create, update, and delete owners (customers)",
               "type": "boolean"
             },
             "logs": {

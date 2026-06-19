@@ -62,6 +62,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/report/waiting/organisation/[{period}/]', '\BO\Zmsstatistic\ReportWaitingOrganisation')
     ->setName("ReportWaitingOrganisation");
 
+\App::$slim->get('/report/capacity/scope/[{period}/]', '\BO\Zmsstatistic\ReportCapacityIndex')
+    ->setName("ReportCapacityIndex");
+
 /*
  * ---------------------------------------------------------------------------
  * Warehouse views

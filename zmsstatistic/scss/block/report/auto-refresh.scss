@@ -1,0 +1,44 @@
+.capacity-report .board__actions {
+    padding-right: 0.35em;
+}
+
+.capacity-report .board__actions .right {
+    margin-left: auto;
+}
+
+.board__actions .report-board--auto-refresh,
+.board__actions .report-board--capacity-channel {
+    display:         inline-flex;
+    align-items:     center;
+    justify-content: center;
+    margin-bottom:   0;
+    padding:         0 1.25em 0 0.75em;
+    cursor:          pointer;
+    font-weight:     700;
+}
+
+.board__actions .report-board--auto-refresh {
+    min-width:       4.75em;
+}
+
+.board__actions .report-board--capacity-channel {
+    min-width:       6.75em;
+}
+
+.board__actions .report-board--auto-refresh,
+.board__actions .report-board--capacity-channel {
+    .report-board--auto-refresh-interval,
+    .report-board--capacity-channel-select {
+        margin:      0;
+        padding:     0;
+        border:      0;
+        background:  transparent;
+        color:       inherit;
+        font:        inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        cursor:      pointer;
+        appearance:  none;
+        text-align:  center;
+    }
+}

@@ -7,7 +7,6 @@
 
 namespace BO\Zmsapi;
 
-use BO\Mellon\Validator;
 use BO\Slim\Render;
 use BO\Zmsdb\Useraccount;
 use Psr\Http\Message\RequestInterface;
@@ -25,7 +24,7 @@ class UseraccountListByRoleAndDepartments extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $roleLevel = $args['level'];
+        $roleName = $args['roleName'];
         $workstation = (new Helper\User($request, 2))->checkPermissions('useraccount');
 
         $rawIds = array_map('trim', explode(',', $args['ids']));
@@ -44,7 +43,13 @@ class UseraccountListByRoleAndDepartments extends BaseController
             }
         }
 
-        $useraccountList = (new Useraccount())->readListByRoleAndDepartmentIds($roleLevel, $departmentIds, 0, false, $workstation);
+        $useraccountList = (new Useraccount())->readListByRoleAndDepartmentIds(
+            $roleName,
+            $departmentIds,
+            0,
+            false,
+            $workstation
+        );
 
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
