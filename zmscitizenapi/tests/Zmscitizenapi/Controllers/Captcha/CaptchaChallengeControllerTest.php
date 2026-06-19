@@ -43,17 +43,7 @@ class CaptchaChallengeControllerTest extends ControllerTestCase
 
     public function testCreateChallengeSuccess()
     {
-        $expectedChallenge = [
-            'meta' => ['success' => true],
-            'data' => [
-                'algorithm' => 'SHA-256',
-                'challenge' => 'abcdefg0123456789',
-                'maxnumber' => 1000,
-                'salt' => '0123456789',
-                'signature' => 'abcdefg0123456789',
-                'signature' => 'abcdefg0123456789',
-            ]
-        ];
+        $expectedChallenge = json_decode($this->readFixture('GET_captcha_challenge.json'), true);
 
         $mockResponse = new Response(200, [], json_encode(['challenge' => $expectedChallenge]));
 
