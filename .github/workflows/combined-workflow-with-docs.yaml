@@ -47,7 +47,7 @@ jobs:
 
       - name: Fix directory structure
         run: |
-          MODULES="zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient zmscitizenview"
+          MODULES="zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsbackend zmsdb zmsclient zmscitizenview"
           # Fix coverage reports
           for module in $MODULES; do
             if [ -d "public/coverage-temp/coverage-$module" ]; then

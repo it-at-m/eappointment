@@ -29,6 +29,7 @@ class EappointmentCli:
     "zmsclient",
     "zmsadmin",
     "zmsapi",
+    "zmsbackend",
     "zmscalldisplay",
     "zmsmessaging",
     "zmsstatistic",
