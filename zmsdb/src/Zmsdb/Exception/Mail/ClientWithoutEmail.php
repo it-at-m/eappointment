@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsdb\Exception\Mail;
+namespace BO\Zmsbackend\Mail\Exception;
 
 class ClientWithoutEmail extends \Exception
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsdb\Exception\Cluster;
+namespace BO\Zmsbackend\Cluster\Exception;
 
 class ScopesWithoutWorkstationCount extends \Exception
 {

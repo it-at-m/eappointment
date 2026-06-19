@@ -25,7 +25,7 @@ class Calldisplay extends \BO\Zmsbackend\Base
             foreach ($calldisplay->scopes as $entity) {
                 $query = new \BO\Zmsbackend\Scope\Service\Scope();
                 $scope = $query->readEntity($entity['id'], $resolveReferences - 1);
-                /* test in zmsapi CalldisplayGet
+                /* test in zmsbackend CalldisplayGet
                 if (! $scope) {
                     throw new \BO\Zmsbackend\Calldisplay\Exception\ScopeNotFound();
                 }
@@ -39,7 +39,7 @@ class Calldisplay extends \BO\Zmsbackend\Base
             foreach ($calldisplay->clusters as $entity) {
                 $query = new \BO\Zmsbackend\Cluster\Service\Cluster();
                 $cluster = $query->readEntity($entity['id'], $resolveReferences);
-                /* test in zmsapi CalldisplayGet
+                /* test in zmsbackend CalldisplayGet
                 if (! $cluster) {
                     throw new \BO\Zmsbackend\Calldisplay\Exception\ClusterNotFound();
                 }

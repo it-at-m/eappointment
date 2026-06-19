@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsdb\Exception\Useraccount;
+namespace BO\Zmsbackend\Useraccount\Exception;
 
 class DuplicateEntry extends \Exception
 {

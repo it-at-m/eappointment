@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsdb\Exception\Process;
+namespace BO\Zmsbackend\Availability\Exception;
 
 class AvailabilityCreateFailed extends \Exception
 {

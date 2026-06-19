@@ -8,7 +8,6 @@
 namespace BO\Zmsadmin;
 
 use BO\Slim\Render;
-use BO\Zmsdb\Closure;
 use BO\Zmsentities\Collection\AvailabilityList;
 use Psr\Http\Message\ResponseInterface;
 

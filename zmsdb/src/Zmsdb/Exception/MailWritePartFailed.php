@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsdb\Exception;
+namespace BO\Zmsbackend\Exception;
 
 class MailWritePartFailed extends \Exception
 {

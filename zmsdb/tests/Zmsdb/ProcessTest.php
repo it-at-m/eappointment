@@ -51,7 +51,7 @@ class ProcessTest extends Base
 
     public function testExceptionCreate()
     {
-        $this->expectException('\BO\Zmsdb\Exception\Process\ProcessCreateFailed');
+        $this->expectException('\BO\Zmsbackend\Process\Exception\ProcessCreateFailed');
 
         $now = static::$now;
         $query = new ProcessStatusFree();
@@ -62,7 +62,7 @@ class ProcessTest extends Base
 
     public function testExceptionAlreadyReserved()
     {
-        $this->expectException('\BO\Zmsdb\Exception\Process\ProcessReserveFailed');
+        $this->expectException('\BO\Zmsbackend\Process\Exception\ProcessReserveFailed');
 
         $now = static::$now;
         $query = new ProcessStatusFree();
@@ -74,7 +74,7 @@ class ProcessTest extends Base
 
     public function testExceptionFollowingSlotsReserved()
     {
-        $this->expectException('\BO\Zmsdb\Exception\Process\ProcessReserveFailed');
+        $this->expectException('\BO\Zmsbackend\Process\Exception\ProcessReserveFailed');
 
         $now = static::$now;
         $query = new ProcessStatusFree();
@@ -168,7 +168,7 @@ class ProcessTest extends Base
         $process = new Entity();
         $process->id = 100009;
         $process->authKey = 'abcd';
-        $this->expectException('\BO\Zmsdb\Exception\Process\ProcessUpdateFailed');
+        $this->expectException('\BO\Zmsbackend\Process\Exception\ProcessUpdateFailed');
         $query = new ProcessStatusFree();
         $query->updateEntity($process, $now);
     }
@@ -251,7 +251,7 @@ class ProcessTest extends Base
 
     public function testWriteEntityWithNewAppointmentExcessiveSlots()
     {
-        $this->expectException('BO\Zmsdb\Exception\Process\ProcessReserveFailed');
+        $this->expectException('BO\Zmsbackend\Process\Exception\ProcessReserveFailed');
         $query = new ProcessStatusFree();
         $queryProcess = new Query();
         $now = static::$now;

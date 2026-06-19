@@ -21,7 +21,7 @@ class EventLogTest extends \BO\Zmsbackend\Tests\Service\Base
 
         $eventlog->addData([
             'name' => 'SYSTEM_UNITTEST_WRITE_READ',
-            'origin' => 'zmsdb.unittest',
+            'origin' => 'zmsbackend.unittest',
             'referenceType' => 'mail.emailHash',
             'reference' => $referenceHash,
             'sessionid' => 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6',

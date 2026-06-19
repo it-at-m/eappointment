@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsdb\Exception;
+namespace BO\Zmsbackend\Cluster\Exception;
 
 class ClusterWithoutScopes extends \Exception
 {

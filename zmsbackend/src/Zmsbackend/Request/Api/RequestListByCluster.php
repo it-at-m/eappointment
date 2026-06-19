@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package Zmsapi
+ * @package Zmsbackend
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 

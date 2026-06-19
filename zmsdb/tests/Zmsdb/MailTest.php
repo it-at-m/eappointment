@@ -79,7 +79,7 @@ class MailTest extends Base
 
     public function testExceptionWithoutMail()
     {
-        $this->expectException('\BO\Zmsdb\Exception\Mail\ClientWithoutEmail');
+        $this->expectException('\BO\Zmsbackend\Mail\Exception\ClientWithoutEmail');
         $now = static::$now;
         $query = new Query();
         $input = $this->getTestEntity();
@@ -89,7 +89,7 @@ class MailTest extends Base
 
     public function testWriteMimepartFailed()
     {
-        $this->expectException('BO\Zmsdb\Exception\MailWritePartFailed');
+        $this->expectException('BO\Zmsbackend\Exception\MailWritePartFailed');
         $now = static::$now;
         $query = new Query();
         $input = $this->getTestEntity();

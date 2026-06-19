@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities;
 
-use BO\Zmsdb\Process;
+use BO\Zmsbackend\Process;
 use BO\Zmsentities\Collection\ClosureList;
 use BO\Zmsentities\Collection\DayoffList;
 

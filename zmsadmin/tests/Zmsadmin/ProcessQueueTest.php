@@ -147,7 +147,7 @@ class ProcessQueueTest extends Base
     public function testSpontaneousClientNotOpened()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound';
+        $exception->template = 'BO\Zmsbackend\Availability\Exception\AvailabilityNotFound';
 
         $this->setApiCalls(
             [

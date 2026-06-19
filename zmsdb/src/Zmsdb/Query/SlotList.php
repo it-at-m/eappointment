@@ -268,7 +268,7 @@ class SlotList extends Base
             $slotdate = $slotData['slotdate'];
             if (!isset($this->slots[$slotdate])) {
                 $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime'] . " on " . $this->availability;
-                throw new \BO\Zmsdb\Exception\SlotDataWithoutPreGeneratedSlot(
+                throw new \BO\Zmsbackend\Slot\Exception\SlotDataWithoutPreGeneratedSlot(
                     "Found database entry without a generated date for $slotDebug"
                 );
             }
@@ -276,7 +276,7 @@ class SlotList extends Base
             $slot = $slotList->getSlot($slotnumber);
             if (null === $slot) {
                 $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime'] . " on " . $this->availability;
-                throw new \BO\Zmsdb\Exception\SlotDataWithoutPreGeneratedSlot(
+                throw new \BO\Zmsbackend\Slot\Exception\SlotDataWithoutPreGeneratedSlot(
                     "Found database entry without a pre-generated slot $slotDebug"
                 );
             }
@@ -287,7 +287,7 @@ class SlotList extends Base
         } elseif (isset($slotData['availability__id'])) {
             // Only availability data for available slots, do nothing
         } else {
-            throw new \BO\Zmsdb\Exception\SlotDataEmpty("Found empty slot: " . var_export($slotData, true));
+            throw new \BO\Zmsbackend\Slot\Exception\SlotDataEmpty("Found empty slot: " . var_export($slotData, true));
         }
         return $this;
     }

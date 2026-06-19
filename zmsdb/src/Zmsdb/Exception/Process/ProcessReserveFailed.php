@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsdb\Exception\Process;
+namespace BO\Zmsbackend\Process\Exception;
 
 class ProcessReserveFailed extends \Exception
 {

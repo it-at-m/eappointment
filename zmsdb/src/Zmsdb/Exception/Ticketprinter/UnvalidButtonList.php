@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsdb\Exception\Ticketprinter;
+namespace BO\Zmsbackend\Ticketprinter\Exception;
 
 /**
  * example class to generate an exception

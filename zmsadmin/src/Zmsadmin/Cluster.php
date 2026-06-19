@@ -83,7 +83,7 @@ class Cluster extends BaseController
         try {
             $organisation = \App::$http->readGetResult('/cluster/' . $entityId . '/organisation/')->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
-            if ($exception->template == 'BO\Zmsdb\Exception\ClusterWithoutScopes') {
+            if ($exception->template == 'BO\Zmsbackend\Cluster\Exception\ClusterWithoutScopes') {
                 $organisation = new \BO\Zmsentities\Organisation();
             } else {
                 throw $exception;

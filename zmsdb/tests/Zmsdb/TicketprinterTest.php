@@ -56,7 +56,7 @@ class TicketprinterTest extends Base
 
     public function testUnvalidButtonListNoCluster()
     {
-        $this->expectException('\BO\Zmsdb\Exception\Ticketprinter\UnvalidButtonList');
+        $this->expectException('\BO\Zmsbackend\Ticketprinter\Exception\UnvalidButtonList');
         $this->expectExceptionCode(428);
         $now = static::$now;
         $query = new Query();
@@ -66,7 +66,7 @@ class TicketprinterTest extends Base
 
     public function testScopeNumberContingentExceeded()
     {
-        $this->expectException('\BO\Zmsdb\Exception\Scope\GivenNumberCountExceeded');
+        $this->expectException('\BO\Zmsbackend\Scope\Exception\GivenNumberCountExceeded');
         $this->expectExceptionCode(404);
         $now = static::$now;
         $query = new Query();
@@ -77,7 +77,7 @@ class TicketprinterTest extends Base
 
     public function testUnvalidButtonListNoScope()
     {
-        $this->expectException('\BO\Zmsdb\Exception\Ticketprinter\UnvalidButtonList');
+        $this->expectException('\BO\Zmsbackend\Ticketprinter\Exception\UnvalidButtonList');
         $this->expectExceptionCode(428);
         $now = static::$now;
         $query = new Query();
@@ -89,7 +89,7 @@ class TicketprinterTest extends Base
 
     public function testTooManyButtons()
     {
-        $this->expectException('\BO\Zmsdb\Exception\Ticketprinter\TooManyButtons');
+        $this->expectException('\BO\Zmsbackend\Ticketprinter\Exception\TooManyButtons');
         $now = new \DateTimeImmutable("2016-04-02 11:55");
         $query = new Query();
         $buttonlist = 's1,s2,s3,s4,s5,s6,s7';
@@ -100,7 +100,7 @@ class TicketprinterTest extends Base
 
     public function testReadByButtonListClusterFailed()
     {
-        $this->expectException('\BO\Zmsdb\Exception\Ticketprinter\UnvalidButtonList');
+        $this->expectException('\BO\Zmsbackend\Ticketprinter\Exception\UnvalidButtonList');
         $this->expectExceptionCode(428);
         $now = static::$now;
         $query = new Query();

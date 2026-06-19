@@ -59,7 +59,7 @@ class ProcessLockTest extends Base
 
     public function testDBIsLockedByNewProcess()
     {
-        $this->expectException('\BO\Zmsdb\Exception\Pdo\LockTimeout');
+        $this->expectException('\BO\Zmsbackend\Exception\Pdo\LockTimeout');
         $this->writeDBLock();
         $now = static::$now;
         $scope = (new \BO\Zmsdb\Scope())->readEntity(141, 0, true);
@@ -69,7 +69,7 @@ class ProcessLockTest extends Base
 
     public function testDBIsLockedByUpdateProcess()
     {
-        $this->expectException('\BO\Zmsdb\Exception\Pdo\LockTimeout');
+        $this->expectException('\BO\Zmsbackend\Exception\Pdo\LockTimeout');
         $this->writeDBLock();
         $now = static::$now;
         $query = new ProcessStatusFree();
@@ -84,7 +84,7 @@ class ProcessLockTest extends Base
 
     public function testConcurrentOnSameSlot()
     {
-        $this->expectException('\BO\Zmsdb\Exception\Pdo\LockTimeout');
+        $this->expectException('\BO\Zmsbackend\Exception\Pdo\LockTimeout');
         $now = static::$now;
         $statement = $this->pdo
             ->prepare(

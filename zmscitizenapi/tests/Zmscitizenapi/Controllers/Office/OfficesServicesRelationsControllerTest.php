@@ -388,7 +388,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
     public function testOfficesNotFound()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Provider\\ProviderNotFound';
+        $exception->template = 'BO\\Zmsbackend\\Provider\\Exception\\ProviderNotFound';
 
         $this->setApiCalls([
             [
@@ -415,7 +415,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
     public function testServicesNotFound()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Request\\RequestNotFound';
+        $exception->template = 'BO\\Zmsbackend\\Request\\Exception\\RequestNotFound';
 
         $this->setApiCalls([
             [

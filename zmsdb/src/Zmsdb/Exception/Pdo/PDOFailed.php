@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsdb\Exception\Pdo;
+namespace BO\Zmsbackend\Exception\Pdo;
 
 class PDOFailed extends \Exception
 {

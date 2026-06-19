@@ -107,7 +107,7 @@ class ProcessListSummaryMail extends \BO\Zmsbackend\Api\BaseController
         $newLogEntry = new \BO\Zmsbackend\EventLog\Service\EventLog();
         $newLogEntry->addData([
             'name' => \BO\Zmsbackend\EventLog\Service\EventLog::CLIENT_PROCESSLIST_REQUEST,
-            'origin' => 'zmsapi ' . Version::getString(),
+            'origin' => 'zmsbackend ' . Version::getString(),
             'referenceType' => 'mail.recipient.hash',
             'reference' => $logRepository->hashStringValue($mailAddress),
             'context' => ['found' => $collection->getIds()],

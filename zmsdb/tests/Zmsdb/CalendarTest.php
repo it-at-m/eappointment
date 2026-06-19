@@ -17,7 +17,7 @@ class CalendarTest extends Base
 
     public function testExceptionCalendarWithoutScopes()
     {
-        $this->expectException('\BO\Zmsdb\Exception\CalendarWithoutScopes');
+        $this->expectException('\BO\Zmsbackend\Calendar\Exception\CalendarWithoutScopes');
         $input = $this->getTestEntity();
         (new Query())->readResolvedEntity($input, static::$now);
     }

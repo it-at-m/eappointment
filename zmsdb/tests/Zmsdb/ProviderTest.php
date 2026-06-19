@@ -15,7 +15,7 @@ class ProviderTest extends Base
 
     public function testUnknowSource()
     {
-        $this->expectException('BO\Zmsdb\Exception\Source\UnknownDataSource');
+        $this->expectException('BO\Zmsbackend\Source\Exception\UnknownDataSource');
         (new Query())->readEntity('xxx', 122280, 1);
     }
 
@@ -69,7 +69,7 @@ class ProviderTest extends Base
 
     public function testWriteEntityFailed()
     {
-        $this->expectException('\BO\Zmsdb\Exception\Provider\ProviderContactMissed');
+        $this->expectException('\BO\Zmsbackend\Provider\Exception\ProviderContactMissed');
         $query = new Query();
         $entity = (new \BO\Zmsentities\Provider())->getExample();
         unset($entity['contact']);

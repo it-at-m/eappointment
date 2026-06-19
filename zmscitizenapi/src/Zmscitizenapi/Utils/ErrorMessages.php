@@ -221,7 +221,7 @@ class ErrorMessages
             'errorMessage' => 'Data does not match the required schema.'
         ],
 
-        //Zmsapi exceptions
+        //Zmsbackend exceptions
         'internalError' => [
             'errorCode' => 'internalError',
             'errorMessage' => 'An internal error occurred. Please try again later.',
