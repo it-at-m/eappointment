@@ -7,7 +7,7 @@ if (!defined('MYSQL_USER')) {
 }
 // MYSQL_PASSWORD
 if (!defined('MYSQL_PASSWORD')) {
-    define('MYSQL_PASSWORD', getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') :'zmsapi');
+    define('MYSQL_PASSWORD', getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') :'zmsbackend');
 }
 // MYSQL_DATABASE is the database name containing the tables
 if (!defined('MYSQL_DATABASE')) {
