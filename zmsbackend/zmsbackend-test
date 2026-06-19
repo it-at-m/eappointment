@@ -103,6 +103,8 @@ fi
 section "4. Test Data Import"
 export MYSQL_DATABASE="$TEST_DB"
 export TZ="UTC"
+export ZMS_DLDB_PATH="$DATA_DIR"
+info "Using DLDB import path: $ZMS_DLDB_PATH"
 cd "$PROJECT_ROOT/zmsdb"
 
 php -r 'require "vendor/autoload.php"; exit(class_exists("BO\\Zmsdldb\\FileAccess")?0:42);' \
