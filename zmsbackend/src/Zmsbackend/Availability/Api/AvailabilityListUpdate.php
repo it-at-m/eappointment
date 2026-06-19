@@ -198,7 +198,7 @@ class AvailabilityListUpdate extends \BO\Zmsbackend\Api\BaseController
     {
         $availabilities = new AvailabilityList();
         foreach ($availabilityData as $data) {
-            $availability = new \BO\Zmsbackend\Availability\Service\Availability($data);
+            $availability = new Availability($data);
             $availability->testValid();
             $availabilities->addEntity($availability);
         }
