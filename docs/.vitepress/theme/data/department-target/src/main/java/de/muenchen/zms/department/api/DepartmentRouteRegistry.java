@@ -1,7 +1,7 @@
 package de.muenchen.zms.department.api;
 
 /**
- * Route map for the department vertical slice (mirrors zmsapi/routing.php excerpt).
+ * Route map for the department vertical slice (mirrors zmsbackend/routing.php excerpt).
  *
  * <pre>
  * GET    /api/v2/department/                              → DepartmentList
