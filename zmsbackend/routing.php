@@ -1,0 +1,6608 @@
+<?php
+
+// @codingStandardsIgnoreFile
+/**
+ * @copyright BerlinOnline Stadtportal GmbH & Co. KG
+ **/
+
+/* ---------------------------------------------------------------------------
+ * html, basic routes
+ * -------------------------------------------------------------------------*/
+
+\App::$slim->get(
+    '/',
+    '\BO\Zmsbackend\Api\Index'
+)
+    ->setName("index");
+
+
+/* ---------------------------------------------------------------------------
+ * json
+ * -------------------------------------------------------------------------*/
+
+/**
+ *  @swagger
+ *  "/apikey/{key}/":
+ *      get:
+ *          summary: Get quotas if key is active
+ *          tags:
+ *              - apikey
+ *          parameters:
+ *              -   name: key
+ *                  description: key for public api access
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/apikey.json"
+ *              404:
+ *                  description: "access failed"
+ */
+\App::$slim->get(
+    '/apikey/{key}/',
+    '\BO\Zmsbackend\Apikey\Api\ApikeyGet'
+)
+    ->setName("ApikeyGet");
+
+/**
+ *  @swagger
+ *  "/apikey/":
+ *      post:
+ *          summary: Activate or update apikey
+ *          tags:
+ *             - apikey
+ *          parameters:
+ *              -   name: apikey
+ *                  description: apikey data to update
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/apikey.json"
+ *              -   name: clientkey
+ *                  description: clientkey to identify api client
+ *                  type: string
+ *                  in: query
+ *                  required: false
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/apikey.json"
+ *              404:
+ *                  description: "access failed"
+ */
+\App::$slim->post(
+    '/apikey/',
+    \BO\Zmsapi\ApikeyUpdate::class
+)
+    ->setName("ApikeyUpdate");
+
+/**
+ *  @swagger
+ *  "/apikey/{key}/":
+ *      delete:
+ *          summary: Deletes an apikey
+ *          tags:
+ *              - apikey
+ *          parameters:
+ *              -   name: key
+ *                  description: key for public api access
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success, returns deleted object or empty if object did not exists"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/apikey.json"
+ */
+\App::$slim->delete(
+    '/apikey/{key}/',
+    '\BO\Zmsbackend\Apikey\Api\ApikeyDelete'
+)
+    ->setName("ApikeyDelete");
+
+/**
+ *  @swagger
+ *  "/availability/{id}/":
+ *      get:
+ *          summary: Get an availability by id
+ *          tags:
+ *              - availability
+ *          parameters:
+ *              -   name: id
+ *                  description: availability number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/availability.json"
+ *              404:
+ *                  description: "availability id does not exists"
+ */
+\App::$slim->get(
+    '/availability/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Availability\Api\AvailabilityGet'
+)
+    ->setName("AvailabilityGet");
+
+/**
+ *  @swagger
+ *  "/availability/":
+ *      post:
+ *          summary: Create or update availabilities. If an entity has an id, an update is performed
+ *          tags:
+ *              - availability
+ *          parameters:
+ *              -   name: availability
+ *                  description: availabilityList data to update
+ *                  in: body
+ *                  schema:
+ *                      type: array
+ *                      items:
+ *                          $ref: "schema/availability.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/availability.json"
+ *              404:
+ *                  description: "availability id does not exists"
+ */
+\App::$slim->post(
+    '/availability/',
+    '\BO\Zmsbackend\Availability\Api\AvailabilityListUpdate'
+)
+    ->setName("AvailabilityListUpdate");
+
+
+/**
+ *  @swagger
+ *  "/availability/slots/update/":
+ *      post:
+ *          summary: Update slots by availabilitylist
+ *          tags:
+ *              - availability
+ *          parameters:
+ *              -   name: availability
+ *                  description: availabilityList data to update slots
+ *                  in: body
+ *                  schema:
+ *                      type: array
+ *                      items:
+ *                          $ref: "schema/availability.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/availability.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              404:
+ *                  description: "availability id does not exists"
+ */
+\App::$slim->post(
+    '/availability/slots/update/',
+    '\BO\Zmsbackend\Availability\Api\AvailabilitySlotsUpdate'
+)
+    ->setName("AvailabilitySlotsUpdate");
+
+
+/**
+ *  @swagger
+ *  "/availability/{id}/":
+ *      delete:
+ *          summary: Deletes an availability
+ *          tags:
+ *              - availability
+ *          parameters:
+ *              -   name: id
+ *                  description: availability number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success, returns deleted object or empty if object did not exists"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/availability.json"
+ */
+\App::$slim->delete(
+    '/availability/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Availability\Api\AvailabilityDelete'
+)
+    ->setName("AvailabilityDelete");
+
+/**
+ *  @swagger
+ *  "/calendar/":
+ *      post:
+ *          summary: Get a list of available days for appointments
+ *          tags:
+ *              - calendar
+ *          parameters:
+ *              -   name: calendar
+ *                  description: data for finding available days
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/calendar.json"
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: fillWithEmptyDays
+ *                  description: "Returns calendar daylist including not bookable days"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get an updated calendar objects with updated days list
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/calendar.json"
+ *              404:
+ *                  description: "Could not find any available days"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/calendar.json"
+ */
+\App::$slim->post(
+    '/calendar/',
+    '\BO\Zmsbackend\Calendar\Api\CalendarGet'
+)
+    ->setName("CalendarGet");
+
+/**
+ *  @swagger
+ *  "/calldisplay/":
+ *      post:
+ *          summary: Get preferences for a calldisplay
+ *          tags:
+ *              - calldisplay
+ *          parameters:
+ *              -   name: calldisplay
+ *                  description: data containing scopes and clusters
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/calldisplay.json"
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get an updated calldislay object with updated scope and cluster list
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/calldisplay.json"
+ *              404:
+ *                  description: "Could not find a given cluster or scope, see metaresult"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ */
+\App::$slim->post(
+    '/calldisplay/',
+    '\BO\Zmsbackend\Calldisplay\Api\CalldisplayGet'
+)
+    ->setName("CalldisplayGet");
+
+/**
+ *  @swagger
+ *  "/calldisplay/queue/":
+ *      post:
+ *          summary: Get queue for a calldisplay
+ *          tags:
+ *              - calldisplay
+ *              - queue
+ *          parameters:
+ *              -   name: calldisplay
+ *                  description: data containing scopes and clusters
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/calldisplay.json"
+ *              -   name: statusList
+ *                  description: "List of statuses for displaying the associated calls in the call display"
+ *                  in: query
+ *                  type: array
+ *                  items:
+ *                      type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a list of queue entries, return empty list if no queue was found
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/queue.json"
+ *              404:
+ *                  description: "Could not find a given cluster or scope or missing cluster and sopelist in entity, see metaresult"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ */
+\App::$slim->post(
+    '/calldisplay/queue/',
+    '\BO\Zmsbackend\Calldisplay\Api\CalldisplayQueue'
+)
+    ->setName("CalldisplayQueue");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/":
+ *      get:
+ *          summary: Get an cluster by id
+ *          tags:
+ *              - cluster
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/cluster.json"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->get(
+    '/cluster/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Cluster\Api\ClusterGet'
+)
+    ->setName("ClusterGet");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/":
+ *      post:
+ *          summary: Update an cluster
+ *          tags:
+ *              - cluster
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: cluster
+ *                  description: cluster data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/cluster.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/cluster.json"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->post(
+    '/cluster/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Cluster\Api\ClusterUpdate'
+)
+    ->setName("ClusterUpdate");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/":
+ *      delete:
+ *          summary: Deletes an cluster
+ *          tags:
+ *              - cluster
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->delete(
+    '/cluster/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Cluster\Api\ClusterDelete'
+)
+    ->setName("ClusterDelete");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/queue/next/":
+ *      get:
+ *          summary: Get the next process in queue by cluster id
+ *          x-since: 2.11
+ *          tags:
+ *              - cluster
+ *              - process
+ *          parameters:
+ *              -   name: id
+ *                  description: number of cluster
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  x-since: 2.12
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: get a process
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              404:
+ *                  description: "Could not find a process or cluster not found"
+ */
+\App::$slim->get(
+    '/cluster/{id:\d{1,4}}/queue/next/',
+    '\BO\Zmsbackend\Process\Api\ProcessNextByCluster'
+)
+    ->setName("ProcessNextByCluster");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/queue/":
+ *      get:
+ *          summary: Get a waiting queue for a cluster
+ *          tags:
+ *              - cluster
+ *              - queue
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  x-since: 2.12
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success, return empty queueList if no entry was found"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/queue.json"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->get(
+    '/cluster/{id:\d{1,11}}/queue/',
+    '\BO\Zmsbackend\Cluster\Api\ClusterQueue'
+)
+    ->setName("ClusterQueue");
+
+/**
+ *  @swagger
+ *  "/useraccount/queue/":
+ *      get:
+ *          summary: Get a waiting queue for user account
+ *          tags:
+ *              - useraccount
+ *              - queue
+ *          parameters:
+ *              -   name: status
+ *                  description: comma separated statuses
+ *                  in: path
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  x-since: 2.12
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success, return empty queueList if no entry was found"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/queue.json"
+ */
+\App::$slim->get(
+    '/useraccount/queue/',
+    '\BO\Zmsbackend\Useraccount\Api\UserQueue'
+)
+    ->setName("UserQueue");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/request/":
+ *      get:
+ *          summary: Get a list of requests by cluster ID
+ *          x-since: 2.11
+ *          tags:
+ *              - request
+ *          parameters:
+ *              -   name: id
+ *                  description: number of cluster
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  x-since: 2.12
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success, might be empty"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/request.json"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->get(
+    '/cluster/{id:\d{1,11}}/request/',
+    '\BO\Zmsbackend\Request\Api\RequestListByCluster'
+)
+    ->setName("RequestListByCluster");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/workstation/":
+ *      get:
+ *          summary: Get a list of today logged in workstations by cluster ID
+ *          x-since: 2.11
+ *          tags:
+ *              - cluster
+ *              - workstation
+ *          parameters:
+ *              -   name: id
+ *                  description: number of cluster
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  x-since: 2.12
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success, might by empty"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->get(
+    '/cluster/{id:\d{1,11}}/workstation/',
+    '\BO\Zmsbackend\Workstation\Api\WorkstationListByCluster'
+)
+    ->setName("WorkstationListByCluster");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/waitingnumber/{hash}/":
+ *      get:
+ *          summary: Get a waitingNumber according to scope preferences in cluster
+ *          x-since: 2.08
+ *          tags:
+ *              - cluster
+ *              - process
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  required: true
+ *                  in: path
+ *                  type: integer
+ *              -   name: hash
+ *                  description: valid ticketprinter hash
+ *                  required: true
+ *                  in: path
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success, return exception with code 200 if ticketprinter is disabled"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/process.json"
+ *              403:
+ *                  description: "hash is not valid"
+ *              404:
+ *                  description: "cluster id does not exists, reserve process failed"
+ */
+\App::$slim->get(
+    '/cluster/{id:\d{1,11}}/waitingnumber/{hash}/',
+    '\BO\Zmsbackend\Ticketprinter\Api\TicketprinterWaitingnumberByCluster'
+)
+    ->setName("TicketprinterWaitingnumberByCluster");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/workstationcount/":
+ *      get:
+ *          summary: Get a cluster with calculated workstation count on its scopes.
+ *          x-since: 2.11
+ *          description: Calculating the workstation count requires performance, thus this is an extra api query
+ *          tags:
+ *              - cluster
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  x-since: 2.12
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/cluster.json"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->get(
+    '/cluster/{id:\d{1,4}}/workstationcount/',
+    '\BO\Zmsbackend\Cluster\Api\ClusterWithWorkstationCount'
+)
+    ->setName("ClusterWithWorkstationCount");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/imagedata/calldisplay/":
+ *      get:
+ *          summary: get image data by cluster id for calldisplay image
+ *          x-since: 2.10
+ *          tags:
+ *              - cluster
+ *              - mimepart
+ *          parameters:
+ *              -   name: id
+ *                  description: number of cluster
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get existing imagedata by cluster id
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/mimepart.json"
+ *              404:
+ *                  description: "Could not find given cluster"
+ */
+\App::$slim->get(
+    '/cluster/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsbackend\Cluster\Api\ClusterCalldisplayImageDataGet'
+)
+    ->setName("ClusterCalldisplayImageDataGet");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/imagedata/calldisplay/":
+ *      post:
+ *          summary: upload and get image data by cluster id for calldisplay image
+ *          x-since: 2.10
+ *          tags:
+ *              - cluster
+ *              - mimepart
+ *          parameters:
+ *              -   name: id
+ *                  description: number of cluster
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: mimepart
+ *                  description: mimepart image data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/mimepart.json"
+ *          responses:
+ *              200:
+ *                  description: get an updated mimepart entity
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/mimepart.json"
+ *              404:
+ *                  description: "Could not find given cluster"
+ */
+\App::$slim->post(
+    '/cluster/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsbackend\Cluster\Api\ClusterCalldisplayImageDataUpdate'
+)
+    ->setName("ClusterCalldisplayImageDataUpdate");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/imagedata/calldisplay/":
+ *      delete:
+ *          summary: Delete calldisplay image by cluster
+ *          x-since: 2.10
+ *          tags:
+ *              - scope
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  x-since: 2.12
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->delete(
+    '/cluster/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsbackend\Cluster\Api\ClusterCalldisplayImageDataDelete'
+)
+    ->setName("ClusterCalldisplayImageDataDelete");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/organisation/":
+ *      get:
+ *          summary: Get an organisation by clusterId.
+ *          x-since: 2.10
+ *          tags:
+ *              - cluster
+ *              - organisation
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/organisation.json"
+ *              404:
+ *                  description: "organisation or cluster id does not exists"
+ */
+\App::$slim->get(
+    '/cluster/{id:\d{1,4}}/organisation/',
+    '\BO\Zmsbackend\Organisation\Api\OrganisationByCluster'
+)
+    ->setName("OrganisationByCluster");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/process/{date}/":
+ *      get:
+ *          summary: Get a list of processes by cluster and date
+ *          x-since: 2.11
+ *          tags:
+ *              - cluster
+ *              - process
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: date
+ *                  description: day in format YYYY-MM-DD
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success, also if process list is empty"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->get(
+    '/cluster/{id:\d{1,11}}/process/{date:\d\d\d\d-\d\d-\d\d}/',
+    '\BO\Zmsbackend\Process\Api\ProcessListByClusterAndDate'
+)
+    ->setName("ProcessListByClusterAndDate");
+
+/**
+ *  @swagger
+ *  "/config/":
+ *      get:
+ *          summary: Get config
+ *          tags:
+ *              - config
+ *          parameters:
+ *              -   name: X-Token
+ *                  description: Secure Token
+ *                  required: true
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/config.json"
+ *              401:
+ *                  description: "authentification failed"
+ */
+\App::$slim->get(
+    '/config/',
+    '\BO\Zmsbackend\Config\Api\ConfigGet'
+)
+    ->setName("ConfigGet");
+
+/**
+ *  @swagger
+ *  "/config/":
+ *      post:
+ *          summary: update config properties
+ *          tags:
+ *              - config
+ *          parameters:
+ *              -   name: X-Token
+ *                  description: Secure Token
+ *                  required: true
+ *                  in: header
+ *                  type: string
+ *              -   name: config
+ *                  description: config data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/config.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/config.json"
+ *              401:
+ *                  description: "authentification failed"
+ */
+\App::$slim->post(
+    '/config/',
+    '\BO\Zmsbackend\Config\Api\ConfigUpdate'
+)
+    ->setName("ConfigUpdate");
+
+
+
+
+
+
+\App::$slim->get(
+    '/mailtemplates/',
+    '\BO\Zmsbackend\Mail\Api\MailTemplatesGet'
+)
+    ->setName("MailTemplatesGet");
+
+
+\App::$slim->post(
+    '/mailtemplates/',
+    '\BO\Zmsbackend\Mail\Api\MailTemplatesUpdate'
+)
+    ->setName("MailTemplatesUpdate");
+
+\App::$slim->post(
+    '/mailtemplates-create-customization/',
+    '\BO\Zmsbackend\Mail\Api\MailTemplatesCreateCustomization'
+)
+        ->setName("MailTemplatesCreateCustomization");
+
+\App::$slim->get(
+    '/custom-mailtemplates/{providerId}/',
+    '\BO\Zmsbackend\Mail\Api\MailCustomTemplatesGet'
+)
+        ->setName("MailCustomTemplatesGet");
+
+\App::$slim->get(
+    '/merged-mailtemplates/{providerId}/',
+    '\BO\Zmsbackend\Mail\Api\MailMergedTemplatesGet'
+)
+        ->setName("MailMergedTemplatesGet");
+
+
+\App::$slim->delete(
+    '/mailtemplates/{templateId}/',
+    '\BO\Zmsbackend\Mail\Api\MailTemplatesDelete'
+)
+        ->setName("MailTemplatesDelete");
+
+
+\App::$slim->get(
+    '/preview-mailtemplates/{mailStatus}/{providerId}/',
+    '\BO\Zmsbackend\Mail\Api\MailTemplatesPreview'
+)
+        ->setName("MailTemplatesPreview");
+
+
+
+
+
+
+
+/**
+ *  @swagger
+ *  "/dayoff/{year}/":
+ *      get:
+ *          summary: Get a list of common free days for a given year
+ *          tags:
+ *              - dayoff
+ *          parameters:
+ *              -   name: year
+ *                  description: year for the free days
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success, returns empty list if no dayoff was found"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/dayoff.json"
+ *              404:
+ *                  description: "year out of range"
+ */
+\App::$slim->get(
+    '/dayoff/{year:2\d{3,3}}/',
+    '\BO\Zmsbackend\Dayoff\Api\DayoffList'
+)
+    ->setName("DayoffList");
+
+/**
+ *  @swagger
+ *  "/dayoff/{year}/":
+ *      post:
+ *          summary: Update list of common free days
+ *          tags:
+ *              - dayoff
+ *          parameters:
+ *              -   name: year
+ *                  description: year for the free days
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: dayoff
+ *                  description: dayoff data to update
+ *                  in: body
+ *                  schema:
+ *                      type: array
+ *                      items:
+ *                          $ref: "schema/dayoff.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/dayoff.json"
+ *              404:
+ *                  description: "year out of range"
+ */
+\App::$slim->post(
+    '/dayoff/{year:2\d{3,3}}/',
+    '\BO\Zmsbackend\Dayoff\Api\DayoffUpdate'
+)
+    ->setName("DayoffUpdate");
+
+/**
+ *  @swagger
+ *  "/department/":
+ *      get:
+ *          summary: Get a list of departments
+ *          tags:
+ *              - department
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/department.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "missing or wrong access rights"
+ */
+\App::$slim->get(
+    '/department/',
+    '\BO\Zmsbackend\Department\Api\DepartmentList'
+)
+    ->setName("DepartmentList");
+
+/**
+ *  @swagger
+ *  "/department/{id}/":
+ *      get:
+ *          summary: Get an department by id
+ *          tags:
+ *              - department
+ *          parameters:
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/department.json"
+ *              404:
+ *                  description: "department id does not exists"
+ */
+\App::$slim->get(
+    '/department/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Department\Api\DepartmentGet'
+)
+    ->setName("DepartmentGet");
+
+/**
+ *  @swagger
+ *  "/department/{id}/":
+ *      post:
+ *          summary: Update an department
+ *          tags:
+ *              - department
+ *          parameters:
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: department
+ *                  description: department data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/department.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/department.json"
+ *              404:
+ *                  description: "department id does not exists"
+ */
+\App::$slim->post(
+    '/department/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Department\Api\DepartmentUpdate'
+)
+    ->setName("DepartmentUpdate");
+
+/**
+ *  @swagger
+ *  "/department/{id}/":
+ *      delete:
+ *          summary: Deletes an department
+ *          tags:
+ *              - department
+ *          parameters:
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *              404:
+ *                  description: "department id does not exists"
+ *              428:
+ *                  x-since: 2.12
+ *                  description: "department has still assigned scopes or clusters"
+ */
+\App::$slim->delete(
+    '/department/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Department\Api\DepartmentDelete'
+)
+    ->setName("DepartmentDelete");
+
+/**
+ *  @swagger
+ *  "/department/{id}/scope/":
+ *      post:
+ *          summary: Add a new scope
+ *          tags:
+ *              - department
+ *              - scope
+ *          parameters:
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: scope
+ *                  description: scope data to add
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/scope.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              404:
+ *                  description: "Missing required properties in the scope"
+ */
+\App::$slim->post(
+    '/department/{id:\d{1,11}}/scope/',
+    '\BO\Zmsbackend\Department\Api\DepartmentAddScope'
+)
+    ->setName("DepartmentAddScope");
+
+/**
+ *  @swagger
+ *  "/department/{id}/cluster/":
+ *      post:
+ *          summary: Add a new cluster
+ *          x-since: 2.10
+ *          tags:
+ *              - department
+ *              - cluster
+ *          parameters:
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: cluster
+ *                  description: cluster data to add
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/cluster.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/cluster.json"
+ *              404:
+ *                  description: "Missing required properties in the cluster"
+ */
+\App::$slim->post(
+    '/department/{id:\d{1,11}}/cluster/',
+    '\BO\Zmsbackend\Department\Api\DepartmentAddCluster'
+)
+    ->setName("DepartmentAddCluster");
+
+/**
+ *  @swagger
+ *  "/department/{id}/organisation/":
+ *      get:
+ *          summary: Get the parent organisation for a department
+ *          tags:
+ *              - department
+ *              - organisation
+ *          parameters:
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/organisation.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "department is not assigned to logged in useraccount"
+ *              404:
+ *                  x-since: 2.12
+ *                  description: "department does not exist"
+ */
+\App::$slim->get(
+    '/department/{id:\d{1,11}}/organisation/',
+    '\BO\Zmsbackend\Organisation\Api\OrganisationByDepartment'
+)
+    ->setName("OrganisationByDepartment");
+
+/**
+ *  @swagger
+ *  "/role/{roleName}/useraccount/":
+ *      get:
+ *          summary: Get a list of useraccounts for a role
+ *          x-since: 2.10
+ *          tags:
+ *              - role
+ *              - useraccount
+ *          parameters:
+ *              -   name: roleName
+ *                  description: role name
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "missing or wrong access rights"
+ *              404:
+ *                  x-since: 2.12
+ *                  description: "role does not exist"
+ */
+\App::$slim->get(
+    '/role/{roleName:[a-z][a-z0-9_]{0,99}}/useraccount/',
+    '\BO\Zmsbackend\Useraccount\Api\UseraccountListByRole'
+)
+    ->setName("UseraccountListByRole");
+
+
+/**
+ *  @swagger
+ *  "/role/{roleName}/department/{ids}/useraccount/":
+ *      get:
+ *          summary: Get a list of useraccounts for a role and departments
+ *          x-since: 2.25
+ *          tags:
+ *              - role
+ *              - department
+ *              - useraccount
+ *          parameters:
+ *              -   name: roleName
+ *                  description: role name
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: ids
+ *                  description: department numbers (comma-separated)
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "department is not assigned to logged in useraccount or missing access rights"
+ *              404:
+ *                  x-since: 2.12
+ *                  description: "role or department does not exist"
+ */
+\App::$slim->get(
+    '/role/{roleName:[a-z][a-z0-9_]{0,99}}/department/{ids:\d{1,11}(?:,\d{1,11})*}/useraccount/',
+    '\BO\Zmsbackend\Useraccount\Api\UseraccountListByRoleAndDepartments'
+)
+    ->setName("UseraccountListByRoleAndDepartments");
+
+/**
+ *  @swagger
+ *  "/useraccount/{loginname}/roles/":
+ *      get:
+ *          summary: Get roles assigned to a useraccount
+ *          x-since: 2.26
+ *          tags:
+ *              - useraccount
+ *              - role
+ *          parameters:
+ *              -   name: loginname
+ *                  description: useraccount login name
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/role.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "missing or wrong access rights"
+ *              404:
+ *                  description: "useraccount does not exist"
+ */
+\App::$slim->get(
+    '/useraccount/{loginname}/roles/',
+    '\BO\Zmsbackend\Useraccount\Api\UseraccountRolesGet'
+)
+    ->setName("UseraccountRolesGet");
+
+/**
+ *  @swagger
+ *  "/permissions/":
+ *      get:
+ *          summary: List all permission definitions
+ *          x-since: 2.26
+ *          tags:
+ *              - permission
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/permission.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "missing or wrong access rights"
+ */
+\App::$slim->get(
+    '/permissions/',
+    '\BO\Zmsbackend\Permission\Api\PermissionListGet'
+)
+    ->setName("PermissionListGet");
+
+/**
+ *  @swagger
+ *  "/roles/":
+ *      post:
+ *          summary: Create a new role with permission names
+ *          x-since: 2.26
+ *          tags:
+ *              - role
+ *          parameters:
+ *              -   name: role
+ *                  description: role payload (id and assignedUserCount are ignored)
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/role.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/role.json"
+ *              400:
+ *                  description: "validation error or duplicate role name"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "missing or wrong access rights"
+ */
+\App::$slim->post(
+    '/roles/',
+    '\BO\Zmsbackend\Role\Api\RoleAdd'
+)
+    ->setName("RoleAdd");
+
+/**
+ *  @swagger
+ *  "/roles/":
+ *      get:
+ *          summary: List all roles
+ *          x-since: 2.26
+ *          tags:
+ *              - role
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/role.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "missing or wrong access rights"
+ */
+\App::$slim->get(
+    '/roles/',
+    '\BO\Zmsbackend\Role\Api\RoleListGet'
+)
+    ->setName("RoleListGet");
+
+/**
+ *  @swagger
+ *  "/roles/{id}/":
+ *      get:
+ *          summary: Get a single role by id
+ *          x-since: 2.26
+ *          tags:
+ *              - role
+ *          parameters:
+ *              -   name: id
+ *                  description: role id
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/role.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "missing or wrong access rights"
+ *              404:
+ *                  description: "role does not exist"
+ */
+\App::$slim->get(
+    '/roles/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Role\Api\RoleGet'
+)
+    ->setName("RoleGet");
+
+/**
+ *  @swagger
+ *  "/roles/{id}/":
+ *      delete:
+ *          summary: Delete a role by id
+ *          x-since: 2.26
+ *          tags:
+ *              - role
+ *          parameters:
+ *              -   name: id
+ *                  description: role id
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success; data contains the deleted role"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/role.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "missing or wrong access rights"
+ *              404:
+ *                  description: "role does not exist"
+ */
+\App::$slim->delete(
+    '/roles/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Role\Api\RoleDelete'
+)
+    ->setName("RoleDelete");
+
+/**
+ *  @swagger
+ *  "/roles/{id}/":
+ *      post:
+ *          summary: Update an existing role (same request body and responses as PUT; used by zmsadmin like OwnerUpdate)
+ *          x-since: 2.26
+ *          tags:
+ *              - role
+ *          parameters:
+ *              -   name: id
+ *                  description: role id
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: role
+ *                  description: role fields to update (id and assignedUserCount are ignored)
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/role.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/role.json"
+ *              400:
+ *                  description: "validation error or invalid permission names"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "missing or wrong access rights"
+ *              404:
+ *                  description: "role does not exist"
+ */
+\App::$slim->post(
+    '/roles/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Role\Api\RoleUpdate'
+)
+    ->setName("RoleUpdate");
+
+/**
+ *  @swagger
+ *  "/useraccount/":
+ *      get:
+ *          summary: Get a list of useraccounts (optionally filtered by search query)
+ *          x-since: 2.11
+ *          tags:
+ *              - useraccount
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: query
+ *                  description: "Optional query string for searching. Searches in useraccount.NutzerID and useraccount.Name. If omitted, returns all accessible useraccounts."
+ *                  in: query
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: get a list of user accounts
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ *              401:
+ *                  description: "login required"
+ *                  x-since: 2.12
+ *              403:
+ *                  description: "missing or wrong access rights"
+ *                  x-since: 2.12
+ */
+\App::$slim->get(
+    '/useraccount/',
+    '\BO\Zmsbackend\Useraccount\Api\UseraccountList'
+)
+    ->setName("UseraccountList");
+
+
+/**
+ *  @swagger
+ *  "/department/{ids}/useraccount/":
+ *      get:
+ *          summary: Get a list of useraccounts for departments (optionally filtered by search query)
+ *          x-since: 2.10
+ *          tags:
+ *              - department
+ *              - useraccount
+ *          parameters:
+ *              -   name: ids
+ *                  description: department numbers (comma-separated)
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: query
+ *                  description: "Optional query string for searching. Searches in useraccount.NutzerID and useraccount.Name. If omitted, returns all useraccounts for the departments."
+ *                  in: query
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: get a list of user accounts
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "department is not assigned to logged in useraccount"
+ *              404:
+ *                  x-since: 2.12
+ *                  description: "department does not exist"
+ */
+\App::$slim->get(
+    '/department/{ids:\d{1,11}(?:,\d{1,11})*}/useraccount/',
+    '\BO\Zmsbackend\Useraccount\Api\UseraccountListByDepartments'
+)
+    ->setName("UseraccountByDepartmentList");
+
+/**
+ *  @swagger
+ *  "/department/{id}/workstation/":
+ *      get:
+ *          summary: Get a list of workstations for a department
+ *          x-since: 2.11
+ *          tags:
+ *              - department
+ *              - workstation
+ *          parameters:
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/workstation.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "department is not assigned to logged in useraccount"
+ *              404:
+ *                  x-since: 2.12
+ *                  description: "department does not exist"
+ */
+\App::$slim->get(
+    '/department/{id:\d{1,11}}/workstation/',
+    '\BO\Zmsbackend\Department\Api\DepartmentWorkstationList'
+)
+    ->setName("DepartmentWorkstationList");
+
+/**
+ *  @swagger
+ *  "/log/process/":
+ *      get:
+ *          summary: Get a list of log entries for a process
+ *          x-since: 2.11
+ *          tags:
+ *              - process
+ *              - log
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: Get a list of log entries for a process or empty list
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/log.json"
+ */
+\App::$slim->get(
+    '/log/process/',
+    '\BO\Zmsbackend\Process\Api\ProcessLog'
+)
+    ->setName("ProcessLog");
+
+/**
+ *  @swagger
+ *  "/log/process/{id}/":
+ *      post:
+ *          summary: Add a log entry for a process
+ *          tags:
+ *              - process
+ *              - log
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: id
+ *                  description: id of a process
+ *                  in: path
+ *                  required: true
+ *                  type: number
+ *              -   name: mimepart
+ *                  description: mimepart data with content
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/mimepart.json"
+ *          responses:
+ *              200:
+ *                  description: log accepted
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/mimepart.json"
+ *              400:
+ *                  description: "Missing required properties in the mimepart"
+ *              403:
+ *                  description: "Missing access rights, unvalid process id"
+ */
+\App::$slim->post(
+    '/log/process/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Process\Api\ProcessAddLog'
+)
+    ->setName("ProcessAddLog");
+
+/**
+ *  @swagger
+ *  "/mails/":
+ *      get:
+ *          summary: get a list of mails with optional filters
+ *          x-since: 2.11
+ *          tags:
+ *              - mail
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: ids
+ *                  description: comma-separated list of mail IDs to retrieve
+ *                  in: query
+ *                  required: false
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: limit
+ *                  description: "Maximum number of results to return"
+ *                  in: query
+ *                  type: integer
+ *              -   name: onlyIds
+ *                  description: "If true, only IDs are returned"
+ *                  in: query
+ *                  type: boolean
+ *          responses:
+ *              200:
+ *                  description: returns a list, might be empty
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/mail.json"
+ */
+\App::$slim->get(
+    '/mails/',
+    '\BO\Zmsbackend\Mail\Api\MailList'
+)
+    ->setName("MailList");
+
+
+/**
+ *  @swagger
+ *  "/mails/":
+ *      post:
+ *          summary: Add a mail to the send queue
+ *          tags:
+ *              - mail
+ *          parameters:
+ *              -   name: mail
+ *                  description: mail data to send
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/mail.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: mail accepted
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/mail.json"
+ *              400:
+ *                  description: "Missing required properties in the notification"
+ */
+\App::$slim->post(
+    '/mails/',
+    '\BO\Zmsbackend\Mail\Api\MailAdd'
+)
+    ->setName("MailAdd");
+
+/**
+ *  @swagger
+ *  "/mails/":
+ *      delete:
+ *          summary: delete mail(s) by ID(s)
+ *          tags:
+ *              - mail
+ *          parameters:
+ *              -   name: ids
+ *                  description: comma-separated list of mail IDs (used for multiple deletions)
+ *                  in: query
+ *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: successfully deleted
+ *              400:
+ *                  description: "invalid request format or missing IDs"
+ *              404:
+ *                  description: "could not find mail(s) or mail(s) already sent"
+ */
+\App::$slim->delete(
+    '/mails/',
+    '\BO\Zmsbackend\Mail\Api\MailDelete'
+)
+    ->setName("MailDeleteMultiple");
+
+
+/**
+ *  @swagger
+ *  "/mails/{id:\d{1,11}}/":
+ *      delete:
+ *          summary: delete mail(s) by ID(s)
+ *          tags:
+ *              - mail
+ *          parameters:
+ *              -   name: id
+ *                  description: mail ID (used for single deletion)
+ *                  in: path
+ *                  required: false
+ *                  type: integer
+ *              -   name: ids
+ *                  description: comma-separated list of mail IDs (used for multiple deletions)
+ *                  in: query
+ *                  required: false
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: successfully deleted
+ *              400:
+ *                  description: "invalid request format or missing IDs"
+ *              404:
+ *                  description: "could not find mail(s) or mail(s) already sent"
+ */
+\App::$slim->delete(
+    '/mails/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Mail\Api\MailDelete'
+)
+    ->setName("MailDelete");
+
+/**
+ *  @swagger
+ *  "/mails/{id:\d{1,11}}/":
+ *      get:
+ *          summary: get a single mail by ID
+ *          tags:
+ *              - mail
+ *          parameters:
+ *              -   name: id
+ *                  description: mail ID
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: successfully retrieved
+ *              404:
+ *                  description: "could not find mail"
+ */
+\App::$slim->get(
+    '/mails/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Mail\Api\MailGet'
+)
+    ->setName("MailGet");
+
+/**
+ *  @swagger
+ *  "/owner/":
+ *      get:
+ *          summary: Get a list of owners
+ *          tags:
+ *              - owner
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success, might be empty"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/owner.json"
+ */
+\App::$slim->get(
+    '/owner/',
+    '\BO\Zmsbackend\Owner\Api\OwnerList'
+)
+    ->setName("OwnerList");
+
+/**
+ *  @swagger
+ *  "/owner/{id}/":
+ *      get:
+ *          summary: Get an owner by id
+ *          tags:
+ *              - owner
+ *          parameters:
+ *              -   name: id
+ *                  description: owner number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/owner.json"
+ *              404:
+ *                  description: "owner id does not exists"
+ */
+\App::$slim->get(
+    '/owner/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Owner\Api\OwnerGet'
+)
+    ->setName("OwnerGet");
+
+/**
+ *  @swagger
+ *  "/owner/{id}/":
+ *      post:
+ *          summary: Update an owner
+ *          tags:
+ *              - owner
+ *          parameters:
+ *              -   name: id
+ *                  description: owner number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: owner
+ *                  description: owner data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/owner.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/owner.json"
+ *              400:
+ *                  x-since: 2.12
+ *                  description: "Invalid input"
+ *              404:
+ *                  description: "owner id does not exists"
+ */
+\App::$slim->post(
+    '/owner/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Owner\Api\OwnerUpdate'
+)
+    ->setName("OwnerUpdate");
+
+/**
+ *  @swagger
+ *  "/owner/":
+ *      post:
+ *          summary: Add a new owner
+ *          tags:
+ *              - owner
+ *          parameters:
+ *              -   name: owner
+ *                  description: owner data to add
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/owner.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/department.json"
+ *              404:
+ *                  description: "Missing required properties in the owner"
+ */
+\App::$slim->post(
+    '/owner/',
+    '\BO\Zmsbackend\Owner\Api\OwnerAdd'
+)
+    ->setName("OwnerAdd");
+
+
+/**
+ *  @swagger
+ *  "/owner/{id}/":
+ *      delete:
+ *          summary: Deletes an owner
+ *          tags:
+ *              - owner
+ *          parameters:
+ *              -   name: id
+ *                  description: owner number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *              404:
+ *                  description: "owner id does not exists"
+ */
+\App::$slim->delete(
+    '/owner/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Owner\Api\OwnerDelete'
+)
+    ->setName("OwnerDelete");
+
+/**
+ *  @swagger
+ *  "/owner/{id}/organisation/":
+ *      post:
+ *          summary: Add a new organisation
+ *          x-since: 2.11
+ *          tags:
+ *              - owner
+ *              - organisation
+ *          parameters:
+ *              -   name: id
+ *                  description: owner number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: organisation
+ *                  description: organisation data to add
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/organisation.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/organisation.json"
+ *              400:
+ *                  x-since: 2.12
+ *                  description: "Invalid input"
+ */
+\App::$slim->post(
+    '/owner/{id:\d{1,11}}/organisation/',
+    '\BO\Zmsbackend\Owner\Api\OwnerAddOrganisation'
+)
+    ->setName("OwnerAddOrganisation");
+
+
+/**
+ *  @swagger
+ *  "/organisation/":
+ *      get:
+ *          summary: Get a list of organisations
+ *          tags:
+ *              - organisation
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success, might be empty"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/organisation.json"
+ */
+\App::$slim->get(
+    '/organisation/',
+    '\BO\Zmsbackend\Organisation\Api\OrganisationList'
+)
+    ->setName("OrganisationList");
+
+/**
+ *  @swagger
+ *  "/organisation/{id}/":
+ *      get:
+ *          summary: Get an organisation by id
+ *          tags:
+ *              - organisation
+ *          parameters:
+ *              -   name: id
+ *                  description: organisation number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/organisation.json"
+ *              404:
+ *                  description: "organisation id does not exists"
+ */
+\App::$slim->get(
+    '/organisation/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Organisation\Api\OrganisationGet'
+)
+    ->setName("OrganisationGet");
+
+/**
+ *  @swagger
+ *  "/organisation/{id}/owner/":
+ *      get:
+ *          summary: Get the owner for an organisation
+ *          tags:
+ *              - organisation
+ *              - owner
+ *          parameters:
+ *              -   name: id
+ *                  description: organisation number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/owner.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "organisation is not assigned to logged in useraccount"
+ *              404:
+ *                  x-since: 2.12
+ *                  description: "organisation does not exist"
+ */
+\App::$slim->get(
+    '/organisation/{id:\d{1,11}}/owner/',
+    '\BO\Zmsbackend\Owner\Api\OwnerByOrganisation'
+)
+    ->setName("OwnerByOrganisation");
+
+/**
+ *  @swagger
+ *  "/organisation/{id}/":
+ *      post:
+ *          summary: Update an organisation
+ *          tags:
+ *              - organisation
+ *          parameters:
+ *              -   name: id
+ *                  description: organisation number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: organisation
+ *                  description: organisation data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/organisation.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/organisation.json"
+ *              404:
+ *                  description: "organisation id does not exists"
+ */
+\App::$slim->post(
+    '/organisation/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Organisation\Api\OrganisationUpdate'
+)
+    ->setName("OrganisationUpdate");
+
+/**
+ *  @swagger
+ *  "/organisation/{id}/":
+ *      delete:
+ *          summary: Deletes an organisation
+ *          tags:
+ *              - organisation
+ *          parameters:
+ *              -   name: id
+ *                  description: organisation number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *              404:
+ *                  description: "organisation id does not exists"
+ */
+\App::$slim->delete(
+    '/organisation/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Organisation\Api\OrganisationDelete'
+)
+    ->setName("OrganisationDelete");
+
+/**
+ *  @swagger
+ *  "/organisation/{id}/hash/":
+ *      get:
+ *          summary: Get a hash to identify a ticketprinter. Usually a browser requests a hash once and stores it in a cookie.
+ *          tags:
+ *              - organisation
+ *              - ticketprinter
+ *          parameters:
+ *              -   name: id
+ *                  description: organisation number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/ticketprinter.json"
+ *              404:
+ *                  description: "organisation id does not exists"
+ */
+\App::$slim->get(
+    '/organisation/{id:\d{1,11}}/hash/',
+    '\BO\Zmsbackend\Organisation\Api\OrganisationHash'
+)
+    ->setName("OrganisationHash");
+
+/**
+ *  @swagger
+ *  "/organisation/{id}/department/":
+ *      post:
+ *          summary: Add a new department
+ *          tags:
+ *              - organisation
+ *              - department
+ *          parameters:
+ *              -   name: id
+ *                  description: organisation number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: department
+ *                  description: department data to add
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/department.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/department.json"
+ *              404:
+ *                  description: "Missing required properties in the department"
+ */
+\App::$slim->post(
+    '/organisation/{id:\d{1,11}}/department/',
+    '\BO\Zmsbackend\Organisation\Api\OrganisationAddDepartment'
+)
+    ->setName("OrganisationAddDepartment");
+
+/**
+ *  @swagger
+ *  "/process/{id}/{authKey}/":
+ *      get:
+ *          summary: Get a process
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: authKey
+ *                  description: authentication key or name
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/process.json"
+ *              403:
+ *                  description: "authkey does not match"
+ *              404:
+ *                  description: "process id does not exists"
+ */
+\App::$slim->get(
+    '/process/{id:\d{1,11}}/{authKey}/',
+    '\BO\Zmsbackend\Process\Api\ProcessGet'
+)
+    ->setName("ProcessGet");
+
+/**
+ *  @swagger
+ *  "/process/{id}/externaluserid/{externalUserId}/":
+ *      get:
+ *          summary: Get a process for a citizen external user id (service auth)
+ *          description: "Trusted backends (e.g. zmscitizenapi after JWT validation) use this instead of WorkstationProcessGet. Requires X-Authkey and matching process.externalUserId."
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key for service/workstation account
+ *                  in: header
+ *                  type: string
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: externalUserId
+ *                  description: external user id from citizen login (must match the process)
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/process.json"
+ *              403:
+ *                  description: "external user id does not match"
+ *              404:
+ *                  description: "process not found"
+ */
+\App::$slim->get(
+    '/process/{id:\d{1,11}}/externaluserid/{externalUserId}/',
+    '\BO\Zmsbackend\Process\Api\ProcessGetByExternalUserId'
+)
+    ->setName("ProcessGetByExternalUserId");
+
+/**
+ *  @swagger
+ *  "/process/{id}/{authKey}/appointment/":
+ *      post:
+ *          summary: Update an appointment of a process
+ *          tags:
+ *              - process
+ *              - appointment
+ *          parameters:
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: authKey
+ *                  description: authentication key
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: slotsRequired
+ *                  description: "On default, the required slots are calculated by fetching preferences for a provider on how much slots each request should take. Priviliged users can change the required slots. To enable this parameter, a X-Authkey header is required."
+ *                  in: query
+ *                  type: integer
+ *                  required: false
+ *              -   name: slotType
+ *                  description: "On default, the slotType is 'public'. A scope can have non public appointments for booking. This is a reserve for internal use. Only priviliged users can change the slot type. To enable this parameter, a X-Authkey header is required."
+ *                  in: query
+ *                  type: string
+ *                  required: false
+ *              -   name: appointment
+ *                  description: appointment data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/appointment.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/process.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              403:
+ *                  description: "forbidden, authkey does not match or status changes, only data may be changed"
+ *              404:
+ *                  description: "process id does not exists or Failed to reserve new appointment"
+ */
+\App::$slim->post(
+    '/process/{id:\d{1,11}}/{authKey}/appointment/',
+    '\BO\Zmsbackend\Process\Api\AppointmentUpdate'
+)
+    ->setName("AppointmentUpdate");
+
+/**
+ *  @swagger
+ *  "/process/{id}/{authKey}/ics/":
+ *      get:
+ *          summary: Get an ICS-File for a process
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: authKey
+ *                  description: authentication key
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: object
+ *                              properties:
+ *                                  content:
+ *                                      type: string
+ *                                      description: "base64 encoded ICS file"
+ *              403:
+ *                  description: "authkey does not match"
+ *              404:
+ *                  description: "process id does not exists"
+ */
+\App::$slim->get(
+    '/process/{id:\d{1,11}}/{authKey}/ics/',
+    '\BO\Zmsbackend\Process\Api\ProcessIcs'
+)
+    ->setName("ProcessIcs");
+
+
+/**
+ *  @swagger
+ *  "/process/{id}/{authKey}/":
+ *      post:
+ *          summary: Update a process but does not send any mails on status changes
+ *          description: Attention - An empty list in "requests" does not delete the associated requests as expected. To delete the requests, create a dummy request with an ID of "-1" and create a one item list with this request into the process. This is required to delete the associated requests.
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: authKey
+ *                  description: authentication key
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: process
+ *                  description: process data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *              -   name: initiator
+ *                  x-since: 2.13
+ *                  description: "Identifies the user initiating the request for logging purposes"
+ *                  in: query
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success, there might be changes on the object or added information. Use the response for further action with the process"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/process.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              403:
+ *                  description: "forbidden, authkey does not match or status changes, only data may be changed"
+ *              404:
+ *                  description: "process id does not exists"
+ */
+\App::$slim->post(
+    '/process/{id:\d{1,11}}/{authKey}/',
+    '\BO\Zmsbackend\Process\Api\ProcessUpdate'
+)
+    ->setName("ProcessUpdate");
+
+/**
+ *  @swagger
+ *  "/process/{id}/{authKey}/preconfirmation/mail/":
+ *      post:
+ *          summary: send mail on preconfirmed process. Depending on config, if no mail is send, an empty mail is returned.
+ *          tags:
+ *              - process
+ *              - mail
+ *          parameters:
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: authKey
+ *                  description: authentication key
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: process
+ *                  description: process data for building mail
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/mail.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              403:
+ *                  description: "forbidden, authkey does not match or status changes, only data may be changed"
+ *              404:
+ *                  description: "process id does not exists"
+ */
+\App::$slim->post(
+    '/process/{id:\d{1,11}}/{authKey}/preconfirmation/mail/',
+    '\BO\Zmsbackend\Process\Api\ProcessPreconfirmationMail'
+)
+    ->setName("ProcessPreconfirmationMail");
+
+/**
+ *  @swagger
+ *  "/process/{id}/{authKey}/confirmation/mail/":
+ *      post:
+ *          summary: send mail on confirmed process. Depending on config, if no mail is send, an empty mail is returned.
+ *          tags:
+ *              - process
+ *              - mail
+ *          parameters:
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: authKey
+ *                  description: authentication key
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: process
+ *                  description: process data for building mail
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/mail.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              403:
+ *                  description: "forbidden, authkey does not match or status changes, only data may be changed"
+ *              404:
+ *                  description: "process id does not exists"
+ */
+\App::$slim->post(
+    '/process/{id:\d{1,11}}/{authKey}/confirmation/mail/',
+    '\BO\Zmsbackend\Process\Api\ProcessConfirmationMail'
+)
+    ->setName("ProcessConfirmationMail");
+
+/**
+ *  @swagger
+ *  "/process/{id}/{authKey}/delete/mail/":
+ *      post:
+ *          summary: send mail on delete process. Depending on config, if no mail is send, an empty mail is returned.
+ *          x-since: 2.08
+ *          tags:
+ *              - process
+ *              - mail
+ *          parameters:
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: authKey
+ *                  description: authentication key
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: process
+ *                  description: process data for building mail
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/mail.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              403:
+ *                  description: "forbidden, authkey does not match or status changes, only data may be changed"
+ *              404:
+ *                  description: "process id does not exists"
+ */
+\App::$slim->post(
+    '/process/{id:\d{1,11}}/{authKey}/delete/mail/',
+    '\BO\Zmsbackend\Process\Api\ProcessDeleteMail'
+)
+    ->setName("ProcessDeleteMail");
+
+/**
+ *  @swagger
+ *  "/process/{id}/{authKey}/":
+ *      delete:
+ *          summary: Deletes a process but does not send any mails
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: authKey
+ *                  description: authentication key
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: initiator
+ *                  x-since: 2.13
+ *                  description: "Identifies the user initiating the request for logging purposes"
+ *                  in: query
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success, there might be changes on the object or added information. Use the response for further action with the process"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/process.json"
+ *              403:
+ *                  description: "authkey does not match"
+ *              404:
+ *                  description: "process id does not exists"
+ */
+\App::$slim->delete(
+    '/process/{id:\d{1,11}}/{authKey}/',
+    '\BO\Zmsbackend\Process\Api\ProcessDelete'
+)
+    ->setName("ProcessDelete");
+
+/**
+ *  @swagger
+ *  "/process/{id}/":
+ *      delete:
+ *          summary: Deletes a process at once
+ *          description: A deleted process usually waits for a cronjob to be removed. This operation deletes the process without any waitingtime. An X-Authkey is required and the workstation needs access to the scope of the process.
+ *          x-since: 2.13
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: initiator
+ *                  description: "Identifies the user initiating the request for logging purposes"
+ *                  in: query
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success, there might be changes on the object or added information. Use the response for further action with the process"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/process.json"
+ *              403:
+ *                  description: "operation is not allowed due to access rights"
+ *              404:
+ *                  description: "process id does not exists"
+ */
+\App::$slim->delete(
+    '/process/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Process\Api\ProcessDeleteQuick'
+)
+    ->setName("ProcessDeleteQuick");
+
+/**
+ *  @swagger
+ *  "/process/search/":
+ *      get:
+ *          summary: Get a list of search results for processes
+ *          x-since: 2.11
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: query
+ *                  description: "Query string for searching. Searches in process.client.*.familyName|telephone|email and process.id"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a list of processes
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ */
+\App::$slim->get(
+    '/process/search/',
+    '\BO\Zmsbackend\Process\Api\ProcessSearch'
+)
+    ->setName("ProcessSearch");
+
+
+/**
+ *  @swagger
+ *  "/process/status/free/":
+ *      post:
+ *          summary: Get a list of free processes for a given day
+ *          tags:
+ *              - calendar
+ *              - process
+ *          parameters:
+ *              -   name: calendar
+ *                  description: data for finding available processes, try to restrict data to one day, if possible
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/calendar.json"
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: keepLessData
+ *                  description: "Parameter for withLessData method to keep given values in response data"
+ *                  in: query
+ *                  type: array
+ *                  items:
+ *                      type: string
+ *              -   name: groupData
+ *                  description: "Set this parameter if you want to automatically group appointments by time and scope. Be aware, that this parameters reduces the number of appointments, there is no information of the original count left. The value for this parameter sets a threshold to set grouping a step further. Giving a value of 200 means, that on a result with 200 or more appointments, the grouping is not by exact time, instead the hour of the appointment is used to group the results, so that for every hour an scope, at least an available appointment is shown."
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a list of available processes
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              404:
+ *                  description: if no process found, return empty list
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ */
+\App::$slim->post(
+    '/process/status/free/',
+    '\BO\Zmsbackend\Process\Api\ProcessFree'
+)
+    ->setName("ProcessFree");
+
+/**
+ *  @swagger
+ *  "/process/status/free/unique/":
+ *      post:
+ *          summary: Get a list of unique free processes for a given day
+ *          tags:
+ *              - calendarAdd commentMore actions
+ *              - process
+ *          parameters:
+ *              -   name: calendar
+ *                  description: data for finding unique available processes, try to restrict data to one day, if possible
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/calendar.json"
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: keepLessData
+ *                  description: "Parameter for withLessData method to keep given values in response data"
+ *                  in: query
+ *                  type: array
+ *                  items:
+ *                      type: string
+ *              -   name: groupData
+ *                  description: "Set this parameter if you want to automatically group appointments by time and scope. Be aware, that this parameters reduces the number of appointments, there is no information of the original count left. The value for this parameter sets a threshold to set grouping a step further. Giving a value of 200 means, that on a result with 200 or more appointments, the grouping is not by exact time, instead the hour of the appointment is used to group the results, so that for every hour an scope, at least an available appointment is shown."
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a list of available processes
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              404:
+ *                  description: if no unique process found, return empty list
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ */
+\App::$slim->post(
+    '/process/status/free/unique/',
+    '\BO\Zmsbackend\Process\Api\ProcessFreeUnique'
+)
+    ->setName("ProcessFreeUnique");
+
+/**
+ *  @swagger
+ *  "/process/status/reserved/":
+ *      get:
+ *          summary: Get a list of reserved processes
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a list of processes, might be empty
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ */
+\App::$slim->get(
+    '/process/status/reserved/',
+    '\BO\Zmsbackend\Process\Api\ProcessReservedList'
+)
+    ->setName("ProcessReservedList");
+
+/**
+ *  @swagger
+ *  "/process/status/reserved/":
+ *      post:
+ *          summary: Try to reserve the appointments in a process
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: process
+ *                  description: process data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *              -   name: X-Authkey
+ *                  description: optional authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *                  required: false
+ *              -   name: slotsRequired
+ *                  description: "On default, the required slots are calculated by fetching preferences for a provider on how much slots each request should take. Priviliged users can change the required slots. To enable this parameter, a X-Authkey header is required."
+ *                  in: query
+ *                  type: integer
+ *                  required: false
+ *              -   name: clientkey
+ *                  description: clientkey to identify api client
+ *                  type: string
+ *                  in: query
+ *                  required: false
+ *              -   name: slotType
+ *                  description: "On default, the slotType is 'public'. A scope can have non public appointments for booking. This is a reserve for internal use. Only priviliged users can change the slot type. To enable this parameter, a X-Authkey header is required."
+ *                  in: query
+ *                  type: string
+ *                  required: false
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a list of processes
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/process.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              404:
+ *                  description: "Failed to reserve a process"
+ */
+\App::$slim->post(
+    '/process/status/reserved/',
+    '\BO\Zmsbackend\Process\Api\ProcessReserve'
+)
+    ->setName("ProcessReserve");
+
+/**
+ *  @swagger
+ *  "/process/status/preconfirmed/":
+ *      post:
+ *          summary: Try to preconfirmed a process, changes status from reservered to preconfirmed
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: process
+ *                  description: process data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *          responses:
+ *              200:
+ *                  description: process is preconfirmed, mails sent according to preferences
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              403:
+ *                  description: "authkey does not match"
+ *              404:
+ *                  x-since: 2.12
+ *                  description: "given process is not reserved anymore"
+ */
+\App::$slim->post(
+    '/process/status/preconfirmed/',
+    '\BO\Zmsbackend\Process\Api\ProcessPreconfirm'
+)
+    ->setName("ProcessPreconfirm");
+
+
+/**
+ *  @swagger
+ *  "/process/status/confirmed/":
+ *      post:
+ *          summary: Try to confirm a process, changes status from reservered to confirmed
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: process
+ *                  description: process data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *          responses:
+ *              200:
+ *                  description: process is confirmed, mails sent according to preferences
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              403:
+ *                  description: "authkey does not match"
+ *              404:
+ *                  x-since: 2.12
+ *                  description: "given process is not reserved anymore"
+ */
+\App::$slim->post(
+    '/process/status/confirmed/',
+    '\BO\Zmsbackend\Process\Api\ProcessConfirm'
+)
+    ->setName("ProcessConfirm");
+
+/**
+ *  @swagger
+ *  "/process/status/finished/":
+ *      post:
+ *          summary: set process to finished or pending status. (other status settings are not allowed)
+ *          x-since: 2.12
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: process
+ *                  description: process data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *          responses:
+ *              200:
+ *                  description: process has finished or pending status now
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              400:
+ *                  description: "Invalid input or missing credentials"
+ *              403:
+ *                  description: "authkey does not match or process scope does not match with workstation scope"
+ */
+\App::$slim->post(
+    '/process/status/finished/',
+    '\BO\Zmsbackend\Process\Api\ProcessFinished'
+)
+    ->setName("ProcessFinished");
+
+/**
+ *  @swagger
+ *  "/process/status/redirect/":
+ *      post:
+ *          summary: Find or create a process to be used to redirect documents.
+ *          x-since: 2.11
+ *          description: Only process.queue.number is a necessary input. But it is possible to create a full process with a given waiting number. If the process already exists, an update is only performed, if process.id and process.authkey matches. Information about the scope are taken from the workstation fetches by X-Authkey
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: process
+ *                  description: process data to create
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *          responses:
+ *              200:
+ *                  description: you are able to call this process now
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              403:
+ *                  description: "authkey does not match"
+ */
+\App::$slim->post(
+    '/process/status/redirect/',
+    '\BO\Zmsbackend\Process\Api\ProcessRedirect'
+)
+    ->setName("ProcessRedirect");
+
+/**
+ *  @swagger
+ *  "/process/status/queued/":
+ *      post:
+ *          summary: set process back to queued status.
+ *          description: This call reverts a missed status to its former status, this might be queued or confirmed. The process should appear in the waiting queue afterwards.
+ *          x-since: 2.12
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: process
+ *                  description: process data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *          responses:
+ *              200:
+ *                  description: process has queued status now
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              403:
+ *                  description: "authkey does not match"
+ */
+\App::$slim->post(
+    '/process/status/queued/',
+    '\BO\Zmsbackend\Process\Api\ProcessQueued'
+)
+    ->setName("ProcessQueued");
+
+/**
+ *  @swagger
+ *  "/process/{id}/":
+ *      get:
+ *          summary: Get a process (access restricted by X-Authkey)
+ *          x-since: 2.12
+ *          tags:
+ *              - process
+ *              - workstation
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              401:
+ *                  description: "login required"
+ *              404:
+ *                  description: "process not found"
+ */
+\App::$slim->get(
+    '/process/{id}/',
+    '\BO\Zmsbackend\Workstation\Api\WorkstationProcessGet'
+)
+    ->setName("WorkstationProcessGet");
+
+/**
+ *  @swagger
+ *  "/provider/{source}/{id}/":
+ *      get:
+ *          summary: Get an provider by id
+ *          tags:
+ *              - provider
+ *          parameters:
+ *              -   name: source
+ *                  description: provider source like 'dldb'
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: id
+ *                  description: provider number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/provider.json"
+ *              404:
+ *                  description: "provider id for source does not exists"
+ */
+\App::$slim->get(
+    '/provider/{source}/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Provider\Api\ProviderGet'
+)
+    ->setName("ProviderGet");
+
+/**
+ *  @swagger
+ *  "/provider/{source}/{id}/scopes/":
+ *      get:
+ *          summary: Get a list of scope by provider ID
+ *          x-since: 2.10
+ *          tags:
+ *              - provider
+ *              - scope
+ *          parameters:
+ *              -   name: source
+ *                  description: provider source like 'dldb'
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: id
+ *                  description: provider number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: false
+ *                  description: authentication key to identify user for testing access rights. Without key, informations are shortened
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/scope.json"
+ *              404:
+ *                  description: "provider id does not exists"
+ */
+\App::$slim->get(
+    '/provider/{source}/{id:\d{1,11}}/scopes/',
+    '\BO\Zmsbackend\Scope\Api\ScopeListByProvider'
+)
+    ->setName("ScopeListByProvider");
+
+/**
+ *  @swagger
+ *  "/request/{source}/{id}/scopes/":
+ *      get:
+ *          summary: Get a list of scope by request ID
+ *          x-since: 2.10
+ *          tags:
+ *              - request
+ *              - scope
+ *          parameters:
+ *              -   name: source
+ *                  description: request source like 'dldb'
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: id
+ *                  description: request number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: false
+ *                  description: authentication key to identify user for testing access rights. Without key, informations are shortened
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/scope.json"
+ *              404:
+ *                  description: "request id does not exists"
+ */
+\App::$slim->get(
+    '/request/{source}/{id:\d{1,11}}/scopes/',
+    '\BO\Zmsbackend\Scope\Api\ScopeListByRequest'
+)
+    ->setName("ScopeListByRequest");
+
+/**
+ *  @swagger
+ *  "/provider/{source}/":
+ *      get:
+ *          summary: Get a list of provider by source
+ *          tags:
+ *              - provider
+ *          parameters:
+ *              -   name: source
+ *                  description: provider source like 'dldb'
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: isAssigned
+ *                  description: "get a list of provider that are already assigned to a scope"
+ *                  in: query
+ *                  type: boolean
+ *              -   name: requestList
+ *                  description: "get a list of provider filtered by given requests (csv-string)"
+ *                  in: query
+ *                  type: array
+ *                  items:
+ *                     type: string
+ *                  collectionFormat: csv
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/provider.json"
+ *              404:
+ *                  description: "provider id for source does not exists"
+ */
+\App::$slim->get(
+    '/provider/{source}/',
+    '\BO\Zmsbackend\Provider\Api\ProviderList'
+)
+    ->setName("ProviderList");
+
+/**
+ *  @swagger
+ *  "/provider/{source}/request/{csv}/":
+ *      get:
+ *          deprecated: true
+ *          summary: DEPRECATED - use provider/{source}/ with requestList as paramter instead to get a list of provider by request numbers
+ *          tags:
+ *              - provider
+ *          parameters:
+ *              -   name: source
+ *                  description: request source like 'dldb'
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: csv
+ *                  required: true
+ *                  description: request numbers as csv string
+ *                  in: path
+ *                  type: array
+ *                  items:
+ *                     type: string
+ *                  collectionFormat: csv
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/provider.json"
+ *              400:
+ *                  description: "invalid tag value"
+ *              404:
+ *                  description: "request id for source does not exists"
+ */
+\App::$slim->get(
+    '/provider/{source}/request/{csv:[0-9,]{3,}}/',
+    '\BO\Zmsbackend\Provider\Api\ProviderByRequestList'
+)
+    ->setName("ProviderByRequestList");
+
+/**
+ *  @swagger
+ *  "/request/{source}/{id}/":
+ *      get:
+ *          summary: Get an request by id
+ *          tags:
+ *              - request
+ *          parameters:
+ *              -   name: source
+ *                  description: request source like 'dldb'
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: id
+ *                  description: request number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/request.json"
+ *              404:
+ *                  description: "request id for source does not exists"
+ */
+\App::$slim->get(
+    '/request/{source}/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Request\Api\RequestGet'
+)
+    ->setName("RequestGet");
+
+/**
+ *  @swagger
+ *  "/requestvariants/":
+ *      get:
+ *          summary: Get all request variants
+ *          tags:
+ *              - requestvariant
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                       type: object
+ *                       properties:
+ *                           meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/requestvariant.json"
+ *              404:
+ *                  description: "no variants found"
+ */
+\App::$slim->get(
+    '/requestvariants/',
+    '\BO\Zmsbackend\Request\Api\RequestVariantList'
+)->setName("RequestVariantList");
+
+/**
+ *  @swagger
+ *  "/provider/{source}/{id}/request/":
+ *      get:
+ *          summary: Get a list of requests by provider ID
+ *          tags:
+ *              - request
+ *          parameters:
+ *              -   name: source
+ *                  description: name of source
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: id
+ *                  description: number of provider
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/request.json"
+ *              404:
+ *                  description: "provider id does not exists"
+ */
+\App::$slim->get(
+    '/provider/{source}/{id:\d{1,11}}/request/',
+    '\BO\Zmsbackend\Request\Api\RequestListByProvider'
+)
+    ->setName("RequestListByProvider");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/request/":
+ *      get:
+ *          summary: Get a list of requests by scope ID
+ *          x-since: 2.11
+ *          tags:
+ *              - request
+ *          parameters:
+ *              -   name: id
+ *                  description: number of scope
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/request.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/request/',
+    '\BO\Zmsbackend\Request\Api\RequestListByScope'
+)
+    ->setName("RequestListByScope");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/availability/{date}/closure/toggle/":
+ *      get:
+ *          summary: Toogle availability closure for specific day
+ *          x-since: 2.11
+ *          tags:
+ *              - scope
+ *              - closure
+ *          parameters:
+ *              -   name: id
+ *                  description: scope ID
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: date
+ *                  description: day in format YYYY-MM-DD
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success, closure is deleted if existed before or created when didn't exist before"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ */
+\App::$slim->post(
+    '/scope/{id:\d{1,11}}/availability/{date:\d\d\d\d-\d\d-\d\d}/closure/toggle/',
+    '\BO\Zmsbackend\Availability\Api\AvailabilityClosureToggle'
+)
+    ->setName("AvailabilityClosureToggle");
+
+/**
+ *  @swagger
+ *  "/closure/":
+ *      get:
+ *          summary: Listet Closures (Schließtage) je Scope im Zeitraum
+ *          tags: [closure, scope]
+ *          parameters:
+ *              - name: scopeIds
+ *                in: query
+ *                required: true
+ *                description: Kommagetrennte Liste von Scope-IDs (z.B. "12,34,56")
+ *                type: string
+ *              - name: dateFrom
+ *                in: query
+ *                required: true
+ *                description: Startdatum (YYYY-MM-DD)
+ *                type: string
+ *              - name: dateUntil
+ *                in: query
+ *                required: true
+ *                description: Enddatum (YYYY-MM-DD, inkl.)
+ *                type: string
+ *              - name: X-Authkey
+ *                in: header
+ *                required: true
+ *                type: string
+ *          responses:
+ *              200:
+ *                  description: OK
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          items:
+ *                              type: array
+ *                              items:
+ *                                  type: object
+ *                                  properties:
+ *                                      date:    { type: string,  example: "2025-09-03" }
+ *                                      scopeId: { type: integer, example: 123 }
+ */
+\App::$slim->get(
+    '/closure/',
+    '\BO\Zmsbackend\Availability\Api\AvailabilityClosureRead'
+)->setName('AvailabilityClosureRead');
+
+/**
+ *  @swagger
+ *  "/scope/{id}/workstation/":
+ *      get:
+ *          summary: Get a list of today logged in workstations by scope ID
+ *          x-since: 2.11
+ *          tags:
+ *              - scope
+ *              - workstation
+ *          parameters:
+ *              -   name: id
+ *                  description: number of scope
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success, might by empty"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/workstation/',
+    '\BO\Zmsbackend\Workstation\Api\WorkstationListByScope'
+)
+    ->setName("WorkstationListByScope");
+
+/**
+ *  @swagger
+ *  "/scope/":
+ *      get:
+ *          summary: Get a list of scopes
+ *          tags:
+ *              - scope
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: false
+ *                  description: authentication key to identify user for testing access rights. Without key, informations are shortened
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "returns a list"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/scope.json"
+ *              404:
+ *                  description: "no scopes defined yet"
+ */
+\App::$slim->get(
+    '/scope/',
+    '\BO\Zmsbackend\Scope\Api\ScopeList'
+)
+    ->setName("ScopeList");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/":
+ *      get:
+ *          summary: Get a scope
+ *          tags:
+ *              - scope
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: false
+ *                  description: authentication key to identify user for testing access rights. Without key, informations are shortened
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Scope\Api\ScopeGet'
+)
+    ->setName("ScopeGet");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/department/":
+ *      get:
+ *          summary: Get a department for a scope
+ *          x-since: 2.10
+ *          tags:
+ *              - scope
+ *              - department
+ *          parameters:
+ *              -   name: id
+ *                  description: scope id
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/department.json"
+ *              404:
+ *                  description: "could not find a department"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/department/',
+    '\BO\Zmsbackend\Department\Api\DepartmentByScopeId'
+)
+    ->setName("DepartmentByScopeId");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/cluster/":
+ *      get:
+ *          summary: Get a cluster for a scope
+ *          x-since: 2.11
+ *          tags:
+ *              - scope
+ *              - cluster
+ *          parameters:
+ *              -   name: id
+ *                  description: scope id
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success, might be empty"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/cluster.json"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/cluster/',
+    '\BO\Zmsbackend\Cluster\Api\ClusterByScopeId'
+)
+    ->setName("ClusterByScopeId");
+
+/**
+ *  @swagger
+ *  "/scope/cluster/{id}/":
+ *      get:
+ *          summary: Get a list of scope by cluster ID
+ *          tags:
+ *              - scope
+ *              - cluster
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/scope.json"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->get(
+    '/scope/cluster/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Scope\Api\ScopeListByCluster'
+)
+    ->setName("ScopeListByCluster");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/availability/":
+ *      get:
+ *          summary: Get a list of availability entries
+ *          x-since: 2.11
+ *          tags:
+ *              - scope
+ *              - availability
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: reserveEntityIds
+ *                  description: "Deprecated"
+ *                  in: query
+ *                  type: integer
+ *              -   name: startDate
+ *                  description: "only fetch availabilities starting this date"
+ *                  in: query
+ *                  type: string
+ *              -   name: endDate
+ *                  description: "only fetch availabilities before this date"
+ *                  in: query
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/availability.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/availability/',
+    '\BO\Zmsbackend\Availability\Api\AvailabilityListByScope'
+)
+    ->setName("AvailabilityListByScope");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/conflict/":
+ *      get:
+ *          summary: Get a list of conflicts by scope and date
+ *          x-since: 2.11
+ *          tags:
+ *              - scope
+ *              - process
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: startDate
+ *                  description: "only fetch availabilities starting this date"
+ *                  in: query
+ *                  type: string
+ *              -   name: endDate
+ *                  description: "only fetch availabilities before this date"
+ *                  in: query
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success, also if process list is empty"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/conflict/',
+    '\BO\Zmsbackend\Process\Api\ConflictListByScope'
+)
+    ->setName("ConflictListByScope");
+
+
+/**
+ *  @swagger
+ *  "/scope/{id}/process/{date}/":
+ *      get:
+ *          summary: Get a list of processes by scope and date
+ *          x-since: 2.11
+ *          tags:
+ *              - scope
+ *              - process
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: date
+ *                  description: day in format YYYY-MM-DD
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success, also if process list is empty"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/process/{date:\d\d\d\d-\d\d-\d\d}/',
+    '\BO\Zmsbackend\Process\Api\ProcessListByScopeAndDate'
+)
+    ->setName("ProcessListByScopeAndDate");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/process/status/{status}/":
+ *      get:
+ *          summary: Get a list of processes by scope and status (pending for example)
+ *          x-since: 2.14
+ *          tags:
+ *              - scope
+ *              - process
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: status
+ *                  description: status of process
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/process/status/{status}/',
+    '\BO\Zmsbackend\Process\Api\ProcessListByScopeAndStatus'
+)
+    ->setName("ProcessListByScopeAndStatus");
+
+/**
+ *  @swagger
+ *  "/client/processlist/summarymail/":
+ *      get:
+ *          summary: request a summary of open processes belonging to an email
+ *          tags:
+ *              - process
+ *              - mail
+ *          parameters:
+ *              -   name: mail
+ *                  description: "email address for which all planned processes have to be send by mail"
+ *                  in: query
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/mail.json"
+ *              429:
+ *                  description: "request repeated to often"
+ */
+\App::$slim->get(
+    '/client/processlist/summarymail/',
+    '\BO\Zmsbackend\Process\Api\ProcessListSummaryMail'
+)
+    ->setName("ProcessListSummaryMail");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/emergency/":
+ *      post:
+ *          summary: Trigger an emergency
+ *          x-since: 2.10
+ *          tags:
+ *              - scope
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->post(
+    '/scope/{id}/emergency/',
+    '\BO\Zmsbackend\Scope\Api\ScopeEmergency'
+)
+    ->setName("ScopeEmergency");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/emergency/":
+ *      delete:
+ *          summary: Cancel an emergency
+ *          x-since: 2.10
+ *          tags:
+ *              - scope
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->delete(
+    '/scope/{id}/emergency/',
+    '\BO\Zmsbackend\Scope\Api\ScopeEmergencyStop'
+)
+    ->setName("ScopeEmergencyStop");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/emergency/respond/":
+ *      post:
+ *          summary: Respond to an emergency
+ *          x-since: 2.10
+ *          tags:
+ *              - scope
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->post(
+    '/scope/{id}/emergency/respond/',
+    '\BO\Zmsbackend\Scope\Api\ScopeEmergencyRespond'
+)
+    ->setName("ScopeEmergencyRespond");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/queue/next/":
+ *      get:
+ *          summary: Get the next process in queue by scope id
+ *          x-since: 2.11
+ *          tags:
+ *              - scope
+ *              - process
+ *          parameters:
+ *              -   name: id
+ *                  description: number of scope
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  x-since: 2.12
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: date
+ *                  x-since: 2.13
+ *                  description: "selected date string"
+ *                  in: query
+ *                  type: string
+ *              -   name: exclude
+ *                  x-since: 2.13
+ *                  description: "exluded process numbers as csv string"
+ *                  in: query
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: get a process
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              404:
+ *                  description: "Could not find a process or scope not found"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,4}}/queue/next/',
+    '\BO\Zmsbackend\Process\Api\ProcessNextByScope'
+)
+    ->setName("ProcessNextByScope");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/queue/{number}/":
+ *      get:
+ *          summary: Get a process by queue number and scope id
+ *          x-since: 2.10
+ *          tags:
+ *              - scope
+ *              - process
+ *          parameters:
+ *              -   name: number
+ *                  description: waitingnumber in scope for a process
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  x-since: 2.12
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: id
+ *                  description: number of scope
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a process
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              404:
+ *                  description: "Could not find a process or scope not found"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,4}}/queue/{number:\d{1,10}}/',
+    '\BO\Zmsbackend\Process\Api\ProcessByQueueNumber'
+)
+    ->setName("ProcessByQueueNumber");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/imagedata/calldisplay/":
+ *      get:
+ *          summary: get image data by scope id for calldisplay image
+ *          x-since: 2.10
+ *          tags:
+ *              - scope
+ *              - mimepart
+ *          parameters:
+ *              -   name: id
+ *                  description: number of scope
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get existing imagedata by scope id
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/mimepart.json"
+ *              404:
+ *                  description: "Could not find given scope"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsbackend\Scope\Api\ScopeCalldisplayImageDataGet'
+)
+    ->setName("ScopeCalldisplayImageDataGet");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/imagedata/calldisplay/":
+ *      post:
+ *          summary: upload and get image data by scope id for calldisplay image
+ *          x-since: 2.10
+ *          tags:
+ *              - scope
+ *              - mimepart
+ *          parameters:
+ *              -   name: id
+ *                  description: number of scope
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: mimepart
+ *                  description: mimepart image data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/mimepart.json"
+ *          responses:
+ *              200:
+ *                  description: get an updated mimepart entity
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/mimepart.json"
+ *              404:
+ *                  description: "Could not find given scope"
+ */
+\App::$slim->post(
+    '/scope/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsbackend\Scope\Api\ScopeCalldisplayImageDataUpdate'
+)
+    ->setName("ScopeCalldisplayImageDataUpdate");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/imagedata/calldisplay/":
+ *      delete:
+ *          summary: Delete calldisplay image by scope
+ *          tags:
+ *              - scope
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->delete(
+    '/scope/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsbackend\Scope\Api\ScopeCalldisplayImageDataDelete'
+)
+    ->setName("ScopeCalldisplayImageDataDelete");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/organisation/":
+ *      get:
+ *          summary: Get an organisation by scopeId.
+ *          tags:
+ *              - scope
+ *              - organisation
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/organisation.json"
+ *              404:
+ *                  description: "organisation or scope id does not exists"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,4}}/organisation/',
+    '\BO\Zmsbackend\Organisation\Api\OrganisationByScope'
+)
+    ->setName("OrganisationByScope");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/queue/":
+ *      get:
+ *          summary: Get a waiting queue for a scope
+ *          tags:
+ *              - scope
+ *              - queue
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  x-since: 2.12
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  x-since: 2.12
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success, return empty queueList if no entry was found"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/queue.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/queue/',
+    '\BO\Zmsbackend\Scope\Api\ScopeQueue'
+)
+    ->setName("ScopeQueue");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/ghostworkstation/":
+ *      post:
+ *          summary: set selected amount of ghostworkstations in workstation scope
+ *          x-since: 2.12
+ *          tags:
+ *              - scope
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: scope
+ *                  description: scope content
+ *                  in: body
+ *                  required: true
+ *                  schema:
+ *                      $ref: "schema/scope.json"
+ *          responses:
+ *              200:
+ *                  description: get updated ghostworkstation count
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              404:
+ *                  description: "Could not find workstation scope"
+ */
+\App::$slim->post(
+    '/scope/{id:\d{1,4}}/ghostworkstation/',
+    '\BO\Zmsbackend\Workstation\Api\CounterGhostWorkstation'
+)
+    ->setName("CounterGhostWorkstation");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/workstationcount/":
+ *      get:
+ *          summary: Get a scope with calculated workstation count.
+ *          x-since: 2.11
+ *          description: Calculating the workstation count requires performance, thus this is an extra api query
+ *          tags:
+ *              - scope
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,4}}/workstationcount/',
+    '\BO\Zmsbackend\Scope\Api\ScopeWithWorkstationCount'
+)
+    ->setName("ScopeWithWorkstationCount");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/":
+ *      post:
+ *          summary: Update a scope
+ *          tags:
+ *              - scope
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: scope
+ *                  description: scope content
+ *                  in: body
+ *                  required: true
+ *                  schema:
+ *                      $ref: "schema/scope.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              404:
+ *                  description: "process id does not exists"
+ */
+\App::$slim->post(
+    '/scope/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Scope\Api\ScopeUpdate'
+)
+    ->setName("ScopeUpdate");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/":
+ *      delete:
+ *          summary: Delete a scope
+ *          tags:
+ *              - scope
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->delete(
+    '/scope/{id:\d{1,11}}/',
+    '\BO\Zmsbackend\Scope\Api\ScopeDelete'
+)
+    ->setName("ScopeDelete");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/waitingnumber/{hash}/":
+ *      get:
+ *          summary: Get a waitingNumber according to scope preferences
+ *          tags:
+ *              - scope
+ *              - process
+ *              - ticketprinter
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  required: true
+ *                  in: path
+ *                  type: integer
+ *              -   name: hash
+ *                  description: valid ticketprinter hash
+ *                  required: true
+ *                  in: path
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/process.json"
+ *              403:
+ *                  description: "hash is not valid"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/waitingnumber/{hash}/',
+    '\BO\Zmsbackend\Ticketprinter\Api\TicketprinterWaitingnumberByScope'
+)
+    ->setName("TicketprinterWaitingnumberByScope");
+
+/**
+ *  @swagger
+ *  "/scope/{ids}/ticketprinter/":
+ *      get:
+ *          summary: Get a list of ticketprinter by scope id list
+ *          x-since: 2.10
+ *          tags:
+ *              - scope
+ *              - ticketprinter
+ *          parameters:
+ *              -   name: ids
+ *                  description: number of scopes as csv
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  x-since: 2.12
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: get a ticketprinter collection
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/ticketprinter.json"
+ *              404:
+ *                  description: "no ticketprinter found"
+ */
+\App::$slim->get(
+    '/scope/{ids}/ticketprinter/',
+    '\BO\Zmsbackend\Ticketprinter\Api\TicketprinterListByScopeList'
+)
+    ->setName("TicketprinterListByScopeList");
+
+/**
+ *  @swagger
+ *  "/session/{name}/{id}/":
+ *      get:
+ *          summary: Get current Session
+ *          tags:
+ *              - session
+ *          parameters:
+ *              -   name: name
+ *                  description: name from session (3 - 20 letters)
+ *                  required: true
+ *                  in: path
+ *                  type: string
+ *              -   name: id
+ *                  description: id from session (20 - 40 chars)
+ *                  required: true
+ *                  in: path
+ *                  type: string
+ *              -   name: sync
+ *                  description: "Set this to 1 if you want synchronous read for the session data. If session data is written shortly before reading, replication might not be up to date. Using this parameter solves this problem but might result in slower responses. Use this parameter only if necessary, for example after HTTP-redirect which write session data and a read requests follows much less than a second after. Usually, two requests do not follow on each other so that this parameter is necessary."
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a session by id and name
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/session.json"
+ *              404:
+ *                  description: "Could not find any available session"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/session.json"
+ */
+\App::$slim->get(
+    '/session/{name:[a-zA-Z]{3,20}}/{id:[a-z0-9]{8,40}}/',
+    '\BO\Zmsbackend\Session\Api\SessionGet'
+)
+    ->setName("SessionGet");
+
+/**
+ *  @swagger
+ *  "/session/":
+ *      post:
+ *          summary: Update current Session
+ *          tags:
+ *              - session
+ *          parameters:
+ *              -   name: session
+ *                  description: session content
+ *                  in: body
+ *                  required: true
+ *                  schema:
+ *                      $ref: "schema/session.json"
+ *          responses:
+ *              200:
+ *                  description: get an updated or new created session object
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/session.json"
+ */
+\App::$slim->post(
+    '/session/',
+    '\BO\Zmsbackend\Session\Api\SessionUpdate'
+)
+    ->setName("SessionUpdate");
+
+/**
+ *  @swagger
+ *  "/session/{name}/{id}/":
+ *      delete:
+ *          summary: delete a session
+ *          tags:
+ *              - session
+ *          parameters:
+ *              -   name: name
+ *                  description: name from session (3 - 20 letters)
+ *                  required: true
+ *                  in: path
+ *                  type: string
+ *              -   name: id
+ *                  description: id from session (20 - 40 chars)
+ *                  required: true
+ *                  in: path
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: session deleted successfully
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/session.json"
+ *              404:
+ *                  description: "Could not find any available session"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/session.json"
+ */
+\App::$slim->delete(
+    '/session/{name:[a-zA-Z]{3,20}}/{id:[a-z0-9]{20,40}}/',
+    '\BO\Zmsbackend\Session\Api\SessionDelete'
+)
+    ->setName("SessionDelete");
+
+/**
+ *  @swagger
+ *  "/source/":
+ *      get:
+ *          summary: Get ist of sources
+ *          tags:
+ *              -   source
+ *          parameters:
+ *              -   name: resolveReferences
+ *                  description: "Resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/source.json"
+ *              404:
+ *                  description: "Could not find any available source"
+ */
+\App::$slim->get(
+    '/source/',
+    '\BO\Zmsbackend\Source\Api\SourceList'
+)
+    ->setName("SourceList");
+
+/**
+ *  @swagger
+ *  "/source/{source}/":
+ *      get:
+ *          summary: Get source by name
+ *          tags:
+ *              - source
+ *          parameters:
+ *              -   name: source
+ *                  description: optional name from source like dldb for example (3 - 20 letters)
+ *                  required: true
+ *                  in: path
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/source.json"
+ *              404:
+ *                  description: "Could not find any available source"
+ */
+\App::$slim->get(
+    '/source/{source:[a-zA-Z0-9]{3,20}}/',
+    '\BO\Zmsbackend\Source\Api\SourceGet'
+)
+    ->setName("SourceGet");
+
+/**
+ *  @swagger
+ *  "/source/":
+ *      post:
+ *          summary: Update a source
+ *          tags:
+ *              -   source
+ *          parameters:
+ *              -   name: source
+ *                  description: source content
+ *                  in: body
+ *                  required: true
+ *                  schema:
+ *                      $ref: "schema/source.json"
+ *              -   name: resolveReferences
+ *                  description: "Resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get an updated or new created source object
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/source.json"
+ */
+\App::$slim->post(
+    '/source/',
+    '\BO\Zmsbackend\Source\Api\SourceUpdate'
+)
+    ->setName("SourceUpdate");
+
+/**
+ *  @swagger
+ *  "/status/":
+ *      get:
+ *          summary: Get status of api
+ *          tags:
+ *              - status
+ *          parameters:
+ *              -   name: includeProcessStats
+ *                  description: "Collecting stats about processes slows the request down. For healthcheck, this data might not be necessary. Default is to include the stats, a value of 0 skip the stats."
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      $ref: "schema/status.json"
+ */
+\App::$slim->get(
+    '/status/',
+    '\BO\Zmsbackend\Status\Api\StatusGet'
+)
+    ->setName("StatusGet");
+
+/**
+ *  @swagger
+ *  "/status/deadlock/":
+ *      get:
+ *          summary: Example status on a database deadlock
+ *          description: Use this route if you want to test deadlock handling on a client
+ *          tags:
+ *              - status
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      $ref: "schema/status.json"
+ */
+\App::$slim->get(
+    '/status/deadlock/',
+    '\BO\Zmsbackend\Status\Api\StatusDeadlock'
+)
+    ->setName("StatusDeadlock");
+
+/**
+ *  @swagger
+ *  "/status/locktimeout/":
+ *      get:
+ *          summary: Example status on a database locktimeout
+ *          description: Use this route if you want to test lock timeout handling on a client
+ *          tags:
+ *              - status
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      $ref: "schema/status.json"
+ */
+\App::$slim->get(
+    '/status/locktimeout/',
+    '\BO\Zmsbackend\Status\Api\StatusLocktimeout'
+)
+    ->setName("StatusLocktimeout");
+
+/**
+ *  @swagger
+ *  "/ticketprinter/{hash}/":
+ *      get:
+ *          summary: Get current Ticketprinter by hash
+ *          tags:
+ *              - ticketprinter
+ *          parameters:
+ *              -   name: hash
+ *                  description: hash from ticketprinter
+ *                  required: true
+ *                  in: path
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: get a ticketprinter by his hash
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/ticketprinter.json"
+ *              404:
+ *                  description: "Could not find any available ticketprinter"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/ticketprinter.json"
+ */
+\App::$slim->get(
+    '/ticketprinter/{hash:[a-z0-9]{20,40}}/',
+    '\BO\Zmsbackend\Ticketprinter\Api\TicketprinterGet'
+)
+    ->setName("TicketprinterGet");
+
+/**
+ *  @swagger
+ *  "/ticketprinter/":
+ *      post:
+ *          summary: Update ticketprinter with list of scope, cluster or link buttons
+ *          tags:
+ *              - ticketprinter
+ *          parameters:
+ *              -   name: ticketprinter
+ *                  description: ticketprinter data for update
+ *                  in: body
+ *                  required: true
+ *                  schema:
+ *                      $ref: "schema/ticketprinter.json"
+ *          responses:
+ *              200:
+ *                  description: get an updated ticketprinter object
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/ticketprinter.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              403:
+ *                  description: "hash is not valid"
+ *              404:
+ *                  description: "Could not find any available ticketprinter"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/ticketprinter.json"
+ */
+\App::$slim->post(
+    '/ticketprinter/',
+    '\BO\Zmsbackend\Ticketprinter\Api\Ticketprinter'
+)
+    ->setName("Ticketprinter");
+
+/**
+ *  @swagger
+ *  "/useraccount/{loginname}/":
+ *      get:
+ *          summary: Get an useraccount by loginname
+ *          tags:
+ *              - useraccount
+ *          parameters:
+ *              -   name: loginname
+ *                  description: useraccount number
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/useraccount.json"
+ *              404:
+ *                  description: "useraccount loginname does not exists"
+ */
+\App::$slim->get(
+    '/useraccount/{loginname}/',
+    '\BO\Zmsbackend\Useraccount\Api\UseraccountGet'
+)
+    ->setName("UseraccountGet");
+
+/**
+ *  @swagger
+ *  "/useraccount/":
+ *      post:
+ *          summary: add a new useraccount
+ *          tags:
+ *              - useraccount
+ *          parameters:
+ *              -   name: useraccount
+ *                  description: useraccount data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/useraccount.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/useraccount.json"
+ *              404:
+ *                  description: "Missing required properties in the useraccount"
+ */
+\App::$slim->post(
+    '/useraccount/',
+    '\BO\Zmsbackend\Useraccount\Api\UseraccountAdd'
+)
+    ->setName("UseraccounAdd");
+
+/**
+ *  @swagger
+ *  "/useraccount/{loginname}/":
+ *      post:
+ *          summary: Update an useraccount
+ *          tags:
+ *              - useraccount
+ *          parameters:
+ *              -   name: loginname
+ *                  description: useraccount number
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: useraccount
+ *                  description: useraccount data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/useraccount.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/useraccount.json"
+ *              404:
+ *                  description: "useraccount loginname does not exists"
+ */
+\App::$slim->post(
+    '/useraccount/{loginname}/',
+    '\BO\Zmsbackend\Useraccount\Api\UseraccountUpdate'
+)
+    ->setName("UseraccountUpdate");
+
+/**
+ *  @swagger
+ *  "/useraccount/{loginname}/":
+ *      delete:
+ *          summary: Deletes an useraccount
+ *          tags:
+ *              - useraccount
+ *          parameters:
+ *              -   name: loginname
+ *                  description: useraccount number
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *              404:
+ *                  description: "useraccount loginname does not exists"
+ */
+\App::$slim->delete(
+    '/useraccount/{loginname}/',
+    '\BO\Zmsbackend\Useraccount\Api\UseraccountDelete'
+)
+    ->setName("UseraccountDelete");
+
+/**
+ *  @swagger
+ *  "/warehouse/":
+ *      get:
+ *          summary: Get a list of available subjects
+ *          x-since: 2.15
+ *          tags:
+ *              - exchange
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/exchange.json"
+ *              404:
+ *                  description: "report does not exists"
+ */
+\App::$slim->get(
+    '/warehouse/',
+    '\BO\Zmsbackend\Warehouse\Api\WarehouseSubjectListGet'
+)
+    ->setName("WarehouseSubjectListGet");
+
+/**
+ *  @swagger
+ *  "/warehouse/{subject}/":
+ *      get:
+ *          summary: Get a list of available subject IDs
+ *          x-since: 2.15
+ *          tags:
+ *              - exchange
+ *          parameters:
+ *              -   name: subject
+ *                  description: The subject is the name of the data set
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/exchange.json"
+ *              404:
+ *                  description: "report does not exists"
+ */
+\App::$slim->get(
+    '/warehouse/{subject}/',
+    '\BO\Zmsbackend\Warehouse\Api\WarehouseSubjectGet'
+)
+    ->setName("WarehouseSubjectGet");
+
+/**
+ *  @swagger
+ *  "/warehouse/{subject}/{subjectId}/":
+ *      get:
+ *          summary: Get a list of available time periods on subject
+ *          x-since: 2.15
+ *          tags:
+ *              - exchange
+ *          parameters:
+ *              -   name: subject
+ *                  description: The subject is the name of the data set
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: subjectId
+ *                  description: A reference ID for the subject, an "_" means no ID necessary
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/exchange.json"
+ *              404:
+ *                  description: "report does not exists"
+ */
+\App::$slim->get(
+    '/warehouse/{subject}/{subjectId}/',
+    '\BO\Zmsbackend\Warehouse\Api\WarehousePeriodListGet'
+)
+    ->setName("WarehousePeriodListGet");
+
+/**
+ *  @swagger
+ *  "/warehouse/{subject}/{subjectId}/{period}/":
+ *      get:
+ *          summary: Get a set of data for statistical usage
+ *          x-since: 2.15
+ *          tags:
+ *              - exchange
+ *          parameters:
+ *              -   name: subject
+ *                  description: The subject is the name of the data set
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: subjectId
+ *                  description: A reference ID for the subject, an "_" means no ID necessary
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: period
+ *                  description: A string referring to a date period. A "_" if no period is necessary, a single year like "2017" for getting monthly cumlative reports, a "2017-11" for getting daily cumulative reports and "2017-11-11" for getting hourly reports
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/exchange.json"
+ *              404:
+ *                  description: "report does not exists"
+ */
+\App::$slim->get(
+    '/warehouse/{subject}/{subjectId}/{period}/',
+    '\BO\Zmsbackend\Warehouse\Api\WarehousePeriodGet'
+)
+    ->setName("WarehousePeriodGet");
+
+/**
+ *  @swagger
+ *  "/workstation/":
+ *      get:
+ *          summary: Get the current workstation based on authkey
+ *          tags:
+ *              - workstation
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              401:
+ *                  description: "login required"
+ */
+\App::$slim->get(
+    '/workstation/',
+    '\BO\Zmsbackend\Workstation\Api\WorkstationGet'
+)
+    ->setName("WorkstationGet");
+
+/**
+ *  @swagger
+ *  "/workstation/":
+ *      post:
+ *          summary: Update a workstation, e.g. to change the scope
+ *          tags:
+ *              - workstation
+ *          parameters:
+ *              -   name: workstation
+ *                  description: workstation data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/workstation.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              401:
+ *                  description: "login required"
+ *              404:
+ *                  description: "useraccount loginname does not exists"
+ *                  x-since: 2.12
+ */
+\App::$slim->post(
+    '/workstation/',
+    '\BO\Zmsbackend\Workstation\Api\WorkstationUpdate'
+)
+    ->setName("WorkstationUpdate");
+
+/**
+ *  @swagger
+ *  "/workstation/password/":
+ *      post:
+ *          operationId: WorkstationPassword
+ *          summary: Change the password and/or username of a useraccount
+ *          x-since: 2.10
+ *          tags:
+ *              - workstation
+ *          parameters:
+ *              -   name: useraccount
+ *                  description: useraccount data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/useraccount.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/useraccount.json"
+ *              401:
+ *                  description: "invalid credentials"
+ *                  x-since: 2.12
+ *              404:
+ *                  description: "useraccount loginname does not exists"
+ */
+\App::$slim->post(
+    '/workstation/password/',
+    '\BO\Zmsbackend\Workstation\Api\WorkstationPassword'
+)
+    ->setName('WorkstationPassword');
+
+/**
+ *  @swagger
+ *  "/workstation/oauth/":
+ *      post:
+ *          summary: Create a workstation for an username, used to oauth
+ *          tags:
+ *              - workstation
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              404:
+ *                  description: "useraccount loginname does not exists"
+ */
+\App::$slim->post(
+    '/workstation/oauth/',
+    '\BO\Zmsbackend\Workstation\Api\WorkstationOAuth'
+)
+    ->setName("WorkstationOAuth");
+
+
+/**
+ *  @swagger
+ *  "/workstation/login/":
+ *      post:
+ *          summary: Create a workstation for an username, used to login
+ *          tags:
+ *              - workstation
+ *          parameters:
+ *              -   name: useraccount
+ *                  description: useraccount data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/useraccount.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              404:
+ *                  description: "useraccount loginname does not exists"
+ */
+\App::$slim->post(
+    '/workstation/login/',
+    '\BO\Zmsbackend\Workstation\Api\WorkstationLogin'
+)
+    ->setName("WorkstationLogin");
+
+/**
+ *  @swagger
+ *  "/workstation/login/{loginname}/":
+ *      delete:
+ *          operationId: WorkstationDelete
+ *          summary: Logout a user and delete his workstation entry
+ *          tags:
+ *              - workstation
+ *          parameters:
+ *              -   name: loginname
+ *                  description: useraccount number
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              404:
+ *                  description: "useraccount loginname does not exists"
+ */
+\App::$slim->delete(
+    '/workstation/login/{loginname}/',
+    '\BO\Zmsbackend\Workstation\Api\WorkstationDelete'
+)
+    ->setName("WorkstationDelete");
+
+/**
+ *  @swagger
+ *  "/workstation/process/called/":
+ *      post:
+ *          summary: Set a process to status called and assign to workstation
+ *          x-since: 2.11
+ *          tags:
+ *              - workstation
+ *              - process
+ *          parameters:
+ *              -   name: process
+ *                  x-since: 2.13
+ *                  description: process data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              404:
+ *                  description: "process does not exists"
+ */
+\App::$slim->post(
+    '/workstation/process/called/',
+    '\BO\Zmsbackend\Workstation\Api\WorkstationProcess'
+)
+    ->setName("WorkstationProcess");
+
+/**
+ *  @swagger
+ *  "/workstation/process/waitingnumber/":
+ *      post:
+ *          summary: Get a waitingNumber according to workstations scope or cluster
+ *          x-since: 2.11
+ *          tags:
+ *              - workstation
+ *              - process
+ *          parameters:
+ *              -   name: workstation
+ *                  description: workstation with process data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/workstation.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/process.json"
+ *              401:
+ *                  description: "login required"
+ *                  x-since: 2.12
+ *              404:
+ *                  description: "scope or cluster not found"
+ */
+\App::$slim->post(
+    '/workstation/process/waitingnumber/',
+    '\BO\Zmsbackend\Workstation\Api\WorkstationProcessWaitingnumber'
+)
+    ->setName("WorkstationProcessWaitingnumber");
+
+/**
+ *  @swagger
+ *  "/workstation/process/":
+ *      delete:
+ *          summary: Remove a process from workstation
+ *          tags:
+ *              - workstation
+ *              - process
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              404:
+ *                  description: "process does not exists"
+ */
+\App::$slim->delete(
+    '/workstation/process/',
+    '\BO\Zmsbackend\Workstation\Api\WorkstationProcessRemove'
+)
+    ->setName("WorkstationProcessRemove");
+
+/**
+ *  @swagger
+ *  "/workstation/process/parked/":
+ *      delete:
+ *          summary: Park a process from workstation
+ *          tags:
+ *              - workstation
+ *              - process
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              404:
+ *                  description: "process does not exists"
+ */
+\App::$slim->delete(
+    '/workstation/process/parked/',
+    '\BO\Zmsbackend\Workstation\Api\WorkstationProcessParked'
+)
+    ->setName("WorkstationProcessParked");
+
+/**
+ *  @swagger
+ *  "/overallcalendar/":
+ *      get:
+ *          summary: Returns slot information from the overall calendar
+ *          description: |
+ *              Returns all slot rows (or only those changed after *updateAfter*)
+ *              aggregated by day, scope, time and seat.
+ *          tags:
+ *              - overallcalendar
+ *          parameters:
+ *              - name: scopeIds
+ *                in: query
+ *                required: true
+ *                description: CSV list of scope IDs, e.g. `58,60`
+ *                schema:
+ *                  type: string
+ *              - name: dateFrom
+ *                in: query
+ *                required: true
+ *                description: First day (YYYY-MM-DD)
+ *                schema:
+ *                  type: string
+ *              - name: dateUntil
+ *                in: query
+ *                required: true
+ *                description: Last day (YYYY-MM-DD)
+ *                schema:
+ *                  type: string
+ *              - name: updateAfter
+ *                in: query
+ *                required: false
+ *                description: Only rows with `updated_at` &gt; this ISO timestamp
+ *                schema:
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: List of days with slot information
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              $ref: "schema/overallCalendar.json"
+ */
+\App::$slim->get(
+    '/overallcalendar/',
+    '\BO\Zmsbackend\Calendar\Api\OverallCalendarRead'
+)->setName('OverallCalendarRead');
+
+/**
+ *  @swagger
+ *  "/process/externaluserid/{externalUserId}/":
+ *      get:
+ *          summary: Get a list of processes by external user id
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: externalUserId
+ *                  description: external user id
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: filterId
+ *                  description: "Get a certain process for a given user"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success, also if process list is empty"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ */
+\App::$slim->get(
+    '/process/externaluserid/{externalUserId}/',
+    '\BO\Zmsbackend\Process\Api\ProcessListByExternalUserId'
+)->setName("ProcessListByExternalUserId");
+
+
+/* ---------------------------------------------------------------------------
+ * maintenance
+ * -------------------------------------------------------------------------*/
+
+\App::$slim->get(
+    '/healthcheck/',
+    '\BO\Zmsbackend\Status\Api\Healthcheck'
+)
+    ->setName("healthcheck");
