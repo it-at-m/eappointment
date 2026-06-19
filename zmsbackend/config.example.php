@@ -42,7 +42,11 @@ if (getenv('MYSQL_PORT_RO')) {
 define('ZMS_IDENTIFIER', getenv('ZMS_IDENTIFIER') ? getenv('ZMS_IDENTIFIER') : 'zms');
 define('ZMS_MODULE_NAME', 'zmsbackend');
 $value = getenv('ZMS_BACKEND_TWIG_CACHE');
-define('ZMS_BACKEND_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '/cache/'));
+if ($value === false || $value === '' || $value === 'false') {
+    define('ZMS_BACKEND_TWIG_CACHE', false);
+} else {
+    define('ZMS_BACKEND_TWIG_CACHE', $value);
+}
 
 class App extends \BO\Zmsbackend\Application
 {
