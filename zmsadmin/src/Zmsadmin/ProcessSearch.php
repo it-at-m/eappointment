@@ -91,7 +91,7 @@ class ProcessSearch extends BaseController
                         'service' => $service ? trim($service) : null,
                         'provider' => $provider ? trim($provider) : null,
                         'userAction' => (int) $userAction,
-                        'date' => $date
+                        'date' => (trim($date) !== '' ? trim($date) : null)
                     ])
                 ->getCollection();
             $logList = $this->filterLogListForUserRights($logList, $scopeIds);
@@ -162,3 +162,4 @@ class ProcessSearch extends BaseController
         return $list;
     }
 }
+
