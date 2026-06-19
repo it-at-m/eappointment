@@ -1,6 +1,6 @@
 #!/bin/bash
 DIR=$(dirname ${BASH_SOURCE[0]})
-BIN=$DIR/../vendor/bin
+BIN=$DIR/../bin
 API=$DIR/../bin/api
 EXPORT=$DIR/../data/
 set -a

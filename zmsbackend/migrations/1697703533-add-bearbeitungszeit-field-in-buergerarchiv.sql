@@ -1,0 +1,1 @@
+ALTER TABLE `buergerarchiv` ADD COLUMN `bearbeitungszeit` integer (11) DEFAULT NULL;

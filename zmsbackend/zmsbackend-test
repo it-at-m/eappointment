@@ -90,7 +90,7 @@ section "3. Fixture Setup"
 mkdir -p "$DATA_DIR"
 find "$DATA_DIR" -mindepth 1 -not -name ".gitignore" -delete || true
 for f in services_de.json locations_de.json topic_de.json; do
-  cp -f "$PROJECT_ROOT/zmsdb/tests/Zmsdb/fixtures/$f" "$DATA_DIR/$f" 2>/dev/null || warn "Failed to copy fixture: $f"
+  cp -f "$MODULE_DIR/tests/Zmsbackend/Service/fixtures/$f" "$DATA_DIR/$f" 2>/dev/null || warn "Failed to copy fixture: $f"
 done
 [ -f "$DATA_DIR/.gitignore" ] || printf "*\n!.gitignore\n" > "$DATA_DIR/.gitignore"
 
@@ -105,7 +105,7 @@ export MYSQL_DATABASE="$TEST_DB"
 export TZ="UTC"
 export ZMS_DLDB_PATH="$DATA_DIR"
 info "Using DLDB import path: $ZMS_DLDB_PATH"
-cd "$PROJECT_ROOT/zmsdb"
+cd "$MODULE_DIR"
 
 php -r 'require "vendor/autoload.php"; exit(class_exists("BO\\Zmsdldb\\FileAccess")?0:42);' \
   || (composer update eappointment/zmsdldb -W --no-progress --prefer-dist && composer dump-autoload -o)

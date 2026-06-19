@@ -1,6 +1,6 @@
 #!/bin/bash
 DIR=$(dirname ${BASH_SOURCE[0]})
-BIN=$DIR/../vendor/bin
+BIN=$DIR/../bin
 CRON_LOG=$DIR/../bin/cronLog
 EXPORT=$DIR/../data/
 

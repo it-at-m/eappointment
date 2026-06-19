@@ -1,0 +1,1 @@
+ALTER TABLE `request_provider` ADD COLUMN `bookable` SMALLINT(5) UNSIGNED DEFAULT 1;

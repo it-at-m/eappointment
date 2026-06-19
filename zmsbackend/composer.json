@@ -39,7 +39,6 @@
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsdldb": "@dev",
         "eappointment/zmsentities": "@dev",
-        "eappointment/zmsdb": "@dev",
         "symfony/cache": "^6.0",
         "psr/simple-cache": "^3.0",
         "monolog/monolog": "^2.0",
@@ -67,7 +66,34 @@
             "@prepare-dirs"
         ]
     },
-    "bin": [],
+    "bin": [
+        "bin/archiveStatisticData",
+        "bin/anonymizeStatisticData",
+        "bin/calculateDailyWaitingStatistic",
+        "bin/cleanupOverviewCalendar",
+        "bin/calculateSlots",
+        "bin/calculateDayOffList",
+        "bin/deallocateAppointmentData",
+        "bin/deleteUnconfirmedAppointmentData",
+        "bin/deleteAppointmentData",
+        "bin/deleteBlacklistedMail",
+        "bin/deleteDayoffData",
+        "bin/deleteOldAvailabilityData",
+        "bin/deleteOldEventLogEntries",
+        "bin/deleteOldLogs",
+        "bin/deleteArchivedProcessForToday",
+        "bin/deleteReservedData",
+        "bin/deleteSessionData",
+        "bin/deleteTicketprinterData",
+        "bin/importTestData",
+        "bin/migrate",
+        "bin/resetApiQuota",
+        "bin/resetGhostWorkstationCount",
+        "bin/resetWorkstations",
+        "bin/sendMailReminder",
+        "bin/sendProcessListToScopeAdmin",
+        "bin/updateDldbData"
+    ],
     "autoload": {
         "psr-4": {
             "BO\\Zmsbackend\\": "src/Zmsbackend/",

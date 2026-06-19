@@ -33,7 +33,7 @@ if (is_dir($fixturesFrom)) {
     }
     echo "copied api fixtures to $fixturesTo\n";
 }
-$serviceFixturesFrom = $GLOBALS['zdb'] . '/tests/Zmsdb/fixtures';
+$serviceFixturesFrom = $GLOBALS['zb'] . '/tests/Zmsbackend/Service/fixtures';
 $serviceFixturesTo = $GLOBALS['zb'] . '/tests/Zmsbackend/Service/fixtures';
 if (is_dir($serviceFixturesFrom)) {
     ensureDir($serviceFixturesTo);

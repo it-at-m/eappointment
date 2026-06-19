@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "99a3164fa4e496feacd7fd3522fe73d9",
+    "content-hash": "8713cfd6c549190aa745d3791d4cda3c",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -184,7 +184,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "3c108695d13219acd0ac9167ac8042d215f386d1"
+                "reference": "fa993f7010dc595e9bf95a9fdb0099b16a833cee"
             },
             "require": {
                 "ext-json": ">=0",
@@ -223,86 +223,6 @@
                 }
             ],
             "description": "Validator for parameters and validation helper",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
-        },
-        {
-            "name": "eappointment/zmsapi",
-            "version": "dev-chore-gh-2604-refactor-zmsapi-and-zmsdb-into-zmsbackend",
-            "dist": {
-                "type": "path",
-                "url": "../zmsapi",
-                "reference": "3c108695d13219acd0ac9167ac8042d215f386d1"
-            },
-            "require": {
-                "eappointment/mellon": "@dev",
-                "eappointment/zmsclient": "@dev",
-                "eappointment/zmsdb": "@dev",
-                "eappointment/zmsdldb": "@dev",
-                "eappointment/zmsentities": "@dev",
-                "eappointment/zmsslim": "@dev",
-                "league/climate": "^3.2",
-                "monolog/monolog": "^2.0",
-                "php": ">=8.3",
-                "psr/simple-cache": "^3.0",
-                "roave/security-advisories": "dev-latest",
-                "symfony/cache": "^6.0",
-                "ulrichsg/getopt-php": "^2.3"
-            },
-            "require-dev": {
-                "aronduby/dump": "*",
-                "mockery/mockery": "^1.0.0",
-                "phpmd/phpmd": "@stable",
-                "phpunit/phpunit": "^11",
-                "roave/security-advisories": "dev-latest",
-                "squizlabs/php_codesniffer": "*",
-                "vimeo/psalm": "6.5.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "BO\\Zmsapi\\": "src/Zmsapi/",
-                    "BO\\Zmsapi\\Tests\\": "tests/Zmsapi/"
-                }
-            },
-            "scripts": {
-                "clean": [
-                    "rm -f public/doc/assets/*.* && rm -f public/_test/assets/*.*"
-                ],
-                "command": [
-                    "bin/configure"
-                ],
-                "prepare-dirs": [
-                    "mkdir -p public/_test/assets && mkdir -p public/doc/assets"
-                ],
-                "wget-files": [
-                    "wget https://rebilly.github.io/ReDoc/releases/v1.22.3/redoc.min.js -O public/doc/assets/redoc.min.js",
-                    "wget https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-bundle.js -O public/_test/assets/swagger-ui-bundle.js",
-                    "wget https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui.css -O public/_test/assets/swagger-ui.css",
-                    "wget https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-standalone-preset.js -O public/_test/assets/swagger-ui-standalone-preset.js",
-                    "sha256sum --status -c checksums.txt"
-                ],
-                "post-install-cmd": [
-                    "@prepare-dirs",
-                    "@wget-files"
-                ],
-                "post-update-cmd": [
-                    "@prepare-dirs",
-                    "@wget-files"
-                ]
-            },
-            "license": [
-                "EUPL-1.2"
-            ],
-            "authors": [
-                {
-                    "name": "Mathias Fischer",
-                    "email": "mathias.fischer@berlinonline.de"
-                }
-            ],
-            "description": "This application offers a REST-like interface for ZMS functions and database access.",
             "transport-options": {
                 "symlink": true,
                 "relative": true
@@ -369,107 +289,17 @@
             }
         },
         {
-            "name": "eappointment/zmsdb",
-            "version": "dev-chore-gh-2604-refactor-zmsapi-and-zmsdb-into-zmsbackend",
-            "dist": {
-                "type": "path",
-                "url": "../zmsdb",
-                "reference": "3c108695d13219acd0ac9167ac8042d215f386d1"
-            },
-            "require": {
-                "aura/sql": "^5",
-                "eappointment/mellon": "@dev",
-                "eappointment/zmsapi": "@dev",
-                "eappointment/zmsclient": "@dev",
-                "eappointment/zmsdldb": "@dev",
-                "eappointment/zmsentities": "@dev",
-                "eappointment/zmsslim": "@dev",
-                "ext-intl": "*",
-                "ext-json": ">=1.0",
-                "ext-mbstring": ">=0",
-                "ext-pcre": ">=0",
-                "ext-pdo": "*",
-                "php": ">=8.3",
-                "psr/simple-cache": "^3.0",
-                "roave/security-advisories": "dev-latest",
-                "symfony/cache": "^6.0"
-            },
-            "require-dev": {
-                "mockery/mockery": "^1.0.0",
-                "phpmd/phpmd": "@stable",
-                "phpunit/phpunit": "^11",
-                "roave/security-advisories": "dev-latest",
-                "squizlabs/php_codesniffer": "^4.0",
-                "vimeo/psalm": "6.5.0"
-            },
-            "bin": [
-                "bin/archiveStatisticData",
-                "bin/anonymizeStatisticData",
-                "bin/calculateDailyWaitingStatistic",
-                "bin/cleanupOverviewCalendar",
-                "bin/calculateSlots",
-                "bin/calculateDayOffList",
-                "bin/deallocateAppointmentData",
-                "bin/deleteUnconfirmedAppointmentData",
-                "bin/deleteAppointmentData",
-                "bin/deleteBlacklistedMail",
-                "bin/deleteDayoffData",
-                "bin/deleteOldAvailabilityData",
-                "bin/deleteOldEventLogEntries",
-                "bin/deleteOldLogs",
-                "bin/deleteArchivedProcessForToday",
-                "bin/deleteReservedData",
-                "bin/deleteSessionData",
-                "bin/deleteTicketprinterData",
-                "bin/importTestData",
-                "bin/migrate",
-                "bin/resetApiQuota",
-                "bin/resetGhostWorkstationCount",
-                "bin/resetWorkstations",
-                "bin/sendMailReminder",
-                "bin/sendProcessListToScopeAdmin",
-                "bin/updateDldbData"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "BO\\Zmsdb\\": "src/Zmsdb/",
-                    "BO\\Zmsdb\\Tests\\": "tests/Zmsdb/"
-                }
-            },
-            "scripts": {
-                "command": [
-                    "bin/configure"
-                ]
-            },
-            "license": [
-                "EUPL-1.2"
-            ],
-            "authors": [
-                {
-                    "name": "mfischer",
-                    "email": "mathias.fischer@berlinonline.de"
-                }
-            ],
-            "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
-        },
-        {
             "name": "eappointment/zmsdldb",
             "version": "dev-chore-gh-2604-refactor-zmsapi-and-zmsdb-into-zmsbackend",
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "3c108695d13219acd0ac9167ac8042d215f386d1"
+                "reference": "fa993f7010dc595e9bf95a9fdb0099b16a833cee"
             },
             "require": {
                 "eappointment/mellon": "@dev",
-                "eappointment/zmsapi": "@dev",
+                "eappointment/zmsbackend": "@dev",
                 "eappointment/zmsclient": "@dev",
-                "eappointment/zmsdb": "@dev",
                 "eappointment/zmsentities": "@dev",
                 "eappointment/zmsslim": "@dev",
                 "ext-curl": ">=0",
@@ -542,7 +372,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "3c108695d13219acd0ac9167ac8042d215f386d1"
+                "reference": "fa993f7010dc595e9bf95a9fdb0099b16a833cee"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -600,7 +430,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "3c108695d13219acd0ac9167ac8042d215f386d1"
+                "reference": "fa993f7010dc595e9bf95a9fdb0099b16a833cee"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -2710,12 +2540,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "23135d23cd7d8f3937072157e2022976e8c5d351"
+                "reference": "2ac91eb2e2659b4b4faf65e446feb1bbbec7c5ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/23135d23cd7d8f3937072157e2022976e8c5d351",
-                "reference": "23135d23cd7d8f3937072157e2022976e8c5d351",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/2ac91eb2e2659b4b4faf65e446feb1bbbec7c5ce",
+                "reference": "2ac91eb2e2659b4b4faf65e446feb1bbbec7c5ce",
                 "shasum": ""
             },
             "conflict": {
@@ -2821,9 +2651,9 @@
                 "cakephp/database": ">=4.2,<4.2.12|>=4.3,<4.3.11|>=4.4,<4.4.10",
                 "cardgate/magento2": "<2.0.33",
                 "cardgate/woocommerce": "<=3.1.15",
-                "cart2quote/module-quotation": ">=4.1.6,<=4.4.5|>=5,<5.4.4",
+                "cart2quote/module-quotation": ">=4.1.6,<4.4.6|>=5,<5.4.4",
                 "cart2quote/module-quotation-encoded": ">=4.1.6,<=4.4.5|>=5,<5.4.4",
-                "cartalyst/sentry": "<=2.1.6",
+                "cartalyst/sentry": "<2.1.7",
                 "catfan/medoo": "<1.7.5",
                 "causal/oidc": "<4",
                 "cecil/cecil": "<7.47.1",
@@ -2861,6 +2691,7 @@
                 "coreshop/core-shop": "<4.1.9|==5",
                 "corveda/phpsandbox": "<1.3.5",
                 "cosenary/instagram": "<=2.3",
+                "cotonti/cotonti": "<=1",
                 "couleurcitron/tarteaucitron-wp": "<0.3",
                 "cpsit/typo3-mailqueue": "<0.4.5|>=0.5,<0.5.2",
                 "craftcms/aws-s3": ">=2.0.2,<=2.2.4",
@@ -3062,10 +2893,10 @@
                 "gregwar/rst": "<1.0.3",
                 "grumpydictator/firefly-iii": "<=6.6.2",
                 "gugoan/economizzer": "<=0.9.0.0-beta1",
-                "guzzlehttp/guzzle": "<6.5.8|>=7,<7.4.5",
+                "guzzlehttp/guzzle": "<7.12.1",
                 "guzzlehttp/guzzle-services": "<1.5.4",
                 "guzzlehttp/oauth-subscriber": "<0.8.1",
-                "guzzlehttp/psr7": "<2.10.2",
+                "guzzlehttp/psr7": "<2.12.1",
                 "haffner/jh_captcha": "<=2.1.3|>=3,<=3.0.2",
                 "handcraftedinthealps/goodby-csv": "<1.4.3",
                 "harvesthq/chosen": "<1.8.7",
@@ -3120,6 +2951,7 @@
                 "jasig/phpcas": "<1.3.3",
                 "jbartels/wec-map": "<3.0.3",
                 "jcbrand/converse.js": "<3.3.3",
+                "jleehr/canto-saas-api": "<=2",
                 "joedolson/my-calendar": "<3.7.7",
                 "joelbutcher/socialstream": "<5.6|>=6,<6.2",
                 "johnbillion/query-monitor": "<3.20.4",
@@ -3369,7 +3201,7 @@
                 "pimcore/demo": "<10.3",
                 "pimcore/ecommerce-framework-bundle": "<1.0.10",
                 "pimcore/perspective-editor": "<1.5.1",
-                "pimcore/pimcore": "<=12.3.6",
+                "pimcore/pimcore": "<=12.3.8",
                 "pimcore/web2print-tools-bundle": "<=5.2.1|>=6.0.0.0-RC1-dev,<=6.1",
                 "piwik/piwik": "<1.11",
                 "pixelfed/pixelfed": "<0.12.5",
@@ -3393,8 +3225,8 @@
                 "prestashop/ps_linklist": "<3.1",
                 "privatebin/privatebin": "<1.4|>=1.5,<1.7.4|>=1.7.7,<2.0.3",
                 "processwire/processwire": "<=3.0.255",
-                "propel/propel": ">=2.0.0.0-alpha1,<=2.0.0.0-alpha7",
-                "propel/propel1": ">=1,<=1.7.1",
+                "propel/propel": ">=2.0.0.0-alpha1,<2.0.0.0-alpha8",
+                "propel/propel1": ">=1,<1.7.2",
                 "psy/psysh": "<=0.11.22|>=0.12,<=0.12.18",
                 "pterodactyl/panel": "<1.12.3",
                 "ptheofan/yii2-statemachine": ">=2.0.0.0-RC1-dev,<=2",
@@ -3457,7 +3289,7 @@
                 "silverstripe/assets": "<2.4.5|>=3,<3.1.3",
                 "silverstripe/cms": "<4.11.3",
                 "silverstripe/comments": ">=1.3,<3.1.1",
-                "silverstripe/forum": "<=0.6.1|>=0.7,<=0.7.3",
+                "silverstripe/forum": "<0.6.2|>=0.7,<0.7.4",
                 "silverstripe/framework": "<5.3.23",
                 "silverstripe/graphql": ">=2,<2.0.5|>=3,<3.8.2|>=4,<4.3.7|>=5,<5.1.3",
                 "silverstripe/hybridsessions": ">=1,<2.4.1|>=2.5,<2.5.1",
@@ -3807,7 +3639,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-19T11:35:13+00:00"
+            "time": "2026-06-19T16:52:16+00:00"
         },
         {
             "name": "seld/cli-prompt",
@@ -4495,28 +4327,27 @@
         },
         {
             "name": "symfony/intl",
-            "version": "v7.4.8",
+            "version": "v8.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/intl.git",
-                "reference": "7cfb7792d580dea833647420afd5f2f98df8457b"
+                "reference": "7822dffb3e2128501a1ac781db5d8217fc9caac1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/intl/zipball/7cfb7792d580dea833647420afd5f2f98df8457b",
-                "reference": "7cfb7792d580dea833647420afd5f2f98df8457b",
+                "url": "https://api.github.com/repos/symfony/intl/zipball/7822dffb3e2128501a1ac781db5d8217fc9caac1",
+                "reference": "7822dffb3e2128501a1ac781db5d8217fc9caac1",
                 "shasum": ""
             },
             "require": {
-                "php": ">=8.2",
-                "symfony/deprecation-contracts": "^2.5|^3"
+                "php": ">=8.4.1"
             },
             "conflict": {
-                "symfony/string": "<7.1"
+                "symfony/string": "<7.4"
             },
             "require-dev": {
-                "symfony/filesystem": "^6.4|^7.0|^8.0",
-                "symfony/var-exporter": "^6.4|^7.0|^8.0"
+                "symfony/filesystem": "^7.4|^8.0",
+                "symfony/var-exporter": "^7.4|^8.0"
             },
             "type": "library",
             "autoload": {
@@ -4561,7 +4392,7 @@
                 "localization"
             ],
             "support": {
-                "source": "https://github.com/symfony/intl/tree/v7.4.8"
+                "source": "https://github.com/symfony/intl/tree/v8.1.0"
             },
             "funding": [
                 {
@@ -4581,24 +4412,24 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-03-30T12:55:43+00:00"
+            "time": "2026-05-29T05:06:50+00:00"
         },
         {
             "name": "symfony/options-resolver",
-            "version": "v7.4.8",
+            "version": "v8.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/options-resolver.git",
-                "reference": "2888fcdc4dc2fd5f7c7397be78631e8af12e02b4"
+                "reference": "88f9c561f678a02d54b897014049fa839e33ff82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/2888fcdc4dc2fd5f7c7397be78631e8af12e02b4",
-                "reference": "2888fcdc4dc2fd5f7c7397be78631e8af12e02b4",
+                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/88f9c561f678a02d54b897014049fa839e33ff82",
+                "reference": "88f9c561f678a02d54b897014049fa839e33ff82",
                 "shasum": ""
             },
             "require": {
-                "php": ">=8.2",
+                "php": ">=8.4.1",
                 "symfony/deprecation-contracts": "^2.5|^3"
             },
             "type": "library",
@@ -4632,7 +4463,7 @@
                 "options"
             ],
             "support": {
-                "source": "https://github.com/symfony/options-resolver/tree/v7.4.8"
+                "source": "https://github.com/symfony/options-resolver/tree/v8.1.0"
             },
             "funding": [
                 {
@@ -4652,7 +4483,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-03-24T13:12:05+00:00"
+            "time": "2026-05-29T05:06:50+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -10350,35 +10181,34 @@
         },
         {
             "name": "symfony/string",
-            "version": "v7.4.13",
+            "version": "v8.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/string.git",
-                "reference": "961683010db3b27ec6ebcd7308e6e1ee8fa7ffde"
+                "reference": "afd5944f4005862d961efb85c8bbd5c523c4e3c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/string/zipball/961683010db3b27ec6ebcd7308e6e1ee8fa7ffde",
-                "reference": "961683010db3b27ec6ebcd7308e6e1ee8fa7ffde",
+                "url": "https://api.github.com/repos/symfony/string/zipball/afd5944f4005862d961efb85c8bbd5c523c4e3c9",
+                "reference": "afd5944f4005862d961efb85c8bbd5c523c4e3c9",
                 "shasum": ""
             },
             "require": {
-                "php": ">=8.2",
-                "symfony/deprecation-contracts": "^2.5|^3.0",
-                "symfony/polyfill-ctype": "~1.8",
-                "symfony/polyfill-intl-grapheme": "~1.33",
-                "symfony/polyfill-intl-normalizer": "~1.0",
-                "symfony/polyfill-mbstring": "~1.0"
+                "php": ">=8.4.1",
+                "symfony/polyfill-ctype": "^1.8",
+                "symfony/polyfill-intl-grapheme": "^1.33",
+                "symfony/polyfill-intl-normalizer": "^1.0",
+                "symfony/polyfill-mbstring": "^1.0"
             },
             "conflict": {
                 "symfony/translation-contracts": "<2.5"
             },
             "require-dev": {
-                "symfony/emoji": "^7.1|^8.0",
-                "symfony/http-client": "^6.4|^7.0|^8.0",
-                "symfony/intl": "^6.4|^7.0|^8.0",
+                "symfony/emoji": "^7.4|^8.0",
+                "symfony/http-client": "^7.4|^8.0",
+                "symfony/intl": "^7.4|^8.0",
                 "symfony/translation-contracts": "^2.5|^3.0",
-                "symfony/var-exporter": "^6.4|^7.0|^8.0"
+                "symfony/var-exporter": "^7.4|^8.0"
             },
             "type": "library",
             "autoload": {
@@ -10417,7 +10247,7 @@
                 "utf8"
             ],
             "support": {
-                "source": "https://github.com/symfony/string/tree/v7.4.13"
+                "source": "https://github.com/symfony/string/tree/v8.1.0"
             },
             "funding": [
                 {
@@ -10437,7 +10267,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-05-23T15:23:29+00:00"
+            "time": "2026-05-29T05:06:50+00:00"
         },
         {
             "name": "theseer/tokenizer",
@@ -10677,7 +10507,6 @@
     "stability-flags": {
         "eappointment/mellon": 20,
         "eappointment/zmsclient": 20,
-        "eappointment/zmsdb": 20,
         "eappointment/zmsdldb": 20,
         "eappointment/zmsentities": 20,
         "eappointment/zmsslim": 20,

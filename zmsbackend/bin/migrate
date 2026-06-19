@@ -1,0 +1,21 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+$updateOption = count(preg_grep('#^--update$#', $argv)) == 1;
+$migrationFiles = preg_grep('#^[^-]#', array_slice($argv, 1));
+
+    \App::$log->info('Checking for open migrations', ['update' => $updateOption]);
+
+if ($migrationFiles) {
+    $added = \BO\Zmsbackend\Cli\Db::startMigrations($migrationFiles, $updateOption);
+} else {
+    $migrations = realpath(__DIR__ . '/../migrations/');
+    $added = \BO\Zmsbackend\Cli\Db::startMigrations($migrations, $updateOption);
+}
+if (!$updateOption && $added) {
+    \App::$log->notice('Migrations pending — run with --update to activate', [
+        'command' => $argv[0] . ' --update ' . implode(' ', array_slice($argv, 1)),
+        'pending' => $added,
+    ]);
+}

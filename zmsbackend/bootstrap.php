@@ -26,19 +26,9 @@ require_once(APP_PATH . '/config.php');
     \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 ];
 \BO\Zmsbackend\Connection\Select::$connectionTimezone = ' ' . \App::$now->getTimezone()->getName();
-
-// vendor/bin/migrate, updateDldbData, and other zmsdb CLI tools still use BO\Zmsdb namespaces.
-\BO\Zmsdb\Connection\Select::$enableProfiling = \App::DEBUG;
-\BO\Zmsdb\Connection\Select::$readSourceName = \App::DB_DSN_READONLY;
-\BO\Zmsdb\Connection\Select::$writeSourceName = \App::DB_DSN_READWRITE;
-\BO\Zmsdb\Connection\Select::$username = \App::DB_USERNAME;
-\BO\Zmsdb\Connection\Select::$password = \App::DB_PASSWORD;
-\BO\Zmsdb\Connection\Select::$galeraConnection = \App::DB_IS_GALERA;
-\BO\Zmsdb\Connection\Select::$pdoOptions = [
-    \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-];
-\BO\Zmsdb\Connection\Select::$connectionTimezone = ' ' . \App::$now->getTimezone()->getName();
-\BO\Zmsdb\Source\Zmsdldb::$importPath = \App::APP_PATH . \App::$data;
+if (defined('MYSQL_DATABASE')) {
+    \BO\Zmsbackend\Connection\Select::$dbname_zms = MYSQL_DATABASE;
+}
 
 $logger = new \BO\Slim\LoggerService();
 $requestLimits = \App::getRequestLimits();

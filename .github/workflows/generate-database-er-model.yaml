@@ -50,8 +50,8 @@ jobs:
 
       - name: Install Composer Dependencies
         run: |
-          echo "Installing Composer dependencies for zmsdb"
-          (cd zmsdb && composer install --no-progress --prefer-dist --optimize-autoloader)
+          echo "Installing Composer dependencies for zmsbackend"
+          (cd zmsbackend && composer install --no-progress --prefer-dist --optimize-autoloader)
         shell: bash
 
       - name: Setup Database and Import Schema
