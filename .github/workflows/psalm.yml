@@ -34,12 +34,10 @@ jobs:
         project:
           - mellon
           - zmsadmin
-          - zmsapi
           - zmsbackend
           - zmscalldisplay
           - zmscitizenapi
           - zmsclient
-          - zmsdb
           - zmsdldb
           - zmsentities
           - zmsmessaging
@@ -178,19 +176,19 @@ jobs:
       - name: Get Composer cache directory
         id: composer-cache-monorepo
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-        working-directory: zmsapi
+        working-directory: zmsbackend
 
       - name: Cache Composer dependencies
         uses: actions/cache@v5
         with:
           path: ${{ steps.composer-cache-monorepo.outputs.dir }}
-          key: ${{ runner.os }}-composer-psalm-monorepo-${{ hashFiles('mellon/composer.lock', 'zmsadmin/composer.lock', 'zmsapi/composer.lock', 'zmsbackend/composer.lock', 'zmscalldisplay/composer.lock', 'zmscitizenapi/composer.lock', 'zmsclient/composer.lock', 'zmsdb/composer.lock', 'zmsdldb/composer.lock', 'zmsentities/composer.lock', 'zmsmessaging/composer.lock', 'zmsslim/composer.lock', 'zmsstatistic/composer.lock', 'zmsticketprinter/composer.lock') }}
+          key: ${{ runner.os }}-composer-psalm-monorepo-${{ hashFiles('mellon/composer.lock', 'zmsadmin/composer.lock', 'zmsbackend/composer.lock', 'zmscalldisplay/composer.lock', 'zmscitizenapi/composer.lock', 'zmsclient/composer.lock', 'zmsdldb/composer.lock', 'zmsentities/composer.lock', 'zmsmessaging/composer.lock', 'zmsslim/composer.lock', 'zmsstatistic/composer.lock', 'zmsticketprinter/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-psalm-monorepo-
 
       - name: Install dependencies (all monorepo modules)
         run: |
-          for project in mellon zmsadmin zmsapi zmsbackend zmscalldisplay zmscitizenapi zmsclient zmsdb zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter; do
+          for project in mellon zmsadmin zmsbackend zmscalldisplay zmscitizenapi zmsclient zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter; do
             echo "Installing ${project}..."
             composer install --no-progress --prefer-dist --no-interaction --working-dir="${project}"
           done
@@ -200,7 +198,7 @@ jobs:
         continue-on-error: true
         run: |
           set +e
-          zmsapi/vendor/bin/psalm \
+          zmsbackend/vendor/bin/psalm \
             -c psalm.monorepo.xml \
             --no-progress \
             --no-cache \

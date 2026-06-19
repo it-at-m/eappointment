@@ -1,6 +1,6 @@
 #!/bin/bash
 DIR=$(dirname ${BASH_SOURCE[0]})
-BIN=$DIR/../vendor/bin
+BIN=$DIR/../bin
 API=$DIR/../bin/api
 EXPORT=$DIR/../data/
 set -a
@@ -10,7 +10,7 @@ set +a
 CURRENTYEAR=`date +'%Y'`
 
 if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
-    export ZMS_CRON_LOG=1 ZMS_CRON_NAME=zmsapi_yearly
+    export ZMS_CRON_LOG=1 ZMS_CRON_NAME=zmsbackend_yearly
     if [[ $ZMS_ENV =~ ^prod|dev|stage$ ]]; then
         $API config cron calculateDayOffList|grep -q "$ZMS_ENV" && $BIN/calculateDayOffList $CURRENTYEAR --commit
     fi

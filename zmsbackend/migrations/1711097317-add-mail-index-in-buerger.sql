@@ -1,0 +1,1 @@
+ALTER TABLE `buerger` ADD INDEX `EMail` (`EMail`);

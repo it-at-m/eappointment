@@ -33,7 +33,6 @@
         "eappointment/mellon": "@dev",
         "eappointment/zmsslim": "@dev",
         "eappointment/zmsclient": "@dev",
-        "eappointment/zmsapi": "@dev",
         "symfony/cache": "^6.0",
         "psr/simple-cache": "^3.0",
         "ext-pdo": "*",

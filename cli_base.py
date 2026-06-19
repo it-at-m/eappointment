@@ -25,10 +25,8 @@ class EappointmentCli:
     "zmsslim",
     "zmsentities",
     "zmsdldb",
-    "zmsdb",
     "zmsclient",
     "zmsadmin",
-    "zmsapi",
     "zmsbackend",
     "zmscalldisplay",
     "zmsmessaging",
@@ -343,7 +341,7 @@ SET FOREIGN_KEY_CHECKS = 1;"""
 
       if not skip_php_migrate:
         app.run_cmd(["bin/configure"], cwd=rest_dir, env=run_env)
-        app.run_cmd(["vendor/bin/migrate", "--update"], cwd=rest_dir, env=run_env)
+        app.run_cmd(["bin/migrate", "--update"], cwd=rest_dir, env=run_env)
 
       if not skip_hourly:
         app.run_cmd(["./cron/cronjob.hourly", f"--city={city}"], cwd=rest_dir, env=run_env)

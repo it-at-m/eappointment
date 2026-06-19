@@ -41,8 +41,6 @@ jobs:
             php_version: "8.3"
           - module: zmsadmin
             php_version: "8.3"
-          - module: zmsapi
-            php_version: "8.3"
           - module: zmsbackend
             php_version: "8.3"
           - module: zmscalldisplay
@@ -50,8 +48,6 @@ jobs:
           - module: zmscitizenapi
             php_version: "8.3"
           - module: zmsclient
-            php_version: "8.3"
-          - module: zmsdb
             php_version: "8.3"
           - module: zmsdldb
             php_version: "8.3"

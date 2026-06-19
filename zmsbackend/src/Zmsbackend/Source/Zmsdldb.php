@@ -14,7 +14,7 @@ class Zmsdldb extends \BO\Zmsbackend\Base
     public static function getFixturesImportPath()
     {
         $dir = dirname(__FILE__);
-        $importPath = realpath($dir . '/../../../tests/Zmsdb/fixtures/');
+        $importPath = realpath($dir . '/../../../tests/Zmsbackend/Service/fixtures/');
         return $importPath;
     }
 
