@@ -413,7 +413,7 @@ exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM i
 
 # 6. PHP Migrations (inherit ZMS_TIMEADJUST from env)
 section "6. PHP Migrations"
-( cd "$ZMS_REST_DIR" && bin/configure && vendor/bin/migrate --update )
+( cd "$ZMS_REST_DIR" && bin/configure && bin/migrate --update )
 
 # 7. Hourly Cronjob (inherit ZMS_TIMEADJUST from env)
 section "7. Hourly Cronjob"
