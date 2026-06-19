@@ -28,53 +28,19 @@ class ProcessSearch extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $validator = $request->getAttribute('validator');
-        $queryString = $validator->getParameter('query')
-            ->isString()
-            ->getValue() ?? '';
-        $page = $validator->getParameter('page')
-            ->isNumber()
-            ->setDefault(1)
-            ->getValue();
-        $service = $validator->getParameter('service')
-            ->isString()
-            ->setDefault('')
-            ->getValue() ?? '';
-        $provider = $validator->getParameter('provider')
-            ->isString()
-            ->setDefault('')
-            ->getValue() ?? '';
-        $date = $validator->getParameter('date')
-            ->isString()
-            ->setDefault('')
-            ->getValue() ?? '';
-        $userAction = $validator->getParameter('user')
-            ->isNumber()
-            ->setDefault(0)
-            ->getValue();
-        $perPage = $validator->getParameter('perPage')
-            ->isNumber()
-            ->setDefault(100)
-            ->getValue();
-        $hideNavigation = $validator->getParameter('hideNavigation')
-            ->isNumber()
-            ->setDefault(0)
-            ->getValue();
+        $searchParameters = $this->readSearchParameters($validator);
 
-        $isSearchRequested = $this->hasSearchParameters(
-            $queryString,
-            $service,
-            $provider,
-            $date,
-            (int) $userAction
-        );
+        $queryString = $searchParameters['queryString'];
+        $page = $searchParameters['page'];
+        $service = $searchParameters['service'];
+        $provider = $searchParameters['provider'];
+        $date = $searchParameters['date'];
+        $userAction = $searchParameters['userAction'];
+        $perPage = $searchParameters['perPage'];
+        $hideNavigation = $searchParameters['hideNavigation'];
+        $isSearchRequested = $searchParameters['isSearchRequested'];
 
-        $processList = new ProcessList();
-        if ($isSearchRequested && '' !== trim((string) $queryString)) {
-            $processList = \App::$http->readGetResult('/process/search/', [
-                'query' => $queryString,
-                'resolveReferences' => 1,
-            ])->getCollection();
-        }
+        $processList = $this->readProcessList($isSearchRequested, $queryString);
 
         $scopeIds = $workstation->getUseraccount()->getDepartmentList()->getUniqueScopeList()->getIds();
         if (!empty($processList) && !$workstation->hasSuperUseraccount()) {
@@ -125,20 +91,6 @@ class ProcessSearch extends BaseController
         );
     }
 
-    private function hasSearchParameters(
-        string $queryString,
-        string $service,
-        string $provider,
-        string $date,
-        int $userAction
-    ): bool {
-        return trim($queryString) !== ''
-            || trim($service) !== ''
-            || trim($provider) !== ''
-            || trim($date) !== ''
-            || $userAction !== 0;
-    }
-
     private function filterProcessListForUserRights(?ProcessList $processList, array $scopeIds)
     {
         if (empty($processList)) {
@@ -174,5 +126,72 @@ class ProcessSearch extends BaseController
         }
 
         return $list;
+    }
+
+    private function readSearchParameters($validator): array
+    {
+        $queryString = $validator->getParameter('query')
+            ->isString()
+            ->getValue() ?? '';
+        $page = $validator->getParameter('page')
+            ->isNumber()
+            ->setDefault(1)
+            ->getValue();
+        $service = $validator->getParameter('service')
+            ->isString()
+            ->setDefault('')
+            ->getValue() ?? '';
+        $provider = $validator->getParameter('provider')
+            ->isString()
+            ->setDefault('')
+            ->getValue() ?? '';
+        $date = $validator->getParameter('date')
+            ->isString()
+            ->setDefault('')
+            ->getValue() ?? '';
+        $userAction = $validator->getParameter('user')
+            ->isNumber()
+            ->setDefault(0)
+            ->getValue();
+        $perPage = $validator->getParameter('perPage')
+            ->isNumber()
+            ->setDefault(100)
+            ->getValue();
+        $hideNavigation = $validator->getParameter('hideNavigation')
+            ->isNumber()
+            ->setDefault(0)
+            ->getValue();
+
+        return [
+            'queryString' => $queryString,
+            'page' => $page,
+            'service' => $service,
+            'provider' => $provider,
+            'date' => $date,
+            'userAction' => $userAction,
+            'perPage' => $perPage,
+            'hideNavigation' => $hideNavigation,
+            'isSearchRequested' => (
+                trim($queryString) !== ''
+                || trim($service) !== ''
+                || trim($provider) !== ''
+                || trim($date) !== ''
+                || (int) $userAction !== 0
+            ),
+        ];
+    }
+
+    private function readProcessList(bool $isSearchRequested, string $queryString): ProcessList
+    {
+        if (!$isSearchRequested || '' === trim($queryString)) {
+            return new ProcessList();
+        }
+
+        return \App::$http
+            ->readGetResult('/process/search/', [
+                'query' => $queryString,
+                'resolveReferences' => 1,
+            ])
+            ->getCollection();
     }
 }
