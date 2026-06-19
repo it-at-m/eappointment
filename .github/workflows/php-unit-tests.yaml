@@ -303,9 +303,7 @@ jobs:
           mkdir -p /tmp/cache
           mkdir -p zmsbackend/data
           cp zmsdb/tests/Zmsdb/fixtures/*.json zmsbackend/data/
-          if [[ ! -f zmsbackend/config.php ]]; then
-            cp zmsbackend/config.example.php zmsbackend/config.php
-          fi
+          zmsbackend/bin/configure
           cd zmsdb
           bin/importTestData --commit
           cd ../zmsbackend

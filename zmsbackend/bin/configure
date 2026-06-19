@@ -1,0 +1,12 @@
+#!/bin/bash
+
+REALPATH=$(which realpath || which readlink)
+REALPATH=$([[ "$REALPATH" =~ 'readlink' ]] && echo "$REALPATH -e" || echo "$REALPATH")
+DIR=$(dirname $($REALPATH ${BASH_SOURCE[0]}))
+ROOT=$($REALPATH $DIR/..)
+
+echo "Configuring application"
+
+if [ ! -e "$ROOT/config.php" ]; then
+    cp "$ROOT/config.example.php" "$ROOT/config.php"
+fi
