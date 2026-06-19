@@ -21,7 +21,6 @@ body:
       options:
         - mellon
         - zmsadmin
-        - zmsapi
         - zmsbackend
         - zmsautomation
         - zmsbase
