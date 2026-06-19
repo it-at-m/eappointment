@@ -262,8 +262,8 @@ class Useraccount extends Schema\Entity
             return $roles;
         }
         if (is_string($roles)) {
-            return array_values(array_filter(array_map('trim', explode(',', $roles)), function ($v) {
-                return $v !== '';
+            return array_values(array_filter(array_map('trim', explode(',', $roles)), function ($role) {
+                return $role !== '';
             }));
         }
         return [];
