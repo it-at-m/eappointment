@@ -10,7 +10,7 @@
 ## Import Database
 
 - `podman exec -i zms-db mysql -u root -proot db < .resources/zms.sql`
-- `podman exec -it zms-web bash -lc "cd zmsapi && vendor/bin/migrate --update"`
+- `podman exec -it zms-web bash -lc "cd zmsbackend && bin/configure && vendor/bin/migrate --update"`
 
 ## Stop Containers
 

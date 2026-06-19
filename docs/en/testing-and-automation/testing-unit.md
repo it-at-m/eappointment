@@ -68,9 +68,24 @@ The `zmsclient-test` script automatically detects and uses Docker or Podman, res
 
 #### Traditional Method (overwrites local DB)
 
-For the modules **zmsapi** and **zmsdb**, test data must be imported. Please note that this will overwrite your local database.
+For the modules **zmsbackend**, **zmsapi**, and **zmsdb**, test data must be imported. Please note that this will overwrite your local database.
 
-**zmsapi:**
+**zmsbackend** (local REST API module; preferred for `/terminvereinbarung/api/2`):
+
+Using DDEV or Podman:
+
+```bash
+./zmsbackend/zmsbackend-test
+```
+
+Or manually (inside `zms-web` / `ddev ssh`):
+
+```bash
+cd zmsdb && bin/importTestData --commit
+cd ../zmsbackend && bin/configure && ./vendor/bin/phpunit
+```
+
+**zmsapi** (legacy module, parallel during GH-2604 migration):
 
 Using DDEV:
 
