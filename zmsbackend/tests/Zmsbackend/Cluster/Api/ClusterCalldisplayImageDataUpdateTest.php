@@ -1,0 +1,43 @@
+<?php
+
+namespace BO\Zmsbackend\Tests\Cluster\Api;
+
+use BO\Zmsbackend\Helper\User;
+use BO\Zmsentities\Useraccount;
+use BO\Zmsentities\Workstation;
+use BO\Zmsentities\Scope;
+
+class ClusterCalldisplayImageDataUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
+{
+    protected $classname = "ClusterCalldisplayImageDataUpdate";
+
+    const CLUSTER_ID = 109;
+
+    public function testRendering()
+    {
+        $this->setWorkstation()->getUserAccount()->setPermissions('calldisplay');
+        $response = $this->render(['id' => self::CLUSTER_ID], [
+            '__body' => $this->readFixture("GetBase64Image.json")
+        ], []);
+        $this->assertStringContainsString('mimepart.json', (string)$response->getBody());
+        $this->assertStringContainsString('"base64":true', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testNoRights()
+    {
+        $this->setWorkstation();
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->render(['id' => self::CLUSTER_ID], [
+            '__body' => '',
+        ], []);
+    }
+
+    public function testClusterNotFound()
+    {
+        $this->setWorkstation()->getUserAccount()->setPermissions('calldisplay');
+        $this->expectException('\BO\Zmsbackend\Cluster\Exception\ClusterNotFound');
+        $this->expectExceptionCode(404);
+        $this->render(['id' => 999], [], []);
+    }
+}

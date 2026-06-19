@@ -1,0 +1,844 @@
+{
+  "created": "2018-01-31T11:02:02+01:00",
+  "datacount": 167,
+  "locale": "de_DE",
+  "hash": "46f26911bb6bfcf34af44e0def10775a",
+  "error": false,
+  "data": [
+    {
+      "id": "657",
+      "name": "Formulare",
+      "path": "formulare"
+    },
+    {
+      "id": "324801",
+      "name": "Arbeit, Beruf und Soziales",
+      "path": "arbeit-beruf-soziales"
+    },
+    {
+      "id": "324803",
+      "name": "Auto und Verkehr",
+      "path": "auto-verkehr"
+    },
+    {
+      "id": "324805",
+      "name": "Schule, Ausbildung und Studium",
+      "path": "schule-ausbildung-studium"
+    },
+    {
+      "id": "324807",
+      "name": "Familie, Partnerschaft und Gleichstellung",
+      "path": "familie-partnerschaft-gleichstellung"
+    },
+    {
+      "id": "324809",
+      "name": "Freizeit und Sport",
+      "path": "freizeit-sport"
+    },
+    {
+      "id": "324811",
+      "name": "Gesundheit und Pflege",
+      "path": "gesundheit-pflege"
+    },
+    {
+      "id": "324813",
+      "name": "Kultur, Medien und Wissenschaft",
+      "path": "kultur-medien-wissenschaft"
+    },
+    {
+      "id": "324815",
+      "name": "Migration und Integration",
+      "path": "migration-integration"
+    },
+    {
+      "id": "324817",
+      "name": "Politik und Engagement",
+      "path": "politik-engagement"
+    },
+    {
+      "id": "324819",
+      "name": "Sicherheit und Notlagen",
+      "path": "sicherheit-notlagen"
+    },
+    {
+      "id": "324821",
+      "name": "Behinderung",
+      "path": "behinderung"
+    },
+    {
+      "id": "324823",
+      "name": "Steuern, Finanzen und Recht",
+      "path": "steuern-finanzen-recht"
+    },
+    {
+      "id": "324825",
+      "name": "Tourismus und Veranstaltungen",
+      "path": "tourismus-veranstaltungen"
+    },
+    {
+      "id": "324827",
+      "name": "Verbraucherschutz",
+      "path": "verbraucherschutz"
+    },
+    {
+      "id": "324829",
+      "name": "Wirtschaft",
+      "path": "wirtschaft"
+    },
+    {
+      "id": "324831",
+      "name": "Wohnen und Bauen",
+      "path": "wohnen-bauen"
+    },
+    {
+      "id": "324833",
+      "name": "Vermessung",
+      "path": "vermessung"
+    },
+    {
+      "id": "324835",
+      "name": "Meldewesen und Ordnung",
+      "path": "meldewesen-ordnung"
+    },
+    {
+      "id": "324837",
+      "name": "Umwelt, Natur und Tiere",
+      "path": "umwelt-natur-tiere"
+    },
+    {
+      "id": "324841",
+      "name": "Bauen/Immobilien",
+      "path": "bauen-immobilien"
+    },
+    {
+      "id": "324843",
+      "name": "Wohnen/Mieten",
+      "path": "wohnen-mieten"
+    },
+    {
+      "id": "324845",
+      "name": "Tiefbau",
+      "path": "tiefbau"
+    },
+    {
+      "id": "324847",
+      "name": "Stadtplanung/Stadtentwicklung",
+      "path": "stadtplanung-stadtentwicklung"
+    },
+    {
+      "id": "324849",
+      "name": "Geodaten/Karten",
+      "path": "geodaten-karten"
+    },
+    {
+      "id": "324851",
+      "name": "Denkmalschutz",
+      "path": "denkmalschutz"
+    },
+    {
+      "id": "324853",
+      "name": "Ämter, Verwaltungen, Institutionen: Wohnen, Bauen",
+      "path": "aemter-wohnenbauen"
+    },
+    {
+      "id": "324877",
+      "name": "Bereich Bauen: Gesetze/Verordnungen",
+      "path": "bauen-gesetzeverordnungen"
+    },
+    {
+      "id": "324885",
+      "name": "Fahren und Parken",
+      "path": "fahren-parken"
+    },
+    {
+      "id": "324887",
+      "name": "Führerschein",
+      "path": "fuehrerschein"
+    },
+    {
+      "id": "324889",
+      "name": "Auto/Kfz",
+      "path": "auto-kfz"
+    },
+    {
+      "id": "324891",
+      "name": "Fahrrad",
+      "path": "fahrrad"
+    },
+    {
+      "id": "324893",
+      "name": "Fußgänger",
+      "path": "fussgaenger"
+    },
+    {
+      "id": "324895",
+      "name": "Verkehrsinfos - Bus/Bahn/Flug",
+      "path": "verkehrsinfos"
+    },
+    {
+      "id": "324897",
+      "name": "Verkehrsplanung/steuerung",
+      "path": "verkehrsplanung"
+    },
+    {
+      "id": "324899",
+      "name": "Ämter, Verwaltungen, Institutionen: Auto, Verkehr",
+      "path": "aemter-autoverkehr"
+    },
+    {
+      "id": "324925",
+      "name": "Bau- und Wohnungsaufsichtsämter",
+      "path": "bau-wohnungsaufsichtamt"
+    },
+    {
+      "id": "324927",
+      "name": "Stadtplanungsämter",
+      "path": "stadtplanungsaemter"
+    },
+    {
+      "id": "324929",
+      "name": "Straßen- und Grünflächenamt - Tiefbau",
+      "path": "strassen-gruenflaechen-tiefbauaemter"
+    },
+    {
+      "id": "324931",
+      "name": "Vermessungsämter / Kataster",
+      "path": "vermessungsaemter"
+    },
+    {
+      "id": "324933",
+      "name": "Wohnungsämter",
+      "path": "wohnungsaemter"
+    },
+    {
+      "id": "324979",
+      "name": "Familie",
+      "path": "familie"
+    },
+    {
+      "id": "324981",
+      "name": "Frauen",
+      "path": "frauen"
+    },
+    {
+      "id": "324983",
+      "name": "Gewalt im Alltag",
+      "path": "gewalt-alltag"
+    },
+    {
+      "id": "324997",
+      "name": "Kinder/Jugendliche",
+      "path": "kinder-jugendliche"
+    },
+    {
+      "id": "324999",
+      "name": "Senioren",
+      "path": "senioren"
+    },
+    {
+      "id": "325001",
+      "name": "Gender Mainstreaming",
+      "path": "gender-mainstreaming"
+    },
+    {
+      "id": "325003",
+      "name": "Gleichgeschlechtliche Lebensweisen",
+      "path": "gleichgeschlechtliche-lebensweisen"
+    },
+    {
+      "id": "325005",
+      "name": "Ämter, Verwaltungen, Institutionen: Familie, Partnerschaft und Gleichstellung",
+      "path": "aemter-familiepartnerschaftgleichstellung"
+    },
+    {
+      "id": "325007",
+      "name": "Ämter, Verwaltungen, Institutionen: Arbeit, Beruf und Soziales",
+      "path": "aemter-arbeitberufsoziales"
+    },
+    {
+      "id": "325011",
+      "name": "Arbeitgeber- und Arbeitnehmervertretungen",
+      "path": "arbeitgeber-arbeitnehmervertretungen"
+    },
+    {
+      "id": "325013",
+      "name": "Arbeitslosengeld II, Grundsicherung, Sozialhilfe",
+      "path": "arbeitslosengeld"
+    },
+    {
+      "id": "325017",
+      "name": "Arbeitsrecht, Tarifrecht",
+      "path": "arbeitsrecht-tarifrecht"
+    },
+    {
+      "id": "325019",
+      "name": "Arbeitsschutz, Arbeitssicherheit",
+      "path": "arbeitsschutz-arbeitssicherheit"
+    },
+    {
+      "id": "325021",
+      "name": "Arbeitsvermittlung, Stellenangebote",
+      "path": "arbeitsvermittlung-stellenangebote"
+    },
+    {
+      "id": "325023",
+      "name": "Berufliche Bildung",
+      "path": "berufliche-bildung"
+    },
+    {
+      "id": "325025",
+      "name": "Sozialversicherung",
+      "path": "sozialversicherung"
+    },
+    {
+      "id": "325029",
+      "name": "Ausbildung",
+      "path": "ausbildung"
+    },
+    {
+      "id": "325031",
+      "name": "Studium",
+      "path": "studium"
+    },
+    {
+      "id": "325033",
+      "name": "Weiterbildung",
+      "path": "weiterbildung"
+    },
+    {
+      "id": "325069",
+      "name": "Wirtschaftsämter",
+      "path": "wirtschaftsaemter"
+    },
+    {
+      "id": "325071",
+      "name": "Wirtschaftsförderung der Bezirke",
+      "path": "wirtschaftsfoerderung-bezirke"
+    },
+    {
+      "id": "325073",
+      "name": "BAföG-Ämter",
+      "path": "bafoeg-aemter"
+    },
+    {
+      "id": "325075",
+      "name": "Sozialämter",
+      "path": "sozialaemter"
+    },
+    {
+      "id": "325077",
+      "name": "Grundsicherungsämter",
+      "path": "grundsicherungsaemter"
+    },
+    {
+      "id": "325079",
+      "name": "Ämter, Verwaltungen, Institutionen: Steuern, Finanzen, Recht",
+      "path": "aemter-steuernfinanzenrecht"
+    },
+    {
+      "id": "325081",
+      "name": "Haushalt/Finanzpolitik",
+      "path": "haushalt-finanzpolitik"
+    },
+    {
+      "id": "325083",
+      "name": "Kreditinstitute",
+      "path": "kreditinstitute"
+    },
+    {
+      "id": "325085",
+      "name": "Landesvermögen",
+      "path": "landesvermoegen"
+    },
+    {
+      "id": "325087",
+      "name": "Schuldnerberatung",
+      "path": "schuldnerberatung"
+    },
+    {
+      "id": "325089",
+      "name": "Steuern/Steuerhilfen",
+      "path": "steuern-steuerhilfen"
+    },
+    {
+      "id": "325091",
+      "name": "Zuwendungen",
+      "path": "zuwendungen"
+    },
+    {
+      "id": "325093",
+      "name": "Gerichte/Schiedsstellen",
+      "path": "gerichte-schiedsstellen"
+    },
+    {
+      "id": "325097",
+      "name": "Schiedsstellen/Schiedsämter",
+      "path": "schiedsstellen-schiedsaemter"
+    },
+    {
+      "id": "325099",
+      "name": "Ämter, Verwaltungen, Institutionen: Kultur, Medien, Wissenschaft",
+      "path": "aemter-kulturmedienwissenschaft"
+    },
+    {
+      "id": "325101",
+      "name": "Bibliotheksämter",
+      "path": "bibliotheksaemter"
+    },
+    {
+      "id": "325103",
+      "name": "Kunst- und Kulturämter",
+      "path": "kunst-kulturaemter"
+    },
+    {
+      "id": "325105",
+      "name": "Bibliotheken",
+      "path": "bibliotheken"
+    },
+    {
+      "id": "325107",
+      "name": "Bühnen, Theater",
+      "path": "buenen-theater"
+    },
+    {
+      "id": "325109",
+      "name": "Denkmäler",
+      "path": "denkmaeler"
+    },
+    {
+      "id": "325111",
+      "name": "Gedenkstätten",
+      "path": "gedaenkstaetten"
+    },
+    {
+      "id": "325113",
+      "name": "Stadtbibliotheken",
+      "path": "stadtbibliotheken"
+    },
+    {
+      "id": "325115",
+      "name": "Staatliche Bühnen",
+      "path": "staatliche-buehnen"
+    },
+    {
+      "id": "325117",
+      "name": "Kirchen- und Religionsgemeinschaften",
+      "path": "kirchen-religionsgemeinschaften"
+    },
+    {
+      "id": "325119",
+      "name": "Museen, Galerien",
+      "path": "museen-galerien"
+    },
+    {
+      "id": "325121",
+      "name": "Stiftungen und Museen öffentlichen Rechts (Kultur)",
+      "path": "stiftungen-museenoeffentlichenrechts"
+    },
+    {
+      "id": "325123",
+      "name": "Stipendien und Kulturförderung",
+      "path": "stipendien-kulturfoerderung"
+    },
+    {
+      "id": "325125",
+      "name": "Veranstaltungen",
+      "path": "veranstaltungen"
+    },
+    {
+      "id": "325127",
+      "name": "Jugendämter",
+      "path": "jugendaemter"
+    },
+    {
+      "id": "325129",
+      "name": "Ämter, Verwaltungen, Institutionen: Behinderung",
+      "path": "aemter-behinderung"
+    },
+    {
+      "id": "325131",
+      "name": "Pflege und Betreuung",
+      "path": "pflege-betreuung"
+    },
+    {
+      "id": "325135",
+      "name": "Sozialhilfe",
+      "path": "sozialhilfe"
+    },
+    {
+      "id": "325137",
+      "name": "Ämter, Verwaltungen, Institutionen: Migration und Integration",
+      "path": "aemter-migrationintegration"
+    },
+    {
+      "id": "325139",
+      "name": "Ausländerangelegenheiten",
+      "path": "auslaenderangelegenheiten"
+    },
+    {
+      "id": "325141",
+      "name": "Soziales: Beratung, Hilfe",
+      "path": "soziales-hilfeberatung"
+    },
+    {
+      "id": "325149",
+      "name": "Archive",
+      "path": "archive"
+    },
+    {
+      "id": "325151",
+      "name": "Newsletter/Presse",
+      "path": "newsletter-presse"
+    },
+    {
+      "id": "325153",
+      "name": "Zeitungen/Magazine",
+      "path": "zeitungen-magazine"
+    },
+    {
+      "id": "325155",
+      "name": "Ämter, Verwaltungen, Institutionen: Sport",
+      "path": "aemter-sport"
+    },
+    {
+      "id": "325157",
+      "name": "Sportämter",
+      "path": "sportaemter"
+    },
+    {
+      "id": "325161",
+      "name": "Freizeiteinrichtungen",
+      "path": "freizeiteinrichtungen"
+    },
+    {
+      "id": "325163",
+      "name": "Sport",
+      "path": "sport"
+    },
+    {
+      "id": "325165",
+      "name": "Sportvereine/Sportverbände",
+      "path": "sportvereine-sportverbaende"
+    },
+    {
+      "id": "325177",
+      "name": "Reisehinweise",
+      "path": "reisehinweise"
+    },
+    {
+      "id": "325179",
+      "name": "Sightseeing",
+      "path": "sightseeing"
+    },
+    {
+      "id": "325181",
+      "name": "Berlin - Ansichten",
+      "path": "berlin-annsichten"
+    },
+    {
+      "id": "325183",
+      "name": "Sehenswertes in den Bezirken",
+      "path": "sehenswertes-bezirke"
+    },
+    {
+      "id": "325185",
+      "name": "Tipps, Infos für Berlinbesucher",
+      "path": "tipps-infosberlinbesucher"
+    },
+    {
+      "id": "325187",
+      "name": "Tourismusinformationen der Bezirke",
+      "path": "tourismusinformationen-bezirke"
+    },
+    {
+      "id": "325189",
+      "name": "Ämter, Verwaltungen, Institutionen: Tourismus",
+      "path": "aemter-tourismus"
+    },
+    {
+      "id": "325191",
+      "name": "Ämter, Verwaltungen, Institutionen: Verbraucherschutz",
+      "path": "aemter-verbraucherschutz"
+    },
+    {
+      "id": "325193",
+      "name": "Veterinär- und Lebensmittelaufsichtsämter",
+      "path": "veterinaer-lebensmittelaufsichtsaemter"
+    },
+    {
+      "id": "325195",
+      "name": "Verbraucherinfos, -beratung",
+      "path": "verbraucherinfos-beratung"
+    },
+    {
+      "id": "325197",
+      "name": "Ämter, Verwaltungen, Institutionen: Gesundheit und Pflege",
+      "path": "aemter-gesundheitpflege"
+    },
+    {
+      "id": "325199",
+      "name": "Gesundheitsämter",
+      "path": "gesundheitsaemter"
+    },
+    {
+      "id": "325201",
+      "name": "Berufsorganisationen Gesundheit",
+      "path": "berufsorganisationen-gesundheit"
+    },
+    {
+      "id": "325203",
+      "name": "Krankenhäuser, Kliniken",
+      "path": "krankenhaeuser-kliniken"
+    },
+    {
+      "id": "325205",
+      "name": "Berufe im Gesundheitswesen",
+      "path": "berufe-gesundheitswesen"
+    },
+    {
+      "id": "325207",
+      "name": "Barrierefreiheit",
+      "path": "barrierefreiheit"
+    },
+    {
+      "id": "325209",
+      "name": "Gesundheit: Beratung, Hilfe",
+      "path": "gesundheit-beratunghilfe"
+    },
+    {
+      "id": "325211",
+      "name": "Ämter, Verwaltungen, Institutionen: Wirtschaft",
+      "path": "aemter-wirtschaft"
+    },
+    {
+      "id": "325213",
+      "name": "Ausschreibungen",
+      "path": "ausschreibungen"
+    },
+    {
+      "id": "325215",
+      "name": "Existenzgründung/Gewerbe",
+      "path": "existenzgruendung-gewerbe"
+    },
+    {
+      "id": "325225",
+      "name": "Veranstaltungen, Messen, Märkte, Marketing",
+      "path": "veranstaltungen-messenmmaerktemarketing"
+    },
+    {
+      "id": "325227",
+      "name": "Wirtschaftsdaten, -meldungen, -statistiken",
+      "path": "wirtschaftsdaten-meldungenstatistiken"
+    },
+    {
+      "id": "325229",
+      "name": "Wirtschaftsförderung, Beratung, Finanzen",
+      "path": "wirtschaftsfoerderung-beratungfinanzen"
+    },
+    {
+      "id": "325231",
+      "name": "Ämter, Verwaltungen, Institutionen: Meldewesen und Ordnung",
+      "path": "aemter-meldewesenordnung"
+    },
+    {
+      "id": "325233",
+      "name": "Ämter, Verwaltungen, Institutionen: Sicherheit und Notlagen",
+      "path": "aemter-sicherheitnotlagen"
+    },
+    {
+      "id": "325235",
+      "name": "Ordnungsämter",
+      "path": "ordnungsaemter"
+    },
+    {
+      "id": "325237",
+      "name": "Justizvollzug",
+      "path": "justizvollzug"
+    },
+    {
+      "id": "325239",
+      "name": "Ämter, Verwaltungen, Institutionen: Umwelt, Natur und Tiere",
+      "path": "aemter-umweltnaturtiere"
+    },
+    {
+      "id": "325241",
+      "name": "Abfall, Entsorgung",
+      "path": "abfall-entsorgung"
+    },
+    {
+      "id": "325243",
+      "name": "Umwelt- und Naturschutzämter",
+      "path": "umwelt-naturschutzaemter"
+    },
+    {
+      "id": "325245",
+      "name": "Energie",
+      "path": "energie"
+    },
+    {
+      "id": "325247",
+      "name": "Landschaftsplanung",
+      "path": "landschaftsplanung"
+    },
+    {
+      "id": "325249",
+      "name": "Stadtgrün",
+      "path": "stadtgruen"
+    },
+    {
+      "id": "325251",
+      "name": "Luft",
+      "path": "luft"
+    },
+    {
+      "id": "325253",
+      "name": "Wasser",
+      "path": "wasser"
+    },
+    {
+      "id": "325255",
+      "name": "Tiere und Pflanzen",
+      "path": "tiere-pflanzen"
+    },
+    {
+      "id": "325259",
+      "name": "Umwelt/Klima - Infos",
+      "path": "umweltklima-infos"
+    },
+    {
+      "id": "325261",
+      "name": "E-Government",
+      "path": "e-government"
+    },
+    {
+      "id": "325263",
+      "name": "Bürgerbeteiligung",
+      "path": "buergerbeteiligung"
+    },
+    {
+      "id": "325265",
+      "name": "Bürgerhaushalt",
+      "path": "buergerhaushalt"
+    },
+    {
+      "id": "325267",
+      "name": "Bürgerinformationssystem der Bezirksverordnetenversammlung",
+      "path": "buegerinformationssystem-bvv"
+    },
+    {
+      "id": "325269",
+      "name": "Interaktive Informationsdienste",
+      "path": "interaktive-informationsdienste"
+    },
+    {
+      "id": "325273",
+      "name": "Standesamts-Urkunden-Onlinebestellung",
+      "path": "standesamts-urkundenonlinebestellung"
+    },
+    {
+      "id": "325275",
+      "name": "Bürgerberatung, -ämter",
+      "path": "buergerberatung-aemter"
+    },
+    {
+      "id": "325277",
+      "name": "bürgeraktiv - das Engagementportal",
+      "path": "buergerschaftliches-engagement"
+    },
+    {
+      "id": "325279",
+      "name": "Verwaltungsgliederung, Organigramme",
+      "path": "verwaltungsgliederung-organigramme"
+    },
+    {
+      "id": "325281",
+      "name": "Senat / Senatsverwaltungen",
+      "path": "senatsverwaltungen"
+    },
+    {
+      "id": "325283",
+      "name": "Parteien im Abgeordnetenhaus",
+      "path": "parteien-abgeordnetenhaus"
+    },
+    {
+      "id": "325285",
+      "name": "Landesbeauftragte, Landeskommissionen",
+      "path": "landesbeauftragte-landeskommissionen"
+    },
+    {
+      "id": "325287",
+      "name": "Internationale Beziehungen",
+      "path": "internationale-beziehungen"
+    },
+    {
+      "id": "325289",
+      "name": "Europa",
+      "path": "europa"
+    },
+    {
+      "id": "325291",
+      "name": "Bundespolitik",
+      "path": "bundespolitik"
+    },
+    {
+      "id": "325293",
+      "name": "Bezirksverordnetenversammlungen",
+      "path": "bezirksverordnetenversammlungen"
+    },
+    {
+      "id": "325295",
+      "name": "Bezirksämter",
+      "path": "bezirksaemter"
+    },
+    {
+      "id": "325297",
+      "name": "Aktuelles aus der Politik",
+      "path": "aktuelles-politik"
+    },
+    {
+      "id": "325303",
+      "name": "Schulämter",
+      "path": "schulaemter"
+    },
+    {
+      "id": "325305",
+      "name": "Ämter, Verwaltungen, Institutionen: Schule, Ausbildung und Studium",
+      "path": "aemter-schuleausbildungstudium"
+    },
+    {
+      "id": "325307",
+      "name": "Schule",
+      "path": "schule"
+    },
+    {
+      "id": "325311",
+      "name": "Meldeangelegenheiten",
+      "path": "meldeangelegenheiten"
+    },
+    {
+      "id": "325313",
+      "name": "Beglaubigungen",
+      "path": "beglaubigungen"
+    },
+    {
+      "id": "325315",
+      "name": "Standesamtsangelegenheiten",
+      "path": "standesamtsangelegenheiten"
+    },
+    {
+      "id": "325317",
+      "name": "Einbürgerung",
+      "path": "einbuergerung"
+    },
+    {
+      "id": "325353",
+      "name": "Onlineverfahren, Online-Dienstleistungen",
+      "path": "onlineverfahren-onlinedienstleistungen"
+    },
+    {
+      "id": "327018",
+      "name": "Jobcenter",
+      "path": "jobcenter"
+    }
+  ]
+}

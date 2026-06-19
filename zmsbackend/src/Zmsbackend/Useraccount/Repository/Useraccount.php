@@ -1,0 +1,378 @@
+<?php
+
+namespace BO\Zmsbackend\Useraccount\Repository;
+
+use BO\Slim\Application as App;
+
+class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\MappingInterface
+{
+    private const VALID_PERMISSION_NAMES = [
+        'appointment',
+        'availability',
+        'calldisplay',
+        'capacityreport',
+        'cherrypick',
+        'cluster',
+        'config',
+        'counter',
+        'customersearch',
+        'dayoff',
+        'department',
+        'emergency',
+        'finishedqueue',
+        'finishedqueuepast',
+        'jurisdiction',
+        'logs',
+        'mailtemplates',
+        'missedqueue',
+        'openqueue',
+        'organisation',
+        'overviewcalendar',
+        'parkedqueue',
+        'restrictedscope',
+        'scope',
+        'source',
+        'statistic',
+        'ticketprinter',
+        'useraccount',
+        'waitingqueue',
+        'superuser',
+    ];
+
+    /**
+     * @var String TABLE mysql table reference
+     */
+    const TABLE = 'nutzer';
+    const TABLE_ASSIGNMENT = 'nutzerzuordnung';
+
+    const QUERY_READ_ID_BY_USERNAME = '
+        SELECT user.`NutzerID` AS id
+        FROM ' . self::TABLE . ' user
+        WHERE
+            user.`Name`=?
+    ';
+
+    const QUERY_WRITE_ASSIGNED_DEPARTMENTS = '
+        REPLACE INTO
+            ' . self::TABLE_ASSIGNMENT . '
+        SET
+            nutzerid=?,
+            behoerdenid=?
+    ';
+
+    const QUERY_DELETE_ASSIGNED_DEPARTMENTS = '
+        DELETE FROM
+            ' . self::TABLE_ASSIGNMENT . '
+        WHERE
+            nutzerid=?
+        ORDER BY behoerdenid
+    ';
+
+    const QUERY_DELETE_USER_ROLES = '
+        DELETE FROM user_role WHERE user_id = ?
+    ';
+
+    const QUERY_INSERT_USER_ROLES_BY_NAME = '
+        INSERT INTO user_role (user_id, role_id)
+        SELECT ?, r.id FROM role r WHERE r.name IN (:roleNames)
+    ';
+
+    const QUERY_READ_SUPERUSER_DEPARTMENTS = '
+        SELECT behoerde.`BehoerdenID` AS id
+        FROM ' . \BO\Zmsbackend\Department\Repository\Department::TABLE . '
+        ORDER BY behoerde.Name
+    ';
+
+    const QUERY_READ_ASSIGNED_DEPARTMENTS = '
+        SELECT userAssignment.`behoerdenid` AS id
+        FROM ' . self::TABLE_ASSIGNMENT . ' userAssignment
+        LEFT JOIN ' . self::TABLE . ' useraccount ON useraccount.Name = :useraccountName
+        WHERE
+            useraccount.`NutzerID` = userAssignment.`nutzerid`
+        ORDER BY userAssignment.`behoerdenid`
+    ';
+
+    const QUERY_READ_ASSIGNED_DEPARTMENTS_FOR_ALL = '
+        SELECT useraccount.Name as useraccountName,
+            userAssignment.`behoerdenid` AS id
+        FROM ' . self::TABLE_ASSIGNMENT . ' userAssignment
+        LEFT JOIN ' . self::TABLE . ' useraccount ON useraccount.NutzerID = userAssignment.nutzerid
+        WHERE
+            useraccount.Name IN (:useraccountNames)
+        ORDER BY useraccount.Name, userAssignment.`behoerdenid`
+    ';
+
+    /**
+     * Build an SQL expression that checks whether the current useraccount has
+     * a permission via user_role -> role_permission -> permission.
+     */
+    protected function permissionExists(string $permissionName)
+    {
+        if (!in_array($permissionName, self::VALID_PERMISSION_NAMES, true)) {
+            throw new \InvalidArgumentException("Invalid permission name: $permissionName");
+        }
+        $quoted = "'" . $permissionName . "'";
+        return self::expression(
+            'EXISTS('
+            . 'SELECT 1 '
+            . 'FROM user_role ur '
+            . 'JOIN role_permission rp ON rp.role_id = ur.role_id '
+            . 'JOIN permission p ON p.id = rp.permission_id '
+            . 'WHERE ur.user_id = useraccount.NutzerID '
+            . 'AND p.name = ' . $quoted
+            . ')'
+        );
+    }
+
+    #[\Override]
+    public function getEntityMapping()
+    {
+        return [
+            'id' => 'useraccount.Name',
+            'password' => 'useraccount.Passworthash',
+            'lastLogin' => 'useraccount.lastUpdate',
+            'roles' => self::expression(
+                '(SELECT GROUP_CONCAT(DISTINCT r.name ORDER BY r.name SEPARATOR \',\') '
+                . 'FROM user_role ur '
+                . 'JOIN role r ON r.id = ur.role_id '
+                . 'WHERE ur.user_id = useraccount.NutzerID)'
+            ),
+            'rights__superuser' => self::expression('`useraccount`.`Berechtigung` = 90'),
+            'rights__organisation' => self::expression('`useraccount`.`Berechtigung` >= 70'),
+            'rights__department' => self::expression('`useraccount`.`Berechtigung` >= 50'),
+            'rights__cluster' => self::expression('`useraccount`.`Berechtigung` >= 40'),
+            'rights__useraccount' => self::expression('`useraccount`.`Berechtigung` >= 40'),
+            'rights__scope' => self::expression('`useraccount`.`Berechtigung` >= 30'),
+            'rights__departmentStats' => self::expression('`useraccount`.`Berechtigung` >= 25'),
+            'rights__availability' => self::expression('`useraccount`.`Berechtigung` >= 20'),
+            'rights__ticketprinter' => self::expression('`useraccount`.`Berechtigung` >= 15'),
+            'rights__audit' => self::expression('`useraccount`.`Berechtigung` = 5 OR `useraccount`.`Berechtigung` = 90'),
+            'rights__basic' => self::expression('`useraccount`.`Berechtigung` >= 0'),
+            'permissions__appointment' => $this->permissionExists('appointment'),
+            'permissions__availability' => $this->permissionExists('availability'),
+            'permissions__calldisplay' => $this->permissionExists('calldisplay'),
+            'permissions__capacityreport' => $this->permissionExists('capacityreport'),
+            'permissions__cherrypick' => $this->permissionExists('cherrypick'),
+            'permissions__cluster' => $this->permissionExists('cluster'),
+            'permissions__config' => $this->permissionExists('config'),
+            'permissions__counter' => $this->permissionExists('counter'),
+            'permissions__customersearch' => $this->permissionExists('customersearch'),
+            'permissions__dayoff' => $this->permissionExists('dayoff'),
+            'permissions__department' => $this->permissionExists('department'),
+            'permissions__emergency' => $this->permissionExists('emergency'),
+            'permissions__finishedqueue' => $this->permissionExists('finishedqueue'),
+            'permissions__finishedqueuepast' => $this->permissionExists('finishedqueuepast'),
+            'permissions__jurisdiction' => $this->permissionExists('jurisdiction'),
+            'permissions__logs' => $this->permissionExists('logs'),
+            'permissions__mailtemplates' => $this->permissionExists('mailtemplates'),
+            'permissions__missedqueue' => $this->permissionExists('missedqueue'),
+            'permissions__openqueue' => $this->permissionExists('openqueue'),
+            'permissions__organisation' => $this->permissionExists('organisation'),
+            'permissions__overviewcalendar' => $this->permissionExists('overviewcalendar'),
+            'permissions__parkedqueue' => $this->permissionExists('parkedqueue'),
+            'permissions__restrictedscope' => $this->permissionExists('restrictedscope'),
+            'permissions__scope' => $this->permissionExists('scope'),
+            'permissions__source' => $this->permissionExists('source'),
+            'permissions__statistic' => $this->permissionExists('statistic'),
+            'permissions__ticketprinter' => $this->permissionExists('ticketprinter'),
+            'permissions__useraccount' => $this->permissionExists('useraccount'),
+            'permissions__waitingqueue' => $this->permissionExists('waitingqueue'),
+            'permissions__superuser' => $this->permissionExists('superuser'),
+        ];
+    }
+
+    public function addConditionLoginName($loginName)
+    {
+        $this->query->where('useraccount.Name', '=', $loginName);
+        return $this;
+    }
+
+    public function addConditionUserId($userId)
+    {
+        $this->query->where('useraccount.NutzerID', '=', $userId);
+        return $this;
+    }
+
+    public function addConditionPassword($password)
+    {
+        $this->query->where('useraccount.Passworthash', '=', $password);
+        return $this;
+    }
+
+    public function addConditionXauthKey($xAuthKey)
+    {
+        $this->query->where('useraccount.SessionID', '=', $xAuthKey);
+        $this->query->where('useraccount.SessionExpiry', '>', date('Y-m-d H:i:s', time() - App::SESSION_DURATION));
+        return $this;
+    }
+
+    public function addConditionRoleName(string $roleName): self
+    {
+        $this->setDistinctSelect();
+
+        $this->innerJoin(
+            new \BO\Zmsbackend\Query\Alias('user_role', 'useraccount_role'),
+            'useraccount.NutzerID',
+            '=',
+            'useraccount_role.user_id'
+        );
+
+        $this->innerJoin(
+            new \BO\Zmsbackend\Query\Alias('role', 'useraccount_role_name'),
+            'useraccount_role.role_id',
+            '=',
+            'useraccount_role_name.id'
+        );
+
+        $this->query->where('useraccount_role_name.name', '=', $roleName);
+
+        return $this;
+    }
+
+    public function addConditionSearch($queryString, $orWhere = false)
+    {
+        $condition = function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($queryString) {
+            $queryString = trim($queryString);
+            $query->orWith('useraccount.NutzerID', 'LIKE', "%$queryString%");
+            $query->orWith('useraccount.Name', 'LIKE', "%$queryString%");
+        };
+        if ($orWhere) {
+            $this->query->orWhere($condition);
+        } else {
+            $this->query->where($condition);
+        }
+        return $this;
+    }
+
+    public function reverseEntityMapping(\BO\Zmsentities\Useraccount $entity)
+    {
+        $data = array();
+        $data['Name'] = $entity->id;
+        $data['Passworthash'] = (isset($entity->password)) ? $entity->password : null;
+        $data['Berechtigung'] = $entity->getRightsLevel();
+        $data['BehoerdenID'] = 0;
+        if (!$entity->isSuperUser() && isset($entity->departments) && 0 < $entity->departments->count()) {
+            $data['BehoerdenID'] = $entity->departments->getFirst()->id;
+        }
+        //default values because of strict mode
+        $data['notrufinitiierung'] = 0;
+        $data['notrufantwort'] = 0;
+
+        $data = array_filter($data, function ($value) {
+            return ($value !== null && $value !== false);
+        });
+        return $data;
+    }
+
+    #[\Override]
+    public function postProcess($data)
+    {
+        $data[$this->getPrefixed("lastLogin")] = ('0000-00-00' != $data[$this->getPrefixed("lastLogin")]) ?
+            strtotime($data[$this->getPrefixed("lastLogin")]) :
+            null;
+
+        $rolesKey = $this->getPrefixed('roles');
+        $rawRoles = $data[$rolesKey] ?? null;
+        if ($rawRoles === null || $rawRoles === '') {
+            $data[$rolesKey] = [];
+        } elseif (is_string($rawRoles)) {
+            $data[$rolesKey] = array_values(array_filter(array_map('trim', explode(',', $rawRoles)), function ($v) {
+                return $v !== '';
+            }));
+        }
+
+        $permissionsPrefix = $this->getPrefixed('permissions__');
+        foreach ($data as $key => $value) {
+            if (0 === strpos($key, $permissionsPrefix)) {
+                $data[$key] = (bool) $value;
+            }
+        }
+
+        return $data;
+    }
+
+    public function addConditionDepartmentIds(array $departmentIds)
+    {
+        $this->setDistinctSelect();
+        $this->innerJoin(
+            new \BO\Zmsbackend\Query\Alias(static::TABLE_ASSIGNMENT, 'useraccount_department'),
+            'useraccount.NutzerID',
+            '=',
+            'useraccount_department.nutzerid'
+        );
+        $this->query->where('useraccount_department.behoerdenid', 'IN', $departmentIds);
+        return $this;
+    }
+
+    public function addConditionDepartmentIdsAndSearch(array $departmentIds, $queryString = null, $orWhere = false): self
+    {
+        $this->addConditionDepartmentIds($departmentIds);
+
+        if ($queryString) {
+            $this->addConditionSearch($queryString, $orWhere);
+        }
+
+        return $this;
+    }
+
+    public function addConditionExcludeSuperusers(): self
+    {
+        $this->setDistinctSelect();
+
+        $this->innerJoin(
+            new \BO\Zmsbackend\Query\Alias('user_role', 'exclude_superuser_user_role'),
+            'useraccount.NutzerID',
+            '=',
+            'exclude_superuser_user_role.user_id'
+        );
+
+        $this->innerJoin(
+            new \BO\Zmsbackend\Query\Alias('role', 'exclude_superuser_role'),
+            'exclude_superuser_user_role.role_id',
+            '=',
+            'exclude_superuser_role.id'
+        );
+
+        $this->query->where('exclude_superuser_role.name', '!=', 'system_admin');
+
+        return $this;
+    }
+
+    public function addOrderByName(): self
+    {
+        $this->query->orderBy('useraccount.Name', 'ASC');
+        return $this;
+    }
+
+    /**
+     * @SuppressWarnings(UnusedFormalParameter)
+     */
+    public function addConditionWorkstationAccess($workstationUserId, array $workstationDepartmentIds, $isWorkstationSuperuser = false): self
+    {
+        // Superusers can access all useraccounts, no filtering needed
+        if ($isWorkstationSuperuser) {
+            return $this;
+        }
+
+        $this->addConditionExcludeSuperusers();
+
+        // If no departments, only exclude superusers (already done above)
+        if (empty($workstationDepartmentIds)) {
+            return $this;
+        }
+
+        // Ensure we have a join to nutzerzuordnung for target useraccounts
+        $this->setDistinctSelect();
+        $this->innerJoin(
+            new \BO\Zmsbackend\Query\Alias(static::TABLE_ASSIGNMENT, 'useraccount_department'),
+            'useraccount.NutzerID',
+            '=',
+            'useraccount_department.nutzerid'
+        );
+
+        // Target useraccount must share at least one department with workstation user
+        $this->query->where('useraccount_department.behoerdenid', 'IN', $workstationDepartmentIds);
+
+        return $this;
+    }
+}
