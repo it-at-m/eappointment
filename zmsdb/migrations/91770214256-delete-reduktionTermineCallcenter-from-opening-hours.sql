@@ -1,1 +1,0 @@
-ALTER TABLE oeffnungszeit DROP COLUMN reduktionTermineCallcenter;

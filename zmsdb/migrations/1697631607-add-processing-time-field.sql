@@ -1,1 +1,0 @@
-ALTER TABLE `statistik` ADD COLUMN `bearbeitungszeit` integer (11) DEFAULT NULL;

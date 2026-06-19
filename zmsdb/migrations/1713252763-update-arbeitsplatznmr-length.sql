@@ -1,1 +1,0 @@
-ALTER TABLE `nutzer` CHANGE `Arbeitsplatznr` `Arbeitsplatznr` varchar (8) NOT NULL DEFAULT '''';

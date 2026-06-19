@@ -1,1 +1,0 @@
-INSERT INTO `config` SET `name` = "mailings__noReplyDepartmentId", `value` = "0";

@@ -1,2 +1,0 @@
--- see ticket https://projekte.berlinonline.de/issues/36795
-INSERT INTO nutzerzuordnung SELECT nutzer.NutzerID, nutzer.BehoerdenID FROM nutzer LEFT JOIN nutzerzuordnung ON nutzer.NutzerID = nutzerzuordnung.nutzerid WHERE nutzerzuordnung.nutzerid IS NULL;

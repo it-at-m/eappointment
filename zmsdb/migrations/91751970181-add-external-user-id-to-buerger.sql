@@ -1,1 +1,0 @@
-ALTER TABLE `buerger` ADD COLUMN `external_user_id` VARCHAR(255) DEFAULT NULL;

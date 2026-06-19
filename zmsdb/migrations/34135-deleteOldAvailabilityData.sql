@@ -1,1 +1,0 @@
-INSERT INTO `config` SET `name` = "cron__deleteOldAvailabilityData", `value` = "stage,dev";

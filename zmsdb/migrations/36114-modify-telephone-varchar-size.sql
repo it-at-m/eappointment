@@ -1,1 +1,0 @@
-ALTER TABLE `abrechnung` MODIFY `Telefonnummer` VARCHAR(50);

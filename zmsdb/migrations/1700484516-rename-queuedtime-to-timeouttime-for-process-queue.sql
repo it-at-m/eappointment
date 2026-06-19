@@ -1,1 +1,0 @@
-ALTER TABLE buerger CHANGE `queuedTime` `timeoutTime` DATETIME;

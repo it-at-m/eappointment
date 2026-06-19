@@ -1,1 +1,0 @@
-INSERT INTO `config` SET `name` = "cron__deleteOldLogs", `value` = "prod,stage,dev";

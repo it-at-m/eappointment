@@ -1,9 +1,0 @@
-{
-  "id": "unittest",
-  "password": "unittest",
-  "departments": [
-    {
-      "id": 1
-    }
-  ]
-}

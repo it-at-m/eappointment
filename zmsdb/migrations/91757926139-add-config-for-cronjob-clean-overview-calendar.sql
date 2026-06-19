@@ -1,1 +1,0 @@
-INSERT INTO `config` SET `name` = "cron__cleanupOverviewCalendar", `value` = "stage,dev,test,load,prod";
