@@ -7,6 +7,9 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Render;
+use BO\Zmsentities\Appointment;
+
 class AppointmentFormButtons extends BaseController
 {
     /**
@@ -36,7 +39,7 @@ class AppointmentFormButtons extends BaseController
             str_replace('-', ':', $selectedTime === null ? '' : $selectedTime)
         );
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'block/appointment/formButtons.twig',
             array(
@@ -51,7 +54,7 @@ class AppointmentFormButtons extends BaseController
 
     protected function isNewAppointment($process, $selectedDate, $selectedTime)
     {
-        $selectedAppointment = new \BO\Zmsentities\Appointment();
+        $selectedAppointment = new Appointment();
         $selectedAppointment->setTime($selectedDate . ' ' . $selectedTime);
         return ($process) ? ($process->getFirstAppointment()->date != $selectedAppointment->date) : false;
     }

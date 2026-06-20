@@ -7,6 +7,8 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Helper\DateTime;
+
 class CounterAppointmentTimes extends BaseController
 {
     /**
@@ -21,7 +23,7 @@ class CounterAppointmentTimes extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
-        $dateTime = new \BO\Zmsentities\Helper\DateTime($selectedDate);
+        $dateTime = new DateTime($selectedDate);
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
 
         try {

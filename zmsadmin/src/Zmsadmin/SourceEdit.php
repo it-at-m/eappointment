@@ -9,8 +9,9 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Source as Entity;
-use BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Zmsentities\Source;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 
 class SourceEdit extends BaseController
 {
@@ -27,7 +28,7 @@ class SourceEdit extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         if (!$workstation->getUseraccount()->hasPermissions(['source'])) {
-            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+            throw new UserAccountMissingRights();
         }
 
         if ('add' != $args['name']) {
@@ -52,14 +53,14 @@ class SourceEdit extends BaseController
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
             $result = $this->writeUpdatedEntity($input);
-            if ($result instanceof Entity) {
-                return \BO\Slim\Render::redirect('sourceEdit', ['name' => $result->getSource()], [
+            if ($result instanceof Source) {
+                return Render::redirect('sourceEdit', ['name' => $result->getSource()], [
                     'success' => 'source_saved'
                 ]);
             }
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/sourceedit.twig',
             array(
@@ -78,7 +79,7 @@ class SourceEdit extends BaseController
 
     protected function writeUpdatedEntity($input)
     {
-        $entity = (new Entity($input))->withCleanedUpFormData();
+        $entity = (new Source($input))->withCleanedUpFormData();
         return $this->handleEntityWrite(function () use ($entity) {
             return \App::$http->readPostResult('/source/', $entity)->getEntity();
         });

@@ -6,6 +6,7 @@ use BO\Mellon\Validator;
 use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Department as DepartmentEntity;
 use BO\Zmsentities\Collection\DepartmentList;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 
 class OverallCalendar extends BaseController
 {
@@ -25,7 +26,7 @@ class OverallCalendar extends BaseController
         }
         $workstation = $result->getEntity();
         if (!$workstation->getUseraccount()->hasPermissions(['overviewcalendar'])) {
-            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+            throw new UserAccountMissingRights();
         }
 
         return \BO\Slim\Render::withHtml(

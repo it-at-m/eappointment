@@ -9,11 +9,13 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Render;
+use BO\Mellon\Validator;
 use BO\Zmsentities\Collection\RoleList;
 use BO\Zmsentities\Exception\UserAccountMissingRights;
+use BO\Zmsentities\Exception\UserAccountAccessRightsFailed;
 use BO\Zmsentities\Schema\Loader;
-use BO\Zmsentities\Useraccount as Entity;
-use BO\Mellon\Validator;
+use BO\Zmsentities\Useraccount;
 
 class UseraccountEdit extends BaseController
 {
@@ -44,15 +46,15 @@ class UseraccountEdit extends BaseController
             ! $workstation->getUseraccount()->isSuperUser()
             && $this->hasSuperuserOnlyRole($userAccount)
         ) {
-            throw new \BO\Zmsentities\Exception\UserAccountAccessRightsFailed();
+            throw new UserAccountAccessRightsFailed();
         }
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
 
         if ($request->getMethod() === 'POST') {
             $input = $request->getParsedBody();
             $result = $this->writeUpdatedEntity($input, $userAccountName);
-            if ($result instanceof Entity) {
-                return \BO\Slim\Render::redirect(
+            if ($result instanceof Useraccount) {
+                return Render::redirect(
                     'useraccountEdit',
                     array('loginname' => $result->id),
                     array('success' => 'useraccount_saved')
@@ -70,7 +72,7 @@ class UseraccountEdit extends BaseController
             : [];
 
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/useraccountEdit.twig',
             [
@@ -81,7 +83,7 @@ class UseraccountEdit extends BaseController
                 'workstation' => $workstation,
                 'title' => 'Nutzer: Einrichtung und Administration','menuActive' => 'useraccount',
                 'exception' => (isset($result)) ? $result : null,
-                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
+                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Useraccount::$schema)),
                 'oidcProviderList' => array_filter($allowedProviderList),
                 'isFromOidc' => in_array($userAccount->getOidcProviderFromName(), $allowedProviderList),
                 'roleList' => $roleList,
@@ -92,7 +94,7 @@ class UseraccountEdit extends BaseController
 
     protected function writeUpdatedEntity($input, $userAccountName)
     {
-        $entity = (new Entity($input))->withCleanedUpFormData();
+        $entity = (new Useraccount($input))->withCleanedUpFormData();
         // TODO: Remove the password fields when password authentication is removed in the future
         $entity->setPassword($input);
         return $this->handleEntityWrite(function () use ($entity, $userAccountName) {
@@ -117,7 +119,7 @@ class UseraccountEdit extends BaseController
         return $roleList;
     }
 
-    protected function hasSuperuserOnlyRole(Entity $userAccount): bool
+    protected function hasSuperuserOnlyRole(Useraccount $userAccount): bool
     {
         $roles = $userAccount->roles ?? [];
 

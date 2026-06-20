@@ -10,10 +10,10 @@ Part of the [product-oriented RefArch roadmap](./product-oriented-refarch-roadma
 
 > **Status ([GH-2604](https://github.com/it-at-m/eappointment/issues/2604)):** Admin API and database access already live in **PHP `zmsbackend`** (Slim, vertical slices under `src/Zmsbackend/<Domain>/`). This page describes the **next** step — the same domain layout on the RefArch **Spring** stack. The name `zmsbackend` is reused; below, **PHP `zmsbackend`** means the current module, **Spring `zmsbackend`** means the target service.
 
-| Target service              | Replaces (today)                                                                 |
-| --------------------------- | -------------------------------------------------------------------------------- |
-| Spring `zmsbackend`         | PHP **`zmsbackend`** (admin REST API + DB; merged from `zmsapi`/`zmsdb`), server-side `zmsentities` usage |
-| Spring `zmscitizenbackend`  | PHP **`zmscitizenapi`**                                                          |
+| Target service             | Replaces (today)                                                                                          |
+| -------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Spring `zmsbackend`        | PHP **`zmsbackend`** (admin REST API + DB; merged from `zmsapi`/`zmsdb`), server-side `zmsentities` usage |
+| Spring `zmscitizenbackend` | PHP **`zmscitizenapi`**                                                                                   |
 
 **`zmsentities` stays in the monorepo** as the shared contract layer: JSON Schemas, validation helpers, and typed objects. **Frontend modules** such as `zmsadmin` and `zmsstatistic` keep depending on it for API response shapes and client-side validation.
 
@@ -25,9 +25,9 @@ Replaces **PHP `zmsbackend`** (and, historically, the former split **`zmsdb`** +
 
 ### Today (PHP)
 
-| Package / module | Role                                                                                       |
-| ---------------- | ------------------------------------------------------------------------------------------ |
-| `zmsentities`    | Schema-backed domain objects (`Department`, `Scope`, …), validation, collections             |
+| Package / module | Role                                                                                                                                                             |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `zmsentities`    | Schema-backed domain objects (`Department`, `Scope`, …), validation, collections                                                                                 |
 | **`zmsbackend`** | Unified admin REST API + SQL layer — `Api/`, `Service/`, `Repository/`, `Exception/` per domain ([GH-2604](https://github.com/it-at-m/eappointment/issues/2604)) |
 
 Before GH-2604, the same responsibilities lived in separate **`zmsapi`** (HTTP) and **`zmsdb`** (queries) Composer packages; the code explorers below show the **current PHP `zmsbackend`** layout.
@@ -98,20 +98,20 @@ src/main/java/de/muenchen/zms/department/
 | `Department\Api\DepartmentList`                                             | `api/DepartmentController.listDepartments`           |
 | `Department\Api\DepartmentUpdate`                                           | `api/DepartmentController.updateDepartment`          |
 | `Department\Api\DepartmentDelete`                                           | `api/DepartmentController.deleteDepartment`          |
-| `Department\Api\DepartmentAddScope`                                           | `api/DepartmentController.addScope`                  |
-| `Department\Api\DepartmentAddCluster`                                         | `api/DepartmentController.addCluster`                |
-| `Organisation\Api\OrganisationByDepartment`                                   | `api/DepartmentController.getOrganisation`           |
-| `Department\Api\DepartmentWorkstationList`                                    | `api/DepartmentController.listWorkstations`          |
+| `Department\Api\DepartmentAddScope`                                         | `api/DepartmentController.addScope`                  |
+| `Department\Api\DepartmentAddCluster`                                       | `api/DepartmentController.addCluster`                |
+| `Organisation\Api\OrganisationByDepartment`                                 | `api/DepartmentController.getOrganisation`           |
+| `Department\Api\DepartmentWorkstationList`                                  | `api/DepartmentController.listWorkstations`          |
 | `Organisation\Api\OrganisationAddDepartment`                                | `api/OrganisationDepartmentController.addDepartment` |
 | `Department\Api\DepartmentByScopeId`                                        | `api/ScopeDepartmentController.getDepartmentByScope` |
-| `Useraccount\Api\UseraccountListByDepartments`                                | `api/DepartmentUseraccountController`                |
-| `Useraccount\Api\UseraccountListByRoleAndDepartments`                         | `api/DepartmentUseraccountController`                |
-| `Department\Service\Department` + `Department\Repository\Department`          | `model/`, `repository/DepartmentRepository`          |
-| `Link`, `Dayoff`, `Scope`, `Cluster`, `Workstation`, `Organisation` domains   | matching `repository/Department*`                    |
-| `Useraccount\Service\Useraccount` (department queries)                        | `repository/DepartmentUseraccountRepository`         |
-| `zmsentities\Department` + `department.json`                              | `view/DepartmentView`                                |
-| `zmsentities\Schema\Validator` + `Department::testValid()`                | `validation/ValidateDepartment`                      |
-| —                                                                         | `validation/DepartmentValidationService`             |
+| `Useraccount\Api\UseraccountListByDepartments`                              | `api/DepartmentUseraccountController`                |
+| `Useraccount\Api\UseraccountListByRoleAndDepartments`                       | `api/DepartmentUseraccountController`                |
+| `Department\Service\Department` + `Department\Repository\Department`        | `model/`, `repository/DepartmentRepository`          |
+| `Link`, `Dayoff`, `Scope`, `Cluster`, `Workstation`, `Organisation` domains | matching `repository/Department*`                    |
+| `Useraccount\Service\Useraccount` (department queries)                      | `repository/DepartmentUseraccountRepository`         |
+| `zmsentities\Department` + `department.json`                                | `view/DepartmentView`                                |
+| `zmsentities\Schema\Validator` + `Department::testValid()`                  | `validation/ValidateDepartment`                      |
+| —                                                                           | `validation/DepartmentValidationService`             |
 
 #### Today — click through the PHP stack
 
@@ -137,13 +137,13 @@ Separate **citizen-facing** backend (today: PHP module **`zmscitizenapi`**).
 
 ### Today
 
-| Package               | Role                                                                                                |
-| --------------------- | --------------------------------------------------------------------------------------------------- |
-| `zmscitizenapi`       | Controllers, services, citizen models (`Office`, `Service`, `ThinnedScope`, …)                      |
+| Package               | Role                                                                                                        |
+| --------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `zmscitizenapi`       | Controllers, services, citizen models (`Office`, `Service`, `ThinnedScope`, …)                              |
 | `ZmsApiClientService` | HTTP client to **PHP `zmsbackend`** — fetches full `zmsentities` graphs (`Provider`, `Scope`, `Process`, …) |
 | `ZmsApiFacadeService` | Orchestrates multiple **PHP `zmsbackend`** calls, merges lists, applies second-level cache                  |
-| `MapperService`       | Maps giant **`zmsentities`** payloads into thinned citizen models                                   |
-| `zmsentities`         | Some shared types; citizen models are mostly separate                                               |
+| `MapperService`       | Maps giant **`zmsentities`** payloads into thinned citizen models                                           |
+| `zmsentities`         | Some shared types; citizen models are mostly separate                                                       |
 
 Core data is loaded **through HTTP calls to PHP `zmsbackend`**, not from an owned query layer. Typical flows fetch **over-sized admin entities**, then **`MapperService`** projects them into **`Office`**, **`ThinnedScope`**, **`Service`**, and similar citizen DTOs — often after **several round-trips** coordinated by **`ZmsApiFacadeService`** (~900 lines today).
 

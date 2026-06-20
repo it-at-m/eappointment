@@ -9,7 +9,6 @@ namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
 use BO\Slim\Render;
-use BO\Zmsentities\Department as Entity;
 
 /**
   * Handle requests concerning services

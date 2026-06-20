@@ -7,7 +7,8 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Collection\DayoffList as Collection;
+use BO\Zmsentities\Collection\DayoffList;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 use BO\Mellon\Validator;
 
 class DayoffByYear extends BaseController
@@ -24,7 +25,7 @@ class DayoffByYear extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         if (!$workstation->getUseraccount()->hasPermissions(['dayoff'])) {
-            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+            throw new UserAccountMissingRights();
         }
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $year = Validator::value($args['year'])->isNumber()->getValue();
@@ -35,7 +36,7 @@ class DayoffByYear extends BaseController
         $input = $request->getParsedBody();
         if (array_key_exists('save', (array) $input)) {
             $data = (array_key_exists('dayoff', $input)) ? $input['dayoff'] : [];
-            $collection = (new Collection($data))->withTimestampFromDateformat();
+            $collection = (new DayoffList($data))->withTimestampFromDateformat();
             \App::$http->readPostResult('/dayoff/' . $year . '/', $collection);
             return \BO\Slim\Render::redirect('dayoffByYear', ['year' => $year], [
                 'success' => 'dayoff_saved'

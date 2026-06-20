@@ -7,7 +7,9 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Cluster as Entity;
+use BO\Zmsentities\Cluster;
+use BO\Zmsentities\Collection\ScopeList;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 use BO\Mellon\Validator;
 
 class DepartmentAddCluster extends BaseController
@@ -23,7 +25,7 @@ class DepartmentAddCluster extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         if (!$workstation->getUseraccount()->hasPermissions(['cluster'])) {
-            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+            throw new UserAccountMissingRights();
         }
         $departmentId = Validator::value($args['departmentId'])->isNumber()->getValue();
         $department = \App::$http
@@ -32,8 +34,8 @@ class DepartmentAddCluster extends BaseController
         $input = $request->getParsedBody();
 
         if (is_array($input) && array_key_exists('save', $input)) {
-            $entity = (new Entity($input))->withCleanedUpFormData();
-            $entity->scopes = (new \BO\Zmsentities\Collection\ScopeList($entity->scopes))->withUniqueScopes();
+            $entity = (new Cluster($input))->withCleanedUpFormData();
+            $entity->scopes = (new ScopeList($entity->scopes))->withUniqueScopes();
             $entity = \App::$http
                 ->readPostResult('/department/' . $department->id . '/cluster/', $entity)
                 ->getEntity();

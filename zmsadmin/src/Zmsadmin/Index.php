@@ -8,6 +8,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsclient\ModuleAccess;
+use BO\Zmsentities\Useraccount;
 use BO\Zmsentities\Workstation;
 use BO\Zmsadmin\Helper\LoginForm;
 use BO\Mellon\Validator;
@@ -74,13 +75,12 @@ class Index extends BaseController
 
     protected function testLogin($input)
     {
-        $userAccount = new \BO\Zmsentities\Useraccount(array(
+        $userAccount = new Useraccount(array(
             'id' => $input['loginName'],
             'password' => $input['password'],
             'departments' => array('id' => 0) // required in schema validation
         ));
         try {
-            /** @var \BO\Zmsentities\Workstation $workstation */
             $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
 
             $sessionHash = hash('sha256', $workstation->authkey);
