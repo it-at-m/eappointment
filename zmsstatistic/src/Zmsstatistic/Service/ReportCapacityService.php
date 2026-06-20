@@ -7,6 +7,7 @@
 
 namespace BO\Zmsstatistic\Service;
 
+use BO\Zmsentities\Day;
 use BO\Zmsentities\Exchange;
 use DateTimeImmutable;
 
@@ -746,11 +747,11 @@ class ReportCapacityService
         return $exchange;
     }
 
-    private function dayFromString(string $date): \BO\Zmsentities\Day
+    private function dayFromString(string $date): Day
     {
         $dateTime = new \DateTime(substr($date, 0, 10));
 
-        return (new \BO\Zmsentities\Day())->setDateTime($dateTime);
+        return (new Day())->setDateTime($dateTime);
     }
 
     private function enrichPeriodList(mixed $periodList, string $scopeId): mixed
