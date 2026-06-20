@@ -65,5 +65,4 @@ class AvailabilityConflicts extends BaseController
             'conflictIdList' => (count($conflictedList)) ? $conflictedList : []
         ];
     }
-
 }

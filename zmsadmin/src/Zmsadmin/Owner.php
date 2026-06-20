@@ -14,7 +14,6 @@ use BO\Zmsentities\Owner as Entity;
 use BO\Zmsentities\Exception\UserAccountMissingRights;
 use BO\Slim\Render;
 
-
 class Owner extends BaseController
 {
     /**

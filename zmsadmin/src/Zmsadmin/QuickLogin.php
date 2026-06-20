@@ -12,7 +12,6 @@ use BO\Zmsentities\Scope;
 use BO\Zmsentities\Useraccount;
 use BO\Zmsentities\Workstation;
 
-
 class QuickLogin extends BaseController
 {
     /**
