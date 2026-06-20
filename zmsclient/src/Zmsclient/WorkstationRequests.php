@@ -11,11 +11,10 @@ use BO\Zmsentities\Collection\ProcessList;
 
 class WorkstationRequests
 {
-
     protected Http $http;
     protected Workstation $workstation;
-    protected Cluster $cluster;
-    protected Department $department;
+    protected ?Cluster $cluster = null;
+    protected ?Department $department = null;
     protected Scope $scope;
 
     public function __construct(

@@ -11,7 +11,6 @@ use BO\Slim\Render;
 use BO\Zmsclient\Status;
 use BO\Zmsentities\Schema\Entity;
 
-
 /**
   * Handle requests concerning services
   *

@@ -14,7 +14,6 @@ use BO\Zmsclient\Exception;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-
 class Logout extends BaseController
 {
     protected $resolveLevel = 0;

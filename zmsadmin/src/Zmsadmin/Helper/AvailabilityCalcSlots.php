@@ -13,7 +13,6 @@ use BO\Zmsentities\Collection\AvailabilityList;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-
 class AvailabilityCalcSlots extends BaseController
 {
     /**
