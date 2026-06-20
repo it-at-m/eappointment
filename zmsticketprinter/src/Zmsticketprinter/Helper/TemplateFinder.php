@@ -9,6 +9,10 @@
 
 namespace BO\Zmsticketprinter\Helper;
 
+use BO\Zmsentities\Department;
+use BO\Zmsentities\Schema\Entity;
+use BO\Zmsticketprinter\Exception\TemplateNotFound;
+
 class TemplateFinder
 {
     protected $defaultTemplate;
@@ -23,7 +27,7 @@ class TemplateFinder
         if ($this->isTemplateReadable($this->template)) {
             $this->defaultTemplate = $defaultTemplate;
         } else {
-            throw new \BO\Zmsticketprinter\Exception\TemplateNotFound("Could not find template $this->template");
+            throw new TemplateNotFound("Could not find template $this->template");
         }
     }
 
@@ -84,7 +88,7 @@ class TemplateFinder
         */
         //look for customized template in departmentlist, overwrite template before
         foreach ($organisation->departments as $departmentData) {
-            $entity = new \BO\Zmsentities\Department($departmentData);
+            $entity = new Department($departmentData);
             if ($this->getExistingTemplate($entity)) {
                 $template = $this->getExistingTemplate($entity);
                 break;
@@ -93,7 +97,7 @@ class TemplateFinder
         return $template;
     }
 
-    protected function getExistingTemplate(\BO\Zmsentities\Schema\Entity $entity)
+    protected function getExistingTemplate(Entity $entity)
     {
         $path = $this->subPath . '/buttonDisplay_' . $entity->getEntityName() . '_' . $entity->id . '.twig';
         if ($entity->hasId() && $this->isTemplateReadable($path)) {
