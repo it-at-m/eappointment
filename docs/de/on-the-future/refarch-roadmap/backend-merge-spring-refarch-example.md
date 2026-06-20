@@ -10,10 +10,10 @@ Teil der [produitorientierten RefArch-Roadmap](./product-oriented-refarch-roadma
 
 > **Status ([GH-2604](https://github.com/it-at-m/eappointment/issues/2604)):** Admin-API und Datenbankzugriff liegen bereits in **PHP `zmsbackend`** (Slim, vertikale Slices unter `src/Zmsbackend/<Domain>/`). Diese Seite beschreibt den **nächsten** Schritt — dasselbe Domain-Layout auf dem RefArch-**Spring**-Stack. Der Name `zmsbackend` wird wiederverwendet; unten bedeutet **PHP `zmsbackend`** das aktuelle Modul, **Spring `zmsbackend`** den Ziel-Service.
 
-| Ziel-Service               | Ersetzt (heute)                                                                                              |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Ziel-Service               | Ersetzt (heute)                                                                                                       |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | Spring `zmsbackend`        | PHP **`zmsbackend`** (Admin-REST-API + DB; zusammengeführt aus `zmsapi`/`zmsdb`), serverseitige `zmsentities`-Nutzung |
-| Spring `zmscitizenbackend` | PHP **`zmscitizenapi`**                                                                                      |
+| Spring `zmscitizenbackend` | PHP **`zmscitizenapi`**                                                                                               |
 
 **`zmsentities` bleibt im Monorepo** als gemeinsame Vertragsschicht: JSON-Schemas, Validierungshilfen und typisierte Objekte. **Frontend-Module** wie `zmsadmin` und `zmsstatistic` hängen weiter daran für API-Antwortformen und clientseitige Validierung.
 
@@ -25,9 +25,9 @@ Ersetzt **PHP `zmsbackend`** (und historisch die früher getrennten Pakete **`zm
 
 ### Heute (PHP)
 
-| Paket / Modul    | Rolle                                                                                                    |
-| ---------------- | -------------------------------------------------------------------------------------------------------- |
-| `zmsentities`    | Schema-basierte Domain-Objekte (`Department`, `Scope`, …), Validierung, Collections                        |
+| Paket / Modul    | Rolle                                                                                                                                                                   |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `zmsentities`    | Schema-basierte Domain-Objekte (`Department`, `Scope`, …), Validierung, Collections                                                                                     |
 | **`zmsbackend`** | Einheitliche Admin-REST-API + SQL-Schicht — `Api/`, `Service/`, `Repository/`, `Exception/` pro Domain ([GH-2604](https://github.com/it-at-m/eappointment/issues/2604)) |
 
 Vor GH-2604 lagen dieselben Verantwortlichkeiten in getrennten **`zmsapi`**- (HTTP) und **`zmsdb`**- (Queries) Composer-Paketen; die Code-Explorer unten zeigen das **aktuelle PHP-`zmsbackend`**-Layout.
@@ -94,24 +94,24 @@ src/main/java/de/muenchen/zms/department/
 | PHP (heute — **`zmsbackend`**)                                              | Java (Spring-Ziel)                                   |
 | --------------------------------------------------------------------------- | ---------------------------------------------------- |
 | `zmsbackend/routing.php` (`/department/*`, …)                               | `api/DepartmentRouteRegistry` + Controller           |
-| `Department\Api\DepartmentGet`                                                | `api/DepartmentController.getDepartment`             |
+| `Department\Api\DepartmentGet`                                              | `api/DepartmentController.getDepartment`             |
 | `Department\Api\DepartmentList`                                             | `api/DepartmentController.listDepartments`           |
 | `Department\Api\DepartmentUpdate`                                           | `api/DepartmentController.updateDepartment`          |
 | `Department\Api\DepartmentDelete`                                           | `api/DepartmentController.deleteDepartment`          |
-| `Department\Api\DepartmentAddScope`                                           | `api/DepartmentController.addScope`                  |
-| `Department\Api\DepartmentAddCluster`                                         | `api/DepartmentController.addCluster`                |
+| `Department\Api\DepartmentAddScope`                                         | `api/DepartmentController.addScope`                  |
+| `Department\Api\DepartmentAddCluster`                                       | `api/DepartmentController.addCluster`                |
 | `Organisation\Api\OrganisationByDepartment`                                 | `api/DepartmentController.getOrganisation`           |
 | `Department\Api\DepartmentWorkstationList`                                  | `api/DepartmentController.listWorkstations`          |
 | `Organisation\Api\OrganisationAddDepartment`                                | `api/OrganisationDepartmentController.addDepartment` |
 | `Department\Api\DepartmentByScopeId`                                        | `api/ScopeDepartmentController.getDepartmentByScope` |
 | `Useraccount\Api\UseraccountListByDepartments`                              | `api/DepartmentUseraccountController`                |
-| `Useraccount\Api\UseraccountListByRoleAndDepartments`                        | `api/DepartmentUseraccountController`                |
+| `Useraccount\Api\UseraccountListByRoleAndDepartments`                       | `api/DepartmentUseraccountController`                |
 | `Department\Service\Department` + `Department\Repository\Department`        | `model/`, `repository/DepartmentRepository`          |
 | `Link`, `Dayoff`, `Scope`, `Cluster`, `Workstation`, `Organisation` Domains | passende `repository/Department*`                    |
 | `Useraccount\Service\Useraccount` (Department-Queries)                      | `repository/DepartmentUseraccountRepository`         |
-| `zmsentities\Department` + `department.json`                              | `view/DepartmentView`                                |
-| `zmsentities\Schema\Validator` + `Department::testValid()`                | `validation/ValidateDepartment`                      |
-| —                                                                         | `validation/DepartmentValidationService`             |
+| `zmsentities\Department` + `department.json`                                | `view/DepartmentView`                                |
+| `zmsentities\Schema\Validator` + `Department::testValid()`                  | `validation/ValidateDepartment`                      |
+| —                                                                           | `validation/DepartmentValidationService`             |
 
 #### Heute — PHP-Stack durchklicken
 
@@ -137,13 +137,13 @@ Eigenes **bürgerorientiertes** Backend (heute: PHP-Modul **`zmscitizenapi`**).
 
 ### Heute
 
-| Paket                 | Rolle                                                                                                  |
-| --------------------- | ------------------------------------------------------------------------------------------------------ |
-| `zmscitizenapi`       | Controller, Services, Citizen-Modelle (`Office`, `Service`, `ThinnedScope`, …)                         |
+| Paket                 | Rolle                                                                                                          |
+| --------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `zmscitizenapi`       | Controller, Services, Citizen-Modelle (`Office`, `Service`, `ThinnedScope`, …)                                 |
 | `ZmsApiClientService` | HTTP-Client zu **PHP `zmsbackend`** — lädt volle **`zmsentities`**-Graphen (`Provider`, `Scope`, `Process`, …) |
-| `ZmsApiFacadeService` | Orchestriert mehrere **PHP-`zmsbackend`**-Aufrufe, merged Listen, Second-Level-Cache                         |
-| `MapperService`       | Mappt große **`zmsentities`**-Payloads auf schlanke Citizen-Modelle                                    |
-| `zmsentities`         | Teilweise gemeinsame Typen; Citizen-Modelle überwiegend separat                                        |
+| `ZmsApiFacadeService` | Orchestriert mehrere **PHP-`zmsbackend`**-Aufrufe, merged Listen, Second-Level-Cache                           |
+| `MapperService`       | Mappt große **`zmsentities`**-Payloads auf schlanke Citizen-Modelle                                            |
+| `zmsentities`         | Teilweise gemeinsame Typen; Citizen-Modelle überwiegend separat                                                |
 
 Kerndaten werden **über HTTP-Aufrufe an PHP `zmsbackend`** geladen, nicht über eine eigene Query-Schicht. Typische Flows holen **überdimensionierte Admin-Entitäten**, dann projiziert **`MapperService`** sie in **`Office`**, **`ThinnedScope`**, **`Service`** und ähnliche Citizen-DTOs — oft nach **mehreren Roundtrips** über **`ZmsApiFacadeService`** (~900 Zeilen heute).
 

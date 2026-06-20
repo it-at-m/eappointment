@@ -7,8 +7,9 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Scope as Entity;
 use BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 
 class TicketprinterStatusByScope extends BaseController
 {
@@ -28,7 +29,7 @@ class TicketprinterStatusByScope extends BaseController
         ])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         if (!$workstation->getUseraccount()->hasPermissions(['ticketprinter', 'scope'])) {
-            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+            throw new UserAccountMissingRights();
         }
         $scopeId = Validator::value($args['id'])->isNumber()->getValue();
         $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/', [
@@ -47,12 +48,12 @@ class TicketprinterStatusByScope extends BaseController
             $scope->preferences['ticketprinter']['deactivatedText'] = $input['hinweis'];
             $scope = \App::$http->readPostResult('/scope/' . $scope->id . '/', $scope)->getEntity();
 
-            return \BO\Slim\Render::redirect('ticketprinterStatusByScope', ['id' => $scopeId], [
+            return Render::redirect('ticketprinterStatusByScope', ['id' => $scopeId], [
                 'success' => 'ticketprinter_deactivated_' . $scope->status['ticketprinter']['deactivated']
             ]);
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/ticketprinterStatus.twig',
             array(

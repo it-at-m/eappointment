@@ -7,9 +7,11 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Collection\UseraccountList as Collection;
+use BO\Slim\Render;
+use BO\Zmsentities\Collection\UseraccountList;
 use BO\Zmsentities\Collection\RoleList;
 use BO\Zmsentities\Exception\UserAccountMissingRights;
+use BO\Zmsentities\Exception\UserAccountAccessRightsFailed;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -39,13 +41,13 @@ class UseraccountListByRole extends BaseController
             ! $workstation->getUseraccount()->isSuperUser()
             && in_array($roleName, self::SUPERUSER_ONLY_ROLES, true)
         ) {
-            throw new \BO\Zmsentities\Exception\UserAccountAccessRightsFailed();
+            throw new UserAccountAccessRightsFailed();
         }
 
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
 
-        $useraccountList = new Collection();
+        $useraccountList = new UseraccountList();
         if ($workstation->getUseraccount()->isSuperUser()) {
             $useraccountList = \App::$http
                 ->readGetResult('/role/' . $roleName . '/useraccount/', ['resolveReferences' => 0])
@@ -80,7 +82,7 @@ class UseraccountListByRole extends BaseController
             }
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/useraccountList.twig',
             array(

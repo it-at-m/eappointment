@@ -11,6 +11,8 @@ namespace BO\Zmsclient\PhpUnit;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Argument;
 use BO\Zmsclient\GraphQL\GraphQLInterpreter;
+use BO\Zmsentities\Session;
+use BO\Zmsclient\SessionHandler;
 
 abstract class Base extends \BO\Slim\PhpUnit\Base
 {
@@ -31,9 +33,9 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
     public function setUp(): void
     {
         \App::$http = $this->getApiMockup();
-        $this->sessionClass = new \BO\Zmsentities\Session();
-        if (\BO\Zmsclient\SessionHandler::getLastInstance() instanceof \BO\Zmsclient\SessionHandler) {
-            \BO\Zmsclient\SessionHandler::getLastInstance()->setHttpHandler(\App::$http);
+        $this->sessionClass = new Session();
+        if (SessionHandler::getLastInstance() instanceof SessionHandler) {
+            SessionHandler::getLastInstance()->setHttpHandler(\App::$http);
         }
     }
 

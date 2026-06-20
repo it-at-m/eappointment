@@ -8,7 +8,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Schema\Loader;
-use BO\Zmsentities\Useraccount as Entity;
+use BO\Zmsentities\Useraccount;
 
 class Profile extends BaseController
 {
@@ -25,12 +25,12 @@ class Profile extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $confirmSuccess = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $error = $request->getAttribute('validator')->getParameter('error')->isString()->getValue();
-        $entity = new Entity($workstation->useraccount);
+        $entity = new Useraccount($workstation->useraccount);
 
         if ($request->getMethod() === 'POST') {
             $input = $request->getParsedBody();
             $result = $this->writeUpdatedEntity($input, $entity->getId());
-            if ($result instanceof Entity) {
+            if ($result instanceof Useraccount) {
                 return \BO\Slim\Render::redirect('profile', [], [
                     'success' => 'useraccount_saved'
                 ]);
@@ -55,7 +55,7 @@ class Profile extends BaseController
                 'success' => $confirmSuccess,
                 'error' => $error,
                 'exception' => (isset($result)) ? $result : null,
-                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
+                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Useraccount::$schema)),
                 'isFromOidc' => in_array($userAccount->getOidcProviderFromName(), $allowedProviderList)
             )
         );
@@ -63,7 +63,7 @@ class Profile extends BaseController
 
     protected function writeUpdatedEntity($input)
     {
-        $entity = (new Entity($input))->withCleanedUpFormData();
+        $entity = (new Useraccount($input))->withCleanedUpFormData();
         // TODO: Remove the password fields when password authentication is removed in the future
         $entity->setPassword($input);
         return $this->handleEntityWrite(function () use ($entity) {

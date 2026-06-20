@@ -7,6 +7,8 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Exception\UserAccountMissingRights;
+
 class Dayoff extends BaseController
 {
     /**
@@ -21,7 +23,7 @@ class Dayoff extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         if (!$workstation->getUseraccount()->hasPermissions(['dayoff'])) {
-            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+            throw new UserAccountMissingRights();
         }
         return \BO\Slim\Render::withHtml(
             $response,

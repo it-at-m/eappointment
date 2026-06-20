@@ -6,6 +6,8 @@
 
 namespace BO\Zmsmessaging\PhpUnit;
 
+use BO\Zmsentities\Schema\Entity;
+use BO\Zmsentities\Collection\Base as BaseCollection;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Argument;
@@ -59,8 +61,8 @@ abstract class Base extends TestCase
                         $options['url'],
                         Argument::that(function ($value) {
                             return
-                                ($value instanceof \BO\Zmsentities\Schema\Entity) ||
-                                ($value instanceof \BO\Zmsentities\Collection\Base);
+                                ($value instanceof Entity) ||
+                                ($value instanceof BaseCollection);
                         }),
                         $parameters
                     ]

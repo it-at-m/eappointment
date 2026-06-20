@@ -8,7 +8,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Slim\Render;
-use BO\Zmsentities\Collection\AvailabilityList;
+use BO\Zmsentities\Closure;
 use Psr\Http\Message\ResponseInterface;
 
 class ScopeAvailabilityDayClosure extends BaseController

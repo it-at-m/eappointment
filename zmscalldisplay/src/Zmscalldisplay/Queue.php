@@ -10,6 +10,7 @@
 namespace BO\Zmscalldisplay;
 
 use BO\Slim\Render;
+use BO\Zmsentities\Collection\QueueList;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -37,12 +38,12 @@ class Queue extends BaseController
 
         $queueList = ($queueList) ?
             $queueList->withStatus($calldisplay::getRequestedQueueStatus($request))->sortByCallTime('descending') :
-            new \BO\Zmsentities\Collection\QueueList();
+            new QueueList();
 
         if ($displayNumber === 1) {
             $queueList = $queueList->chunk(10)[0];
         } elseif ($displayNumber === 2) {
-            $queueList = $queueList->chunk(10)[1] ?? new \BO\Zmsentities\Collection\QueueList();
+            $queueList = $queueList->chunk(10)[1] ?? new QueueList();
         }
 
         $callDisplayText = null;

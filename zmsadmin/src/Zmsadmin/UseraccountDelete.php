@@ -10,6 +10,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
+use BO\Slim\Render;
 use BO\Zmsentities\Exception\UserAccountMissingRights;
 
 /**
@@ -34,7 +35,7 @@ class UseraccountDelete extends BaseController
 
         $loginName = Validator::value($args['loginname'])->isString()->getValue();
         \App::$http->readDeleteResult('/useraccount/' . $loginName . '/')->getEntity();
-        return \BO\Slim\Render::redirect(
+        return Render::redirect(
             'useraccountList',
             array(),
             array(

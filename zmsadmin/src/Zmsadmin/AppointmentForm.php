@@ -7,8 +7,6 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Scope;
-
 class AppointmentForm extends BaseController
 {
     /**

@@ -8,9 +8,6 @@
 namespace BO\Zmsadmin\Helper;
 
 use BO\Zmsadmin\BaseController;
-use BO\Zmsentities\Availability as Entity;
-use BO\Zmsentities\Collection\AvailabilityList as Collection;
-use BO\Zmsentities\Collection\ProcessList;
 
 class MailTemplateHandler extends BaseController
 {

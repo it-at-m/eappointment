@@ -10,6 +10,10 @@
 namespace BO\Zmsadmin\Helper;
 
 use BO\Zmsentities\Collection\ScopeList;
+use BO\Zmsentities\Collection\RequestList;
+use BO\Zmsentities\Collection\ProcessList;
+use BO\Zmsentities\Scope;
+use BO\Zmsentities\Process;
 
 /**
  * @SuppressWarnings(Complexity)
@@ -58,7 +62,7 @@ class AppointmentFormHelper
                 ])
                 ->getCollection();
         }
-        return ($requestList) ? $requestList->sortByName() : new \BO\Zmsentities\Collection\RequestList();
+        return ($requestList) ? $requestList->sortByName() : new RequestList();
     }
 
     public static function readSelectedScope($request, $workstation, $selectedProcess = null, $resolveReferences = 1)
@@ -73,7 +77,7 @@ class AppointmentFormHelper
             $selectedScope = null;
         }
         if (! $workstation->queue['clusterEnabled'] && ! $selectedScopeId) {
-            $selectedScope = new \BO\Zmsentities\Scope($workstation->scope);
+            $selectedScope = new Scope($workstation->scope);
         }
         if ($selectedScopeId) {
             $selectedScope = \App::$http
@@ -100,7 +104,7 @@ class AppointmentFormHelper
             null;
     }
 
-    public static function updateMail($formData, \BO\Zmsentities\Process $process)
+    public static function updateMail($formData, Process $process)
     {
         if (isset($formData['sendMailConfirmation'])) {
             $mailConfirmation = $formData['sendMailConfirmation'];
@@ -134,7 +138,7 @@ class AppointmentFormHelper
                     $scopeList->getFirst()->getId()
                 );
             } elseif (! $freeProcessList) {
-                $freeProcessList = (new \BO\Zmsentities\Collection\ProcessList())->addEntity($selectedProcess);
+                $freeProcessList = (new ProcessList())->addEntity($selectedProcess);
             }
         }
 
@@ -148,7 +152,7 @@ class AppointmentFormHelper
         return $slotType;
     }
 
-    protected static function setSlotsRequired($validator, \BO\Zmsentities\Scope $scope, $process)
+    protected static function setSlotsRequired($validator, Scope $scope, $process)
     {
         $slotsRequired = 0;
         if ($scope && $scope->getPreference('appointment', 'multipleSlotsEnabled')) {
@@ -161,7 +165,7 @@ class AppointmentFormHelper
         return $slotsRequired;
     }
 
-    protected static function writeMail($mailConfirmation, \BO\Zmsentities\Process $process)
+    protected static function writeMail($mailConfirmation, Process $process)
     {
         if (
             $mailConfirmation &&

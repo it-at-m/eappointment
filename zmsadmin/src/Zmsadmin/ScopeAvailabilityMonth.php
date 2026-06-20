@@ -9,10 +9,12 @@
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
-use BO\Zmsentities\Calendar;
-use BO\Zmsentities\Closure;
+use BO\Slim\Render;
 use BO\Zmsentities\Collection\AvailabilityList;
 use BO\Zmsentities\Collection\ProcessList;
+use BO\Zmsentities\Collection\ScopeList;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
+use BO\Zmsentities\Helper\DateTime;
 
 class ScopeAvailabilityMonth extends BaseController
 {
@@ -38,9 +40,9 @@ class ScopeAvailabilityMonth extends BaseController
             'gql' => Helper\GraphDefaults::getWorkstation()
         ])->getEntity();
         if (!$workstation->getUseraccount()->hasPermissions(['availability'])) {
-            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+            throw new UserAccountMissingRights();
         }
-        $dateTime = (isset($args['date'])) ? new \BO\Zmsentities\Helper\DateTime($args['date']) : \App::$now;
+        $dateTime = (isset($args['date'])) ? new DateTime($args['date']) : \App::$now;
         $startDate = $dateTime->modify('first day of this month');
         $endDate = $dateTime->modify('last day of this month');
 
@@ -49,7 +51,7 @@ class ScopeAvailabilityMonth extends BaseController
             'resolveReferences' => 1
         ])->getEntity();
         $calendar = new Helper\Calendar($dateTime->format('Y-m-d'));
-        $scopeList = (new \BO\Zmsentities\Collection\ScopeList())->addEntity($scope);
+        $scopeList = (new ScopeList())->addEntity($scope);
         $month = $calendar->readMonthListByScopeList($scopeList, 'intern', 0)->getFirst();
 
         $availabilityList = $this->getAvailabilityList($scope, $startDate, $endDate);
@@ -61,9 +63,9 @@ class ScopeAvailabilityMonth extends BaseController
             ->getCollection();
         $processConflictList = $processConflictList ?
             $processConflictList->toConflictListByDay() :
-            new \BO\Zmsentities\Collection\ProcessList();
+            new ProcessList();
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/availabilityMonth.twig',
             array(
@@ -102,7 +104,7 @@ class ScopeAvailabilityMonth extends BaseController
             if ($exception->template != 'BO\Zmsbackend\Availability\Exception\AvailabilityNotFound') {
                 throw $exception;
             }
-            $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
+            $availabilityList = new AvailabilityList();
         }
         return $availabilityList;
     }

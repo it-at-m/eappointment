@@ -181,12 +181,6 @@ class Http
 
     /**
      * Creates a POST-Http-Request and fetches the response
-     *
-     * @param string $relativeUrl
-     * @param \BO\Zmsentities\Schema\Entity $entity
-     * @param array $getParameters (optional)
-     *
-     * @return Result
      */
     public function readPostResult($relativeUrl, $entity, array $getParameters = null)
     {

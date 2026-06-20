@@ -7,12 +7,8 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Process as Entity;
+use BO\Slim\Render;
 
-/**
-  * Init Controller to display next Button Template only
-  *
-  */
 class WorkstationProcessParked extends BaseController
 {
     /**
@@ -34,7 +30,7 @@ class WorkstationProcessParked extends BaseController
         if (1 == $noRedirect) {
             return $response;
         }
-        return \BO\Slim\Render::redirect(
+        return Render::redirect(
             'workstationProcessCallButton',
             array(),
             array()
