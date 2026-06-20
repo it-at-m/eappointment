@@ -11,18 +11,9 @@ use JsonSerializable;
 class Combinable extends Entity implements JsonSerializable
 {
     public static $schema = 'citizenapi/combinable.json';
-
-    /** @var array<string, array<int>> */
     private array $combinations = [];
-
-    /** @var array<string> */
     private array $order = [];
 
-    /**
-     * Constructor.
-     *
-     * @param array $combinations An associative array of combinations (serviceId => providerIds).
-     */
     public function __construct(array $combinations = [])
     {
         $this->order = array_keys($combinations);
@@ -40,27 +31,11 @@ class Combinable extends Entity implements JsonSerializable
         }
     }
 
-    /**
-     * Get the combinations array in original format (for internal use).
-     *
-     * @return array<string, array<int>> The combinations as an associative array.
-     */
     public function getCombinations(): array
     {
         return $this->combinations;
     }
 
-    /**
-     * Converts the model data back into an array for serialization.
-     * Returns the data in numbered format:
-     * {
-     *   "1": { "serviceId": [providers] },
-     *   "2": { "serviceId": [providers] },
-     *   ...
-     * }
-     *
-     * @return array The combinations with order preserved using numbered keys.
-     */
     public function toArray(): array
     {
         $result = [];

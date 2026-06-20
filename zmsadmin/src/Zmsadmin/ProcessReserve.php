@@ -12,7 +12,7 @@ namespace BO\Zmsadmin;
 use BO\Mellon\Condition;
 use BO\Slim\Render;
 use BO\Zmsentities\Validator\ProcessValidator;
-use BO\Zmsentities\Process as Entity;
+use BO\Zmsentities\Process;
 
 /**
  * Reserve a process
@@ -35,7 +35,7 @@ class ProcessReserve extends BaseController
         $process = $this->getProcess($input, $scope);
         $validatedForm = static::getValidatedForm($request->getAttribute('validator'), $process);
         if ($validatedForm['failed']) {
-            return \BO\Slim\Render::withJson(
+            return Render::withJson(
                 $response,
                 $validatedForm
             );
@@ -55,7 +55,7 @@ class ProcessReserve extends BaseController
             ] :
             [];
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'element/helper/messageHandler.twig',
             $queryParams
@@ -64,7 +64,7 @@ class ProcessReserve extends BaseController
 
     protected function getProcess($input, $scope)
     {
-        $process = new \BO\Zmsentities\Process();
+        $process = new Process();
         $selectedTime = str_replace('-', ':', $input['selectedtime']);
         $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $input['selecteddate'] . ' ' . $selectedTime);
 

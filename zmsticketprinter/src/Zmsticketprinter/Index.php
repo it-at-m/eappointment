@@ -13,7 +13,6 @@ use BO\Mellon\Unvalidated;
 use BO\Mellon\Valid;
 use BO\Mellon\Validator;
 use BO\Slim\Render;
-use BO\Zmsentities\Ticketprinter;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -173,12 +172,6 @@ class Index extends BaseController
         return false;
     }
 
-    /**
-     * @param Validator $validator
-     * @param Ticketprinter $ticketprinter
-     * @param Unvalidated|Valid $defaultTemplate
-     * @return array
-     */
     protected function getQueryString($validator, $ticketprinter, $defaultTemplate)
     {
         $query = ($defaultTemplate->getValue() === 'default') ? [] : ['template' => $defaultTemplate->getValue()];

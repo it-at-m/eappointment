@@ -9,6 +9,7 @@
 namespace BO\Zmsmessaging;
 
 use BO\Zmsentities\Mimepart;
+use BO\Zmsentities\Mail as MailEntity;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception as PHPMailerException;
 
@@ -136,7 +137,7 @@ class Mail extends BaseController
         $successfullySentIds = [];
 
         foreach ($mailItems as $item) {
-            $entity = new \BO\Zmsentities\Mail($item);
+            $entity = new MailEntity($item);
             $processId = $entity['process']['id'] ?? null;
             $mailer = $this->getValidMailer($entity);
             if (!$mailer) {
@@ -213,7 +214,7 @@ class Mail extends BaseController
         return $results;
     }
 
-    protected function getValidMailer(\BO\Zmsentities\Mail $entity)
+    protected function getValidMailer(MailEntity $entity)
     {
         $message = '';
         $messageId = $entity['id'];
@@ -255,7 +256,7 @@ class Mail extends BaseController
      * @SuppressWarnings("CyclomaticComplexity")
      * @SuppressWarnings("NPathComplexity")
      */
-    protected function readMailer(\BO\Zmsentities\Mail $entity)
+    protected function readMailer(MailEntity $entity)
     {
         $this->testEntity($entity);
         $encoding = 'base64';

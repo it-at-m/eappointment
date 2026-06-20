@@ -7,7 +7,6 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Scope;
 use BO\Mellon\Validator;
 
 class CalendarWeek extends BaseController
@@ -34,8 +33,6 @@ class CalendarWeek extends BaseController
             $currentWeek :
             $selectedWeek;
 
-        // HTTP requests
-        /** @var \BO\Zmsentities\Workstation $workstation */
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
         $cluster = $workstationRequest->readCluster();

@@ -7,8 +7,12 @@
 
 namespace BO\Zmsstatistic;
 
+use BO\Slim\Render;
 use BO\Zmsclient\ModuleAccess;
+use BO\Zmsentities\Useraccount;
 use BO\Zmsentities\Workstation;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class Index extends BaseController
 {
@@ -20,10 +24,10 @@ class Index extends BaseController
      */
     #[\Override]
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
-    ): \Psr\Http\Message\ResponseInterface {
+    ): ResponseInterface {
         try {
             $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         } catch (\Exception $workstationexception) {
@@ -41,7 +45,7 @@ class Index extends BaseController
                     ?? \BO\Slim\Render::redirect('workstationSelect', array(), array());
             }
 
-            return \BO\Slim\Render::withHtml(
+            return Render::withHtml(
                 $response,
                 'page/index.twig',
                 array(
@@ -60,7 +64,7 @@ class Index extends BaseController
                     return $wrongModuleResponse;
                 }
             }
-            return \BO\Slim\Render::withHtml(
+            return Render::withHtml(
                 $response,
                 'page/index.twig',
                 array(
@@ -78,13 +82,12 @@ class Index extends BaseController
     #[\Override]
     protected function testLogin($input)
     {
-        $userAccount = new \BO\Zmsentities\Useraccount(array(
+        $userAccount = new Useraccount(array(
             'id' => $input['loginName'],
             'password' => $input['password'],
             'departments' => array('id' => 0) // required in schema validation
         ));
         try {
-            /** @var \BO\Zmsentities\Workstation $workstation */
             $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
 
             $sessionHash = hash('sha256', $workstation->authkey);
