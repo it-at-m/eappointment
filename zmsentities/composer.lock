@@ -8,11 +8,11 @@
     "packages": [
         {
             "name": "eappointment/mellon",
-            "version": "dev-feature-zmskvr-implement-php-code-scanning-with-psalm",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "0d46775dba0ed63865729096837616ebb05961df"
+                "reference": "3423aa6d24a83e679117d8d678bf8e9495a96f0e"
             },
             "require": {
                 "ext-json": ">=0",
