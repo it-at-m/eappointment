@@ -10,6 +10,7 @@ namespace BO\Zmsmessaging;
 
 use BO\Zmsentities\Mail;
 use BO\Zmsentities\Mimepart;
+use BO\Zmsentities\Schema\Entity;
 use BO\Mellon\Validator;
 
 class BaseController
@@ -43,7 +44,7 @@ class BaseController
         return $time;
     }
 
-    protected function sendMailer(\BO\Zmsentities\Schema\Entity $entity, $mailer = null, $action = false)
+    protected function sendMailer(Entity $entity, $mailer = null, $action = false)
     {
         // @codeCoverageIgnoreStart
         $hasSendSuccess = ($action) ? $mailer->Send() : $action;
@@ -72,7 +73,7 @@ class BaseController
 
     public function deleteEntityFromQueue($entity)
     {
-        if (!($entity instanceof \BO\Zmsentities\Mail)) {
+        if (!($entity instanceof Mail)) {
             return false;
         }
         try {
