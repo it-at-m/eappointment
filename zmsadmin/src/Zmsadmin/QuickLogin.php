@@ -7,8 +7,10 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Mellon\Validator;
-use BO\Zmsentities\Workstation as Entity;
+use BO\Zmsentities\Exception\QuickLoginFailed;
+use BO\Zmsentities\Scope;
+use BO\Zmsentities\Useraccount;
+use BO\Zmsentities\Workstation;
 
 class QuickLogin extends BaseController
 {
@@ -25,16 +27,16 @@ class QuickLogin extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         $loginData = Helper\LoginForm::fromQuickLogin();
         if ($loginData->hasFailed()) {
-            throw new \BO\Zmsentities\Exception\QuickLoginFailed();
+            throw new QuickLoginFailed();
         }
         $loginData = $loginData->getStatus();
 
         // Check for required fields before proceeding
         if (!isset($loginData['loginName']['value']) || !isset($loginData['password']['value'])) {
-            throw new \BO\Zmsentities\Exception\QuickLoginFailed();
+            throw new QuickLoginFailed();
         }
 
-        $userAccount = new \BO\Zmsentities\Useraccount(array(
+        $userAccount = new Useraccount(array(
             'id' => $loginData['loginName']['value'],
             'password' => $loginData['password']['value']
         ));
@@ -45,18 +47,18 @@ class QuickLogin extends BaseController
         } catch (\BO\Zmsclient\Exception $exception) {
             //ignore double login exception on quick login
             if ($exception->template == 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn') {
-                $workstation = new Entity($exception->data);
+                $workstation = new Workstation($exception->data);
             } else {
-                throw new \BO\Zmsentities\Exception\QuickLoginFailed();
+                throw new QuickLoginFailed();
             }
         }
 
         if (!isset($workstation)) {
-            throw new \BO\Zmsentities\Exception\QuickLoginFailed();
+            throw new QuickLoginFailed();
         }
 
         \BO\Zmsclient\Auth::setKey($workstation->authkey, time() + \App::SESSION_DURATION);
-        $workstation->scope = new \BO\Zmsentities\Scope(array('id' => $loginData['scope']['value']));
+        $workstation->scope = new Scope(array('id' => $loginData['scope']['value']));
         $workstation->hint = $loginData['hint']['value'];
         $workstation->name = $loginData['workstation']['value'];
         \App::$http->readPostResult('/workstation/', $workstation)->getEntity();

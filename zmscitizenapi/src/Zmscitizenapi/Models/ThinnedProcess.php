@@ -12,45 +12,25 @@ use JsonSerializable;
 class ThinnedProcess extends Entity implements JsonSerializable
 {
     public static $schema = "citizenapi/thinnedProcess.json";
-/** @var int|null */
     public ?int $processId;
-/** @var string|null */
     public ?string $timestamp;
-/** @var string|null */
     public ?string $authKey;
-/** @var string|null */
     public ?string $familyName;
-/** @var string|null */
     public ?string $customTextfield;
-/** @var string|null */
     public ?string $customTextfield2;
-/** @var string|null */
     public ?string $email;
-/** @var string|null */
     public ?string $telephone;
-/** @var string|null */
     public ?string $officeName;
-/** @var int|null */
     public ?int $officeId;
-/** @var ThinnedScope|null */
     public ?ThinnedScope $scope;
-/** @var array */
     public array $subRequestCounts;
-/** @var int|null */
     public ?int $serviceId;
-/** @var string|null */
     public ?string $serviceName;
-/** @var int */
     public int $serviceCount;
-/** @var string|null */
     public ?string $status;
-/** @var string|null */
     public ?string $captchaToken;
-/** @var int|null */
     public ?int $slotCount;
-/** @var string|null */
     public ?string $displayNumber;
-/** @var string|null */
     public ?string $icsContent;
 
     public function __construct(?int $processId = null, ?string $timestamp = null, ?string $authKey = null, ?string $familyName = null, ?string $customTextfield = null, ?string $customTextfield2 = null, ?string $email = null, ?string $telephone = null, ?string $officeName = null, ?int $officeId = null, ?ThinnedScope $scope = null, array $subRequestCounts = [], ?int $serviceId = null, ?string $serviceName = null, int $serviceCount = 0, ?string $status = null, ?string $captchaToken = null, ?int $slotCount = null, ?string $displayNumber = null, ?string $icsContent = null)
@@ -78,11 +58,6 @@ class ThinnedProcess extends Entity implements JsonSerializable
         $this->ensureValid();
     }
 
-    /**
-     * Convert the ThinnedProcess object to an array.
-     *
-     * @return array
-     */
     public function toArray(): array
     {
         return [

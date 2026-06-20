@@ -4,12 +4,10 @@
 
  use BO\Zmsadmin\BaseController;
  use BO\Zmsadmin\Helper\MailTemplateArrayProvider;
- use Twig\Error\LoaderError;
- use Twig\Error\RuntimeError;
- use Twig\Error\SyntaxError;
- use Twig\Environment;
- use Symfony\Bridge\Twig\Extension\TranslationExtension;
- use Twig\Extra\Intl\IntlExtension;
+ use BO\Zmsentities\Config;
+ use BO\Zmsentities\Mail;
+ use BO\Zmsentities\Process;
+ use BO\Zmsentities\Request;
 
 class MailTemplatePreviewMail extends BaseController
 {
@@ -24,11 +22,11 @@ class MailTemplatePreviewMail extends BaseController
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->getValue();
 
-        $mainProcessExample = ((new \BO\Zmsentities\Process())->getExample());
+        $mainProcessExample = ((new Process())->getExample());
         $mainProcessExample->id = 987654;
         $dateTime = new \DateTimeImmutable("2015-10-23 08:00:00", new \DateTimeZone('Europe/Berlin'));
         $mainProcessExample->getFirstAppointment()->setDateTime($dateTime);
-        $mainProcessExample->requests[] = (new \BO\Zmsentities\Request())->getExample();
+        $mainProcessExample->requests[] = (new Request())->getExample();
 
         $templates = array();
 
@@ -39,10 +37,10 @@ class MailTemplatePreviewMail extends BaseController
         $templateProvider = new MailTemplateArrayProvider();
         $templateProvider->setTemplates($templates);
 
-        $config = new \BO\Zmsentities\Config();
+        $config = new Config();
 
         try {
-            $mail = (new \BO\Zmsentities\Mail())
+            $mail = (new Mail())
             ->setTemplateProvider($templateProvider)
             ->toResolvedEntity($mainProcessExample, $config, $mailStatus);
         } catch (\Exception $e) {

@@ -7,8 +7,9 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Scope as Entity;
 use BO\Mellon\Validator;
+use BO\Zmsentities\Scope as Entity;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 
 /**
   * Handle requests concerning services
@@ -27,7 +28,7 @@ class DepartmentAddScope extends Scope
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         if (!$workstation->getUseraccount()->hasPermissions(['scope'])) {
-            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+            throw new UserAccountMissingRights();
         }
         $departmentId = Validator::value($args['id'])->isNumber()->getValue();
         $department = \App::$http

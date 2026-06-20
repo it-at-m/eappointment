@@ -8,20 +8,23 @@
 
 namespace BO\Zmsadmin\Helper;
 
-use BO\Zmsentities\Collection\ProviderList as Collection;
+use BO\Zmsadmin\BaseController;
+use BO\Zmsentities\Collection\ProviderList;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
-class ProviderHandler extends \BO\Zmsadmin\BaseController
+class ProviderHandler extends BaseController
 {
     /**
      * @SuppressWarnings(UnusedFormalParameter)
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      */
     #[\Override]
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
-    ): \Psr\Http\Message\ResponseInterface {
+    ): ResponseInterface {
         return \BO\Slim\Render::withJson(
             $response,
             static::readProviderList($args['source'])
@@ -46,7 +49,7 @@ class ProviderHandler extends \BO\Zmsadmin\BaseController
         )->getCollection();
         return ($providerAssigned) ?
             $providerAssigned->withUniqueProvider()->sortByName() :
-            new Collection();
+            new ProviderList();
     }
 
     protected static function readProviderNotAssigned($source)
@@ -59,6 +62,6 @@ class ProviderHandler extends \BO\Zmsadmin\BaseController
         )->getCollection();
         return ($providerNotAssigned) ?
             $providerNotAssigned->withUniqueProvider()->sortByName() :
-            new Collection();
+            new ProviderList();
     }
 }

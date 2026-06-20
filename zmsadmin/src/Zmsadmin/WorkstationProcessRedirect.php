@@ -7,6 +7,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Render;
 use BO\Zmsentities\Helper\ProcessPlainText;
 use Psr\Http\Message\RequestInterface;
 
@@ -35,7 +36,7 @@ class WorkstationProcessRedirect extends BaseController
             $selectedLocation = $validator->getParameter('location')->isNumber()->getValue();
 
             if (empty($selectedLocation)) {
-                return \BO\Slim\Render::redirect(
+                return Render::redirect(
                     'workstationProcessRedirect',
                     [],
                     [
@@ -59,14 +60,14 @@ class WorkstationProcessRedirect extends BaseController
 
             \App::$http->readPostResult('/process/status/redirect/', $newProcess)->getEntity();
 
-            return \BO\Slim\Render::redirect(
+            return Render::redirect(
                 $workstation->getVariantName(),
                 array(),
                 array()
             );
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/workstationProcessRedirect.twig',
             array(

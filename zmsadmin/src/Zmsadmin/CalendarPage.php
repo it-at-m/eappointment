@@ -8,6 +8,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Scope;
+use BO\Zmsentities\Collection\ScopeList;
 
 class CalendarPage extends BaseController
 {
@@ -30,11 +31,11 @@ class CalendarPage extends BaseController
         $selectedScopeId = $validator->getParameter('selectedscope')->isNumber()->getValue();
 
         $scope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
-        $scope = ($scope) ? $scope : new \BO\Zmsentities\Scope($workstation->scope);
+        $scope = ($scope) ? $scope : new Scope($workstation->scope);
         $calendar = new Helper\Calendar($selectedDate);
 
         $scopeList = ($selectedScopeId)
-            ? (new \BO\Zmsentities\Collection\ScopeList())->addEntity($scope)
+            ? (new ScopeList())->addEntity($scope)
             : (new Helper\ClusterHelper($workstation))->getScopeList();
 
         $slotsRequired = ($scope && $scope->getPreference('appointment', 'multipleSlotsEnabled')) ? $slotsRequired : 0;

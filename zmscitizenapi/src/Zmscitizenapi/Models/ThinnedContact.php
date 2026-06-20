@@ -9,7 +9,6 @@ use InvalidArgumentException;
 
 class ThinnedContact extends Entity implements \JsonSerializable
 {
-    /** @var string Points to the JSON schema file for validation */
     public static $schema = 'citizenapi/thinnedContact.json';
     public ?string $city;
     public ?string $country;
@@ -30,11 +29,6 @@ class ThinnedContact extends Entity implements \JsonSerializable
         $this->ensureValid();
     }
 
-    /**
-     * Validates the model against the JSON schema.
-     *
-     * @throws InvalidArgumentException if validation fails.
-     */
     private function ensureValid(): void
     {
         // testValid() is inherited from Entity; it checks $this against self::$schema.

@@ -12,7 +12,7 @@ namespace BO\Zmsadmin;
 use BO\Mellon\Condition;
 use BO\Slim\Render;
 use BO\Zmsentities\Validator\ProcessValidator;
-use BO\Zmsentities\Process as Entity;
+use BO\Zmsentities\Process;
 use BO\Zmsadmin\Helper\AppointmentFormHelper;
 
 /**
@@ -76,7 +76,7 @@ class ProcessSave extends BaseController
         );
     }
 
-    protected function getSuccessMessage(Entity $process)
+    protected function getSuccessMessage(Process $process)
     {
         return ($process->isWithAppointment()) ? 'process_updated' : 'process_withoutappointment_updated';
     }
@@ -94,7 +94,7 @@ class ProcessSave extends BaseController
         return ($conflictList && isset($conflictList[$dayKey])) ? $conflictList[$dayKey] : null;
     }
 
-    protected function writeUpdatedProcess($input, Entity $process, $validator, $notify = true)
+    protected function writeUpdatedProcess($input, Process $process, $validator, $notify = true)
     {
         $initiator = $validator->getParameter('initiator')->isString()->getValue();
         $process = \App::$http->readPostResult(
@@ -114,7 +114,7 @@ class ProcessSave extends BaseController
         return $process;
     }
 
-    private function shouldSendNotifications($requestData, \BO\Zmsentities\Schema\Entity $process)
+    private function shouldSendNotifications($requestData, Process $process)
     {
         $requestIds = $requestData['requests'] ?? [];
         $currentRequestIds = [];

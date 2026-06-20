@@ -7,8 +7,12 @@
 
 namespace BO\Zmsstatistic;
 
-use BO\Zmsclient\Auth;
 use App;
+use BO\Slim\Render;
+use BO\Zmsclient\Auth;
+use BO\Zmsclient\Exception;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class Logout extends BaseController
 {
@@ -21,19 +25,19 @@ class Logout extends BaseController
      */
     #[\Override]
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
-    ): \Psr\Http\Message\ResponseInterface {
+    ): ResponseInterface {
         try {
             $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
             \App::$http->readDeleteResult('/workstation/login/' . $workstation->useraccount['id'] . '/')->getEntity();
-        } catch (\BO\Zmsclient\Exception $exception) {
+        } catch (Exception $exception) {
             if ("BO\Zmsentities\Exception\UseraccountMissingLogin" !== $exception->template) {
                 throw $exception;
             }
         }
-        $sessionHash = hash('sha256', \BO\Zmsclient\Auth::getKey());
+        $sessionHash = hash('sha256', Auth::getKey());
         App::$log->info('User logged out', [
             'event' => 'auth_logout',
             'timestamp' => date('c'),
@@ -42,8 +46,8 @@ class Logout extends BaseController
             'logout_type' => 'manual',
             'application' => 'zmsstatistic'
         ]);
-        \BO\Zmsclient\Auth::removeKey();
-        return \BO\Slim\Render::withHtml(
+        Auth::removeKey();
+        return Render::withHtml(
             $response,
             'page/logout.twig',
             array(

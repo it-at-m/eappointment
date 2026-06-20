@@ -2,76 +2,63 @@
 
 namespace BO\Zmsclient;
 
+use DateTimeInterface;
+use BO\Zmsentities\Workstation;
+use BO\Zmsentities\Cluster;
+use BO\Zmsentities\Department;
+use BO\Zmsentities\Scope;
+use BO\Zmsentities\Collection\ProcessList;
+
 class WorkstationRequests
 {
-    /**
-     * @var \BO\Zmsclient\Http $http
-     */
-    protected $http;
-
-    /**
-     * @var \BO\Zmsentities\Workstation $workstation
-     */
-    protected $workstation;
-
-    /**
-     * @var \BO\Zmsentities\Cluster $cluster
-     */
-    protected $cluster;
-
-    /**
-     * @var \BO\Zmsentities\Department $department
-     */
-    protected $department;
-
-    /**
-     * @var \BO\Zmsentities\Scope $scope
-     */
-    protected $scope;
-
+    protected Http $http;
+    protected Workstation $workstation;
+    protected ?Cluster $cluster = null;
+    protected ?Department $department = null;
+    protected Scope $scope;
 
     public function __construct(
         Http $http,
-        \BO\Zmsentities\Workstation $workstation
+        Workstation $workstation
     ) {
         $this->http = $http;
         $this->workstation = $workstation;
         $this->scope = $workstation->getScope();
     }
 
-    public function getScope(): \BO\Zmsentities\Scope
+    public function getScope(): Scope
     {
         return $this->scope;
     }
 
-    public function setDifferentScope(\BO\Zmsentities\Scope $scope): self
+    public function setDifferentScope(Scope $scope): self
     {
         $this->scope = $scope;
         return $this;
     }
 
-    public function readDepartment(): \BO\Zmsentities\Department
+    public function readDepartment(): Department
     {
         if (!$this->department) {
             $this->department = $this->http->readGetResult('/scope/' . $this->scope['id'] . '/department/')
                 ->getEntity();
         }
-        return $this->department ? $this->department : new \BO\Zmsentities\Department();
+        return $this->department ? $this->department : new Department();
     }
 
-    public function readCluster(): \BO\Zmsentities\Cluster
+    public function readCluster(): Cluster
     {
         if (!$this->cluster) {
             $this->cluster = $this->http->readGetResult('/scope/' . $this->scope['id'] . '/cluster/')
                 ->getEntity();
         }
-        return $this->cluster ? $this->cluster : new \BO\Zmsentities\Cluster();
+        return $this->cluster ? $this->cluster : new Cluster();
     }
 
     public function readProcessListByDate(
-        \DateTimeInterface $selectedDate,
+        DateTimeInterface $selectedDate,
         $gql = ""
-    ): \BO\Zmsentities\Collection\ProcessList {
+    ): ProcessList {
         if ($this->workstation->isClusterEnabled()) {
             $processList = $this->http
                 ->readGetResult(
@@ -91,7 +78,7 @@ class WorkstationRequests
                 )
                 ->getCollection();
         }
-        return ($processList) ? $processList : new \BO\Zmsentities\Collection\ProcessList();
+        return ($processList) ? $processList : new ProcessList();
     }
 
 

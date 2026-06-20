@@ -7,7 +7,11 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Render;
+use BO\Zmsentities\Helper\DateTime;
 use BO\Zmsentities\Collection\AvailabilityList;
+use BO\Zmsentities\Collection\ProcessList;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 
 class ScopeAvailabilityDay extends BaseController
 {
@@ -23,13 +27,13 @@ class ScopeAvailabilityDay extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         if (!$workstation->getUseraccount()->hasPermissions(['availability'])) {
-            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+            throw new UserAccountMissingRights();
         }
         $data = static::getAvailabilityData(intval($args['id']), $args['date']);
         $data['title'] = 'Behörden und Standorte - Öffnungszeiten';
         $data['menuActive'] = 'owner';
         $data['workstation'] = $workstation;
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/availabilityday.twig',
             $data
@@ -91,7 +95,7 @@ class ScopeAvailabilityDay extends BaseController
     protected static function getAvailabilityData($scopeId, $dateString)
     {
         $scope = static::getScope($scopeId);
-        $dateTime = new \BO\Zmsentities\Helper\DateTime($dateString);
+        $dateTime = new DateTime($dateString);
         $dateWithTime = $dateTime->setTime(\App::$now->format('H'), \App::$now->format('i'));
         $availabilityList = static::readAvailabilityList($scopeId, $dateWithTime);
         $processList = \App::$http
@@ -101,7 +105,7 @@ class ScopeAvailabilityDay extends BaseController
                 ->withoutStatus(['fake'])
                 ->toProcessList();
         if (!$processList->count()) {
-            $processList = new \BO\Zmsentities\Collection\ProcessList();
+            $processList = new ProcessList();
         }
 
 
@@ -158,7 +162,7 @@ class ScopeAvailabilityDay extends BaseController
             if ($exception->template != 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound') {
                 throw $exception;
             }
-            $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
+            $availabilityList = new AvailabilityList();
         }
         return $availabilityList->withDateTime($dateTime); //withDateTime to check if opened
     }

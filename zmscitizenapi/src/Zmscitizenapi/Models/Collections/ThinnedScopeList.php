@@ -12,7 +12,6 @@ use JsonSerializable;
 class ThinnedScopeList extends Entity implements JsonSerializable
 {
     public static $schema = "citizenapi/collections/thinnedScopeList.json";
-/** @var ThinnedScope[] */
     public array $scopes = [];
     public function __construct(array $scopes = [])
     {
