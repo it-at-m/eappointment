@@ -35,7 +35,7 @@ class Index extends BaseController
         $oidclogin = $request->getAttribute('validator')->getParameter('oidclogin')->isString()->getValue();
         if ($request->getMethod() === 'POST') {
             $loginData = $this->testLogin($input);
-            if ($loginData instanceof Useraccount && $loginData->offsetExists('authkey')) {
+            if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
                 \BO\Zmsclient\Auth::setKey($loginData->authkey, time() + \App::SESSION_DURATION);
                 return ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_ADMIN, $loginData, $response)
                     ?? \BO\Slim\Render::redirect('workstationSelect', array(), array());
