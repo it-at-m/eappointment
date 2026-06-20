@@ -11,8 +11,8 @@ use JsonSerializable;
 class AvailableDays extends Entity implements JsonSerializable
 {
     public static $schema = 'citizenapi/availableDays.json';
-/** @var array */
     public array $availableDays = [];
+
     public function __construct(array $availableDays = [])
     {
         $this->availableDays = $availableDays;
@@ -26,11 +26,6 @@ class AvailableDays extends Entity implements JsonSerializable
         }
     }
 
-    /**
-     * Converts the model data back into an array for serialization.
-     *
-     * @return array
-     */
     public function toArray(): array
     {
         return [
