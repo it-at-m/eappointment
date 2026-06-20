@@ -2,9 +2,8 @@
 
 namespace BO\Zmsclient;
 
-/**
- * Session handler for mysql
- */
+use BO\Zmsentities\Session;
+
 class SessionHandler implements \SessionHandlerInterface
 {
     public $sessionName;
@@ -87,7 +86,7 @@ class SessionHandler implements \SessionHandlerInterface
     public function write(string $id, string $data, array $params = []): bool
     {
         $hashedSessionId = hash('sha256', $id);
-        $entity = new \BO\Zmsentities\Session();
+        $entity = new Session();
         $entity->id = $hashedSessionId;
         $entity->name = $this->sessionName;
         $entity->content = unserialize($data);
