@@ -10,7 +10,10 @@
 namespace BO\Zmscalldisplay\Helper;
 
 use BO\Zmscalldisplay\Exception\TemplateNotFound;
-use BO\Zmsentities\Schema\Entity as BaseEntity;
+use BO\Zmsentities\Schema\Entity;
+use BO\Zmsentities\Scope;
+use BO\Zmsentities\Cluster;
+use BO\Zmsentities\Department;
 
 class TemplateFinder
 {
@@ -35,12 +38,6 @@ class TemplateFinder
         return $this->template;
     }
 
-    /**
-     * get a customized Template if it exists, otherwise return default
-     * department preferred before cluster
-     *
-     * @param \BO\Zmsentities\Calldisplay $calldisplay
-     **/
     public function setCustomizedTemplate($calldisplay)
     {
         $template = null;
@@ -51,21 +48,17 @@ class TemplateFinder
         return $this;
     }
 
-    /**
-     * @param \BO\Zmsentities\Calldisplay $calldisplay
-     * @return string|null
-     */
     protected function getTemplateBySettings($calldisplay)
     {
         $template = null;
         //look for customized templates by single scope or single cluster
         if ($calldisplay->getScopeList()->getFirst()) {
-            $entity = new \BO\Zmsentities\Scope($calldisplay->getScopeList()->getFirst());
+            $entity = new Scope($calldisplay->getScopeList()->getFirst());
             $template = $this->getExistingTemplate($entity);
         }
         //look for customized template in clusterlist, overwrite template before
         foreach ($calldisplay->getClusterList() as $entity) {
-            $entity = new \BO\Zmsentities\Cluster($entity);
+            $entity = new Cluster($entity);
             if ($this->getExistingTemplate($entity)) {
                 $template = $this->getExistingTemplate($entity);
                 break;
@@ -73,7 +66,7 @@ class TemplateFinder
         }
         //look for customized template in departmentlist, overwrite template before
         foreach ($calldisplay->organisation['departments'] as $departmentData) {
-            $entity = new \BO\Zmsentities\Department($departmentData);
+            $entity = new Department($departmentData);
             if ($this->getExistingTemplate($entity)) {
                 $template = $this->getExistingTemplate($entity);
                 break;
@@ -83,11 +76,7 @@ class TemplateFinder
         return $template;
     }
 
-    /**
-     * @param BaseEntity $entity
-     * @return string|null
-     */
-    protected function getExistingTemplate(BaseEntity $entity)
+    protected function getExistingTemplate(Entity $entity)
     {
         $path = $this->subPath . '/calldisplay_' . $entity->getEntityName() . '_' . $entity->getId() . '.twig';
         if ($entity->hasId() && $this->isTemplateReadable($path)) {
@@ -97,18 +86,11 @@ class TemplateFinder
         return null;
     }
 
-    /**
-     * @param string $path
-     * @return bool
-     */
     protected function isTemplateReadable($path)
     {
         return is_readable($this->getTemplatePath() . $path);
     }
 
-    /**
-     * @todo check against ISO definition
-     */
     public function getTemplatePath()
     {
         return realpath(__DIR__) . '/../../../templates';
