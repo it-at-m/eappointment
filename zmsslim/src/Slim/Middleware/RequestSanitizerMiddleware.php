@@ -16,7 +16,7 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
     private int $maxStringLength;
     private LoggerService $logger;
 
-    public function __construct(LoggerService $logger, int $maxRecursionDepth = 10, int $maxStringLength = 32768)
+    public function __construct(LoggerService $logger, int $maxRecursionDepth = 10, int $maxStringLength = 131072)
     {
         if ($maxRecursionDepth < 1) {
             throw new \InvalidArgumentException('maxRecursionDepth must be greater than 0');

@@ -133,8 +133,8 @@ class Application extends \BO\Slim\Application
         // Request limits
         self::$MAX_REQUEST_SIZE = (int) (getenv('MAX_REQUEST_SIZE') ?: 10485760);
         // 10MB
-        self::$MAX_STRING_LENGTH = (int) (getenv('MAX_STRING_LENGTH') ?: 32768);
-        // 32KB
+        self::$MAX_STRING_LENGTH = (int) (getenv('MAX_STRING_LENGTH') ?: 131072);
+        // 128KB
         self::$MAX_RECURSION_DEPTH = (int) (getenv('MAX_RECURSION_DEPTH') ?: 10);
         // IP Filter
         self::$IP_BLACKLIST = getenv('IP_BLACKLIST') ?: '';

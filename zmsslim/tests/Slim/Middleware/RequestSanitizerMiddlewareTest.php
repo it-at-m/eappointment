@@ -17,7 +17,7 @@ class RequestSanitizerMiddlewareTest extends MiddlewareTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->middleware = new RequestSanitizerMiddleware($this->logger, 10, 32768);
+        $this->middleware = new RequestSanitizerMiddleware($this->logger, 10, 131072);
     }
 
     public function testSanitizesQueryParams(): void
@@ -68,6 +68,6 @@ class RequestSanitizerMiddlewareTest extends MiddlewareTestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('maxRecursionDepth must be greater than 0');
 
-        new RequestSanitizerMiddleware($this->logger, 0, 32768);
+        new RequestSanitizerMiddleware($this->logger, 0, 131072);
     }
 }

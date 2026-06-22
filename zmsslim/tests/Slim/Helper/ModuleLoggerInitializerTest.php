@@ -48,7 +48,7 @@ class ModuleLoggerInitializerTest extends TestCase
 
         $limits = ModuleLoggerInitializer::getRequestLimits();
 
-        $this->assertSame(32768, $limits['maxStringLength']);
+        $this->assertSame(131072, $limits['maxStringLength']);
         $this->assertSame(10, $limits['maxRecursionDepth']);
     }
 

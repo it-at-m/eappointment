@@ -78,7 +78,7 @@ sequenceDiagram
 | RATE_LIMIT_LOCK_TIMEOUT | Lock timeout in seconds | 1 |
 | **Request Limits** |
 | MAX_REQUEST_SIZE | Maximum request size in bytes | 10485760 (10MB) |
-| MAX_STRING_LENGTH | Maximum string length in bytes | 32768 (32KB) |
+| MAX_STRING_LENGTH | Maximum string length in bytes | 131072 (128KB) |
 | MAX_RECURSION_DEPTH | Maximum recursion depth | 10 |
 | **Security Configuration** |
 | IP_BLACKLIST | Blacklisted IPs/CIDR ranges (comma-separated) | "" |

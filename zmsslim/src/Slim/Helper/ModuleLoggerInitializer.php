@@ -63,7 +63,7 @@ final class ModuleLoggerInitializer
     public static function getRequestLimits(): array
     {
         return [
-            'maxStringLength' => (int) (getenv('MAX_STRING_LENGTH') ?: 32768),
+            'maxStringLength' => (int) (getenv('MAX_STRING_LENGTH') ?: 131072),
             'maxRecursionDepth' => (int) (getenv('MAX_RECURSION_DEPTH') ?: 10),
         ];
     }

@@ -165,7 +165,7 @@ class Application extends \BO\Slim\Application
 
     private static function initializeRequestLimits(): void
     {
-        self::$MAX_STRING_LENGTH = (int) (getenv('MAX_STRING_LENGTH') ?: 32768);
+        self::$MAX_STRING_LENGTH = (int) (getenv('MAX_STRING_LENGTH') ?: 131072); // 128KB
         self::$MAX_RECURSION_DEPTH = (int) (getenv('MAX_RECURSION_DEPTH') ?: 10);
     }
 
