@@ -14,25 +14,14 @@ use GuzzleHttp\Exception\RequestException;
 class CaptchaService extends Entity implements CaptchaInterface
 {
     public static $schema = "citizenapi/captcha/altchaCaptcha.json";
-/** @var string */
     public string $service;
-/** @var string */
     private string $siteKey;
-/** @var string */
     private string $siteSecret;
-/** @var string */
     private string $tokenSecret;
-/** @var int */
     private int $tokenExpirationSeconds;
-/** @var string */
     public string $challengeUrl;
-/** @var string */
     public string $verifyUrl;
-/** @var Client */
     protected Client $httpClient;
-/**
-     * Constructor.
-     */
     public function __construct()
     {
         $this->service = 'CaptchaService';
@@ -53,11 +42,6 @@ class CaptchaService extends Entity implements CaptchaInterface
         }
     }
 
-    /**
-     * Return the captcha configuration details.
-     *
-     * @return array
-     */
     #[\Override]
     public function getCaptchaDetails(): array
     {
@@ -69,11 +53,6 @@ class CaptchaService extends Entity implements CaptchaInterface
         ];
     }
 
-    /**
-     * Generate a JWT for captcha validation.
-     *
-     * @return string
-     */
     public function generateToken(): string
     {
         $payload = [
@@ -85,12 +64,6 @@ class CaptchaService extends Entity implements CaptchaInterface
         return JWT::encode($payload, $this->tokenSecret, 'HS256');
     }
 
-    /**
-     * Request a new captcha challenge.
-     *
-     * @return array
-     * @throws \Exception
-     */
     #[\Override]
     public function createChallenge(): array
     {
@@ -129,13 +102,6 @@ class CaptchaService extends Entity implements CaptchaInterface
         }
     }
 
-    /**
-     * Verify the captcha solution.
-     *
-     * @param string $payload
-     * @return mixed
-     * @throws \Exception
-     */
     #[\Override]
     public function verifySolution(?string $payload): array
     {

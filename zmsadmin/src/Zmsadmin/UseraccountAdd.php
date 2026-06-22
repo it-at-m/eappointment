@@ -7,6 +7,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Render;
 use BO\Zmsentities\Collection\RoleList;
 use BO\Zmsentities\Exception\UserAccountMissingRights;
 use BO\Zmsentities\Schema\Loader;
@@ -42,7 +43,7 @@ class UseraccountAdd extends BaseController
             $submittedUserAccount = $input; // Preserve submitted data for form re-population
             $result = $this->writeNewEntity($input);
             if ($result instanceof Entity) {
-                return \BO\Slim\Render::redirect(
+                return Render::redirect(
                     'useraccountEdit',
                     array(
                         'loginname' => $result->id
@@ -66,7 +67,7 @@ class UseraccountAdd extends BaseController
             }
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/useraccountEdit.twig',
             [

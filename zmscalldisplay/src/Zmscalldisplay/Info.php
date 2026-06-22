@@ -12,7 +12,7 @@ namespace BO\Zmscalldisplay;
 use BO\Slim\Render;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use BO\Zmsentities\Collection\QueueList as Collection;
+use BO\Zmsentities\Collection\QueueList;
 
 class Info extends BaseController
 {
@@ -30,7 +30,7 @@ class Info extends BaseController
             ->getCollection();
 
         $filteredQueue = $queueListFull
-            ->withoutStatus(Collection::STATUS_FAKE)
+            ->withoutStatus(QueueList::STATUS_FAKE)
             ->getCountWithWaitingTime();
 
         $lastClient = $filteredQueue->getLast();

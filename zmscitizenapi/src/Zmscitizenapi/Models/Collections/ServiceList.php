@@ -12,7 +12,6 @@ use JsonSerializable;
 class ServiceList extends Entity implements JsonSerializable
 {
     public static $schema = "citizenapi/collections/serviceList.json";
-/** @var Service[] */
     public array $services = [];
     public function __construct(array $services = [])
     {
@@ -37,11 +36,6 @@ class ServiceList extends Entity implements JsonSerializable
         }
     }
 
-    /**
-     * Converts the service list to an array for serialization.
-     *
-     * @return array
-     */
     public function toArray(): array
     {
         return [

@@ -9,6 +9,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Render;
 use BO\Zmsentities\Collection\RoleList;
 use BO\Zmsentities\Collection\UseraccountList as Collection;
 use BO\Zmsentities\Exception\UserAccountMissingRights;
@@ -78,7 +79,7 @@ class UseraccountList extends BaseController
             }
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/useraccountList.twig',
             array(

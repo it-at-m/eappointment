@@ -7,10 +7,13 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Render;
 use Psr\Http\Message\RequestInterface;
 use BO\Zmsadmin\Helper\ProcessFinishedHelper;
-use BO\Zmsentities\Process as Entity;
+use BO\Zmsentities\Exception\WorkstationMissingAssignedProcess;
+use BO\Zmsentities\Process;
 use BO\Zmsentities\Collection\RequestList;
+use BO\Zmsentities\Workstation;
 
 class WorkstationProcessFinished extends BaseController
 {
@@ -50,7 +53,7 @@ class WorkstationProcessFinished extends BaseController
             return $this->getFinishedResponse($workstation, $process);
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/workstationProcessFinished.twig',
             array(
@@ -64,13 +67,13 @@ class WorkstationProcessFinished extends BaseController
     }
 
     protected function getFinishedResponse(
-        \BO\Zmsentities\Workstation $workstation,
-        Entity $process = null
+        Workstation $workstation,
+        Process $process = null
     ) {
         $process = ($process) ? $process : clone $workstation->process;
         $process->status = ('pending' != $process->status) ? 'finished' : $process->status;
-        \App::$http->readPostResult('/process/status/finished/', new Entity($process))->getEntity();
-        return \BO\Slim\Render::redirect(
+        \App::$http->readPostResult('/process/status/finished/', new Process($process))->getEntity();
+        return Render::redirect(
             $workstation->getVariantName(),
             array(),
             array()
@@ -78,10 +81,10 @@ class WorkstationProcessFinished extends BaseController
     }
 
 
-    protected function testProcess(\BO\Zmsentities\Workstation $workstation)
+    protected function testProcess(Workstation $workstation)
     {
         if (! $workstation->process->hasId()) {
-            throw new \BO\Zmsentities\Exception\WorkstationMissingAssignedProcess();
+            throw new WorkstationMissingAssignedProcess();
         }
     }
 }
