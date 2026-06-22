@@ -26,7 +26,10 @@ class WorkstationProcessCalled extends BaseController
         if (! $workstation->process->hasId() && ! $workstation->process->queue->callTime) {
             $process = \App::$http->readGetResult('/process/' . $args['id'] . '/')->getEntity();
             try {
-                $workstation = \App::$http->readPostResult('/workstation/process/called/', $process, [
+                $workstation = \App::$http->readPostResult(
+                    '/workstation/process/called/',
+                    $this->createProcessPayloadForCalled($process),
+                    [
                     'allowClusterWideCall' => \App::$allowClusterWideCall
                 ])->getEntity();
             } catch (\BO\Zmsclient\Exception $e) {
@@ -72,5 +75,16 @@ class WorkstationProcessCalled extends BaseController
                 'error' => $error
             )
         );
+    }
+
+    private function createProcessPayloadForCalled(\BO\Zmsentities\Process $process): \BO\Zmsentities\Process
+    {
+        return new \BO\Zmsentities\Process([
+            'id' => $process->getId(),
+            'authKey' => $process->authKey,
+            'status' => $process->getStatus(),
+            'scope' => ['id' => $process->scope['id']],
+            'queue' => $process->queue->getArrayCopy(),
+        ]);
     }
 }
