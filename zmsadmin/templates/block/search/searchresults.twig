@@ -43,7 +43,7 @@
             </div>
         </form>
 
-        {% if searchProcessQuery and processSearchTotal is defined %}
+        {% if searchProcessQuery is not null and searchProcessQuery != '' and processSearchTotal is defined %}
             <p class="m-5" style="margin-top: 0;">
                 {% set shownCount = processList.count() + processListOther.count() %}
                 {% if processSearchTotal > shownCount %}
