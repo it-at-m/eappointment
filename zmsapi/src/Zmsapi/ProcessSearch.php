@@ -47,8 +47,13 @@ class ProcessSearch extends BaseController
         }
 
         $processQuery = new Process();
-        $totalCount = $processQuery->readSearchCount($parameters);
         $processList = $processQuery->readSearch($parameters, $resolveReferences, $limit, $offset);
+        $fetchedCount = $processList->count();
+        if ($fetchedCount < $limit) {
+            $totalCount = $offset + $fetchedCount;
+        } else {
+            $totalCount = $processQuery->readSearchCount($parameters);
+        }
         if ($lessResolvedData) {
             $processList = $processList->withLessData();
         }
