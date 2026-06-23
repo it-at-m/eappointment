@@ -26,14 +26,9 @@ class ProcessSearch extends BaseController
         $workstation = (new Helper\User($request, 2))->checkPermissions('customersearch');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $lessResolvedData = Validator::param('lessResolvedData')->isNumber()->setDefault(0)->getValue();
-        $page = Validator::param('page')->isNumber()->setDefault(1)->getValue();
-        $limit = Validator::param('limit')->isNumber()->setDefault(100)->getValue();
-        if ($limit > 1000) {
-            $limit = 1000;
-        }
-        if ($page < 1) {
-            $page = 1;
-        }
+        $page = max(1, (int) (Validator::param('page')->isNumber()->setDefault(1)->getValue() ?? 1));
+        $limit = (int) (Validator::param('limit')->isNumber()->setDefault(100)->getValue() ?? 100);
+        $limit = min(1000, max(1, $limit));
         $offset = ($page - 1) * $limit;
 
         $parameters = $request->getParams();
