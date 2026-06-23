@@ -412,8 +412,8 @@ class MapperServiceTest extends TestCase
                     "name" => "Service 1",
                     "maxQuantity" => 1,
                     "combinable" => new Combinable(),
-                    "parent_id" => null,
-                    "variant_id" => null,
+                    "parentId" => null,
+                    "variantId" => null,
                     "showOnStartPage" => true
                 ],
                 [
@@ -421,8 +421,8 @@ class MapperServiceTest extends TestCase
                     "name" => "Service 2",
                     "maxQuantity" => 1,
                     "combinable" => new Combinable(),
-                    "parent_id" => null,
-                    "variant_id" => null,
+                    "parentId" => null,
+                    "variantId" => null,
                     "showOnStartPage" => true
                 ]
             ]
@@ -472,8 +472,8 @@ class MapperServiceTest extends TestCase
                     "name" => "Service 2",
                     "maxQuantity" => 1,
                     "combinable" => new Combinable(),
-                    "parent_id" => null,
-                    "variant_id" => null,
+                    "parentId" => null,
+                    "variantId" => null,
                     "showOnStartPage" => true
                 ]
             ]

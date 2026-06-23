@@ -54,8 +54,8 @@ class ServicesListControllerTest extends ControllerTestCase
                     "name" => "Unittest Source Dienstleistung",
                     "maxQuantity" => 1,
                     "combinable" => null,
-                    "parent_id" => null,
-                    "variant_id" => null,
+                    "parentId" => null,
+                    "variantId" => null,
                     "showOnStartPage" => null
                 ]
             ]
