@@ -590,13 +590,34 @@ class Process extends Base implements MappingInterface
 
     public function addConditionSearch($queryString, $orWhere = false)
     {
-        $condition = function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($queryString) {
-            $queryString = trim($queryString);
-            $query->orWith('process.Name', 'LIKE', "%$queryString%");
-            $query->orWith('process.EMail', 'LIKE', "%$queryString%");
-            $query->orWith('process.Telefonnummer', 'LIKE', "%$queryString%");
-            $query->orWith('process.telefonnummer_fuer_rueckfragen', 'LIKE', "%$queryString%");
-            $query->orWith('process.displayNumber', 'LIKE', "%$queryString%");
+        $queryString = trim($queryString);
+        $likeContains = '%' . $this->escapeLikeValue($queryString) . '%';
+        $likeWordPrefix = '% ' . $this->escapeLikeValue($queryString) . '%';
+        $likeWordSuffix = '% ' . $this->escapeLikeValue($queryString);
+        $likeSurnameFirst = $this->escapeLikeValue($queryString) . ' %';
+        $useNamePrefix = !$this->isNumericSearchQuery($queryString)
+            && mb_strlen($queryString) <= 3;
+
+        $condition = function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use (
+            $queryString,
+            $likeContains,
+            $likeWordPrefix,
+            $likeWordSuffix,
+            $likeSurnameFirst,
+            $useNamePrefix
+        ) {
+            if ($useNamePrefix) {
+                $query->orWith('process.Name', 'LIKE', $likeSurnameFirst);
+                $query->orWith('process.Name', 'LIKE', $likeWordSuffix);
+                $query->orWith('process.Name', 'LIKE', $likeWordPrefix);
+                $query->orWith('process.Name', '=', $queryString);
+            } else {
+                $query->orWith('process.Name', 'LIKE', $likeContains);
+            }
+            $query->orWith('process.EMail', 'LIKE', $likeContains);
+            $query->orWith('process.Telefonnummer', 'LIKE', $likeContains);
+            $query->orWith('process.telefonnummer_fuer_rueckfragen', 'LIKE', $likeContains);
+            $query->orWith('process.displayNumber', 'LIKE', $likeContains);
         };
         if ($orWhere) {
             $this->query->orWhere($condition);
@@ -604,6 +625,63 @@ class Process extends Base implements MappingInterface
             $this->query->where($condition);
         }
         return $this;
+    }
+
+    public function addConditionUpcomingOnly(\DateTimeInterface $now)
+    {
+        $today = $now->format('Y-m-d');
+        $time = $now->format('H:i:s');
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) use ($today, $time) {
+            $condition
+                ->andWith('process.Datum', '>', $today)
+                ->orWith(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $inner) use ($today, $time) {
+                    $inner
+                        ->andWith('process.Datum', '=', $today)
+                        ->andWith('process.Uhrzeit', '>=', $time);
+                });
+        });
+        return $this;
+    }
+
+    public function addOrderByAppointmentDate()
+    {
+        $this->query->orderBy('process.Datum', 'ASC');
+        $this->query->orderBy('process.Uhrzeit', 'ASC');
+        $this->query->orderBy('process.BuergerID', 'ASC');
+        return $this;
+    }
+
+    public function addOrderBySearchRelevance($queryString)
+    {
+        $queryString = trim($queryString);
+        if ($queryString === '') {
+            return $this;
+        }
+
+        $escapedLike = $this->escapeLikeValue($queryString);
+        $this->query->orderBy(self::expression(
+            "CASE
+                WHEN process.Name LIKE '{$escapedLike} %' OR process.Name = '{$escapedLike}' THEN 0
+                WHEN process.Name LIKE '% {$escapedLike}' OR process.Name LIKE '% {$escapedLike} %' THEN 1
+                WHEN process.Name LIKE '%{$escapedLike}%' THEN 2
+                ELSE 3
+            END"
+        ));
+        $this->query->orderBy('process.Datum', 'ASC');
+        $this->query->orderBy('process.Uhrzeit', 'ASC');
+        $this->query->orderBy('process.BuergerID', 'ASC');
+
+        return $this;
+    }
+
+    private function isNumericSearchQuery($queryString): bool
+    {
+        return (bool) preg_match('#^\d+$#', $queryString);
+    }
+
+    private function escapeLikeValue($value): string
+    {
+        return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $value);
     }
 
     public function addConditionName($name, $exactMatching = false)

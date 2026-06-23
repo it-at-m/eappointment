@@ -72,4 +72,13 @@ class ProcessSearchTest extends Base
         $this->assertEntityList("\\BO\\Zmsentities\\Process", $processList);
         $this->assertEquals(4, $processList->count());
     }
+
+    public function testSearchCount()
+    {
+        $query = new Query();
+        $processList = $query->readSearch(['query' => 'J51362']);
+        $totalCount = $query->readSearchCount(['query' => 'J51362']);
+        $this->assertGreaterThanOrEqual($processList->count(), $totalCount);
+        $this->assertEquals(6, $totalCount);
+    }
 }
