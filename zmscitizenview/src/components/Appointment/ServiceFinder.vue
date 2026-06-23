@@ -681,7 +681,7 @@ onMounted(() => {
         if (handleApiResponseForDownTime(data, props.globalState.baseUrl))
           return;
 
-        services.value = (data as any).services.map(normalizeService);
+        services.value = (data as any).services;
         relations.value = (data as any).relations;
         offices.value = (data as any).offices;
 
@@ -711,7 +711,7 @@ onMounted(() => {
         return;
       }
 
-      services.value = (data as any).services.map(normalizeService);
+      services.value = (data as any).services;
       relations.value = (data as any).relations;
       offices.value = (data as any).offices;
 
@@ -861,18 +861,6 @@ const showSubservices = computed(() => {
 
   return true;
 });
-
-function normalizeService(raw: any): Service {
-  return {
-    id: String(raw.id),
-    name: raw.name,
-    maxQuantity: raw.maxQuantity,
-    combinable: raw.combinable,
-    parentId: raw.parent_id == null ? null : String(raw.parent_id),
-    variantId: raw.variant_id == null ? null : Number(raw.variant_id),
-    showOnStartPage: raw.showOnStartPage,
-  };
-}
 
 const hasVariants = computed(() => variantServices.value.length > 1);
 const needsVariantSelection = computed(

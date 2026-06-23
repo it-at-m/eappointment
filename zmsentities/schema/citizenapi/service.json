@@ -37,14 +37,14 @@
       ],
       "description": "Indicates whether the service is publicly visible"
     },
-    "parent_id": {
+    "parentId": {
       "type": [
         "integer",
         "null"
       ],
       "description": "Parent-Service ID (falls diese Service-Variante zu einem Parent gehört)"
     },
-    "variant_id": {
+    "variantId": {
       "type": [
         "integer",
         "null"
