@@ -591,26 +591,32 @@ class Process extends Base implements MappingInterface
     public function addConditionSearch($queryString, $orWhere = false)
     {
         $queryString = trim($queryString);
-        $likeContains = '%' . $this->escapeLikeValue($queryString) . '%';
-        $likeWordPrefix = '% ' . $this->escapeLikeValue($queryString) . '%';
-        $likeWordSuffix = '% ' . $this->escapeLikeValue($queryString);
-        $likeSurnameFirst = $this->escapeLikeValue($queryString) . ' %';
-        $useNamePrefix = !$this->isNumericSearchQuery($queryString)
-            && mb_strlen($queryString) <= 3;
+        $terms = $this->parseSearchTerms($queryString);
+        if ($terms === []) {
+            return $this;
+        }
 
-        $condition = function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use (
-            $queryString,
-            $likeContains,
-            $likeWordPrefix,
-            $likeWordSuffix,
-            $likeSurnameFirst,
-            $useNamePrefix
-        ) {
-            if ($useNamePrefix) {
-                $query->orWith('process.Name', 'LIKE', $likeSurnameFirst);
-                $query->orWith('process.Name', 'LIKE', $likeWordSuffix);
-                $query->orWith('process.Name', 'LIKE', $likeWordPrefix);
-                $query->orWith('process.Name', '=', $queryString);
+        $condition = function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($terms) {
+            if (count($terms) > 1) {
+                foreach ($terms as $term) {
+                    $query->andWith(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $inner) use ($term) {
+                        $this->appendNamePartLikeGroup($inner, $term['value'], true);
+                    });
+                }
+                return;
+            }
+
+            $term = $terms[0]['value'];
+            if ($terms[0]['quoted']) {
+                $this->appendNamePartLikeGroup($query, $term, true);
+                return;
+            }
+
+            $likeContains = '%' . $this->escapeLikeValue($term) . '%';
+            $useNameWordBoundary = !$this->isNumericSearchQuery($term) && mb_strlen($term) <= 3;
+
+            if ($useNameWordBoundary) {
+                $this->appendNamePartLikeGroup($query, $term, true);
             } else {
                 $query->orWith('process.Name', 'LIKE', $likeContains);
             }
@@ -658,7 +664,9 @@ class Process extends Base implements MappingInterface
             return $this;
         }
 
-        $escapedLike = $this->escapeLikeValue($queryString);
+        $terms = $this->parseSearchTerms($queryString);
+        $primaryTerm = $terms[0]['value'] ?? $queryString;
+        $escapedLike = $this->escapeLikeValue($primaryTerm);
         $this->query->orderBy(self::expression(
             "CASE
                 WHEN process.Name LIKE '{$escapedLike} %' OR process.Name = '{$escapedLike}' THEN 0
@@ -672,6 +680,49 @@ class Process extends Base implements MappingInterface
         $this->query->orderBy('process.BuergerID', 'ASC');
 
         return $this;
+    }
+
+    /**
+     * @return array<int, array{value: string, quoted: bool}>
+     */
+    private function parseSearchTerms(string $queryString): array
+    {
+        if ($queryString === '') {
+            return [];
+        }
+
+        if (!preg_match_all('/"([^"]+)"|(\S+)/u', $queryString, $matches, PREG_SET_ORDER)) {
+            return [['value' => $queryString, 'quoted' => false]];
+        }
+
+        $terms = [];
+        foreach ($matches as $match) {
+            $value = trim($match[1] !== '' ? $match[1] : $match[2]);
+            if ($value === '') {
+                continue;
+            }
+            $terms[] = [
+                'value' => $value,
+                'quoted' => $match[1] !== '',
+            ];
+        }
+
+        return $terms;
+    }
+
+    private function appendNamePartLikeGroup(
+        \BO\Zmsdb\Query\Builder\ConditionBuilder $query,
+        string $term,
+        bool $wordBoundaryOnly = false
+    ): void {
+        $escaped = $this->escapeLikeValue($term);
+        $query->orWith('process.Name', 'LIKE', $escaped . ' %');
+        $query->orWith('process.Name', 'LIKE', '% ' . $escaped);
+        $query->orWith('process.Name', 'LIKE', '% ' . $escaped . ' %');
+        $query->orWith('process.Name', '=', $term);
+        if (!$wordBoundaryOnly) {
+            $query->orWith('process.Name', 'LIKE', '%' . $escaped . '%');
+        }
     }
 
     private function isNumericSearchQuery($queryString): bool

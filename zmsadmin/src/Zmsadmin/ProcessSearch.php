@@ -31,8 +31,11 @@ class ProcessSearch extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $validator = $request->getAttribute('validator');
         $queryString = $validator->getParameter('query')
-            ->isString()
+            ->isString('', false)
             ->getValue();
+        if ($queryString !== null && $queryString !== '') {
+            $queryString = html_entity_decode((string) $queryString, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        }
         $page = $validator->getParameter('page')
             ->isNumber()
             ->setDefault(1)
@@ -85,10 +88,10 @@ class ProcessSearch extends BaseController
         }
 
         if ($workstation->hasAuditAccount()) {
-            $queryString = urlencode($queryString);
+            $logSearchQuery = urlencode((string) $queryString);
             $logList = \App::$http
                 ->readGetResult("/log/process/", [
-                        'searchQuery' => $queryString,
+                        'searchQuery' => $logSearchQuery,
                         'page' => $page,
                         'perPage' => $perPage,
                         'service' => $service ? trim($service) : null,
@@ -121,7 +124,7 @@ class ProcessSearch extends BaseController
                 'processList' => $processList,
                 'processListOther' => $processListOther,
                 'logList' => $logList ?? [],
-                'searchProcessQuery' => urldecode($queryString),
+                'searchProcessQuery' => $queryString,
                 'processSearchTotal' => $processSearchTotal,
                 'menuActive' => 'search'
             )
