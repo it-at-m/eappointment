@@ -472,14 +472,12 @@ class Process extends Base implements Interfaces\ResolveReferences
             $query->addConditionUpcomingOnly($now);
         }
 
-        if (isset($parameter['scopeIds']) && $parameter['scopeIds'] !== '') {
+        if (array_key_exists('scopeIds', $parameter)) {
             $scopeIds = is_array($parameter['scopeIds'])
                 ? $parameter['scopeIds']
                 : array_map('intval', explode(',', (string) $parameter['scopeIds']));
             $scopeIds = array_values(array_filter($scopeIds));
-            if ($scopeIds !== []) {
-                $query->addConditionScopeIds($scopeIds);
-            }
+            $query->addConditionScopeIds($scopeIds);
         }
 
         if (isset($parameter['query'])) {

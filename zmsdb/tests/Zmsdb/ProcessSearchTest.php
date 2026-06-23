@@ -90,4 +90,12 @@ class ProcessSearchTest extends Base
         $totalCount = $query->readSearchCount(['query' => "O'Brien"]);
         $this->assertGreaterThanOrEqual($processList->count(), $totalCount);
     }
+
+    public function testSearchWithEmptyScopeIdsDeniesAll()
+    {
+        $query = new Query();
+        $processList = $query->readSearch(['query' => 'J51362', 'scopeIds' => '']);
+        $this->assertEquals(0, $processList->count());
+        $this->assertEquals(0, $query->readSearchCount(['query' => 'J51362', 'scopeIds' => '']));
+    }
 }
