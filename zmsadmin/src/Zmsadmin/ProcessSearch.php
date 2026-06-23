@@ -10,12 +10,7 @@ namespace BO\Zmsadmin;
 use BO\Slim\Render;
 use BO\Zmsentities\Collection\LogList;
 use BO\Zmsentities\Collection\ProcessList;
-use DateTime;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class ProcessSearch extends BaseController
 {
     /**
@@ -29,17 +24,48 @@ class ProcessSearch extends BaseController
         array $args
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $validator = $request->getAttribute('validator');
+        $parameters = $this->getSearchParameters($request->getAttribute('validator'));
+        $scopeIds = $workstation->getUseraccount()->getDepartmentList()->getUniqueScopeList()->getIds();
+
+        [$processList, $processSearchTotal] = $this->readProcessSearchResults(
+            $workstation,
+            $parameters,
+            $scopeIds
+        );
+        $logList = $this->readLogSearchResults($workstation, $parameters, $scopeIds);
+        [$processList, $processListOther] = $this->splitProcessListsByScope($workstation, $processList);
+
+        return Render::withHtml(
+            $response,
+            'page/search.twig',
+            array(
+                'title' => 'Suche',
+                'service' => $parameters['service'],
+                'provider' => $parameters['provider'],
+                'userAction' => $parameters['userAction'],
+                'date' => $parameters['date'],
+                'page' => $parameters['page'],
+                'perPage' => $parameters['perPage'],
+                'workstation' => $workstation,
+                'processList' => $processList,
+                'processListOther' => $processListOther,
+                'logList' => $logList ?? [],
+                'searchProcessQuery' => $parameters['queryString'],
+                'processSearchTotal' => $processSearchTotal,
+                'menuActive' => 'search'
+            )
+        );
+    }
+
+    private function getSearchParameters($validator): array
+    {
         $queryString = $validator->getParameter('query')
             ->isString('', false)
             ->getValue();
         if ($queryString !== null && $queryString !== '') {
             $queryString = html_entity_decode((string) $queryString, ENT_QUOTES | ENT_HTML5, 'UTF-8');
         }
-        $page = $validator->getParameter('page')
-            ->isNumber()
-            ->setDefault(1)
-            ->getValue();
+
         $service = $validator->getParameter('service')
             ->isString()
             ->setDefault('')
@@ -48,14 +74,6 @@ class ProcessSearch extends BaseController
             ->isString()
             ->setDefault('')
             ->getValue();
-        $date = $validator->getParameter('date')
-            ->isString()
-            ->setDefault(null)
-            ->getValue();
-        $userAction = $validator->getParameter('user')
-            ->isNumber()
-            ->setDefault(0)
-            ->getValue();
         $perPage = $validator->getParameter('perPage')
             ->isNumber()
             ->setDefault(100)
@@ -63,72 +81,80 @@ class ProcessSearch extends BaseController
         if ($perPage > 1000) {
             $perPage = 1000;
         }
-        $processSearchTotal = 0;
-        $scopeIds = $workstation->getUseraccount()->getDepartmentList()->getUniqueScopeList()->getIds();
-        if (!empty($queryString)) {
-            $searchParameters = [
-                'query' => $queryString,
-                'resolveReferences' => 1,
-                'page' => $page,
-                'limit' => $perPage,
-            ];
-            if (!$workstation->hasSuperUseraccount() && !empty($scopeIds)) {
-                $searchParameters['scopeIds'] = implode(',', $scopeIds);
-            }
-            $searchResult = \App::$http->readGetResult('/process/search/', $searchParameters);
-            $processList = $searchResult->getCollection();
-            $searchMeta = $searchResult->getMeta();
-            $processSearchTotal = isset($searchMeta->totalCount) ? (int) $searchMeta->totalCount : $processList->count();
-        } else {
-            $processList = new ProcessList();
+
+        return [
+            'queryString' => $queryString,
+            'page' => (int) $validator->getParameter('page')->isNumber()->setDefault(1)->getValue(),
+            'service' => $service ? trim($service) : null,
+            'provider' => $provider ? trim($provider) : null,
+            'date' => $validator->getParameter('date')->isString()->setDefault(null)->getValue(),
+            'userAction' => (int) $validator->getParameter('user')->isNumber()->setDefault(0)->getValue(),
+            'perPage' => $perPage,
+        ];
+    }
+
+    private function readProcessSearchResults($workstation, array $parameters, array $scopeIds): array
+    {
+        $queryString = $parameters['queryString'];
+        if (empty($queryString)) {
+            return [new ProcessList(), 0];
         }
+
+        $searchParameters = [
+            'query' => $queryString,
+            'resolveReferences' => 1,
+            'page' => $parameters['page'],
+            'limit' => $parameters['perPage'],
+        ];
+        if (!$workstation->hasSuperUseraccount() && !empty($scopeIds)) {
+            $searchParameters['scopeIds'] = implode(',', $scopeIds);
+        }
+
+        $searchResult = \App::$http->readGetResult('/process/search/', $searchParameters);
+        $processList = $searchResult->getCollection();
+        $searchMeta = $searchResult->getMeta();
+        $processSearchTotal = isset($searchMeta->totalCount)
+            ? (int) $searchMeta->totalCount
+            : $processList->count();
 
         if (!empty($processList) && !$workstation->hasSuperUseraccount()) {
             $processList = $this->filterProcessListForUserRights($processList, $scopeIds);
         }
 
-        if ($workstation->hasAuditAccount()) {
-            $logSearchQuery = urlencode((string) $queryString);
-            $logList = \App::$http
-                ->readGetResult("/log/process/", [
-                        'searchQuery' => $logSearchQuery,
-                        'page' => $page,
-                        'perPage' => $perPage,
-                        'service' => $service ? trim($service) : null,
-                        'provider' => $provider ? trim($provider) : null,
-                        'userAction' => (int) $userAction,
-                        'date' => $date
-                    ])
-                ->getCollection();
-            $logList = $this->filterLogListForUserRights($logList, $scopeIds);
+        return [$processList, $processSearchTotal];
+    }
+
+    private function readLogSearchResults($workstation, array $parameters, array $scopeIds): ?LogList
+    {
+        if (!$workstation->hasAuditAccount()) {
+            return null;
         }
 
+        $logList = \App::$http
+            ->readGetResult("/log/process/", [
+                'searchQuery' => urlencode((string) $parameters['queryString']),
+                'page' => $parameters['page'],
+                'perPage' => $parameters['perPage'],
+                'service' => $parameters['service'],
+                'provider' => $parameters['provider'],
+                'userAction' => $parameters['userAction'],
+                'date' => $parameters['date'],
+            ])
+            ->getCollection();
+
+        return $this->filterLogListForUserRights($logList, $scopeIds);
+    }
+
+    private function splitProcessListsByScope($workstation, ?ProcessList $processList): array
+    {
         $processList = $processList ?? new ProcessList();
         $processListOther = new ProcessList();
         if (!$workstation->hasSuperUseraccount()) {
             $processListOther = $processList->withOutScopeId($workstation->scope['id']);
             $processList = $processList->withScopeId($workstation->scope['id']);
         }
-        return Render::withHtml(
-            $response,
-            'page/search.twig',
-            array(
-                'title' => 'Suche',
-                'service' => $service ? trim($service) : null,
-                'provider' => $provider ? trim($provider) : null,
-                'userAction' => (int) $userAction,
-                'date' => $date,
-                'page' => $page,
-                'perPage' => $perPage,
-                'workstation' => $workstation,
-                'processList' => $processList,
-                'processListOther' => $processListOther,
-                'logList' => $logList ?? [],
-                'searchProcessQuery' => $queryString,
-                'processSearchTotal' => $processSearchTotal,
-                'menuActive' => 'search'
-            )
-        );
+
+        return [$processList, $processListOther];
     }
 
     private function filterProcessListForUserRights(?ProcessList $processList, array $scopeIds)
