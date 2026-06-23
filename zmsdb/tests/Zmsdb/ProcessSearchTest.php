@@ -81,4 +81,13 @@ class ProcessSearchTest extends Base
         $this->assertGreaterThanOrEqual($processList->count(), $totalCount);
         $this->assertEquals(6, $totalCount);
     }
+
+    public function testSearchWithApostropheInQuery()
+    {
+        $query = new Query();
+        $processList = $query->readSearch(['query' => "O'Brien"]);
+        $this->assertEntityList("\\BO\\Zmsentities\\Process", $processList);
+        $totalCount = $query->readSearchCount(['query' => "O'Brien"]);
+        $this->assertGreaterThanOrEqual($processList->count(), $totalCount);
+    }
 }

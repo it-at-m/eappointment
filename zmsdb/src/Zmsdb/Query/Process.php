@@ -666,7 +666,7 @@ class Process extends Base implements MappingInterface
 
         $terms = $this->parseSearchTerms($queryString);
         $primaryTerm = $terms[0]['value'] ?? $queryString;
-        $escapedLike = $this->escapeLikeValue($primaryTerm);
+        $escapedLike = $this->escapeLikePatternForSqlLiteral($primaryTerm);
         $this->query->orderBy(self::expression(
             "CASE
                 WHEN process.Name LIKE '{$escapedLike} %' OR process.Name = '{$escapedLike}' THEN 0
@@ -733,6 +733,16 @@ class Process extends Base implements MappingInterface
     private function escapeLikeValue($value): string
     {
         return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $value);
+    }
+
+    private function escapeLikePatternForSqlLiteral(string $value): string
+    {
+        return $this->escapeSqlStringLiteral($this->escapeLikeValue($value));
+    }
+
+    private function escapeSqlStringLiteral(string $value): string
+    {
+        return str_replace("'", "''", $value);
     }
 
     public function addConditionName($name, $exactMatching = false)
