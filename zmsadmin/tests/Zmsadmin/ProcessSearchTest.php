@@ -189,4 +189,47 @@ class ProcessSearchTest extends Base
         $this->assertStringNotContainsString('&#34;Muster&#34;', (string) $response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testZeroQueryTriggersProcessSearch()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/search/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'query' => '0',
+                        'page' => 1,
+                        'limit' => 100,
+                        'scopeIds' => '380,1,141',
+                    ],
+                    'response' => $this->readFixture("GET_searchresult_others.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/log/process/',
+                    'parameters' => [
+                        'searchQuery' => '0',
+                        'page' => 1,
+                        'perPage' => 100,
+                        'service' => null,
+                        'provider' => null,
+                        'userAction' => 0,
+                        'date' => null
+                    ],
+                    'response' => $this->readFixture("GET_loglist.json")
+                ],
+            ]
+        );
+        $response = $this->render($this->arguments, ['query' => '0'], []);
+        $this->assertStringContainsString('name="query" value="0"', (string) $response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
 }
