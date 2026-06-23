@@ -96,7 +96,7 @@ class ProcessSearch extends BaseController
     private function readProcessSearchResults($workstation, array $parameters, array $scopeIds): array
     {
         $queryString = $parameters['queryString'];
-        if (empty($queryString)) {
+        if ($queryString === null || $queryString === '') {
             return [new ProcessList(), 0];
         }
 
