@@ -71,7 +71,7 @@ jobs:
       IMAGE_REGISTRY: ghcr.io
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix)) && matrix.branch || github.ref }}
 
