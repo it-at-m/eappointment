@@ -126,7 +126,7 @@ class ProcessSearch extends BaseController
 
     private function readLogSearchResults($workstation, array $parameters, array $scopeIds): ?LogList
     {
-        if (!$workstation->hasAuditAccount()) {
+        if (!$workstation->hasAuditAccount() || !$this->shouldRunLogSearch($parameters)) {
             return null;
         }
 
@@ -155,6 +155,15 @@ class ProcessSearch extends BaseController
         }
 
         return [$processList, $processListOther];
+    }
+
+    private function shouldRunLogSearch(array $parameters): bool
+    {
+        if ($parameters['service'] || $parameters['provider'] || $parameters['date']) {
+            return true;
+        }
+
+        return (int) $parameters['userAction'] !== 0;
     }
 
     private function filterProcessListForUserRights(?ProcessList $processList, array $scopeIds)
