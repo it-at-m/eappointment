@@ -106,7 +106,7 @@ class ProcessSearch extends BaseController
             'page' => $parameters['page'],
             'limit' => $parameters['perPage'],
         ];
-        if (!$workstation->hasSuperUseraccount() && !empty($scopeIds)) {
+        if (!$workstation->hasSuperUseraccount()) {
             $searchParameters['scopeIds'] = implode(',', $scopeIds);
         }
 

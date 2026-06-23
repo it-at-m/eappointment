@@ -48,9 +48,7 @@ class ProcessSearch extends BaseController
                 ->getDepartmentList()
                 ->getUniqueScopeList()
                 ->getIds();
-            if ($scopeIds !== []) {
-                $parameters['scopeIds'] = implode(',', $scopeIds);
-            }
+            $parameters['scopeIds'] = implode(',', $scopeIds);
         }
 
         $processQuery = new Process();
