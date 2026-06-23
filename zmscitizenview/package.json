@@ -26,7 +26,7 @@
   "devDependencies": {
     "@babel/types": "^7.21.4",
     "@muenchen/prettier-codeformat": "^1.0.2",
-    "@types/node": "^25.9.3",
+    "@types/node": "^26.0.0",
     "@types/webfontloader": "^1.6.35",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vitest/coverage-v8": "^4.1.9",
