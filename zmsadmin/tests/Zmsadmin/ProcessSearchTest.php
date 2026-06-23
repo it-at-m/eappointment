@@ -27,7 +27,10 @@ class ProcessSearchTest extends Base
                     'url' => '/process/search/',
                     'parameters' => [
                         'resolveReferences' => 1,
-                        'query' => 'Test%20BO'
+                        'query' => 'Test%20BO',
+                        'page' => 1,
+                        'limit' => 100,
+                        'scopeIds' => '380,1,141,140,142',
                     ],
                     'response' => $this->readFixture("GET_searchresult.json")
                 ],
@@ -67,7 +70,10 @@ class ProcessSearchTest extends Base
                     'url' => '/process/search/',
                     'parameters' => [
                         'resolveReferences' => 1,
-                        'query' => '100005'
+                        'query' => '100005',
+                        'page' => 2,
+                        'limit' => 20,
+                        'scopeIds' => '380,1,141,140,142',
                     ],
                     'response' => $this->readFixture("GET_searchresult_processid.json")
                 ],
@@ -111,7 +117,10 @@ class ProcessSearchTest extends Base
                     'url' => '/process/search/',
                     'parameters' => [
                         'resolveReferences' => 1,
-                        'query' => 'Test%20BO'
+                        'query' => 'Test%20BO',
+                        'page' => 1,
+                        'limit' => 100,
+                        'scopeIds' => '380,1,141',
                     ],
                     'response' => $this->readFixture("GET_searchresult_others.json")
                 ],

@@ -57,12 +57,29 @@ class ProcessSearch extends BaseController
             ->isNumber()
             ->setDefault(100)
             ->getValue();
-        $processList = !empty($queryString) ? \App::$http->readGetResult('/process/search/', [
-            'query' => $queryString,
-            'resolveReferences' => 1,
-        ])->getCollection() : new ProcessList();
-
+        if ($perPage > 1000) {
+            $perPage = 1000;
+        }
+        $processSearchTotal = 0;
         $scopeIds = $workstation->getUseraccount()->getDepartmentList()->getUniqueScopeList()->getIds();
+        if (!empty($queryString)) {
+            $searchParameters = [
+                'query' => $queryString,
+                'resolveReferences' => 1,
+                'page' => $page,
+                'limit' => $perPage,
+            ];
+            if (!$workstation->hasSuperUseraccount() && !empty($scopeIds)) {
+                $searchParameters['scopeIds'] = implode(',', $scopeIds);
+            }
+            $searchResult = \App::$http->readGetResult('/process/search/', $searchParameters);
+            $processList = $searchResult->getCollection();
+            $searchMeta = $searchResult->getMeta();
+            $processSearchTotal = isset($searchMeta->totalCount) ? (int) $searchMeta->totalCount : $processList->count();
+        } else {
+            $processList = new ProcessList();
+        }
+
         if (!empty($processList) && !$workstation->hasSuperUseraccount()) {
             $processList = $this->filterProcessListForUserRights($processList, $scopeIds);
         }
@@ -105,6 +122,7 @@ class ProcessSearch extends BaseController
                 'processListOther' => $processListOther,
                 'logList' => $logList ?? [],
                 'searchProcessQuery' => urldecode($queryString),
+                'processSearchTotal' => $processSearchTotal,
                 'menuActive' => 'search'
             )
         );
