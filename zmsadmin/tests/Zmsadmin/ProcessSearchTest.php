@@ -44,7 +44,8 @@ class ProcessSearchTest extends Base
                         'service' => null,
                         'provider' => null,
                         'userAction' => 0,
-                        'date' => null
+                        'date' => null,
+                        'scopeIds' => '380,1,141,140,142',
                     ],
                     'response' => $this->readFixture("GET_loglist.json")
                 ]
@@ -87,7 +88,8 @@ class ProcessSearchTest extends Base
                         'service' => null,
                         'provider' => null,
                         'userAction' => 0,
-                        'date' => null
+                        'date' => null,
+                        'scopeIds' => '380,1,141,140,142',
                     ],
                     'response' => $this->readFixture("GET_loglist.json")
                 ]
@@ -134,7 +136,8 @@ class ProcessSearchTest extends Base
                         'service' => null,
                         'provider' => null,
                         'userAction' => 0,
-                        'date' => null
+                        'date' => null,
+                        'scopeIds' => '380,1,141,140,142',
                     ],
                     'response' => $this->readFixture("GET_loglist.json")
                 ]
@@ -178,7 +181,8 @@ class ProcessSearchTest extends Base
                         'service' => null,
                         'provider' => null,
                         'userAction' => 0,
-                        'date' => null
+                        'date' => null,
+                        'scopeIds' => '380,1,141',
                     ],
                     'response' => $this->readFixture("GET_loglist.json")
                 ],
@@ -255,7 +259,8 @@ class ProcessSearchTest extends Base
                         'service' => null,
                         'provider' => null,
                         'userAction' => 0,
-                        'date' => null
+                        'date' => null,
+                        'scopeIds' => '380,1,141',
                     ],
                     'response' => $this->readFixture("GET_loglist.json")
                 ],

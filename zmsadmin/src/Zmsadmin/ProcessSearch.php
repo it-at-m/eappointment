@@ -130,16 +130,21 @@ class ProcessSearch extends BaseController
             return null;
         }
 
+        $logParameters = [
+            'searchQuery' => urlencode((string) $parameters['queryString']),
+            'page' => $parameters['page'],
+            'perPage' => $parameters['perPage'],
+            'service' => $parameters['service'],
+            'provider' => $parameters['provider'],
+            'userAction' => $parameters['userAction'],
+            'date' => $parameters['date'],
+        ];
+        if (!$workstation->hasSuperUseraccount()) {
+            $logParameters['scopeIds'] = implode(',', $scopeIds);
+        }
+
         $logList = \App::$http
-            ->readGetResult("/log/process/", [
-                'searchQuery' => urlencode((string) $parameters['queryString']),
-                'page' => $parameters['page'],
-                'perPage' => $parameters['perPage'],
-                'service' => $parameters['service'],
-                'provider' => $parameters['provider'],
-                'userAction' => $parameters['userAction'],
-                'date' => $parameters['date'],
-            ])
+            ->readGetResult("/log/process/", $logParameters)
             ->getCollection();
 
         return $this->filterLogListForUserRights(

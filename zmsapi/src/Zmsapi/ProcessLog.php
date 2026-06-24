@@ -32,8 +32,14 @@ class ProcessLog extends BaseController
         $userAction = Validator::param('userAction')->isNumber()->setDefault(0)->getValue();
         $page = Validator::param('page')->isNumber()->setDefault(1)->getValue();
         $perPage = Validator::param('perPage')->isNumber()->setDefault(100)->getValue();
+        $scopeIds = Validator::param('scopeIds')->isString()->setDefault(null)->getValue();
         if ($perPage > 1000) {
             $perPage = 1000;
+        }
+
+        $resolvedScopeIds = null;
+        if ($scopeIds !== null && $scopeIds !== '') {
+            $resolvedScopeIds = array_values(array_filter(array_map('intval', explode(',', $scopeIds))));
         }
 
         $logList = (new Query())->readByProcessData(
@@ -43,7 +49,8 @@ class ProcessLog extends BaseController
             $date ? new DateTime($date) : null,
             $userAction,
             $page,
-            $perPage
+            $perPage,
+            $resolvedScopeIds
         );
 
         $message = Response\Message::create($request);

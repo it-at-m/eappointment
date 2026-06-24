@@ -110,4 +110,59 @@ class LogTest extends Base
         }
         $this->assertTrue($found);
     }
+
+    public function testShortNameSearchUsesWordBoundary()
+    {
+        $referenceIdDecoyA = 987656;
+        $referenceIdMatch = 987657;
+        Query::writeLogEntry(
+            'TEST mueller decoy',
+            $referenceIdDecoyA,
+            Query::PROCESS,
+            141,
+            'testadmin',
+            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => 'Mueller'], JSON_UNESCAPED_UNICODE),
+            ['action' => 'edited', 'client_name' => 'Mueller']
+        );
+        Query::writeLogEntry(
+            'TEST prefix match',
+            $referenceIdMatch,
+            Query::PROCESS,
+            172,
+            'testadmin',
+            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => 'Max Mustermann'], JSON_UNESCAPED_UNICODE),
+            ['action' => 'edited', 'client_name' => 'Max Mustermann']
+        );
+
+        $query = new Query();
+        $results = $query->getBySearchParams([], 'Muster', 0, null, 10, 0, [172]);
+        $references = [];
+        foreach ($results as $entry) {
+            $references[] = (int) $entry['reference'];
+        }
+
+        $this->assertContains($referenceIdMatch, $references);
+        $this->assertNotContains($referenceIdDecoyA, $references);
+    }
+
+    public function testQuotedNameSearch()
+    {
+        $referenceId = 987658;
+        Query::writeLogEntry(
+            'TEST quoted prefix search',
+            $referenceId,
+            Query::PROCESS,
+            172,
+            'testadmin',
+            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => 'Max Mustermann'], JSON_UNESCAPED_UNICODE),
+            ['action' => 'edited', 'client_name' => 'Max Mustermann']
+        );
+
+        $query = new Query();
+        foreach (['"Muster"', '"Max Mustermann"'] as $searchQuery) {
+            $results = $query->getBySearchParams([], $searchQuery, 0, null, 10, 0, [172]);
+            $references = array_map(static fn ($entry) => (int) $entry['reference'], iterator_to_array($results));
+            $this->assertContains($referenceId, $references, 'Failed for query: ' . $searchQuery);
+        }
+    }
 }
