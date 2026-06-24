@@ -340,8 +340,9 @@ class Log extends Base
         int $offset,
         ?array $scopeIds = null
     ) {
-        $params = [];
+        $params = ['logType' => self::PROCESS];
         $conditions = array_merge(
+            ['type = :logType'],
             $this->buildFieldValueConditions($fieldValues, $params),
             $this->buildGeneralSearchConditionList($generalSearch, $params),
             $this->buildScopeIdConditions($scopeIds, $params),

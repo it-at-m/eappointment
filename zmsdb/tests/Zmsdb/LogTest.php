@@ -53,6 +53,18 @@ class LogTest extends Base
         $this->assertArrayNotHasKey('slot_count', $parsed);
     }
 
+    public function testEmptySearchOnlyReturnsProcessLogs()
+    {
+        Query::writeLogEntry('TEST buerger log', 987670, Query::PROCESS);
+        $query = new Query();
+        $results = $query->getBySearchParams([], null, 0, null, 10, 0);
+
+        $this->assertGreaterThanOrEqual(1, $results->count());
+        foreach ($results as $entry) {
+            $this->assertSame(Query::PROCESS, $entry['type']);
+        }
+    }
+
     public function testSearchByIndexedClientName()
     {
         $referenceId = 987654;
