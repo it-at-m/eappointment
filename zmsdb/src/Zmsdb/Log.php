@@ -486,8 +486,7 @@ class Log extends Base
             $term = $termInfo['value'];
             $prefix = 'generalSearch' . $index;
             $escaped = $this->escapeLikeValue($term);
-            $useWordBoundary = $termInfo['quoted']
-                || (!$this->isNumericSearchQuery($term) && mb_strlen($term) <= 3);
+            $useWordBoundary = $termInfo['quoted'];
 
             if ($useWordBoundary) {
                 $parts = $this->buildClientNameWordBoundaryParts($escaped, $params, $prefix . 'Name');

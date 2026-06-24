@@ -111,15 +111,25 @@ class LogTest extends Base
         $this->assertTrue($found);
     }
 
-    public function testShortNameSearchUsesWordBoundary()
+    public function testUnquotedNameSearchUsesSubstring()
     {
         $referenceIdDecoyA = 987656;
+        $referenceIdDecoyB = 987659;
         $referenceIdMatch = 987657;
         Query::writeLogEntry(
             'TEST mueller decoy',
             $referenceIdDecoyA,
             Query::PROCESS,
-            141,
+            172,
+            'testadmin',
+            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => 'Mueller'], JSON_UNESCAPED_UNICODE),
+            ['action' => 'edited', 'client_name' => 'Mueller']
+        );
+        Query::writeLogEntry(
+            'TEST mueller decoy',
+            $referenceIdDecoyB,
+            Query::PROCESS,
+            172,
             'testadmin',
             json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => 'Mueller'], JSON_UNESCAPED_UNICODE),
             ['action' => 'edited', 'client_name' => 'Mueller']
@@ -142,12 +152,15 @@ class LogTest extends Base
         }
 
         $this->assertContains($referenceIdMatch, $references);
-        $this->assertNotContains($referenceIdDecoyA, $references);
+        $this->assertContains($referenceIdDecoyA, $references);
+        $this->assertContains($referenceIdDecoyB, $references);
     }
 
     public function testQuotedNameSearch()
     {
         $referenceId = 987658;
+        $referenceIdDecoyA = 987660;
+        $referenceIdDecoyB = 987661;
         Query::writeLogEntry(
             'TEST quoted prefix search',
             $referenceId,
@@ -157,6 +170,24 @@ class LogTest extends Base
             json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => 'Max Mustermann'], JSON_UNESCAPED_UNICODE),
             ['action' => 'edited', 'client_name' => 'Max Mustermann']
         );
+        Query::writeLogEntry(
+            'TEST quoted decoy search',
+            $referenceIdDecoyA,
+            Query::PROCESS,
+            172,
+            'testadmin',
+            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => 'Mueller'], JSON_UNESCAPED_UNICODE),
+            ['action' => 'edited', 'client_name' => 'Mueller']
+        );
+        Query::writeLogEntry(
+            'TEST quoted decoy b search',
+            $referenceIdDecoyB,
+            Query::PROCESS,
+            172,
+            'testadmin',
+            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => 'Mueller'], JSON_UNESCAPED_UNICODE),
+            ['action' => 'edited', 'client_name' => 'Mueller']
+        );
 
         $query = new Query();
         foreach (['"Muster"', '"Max Mustermann"'] as $searchQuery) {
@@ -164,5 +195,13 @@ class LogTest extends Base
             $references = array_map(static fn ($entry) => (int) $entry['reference'], iterator_to_array($results));
             $this->assertContains($referenceId, $references, 'Failed for query: ' . $searchQuery);
         }
+
+        $quotedMatchResults = $query->getBySearchParams([], '"Muster"', 0, null, 10, 0, [172]);
+        $quotedMatchReferences = array_map(
+            static fn ($entry) => (int) $entry['reference'],
+            iterator_to_array($quotedMatchResults)
+        );
+        $this->assertNotContains($referenceIdDecoyA, $quotedMatchReferences);
+        $this->assertNotContains($referenceIdDecoyB, $quotedMatchReferences);
     }
 }
