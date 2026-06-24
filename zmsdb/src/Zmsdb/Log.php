@@ -336,10 +336,33 @@ class Log extends Base
         int $offset,
         ?array $scopeIds = null
     ) {
-        $sql = 'SELECT * FROM log';
-        $conditions = [];
         $params = [];
+        $conditions = array_merge(
+            $this->buildFieldValueConditions($fieldValues, $params),
+            $this->buildGeneralSearchConditionList($generalSearch, $params),
+            $this->buildScopeIdConditions($scopeIds, $params),
+            $this->buildDateConditions($date, $params),
+            $this->buildUserActionConditions($userAction, $params)
+        );
 
+        $sql = 'SELECT * FROM log';
+        if (!empty($conditions)) {
+            $sql .= ' WHERE ' . implode(' AND ', $conditions);
+        }
+
+        $sql .= ' ORDER BY ts DESC LIMIT ' . (int) $perPage . ' OFFSET ' . (int) $offset;
+
+        $logs = new LogList();
+        foreach ($this->fetchAll($sql, $params) as $row) {
+            $logs->addEntity(new Entity($this->normalizeLogRow($row)));
+        }
+
+        return $logs;
+    }
+
+    private function buildFieldValueConditions(array $fieldValues, array &$params): array
+    {
+        $conditions = [];
         foreach ($fieldValues as $field => $value) {
             if ($value === null || $value === '') {
                 continue;
@@ -362,33 +385,55 @@ class Log extends Base
             }
         }
 
-        if (!empty($generalSearch)) {
-            $generalSearch = trim((string) $generalSearch);
-            foreach ($this->buildGeneralSearchConditions($generalSearch, $params) as $searchCondition) {
-                $conditions[] = $searchCondition;
-            }
+        return $conditions;
+    }
+
+    private function buildGeneralSearchConditionList(?string $generalSearch, array &$params): array
+    {
+        if ($generalSearch === null || trim($generalSearch) === '') {
+            return [];
         }
 
-        if (!empty($scopeIds)) {
-            $scopePlaceholders = [];
-            foreach (array_values($scopeIds) as $index => $scopeId) {
-                $parameterKey = 'scopeId' . $index;
-                $scopePlaceholders[] = ':' . $parameterKey;
-                $params[$parameterKey] = (int) $scopeId;
-            }
-            $conditions[] = 'scope_id IN (' . implode(', ', $scopePlaceholders) . ')';
+        return $this->buildGeneralSearchConditions(trim($generalSearch), $params);
+    }
+
+    private function buildScopeIdConditions(?array $scopeIds, array &$params): array
+    {
+        if (empty($scopeIds)) {
+            return [];
         }
 
-        if (!empty($date)) {
-            $start = (clone $date)->setTime(0, 0, 0);
-            $end = (clone $date)->setTime(0, 0, 0)->add(new \DateInterval('P1D'));
-            $conditions[] = '(ts >= :start AND ts < :end)';
-            $params['start'] = $start->format('Y-m-d H:i:s');
-            $params['end'] = $end->format('Y-m-d H:i:s');
+        $scopePlaceholders = [];
+        foreach (array_values($scopeIds) as $index => $scopeId) {
+            $parameterKey = 'scopeId' . $index;
+            $scopePlaceholders[] = ':' . $parameterKey;
+            $params[$parameterKey] = (int) $scopeId;
         }
 
+        return ['scope_id IN (' . implode(', ', $scopePlaceholders) . ')'];
+    }
+
+    private function buildDateConditions(?DateTime $date, array &$params): array
+    {
+        if (empty($date)) {
+            return [];
+        }
+
+        $start = (clone $date)->setTime(0, 0, 0);
+        $end = (clone $date)->setTime(0, 0, 0)->add(new \DateInterval('P1D'));
+        $params['start'] = $start->format('Y-m-d H:i:s');
+        $params['end'] = $end->format('Y-m-d H:i:s');
+
+        return ['(ts >= :start AND ts < :end)'];
+    }
+
+    private function buildUserActionConditions(int $userAction, array &$params): array
+    {
         if ($userAction === 1) {
-            $conditions[] = '(
+            $params['ua_yes'] = '%Sachbearbeiter*in%';
+            $params['ua_system'] = '%Sachbearbeiter*in\":\"_system_%';
+
+            return ['(
                 (user_id IS NOT NULL AND user_id != \'\' AND user_id NOT LIKE \'_system_%\')
                 OR (
                     user_id IS NULL
@@ -396,13 +441,14 @@ class Log extends Base
                     AND data LIKE :ua_yes
                     AND data NOT LIKE :ua_system
                 )
-            )';
-            $params['ua_yes'] = '%Sachbearbeiter*in%';
-            $params['ua_system'] = '%Sachbearbeiter*in\":\"_system_%';
+            )'];
         }
 
         if ($userAction === 2) {
-            $conditions[] = '(
+            $params['ua_yes'] = '%Sachbearbeiter*in%';
+            $params['ua_system'] = '%Sachbearbeiter*in\":\"_system_%';
+
+            return ['(
                 user_id LIKE \'_system_%\'
                 OR user_id IS NULL
                 OR user_id = \'\'
@@ -410,25 +456,10 @@ class Log extends Base
                     data IS NOT NULL
                     AND (data LIKE :ua_system OR data NOT LIKE :ua_yes)
                 )
-            )';
-            $params['ua_yes'] = '%Sachbearbeiter*in%';
-            $params['ua_system'] = '%Sachbearbeiter*in\":\"_system_%';
+            )'];
         }
 
-        if (!empty($conditions)) {
-            $sql .= ' WHERE ' . implode(' AND ', $conditions);
-        }
-
-        $sql .= ' ORDER BY ts DESC LIMIT ' . (int) $perPage . ' OFFSET ' . (int) $offset;
-
-        $rows = $this->fetchAll($sql, $params);
-
-        $logs = new LogList();
-        foreach ($rows as $row) {
-            $logs->addEntity(new Entity($this->normalizeLogRow($row)));
-        }
-
-        return $logs;
+        return [];
     }
 
     private function normalizeLogRow(array $row): array
