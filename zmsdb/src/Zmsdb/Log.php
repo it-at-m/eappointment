@@ -221,9 +221,13 @@ class Log extends Base
         return array_filter([
             'action' => is_string($actionLabel) ? self::actionCodeFromLabel($actionLabel) : null,
             'display_number' => $display['Terminnummer'] ?? null,
-            'queue_number' => isset($display['Wartenummer']) ? (int) $display['Wartenummer'] : null,
+            'queue_number' => isset($display['Wartenummer']) && $display['Wartenummer'] !== ''
+                ? (int) $display['Wartenummer']
+                : null,
             'appointment_at' => $appointmentAt,
-            'slot_count' => isset($display['Slots']) ? (int) $display['Slots'] : null,
+            'slot_count' => isset($display['Slots']) && $display['Slots'] !== ''
+                ? (int) $display['Slots']
+                : null,
             'client_name' => $display['Bürger*in'] ?? null,
             'services' => $display['Dienstleistungen'] ?? null,
             'scope_name' => $display['Standort'] ?? null,
@@ -450,11 +454,13 @@ class Log extends Base
 
             return ['(
                 user_id LIKE \'_system_%\'
-                OR user_id IS NULL
-                OR user_id = \'\'
                 OR (
-                    data IS NOT NULL
-                    AND (data LIKE :ua_system OR data NOT LIKE :ua_yes)
+                    (user_id IS NULL OR user_id = \'\')
+                    AND (
+                        data IS NULL
+                        OR data LIKE :ua_system
+                        OR data NOT LIKE :ua_yes
+                    )
                 )
             )'];
         }
