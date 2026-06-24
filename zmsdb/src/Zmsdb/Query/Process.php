@@ -617,10 +617,9 @@ class Process extends Base implements MappingInterface
 
             if ($useNameWordBoundary) {
                 $this->appendNamePartLikeGroup($query, $term, true);
-                return;
+            } else {
+                $query->orWith('process.Name', 'LIKE', $likeContains);
             }
-
-            $query->orWith('process.Name', 'LIKE', $likeContains);
             $query->orWith('process.EMail', 'LIKE', $likeContains);
             $query->orWith('process.Telefonnummer', 'LIKE', $likeContains);
             $query->orWith('process.telefonnummer_fuer_rueckfragen', 'LIKE', $likeContains);

@@ -152,8 +152,8 @@ class Log extends Base
         int $offset
     ) {
         $sql = "SELECT * FROM log";
-        $conditions = ['type = :logType'];
-        $params = ['logType' => self::PROCESS];
+        $conditions = [];
+        $params = [];
 
         foreach ($fieldValues as $field => $value) {
             if ($value === null || $value === '') {
