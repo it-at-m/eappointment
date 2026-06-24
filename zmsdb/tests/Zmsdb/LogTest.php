@@ -39,6 +39,20 @@ class LogTest extends Base
         $this->assertSame('Reisepass', $parsed['services']);
     }
 
+    public function testParseLegacyLogDataEmptyNumbersStayNull()
+    {
+        $json = json_encode([
+            'Aktion' => Query::ACTION_EDITED,
+            'Wartenummer' => '',
+            'Slots' => '',
+        ], JSON_UNESCAPED_UNICODE);
+
+        $parsed = Query::parseLegacyLogData($json);
+
+        $this->assertArrayNotHasKey('queue_number', $parsed);
+        $this->assertArrayNotHasKey('slot_count', $parsed);
+    }
+
     public function testSearchByIndexedClientName()
     {
         $referenceId = 987654;
@@ -203,5 +217,47 @@ class LogTest extends Base
         );
         $this->assertNotContains($referenceIdDecoyA, $quotedMatchReferences);
         $this->assertNotContains($referenceIdDecoyB, $quotedMatchReferences);
+    }
+
+    public function testUserActionFiltersAreMutuallyExclusiveForLegacyRows()
+    {
+        $humanReferenceId = 987662;
+        $systemReferenceId = 987663;
+        Query::writeLogEntry(
+            'TEST human legacy user action',
+            $humanReferenceId,
+            Query::PROCESS,
+            172,
+            null,
+            json_encode([
+                'Aktion' => Query::ACTION_EDITED,
+                'Sachbearbeiter*in' => 'testadmin',
+            ], JSON_UNESCAPED_UNICODE),
+            ['action' => 'edited', 'client_name' => 'Human Legacy']
+        );
+        Query::writeLogEntry(
+            'TEST system user action',
+            $systemReferenceId,
+            Query::PROCESS,
+            172,
+            '_system_citizenapi',
+            json_encode([
+                'Aktion' => Query::ACTION_EDITED,
+                'Sachbearbeiter*in' => '_system_citizenapi',
+            ], JSON_UNESCAPED_UNICODE),
+            ['action' => 'edited', 'client_name' => 'System User']
+        );
+
+        $query = new Query();
+        $humanResults = $query->getBySearchParams([], null, 1, null, 10, 0, [172]);
+        $systemResults = $query->getBySearchParams([], null, 2, null, 10, 0, [172]);
+
+        $humanReferences = array_map(static fn ($entry) => (int) $entry['reference'], iterator_to_array($humanResults));
+        $systemReferences = array_map(static fn ($entry) => (int) $entry['reference'], iterator_to_array($systemResults));
+
+        $this->assertContains($humanReferenceId, $humanReferences);
+        $this->assertNotContains($humanReferenceId, $systemReferences);
+        $this->assertContains($systemReferenceId, $systemReferences);
+        $this->assertNotContains($systemReferenceId, $humanReferences);
     }
 }
