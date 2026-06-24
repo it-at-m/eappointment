@@ -30,7 +30,19 @@ class Log extends Base
             'user_id' => 'log.user_id',
             'data' => 'log.data',
             'message' => 'log.message',
-            'ts' => 'log.ts'
+            'ts' => 'log.ts',
+            'action' => 'log.action',
+            'display_number' => 'log.display_number',
+            'queue_number' => 'log.queue_number',
+            'appointment_at' => 'log.appointment_at',
+            'slot_count' => 'log.slot_count',
+            'client_name' => 'log.client_name',
+            'services' => 'log.services',
+            'scope_name' => 'log.scope_name',
+            'client_email' => 'log.client_email',
+            'client_phone' => 'log.client_phone',
+            'process_status' => 'log.process_status',
+            'db_status' => 'log.db_status',
         ];
     }
 
