@@ -304,7 +304,8 @@ class Log extends Base
         $date,
         $userAction,
         $page = 1,
-        $perPage = 100
+        $perPage = 100,
+        ?array $scopeIds = null
     ) {
         $fieldValues = [];
         if ($provider) {
@@ -321,7 +322,8 @@ class Log extends Base
             $userAction,
             $date,
             $perPage,
-            ($page - 1) * $perPage
+            ($page - 1) * $perPage,
+            $scopeIds
         );
     }
 
@@ -331,7 +333,8 @@ class Log extends Base
         int $userAction,
         ?DateTime $date,
         int $perPage,
-        int $offset
+        int $offset,
+        ?array $scopeIds = null
     ) {
         $sql = 'SELECT * FROM log';
         $conditions = [];
@@ -360,24 +363,20 @@ class Log extends Base
         }
 
         if (!empty($generalSearch)) {
-            $generalSearch = (string) $generalSearch;
-            $searchParts = [
-                'client_name LIKE :generalSearch',
-                'services LIKE :generalSearch',
-                'scope_name LIKE :generalSearch',
-                'client_email LIKE :generalSearch',
-                'display_number = :generalSearchExact',
-                '(client_name IS NULL AND data IS NOT NULL AND data LIKE :generalSearch)',
-            ];
-            $params['generalSearch'] = '%' . $this->escapeLikeValue($generalSearch) . '%';
-            $params['generalSearchExact'] = $generalSearch;
-
-            if (preg_match('#^\d+$#', $generalSearch)) {
-                $searchParts[] = 'reference_id = :generalSearchId';
-                $params['generalSearchId'] = (int) $generalSearch;
+            $generalSearch = trim((string) $generalSearch);
+            foreach ($this->buildGeneralSearchConditions($generalSearch, $params) as $searchCondition) {
+                $conditions[] = $searchCondition;
             }
+        }
 
-            $conditions[] = '(' . implode(' OR ', $searchParts) . ')';
+        if (!empty($scopeIds)) {
+            $scopePlaceholders = [];
+            foreach (array_values($scopeIds) as $index => $scopeId) {
+                $parameterKey = 'scopeId' . $index;
+                $scopePlaceholders[] = ':' . $parameterKey;
+                $params[$parameterKey] = (int) $scopeId;
+            }
+            $conditions[] = 'scope_id IN (' . implode(', ', $scopePlaceholders) . ')';
         }
 
         if (!empty($date)) {
@@ -432,10 +431,6 @@ class Log extends Base
         return $logs;
     }
 
-    /**
-     * @param array<string, mixed> $row
-     * @return array<string, mixed>
-     */
     private function normalizeLogRow(array $row): array
     {
         if (isset($row['reference_id']) && !isset($row['reference'])) {
@@ -477,6 +472,111 @@ class Log extends Base
     private function escapeLikeValue(string $value): string
     {
         return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $value);
+    }
+
+    private function buildGeneralSearchConditions(string $generalSearch, array &$params): array
+    {
+        $terms = $this->parseSearchTerms($generalSearch);
+        if ($terms === []) {
+            return [];
+        }
+
+        $conditions = [];
+        foreach ($terms as $index => $termInfo) {
+            $term = $termInfo['value'];
+            $prefix = 'generalSearch' . $index;
+            $escaped = $this->escapeLikeValue($term);
+            $useWordBoundary = $termInfo['quoted']
+                || (!$this->isNumericSearchQuery($term) && mb_strlen($term) <= 3);
+
+            if ($useWordBoundary) {
+                $parts = $this->buildClientNameWordBoundaryParts($escaped, $params, $prefix . 'Name');
+                $parts[] = '(client_name IS NULL AND data IS NOT NULL AND ('
+                    . implode(' OR ', $this->buildLegacyClientNameWordBoundaryParts($escaped, $params, $prefix . 'Legacy'))
+                    . '))';
+            } else {
+                $params[$prefix . 'Contains'] = '%' . $escaped . '%';
+                $params[$prefix . 'Exact'] = $term;
+                $parts = [
+                    'client_name LIKE :' . $prefix . 'Contains',
+                    'services LIKE :' . $prefix . 'Contains',
+                    'scope_name LIKE :' . $prefix . 'Contains',
+                    'client_email LIKE :' . $prefix . 'Contains',
+                    'display_number = :' . $prefix . 'Exact',
+                    '(client_name IS NULL AND data IS NOT NULL AND data LIKE :' . $prefix . 'Contains)',
+                ];
+            }
+
+            if (count($terms) === 1 && $this->isNumericSearchQuery($term)) {
+                $params[$prefix . 'Id'] = (int) $term;
+                $parts[] = 'reference_id = :' . $prefix . 'Id';
+            }
+
+            $conditions[] = '(' . implode(' OR ', $parts) . ')';
+        }
+
+        return $conditions;
+    }
+
+    private function buildClientNameWordBoundaryParts(string $escapedTerm, array &$params, string $prefix): array
+    {
+        $params[$prefix . 'Start'] = $escapedTerm . ' %';
+        $params[$prefix . 'End'] = '% ' . $escapedTerm;
+        $params[$prefix . 'Middle'] = '% ' . $escapedTerm . ' %';
+        $params[$prefix . 'Exact'] = $escapedTerm;
+
+        return [
+            'client_name LIKE :' . $prefix . 'Start',
+            'client_name LIKE :' . $prefix . 'End',
+            'client_name LIKE :' . $prefix . 'Middle',
+            'client_name = :' . $prefix . 'Exact',
+        ];
+    }
+
+    private function buildLegacyClientNameWordBoundaryParts(string $escapedTerm, array &$params, string $prefix): array
+    {
+        $legacyKey = $this->escapeLikeValue('Bürger*in');
+        $params[$prefix . 'Start'] = '%' . $legacyKey . '":"' . $escapedTerm . ' %';
+        $params[$prefix . 'End'] = '%' . $legacyKey . '":"% ' . $escapedTerm . '"%';
+        $params[$prefix . 'Middle'] = '%' . $legacyKey . '":"% ' . $escapedTerm . ' %';
+        $params[$prefix . 'Exact'] = '%' . $legacyKey . '":"' . $escapedTerm . '"%';
+
+        return [
+            'data LIKE :' . $prefix . 'Start',
+            'data LIKE :' . $prefix . 'End',
+            'data LIKE :' . $prefix . 'Middle',
+            'data LIKE :' . $prefix . 'Exact',
+        ];
+    }
+
+    private function parseSearchTerms(string $queryString): array
+    {
+        if ($queryString === '') {
+            return [];
+        }
+
+        if (!preg_match_all('/"([^"]+)"|(\S+)/u', $queryString, $matches, PREG_SET_ORDER)) {
+            return [['value' => $queryString, 'quoted' => false]];
+        }
+
+        $terms = [];
+        foreach ($matches as $match) {
+            $value = trim($match[1] !== '' ? $match[1] : $match[2]);
+            if ($value === '') {
+                continue;
+            }
+            $terms[] = [
+                'value' => $value,
+                'quoted' => $match[1] !== '',
+            ];
+        }
+
+        return $terms;
+    }
+
+    private function isNumericSearchQuery(string $queryString): bool
+    {
+        return (bool) preg_match('#^\d+$#', $queryString);
     }
 
     public function clearLogsOlderThan(int $olderThan): bool
