@@ -190,6 +190,39 @@ class ProcessSearchTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testEmptyQueryShowsLatestLogsForSuperuser()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture('GET_Workstation_Resolved2.json'),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/log/process/',
+                    'parameters' => [
+                        'searchQuery' => '',
+                        'page' => 1,
+                        'perPage' => 100,
+                        'service' => null,
+                        'provider' => null,
+                        'userAction' => 0,
+                        'date' => null,
+                    ],
+                    'response' => $this->readFixture('GET_loglist_out_of_scope.json'),
+                ],
+            ]
+        );
+        $response = $this->render($this->arguments, ['query' => ''], []);
+        $body = (string) $response->getBody();
+        $this->assertStringContainsString('Log-Ergebnisse', $body);
+        $this->assertStringContainsString('OutOfScope Log Entry', $body);
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testZeroQueryTriggersProcessSearch()
     {
         $this->setApiCalls(
