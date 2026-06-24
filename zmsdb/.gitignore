@@ -8,5 +8,3 @@ testdataset.sql.gz
 .phpunit.result.cache
 coverage
 .phpunit.cache
-bin/seedSearchTestData
-bin/seedLogSearchTestData

@@ -34,6 +34,20 @@ class ProcessSearchTest extends Base
                     ],
                     'response' => $this->readFixture("GET_searchresult.json")
                 ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/log/process/',
+                    'parameters' => [
+                        'searchQuery' => 'Test%2520BO',
+                        'page' => 1,
+                        'perPage' => 100,
+                        'service' => null,
+                        'provider' => null,
+                        'userAction' => 0,
+                        'date' => null
+                    ],
+                    'response' => $this->readFixture("GET_loglist.json")
+                ]
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
@@ -70,7 +84,7 @@ class ProcessSearchTest extends Base
                         'searchQuery' => '100005',
                         'page' => 2,
                         'perPage' => 20,
-                        'service' => 'Pass',
+                        'service' => null,
                         'provider' => null,
                         'userAction' => 0,
                         'date' => null
@@ -82,8 +96,7 @@ class ProcessSearchTest extends Base
         $response = $this->render($this->arguments, [
             'query' => '100005',
             'page' => 2,
-            'perPage' => 20,
-            'service' => 'Pass',
+            'perPage' => 20
         ], []);
         $this->assertStringContainsString('Log-Ergebnisse', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
@@ -111,6 +124,20 @@ class ProcessSearchTest extends Base
                     ],
                     'response' => $this->readFixture("GET_searchresult_others.json")
                 ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/log/process/',
+                    'parameters' => [
+                        'searchQuery' => 'Test%2520BO',
+                        'page' => 1,
+                        'perPage' => 100,
+                        'service' => null,
+                        'provider' => null,
+                        'userAction' => 0,
+                        'date' => null
+                    ],
+                    'response' => $this->readFixture("GET_loglist.json")
+                ]
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
@@ -141,6 +168,20 @@ class ProcessSearchTest extends Base
                     ],
                     'response' => $this->readFixture("GET_searchresult_others.json")
                 ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/log/process/',
+                    'parameters' => [
+                        'searchQuery' => '%22Muster%22',
+                        'page' => 1,
+                        'perPage' => 100,
+                        'service' => null,
+                        'provider' => null,
+                        'userAction' => 0,
+                        'date' => null
+                    ],
+                    'response' => $this->readFixture("GET_loglist.json")
+                ],
             ]
         );
         $response = $this->render($this->arguments, ['query' => '"Muster"'], []);
@@ -170,6 +211,20 @@ class ProcessSearchTest extends Base
                         'scopeIds' => '380,1,141',
                     ],
                     'response' => $this->readFixture("GET_searchresult_others.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/log/process/',
+                    'parameters' => [
+                        'searchQuery' => '0',
+                        'page' => 1,
+                        'perPage' => 100,
+                        'service' => null,
+                        'provider' => null,
+                        'userAction' => 0,
+                        'date' => null
+                    ],
+                    'response' => $this->readFixture("GET_loglist.json")
                 ],
             ]
         );
