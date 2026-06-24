@@ -142,7 +142,11 @@ class ProcessSearch extends BaseController
             ])
             ->getCollection();
 
-        return $this->filterLogListForUserRights($logList, $scopeIds);
+        return $this->filterLogListForUserRights(
+            $logList,
+            $scopeIds,
+            $workstation->hasSuperUseraccount()
+        );
     }
 
     private function splitProcessListsByScope($workstation, ?ProcessList $processList): array
@@ -174,8 +178,11 @@ class ProcessSearch extends BaseController
         return $list;
     }
 
-    private function filterLogListForUserRights(?LogList $logList, array $scopeIds)
-    {
+    private function filterLogListForUserRights(
+        ?LogList $logList,
+        array $scopeIds,
+        bool $bypassScopeFilter = false
+    ) {
         if (!isset($logList) || !$logList) {
             $logList = new LogList();
         }
@@ -186,7 +193,10 @@ class ProcessSearch extends BaseController
             $data = isset($log->data) ? json_decode($log->data, true) : null;
             $log->data = $data;
 
-            if (isset($log->scope_id) && in_array($log->scope_id, $scopeIds)) {
+            if (
+                $bypassScopeFilter
+                || (isset($log->scope_id) && in_array($log->scope_id, $scopeIds))
+            ) {
                 $list->addEntity(clone $log);
             }
         }
