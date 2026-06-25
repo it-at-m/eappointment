@@ -1097,8 +1097,7 @@ const clearBookingError = (): void => {
 
 const clearAllErrors = (): void => {
   clearContextErrors(errorStateMap.value);
-  captchaError.value = false;
-  errorStates.currentErrorData.value = null;
+  clearBookingError();
 };
 
 const handleCaptchaTokenChanged = (token?: string | null): void => {
