@@ -31,7 +31,7 @@
             >
               {{ selectedService.count }}x
               <a
-                :href="getServiceBaseURL() + +(serviceLinkId || '')"
+                :href="getServiceBaseURL() + resolvedServiceLinkId"
                 target="_blank"
                 class="m-link"
                 tabindex="0"
@@ -333,6 +333,7 @@ import {
   SelectedAppointmentProvider,
   SelectedServiceProvider,
   SelectedTimeslotProvider,
+  ServiceLinkProvider,
 } from "@/types/ProvideInjectTypes";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
@@ -443,6 +444,13 @@ const estimatedDuration = () => {
 const variantId = computed<number | null>(() => {
   const id = (selectedService.value as any)?.variantId;
   return typeof id === "number" && Number.isFinite(id) ? id : null;
+});
+
+const resolvedServiceLinkId = computed(() => {
+  if (serviceLinkId.value) return serviceLinkId.value;
+  const service = selectedService.value;
+  if (!service) return "";
+  return String(service.parentId ?? service.id);
 });
 
 const sanitizedInfoForAppointment = computed(() =>
