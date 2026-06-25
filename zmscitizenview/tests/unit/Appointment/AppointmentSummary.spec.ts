@@ -76,7 +76,7 @@ describe("AppointmentSummary", () => {
           },
           serviceLinkProvider: {
             serviceLinkId: ref<string | null>(null),
-            updateServiceLinkId: () => {},
+            updateServiceLinkId: () => { },
           },
         },
         stubs: {
@@ -105,6 +105,21 @@ describe("AppointmentSummary", () => {
       expect(wrapper.text()).toContain("2x");
       expect(wrapper.text()).toContain("Sub Service 1");
       expect(wrapper.text()).toContain("1x");
+    });
+
+    it("uses parent service id for service link when serviceLinkId is unset", () => {
+      mockSelectedService.value = {
+        id: "999",
+        parentId: "1063423",
+        name: "Gewerbe-Anmeldung Video",
+        count: 1,
+        variantId: 2,
+        subServices: [],
+      };
+      const wrapper = createWrapper();
+      const link = wrapper.find("a.m-link");
+      expect(link.attributes("href")).toContain("1063423");
+      expect(link.attributes("href")).not.toContain("/0");
     });
 
     it("renders provider information correctly", () => {
