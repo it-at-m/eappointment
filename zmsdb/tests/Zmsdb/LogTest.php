@@ -93,7 +93,7 @@ class LogTest extends Base
         );
 
         $query = new Query();
-        $results = $query->getBySearchParams([], 'LogSearch UniqueName', 0, null, 10, 0);
+        $results = $query->getBySearchParams([], 'Lo', 0, null, 10, 0);
         $this->assertGreaterThanOrEqual(1, $results->count());
 
         $found = false;
@@ -137,11 +137,12 @@ class LogTest extends Base
         $this->assertTrue($found);
     }
 
-    public function testUnquotedNameSearchUsesSubstring()
+    public function testUnquotedNameSearchUsesWordPrefix()
     {
         $referenceIdDecoyA = 987656;
         $referenceIdDecoyB = 987659;
         $referenceIdMatch = 987657;
+        $searchToken = 'WordPrefixTest';
         Query::writeLogEntry(
             'TEST mueller decoy',
             $referenceIdDecoyA,
@@ -166,69 +167,99 @@ class LogTest extends Base
             Query::PROCESS,
             172,
             'testadmin',
-            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => 'Max Mustermann'], JSON_UNESCAPED_UNICODE),
-            ['action' => 'edited', 'client_name' => 'Max Mustermann']
+            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => $searchToken . ' Max Mustermann'], JSON_UNESCAPED_UNICODE),
+            ['action' => 'edited', 'client_name' => $searchToken . ' Max Mustermann']
         );
 
+        \BO\Zmsdb\Connection\Select::setTransaction(true);
+        \BO\Zmsdb\Connection\Select::writeCommit();
+        \BO\Zmsdb\Connection\Select::setTransaction(false);
+
         $query = new Query();
-        $results = $query->getBySearchParams([], 'Muster', 0, null, 10, 0, [172]);
+        $query->getWriter();
+        $results = $query->getBySearchParams([], $searchToken, 0, null, 100, 0, [172]);
         $references = [];
         foreach ($results as $entry) {
             $references[] = (int) $entry['reference'];
         }
 
         $this->assertContains($referenceIdMatch, $references);
-        $this->assertContains($referenceIdDecoyA, $references);
-        $this->assertContains($referenceIdDecoyB, $references);
+        $this->assertNotContains($referenceIdDecoyA, $references);
+        $this->assertNotContains($referenceIdDecoyB, $references);
+
+        $query->perform(
+            'DELETE FROM log WHERE reference_id IN (:decoyA, :decoyB, :match)',
+            [
+                'decoyA' => $referenceIdDecoyA,
+                'decoyB' => $referenceIdDecoyB,
+                'match' => $referenceIdMatch,
+            ]
+        );
     }
 
     public function testQuotedNameSearch()
     {
         $referenceId = 987658;
-        $referenceIdDecoyA = 987660;
-        $referenceIdDecoyB = 987661;
+        $doetownReferenceId = 987660;
+        $shadoweReferenceId = 987661;
+        $searchToken = 'QuotedSearchTest987658';
+        $scopeId = 999172;
         Query::writeLogEntry(
             'TEST quoted prefix search',
             $referenceId,
             Query::PROCESS,
-            172,
+            $scopeId,
             'testadmin',
-            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => 'Max Mustermann'], JSON_UNESCAPED_UNICODE),
-            ['action' => 'edited', 'client_name' => 'Max Mustermann']
+            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => $searchToken . ' Max Mustermann'], JSON_UNESCAPED_UNICODE),
+            ['action' => 'edited', 'client_name' => $searchToken . ' Max Mustermann']
         );
         Query::writeLogEntry(
             'TEST quoted decoy search',
-            $referenceIdDecoyA,
+            $doetownReferenceId,
             Query::PROCESS,
-            172,
+            $scopeId,
             'testadmin',
-            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => 'Mueller'], JSON_UNESCAPED_UNICODE),
-            ['action' => 'edited', 'client_name' => 'Mueller']
+            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => 'Neustadt'], JSON_UNESCAPED_UNICODE),
+            ['action' => 'edited', 'client_name' => 'Neustadt']
         );
         Query::writeLogEntry(
             'TEST quoted decoy b search',
-            $referenceIdDecoyB,
+            $shadoweReferenceId,
             Query::PROCESS,
-            172,
+            $scopeId,
             'testadmin',
-            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => 'Mueller'], JSON_UNESCAPED_UNICODE),
-            ['action' => 'edited', 'client_name' => 'Mueller']
+            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => 'Fernstadt'], JSON_UNESCAPED_UNICODE),
+            ['action' => 'edited', 'client_name' => 'Fernstadt']
         );
 
+        \BO\Zmsdb\Connection\Select::setTransaction(true);
+        \BO\Zmsdb\Connection\Select::writeCommit();
+        \BO\Zmsdb\Connection\Select::setTransaction(false);
+
         $query = new Query();
-        foreach (['"Muster"', '"Max Mustermann"'] as $searchQuery) {
-            $results = $query->getBySearchParams([], $searchQuery, 0, null, 10, 0, [172]);
+        $query->getWriter();
+        foreach (['"Doe"', '"' . $searchToken . ' Max Mustermann"'] as $searchQuery) {
+            $results = $query->getBySearchParams([], $searchQuery, 0, null, 100, 0, [$scopeId]);
             $references = array_map(static fn ($entry) => (int) $entry['reference'], iterator_to_array($results));
             $this->assertContains($referenceId, $references, 'Failed for query: ' . $searchQuery);
         }
 
-        $quotedMatchResults = $query->getBySearchParams([], '"Muster"', 0, null, 10, 0, [172]);
-        $quotedMatchReferences = array_map(
+        $quotedDoeResults = $query->getBySearchParams([], '"Doe"', 0, null, 100, 0, [$scopeId]);
+        $quotedDoeReferences = array_map(
             static fn ($entry) => (int) $entry['reference'],
-            iterator_to_array($quotedMatchResults)
+            iterator_to_array($quotedDoeResults)
         );
-        $this->assertNotContains($referenceIdDecoyA, $quotedMatchReferences);
-        $this->assertNotContains($referenceIdDecoyB, $quotedMatchReferences);
+        $this->assertNotContains($doetownReferenceId, $quotedDoeReferences);
+        $this->assertNotContains($shadoweReferenceId, $quotedDoeReferences);
+
+        $query->perform(
+            'DELETE FROM log WHERE reference_id IN (:match, :doetown, :shadowe)',
+            [
+                'match' => $referenceId,
+                'doetown' => $doetownReferenceId,
+                'shadowe' => $shadoweReferenceId,
+            ]
+        );
     }
 
     public function testUserActionFiltersAreMutuallyExclusiveForLegacyRows()

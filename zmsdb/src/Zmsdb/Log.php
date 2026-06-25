@@ -30,6 +30,15 @@ class Log extends Base
     const ACTION_DELETED = 'Termin wurde gelöscht';
     const ACTION_CANCELED = 'Termin wurde abgesagt';
 
+    private const FULLTEXT_SEARCH_COLUMNS = 'client_name, services, scope_name, client_email';
+
+    private const TEXT_SEARCH_COLUMNS = [
+        'client_name',
+        'services',
+        'scope_name',
+        'client_email',
+    ];
+
     private const INDEXED_COLUMNS = [
         'action',
         'display_number',
@@ -523,25 +532,12 @@ class Log extends Base
         foreach ($terms as $index => $termInfo) {
             $term = $termInfo['value'];
             $prefix = 'generalSearch' . $index;
-            $escaped = $this->escapeLikeValue($term);
             $useWordBoundary = $termInfo['quoted'];
 
             if ($useWordBoundary) {
-                $parts = $this->buildClientNameWordBoundaryParts($escaped, $params, $prefix . 'Name');
-                $parts[] = '(client_name IS NULL AND data IS NOT NULL AND ('
-                    . implode(' OR ', $this->buildLegacyClientNameWordBoundaryParts($escaped, $params, $prefix . 'Legacy'))
-                    . '))';
+                $parts = $this->buildQuotedClientNameSearchParts($term, $params, $prefix . 'Name');
             } else {
-                $params[$prefix . 'Contains'] = '%' . $escaped . '%';
-                $params[$prefix . 'Exact'] = $term;
-                $parts = [
-                    'client_name LIKE :' . $prefix . 'Contains',
-                    'services LIKE :' . $prefix . 'Contains',
-                    'scope_name LIKE :' . $prefix . 'Contains',
-                    'client_email LIKE :' . $prefix . 'Contains',
-                    'display_number = :' . $prefix . 'Exact',
-                    '(client_name IS NULL AND data IS NOT NULL AND data LIKE :' . $prefix . 'Contains)',
-                ];
+                $parts = $this->buildUnquotedSearchParts($term, $prefix, $params);
             }
 
             if (count($terms) === 1 && $this->isNumericSearchQuery($term)) {
@@ -553,6 +549,116 @@ class Log extends Base
         }
 
         return $conditions;
+    }
+
+    private function buildUnquotedSearchParts(string $term, string $paramPrefix, array &$params): array
+    {
+        $parts = [];
+        $params[$paramPrefix . 'Exact'] = $term;
+        $parts[] = 'display_number = :' . $paramPrefix . 'Exact';
+
+        if (mb_strlen($term) <= 2) {
+            if (mb_strlen($term) === 1) {
+                $escaped = $this->escapeLikeValue($term);
+                $params[$paramPrefix . 'Prefix'] = $escaped . '%';
+                foreach (self::TEXT_SEARCH_COLUMNS as $column) {
+                    $parts[] = $column . ' LIKE :' . $paramPrefix . 'Prefix';
+                }
+
+                return $parts;
+            }
+
+            $parts = array_merge($parts, $this->buildTextColumnBoundaryLikeParts($term, $paramPrefix, $params));
+
+            return $parts;
+        }
+
+        $fulltextTerm = $this->escapeFulltextBooleanTerm($term);
+        if ($fulltextTerm !== '') {
+            $params[$paramPrefix . 'Ft'] = $fulltextTerm;
+            $parts[] = 'MATCH(' . self::FULLTEXT_SEARCH_COLUMNS . ') AGAINST(:' . $paramPrefix . 'Ft IN BOOLEAN MODE)';
+        }
+
+        return $parts;
+    }
+
+    private function buildTextColumnBoundaryLikeParts(string $term, string $paramPrefix, array &$params): array
+    {
+        $escaped = $this->escapeLikeValue($term);
+        $params[$paramPrefix . 'Start'] = $escaped . '%';
+        $params[$paramPrefix . 'End'] = '%' . $escaped;
+        $params[$paramPrefix . 'Middle'] = '% ' . $escaped . ' %';
+        $params[$paramPrefix . 'MiddleStart'] = '% ' . $escaped;
+        $params[$paramPrefix . 'Exact'] = $term;
+
+        $parts = [];
+        foreach (self::TEXT_SEARCH_COLUMNS as $column) {
+            $parts[] = $column . ' LIKE :' . $paramPrefix . 'Start';
+            $parts[] = $column . ' LIKE :' . $paramPrefix . 'End';
+            $parts[] = $column . ' LIKE :' . $paramPrefix . 'Middle';
+            $parts[] = $column . ' LIKE :' . $paramPrefix . 'MiddleStart';
+            $parts[] = $column . ' = :' . $paramPrefix . 'Exact';
+        }
+
+        return $parts;
+    }
+
+    private function escapeFulltextBooleanTerm(string $term): string
+    {
+        $term = trim(preg_replace('/[+\-><()~*"@]+/u', ' ', $term) ?? '');
+        if ($term === '') {
+            return '';
+        }
+
+        $words = preg_split('/\s+/u', $term, -1, PREG_SPLIT_NO_EMPTY);
+        if ($words === false || $words === []) {
+            return '';
+        }
+
+        if (count($words) > 1) {
+            return '"' . implode(' ', array_map(static fn ($word) => str_replace('"', '', $word), $words)) . '"';
+        }
+
+        return '+' . $words[0] . '*';
+    }
+
+    private function buildQuotedClientNameSearchParts(string $term, array &$params, string $paramPrefix): array
+    {
+        if (mb_strlen($term) <= 2) {
+            return $this->buildClientNameWordBoundaryParts(
+                $this->escapeLikeValue($term),
+                $params,
+                $paramPrefix
+            );
+        }
+
+        $fulltextTerm = $this->escapeFulltextQuotedTerm($term);
+        if ($fulltextTerm === '') {
+            return [];
+        }
+
+        $params[$paramPrefix . 'Ft'] = $fulltextTerm;
+
+        return ['MATCH(client_name) AGAINST(:' . $paramPrefix . 'Ft IN BOOLEAN MODE)'];
+    }
+
+    private function escapeFulltextQuotedTerm(string $term): string
+    {
+        $term = trim(preg_replace('/[+\-><()~*"@]+/u', ' ', $term) ?? '');
+        if ($term === '') {
+            return '';
+        }
+
+        $words = preg_split('/\s+/u', $term, -1, PREG_SPLIT_NO_EMPTY);
+        if ($words === false || $words === []) {
+            return '';
+        }
+
+        if (count($words) > 1) {
+            return '"' . implode(' ', array_map(static fn ($word) => str_replace('"', '', $word), $words)) . '"';
+        }
+
+        return '+' . $words[0];
     }
 
     private function buildClientNameWordBoundaryParts(string $escapedTerm, array &$params, string $prefix): array
@@ -567,22 +673,6 @@ class Log extends Base
             'client_name LIKE :' . $prefix . 'End',
             'client_name LIKE :' . $prefix . 'Middle',
             'client_name = :' . $prefix . 'Exact',
-        ];
-    }
-
-    private function buildLegacyClientNameWordBoundaryParts(string $escapedTerm, array &$params, string $prefix): array
-    {
-        $legacyKey = $this->escapeLikeValue('Bürger*in');
-        $params[$prefix . 'Start'] = '%' . $legacyKey . '":"' . $escapedTerm . ' %';
-        $params[$prefix . 'End'] = '%' . $legacyKey . '":"% ' . $escapedTerm . '"%';
-        $params[$prefix . 'Middle'] = '%' . $legacyKey . '":"% ' . $escapedTerm . ' %';
-        $params[$prefix . 'Exact'] = '%' . $legacyKey . '":"' . $escapedTerm . '"%';
-
-        return [
-            'data LIKE :' . $prefix . 'Start',
-            'data LIKE :' . $prefix . 'End',
-            'data LIKE :' . $prefix . 'Middle',
-            'data LIKE :' . $prefix . 'Exact',
         ];
     }
 
