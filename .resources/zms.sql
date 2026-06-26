@@ -1033,13 +1033,13 @@ CREATE TABLE `request_variant` (
 --
 
 INSERT INTO `request_variant` (`id`, `name`) VALUES
-(7, 'Einzelperson'),
-(6, 'Familie'),
-(4, 'Großkunde'),
-(5, 'Kleinkunde'),
 (1, 'Präsenz'),
 (2, 'Telefon'),
-(3, 'Videoberatung');
+(3, 'Videoberatung'),
+(4, 'Einzelperson'),
+(5, 'Familie'),
+(6, 'Kleinkunde'),
+(7, 'Großkunde');
 
 -- --------------------------------------------------------
 

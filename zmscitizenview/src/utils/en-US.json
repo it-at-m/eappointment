@@ -256,10 +256,10 @@
     "1": "On-site appointment",
     "2": "Phone appointment",
     "3": "Video conference",
-    "4": "Appointment for a large client",
-    "5": "Appointment for a small client",
-    "6": "Appointment for a family",
-    "7": "Appointment for an individual"
+    "4": "Appointment for an individual",
+    "5": "Appointment for a family",
+    "6": "Appointment for a small client",
+    "7": "Appointment for a large client"
   },
   "locationVariantText": {
     "1": "You will come to our location in person.",

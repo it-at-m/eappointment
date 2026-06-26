@@ -79,25 +79,25 @@ function getRawApiBaseURL(baseUrl: string | undefined): string {
 }
 
 /**
- * Request variant IDs from `request_variant`
+ * Canonical request variant IDs (see 91780800000-reorder-request-variant-ids.sql).
  *
  * | ID | DB name       |
  * |----|---------------|
  * | 1  | Präsenz       |
  * | 2  | Telefon       |
  * | 3  | Videoberatung |
- * | 4  | Großkunde     |
- * | 5  | Kleinkunde    |
- * | 6  | Familie       |
- * | 7  | Einzelperson  |
+ * | 4  | Einzelperson  |
+ * | 5  | Familie       |
+ * | 6  | Kleinkunde    |
+ * | 7  | Großkunde     |
  */
 export const VARIANT_ID_PRESENCE = 1;
 export const VARIANT_ID_TELEPHONE = 2;
 export const VARIANT_ID_VIDEO = 3;
-export const VARIANT_ID_LARGE_CLIENT = 4;
-export const VARIANT_ID_SMALL_CLIENT = 5;
-export const VARIANT_ID_FAMILY = 6;
-export const VARIANT_ID_INDIVIDUAL = 7;
+export const VARIANT_ID_INDIVIDUAL = 4;
+export const VARIANT_ID_FAMILY = 5;
+export const VARIANT_ID_SMALL_CLIENT = 6;
+export const VARIANT_ID_LARGE_CLIENT = 7;
 
 export const VARIANTS_WITH_HINTS = [
   VARIANT_ID_PRESENCE,

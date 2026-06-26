@@ -969,8 +969,8 @@ describe("ServiceFinder", () => {
       const variantServices = wrapper.vm.variantServices as any[];
 
       expect(variantServices.map((variant) => variant.variantId)).toEqual([
-        VARIANT_ID_LARGE_CLIENT,
         VARIANT_ID_SMALL_CLIENT,
+        VARIANT_ID_LARGE_CLIENT,
       ]);
       expect(
         variantServices.some(
