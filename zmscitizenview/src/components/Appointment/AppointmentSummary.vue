@@ -87,7 +87,7 @@
               </p>
             </template>
 
-            <template v-else-if="variantId === 1">
+            <template v-else-if="isVariantWithAddress(variantId)">
               <p class="no-bottom-margin smaller-front-size">
                 <strong>{{ t("address") }}</strong
                 ><br />
@@ -103,13 +103,15 @@
                 ></span>
               </p>
               <p class="no-bottom-margin smaller-front-size">
-                <strong>{{ t("appointmentTypes.1") }}</strong
+                <strong>{{ t(`appointmentTypes.${variantId}`) }}</strong
                 ><br />
               </p>
-              <p>{{ t("locationVariantText.1") }}</p>
+              <p v-if="getVariantHint(variantId, t)">
+                {{ getVariantHint(variantId, t) }}
+              </p>
             </template>
 
-            <template v-else-if="VARIANTS_WITH_HINTS.includes(variantId)">
+            <template v-else-if="isVariantWithHint(variantId)">
               <p class="no-bottom-margin smaller-front-size">
                 <strong>{{ t(`appointmentTypes.${variantId}`) }}</strong
                 ><br />
@@ -339,7 +341,8 @@ import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   getServiceBaseURL,
   getVariantHint,
-  VARIANTS_WITH_HINTS,
+  isVariantWithAddress,
+  isVariantWithHint,
 } from "@/utils/Constants";
 import { containsParagraphTag } from "@/utils/containsParagraphTag";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";

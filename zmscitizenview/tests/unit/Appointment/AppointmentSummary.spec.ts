@@ -404,5 +404,29 @@ describe("AppointmentSummary", () => {
       expect(wrapper.text()).toContain("appointmentTypes.2");
       expect(wrapper.text()).toContain("locationVariantText.2");
     });
+
+    it.each([4, 5, 6, 7])(
+      "should show address/hint for on-site variant %i",
+      async (variantId) => {
+        mockSelectedService.value.variantId = variantId;
+        const wrapper = createWrapper();
+        await nextTick();
+
+        expect(wrapper.text()).toContain("Test Street 123");
+        expect(wrapper.text()).toContain("12345 Test City");
+        expect(wrapper.text()).toContain("Test Info Scope");
+        expect(wrapper.text()).toContain(`appointmentTypes.${variantId}`);
+      }
+    );
+
+    it("should hide address for variant 3 (video)", async () => {
+      mockSelectedService.value.variantId = 3;
+      const wrapper = createWrapper();
+      await nextTick();
+
+      expect(wrapper.text()).not.toContain("Test Street 123");
+      expect(wrapper.text()).toContain("appointmentTypes.3");
+      expect(wrapper.text()).toContain("locationVariantText.3");
+    });
   });
 });

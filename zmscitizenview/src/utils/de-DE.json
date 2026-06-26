@@ -279,10 +279,10 @@
     "1": "Vor-Ort-Termin",
     "2": "Telefon-Termin",
     "3": "Videokonferenz",
-    "4": "Termin für eine Einzelperson",
-    "5": "Termin für eine Familie",
-    "6": "Termin für einen Kleinkunden",
-    "7": "Termin für einen Großkunden"
+    "4": "Termin für einen Großkunden",
+    "5": "Termin für einen Kleinkunden",
+    "6": "Termin für eine Familie",
+    "7": "Termin für eine Einzelperson"
   },
   "locationVariantText": {
     "1": "Sie kommen persönlich an unserem Standort vorbei.",

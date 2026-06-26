@@ -78,24 +78,68 @@ function getRawApiBaseURL(baseUrl: string | undefined): string {
   }
 }
 
-export const VARIANTS_WITH_HINTS = [1, 2, 3] as const;
-export const getVariantHint = (
-  variantId: number,
-  t: (key: string) => string
-) => {
-  return VARIANTS_WITH_HINTS.includes(variantId)
-    ? t(`locationVariantText.${variantId}`)
-    : undefined;
-};
-
+/**
+ * Request variant IDs from `request_variant`
+ *
+ * | ID | DB name       |
+ * |----|---------------|
+ * | 1  | Präsenz       |
+ * | 2  | Telefon       |
+ * | 3  | Videoberatung |
+ * | 4  | Großkunde     |
+ * | 5  | Kleinkunde    |
+ * | 6  | Familie       |
+ * | 7  | Einzelperson  |
+ */
 export const VARIANT_ID_PRESENCE = 1;
 export const VARIANT_ID_TELEPHONE = 2;
 export const VARIANT_ID_VIDEO = 3;
+export const VARIANT_ID_LARGE_CLIENT = 4;
+export const VARIANT_ID_SMALL_CLIENT = 5;
+export const VARIANT_ID_FAMILY = 6;
+export const VARIANT_ID_INDIVIDUAL = 7;
+
+export const VARIANTS_WITH_HINTS = [
+  VARIANT_ID_PRESENCE,
+  VARIANT_ID_TELEPHONE,
+  VARIANT_ID_VIDEO,
+] as const;
+
+export const VARIANT_IDS_WITH_ADDRESS = [
+  VARIANT_ID_PRESENCE,
+  VARIANT_ID_LARGE_CLIENT,
+  VARIANT_ID_SMALL_CLIENT,
+  VARIANT_ID_FAMILY,
+  VARIANT_ID_INDIVIDUAL,
+] as const;
 
 export const VARIANT_IDS_REQUIRING_IMPLICIT_PRESENCE = [
   VARIANT_ID_TELEPHONE,
   VARIANT_ID_VIDEO,
 ] as const;
+
+export function isVariantWithAddress(variantId: number | null): boolean {
+  return (
+    variantId != null &&
+    (VARIANT_IDS_WITH_ADDRESS as readonly number[]).includes(variantId)
+  );
+}
+
+export function isVariantWithHint(variantId: number | null): boolean {
+  return (
+    variantId != null &&
+    (VARIANTS_WITH_HINTS as readonly number[]).includes(variantId)
+  );
+}
+
+export const getVariantHint = (
+  variantId: number,
+  t: (key: string) => string
+) => {
+  return (VARIANTS_WITH_HINTS as readonly number[]).includes(variantId)
+    ? t(`locationVariantText.${variantId}`)
+    : undefined;
+};
 
 export function shouldAddImplicitPresenceVariant(
   variantIds: Array<number | null | undefined>

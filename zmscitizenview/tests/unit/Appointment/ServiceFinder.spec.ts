@@ -2,7 +2,9 @@ import { mount } from "@vue/test-utils";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { nextTick, ref } from "vue";
 import {
+  VARIANT_ID_LARGE_CLIENT,
   VARIANT_ID_PRESENCE,
+  VARIANT_ID_SMALL_CLIENT,
   VARIANT_ID_TELEPHONE,
   VARIANT_ID_VIDEO
 } from "@/utils/Constants";
@@ -840,9 +842,6 @@ describe("ServiceFinder", () => {
   });
 
   describe("Variants", () => {
-    const VARIANT_ID_LARGE_CUSTOMER = 4;
-    const VARIANT_ID_SMALL_CUSTOMER = 5;
-
     const makeServiceVariant = ({
       id,
       name,
@@ -946,14 +945,14 @@ describe("ServiceFinder", () => {
         id: "21",
         name: "Planeinsicht Grundstücksentwässerung – Kleinkunden",
         parentId: "20",
-        variantId: VARIANT_ID_SMALL_CUSTOMER,
+        variantId: VARIANT_ID_SMALL_CLIENT,
       });
 
       const largeCustomerVariant = makeServiceVariant({
         id: "22",
         name: "Planeinsicht Grundstücksentwässerung – Großkunden",
         parentId: "20",
-        variantId: VARIANT_ID_LARGE_CUSTOMER,
+        variantId: VARIANT_ID_LARGE_CLIENT,
       });
 
       const wrapper = createWrapper(baseService);
@@ -970,8 +969,8 @@ describe("ServiceFinder", () => {
       const variantServices = wrapper.vm.variantServices as any[];
 
       expect(variantServices.map((variant) => variant.variantId)).toEqual([
-        VARIANT_ID_LARGE_CUSTOMER,
-        VARIANT_ID_SMALL_CUSTOMER,
+        VARIANT_ID_LARGE_CLIENT,
+        VARIANT_ID_SMALL_CLIENT,
       ]);
       expect(
         variantServices.some(
@@ -992,7 +991,7 @@ describe("ServiceFinder", () => {
         id: "21",
         name: "Planeinsicht Grundstücksentwässerung – Kleinkunden",
         parentId: "20",
-        variantId: VARIANT_ID_SMALL_CUSTOMER,
+        variantId: VARIANT_ID_SMALL_CLIENT,
       });
 
       const wrapper = createWrapper(baseService);
@@ -1005,7 +1004,7 @@ describe("ServiceFinder", () => {
       const variantServices = wrapper.vm.variantServices as any[];
 
       expect(variantServices.map((variant) => variant.variantId)).toEqual([
-        VARIANT_ID_SMALL_CUSTOMER,
+        VARIANT_ID_SMALL_CLIENT,
       ]);
       expect(
         variantServices.some(
@@ -1025,7 +1024,7 @@ describe("ServiceFinder", () => {
         id: "22",
         name: "Planeinsicht Grundstücksentwässerung – Großkunden",
         parentId: "20",
-        variantId: VARIANT_ID_LARGE_CUSTOMER,
+        variantId: VARIANT_ID_LARGE_CLIENT,
       });
 
       const wrapper = createWrapper(baseService);
@@ -1038,7 +1037,7 @@ describe("ServiceFinder", () => {
       const variantServices = wrapper.vm.variantServices as any[];
 
       expect(variantServices.map((variant) => variant.variantId)).toEqual([
-        VARIANT_ID_LARGE_CUSTOMER,
+        VARIANT_ID_LARGE_CLIENT,
       ]);
       expect(
         variantServices.some(
