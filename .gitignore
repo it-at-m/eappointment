@@ -24,6 +24,7 @@ coverage/
 
 # Python
 __pycache__/
+.venv/
 
 # =============== PHP =================
 vendor/
