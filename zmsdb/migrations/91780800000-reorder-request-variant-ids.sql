@@ -1,10 +1,16 @@
--- Normalize request_variant IDs to the canonical order (idempotent).
--- Preserves request.variant_id by remapping through variant names.
-
-SET FOREIGN_KEY_CHECKS = 0;
-
-CREATE TEMPORARY TABLE `tmp_request_variant` AS
-SELECT `id`, `name` FROM `request_variant`;
+UPDATE `request` r
+INNER JOIN `request_variant` rv ON r.`variant_id` = rv.`id`
+SET r.`variant_id` = CASE rv.`name`
+    WHEN 'Präsenz' THEN 1
+    WHEN 'Telefon' THEN 2
+    WHEN 'Videoberatung' THEN 3
+    WHEN 'Einzelperson' THEN 4
+    WHEN 'Familie' THEN 5
+    WHEN 'Kleinkunde' THEN 6
+    WHEN 'Großkunde' THEN 7
+    ELSE r.`variant_id`
+END
+WHERE r.`variant_id` IS NOT NULL;
 
 DROP TABLE IF EXISTS `request_variant`;
 
@@ -18,23 +24,10 @@ CREATE TABLE `request_variant`
     DEFAULT CHARSET = utf8mb4
     COLLATE = utf8mb4_unicode_ci;
 
-INSERT INTO `request_variant` (`id`, `name`) VALUES
-(1, 'Präsenz'),
-(2, 'Telefon'),
-(3, 'Videoberatung'),
-(4, 'Einzelperson'),
-(5, 'Familie'),
-(6, 'Kleinkunde'),
-(7, 'Großkunde');
-
-ALTER TABLE `request_variant` AUTO_INCREMENT = 8;
-
-UPDATE `request` r
-INNER JOIN `tmp_request_variant` old ON r.`variant_id` = old.`id`
-INNER JOIN `request_variant` new ON new.`name` = old.`name`
-SET r.`variant_id` = new.`id`
-WHERE r.`variant_id` IS NOT NULL;
-
-DROP TEMPORARY TABLE `tmp_request_variant`;
-
-SET FOREIGN_KEY_CHECKS = 1;
+INSERT INTO `request_variant` (`id`, `name`) VALUES (1, 'Präsenz');
+INSERT INTO `request_variant` (`id`, `name`) VALUES (2, 'Telefon');
+INSERT INTO `request_variant` (`id`, `name`) VALUES (3, 'Videoberatung');
+INSERT INTO `request_variant` (`id`, `name`) VALUES (4, 'Einzelperson');
+INSERT INTO `request_variant` (`id`, `name`) VALUES (5, 'Familie');
+INSERT INTO `request_variant` (`id`, `name`) VALUES (6, 'Kleinkunde');
+INSERT INTO `request_variant` (`id`, `name`) VALUES (7, 'Großkunde');
