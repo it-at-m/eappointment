@@ -257,7 +257,8 @@ const sidebarLabels = {
     docsGettingStarted: "Getting Started with docs",
     cronjobsLocally: "Running Cronjobs Locally",
     macosLocalConfig: "macOS local configuration",
-    podmanDevContainers: "Podman and Dev Containers",
+    podmanDevContainers: "Podman and Dev Containers (6.x)",
+    podmanDevContainersLegacy: "Podman and Dev Containers (5.8, legacy)",
     localHttpsDdev: "Local HTTPS SSL (DDEV)",
     keycloakLocal: "Local Keycloak Setup",
     codeFormatting: "Code Formatting",
@@ -306,7 +307,8 @@ const sidebarLabels = {
     docsGettingStarted: "Erste Schritte mit der Dokumentation",
     cronjobsLocally: "Cronjobs lokal ausführen",
     macosLocalConfig: "macOS lokale Konfiguration",
-    podmanDevContainers: "Podman und Dev Containers",
+    podmanDevContainers: "Podman und Dev Containers (6.x)",
+    podmanDevContainersLegacy: "Podman und Dev Containers (5.8, Legacy)",
     localHttpsDdev: "Lokales HTTPS-SSL (DDEV)",
     keycloakLocal: "Lokale Keycloak-Einrichtung",
     codeFormatting: "Code-Formatierung",
@@ -421,6 +423,10 @@ const buildSidebar = (prefix, lang) => {
                 {
                   text: t.podmanDevContainers,
                   link: `${prefix}/setup-and-development/getting-started/macos-local-configuration/podman-and-dev-containers`,
+                },
+                {
+                  text: t.podmanDevContainersLegacy,
+                  link: `${prefix}/setup-and-development/getting-started/macos-local-configuration/podman-and-dev-containers-legacy`,
                 },
                 {
                   text: t.localHttpsDdev,
