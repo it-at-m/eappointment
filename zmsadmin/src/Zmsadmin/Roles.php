@@ -3,6 +3,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Exception\UserAccountMissingRights;
+use BO\Slim\Render;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -27,7 +28,7 @@ class Roles extends BaseController
 
         $roleList = \App::$http->readGetResult('/roles/', [])->getCollection();
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/rolesList.twig',
             [

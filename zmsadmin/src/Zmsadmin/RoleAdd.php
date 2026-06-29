@@ -2,8 +2,9 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Render;
 use BO\Zmsentities\Exception\UserAccountMissingRights;
-use BO\Zmsentities\Role as RoleEntity;
+use BO\Zmsentities\Role;
 
 class RoleAdd extends BaseController
 {
@@ -27,8 +28,8 @@ class RoleAdd extends BaseController
             $input = $request->getParsedBody();
             $submitted = is_array($input) ? $input : [];
             $result = $this->writeNewRole($submitted);
-            if ($result instanceof RoleEntity) {
-                return \BO\Slim\Render::redirect(
+            if ($result instanceof Role) {
+                return Render::redirect(
                     'roleEdit',
                     ['id' => $result->id],
                     ['success' => 'role_added']
@@ -36,7 +37,7 @@ class RoleAdd extends BaseController
             }
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/roleForm.twig',
             [
@@ -52,7 +53,7 @@ class RoleAdd extends BaseController
         );
     }
 
-    protected function writeNewRole(array $input): RoleEntity|array|null
+    protected function writeNewRole(array $input): Role|array|null
     {
         $data = $input;
         unset($data['id'], $data['assignedUserCount']);
@@ -60,7 +61,7 @@ class RoleAdd extends BaseController
         $data['permissions'] = is_array($permissions)
             ? array_values(array_unique($permissions))
             : [];
-        $entity = (new RoleEntity($data))->withCleanedUpFormData();
+        $entity = (new Role($data))->withCleanedUpFormData();
 
         $roles = \App::$http->readGetResult('/roles/', [])->getCollection();
         foreach ($roles as $existing) {

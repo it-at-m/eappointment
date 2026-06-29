@@ -3,7 +3,7 @@
 ## ZMS Automation – [ATAF](https://it-at-m.github.io/agile-test-automation-framework/)-Integration
 
 Dieses Modul enthält API- und UI-Tests für ZMS auf Basis von [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) (Test Automation Framework) und Cucumber.
-`zmsautomation` baut auf [it-at-m/agile-test-automation-framework](https://it-at-m.github.io/agile-test-automation-framework/) auf.
+`zmsautomation` baut auf [it-at-m/agile-test-automation-framework](https://it-at-m.github.io/agile-test-automation-framework/) auf. Es nutzt ATAF **ohne Jira** (Features in Git) und **lokales Keycloak** für SSO — siehe [Lokales Keycloak-Setup](#lokales-keycloak-setup) und das ATAF-Handbuch [Standalone-Nutzung (ohne Jira, lokales Keycloak)](https://it-at-m.github.io/agile-test-automation-framework/de/usage/standalone-without-jira.html).
 
 ## Voraussetzungen
 
@@ -156,6 +156,60 @@ Verwende `--browser safari` (oder `chrome`, `firefox`, `edge`, `safari`) nach Be
 ### UI-Tests (SSO)
 
 Für lokale UI-Tests (Statistik, Admin) ist der Standard-SSO-Benutzer der Keycloak-Account `ataf` (Passwort `vorschau`) aus den Keycloak-Migrationsdaten.
+
+## Lokales Keycloak-Setup {#lokales-keycloak-setup}
+
+`zmsautomation` nutzt [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) **ohne Jira**: alle Cucumber-Features liegen unter `src/test/resources/features/`, UI-Tests authentifizieren sich gegen ein **lokales Keycloak** — dasselbe [keycloakmigration](https://github.com/klg71/keycloakmigration)-Muster wie im [RefArch-Stack](https://github.com/it-at-m/refarch-templates/tree/main/stack/keycloak/migration). Für lokale Läufe brauchst du kein Corporate- oder Behörden-SSO (`ssodev`).
+
+Siehe auch das ATAF-Handbuch: [Standalone-Nutzung (ohne Jira, lokales Keycloak)](https://it-at-m.github.io/agile-test-automation-framework/de/usage/standalone-without-jira.html).
+
+### Docker-Compose-Dienste
+
+Keycloak und der Migrations-Sidecar sind definiert in:
+
+- [`.ddev/docker-compose.keycloak.yaml`](https://github.com/it-at-m/eappointment/blob/main/.ddev/docker-compose.keycloak.yaml) (DDEV)
+- [`.devcontainer/docker-compose.yaml`](https://github.com/it-at-m/eappointment/blob/main/.devcontainer/docker-compose.yaml) (devcontainer / Podman)
+
+Beide Stacks starten:
+
+| Dienst          | Aufgabe                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------- |
+| `keycloak`      | `quay.io/keycloak/keycloak:26.6.3`, `start-dev`, `KC_HTTP_RELATIVE_PATH=/auth`, Port `8080` |
+| `init-keycloak` | `klg71/keycloakmigration:0.2.129`, wendet Migrationen an, sobald Keycloak bereit ist        |
+
+`init-keycloak` bindet [`.resources/keycloak/migration/`](https://github.com/it-at-m/eappointment/tree/main/.resources/keycloak/migration) ein und liest `KEYCLOAK_CHANGELOG=/migration/keycloak-changelog.yml`.
+
+### Migrations-Changelog
+
+Der Changelog wendet die Realm-Konfiguration in dieser Reihenfolge an:
+
+```yaml
+includes:
+  - path: 01_init-realm.yml # Realm zms
+  - path: 02_add-clients.yml # OIDC-Client zms, Redirect-URIs für Admin/Statistik
+  - path: 03_add-roles.yml
+  - path: 04_add-users.yml
+  - path: 05_assign-roles.yml
+  - path: 06_zms-audience.yml
+  - path: 07_add-system-users.yml # Testbenutzer ataf (Passwort vorschau)
+  - path: 08_add-role-test-users.yml
+```
+
+Das entspricht dem RefArch-Muster ([`stack/docker-compose.yml`](https://github.com/it-at-m/refarch-templates/blob/4735e9f425a29e9cd38eafc6cd34b5da705f0574/stack/docker-compose.yml#L52)), nutzt aber einen ZMS-spezifischen Realm, Clients und Benutzer.
+
+### Hostname `keycloak`
+
+Anwendungen und Browser-Redirects erwarten den Hostnamen `keycloak`, nicht `localhost`. Trage `127.0.0.1 keycloak` in die Hosts-Datei ein und starte den Stack neu — siehe [Lokale Keycloak-Einrichtung](../setup-and-development/local-keycloak-setup.md).
+
+### ATAF-Test-Properties
+
+`zmsautomation/src/test/resources/testautomation.properties` verknüpft ATAF mit dem migrierten Benutzer und umgeht den Corporate-Proxy für Docker-Hostnamen:
+
+```properties
+testautomation.userName=ataf
+testautomation.userPassword=vorschau
+testautomation.noProxy=keycloak,citizenview,refarch-gateway,localhost,127.0.0.1
+```
 
 ## Beispiel
 

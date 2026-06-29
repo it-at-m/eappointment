@@ -15,23 +15,23 @@
     "serve-loader-test": "npm run build && ws -o -r \"/ -> /resources/loader-test\" -r \"/dist -> ../../dist\""
   },
   "dependencies": {
-    "@muenchen/muc-patternlab-vue": "10.0.0",
+    "@muenchen/muc-patternlab-vue": "10.0.1",
     "altcha": "^3.1.0",
-    "dompurify": "^3.4.10",
+    "dompurify": "^3.4.11",
     "jsdom": "^29.1.1",
-    "vue": "^3.5.38",
-    "vue-i18n": "11.4.5",
+    "vue": "^3.5.39",
+    "vue-i18n": "11.4.6",
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
-    "@babel/types": "^7.21.4",
+    "@babel/types": "^8.0.0",
     "@muenchen/prettier-codeformat": "^1.0.2",
-    "@types/node": "^25.9.3",
+    "@types/node": "^26.0.1",
     "@types/webfontloader": "^1.6.35",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vitest/coverage-v8": "^4.1.9",
     "@vue/eslint-config-prettier": "10.2.0",
-    "@vue/eslint-config-typescript": "14.8.0",
+    "@vue/eslint-config-typescript": "14.9.0",
     "@vue/test-utils": "^2.4.11",
     "eslint": "9.39.4",
     "eslint-plugin-vue": "10.9.2",
@@ -39,12 +39,13 @@
     "lodash": "^4.18.0",
     "sass": "^1.101.0",
     "typescript": "^6.0.3",
-    "vite": "^8.0.11",
+    "vite": "^8.1.0",
     "vitest": "^4.1.9",
     "vue-tsc": "^3.3.3"
   },
   "// overrides.@tootallnate/once": "local-web-server -> lws-rewrite -> http-proxy-agent pins once@2; force ^3.0.1 (abort-signal hang / GHSA).",
   "// overrides.ws": "jsdom -> ws@8.18.x; force ^8.20.1 (CVE-2026-45736).",
+  "// overrides.undici": "jsdom -> undici@7.25.x; force ^7.28.0 (CVE-2026-9697, CVE-2026-9678).",
   "overrides": {
     "vite-plugin-vuetify": {
       "make-dir": "5.1.0"
@@ -52,6 +53,7 @@
     "@tootallnate/once": "^3.0.1",
     "tmp": "^0.2.7",
     "ws": "^8.20.1",
-    "js-yaml": "^4.2.0"
+    "js-yaml": "^4.2.0",
+    "undici": "^7.28.0"
   }
 }

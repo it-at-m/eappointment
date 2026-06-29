@@ -14,11 +14,8 @@ use JsonSerializable;
 class OfficeServiceAndRelationList extends Entity implements JsonSerializable
 {
     public static $schema = "citizenapi/collections/officeServiceAndRelationList.json";
-/** @var OfficeList */
     protected OfficeList $offices;
-/** @var ServiceList */
     protected ServiceList $services;
-/** @var OfficeServiceRelationList */
     protected OfficeServiceRelationList $relations;
     public function __construct(OfficeList $offices, ServiceList $services, OfficeServiceRelationList $relations)
     {

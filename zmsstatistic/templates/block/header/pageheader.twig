@@ -33,13 +33,13 @@
             ) }}
             </form>
             #}
-            <div class="page-header__scope" data-header-scope="{{ workstation.scope.contact|json_encode }}">
-                {% set scopeName = workstation.scope.contact.name %}
-                {% if workstation.scope.contact.name|length > 30 %}
-                    {% set scopeName = workstation.scope.contact.name[:30] ~ "..." %}
+            <div class="page-header__scope" data-header-scope="{{ workstation.scope.contact|default({})|json_encode }}">
+                {% set scopeName = workstation.scope.contact.name|default('') %}
+                {% if scopeName|length > 30 %}
+                    {% set scopeName = scopeName[:30] ~ "..." %}
                 {% endif %}
                 <ul class="list--horizontal">
-                    <li class="user-scope header-scope-title" title="{{ workstation.scope.contact.name }}">
+                    <li class="user-scope header-scope-title" title="{{ workstation.scope.contact.name|default('') }}">
                         <div>{% trans %}header.scope{% endtrans %}: <strong><span class="header-scope-name">{{ scopeName }}</span></strong></div>
                     </li>
             	    <li class="user-workstation">

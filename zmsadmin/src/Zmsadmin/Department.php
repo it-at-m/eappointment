@@ -8,8 +8,9 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Department as Entity;
-use BO\Mellon\Validator;
 use BO\Zmsentities\Schema\Schema;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
+use BO\Mellon\Validator;
 
 class Department extends BaseController
 {
@@ -24,7 +25,7 @@ class Department extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         if (!$workstation->getUseraccount()->hasPermissions(['department'])) {
-            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+            throw new UserAccountMissingRights();
         }
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $entityId = Validator::value($args['id'])->isNumber()->getValue();

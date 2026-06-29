@@ -8,7 +8,11 @@
 
 namespace BO\Zmsadmin\Helper;
 
-class ProcessFinishedHelper extends \BO\Zmsentities\Process
+use BO\Zmsentities\Process;
+use BO\Zmsentities\Collection\RequestList;
+use BO\Zmsentities\Request;
+
+class ProcessFinishedHelper extends Process
 {
     public function __construct($processData, $input, $requestList, $source)
     {
@@ -20,20 +24,20 @@ class ProcessFinishedHelper extends \BO\Zmsentities\Process
 
     public function setRequestData(
         array $input,
-        \BO\Zmsentities\Collection\RequestList $requestList,
+        RequestList $requestList,
         $source
     ) {
         if (array_key_exists('ignoreRequests', $input) && $input['ignoreRequests']) {
-            $this->requests = new \BO\Zmsentities\Collection\RequestList();
-            $request = new \BO\Zmsentities\Request([
+            $this->requests = new RequestList();
+            $request = new Request([
                 'id' => -1,
                 'source' => $source,
                 'name' =>  "Ohne Erfassung",
             ]);
             $this->requests[] = $request;
         } elseif (array_key_exists('noRequestsPerformed', $input) && $input['noRequestsPerformed']) {
-            $this->requests = new \BO\Zmsentities\Collection\RequestList();
-            $request = new \BO\Zmsentities\Request([
+            $this->requests = new RequestList();
+            $request = new Request([
                 'id' => 0,
                 'source' => $source,
                 'name' =>  "Dienstleistung konnte nicht erbracht werden",

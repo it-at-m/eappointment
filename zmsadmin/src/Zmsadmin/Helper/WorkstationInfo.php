@@ -10,10 +10,13 @@
 namespace BO\Zmsadmin\Helper;
 
 use BO\Mellon\Validator;
+use BO\Zmsentities\Workstation;
+use BO\Zmsclient\WorkstationRequests;
+use DateTime;
 
 class WorkstationInfo
 {
-    public static function getInfoBoxData(\BO\Zmsentities\Workstation $workstation, $selectedDate)
+    public static function getInfoBoxData(Workstation $workstation, $selectedDate)
     {
         $infoData = array(
             'waitingTimeEstimate' => 0,
@@ -33,7 +36,7 @@ class WorkstationInfo
 
         $queueListHelper = (new QueueListHelper($clusterHelper, $selectedDate));
 
-        $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
+        $workstationRequest = new WorkstationRequests(\App::$http, $workstation);
         $processList = $workstationRequest->readProcessListByDate(
             new \DateTime($selectedDate)
         );

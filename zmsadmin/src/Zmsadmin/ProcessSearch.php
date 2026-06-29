@@ -7,6 +7,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Render;
 use BO\Zmsentities\Collection\LogList;
 use BO\Zmsentities\Collection\ProcessList;
 use DateTime;
@@ -82,13 +83,13 @@ class ProcessSearch extends BaseController
             $logList = $this->filterLogListForUserRights($logList, $scopeIds);
         }
 
-        $processList = $processList ?? new \BO\Zmsentities\Collection\ProcessList();
-        $processListOther = new \BO\Zmsentities\Collection\ProcessList();
+        $processList = $processList ?? new ProcessList();
+        $processListOther = new ProcessList();
         if (!$workstation->hasSuperUseraccount()) {
             $processListOther = $processList->withOutScopeId($workstation->scope['id']);
             $processList = $processList->withScopeId($workstation->scope['id']);
         }
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/search.twig',
             array(

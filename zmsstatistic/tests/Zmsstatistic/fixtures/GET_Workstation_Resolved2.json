@@ -25,6 +25,7 @@
             },
             "permissions": {
                 "statistic": "1",
+                "capacityreport": "1",
                 "superuser": "1"
             },
             "departments": [

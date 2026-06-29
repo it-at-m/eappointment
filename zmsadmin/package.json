@@ -41,9 +41,9 @@
     "eslint-plugin-react": "^7.31.8",
     "events": "^3.3.0",
     "flatted": "^3.4.2",
-    "focus-trap-react": "12.0.2",
+    "focus-trap-react": "12.0.3",
     "https-browserify": "^1.0.0",
-    "immutable": "^5.1.5",
+    "immutable": "^5.1.8",
     "jquery": "^4.0.0",
     "js-cookie": "^3.0.8",
     "js-yaml": "^4.2.0",
@@ -58,7 +58,7 @@
     "prop-types": "15.8.1",
     "punycode": "^2.0.0",
     "qrcode-generator": "^2.0.0",
-    "qs": "^6.14.2",
+    "qs": "^6.15.3",
     "querystring-es3": "^0.2.1",
     "react": "^18.0.2",
     "react-datepicker": "^9.1.0",
@@ -78,8 +78,8 @@
     "chart.js": "^4.4.2",
     "react-chartjs-2": "^5.3.1"
   },
-  "// overrides.dompurify": "monaco-editor depends on dompurify@3.2.7; override to ^3.4.10 (patched) until Monaco ships a newer dompurify.",
+  "// overrides.dompurify": "monaco-editor depends on dompurify@3.2.7; override to ^3.4.11 (patched) until Monaco ships a newer dompurify.",
   "overrides": {
-    "dompurify": "^3.4.10"
+    "dompurify": "^3.4.11"
   }
 }

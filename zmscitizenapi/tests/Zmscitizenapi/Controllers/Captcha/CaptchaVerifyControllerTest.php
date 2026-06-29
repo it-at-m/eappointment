@@ -43,10 +43,15 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         parent::tearDown();
     }
 
+    private function encodedCaptchaPayload(): string
+    {
+        return base64_encode($this->readFixture('POST_captcha_verify_payload.json'));
+    }
+
     public function testRendering()
     {
         $parameters = [
-            'payload' => base64_encode(json_encode(['challenge' => 'abcdefg0123456789']))
+            'payload' => $this->encodedCaptchaPayload()
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $this->assertEquals(200, $response->getStatusCode());
@@ -84,8 +89,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
             }
         };
 
-        $payload = base64_encode(json_encode(['challenge' => 'abcdefg0123456789']));
-        $result = $captcha->verifySolution($payload);
+        $result = $captcha->verifySolution($this->encodedCaptchaPayload());
 
         $this->assertEquals($expectedResponse['meta'], $result['meta']);
         $this->assertEquals($expectedResponse['data'], $result['data']);
@@ -117,8 +121,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
             }
         };
 
-        $payload = base64_encode(json_encode(['challenge' => 'abcdefg0123456789']));
-        $result = $captcha->verifySolution($payload);
+        $result = $captcha->verifySolution($this->encodedCaptchaPayload());
 
         $this->assertEquals($expectedResponse['meta'], $result['meta']);
         $this->assertEquals($expectedResponse['data'], $result['data']);
@@ -147,8 +150,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
             }
         };
 
-        $payload = base64_encode(json_encode(['challenge' => 'abcdefg0123456789']));
-        $result = $captcha->verifySolution($payload);
+        $result = $captcha->verifySolution($this->encodedCaptchaPayload());
 
         $this->assertEquals($expectedResponse['meta'], $result['meta']);
         $this->assertEquals($expectedResponse['data'], $result['data']);
@@ -202,8 +204,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
             }
         };
 
-        $payload = base64_encode(json_encode(['challenge' => 'abcdefg0123456789']));
-        $result = $captcha->verifySolution($payload);
+        $result = $captcha->verifySolution($this->encodedCaptchaPayload());
 
         $this->assertFalse($result['meta']['success']);
         $this->assertStringContainsString('Response from Captcha service is not valid JSON', $result['meta']['error']);
@@ -246,7 +247,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
 
     public function testVerifySolutionException()
     {
-        $mockHandler = new MockHandler([ 
+        $mockHandler = new MockHandler([
             new \GuzzleHttp\Exception\ConnectException(
                 'Connection refused',
                 new \GuzzleHttp\Psr7\Request('POST', 'test')
@@ -267,8 +268,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
             }
         };
 
-        $payload = base64_encode(json_encode(['challenge' => 'abcdefg0123456789']));
-        $result = $captcha->verifySolution($payload);
+        $result = $captcha->verifySolution($this->encodedCaptchaPayload());
 
         $this->assertFalse($result['meta']['success']);
         $this->assertStringContainsString('Connection refused', $result['meta']['error']);

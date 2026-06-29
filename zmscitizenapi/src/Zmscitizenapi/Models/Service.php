@@ -39,11 +39,6 @@ class Service extends Entity implements JsonSerializable
         }
     }
 
-    /**
-     * Converts the model data back into an array for serialization.
-     *
-     * @return array
-     */
     public function toArray(): array
     {
         return [

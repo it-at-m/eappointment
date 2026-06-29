@@ -199,9 +199,6 @@ class MapperService
     /**
      * Map services with combinations based on request and relation lists.
      *
-     * @param RequestList $requestList
-     * @param RequestRelationList $relationList
-     * @return ServiceList
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public static function mapServicesWithCombinations(
@@ -221,7 +218,6 @@ class MapperService
             $servicesProviderIds[$serviceId][] = $relation->provider->id;
         }
 
-        /** @var Service[] $services */
         $services = [];
         $requestArray = iterator_to_array($requestList);
         usort($requestArray, function ($a, $b) {
@@ -569,12 +565,6 @@ class MapperService
         return $requests;
     }
 
-    /**
-     * Converts a raw or existing contact object/array into a ThinnedContact model.
-     *
-     * @param object|array $contact
-     * @return ThinnedContact
-     */
     public static function contactToThinnedContact($contact): ThinnedContact
     {
         if (is_array($contact)) {
@@ -600,12 +590,6 @@ class MapperService
         );
     }
 
-    /**
-     * Convert a Provider object to a ThinnedProvider.
-     *
-     * @param Provider $provider
-     * @return ThinnedProvider
-     */
     public static function providerToThinnedProvider(Provider $provider): ThinnedProvider
     {
         return new ThinnedProvider(
@@ -619,12 +603,6 @@ class MapperService
         );
     }
 
-    /**
-     * Generate ICS content for a process if it has appointments with time.
-     *
-     * @param Process $process The process to generate ICS content for
-     * @return string|null The ICS content or null if generation fails or not applicable
-     */
     private static function generateIcsContent(Process $process): ?string
     {
         if (!isset($process->appointments[0]) || !$process->appointments[0]->hasTime()) {

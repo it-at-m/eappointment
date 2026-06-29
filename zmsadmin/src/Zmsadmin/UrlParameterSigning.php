@@ -13,7 +13,6 @@ use BO\Slim\Helper;
 use BO\Slim\Render;
 use BO\Zmsadmin\Exception\BadRequest;
 use BO\Zmsadmin\Exception\NotAllowed;
-use BO\Zmsentities\Collection\DepartmentList;
 use BO\Zmsentities\Department;
 use BO\Zmsentities\Exception\UserAccountAccessRightsFailed;
 use BO\Zmsentities\Helper\Property;
@@ -77,7 +76,6 @@ class UrlParameterSigning extends BaseController
         foreach ($organisation->departments as $departmentData) {
             $department = (new Department($departmentData))->withCompleteScopeList();
             if (Property::__keyExists('scopes', $department)) {
-                /** @var \BO\Zmsentities\Scope $scope */
                 foreach ($department['scopes'] as $scope) {
                     $scopeIds[$scope['id']] = $scope['id'];
                 }
@@ -97,7 +95,6 @@ class UrlParameterSigning extends BaseController
         foreach ($organisation->departments as $departmentData) {
             $department = (new Department($departmentData))->withCompleteScopeList();
             if (Property::__keyExists('clusters', $department)) {
-                /** @var \BO\Zmsentities\Cluster $scope */
                 foreach ($department['clusters'] as $cluster) {
                     $clusterIds[$cluster['id']] = $cluster['id'];
                 }

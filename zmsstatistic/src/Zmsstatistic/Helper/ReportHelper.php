@@ -142,6 +142,28 @@ class ReportHelper
     }
 
     /**
+     * Workstation scope id when the user has selected a default location, otherwise null.
+     */
+    public function getWorkstationScopeId($workstation): ?int
+    {
+        $scopeId = (int) ($workstation->scope['id'] ?? 0);
+
+        return $scopeId > 0 ? $scopeId : null;
+    }
+
+    /**
+     * Scope id(s) for warehouse report queries from form selection or workstation default.
+     */
+    public function resolveScopeIdParam(array $selectedScopes, ?int $workstationScopeId): string
+    {
+        if (!empty($selectedScopes)) {
+            return implode(',', $selectedScopes);
+        }
+
+        return $workstationScopeId !== null ? (string) $workstationScopeId : '';
+    }
+
+    /**
      * Extract and validate date range from request parameters
      */
     public function extractDateRange(?string $fromDate, ?string $toDate): ?array
