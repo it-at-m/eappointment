@@ -128,39 +128,33 @@ class ProcessSearch extends BaseController
         return $list;
     }
 
+    private function readStringParameter($validator, string $name, string $default = ''): string
+    {
+        return $validator->getParameter($name)
+            ->isString()
+            ->setDefault($default)
+            ->getValue() ?? $default;
+    }
+
+    private function readNumberParameter($validator, string $name, int $default): int
+    {
+        return (int) $validator->getParameter($name)
+            ->isNumber()
+            ->setDefault($default)
+            ->getValue();
+    }
+
     private function readSearchParameters($validator): array
     {
-        $queryString = $validator->getParameter('query')
-            ->isString()
-            ->getValue() ?? '';
-        $page = $validator->getParameter('page')
-            ->isNumber()
-            ->setDefault(1)
-            ->getValue();
-        $service = $validator->getParameter('service')
-            ->isString()
-            ->setDefault('')
-            ->getValue() ?? '';
-        $provider = $validator->getParameter('provider')
-            ->isString()
-            ->setDefault('')
-            ->getValue() ?? '';
-        $date = $validator->getParameter('date')
-            ->isString()
-            ->setDefault('')
-            ->getValue() ?? '';
-        $userAction = $validator->getParameter('user')
-            ->isNumber()
-            ->setDefault(0)
-            ->getValue();
-        $perPage = $validator->getParameter('perPage')
-            ->isNumber()
-            ->setDefault(100)
-            ->getValue();
-        $hideNavigation = $validator->getParameter('hideNavigation')
-            ->isNumber()
-            ->setDefault(0)
-            ->getValue();
+        $queryString = $this->readStringParameter($validator, 'query');
+        $service = $this->readStringParameter($validator, 'service');
+        $provider = $this->readStringParameter($validator, 'provider');
+        $date = $this->readStringParameter($validator, 'date');
+
+        $page = $this->readNumberParameter($validator, 'page', 1);
+        $userAction = $this->readNumberParameter($validator, 'user', 0);
+        $perPage = $this->readNumberParameter($validator, 'perPage', 100);
+        $hideNavigation = $this->readNumberParameter($validator, 'hideNavigation', 0);
 
         return [
             'queryString' => $queryString,
@@ -176,7 +170,7 @@ class ProcessSearch extends BaseController
                 || trim($service) !== ''
                 || trim($provider) !== ''
                 || trim($date) !== ''
-                || (int) $userAction !== 0
+                || $userAction !== 0
             ),
         ];
     }
