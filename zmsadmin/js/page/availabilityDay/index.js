@@ -92,9 +92,7 @@ class AvailabilityPage extends Component {
             }
 
             this.onSaveUpdates();
-        }).catch(error => {
-            console.error("Validation error:", error);
-        });
+        }).catch(() => {});
     }
 
     refreshData() {
@@ -119,8 +117,7 @@ class AvailabilityPage extends Component {
                     resolve(this.state)
                 })
 
-            }).fail(err => {
-                console.error('refreshData error', err)
+            }).fail(() => {
                 resolve(null)
             })
         })
@@ -157,8 +154,6 @@ class AvailabilityPage extends Component {
                         code: err.status,
                         message: err.responseText
                     });
-                } else {
-                    console.error('checkdayoff error', err);
                 }
             }
         });
@@ -183,31 +178,37 @@ class AvailabilityPage extends Component {
                     this.refreshData()
                         .then(() => this.getConflictList({ scrollToErrors: false }))
                         .then((conflictList) => {
-                            const firstConflictedAvailability = this.findFirstConflictedAvailability(
-                                conflictList,
-                                this.state.availabilitylist
-                            );
+                            const hasConflicts = (conflictList?.conflictIdList?.length || 0) > 0;
+
+                            const firstConflictedAvailability = hasConflicts
+                                ? this.findFirstConflictedAvailability(
+                                    conflictList,
+                                    this.state.availabilitylist
+                                )
+                                : null;
 
                             this.setState({
                                 errorList: [],
-                                selectedAvailability: firstConflictedAvailability || null,
+                                selectedAvailability: firstConflictedAvailability,
                                 lastSave: new Date().getTime(),
                                 saveSuccess: true,
-                                saveType: 'save'
+                                saveType: 'save',
+                                saveHasConflicts: hasConflicts,
+                                saveConflictCheckFailed: false
                             }, () => {
                                 this.scrollToSuccessMessage();
                                 hideSpinner();
                             });
                         })
-                        .catch((err) => {
-                            console.error('conflict check after save failed', err);
-
+                        .catch(() => {
                             this.setState({
                                 errorList: [],
                                 selectedAvailability: null,
                                 lastSave: new Date().getTime(),
                                 saveSuccess: true,
-                                saveType: 'save'
+                                saveType: 'save',
+                                saveHasConflicts: false,
+                                saveConflictCheckFailed: true
                             }, () => {
                                 this.scrollToSuccessMessage();
                                 hideSpinner();
@@ -220,8 +221,6 @@ class AvailabilityPage extends Component {
                             code: err.status,
                             message: err.responseText
                         });
-                    } else {
-                        console.error('save error', err);
                     }
                     this.updateSaveBarState('save', false);
                     hideSpinner();
@@ -271,15 +270,12 @@ class AvailabilityPage extends Component {
     updateSaveBarState(type, success) {
 
         this.setState({
-
             lastSave: new Date().getTime(),
-
             saveSuccess: success,
-
-            saveType: type
-
+            saveType: type,
+            saveHasConflicts: false,
+            saveConflictCheckFailed: false
         });
-
     }
 
     scrollToSuccessMessage() {
@@ -354,8 +350,6 @@ class AvailabilityPage extends Component {
                             code: err.status,
                             message: responseText
                         });
-                    } else {
-                        console.error('delete error', err);
                     }
                     this.updateSaveBarState('delete', false);
                     hideSpinner();
@@ -681,7 +675,6 @@ class AvailabilityPage extends Component {
                     }
                 );
             } catch (error) {
-                console.error("Validation error:", error);
                 reject(error);
             }
         });
@@ -754,8 +747,6 @@ class AvailabilityPage extends Component {
                         code: err.status,
                         message: responseText
                     });
-                } else {
-                    console.error('conflict error', err);
                 }
 
                 hideSpinner();
@@ -1000,6 +991,8 @@ class AvailabilityPage extends Component {
                 <SaveBar
                     lastSave={this.state.lastSave}
                     success={this.state.saveSuccess}
+                    hasConflicts={this.state.saveHasConflicts}
+                    conflictCheckFailed={this.state.saveConflictCheckFailed}
                     setSuccessRef={setSuccessRef ? this.setSuccessRef : null}
                     type={this.state.saveType}
                 />
