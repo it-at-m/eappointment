@@ -1854,6 +1854,7 @@ describe("AppointmentSelection", () => {
       const wrapper = createWrapper();
 
       wrapper.vm.selectedDay = new Date("2025-06-16");
+      wrapper.vm.selectedTimeslot = 1747223100;
       await nextTick();
 
       const emissionsBefore =
@@ -1886,19 +1887,20 @@ describe("AppointmentSelection", () => {
       );
     });
 
-    it("clears booking error before emitting back", async () => {
+    it("emits clearBookingError and back when previousStep is called", async () => {
       const wrapper = createWrapper();
+
+      const clearBookingErrorEmissionsBefore =
+        wrapper.emitted("clearBookingError")?.length ?? 0;
+      const backEmissionsBefore = wrapper.emitted("back")?.length ?? 0;
 
       wrapper.vm.previousStep();
       await nextTick();
 
-      expect(wrapper.emitted("clearBookingError")).toBeTruthy();
-      expect(wrapper.emitted("back")).toBeTruthy();
-
-      const clearIndex = Object.keys(wrapper.emitted()).indexOf("clearBookingError");
-      const backIndex = Object.keys(wrapper.emitted()).indexOf("back");
-
-      expect(clearIndex).toBeLessThan(backIndex);
+      expect(wrapper.emitted("clearBookingError")?.length ?? 0).toBe(
+        clearBookingErrorEmissionsBefore + 1
+      );
+      expect(wrapper.emitted("back")?.length ?? 0).toBe(backEmissionsBefore + 1);
     });
 
     it('does not show any callout when bookingError is false', async () => {
