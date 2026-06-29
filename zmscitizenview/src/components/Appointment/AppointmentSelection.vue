@@ -551,7 +551,7 @@ const currentDayPart = computed(() => {
 
 const showSelectionForProvider = async (provider: OfficeImpl) => {
   isSwitchingProvider.value = true;
-  clearVisibleErrors();
+  clearVisibleErrors(false);
   selectedProvider.value = provider;
   selectedDay.value = undefined;
   selectedTimeslot.value = 0;
@@ -1412,7 +1412,7 @@ watch(
     if (daysWereFetched && !hasAvailableDays && !availableDaysFetched.value) {
       availableDaysFetched.value = true;
     }
-    clearVisibleErrors();
+    clearVisibleErrors(daysWereFetched);
 
     if (hasAvailableDays) {
       isSwitchingProvider.value = true;
