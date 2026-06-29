@@ -16,7 +16,7 @@
   "overrides": {
     "handlebars": "^4.7.9",
     "dompurify": "^3.4.10",
-    "fast-uri": "^3.1.2",
+    "fast-uri": "^4.0.0",
     "fast-xml-builder": "^1.1.7",
     "postcss": "^8.5.10",
     "protobufjs": "^8.6.0",
