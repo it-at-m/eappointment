@@ -114,15 +114,69 @@ class ProcessSearchTest extends Base
                         'query' => 'Test%20BO'
                     ],
                     'response' => $this->readFixture("GET_searchresult_others.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertStringContainsString('data-processList-count="5"', (string)$response->getBody());
+        $this->assertStringContainsString('data-processListOther-count="0"', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testAuditAccountWithoutSearchRequestDoesNotLoadProcessOrLogResults()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [], []);
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertStringNotContainsString('Log-Ergebnisse', (string)$response->getBody());
+    }
+
+    public function testRenderingWithHiddenNavigation()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'hideNavigation' => 1
+        ], []);
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testAuditAccountCanSearchLogsByServiceWithoutProcessQuery()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/log/process/',
                     'parameters' => [
-                        'searchQuery' => 'Test%2520BO',
+                        'searchQuery' => '',
                         'page' => 1,
                         'perPage' => 100,
-                        'service' => null,
+                        'service' => 'testservice',
                         'provider' => null,
                         'userAction' => 0,
                         'date' => null
@@ -131,9 +185,11 @@ class ProcessSearchTest extends Base
                 ]
             ]
         );
-        $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString('data-processList-count="5"', (string)$response->getBody());
-        $this->assertStringContainsString('data-processListOther-count="0"', (string)$response->getBody());
+
+        $response = $this->render($this->arguments, [
+            'service' => 'testservice'
+        ], []);
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringContainsString('Log-Ergebnisse', (string)$response->getBody());
     }
 }

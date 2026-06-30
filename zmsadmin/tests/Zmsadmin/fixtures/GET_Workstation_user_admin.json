@@ -9,9 +9,9 @@
     "data": {
         "$schema": "https://schema.berlin.de/queuemanagement/workstation.json",
         "useraccount": {
-            "roles": ["audit_viewer"],
+            "roles": ["user_admin"],
             "permissions": {
-                "logs": "1"
+                "useraccount": "1"
             },
             "departments": [
                 {
