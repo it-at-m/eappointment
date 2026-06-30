@@ -29,7 +29,7 @@ class OwnerUpdate extends BaseController
         $owner = (new Query())->readEntity($args['id']);
         if (! $owner->hasId()) {
             throw new Exception\Owner\OwnerNotFound();
-        }(new Helper\User($request, 2))->checkRights(
+        }(new Helper\User($request, 2))->checkPermissions(
             new \BO\Zmsentities\Useraccount\EntityAccess($owner)
         );
 
