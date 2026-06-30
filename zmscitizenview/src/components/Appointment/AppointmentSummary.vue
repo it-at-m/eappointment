@@ -106,8 +106,8 @@
                 <strong>{{ t(`appointmentTypes.${variantId}`) }}</strong
                 ><br />
               </p>
-              <p v-if="getVariantHint(variantId, t)">
-                {{ getVariantHint(variantId, t) }}
+              <p v-if="getAppointmentLocationVariantHint(variantId, t)">
+                {{ getAppointmentLocationVariantHint(variantId, t) }}
               </p>
             </template>
 
@@ -116,7 +116,7 @@
                 <strong>{{ t(`appointmentTypes.${variantId}`) }}</strong
                 ><br />
               </p>
-              <p>{{ getVariantHint(variantId, t) }}</p>
+              <p>{{ getAppointmentLocationVariantHint(variantId, t) }}</p>
             </template>
 
             <template v-else>
@@ -339,8 +339,8 @@ import {
 } from "@/types/ProvideInjectTypes";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
+  getAppointmentLocationVariantHint,
   getServiceBaseURL,
-  getVariantHint,
   isVariantWithAddress,
   isVariantWithHint,
 } from "@/utils/Constants";

@@ -141,6 +141,22 @@ export const getVariantHint = (
     : undefined;
 };
 
+export const getAppointmentLocationVariantHint = (
+  variantId: number | null,
+  t: (key: string) => string
+) => {
+  if (variantId == null) return undefined;
+
+  if (
+    variantId === VARIANT_ID_SMALL_CLIENT ||
+    variantId === VARIANT_ID_LARGE_CLIENT
+  ) {
+    return t(`locationVariantText.${VARIANT_ID_PRESENCE}`);
+  }
+
+  return getVariantHint(variantId, t);
+};
+
 export function shouldAddImplicitPresenceVariant(
   variantIds: Array<number | null | undefined>
 ): boolean {
