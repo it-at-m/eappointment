@@ -167,5 +167,64 @@ class UseraccountUpdateTest extends Base
             }'
         ], []);
     }
+
+    public function testMultipleRolesRejected()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
+        $this->setDepartment(74);
+
+        $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountInvalidRoleAssignment');
+        $this->expectExceptionCode(400);
+
+        $this->render(['loginname' => 'testadmin'], [
+            '__body' => '{
+                "roles": ["agent_queue", "appointment_admin"],
+                "departments": [
+                    {"id": 74}
+                ],
+                "email": "unittest@berlinonline.de",
+                "id": "testadmin"
+            }'
+        ], []);
+    }
+
+    public function testMissingRolesRejected()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
+        $this->setDepartment(74);
+
+        $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountInvalidRoleAssignment');
+        $this->expectExceptionCode(400);
+
+        $this->render(['loginname' => 'testadmin'], [
+            '__body' => '{
+                "departments": [
+                    {"id": 74}
+                ],
+                "email": "unittest@berlinonline.de",
+                "id": "testadmin"
+            }'
+        ], []);
+    }
+
+    public function testUnknownRoleRejected()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
+        $this->setDepartment(74);
+
+        $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountInvalidRoleAssignment');
+        $this->expectExceptionCode(400);
+
+        $this->render(['loginname' => 'testadmin'], [
+            '__body' => '{
+                "roles": ["__unknown_role__"],
+                "departments": [
+                    {"id": 74}
+                ],
+                "email": "unittest@berlinonline.de",
+                "id": "testadmin"
+            }'
+        ], []);
+    }
 }
 
