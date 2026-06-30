@@ -150,12 +150,19 @@ class Role extends Base
     public function deleteRole(int $roleId): ?Entity
     {
         $entity = $this->readRoleById($roleId);
-        $deleteAssignments = new Query\UserRole(Query\Base::DELETE);
-        $deleteAssignments->addConditionRoleId($roleId);
-        $this->deleteItem($deleteAssignments);
+        if (! $entity || ! $entity->hasId()) {
+            return null;
+        }
+
+        $assignedUserCount = (int) ($entity['assignedUserCount'] ?? 0);
+        if ($assignedUserCount > 0) {
+            throw new \BO\Zmsdb\Exception\Role\AssignedUserListNotEmpty();
+        }
+
         $query = new Query\Role(Query\Base::DELETE);
         $query->addConditionRoleId($roleId);
         $deleted = ($this->deleteItem($query)) ? $entity : null;
+
         if ($deleted) {
             (new Useraccount())->invalidateAllCaches();
         }
