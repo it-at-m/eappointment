@@ -13,6 +13,10 @@ use BO\Zmsentities\Collection\ProcessList;
 
 class ProcessSearch extends BaseController
 {
+    private const DEFAULT_RESULTS_PER_PAGE = 100;
+
+    private const MAX_RESULTS_PER_PAGE = 1000;
+
     /**
      * @SuppressWarnings(Param)
      * @return \Psr\Http\Message\ResponseInterface
@@ -74,13 +78,11 @@ class ProcessSearch extends BaseController
             ->isString()
             ->setDefault('')
             ->getValue();
-        $perPage = $validator->getParameter('perPage')
+        $requestedResultsPerPage = (int) $validator->getParameter('perPage')
             ->isNumber()
-            ->setDefault(100)
+            ->setDefault(self::DEFAULT_RESULTS_PER_PAGE)
             ->getValue();
-        if ($perPage > 1000) {
-            $perPage = 1000;
-        }
+        $resultsPerPage = min($requestedResultsPerPage, self::MAX_RESULTS_PER_PAGE);
 
         return [
             'queryString' => $queryString,
@@ -89,7 +91,7 @@ class ProcessSearch extends BaseController
             'provider' => $provider ? trim($provider) : null,
             'date' => $validator->getParameter('date')->isString()->setDefault(null)->getValue(),
             'userAction' => (int) $validator->getParameter('user')->isNumber()->setDefault(0)->getValue(),
-            'perPage' => $perPage,
+            'perPage' => $resultsPerPage,
         ];
     }
 

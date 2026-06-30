@@ -9,6 +9,7 @@ namespace BO\Zmsapi;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
+use BO\Zmsapi\Helper\SearchPagination;
 use BO\Zmsdb\Log as Query;
 use DateTime;
 
@@ -30,12 +31,14 @@ class ProcessLog extends BaseController
         $provider = Validator::param('provider')->isString()->setDefault(null)->getValue();
         $date = Validator::param('date')->isString()->setDefault(null)->getValue();
         $userAction = Validator::param('userAction')->isNumber()->setDefault(0)->getValue();
-        $page = Validator::param('page')->isNumber()->setDefault(1)->getValue();
-        $perPage = Validator::param('perPage')->isNumber()->setDefault(100)->getValue();
+        $requestedPage = (int) Validator::param('page')->isNumber()->setDefault(1)->getValue();
+        $requestedResultsPerPage = (int) Validator::param('perPage')
+            ->isNumber()
+            ->setDefault(SearchPagination::DEFAULT_RESULTS_PER_PAGE)
+            ->getValue();
+        $page = SearchPagination::normalizePage($requestedPage);
+        $resultsPerPage = SearchPagination::normalizeResultsPerPage($requestedResultsPerPage);
         $scopeIds = Validator::param('scopeIds')->isString()->setDefault(null)->getValue();
-        if ($perPage > 1000) {
-            $perPage = 1000;
-        }
 
         $resolvedScopeIds = null;
         if ($scopeIds !== null && $scopeIds !== '') {
@@ -49,7 +52,7 @@ class ProcessLog extends BaseController
             $date ? new DateTime($date) : null,
             $userAction,
             $page,
-            $perPage,
+            $resultsPerPage,
             $resolvedScopeIds
         );
 
