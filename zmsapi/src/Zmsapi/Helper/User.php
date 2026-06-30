@@ -97,23 +97,6 @@ class User
         }
     }
 
-    /**
-     * @throws \BO\Zmsentities\Exception\UserAccountMissingRights
-     * @throws \BO\Zmsentities\Exception\UserAccountMissingLogin
-     *
-     */
-    public static function testWorkstationAssignedRights($useraccount)
-    {
-        static::$workstation
-            ->getUseraccount()
-            ->testRights(
-                array_keys(
-                    array_filter($useraccount->rights, function ($right) {
-                        return (1 == $right);
-                    })
-                )
-            );
-    }
 
     public static function testWorkstationAssignedRoles($useraccount): void
     {

@@ -49,7 +49,6 @@ class UseraccountTest extends EntityCommonTests
         $entity->id = 'z-id-test';
         $superuser = (new $this->entityclass())->getExample();
         $superuser->id = 'a-id-test';
-        $superuser->rights['superuser'] = true;
         $collection = new \BO\Zmsentities\Collection\UseraccountList();
         $collection[] = $entity;
         $collection[] = $superuser;
@@ -168,7 +167,6 @@ class UseraccountTest extends EntityCommonTests
         $this->assertTrue($entity->hasPermissions(['appointment', 'availability']));
         $this->assertFalse($entity->hasPermissions(['appointment', 'counter']));
 
-        $entity->rights['superuser'] = false;
         $entity->permissions['superuser'] = true;
         $this->assertTrue($entity->isSuperUser());
         $this->assertTrue($entity->hasPermissions(['counter', 'logs']), 'Superuser bypasses permission checks');
@@ -192,7 +190,6 @@ class UseraccountTest extends EntityCommonTests
         $this->assertTrue($entity->hasAnyPermission(['counter', 'appointment']));
         $this->assertFalse($entity->hasAnyPermission(['counter', 'logs']));
 
-        $entity->rights['superuser'] = false;
         $entity->permissions['superuser'] = true;
         $this->assertTrue($entity->hasAnyPermission(['counter', 'logs']));
     }
@@ -212,7 +209,6 @@ class UseraccountTest extends EntityCommonTests
         $this->assertFalse($withoutStatistic->hasExclusivePermission('statistic'));
 
         $statisticOnly->permissions['superuser'] = true;
-        $statisticOnly->rights['superuser'] = false;
         $this->assertFalse($statisticOnly->hasExclusivePermission('statistic'), 'Superuser is never exclusive');
     }
 
@@ -269,18 +265,9 @@ class UseraccountTest extends EntityCommonTests
         $this->assertSame($entity, $entity->testAnyPermission(['counter', 'appointment']));
     }
 
-    public function testMixedRightsAndPermissions()
-    {
-        $entity = (new $this->entityclass())->getExample();
-        $this->assertTrue($entity->hasRights(['basic', 'appointment']), "User has basic right and appointment permission");
-        $this->assertFalse($entity->hasRights(['basic', 'counter']), "User has basic right but not counter permission");
-        $this->assertFalse($entity->hasRights(['department', 'cherrypick']), "User neither has department right nor cherrypick permission");
-    }
-
     public function testIsSuperUserViaPermissionsOnly()
     {
         $entity = (new $this->entityclass())->getExample();
-        $entity->rights['superuser'] = false;
         $entity->permissions['superuser'] = true;
         $this->assertTrue($entity->isSuperUser());
     }
