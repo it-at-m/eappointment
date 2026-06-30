@@ -2,7 +2,7 @@
 
 namespace BO\Zmsadmin\Tests;
 
-class ProcessSearchTest extends Base
+class SearchTest extends Base
 {
     protected $arguments = [];
 
@@ -10,7 +10,7 @@ class ProcessSearchTest extends Base
         'query' => 'Test%20BO'
     ];
 
-    protected $classname = "ProcessSearch";
+    protected $classname = "Search";
 
     public function testRendering()
     {

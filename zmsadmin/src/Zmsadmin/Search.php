@@ -11,7 +11,7 @@ use BO\Slim\Render;
 use BO\Zmsentities\Collection\LogList;
 use BO\Zmsentities\Collection\ProcessList;
 
-class ProcessSearch extends BaseController
+class Search extends BaseController
 {
     private const DEFAULT_RESULTS_PER_PAGE = 100;
 
