@@ -23,6 +23,21 @@ class Role extends Base
         return $role;
     }
 
+    public function readRoleByName(string $name, int $resolveReferences = 1): ?Entity
+    {
+        $query = new Query\Role(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionName($name);
+
+        $role = $this->fetchOne($query, new Entity());
+        if (! $role->hasId()) {
+            return null;
+        }
+
+        return $role;
+    }
+
     public function readAllRoles(string $order = 'ASC', int $resolveReferences = 1): Collection
     {
         $roleList = new Collection();

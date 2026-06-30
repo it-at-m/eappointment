@@ -23,6 +23,23 @@ class RoleTest extends Base
         $this->assertNull($missingEntity);
     }
 
+    public function testReadRoleByNameExisting()
+    {
+        $query = new Query();
+        $entity = $query->readRoleByName('system_admin');
+
+        $this->assertEntity("\\BO\\Zmsentities\\Role", $entity);
+        $this->assertEquals('system_admin', $entity->name);
+        $this->assertNotEmpty($entity->id);
+    }
+
+    public function testReadRoleByNameMissing()
+    {
+        $query = new Query();
+        $missing = $query->readRoleByName('__does_not_exist__');
+
+        $this->assertNull($missing);
+    }
 
     public function testReadAllRoles()
     {

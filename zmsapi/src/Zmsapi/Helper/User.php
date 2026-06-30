@@ -132,6 +132,12 @@ class User
             throw new \BO\Zmsapi\Exception\Useraccount\UseraccountInvalidRoleAssignment();
         }
 
+        $roleName = $roleNames[0];
+        $existingRole = (new \BO\Zmsdb\Role())->readRoleByName($roleName, 0);
+        if ($existingRole === null) {
+            throw new \BO\Zmsapi\Exception\Useraccount\UseraccountInvalidRoleAssignment();
+        }
+
         if (
             ! static::$workstation->getUseraccount()->isSuperUser()
             && array_intersect($roleNames, self::SUPERUSER_ONLY_ROLES)
