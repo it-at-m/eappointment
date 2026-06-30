@@ -143,9 +143,6 @@ class Log extends Base
         );
     }
 
-    /**
-     * @return array{display: array<string, mixed>, indexed: array<string, mixed>}
-     */
     public static function buildProcessLogPayload(
         \BO\Zmsentities\Process $process,
         string $action,
@@ -204,9 +201,6 @@ class Log extends Base
         return self::ACTION_LABEL_TO_CODE[$label] ?? null;
     }
 
-    /**
-     * @return array<string, mixed>|null
-     */
     public static function parseLegacyLogData(?string $dataJson): ?array
     {
         if ($dataJson === null || $dataJson === '') {
@@ -249,9 +243,6 @@ class Log extends Base
         });
     }
 
-    /**
-     * @return array{updated: int, lastLogId: int}
-     */
     public function backfillIndexedColumns(int $limit = 5000, int $afterLogId = 0): array
     {
         $limit = max(1, min(10000, $limit));
