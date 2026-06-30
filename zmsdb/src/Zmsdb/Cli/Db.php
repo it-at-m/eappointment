@@ -31,26 +31,47 @@ class Db
         if ($verbose) {
             \App::$log->info('Importing SQL file', ['file' => basename($file)]);
         }
+        $delimiter = ';';
         $query = '';
         while ($line = $readFunction($sqlFile)) {
+            if (preg_match('/^\s*DELIMITER\s+(\S+)\s*$/i', rtrim($line))) {
+                $delimiter = trim(substr(trim($line), 9));
+                continue;
+            }
+
             $query .= $line;
-            if (preg_match('/;\s*$/', $line)) {
-                try {
-                    $pdo->exec($query);
-                    //echo "Successful:\n$query\n";
-                    $query = '';
-                } catch (\Exception $exception) {
-                    if ($verbose) {
-                        \App::$log->error('SQL import failed', [
-                            'file' => basename($file),
-                            'method' => __METHOD__,
-                            'exception' => get_class($exception),
-                            'message' => $exception->getMessage(),
-                            'code' => $exception->getCode(),
-                        ]);
-                    }
-                    throw $exception;
+            $endsWithDelimiter = $delimiter === ';'
+                ? (bool) preg_match('/;\s*$/', $line)
+                : (bool) preg_match('/' . preg_quote($delimiter, '/') . '\s*$/', rtrim($line));
+
+            if (!$endsWithDelimiter) {
+                continue;
+            }
+
+            $statement = $query;
+            if ($delimiter !== ';') {
+                $statement = preg_replace('/' . preg_quote($delimiter, '/') . '\s*$/', '', $statement);
+            }
+            $statement = trim($statement);
+            $query = '';
+
+            if ($statement === '') {
+                continue;
+            }
+
+            try {
+                $pdo->exec($statement);
+            } catch (\Exception $exception) {
+                if ($verbose) {
+                    \App::$log->error('SQL import failed', [
+                        'file' => basename($file),
+                        'method' => __METHOD__,
+                        'exception' => get_class($exception),
+                        'message' => $exception->getMessage(),
+                        'code' => $exception->getCode(),
+                    ]);
                 }
+                throw $exception;
             }
         }
         $closeFunction($sqlFile);
