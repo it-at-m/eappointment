@@ -1,7 +1,11 @@
 -- Backfill indexed search columns from the legacy JSON `data` blob.
+-- Runs AFTER 91780720002 (columns) and 91780720003/04/05 (indexes).
+-- Indexes are created on empty columns first (fast), then this migration populates them in batches.
+--
 -- Idempotent: only updates rows that have not been backfilled yet (client_name IS NULL).
--- Batched via stored procedure: each UPDATE commits separately (short row locks, no downtime).
+-- Batched via stored procedure: each UPDATE commits separately (short row locks).
 -- Batch count = CEILING(pending / batch_size) + buffer for rows written during the migration.
+-- Legacy JSON search in `data` remains available until backfill completes.
 
 DELIMITER $$
 
