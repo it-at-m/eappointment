@@ -144,6 +144,12 @@ class User
         return $workstation;
     }
 
+    public static function hasLogin(): bool
+    {
+        $userAccount = static::readWorkstation()->getUseraccount();
+        return $userAccount->hasId();
+    }
+
     public static function checkPermissions(...$requiredPermissions)
     {
         $workstation = static::readWorkstation();
@@ -254,11 +260,6 @@ class User
         return $department;
     }
 
-    public static function hasRights()
-    {
-        $userAccount = static::readWorkstation()->getUseraccount();
-        return $userAccount->hasId();
-    }
 
     /**
      * Get X-Api-Key from header

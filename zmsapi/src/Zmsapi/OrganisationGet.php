@@ -32,7 +32,7 @@ class OrganisationGet extends BaseController
 
         $message = Response\Message::create($request);
 
-        if ($workstation->hasRights()) {
+        if ($workstation->hasLogin()) {
             $workstation->checkRights('department');
         } else {
             $organisation = $organisation->withLessData();

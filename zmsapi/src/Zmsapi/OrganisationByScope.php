@@ -39,8 +39,9 @@ class OrganisationByScope extends BaseController
         }
 
         $message = Response\Message::create($request);
-        if ((new Helper\User($request))->hasRights()) {
-            (new Helper\User($request))->checkPermissions();
+        $user = new Helper\User($request);
+        if ($user->hasLogin()) {
+            $user->checkPermissions();
         } else {
             $organisation = $organisation->withLessData();
             $message->meta->reducedData = true;

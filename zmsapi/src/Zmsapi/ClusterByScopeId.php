@@ -26,9 +26,10 @@ class ClusterByScopeId extends BaseController
         $message = Response\Message::create($request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
 
-        if ((new Helper\User($request))->hasRights() || $resolveReferences > 0) {
+        $user = new Helper\User($request);
+        if ($user->hasLogin() || $resolveReferences > 0) {
             $resolveReferences = ($resolveReferences > 0 ) ? $resolveReferences : 1;
-            (new Helper\User($request))->checkPermissions();
+            $user->checkPermissions();
         } else {
             $message->meta->reducedData = true;
         }
