@@ -24,18 +24,6 @@ class ProcessSearchTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/process/search/',
-                    'parameters' => [
-                        'resolveReferences' => 1,
-                        'query' => 'Test%20BO',
-                        'page' => 1,
-                        'limit' => 100,
-                        'scopeIds' => '380,1,141,140,142',
-                    ],
-                    'response' => $this->readFixture("GET_searchresult.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/log/process/',
                     'parameters' => [
                         'searchQuery' => 'Test%2520BO',
@@ -65,18 +53,6 @@ class ProcessSearchTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/process/search/',
-                    'parameters' => [
-                        'resolveReferences' => 1,
-                        'query' => '100005',
-                        'page' => 2,
-                        'limit' => 20,
-                        'scopeIds' => '380,1,141,140,142',
-                    ],
-                    'response' => $this->readFixture("GET_searchresult_processid.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -125,21 +101,6 @@ class ProcessSearchTest extends Base
                         'scopeIds' => '380,1,141',
                     ],
                     'response' => $this->readFixture("GET_searchresult_others.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/log/process/',
-                    'parameters' => [
-                        'searchQuery' => 'Test%2520BO',
-                        'page' => 1,
-                        'perPage' => 100,
-                        'service' => null,
-                        'provider' => null,
-                        'userAction' => 0,
-                        'date' => null,
-                        'scopeIds' => '380,1,141',
-                    ],
-                    'response' => $this->readFixture("GET_loglist.json")
                 ]
             ]
         );
@@ -147,6 +108,77 @@ class ProcessSearchTest extends Base
         $this->assertStringContainsString('data-processList-count="5"', (string)$response->getBody());
         $this->assertStringContainsString('data-processListOther-count="0"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testAuditAccountWithoutSearchRequestDoesNotLoadProcessOrLogResults()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [], []);
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertStringNotContainsString('Log-Ergebnisse', (string)$response->getBody());
+    }
+
+    public function testRenderingWithHiddenNavigation()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'hideNavigation' => 1
+        ], []);
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testAuditAccountCanSearchLogsByServiceWithoutProcessQuery()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/log/process/',
+                    'parameters' => [
+                        'searchQuery' => '',
+                        'page' => 1,
+                        'perPage' => 100,
+                        'service' => 'testservice',
+                        'provider' => null,
+                        'userAction' => 0,
+                        'date' => null,
+                        'scopeIds' => '380,1,141,140,142',
+                    ],
+                    'response' => $this->readFixture("GET_loglist.json")
+                ]
+            ]
+        );
+
+        $response = $this->render($this->arguments, [
+            'service' => 'testservice'
+        ], []);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringContainsString('Log-Ergebnisse', (string)$response->getBody());
     }
 
     public function testQuotedSearchQuery()
@@ -170,21 +202,6 @@ class ProcessSearchTest extends Base
                         'scopeIds' => '380,1,141',
                     ],
                     'response' => $this->readFixture("GET_searchresult_others.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/log/process/',
-                    'parameters' => [
-                        'searchQuery' => '%22Muster%22',
-                        'page' => 1,
-                        'perPage' => 100,
-                        'service' => null,
-                        'provider' => null,
-                        'userAction' => 0,
-                        'date' => null,
-                        'scopeIds' => '380,1,141',
-                    ],
-                    'response' => $this->readFixture("GET_loglist.json")
                 ],
             ]
         );
@@ -248,21 +265,6 @@ class ProcessSearchTest extends Base
                         'scopeIds' => '380,1,141',
                     ],
                     'response' => $this->readFixture("GET_searchresult_others.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/log/process/',
-                    'parameters' => [
-                        'searchQuery' => '0',
-                        'page' => 1,
-                        'perPage' => 100,
-                        'service' => null,
-                        'provider' => null,
-                        'userAction' => 0,
-                        'date' => null,
-                        'scopeIds' => '380,1,141',
-                    ],
-                    'response' => $this->readFixture("GET_loglist.json")
                 ],
             ]
         );

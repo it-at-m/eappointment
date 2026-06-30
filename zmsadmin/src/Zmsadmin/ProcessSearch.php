@@ -28,7 +28,7 @@ class ProcessSearch extends BaseController
         array $args
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $parameters = $this->getSearchParameters($request->getAttribute('validator'));
+        $parameters = $this->readSearchParameters($request->getAttribute('validator'));
         $scopeIds = $workstation->getUseraccount()->getDepartmentList()->getUniqueScopeList()->getIds();
 
         [$processList, $processSearchTotal] = $this->readProcessSearchResults(
@@ -44,6 +44,7 @@ class ProcessSearch extends BaseController
             'page/search.twig',
             array(
                 'title' => 'Suche',
+                'hideNavigation' => (bool) $parameters['hideNavigation'],
                 'service' => $parameters['service'],
                 'provider' => $parameters['provider'],
                 'userAction' => $parameters['userAction'],
@@ -61,44 +62,57 @@ class ProcessSearch extends BaseController
         );
     }
 
-    private function getSearchParameters($validator): array
+    private function readSearchParameters($validator): array
     {
         $queryString = $validator->getParameter('query')
             ->isString('', false)
             ->getValue();
         if ($queryString !== null && $queryString !== '') {
             $queryString = html_entity_decode((string) $queryString, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        } else {
+            $queryString = $queryString ?? '';
         }
 
-        $service = $validator->getParameter('service')
-            ->isString()
-            ->setDefault('')
-            ->getValue();
-        $provider = $validator->getParameter('provider')
-            ->isString()
-            ->setDefault('')
-            ->getValue();
-        $requestedResultsPerPage = (int) $validator->getParameter('perPage')
-            ->isNumber()
-            ->setDefault(self::DEFAULT_RESULTS_PER_PAGE)
-            ->getValue();
+        $service = $this->readStringParameter($validator, 'service');
+        $provider = $this->readStringParameter($validator, 'provider');
+        $date = $validator->getParameter('date')->isString()->setDefault(null)->getValue();
+        $page = $this->readNumberParameter($validator, 'page', 1);
+        $userAction = $this->readNumberParameter($validator, 'user', 0);
+        $requestedResultsPerPage = $this->readNumberParameter($validator, 'perPage', self::DEFAULT_RESULTS_PER_PAGE);
         $resultsPerPage = min($requestedResultsPerPage, self::MAX_RESULTS_PER_PAGE);
+        $hideNavigation = $this->readNumberParameter($validator, 'hideNavigation', 0);
 
         return [
             'queryString' => $queryString,
-            'page' => (int) $validator->getParameter('page')->isNumber()->setDefault(1)->getValue(),
+            'page' => $page,
             'service' => $service ? trim($service) : null,
             'provider' => $provider ? trim($provider) : null,
-            'date' => $validator->getParameter('date')->isString()->setDefault(null)->getValue(),
-            'userAction' => (int) $validator->getParameter('user')->isNumber()->setDefault(0)->getValue(),
+            'date' => $date !== null && trim($date) !== '' ? trim($date) : null,
+            'userAction' => $userAction,
             'perPage' => $resultsPerPage,
+            'hideNavigation' => $hideNavigation,
+            'isSearchRequested' => (
+                trim((string) $queryString) !== ''
+                || trim($service) !== ''
+                || trim($provider) !== ''
+                || ($date !== null && trim($date) !== '')
+                || $userAction !== 0
+            ),
         ];
     }
 
     private function readProcessSearchResults($workstation, array $parameters, array $scopeIds): array
     {
+        if (!$parameters['isSearchRequested']) {
+            return [new ProcessList(), 0];
+        }
+
+        if (!$workstation->getUseraccount()->hasPermissions(['customersearch'])) {
+            return [new ProcessList(), 0];
+        }
+
         $queryString = $parameters['queryString'];
-        if ($queryString === null || $queryString === '') {
+        if ($queryString === null || trim((string) $queryString) === '') {
             return [new ProcessList(), 0];
         }
 
@@ -108,7 +122,7 @@ class ProcessSearch extends BaseController
             'page' => $parameters['page'],
             'limit' => $parameters['perPage'],
         ];
-        if (!$workstation->hasSuperUseraccount()) {
+        if (!$workstation->getUseraccount()->isSuperUser()) {
             $searchParameters['scopeIds'] = implode(',', $scopeIds);
         }
 
@@ -119,7 +133,7 @@ class ProcessSearch extends BaseController
             ? (int) $searchMeta->totalCount
             : $processList->count();
 
-        if (!empty($processList) && !$workstation->hasSuperUseraccount()) {
+        if (!empty($processList) && !$workstation->getUseraccount()->isSuperUser()) {
             $processList = $this->filterProcessListForUserRights($processList, $scopeIds);
         }
 
@@ -128,7 +142,11 @@ class ProcessSearch extends BaseController
 
     private function readLogSearchResults($workstation, array $parameters, array $scopeIds): ?LogList
     {
-        if (!$workstation->hasAuditAccount()) {
+        if (!$workstation->getUseraccount()->hasPermissions(['logs'])) {
+            return null;
+        }
+
+        if (!$parameters['isSearchRequested'] && !$workstation->getUseraccount()->isSuperUser()) {
             return null;
         }
 
@@ -141,7 +159,7 @@ class ProcessSearch extends BaseController
             'userAction' => $parameters['userAction'],
             'date' => $parameters['date'],
         ];
-        if (!$workstation->hasSuperUseraccount()) {
+        if (!$workstation->getUseraccount()->isSuperUser()) {
             $logParameters['scopeIds'] = implode(',', $scopeIds);
         }
 
@@ -152,7 +170,7 @@ class ProcessSearch extends BaseController
         return $this->filterLogListForUserRights(
             $logList,
             $scopeIds,
-            $workstation->hasSuperUseraccount()
+            $workstation->getUseraccount()->isSuperUser()
         );
     }
 
@@ -160,7 +178,7 @@ class ProcessSearch extends BaseController
     {
         $processList = $processList ?? new ProcessList();
         $processListOther = new ProcessList();
-        if (!$workstation->hasSuperUseraccount()) {
+        if (!$workstation->getUseraccount()->isSuperUser()) {
             $processListOther = $processList->withOutScopeId($workstation->scope['id']);
             $processList = $processList->withScopeId($workstation->scope['id']);
         }
@@ -209,5 +227,21 @@ class ProcessSearch extends BaseController
         }
 
         return $list;
+    }
+
+    private function readStringParameter($validator, string $name, string $default = ''): string
+    {
+        return $validator->getParameter($name)
+            ->isString()
+            ->setDefault($default)
+            ->getValue() ?? $default;
+    }
+
+    private function readNumberParameter($validator, string $name, int $default): int
+    {
+        return (int) $validator->getParameter($name)
+            ->isNumber()
+            ->setDefault($default)
+            ->getValue();
     }
 }
