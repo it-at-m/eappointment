@@ -744,14 +744,29 @@ class Useraccount extends Base
 
     protected function replaceUserRoles(int $userId, array $roleNames): void
     {
-        $this->perform(Query\Useraccount::QUERY_DELETE_USER_ROLES, [$userId]);
-        if (empty($roleNames)) {
-            return;
+        if (count($roleNames) !== 1) {
+            throw new \BO\Zmsdb\Exception\Useraccount\RoleAssignmentFailed();
         }
 
+        $this->perform(Query\Useraccount::QUERY_DELETE_USER_ROLES, [$userId]);
+
         $placeholders = implode(', ', array_fill(0, count($roleNames), '?'));
-        $query = str_replace(':roleNames', $placeholders, Query\Useraccount::QUERY_INSERT_USER_ROLES_BY_NAME);
+        $query = str_replace(
+            ':roleNames',
+            $placeholders,
+            Query\Useraccount::QUERY_INSERT_USER_ROLES_BY_NAME
+        );
+
         $this->perform($query, array_merge([$userId], $roleNames));
+
+        $count = (int) $this->fetchValue(
+            'SELECT COUNT(*) FROM user_role WHERE user_id = ?',
+            [$userId]
+        );
+
+        if ($count !== 1) {
+            throw new \BO\Zmsdb\Exception\Useraccount\RoleAssignmentFailed();
+        }
     }
 
     public function writeUpdatedEntity($loginName, Entity $entity, $resolveReferences = 0)
