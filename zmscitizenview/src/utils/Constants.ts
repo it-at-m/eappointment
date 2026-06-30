@@ -135,7 +135,7 @@ export function isVariantWithHint(variantId: number | null): boolean {
 export const getVariantHint = (
   variantId: number,
   t: (key: string) => string
-) => {
+): string | undefined => {
   return (VARIANTS_WITH_HINTS as readonly number[]).includes(variantId)
     ? t(`locationVariantText.${variantId}`)
     : undefined;
@@ -144,7 +144,7 @@ export const getVariantHint = (
 export const getAppointmentLocationVariantHint = (
   variantId: number | null,
   t: (key: string) => string
-) => {
+): string | undefined => {
   if (variantId == null) return undefined;
 
   if (
