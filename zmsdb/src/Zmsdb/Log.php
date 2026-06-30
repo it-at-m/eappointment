@@ -243,55 +243,6 @@ class Log extends Base
         });
     }
 
-    public function backfillIndexedColumns(int $limit = 5000, int $afterLogId = 0): array
-    {
-        $limit = max(1, min(10000, $limit));
-        $sql = 'SELECT log_id, data FROM log
-            WHERE type = :type
-              AND data IS NOT NULL
-              AND client_name IS NULL
-              AND log_id > :afterLogId
-            ORDER BY log_id ASC
-            LIMIT ' . $limit;
-        $rows = $this->fetchAll($sql, [
-            'type' => self::PROCESS,
-            'afterLogId' => $afterLogId,
-        ]);
-
-        $updated = 0;
-        $lastLogId = $afterLogId;
-        foreach ($rows as $row) {
-            $lastLogId = (int) $row['log_id'];
-            $indexed = self::parseLegacyLogData($row['data'] ?? null);
-            if ($indexed === null || $indexed === []) {
-                continue;
-            }
-
-            $setParts = [];
-            $parameters = ['logId' => $lastLogId];
-            foreach (self::INDEXED_COLUMNS as $column) {
-                if (!array_key_exists($column, $indexed)) {
-                    continue;
-                }
-                $setParts[] = '`' . $column . '`=:' . $column;
-                $parameters[$column] = $indexed[$column];
-            }
-
-            if ($setParts === []) {
-                continue;
-            }
-
-            $updateSql = 'UPDATE log SET ' . implode(', ', $setParts) . ' WHERE log_id = :logId';
-            $this->perform($updateSql, $parameters);
-            $updated++;
-        }
-
-        return [
-            'updated' => $updated,
-            'lastLogId' => $lastLogId,
-        ];
-    }
-
     public function readByProcessId($processId)
     {
         $query = new Query\Log(Query\Base::SELECT);
