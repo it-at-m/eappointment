@@ -6,6 +6,15 @@ use BO\Zmsdb\Log as Query;
 
 class LogTest extends Base
 {
+    private const CITIZEN_MAX_MUSTERMANN = 'Max Mustermann';
+
+    private const CITIZEN_ERIKA_MUSTERMANN = 'Erika Mustermann';
+
+    private static function logSearchLabel(string $label): string
+    {
+        return 'LogSearch ' . $label;
+    }
+
     public function testBasic()
     {
         Query::writeLogEntry("Test", 12345);
@@ -23,7 +32,7 @@ class LogTest extends Base
             'Wartenummer' => 100495,
             'Terminzeit' => '24.06.2026 09:50:00',
             'Slots' => 1,
-            'Bürger*in' => 'tom fink',
+            'Bürger*in' => self::CITIZEN_MAX_MUSTERMANN,
             'Dienstleistungen' => 'Reisepass',
             'Standort' => 'Bürgerbüro Ruppertstraße (KVR-II/221)',
             'E-Mail' => 't@t.com',
@@ -33,7 +42,7 @@ class LogTest extends Base
 
         $parsed = Query::parseLegacyLogData($json);
         $this->assertSame('called', $parsed['action']);
-        $this->assertSame('tom fink', $parsed['client_name']);
+        $this->assertSame(self::CITIZEN_MAX_MUSTERMANN, $parsed['citizen_name']);
         $this->assertSame('100495', $parsed['display_number']);
         $this->assertSame('2026-06-24 09:50:00', $parsed['appointment_at']);
         $this->assertSame('Reisepass', $parsed['services']);
@@ -65,14 +74,15 @@ class LogTest extends Base
         }
     }
 
-    public function testSearchByIndexedClientName()
+    public function testSearchByIndexedCitizenName()
     {
         $referenceId = 987654;
+        $citizenName = self::logSearchLabel('UniqueName');
         $display = [
             'Aktion' => Query::ACTION_EDITED,
             'Sachbearbeiter*in' => 'testadmin',
             'Terminnummer' => '555001',
-            'Bürger*in' => 'LogSearch UniqueName',
+            'Bürger*in' => $citizenName,
             'Dienstleistungen' => 'Reisepass',
             'Standort' => 'Test Standort',
         ];
@@ -86,7 +96,7 @@ class LogTest extends Base
             [
                 'action' => 'edited',
                 'display_number' => '555001',
-                'client_name' => 'LogSearch UniqueName',
+                'citizen_name' => $citizenName,
                 'services' => 'Reisepass',
                 'scope_name' => 'Test Standort',
             ]
@@ -109,6 +119,7 @@ class LogTest extends Base
     public function testSearchByIndexedServices()
     {
         $referenceId = 987655;
+        $serviceName = self::logSearchLabel('UniqueService');
         Query::writeLogEntry(
             'TEST service search',
             $referenceId,
@@ -117,16 +128,16 @@ class LogTest extends Base
             'testadmin',
             json_encode([
                 'Aktion' => Query::ACTION_EDITED,
-                'Dienstleistungen' => 'UniqueServiceName',
+                'Dienstleistungen' => $serviceName,
             ], JSON_UNESCAPED_UNICODE),
             [
                 'action' => 'edited',
-                'services' => 'UniqueServiceName',
+                'services' => $serviceName,
             ]
         );
 
         $query = new Query();
-        $results = $query->readByProcessData(null, 'UniqueServiceName', null, null, 0, 1, 10);
+        $results = $query->readByProcessData(null, $serviceName, null, null, 0, 1, 10);
         $found = false;
         foreach ($results as $entry) {
             if ((int) $entry['reference'] === $referenceId) {
@@ -139,36 +150,36 @@ class LogTest extends Base
 
     public function testUnquotedNameSearchUsesWordPrefix()
     {
-        $referenceIdDecoyA = 987656;
-        $referenceIdDecoyB = 987659;
+        $referenceIdMax = 987656;
+        $referenceIdErika = 987659;
         $referenceIdMatch = 987657;
-        $searchToken = 'WordPrefixTest';
+        $citizenNameMatch = self::logSearchLabel('WordPrefix987657');
         Query::writeLogEntry(
-            'TEST mueller decoy',
-            $referenceIdDecoyA,
+            'TEST log search max mustermann',
+            $referenceIdMax,
             Query::PROCESS,
             172,
             'testadmin',
-            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => 'Mueller'], JSON_UNESCAPED_UNICODE),
-            ['action' => 'edited', 'client_name' => 'Mueller']
+            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => self::CITIZEN_MAX_MUSTERMANN], JSON_UNESCAPED_UNICODE),
+            ['action' => 'edited', 'citizen_name' => self::CITIZEN_MAX_MUSTERMANN]
         );
         Query::writeLogEntry(
-            'TEST mueller decoy',
-            $referenceIdDecoyB,
+            'TEST log search erika mustermann',
+            $referenceIdErika,
             Query::PROCESS,
             172,
             'testadmin',
-            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => 'Mueller'], JSON_UNESCAPED_UNICODE),
-            ['action' => 'edited', 'client_name' => 'Mueller']
+            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => self::CITIZEN_ERIKA_MUSTERMANN], JSON_UNESCAPED_UNICODE),
+            ['action' => 'edited', 'citizen_name' => self::CITIZEN_ERIKA_MUSTERMANN]
         );
         Query::writeLogEntry(
-            'TEST prefix match',
+            'TEST log search word prefix match',
             $referenceIdMatch,
             Query::PROCESS,
             172,
             'testadmin',
-            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => $searchToken . ' Max Mustermann'], JSON_UNESCAPED_UNICODE),
-            ['action' => 'edited', 'client_name' => $searchToken . ' Max Mustermann']
+            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => $citizenNameMatch], JSON_UNESCAPED_UNICODE),
+            ['action' => 'edited', 'citizen_name' => $citizenNameMatch]
         );
 
         \BO\Zmsdb\Connection\Select::setTransaction(true);
@@ -177,21 +188,21 @@ class LogTest extends Base
 
         $query = new Query();
         $query->getWriter();
-        $results = $query->getBySearchParams([], $searchToken, 0, null, 100, 0, [172]);
+        $results = $query->getBySearchParams([], $citizenNameMatch, 0, null, 100, 0, [172]);
         $references = [];
         foreach ($results as $entry) {
             $references[] = (int) $entry['reference'];
         }
 
         $this->assertContains($referenceIdMatch, $references);
-        $this->assertNotContains($referenceIdDecoyA, $references);
-        $this->assertNotContains($referenceIdDecoyB, $references);
+        $this->assertNotContains($referenceIdMax, $references);
+        $this->assertNotContains($referenceIdErika, $references);
 
         $query->perform(
-            'DELETE FROM log WHERE reference_id IN (:decoyA, :decoyB, :match)',
+            'DELETE FROM log WHERE reference_id IN (:max, :erika, :match)',
             [
-                'decoyA' => $referenceIdDecoyA,
-                'decoyB' => $referenceIdDecoyB,
+                'max' => $referenceIdMax,
+                'erika' => $referenceIdErika,
                 'match' => $referenceIdMatch,
             ]
         );
@@ -199,37 +210,37 @@ class LogTest extends Base
 
     public function testQuotedNameSearch()
     {
-        $referenceId = 987658;
-        $doetownReferenceId = 987660;
-        $shadoweReferenceId = 987661;
-        $searchToken = 'QuotedSearchTest987658';
+        $referenceIdMatch = 987658;
+        $referenceIdMax = 987660;
+        $referenceIdErika = 987661;
+        $citizenNameMatch = self::logSearchLabel('Quoted987658');
         $scopeId = 999172;
         Query::writeLogEntry(
-            'TEST quoted prefix search',
-            $referenceId,
+            'TEST log search quoted match',
+            $referenceIdMatch,
             Query::PROCESS,
             $scopeId,
             'testadmin',
-            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => $searchToken . ' Max Mustermann'], JSON_UNESCAPED_UNICODE),
-            ['action' => 'edited', 'client_name' => $searchToken . ' Max Mustermann']
+            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => $citizenNameMatch], JSON_UNESCAPED_UNICODE),
+            ['action' => 'edited', 'citizen_name' => $citizenNameMatch]
         );
         Query::writeLogEntry(
-            'TEST quoted decoy search',
-            $doetownReferenceId,
+            'TEST log search max mustermann',
+            $referenceIdMax,
             Query::PROCESS,
             $scopeId,
             'testadmin',
-            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => 'Neustadt'], JSON_UNESCAPED_UNICODE),
-            ['action' => 'edited', 'client_name' => 'Neustadt']
+            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => self::CITIZEN_MAX_MUSTERMANN], JSON_UNESCAPED_UNICODE),
+            ['action' => 'edited', 'citizen_name' => self::CITIZEN_MAX_MUSTERMANN]
         );
         Query::writeLogEntry(
-            'TEST quoted decoy b search',
-            $shadoweReferenceId,
+            'TEST log search erika mustermann',
+            $referenceIdErika,
             Query::PROCESS,
             $scopeId,
             'testadmin',
-            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => 'Fernstadt'], JSON_UNESCAPED_UNICODE),
-            ['action' => 'edited', 'client_name' => 'Fernstadt']
+            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => self::CITIZEN_ERIKA_MUSTERMANN], JSON_UNESCAPED_UNICODE),
+            ['action' => 'edited', 'citizen_name' => self::CITIZEN_ERIKA_MUSTERMANN]
         );
 
         \BO\Zmsdb\Connection\Select::setTransaction(true);
@@ -238,26 +249,38 @@ class LogTest extends Base
 
         $query = new Query();
         $query->getWriter();
-        foreach (['"Doe"', '"' . $searchToken . ' Max Mustermann"'] as $searchQuery) {
-            $results = $query->getBySearchParams([], $searchQuery, 0, null, 100, 0, [$scopeId]);
-            $references = array_map(static fn ($entry) => (int) $entry['reference'], iterator_to_array($results));
-            $this->assertContains($referenceId, $references, 'Failed for query: ' . $searchQuery);
-        }
 
-        $quotedDoeResults = $query->getBySearchParams([], '"Doe"', 0, null, 100, 0, [$scopeId]);
-        $quotedDoeReferences = array_map(
+        $quotedMatchResults = $query->getBySearchParams([], '"' . $citizenNameMatch . '"', 0, null, 100, 0, [$scopeId]);
+        $quotedMatchReferences = array_map(
             static fn ($entry) => (int) $entry['reference'],
-            iterator_to_array($quotedDoeResults)
+            iterator_to_array($quotedMatchResults)
         );
-        $this->assertNotContains($doetownReferenceId, $quotedDoeReferences);
-        $this->assertNotContains($shadoweReferenceId, $quotedDoeReferences);
+        $this->assertContains($referenceIdMatch, $quotedMatchReferences);
+        $this->assertNotContains($referenceIdMax, $quotedMatchReferences);
+        $this->assertNotContains($referenceIdErika, $quotedMatchReferences);
+
+        $quotedMustermannResults = $query->getBySearchParams(
+            [],
+            '"' . self::CITIZEN_MAX_MUSTERMANN . '"',
+            0,
+            null,
+            100,
+            0,
+            [$scopeId]
+        );
+        $quotedMustermannReferences = array_map(
+            static fn ($entry) => (int) $entry['reference'],
+            iterator_to_array($quotedMustermannResults)
+        );
+        $this->assertContains($referenceIdMax, $quotedMustermannReferences);
+        $this->assertNotContains($referenceIdErika, $quotedMustermannReferences);
 
         $query->perform(
-            'DELETE FROM log WHERE reference_id IN (:match, :doetown, :shadowe)',
+            'DELETE FROM log WHERE reference_id IN (:match, :max, :erika)',
             [
-                'match' => $referenceId,
-                'doetown' => $doetownReferenceId,
-                'shadowe' => $shadoweReferenceId,
+                'match' => $referenceIdMatch,
+                'max' => $referenceIdMax,
+                'erika' => $referenceIdErika,
             ]
         );
     }
@@ -276,7 +299,7 @@ class LogTest extends Base
                 'Aktion' => Query::ACTION_EDITED,
                 'Sachbearbeiter*in' => 'testadmin',
             ], JSON_UNESCAPED_UNICODE),
-            ['action' => 'edited', 'client_name' => 'Human Legacy']
+            ['action' => 'edited', 'citizen_name' => self::CITIZEN_MAX_MUSTERMANN]
         );
         Query::writeLogEntry(
             'TEST system user action',
@@ -288,7 +311,7 @@ class LogTest extends Base
                 'Aktion' => Query::ACTION_EDITED,
                 'Sachbearbeiter*in' => '_system_citizenapi',
             ], JSON_UNESCAPED_UNICODE),
-            ['action' => 'edited', 'client_name' => 'System User']
+            ['action' => 'edited', 'citizen_name' => self::CITIZEN_ERIKA_MUSTERMANN]
         );
 
         $query = new Query();

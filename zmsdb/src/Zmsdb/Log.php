@@ -30,13 +30,13 @@ class Log extends Base
     const ACTION_DELETED = 'Termin wurde gelöscht';
     const ACTION_CANCELED = 'Termin wurde abgesagt';
 
-    private const FULLTEXT_SEARCH_COLUMNS = 'client_name, services, scope_name, client_email';
+    private const FULLTEXT_SEARCH_COLUMNS = 'citizen_name, services, scope_name, citizen_email';
 
     private const TEXT_SEARCH_COLUMNS = [
-        'client_name',
+        'citizen_name',
         'services',
         'scope_name',
-        'client_email',
+        'citizen_email',
     ];
 
     private const INDEXED_COLUMNS = [
@@ -45,11 +45,11 @@ class Log extends Base
         'queue_number',
         'appointment_at',
         'slot_count',
-        'client_name',
+        'citizen_name',
         'services',
         'scope_name',
-        'client_email',
-        'client_phone',
+        'citizen_email',
+        'citizen_phone',
         'process_status',
         'db_status',
     ];
@@ -177,13 +177,13 @@ class Log extends Base
             'queue_number' => $process->getQueueNumber(),
             'appointment_at' => $appointmentAt->format('Y-m-d H:i:s'),
             'slot_count' => $process->getFirstAppointment()->slotCount ?? null,
-            'client_name' => $process->getFirstClient()->familyName,
+            'citizen_name' => $process->getFirstClient()->familyName,
             'services' => implode(', ', array_map(function ($request) {
                 return $request->getName();
             }, $requests->getAsArray())),
             'scope_name' => $process->scope->getName(),
-            'client_email' => $process->getFirstClient()->email,
-            'client_phone' => $process->getFirstClient()->telephone,
+            'citizen_email' => $process->getFirstClient()->email,
+            'citizen_phone' => $process->getFirstClient()->telephone,
             'process_status' => $process->getStatus(),
             'db_status' => $process->dbstatus,
         ], static function ($value) {
@@ -231,11 +231,11 @@ class Log extends Base
             'slot_count' => isset($display['Slots']) && $display['Slots'] !== ''
                 ? (int) $display['Slots']
                 : null,
-            'client_name' => $display['Bürger*in'] ?? null,
+            'citizen_name' => $display['Bürger*in'] ?? null,
             'services' => $display['Dienstleistungen'] ?? null,
             'scope_name' => $display['Standort'] ?? null,
-            'client_email' => $display['E-Mail'] ?? null,
-            'client_phone' => $display['Telefon'] ?? null,
+            'citizen_email' => $display['E-Mail'] ?? null,
+            'citizen_phone' => $display['Telefon'] ?? null,
             'process_status' => $display['Status'] ?? null,
             'db_status' => $display['DB Status'] ?? null,
         ], static function ($value) {
@@ -477,7 +477,7 @@ class Log extends Base
             $useWordBoundary = $termInfo['quoted'];
 
             if ($useWordBoundary) {
-                $parts = $this->buildQuotedClientNameSearchParts($term, $params, $prefix . 'Name');
+                $parts = $this->buildQuotedCitizenNameSearchParts($term, $params, $prefix . 'Name');
             } else {
                 $parts = $this->buildUnquotedSearchParts($term, $prefix, $params);
             }
@@ -564,10 +564,10 @@ class Log extends Base
         return '+' . $words[0] . '*';
     }
 
-    private function buildQuotedClientNameSearchParts(string $term, array &$params, string $paramPrefix): array
+    private function buildQuotedCitizenNameSearchParts(string $term, array &$params, string $paramPrefix): array
     {
         if (mb_strlen($term) <= 2) {
-            return $this->buildClientNameWordBoundaryParts(
+            return $this->buildCitizenNameWordBoundaryParts(
                 $this->escapeLikeValue($term),
                 $params,
                 $paramPrefix
@@ -581,7 +581,7 @@ class Log extends Base
 
         $params[$paramPrefix . 'Ft'] = $fulltextTerm;
 
-        return ['MATCH(client_name) AGAINST(:' . $paramPrefix . 'Ft IN BOOLEAN MODE)'];
+        return ['MATCH(citizen_name) AGAINST(:' . $paramPrefix . 'Ft IN BOOLEAN MODE)'];
     }
 
     private function escapeFulltextQuotedTerm(string $term): string
@@ -603,7 +603,7 @@ class Log extends Base
         return '+' . $words[0];
     }
 
-    private function buildClientNameWordBoundaryParts(string $escapedTerm, array &$params, string $prefix): array
+    private function buildCitizenNameWordBoundaryParts(string $escapedTerm, array &$params, string $prefix): array
     {
         $params[$prefix . 'Start'] = $escapedTerm . ' %';
         $params[$prefix . 'End'] = '% ' . $escapedTerm;
@@ -611,10 +611,10 @@ class Log extends Base
         $params[$prefix . 'Exact'] = $escapedTerm;
 
         return [
-            'client_name LIKE :' . $prefix . 'Start',
-            'client_name LIKE :' . $prefix . 'End',
-            'client_name LIKE :' . $prefix . 'Middle',
-            'client_name = :' . $prefix . 'Exact',
+            'citizen_name LIKE :' . $prefix . 'Start',
+            'citizen_name LIKE :' . $prefix . 'End',
+            'citizen_name LIKE :' . $prefix . 'Middle',
+            'citizen_name = :' . $prefix . 'Exact',
         ];
     }
 

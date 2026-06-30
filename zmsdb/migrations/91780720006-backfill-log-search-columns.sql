@@ -2,7 +2,7 @@
 -- Runs AFTER 91780720002 (columns) and 91780720003/04/05 (indexes).
 -- Indexes are created on empty columns first (fast), then this migration populates them in batches.
 --
--- Idempotent: only updates rows that have not been backfilled yet (client_name IS NULL).
+-- Idempotent: only updates rows that have not been backfilled yet (citizen_name IS NULL).
 -- Batched via stored procedure: each UPDATE commits separately (short row locks).
 -- Batch count = CEILING(pending / batch_size) + buffer for rows written during the migration.
 -- Legacy JSON search in `data` remains available until backfill completes.
@@ -34,7 +34,7 @@ proc: BEGIN
     WHERE `type` = 'buerger'
       AND `data` IS NOT NULL
       AND `data` != ''
-      AND `client_name` IS NULL;
+      AND `citizen_name` IS NULL;
 
     SET v_max_batches = CEILING(v_pending / p_batch_size) + p_buffer_batches;
 
@@ -63,17 +63,17 @@ proc: BEGIN
                 '%d.%m.%Y %H:%i:%s'
             ),
             `slot_count` = CAST(NULLIF(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$.Slots')), '') AS UNSIGNED),
-            `client_name` = NULLIF(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$."Bürger*in"')), ''),
+            `citizen_name` = NULLIF(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$."Bürger*in"')), ''),
             `services` = NULLIF(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$.Dienstleistungen')), ''),
             `scope_name` = NULLIF(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$.Standort')), ''),
-            `client_email` = NULLIF(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$.E-Mail')), ''),
-            `client_phone` = NULLIF(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$.Telefon')), ''),
+            `citizen_email` = NULLIF(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$.E-Mail')), ''),
+            `citizen_phone` = NULLIF(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$.Telefon')), ''),
             `process_status` = NULLIF(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$.Status')), ''),
             `db_status` = NULLIF(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$."DB Status"')), '')
         WHERE `type` = 'buerger'
           AND `data` IS NOT NULL
           AND `data` != ''
-          AND `client_name` IS NULL
+          AND `citizen_name` IS NULL
         ORDER BY `log_id` ASC
         LIMIT p_batch_size;
 
