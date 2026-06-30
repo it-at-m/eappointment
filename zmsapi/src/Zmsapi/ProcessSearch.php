@@ -9,6 +9,7 @@ namespace BO\Zmsapi;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
+use BO\Zmsapi\Helper\SearchPagination;
 use BO\Zmsdb\Process;
 
 class ProcessSearch extends BaseController
@@ -26,10 +27,15 @@ class ProcessSearch extends BaseController
         $workstation = (new Helper\User($request, 2))->checkPermissions('customersearch');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $lessResolvedData = Validator::param('lessResolvedData')->isNumber()->setDefault(0)->getValue();
-        $page = max(1, (int) (Validator::param('page')->isNumber()->setDefault(1)->getValue() ?? 1));
-        $limit = (int) (Validator::param('limit')->isNumber()->setDefault(100)->getValue() ?? 100);
-        $limit = min(1000, max(1, $limit));
-        $offset = ($page - 1) * $limit;
+
+        $requestedPage = (int) (Validator::param('page')->isNumber()->setDefault(1)->getValue() ?? 1);
+        $requestedLimit = (int) (
+            Validator::param('limit')->isNumber()->setDefault(SearchPagination::DEFAULT_RESULTS_PER_PAGE)->getValue()
+            ?? SearchPagination::DEFAULT_RESULTS_PER_PAGE
+        );
+        $page = SearchPagination::normalizePage($requestedPage);
+        $resultsPerPage = SearchPagination::normalizeResultsPerPage($requestedLimit);
+        $offset = SearchPagination::offset($page, $resultsPerPage);
 
         $parameters = $request->getParams();
         unset($parameters['resolveReferences']);
@@ -48,7 +54,7 @@ class ProcessSearch extends BaseController
 
         $processQuery = new Process();
         $totalCount = $processQuery->readSearchCount($parameters);
-        $processList = $processQuery->readSearch($parameters, $resolveReferences, $limit, $offset);
+        $processList = $processQuery->readSearch($parameters, $resolveReferences, $resultsPerPage, $offset);
         if ($lessResolvedData) {
             $processList = $processList->withLessData();
         }
@@ -57,7 +63,7 @@ class ProcessSearch extends BaseController
         $message->data = $processList->withAccess($workstation->getUseraccount());
         $message->meta->totalCount = $totalCount;
         $message->meta->page = $page;
-        $message->meta->limit = $limit;
+        $message->meta->limit = $resultsPerPage;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
