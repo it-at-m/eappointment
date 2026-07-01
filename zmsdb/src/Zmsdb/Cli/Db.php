@@ -10,78 +10,65 @@ class Db
 {
     public static $baseDSN = '';
 
-    public static function startExecuteSqlFile($file, $dbname = null, $verbose = true)
+    public static function startExecuteSqlFile($file, $databaseName = null, $verbose = true)
     {
-        $pdo = self::startUsingDatabase($dbname, $verbose);
-        $startTime = microtime(true);
-
-        // Check if file is compressed or not
-        $isCompressed = (substr($file, -3) === '.gz');
-
-        if ($isCompressed) {
-            $sqlFile = gzopen($file, 'r');
-            $readFunction = 'gzgets';
-            $closeFunction = 'gzclose';
-        } else {
-            $sqlFile = fopen($file, 'r');
-            $readFunction = 'fgets';
-            $closeFunction = 'fclose';
-        }
+        $databaseConnection = self::startUsingDatabase($databaseName, $verbose);
+        $startedAt = microtime(true);
+        $sqlFileHandle = self::openSqlFileHandle($file);
 
         if ($verbose) {
             \App::$log->info('Importing SQL file', ['file' => basename($file)]);
         }
-        $query = '';
-        while ($line = $readFunction($sqlFile)) {
-            $query .= $line;
-            if (preg_match('/;\s*$/', $line)) {
-                try {
-                    $pdo->exec($query);
-                    //echo "Successful:\n$query\n";
-                    $query = '';
-                } catch (\Exception $exception) {
-                    if ($verbose) {
-                        \App::$log->error('SQL import failed', [
-                            'file' => basename($file),
-                            'method' => __METHOD__,
-                            'exception' => get_class($exception),
-                            'message' => $exception->getMessage(),
-                            'code' => $exception->getCode(),
-                        ]);
-                    }
-                    throw $exception;
-                }
+
+        $statementDelimiter = ';';
+        $statementBuffer = '';
+
+        while ($line = $sqlFileHandle['readLine']($sqlFileHandle['handle'])) {
+            $delimiterFromLine = self::readDelimiterDirective($line);
+            if ($delimiterFromLine !== null) {
+                $statementDelimiter = $delimiterFromLine;
+                continue;
             }
+
+            $statementBuffer .= $line;
+            if (!self::lineEndsWithStatementDelimiter($line, $statementDelimiter)) {
+                continue;
+            }
+
+            $sqlStatement = self::extractSqlStatement($statementBuffer, $statementDelimiter);
+            $statementBuffer = '';
+
+            if ($sqlStatement === '') {
+                continue;
+            }
+
+            self::executeSqlStatement($databaseConnection, $sqlStatement, $file, $verbose);
         }
-        $closeFunction($sqlFile);
-        $time = round(microtime(true) - $startTime, 3);
+
+        $sqlFileHandle['close']($sqlFileHandle['handle']);
+
         if ($verbose) {
             \App::$log->info('SQL import finished', [
                 'file' => basename($file),
-                'seconds' => $time,
+                'seconds' => round(microtime(true) - $startedAt, 3),
             ]);
         }
     }
 
-    public static function executeSql($query, $dbname = null)
+    public static function executeSql($query, $databaseName = null)
     {
-        $pdo = self::startUsingDatabase($dbname, false);
-        $pdo->exec($query);
+        $databaseConnection = self::startUsingDatabase($databaseName, false);
+        $databaseConnection->exec($query);
     }
 
-    public static function startUsingDatabase($dbname = null, $verbose = true): \BO\Zmsdb\Connection\Pdo
+    public static function startUsingDatabase($databaseName = null, $verbose = true): \BO\Zmsdb\Connection\Pdo
     {
         if (!self::$baseDSN) {
             self::$baseDSN = \BO\Zmsdb\Connection\Select::$writeSourceName;
         }
+
         \BO\Zmsdb\Connection\Select::closeWriteConnection();
-        if ($dbname === null) {
-            \BO\Zmsdb\Connection\Select::$writeSourceName = self::$baseDSN;
-        } else {
-            $dbname_zms =& \BO\Zmsdb\Connection\Select::$dbname_zms;
-            \BO\Zmsdb\Connection\Select::$writeSourceName =
-                preg_replace("#dbname=$dbname_zms.*?;#", "dbname=$dbname;", self::$baseDSN);
-        }
+        self::applyDatabaseNameToConnection($databaseName);
 
         if ($verbose) {
             \App::$log->info('Using database connection', [
@@ -89,19 +76,18 @@ class Db
             ]);
         }
 
-        $pdo = \BO\Zmsdb\Connection\Select::getWriteConnection();
-        return $pdo;
+        return \BO\Zmsdb\Connection\Select::getWriteConnection();
     }
 
-    public static function startTestDataImport($fixtures, $filename = 'mysql_zmsbo.sql')
+    public static function startTestDataImport($fixturesDirectory, $filename = 'mysql_zmsbo.sql')
     {
-        $dbname_zms =& \BO\Zmsdb\Connection\Select::$dbname_zms;
+        $defaultDatabaseName =& \BO\Zmsdb\Connection\Select::$dbname_zms;
 
-        $pdo = self::startUsingDatabase('information_schema');
-        $pdo->exec("DROP DATABASE IF EXISTS `$dbname_zms`;");
-        $pdo->exec("CREATE DATABASE IF NOT EXISTS `$dbname_zms`;");
+        $databaseConnection = self::startUsingDatabase('information_schema');
+        $databaseConnection->exec("DROP DATABASE IF EXISTS `$defaultDatabaseName`;");
+        $databaseConnection->exec("CREATE DATABASE IF NOT EXISTS `$defaultDatabaseName`;");
 
-        self::startExecuteSqlFile($fixtures . '/' . $filename);
+        self::startExecuteSqlFile($fixturesDirectory . '/' . $filename);
     }
 
     public static function startConfigDataImport()
@@ -112,49 +98,154 @@ class Db
 
     public static function startMigrations($migrationList, $commit = true)
     {
-        if (!is_array($migrationList)) {
-            $migrationList = glob($migrationList . '/*.sql');
-        }
-        sort($migrationList);
-        $pdo = self::startUsingDatabase();
-        $migrationsDoneList = $pdo->fetchPairs('SELECT filename, changeTimestamp FROM migrations');
-        $addedMigrations = 0;
-        foreach ($migrationList as $migrationFile) {
-            $migrationName = basename($migrationFile);
-            if (!array_key_exists($migrationName, $migrationsDoneList)) {
-                $addedMigrations++;
-                if (!$commit) {
-                    \App::$log->info('Pending migration', [
-                        'index' => $addedMigrations,
-                        'migration' => $migrationName,
-                    ]);
-                } else {
-                    self::startExecuteSqlFile($migrationFile);
-                    $pdo->prepare('INSERT INTO `migrations` SET `filename` = :filename')
-                        ->execute(['filename' => $migrationName]);
-                }
+        $migrationFiles = self::resolveMigrationFileList($migrationList);
+        $databaseConnection = self::startUsingDatabase();
+        $completedMigrations = $databaseConnection->fetchPairs(
+            'SELECT filename, changeTimestamp FROM migrations'
+        );
+        $addedMigrationCount = 0;
+
+        foreach ($migrationFiles as $migrationFile) {
+            $migrationFilename = basename($migrationFile);
+            if (array_key_exists($migrationFilename, $completedMigrations)) {
+                continue;
             }
+
+            $addedMigrationCount++;
+            if (!$commit) {
+                \App::$log->info('Pending migration', [
+                    'index' => $addedMigrationCount,
+                    'migration' => $migrationFilename,
+                ]);
+                continue;
+            }
+
+            self::startExecuteSqlFile($migrationFile);
+            $databaseConnection->prepare('INSERT INTO `migrations` SET `filename` = :filename')
+                ->execute(['filename' => $migrationFilename]);
         }
+
         \App::$log->info('Migration check finished', [
-            'completed' => count($migrationsDoneList),
-            'added' => $addedMigrations,
+            'completed' => count($completedMigrations),
+            'added' => $addedMigrationCount,
         ]);
-        return $addedMigrations;
+
+        return $addedMigrationCount;
     }
 
     public static function executeTestData(string $testName, string $step)
     {
-        $fixtures = realpath(__DIR__ . '/../../../tests/Zmsdb/fixtures/');
-        $sqlFile = $fixtures . '/' . $testName . '/' . $step . '.sql';
+        $fixturesDirectory = realpath(__DIR__ . '/../../../tests/Zmsdb/fixtures/');
+        $sqlFile = $fixturesDirectory . '/' . $testName . '/' . $step . '.sql';
 
-        if (! file_exists($sqlFile)) {
+        if (!file_exists($sqlFile)) {
             return;
         }
 
-        self::startExecuteSqlFile(
-            $sqlFile,
-            null,
-            false
+        self::startExecuteSqlFile($sqlFile, null, false);
+    }
+
+    private static function openSqlFileHandle(string $file): array
+    {
+        $isGzipCompressed = substr($file, -3) === '.gz';
+
+        if ($isGzipCompressed) {
+            return [
+                'handle' => gzopen($file, 'r'),
+                'readLine' => 'gzgets',
+                'close' => 'gzclose',
+            ];
+        }
+
+        return [
+            'handle' => fopen($file, 'r'),
+            'readLine' => 'fgets',
+            'close' => 'fclose',
+        ];
+    }
+
+    private static function readDelimiterDirective(string $line): ?string
+    {
+        if (!preg_match('/^\s*DELIMITER\s+(\S+)\s*$/i', rtrim($line), $matches)) {
+            return null;
+        }
+
+        return $matches[1];
+    }
+
+    private static function lineEndsWithStatementDelimiter(string $line, string $statementDelimiter): bool
+    {
+        if ($statementDelimiter === ';') {
+            return (bool) preg_match('/;\s*$/', $line);
+        }
+
+        return (bool) preg_match(
+            '/' . preg_quote($statementDelimiter, '/') . '\s*$/',
+            rtrim($line)
         );
+    }
+
+    private static function extractSqlStatement(string $statementBuffer, string $statementDelimiter): string
+    {
+        $sqlStatement = $statementBuffer;
+
+        if ($statementDelimiter !== ';') {
+            $sqlStatement = preg_replace(
+                '/' . preg_quote($statementDelimiter, '/') . '\s*$/',
+                '',
+                $sqlStatement
+            );
+        }
+
+        return trim($sqlStatement);
+    }
+
+    private static function executeSqlStatement(
+        \BO\Zmsdb\Connection\Pdo $databaseConnection,
+        string $sqlStatement,
+        string $sourceFile,
+        bool $verbose
+    ): void {
+        try {
+            $databaseConnection->exec($sqlStatement);
+        } catch (\Exception $exception) {
+            if ($verbose) {
+                \App::$log->error('SQL import failed', [
+                    'file' => basename($sourceFile),
+                    'method' => __METHOD__,
+                    'exception' => get_class($exception),
+                    'message' => $exception->getMessage(),
+                    'code' => $exception->getCode(),
+                ]);
+            }
+
+            throw $exception;
+        }
+    }
+
+    private static function applyDatabaseNameToConnection(?string $databaseName): void
+    {
+        if ($databaseName === null) {
+            \BO\Zmsdb\Connection\Select::$writeSourceName = self::$baseDSN;
+            return;
+        }
+
+        $defaultDatabaseName =& \BO\Zmsdb\Connection\Select::$dbname_zms;
+        \BO\Zmsdb\Connection\Select::$writeSourceName = preg_replace(
+            "#dbname=$defaultDatabaseName.*?;#",
+            "dbname=$databaseName;",
+            self::$baseDSN
+        );
+    }
+
+    private static function resolveMigrationFileList($migrationList): array
+    {
+        if (!is_array($migrationList)) {
+            $migrationList = glob($migrationList . '/*.sql');
+        }
+
+        sort($migrationList);
+
+        return $migrationList;
     }
 }
