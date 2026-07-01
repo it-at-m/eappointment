@@ -616,7 +616,7 @@ class Process extends Base implements MappingInterface
             $useNameWordBoundary = !$this->isNumericSearchQuery($term) && mb_strlen($term) <= 3;
 
             if ($useNameWordBoundary) {
-                $this->appendNamePartLikeGroup($query, $term, true);
+                $this->appendNamePartLikeGroup($query, $term, true, true);
             } else {
                 $query->orWith('process.Name', 'LIKE', $likeContains);
             }
@@ -713,7 +713,8 @@ class Process extends Base implements MappingInterface
     private function appendNamePartLikeGroup(
         \BO\Zmsdb\Query\Builder\ConditionBuilder $query,
         string $term,
-        bool $wordBoundaryOnly = false
+        bool $wordBoundaryOnly = false,
+        bool $includeWordPrefix = false
     ): void {
         $escaped = $this->escapeLikeValue($term);
         $query->orWith('process.Name', 'LIKE', $escaped . ' %');
@@ -721,8 +722,10 @@ class Process extends Base implements MappingInterface
         $query->orWith('process.Name', 'LIKE', '% ' . $escaped . ' %');
         $query->orWith('process.Name', '=', $term);
         if ($wordBoundaryOnly) {
-            $query->orWith('process.Name', 'LIKE', $escaped . '%');
-            $query->orWith('process.Name', 'LIKE', '% ' . $escaped . '%');
+            if ($includeWordPrefix) {
+                $query->orWith('process.Name', 'LIKE', $escaped . '%');
+                $query->orWith('process.Name', 'LIKE', '% ' . $escaped . '%');
+            }
         } else {
             $query->orWith('process.Name', 'LIKE', '%' . $escaped . '%');
         }

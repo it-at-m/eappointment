@@ -146,4 +146,39 @@ class ProcessSearchTest extends Base
         $this->assertContains($processIds[1], $resultIds);
         $this->assertNotContains($processIds[2], $resultIds);
     }
+
+    public function testQuotedShortNameSearchMatchesWholeWordOnly()
+    {
+        $query = new Query();
+        $candidates = $query->readSearch(['query' => 'J51362']);
+        $this->assertGreaterThanOrEqual(2, $candidates->count());
+
+        $processIds = [];
+        foreach ($candidates as $process) {
+            $processIds[] = $process->id;
+            if (count($processIds) === 2) {
+                break;
+            }
+        }
+
+        $namesById = [
+            $processIds[0] => 'Tom Ott',
+            $processIds[1] => 'Tom Otto',
+        ];
+        foreach ($namesById as $id => $name) {
+            $query->perform(
+                'UPDATE `' . ProcessQuery::TABLE . '` SET Name = :name WHERE BuergerID = :id',
+                ['name' => $name, 'id' => $id]
+            );
+        }
+
+        $results = $query->readSearch(['query' => '"ott"']);
+        $resultIds = [];
+        foreach ($results as $process) {
+            $resultIds[] = $process->id;
+        }
+
+        $this->assertContains($processIds[0], $resultIds);
+        $this->assertNotContains($processIds[1], $resultIds);
+    }
 }
