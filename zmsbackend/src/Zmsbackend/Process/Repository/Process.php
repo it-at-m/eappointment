@@ -834,7 +834,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     {
         $likeValue = '%' . $this->escapeLikeValue($scopeName) . '%';
         $this->leftJoin(
-            new Alias(Scope::TABLE, 'search_scope'),
+            new \BO\Zmsbackend\Query\Alias(\BO\Zmsbackend\Query\Scope::TABLE, 'search_scope'),
             self::expression(
                 'IF(`process`.`AbholortID`, `process`.`AbholortID`, `process`.`StandortID`)'
             ),
@@ -842,7 +842,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
             'search_scope.StandortID'
         );
         $this->leftJoin(
-            new Alias(Provider::TABLE, 'search_scope_provider'),
+            new \BO\Zmsbackend\Query\Alias(\BO\Zmsbackend\Provider\Repository\Provider::TABLE, 'search_scope_provider'),
             self::expression(
                 'search_scope.InfoDienstleisterID = search_scope_provider.id
                 AND search_scope.source = search_scope_provider.source'
@@ -862,13 +862,13 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     {
         $likeValue = '%' . $this->escapeLikeValue($serviceName) . '%';
         $this->leftJoin(
-            new Alias('buergeranliegen', 'search_request_link'),
+            new \BO\Zmsbackend\Query\Alias('buergeranliegen', 'search_request_link'),
             'search_request_link.BuergerID',
             '=',
             'process.BuergerID'
         );
         $this->leftJoin(
-            new Alias('request', 'search_request'),
+            new \BO\Zmsbackend\Query\Alias(\BO\Zmsbackend\Request\Repository\Request::TABLE, 'search_request'),
             self::expression(
                 'search_request_link.AnliegenID = search_request.id
                 AND search_request_link.source = search_request.source'
