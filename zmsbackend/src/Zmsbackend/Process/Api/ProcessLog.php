@@ -9,6 +9,7 @@ namespace BO\Zmsbackend\Process\Api;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
+use BO\Zmsbackend\Helper\SearchPagination;
 use BO\Zmsbackend\Log\Service\Log as Query;
 use DateTime;
 
@@ -30,20 +31,29 @@ class ProcessLog extends \BO\Zmsbackend\Api\BaseController
         $provider = Validator::param('provider')->isString()->setDefault(null)->getValue();
         $date = Validator::param('date')->isString()->setDefault(null)->getValue();
         $userAction = Validator::param('userAction')->isNumber()->setDefault(0)->getValue();
-        $page = Validator::param('page')->isNumber()->setDefault(1)->getValue();
-        $perPage = Validator::param('perPage')->isNumber()->setDefault(100)->getValue();
-        if ($perPage > 1000) {
-            $perPage = 1000;
+        $requestedPage = (int) Validator::param('page')->isNumber()->setDefault(1)->getValue();
+        $requestedResultsPerPage = (int) Validator::param('perPage')
+            ->isNumber()
+            ->setDefault(SearchPagination::DEFAULT_RESULTS_PER_PAGE)
+            ->getValue();
+        $page = SearchPagination::normalizePage($requestedPage);
+        $resultsPerPage = SearchPagination::normalizeResultsPerPage($requestedResultsPerPage);
+        $scopeIds = Validator::param('scopeIds')->isString()->setDefault(null)->getValue();
+
+        $resolvedScopeIds = null;
+        if ($scopeIds !== null && $scopeIds !== '') {
+            $resolvedScopeIds = array_values(array_filter(array_map('intval', explode(',', $scopeIds))));
         }
 
         $logList = (new Query())->readByProcessData(
-            urldecode($searchQuery),
+            urldecode((string) $searchQuery),
             $service,
             $provider,
             $date ? new DateTime($date) : null,
             $userAction,
             $page,
-            $perPage
+            $resultsPerPage,
+            $resolvedScopeIds
         );
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);

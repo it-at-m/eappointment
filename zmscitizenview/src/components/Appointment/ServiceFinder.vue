@@ -54,7 +54,7 @@
         v-model="countOfService"
         :label="service?.name || ''"
         :id="`service-${service?.id}`"
-        :link="getServiceBaseURL() + (serviceLinkId || '')"
+        :link="serviceInfoLink"
         :max="maxValueOfService"
         :min="1"
       />
@@ -284,6 +284,21 @@ const { serviceLinkId, updateServiceLinkId } = inject<ServiceLinkProvider>(
 ) as ServiceLinkProvider;
 
 const service = ref<ServiceImpl | undefined>(selectedService.value);
+const getServiceInfoId = (
+  selectedService: Service | ServiceImpl | undefined
+) => {
+  if (!selectedService) return "";
+
+  return String(selectedService.parentId ?? selectedService.id ?? "");
+};
+
+const serviceInfoLink = computed(() => {
+  const serviceInfoId = getServiceInfoId(service.value);
+
+  return serviceInfoId
+    ? getServiceBaseURL() + serviceInfoId
+    : getServiceBaseURL();
+});
 const minSlotsPerAppointment = ref<number>(25);
 const currentSlots = ref<number>(0);
 const showAllServices = ref<boolean>(false);
@@ -328,13 +343,18 @@ const onServiceSelected = (selected: ServiceImpl | undefined) => {
     return;
   }
 
-  updateServiceLinkId(String(selected.parentId ?? selected.id));
+  updateServiceLinkId(getServiceInfoId(selected));
   selectedVariant.value = "";
   service.value = selected;
 };
 
 watch(service, (newService) => {
   if (!newService) return;
+
+  const nextServiceLinkId = getServiceInfoId(newService);
+  if (nextServiceLinkId && serviceLinkId.value !== nextServiceLinkId) {
+    updateServiceLinkId(nextServiceLinkId);
+  }
 
   const variantId = newService.variantId;
   if (typeof variantId === "number" && Number.isFinite(variantId)) {
@@ -646,7 +666,7 @@ const scrollToTop = () => {
 onMounted(() => {
   if (service.value) {
     if (!serviceLinkId.value) {
-      updateServiceLinkId(String(service.value.parentId ?? service.value.id));
+      updateServiceLinkId(getServiceInfoId(service.value));
     }
     const variantId = (service.value as any)?.variantId;
     if (typeof variantId === "number" && Number.isFinite(variantId)) {
@@ -730,7 +750,7 @@ onMounted(() => {
           );
 
         if (foundService) {
-          updateServiceLinkId(String(foundService.parentId ?? foundService.id));
+          updateServiceLinkId(getServiceInfoId(foundService));
           service.value = {
             ...foundService,
             providers: [] as OfficeImpl[],

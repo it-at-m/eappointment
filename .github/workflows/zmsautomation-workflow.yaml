@@ -62,6 +62,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      # Limit concurrent matrix legs to reduce Docker daemon / disk pressure on shared runners.
+      max-parallel: 2
       matrix:
         branch: ${{ fromJson((github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix)) && '["main","next"]' || format('["{0}"]', github.ref_name)) }}
         browser: ${{ fromJson((github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix)) && '["chrome","firefox"]' || format('["{0}"]', inputs.browser)) }}
@@ -239,13 +241,35 @@ jobs:
           modules=(zmsadmin zmsbackend zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
           layout_modules=(zmsadmin zmsstatistic)
 
-          # zmsadmin/zmsstatistic use file:../zmslayout deps (symlinks in node_modules).
-          # Prebuilt images only contain the module tree; provide zmslayout for copy + runtime.
-          echo "Injecting zmslayout from checkout into $WEB_CONT:/var/www/html/zmslayout"
-          docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/zmslayout"
-          docker cp ./zmslayout/. "$WEB_CONT:/var/www/html/zmslayout/"
+          retry() {
+            local max_attempts="$1"
+            local delay_seconds="$2"
+            shift 2
+            local attempt=1
+            until "$@"; do
+              if (( attempt >= max_attempts )); then
+                echo "All ${max_attempts} attempts failed."
+                return 1
+              fi
+              echo "Attempt ${attempt} failed; retrying in ${delay_seconds}s..."
+              sleep "$delay_seconds"
+              attempt=$((attempt + 1))
+            done
+          }
 
-          for m in "${modules[@]}"; do
+          # zmsadmin/zmsstatistic use file:../zmslayout deps (symlinks in node_modules).
+          # Prebuilt images only contain the module tree; zmslayout must be present at runtime.
+          # web bind-mounts the repo to /var/www/html — avoid docker cp (flaky on GHA:
+          # archive/tar: missed writing … / unexpected EOF). Fall back to tar streaming if needed.
+          echo "Ensuring zmslayout is available at $WEB_CONT:/var/www/html/zmslayout"
+          if ! docker exec -u root "$WEB_CONT" bash -lc 'test -d /var/www/html/zmslayout/js && test -d /var/www/html/zmslayout/scss'; then
+            echo "zmslayout not on bind mount; streaming via tar"
+            docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/zmslayout"
+            retry 3 10 env WEB_CONT="$WEB_CONT" bash -c 'tar cf - -C ./zmslayout . | docker exec -i -u root "$WEB_CONT" tar -xf - -C /var/www/html/zmslayout/'
+          fi
+
+          inject_module() {
+            local m="$1"
             echo "Injecting $m from GHCR image tag $PHP_TAG into $WEB_CONT:/var/www/html/$m"
             docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/${m}"
 
@@ -278,6 +302,10 @@ jobs:
             fi
 
             docker exec -u root "$WEB_CONT" bash -lc "chown -R www-data:www-data /var/www/html/${m} 2>/dev/null || true; chmod -R 755 /var/www/html/${m} 2>/dev/null || true"
+          }
+
+          for m in "${modules[@]}"; do
+            retry 3 10 inject_module "$m"
           done
 
           docker exec -u root "$WEB_CONT" bash -lc "chown -R www-data:www-data /var/www/html/zmslayout 2>/dev/null || true; chmod -R 755 /var/www/html/zmslayout 2>/dev/null || true"
