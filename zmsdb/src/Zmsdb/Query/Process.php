@@ -720,7 +720,10 @@ class Process extends Base implements MappingInterface
         $query->orWith('process.Name', 'LIKE', '% ' . $escaped);
         $query->orWith('process.Name', 'LIKE', '% ' . $escaped . ' %');
         $query->orWith('process.Name', '=', $term);
-        if (!$wordBoundaryOnly) {
+        if ($wordBoundaryOnly) {
+            $query->orWith('process.Name', 'LIKE', $escaped . '%');
+            $query->orWith('process.Name', 'LIKE', '% ' . $escaped . '%');
+        } else {
             $query->orWith('process.Name', 'LIKE', '%' . $escaped . '%');
         }
     }

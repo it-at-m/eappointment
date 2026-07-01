@@ -108,4 +108,41 @@ class ProcessSearchTest extends Base
         $totalCount = $query->readSearchCount(['provider' => 'Heerstraße', 'scopeIds' => '141']);
         $this->assertGreaterThanOrEqual($processList->count(), $totalCount);
     }
+
+    public function testUnquotedShortNameSearchMatchesWordPrefix()
+    {
+        $query = new Query();
+        $candidates = $query->readSearch(['query' => 'J51362']);
+        $this->assertGreaterThanOrEqual(3, $candidates->count());
+
+        $processIds = [];
+        foreach ($candidates as $process) {
+            $processIds[] = $process->id;
+            if (count($processIds) === 3) {
+                break;
+            }
+        }
+
+        $namesById = [
+            $processIds[0] => 'Tom Ott',
+            $processIds[1] => 'Tom Otto',
+            $processIds[2] => 'Hans Schott',
+        ];
+        foreach ($namesById as $id => $name) {
+            $query->perform(
+                'UPDATE process SET Name = :name WHERE BuergerID = :id',
+                ['name' => $name, 'id' => $id]
+            );
+        }
+
+        $results = $query->readSearch(['query' => 'ott']);
+        $resultIds = [];
+        foreach ($results as $process) {
+            $resultIds[] = $process->id;
+        }
+
+        $this->assertContains($processIds[0], $resultIds);
+        $this->assertContains($processIds[1], $resultIds);
+        $this->assertNotContains($processIds[2], $resultIds);
+    }
 }
