@@ -158,6 +158,18 @@ class SearchTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
+                    'url' => '/process/search/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'page' => 1,
+                        'limit' => 100,
+                        'service' => 'testservice',
+                        'scopeIds' => '380,1,141,140,142',
+                    ],
+                    'response' => $this->readFixture("GET_searchresult_others.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/log/process/',
                     'parameters' => [
                         'searchQuery' => '',
@@ -179,6 +191,39 @@ class SearchTest extends Base
         ], []);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertStringContainsString('Log-Ergebnisse', (string)$response->getBody());
+        $this->assertStringContainsString('data-processList-count="5"', (string)$response->getBody());
+    }
+
+    public function testCustomerSearchByProviderWithoutTextQuery()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/search/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'page' => 1,
+                        'limit' => 100,
+                        'provider' => 'Bürgerbüro',
+                        'scopeIds' => '380,1,141',
+                    ],
+                    'response' => $this->readFixture("GET_searchresult_others.json")
+                ],
+            ]
+        );
+
+        $response = $this->render($this->arguments, [
+            'provider' => 'Bürgerbüro',
+        ], []);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringContainsString('data-processList-count="5"', (string)$response->getBody());
     }
 
     public function testQuotedSearchQuery()

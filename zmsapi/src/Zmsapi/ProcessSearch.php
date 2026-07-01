@@ -44,6 +44,12 @@ class ProcessSearch extends BaseController
         unset($parameters['page']);
         $parameters['upcomingOnly'] = 1;
 
+        foreach (['service', 'provider', 'date'] as $filterKey) {
+            if (!isset($parameters[$filterKey]) || trim((string) $parameters[$filterKey]) === '') {
+                unset($parameters[$filterKey]);
+            }
+        }
+
         if (!$workstation->getUseraccount()->isSuperUser()) {
             $scopeIds = $workstation->getUseraccount()
                 ->getDepartmentList()

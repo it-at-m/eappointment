@@ -111,17 +111,32 @@ class Search extends BaseController
             return [new ProcessList(), 0];
         }
 
-        $queryString = $parameters['queryString'];
-        if ($queryString === null || trim((string) $queryString) === '') {
+        $queryString = trim((string) $parameters['queryString']);
+        $hasStructuredFilters = $parameters['service'] !== null
+            || $parameters['provider'] !== null
+            || $parameters['date'] !== null;
+
+        if ($queryString === '' && !$hasStructuredFilters) {
             return [new ProcessList(), 0];
         }
 
         $searchParameters = [
-            'query' => $queryString,
             'resolveReferences' => 1,
             'page' => $parameters['page'],
             'limit' => $parameters['perPage'],
         ];
+        if ($queryString !== '') {
+            $searchParameters['query'] = $queryString;
+        }
+        if ($parameters['service'] !== null) {
+            $searchParameters['service'] = $parameters['service'];
+        }
+        if ($parameters['provider'] !== null) {
+            $searchParameters['provider'] = $parameters['provider'];
+        }
+        if ($parameters['date'] !== null) {
+            $searchParameters['date'] = $parameters['date'];
+        }
         if (!$workstation->getUseraccount()->isSuperUser()) {
             $searchParameters['scopeIds'] = implode(',', $scopeIds);
         }
