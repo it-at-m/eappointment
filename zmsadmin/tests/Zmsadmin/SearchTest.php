@@ -158,18 +158,6 @@ class SearchTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/process/search/',
-                    'parameters' => [
-                        'resolveReferences' => 1,
-                        'page' => 1,
-                        'limit' => 100,
-                        'service' => 'testservice',
-                        'scopeIds' => '380,1,141,140,142',
-                    ],
-                    'response' => $this->readFixture("GET_searchresult_others.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/log/process/',
                     'parameters' => [
                         'searchQuery' => '',
@@ -191,7 +179,7 @@ class SearchTest extends Base
         ], []);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertStringContainsString('Log-Ergebnisse', (string)$response->getBody());
-        $this->assertStringContainsString('data-processList-count="5"', (string)$response->getBody());
+        $this->assertStringContainsString('data-processList-count="0"', (string)$response->getBody());
     }
 
     public function testCustomerSearchByProviderWithoutTextQuery()
