@@ -453,7 +453,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return (int) $this->fetchValue($query, $query->getParameters());
     }
 
-    protected function buildSearchQuery(array $parameter, $resolveReferences = 0, bool $withEntityMapping = true): Query\Process
+    protected function buildSearchQuery(array $parameter, $resolveReferences = 0, bool $withEntityMapping = true): \BO\Zmsbackend\Process\Repository\Process
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $query
