@@ -46,8 +46,8 @@ class Service extends Entity implements JsonSerializable
             'name' => $this->name,
             'maxQuantity' => $this->maxQuantity,
             'combinable' => $this->combinable,
-            'parent_id' => $this->parentId,
-            'variant_id' => $this->variantId,
+            'parentId' => $this->parentId,
+            'variantId' => $this->variantId,
             'showOnStartPage' => $this->showOnStartPage
         ];
     }
