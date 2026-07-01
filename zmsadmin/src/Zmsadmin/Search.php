@@ -103,23 +103,50 @@ class Search extends BaseController
 
     private function readProcessSearchResults($workstation, array $parameters, array $scopeIds): array
     {
-        if (!$parameters['isSearchRequested']) {
+        if (!$this->shouldRunProcessSearch($workstation, $parameters)) {
             return [new ProcessList(), 0];
+        }
+
+        $searchParameters = $this->buildProcessSearchParameters($workstation, $parameters, $scopeIds);
+        $searchResult = \App::$http->readGetResult('/process/search/', $searchParameters);
+        $processList = $searchResult->getCollection();
+        $searchMeta = $searchResult->getMeta();
+        $processSearchTotal = isset($searchMeta->totalCount)
+            ? (int) $searchMeta->totalCount
+            : $processList->count();
+
+        if (!empty($processList) && !$workstation->getUseraccount()->isSuperUser()) {
+            $processList = $this->filterProcessListForUserRights($processList, $scopeIds);
+        }
+
+        return [$processList, $processSearchTotal];
+    }
+
+    private function shouldRunProcessSearch($workstation, array $parameters): bool
+    {
+        if (!$parameters['isSearchRequested']) {
+            return false;
         }
 
         if (!$workstation->getUseraccount()->hasPermissions(['customersearch'])) {
-            return [new ProcessList(), 0];
+            return false;
         }
 
         $queryString = trim((string) $parameters['queryString']);
-        $hasStructuredFilters = $parameters['service'] !== null
+
+        return $queryString !== '' || $this->hasStructuredSearchFilters($parameters);
+    }
+
+    private function hasStructuredSearchFilters(array $parameters): bool
+    {
+        return $parameters['service'] !== null
             || $parameters['provider'] !== null
             || $parameters['date'] !== null;
+    }
 
-        if ($queryString === '' && !$hasStructuredFilters) {
-            return [new ProcessList(), 0];
-        }
-
+    private function buildProcessSearchParameters($workstation, array $parameters, array $scopeIds): array
+    {
+        $queryString = trim((string) $parameters['queryString']);
         $searchParameters = [
             'resolveReferences' => 1,
             'page' => $parameters['page'],
@@ -141,18 +168,7 @@ class Search extends BaseController
             $searchParameters['scopeIds'] = implode(',', $scopeIds);
         }
 
-        $searchResult = \App::$http->readGetResult('/process/search/', $searchParameters);
-        $processList = $searchResult->getCollection();
-        $searchMeta = $searchResult->getMeta();
-        $processSearchTotal = isset($searchMeta->totalCount)
-            ? (int) $searchMeta->totalCount
-            : $processList->count();
-
-        if (!empty($processList) && !$workstation->getUseraccount()->isSuperUser()) {
-            $processList = $this->filterProcessListForUserRights($processList, $scopeIds);
-        }
-
-        return [$processList, $processSearchTotal];
+        return $searchParameters;
     }
 
     private function readLogSearchResults($workstation, array $parameters, array $scopeIds): ?LogList
