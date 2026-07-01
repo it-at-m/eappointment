@@ -531,6 +531,15 @@ class Process extends Base implements Interfaces\ResolveReferences
         if (isset($parameter['requestId']) && $parameter['requestId']) {
             $query->addConditionRequestId($parameter['requestId']);
         }
+        if (isset($parameter['provider']) && $parameter['provider']) {
+            $query->addConditionScopeNameSearch($parameter['provider']);
+        }
+        if (isset($parameter['service']) && $parameter['service']) {
+            $query->addConditionServiceNameSearch($parameter['service']);
+        }
+        if (isset($parameter['date']) && $parameter['date']) {
+            $query->addConditionDate($parameter['date']);
+        }
         return $query;
     }
 

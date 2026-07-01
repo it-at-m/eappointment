@@ -98,4 +98,14 @@ class ProcessSearchTest extends Base
         $this->assertEquals(0, $processList->count());
         $this->assertEquals(0, $query->readSearchCount(['query' => 'J51362', 'scopeIds' => '']));
     }
+
+    public function testSearchByProviderWithoutTextQuery()
+    {
+        $query = new Query();
+        $processList = $query->readSearch(['provider' => 'Bürgerbüro', 'scopeIds' => '141']);
+        $this->assertEntityList("\\BO\\Zmsentities\\Process", $processList);
+        $this->assertGreaterThanOrEqual(1, $processList->count());
+        $totalCount = $query->readSearchCount(['provider' => 'Bürgerbüro', 'scopeIds' => '141']);
+        $this->assertGreaterThanOrEqual($processList->count(), $totalCount);
+    }
 }

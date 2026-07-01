@@ -824,6 +824,55 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionScopeNameSearch(string $scopeName)
+    {
+        $likeValue = '%' . $this->escapeLikeValue($scopeName) . '%';
+        $this->leftJoin(
+            new Alias(Scope::TABLE, 'search_scope'),
+            self::expression(
+                'IF(`process`.`AbholortID`, `process`.`AbholortID`, `process`.`StandortID`)'
+            ),
+            '=',
+            'search_scope.StandortID'
+        );
+        $this->leftJoin(
+            new Alias(Provider::TABLE, 'search_scope_provider'),
+            self::expression(
+                'search_scope.InfoDienstleisterID = search_scope_provider.id
+                AND search_scope.source = search_scope_provider.source'
+            )
+        );
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($likeValue) {
+            $query->orWith('search_scope.Bezeichnung', 'LIKE', $likeValue);
+            $query->orWith('search_scope.standortinfozeile', 'LIKE', $likeValue);
+            $query->orWith('search_scope.standortkuerzel', 'LIKE', $likeValue);
+            $query->orWith('search_scope_provider.name', 'LIKE', $likeValue);
+        });
+
+        return $this;
+    }
+
+    public function addConditionServiceNameSearch(string $serviceName)
+    {
+        $likeValue = '%' . $this->escapeLikeValue($serviceName) . '%';
+        $this->leftJoin(
+            new Alias('buergeranliegen', 'search_request_link'),
+            'search_request_link.BuergerID',
+            '=',
+            'process.BuergerID'
+        );
+        $this->leftJoin(
+            new Alias('request', 'search_request'),
+            self::expression(
+                'search_request_link.AnliegenID = search_request.id
+                AND search_request_link.source = search_request.source'
+            )
+        );
+        $this->query->where('search_request.name', 'LIKE', $likeValue);
+
+        return $this;
+    }
+
     /**
      * add condition to get process if deallocation time < now
      */
