@@ -41,7 +41,7 @@
     "typescript": "^6.0.3",
     "vite": "^8.1.0",
     "vitest": "^4.1.9",
-    "vue-tsc": "^3.3.3"
+    "vue-tsc": "^3.3.6"
   },
   "// overrides.@tootallnate/once": "local-web-server -> lws-rewrite -> http-proxy-agent pins once@2; force ^3.0.1 (abort-signal hang / GHSA).",
   "// overrides.ws": "jsdom -> ws@8.18.x; force ^8.20.1 (CVE-2026-45736).",
