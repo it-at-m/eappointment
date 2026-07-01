@@ -43,6 +43,18 @@
             </div>
         </form>
 
+        {% if processSearchTotal is defined and (searchProcessQuery or service or provider or date) %}
+            <p class="m-5" style="margin-top: 0;">
+                {% set shownCount = processList.count() + processListOther.count() %}
+                {% if processSearchTotal > shownCount %}
+                    Es werden {{ shownCount }} von {{ processSearchTotal }} Treffern angezeigt.
+                    Bitte verfeinern Sie Ihre Suche oder blättern Sie zur nächsten Seite.
+                {% elseif processSearchTotal > 0 %}
+                    {{ processSearchTotal }} Treffer gefunden.
+                {% endif %}
+            </p>
+        {% endif %}
+
         <div tabindex="1" class="table-responsive-wrapper">
             <table class="table--base" data-processList-count="{{ processList.count() }}"  data-processListOther-count="{{ processListOther.count() }}">
                 <thead>
@@ -164,7 +176,9 @@
 
                 Seite: {{ currentPage }}
 
-                {% if currentPage < 100 %}
+                {% if processSearchTotal is defined and (currentPage * currentPerPage) < processSearchTotal %}
+                    <a href="?{{ nextParams|url_encode }}">Nächste Seite &gt;</a>
+                {% elseif currentPage < 100 and not processSearchTotal is defined %}
                     <a href="?{{ nextParams|url_encode }}">Nächste Seite &gt;</a>
                 {% endif %}
             </div>

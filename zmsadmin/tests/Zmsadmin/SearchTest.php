@@ -2,7 +2,7 @@
 
 namespace BO\Zmsadmin\Tests;
 
-class ProcessSearchTest extends Base
+class SearchTest extends Base
 {
     protected $arguments = [];
 
@@ -10,7 +10,7 @@ class ProcessSearchTest extends Base
         'query' => 'Test%20BO'
     ];
 
-    protected $classname = "ProcessSearch";
+    protected $classname = "Search";
 
     public function testRendering()
     {
@@ -24,15 +24,6 @@ class ProcessSearchTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/process/search/',
-                    'parameters' => [
-                        'resolveReferences' => 1,
-                        'query' => 'Test%20BO'
-                    ],
-                    'response' => $this->readFixture("GET_searchresult.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/log/process/',
                     'parameters' => [
                         'searchQuery' => 'Test%2520BO',
@@ -41,7 +32,8 @@ class ProcessSearchTest extends Base
                         'service' => null,
                         'provider' => null,
                         'userAction' => 0,
-                        'date' => null
+                        'date' => null,
+                        'scopeIds' => '380,1,141,140,142',
                     ],
                     'response' => $this->readFixture("GET_loglist.json")
                 ]
@@ -64,15 +56,6 @@ class ProcessSearchTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/process/search/',
-                    'parameters' => [
-                        'resolveReferences' => 1,
-                        'query' => '100005'
-                    ],
-                    'response' => $this->readFixture("GET_searchresult_processid.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/log/process/',
                     'parameters' => [
                         'searchQuery' => '100005',
@@ -81,7 +64,8 @@ class ProcessSearchTest extends Base
                         'service' => null,
                         'provider' => null,
                         'userAction' => 0,
-                        'date' => null
+                        'date' => null,
+                        'scopeIds' => '380,1,141,140,142',
                     ],
                     'response' => $this->readFixture("GET_loglist.json")
                 ]
@@ -111,7 +95,10 @@ class ProcessSearchTest extends Base
                     'url' => '/process/search/',
                     'parameters' => [
                         'resolveReferences' => 1,
-                        'query' => 'Test%20BO'
+                        'query' => 'Test%20BO',
+                        'page' => 1,
+                        'limit' => 100,
+                        'scopeIds' => '380,1,141',
                     ],
                     'response' => $this->readFixture("GET_searchresult_others.json")
                 ]
@@ -179,7 +166,8 @@ class ProcessSearchTest extends Base
                         'service' => 'testservice',
                         'provider' => null,
                         'userAction' => 0,
-                        'date' => null
+                        'date' => null,
+                        'scopeIds' => '380,1,141,140,142',
                     ],
                     'response' => $this->readFixture("GET_loglist.json")
                 ]
@@ -191,5 +179,130 @@ class ProcessSearchTest extends Base
         ], []);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertStringContainsString('Log-Ergebnisse', (string)$response->getBody());
+        $this->assertStringContainsString('data-processList-count="0"', (string)$response->getBody());
+    }
+
+    public function testCustomerSearchByProviderWithoutTextQuery()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/search/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'page' => 1,
+                        'limit' => 100,
+                        'provider' => 'Bürgerbüro',
+                        'scopeIds' => '380,1,141',
+                    ],
+                    'response' => $this->readFixture("GET_searchresult_others.json")
+                ],
+            ]
+        );
+
+        $response = $this->render($this->arguments, [
+            'provider' => 'Bürgerbüro',
+        ], []);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringContainsString('data-processList-count="5"', (string)$response->getBody());
+    }
+
+    public function testQuotedSearchQuery()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/search/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'query' => '"Muster"',
+                        'page' => 1,
+                        'limit' => 100,
+                        'scopeIds' => '380,1,141',
+                    ],
+                    'response' => $this->readFixture("GET_searchresult_others.json")
+                ],
+            ]
+        );
+        $response = $this->render($this->arguments, ['query' => '"Muster"'], []);
+        $this->assertStringContainsString('name="query" value="&quot;Muster&quot;"', (string) $response->getBody());
+        $this->assertStringNotContainsString('&#34;Muster&#34;', (string) $response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testEmptyQueryShowsLatestLogsForSuperuser()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture('GET_Workstation_Resolved2.json'),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/log/process/',
+                    'parameters' => [
+                        'searchQuery' => '',
+                        'page' => 1,
+                        'perPage' => 100,
+                        'service' => null,
+                        'provider' => null,
+                        'userAction' => 0,
+                        'date' => null,
+                    ],
+                    'response' => $this->readFixture('GET_loglist_out_of_scope.json'),
+                ],
+            ]
+        );
+        $response = $this->render($this->arguments, ['query' => ''], []);
+        $body = (string) $response->getBody();
+        $this->assertStringContainsString('Log-Ergebnisse', $body);
+        $this->assertStringContainsString('OutOfScope Log Entry', $body);
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testZeroQueryTriggersProcessSearch()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/search/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'query' => '0',
+                        'page' => 1,
+                        'limit' => 100,
+                        'scopeIds' => '380,1,141',
+                    ],
+                    'response' => $this->readFixture("GET_searchresult_others.json")
+                ],
+            ]
+        );
+        $response = $this->render($this->arguments, ['query' => '0'], []);
+        $this->assertStringContainsString('name="query" value="0"', (string) $response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }
