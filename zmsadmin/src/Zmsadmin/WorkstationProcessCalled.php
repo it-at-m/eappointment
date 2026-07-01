@@ -30,7 +30,7 @@ class WorkstationProcessCalled extends BaseController
                     'allowClusterWideCall' => \App::$allowClusterWideCall
                 ])->getEntity();
             } catch (\BO\Zmsclient\Exception $e) {
-                if ($e->template === 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyCalled') {
+                if ($e->template === 'BO\\Zmsbackend\\Process\\Exception\\ProcessAlreadyCalled') {
                     return \BO\Slim\Render::redirect(
                         'workstationProcessCalled',
                         ['id' => $processId],

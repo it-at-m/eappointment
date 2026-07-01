@@ -12,7 +12,7 @@ import de.muenchen.zms.department.view.ReferenceViews.ScopeReferenceView;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
-/** today: zmsdb\\Department::readResolvedReferences */
+/** today: zmsbackend\\Department\\Service\\Department::readResolvedReferences */
 @Component
 public class DepartmentReferenceLoader {
 

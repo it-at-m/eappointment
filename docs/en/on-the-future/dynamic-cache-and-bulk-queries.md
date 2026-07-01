@@ -10,7 +10,7 @@ outline: deep
 
 ## Goal
 
-Reduce the number of API and database round-trips—especially through `zmsapi` and `zmscitizenapi`—by holding appointment-relevant state in a **shared, dynamic cache** instead of querying the database for every slot lookup, reservation, confirmation, or cancellation.
+Reduce the number of API and database round-trips—especially through `zmsbackend` and `zmscitizenapi`—by holding appointment-relevant state in a **shared, dynamic cache** instead of querying the database for every slot lookup, reservation, confirmation, or cancellation.
 
 Today, only a few relatively static `GET` endpoints are cached (for example `GET offices-and-services`). Calendar data, reservations, preconfirmed/confirmed statuses, and deletions are still resolved through repeated per-request database access.
 
@@ -29,29 +29,29 @@ flowchart LR
 
     subgraph apis [API layer]
         citizenapi[zmscitizenapi]
-        zmsapi[zmsapi]
+        zmsbackend[zmsbackend]
     end
 
     cache[(Redis / Memcached)]
     db[(MariaDB)]
 
     citizenview --> citizenapi
-    zmsadmin --> zmsapi
+    zmsadmin --> zmsbackend
     citizenapi <--> cache
-    zmsapi <--> cache
+    zmsbackend <--> cache
     cache -->|bulk persist| db
     db -->|cold reload / rebuild| cache
 ```
 
 ## Challenge: shared, up-to-date cache
 
-Opening hours and availability can change at runtime—for example when staff edit schedules in `zmsadmin` or when **cronjobs** recalculate slots. `zmscitizenapi` and `zmsapi` therefore need a **shared cache** that reflects those changes consistently and quickly.
+Opening hours and availability can change at runtime—for example when staff edit schedules in `zmsadmin` or when **cronjobs** recalculate slots. `zmscitizenapi` and `zmsbackend` therefore need a **shared cache** that reflects those changes consistently and quickly.
 
 Possible directions:
 
 - **Unified cache namespace** with explicit invalidation or versioning when admin or cron-driven changes occur.
 - **Event-driven invalidation** (publish/subscribe on the cache bus or message queue) so all API instances drop or refresh affected keys together.
-- **Longer term:** merge `zmscitizenapi` and `zmsapi` into a **single unified API** behind one gateway, reducing split-brain cache ownership (see the [RefArch roadmap](./refarch-roadmap/product-oriented-refarch-roadmap.md)).
+- **Longer term:** merge `zmscitizenapi` and `zmsbackend` into a **single unified API** behind one gateway, reducing split-brain cache ownership (see the [RefArch roadmap](./refarch-roadmap/product-oriented-refarch-roadmap.md)).
 
 ## Expected benefits
 
@@ -78,7 +78,7 @@ Possible directions:
 
 ## Next steps (when prioritized)
 
-1. Measure current `zmsapi` / `zmscitizenapi` query volume and latency on representative booking flows.
+1. Measure current `zmsbackend` / `zmscitizenapi` query volume and latency on representative booking flows.
 2. Identify cache key shapes and invalidation triggers (scope changes, opening hours, holidays, process updates).
 3. Prototype Redis (or Memcached) integration on one read-heavy path with metrics before widening scope.
 4. Align with the [database naming refactor](./database-refactor/standardize-database-table-and-field-naming.md) and RefArch backend consolidation so cache boundaries match future service boundaries.

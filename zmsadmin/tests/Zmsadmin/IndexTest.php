@@ -120,7 +120,7 @@ class IndexTest extends Base
     {
         $this->expectException('\BO\Zmsclient\Exception');
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn';
+        $exception->template = 'BO\Zmsbackend\Useraccount\Exception\UserAlreadyLoggedIn';
         $exception->data['authkey'] = 'unit';
         $this->setApiCalls(
             [
@@ -225,7 +225,7 @@ class IndexTest extends Base
     public function testLoginFailed()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\Zmsapi\Exception\Useraccount\InvalidCredentials';
+        $exception->template = 'BO\Zmsbackend\Useraccount\Exception\InvalidCredentials';
         $exception->data['password']['messages'] = [
             'Der Nutzername oder das Passwort wurden falsch eingegeben'
         ];
@@ -257,5 +257,69 @@ class IndexTest extends Base
             (string)$response->getBody()
         );
         $this->assertStringContainsString('form-group has-error', (string)$response->getBody());
+    }
+
+    public function testUserAdminRedirectsToUseraccountListAfterLogin(): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/login/',
+                    'response' => $this->readFixture("GET_Workstation_user_admin.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'secure-token',
+                    'response' => $this->readFixture("GET_config.json"),
+                ]
+            ]
+        );
+
+        $response = $this->render($this->arguments, $this->parameters, [], 'POST');
+
+        $this->assertEquals(302, $response->getStatusCode());
+        $location = $response->getHeaderLine('Location');
+        $this->assertStringContainsString('/users/', $location);
+        $this->assertStringContainsString('hideNavigation=1', $location);
+    }
+
+    public function testAuditViewerRedirectsToSearchAfterLogin(): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/login/',
+                    'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'secure-token',
+                    'response' => $this->readFixture("GET_config.json"),
+                ]
+            ]
+        );
+
+        $response = $this->render($this->arguments, $this->parameters, [], 'POST');
+
+        $this->assertEquals(302, $response->getStatusCode());
+        $location = $response->getHeaderLine('Location');
+        $this->assertStringContainsString('/search/', $location);
+        $this->assertStringContainsString('hideNavigation=1', $location);
     }
 }

@@ -117,7 +117,7 @@ jobs:
         run: |
           set -euo pipefail
           PHP_TAG="${{ steps.tags.outputs.php_tag }}"
-          modules=(zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+          modules=(zmsadmin zmsbackend zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
           for m in "${modules[@]}"; do
             echo "Pulling $m:$PHP_TAG"
             docker pull "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG"
@@ -238,7 +238,7 @@ jobs:
           set -euo pipefail
           WEB_CONT="zms-web"
           PHP_TAG="${{ steps.tags.outputs.php_tag }}"
-          modules=(zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+          modules=(zmsadmin zmsbackend zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
           layout_modules=(zmsadmin zmsstatistic)
 
           retry() {
@@ -323,7 +323,7 @@ jobs:
             chmod -R 777 /var/www/html/cache 2>/dev/null || true
 
             # Module cache dirs (local devcontainer does similar in postStartCommand)
-            for dir in zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsstatistic zmsticketprinter zmsmessaging; do
+            for dir in zmsadmin zmsbackend zmscalldisplay zmscitizenapi zmsstatistic zmsticketprinter zmsmessaging; do
               mkdir -p "/var/www/html/$dir/cache"
               chown -R www-data:www-data "/var/www/html/$dir/cache" 2>/dev/null || true
               chmod -R 777 "/var/www/html/$dir/cache" 2>/dev/null || true

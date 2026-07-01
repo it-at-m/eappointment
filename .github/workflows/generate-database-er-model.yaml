@@ -20,7 +20,7 @@ jobs:
       mariadb:
         image: mariadb:10.11
         env:
-          MYSQL_ROOT_PASSWORD: zmsdb
+          MYSQL_ROOT_PASSWORD: zmsbackend
           MYSQL_DATABASE: zmsbo
           MYSQL_CHARACTER_SET: utf8mb4
           MYSQL_COLLATION: utf8mb4_unicode_ci
@@ -50,15 +50,15 @@ jobs:
 
       - name: Install Composer Dependencies
         run: |
-          echo "Installing Composer dependencies for zmsdb"
-          (cd zmsdb && composer install --no-progress --prefer-dist --optimize-autoloader)
+          echo "Installing Composer dependencies for zmsbackend"
+          (cd zmsbackend && composer install --no-progress --prefer-dist --optimize-autoloader)
         shell: bash
 
       - name: Setup Database and Import Schema
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
           MYSQL_DATABASE: zmsbo
-          MYSQL_ROOT_PASSWORD: zmsdb
+          MYSQL_ROOT_PASSWORD: zmsbackend
         run: |
           set -e
           echo "Installing MariaDB client..."
@@ -81,7 +81,7 @@ jobs:
           import re
 
           class DatabaseSchemaGenerator:
-              def __init__(self, host='mariadb', port=3306, user='root', password='zmsdb', database='zmsbo'):
+              def __init__(self, host='mariadb', port=3306, user='root', password='zmsbackend', database='zmsbo'):
                   self.connection = pymysql.connect(
                       host=host,
                       port=port,
@@ -546,7 +546,7 @@ jobs:
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
           MYSQL_DATABASE: zmsbo
-          MYSQL_ROOT_PASSWORD: zmsdb
+          MYSQL_ROOT_PASSWORD: zmsbackend
         run: python3 generate_schema.py
 
       - name: Upload database schema diagrams artifact

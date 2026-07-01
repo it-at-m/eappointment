@@ -8,7 +8,7 @@ import de.muenchen.zms.department.view.DepartmentView;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** today: zmsapi\\DepartmentUpdate, zmsdb\\Department::updateEntity */
+/** today: zmsbackend\\Department\\Api\\DepartmentUpdate, zmsbackend\\Department\\Service\\Department::updateEntity */
 @Service
 public class DepartmentUpdateService {
 

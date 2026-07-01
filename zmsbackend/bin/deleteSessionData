@@ -1,0 +1,11 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+if (isset($argv[3]) && $argv[3] == '--commit') {
+    \BO\Zmsbackend\Helper\SessionDeleteByCron::init($argv[1], $argv[2]);
+} else {
+    \App::$log->notice('deleteSessionData usage', [
+        'usage' => "Usage: {$argv[0]} sessionName timeInterval --commit",
+    ]);
+}

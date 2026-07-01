@@ -6,7 +6,7 @@ import de.muenchen.zms.department.view.DepartmentView;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** today: zmsapi\\DepartmentGet, zmsdb\\Department::readEntity */
+/** today: zmsbackend\\Department\\Api\\DepartmentGet, zmsbackend\\Department\\Service\\Department::readEntity */
 @Service
 public class DepartmentFetchService {
 

@@ -23,7 +23,7 @@ Feature: Example feature with required ticket tag
 
 ## REST
 
-### zmsapi
+### REST API (`rest/zmsapi/`, served by `zmsbackend`)
 
 #### `status.feature`
 

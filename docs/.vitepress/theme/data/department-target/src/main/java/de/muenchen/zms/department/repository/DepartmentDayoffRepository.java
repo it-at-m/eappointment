@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
-/** today: zmsdb\\DayOff::readOnlyByDepartmentId */
+/** today: zmsbackend\\Dayoff\\Service\\DayOff::readOnlyByDepartmentId */
 public interface DepartmentDayoffRepository extends Repository<Object, Long> {
 
     @Query("""

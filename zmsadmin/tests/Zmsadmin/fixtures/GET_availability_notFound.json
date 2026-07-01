@@ -4,7 +4,7 @@
         "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
         "error": true,
         "generated": "2017-06-21T12:29:30+02:00",
-        "server": "Zmsapi-ENV",
+        "server": "Zmsbackend-ENV",
         "message": "Not found"
     },
     "data": {

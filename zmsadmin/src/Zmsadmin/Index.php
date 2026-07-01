@@ -37,8 +37,19 @@ class Index extends BaseController
             $loginData = $this->testLogin($input);
             if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
                 \BO\Zmsclient\Auth::setKey($loginData->authkey, time() + \App::SESSION_DURATION);
-                return ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_ADMIN, $loginData, $response)
-                    ?? \BO\Slim\Render::redirect('workstationSelect', array(), array());
+
+                if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_ADMIN, $loginData, $response)) {
+                    return $wrongModuleResponse;
+                }
+
+                $useraccount = $loginData->getUseraccount();
+                if ($useraccount->hasRole('user_admin')) {
+                    return \BO\Slim\Render::redirect('useraccountList', [], ['hideNavigation' => 1]);
+                }
+                if ($useraccount->hasRole('audit_viewer')) {
+                    return \BO\Slim\Render::redirect('search', [], ['hideNavigation' => 1]);
+                }
+                return \BO\Slim\Render::redirect('workstationSelect', [], []);
             }
             return \BO\Slim\Render::withHtml(
                 $response,
@@ -97,7 +108,7 @@ class Index extends BaseController
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
             if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
                 $exceptionData = [
-                  'template' => 'exception/bo/zmsapi/exception/useraccount/invalidcredentials.twig'
+                  'template' => 'exception/bo/zmsbackend/useraccount/exception/invalidcredentials.twig'
                 ];
                 $exceptionData['data']['password']['messages'] = [
                     'Der Nutzername oder das Passwort wurden falsch eingegeben'
@@ -109,7 +120,7 @@ class Index extends BaseController
                     'error_type' => 'invalid_credentials',
                     'application' => 'zmsadmin'
                 ]);
-            } elseif ('BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn' == $exception->template) {
+            } elseif ('BO\Zmsbackend\Useraccount\Exception\UserAlreadyLoggedIn' == $exception->template) {
                 \BO\Zmsclient\Auth::setKey($exception->data['authkey'], time() + \App::SESSION_DURATION);
                 \App::$log->info('User already logged in - reusing existing session', [
                     'event' => 'auth_session_reuse',

@@ -4,7 +4,7 @@
     	"$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
     	"error": false,
     	"generated": "2016-04-29T11:53:31+02:00",
-    	"server": "Zmsapi-unconfigured"
+    	"server": "Zmsbackend-unconfigured"
   	},
   	"data": {
 		"$schema": "https:\/\/schema.berlin.de\/queuemanagement\/calldisplay.json",
