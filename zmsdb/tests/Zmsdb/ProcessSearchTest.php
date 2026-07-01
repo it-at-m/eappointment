@@ -3,6 +3,7 @@
 namespace BO\Zmsdb\Tests;
 
 use \BO\Zmsdb\Process as Query;
+use \BO\Zmsdb\Query\Process as ProcessQuery;
 use \BO\Zmsdb\ProcessStatusFree;
 use \BO\Zmsdb\ProcessStatusQueued;
 use \BO\Zmsdb\ProcessStatusArchived;
@@ -130,7 +131,7 @@ class ProcessSearchTest extends Base
         ];
         foreach ($namesById as $id => $name) {
             $query->perform(
-                'UPDATE process SET Name = :name WHERE BuergerID = :id',
+                'UPDATE `' . ProcessQuery::TABLE . '` SET Name = :name WHERE BuergerID = :id',
                 ['name' => $name, 'id' => $id]
             );
         }
