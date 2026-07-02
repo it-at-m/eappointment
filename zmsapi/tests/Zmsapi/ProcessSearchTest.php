@@ -48,4 +48,12 @@ class ProcessSearchTest extends Base
         $this->assertStringNotContainsString('availability', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
+
+    public function testNoScopesIgnoresCallerScopeIds()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('customersearch');
+        $response = $this->render([], ['query' => 'dayoff', 'scopeIds' => (string) self::SCOPE_ID], []);
+        $this->assertStringNotContainsString('process.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
 }
