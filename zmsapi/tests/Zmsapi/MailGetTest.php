@@ -8,11 +8,6 @@ class MailGetTest extends Base
 
     public function testRendering()
     {
-        $this->testRenderingWithPermission();
-    }
-
-    public function testRenderingWithPermission()
-    {
         $jsonString = (string)(new MailAddTest('dummyTest'))->testRendering()->getBody();
         $message = json_decode($jsonString, true);
         $entity = new \BO\Zmsentities\Mail($message['data']);
