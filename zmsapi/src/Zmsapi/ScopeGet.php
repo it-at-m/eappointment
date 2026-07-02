@@ -27,7 +27,7 @@ class ScopeGet extends BaseController
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $keepLessData = Validator::param('keepLessData')->isArray()->setDefault([])->getValue();
         $hasGQL = Validator::param('gql')->isString()->getValue();
-        $accessRights = Validator::param('accessRights')->isString()->isBiggerThan(4)->setDefault('basic')->getValue();
+        $accessRights = Validator::param('accessRights')->isString()->isBiggerThan(4)->getValue();
         $getIsOpened = Validator::param('getIsOpened')->isNumber()->setDefault(0)->getValue();
         $scope = (new Scope())->readEntity($args['id'], $resolveReferences);
         if (! $scope) {
@@ -36,10 +36,12 @@ class ScopeGet extends BaseController
 
         $userAccess = new Helper\User($request, 2);
         if ($userAccess->hasLogin()) {
-            $userAccess->checkRights(
-                $accessRights,
-                new \BO\Zmsentities\Useraccount\EntityAccess($scope)
-            );
+            $entityAccess = new \BO\Zmsentities\Useraccount\EntityAccess($scope);
+            if ($accessRights) {
+                $userAccess->checkPermissions($accessRights, $entityAccess);
+            } else {
+                $userAccess->checkPermissions($entityAccess);
+            }
         } else {
             $scope = ($hasGQL) ? $scope : $scope->withLessData($keepLessData);
             $message->meta->reducedData = true;

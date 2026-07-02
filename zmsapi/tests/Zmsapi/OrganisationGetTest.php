@@ -8,7 +8,7 @@ class OrganisationGetTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->setWorkstation()->getUseraccount()->setPermissions('department');
         $response = $this->render(['id' => 54], ['resolveReferences' => 1], []);
         $this->assertStringContainsString('organisation.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -32,5 +32,13 @@ class OrganisationGetTest extends Base
         $this->expectException('\BO\Zmsapi\Exception\Organisation\OrganisationNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);
+    }
+
+    public function testMissingDepartmentPermission()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectExceptionCode(403);
+        $this->render(['id' => 54], ['resolveReferences' => 1], []);
     }
 }

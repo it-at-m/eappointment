@@ -22,7 +22,7 @@ class ClusterUpdate extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('cluster');
+        (new Helper\User($request))->checkPermissions('cluster');
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Cluster($input);
         $cluster = (new Query())->readEntity($args['id']);

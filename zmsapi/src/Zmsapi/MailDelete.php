@@ -21,7 +21,7 @@ class MailDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('superuser');
+        (new Helper\User($request))->checkPermissions('superuser');
         $query = new Query();
 
         $ids = $request->getQueryParams()['ids'] ?? null;
