@@ -133,7 +133,7 @@ Track applied files in the existing `migrations` table (unchanged).
 
 ### Example: additive only — `custom_text_field3` (no contract)
 
-Adding a third custom text field on `standort` / `buerger` is a **normal additive** change. Same pattern as [`91744880189-add-standort-custom-text-field2.sql`](../../../../zmsdb/migrations/91744880189-add-standort-custom-text-field2.sql).
+Adding a third custom text field on `standort` / `buerger` is a **normal additive** change. Same pattern as `zmsdb/migrations/91744880189-add-standort-custom-text-field2.sql`.
 
 |               | Rename (`StandortID` → `scope_id`) | Add `custom_text_field3`   |
 | ------------- | ---------------------------------- | -------------------------- |
@@ -237,7 +237,7 @@ RENAME TABLE standort TO scope;
 CREATE VIEW standort AS SELECT * FROM scope;
 ```
 
-New code: [`Scope.php`](../../../../zmsdb/src/Zmsdb/Query/Scope.php) `const TABLE = 'scope';`
+New code: `zmsdb/src/Zmsdb/Query/Scope.php` — `const TABLE = 'scope';`
 
 Contract: `DROP VIEW standort;`
 
@@ -289,4 +289,4 @@ ALTER TABLE standort DROP PRIMARY KEY, DROP COLUMN StandortID, ADD PRIMARY KEY (
 
 ## Post-mortem: failed rename migration
 
-[`91775568666`](../../../../zmsdb/migrations/91775568666-rename-waiting-way-processing-columns.sql) + [`91775568667`](../../../../zmsdb/migrations/91775568667-convert-way-time-to-seconds-double.sql) should have been expand → code → contract, not bare `RENAME COLUMN`.
+`zmsdb/migrations/91775568666-rename-waiting-way-processing-columns.sql` + `zmsdb/migrations/91775568667-convert-way-time-to-seconds-double.sql` should have been expand → code → contract, not bare `RENAME COLUMN`.
