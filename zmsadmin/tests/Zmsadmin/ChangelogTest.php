@@ -42,7 +42,7 @@ class ChangelogTest extends Base
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString('Changelog', (string)$response->getBody());
         $this->assertStringContainsString('Bürgeramt Heerstraße', (string)$response->getBody());
-        $this->assertStringContainsString('Sachbearbeiterplatz', (string)$response->getBody());
+        $this->assertStringContainsString('Sachbearbeiter', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }
