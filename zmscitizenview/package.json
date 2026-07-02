@@ -15,7 +15,7 @@
     "serve-loader-test": "npm run build && ws -o -r \"/ -> /resources/loader-test\" -r \"/dist -> ../../dist\""
   },
   "dependencies": {
-    "@muenchen/muc-patternlab-vue": "10.0.0",
+    "@muenchen/muc-patternlab-vue": "10.0.1",
     "altcha": "^3.1.0",
     "dompurify": "^3.4.11",
     "jsdom": "^29.1.1",
@@ -26,7 +26,7 @@
   "devDependencies": {
     "@babel/types": "^8.0.0",
     "@muenchen/prettier-codeformat": "^1.0.2",
-    "@types/node": "^26.0.1",
+    "@types/node": "^26.1.0",
     "@types/webfontloader": "^1.6.35",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vitest/coverage-v8": "^4.1.9",
@@ -39,7 +39,7 @@
     "lodash": "^4.18.0",
     "sass": "^1.101.0",
     "typescript": "^6.0.3",
-    "vite": "^8.1.0",
+    "vite": "^8.1.2",
     "vitest": "^4.1.9",
     "vue-tsc": "^3.3.3"
   },
