@@ -2,27 +2,26 @@
 
 namespace BO\Zmsapi\Tests;
 
-class MailDeleteTest extends Base
+class MailGetTest extends Base
 {
-    protected $classname = "MailDelete";
+    protected $classname = "MailGet";
 
     public function testRendering()
+    {
+        $this->testRenderingWithPermission();
+    }
+
+    public function testRenderingWithPermission()
     {
         $jsonString = (string)(new MailAddTest('dummyTest'))->testRendering()->getBody();
         $message = json_decode($jsonString, true);
         $entity = new \BO\Zmsentities\Mail($message['data']);
-        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
-        $response = $this->render(['id' => $entity->id], [], []);
-        $this->assertStringContainsString('mail.json', (string)$response->getBody());
-        $this->assertTrue(200 == $response->getStatusCode());
-    }
 
-    public function testNotFound()
-    {
         $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
-        $this->expectException('\BO\Zmsapi\Exception\Mail\MailNotFound');
-        $this->expectExceptionCode(404);
-        $this->render(['id' => 0], [], []);
+
+        $response = $this->render(['id' => $entity->id], [], []);
+        $this->assertTrue(200 == $response->getStatusCode());
+        $this->assertStringContainsString('mail.json', (string)$response->getBody());
     }
 
     public function testMissingRights()
@@ -31,5 +30,13 @@ class MailDeleteTest extends Base
         $this->expectException('\\BO\\Zmsentities\\Exception\\UserAccountMissingRights');
         $this->expectExceptionCode(403);
         $this->render(['id' => 1], [], []);
+    }
+
+    public function testNotFound()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
+        $this->expectException('\\BO\\Zmsapi\\Exception\\Mail\\MailNotFound');
+        $this->expectExceptionCode(404);
+        $this->render(['id' => 0], [], []);
     }
 }

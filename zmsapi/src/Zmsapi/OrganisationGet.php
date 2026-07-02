@@ -33,7 +33,7 @@ class OrganisationGet extends BaseController
         $message = Response\Message::create($request);
 
         if ($workstation->hasLogin()) {
-            $workstation->checkRights('department');
+            $workstation->checkPermissions('department');
         } else {
             $organisation = $organisation->withLessData();
             $message->meta->reducedData = true;
