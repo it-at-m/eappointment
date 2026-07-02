@@ -112,7 +112,7 @@ Unprefixed-Dateien: CI-Lint **nur additiv** (kein `DROP`, `RENAME`, …). Breaki
 
 ### Beispiel: nur additiv — `custom_text_field3` (kein Contract)
 
-Wie [`91744880189-add-standort-custom-text-field2.sql`](../../../../zmsdb/migrations/91744880189-add-standort-custom-text-field2.sql). Unprefixed, nur **Migrate Expand**, kein Contract.
+Wie `zmsdb/migrations/91744880189-add-standort-custom-text-field2.sql`. Unprefixed, nur **Migrate Expand**, kein Contract.
 
 ### Beispiel: Code und Spalten löschen (nur Contract)
 
@@ -163,11 +163,11 @@ Tabellenumbenennung ist **nie unprefixed**.
 ## Beispiel: `standort.StandortID` → `scope_id`
 
 1. **Expand:** `scope_id` hinzufügen, Backfill, Trigger
-2. **Code:** Mapping in [`Scope.php`](../../../../zmsdb/src/Zmsdb/Query/Scope.php) auf `scope_id`
+2. **Code:** Mapping in `zmsdb/src/Zmsdb/Query/Scope.php` auf `scope_id`
 3. **Contract:** Trigger droppen, `StandortID` droppen
 
 ---
 
 ## Post-Mortem: fehlgeschlagene Rename-Migration
 
-[`91775568666`](../../../../zmsdb/migrations/91775568666-rename-waiting-way-processing-columns.sql) hätte Expand → Code → Contract sein müssen, nicht bloßes `RENAME COLUMN`.
+`zmsdb/migrations/91775568666-rename-waiting-way-processing-columns.sql` hätte Expand → Code → Contract sein müssen, nicht bloßes `RENAME COLUMN`.
