@@ -279,6 +279,7 @@ const sidebarLabels = {
     onTheFuture: "On the Future",
     databaseRefactor: "Database Refactor",
     standardizeDb: "Standardize Database Table and Field Naming",
+    zeroDowntime: "Zero-Downtime Deployments and Migrations",
     refarchRoadmap: "RefArch Roadmap",
     modernizeArch: "Modernize ZMS Architecture (3-5 Year Plan)",
     backendMergeRefarch: "Refactoring ZMS Backends into Spring RefArch",
@@ -329,6 +330,7 @@ const sidebarLabels = {
     onTheFuture: "Ausblick",
     databaseRefactor: "Datenbank-Refactoring",
     standardizeDb: "Datenbanktabellen- und Feldbenennung standardisieren",
+    zeroDowntime: "Zero-Downtime-Deployments und Migrationen",
     refarchRoadmap: "RefArch-Roadmap",
     modernizeArch: "ZMS-Architektur modernisieren (3-5-Jahresplan)",
     backendMergeRefarch: "Refactoring ZMS Backends in Spring RefArch",
@@ -515,6 +517,10 @@ const buildSidebar = (prefix, lang) => {
             {
               text: t.standardizeDb,
               link: `${prefix}/on-the-future/database-refactor/standardize-database-table-and-field-naming`,
+            },
+            {
+              text: t.zeroDowntime,
+              link: `${prefix}/on-the-future/database-refactor/zero-downtime-deployments-and-migrations`,
             },
           ],
         },
