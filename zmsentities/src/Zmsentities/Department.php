@@ -136,7 +136,7 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
     #[\Override]
     public function hasAccess(Useraccount $useraccount)
     {
-        return $useraccount->hasRights(['superuser']) || $useraccount->hasDepartment($this->id);
+        return $useraccount->isSuperUser() || $useraccount->hasDepartment($this->id);
     }
 
     /**

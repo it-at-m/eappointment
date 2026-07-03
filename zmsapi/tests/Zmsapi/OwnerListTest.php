@@ -10,7 +10,7 @@ class OwnerListTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
         $response = $this->render([], [], []);
         $this->assertStringContainsString('owner.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());

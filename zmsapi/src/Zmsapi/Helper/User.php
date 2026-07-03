@@ -199,8 +199,8 @@ class User
                 }
                 $departments->addEntity($departmentMap[$departmentId]);
             }
-        } elseif ($userAccount->hasRights(['department'])) {
-            // Users with 'department' rights: need organisation-based access checks
+        } elseif ($userAccount->hasPermissions(['department'])) {
+            // Users with 'department' permission: need organisation-based access checks
             // Group departments by organisation and load in batches
             foreach ($normalizedIds as $departmentId) {
                 $departments->addEntity(self::checkDepartment($departmentId));
@@ -247,7 +247,7 @@ class User
         }
         if ($userAccount->isSuperUser()) {
             $department = (new \BO\Zmsdb\Department())->readEntity($departmentId);
-        } elseif ($userAccount->hasRights(['department'])) {
+        } elseif ($userAccount->hasPermissions(['department'])) {
             $department = self::testReadDepartmentByOrganisation($departmentId, $userAccount);
         } else {
             $department = $userAccount->testDepartmentById($departmentId);

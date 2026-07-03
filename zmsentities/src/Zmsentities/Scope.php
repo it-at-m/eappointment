@@ -324,7 +324,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     #[\Override]
     public function hasAccess(Useraccount $useraccount)
     {
-        return $useraccount->hasRights(['superuser']) ||  $useraccount->hasScope($this->id);
+        return $useraccount->isSuperUser() ||  $useraccount->hasScope($this->id);
     }
 
     /**
