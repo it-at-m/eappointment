@@ -14,7 +14,7 @@
                 </p>
                 <h3>Zugeordnete Einheiten</h3>
                 <ul>
-                    {%- if useraccount.rights.superuser -%}
+                    {%- if useraccount.permissions.superuser -%}
                         <li>Alle (Superuser)</li>
                     {%- else -%}
                     {% for department in useraccount.departments %}
@@ -24,7 +24,7 @@
                 </ul>
                 <h3>Sie haben die folgenden Berechtigungen</h3>
                 <ul>
-                    {%- if useraccount.rights.superuser -%}
+                    {%- if useraccount.permissions.superuser -%}
                         <li>Superuser</li>
                     {%- endif -%}
                     {%- if useraccount.rights.organisation -%}
