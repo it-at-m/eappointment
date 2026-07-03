@@ -56,8 +56,12 @@ jobs:
           if [ "${{ github.ref_type }}" = "branch" ]; then
             # Sanitize the tag by replacing invalid characters with a hyphen
             tag="branch-$(echo "$tag" | sed 's/[\/:]/-/g')"
+            # Show the short commit hash for non-tag builds
+            app_version="$(git rev-parse --short HEAD)"
+          else
+            # Show the release tag for tag builds (prod releases)
+            app_version="$(git describe --tags --always)"
           fi
-          app_version="$(git describe --tags --always)"
           docker build . \
             --file ".resources/Containerfile" \
             --tag "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
