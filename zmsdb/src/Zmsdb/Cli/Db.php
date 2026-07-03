@@ -110,12 +110,13 @@ class Db
         (new \BO\Zmsdb\Config())->updateEntity($defaults);
     }
 
-    public static function startMigrations($migrationList, $commit = true)
+    public static function startMigrations($migrationList, $commit = true, ?string $phase = null)
     {
         if (!is_array($migrationList)) {
             $migrationList = glob($migrationList . '/*.sql');
         }
         sort($migrationList);
+        $migrationList = self::filterMigrationFilesByPhase($migrationList, $phase);
         $pdo = self::startUsingDatabase();
         $migrationsDoneList = $pdo->fetchPairs('SELECT filename, changeTimestamp FROM migrations');
         $addedMigrations = 0;
@@ -155,6 +156,40 @@ class Db
             $sqlFile,
             null,
             false
+        );
+    }
+
+    /**
+     * Split migrations into expand/contract phases by filename for zero-downtime
+     * (Expand–Contract) deployments.
+     *
+     * - contract phase: files whose name contains "-contract-" or "-contract." (destructive cleanup)
+     * - expand phase:   every other file, i.e. "*-expand-*" plus unprefixed additive migrations
+     * - no phase (null/empty): all files, preserving the legacy behaviour
+     */
+    private static function filterMigrationFilesByPhase(array $migrationFiles, ?string $phase): array
+    {
+        if ($phase === null || $phase === '') {
+            return $migrationFiles;
+        }
+
+        $isContract = static function (string $migrationFile): bool {
+            return (bool) preg_match('/-contract[-.]/', basename($migrationFile));
+        };
+
+        if ($phase === 'contract') {
+            return array_values(array_filter($migrationFiles, $isContract));
+        }
+
+        if ($phase === 'expand') {
+            return array_values(array_filter(
+                $migrationFiles,
+                static fn(string $migrationFile): bool => !$isContract($migrationFile)
+            ));
+        }
+
+        throw new \InvalidArgumentException(
+            "Unknown migration phase '$phase'; expected 'expand' or 'contract'"
         );
     }
 }
