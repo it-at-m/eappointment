@@ -226,6 +226,7 @@ import {
   createErrorStates,
   handleApiResponse as handleErrorApiResponse,
 } from "@/utils/errorHandler";
+import { resolveServiceInfoId } from "@/utils/resolveServiceInfoId";
 import {
   adjustMainServiceCount,
   adjustSubserviceCount,
@@ -284,30 +285,8 @@ const { serviceLinkId, updateServiceLinkId } = inject<ServiceLinkProvider>(
 ) as ServiceLinkProvider;
 
 const service = ref<ServiceImpl | undefined>(selectedService.value);
-const getServiceInfoId = (
-  selectedService: Service | ServiceImpl | undefined
-) => {
-  if (!selectedService) return "";
-
-  // Variants can be nested (e.g. a "Telefon" variant points to its base
-  // variant which in turn points to the actual service). Walk up the parent
-  // chain so the service info link always targets the root service, not just
-  // the immediate parent.
-  let current: Service | ServiceImpl = selectedService;
-  const visited = new Set<string>();
-
-  while (current.parentId != null) {
-    const parentIdStr = String(current.parentId);
-    if (visited.has(parentIdStr)) break;
-    visited.add(parentIdStr);
-
-    const parent = services.value.find((s) => String(s.id) === parentIdStr);
-    if (!parent) break;
-    current = parent;
-  }
-
-  return String(current.parentId ?? current.id ?? "");
-};
+const getServiceInfoId = (selectedService: Service | ServiceImpl | undefined) =>
+  resolveServiceInfoId(selectedService, services.value);
 
 const serviceInfoLink = computed(() => {
   const serviceInfoId = getServiceInfoId(service.value);
