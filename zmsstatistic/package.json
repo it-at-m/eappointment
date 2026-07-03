@@ -36,7 +36,7 @@
     "flatted": "^3.4.2",
     "immutable": "^5.1.9",
     "minimatch": "^10.2.5",
-    "picomatch": "^4.0.4",
+    "picomatch": "^4.0.5",
     "eslint-plugin-import": "^2.20.1",
     "jquery": "^4.0.0",
     "parcel": "^2.16.4",
