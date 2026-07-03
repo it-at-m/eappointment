@@ -8,6 +8,13 @@ $phase = null;
 $phaseArguments = preg_grep('#^--phase=#', $argv);
 if ($phaseArguments) {
     $phase = substr((string) reset($phaseArguments), strlen('--phase='));
+    if (!in_array($phase, ['expand', 'contract'], true)) {
+        \App::$log->error('Invalid migration phase', [
+            'phase' => $phase,
+            'expected' => ['expand', 'contract'],
+        ]);
+        exit(1);
+    }
 }
 
 $migrationFiles = preg_grep('#^[^-]#', array_slice($argv, 1));
