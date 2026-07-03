@@ -3,15 +3,22 @@
 require_once(__DIR__."/script_bootstrap.php");
 
 $updateOption = count(preg_grep('#^--update$#', $argv)) == 1;
+
+$phase = null;
+$phaseArguments = preg_grep('#^--phase=#', $argv);
+if ($phaseArguments) {
+    $phase = substr((string) reset($phaseArguments), strlen('--phase='));
+}
+
 $migrationFiles = preg_grep('#^[^-]#', array_slice($argv, 1));
 
-    \App::$log->info('Checking for open migrations', ['update' => $updateOption]);
+    \App::$log->info('Checking for open migrations', ['update' => $updateOption, 'phase' => $phase]);
 
 if ($migrationFiles) {
-    $added = \BO\Zmsdb\Cli\Db::startMigrations($migrationFiles, $updateOption);
+    $added = \BO\Zmsdb\Cli\Db::startMigrations($migrationFiles, $updateOption, $phase);
 } else {
     $migrations = realpath(__DIR__ . '/../migrations/');
-    $added = \BO\Zmsdb\Cli\Db::startMigrations($migrations, $updateOption);
+    $added = \BO\Zmsdb\Cli\Db::startMigrations($migrations, $updateOption, $phase);
 }
 if (!$updateOption && $added) {
     \App::$log->notice('Migrations pending — run with --update to activate', [
