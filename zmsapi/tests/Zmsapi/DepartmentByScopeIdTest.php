@@ -10,7 +10,7 @@ class DepartmentByScopeIdTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->setWorkstation();
         $response = $this->render(['id' => 141], [], []);
         $this->assertStringContainsString('department.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -26,14 +26,14 @@ class DepartmentByScopeIdTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->setWorkstation();
         $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
 
     public function testNotFound()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->setWorkstation();
         $this->expectException('\BO\Zmsapi\Exception\Department\DepartmentNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);

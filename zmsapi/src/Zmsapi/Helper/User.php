@@ -131,19 +131,6 @@ class User
         $useraccount['roles'] = $roleNames;
     }
 
-    /**
-     * @return \BO\Zmsentities\Workstation
-     *
-     */
-    public static function checkRights(...$requiredRights)
-    {
-        $workstation = static::readWorkstation();
-        if (\App::RIGHTSCHECK_ENABLED) {
-            $workstation->getUseraccount()->testRights($requiredRights);
-        }
-        return $workstation;
-    }
-
     public static function hasLogin(): bool
     {
         $userAccount = static::readWorkstation()->getUseraccount();

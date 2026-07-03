@@ -75,10 +75,14 @@ class ScopeGetTest extends Base
     public function testLegacyRightNoLongerSufficientForScope()
     {
         $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
-        $department = (new \BO\Zmsentities\Department());
+
+        $department = new \BO\Zmsentities\Department();
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
-        // Nur Legacy-Recht, keine neue Permission
-        $this->setWorkstation()->getUseraccount()->setRights('scope')->addDepartment($department);
+
+        $useraccount = $this->setWorkstation()->getUseraccount();
+        $useraccount->rights['scope'] = true;
+        $useraccount->addDepartment($department);
+
         $this->render(['id' => self::SCOPE_ID], ['accessRights' => 'scope'], []);
     }
 

@@ -32,17 +32,6 @@ class UseraccountTest extends EntityCommonTests
         }
     }
 
-    public function testCollection()
-    {
-        $entity = (new $this->entityclass())->getExample();
-        $superuser = (new $this->entityclass())->getExample();
-        $superuser->rights['superuser'] = true;
-        $collection = new \BO\Zmsentities\Collection\UseraccountList();
-        $collection[] = $entity;
-        $collection[] = $superuser;
-        $this->assertTrue($collection->withRights(['superuser'])->count() == 1, 'Only one superuser given');
-    }
-
     public function testCollectionSortByCustomStringKey()
     {
         $entity = (new $this->entityclass())->getExample();
@@ -117,34 +106,33 @@ class UseraccountTest extends EntityCommonTests
         $this->assertFalse($entity->hasScope(456), "Department should not have scope 456");
     }
 
-    public function testRightChecks()
+    public function testPermissionChecks()
     {
         $entity = (new $this->entityclass())->getExample();
         $department = (new \BO\Zmsentities\Department())->getExample();
         $scope = new \BO\Zmsentities\Scope(['id' => 123]);
-        $this->assertFalse($entity->hasRights([
+        $this->assertFalse($entity->hasPermissions([
             new \BO\Zmsentities\Useraccount\EntityAccess($department)
-        ]), "User rights should not validate for department");
-        $this->assertFalse($entity->hasRights([
+        ]), "User permissions should not validate for department");
+        $this->assertFalse($entity->hasPermissions([
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
-        ]), "User rights should not validate for scope");
+        ]), "User permissions should not validate for scope");
         $entity->addDepartment($department);
-        $this->assertTrue($entity->hasRights([
+        $this->assertTrue($entity->hasPermissions([
             new \BO\Zmsentities\Useraccount\EntityAccess($department),
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
-        ]), "User rights should validate");
+        ]), "User permissions should validate");
         $this->assertStringContainsString(
             "EntityAccess(department#123)",
             (string)(new \BO\Zmsentities\Useraccount\EntityAccess($department))
         );
-        $this->assertTrue($entity->hasRights(['ticketprinter']), "User has tickerprinter right");
     }
 
-    public function testPermissions()
+    public function testHasPermissions()
     {
         $entity = (new $this->entityclass())->getExample();
-        $this->assertTrue($entity->hasRights(['appointment']), "User has appointment permission");
-        $this->assertFalse($entity->hasRights(['counter']), "User doesn't have counter permission");
+        $this->assertTrue($entity->hasPermissions(['appointment']), "User has appointment permission");
+        $this->assertFalse($entity->hasPermissions(['counter']), "User doesn't have counter permission");
     }
 
     public function testSetPermissions()
@@ -272,26 +260,12 @@ class UseraccountTest extends EntityCommonTests
         $this->assertTrue($entity->isSuperUser());
     }
 
-    public function testSuperuserBypassesHasRights()
+    public function testIsSuperUserIgnoresLegacySuperuserRight()
     {
         $entity = (new $this->entityclass())->getExample();
         $entity->rights['superuser'] = true;
-        $this->assertTrue($entity->hasRights(['department']), "Superuser right passes any string right check");
-    }
-
-    public function testTestRightsMissingLogin()
-    {
-        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingLogin');
-        $entity = (new $this->entityclass())->getExample();
-        unset($entity['id']);
-        $entity->testRights(['basic']);
-    }
-
-    public function testTestRightsMissingRights()
-    {
-        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
-        $entity = (new $this->entityclass())->getExample();
-        $entity->testRights(['counter']);
+        $entity->permissions['superuser'] = false;
+        $this->assertFalse($entity->isSuperUser());
     }
 
     public function testWithCleanedUpFormData()

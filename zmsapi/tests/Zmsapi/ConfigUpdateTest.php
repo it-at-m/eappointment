@@ -2,9 +2,6 @@
 
 namespace BO\Zmsapi\Tests;
 
-use \BO\Slim\Render;
-
-use BO\Zmsapi\Helper\User;
 
 class ConfigUpdateTest extends Base
 {
@@ -29,8 +26,7 @@ class ConfigUpdateTest extends Base
 
     public function testWithSuperuser()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
         $response = $this->render([], [
             '__body' => '{
                   "cron": {
@@ -48,7 +44,6 @@ class ConfigUpdateTest extends Base
         $this->expectException('\BO\Zmsapi\Exception\Config\ConfigAuthentificationFailed');
         $this->expectExceptionCode(401);
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('basic');
         $response = $this->render([], [
             '__body' => '{
                   "cron": {

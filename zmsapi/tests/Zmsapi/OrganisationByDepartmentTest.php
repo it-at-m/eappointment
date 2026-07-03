@@ -8,14 +8,13 @@ class OrganisationByDepartmentTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
-        $this->setDepartment(72);
+        $this->setWorkstation();
         $response = $this->render(['id' => 72], [], []); //BA Egon-Erwin-Kisch-Str.
         $this->assertStringContainsString('Lichtenberg', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testNoRights()
+    public function testNoLogin()
     {
         $this->expectException('BO\Zmsentities\Exception\UserAccountMissingLogin');
         $this->expectExceptionCode(401);
@@ -24,7 +23,7 @@ class OrganisationByDepartmentTest extends Base
 
     public function testDepartmentNotFound()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser', 'useraccount');
+        $this->setWorkstation();
         $this->expectException('BO\Zmsapi\Exception\Department\DepartmentNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 9999], [], []);
