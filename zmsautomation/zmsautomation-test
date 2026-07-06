@@ -742,6 +742,11 @@ if [[ "${ZMS_BROWSER:-chrome}" == "chrome" ]]; then
     CHROME_BIN_PATH="/usr/bin/chromium-browser"
   fi
   CHROME_MVN_ARGS+=("-Dwebdriver.chrome.binary=${CHROME_BIN_PATH}")
+  # Chromium 150+ exits in Docker without headless; ATAF 0.3.3 only gates headless for Edge.
+  if [[ "${GITHUB_ACTIONS:-}" == "true" || "${ZMS_CHROME_HEADLESS:-}" == "true" ]]; then
+    CHROME_MVN_ARGS+=("-Dtestautomation.browserHeadless=true")
+    info "Chrome headless enabled for CI/container runs"
+  fi
 fi
 while (( attempt <= MAX_UI_RETRIES )); do
   if [[ "$RUN_UI_TESTS" == true ]]; then
