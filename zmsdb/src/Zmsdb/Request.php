@@ -17,12 +17,7 @@ class Request extends Base
         $cacheKey = "request-$source-$requestId-$resolveReferences";
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
-            $request = App::$cache->get($cacheKey);
-            if (!isset($request['root_parent_id'])) {
-                $this->attachRootParentIds(new Collection([$request]));
-                App::$cache->set($cacheKey, $request);
-            }
-            return $request;
+            return App::$cache->get($cacheKey);
         }
 
         $this->testSource($source);
