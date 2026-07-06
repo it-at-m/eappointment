@@ -30,9 +30,10 @@ app.use((req, res, next) => {
   return res.status(401).send("Authentication required");
 });
 
-async function proxyApi(relativePath, query = "") {
+async function proxyApi(relativePath, { method = "GET", query = "" } = {}) {
   const url = `${apiBaseUrl}${relativePath}${query}`;
   const response = await fetch(url, {
+    method,
     headers: {
       Accept: "application/json",
       Authorization: apiAuthorization,
@@ -51,7 +52,7 @@ app.get("/api/mails", async (req, res) => {
     if (req.query.ids) {
       query.set("ids", String(req.query.ids));
     }
-    const result = await proxyApi("/mails/", `?${query}`);
+    const result = await proxyApi("/mails/", { query: `?${query}` });
     res.status(result.status).type("application/json").send(result.body);
   } catch (error) {
     res.status(502).json({
@@ -64,6 +65,22 @@ app.get("/api/mails", async (req, res) => {
 app.get("/api/mails/:id", async (req, res) => {
   try {
     const result = await proxyApi(`/mails/${req.params.id}/`);
+    res.status(result.status).type("application/json").send(result.body);
+  } catch (error) {
+    res.status(502).json({
+      error: true,
+      message: `Failed to reach ZMS API at ${apiBaseUrl}: ${error.message}`,
+    });
+  }
+});
+
+app.delete("/api/mails/:id", async (req, res) => {
+  try {
+    const ids = encodeURIComponent(req.params.id);
+    const result = await proxyApi("/mails/", {
+      method: "DELETE",
+      query: `?ids=${ids}`,
+    });
     res.status(result.status).type("application/json").send(result.body);
   } catch (error) {
     res.status(502).json({

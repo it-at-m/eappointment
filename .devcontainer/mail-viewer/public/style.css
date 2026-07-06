@@ -53,6 +53,15 @@ h1 {
   border-radius: 8px;
   padding: 0.9rem 1rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.mail-card-main {
+  min-width: 0;
+  flex: 1;
 }
 
 .mail-card:hover {
@@ -99,6 +108,24 @@ h1 {
 .detail-header h2 {
   margin: 0;
   font-size: 1.1rem;
+  flex: 1;
+}
+
+button.danger {
+  margin-left: auto;
+  border: 1px solid #dc2626;
+  background: #fef2f2;
+  color: #b91c1c;
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+}
+
+button.danger:hover {
+  background: #fee2e2;
+}
+
+.mail-card .danger {
+  flex-shrink: 0;
 }
 
 .meta {
