@@ -548,15 +548,15 @@ public class CitizenViewPage extends BasePage {
 
     /**
      * After clicking Weiter on the Kontakt form: wait for the update-appointment response and for the preconfirm
-     * page (privacy checkboxes). The Kontakt Weiter is only disabled <em>after</em> click while the request runs.
+     * page (electronic communication checkbox). The Kontakt Weiter is only disabled <em>after</em> click while the request runs.
      */
     public void waitForPreconfirmPageAfterUpdate() {
         CONTEXT.set();
-        String sel = "#checkbox-privacy-policy";
+        String sel = "#checkbox-electronic-communication";
         waitWithThreeWindows(() -> deepElementExists(sel), "Preconfirm page " + sel);
         Assert.assertTrue(
                 deepElementExists(sel),
-                "Preconfirm page (privacy checkbox " + sel + ") not visible after Kontakt Weiter with retries.");
+                "Preconfirm page (electronic communication checkbox " + sel + ") not visible after Kontakt Weiter with retries.");
         ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm page visible");
     }
 
@@ -1551,7 +1551,6 @@ public class CitizenViewPage extends BasePage {
 
     public void acceptPrivacyAndCommunication() {
         CONTEXT.set();
-        deepClick("#checkbox-privacy-policy");
         deepClick("#checkbox-electronic-communication");
     }
 
