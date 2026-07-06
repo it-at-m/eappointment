@@ -448,7 +448,7 @@ SET FOREIGN_KEY_CHECKS = 1;"""
       is_composer_install = len(commands) >= 2 and commands[0] == "composer" and commands[1] == "install"
 
       build_commands = {
-        "zmsadmin": ["npm run build"],
+        "zmsadmin": ["npm run build", "make libs"],
         "zmscalldisplay": ["npm run build"],
         "zmsstatistic": ["npm run build"],
         "zmsticketprinter": ["npm run build"]
