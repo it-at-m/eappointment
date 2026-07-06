@@ -4,6 +4,7 @@ const statusEl = document.getElementById("status");
 const autoRefreshEl = document.getElementById("autoRefresh");
 let mails = [];
 let timer = null;
+let selectedMailId = null;
 
 function formatTimestamp(value) {
   let ms = Number(value);
@@ -41,14 +42,23 @@ function renderList() {
     .map(
       (mail) => `
       <article class="mail-card" data-id="${mail.id}">
-        <h3>${escapeHtml(mail.subject || "(no subject)")}</h3>
-        <div class="sub">#${mail.id} · ${escapeHtml(recipient(mail))} · ${formatTimestamp(mail.createTimestamp)}</div>
+        <div class="mail-card-main">
+          <h3>${escapeHtml(mail.subject || "(no subject)")}</h3>
+          <div class="sub">#${mail.id} · ${escapeHtml(recipient(mail))} · ${formatTimestamp(mail.createTimestamp)}</div>
+        </div>
+        <button class="danger delete-mail" type="button" data-id="${mail.id}">Delete</button>
       </article>`,
     )
     .join("");
 
   listEl.querySelectorAll(".mail-card").forEach((card) => {
     card.addEventListener("click", () => openDetail(card.dataset.id));
+  });
+  listEl.querySelectorAll(".delete-mail").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      deleteMail(button.dataset.id);
+    });
   });
 }
 
@@ -65,6 +75,7 @@ function openDetail(id) {
     return;
   }
 
+  selectedMailId = mail.id;
   listEl.classList.add("hidden");
   detailEl.classList.remove("hidden");
   document.getElementById("detailTitle").textContent =
@@ -88,6 +99,7 @@ function openDetail(id) {
 }
 
 function closeDetail() {
+  selectedMailId = null;
   detailEl.classList.add("hidden");
   listEl.classList.remove("hidden");
 }
@@ -109,6 +121,35 @@ function escapeHtml(value) {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
+}
+
+async function deleteMail(id) {
+  if (!window.confirm(`Delete mail #${id} from the queue?`)) {
+    return;
+  }
+
+  statusEl.textContent = `Deleting mail #${id}…`;
+  try {
+    const response = await fetch(`/api/mails/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    const payload = await response.json();
+    if (!response.ok || payload?.meta?.error) {
+      const apiMessage =
+        payload?.meta?.message ||
+        payload?.message ||
+        payload?.meta?.exception ||
+        `HTTP ${response.status}`;
+      throw new Error(apiMessage);
+    }
+    if (String(selectedMailId) === String(id)) {
+      closeDetail();
+    }
+    await loadMails();
+  } catch (error) {
+    statusEl.textContent = `Error: ${error.message}`;
+  }
 }
 
 async function loadMails() {
@@ -147,6 +188,11 @@ function scheduleAutoRefresh() {
 
 document.getElementById("refresh").addEventListener("click", loadMails);
 document.getElementById("closeDetail").addEventListener("click", closeDetail);
+document.getElementById("deleteDetail").addEventListener("click", () => {
+  if (selectedMailId != null) {
+    deleteMail(selectedMailId);
+  }
+});
 autoRefreshEl.addEventListener("change", scheduleAutoRefresh);
 document.querySelectorAll(".tab").forEach((tab) => {
   tab.addEventListener("click", () => setActiveTab(tab.dataset.tab));
