@@ -1,8 +1,15 @@
+const BASE_TITLE = "ZMS local mail queue";
 const listEl = document.getElementById("list");
 const detailEl = document.getElementById("detail");
 const statusEl = document.getElementById("status");
 const autoRefreshEl = document.getElementById("autoRefresh");
 let mails = [];
+
+function updateTitle() {
+  document.title = mails.length
+    ? `(${mails.length}) ${BASE_TITLE}`
+    : BASE_TITLE;
+}
 let timer = null;
 let selectedMailId = null;
 
@@ -69,6 +76,16 @@ function normalizeMailHtml(html) {
   return html.replace(/href="(localhost:\d+)/gi, 'href="http://$1');
 }
 
+function setHtmlPreview(html) {
+  const panel = document.getElementById("panel-html");
+  const iframe = document.createElement("iframe");
+  iframe.id = "htmlFrame";
+  iframe.title = "HTML preview";
+  iframe.setAttribute("sandbox", "");
+  iframe.srcdoc = html || "<p>No HTML part.</p>";
+  panel.querySelector("iframe")?.replaceWith(iframe);
+}
+
 function openDetail(id) {
   const mail = mails.find((entry) => String(entry.id) === String(id));
   if (!mail) {
@@ -82,16 +99,17 @@ function openDetail(id) {
     mail.subject || `Mail #${mail.id}`;
 
   const processId = mail?.process?.id;
+  const displayNumber = mail?.process?.displayNumber;
   document.getElementById("meta").innerHTML = `
     <div><strong>ID:</strong> ${mail.id}</div>
     <div><strong>To:</strong> ${escapeHtml(recipient(mail))}</div>
     <div><strong>Created:</strong> ${formatTimestamp(mail.createTimestamp)}</div>
-    ${processId ? `<div><strong>Process:</strong> ${processId}</div>` : ""}`;
+    ${processId ? `<div><strong>Process:</strong> ${processId}</div>` : ""}
+    ${displayNumber ? `<div><strong>Display number:</strong> ${escapeHtml(displayNumber)}</div>` : ""}`;
 
   const htmlPart = multipartPart(mail, "text/html");
   const plainPart = multipartPart(mail, "text/plain");
-  document.getElementById("htmlFrame").srcdoc =
-    normalizeMailHtml(htmlPart?.content) || "<p>No HTML part.</p>";
+  setHtmlPreview(normalizeMailHtml(htmlPart?.content));
   document.getElementById("plainText").textContent =
     plainPart?.content || "No plain text part.";
   document.getElementById("rawJson").textContent = JSON.stringify(mail, null, 2);
@@ -170,6 +188,7 @@ async function loadMails() {
       (a, b) => Number(b.createTimestamp || 0) - Number(a.createTimestamp || 0),
     );
     renderList();
+    updateTitle();
     statusEl.textContent = `${mails.length} mail(s) · ${new Date().toLocaleTimeString()}`;
   } catch (error) {
     statusEl.textContent = `Error: ${error.message}`;
