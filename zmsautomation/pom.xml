@@ -330,9 +330,9 @@
                 <include>**/UiTestRunner.java</include>
               </includes>
               <environmentVariables>
-                <DISPLAY>${env.DISPLAY}</DISPLAY>
-                <CHROME_BIN>${env.CHROME_BIN}</CHROME_BIN>
-                <DBUS_SESSION_BUS_ADDRESS>${env.DBUS_SESSION_BUS_ADDRESS}</DBUS_SESSION_BUS_ADDRESS>
+                <DISPLAY>:99</DISPLAY>
+                <CHROME_BIN>/usr/bin/chromium</CHROME_BIN>
+                <DBUS_SESSION_BUS_ADDRESS>/dev/null</DBUS_SESSION_BUS_ADDRESS>
               </environmentVariables>
               <systemPropertyVariables>
                 <cucumber.features>src/test/resources/features/ui</cucumber.features>
