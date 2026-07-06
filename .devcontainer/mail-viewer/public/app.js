@@ -1,8 +1,15 @@
+const BASE_TITLE = "ZMS local mail queue";
 const listEl = document.getElementById("list");
 const detailEl = document.getElementById("detail");
 const statusEl = document.getElementById("status");
 const autoRefreshEl = document.getElementById("autoRefresh");
 let mails = [];
+
+function updateTitle() {
+  document.title = mails.length
+    ? `(${mails.length}) ${BASE_TITLE}`
+    : BASE_TITLE;
+}
 let timer = null;
 let selectedMailId = null;
 
@@ -181,6 +188,7 @@ async function loadMails() {
       (a, b) => Number(b.createTimestamp || 0) - Number(a.createTimestamp || 0),
     );
     renderList();
+    updateTitle();
     statusEl.textContent = `${mails.length} mail(s) · ${new Date().toLocaleTimeString()}`;
   } catch (error) {
     statusEl.textContent = `Error: ${error.message}`;
