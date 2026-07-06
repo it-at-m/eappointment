@@ -69,6 +69,16 @@ function normalizeMailHtml(html) {
   return html.replace(/href="(localhost:\d+)/gi, 'href="http://$1');
 }
 
+function setHtmlPreview(html) {
+  const panel = document.getElementById("panel-html");
+  const iframe = document.createElement("iframe");
+  iframe.id = "htmlFrame";
+  iframe.title = "HTML preview";
+  iframe.setAttribute("sandbox", "");
+  iframe.srcdoc = html || "<p>No HTML part.</p>";
+  panel.querySelector("iframe")?.replaceWith(iframe);
+}
+
 function openDetail(id) {
   const mail = mails.find((entry) => String(entry.id) === String(id));
   if (!mail) {
@@ -92,8 +102,7 @@ function openDetail(id) {
 
   const htmlPart = multipartPart(mail, "text/html");
   const plainPart = multipartPart(mail, "text/plain");
-  document.getElementById("htmlFrame").srcdoc =
-    normalizeMailHtml(htmlPart?.content) || "<p>No HTML part.</p>";
+  setHtmlPreview(normalizeMailHtml(htmlPart?.content));
   document.getElementById("plainText").textContent =
     plainPart?.content || "No plain text part.";
   document.getElementById("rawJson").textContent = JSON.stringify(mail, null, 2);
