@@ -1,0 +1,156 @@
+:root {
+  color-scheme: light dark;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  line-height: 1.4;
+}
+
+body {
+  margin: 0;
+  background: #f4f4f5;
+  color: #18181b;
+}
+
+header,
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+}
+
+.hint {
+  margin: 0 0 1rem;
+  color: #52525b;
+}
+
+.toolbar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.status {
+  color: #52525b;
+  font-size: 0.9rem;
+}
+
+.list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.mail-card {
+  background: #fff;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+}
+
+.mail-card:hover {
+  border-color: #2563eb;
+}
+
+.mail-card h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+
+.mail-card .sub {
+  color: #52525b;
+  font-size: 0.9rem;
+}
+
+.empty {
+  padding: 2rem;
+  text-align: center;
+  color: #71717a;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px dashed #d4d4d8;
+}
+
+.detail {
+  background: #fff;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.hidden {
+  display: none;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.detail-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.meta {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.meta a {
+  color: #2563eb;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.tab {
+  border: 1px solid #d4d4d8;
+  background: #fafafa;
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #fff;
+}
+
+.panel iframe {
+  width: 100%;
+  min-height: 480px;
+  border: 1px solid #d4d4d8;
+  border-radius: 6px;
+  background: #fff;
+}
+
+pre {
+  margin: 0;
+  padding: 1rem;
+  background: #fafafa;
+  border: 1px solid #d4d4d8;
+  border-radius: 6px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+button {
+  cursor: pointer;
+}
