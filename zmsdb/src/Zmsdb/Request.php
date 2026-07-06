@@ -17,7 +17,12 @@ class Request extends Base
         $cacheKey = "request-$source-$requestId-$resolveReferences";
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
-            return App::$cache->get($cacheKey);
+            $request = App::$cache->get($cacheKey);
+            if (!isset($request['root_parent_id'])) {
+                $this->attachRootParentIds(new Collection([$request]));
+                App::$cache->set($cacheKey, $request);
+            }
+            return $request;
         }
 
         $this->testSource($source);
@@ -32,6 +37,8 @@ class Request extends Base
         if (! $request->hasId()) {
             throw new Exception\Request\RequestNotFound("Could not find request with ID $source/$requestId");
         }
+
+        $this->attachRootParentIds(new Collection([$request]));
 
         if (App::$cache) {
             App::$cache->set($cacheKey, $request);
@@ -52,7 +59,102 @@ class Request extends Base
             $request = new Entity($query->postProcessJoins($requestData));
             $requestList->addEntity($request);
         }
+
+        return $this->attachRootParentIds($requestList);
+    }
+
+    protected function attachRootParentIds(Collection $requestList): Collection
+    {
+        if (!$requestList->count()) {
+            return $requestList;
+        }
+
+        $lookup = [];
+        foreach ($requestList as $request) {
+            $lookup[$this->getRequestLookupKey($request)] = $request;
+        }
+
+        $changed = true;
+        while ($changed) {
+            $changed = false;
+            foreach ($lookup as $request) {
+                $parentId = $request->getParentId();
+                if ($parentId === null || $parentId === '') {
+                    continue;
+                }
+
+                $parentKey = $request->getSource() . ':' . $parentId;
+                if (isset($lookup[$parentKey])) {
+                    continue;
+                }
+
+                try {
+                    $lookup[$parentKey] = $this->readEntityWithoutRootParentResolution(
+                        $request->getSource(),
+                        $parentId
+                    );
+                    $changed = true;
+                } catch (\Throwable $exception) {
+                    continue;
+                }
+            }
+        }
+
+        foreach ($requestList as $request) {
+            $request['root_parent_id'] = $this->resolveRootParentId($request, $lookup);
+        }
+
         return $requestList;
+    }
+
+    protected function readEntityWithoutRootParentResolution($source, $requestId): Entity
+    {
+        $this->testSource($source);
+        $query = new Query\Request(Query\Base::SELECT);
+        $query
+            ->setResolveLevel(0)
+            ->addEntityMapping()
+            ->addConditionRequestSource($source)
+            ->addConditionRequestId($requestId);
+
+        $request = $this->fetchOne($query, new Entity());
+        if (!$request->hasId()) {
+            throw new Exception\Request\RequestNotFound("Could not find request with ID $source/$requestId");
+        }
+
+        return $request;
+    }
+
+    protected function resolveRootParentId(Entity $request, array $lookup): string
+    {
+        $current = $request;
+        $visited = [];
+
+        while ($current->getParentId() !== null && $current->getParentId() !== '') {
+            $parentKey = $current->getSource() . ':' . $current->getParentId();
+            if (isset($visited[$parentKey])) {
+                break;
+            }
+            $visited[$parentKey] = true;
+
+            $parent = $lookup[$parentKey] ?? null;
+            if (!$parent instanceof Entity) {
+                break;
+            }
+            $current = $parent;
+        }
+
+        $parentId = $current->getParentId();
+        if ($parentId !== null && $parentId !== '') {
+            return (string) $parentId;
+        }
+
+        return (string) $current->getId();
+    }
+
+    protected function getRequestLookupKey(Entity $request): string
+    {
+        return $request->getSource() . ':' . $request->getId();
     }
 
     public function readRequestByProcessId($processId, $resolveReferences = 0)

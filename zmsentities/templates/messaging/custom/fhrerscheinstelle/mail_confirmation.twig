@@ -41,7 +41,7 @@
             Folgende {{ requestalias }} für diesen Termin gebucht:
             <br/><br />
             {% for requestGroup in requestGroups %}
-                <strong><a href="http://www.muenchen.de/dienstleistungsfinder/muenchen/{{ requestGroup['request'].data.id|default(requestGroup['request'].id) }}/">{{ requestGroup['request'].name }} {#am Standort {{ process.scope.provider.displayName }}#}</a></strong><br/>
+                <strong><a href="http://www.muenchen.de/dienstleistungsfinder/muenchen/{{ requestGroup['request'].root_parent_id }}/">{{ requestGroup['request'].name }} {#am Standort {{ process.scope.provider.displayName }}#}</a></strong><br/>
                 
                 Anzahl: {{ requestGroup['count'] }}
                 
