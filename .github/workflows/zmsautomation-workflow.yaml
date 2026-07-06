@@ -168,6 +168,7 @@ jobs:
               x11-utils x11-xserver-utils \
               xvfb \
               firefox-esr \
+              "chromium-common=${CHROMIUM_APT_VERSION}" \
               "chromium=${CHROMIUM_APT_VERSION}" \
               "chromium-driver=${CHROMIUM_APT_VERSION}" \
               ;
