@@ -82,11 +82,13 @@ function openDetail(id) {
     mail.subject || `Mail #${mail.id}`;
 
   const processId = mail?.process?.id;
+  const displayNumber = mail?.process?.displayNumber;
   document.getElementById("meta").innerHTML = `
     <div><strong>ID:</strong> ${mail.id}</div>
     <div><strong>To:</strong> ${escapeHtml(recipient(mail))}</div>
     <div><strong>Created:</strong> ${formatTimestamp(mail.createTimestamp)}</div>
-    ${processId ? `<div><strong>Process:</strong> ${processId}</div>` : ""}`;
+    ${processId ? `<div><strong>Process:</strong> ${processId}</div>` : ""}
+    ${displayNumber ? `<div><strong>Display number:</strong> ${escapeHtml(displayNumber)}</div>` : ""}`;
 
   const htmlPart = multipartPart(mail, "text/html");
   const plainPart = multipartPart(mail, "text/plain");
