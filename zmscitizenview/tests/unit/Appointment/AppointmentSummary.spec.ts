@@ -107,10 +107,11 @@ describe("AppointmentSummary", () => {
       expect(wrapper.text()).toContain("1x");
     });
 
-    it("uses parent service id for service link when serviceLinkId is unset", () => {
+    it("uses rootParentId for service link when serviceLinkId is unset", () => {
       mockSelectedService.value = {
         id: "999",
-        parentId: "1063423",
+        parentId: "3",
+        rootParentId: "1063423",
         name: "Gewerbe-Anmeldung Video",
         count: 1,
         variantId: 2,

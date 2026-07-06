@@ -56,6 +56,7 @@ class ServicesListControllerTest extends ControllerTestCase
                     "combinable" => null,
                     "parentId" => null,
                     "variantId" => null,
+                    "rootParentId" => 1,
                     "showOnStartPage" => null
                 ]
             ]

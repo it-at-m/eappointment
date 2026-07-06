@@ -414,6 +414,7 @@ class MapperServiceTest extends TestCase
                     "combinable" => new Combinable(),
                     "parentId" => null,
                     "variantId" => null,
+                    "rootParentId" => 1,
                     "showOnStartPage" => true
                 ],
                 [
@@ -423,6 +424,7 @@ class MapperServiceTest extends TestCase
                     "combinable" => new Combinable(),
                     "parentId" => null,
                     "variantId" => null,
+                    "rootParentId" => 2,
                     "showOnStartPage" => true
                 ]
             ]
@@ -474,6 +476,7 @@ class MapperServiceTest extends TestCase
                     "combinable" => new Combinable(),
                     "parentId" => null,
                     "variantId" => null,
+                    "rootParentId" => 2,
                     "showOnStartPage" => true
                 ]
             ]
@@ -642,6 +645,50 @@ class MapperServiceTest extends TestCase
         $this->assertEquals('Service 2', $services[1]['name']);
         $this->assertEquals(1, $services[1]['maxQuantity']);
         $this->assertEquals([1 => [100]], $services[1]['combinable']->getCombinations());
+    }
+
+    public function testMapServicesWithCombinationsResolvesRootParentId()
+    {
+        $root = new Request();
+        $root->id = 1080455;
+        $root->name = 'Auskunft zur Rente';
+        $root->data = ['maxQuantity' => 1, 'public' => true];
+
+        $base = new Request();
+        $base->id = 3;
+        $base->name = 'Auskunft zur Rente';
+        $base->parent_id = 1080455;
+        $base->variant_id = 1;
+        $base->data = ['maxQuantity' => 1, 'public' => true];
+
+        $telefon = new Request();
+        $telefon->id = 2;
+        $telefon->name = 'Auskunft zur Rente Telefon';
+        $telefon->parent_id = 3;
+        $telefon->variant_id = 2;
+        $telefon->root_parent_id = 1080455;
+        $telefon->data = ['maxQuantity' => 1, 'public' => true];
+
+        $requestList = new RequestList([$telefon, $base, $root]);
+
+        $provider = new Provider();
+        $provider->id = 100;
+
+        $relation = new RequestRelation();
+        $relation->request = $telefon;
+        $relation->provider = $provider;
+        $relation->slots = 1;
+
+        $result = MapperService::mapServicesWithCombinations(
+            $requestList,
+            new RequestRelationList([$relation])
+        );
+
+        $services = $result->toArray()['services'];
+        $this->assertCount(1, $services);
+        $this->assertEquals(2, $services[0]['id']);
+        $this->assertEquals(3, $services[0]['parentId']);
+        $this->assertEquals(1080455, $services[0]['rootParentId']);
     }
     
     public function testScopeToThinnedScopeWithMissingProvider()

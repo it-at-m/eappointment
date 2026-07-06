@@ -164,6 +164,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "combinable" => [],
                     "parentId" => null,
                     "variantId" => null,
+                    "rootParentId" => 1,
                     "showOnStartPage" => true,
                 ]
             ],
@@ -341,6 +342,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "combinable" => [],
                     "parentId" => null,
                     "variantId" => null,
+                    "rootParentId" => 1,
                     "showOnStartPage" => true
                 ],
                 [
@@ -353,6 +355,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     ],
                     "parentId" => null,
                     "variantId" => null,
+                    "rootParentId" => 2,
                     "showOnStartPage" => true
                 ]
             ],

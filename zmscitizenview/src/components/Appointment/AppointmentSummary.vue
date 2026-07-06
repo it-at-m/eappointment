@@ -345,7 +345,6 @@ import {
   isVariantWithHint,
 } from "@/utils/Constants";
 import { containsParagraphTag } from "@/utils/containsParagraphTag";
-import { resolveServiceInfoId } from "@/utils/resolveServiceInfoId";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
@@ -452,7 +451,8 @@ const variantId = computed<number | null>(() => {
 
 const resolvedServiceLinkId = computed(() => {
   if (serviceLinkId.value) return serviceLinkId.value;
-  return resolveServiceInfoId(selectedService.value);
+  const service = selectedService.value;
+  return String(service?.rootParentId ?? service?.id ?? "");
 });
 
 const sanitizedInfoForAppointment = computed(() =>

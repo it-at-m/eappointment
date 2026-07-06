@@ -51,6 +51,13 @@
       ],
       "description": "Variant-ID (z.B. ZMS-Variantenkennung)"
     },
+    "rootParentId": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Root service ID for service info links; equals id for root services"
+    },
     "showOnStartPage": {
       "type": [
         "boolean",

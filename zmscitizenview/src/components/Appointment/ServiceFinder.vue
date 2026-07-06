@@ -226,7 +226,6 @@ import {
   createErrorStates,
   handleApiResponse as handleErrorApiResponse,
 } from "@/utils/errorHandler";
-import { resolveServiceInfoId } from "@/utils/resolveServiceInfoId";
 import {
   adjustMainServiceCount,
   adjustSubserviceCount,
@@ -286,7 +285,7 @@ const { serviceLinkId, updateServiceLinkId } = inject<ServiceLinkProvider>(
 
 const service = ref<ServiceImpl | undefined>(selectedService.value);
 const getServiceInfoId = (selectedService: Service | ServiceImpl | undefined) =>
-  resolveServiceInfoId(selectedService, services.value);
+  String(selectedService?.rootParentId ?? selectedService?.id ?? "");
 
 const serviceInfoLink = computed(() => {
   const serviceInfoId = getServiceInfoId(service.value);

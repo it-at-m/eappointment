@@ -410,7 +410,6 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
-import { resolveServiceInfoId } from "@/utils/resolveServiceInfoId";
 import { isExpired } from "@/utils/timestampInPast";
 
 const props = defineProps<{
@@ -1215,7 +1214,11 @@ onMounted(() => {
             );
 
             updateServiceLinkId(
-              resolveServiceInfoId(selectedService.value, services.value)
+              String(
+                selectedService.value.rootParentId ??
+                  selectedService.value.id ??
+                  ""
+              )
             );
 
             preselectedLocationId.value = appointment.value.officeId;
