@@ -32,6 +32,17 @@ Folgende lokale Container werden bei `ddev start` bzw. `devcontainer up --worksp
 - `zms-db` (MariaDB), DB-Port: `3306`
 - `zms-phpmyadmin`, Endpunkt: `http://localhost:8036`
 - `zms-citizenview`, Vite-Hot-Reload-Endpunkt: `http://localhost:8082`
+- `zms-mail-viewer`, lokaler Mail-Queue-Viewer: `http://localhost:8025` (Login `superuser` / `vorschau`)
+
+## Lokaler Mail-Queue-Viewer
+
+ZMS legt ausgehende Mails in der API-Queue (`GET /api/2/mails/`) ab, bevor `zmsmessaging` sie versendet. Lokal ist SMTP meist deaktiviert — Mails bleiben in der Queue.
+
+Der Sidecar `zms-mail-viewer` pollt diese API und zeigt Betreff, Empfänger, HTML-Vorschau und Klartext.
+
+- URL: `http://localhost:8025`
+- Login: `superuser` / `vorschau` (Browser-Basic-Auth; konfigurierbar über `ZMS_MAIL_VIEWER_USER` / `ZMS_MAIL_VIEWER_PASSWORD`)
+- API-Auth: lokale Superuser-Zugangsdaten über `ZMS_MAIL_VIEWER_API_USER` / `ZMS_MAIL_VIEWER_API_PASSWORD` (Standard `superuser` / `vorschau`)
 
 ## Automatische Einrichtung beim Start
 
