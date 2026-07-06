@@ -1232,6 +1232,14 @@ onMounted(() => {
               null
             );
 
+            updateServiceLinkId(
+              String(
+                selectedService.value.rootParentId ??
+                  selectedService.value.id ??
+                  ""
+              )
+            );
+
             preselectedLocationId.value = appointment.value.officeId;
             const foundOffice = offices.value.find(
               (office) => office.id == appointment.value?.officeId
