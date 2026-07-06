@@ -963,9 +963,6 @@ CREATE TABLE `provider` (
 -- Dumping data for table `provider`
 --
 
-INSERT INTO `provider` (`source`, `id`, `name`, `contact__city`, `contact__country`, `contact__lat`, `contact__lon`, `contact__postalCode`, `contact__region`, `contact__street`, `contact__streetNumber`, `link`, `data`, `display_name`, `parent_id`) VALUES
-('zms', '1', '', '', '', 0, 0, 0, '', '', '', '', '{}', '', NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -988,9 +985,6 @@ CREATE TABLE `request` (
 -- Dumping data for table `request`
 --
 
-INSERT INTO `request` (`source`, `id`, `name`, `link`, `group`, `data`, `parent_id`, `variant_id`) VALUES
-('zms', '1', '', '', '', '{}', NULL, NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -1011,9 +1005,6 @@ CREATE TABLE `request_provider` (
 --
 -- Dumping data for table `request_provider`
 --
-
-INSERT INTO `request_provider` (`source`, `request__id`, `provider__id`, `slots`, `bookable`, `max_quantity`, `public_visibility`) VALUES
-('zms', '1', '1', 0, 1, NULL, 1);
 
 -- --------------------------------------------------------
 
