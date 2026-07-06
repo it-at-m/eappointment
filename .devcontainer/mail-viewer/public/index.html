@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ZMS local mail queue</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>ZMS local mail queue</h1>
+      <p class="hint">Pending outbound mails from <code>/api/2/mails/</code> (dev only)</p>
+      <div class="toolbar">
+        <button id="refresh" type="button">Refresh</button>
+        <label>
+          <input id="autoRefresh" type="checkbox" />
+          Auto-refresh (5s)
+        </label>
+        <span id="status" class="status"></span>
+      </div>
+    </header>
+    <main>
+      <section id="list" class="list"></section>
+      <section id="detail" class="detail hidden">
+        <div class="detail-header">
+          <button id="closeDetail" type="button">Back</button>
+          <h2 id="detailTitle"></h2>
+        </div>
+        <div id="meta" class="meta"></div>
+        <div class="tabs">
+          <button class="tab active" data-tab="html" type="button">HTML</button>
+          <button class="tab" data-tab="plain" type="button">Plain text</button>
+          <button class="tab" data-tab="raw" type="button">Raw JSON</button>
+        </div>
+        <div id="panel-html" class="panel">
+          <iframe id="htmlFrame" title="HTML preview" sandbox=""></iframe>
+        </div>
+        <div id="panel-plain" class="panel hidden">
+          <pre id="plainText"></pre>
+        </div>
+        <div id="panel-raw" class="panel hidden">
+          <pre id="rawJson"></pre>
+        </div>
+      </section>
+    </main>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
