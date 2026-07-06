@@ -49,6 +49,21 @@ ensure_xvfb() {
   return 1
 }
 
+export_chrome_browser_env() {
+  export DISPLAY="${DISPLAY:-:99}"
+  # Chromium in Debian Docker/CI; chromedriver also checks google-chrome by name.
+  if command -v chromium >/dev/null 2>&1; then
+    export CHROME_BIN="${CHROME_BIN:-/usr/bin/chromium}"
+    ln -sf /usr/bin/chromium /usr/bin/google-chrome 2>/dev/null || true
+  elif command -v chromium-browser >/dev/null 2>&1; then
+    export CHROME_BIN="${CHROME_BIN:-/usr/bin/chromium-browser}"
+    ln -sf /usr/bin/chromium-browser /usr/bin/google-chrome 2>/dev/null || true
+  fi
+  # Chrome often exits immediately in containers when dbus is unavailable.
+  export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-/dev/null}"
+  info "Chrome env: DISPLAY=$DISPLAY CHROME_BIN=${CHROME_BIN:-<unset>} DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
+}
+
 # Maven accepts -Pataf-api,ataf-ui as well as separate -Pataf-api -Pataf-ui flags.
 resolve_ataf_maven_profiles() {
   HAS_ATAF_API=false
@@ -576,6 +591,7 @@ section "10. Browser Setup"
 info "Setting up browsers and Xvfb for UI tests..."
 
 ensure_xvfb || { warn "Cannot run UI tests without a working X display"; exit 1; }
+export_chrome_browser_env
 
 # Verify Firefox is available (optional – main dev browser is Chromium)
 if command -v firefox >/dev/null 2>&1; then
@@ -596,12 +612,10 @@ fi
 # Verify Chromium / Chrome and chromedriver are available
 if command -v chromium >/dev/null 2>&1; then
   CHROMIUM_VERSION=$(chromium --version 2>&1 || echo "unknown")
-  export CHROME_BIN="${CHROME_BIN:-/usr/bin/chromium}"
-  info "Chromium found: $CHROMIUM_VERSION (CHROME_BIN=$CHROME_BIN)"
+  info "Chromium found: $CHROMIUM_VERSION"
 elif command -v chromium-browser >/dev/null 2>&1; then
   CHROMIUM_VERSION=$(chromium-browser --version 2>&1 || echo "unknown")
-  export CHROME_BIN="${CHROME_BIN:-/usr/bin/chromium-browser}"
-  info "Chromium browser found: $CHROMIUM_VERSION (CHROME_BIN=$CHROME_BIN)"
+  info "Chromium browser found: $CHROMIUM_VERSION"
 else
   warn "Chromium/Chrome not found in PATH"
 fi
@@ -721,12 +735,26 @@ if [[ "${ZMS_BROWSER:-chrome}" == "edge" ]]; then
   )
   info "For Edge runs, forcing Selenium platform to ${EDGE_PLATFORM}"
 fi
+CHROME_MVN_ARGS=()
+if [[ "${ZMS_BROWSER:-chrome}" == "chrome" ]]; then
+  CHROME_BIN_PATH="${CHROME_BIN:-/usr/bin/chromium}"
+  if [[ ! -x "$CHROME_BIN_PATH" && -x /usr/bin/chromium-browser ]]; then
+    CHROME_BIN_PATH="/usr/bin/chromium-browser"
+  fi
+  CHROME_MVN_ARGS+=("-Dwebdriver.chrome.binary=${CHROME_BIN_PATH}")
+fi
 while (( attempt <= MAX_UI_RETRIES )); do
+  if [[ "$RUN_UI_TESTS" == true ]]; then
+    ensure_xvfb || { warn "Cannot run UI tests without a working X display"; exit 1; }
+    export_chrome_browser_env
+  fi
+  mkdir -p "$PROJECT_ROOT/zmsautomation/target"
   attempt_log="$PROJECT_ROOT/zmsautomation/target/maven-test-attempt-${attempt}.log"
   info "Starting Maven test attempt ${attempt}/${MAX_UI_RETRIES}"
   set +e
   mvn -B -DtrimStackTrace=false \
     "${PLATFORM_ARGS[@]}" \
+    "${CHROME_MVN_ARGS[@]+"${CHROME_MVN_ARGS[@]}"}" \
     -DBASE_URI="$BASE_URI" \
     -DCITIZEN_API_BASE_URI="$CITIZEN_API_BASE_URI" \
     -Dbrowser="${ZMS_BROWSER:-chrome}" \
