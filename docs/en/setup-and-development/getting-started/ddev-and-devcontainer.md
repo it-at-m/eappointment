@@ -32,6 +32,17 @@ The following local containers are automatically created when running `ddev star
 - `zms-db` (MariaDB), DB port: `3306`
 - `zms-phpmyadmin`, endpoint: `http://localhost:8036`
 - `zms-citizenview`, Vite hot reload endpoint: `http://localhost:8082`
+- `zms-mail-viewer`, local outbound mail queue viewer: `http://localhost:8025` (login `superuser` / `vorschau`)
+
+## Local mail queue viewer
+
+ZMS stores outbound mails in the API queue (`GET /api/2/mails/`) before `zmsmessaging` sends them. In local dev SMTP is usually disabled, so mails stay in the queue.
+
+The `zms-mail-viewer` sidecar polls that API and shows subject, recipient, HTML preview, and plain text. It runs only in local DDEV/devcontainer setups.
+
+- URL: `http://localhost:8025`
+- Login: `superuser` / `vorschau` (browser basic auth; configurable via `ZMS_MAIL_VIEWER_USER` / `ZMS_MAIL_VIEWER_PASSWORD`)
+- API auth: local superuser credentials via `ZMS_MAIL_VIEWER_API_USER` / `ZMS_MAIL_VIEWER_API_PASSWORD` (default `superuser` / `vorschau`)
 
 ## Automatic setup on startup
 
