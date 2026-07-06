@@ -329,11 +329,6 @@
               <includes>
                 <include>**/UiTestRunner.java</include>
               </includes>
-              <environmentVariables>
-                <DISPLAY>:99</DISPLAY>
-                <CHROME_BIN>/usr/bin/chromium</CHROME_BIN>
-                <DBUS_SESSION_BUS_ADDRESS>/dev/null</DBUS_SESSION_BUS_ADDRESS>
-              </environmentVariables>
               <systemPropertyVariables>
                 <cucumber.features>src/test/resources/features/ui</cucumber.features>
                 <cucumber.glue>zms.ataf.steps,zms.ataf.rest.steps,zms.ataf.ui.steps,zms.ataf.hooks,ataf.rest.steps,ataf.web.steps</cucumber.glue>

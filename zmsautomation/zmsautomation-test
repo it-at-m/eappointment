@@ -7,63 +7,6 @@ MAVEN_ARGS=("$@")
 info() { echo "[INFO] $*"; }
 warn() { echo "[WARN] $*"; }
 
-display_ready() {
-  command -v xdpyinfo >/dev/null 2>&1 || return 1
-  xdpyinfo -display "$DISPLAY" >/dev/null 2>&1
-}
-
-# ATAF Chrome runs non-headless locally and needs a working X server (zmsbase uses DISPLAY=:99).
-ensure_xvfb() {
-  export DISPLAY="${DISPLAY:-:99}"
-  info "DISPLAY set to: $DISPLAY"
-
-  if display_ready; then
-    info "X display $DISPLAY is ready"
-    return 0
-  fi
-
-  if ! command -v Xvfb >/dev/null 2>&1; then
-    warn "Xvfb is not installed — UI tests need a virtual X server (apt install xvfb)."
-    return 1
-  fi
-
-  info "Starting Xvfb on display $DISPLAY..."
-  local display_num="${DISPLAY#:}"
-  rm -f "/tmp/.X${display_num}-lock" "/tmp/.X11-unix/X${display_num}" 2>/dev/null || true
-
-  Xvfb "$DISPLAY" -screen 0 1024x768x24 -ac >/tmp/xvfb.log 2>&1 &
-  local xvfb_pid=$!
-
-  for _ in $(seq 1 15); do
-    if display_ready; then
-      info "Xvfb started successfully (PID: $xvfb_pid)"
-      return 0
-    fi
-    sleep 1
-  done
-
-  warn "Xvfb failed to start on $DISPLAY"
-  if [[ -f /tmp/xvfb.log ]]; then
-    tail -20 /tmp/xvfb.log || true
-  fi
-  return 1
-}
-
-export_chrome_browser_env() {
-  export DISPLAY="${DISPLAY:-:99}"
-  # Chromium in Debian Docker/CI; chromedriver also checks google-chrome by name.
-  if command -v chromium >/dev/null 2>&1; then
-    export CHROME_BIN="${CHROME_BIN:-/usr/bin/chromium}"
-    ln -sf /usr/bin/chromium /usr/bin/google-chrome 2>/dev/null || true
-  elif command -v chromium-browser >/dev/null 2>&1; then
-    export CHROME_BIN="${CHROME_BIN:-/usr/bin/chromium-browser}"
-    ln -sf /usr/bin/chromium-browser /usr/bin/google-chrome 2>/dev/null || true
-  fi
-  # Chrome often exits immediately in containers when dbus is unavailable.
-  export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-/dev/null}"
-  info "Chrome env: DISPLAY=$DISPLAY CHROME_BIN=${CHROME_BIN:-<unset>} DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
-}
-
 # Maven accepts -Pataf-api,ataf-ui as well as separate -Pataf-api -Pataf-ui flags.
 resolve_ataf_maven_profiles() {
   HAS_ATAF_API=false
@@ -590,8 +533,9 @@ if [[ "$RUN_UI_TESTS" == true ]]; then
 section "10. Browser Setup"
 info "Setting up browsers and Xvfb for UI tests..."
 
-ensure_xvfb || { warn "Cannot run UI tests without a working X display"; exit 1; }
-export_chrome_browser_env
+# Ensure DISPLAY is set
+export DISPLAY="${DISPLAY:-:0}"
+info "DISPLAY set to: $DISPLAY"
 
 # Verify Firefox is available (optional – main dev browser is Chromium)
 if command -v firefox >/dev/null 2>&1; then
@@ -625,6 +569,20 @@ if command -v chromedriver >/dev/null 2>&1; then
   info "Chromedriver found: $CHROMEDRIVER_VERSION"
 else
   warn "Chromedriver not found in PATH"
+fi
+
+# Ensure Xvfb is running
+if pgrep -x Xvfb > /dev/null; then
+  info "Xvfb is already running (PID: $(pgrep -x Xvfb))"
+else
+  info "Starting Xvfb on display $DISPLAY..."
+  Xvfb "$DISPLAY" -screen 0 1024x768x24 > /dev/null 2>&1 &
+  sleep 2
+  if pgrep -x Xvfb > /dev/null; then
+    info "Xvfb started successfully (PID: $(pgrep -x Xvfb))"
+  else
+    warn "Failed to start Xvfb - UI tests may fail"
+  fi
 fi
 fi
 
@@ -735,31 +693,12 @@ if [[ "${ZMS_BROWSER:-chrome}" == "edge" ]]; then
   )
   info "For Edge runs, forcing Selenium platform to ${EDGE_PLATFORM}"
 fi
-CHROME_MVN_ARGS=()
-if [[ "${ZMS_BROWSER:-chrome}" == "chrome" ]]; then
-  CHROME_BIN_PATH="${CHROME_BIN:-/usr/bin/chromium}"
-  if [[ ! -x "$CHROME_BIN_PATH" && -x /usr/bin/chromium-browser ]]; then
-    CHROME_BIN_PATH="/usr/bin/chromium-browser"
-  fi
-  CHROME_MVN_ARGS+=("-Dwebdriver.chrome.binary=${CHROME_BIN_PATH}")
-  # Chromium 150+ exits in Docker without headless; ATAF 0.3.3 only gates headless for Edge.
-  if [[ "${GITHUB_ACTIONS:-}" == "true" || "${ZMS_CHROME_HEADLESS:-}" == "true" ]]; then
-    CHROME_MVN_ARGS+=("-Dtestautomation.browserHeadless=true")
-    info "Chrome headless enabled for CI/container runs"
-  fi
-fi
 while (( attempt <= MAX_UI_RETRIES )); do
-  if [[ "$RUN_UI_TESTS" == true ]]; then
-    ensure_xvfb || { warn "Cannot run UI tests without a working X display"; exit 1; }
-    export_chrome_browser_env
-  fi
-  mkdir -p "$PROJECT_ROOT/zmsautomation/target"
   attempt_log="$PROJECT_ROOT/zmsautomation/target/maven-test-attempt-${attempt}.log"
   info "Starting Maven test attempt ${attempt}/${MAX_UI_RETRIES}"
   set +e
   mvn -B -DtrimStackTrace=false \
     "${PLATFORM_ARGS[@]}" \
-    "${CHROME_MVN_ARGS[@]+"${CHROME_MVN_ARGS[@]}"}" \
     -DBASE_URI="$BASE_URI" \
     -DCITIZEN_API_BASE_URI="$CITIZEN_API_BASE_URI" \
     -Dbrowser="${ZMS_BROWSER:-chrome}" \

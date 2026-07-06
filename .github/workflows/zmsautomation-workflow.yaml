@@ -160,7 +160,7 @@ jobs:
             apt-get update
 
             # Pin Chromium: trixie-security ships 150.x which exits immediately in CI Docker
-            # (SessionNotCreatedException). Hold trixie/main 147.x until headless CI path is verified.
+            # (SessionNotCreatedException). Hold trixie/main 147.x until 150 works in CI.
             CHROMIUM_APT_VERSION="147.0.7727.137-1~deb13u1"
             apt-get install -y --no-install-recommends --allow-downgrades \
               curl wget unzip ca-certificates gnupg \
@@ -391,7 +391,6 @@ jobs:
               set -euo pipefail
               set -a
               source /var/www/html/.devcontainer/.env
-              export DISPLAY="${DISPLAY:-:99}"
               tags="$1"
               SCREENSHOT_EVERY_STEP="$2"
               ZMS_BROWSER="$3"
