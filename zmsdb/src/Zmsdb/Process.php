@@ -430,15 +430,56 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readList($statement, $resolveReferences);
     }
 
-    public function readSearch(array $parameter, $resolveReferences = 0, $limit = 100)
+    public function readSearch(array $parameter, $resolveReferences = 0, $limit = 100, $offset = 0)
+    {
+        $searchQuery = $this->extractSearchQuery($parameter);
+        $query = $this->buildSearchQuery($parameter, $resolveReferences);
+        if ($searchQuery !== null) {
+            $query->addOrderBySearchRelevance($searchQuery);
+        } else {
+            $query->addOrderByAppointmentDate();
+        }
+        $query->addLimit($limit, $offset > 0 ? $offset : null);
+
+        $statement = $this->fetchStatement($query);
+        return $this->readList($statement, $resolveReferences);
+    }
+
+    public function readSearchCount(array $parameter): int
+    {
+        $query = $this->buildSearchQuery($parameter, 0, false);
+        $query->addCountValue();
+
+        return (int) $this->fetchValue($query, $query->getParameters());
+    }
+
+    protected function buildSearchQuery(array $parameter, $resolveReferences = 0, bool $withEntityMapping = true): Query\Process
     {
         $query = new Query\Process(Query\Base::SELECT);
         $query
             ->addResolvedReferences($resolveReferences)
-            ->addEntityMapping()
             ->addConditionAssigned()
-            ->addConditionIgnoreSlots()
-            ->addLimit($limit);
+            ->addConditionIgnoreSlots();
+
+        if ($withEntityMapping) {
+            $query->addEntityMapping();
+        }
+
+        if (!empty($parameter['upcomingOnly'])) {
+            $now = class_exists('\App') && isset(\App::$now)
+                ? \App::$now
+                : new \DateTimeImmutable('now', new \DateTimeZone('Europe/Berlin'));
+            $query->addConditionUpcomingOnly($now);
+        }
+
+        if (array_key_exists('scopeIds', $parameter)) {
+            $scopeIds = is_array($parameter['scopeIds'])
+                ? $parameter['scopeIds']
+                : array_map('intval', explode(',', (string) $parameter['scopeIds']));
+            $scopeIds = array_values(array_filter($scopeIds));
+            $query->addConditionScopeIds($scopeIds);
+        }
+
         if (isset($parameter['query'])) {
             if (preg_match('#^\d+$#', $parameter['query'])) {
                 $query->addConditionProcessId($parameter['query']);
@@ -448,12 +489,25 @@ class Process extends Base implements Interfaces\ResolveReferences
             }
             unset($parameter['query']);
         }
+
         if (count($parameter)) {
+            foreach (['upcomingOnly', 'scopeIds', 'page', 'limit', 'offset', 'includePast'] as $reservedKey) {
+                unset($parameter[$reservedKey]);
+            }
             $query = $this->addSearchConditions($query, $parameter);
         }
 
-        $statement = $this->fetchStatement($query);
-        return $this->readList($statement, $resolveReferences);
+        return $query;
+    }
+
+    protected function extractSearchQuery(array $parameter): ?string
+    {
+        if (!isset($parameter['query'])) {
+            return null;
+        }
+
+        $queryString = trim((string) $parameter['query']);
+        return $queryString !== '' ? $queryString : null;
     }
 
     protected function addSearchConditions(Query\Process $query, $parameter)
@@ -476,6 +530,15 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
         if (isset($parameter['requestId']) && $parameter['requestId']) {
             $query->addConditionRequestId($parameter['requestId']);
+        }
+        if (isset($parameter['provider']) && $parameter['provider']) {
+            $query->addConditionScopeNameSearch($parameter['provider']);
+        }
+        if (isset($parameter['service']) && $parameter['service']) {
+            $query->addConditionServiceNameSearch($parameter['service']);
+        }
+        if (isset($parameter['date']) && $parameter['date']) {
+            $query->addConditionDate($parameter['date']);
         }
         return $query;
     }

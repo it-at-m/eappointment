@@ -13,6 +13,7 @@ class RequestTest extends Base
         $entity = (new Query())->readEntity('dldb', 120335);
         $this->assertEntity("\\BO\\Zmsentities\\Request", $entity);
         $this->assertEquals(120335, $entity['id']);
+        $this->assertEquals('120335', $entity->getRootParentId());
 
         $entity = (new Query())->readEntity('dldb', 120335, 1);
         $this->assertEntity("\\BO\\Zmsentities\\Request", $entity);

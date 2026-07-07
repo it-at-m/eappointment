@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "description": "Represents a variant of a request (e.g., Präsenz, Telefon, Videoberatung)",
+    "description": "Represents a variant of a request (1 Präsenz, 2 Telefon, 3 Videoberatung, 4 Einzelperson, 5 Familie, 6 Kleinkunde, 7 Großkunde)",
     "example": {
         "id": 1,
         "name": "Präsenz"

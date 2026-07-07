@@ -31,7 +31,7 @@
             >
               {{ selectedService.count }}x
               <a
-                :href="getServiceBaseURL() + +(serviceLinkId || '')"
+                :href="getServiceBaseURL() + resolvedServiceLinkId"
                 target="_blank"
                 class="m-link"
                 tabindex="0"
@@ -87,7 +87,7 @@
               </p>
             </template>
 
-            <template v-else-if="variantId === 1">
+            <template v-else-if="isVariantWithAddress(variantId)">
               <p class="no-bottom-margin smaller-front-size">
                 <strong>{{ t("address") }}</strong
                 ><br />
@@ -103,18 +103,20 @@
                 ></span>
               </p>
               <p class="no-bottom-margin smaller-front-size">
-                <strong>{{ t("appointmentTypes.1") }}</strong
+                <strong>{{ t(`appointmentTypes.${variantId}`) }}</strong
                 ><br />
               </p>
-              <p>{{ t("locationVariantText.1") }}</p>
+              <p v-if="getAppointmentLocationVariantHint(variantId, t)">
+                {{ getAppointmentLocationVariantHint(variantId, t) }}
+              </p>
             </template>
 
-            <template v-else-if="VARIANTS_WITH_HINTS.includes(variantId)">
+            <template v-else-if="isVariantWithHint(variantId)">
               <p class="no-bottom-margin smaller-front-size">
                 <strong>{{ t(`appointmentTypes.${variantId}`) }}</strong
                 ><br />
               </p>
-              <p>{{ getVariantHint(variantId, t) }}</p>
+              <p>{{ getAppointmentLocationVariantHint(variantId, t) }}</p>
             </template>
 
             <template v-else>
@@ -320,12 +322,14 @@ import {
   SelectedAppointmentProvider,
   SelectedServiceProvider,
   SelectedTimeslotProvider,
+  ServiceLinkProvider,
 } from "@/types/ProvideInjectTypes";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
+  getAppointmentLocationVariantHint,
   getServiceBaseURL,
-  getVariantHint,
-  VARIANTS_WITH_HINTS,
+  isVariantWithAddress,
+  isVariantWithHint,
 } from "@/utils/Constants";
 import { containsParagraphTag } from "@/utils/containsParagraphTag";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
@@ -425,6 +429,12 @@ const estimatedDuration = () => {
 const variantId = computed<number | null>(() => {
   const id = (selectedService.value as any)?.variantId;
   return typeof id === "number" && Number.isFinite(id) ? id : null;
+});
+
+const resolvedServiceLinkId = computed(() => {
+  if (serviceLinkId.value) return serviceLinkId.value;
+  const service = selectedService.value;
+  return String(service?.rootParentId ?? service?.id ?? "");
 });
 
 const sanitizedInfoForAppointment = computed(() =>
