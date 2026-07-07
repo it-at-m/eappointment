@@ -1728,7 +1728,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10502 in the citizen view
     And the estimated duration in the booking summary should be 15 minutes in the citizen view
-    When I accept privacy and communication in the citizen view
+    When I accept communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
     When I sync the booking process from citizen view localStorage
@@ -1763,7 +1763,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10502 in the citizen view
     And the estimated duration in the booking summary should be 15 minutes in the citizen view
-    When I accept privacy and communication in the citizen view
+    When I accept communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
     When I sync the booking process from citizen view localStorage
@@ -1796,7 +1796,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10489 in the citizen view
     And the estimated duration in the booking summary should be 30 minutes in the citizen view
-    When I accept privacy and communication in the citizen view
+    When I accept communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
     When I sync the booking process from citizen view localStorage
@@ -1829,7 +1829,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10492 in the citizen view
     And the estimated duration in the booking summary should be 10 minutes in the citizen view
-    When I accept privacy and communication in the citizen view
+    When I accept communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
     When I sync the booking process from citizen view localStorage
@@ -1863,7 +1863,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10502 in the citizen view
     And the estimated duration in the booking summary should be 15 minutes in the citizen view
-    When I accept privacy and communication in the citizen view
+    When I accept communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
     When I sync the booking process from citizen view localStorage
@@ -1900,7 +1900,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10489 in the citizen view
     And the estimated duration in the booking summary should be 30 minutes in the citizen view
-    When I accept privacy and communication in the citizen view
+    When I accept communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
     When I sync the booking process from citizen view localStorage
