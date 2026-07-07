@@ -1549,7 +1549,7 @@ public class CitizenViewPage extends BasePage {
         }
     }
 
-    public void acceptPrivacyAndCommunication() {
+    public void acceptCommunication() {
         CONTEXT.set();
         deepClick("#checkbox-electronic-communication");
     }
@@ -1572,7 +1572,7 @@ public class CitizenViewPage extends BasePage {
                         });
     }
 
-    /** Preconfirm page: after privacy checkboxes, primary "Termin reservieren" button leads to activation (“Aktivieren Sie Ihren Termin.”). */
+    /** Preconfirm page: after communication checkbox, primary "Termin reservieren" button leads to activation (“Aktivieren Sie Ihren Termin.”). */
     public void continueFromPreconfirmStep() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm → Termin reservieren (activation callout)");
