@@ -144,6 +144,43 @@ class SearchTest extends Base
             'hideNavigation' => 1
         ], []);
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringNotContainsString('navigation-primary', (string) $response->getBody());
+    }
+
+    public function testAuditViewerKeepsHiddenNavigationAfterSearch()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/log/process/',
+                    'parameters' => [
+                        'searchQuery' => 'Test%2520BO',
+                        'page' => 1,
+                        'perPage' => 100,
+                        'service' => null,
+                        'provider' => null,
+                        'userAction' => 0,
+                        'date' => null,
+                        'scopeIds' => '380,1,141,140,142',
+                    ],
+                    'response' => $this->readFixture("GET_loglist.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $body = (string) $response->getBody();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringNotContainsString('navigation-primary', $body);
+        $this->assertStringNotContainsString('Arbeitsansichten', $body);
+        $this->assertStringNotContainsString('Standort auswählen', $body);
+        $this->assertStringContainsString('name="hideNavigation" value="1"', $body);
     }
 
     public function testAuditAccountCanSearchLogsByServiceWithoutProcessQuery()

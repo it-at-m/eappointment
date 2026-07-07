@@ -36,6 +36,9 @@
                 </div>
 
                 <input type="hidden" name="perPage" value="{{ perPage }}">
+                {% if hideNavigation %}
+                    <input type="hidden" name="hideNavigation" value="1">
+                {% endif %}
 
                 <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
                     <button type="submit" class="btn btn-primary">Übernehmen</button>
@@ -137,6 +140,9 @@
                 <input type="hidden" name="provider" value="{{ provider }}">
                 <input type="hidden" name="user" value="{{ userAction }}">
                 <input type="hidden" name="date" value="{{ date }}">
+                {% if hideNavigation %}
+                    <input type="hidden" name="hideNavigation" value="1">
+                {% endif %}
                 <label for="perPage">Pro Seite</label>
                 <input
                         type="number"
@@ -157,7 +163,8 @@
                     'service': service,
                     'provider': provider,
                     'user': userAction,
-                    'date': date
+                    'date': date,
+                    'hideNavigation': hideNavigation ? 1 : null
                 }) %}
 
                 {% set nextParams = (queryParams ?? {})|merge({
@@ -167,7 +174,8 @@
                     'service': service,
                     'provider': provider,
                     'user': userAction,
-                    'date': date
+                    'date': date,
+                    'hideNavigation': hideNavigation ? 1 : null
                 }) %}
 
                 {% if currentPage > 1 %}
