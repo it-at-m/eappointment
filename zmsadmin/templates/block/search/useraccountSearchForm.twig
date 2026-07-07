@@ -7,6 +7,9 @@
     
     {% block board_body %}
     <form method="GET" action="{{ urlGet('useraccountList', {}, {}) }}" class="form--base">
+        {% if hideNavigation %}
+            <input type="hidden" name="hideNavigation" value="1">
+        {% endif %}
         {{ formgroup(
         {},
         [{

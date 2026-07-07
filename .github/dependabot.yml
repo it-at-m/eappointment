@@ -69,6 +69,14 @@ updates:
       timezone: "Europe/Berlin"
     target-branch: "next"
 
+  - package-ecosystem: "npm"
+    directory: "/.devcontainer/mail-viewer"
+    schedule:
+      interval: "daily"
+      time: "04:00"
+      timezone: "Europe/Berlin"
+    target-branch: "next"
+
   ##################################################
   # Composer Projects
   ##################################################

@@ -590,13 +590,40 @@ class Process extends Base implements MappingInterface
 
     public function addConditionSearch($queryString, $orWhere = false)
     {
-        $condition = function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($queryString) {
-            $queryString = trim($queryString);
-            $query->orWith('process.Name', 'LIKE', "%$queryString%");
-            $query->orWith('process.EMail', 'LIKE', "%$queryString%");
-            $query->orWith('process.Telefonnummer', 'LIKE', "%$queryString%");
-            $query->orWith('process.telefonnummer_fuer_rueckfragen', 'LIKE', "%$queryString%");
-            $query->orWith('process.displayNumber', 'LIKE', "%$queryString%");
+        $queryString = trim($queryString);
+        $terms = $this->parseSearchTerms($queryString);
+        if ($terms === []) {
+            return $this;
+        }
+
+        $condition = function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($terms) {
+            if (count($terms) > 1) {
+                foreach ($terms as $term) {
+                    $query->andWith(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $inner) use ($term) {
+                        $this->appendNamePartLikeGroup($inner, $term['value'], true);
+                    });
+                }
+                return;
+            }
+
+            $term = $terms[0]['value'];
+            if ($terms[0]['quoted']) {
+                $this->appendNamePartLikeGroup($query, $term, true);
+                return;
+            }
+
+            $likeContains = '%' . $this->escapeLikeValue($term) . '%';
+            $useNameWordBoundary = !$this->isNumericSearchQuery($term) && mb_strlen($term) <= 3;
+
+            if ($useNameWordBoundary) {
+                $this->appendNamePartLikeGroup($query, $term, true, true);
+            } else {
+                $query->orWith('process.Name', 'LIKE', $likeContains);
+            }
+            $query->orWith('process.EMail', 'LIKE', $likeContains);
+            $query->orWith('process.Telefonnummer', 'LIKE', $likeContains);
+            $query->orWith('process.telefonnummer_fuer_rueckfragen', 'LIKE', $likeContains);
+            $query->orWith('process.displayNumber', 'LIKE', $likeContains);
         };
         if ($orWhere) {
             $this->query->orWhere($condition);
@@ -604,6 +631,124 @@ class Process extends Base implements MappingInterface
             $this->query->where($condition);
         }
         return $this;
+    }
+
+    public function addConditionUpcomingOnly(\DateTimeInterface $now)
+    {
+        $today = $now->format('Y-m-d');
+        $time = $now->format('H:i:s');
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) use ($today, $time) {
+            $condition
+                ->andWith('process.Datum', '>', $today)
+                ->orWith(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $inner) use ($today, $time) {
+                    $inner
+                        ->andWith('process.Datum', '=', $today)
+                        ->andWith('process.Uhrzeit', '>=', $time);
+                });
+        });
+        return $this;
+    }
+
+    public function addOrderByAppointmentDate()
+    {
+        $this->query->orderBy('process.Datum', 'ASC');
+        $this->query->orderBy('process.Uhrzeit', 'ASC');
+        $this->query->orderBy('process.BuergerID', 'ASC');
+        return $this;
+    }
+
+    public function addOrderBySearchRelevance($queryString)
+    {
+        $queryString = trim($queryString);
+        if ($queryString === '') {
+            return $this;
+        }
+
+        $terms = $this->parseSearchTerms($queryString);
+        $primaryTerm = $terms[0]['value'] ?? $queryString;
+        $escapedLike = $this->escapeLikePatternForSqlLiteral($primaryTerm);
+        $this->query->orderBy(self::expression(
+            "CASE
+                WHEN process.Name LIKE '{$escapedLike} %' OR process.Name = '{$escapedLike}' THEN 0
+                WHEN process.Name LIKE '% {$escapedLike}' OR process.Name LIKE '% {$escapedLike} %' THEN 1
+                WHEN process.Name LIKE '%{$escapedLike}%' THEN 2
+                ELSE 3
+            END"
+        ));
+        $this->query->orderBy('process.Datum', 'ASC');
+        $this->query->orderBy('process.Uhrzeit', 'ASC');
+        $this->query->orderBy('process.BuergerID', 'ASC');
+
+        return $this;
+    }
+
+    /**
+     * @return array<int, array{value: string, quoted: bool}>
+     */
+    private function parseSearchTerms(string $queryString): array
+    {
+        if ($queryString === '') {
+            return [];
+        }
+
+        if (!preg_match_all('/"([^"]+)"|(\S+)/u', $queryString, $matches, PREG_SET_ORDER)) {
+            return [['value' => $queryString, 'quoted' => false]];
+        }
+
+        $terms = [];
+        foreach ($matches as $match) {
+            $value = trim($match[1] !== '' ? $match[1] : $match[2]);
+            if ($value === '') {
+                continue;
+            }
+            $terms[] = [
+                'value' => $value,
+                'quoted' => $match[1] !== '',
+            ];
+        }
+
+        return $terms;
+    }
+
+    private function appendNamePartLikeGroup(
+        \BO\Zmsdb\Query\Builder\ConditionBuilder $query,
+        string $term,
+        bool $wordBoundaryOnly = false,
+        bool $includeWordPrefix = false
+    ): void {
+        $escaped = $this->escapeLikeValue($term);
+        $query->orWith('process.Name', 'LIKE', $escaped . ' %');
+        $query->orWith('process.Name', 'LIKE', '% ' . $escaped);
+        $query->orWith('process.Name', 'LIKE', '% ' . $escaped . ' %');
+        $query->orWith('process.Name', '=', $term);
+        if ($wordBoundaryOnly) {
+            if ($includeWordPrefix) {
+                $query->orWith('process.Name', 'LIKE', $escaped . '%');
+                $query->orWith('process.Name', 'LIKE', '% ' . $escaped . '%');
+            }
+        } else {
+            $query->orWith('process.Name', 'LIKE', '%' . $escaped . '%');
+        }
+    }
+
+    private function isNumericSearchQuery($queryString): bool
+    {
+        return (bool) preg_match('#^\d+$#', $queryString);
+    }
+
+    private function escapeLikeValue($value): string
+    {
+        return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $value);
+    }
+
+    private function escapeLikePatternForSqlLiteral(string $value): string
+    {
+        return $this->escapeSqlStringLiteral($this->escapeLikeValue($value));
+    }
+
+    private function escapeSqlStringLiteral(string $value): string
+    {
+        return str_replace("'", "''", $value);
     }
 
     public function addConditionName($name, $exactMatching = false)
@@ -682,6 +827,55 @@ class Process extends Base implements MappingInterface
             'process.BuergerID'
         );
         $this->query->where('buergeranliegen.AnliegenID', '=', $requestId);
+        return $this;
+    }
+
+    public function addConditionScopeNameSearch(string $scopeName)
+    {
+        $likeValue = '%' . $this->escapeLikeValue($scopeName) . '%';
+        $this->leftJoin(
+            new Alias(Scope::TABLE, 'search_scope'),
+            self::expression(
+                'IF(`process`.`AbholortID`, `process`.`AbholortID`, `process`.`StandortID`)'
+            ),
+            '=',
+            'search_scope.StandortID'
+        );
+        $this->leftJoin(
+            new Alias(Provider::TABLE, 'search_scope_provider'),
+            self::expression(
+                'search_scope.InfoDienstleisterID = search_scope_provider.id
+                AND search_scope.source = search_scope_provider.source'
+            )
+        );
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($likeValue) {
+            $query->orWith('search_scope.Bezeichnung', 'LIKE', $likeValue);
+            $query->orWith('search_scope.standortinfozeile', 'LIKE', $likeValue);
+            $query->orWith('search_scope.standortkuerzel', 'LIKE', $likeValue);
+            $query->orWith('search_scope_provider.name', 'LIKE', $likeValue);
+        });
+
+        return $this;
+    }
+
+    public function addConditionServiceNameSearch(string $serviceName)
+    {
+        $likeValue = '%' . $this->escapeLikeValue($serviceName) . '%';
+        $this->leftJoin(
+            new Alias('buergeranliegen', 'search_request_link'),
+            'search_request_link.BuergerID',
+            '=',
+            'process.BuergerID'
+        );
+        $this->leftJoin(
+            new Alias('request', 'search_request'),
+            self::expression(
+                'search_request_link.AnliegenID = search_request.id
+                AND search_request_link.source = search_request.source'
+            )
+        );
+        $this->query->where('search_request.name', 'LIKE', $likeValue);
+
         return $this;
     }
 
