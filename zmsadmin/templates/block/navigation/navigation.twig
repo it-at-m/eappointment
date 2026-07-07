@@ -1,15 +1,16 @@
 {% block navigation %}
     {% set permissions = workstation.useraccount.permissions|default({}) %}
     {% set hasScope = workstation.scope.id|default(false) %}
+    {% set isUserAdmin = 'user_admin' in workstation.useraccount.roles|default([]) %}
 
-    {% set hasWorkViews =
+    {% set hasWorkViews = not isUserAdmin and (
         (not hasScope)
         or (hasScope and permissions.counter|default(false))
         or (hasScope and permissions.appointment|default(false))
         or (hasScope and permissions.calldisplay|default(false))
         or (hasScope and permissions.ticketprinter|default(false))
         or permissions.overviewcalendar|default(false)
-    %}
+    ) %}
 
     {% set hasAdminViews =
         (workstation.id > 0 and permissions.superuser|default(false))

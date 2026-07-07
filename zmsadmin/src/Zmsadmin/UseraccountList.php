@@ -43,9 +43,6 @@ class UseraccountList extends BaseController
             ->isNumber()
             ->setDefault(0)
             ->getValue();
-        if ($workstation->getUseraccount()->hasRole('user_admin')) {
-            $hideNavigation = 1;
-        }
 
         $useraccountList = new Collection();
         if ($workstation->getUseraccount()->isSuperUser()) {

@@ -336,5 +336,55 @@ class UseraccountEditTest extends Base
         $this->expectException(UserAccountAccessRightsFailed::class);
         $this->render($this->arguments, $this->parameters, []);
     }
+
+    public function testUserAdminShowsUserNavigationWithoutWorkViewsOnEdit(): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture('GET_Workstation_user_admin.json'),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/useraccount/testuser/',
+                    'response' => $this->readFixture('GET_useraccount_testuser.json'),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/owner/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture('GET_owner.json'),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'secure-token',
+                    'response' => $this->readFixture('GET_config.json'),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture('GET_rolelist.json'),
+                ],
+            ]
+        );
+
+        $response = $this->render($this->arguments, [], []);
+        $body = (string) $response->getBody();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringContainsString('navigation-primary', $body);
+        $this->assertStringContainsString('Nutzer*innen', $body);
+        $this->assertStringNotContainsString('Standort auswählen', $body);
+        $this->assertStringNotContainsString('Arbeitsansichten', $body);
+        $this->assertStringNotContainsString('Kundensuche', $body);
+        $this->assertStringNotContainsString('page-header__scope', $body);
+        $this->assertStringNotContainsString('Auswahl ändern', $body);
+    }
 }
 
