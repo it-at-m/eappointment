@@ -85,7 +85,7 @@
                 :exclusive-location="exclusiveLocation"
                 :t="t"
                 @next="setServices"
-                @captchaTokenChanged="captchaToken = $event ?? undefined"
+                @captchaTokenChanged="handleCaptchaTokenChanged"
                 @invalidJumpinLink="handleInvalidJumpinLink"
                 @rateLimitError="handleServiceFinderRateLimitError"
               />
@@ -666,14 +666,17 @@ provide("loadingStates", {
 
 const increaseCurrentView = () => currentView.value++;
 
-const decreaseCurrentView = () => currentView.value--;
+const decreaseCurrentView = (): void => {
+  clearAllErrors();
+  currentView.value--;
+};
 
 /**
  * Adjusts the current view to the active step in the stepper
  */
 const changeStep = (step: string) => {
   if (parseInt(step) < parseInt(activeStep.value)) {
-    clearContextErrors(errorStateMap.value);
+    clearAllErrors();
     currentView.value = parseInt(step);
   }
 };
@@ -682,6 +685,7 @@ const changeStep = (step: string) => {
  * Creation of a map that prepares the services and their counts for the backend call.
  */
 const setServices = () => {
+  clearAllErrors();
   selectedServiceMap.value = new Map<string, number>();
   if (selectedService.value) {
     if (selectedService.value.count) {
@@ -737,8 +741,7 @@ const nextReserveAppointment = () => {
   }
 
   isReservingAppointment.value = true;
-  clearContextErrors(errorStateMap.value);
-  captchaError.value = false;
+  clearAllErrors();
   rebookOrCancelDialog.value = false;
 
   reserveAppointment(
@@ -1081,9 +1084,25 @@ const handleServiceFinderRateLimitError = () => {
   );
 };
 
-const clearBookingError = () => {
+const clearBookingError = (): void => {
   captchaError.value = false;
+
   errorStateMap.value.apiErrorAppointmentNotAvailable.value = false;
+  errorStateMap.value.apiErrorCaptchaExpired.value = false;
+  errorStateMap.value.apiErrorCaptchaMissing.value = false;
+  errorStateMap.value.apiErrorCaptchaInvalid.value = false;
+
+  errorStates.currentErrorData.value = null;
+};
+
+const clearAllErrors = (): void => {
+  clearContextErrors(errorStateMap.value);
+  clearBookingError();
+};
+
+const handleCaptchaTokenChanged = (token?: string | null): void => {
+  captchaToken.value = token ?? undefined;
+  clearBookingError();
 };
 
 const redirectToAppointmentStart = () => {
@@ -1211,6 +1230,14 @@ onMounted(() => {
             selectedService.value.providers = getProviders(
               selectedService.value.id,
               null
+            );
+
+            updateServiceLinkId(
+              String(
+                selectedService.value.rootParentId ??
+                  selectedService.value.id ??
+                  ""
+              )
             );
 
             preselectedLocationId.value = appointment.value.officeId;

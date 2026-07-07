@@ -20,11 +20,6 @@ const FooterButtons = (props) => {
         availability => availability?.tempId?.includes('__temp__')
     );
 
-    const hasNewAvailabilitiesWithEmptyTimes = availabilitylist?.some(
-        availability => availability?.tempId?.includes('__temp__') && 
-        (!availability.startTime || !availability.endTime)
-    );
-
     const isPastDate = moment.unix(selectedDate).isBefore(moment(), 'day');
 
     return (
@@ -33,7 +28,7 @@ const FooterButtons = (props) => {
                 title="Neue Öffnungszeit anlegen und bearbeiten"
                 className="button button--diamond button-new"
                 onClick={onNew}
-                disabled={data || hasConflicts || isPastDate}
+                disabled={hasConflicts || isPastDate}
             >
                 neue Öffnungszeit
             </button>
@@ -52,7 +47,7 @@ const FooterButtons = (props) => {
                 type="save"
                 value="publish"
                 onClick={onPublish}
-                disabled={(!stateChanged && !hasNewAvailabilities) || hasSlotCountError || hasErrors || isPastDate || hasNewAvailabilitiesWithEmptyTimes}
+                disabled={(!stateChanged && !hasNewAvailabilities) || isPastDate}
             >
                 Alle Änderungen aktivieren
             </button>

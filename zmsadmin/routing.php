@@ -294,7 +294,7 @@ use Slim\Routing\RouteCollectorProxy;
  * Search
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/search/', \BO\Zmsadmin\ProcessSearch::class)
+\App::$slim->get('/search/', \BO\Zmsadmin\Search::class)
     ->setName("search");
 
 /*

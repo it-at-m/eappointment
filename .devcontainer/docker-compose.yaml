@@ -18,6 +18,30 @@ services:
     networks:
       - default
 
+  mail-viewer:
+    image: node:24
+    container_name: zms-mail-viewer
+    working_dir: /workspace/.devcontainer/mail-viewer
+    volumes:
+      - ..:/workspace:cached,z
+    command: sh -c "npm install && npm start"
+    ports:
+      - "8025:8025"
+    environment:
+      - PORT=8025
+      - ZMS_API_URL=http://web/terminvereinbarung/api/2
+      - ZMS_MAIL_VIEWER_API_USER=${ZMS_MAIL_VIEWER_API_USER:-superuser}
+      - ZMS_MAIL_VIEWER_API_PASSWORD=${ZMS_MAIL_VIEWER_API_PASSWORD:-vorschau}
+      - ZMS_MAIL_VIEWER_USER=${ZMS_MAIL_VIEWER_USER:-superuser}
+      - ZMS_MAIL_VIEWER_PASSWORD=${ZMS_MAIL_VIEWER_PASSWORD:-vorschau}
+    env_file:
+      - .env
+    depends_on:
+      - web
+    networks:
+      - default
+    restart: unless-stopped
+
   citizenview:
     image: node:24
     container_name: zms-citizenview
@@ -73,7 +97,7 @@ services:
     restart: unless-stopped
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.6.4@sha256:20e96e40e673ffa474ac4da56c91cb0adba28b8571bd274ce255e6120265c1f4
+    image: quay.io/keycloak/keycloak:26.6.4@sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4
     container_name: zms-keycloak
     hostname: keycloak
     command:

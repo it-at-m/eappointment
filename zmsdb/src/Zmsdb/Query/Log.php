@@ -30,7 +30,19 @@ class Log extends Base
             'user_id' => 'log.user_id',
             'data' => 'log.data',
             'message' => 'log.message',
-            'ts' => 'log.ts'
+            'ts' => 'log.ts',
+            'action' => 'log.action',
+            'display_number' => 'log.display_number',
+            'queue_number' => 'log.queue_number',
+            'appointment_at' => 'log.appointment_at',
+            'slot_count' => 'log.slot_count',
+            'citizen_name' => 'log.citizen_name',
+            'services' => 'log.services',
+            'scope_name' => 'log.scope_name',
+            'citizen_email' => 'log.citizen_email',
+            'citizen_phone' => 'log.citizen_phone',
+            'process_status' => 'log.process_status',
+            'db_status' => 'log.db_status',
         ];
     }
 
@@ -52,16 +64,5 @@ class Log extends Base
     public function addConditionOlderThan(\DateTime $olderThanDate)
     {
         $this->query->where('log.ts', '<', $olderThanDate->format('Y-m-d H:i:s'));
-    }
-
-    public function addConditionDataSearch(string $search)
-    {
-        $this->query->where('log.data', 'LIKE', '%' . $search . '%');
-
-        if (is_numeric($search)) {
-            $this->query->orWhere('log.reference_id', '=', $search);
-        }
-
-        $this->query->orderBy('log.ts', 'DESC');
     }
 }

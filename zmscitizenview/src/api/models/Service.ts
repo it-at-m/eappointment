@@ -38,6 +38,11 @@ export interface Service {
    * @type {(number | null)}
    * @memberof Service
    */
+  rootParentId?: string | number | null;
+  /**
+   * @type {(number | null)}
+   * @memberof Service
+   */
   variantId: number | null;
   /**
    * @type {(boolean)}
