@@ -166,13 +166,11 @@ class RoleTest extends Base
     }
 
     /**
-     * Replace the database user_role relation for a user by loginname with the specified role id.
+     * Replaces the database user_role relation for a user identified by login name
+     * with the specified role id.
      *
-     * This bypasses Useraccount::writeUpdatedEntity() intentionally because these tests use
-     * dynamic test roles that are not part of the temporary LEGACY_LEVEL_BY_ROLE bridge.
-     *
-     * TODO ZMSKVR-1173: Remove this direct user_role setup once the legacy nutzer.Berechtigung
-     * bridge is removed and role assignment no longer depends on legacy rights mapping.
+     * This intentionally bypasses Useraccount::writeUpdatedEntity(), because the
+     * role tests assign dynamically created test roles directly.
      */
     private function replaceUserRoleDirectly(\BO\Zmsdb\Useraccount $userQuery, string $loginName, int $roleId): void
     {

@@ -22,10 +22,10 @@ class UseraccountTest extends EntityCommonTests
         $this->assertTrue($entity->hasDepartment('123'), 'add department failed');
         $this->assertFalse($entity->hasDepartment('55'), 'department 55 should not exists');
 
-        $this->assertTrue($entity->hasProperties('id', 'password', 'rights', 'permissions'));
+        $this->assertTrue($entity->hasProperties('id', 'password', 'permissions'));
         unset($entity['id']);
         try {
-            $entity->hasProperties('id', 'password', 'rights', 'permissions');
+            $entity->hasProperties('id', 'password', 'permissions');
             $this->fail("Expected exception UserAccountMissingProperties not thrown");
         } catch (\BO\Zmsentities\Exception\UserAccountMissingProperties $exception) {
             $this->assertEquals(500, $exception->getCode());
@@ -58,13 +58,6 @@ class UseraccountTest extends EntityCommonTests
         $entity->departments = $entity->getDepartmentList()->getArrayCopy();
         $this->assertEquals(1, $entity->getDepartmentList()->count());
         $this->assertEntityList('\BO\Zmsentities\Department', $entity->getDepartmentList());
-    }
-
-    public function testRightsLevel()
-    {
-        $entity = $this->getExample();
-        $this->assertEquals(30, $entity->getRightsLevel());
-        $this->assertFalse($entity->isSuperUser());
     }
 
     public function testIsOveraged()
@@ -258,14 +251,6 @@ class UseraccountTest extends EntityCommonTests
         $entity = (new $this->entityclass())->getExample();
         $entity->permissions['superuser'] = true;
         $this->assertTrue($entity->isSuperUser());
-    }
-
-    public function testIsSuperUserIgnoresLegacySuperuserRight()
-    {
-        $entity = (new $this->entityclass())->getExample();
-        $entity->rights['superuser'] = true;
-        $entity->permissions['superuser'] = false;
-        $this->assertFalse($entity->isSuperUser());
     }
 
     public function testWithCleanedUpFormData()

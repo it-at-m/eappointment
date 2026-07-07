@@ -114,20 +114,6 @@ class ProcessSearchTest extends Base
                         'query' => 'Test%20BO'
                     ],
                     'response' => $this->readFixture("GET_searchresult_others.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/log/process/',
-                    'parameters' => [
-                        'searchQuery' => 'Test%2520BO',
-                        'page' => 1,
-                        'perPage' => 100,
-                        'service' => null,
-                        'provider' => null,
-                        'userAction' => 0,
-                        'date' => null
-                    ],
-                    'response' => $this->readFixture("GET_loglist.json")
                 ]
             ]
         );
