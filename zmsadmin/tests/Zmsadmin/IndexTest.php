@@ -322,4 +322,58 @@ class IndexTest extends Base
         $this->assertStringContainsString('/search/', $location);
         $this->assertStringContainsString('hideNavigation=1', $location);
     }
+
+    public function testAuditViewerRedirectsToSearchWhenAlreadyLoggedIn(): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'secure-token',
+                    'response' => $this->readFixture("GET_config.json"),
+                ]
+            ]
+        );
+
+        $response = $this->render($this->arguments, [], []);
+
+        $this->assertEquals(302, $response->getStatusCode());
+        $location = $response->getHeaderLine('Location');
+        $this->assertStringContainsString('/search/', $location);
+        $this->assertStringContainsString('hideNavigation=1', $location);
+    }
+
+    public function testUserAdminRedirectsToUseraccountListWhenAlreadyLoggedIn(): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_user_admin.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'secure-token',
+                    'response' => $this->readFixture("GET_config.json"),
+                ]
+            ]
+        );
+
+        $response = $this->render($this->arguments, [], []);
+
+        $this->assertEquals(302, $response->getStatusCode());
+        $location = $response->getHeaderLine('Location');
+        $this->assertStringContainsString('/users/', $location);
+        $this->assertStringContainsString('hideNavigation=1', $location);
+    }
 }
