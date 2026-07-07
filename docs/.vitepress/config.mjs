@@ -264,6 +264,7 @@ const sidebarLabels = {
     codeFormatting: "Code Formatting",
     gitHooks: "Git Hooks (Husky)",
     localDbCache: "Local Database and Cache Operations",
+    databaseMigrations: "Database Migrations",
     dependencyUpgrade: "Dependency Upgrade Check",
     phpBaseImages: "PHP Base Images",
     testingAndAutomation: "Testing and Automation",
@@ -315,6 +316,7 @@ const sidebarLabels = {
     codeFormatting: "Code-Formatierung",
     gitHooks: "Git-Hooks (Husky)",
     localDbCache: "Lokale Datenbank- und Cache-Operationen",
+    databaseMigrations: "Datenbank-Migrationen",
     dependencyUpgrade: "Abhängigkeits-Aktualisierungsprüfung",
     phpBaseImages: "PHP-Basis-Images",
     testingAndAutomation: "Tests und Automatisierung",
@@ -445,6 +447,10 @@ const buildSidebar = (prefix, lang) => {
         {
           text: t.localDbCache,
           link: `${prefix}/setup-and-development/local-database-and-cache-operations`,
+        },
+        {
+          text: t.databaseMigrations,
+          link: `${prefix}/setup-and-development/database-migrations`,
         },
         {
           text: t.dependencyUpgrade,
