@@ -288,7 +288,7 @@ class IndexTest extends Base
         $this->assertEquals(302, $response->getStatusCode());
         $location = $response->getHeaderLine('Location');
         $this->assertStringContainsString('/users/', $location);
-        $this->assertStringContainsString('hideNavigation=1', $location);
+        $this->assertStringNotContainsString('hideNavigation=1', $location);
     }
 
     public function testAuditViewerRedirectsToSearchAfterLogin(): void
@@ -374,6 +374,6 @@ class IndexTest extends Base
         $this->assertEquals(302, $response->getStatusCode());
         $location = $response->getHeaderLine('Location');
         $this->assertStringContainsString('/users/', $location);
-        $this->assertStringContainsString('hideNavigation=1', $location);
+        $this->assertStringNotContainsString('hideNavigation=1', $location);
     }
 }

@@ -16,7 +16,7 @@ class RestrictedRoleRedirect
     public static function create(Useraccount $useraccount): ?ResponseInterface
     {
         if ($useraccount->hasRole('user_admin')) {
-            return Render::redirect('useraccountList', [], ['hideNavigation' => 1]);
+            return Render::redirect('useraccountList', [], []);
         }
 
         if ($useraccount->hasRole('audit_viewer')) {
