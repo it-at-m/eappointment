@@ -169,7 +169,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     And the cancel endpoint response should still include processId, email, displayNumber, and scope.id, and serviceId and serviceName for the cancellation email
     And the appointment status should be "deleted"
     When I fetch the cancellation mail for the current process
-    Then the cancellation mail should indicate the appointment was deleted with the word Absage
+    Then the cancellation mail should indicate the appointment was deleted with the word abgesagt
 
   @mainCalendar
   Scenario: Personalausweis at Pass Ruppertstraße (10489) – lands at 10489
@@ -204,7 +204,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     And the cancel endpoint response should still include processId, email, displayNumber, and scope.id, and serviceId and serviceName for the cancellation email
     And the appointment status should be "deleted"
     When I fetch the cancellation mail for the current process
-    Then the cancellation mail should indicate the appointment was deleted with the word Absage
+    Then the cancellation mail should indicate the appointment was deleted with the word abgesagt
 
   @pickupCalendar
   Scenario: Abholung at 10492 (Bürgerbüro Ruppertstraße KVR-II/211)
@@ -239,7 +239,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     And the cancel endpoint response should still include processId, email, displayNumber, and scope.id, and serviceId and serviceName for the cancellation email
     And the appointment status should be "deleted"
     When I fetch the cancellation mail for the current process
-    Then the cancellation mail should indicate the appointment was deleted with the word Absage
+    Then the cancellation mail should indicate the appointment was deleted with the word abgesagt
 
   @passCalendar @jumpin
   Scenario: JumpIn 10489 with Personalausweis 1063441 – effective office may be 10502
@@ -274,7 +274,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     And the cancel endpoint response should still include processId, email, displayNumber, and scope.id, and serviceId and serviceName for the cancellation email
     And the appointment status should be "deleted"
     When I fetch the cancellation mail for the current process
-    Then the cancellation mail should indicate the appointment was deleted with the word Absage
+    Then the cancellation mail should indicate the appointment was deleted with the word abgesagt
 ```
 
 ## UI
