@@ -29,6 +29,9 @@ class Search extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $parameters = $this->readSearchParameters($request->getAttribute('validator'));
+        if ($workstation->getUseraccount()->hasRole('audit_viewer')) {
+            $parameters['hideNavigation'] = 1;
+        }
         $scopeIds = $workstation->getUseraccount()->getDepartmentList()->getUniqueScopeList()->getIds();
 
         [$processList, $processSearchTotal] = $this->readProcessSearchResults(
