@@ -108,11 +108,6 @@ class Workstation extends Schema\Entity
             return true;
         }
 
-        $userRights = $this->getUseraccountRights();
-        if (isset($userRights['audit']) && $userRights['audit']) {
-            return true;
-        }
-
         return false;
     }
 

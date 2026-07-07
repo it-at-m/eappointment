@@ -78,24 +78,84 @@ function getRawApiBaseURL(baseUrl: string | undefined): string {
   }
 }
 
-export const VARIANTS_WITH_HINTS = [1, 2, 3] as const;
-export const getVariantHint = (
-  variantId: number,
-  t: (key: string) => string
-) => {
-  return VARIANTS_WITH_HINTS.includes(variantId)
-    ? t(`locationVariantText.${variantId}`)
-    : undefined;
-};
-
+/**
+ * Canonical request variant IDs (see 91780800000-reorder-request-variant-ids.sql).
+ *
+ * | ID | DB name       |
+ * |----|---------------|
+ * | 1  | Präsenz       |
+ * | 2  | Telefon       |
+ * | 3  | Videoberatung |
+ * | 4  | Einzelperson  |
+ * | 5  | Familie       |
+ * | 6  | Kleinkunde    |
+ * | 7  | Großkunde     |
+ */
 export const VARIANT_ID_PRESENCE = 1;
 export const VARIANT_ID_TELEPHONE = 2;
 export const VARIANT_ID_VIDEO = 3;
+export const VARIANT_ID_INDIVIDUAL = 4;
+export const VARIANT_ID_FAMILY = 5;
+export const VARIANT_ID_SMALL_CLIENT = 6;
+export const VARIANT_ID_LARGE_CLIENT = 7;
+
+export const VARIANTS_WITH_HINTS = [
+  VARIANT_ID_PRESENCE,
+  VARIANT_ID_TELEPHONE,
+  VARIANT_ID_VIDEO,
+] as const;
+
+export const VARIANT_IDS_WITH_ADDRESS = [
+  VARIANT_ID_PRESENCE,
+  VARIANT_ID_LARGE_CLIENT,
+  VARIANT_ID_SMALL_CLIENT,
+  VARIANT_ID_FAMILY,
+  VARIANT_ID_INDIVIDUAL,
+] as const;
 
 export const VARIANT_IDS_REQUIRING_IMPLICIT_PRESENCE = [
   VARIANT_ID_TELEPHONE,
   VARIANT_ID_VIDEO,
 ] as const;
+
+export function isVariantWithAddress(variantId: number | null): boolean {
+  return (
+    variantId != null &&
+    (VARIANT_IDS_WITH_ADDRESS as readonly number[]).includes(variantId)
+  );
+}
+
+export function isVariantWithHint(variantId: number | null): boolean {
+  return (
+    variantId != null &&
+    (VARIANTS_WITH_HINTS as readonly number[]).includes(variantId)
+  );
+}
+
+export const getVariantHint = (
+  variantId: number,
+  t: (key: string) => string
+): string | undefined => {
+  return (VARIANTS_WITH_HINTS as readonly number[]).includes(variantId)
+    ? t(`locationVariantText.${variantId}`)
+    : undefined;
+};
+
+export const getAppointmentLocationVariantHint = (
+  variantId: number | null,
+  t: (key: string) => string
+): string | undefined => {
+  if (variantId == null) return undefined;
+
+  if (
+    variantId === VARIANT_ID_SMALL_CLIENT ||
+    variantId === VARIANT_ID_LARGE_CLIENT
+  ) {
+    return t(`locationVariantText.${VARIANT_ID_PRESENCE}`);
+  }
+
+  return getVariantHint(variantId, t);
+};
 
 export function shouldAddImplicitPresenceVariant(
   variantIds: Array<number | null | undefined>

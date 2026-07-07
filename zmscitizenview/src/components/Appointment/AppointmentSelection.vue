@@ -312,6 +312,25 @@ const currentErrorData = computed(() => errorStates.currentErrorData);
 
 const error = ref<boolean>(false);
 const showError = computed(() => error.value || props.bookingError);
+
+const clearLocalApiErrors = (): void => {
+  error.value = false;
+
+  Object.values(errorStateMap.value).forEach((errorState) => {
+    errorState.value = false;
+  });
+
+  errorStates.currentErrorData.value = null;
+};
+
+const clearVisibleErrors = (notifyParent = true): void => {
+  clearLocalApiErrors();
+
+  if (notifyParent) {
+    emit("clearBookingError");
+  }
+};
+
 const isNoAppointmentForThisDayError = computed(
   () => errorStateMap.value.apiErrorNoAppointmentForThisDay?.value ?? false
 );
@@ -532,8 +551,8 @@ const currentDayPart = computed(() => {
 
 const showSelectionForProvider = async (provider: OfficeImpl) => {
   isSwitchingProvider.value = true;
+  clearVisibleErrors(false);
   selectedProvider.value = provider;
-  error.value = false;
   selectedDay.value = undefined;
   selectedTimeslot.value = 0;
   await fetchAvailableDaysForSelection();
@@ -630,6 +649,7 @@ const hasSelectedProviderWithAppointments = computed(() => {
 });
 
 const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
+  clearVisibleErrors();
   selectedTimeslot.value = timeSlot;
   selectedProvider.value = getOfficeById(officeId);
   if (summary.value) {
@@ -652,8 +672,8 @@ const handleDaySelection = async (day: any) => {
     return;
   }
 
-  // Clear stale booking error callout when user chooses another date.
-  emit("clearBookingError");
+  // Clear stale booking and local availability errors when user chooses another date.
+  clearVisibleErrors();
 
   selectedDay.value = day;
   selectedTimeslot.value = 0;
@@ -795,7 +815,10 @@ const isSlotSelected = (officeId: number | string, time: number) =>
   selectedProvider.value?.id?.toString() === officeId.toString();
 
 const nextStep = () => emit("next");
-const previousStep = () => emit("back");
+const previousStep = () => {
+  clearVisibleErrors();
+  emit("back");
+};
 
 // API error handling
 const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
@@ -824,11 +847,6 @@ const handleError = (data: any): void => {
   handleApiResponse(data, errorStateMap.value, currentErrorData.value);
 };
 
-const clearApiErrors = (): void => {
-  Object.values(errorStateMap.value).forEach((es) => (es.value = false));
-  currentErrorData.value = null;
-};
-
 const setNoAppointmentForThisDayError = (): void => {
   error.value = true;
   handleApiError(
@@ -849,7 +867,7 @@ const fetchAvailableDaysForSelection = async (): Promise<void> => {
     // No providers available, clear available days
     availableDays.value = [];
     availableDaysFetched.value = true;
-    error.value = false;
+    clearLocalApiErrors();
     isSwitchingProvider.value = false;
     updateDateRangeForSelectedProviders();
     return;
@@ -890,7 +908,7 @@ const fetchAvailableDaysForSelection = async (): Promise<void> => {
     );
     calendarKey.value++;
     availableDaysFetched.value = true;
-    error.value = false;
+    clearLocalApiErrors();
     isSwitchingProvider.value = false;
 
     // Update date range based on selected providers
@@ -953,8 +971,7 @@ const getAppointmentsOfDay = async (date: string): Promise<void> => {
         setNoAppointmentForThisDayError();
       } else {
         removeDateWithoutAppointments(date);
-        error.value = false;
-        clearApiErrors();
+        clearLocalApiErrors();
       }
 
       // Only show error if there are no appointments on any day
@@ -1395,11 +1412,10 @@ watch(
     if (daysWereFetched && !hasAvailableDays && !availableDaysFetched.value) {
       availableDaysFetched.value = true;
     }
+    clearVisibleErrors(daysWereFetched);
 
     if (hasAvailableDays) {
       isSwitchingProvider.value = true;
-      error.value = false;
-      Object.values(errorStateMap.value).forEach((es) => (es.value = false));
     } else {
       isSwitchingProvider.value = false;
     }

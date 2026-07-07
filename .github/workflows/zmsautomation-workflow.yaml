@@ -159,15 +159,21 @@ jobs:
             set -euo pipefail
             apt-get update
 
-            # Core CLI utilities used by zmsautomation-test.
-            apt-get install -y --no-install-recommends \
+            # Pin Chromium: trixie-security ships 150.x which exits immediately in CI Docker
+            # (SessionNotCreatedException). Hold trixie/main 147.x until 150 works in CI.
+            CHROMIUM_APT_VERSION="147.0.7727.137-1~deb13u1"
+            apt-get install -y --no-install-recommends --allow-downgrades \
               curl wget unzip ca-certificates gnupg \
               mariadb-client \
               x11-utils x11-xserver-utils \
               xvfb \
               firefox-esr \
-              chromium chromium-driver \
+              "chromium-common=${CHROMIUM_APT_VERSION}" \
+              "chromium=${CHROMIUM_APT_VERSION}" \
+              "chromium-driver=${CHROMIUM_APT_VERSION}" \
               ;
+            chromium --version
+            chromedriver --version
 
             # Prefer symlink for "firefox" path used by Selenium setups.
             ln -sf /usr/bin/firefox-esr /usr/bin/firefox || true

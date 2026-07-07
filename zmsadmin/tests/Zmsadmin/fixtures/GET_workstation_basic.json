@@ -22,6 +22,9 @@
                 "ticketprinter": "0",
                 "useraccount": "0"
             },
+            "permissions": {
+                "customersearch": "1"
+            },
             "departments": [
                 {
                     "id": "74",

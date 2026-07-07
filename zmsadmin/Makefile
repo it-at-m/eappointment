@@ -7,6 +7,10 @@ now: # Dummy target
 
 build: css js # Build javascript and css
 
+libs: now # Copy monaco-editor and requirejs for mail template editor
+	mkdir -p public/_libs/requirejs && cp -r node_modules/requirejs/* public/_libs/requirejs/
+	mkdir -p public/_libs/monaco-editor && cp -r node_modules/monaco-editor/* public/_libs/monaco-editor/
+
 css: now
 	npm run css
 
@@ -32,8 +36,7 @@ live: # init live system
 	npm install --legacy-peer-deps
 	$(MAKE) materialize-zmslayout-deps
 	npm run build
-	mkdir -p public/_libs/requirejs && cp -r node_modules/requirejs/* public/_libs/requirejs/
-	mkdir -p public/_libs/monaco-editor && cp -r node_modules/monaco-editor/* public/_libs/monaco-editor/
+	$(MAKE) libs
 
 
 dev: # init development system
