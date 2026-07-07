@@ -54,7 +54,7 @@
         v-model="countOfService"
         :label="service?.name || ''"
         :id="`service-${service?.id}`"
-        :link="getServiceBaseURL() + (serviceLinkId || '')"
+        :link="serviceInfoLink"
         :max="maxValueOfService"
         :min="1"
       />
@@ -284,6 +284,16 @@ const { serviceLinkId, updateServiceLinkId } = inject<ServiceLinkProvider>(
 ) as ServiceLinkProvider;
 
 const service = ref<ServiceImpl | undefined>(selectedService.value);
+const getServiceInfoId = (selectedService: Service | ServiceImpl | undefined) =>
+  String(selectedService?.rootParentId ?? selectedService?.id ?? "");
+
+const serviceInfoLink = computed(() => {
+  const serviceInfoId = getServiceInfoId(service.value);
+
+  return serviceInfoId
+    ? getServiceBaseURL() + serviceInfoId
+    : getServiceBaseURL();
+});
 const minSlotsPerAppointment = ref<number>(25);
 const currentSlots = ref<number>(0);
 const showAllServices = ref<boolean>(false);
@@ -328,13 +338,18 @@ const onServiceSelected = (selected: ServiceImpl | undefined) => {
     return;
   }
 
-  updateServiceLinkId(String(selected.parentId ?? selected.id));
+  updateServiceLinkId(getServiceInfoId(selected));
   selectedVariant.value = "";
   service.value = selected;
 };
 
 watch(service, (newService) => {
   if (!newService) return;
+
+  const nextServiceLinkId = getServiceInfoId(newService);
+  if (nextServiceLinkId && serviceLinkId.value !== nextServiceLinkId) {
+    updateServiceLinkId(nextServiceLinkId);
+  }
 
   const variantId = newService.variantId;
   if (typeof variantId === "number" && Number.isFinite(variantId)) {
@@ -646,7 +661,7 @@ const scrollToTop = () => {
 onMounted(() => {
   if (service.value) {
     if (!serviceLinkId.value) {
-      updateServiceLinkId(String(service.value.parentId ?? service.value.id));
+      updateServiceLinkId(getServiceInfoId(service.value));
     }
     const variantId = (service.value as any)?.variantId;
     if (typeof variantId === "number" && Number.isFinite(variantId)) {
@@ -681,7 +696,7 @@ onMounted(() => {
         if (handleApiResponseForDownTime(data, props.globalState.baseUrl))
           return;
 
-        services.value = (data as any).services.map(normalizeService);
+        services.value = (data as any).services;
         relations.value = (data as any).relations;
         offices.value = (data as any).offices;
 
@@ -711,7 +726,7 @@ onMounted(() => {
         return;
       }
 
-      services.value = (data as any).services.map(normalizeService);
+      services.value = (data as any).services;
       relations.value = (data as any).relations;
       offices.value = (data as any).offices;
 
@@ -730,7 +745,7 @@ onMounted(() => {
           );
 
         if (foundService) {
-          updateServiceLinkId(String(foundService.parentId ?? foundService.id));
+          updateServiceLinkId(getServiceInfoId(foundService));
           service.value = {
             ...foundService,
             providers: [] as OfficeImpl[],
@@ -861,18 +876,6 @@ const showSubservices = computed(() => {
 
   return true;
 });
-
-function normalizeService(raw: any): Service {
-  return {
-    id: String(raw.id),
-    name: raw.name,
-    maxQuantity: raw.maxQuantity,
-    combinable: raw.combinable,
-    parentId: raw.parent_id == null ? null : String(raw.parent_id),
-    variantId: raw.variant_id == null ? null : Number(raw.variant_id),
-    showOnStartPage: raw.showOnStartPage,
-  };
-}
 
 const hasVariants = computed(() => variantServices.value.length > 1);
 const needsVariantSelection = computed(
