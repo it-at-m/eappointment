@@ -19,6 +19,7 @@ export class ServiceImpl implements Service {
   count?: number;
 
   parentId: string | number | null;
+  rootParentId?: string | number | null;
   variantId: number | null;
 
   showOnStartPage?: boolean;

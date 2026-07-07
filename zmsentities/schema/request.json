@@ -200,6 +200,15 @@
             "description": "optional parent request id (FK)",
             "default": null
         },
+        "root_parent_id": {
+            "oneOf": [
+                { "type": "null" },
+                { "type": "number" },
+                { "type": "string", "pattern": "^[0-9]+$" }
+            ],
+            "description": "root service request id for service info links; equals id for root services, resolved when loading from zmsdb",
+            "default": null
+        },
         "variant_id": {
             "oneOf": [
                 { "type": "null" },
