@@ -19,17 +19,6 @@ class Useraccount extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'rights' => [
-                "availability" => false,
-                "basic" => true,
-                "cluster" => false,
-                "department" => false,
-                "organisation" => false,
-                "scope" => false,
-                "superuser" => false,
-                "ticketprinter" => false,
-                "useraccount" => false,
-            ],
             'permissions' => [
                 "appointment" => false,
                 "availability" => false,
@@ -116,13 +105,6 @@ class Useraccount extends Schema\Entity
         return $this->getDepartmentList()->getUniqueScopeList()->hasEntity($scopeId);
     }
 
-    /**
-     * @todo Remove this function, keep no contraint on old DB schema in zmsentities
-     */
-    public function getRightsLevel()
-    {
-        return Helper\RightsLevelManager::getLevel($this->rights);
-    }
 
     public function setPermissions()
     {
