@@ -383,16 +383,33 @@ describe("AppointmentSummary", () => {
     });
 
     it.each([4, 5, 6, 7])(
-      "should show address/hint for on-site variant %i",
+      "should show address and scope hint for variant %i",
       async (variantId) => {
         mockSelectedService.value.variantId = variantId;
+
         const wrapper = createWrapper();
         await nextTick();
 
         expect(wrapper.text()).toContain("Test Street 123");
         expect(wrapper.text()).toContain("12345 Test City");
         expect(wrapper.text()).toContain("Test Info Scope");
-        expect(wrapper.text()).toContain(`appointmentTypes.${variantId}`);
+      }
+    );
+
+    it.each([
+      [4, "appointmentTypes.4"],
+      [5, "appointmentTypes.5"],
+      [6, "appointmentTypes.1"],
+      [7, "appointmentTypes.1"],
+    ])(
+      "should show the correct appointment type label for variant %i",
+      async (variantId, expectedAppointmentTypeLabel) => {
+        mockSelectedService.value.variantId = variantId;
+
+        const wrapper = createWrapper();
+        await nextTick();
+
+        expect(wrapper.text()).toContain(expectedAppointmentTypeLabel);
       }
     );
 
