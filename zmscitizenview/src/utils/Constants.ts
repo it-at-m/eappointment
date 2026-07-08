@@ -164,8 +164,6 @@ export const getAppointmentLocationVariantLabel = (
   if (variantId == null) return undefined;
 
   if (
-    variantId === VARIANT_ID_INDIVIDUAL ||
-    variantId === VARIANT_ID_FAMILY ||
     variantId === VARIANT_ID_SMALL_CLIENT ||
     variantId === VARIANT_ID_LARGE_CLIENT
   ) {
