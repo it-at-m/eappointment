@@ -103,7 +103,9 @@
                 ></span>
               </p>
               <p class="no-bottom-margin smaller-front-size">
-                <strong>{{ t(`appointmentTypes.${variantId}`) }}</strong
+                <strong>{{
+                  getAppointmentLocationVariantLabel(variantId, t)
+                }}</strong
                 ><br />
               </p>
               <p v-if="getAppointmentLocationVariantHint(variantId, t)">
@@ -113,7 +115,9 @@
 
             <template v-else-if="isVariantWithHint(variantId)">
               <p class="no-bottom-margin smaller-front-size">
-                <strong>{{ t(`appointmentTypes.${variantId}`) }}</strong
+                <strong>{{
+                  getAppointmentLocationVariantLabel(variantId, t)
+                }}</strong
                 ><br />
               </p>
               <p>{{ getAppointmentLocationVariantHint(variantId, t) }}</p>
@@ -121,7 +125,9 @@
 
             <template v-else>
               <p>
-                <strong>{{ t(`appointmentTypes.${variantId}`) }}</strong
+                <strong>{{
+                  getAppointmentLocationVariantLabel(variantId, t)
+                }}</strong
                 ><br />
               </p>
             </template>
@@ -327,6 +333,7 @@ import {
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   getAppointmentLocationVariantHint,
+  getAppointmentLocationVariantLabel,
   getServiceBaseURL,
   isVariantWithAddress,
   isVariantWithHint,
