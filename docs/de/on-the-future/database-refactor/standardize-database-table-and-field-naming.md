@@ -1119,33 +1119,33 @@ Maintainable structure with clear patterns
 
 Availability Query Class
 
-| Current Mapping                | New Mapping (camelCase)      | Database Column (snake_case)              |
-| ------------------------------ | ---------------------------- | ----------------------------------------- |
-| 'id'                           | 'id'                         | availability.availability_id              |
-| 'scope**id'                    | 'scopeId'                    | availability.scope_id                     |
-| 'bookable**startInDays'        | 'bookableStartInDays'        | availability.open_from_days               |
-| 'bookable**endInDays'          | 'bookableEndInDays'          | availability.open_until_days              |
-| 'description'                  | 'description'                | availability.comment                      |
-| 'startDate'                    | 'startDate'                  | availability.start_date                   |
-| 'startTime'                    | 'startTime'                  | availability.start_time                   |
-| 'endDate'                      | 'endDate'                    | availability.end_date                     |
-| 'endTime'                      | 'endTime'                    | availability.end_time                     |
-| 'lastChange'                   | 'lastChange'                 | availability.updated_at                   |
-| 'multipleSlotsAllowed'         | 'multipleSlotsAllowed'       | availability.multiple_slots_allowed       |
-| 'repeat**afterWeeks'           | 'repeatAfterWeeks'           | availability.every_x_weeks                |
-| 'repeat**weekOfMonth'          | 'repeatWeekOfMonth'          | availability.every_other_week             |
-| 'slotTimeInMinutes'            | 'slotTimeInMinutes'          | availability.time_slot                    |
-| 'type'                         | 'type'                       | availability.type                         |
-| 'weekday**monday'              | 'weekdayMonday'              | availability.weekday                      |
-| 'weekday**tuesday'             | 'weekdayTuesday'             | availability.weekday                      |
-| 'weekday**wednesday'           | 'weekdayWednesday'           | availability.weekday                      |
-| 'weekday**thursday'            | 'weekdayThursday'            | availability.weekday                      |
-| 'weekday**friday'              | 'weekdayFriday'              | availability.weekday                      |
-| 'weekday**saturday'            | 'weekdaySaturday'            | availability.weekday                      |
-| 'weekday**sunday'              | 'weekdaySunday'              | availability.weekday                      |
-| 'workstationCount**callcenter' | 'workstationCountCallcenter' | availability.workstation_count_callcenter |
-| 'workstationCount**intern'     | 'workstationCountIntern'     | availability.workstation_count_intern     |
-| 'workstationCount\_\_public'   | 'workstationCountPublic'     | availability.workstation_count_public     |
+| Current Mapping                  | New Mapping (camelCase)      | Database Column (snake_case)              |
+| -------------------------------- | ---------------------------- | ----------------------------------------- |
+| 'id'                             | 'id'                         | availability.availability_id              |
+| 'scope\*\*id'                    | 'scopeId'                    | availability.scope_id                     |
+| 'bookable\*\*startInDays'        | 'bookableStartInDays'        | availability.open_from_days               |
+| 'bookable\*\*endInDays'          | 'bookableEndInDays'          | availability.open_until_days              |
+| 'description'                    | 'description'                | availability.comment                      |
+| 'startDate'                      | 'startDate'                  | availability.start_date                   |
+| 'startTime'                      | 'startTime'                  | availability.start_time                   |
+| 'endDate'                        | 'endDate'                    | availability.end_date                     |
+| 'endTime'                        | 'endTime'                    | availability.end_time                     |
+| 'lastChange'                     | 'lastChange'                 | availability.updated_at                   |
+| 'multipleSlotsAllowed'           | 'multipleSlotsAllowed'       | availability.multiple_slots_allowed       |
+| 'repeat\*\*afterWeeks'           | 'repeatAfterWeeks'           | availability.every_x_weeks                |
+| 'repeat\*\*weekOfMonth'          | 'repeatWeekOfMonth'          | availability.every_other_week             |
+| 'slotTimeInMinutes'              | 'slotTimeInMinutes'          | availability.time_slot                    |
+| 'type'                           | 'type'                       | availability.type                         |
+| 'weekday\*\*monday'              | 'weekdayMonday'              | availability.weekday                      |
+| 'weekday\*\*tuesday'             | 'weekdayTuesday'             | availability.weekday                      |
+| 'weekday\*\*wednesday'           | 'weekdayWednesday'           | availability.weekday                      |
+| 'weekday\*\*thursday'            | 'weekdayThursday'            | availability.weekday                      |
+| 'weekday\*\*friday'              | 'weekdayFriday'              | availability.weekday                      |
+| 'weekday\*\*saturday'            | 'weekdaySaturday'            | availability.weekday                      |
+| 'weekday\*\*sunday'              | 'weekdaySunday'              | availability.weekday                      |
+| 'workstationCount\*\*callcenter' | 'workstationCountCallcenter' | availability.workstation_count_callcenter |
+| 'workstationCount\*\*intern'     | 'workstationCountIntern'     | availability.workstation_count_intern     |
+| 'workstationCount\_\_public'     | 'workstationCountPublic'     | availability.workstation_count_public     |
 
 Scope Query Class
 
@@ -1153,10 +1153,10 @@ Scope Query Class
 | ----------------------------------------------------------- | ------------------------------------------------------- | ---------------------------------- |
 | 'hint'                                                      | 'hint'                                                  | scope.hint                         |
 | 'id'                                                        | 'id'                                                    | scope.scope_id                     |
-| 'contact**name'                                             | 'contactName'                                           | scopeprovider.name                 |
-| 'contact**street'                                           | 'contactStreet'                                         | scope.address                      |
-| 'contact**email'                                            | 'contactEmail'                                          | scope.admin_email                  |
-| 'contact**country'                                          | 'contactCountry'                                        | "Germany"                          |
+| 'contact\*\*name'                                           | 'contactName'                                           | scopeprovider.name                 |
+| 'contact\*\*street'                                         | 'contactStreet'                                         | scope.address                      |
+| 'contact\*\*email'                                          | 'contactEmail'                                          | scope.admin_email                  |
+| 'contact\*\*country'                                        | 'contactCountry'                                        | "Germany"                          |
 | 'lastChange'                                                | 'lastChange'                                            | scope.updated_at                   |
 | 'preferences**appointment**deallocationDuration'            | 'preferencesAppointmentDeallocationDuration'            | scope.deletion_duration            |
 | 'preferences**appointment**infoForAppointment'              | 'preferencesAppointmentInfoForAppointment'              | scope.info_for_appointment         |
@@ -1227,13 +1227,13 @@ Scope Query Class
 
 Process Query Class
 
-| Current Mapping              | New Mapping (camelCase) | Database Column (snake_case) |
-| ---------------------------- | ----------------------- | ---------------------------- |
-| 'amendment'                  | 'amendment'             | process.comment              |
-| 'id'                         | 'id'                    | process.citizen_id           |
-| 'appointments**0**date'      | 'appointments0Date'     | process.appointment_datetime |
-| 'scope**id'                  | 'scopeId'               | process.scope_id             |
-| 'appointments**0**scope**id' | 'appointments0ScopeId'  | process.scope_id             |
+| Current Mapping                | New Mapping (camelCase) | Database Column (snake_case) |
+| ------------------------------ | ----------------------- | ---------------------------- |
+| 'amendment'                    | 'amendment'             | process.comment              |
+| 'id'                           | 'id'                    | process.citizen_id           |
+| 'appointments**0**date'        | 'appointments0Date'     | process.appointment_datetime |
+| 'scope\*\*id'                  | 'scopeId'               | process.scope_id             |
+| 'appointments**0**scope\*\*id' | 'appointments0ScopeId'  | process.scope_id             |
 
 Citizen Query Class
 
@@ -1268,12 +1268,12 @@ Provider Query Class
 
 | Current Mapping           | New Mapping (camelCase) | Database Column (snake_case)   |
 | ------------------------- | ----------------------- | ------------------------------ |
-| 'contact**city'           | 'contactCity'           | provider.contact_city          |
-| 'contact**country'        | 'contactCountry'        | provider.contact_country       |
-| 'contact**name'           | 'contactName'           | provider.name                  |
-| 'contact**postalCode'     | 'contactPostalCode'     | provider.contact_postal_code   |
-| 'contact**region'         | 'contactRegion'         | provider.contact_region        |
-| 'contact**street'         | 'contactStreet'         | provider.contact_street        |
+| 'contact\*\*city'         | 'contactCity'           | provider.contact_city          |
+| 'contact\*\*country'      | 'contactCountry'        | provider.contact_country       |
+| 'contact\*\*name'         | 'contactName'           | provider.name                  |
+| 'contact\*\*postalCode'   | 'contactPostalCode'     | provider.contact_postal_code   |
+| 'contact\*\*region'       | 'contactRegion'         | provider.contact_region        |
+| 'contact\*\*street'       | 'contactStreet'         | provider.contact_street        |
 | 'contact\_\_streetNumber' | 'contactStreetNumber'   | provider.contact_street_number |
 | 'id'                      | 'id'                    | provider.id                    |
 | 'link'                    | 'link'                  | provider.link                  |

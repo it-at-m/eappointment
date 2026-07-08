@@ -205,28 +205,15 @@
             </div>
             <div class="m-content">
               <p class="smaller-front-size">
-                <strong>{{ t("privacyCheckboxLabel") }}</strong
+                <strong>{{ t("privacyLabel") }}</strong
                 ><br />
               </p>
             </div>
             <div class="m-content">
-              <div class="m-checkboxes">
-                <div class="m-checkboxes__item">
-                  <input
-                    id="checkbox-privacy-policy"
-                    class="m-checkboxes__input"
-                    name="checkbox-privacy-policy"
-                    type="checkbox"
-                    @click="clickPrivacyPolicy"
-                    aria-required="true"
-                  />
-                  <label
-                    class="m-label m-checkboxes__label"
-                    for="checkbox-privacy-policy"
-                    v-html="sanitizeHtml(t('privacyCheckboxText'))"
-                  />
-                </div>
-              </div>
+              <p
+                class="m-label"
+                v-html="sanitizeHtml(t('privacyText'))"
+              />
             </div>
             <div class="m-content">
               <p class="smaller-front-size">
@@ -396,7 +383,6 @@ const { serviceLinkId } = inject<ServiceLinkProvider>(
 
 const { isExpired } = useReservationTimer();
 
-const privacyPolicy = ref<boolean>(false);
 const electronicCommunication = ref<boolean>(false);
 
 const formatterDate = new Intl.DateTimeFormat("de-DE", {
@@ -418,14 +404,10 @@ const formatTime = (time: any) => {
   return formatterDate.format(date) + ", " + formatterTime.format(date);
 };
 
-const clickPrivacyPolicy = () => (privacyPolicy.value = !privacyPolicy.value);
-
 const clickElectronicCommunication = () =>
   (electronicCommunication.value = !electronicCommunication.value);
 
-const validForm = computed(
-  () => privacyPolicy.value && electronicCommunication.value
-);
+const validForm = computed(() => electronicCommunication.value);
 
 const bookAppointment = () => emit("bookAppointment");
 const previousStep = () => emit("back");
