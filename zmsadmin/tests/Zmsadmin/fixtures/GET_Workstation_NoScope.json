@@ -10,7 +10,7 @@
         "$schema": "https://schema.berlin.de/queuemanagement/workstation.json",
         "useraccount": {
             "permissions": {
-               "overviewcalendar": "1"
+               "overviewcalendar": true
             },
             "departments": [],
             "id": "testadmin",
