@@ -59,6 +59,9 @@ class ExchangeAccessFilter
         }
     }
 
+    /**
+     * @SuppressWarnings(UnusedFormalParameter)
+     */
     protected static function getFilteredEntityByUseraccountSuperuser($unused, $filteredKey)
     {
         if (! static::$workstation->getUseraccount()->isSuperUser()) {
