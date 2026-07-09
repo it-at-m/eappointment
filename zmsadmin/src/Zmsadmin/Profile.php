@@ -41,6 +41,11 @@ class Profile extends BaseController
         // Currently we depend on these magic string like "useraccount".
         // A better approach would be a function called readUserAccountData($accountId)
         $userAccount = \App::$http->readGetResult('/useraccount/' . $entity->getId() . '/')->getEntity();
+        $userAccountData = $userAccount->getArrayCopy();
+        $workstationUserAccount = $entity->getArrayCopy();
+        if (empty($userAccountData['departments'] ?? [])) {
+            $userAccountData['departments'] = $workstationUserAccount['departments'] ?? [];
+        }
         $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider') ?? '');
 
@@ -51,7 +56,7 @@ class Profile extends BaseController
                 'title' => 'Nutzerprofil',
                 'menuActive' => 'profile',
                 'workstation' => $workstation,
-                'useraccount' => $entity->getArrayCopy(),
+                'useraccount' => $userAccountData,
                 'success' => $confirmSuccess,
                 'error' => $error,
                 'exception' => (isset($result)) ? $result : null,
