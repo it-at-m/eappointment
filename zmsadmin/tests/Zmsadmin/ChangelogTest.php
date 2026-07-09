@@ -25,7 +25,7 @@ class ChangelogTest extends Base
                     'url' => '/config/',
                     'parameters' => [],
                     'xtoken' => 'secure-token',
-                    'reponse' => $this->readFixture("GET_config.json")
+                    'response' => $this->readFixture("GET_config.json")
                 ]
             ]
         );
@@ -50,7 +50,7 @@ class ChangelogTest extends Base
                     'url' => '/config/',
                     'parameters' => [],
                     'xtoken' => 'secure-token',
-                    'reponse' => $this->readFixture("GET_config.json")
+                    'response' => $this->readFixture("GET_config.json")
                 ]
             ]
         );
