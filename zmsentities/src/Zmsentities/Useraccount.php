@@ -215,7 +215,7 @@ class Useraccount extends Schema\Entity
     {
         return in_array($role, $this->getRoles(), true);
     }
-    
+
     public function testPermissions(array $requiredPermissions)
     {
         if (! $this->hasId()) {
