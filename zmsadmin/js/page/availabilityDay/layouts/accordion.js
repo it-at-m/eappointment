@@ -10,22 +10,11 @@ moment.locale('de')
 
 class Accordion extends Component
 {
-    constructor(props) {
-        super(props);
-        this.isExpanded = null
-    }
-
-    componentDidUpdate(prevProps) {
-        var eventId = null
-        if (prevProps.data !== this.props.data) {
-            if (this.props.data) {
-                eventId = (this.props.data.id) ? this.props.data.id : this.props.data.tempId;
-            }
-            this.isExpanded = eventId
-        }
-    }
-
     render() {
+        const selectedEventId = this.props.data
+            ? (this.props.data.id || this.props.data.tempId)
+            : null;
+
         const onPublish = (ev) => {
             ev.preventDefault()
             this.props.onPublish()
@@ -72,19 +61,11 @@ class Accordion extends Component
                 }
                 let eventId = availability.id ? availability.id : availability.tempId;
 
-                let accordionExpanded =
-                    (availability.id && availability.id === this.isExpanded) ||
-                    (availability.tempId && availability.tempId === this.isExpanded);
+                const accordionExpanded = eventId == selectedEventId;
 
                 const onToggle = ev => {
                     ev.preventDefault();
-                    if (eventId == ev.currentTarget.attributes.eventkey.value && eventId != this.isExpanded) {
-                        this.isExpanded = eventId
-                        this.props.onSelect(availability)
-                    } else {
-                        this.isExpanded = null
-                        this.props.onSelect(null)
-                    }
+                    this.props.onSelect(accordionExpanded ? null : availability);
                 }
 
                 const onCopy = ev => {
@@ -223,6 +204,7 @@ class Accordion extends Component
                     stateChanged={this.props.stateChanged}
                     data={this.props.data}
                     availabilitylist={this.props.availabilityList}
+                    selectedDate={moment(this.props.timestamp, 'X').startOf('day').unix()}
                     {...{ onNew, onPublish, onAbort }}
                 />}
             />

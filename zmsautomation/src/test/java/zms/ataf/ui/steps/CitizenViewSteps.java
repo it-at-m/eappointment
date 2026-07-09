@@ -146,7 +146,7 @@ public class CitizenViewSteps {
 
     /**
      * Update-appointment (Kontakt) step only — run <em>after</em> reserve (first Weiter after slot). Fills form and
-     * clicks Weiter to update; then preconfirm page with privacy checkboxes.
+     * clicks Weiter to update; then preconfirm page with communication checkbox.
      */
     @When("I enter default contact details in the citizen view")
     public void iEnterDefaultContactDetails() {
@@ -156,10 +156,10 @@ public class CitizenViewSteps {
         page.waitForPreconfirmPageAfterUpdate();
     }
 
-    @When("I accept privacy and communication in the citizen view")
-    public void iAcceptPrivacyAndCommunication() {
-        ScenarioLogManager.getLogger().info("zmscitizenview: accept privacy policy and electronic communication");
-        page.acceptPrivacyAndCommunication();
+    @When("I accept communication in the citizen view")
+    public void iAcceptCommunication() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: accept electronic communication");
+        page.acceptCommunication();
     }
 
     /** Preconfirm page: privacy + this Weiter → activation callout (not before Kontakt). */

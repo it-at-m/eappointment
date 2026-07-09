@@ -197,7 +197,25 @@ class Useraccount extends Schema\Entity
 
         return true;
     }
+    public function getRoles(): array
+    {
+        $roles = $this->roles ?? [];
+        if (is_array($roles)) {
+            return $roles;
+        }
+        if (is_string($roles)) {
+            return array_values(array_filter(array_map('trim', explode(',', $roles)), function ($role) {
+                return $role !== '';
+            }));
+        }
+        return [];
+    }
 
+    public function hasRole(string $role): bool
+    {
+        return in_array($role, $this->getRoles(), true);
+    }
+    
     public function testPermissions(array $requiredPermissions)
     {
         if (! $this->hasId()) {

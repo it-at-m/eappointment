@@ -9,6 +9,7 @@ namespace BO\Zmsadmin;
 
 use BO\Zmsclient\ModuleAccess;
 use BO\Zmsadmin\Helper\LoginForm;
+use BO\Zmsadmin\Helper\RestrictedRoleRedirect;
 use BO\Mellon\Validator;
 
 class WorkstationSelect extends BaseController
@@ -29,6 +30,10 @@ class WorkstationSelect extends BaseController
         }
         if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_ADMIN, $workstation, $response)) {
             return $wrongModuleResponse;
+        }
+
+        if ($restrictedRoleRedirect = RestrictedRoleRedirect::create($workstation->getUseraccount())) {
+            return $restrictedRoleRedirect;
         }
 
         $input = $request->getParsedBody();

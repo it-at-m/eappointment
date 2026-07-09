@@ -139,9 +139,10 @@ describe("AppointmentView", () => {
             emits: ["next", "captchaTokenChanged", "invalidJumpinLink"],
           },
           'AppointmentSelection': {
+            name: "AppointmentSelection",
             template: "<div data-test='AppointmentSelection'></div>",
             props: ["globalState", "isRebooking", "exclusiveLocation", "preselectedOfficeId", "selectedServiceMap", "captchaToken", "t", "bookingError", "bookingErrorKey"],
-            emits: ["back", "next"],
+            emits: ["back", "next", "clearBookingError"],
           },
           'customer-info': {
             template: "<div data-test='customer-info'></div>",
@@ -225,6 +226,61 @@ describe("AppointmentView", () => {
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
       expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
+    });
+
+    it("clears appointment selection booking error when AppointmentSelection emits clearBookingError", async () => {
+      const wrapper = createWrapper({ appointmentHash: undefined });
+
+      wrapper.vm.currentView = 1;
+      wrapper.vm.errorStates.errorStateMap.apiErrorAppointmentNotAvailable.value =
+        true;
+
+      await nextTick();
+
+      const appointmentSelection = wrapper.findComponent({
+        name: "AppointmentSelection",
+      });
+
+      expect(appointmentSelection.exists()).toBe(true);
+      expect(appointmentSelection.props("bookingError")).toBe(true);
+      expect(appointmentSelection.props("bookingErrorKey")).toBe(
+        "apiErrorAppointmentNotAvailable"
+      );
+
+      appointmentSelection.vm.$emit("clearBookingError");
+      await nextTick();
+
+      expect(
+        wrapper.vm.errorStates.errorStateMap.apiErrorAppointmentNotAvailable.value
+      ).toBe(false);
+
+      const appointmentSelectionAfter = wrapper.findComponent({
+        name: "AppointmentSelection",
+      });
+
+      expect(appointmentSelectionAfter.props("bookingError")).toBe(false);
+      expect(appointmentSelectionAfter.props("bookingErrorKey")).toBe("");
+    });
+
+    it("clears captcha booking errors when captcha token changes", async () => {
+      const wrapper = createWrapper({ appointmentHash: undefined });
+
+      wrapper.vm.errorStates.errorStateMap.apiErrorCaptchaExpired.value = true;
+      wrapper.vm.captchaToken = undefined;
+
+      await nextTick();
+
+      expect(
+        wrapper.vm.errorStates.errorStateMap.apiErrorCaptchaExpired.value
+      ).toBe(true);
+
+      wrapper.vm.handleCaptchaTokenChanged("new-token");
+      await nextTick();
+
+      expect(wrapper.vm.captchaToken).toBe("new-token");
+      expect(
+        wrapper.vm.errorStates.errorStateMap.apiErrorCaptchaExpired.value
+      ).toBe(false);
     });
   });
 
