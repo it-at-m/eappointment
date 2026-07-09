@@ -27,7 +27,7 @@ class RoleDelete extends BaseController
         try {
             $roleModel->deleteRole($roleEntity->id);
         } catch (\BO\Zmsdb\Exception\Role\AssignedUserListNotEmpty $e) {
-            throw new Exception\Role\RoleHasAssignedUsers();
+            throw new Exception\Role\RoleHasAssignedUsers('', 0, $e);
         }
 
         $message = Response\Message::create($request);
