@@ -76,7 +76,7 @@ describe("AppointmentSummary", () => {
           },
           serviceLinkProvider: {
             serviceLinkId: ref<string | null>(null),
-            updateServiceLinkId: () => {},
+            updateServiceLinkId: () => { },
           },
         },
         stubs: {
@@ -105,6 +105,22 @@ describe("AppointmentSummary", () => {
       expect(wrapper.text()).toContain("2x");
       expect(wrapper.text()).toContain("Sub Service 1");
       expect(wrapper.text()).toContain("1x");
+    });
+
+    it("uses rootParentId for service link when serviceLinkId is unset", () => {
+      mockSelectedService.value = {
+        id: "999",
+        parentId: "3",
+        rootParentId: "1063423",
+        name: "Gewerbe-Anmeldung Video",
+        count: 1,
+        variantId: 2,
+        subServices: [],
+      };
+      const wrapper = createWrapper();
+      const link = wrapper.find("a.m-link");
+      expect(link.attributes("href")).toContain("1063423");
+      expect(link.attributes("href")).not.toContain("/0");
     });
 
     it("renders provider information correctly", () => {
@@ -145,18 +161,16 @@ describe("AppointmentSummary", () => {
   });
 
   describe("Form Validation", () => {
-    it("disables preconfirm button when both checkboxes are not checked", () => {
+    it("disables preconfirm button when electronic communication checkbox is not checked", () => {
       const wrapper = createWrapper();
       const bookButton = findButtonByIcon(wrapper, "check");
       expect(bookButton).toBeTruthy();
       expect(bookButton!.attributes("disabled")).toBeDefined(); // disabled
     });
 
-    it("enables preconfirm button when both checkboxes are checked", async () => {
+    it("enables preconfirm button when electronic communication checkbox is checked", async () => {
       const wrapper = createWrapper();
-      const privacyCheckbox = wrapper.find('input[name="checkbox-privacy-policy"]');
       const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
-      await privacyCheckbox.trigger("click");
       await communicationCheckbox.trigger("click");
       await nextTick();
       const bookButton = findButtonByIcon(wrapper, "check");
@@ -164,52 +178,34 @@ describe("AppointmentSummary", () => {
       expect(bookButton!.attributes("disabled")).toBeUndefined(); // enabled
     });
 
-    it("disables preconfirm button when only privacy policy is checked", async () => {
-      const wrapper = createWrapper();
-      const privacyCheckbox = wrapper.find('input[name="checkbox-privacy-policy"]');
-      await privacyCheckbox.trigger("click");
-      await nextTick();
-      const bookButton = findButtonByIcon(wrapper, "check");
-      expect(bookButton!.attributes("disabled")).toBeDefined();
-    });
-
-    it("disables preconfirm button when only electronic communication is checked", async () => {
+    it("disables preconfirm button when checkbox is unchecked after it was checked", async () => {
       const wrapper = createWrapper();
       const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
       await communicationCheckbox.trigger("click");
       await nextTick();
-      const bookButton = findButtonByIcon(wrapper, "check");
-      expect(bookButton!.attributes("disabled")).toBeDefined();
-    });
-
-    it("disables preconfirm button when one checkbox is unchecked after both were checked", async () => {
-      const wrapper = createWrapper();
-      const privacyCheckbox = wrapper.find('input[name="checkbox-privacy-policy"]');
-      const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
-      await privacyCheckbox.trigger("click");
+      let bookButton = findButtonByIcon(wrapper, "check");
+      expect(bookButton).toBeTruthy();
+      expect(bookButton!.attributes("disabled")).toBeUndefined();
       await communicationCheckbox.trigger("click");
       await nextTick();
-      await privacyCheckbox.trigger("click");
-      await nextTick();
-      const bookButton = findButtonByIcon(wrapper, "check");
+      bookButton = findButtonByIcon(wrapper, "check");
       expect(bookButton!.attributes("disabled")).toBeDefined();
     });
 
-    it("renders consent checkboxes with correct labels", () => {
+    it("renders privacy text and electronic communication checkbox", () => {
       const wrapper = createWrapper();
-      const privacyCheckbox = wrapper.find('input[name="checkbox-privacy-policy"]');
+      const privacyText = wrapper.find("p.m-label");
       const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
-      expect(privacyCheckbox.exists()).toBe(true);
+      expect(privacyText.exists()).toBe(true);
+      expect(privacyText.text()).toContain("privacyText");
+      expect(wrapper.find('input[name="checkbox-privacy-policy"]').exists()).toBe(false);
       expect(communicationCheckbox.exists()).toBe(true);
-      expect(wrapper.find('label[for="checkbox-privacy-policy"]').exists()).toBe(true);
       expect(wrapper.find('label[for="checkbox-electronic-communication"]').exists()).toBe(true);
     });
 
-    it("does not show consent checkboxes in rebookOrCancelDialog mode", () => {
+    it("does not show consent checkbox in rebookOrCancelDialog mode", () => {
       const wrapper = createWrapper({ rebookOrCancelDialog: true });
-      const privacyCheckbox = wrapper.find('input[name="checkbox-privacy-policy"]');
       const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
-      expect(privacyCheckbox.exists()).toBe(false);
       expect(communicationCheckbox.exists()).toBe(false);
     });
   });
@@ -225,7 +221,6 @@ describe("AppointmentSummary", () => {
 
     it("emits bookAppointment when preconfirm button is clicked", async () => {
       const wrapper = createWrapper();
-      await wrapper.find('input[name="checkbox-privacy-policy"]').trigger("click");
       await wrapper.find('input[name="checkbox-electronic-communication"]').trigger("click");
       await nextTick();
       const book = findButtonByIcon(wrapper, "check");
@@ -268,9 +263,7 @@ describe("AppointmentSummary", () => {
       const wrapper = createWrapper({ isRebooking: true });
 
       // validForm fulfilled (both consents set)
-      const privacy = wrapper.find('input[name="checkbox-privacy-policy"]');
       const comm = wrapper.find('input[name="checkbox-electronic-communication"]');
-      await privacy.trigger("click");
       await comm.trigger("click");
       await nextTick();
 
@@ -306,7 +299,6 @@ describe("AppointmentSummary", () => {
 
     it("book button enables/disables on valid form and loading", async () => {
       const wrapper = createWrapper();
-      await wrapper.find('input[name="checkbox-privacy-policy"]').trigger("click");
       await wrapper.find('input[name="checkbox-electronic-communication"]').trigger("click");
       await nextTick();
       let book = findButtonByIcon(wrapper, "check");
@@ -388,6 +380,30 @@ describe("AppointmentSummary", () => {
 
       expect(wrapper.text()).toContain("appointmentTypes.2");
       expect(wrapper.text()).toContain("locationVariantText.2");
+    });
+
+    it.each([4, 5, 6, 7])(
+      "should show address/hint for on-site variant %i",
+      async (variantId) => {
+        mockSelectedService.value.variantId = variantId;
+        const wrapper = createWrapper();
+        await nextTick();
+
+        expect(wrapper.text()).toContain("Test Street 123");
+        expect(wrapper.text()).toContain("12345 Test City");
+        expect(wrapper.text()).toContain("Test Info Scope");
+        expect(wrapper.text()).toContain(`appointmentTypes.${variantId}`);
+      }
+    );
+
+    it("should hide address for variant 3 (video)", async () => {
+      mockSelectedService.value.variantId = 3;
+      const wrapper = createWrapper();
+      await nextTick();
+
+      expect(wrapper.text()).not.toContain("Test Street 123");
+      expect(wrapper.text()).toContain("appointmentTypes.3");
+      expect(wrapper.text()).toContain("locationVariantText.3");
     });
   });
 });

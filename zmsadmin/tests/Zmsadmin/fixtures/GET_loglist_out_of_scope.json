@@ -1,0 +1,19 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2017-06-30T11:09:21+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "0": {
+            "$schema": "https://schema.berlin.de/queuemanagement/log.json",
+            "type": "buerger",
+            "reference": "100999",
+            "scope_id": 999,
+            "message": "OutOfScope Log Entry",
+            "ts": 1498721326
+        }
+    }
+}
