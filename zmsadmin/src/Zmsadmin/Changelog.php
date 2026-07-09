@@ -30,7 +30,7 @@ class Changelog extends BaseController
         $changelogHelper = new ChangelogHelper();
         $changelogContent = $changelogHelper->getChangelogHtml();
         //TODO: Check if safe when refactoring to vue.js in the future
-        $config = \App::$http->readGetResult('/config/', [],\App::CONFIG_SECURE_TOKEN )->getEntity();
+        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
 
         return \BO\Slim\Render::withHtml(
             $response,
