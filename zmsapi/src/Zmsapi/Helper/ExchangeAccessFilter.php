@@ -14,7 +14,8 @@ class ExchangeAccessFilter
         'scope.id' => 'getFilteredEntityByScope',
         'department.id' => 'getFilteredEntityByDepartment',
         'organisation.id' => 'getFilteredEntityByOrganisation',
-        'useraccount.rights' => 'getFilteredEntityByUseraccountRights'
+        'useraccount.permissions' => 'getFilteredEntityByUseraccountPermissions',
+        'useraccount.permissions.superuser' => 'getFilteredEntityByUseraccountSuperuser',
     ];
 
     protected static $exchangeEntity = null;
@@ -51,9 +52,16 @@ class ExchangeAccessFilter
         return static::$filteredEntity;
     }
 
-    protected static function getFilteredEntityByUseraccountRights($permission, $filteredKey)
+    protected static function getFilteredEntityByUseraccountPermissions($permission, $filteredKey)
     {
         if (! static::$workstation->getUseraccount()->hasPermissions([$permission])) {
+            unset(static::$filteredEntity->data[$filteredKey]);
+        }
+    }
+
+    protected static function getFilteredEntityByUseraccountSuperuser($unused, $filteredKey)
+    {
+        if (! static::$workstation->getUseraccount()->isSuperUser()) {
             unset(static::$filteredEntity->data[$filteredKey]);
         }
     }
