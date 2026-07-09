@@ -8,17 +8,15 @@
     },
     "data": {
         "$schema": "https://schema.berlin.de/queuemanagement/useraccount.json",
-        "rights": {
-            "availability": "1",
-            "basic": "1",
-            "cluster": "1",
-            "department": "1",
-            "organisation": "1",
-            "scope": "1",
-            "sms": "1",
-            "superuser": "1",
-            "ticketprinter": "1",
-            "useraccount": "1"
+        "permissions": {
+            "availability": true,
+            "cluster": true,
+            "department": true,
+            "organisation": true,
+            "scope": true,
+            "superuser": true,
+            "ticketprinter": true,
+            "useraccount": true
         },
         "id": "testadmin",
         "lastLogin": 1459461600
