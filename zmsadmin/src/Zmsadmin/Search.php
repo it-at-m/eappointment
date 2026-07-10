@@ -8,8 +8,8 @@
 namespace BO\Zmsadmin;
 
 use BO\Slim\Render;
-use BO\Zmsdb\Log as LogQuery;
 use BO\Zmsentities\Collection\LogList;
+use BO\Zmsentities\Log as LogEntity;
 use BO\Zmsentities\Collection\ProcessList;
 
 class Search extends BaseController
@@ -250,7 +250,7 @@ class Search extends BaseController
         $list = new LogList();
 
         foreach ($logList as $log) {
-            $log->display = LogQuery::formatDisplayFields($log->getArrayCopy());
+            $log->display = LogEntity::formatDisplayFields($log->getArrayCopy());
 
             if (
                 $bypassScopeFilter
