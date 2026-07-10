@@ -52,7 +52,7 @@ class Log extends Base
         'citizen_phone',
         'process_status',
         'db_status',
-        'citizen_amendment',
+        'process_amendment',
     ];
 
     private const ACTION_LABEL_TO_CODE = [
@@ -161,7 +161,7 @@ class Log extends Base
             'citizen_phone' => $process->getFirstClient()->telephone,
             'process_status' => $process->getStatus(),
             'db_status' => $process->dbstatus,
-            'citizen_amendment' => $process->getAmendment(),
+            'process_amendment' => $process->getAmendment(),
         ], static function ($value) {
             return $value !== null && $value !== '';
         });

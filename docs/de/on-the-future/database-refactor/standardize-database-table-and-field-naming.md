@@ -919,7 +919,7 @@ array (
 | `citizen_phone`     | `citizen_phone`          | Aus `data.Telefon`                                      |
 | `process_status`    | `process_status`         | Aus `data.Status`                                       |
 | `db_status`         | `db_status`              | Aus `data.DB Status`                                    |
-| `citizen_amendment` | `citizen_amendment`      | Aus `data.Anmerkung` (`91783691659`)                    |
+| `process_amendment` | `process_amendment`      | Aus `data.Anmerkung` (`91783691659`)                    |
 | `data`              | — (entfernen)            | Legacy-JSON; Backfill `91780720006`, Drop `91783691660` |
 
 #### migrations
@@ -1336,7 +1336,7 @@ Die Tabelle ist extrem breit: stündliche Spalten für geschätzte Wartezeit, ec
 
 #### Normalisierung von `log.data` (JSON)
 
-Häufig gefilterte Felder aus dem JSON-Blob `data` sind in typisierte Spalten ausgelagert (`action`, `display_number`, `queue_number`, `appointment_at`, `slot_count`, `citizen_name`, `services`, `scope_name`, `citizen_email`, `citizen_phone`, `process_status`, `db_status`, `citizen_amendment`). Backfill der Suchspalten: `91780720006`; `citizen_amendment`: `91783691659`.
+Häufig gefilterte Felder aus dem JSON-Blob `data` sind in typisierte Spalten ausgelagert (`action`, `display_number`, `queue_number`, `appointment_at`, `slot_count`, `citizen_name`, `services`, `scope_name`, `citizen_email`, `citizen_phone`, `process_status`, `db_status`, `process_amendment`). Backfill der Suchspalten: `91780720006`; `process_amendment`: `91783691659`.
 
 **Expand/Contract:** `91783691659` (Spalte + Backfill aus `data.Anmerkung`), Code-Deploy ohne Lese-/Schreibzugriff auf `data`, danach `91783691660` (`DROP COLUMN data`).
 

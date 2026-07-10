@@ -919,7 +919,7 @@ array (
 | `citizen_phone`     | `citizen_phone`         | From `data.Telefon`                                     |
 | `process_status`    | `process_status`        | From `data.Status`                                      |
 | `db_status`         | `db_status`             | From `data.DB Status`                                   |
-| `citizen_amendment` | `citizen_amendment`     | From `data.Anmerkung` (`91783691659`)                   |
+| `process_amendment` | `process_amendment`     | From `data.Anmerkung` (`91783691659`)                   |
 | `data`              | — (drop)                | Legacy JSON; backfill `91780720006`, drop `91783691660` |
 
 #### migrations
@@ -1341,7 +1341,7 @@ Benefits: simpler migrations, easier aggregation, room for new metrics without `
 
 #### Normalize `log.data` (JSON)
 
-Frequently filtered fields from the JSON blob `data` are promoted to typed columns (`action`, `display_number`, `queue_number`, `appointment_at`, `slot_count`, `citizen_name`, `services`, `scope_name`, `citizen_email`, `citizen_phone`, `process_status`, `db_status`, `citizen_amendment`). Search-column backfill: `91780720006`; `citizen_amendment`: `91783691659`.
+Frequently filtered fields from the JSON blob `data` are promoted to typed columns (`action`, `display_number`, `queue_number`, `appointment_at`, `slot_count`, `citizen_name`, `services`, `scope_name`, `citizen_email`, `citizen_phone`, `process_status`, `db_status`, `process_amendment`). Search-column backfill: `91780720006`; `process_amendment`: `91783691659`.
 
 **Expand/contract:** `91783691659` (column + backfill from `data.Anmerkung`), deploy code that no longer reads/writes `data`, then `91783691660` (`DROP COLUMN data`).
 
