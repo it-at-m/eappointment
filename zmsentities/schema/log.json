@@ -89,9 +89,9 @@
             "type": "string",
             "description": "Database status at the time of the log entry"
         },
-        "citizen_amendment": {
+        "process_amendment": {
             "type": "string",
-            "description": "Citizen amendment note at the time of the log entry"
+            "description": "Process amendment note at the time of the log entry"
         },
         "display": {
             "type": "object",

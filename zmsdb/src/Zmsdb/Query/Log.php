@@ -42,7 +42,7 @@ class Log extends Base
             'citizen_phone' => 'log.citizen_phone',
             'process_status' => 'log.process_status',
             'db_status' => 'log.db_status',
-            'citizen_amendment' => 'log.citizen_amendment',
+            'process_amendment' => 'log.process_amendment',
         ];
     }
 

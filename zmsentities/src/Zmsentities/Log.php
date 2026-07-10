@@ -39,7 +39,7 @@ class Log extends Schema\Entity
         'display_number' => 'Terminnummer',
         'citizen_name' => 'Bürger*in',
         'services' => 'Dienstleistungen',
-        'citizen_amendment' => 'Anmerkung',
+        'process_amendment' => 'Anmerkung',
         'scope_name' => 'Standort',
         'citizen_email' => 'E-Mail',
         'citizen_phone' => 'Telefon',
