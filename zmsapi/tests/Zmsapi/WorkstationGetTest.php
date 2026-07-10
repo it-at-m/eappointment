@@ -84,10 +84,9 @@ class WorkstationGetTest extends Base
         $this->render([], [], []);
     }
 
-    public function testWithOrganisationRight()
+    public function testCheckDepartmentWithAssignedDepartment()
     {
-        $workstation = $this->setWorkstation();
-        $workstation->getUseraccount()->setRights('organisation');
+        $this->setWorkstation();
         $this->setDepartment(74);
         $department = User::checkDepartment(74);
         $this->assertEquals(74, $department->getId());

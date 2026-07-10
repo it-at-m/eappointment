@@ -97,23 +97,6 @@ class User
         }
     }
 
-    /**
-     * @throws \BO\Zmsentities\Exception\UserAccountMissingRights
-     * @throws \BO\Zmsentities\Exception\UserAccountMissingLogin
-     *
-     */
-    public static function testWorkstationAssignedRights($useraccount)
-    {
-        static::$workstation
-            ->getUseraccount()
-            ->testRights(
-                array_keys(
-                    array_filter($useraccount->rights, function ($right) {
-                        return (1 == $right);
-                    })
-                )
-            );
-    }
 
     public static function testWorkstationAssignedRoles($useraccount): void
     {
@@ -132,6 +115,12 @@ class User
             throw new \BO\Zmsapi\Exception\Useraccount\UseraccountInvalidRoleAssignment();
         }
 
+        $roleName = $roleNames[0];
+        $existingRole = (new \BO\Zmsdb\Role())->readRoleByName($roleName, 0);
+        if ($existingRole === null) {
+            throw new \BO\Zmsapi\Exception\Useraccount\UseraccountInvalidRoleAssignment();
+        }
+
         if (
             ! static::$workstation->getUseraccount()->isSuperUser()
             && array_intersect($roleNames, self::SUPERUSER_ONLY_ROLES)
@@ -142,17 +131,10 @@ class User
         $useraccount['roles'] = $roleNames;
     }
 
-    /**
-     * @return \BO\Zmsentities\Workstation
-     *
-     */
-    public static function checkRights(...$requiredRights)
+    public static function hasLogin(): bool
     {
-        $workstation = static::readWorkstation();
-        if (\App::RIGHTSCHECK_ENABLED) {
-            $workstation->getUseraccount()->testRights($requiredRights);
-        }
-        return $workstation;
+        $userAccount = static::readWorkstation()->getUseraccount();
+        return $userAccount->hasId();
     }
 
     public static function checkPermissions(...$requiredPermissions)
@@ -204,8 +186,8 @@ class User
                 }
                 $departments->addEntity($departmentMap[$departmentId]);
             }
-        } elseif ($userAccount->hasRights(['department'])) {
-            // Users with 'department' rights: need organisation-based access checks
+        } elseif ($userAccount->hasPermissions(['department'])) {
+            // Users with 'department' permission: need organisation-based access checks
             // Group departments by organisation and load in batches
             foreach ($normalizedIds as $departmentId) {
                 $departments->addEntity(self::checkDepartment($departmentId));
@@ -252,7 +234,7 @@ class User
         }
         if ($userAccount->isSuperUser()) {
             $department = (new \BO\Zmsdb\Department())->readEntity($departmentId);
-        } elseif ($userAccount->hasRights(['department'])) {
+        } elseif ($userAccount->hasPermissions(['department'])) {
             $department = self::testReadDepartmentByOrganisation($departmentId, $userAccount);
         } else {
             $department = $userAccount->testDepartmentById($departmentId);
@@ -265,11 +247,6 @@ class User
         return $department;
     }
 
-    public static function hasRights()
-    {
-        $userAccount = static::readWorkstation()->getUseraccount();
-        return $userAccount->hasId();
-    }
 
     /**
      * Get X-Api-Key from header

@@ -2,8 +2,6 @@
 
 namespace BO\Zmsapi\Tests;
 
-use BO\Zmsapi\Helper\User;
-
 class WarehouseSubjectListGetTest extends Base
 {
     protected $classname = "WarehouseSubjectListGet";
@@ -17,10 +15,9 @@ class WarehouseSubjectListGetTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testNoRights()
+    public function testMissingStatisticPermission()
     {
         $workstation = $this->setWorkstation();
-        $workstation->getUseraccount()->setRights('basic');
         $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->render([], [], []);
     }

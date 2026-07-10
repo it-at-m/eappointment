@@ -14,7 +14,8 @@ class ExchangeAccessFilter
         'scope.id' => 'getFilteredEntityByScope',
         'department.id' => 'getFilteredEntityByDepartment',
         'organisation.id' => 'getFilteredEntityByOrganisation',
-        'useraccount.rights' => 'getFilteredEntityByUseraccountRights'
+        'useraccount.permissions' => 'getFilteredEntityByUseraccountPermissions',
+        'useraccount.permissions.superuser' => 'getFilteredEntityByUseraccountSuperuser',
     ];
 
     protected static $exchangeEntity = null;
@@ -51,16 +52,26 @@ class ExchangeAccessFilter
         return static::$filteredEntity;
     }
 
-    protected static function getFilteredEntityByUseraccountRights($right, $filteredKey)
+    protected static function getFilteredEntityByUseraccountPermissions($permission, $filteredKey)
     {
-        if (! static::$workstation->getUseraccount()->hasRights([$right])) {
+        if (! static::$workstation->getUseraccount()->hasPermissions([$permission])) {
+            unset(static::$filteredEntity->data[$filteredKey]);
+        }
+    }
+
+    /**
+     * @SuppressWarnings(UnusedFormalParameter)
+     */
+    protected static function getFilteredEntityByUseraccountSuperuser($unused, $filteredKey)
+    {
+        if (! static::$workstation->getUseraccount()->isSuperUser()) {
             unset(static::$filteredEntity->data[$filteredKey]);
         }
     }
 
     protected static function getFilteredEntityByScope($entityId, $filteredKey)
     {
-        if (static::$workstation->getUseraccount()->hasRights(['scope'])) {
+        if (static::$workstation->getUseraccount()->hasPermissions(['scope'])) {
             if (! static::$workstation->getScopeListFromAssignedDepartments()->hasEntity($entityId)) {
                 unset(static::$filteredEntity->data[$filteredKey]);
             }
@@ -69,7 +80,7 @@ class ExchangeAccessFilter
 
     protected static function getFilteredEntityByDepartment($entityId, $filteredKey)
     {
-        if (static::$workstation->getUseraccount()->hasRights(['department'])) {
+        if (static::$workstation->getUseraccount()->hasPermissions(['department'])) {
             if (! static::$workstation->getDepartmentList()->hasEntity($entityId)) {
                 unset(static::$filteredEntity->data[$filteredKey]);
             }
@@ -78,7 +89,7 @@ class ExchangeAccessFilter
 
     protected static function getFilteredEntityByOrganisation($entityId, $filteredKey)
     {
-        if (static::$workstation->getUseraccount()->hasRights(['organisation'])) {
+        if (static::$workstation->getUseraccount()->hasPermissions(['organisation'])) {
             if (! static::$organisationList->hasEntity($entityId)) {
                 unset(static::$filteredEntity->data[$filteredKey]);
             }

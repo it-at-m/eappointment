@@ -10,7 +10,7 @@ class DepartmentUpdateTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department')
+        $this->setWorkstation()->getUseraccount()->setPermissions('department')
             ->addDepartment([
                 'id' => 999
             ]);
@@ -28,14 +28,14 @@ class DepartmentUpdateTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->setWorkstation()->getUseraccount()->setPermissions('department');
         $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
 
     public function testNotFound()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department')
+        $this->setWorkstation()->getUseraccount()->setPermissions('department')
             ->addDepartment([
                 'id' => 999
             ]);
