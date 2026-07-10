@@ -324,12 +324,14 @@ class Log extends Base
 
     private function buildUserActionConditions(int $userAction): array
     {
+        $systemUserPattern = $this->escapeLikeValue('_system_') . '%';
+
         if ($userAction === 1) {
-            return ['(user_id IS NOT NULL AND user_id != \'\' AND user_id NOT LIKE \'_system_%\')'];
+            return ['(user_id IS NOT NULL AND user_id != \'\' AND user_id NOT LIKE \'' . $systemUserPattern . '\')'];
         }
 
         if ($userAction === 2) {
-            return ['(user_id LIKE \'_system_%\')'];
+            return ['(user_id LIKE \'' . $systemUserPattern . '\')'];
         }
 
         return [];
