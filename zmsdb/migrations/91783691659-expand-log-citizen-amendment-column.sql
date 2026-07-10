@@ -2,7 +2,7 @@
 -- Deploy before code that stops writing `data` and before the contract migration.
 
 ALTER TABLE `log`
-    ADD COLUMN IF NOT EXISTS `citizen_amendment` VARCHAR(512) DEFAULT NULL;
+    ADD COLUMN IF NOT EXISTS `citizen_amendment` TEXT DEFAULT NULL;
 
 UPDATE `log`
 SET `citizen_amendment` = NULLIF(TRIM(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$.Anmerkung'))), '')
