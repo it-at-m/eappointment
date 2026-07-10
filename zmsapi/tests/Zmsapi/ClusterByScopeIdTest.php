@@ -10,14 +10,14 @@ class ClusterByScopeIdTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('cluster');
+        $this->setWorkstation();
         $response = $this->render(['id' => 141], [], []);
         $this->assertStringContainsString('cluster.json', (string)$response->getBody());
         $this->assertStringContainsString('109', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testWithoutRights()
+    public function testReducedDataWithoutLogin()
     {
         $response = $this->render(['id' => 141], [], []);
         $this->assertStringContainsString('cluster.json', (string)$response->getBody());
@@ -27,14 +27,14 @@ class ClusterByScopeIdTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('cluster');
+        $this->setWorkstation();
         $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
 
     public function testNotFound()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('cluster');
+        $this->setWorkstation();
         $response = $this->render(['id' => 999], [], []);
         $this->assertTrue(200 == $response->getStatusCode());
     }

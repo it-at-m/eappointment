@@ -29,8 +29,9 @@ class ScopeList extends BaseController
         if (0 == $scopeList->count()) {
             throw new Exception\Scope\ScopeNotFound(); // @codeCoverageIgnore
         }
-        if ((new Helper\User($request))->hasRights()) {
-            (new Helper\User($request))->checkAnyPermission('restrictedscope', 'scope');
+        $user = new Helper\User($request);
+        if ($user->hasLogin()) {
+            $user->checkAnyPermission('restrictedscope', 'scope');
         } else {
             $scopeList = $scopeList->withLessData();
             $message->meta->reducedData = true;

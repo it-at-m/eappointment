@@ -27,7 +27,7 @@ class OrganisationAddDepartment extends BaseController
         $user->checkPermissions('department');
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $organisation = (new \BO\Zmsdb\Organisation())->readEntity($args['id'], 1);
-        $user->checkRights(
+        $user->checkPermissions(
             'department',
             new \BO\Zmsentities\Useraccount\EntityAccess($organisation)
         );

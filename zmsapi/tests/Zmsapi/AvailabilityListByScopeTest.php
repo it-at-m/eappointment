@@ -12,7 +12,7 @@ class AvailabilityListByScopeTest extends Base
     {
         $department = (new \BO\Zmsentities\Department());
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
-        $this->setWorkstation()->getUseraccount()->setRights('availability')->addDepartment($department);
+        $this->setWorkstation()->getUseraccount()->setPermissions('availability')->addDepartment($department);
         $response = $this->render(['id' => self::SCOPE_ID], [], []);
         $this->assertStringContainsString('availability.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -20,14 +20,14 @@ class AvailabilityListByScopeTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('availability');
+        $this->setWorkstation()->getUseraccount()->setPermissions('availability');
         $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
 
     public function testNotFound()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('availability');
+        $this->setWorkstation()->getUseraccount()->setPermissions('availability');
         $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);
@@ -39,7 +39,7 @@ class AvailabilityListByScopeTest extends Base
         $this->expectExceptionCode(404);
         $department = (new \BO\Zmsentities\Department());
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => 1]);
-        $this->setWorkstation()->getUseraccount()->setRights('availability')->addDepartment($department);
+        $this->setWorkstation()->getUseraccount()->setPermissions('availability')->addDepartment($department);
         $this->render(['id' => 1], [], []);
     }
 
@@ -49,7 +49,7 @@ class AvailabilityListByScopeTest extends Base
         $this->expectExceptionCode(403);
         $department = (new \BO\Zmsentities\Department());
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
-        $this->setWorkstation()->getUseraccount()->setRights('scope')->addDepartment($department);
+        $this->setWorkstation()->getUseraccount()->setPermissions('scope')->addDepartment($department);
         $this->render(['id' => self::SCOPE_ID], [], []);
     }
 
@@ -57,7 +57,7 @@ class AvailabilityListByScopeTest extends Base
     {
         $department = (new \BO\Zmsentities\Department());
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
-        $this->setWorkstation()->getUseraccount()->setRights('scope')->addDepartment($department);
+        $this->setWorkstation()->getUseraccount()->setPermissions('scope')->addDepartment($department);
         $response =  $this->render(
             ['id' => self::SCOPE_ID],
             ['__header' => array(
@@ -68,4 +68,5 @@ class AvailabilityListByScopeTest extends Base
         $this->assertStringContainsString('availability.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
+
 }

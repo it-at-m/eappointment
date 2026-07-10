@@ -23,7 +23,7 @@ class MailGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('superuser');
+        (new Helper\User($request))->checkPermissions('superuser');
         $mailId = $args['id'];
         $mail = (new Query())->readEntity($mailId);
 

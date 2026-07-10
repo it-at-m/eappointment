@@ -71,7 +71,7 @@ class AvailabilityListByScope extends BaseController
     protected function validateAccessRights($request, $scope)
     {
         try {
-            (new Helper\User($request, 2))->checkRights(
+            (new Helper\User($request, 2))->checkPermissions(
                 'availability',
                 new \BO\Zmsentities\Useraccount\EntityAccess($scope)
             );

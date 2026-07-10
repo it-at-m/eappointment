@@ -36,8 +36,9 @@ class ScopeQueue extends BaseController
         $queueList = $query->readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences);
 
         $message = Response\Message::create($request);
-        if ((new Helper\User($request))->hasRights()) {
-            (new Helper\User($request))->checkPermissions();
+        $user = new Helper\User($request);
+        if ($user->hasLogin()) {
+            $user->checkPermissions();
         } else {
             $queueList = $queueList->withLessData();
             $message->meta->reducedData = true;
