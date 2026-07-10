@@ -8,6 +8,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Slim\Render;
+use BO\Zmsdb\Log as LogQuery;
 use BO\Zmsentities\Collection\LogList;
 use BO\Zmsentities\Collection\ProcessList;
 
@@ -249,8 +250,7 @@ class Search extends BaseController
         $list = new LogList();
 
         foreach ($logList as $log) {
-            $data = isset($log->data) ? json_decode($log->data, true) : null;
-            $log->data = $data;
+            $log->display = LogQuery::formatDisplayFields($log->getArrayCopy());
 
             if (
                 $bypassScopeFilter

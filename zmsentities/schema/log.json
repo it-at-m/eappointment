@@ -7,8 +7,9 @@
         "ts": "12345678",
         "message": "A simple log entry",
         "scope_id": "50",
-        "user_id": "10",
-        "data": "{'useraccount': 10}"
+        "user_id": "testadmin",
+        "action": "edited",
+        "citizen_name": "Max Mustermann"
     },
     "required": [
         "type",
@@ -40,9 +41,64 @@
             "type": "string",
             "description": "User which performed operation"
         },
-        "data": {
+        "action": {
             "type": "string",
-            "description": "Payload of data"
+            "description": "Machine-readable action code for process log entries"
+        },
+        "display_number": {
+            "type": "string",
+            "description": "Display number of the related process"
+        },
+        "queue_number": {
+            "type": "number",
+            "description": "Queue number of the related process"
+        },
+        "appointment_at": {
+            "type": "string",
+            "description": "Appointment datetime in Y-m-d H:i:s format"
+        },
+        "slot_count": {
+            "type": "number",
+            "description": "Number of booked slots"
+        },
+        "citizen_name": {
+            "type": "string",
+            "description": "Citizen name at the time of the log entry"
+        },
+        "services": {
+            "type": "string",
+            "description": "Comma-separated list of requested services"
+        },
+        "scope_name": {
+            "type": "string",
+            "description": "Scope name at the time of the log entry"
+        },
+        "citizen_email": {
+            "type": "string",
+            "description": "Citizen email at the time of the log entry"
+        },
+        "citizen_phone": {
+            "type": "string",
+            "description": "Citizen phone at the time of the log entry"
+        },
+        "process_status": {
+            "type": "string",
+            "description": "Process status at the time of the log entry"
+        },
+        "db_status": {
+            "type": "string",
+            "description": "Database status at the time of the log entry"
+        },
+        "citizen_amendment": {
+            "type": "string",
+            "description": "Citizen amendment note at the time of the log entry"
+        },
+        "display": {
+            "type": "object",
+            "description": "Human-readable display fields derived from indexed columns",
+            "additionalProperties": {
+                "type": "string"
+            }
         }
     }
 }
