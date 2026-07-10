@@ -34,6 +34,24 @@ class Log extends Schema\Entity
         'canceled' => self::ACTION_CANCELED,
     ];
 
+    private const DISPLAY_TEXT_FIELDS = [
+        'user_id' => 'Sachbearbeiter*in',
+        'display_number' => 'Terminnummer',
+        'citizen_name' => 'Bürger*in',
+        'services' => 'Dienstleistungen',
+        'citizen_amendment' => 'Anmerkung',
+        'scope_name' => 'Standort',
+        'citizen_email' => 'E-Mail',
+        'citizen_phone' => 'Telefon',
+        'process_status' => 'Status',
+        'db_status' => 'DB Status',
+    ];
+
+    private const DISPLAY_OPTIONAL_NUMBER_FIELDS = [
+        'queue_number' => 'Wartenummer',
+        'slot_count' => 'Slots',
+    ];
+
     public static $schema = "log.json";
 
     public static function actionLabelFromCode(?string $code): ?string
@@ -52,52 +70,38 @@ class Log extends Schema\Entity
         if ($actionLabel !== null) {
             $display['Aktion'] = $actionLabel;
         }
-        if (!empty($log['user_id'])) {
-            $display['Sachbearbeiter*in'] = $log['user_id'];
-        }
-        if (!empty($log['display_number'])) {
-            $display['Terminnummer'] = $log['display_number'];
-        }
-        if (isset($log['queue_number']) && $log['queue_number'] !== '') {
-            $display['Wartenummer'] = $log['queue_number'];
-        }
-        if (!empty($log['appointment_at'])) {
-            $appointmentAt = \DateTimeImmutable::createFromFormat(
-                'Y-m-d H:i:s',
-                (string) $log['appointment_at']
-            );
-            if ($appointmentAt instanceof \DateTimeImmutable) {
-                $display['Terminzeit'] = $appointmentAt->format('d.m.Y H:i:s');
+
+        foreach (self::DISPLAY_TEXT_FIELDS as $column => $label) {
+            if (!empty($log[$column])) {
+                $display[$label] = $log[$column];
             }
         }
-        if (isset($log['slot_count']) && $log['slot_count'] !== '') {
-            $display['Slots'] = $log['slot_count'];
+
+        foreach (self::DISPLAY_OPTIONAL_NUMBER_FIELDS as $column => $label) {
+            if (isset($log[$column]) && $log[$column] !== '') {
+                $display[$label] = $log[$column];
+            }
         }
-        if (!empty($log['citizen_name'])) {
-            $display['Bürger*in'] = $log['citizen_name'];
-        }
-        if (!empty($log['services'])) {
-            $display['Dienstleistungen'] = $log['services'];
-        }
-        if (!empty($log['citizen_amendment'])) {
-            $display['Anmerkung'] = $log['citizen_amendment'];
-        }
-        if (!empty($log['scope_name'])) {
-            $display['Standort'] = $log['scope_name'];
-        }
-        if (!empty($log['citizen_email'])) {
-            $display['E-Mail'] = $log['citizen_email'];
-        }
-        if (!empty($log['citizen_phone'])) {
-            $display['Telefon'] = $log['citizen_phone'];
-        }
-        if (!empty($log['process_status'])) {
-            $display['Status'] = $log['process_status'];
-        }
-        if (!empty($log['db_status'])) {
-            $display['DB Status'] = $log['db_status'];
+
+        $appointmentAt = self::formatAppointmentAtDisplay($log['appointment_at'] ?? null);
+        if ($appointmentAt !== null) {
+            $display['Terminzeit'] = $appointmentAt;
         }
 
         return $display;
+    }
+
+    private static function formatAppointmentAtDisplay($appointmentAt): ?string
+    {
+        if (empty($appointmentAt)) {
+            return null;
+        }
+
+        $parsed = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', (string) $appointmentAt);
+        if (!$parsed instanceof \DateTimeImmutable) {
+            return null;
+        }
+
+        return $parsed->format('d.m.Y H:i:s');
     }
 }
