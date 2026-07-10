@@ -11,6 +11,8 @@
 </li>
 <li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1448'>ZMSKVR-1448</a>] -         Fehlermeldungen im Bürgerfrontend bleiben persistent nach Aktionen der Fehlerbehebung
 </li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1453'>ZMSKVR-1453</a>] -         Terminvarianten Verbesserungen (Link zur DL+ Orteingaben beim Verschieben,  Ort beim G-K- Kunde generell)
+</li>
 <li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1501'>ZMSKVR-1501</a>] -         DLDB-Mapper: getSlotTime() berücksichtigt 45-Minuten-Slotzeit nicht
 </li>
 </ul>
