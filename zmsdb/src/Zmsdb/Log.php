@@ -127,7 +127,7 @@ class Log extends Base
             $requests = (new Request())->readRequestsByIds($process->getRequestIds());
         }
 
-        $payload = self::buildProcessLogPayload($process, $action, $userAccount, $requests);
+        $payload = self::buildProcessLogPayload($process, $action, $requests);
 
         Log::writeLogEntry(
             $method,
@@ -142,7 +142,6 @@ class Log extends Base
     public static function buildProcessLogPayload(
         \BO\Zmsentities\Process $process,
         string $action,
-        \BO\Zmsentities\Useraccount $userAccount,
         RequestList $requests
     ): array {
         $appointmentAt = $process->getFirstAppointment()->toDateTime();
@@ -242,7 +241,7 @@ class Log extends Base
             $this->buildGeneralSearchConditionList($generalSearch, $params),
             $this->buildScopeIdConditions($scopeIds, $params),
             $this->buildDateConditions($date, $params),
-            $this->buildUserActionConditions($userAction, $params)
+            $this->buildUserActionConditions($userAction)
         );
 
         $sql = 'SELECT * FROM log';
@@ -323,7 +322,7 @@ class Log extends Base
         return ['(ts >= :start AND ts < :end)'];
     }
 
-    private function buildUserActionConditions(int $userAction, array &$params): array
+    private function buildUserActionConditions(int $userAction): array
     {
         if ($userAction === 1) {
             return ['(user_id IS NOT NULL AND user_id != \'\' AND user_id NOT LIKE \'_system_%\')'];
