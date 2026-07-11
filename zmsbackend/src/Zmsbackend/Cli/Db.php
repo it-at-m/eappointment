@@ -96,9 +96,10 @@ class Db
         (new \BO\Zmsbackend\Config\Service\Config())->updateEntity($defaults);
     }
 
-    public static function startMigrations($migrationList, $commit = true)
+    public static function startMigrations($migrationList, $commit = true, ?string $phase = null)
     {
         $migrationFiles = self::resolveMigrationFileList($migrationList);
+        $migrationFiles = self::filterMigrationFilesByPhase($migrationFiles, $phase);
         $databaseConnection = self::startUsingDatabase();
         $completedMigrations = $databaseConnection->fetchPairs(
             'SELECT filename, changeTimestamp FROM migrations'
@@ -182,6 +183,40 @@ class Db
         return (bool) preg_match(
             '/' . preg_quote($statementDelimiter, '/') . '\s*$/',
             rtrim($line)
+        );
+    }
+
+    /**
+     * Split migrations into expand/contract phases by filename for zero-downtime
+     * (Expand–Contract) deployments.
+     *
+     * - contract phase: files whose name contains "-contract-" or "-contract." (destructive cleanup)
+     * - expand phase:   every other file, i.e. "*-expand-*" plus unprefixed additive migrations
+     * - no phase (null/empty): all files, preserving the legacy behaviour
+     */
+    private static function filterMigrationFilesByPhase(array $migrationFiles, ?string $phase): array
+    {
+        if ($phase === null || $phase === '') {
+            return $migrationFiles;
+        }
+
+        $isContract = static function (string $migrationFile): bool {
+            return (bool) preg_match('/-contract[-.]/', basename($migrationFile));
+        };
+
+        if ($phase === 'contract') {
+            return array_values(array_filter($migrationFiles, $isContract));
+        }
+
+        if ($phase === 'expand') {
+            return array_values(array_filter(
+                $migrationFiles,
+                static fn(string $migrationFile): bool => !$isContract($migrationFile)
+            ));
+        }
+
+        throw new \InvalidArgumentException(
+            "Unknown migration phase '$phase'; expected 'expand' or 'contract'"
         );
     }
 

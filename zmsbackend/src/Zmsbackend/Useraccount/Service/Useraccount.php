@@ -19,23 +19,6 @@ class Useraccount extends \BO\Zmsbackend\Base
     private const CACHE_INDEX_GLOBAL = 'all';
 
     /**
-     * Temporary bridge for the roles migration.
-     *
-     * Derives the legacy nutzer.Berechtigung level from the selected role so old
-     * rights-based checks keep working until ZMSKVR-1173 removes the legacy rights path.
-     */
-    private const LEGACY_LEVEL_BY_ROLE = [
-        'system_admin'      => 90,
-        'user_admin'        => 40,
-        'appointment_admin' => 30,
-        'reporting_viewer'  => 25,
-        'audit_viewer'      => 5,
-        'agent_basic'       => 0,
-        'agent_queue'       => 0,
-        'agent_queue_plus'  => 0,
-    ];
-
-    /**
      * Read or initialize the cache version for all useraccount-related cache entries.
      */
     protected function getUseraccountCacheVersion(): int
@@ -663,7 +646,11 @@ class Useraccount extends \BO\Zmsbackend\Base
         if ($this->readIsUserExisting($entity->id)) {
             throw new \BO\Zmsbackend\Useraccount\Exception\DuplicateEntry();
         }
-        $this->applyLegacyRightsFromRole($entity);
+
+        $roleNames = $this->extractRequestedRoleNames($entity);
+        if (count($roleNames) !== 1) {
+            throw new \BO\Zmsbackend\Useraccount\Exception\RoleAssignmentFailed();
+        }
 
         $query = new \BO\Zmsbackend\Useraccount\Repository\Useraccount(\BO\Zmsbackend\Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity);
@@ -671,7 +658,6 @@ class Useraccount extends \BO\Zmsbackend\Base
         $this->writeItem($query);
 
         $userId = (int) $this->readEntityIdByLoginName($entity->id);
-        $roleNames = $this->extractRequestedRoleNames($entity);
         $this->replaceUserRoles($userId, $roleNames);
         $this->updateAssignedDepartments($entity);
 
@@ -704,54 +690,31 @@ class Useraccount extends \BO\Zmsbackend\Base
         return array_keys($requestedRoles);
     }
 
-    /**
-     * Applies legacy rights derived from the selected role.
-     *
-     * This is needed while old code still writes nutzer.Berechtigung through
-     * \BO\Zmsbackend\Useraccount\Repository\Useraccount::reverseEntityMapping(). Remove with ZMSKVR-1173 once
-     * legacy rights/Berechtigung are fully retired.
-     */
-    protected function applyLegacyRightsFromRole(Entity $entity): void
-    {
-        $roleNames = $this->extractRequestedRoleNames($entity);
-
-        if (count($roleNames) !== 1) {
-            throw new \InvalidArgumentException('Exactly one role is required.');
-        }
-
-        $roleName = $roleNames[0];
-
-        if (!isset(self::LEGACY_LEVEL_BY_ROLE[$roleName])) {
-            throw new \InvalidArgumentException('Unknown role: ' . $roleName);
-        }
-
-        $legacyLevel = self::LEGACY_LEVEL_BY_ROLE[$roleName];
-
-        $entity->rights = [
-            'basic' => true,
-            'audit' => in_array($legacyLevel, [5, 90], true),
-            'ticketprinter' => $legacyLevel >= 15,
-            'availability' => $legacyLevel >= 20,
-            'departmentStats' => $legacyLevel >= 25,
-            'scope' => $legacyLevel >= 30,
-            'useraccount' => $legacyLevel >= 40,
-            'cluster' => $legacyLevel >= 40,
-            'department' => $legacyLevel >= 50,
-            'organisation' => $legacyLevel >= 70,
-            'superuser' => $legacyLevel >= 90,
-        ];
-    }
-
     protected function replaceUserRoles(int $userId, array $roleNames): void
     {
-        $this->perform(\BO\Zmsbackend\Useraccount\Repository\Useraccount::QUERY_DELETE_USER_ROLES, [$userId]);
-        if (empty($roleNames)) {
-            return;
+        if (count($roleNames) !== 1) {
+            throw new \BO\Zmsbackend\Useraccount\Exception\RoleAssignmentFailed();
         }
 
+        $this->perform(\BO\Zmsbackend\Useraccount\Repository\Useraccount::QUERY_DELETE_USER_ROLES, [$userId]);
+
         $placeholders = implode(', ', array_fill(0, count($roleNames), '?'));
-        $query = str_replace(':roleNames', $placeholders, \BO\Zmsbackend\Useraccount\Repository\Useraccount::QUERY_INSERT_USER_ROLES_BY_NAME);
+        $query = str_replace(
+            ':roleNames',
+            $placeholders,
+            \BO\Zmsbackend\Useraccount\Repository\Useraccount::QUERY_INSERT_USER_ROLES_BY_NAME
+        );
+
         $this->perform($query, array_merge([$userId], $roleNames));
+
+        $count = (int) $this->fetchValue(
+            'SELECT COUNT(*) FROM user_role WHERE user_id = ?',
+            [$userId]
+        );
+
+        if ($count !== 1) {
+            throw new \BO\Zmsbackend\Useraccount\Exception\RoleAssignmentFailed();
+        }
     }
 
     public function writeUpdatedEntity($loginName, Entity $entity, $resolveReferences = 0)
@@ -764,9 +727,6 @@ class Useraccount extends \BO\Zmsbackend\Base
         $requestedRoles = $this->extractRequestedRoleNames($entity);
 
         if (count($requestedRoles) > 0) {
-            // Temporary migration bridge: keep nutzer.Berechtigung in sync with the selected role
-            // until legacy rights handling is removed in ZMSKVR-1173.
-            $this->applyLegacyRightsFromRole($entity);
             $userId = (int) $this->readEntityIdByLoginName($loginName);
             $roleNames = $requestedRoles;
         }

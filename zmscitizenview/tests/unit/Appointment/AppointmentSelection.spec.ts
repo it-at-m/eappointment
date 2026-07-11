@@ -86,6 +86,9 @@ const createWrapper = (overrides: WrapperOverrides = {}) => {
 describe("AppointmentSelection", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    Element.prototype.scrollIntoView = vi.fn();
+    HTMLElement.prototype.focus = vi.fn();
   });
 
   (fetchAvailableDays as Mock).mockResolvedValue({
@@ -1818,6 +1821,86 @@ describe("AppointmentSelection", () => {
       expect(errorCallout!.attributes('data-type')).toBe("error");
       expect(errorCallout!.html()).toContain("apiErrorAppointmentNotAvailableHeader");
       expect(errorCallout!.html()).toContain("apiErrorAppointmentNotAvailableText");
+    });
+
+    it("emits clearBookingError when a new time slot is selected", async () => {
+      const wrapper = createWrapper();
+
+      wrapper.vm.selectableProviders = [
+        {
+          id: 1,
+          name: "Office A",
+          address: { street: "Main", house_number: "1" },
+          scope: { id: "1" },
+        },
+      ];
+
+      await nextTick();
+
+      const emissionsBefore =
+        wrapper.emitted("clearBookingError")?.length ?? 0;
+
+      await wrapper.vm.handleTimeSlotSelection(1, 1747223100);
+      await nextTick();
+
+      expect(wrapper.emitted("clearBookingError")?.length ?? 0).toBe(
+        emissionsBefore + 1
+      );
+      expect(wrapper.vm.selectedTimeslot).toBe(1747223100);
+      expect(wrapper.vm.selectedProvider?.id).toBe(1);
+    });
+
+    it("emits clearBookingError when another day is selected", async () => {
+      const wrapper = createWrapper();
+
+      wrapper.vm.selectedDay = new Date("2025-06-16");
+      wrapper.vm.selectedTimeslot = 1747223100;
+      await nextTick();
+
+      const emissionsBefore =
+        wrapper.emitted("clearBookingError")?.length ?? 0;
+
+      await wrapper.vm.handleDaySelection(new Date("2025-06-17"));
+      await nextTick();
+
+      expect(wrapper.emitted("clearBookingError")?.length ?? 0).toBe(
+        emissionsBefore + 1
+      );
+      expect(wrapper.vm.selectedDay).toEqual(new Date("2025-06-17"));
+      expect(wrapper.vm.selectedTimeslot).toBe(0);
+    });
+
+    it("does not emit clearBookingError when the same day is selected again", async () => {
+      const wrapper = createWrapper();
+
+      wrapper.vm.selectedDay = new Date("2025-06-17");
+      await nextTick();
+
+      const emissionsBefore =
+        wrapper.emitted("clearBookingError")?.length ?? 0;
+
+      await wrapper.vm.handleDaySelection(new Date("2025-06-17"));
+      await nextTick();
+
+      expect(wrapper.emitted("clearBookingError")?.length ?? 0).toBe(
+        emissionsBefore
+      );
+    });
+
+    it("emits clearBookingError and back when previousStep is called", async () => {
+      const wrapper = createWrapper();
+
+      const clearBookingErrorEmissionsBefore =
+        wrapper.emitted("clearBookingError")?.length ?? 0;
+      const backEmissionsBefore = wrapper.emitted("back")?.length ?? 0;
+
+      wrapper.vm.previousStep();
+      await nextTick();
+
+      expect(wrapper.emitted("clearBookingError")?.length ?? 0).toBe(
+        clearBookingErrorEmissionsBefore + 1
+      );
+      expect(wrapper.emitted("back")?.length ?? 0).toBe(backEmissionsBefore + 1);
     });
 
     it('does not show any callout when bookingError is false', async () => {

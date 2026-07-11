@@ -26,7 +26,8 @@ class DepartmentAddScope extends \BO\Zmsbackend\Api\BaseController
         $user = new \BO\Zmsbackend\Helper\User($request, 2);
         $user->checkPermissions('scope');
         $department = (new \BO\Zmsbackend\Department\Service\Department())->readEntity($args['id'], 1);
-        $user->checkRights(
+        $user->checkPermissions(
+
             'department',
             new \BO\Zmsentities\Useraccount\EntityAccess($department)
         );

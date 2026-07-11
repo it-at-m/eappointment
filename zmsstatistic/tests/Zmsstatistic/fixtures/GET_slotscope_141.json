@@ -16,7 +16,7 @@
         "variable": "id",
         "type": "string",
         "description": "Gesamter Zeitraum",
-        "reference": "useraccount.rights.superuser"
+        "reference": "useraccount.permissions.superuser"
       }
     ],
     "data": [

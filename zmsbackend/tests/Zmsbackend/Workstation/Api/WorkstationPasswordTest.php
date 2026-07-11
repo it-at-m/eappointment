@@ -22,18 +22,6 @@ class WorkstationPasswordTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->setWorkstation(138, static::$loginName, 143, static::$authKey);
         $response = $this->render([], [
             '__body' => '{
-                "rights": {
-                    "availability": "0",
-                    "basic": "0",
-                    "cluster": "0",
-                    "department": "0",
-                    "organisation": "0",
-                    "scope": "0",
-                    "sms": "0",
-                    "superuser": "0",
-                    "ticketprinter": "0",
-                    "useraccount": "1"
-                },
                 "id": "'. static::$loginName .'",
                 "password": "'. static::$authKey .'",
                 "email": "unittest@berlinonline.de",
@@ -95,18 +83,6 @@ class WorkstationPasswordTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->expectExceptionCode(400);
         $this->render([], [
             '__body' => '{
-                "rights": {
-                    "availability": "0",
-                    "basic": "0",
-                    "cluster": "0",
-                    "department": "0",
-                    "organisation": "0",
-                    "scope": "0",
-                    "sms": "0",
-                    "superuser": "0",
-                    "ticketprinter": "0",
-                    "useraccount": "1"
-                },
                 "id": "'. static::$loginName .'",
                 "password": "'. static::$authKey .'",
                 "email": "unittest@berlinonline.de",

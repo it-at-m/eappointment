@@ -21,6 +21,8 @@ hooks:
     - exec-host: "bash -c 'if [ ! -f .ddev/.env ]; then cp .ddev/.env.template .ddev/.env; fi && bash .devcontainer/scripts/ensure-zmsbackend-local.sh .ddev/.env && bash .devcontainer/scripts/sync-php-base-tag.sh .ddev/.env'"
   post-start:
     - exec: "bash .devcontainer/scripts/ensure-zmsbackend-local.sh .ddev/.env"
+    - exec: "bash .devcontainer/scripts/copy-zmsadmin-editor-libs.sh"
+
     - exec: "sed -i 's/^pm\\.max_children.*/pm.max_children = 30/' /etc/php/*/fpm/pool.d/www.conf && supervisorctl restart php-fpm"
     - exec: "curl -sSL -o zmsadmin/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md"
     - exec: "curl -sSL -o zmsstatistic/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md"

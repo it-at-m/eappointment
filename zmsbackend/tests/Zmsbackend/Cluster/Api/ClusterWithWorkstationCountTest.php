@@ -11,7 +11,6 @@ class ClusterWithWorkstationCountTest extends \BO\Zmsbackend\Tests\Api\Base
     public function testRendering()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('cluster');
         $response = $this->render(['id' => 109], [], []);
         $this->assertStringContainsString('cluster.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -20,7 +19,6 @@ class ClusterWithWorkstationCountTest extends \BO\Zmsbackend\Tests\Api\Base
     public function testEmpty()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('cluster');
         $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
@@ -28,8 +26,9 @@ class ClusterWithWorkstationCountTest extends \BO\Zmsbackend\Tests\Api\Base
     public function testNotFound()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('cluster');
+        User::$workstation->useraccount->setPermissions('cluster');
         $this->expectException('\BO\Zmsbackend\Cluster\Exception\ClusterNotFound');
+
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);
     }

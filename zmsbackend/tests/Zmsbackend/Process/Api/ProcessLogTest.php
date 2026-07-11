@@ -15,7 +15,8 @@ class ProcessLogTest extends \BO\Zmsbackend\Tests\Api\Base
     public function testRendering()
     {
         (new \BO\Zmsbackend\Tests\Process\Api\ProcessUpdateTest('dummyTest'))->testRendering();
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
+
         $response = $this->render([], ['searchQuery' => self::SEARCH_PARAM], []);
         $this->assertStringContainsString('log.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -23,7 +24,7 @@ class ProcessLogTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testNotFound()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('logs');
         $response = $this->render([], ['searchQuery' => 123456], []);
         $this->assertStringContainsString('"data":[]', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());

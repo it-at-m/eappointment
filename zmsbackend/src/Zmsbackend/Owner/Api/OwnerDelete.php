@@ -30,7 +30,8 @@ class OwnerDelete extends \BO\Zmsbackend\Api\BaseController
         $owner = $query->readEntity($args['id'], 2);
         if (! $owner->hasId()) {
             throw new \BO\Zmsbackend\Owner\Exception\OwnerNotFound();
-        }(new \BO\Zmsbackend\Helper\User($request, 2))->checkRights(
+        }(new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions(
+
             new \BO\Zmsentities\Useraccount\EntityAccess($owner)
         );
         $query->deleteEntity($owner->id);

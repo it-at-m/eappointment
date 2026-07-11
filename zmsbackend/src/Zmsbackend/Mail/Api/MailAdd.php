@@ -23,7 +23,8 @@ class MailAdd extends \BO\Zmsbackend\Api\BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new \BO\Zmsbackend\Helper\User($request))->checkRights('basic');
+        (new \BO\Zmsbackend\Helper\User($request))->checkPermissions('basic');
+
 
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Mail($input);

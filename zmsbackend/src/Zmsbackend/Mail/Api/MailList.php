@@ -23,7 +23,8 @@ class MailList extends \BO\Zmsbackend\Api\BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new \BO\Zmsbackend\Helper\User($request))->checkRights('superuser');
+        (new \BO\Zmsbackend\Helper\User($request))->checkPermissions('superuser');
+
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $limit = Validator::param('limit')->isNumber()->setDefault(300)->getValue();
         $onlyIds = Validator::param('onlyIds')->isBool()->setDefault(false)->getValue();

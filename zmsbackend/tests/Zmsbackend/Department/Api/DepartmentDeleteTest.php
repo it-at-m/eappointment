@@ -10,7 +10,7 @@ class DepartmentDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department')
+        $this->setWorkstation()->getUseraccount()->setPermissions('department')
             ->addDepartment([
                 'id' => 999
             ]);
@@ -21,7 +21,7 @@ class DepartmentDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testHasChildren()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department')
+        $this->setWorkstation()->getUseraccount()->setPermissions('department')
             ->addDepartment([
                 'id' => 74
             ]);
@@ -32,7 +32,7 @@ class DepartmentDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testNotFound()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->setWorkstation()->getUseraccount()->setPermissions('department');
         // The rights check does not know, if the department is missed because of rights or by lack of data
         $this->expectException('BO\Zmsentities\Exception\UserAccountMissingDepartment');
         $this->expectExceptionCode(403);

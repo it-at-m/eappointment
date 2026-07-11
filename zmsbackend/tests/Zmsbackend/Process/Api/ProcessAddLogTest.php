@@ -12,7 +12,7 @@ class ProcessAddLogTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
         $response = $this->render(['id' => self::PROCESS_ID], [
             '__body' => $this->readFixture('GetMimepart.json')
         ], []);
@@ -22,7 +22,7 @@ class ProcessAddLogTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testHasError()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
         $response = $this->render(['id' => self::PROCESS_ID], [
             '__body' => $this->readFixture('GetMimepart.json'),
             'error' => 1

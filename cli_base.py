@@ -88,7 +88,9 @@ class EappointmentCli:
     subprocess.run(args, cwd=cwd, env=env, check=True)
 
   def apply_appointment_email_link_config(self, appointment_links_host: str, **db_kw):
-    """Set config keys used in appointment confirmation/change emails (host:port, no scheme)."""
+    """Set config keys used in appointment confirmation/change emails."""
+    if not appointment_links_host.startswith(("http://", "https://")):
+      appointment_links_host = f"http://{appointment_links_host}"
     db_host, db_port, db_name, db_user, db_password = self.db_env(**db_kw)
     esc = appointment_links_host.replace("\\", "\\\\").replace("'", "''")
     sql = f"""UPDATE `config`
@@ -122,7 +124,7 @@ WHERE `name` = 'appointments__urlChange';
   def run_flyway_test_data_migrations(
     self,
     citizenview_base_url=None,
-    appointment_links_host="localhost:8082/",
+    appointment_links_host="http://localhost:8082/",
     mysql_host=None,
     mysql_port=None,
     mysql_database=None,
@@ -211,9 +213,9 @@ SET FOREIGN_KEY_CHECKS = 1;"""
     @click.option("--citizenview-base-url", default=None, help="Flyway placeholder citizenviewBaseUrl (default: from env or http://citizenview:8082/).")
     @click.option(
       "--appointment-links-host",
-      default="localhost:8082/",
+      default="http://localhost:8082/",
       show_default=True,
-      help="Host:port written to appointments__urlAppointments and appointments__urlChange (email confirmation links).",
+      help="Base URL for appointments__urlAppointments and appointments__urlChange (email confirmation links).",
     )
     @click.option(
       "--mysql-host",
@@ -271,9 +273,9 @@ SET FOREIGN_KEY_CHECKS = 1;"""
     @click.option("--citizenview-base-url", default=None, help="Flyway placeholder citizenviewBaseUrl (default: from env or http://citizenview:8082/).")
     @click.option(
       "--appointment-links-host",
-      default="localhost:8082/",
+      default="http://localhost:8082/",
       show_default=True,
-      help="Host:port for appointments__urlAppointments / appointments__urlChange (after Flyway test migrations).",
+      help="Base URL for appointments__urlAppointments / appointments__urlChange (after Flyway test migrations).",
     )
     @click.option("--mysql-host", default=None, help="Override MYSQL_HOST (use 127.0.0.1 on the host).")
     @click.option("--mysql-port", default=None, help="Override MYSQL_PORT.")
@@ -454,7 +456,7 @@ SET FOREIGN_KEY_CHECKS = 1;"""
       is_composer_install = len(commands) >= 2 and commands[0] == "composer" and commands[1] == "install"
 
       build_commands = {
-        "zmsadmin": ["npm run build"],
+        "zmsadmin": ["npm run build", "make libs"],
         "zmscalldisplay": ["npm run build"],
         "zmsstatistic": ["npm run build"],
         "zmsticketprinter": ["npm run build"]

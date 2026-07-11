@@ -5,13 +5,13 @@ namespace BO\Zmsbackend\Tests\Department\Api;
 use BO\Zmsbackend\Helper\User;
 
 class DepartmentListTest extends \BO\Zmsbackend\Tests\Api\Base
+
 {
     protected $classname = "DepartmentList";
 
     public function testRendering()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('department');
         $response = $this->render([], [], []);
         $this->assertStringContainsString('department.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());

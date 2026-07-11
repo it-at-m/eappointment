@@ -35,8 +35,10 @@ class OrganisationByCluster extends \BO\Zmsbackend\Api\BaseController
         }
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
-        if ((new \BO\Zmsbackend\Helper\User($request))->hasRights()) {
-            (new \BO\Zmsbackend\Helper\User($request))->checkPermissions('cluster');
+        $user = new \BO\Zmsbackend\Helper\User($request);
+        if ($user->hasLogin()) {
+            $user->checkPermissions('cluster');
+
         } else {
             $organisation = $organisation->withLessData();
             $message->meta->reducedData = true;

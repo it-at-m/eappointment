@@ -31,7 +31,9 @@ class ScopeListByRequest extends \BO\Zmsbackend\Api\BaseController
         }
 
         $scopeList = (new Query())->readByRequestId($requestEntity->getId(), $args['source'], $resolveReferences);
-        if (! (new \BO\Zmsbackend\Helper\User($request))->hasRights() && ! \BO\Zmsbackend\Helper\User::hasXApiKey($request)) {
+        $user = new \BO\Zmsbackend\Helper\User($request);
+        if (! $user->hasLogin() && ! \BO\Zmsbackend\Helper\User::hasXApiKey($request)) {
+
             $scopeList = $scopeList->withLessData();
             $message->meta->reducedData = true;
         }

@@ -26,9 +26,10 @@ class ClusterByScopeId extends \BO\Zmsbackend\Api\BaseController
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
 
-        if ((new \BO\Zmsbackend\Helper\User($request))->hasRights() || $resolveReferences > 0) {
+        if ((new \BO\Zmsbackend\Helper\User($request))->hasLogin() || $resolveReferences > 0) {
             $resolveReferences = ($resolveReferences > 0 ) ? $resolveReferences : 1;
             (new \BO\Zmsbackend\Helper\User($request))->checkPermissions();
+
         } else {
             $message->meta->reducedData = true;
         }

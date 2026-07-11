@@ -169,7 +169,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     And the cancel endpoint response should still include processId, email, displayNumber, and scope.id, and serviceId and serviceName for the cancellation email
     And the appointment status should be "deleted"
     When I fetch the cancellation mail for the current process
-    Then the cancellation mail should indicate the appointment was deleted with the word gelöscht
+    Then the cancellation mail should indicate the appointment was deleted with the word abgesagt
 
   @mainCalendar
   Scenario: Personalausweis at Pass Ruppertstraße (10489) – lands at 10489
@@ -204,7 +204,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     And the cancel endpoint response should still include processId, email, displayNumber, and scope.id, and serviceId and serviceName for the cancellation email
     And the appointment status should be "deleted"
     When I fetch the cancellation mail for the current process
-    Then the cancellation mail should indicate the appointment was deleted with the word gelöscht
+    Then the cancellation mail should indicate the appointment was deleted with the word abgesagt
 
   @pickupCalendar
   Scenario: Abholung at 10492 (Bürgerbüro Ruppertstraße KVR-II/211)
@@ -239,7 +239,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     And the cancel endpoint response should still include processId, email, displayNumber, and scope.id, and serviceId and serviceName for the cancellation email
     And the appointment status should be "deleted"
     When I fetch the cancellation mail for the current process
-    Then the cancellation mail should indicate the appointment was deleted with the word gelöscht
+    Then the cancellation mail should indicate the appointment was deleted with the word abgesagt
 
   @passCalendar @jumpin
   Scenario: JumpIn 10489 with Personalausweis 1063441 – effective office may be 10502
@@ -274,7 +274,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     And the cancel endpoint response should still include processId, email, displayNumber, and scope.id, and serviceId and serviceName for the cancellation email
     And the appointment status should be "deleted"
     When I fetch the cancellation mail for the current process
-    Then the cancellation mail should indicate the appointment was deleted with the word gelöscht
+    Then the cancellation mail should indicate the appointment was deleted with the word abgesagt
 ```
 
 ## UI
@@ -1728,7 +1728,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10502 in the citizen view
     And the estimated duration in the booking summary should be 15 minutes in the citizen view
-    When I accept privacy and communication in the citizen view
+    When I accept communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
     When I sync the booking process from citizen view localStorage
@@ -1763,7 +1763,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10502 in the citizen view
     And the estimated duration in the booking summary should be 15 minutes in the citizen view
-    When I accept privacy and communication in the citizen view
+    When I accept communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
     When I sync the booking process from citizen view localStorage
@@ -1796,7 +1796,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10489 in the citizen view
     And the estimated duration in the booking summary should be 30 minutes in the citizen view
-    When I accept privacy and communication in the citizen view
+    When I accept communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
     When I sync the booking process from citizen view localStorage
@@ -1829,7 +1829,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10492 in the citizen view
     And the estimated duration in the booking summary should be 10 minutes in the citizen view
-    When I accept privacy and communication in the citizen view
+    When I accept communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
     When I sync the booking process from citizen view localStorage
@@ -1863,7 +1863,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10502 in the citizen view
     And the estimated duration in the booking summary should be 15 minutes in the citizen view
-    When I accept privacy and communication in the citizen view
+    When I accept communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
     When I sync the booking process from citizen view localStorage
@@ -1900,7 +1900,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10489 in the citizen view
     And the estimated duration in the booking summary should be 30 minutes in the citizen view
-    When I accept privacy and communication in the citizen view
+    When I accept communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
     When I sync the booking process from citizen view localStorage

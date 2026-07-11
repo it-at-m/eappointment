@@ -23,7 +23,8 @@ class OwnerList extends \BO\Zmsbackend\Api\BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new \BO\Zmsbackend\Helper\User($request, 2))->checkRights();
+        $workstation = (new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions();
+
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
 
         $ownerList = (new Query())->readList($resolveReferences);

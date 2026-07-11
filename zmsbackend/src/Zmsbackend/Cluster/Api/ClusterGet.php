@@ -28,9 +28,11 @@ class ClusterGet extends \BO\Zmsbackend\Api\BaseController
         $getScopeIsOpened = Validator::param('getIsOpened')->isNumber()->setDefault(0)->getValue();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
 
-        if ((new \BO\Zmsbackend\Helper\User($request))->hasRights() || $resolveReferences > 0) {
+        $user = new \BO\Zmsbackend\Helper\User($request);
+        if ($user->hasLogin() || $resolveReferences > 0) {
             $resolveReferences = ($resolveReferences > 0 ) ? $resolveReferences : 1;
-            (new \BO\Zmsbackend\Helper\User($request))->checkPermissions();
+            $user->checkPermissions();
+
         } else {
             $message->meta->reducedData = true;
         }
@@ -44,8 +46,8 @@ class ClusterGet extends \BO\Zmsbackend\Api\BaseController
             throw new \BO\Zmsbackend\Cluster\Exception\ClusterNotFound();
         }
 
-        if ((new \BO\Zmsbackend\Helper\User($request))->hasRights() || $resolveReferences > 0) {
-            (new \BO\Zmsbackend\Helper\User($request))->checkPermissions(
+        if ($user->hasLogin() || $resolveReferences > 0) {
+            $user->checkPermissions(
                 new \BO\Zmsentities\Useraccount\EntityAccess($cluster)
             );
         }

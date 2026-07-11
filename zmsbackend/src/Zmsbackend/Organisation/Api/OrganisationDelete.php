@@ -29,7 +29,8 @@ class OrganisationDelete extends \BO\Zmsbackend\Api\BaseController
         $organisation = $query->readEntity($args['id'], 1);
         if (! $organisation) {
             throw new \BO\Zmsbackend\Organisation\Exception\OrganisationNotFound();
-        }(new \BO\Zmsbackend\Helper\User($request, 2))->checkRights(
+        }(new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions(
+
             'organisation',
             new \BO\Zmsentities\Useraccount\EntityAccess($organisation)
         );

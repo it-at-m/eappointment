@@ -25,7 +25,8 @@ class ProcessAddLog extends \BO\Zmsbackend\Api\BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new \BO\Zmsbackend\Helper\User($request))->checkRights('superuser');
+        (new \BO\Zmsbackend\Helper\User($request))->checkPermissions('superuser');
+
         $processId = Validator::value($args['id'])->isNumber()->getValue();
 
         /** @var ProcessEntity $process */

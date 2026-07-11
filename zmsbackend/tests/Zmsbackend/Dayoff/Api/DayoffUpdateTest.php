@@ -8,6 +8,7 @@ use BO\Zmsentities\Workstation;
 use BO\Zmsentities\Scope;
 
 class DayoffUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
+
 {
     protected $classname = "DayoffUpdate";
 
@@ -25,8 +26,7 @@ class DayoffUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('dayoff');
         $dayoffList = new \BO\Zmsentities\Collection\DayoffList(
             json_decode($this->readFixture("GetDayoffList.json"))
         );
@@ -39,16 +39,14 @@ class DayoffUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testUnvalidInput()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('dayoff');
         $this->expectException('BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
 
     public function testDatesInYear()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('dayoff');
         $this->expectException('\BO\Zmsentities\Exception\DayoffWrongYear');
         $this->expectExceptionCode(404);
         $dayoffList = new \BO\Zmsentities\Collection\DayoffList(

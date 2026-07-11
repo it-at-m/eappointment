@@ -24,7 +24,8 @@ class DepartmentAddCluster extends \BO\Zmsbackend\Api\BaseController
         array $args
     ) {
         $department = (new \BO\Zmsbackend\Department\Service\Department())->readEntity($args['id'], 1);
-        (new \BO\Zmsbackend\Helper\User($request, 2))->checkRights(
+        (new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions(
+
             'department',
             new \BO\Zmsentities\Useraccount\EntityAccess($department)
         );

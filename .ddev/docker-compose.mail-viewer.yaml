@@ -1,0 +1,22 @@
+services:
+  mail-viewer:
+    image: node:24
+    container_name: ddev-${DDEV_SITENAME}-mail-viewer
+    working_dir: /var/www/html/.devcontainer/mail-viewer
+    volumes:
+      - ..:/var/www/html:cached
+    command: sh -c "npm install && npm start"
+    ports:
+      - "8025:8025"
+    environment:
+      - PORT=8025
+      - ZMS_API_URL=http://web/terminvereinbarung/api/2
+      - ZMS_MAIL_VIEWER_API_USER=${ZMS_MAIL_VIEWER_API_USER:-superuser}
+      - ZMS_MAIL_VIEWER_API_PASSWORD=${ZMS_MAIL_VIEWER_API_PASSWORD:-vorschau}
+      - ZMS_MAIL_VIEWER_USER=${ZMS_MAIL_VIEWER_USER:-superuser}
+      - ZMS_MAIL_VIEWER_PASSWORD=${ZMS_MAIL_VIEWER_PASSWORD:-vorschau}
+    env_file:
+      - .env
+    depends_on:
+      - web
+    restart: unless-stopped

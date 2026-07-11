@@ -23,6 +23,23 @@ class RoleTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertNull($missingEntity);
     }
 
+    public function testReadRoleByNameExisting()
+    {
+        $query = new Query();
+        $entity = $query->readRoleByName('system_admin');
+
+        $this->assertEntity("\\BO\\Zmsentities\\Role", $entity);
+        $this->assertEquals('system_admin', $entity->name);
+        $this->assertNotEmpty($entity->id);
+    }
+
+    public function testReadRoleByNameMissing()
+    {
+        $query = new Query();
+        $missing = $query->readRoleByName('__does_not_exist__');
+
+        $this->assertNull($missing);
+    }
 
     public function testReadAllRoles()
     {
@@ -149,13 +166,15 @@ class RoleTest extends \BO\Zmsbackend\Tests\Service\Base
     }
 
     /**
-     * Replace the database user_role relation for a user by loginname with the specified role id.
+     * Replaces the database user_role relation for a user identified by login name
+     * with the specified role id.
      *
      * This bypasses \BO\Zmsbackend\Useraccount\Service\Useraccount::writeUpdatedEntity() intentionally because these tests use
      * dynamic test roles that are not part of the temporary LEGACY_LEVEL_BY_ROLE bridge.
      *
      * TODO ZMSKVR-1173: Remove this direct user_role setup once the legacy nutzer.Berechtigung
      * bridge is removed and role assignment no longer depends on legacy rights mapping.
+
      */
     private function replaceUserRoleDirectly(\BO\Zmsbackend\Useraccount\Service\Useraccount $userQuery, string $loginName, int $roleId): void
     {
@@ -170,6 +189,48 @@ class RoleTest extends \BO\Zmsbackend\Tests\Service\Base
              SELECT NutzerID, ? FROM nutzer WHERE Name = ?',
             [$roleId, $loginName]
         );
+    }
+
+    public function testDeleteAssignedRoleIsRejected()
+    {
+        $roleQuery = new Query();
+        $userQuery = new \BO\Zmsbackend\Useraccount\Service\Useraccount();
+
+        $createdRole = $roleQuery->addRole(new Entity([
+            "name" => "test_role_delete_assigned",
+            "description" => "Assigned role",
+            "permissions" => ["useraccount"],
+        ]));
+
+        $this->assertEntity("\\BO\\Zmsentities\\Role", $createdRole);
+
+        $user = (new \BO\Zmsentities\Useraccount())->getExample();
+        $user->id = $user->id . rand();
+        $createdUser = $userQuery->writeEntity($user);
+
+        $this->replaceUserRoleDirectly(
+            $userQuery,
+            $createdUser->id,
+            (int) $createdRole->id
+        );
+
+        $reloadedUser = $userQuery->readEntity($createdUser->id, 1, true);
+        $this->assertIsArray($reloadedUser->roles);
+        $this->assertContains($createdRole->name, $reloadedUser->roles);
+
+        try {
+            $roleQuery->deleteRole((int) $createdRole->id);
+            $this->fail('Expected exception not thrown');
+        } catch (\BO\Zmsbackend\Role\Exception\AssignedUserListNotEmpty $e) {
+            // expected
+        }
+
+        $stillThere = $roleQuery->readRoleById((int) $createdRole->id);
+        $this->assertEntity("\\BO\\Zmsentities\\Role", $stillThere);
+
+        $reloadedUserAfterDeleteAttempt = $userQuery->readEntity($createdUser->id, 1, true);
+        $this->assertIsArray($reloadedUserAfterDeleteAttempt->roles);
+        $this->assertContains($createdRole->name, $reloadedUserAfterDeleteAttempt->roles);
     }
 
     public function testUpdateRoleInvalidatesCachedUserRoleNames()
@@ -203,7 +264,6 @@ class RoleTest extends \BO\Zmsbackend\Tests\Service\Base
         $refreshed = $userQuery->readEntity($createdUser->id, 1, false);
         $this->assertSame(['test_role_cache_after'], $refreshed->roles);
     }
-
     public function testDeleteRoleRemovesAssignedUserRoleRelations()
     {
         $roleQuery = new Query();
@@ -238,4 +298,5 @@ class RoleTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertIsArray($reloadedUserAfterDelete->roles);
         $this->assertNotContains($createdRole->name, $reloadedUserAfterDelete->roles);
     }
+
 }

@@ -41,7 +41,7 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
     #[\Override]
     public function hasAccess(Useraccount $useraccount)
     {
-        return $useraccount->hasRights(['superuser'])
+        return $useraccount->isSuperUser()
             || 0 < $this->getDepartmentList()->withAccess($useraccount)->count();
     }
 

@@ -23,7 +23,8 @@ class DepartmentList extends \BO\Zmsbackend\Api\BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new \BO\Zmsbackend\Helper\User($request))->checkRights('basic');
+        (new \BO\Zmsbackend\Helper\User($request))->checkPermissions('basic');
+
 
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $departmentList = (new Query())->readList($resolveReferences);

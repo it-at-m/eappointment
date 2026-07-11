@@ -15,7 +15,6 @@ class ScopeCalldisplayImageDataGetTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('scope');
         $response = $this->render(['id' => self::SCOPE_ID], [], []);
         $this->assertStringContainsString('mimepart.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -23,15 +22,15 @@ class ScopeCalldisplayImageDataGetTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testEmpty()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('scope');
         $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
 
     public function testScopeNotFound()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('scope');
+        $this->setWorkstation()->getUseraccount()->setPermissions('scope');
         $this->expectException('\BO\Zmsbackend\Scope\Exception\ScopeNotFound');
+
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);
     }

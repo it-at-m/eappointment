@@ -21,7 +21,8 @@ class DepartmentWorkstationList extends \BO\Zmsbackend\Api\BaseController
         ResponseInterface $response,
         array $args
     ): ResponseInterface {
-        (new \BO\Zmsbackend\Helper\User($request))->checkRights('useraccount');
+        (new \BO\Zmsbackend\Helper\User($request))->checkPermissions('useraccount');
+
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $department = \BO\Zmsbackend\Helper\User::checkDepartment($args['id']);
 

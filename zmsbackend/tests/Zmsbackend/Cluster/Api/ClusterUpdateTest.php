@@ -11,7 +11,7 @@ class ClusterUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
     public function testRendering()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('cluster');
+        User::$workstation->useraccount->setPermissions('cluster');
         $response = $this->render(["id"=> 109], [
             '__body' => '{
                   "id": 109,
@@ -28,7 +28,7 @@ class ClusterUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
     public function testEmpty()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('cluster');
+        User::$workstation->useraccount->setPermissions('cluster');
         $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
@@ -36,12 +36,29 @@ class ClusterUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
     public function testNotFound()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('cluster');
+        User::$workstation->useraccount->setPermissions('cluster');
         $this->expectException('\BO\Zmsbackend\Cluster\Exception\ClusterNotFound');
+
         $this->expectExceptionCode(404);
         $this->render(["id"=> 999], [
             '__body' => '{
                   "id": 999
+              }'
+        ], []);
+    }
+
+    public function testMissingRights()
+    {
+        $this->setWorkstation();
+        $this->expectException('\\BO\\Zmsentities\\Exception\\UserAccountMissingRights');
+        $this->expectExceptionCode(403);
+        $this->render(["id"=> 109], [
+            '__body' => '{
+                  "id": 109,
+                  "name": "Bürgeramt Heerstraße",
+                  "hint": "",
+                  "shortNameEnabled": true,
+                  "callDisplayText": ""
               }'
         ], []);
     }

@@ -8,7 +8,7 @@ class SourceUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('source');
         $response = $this->render([], [
             '__body' => $this->readFixture('GetSource.json'),
             'resolveReferences' => 2
@@ -24,7 +24,7 @@ class SourceUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testWithRequestRelation()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('source');
         $response = $this->render([], [
             '__body' => $this->readFixture('GetSourceWithRequestRelation.json'),
             'resolveReferences' => 2
@@ -38,7 +38,7 @@ class SourceUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testEmpty()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('source');
         $this->expectException('BO\Mellon\Failure\Exception');
         $this->render([], [
             '__body' => '',
@@ -47,7 +47,7 @@ class SourceUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testUnvalidSchema()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('source');
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
         $this->render([], [
@@ -71,9 +71,9 @@ class SourceUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
         ], []);
     }
 
-    public function testNoRights()
+    public function testMissingSourcePermission()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('scope');
+        $this->setWorkstation();
         $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->render([], [
             '__body' => $this->readFixture('GetSource.json')

@@ -36,8 +36,10 @@ class ScopeQueue extends \BO\Zmsbackend\Api\BaseController
         $queueList = $query->readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences);
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
-        if ((new \BO\Zmsbackend\Helper\User($request))->hasRights()) {
-            (new \BO\Zmsbackend\Helper\User($request))->checkPermissions();
+        $user = new \BO\Zmsbackend\Helper\User($request);
+        if ($user->hasLogin()) {
+            $user->checkPermissions();
+
         } else {
             $queueList = $queueList->withLessData();
             $message->meta->reducedData = true;

@@ -162,8 +162,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "name" => "Unittest Source Dienstleistung",
                     "maxQuantity" => 1,
                     "combinable" => [],
-                    "parent_id" => null,
-                    "variant_id" => null,
+                    "parentId" => null,
+                    "variantId" => null,
+                    "rootParentId" => 1,
                     "showOnStartPage" => true,
                 ]
             ],
@@ -339,8 +340,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "name" => "Unittest Source Dienstleistung",
                     "maxQuantity" => 1,
                     "combinable" => [],
-                    "parent_id" => null,
-                    "variant_id" => null,
+                    "parentId" => null,
+                    "variantId" => null,
+                    "rootParentId" => 1,
                     "showOnStartPage" => true
                 ],
                 [
@@ -351,8 +353,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "1" => ["1" => [9999999]],
                         "2" => ["2" => [9999999]]
                     ],
-                    "parent_id" => null,
-                    "variant_id" => null,
+                    "parentId" => null,
+                    "variantId" => null,
+                    "rootParentId" => 2,
                     "showOnStartPage" => true
                 ]
             ],

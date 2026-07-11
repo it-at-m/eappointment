@@ -21,7 +21,8 @@ class MailDelete extends \BO\Zmsbackend\Api\BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new \BO\Zmsbackend\Helper\User($request))->checkRights('superuser');
+        (new \BO\Zmsbackend\Helper\User($request))->checkPermissions('superuser');
+
         $query = new Query();
 
         $ids = $request->getQueryParams()['ids'] ?? null;

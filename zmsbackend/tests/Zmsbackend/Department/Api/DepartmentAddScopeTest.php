@@ -79,7 +79,24 @@ class DepartmentAddScopeTest extends \BO\Zmsbackend\Tests\Api\Base
                 "shortName": "Test Scope",
                 "provider": {
                     "id": 122217,
-                    "displayName": "B\u00fcrgeramt Heerstra\u00dfe"
+                    "displayName": "B\\u00fcrgeramt Heerstra\\u00dfe"
+                }
+            }'
+        ], []);
+    }
+
+    public function testNoEntityAccess()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('scope', 'department');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectExceptionCode(403);
+        $this->render(['id' => 72], [
+            '__body' => '{
+                "shortName": "Test Scope",
+                "provider": {
+                    "id": 122217,
+                    "displayName": "B\u00fcrgeramt Heerstra\u00dfe",
+                    "source": "dldb"
                 }
             }'
         ], []);

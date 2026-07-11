@@ -25,7 +25,7 @@ class ScopeGetTest extends \BO\Zmsbackend\Tests\Api\Base
     {
         $department = (new \BO\Zmsentities\Department());
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
-        $this->setWorkstation()->getUseraccount()->setRights('basic')->addDepartment($department);
+        $this->setWorkstation()->getUseraccount()->addDepartment($department);
         $response = $this->render(['id' => self::SCOPE_ID], [], []); //Pankow
         $this->assertStringContainsString('scope.json', (string)$response->getBody());
         $this->assertStringNotContainsString('"reducedData"', (string)$response->getBody());
@@ -36,8 +36,8 @@ class ScopeGetTest extends \BO\Zmsbackend\Tests\Api\Base
     {
         $department = (new \BO\Zmsentities\Department());
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
-        $this->setWorkstation()->getUseraccount()->setRights('scope')->addDepartment($department);
-        $response = $this->render(['id' => self::SCOPE_ID], ['getIsOpened' => 1], []); //Pankow
+        $this->setWorkstation()->getUseraccount()->setPermissions('scope')->addDepartment($department);
+        $response = $this->render(['id' => self::SCOPE_ID], ['getIsOpened' => 1, 'accessRights' => 'scope'], []); //Pankow
         $this->assertStringContainsString('isOpened', (string)$response->getBody());
         $this->assertStringContainsString('scope.json', (string)$response->getBody());
         $this->assertStringNotContainsString('"reducedData"', (string)$response->getBody());
@@ -49,7 +49,26 @@ class ScopeGetTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
         $department = (new \BO\Zmsentities\Department());
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
-        $this->setWorkstation()->getUseraccount()->setRights('basic')->addDepartment($department);
+        $this->setWorkstation()->getUseraccount()->addDepartment($department);
+        $this->render(['id' => self::SCOPE_ID], ['accessRights' => 'scope'], []);
+    }
+
+    public function testRestrictedscopePermission()
+    {
+        $department = (new \BO\Zmsentities\Department());
+        $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
+        $this->setWorkstation()->getUseraccount()->setPermissions('restrictedscope')->addDepartment($department);
+        $response = $this->render(['id' => self::SCOPE_ID], ['accessRights' => 'restrictedscope'], []);
+        $this->assertStringContainsString('scope.json', (string)$response->getBody());
+        $this->assertStringNotContainsString('"reducedData"', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testScopePermissionWithoutEntityAccess()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+        // Login, Permission vorhanden, aber keine EntityAccess-Zuordnung für Scope 141
+        $this->setWorkstation()->getUseraccount()->setPermissions('scope');
         $this->render(['id' => self::SCOPE_ID], ['accessRights' => 'scope'], []);
     }
 

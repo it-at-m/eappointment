@@ -22,7 +22,8 @@ class ClusterDelete extends \BO\Zmsbackend\Api\BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new \BO\Zmsbackend\Helper\User($request))->checkRights('cluster');
+        (new \BO\Zmsbackend\Helper\User($request))->checkPermissions('cluster');
+
         $query = new Query();
         $cluster = $query->readEntity($args['id']);
         if (! $cluster) {
