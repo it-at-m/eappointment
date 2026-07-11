@@ -32,36 +32,36 @@ on:
         default: main
       run_all_in_one_job:
         description: |
-          Run the full suite in one job (sequential). When disabled, pick one or more
-          module checkboxes below for parallel shard jobs on the selected branch.
+          Run the full suite in one sequential job instead of parallel module shards.
+          Default (disabled): all checked modules below run in parallel on the selected branch.
         required: true
         type: boolean
-        default: true
+        default: false
       module_admin:
         description: "Admin UI tests (@zmsadmin)"
         required: true
         type: boolean
-        default: false
+        default: true
       module_citizenview:
         description: "Citizenview UI tests (@zmscitizenview)"
         required: true
         type: boolean
-        default: false
+        default: true
       module_statistic:
         description: "Statistic UI tests (@zmsstatistic)"
         required: true
         type: boolean
-        default: false
+        default: true
       module_zmsapi:
         description: "zmsapi REST tests (@zmsapi)"
         required: true
         type: boolean
-        default: false
+        default: true
       module_zmscitizenapi:
         description: "zmscitizenapi REST tests (@zmscitizenapi)"
         required: true
         type: boolean
-        default: false
+        default: true
       use_custom_tags:
         description: |
           Run a single job with custom Cucumber tag expressions (ignores module
