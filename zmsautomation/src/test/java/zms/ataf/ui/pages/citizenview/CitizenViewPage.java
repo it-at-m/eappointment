@@ -471,6 +471,15 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         String sel = "#provider-" + officeId;
         waitWithThreeWindows(() -> deepElementExists(sel), "Provider summary " + sel);
+        if (!deepElementExists(sel)) {
+            ScenarioLogManager.getLogger()
+                    .warn("Provider summary {} not visible after 60s; waiting up to 30s more after deep-link navigation", sel);
+            try {
+                waitUntilDeepElementExists(sel, 30);
+            } catch (TimeoutException e) {
+                ScenarioLogManager.getLogger().warn("Provider summary {} still not visible after extended wait", sel);
+            }
+        }
         Assert.assertTrue(deepElementExists(sel), "Expected booking summary provider block: " + sel);
         Assert.assertTrue(
                 shadowDomContainsText("Bürgerbüro Ruppertstraße"),
@@ -1812,10 +1821,21 @@ public class CitizenViewPage extends BasePage {
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn("Navigate to appointment view URL", e);
         }
+        waitForAppointmentDetailShellAfterNavigation();
+    }
+
+    /**
+     * After opening an appointment-detail deep link, wait for the detail shell instead of a fixed sleep.
+     * Firefox can be slower than Chrome to render provider blocks after navigate+refresh.
+     */
+    private void waitForAppointmentDetailShellAfterNavigation() {
+        CONTEXT.set();
         try {
-            Thread.sleep(10000L);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
+            waitUntilDeepElementExists("#timeTitleElement", DEFAULT_EXPLICIT_WAIT_TIME);
+            ScenarioLogManager.getLogger().info("zmscitizenview: appointment detail shell visible (#timeTitleElement)");
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: appointment detail shell not visible after {}s; provider assertion will retry", DEFAULT_EXPLICIT_WAIT_TIME);
         }
     }
 
