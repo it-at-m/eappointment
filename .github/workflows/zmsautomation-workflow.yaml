@@ -121,19 +121,17 @@ jobs:
               --arg zmscitizenapi "$(append_not_ignore '@zmscitizenapi')" \
               '
               {
-                include: (
-                  ["main", "next"] as $branches
+                include: [
+                  ["main", "next"][] as $branch
                   | [
                       {shard: "admin", test_layer: "ui", tag_filter: $admin},
                       {shard: "citizenview", test_layer: "ui", tag_filter: $citizenview},
                       {shard: "statistic", test_layer: "ui", tag_filter: $statistic},
                       {shard: "zmsapi", test_layer: "api", tag_filter: $zmsapi},
                       {shard: "zmscitizenapi", test_layer: "api", tag_filter: $zmscitizenapi}
-                    ] as $shards
-                  | $branches[] as $branch
-                  | $shards[] as $shard
+                    ][] as $shard
                   | $shard + {branch: $branch, browser: "chrome", use_custom_tags: false}
-                )
+                ]
               }
               ' > matrix.json
             echo "max_parallel=10" >> "$GITHUB_OUTPUT"
