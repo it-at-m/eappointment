@@ -6,7 +6,7 @@ run-name: >-
         && 'zmsautomation | ▶️ manual | full shard matrix | UI × chrome+firefox, API once | main + next')
     || format(
          'zmsautomation | ▶️ manual | {0} | {1}{2}',
-         inputs.branch,
+         github.ref_name,
          inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'),
          inputs.use_custom_tags && format(' | {0}', inputs.cucumber_tag_expressions) || ''
        )
@@ -19,22 +19,15 @@ on:
         description: |
           Run the full scheduled shard matrix: main + next; UI modules (admin,
           citizenview, statistic) on chrome + firefox; API modules (zmsapi,
-          zmscitizenapi) once each. Ignores inputs below.
+          zmscitizenapi) once each. Ignores module/browser inputs below.
         required: true
         type: boolean
         default: false
-      branch:
-        description: Git branch to test (ignored when run_main_next_matrix is enabled)
-        required: true
-        type: choice
-        options:
-          - main
-          - next
-        default: main
       run_all_in_one_job:
         description: |
           Run the full suite in one sequential job instead of parallel module shards.
-          Default (disabled): all checked modules below run in parallel on the selected branch.
+          Default (disabled): all checked modules below run in parallel on the branch
+          selected via "Use workflow from" above.
         required: true
         type: boolean
         default: false
@@ -170,7 +163,7 @@ jobs:
             MATRIX_SIZE="$(jq '.include | length' matrix.json)"
             echo "max_parallel=$MATRIX_SIZE" >> "$GITHUB_OUTPUT"
           else
-            BRANCH="${{ inputs.branch }}"
+            BRANCH="${{ github.ref_name }}"
             BROWSER="${{ inputs.browser }}"
             TEST_LAYER="${{ inputs.test_layer }}"
 
