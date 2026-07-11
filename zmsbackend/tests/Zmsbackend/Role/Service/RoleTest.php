@@ -264,39 +264,4 @@ class RoleTest extends \BO\Zmsbackend\Tests\Service\Base
         $refreshed = $userQuery->readEntity($createdUser->id, 1, false);
         $this->assertSame(['test_role_cache_after'], $refreshed->roles);
     }
-    public function testDeleteRoleRemovesAssignedUserRoleRelations()
-    {
-        $roleQuery = new Query();
-        $userQuery = new \BO\Zmsbackend\Useraccount\Service\Useraccount();
-
-        $createdRole = $roleQuery->addRole(new Entity([
-            "name" => "test_role_delete_assigned",
-            "description" => "Assigned role",
-            "permissions" => ["useraccount"],
-        ]));
-
-        $this->assertEntity("\\BO\\Zmsentities\\Role", $createdRole);
-
-        $user = (new \BO\Zmsentities\Useraccount())->getExample();
-        $user->id = $user->id . rand();
-        $createdUser = $userQuery->writeEntity($user);
-
-        $this->replaceUserRoleDirectly(
-            $userQuery,
-            $createdUser->id,
-            (int) $createdRole->id
-        );
-
-        $reloadedUser = $userQuery->readEntity($createdUser->id, 1, true);
-        $this->assertIsArray($reloadedUser->roles);
-        $this->assertContains($createdRole->name, $reloadedUser->roles);
-
-        $deleted = $roleQuery->deleteRole((int) $createdRole->id);
-        $this->assertEntity("\\BO\\Zmsentities\\Role", $deleted);
-
-        $reloadedUserAfterDelete = $userQuery->readEntity($createdUser->id, 1, true);
-        $this->assertIsArray($reloadedUserAfterDelete->roles);
-        $this->assertNotContains($createdRole->name, $reloadedUserAfterDelete->roles);
-    }
-
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsbackend\Tests;
+namespace BO\Zmsbackend\Tests\Mail\Api;
 
 class MailGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
@@ -8,7 +8,7 @@ class MailGetTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testRendering()
     {
-        $jsonString = (string)(new \BO\Zmsbackend\Tests\Mail\Api\MailAddTest('dummyTest'))->testRendering()->getBody();
+        $jsonString = (string)(new MailAddTest('dummyTest'))->testRendering()->getBody();
         $message = json_decode($jsonString, true);
         $entity = new \BO\Zmsentities\Mail($message['data']);
 

@@ -32,7 +32,6 @@ class WorkstationUpdate extends \BO\Zmsbackend\Api\BaseController
         if ($entity->getUseraccount()->id != $currentWorkstation->getUseraccount()->id) {
             throw new \BO\Zmsbackend\Workstation\Exception\WorkstationAccessFailed();
         }
-        $entity->getUseraccount()->rights = $currentWorkstation->getUseraccount()->rights;
         $workstation = (new \BO\Zmsbackend\Workstation\Service\Workstation())->updateEntity($entity, $resolveReferences);
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
 

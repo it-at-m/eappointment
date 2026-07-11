@@ -25,7 +25,7 @@ class Role extends \BO\Zmsbackend\Base
 
     public function readRoleByName(string $name, int $resolveReferences = 1): ?Entity
     {
-        $query = new Query\Role(Query\Base::SELECT);
+        $query = new \BO\Zmsbackend\Role\Repository\Role(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionName($name);
