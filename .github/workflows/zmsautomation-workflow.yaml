@@ -230,12 +230,19 @@ jobs:
             fi
           fi
 
+          if [[ "$FULL_MATRIX" == true ]]; then
+            jq '.include |= map(. + {job_name: "\(.branch) · \(.shard) · \(.browser)"})' matrix.json > matrix.tmp.json
+          else
+            jq '.include |= map(. + {job_name: "\(.shard) · \(.browser)"})' matrix.json > matrix.tmp.json
+          fi
+          mv matrix.tmp.json matrix.json
+
           echo "matrix=$(jq -c . matrix.json)" >> "$GITHUB_OUTPUT"
           echo "Generated matrix:"
           jq . matrix.json
 
   zms-automation:
-    name: ${{ matrix.branch }} · ${{ matrix.shard }} · ${{ matrix.browser }}
+    name: ${{ matrix.job_name }}
     needs: generate-matrix
     runs-on: ubuntu-latest
     strategy:
