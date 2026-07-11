@@ -5,11 +5,10 @@ run-name: >-
     || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix
         && 'zmsautomation | ▶️ manual | full shard matrix | main + next | 🌐 chrome')
     || format(
-         'zmsautomation | ▶️ manual | {0} | {1} | {2} | {3}',
+         'zmsautomation | ▶️ manual | {0} | {1}{2}',
          inputs.branch,
-         inputs.module,
          inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'),
-         inputs.module == 'custom' && inputs.cucumber_tag_expressions || ''
+         inputs.use_custom_tags && format(' | {0}', inputs.cucumber_tag_expressions) || ''
        )
   }}
 
@@ -24,31 +23,55 @@ on:
         type: boolean
         default: false
       branch:
-        description: Git branch to test (single-job manual runs only)
+        description: Git branch to test (ignored when run_main_next_matrix is enabled)
         required: true
         type: choice
         options:
           - main
           - next
         default: main
-      module:
+      run_all_in_one_job:
         description: |
-          Test module (single-job manual runs only). Use "custom" with test layer and tag
-          fields below for ad-hoc filters (e.g. @ZMSKVR-1328).
+          Run the full suite in one job (sequential). When disabled, pick one or more
+          module checkboxes below for parallel shard jobs on the selected branch.
         required: true
-        type: choice
-        options:
-          - all
-          - admin
-          - citizenview
-          - statistic
-          - zmsapi
-          - zmscitizenapi
-          - custom
-        default: all
+        type: boolean
+        default: true
+      module_admin:
+        description: "Shard: admin UI tests (@zmsadmin)"
+        required: true
+        type: boolean
+        default: false
+      module_citizenview:
+        description: "Shard: citizenview UI tests (@zmscitizenview)"
+        required: true
+        type: boolean
+        default: false
+      module_statistic:
+        description: "Shard: statistic UI tests (@zmsstatistic)"
+        required: true
+        type: boolean
+        default: false
+      module_zmsapi:
+        description: "Shard: zmsapi REST tests (@zmsapi)"
+        required: true
+        type: boolean
+        default: false
+      module_zmscitizenapi:
+        description: "Shard: zmscitizenapi REST tests (@zmscitizenapi)"
+        required: true
+        type: boolean
+        default: false
+      use_custom_tags:
+        description: |
+          Run a single job with custom Cucumber tag expressions (ignores module
+          checkboxes and run_all_in_one_job). Use test layer and tag fields below.
+        required: true
+        type: boolean
+        default: false
       test_layer:
         description: |
-          Only when module = custom. API = REST, UI = Selenium, both = full suite in one job.
+          Only when use_custom_tags is enabled. API = REST, UI = Selenium, both = full suite in one job.
         required: true
         type: choice
         options:
@@ -58,7 +81,7 @@ on:
         default: both
       cucumber_tag_expressions:
         description: |
-          Only when module = custom. Newline-separated Cucumber tag expressions; each line
+          Only when use_custom_tags is enabled. Newline-separated Cucumber tag expressions; each line
           runs sequentially. @ignore is excluded automatically.
           Examples: @ZMSKVR-1328, @smoke
         required: false
@@ -138,67 +161,69 @@ jobs:
           else
             BRANCH="${{ inputs.branch }}"
             BROWSER="${{ inputs.browser }}"
-            MODULE="${{ inputs.module }}"
             TEST_LAYER="${{ inputs.test_layer }}"
 
-            case "$MODULE" in
-              all)
-                TAG_FILTER="$(append_not_ignore '')"
-                TEST_LAYER="both"
-                SHARD="all"
-                USE_CUSTOM=false
-                ;;
-              admin)
-                TAG_FILTER="$(append_not_ignore '@zmsadmin')"
-                TEST_LAYER="ui"
-                SHARD="admin"
-                USE_CUSTOM=false
-                ;;
-              citizenview)
-                TAG_FILTER="$(append_not_ignore '@zmscitizenview')"
-                TEST_LAYER="ui"
-                SHARD="citizenview"
-                USE_CUSTOM=false
-                ;;
-              statistic)
-                TAG_FILTER="$(append_not_ignore '@zmsstatistic')"
-                TEST_LAYER="ui"
-                SHARD="statistic"
-                USE_CUSTOM=false
-                ;;
-              zmsapi)
-                TAG_FILTER="$(append_not_ignore '@zmsapi')"
-                TEST_LAYER="api"
-                SHARD="zmsapi"
-                USE_CUSTOM=false
-                ;;
-              zmscitizenapi)
-                TAG_FILTER="$(append_not_ignore '@zmscitizenapi')"
-                TEST_LAYER="api"
-                SHARD="zmscitizenapi"
-                USE_CUSTOM=false
-                ;;
-              custom)
-                TAG_FILTER=""
-                SHARD="custom"
-                USE_CUSTOM=true
-                ;;
-              *)
-                echo "Unknown module: $MODULE"
-                exit 1
-                ;;
-            esac
+            if [[ "${{ inputs.use_custom_tags }}" == "true" ]]; then
+              jq -n \
+                --arg branch "$BRANCH" \
+                --arg browser "$BROWSER" \
+                --arg test_layer "$TEST_LAYER" \
+                '{include: [{branch: $branch, browser: $browser, shard: "custom", test_layer: $test_layer, tag_filter: "", use_custom_tags: true}]}' \
+                > matrix.json
+              echo "max_parallel=1" >> "$GITHUB_OUTPUT"
+            elif [[ "${{ inputs.run_all_in_one_job }}" == "true" ]]; then
+              TAG_FILTER="$(append_not_ignore '')"
+              jq -n \
+                --arg branch "$BRANCH" \
+                --arg browser "$BROWSER" \
+                --arg tag_filter "$TAG_FILTER" \
+                '{include: [{branch: $branch, browser: $browser, shard: "all", test_layer: "both", tag_filter: $tag_filter, use_custom_tags: false}]}' \
+                > matrix.json
+              echo "max_parallel=1" >> "$GITHUB_OUTPUT"
+            else
+              jq -n \
+                --arg branch "$BRANCH" \
+                --arg browser "$BROWSER" \
+                --arg admin "$(append_not_ignore '@zmsadmin')" \
+                --arg citizenview "$(append_not_ignore '@zmscitizenview')" \
+                --arg statistic "$(append_not_ignore '@zmsstatistic')" \
+                --arg zmsapi "$(append_not_ignore '@zmsapi')" \
+                --arg zmscitizenapi "$(append_not_ignore '@zmscitizenapi')" \
+                --argjson module_admin "${{ inputs.module_admin }}" \
+                --argjson module_citizenview "${{ inputs.module_citizenview }}" \
+                --argjson module_statistic "${{ inputs.module_statistic }}" \
+                --argjson module_zmsapi "${{ inputs.module_zmsapi }}" \
+                --argjson module_zmscitizenapi "${{ inputs.module_zmscitizenapi }}" \
+                '
+                {
+                  include: [
+                    if $module_admin then
+                      {shard: "admin", test_layer: "ui", tag_filter: $admin, use_custom_tags: false}
+                    else empty end,
+                    if $module_citizenview then
+                      {shard: "citizenview", test_layer: "ui", tag_filter: $citizenview, use_custom_tags: false}
+                    else empty end,
+                    if $module_statistic then
+                      {shard: "statistic", test_layer: "ui", tag_filter: $statistic, use_custom_tags: false}
+                    else empty end,
+                    if $module_zmsapi then
+                      {shard: "zmsapi", test_layer: "api", tag_filter: $zmsapi, use_custom_tags: false}
+                    else empty end,
+                    if $module_zmscitizenapi then
+                      {shard: "zmscitizenapi", test_layer: "api", tag_filter: $zmscitizenapi, use_custom_tags: false}
+                    else empty end
+                  ]
+                  | map(. + {branch: $branch, browser: $browser})
+                }
+                ' > matrix.json
 
-            jq -n \
-              --arg branch "$BRANCH" \
-              --arg browser "$BROWSER" \
-              --arg shard "$SHARD" \
-              --arg test_layer "$TEST_LAYER" \
-              --arg tag_filter "$TAG_FILTER" \
-              --argjson use_custom_tags "$USE_CUSTOM" \
-              '{include: [{branch: $branch, browser: $browser, shard: $shard, test_layer: $test_layer, tag_filter: $tag_filter, use_custom_tags: $use_custom_tags}]}' \
-              > matrix.json
-            echo "max_parallel=1" >> "$GITHUB_OUTPUT"
+              SHARD_COUNT="$(jq '.include | length' matrix.json)"
+              if [[ "$SHARD_COUNT" -eq 0 ]]; then
+                echo "No modules selected. Enable run_all_in_one_job, use_custom_tags, or at least one module checkbox."
+                exit 1
+              fi
+              echo "max_parallel=$SHARD_COUNT" >> "$GITHUB_OUTPUT"
+            fi
           fi
 
           echo "matrix=$(jq -c . matrix.json)" >> "$GITHUB_OUTPUT"
