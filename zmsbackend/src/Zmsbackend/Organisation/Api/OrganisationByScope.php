@@ -42,7 +42,6 @@ class OrganisationByScope extends \BO\Zmsbackend\Api\BaseController
         $user = new \BO\Zmsbackend\Helper\User($request);
         if ($user->hasLogin()) {
             $user->checkPermissions();
-
         } else {
             $organisation = $organisation->withLessData();
             $message->meta->reducedData = true;

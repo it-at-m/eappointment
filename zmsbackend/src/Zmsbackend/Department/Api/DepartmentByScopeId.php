@@ -33,7 +33,6 @@ class DepartmentByScopeId extends \BO\Zmsbackend\Api\BaseController
         $user = new \BO\Zmsbackend\Helper\User($request);
         if ($user->hasLogin()) {
             $user->checkPermissions();
-
         } else {
             $department = $department->withLessData();
             $message->meta->reducedData = true;

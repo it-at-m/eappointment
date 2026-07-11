@@ -69,6 +69,5 @@ class UseraccountUpdate extends \BO\Zmsbackend\Api\BaseController
 
         \BO\Zmsbackend\Helper\UserAuth::testUseraccountExists($args['loginname']);
         \BO\Zmsbackend\Helper\User::testWorkstationAccessRights($entity);
-
     }
 }

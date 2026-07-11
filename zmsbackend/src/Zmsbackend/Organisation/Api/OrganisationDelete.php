@@ -30,7 +30,6 @@ class OrganisationDelete extends \BO\Zmsbackend\Api\BaseController
         if (! $organisation) {
             throw new \BO\Zmsbackend\Organisation\Exception\OrganisationNotFound();
         }(new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions(
-
             'organisation',
             new \BO\Zmsentities\Useraccount\EntityAccess($organisation)
         );

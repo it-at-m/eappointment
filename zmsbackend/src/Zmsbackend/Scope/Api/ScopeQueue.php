@@ -39,7 +39,6 @@ class ScopeQueue extends \BO\Zmsbackend\Api\BaseController
         $user = new \BO\Zmsbackend\Helper\User($request);
         if ($user->hasLogin()) {
             $user->checkPermissions();
-
         } else {
             $queueList = $queueList->withLessData();
             $message->meta->reducedData = true;

@@ -235,7 +235,6 @@ class User
         if ($userAccount->isSuperUser()) {
             $department = (new \BO\Zmsbackend\Department\Service\Department())->readEntity($departmentId);
         } elseif ($userAccount->hasPermissions(['department'])) {
-
             $department = self::testReadDepartmentByOrganisation($departmentId, $userAccount);
         } else {
             $department = $userAccount->testDepartmentById($departmentId);

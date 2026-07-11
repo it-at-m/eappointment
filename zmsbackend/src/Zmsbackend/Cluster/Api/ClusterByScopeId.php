@@ -29,7 +29,6 @@ class ClusterByScopeId extends \BO\Zmsbackend\Api\BaseController
         if ((new \BO\Zmsbackend\Helper\User($request))->hasLogin() || $resolveReferences > 0) {
             $resolveReferences = ($resolveReferences > 0 ) ? $resolveReferences : 1;
             (new \BO\Zmsbackend\Helper\User($request))->checkPermissions();
-
         } else {
             $message->meta->reducedData = true;
         }

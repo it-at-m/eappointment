@@ -28,7 +28,6 @@ class ScopeCalldisplayImageDataDelete extends \BO\Zmsbackend\Api\BaseController
             throw new \BO\Zmsbackend\Scope\Exception\ScopeNotFound();
         }(new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions(
             'calldisplay',
-
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
         );
 

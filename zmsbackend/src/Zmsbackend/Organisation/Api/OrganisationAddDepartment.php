@@ -28,7 +28,6 @@ class OrganisationAddDepartment extends \BO\Zmsbackend\Api\BaseController
         \BO\Zmsbackend\Connection\Select::getWriteConnection();
         $organisation = (new \BO\Zmsbackend\Organisation\Service\Organisation())->readEntity($args['id'], 1);
         $user->checkPermissions(
-
             'department',
             new \BO\Zmsentities\Useraccount\EntityAccess($organisation)
         );

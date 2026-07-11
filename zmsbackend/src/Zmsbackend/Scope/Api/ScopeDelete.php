@@ -26,7 +26,6 @@ class ScopeDelete extends \BO\Zmsbackend\Api\BaseController
         if (! $scope) {
             throw new \BO\Zmsbackend\Scope\Exception\ScopeNotFound();
         }(new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions(
-
             'scope',
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
         );
