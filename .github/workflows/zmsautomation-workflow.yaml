@@ -50,8 +50,8 @@ on:
         type: boolean
         default: true
   schedule:
-    # GitHub Actions cron uses UTC. 03:00 UTC ≈ 05:00 Europe/Berlin (CEST) / 04:00 (CET).
-    - cron: "0 3 * * *"
+    # GitHub Actions cron uses UTC. 01:00 UTC ≈ 03:00 Europe/Berlin (CEST) / 02:00 (CET).
+    - cron: "0 1 * * *"
 
 permissions:
   contents: read
@@ -62,8 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      # Limit concurrent matrix legs to reduce Docker daemon / disk pressure on shared runners.
-      max-parallel: 2
+      max-parallel: 4
       matrix:
         branch: ${{ fromJson((github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix)) && '["main","next"]' || format('["{0}"]', github.ref_name)) }}
         browser: ${{ fromJson((github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix)) && '["chrome","firefox"]' || format('["{0}"]', inputs.browser)) }}
