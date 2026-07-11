@@ -17,8 +17,8 @@ on:
     inputs:
       run_main_next_matrix:
         description: |
-          Run the full scheduled shard matrix: main + next; UI modules (admin,
-          citizenview, statistic) on chrome + firefox; API modules (zmsapi,
+          Run the full scheduled shard matrix: main + next; UI modules (zmsadmin,
+          zmscitizenview, zmsstatistic) on chrome + firefox; API modules (zmsapi,
           zmscitizenapi) once each. Ignores module/browser inputs below.
         required: true
         type: boolean
@@ -142,9 +142,9 @@ jobs:
                   [
                     ["main", "next"][] as $branch
                     | [
-                        {shard: "admin", test_layer: "ui", tag_filter: $admin},
-                        {shard: "citizenview", test_layer: "ui", tag_filter: $citizenview},
-                        {shard: "statistic", test_layer: "ui", tag_filter: $statistic}
+                        {shard: "zmsadmin", test_layer: "ui", tag_filter: $admin},
+                        {shard: "zmscitizenview", test_layer: "ui", tag_filter: $citizenview},
+                        {shard: "zmsstatistic", test_layer: "ui", tag_filter: $statistic}
                       ][] as $shard
                     | ["chrome", "firefox"][] as $browser
                     | $shard + {branch: $branch, browser: $browser, use_custom_tags: false}
@@ -202,13 +202,13 @@ jobs:
                 {
                   include: [
                     if $module_admin then
-                      {shard: "admin", test_layer: "ui", tag_filter: $admin, use_custom_tags: false}
+                      {shard: "zmsadmin", test_layer: "ui", tag_filter: $admin, use_custom_tags: false}
                     else empty end,
                     if $module_citizenview then
-                      {shard: "citizenview", test_layer: "ui", tag_filter: $citizenview, use_custom_tags: false}
+                      {shard: "zmscitizenview", test_layer: "ui", tag_filter: $citizenview, use_custom_tags: false}
                     else empty end,
                     if $module_statistic then
-                      {shard: "statistic", test_layer: "ui", tag_filter: $statistic, use_custom_tags: false}
+                      {shard: "zmsstatistic", test_layer: "ui", tag_filter: $statistic, use_custom_tags: false}
                     else empty end,
                     if $module_zmsapi then
                       {shard: "zmsapi", test_layer: "api", tag_filter: $zmsapi, use_custom_tags: false}
