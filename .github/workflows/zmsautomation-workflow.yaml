@@ -1,9 +1,9 @@
 name: ⚙️ zmsautomation
 run-name: >-
   ${{
-    github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | 5 modules × main + next | 🌐 chrome'
+    github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | 5 modules × main + next | 🌐 chrome + 🦊 firefox'
     || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix
-        && 'zmsautomation | ▶️ manual | full shard matrix | main + next | 🌐 chrome')
+        && 'zmsautomation | ▶️ manual | full shard matrix | main + next | 🌐 chrome + 🦊 firefox')
     || format(
          'zmsautomation | ▶️ manual | {0} | {1}{2}',
          inputs.branch,
@@ -17,7 +17,7 @@ on:
     inputs:
       run_main_next_matrix:
         description: |
-          Run the full scheduled shard matrix: main + next, chrome, all 5 modules
+          Run the full scheduled shard matrix: main + next, chrome + firefox, all 5 modules
           (admin, citizenview, statistic, zmsapi, zmscitizenapi). Ignores inputs below.
         required: true
         type: boolean
@@ -153,11 +153,12 @@ jobs:
                       {shard: "zmsapi", test_layer: "api", tag_filter: $zmsapi},
                       {shard: "zmscitizenapi", test_layer: "api", tag_filter: $zmscitizenapi}
                     ][] as $shard
-                  | $shard + {branch: $branch, browser: "chrome", use_custom_tags: false}
+                  | ["chrome", "firefox"][] as $browser
+                  | $shard + {branch: $branch, browser: $browser, use_custom_tags: false}
                 ]
               }
               ' > matrix.json
-            echo "max_parallel=10" >> "$GITHUB_OUTPUT"
+            echo "max_parallel=20" >> "$GITHUB_OUTPUT"
           else
             BRANCH="${{ inputs.branch }}"
             BROWSER="${{ inputs.browser }}"
