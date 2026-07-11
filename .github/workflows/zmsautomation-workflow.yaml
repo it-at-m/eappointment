@@ -235,6 +235,7 @@ jobs:
           jq . matrix.json
 
   zms-automation:
+    name: ${{ matrix.branch }} · ${{ matrix.shard }} · ${{ matrix.browser }}
     needs: generate-matrix
     runs-on: ubuntu-latest
     strategy:
