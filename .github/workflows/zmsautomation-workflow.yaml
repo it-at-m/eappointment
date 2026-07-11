@@ -165,7 +165,7 @@ jobs:
             # ages out of Debian repos (apt exit 100 on matrix jobs staggered by max-parallel).
             CHROMIUM_APT_VERSION="150.0.7871.100-1~deb13u1"
             if ! apt-cache show "chromium=${CHROMIUM_APT_VERSION}" >/dev/null 2>&1; then
-              CHROMIUM_APT_VERSION="$(apt-cache policy chromium | awk '/Candidate:/ {print $2}')"
+              CHROMIUM_APT_VERSION="$(apt-cache policy chromium 2>/dev/null | grep "^  Candidate:" | head -1 | sed "s/^  Candidate: //" | tr -d " ")"
               echo "Pinned Chromium unavailable; using mirror candidate ${CHROMIUM_APT_VERSION}"
             fi
             apt-get install -y --no-install-recommends --allow-downgrades \
@@ -178,7 +178,7 @@ jobs:
               "chromium=${CHROMIUM_APT_VERSION}" \
               "chromium-driver=${CHROMIUM_APT_VERSION}" \
               ;
-            chromium --version
+            dpkg-query -W -f="chromium=%Version\n" chromium chromium-driver
             chromedriver --version
 
             # Prefer symlink for "firefox" path used by Selenium setups.
