@@ -38,27 +38,27 @@ on:
         type: boolean
         default: true
       module_admin:
-        description: "Shard: admin UI tests (@zmsadmin)"
+        description: "Admin UI tests (@zmsadmin)"
         required: true
         type: boolean
         default: false
       module_citizenview:
-        description: "Shard: citizenview UI tests (@zmscitizenview)"
+        description: "Citizenview UI tests (@zmscitizenview)"
         required: true
         type: boolean
         default: false
       module_statistic:
-        description: "Shard: statistic UI tests (@zmsstatistic)"
+        description: "Statistic UI tests (@zmsstatistic)"
         required: true
         type: boolean
         default: false
       module_zmsapi:
-        description: "Shard: zmsapi REST tests (@zmsapi)"
+        description: "zmsapi REST tests (@zmsapi)"
         required: true
         type: boolean
         default: false
       module_zmscitizenapi:
-        description: "Shard: zmscitizenapi REST tests (@zmscitizenapi)"
+        description: "zmscitizenapi REST tests (@zmscitizenapi)"
         required: true
         type: boolean
         default: false
