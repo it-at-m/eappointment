@@ -159,9 +159,15 @@ jobs:
             set -euo pipefail
             apt-get update
 
-            # Pin Chromium: trixie-security ships 150.x which exits immediately in CI Docker
-            # (SessionNotCreatedException). Hold trixie/main 147.x until 150 works in CI.
-            CHROMIUM_APT_VERSION="147.0.7727.137-1~deb13u1"
+            # Pin Chromium for reproducibility. trixie-security previously shipped 150.x that
+            # needed headless in Docker (SessionNotCreatedException); GITHUB_ACTIONS enables
+            # headless in zmsautomation-test. Fall back to the mirror candidate when the pin
+            # ages out of Debian repos (apt exit 100 on matrix jobs staggered by max-parallel).
+            CHROMIUM_APT_VERSION="150.0.7871.100-1~deb13u1"
+            if ! apt-cache show "chromium=${CHROMIUM_APT_VERSION}" >/dev/null 2>&1; then
+              CHROMIUM_APT_VERSION="$(apt-cache policy chromium | awk '/Candidate:/ {print $2}')"
+              echo "Pinned Chromium unavailable; using mirror candidate ${CHROMIUM_APT_VERSION}"
+            fi
             apt-get install -y --no-install-recommends --allow-downgrades \
               curl wget unzip ca-certificates gnupg \
               mariadb-client \
