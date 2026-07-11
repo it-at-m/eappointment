@@ -1,12 +1,12 @@
 name: ⚙️ zmsautomation
 run-name: >-
   ${{
-    github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | 5 modules × main + next | 🌐 chrome + 🦊 firefox'
+    github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | UI × chrome+firefox, API once | main + next'
     || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix
-        && 'zmsautomation | ▶️ manual | full shard matrix | main + next | 🌐 chrome + 🦊 firefox')
+        && 'zmsautomation | ▶️ manual | full shard matrix | UI × chrome+firefox, API once | main + next')
     || format(
          'zmsautomation | ▶️ manual | {0} | {1}{2}',
-         inputs.branch,
+         github.ref_name,
          inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'),
          inputs.use_custom_tags && format(' | {0}', inputs.cucumber_tag_expressions) || ''
        )
@@ -17,23 +17,17 @@ on:
     inputs:
       run_main_next_matrix:
         description: |
-          Run the full scheduled shard matrix: main + next, chrome + firefox, all 5 modules
-          (admin, citizenview, statistic, zmsapi, zmscitizenapi). Ignores inputs below.
+          Run the full scheduled shard matrix: main + next; UI modules (admin,
+          citizenview, statistic) on chrome + firefox; API modules (zmsapi,
+          zmscitizenapi) once each. Ignores module/browser inputs below.
         required: true
         type: boolean
         default: false
-      branch:
-        description: Git branch to test (ignored when run_main_next_matrix is enabled)
-        required: true
-        type: choice
-        options:
-          - main
-          - next
-        default: main
       run_all_in_one_job:
         description: |
           Run the full suite in one sequential job instead of parallel module shards.
-          Default (disabled): all checked modules below run in parallel on the selected branch.
+          Default (disabled): all checked modules below run in parallel on the branch
+          selected via "Use workflow from" above.
         required: true
         type: boolean
         default: false
@@ -144,23 +138,32 @@ jobs:
               --arg zmscitizenapi "$(append_not_ignore '@zmscitizenapi')" \
               '
               {
-                include: [
-                  ["main", "next"][] as $branch
-                  | [
-                      {shard: "admin", test_layer: "ui", tag_filter: $admin},
-                      {shard: "citizenview", test_layer: "ui", tag_filter: $citizenview},
-                      {shard: "statistic", test_layer: "ui", tag_filter: $statistic},
-                      {shard: "zmsapi", test_layer: "api", tag_filter: $zmsapi},
-                      {shard: "zmscitizenapi", test_layer: "api", tag_filter: $zmscitizenapi}
-                    ][] as $shard
-                  | ["chrome", "firefox"][] as $browser
-                  | $shard + {branch: $branch, browser: $browser, use_custom_tags: false}
-                ]
+                include: (
+                  [
+                    ["main", "next"][] as $branch
+                    | [
+                        {shard: "admin", test_layer: "ui", tag_filter: $admin},
+                        {shard: "citizenview", test_layer: "ui", tag_filter: $citizenview},
+                        {shard: "statistic", test_layer: "ui", tag_filter: $statistic}
+                      ][] as $shard
+                    | ["chrome", "firefox"][] as $browser
+                    | $shard + {branch: $branch, browser: $browser, use_custom_tags: false}
+                  ]
+                  + [
+                    ["main", "next"][] as $branch
+                    | [
+                        {shard: "zmsapi", test_layer: "api", tag_filter: $zmsapi},
+                        {shard: "zmscitizenapi", test_layer: "api", tag_filter: $zmscitizenapi}
+                      ][] as $shard
+                    | $shard + {branch: $branch, browser: "chrome", use_custom_tags: false}
+                  ]
+                )
               }
               ' > matrix.json
-            echo "max_parallel=20" >> "$GITHUB_OUTPUT"
+            MATRIX_SIZE="$(jq '.include | length' matrix.json)"
+            echo "max_parallel=$MATRIX_SIZE" >> "$GITHUB_OUTPUT"
           else
-            BRANCH="${{ inputs.branch }}"
+            BRANCH="${{ github.ref_name }}"
             BROWSER="${{ inputs.browser }}"
             TEST_LAYER="${{ inputs.test_layer }}"
 
