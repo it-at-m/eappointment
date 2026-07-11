@@ -22,25 +22,14 @@ class UseraccountTest extends EntityCommonTests
         $this->assertTrue($entity->hasDepartment('123'), 'add department failed');
         $this->assertFalse($entity->hasDepartment('55'), 'department 55 should not exists');
 
-        $this->assertTrue($entity->hasProperties('id', 'password', 'rights', 'permissions'));
+        $this->assertTrue($entity->hasProperties('id', 'password', 'permissions'));
         unset($entity['id']);
         try {
-            $entity->hasProperties('id', 'password', 'rights', 'permissions');
+            $entity->hasProperties('id', 'password', 'permissions');
             $this->fail("Expected exception UserAccountMissingProperties not thrown");
         } catch (\BO\Zmsentities\Exception\UserAccountMissingProperties $exception) {
             $this->assertEquals(500, $exception->getCode());
         }
-    }
-
-    public function testCollection()
-    {
-        $entity = (new $this->entityclass())->getExample();
-        $superuser = (new $this->entityclass())->getExample();
-        $superuser->rights['superuser'] = true;
-        $collection = new \BO\Zmsentities\Collection\UseraccountList();
-        $collection[] = $entity;
-        $collection[] = $superuser;
-        $this->assertTrue($collection->withRights(['superuser'])->count() == 1, 'Only one superuser given');
     }
 
     public function testCollectionSortByCustomStringKey()
@@ -49,7 +38,6 @@ class UseraccountTest extends EntityCommonTests
         $entity->id = 'z-id-test';
         $superuser = (new $this->entityclass())->getExample();
         $superuser->id = 'a-id-test';
-        $superuser->rights['superuser'] = true;
         $collection = new \BO\Zmsentities\Collection\UseraccountList();
         $collection[] = $entity;
         $collection[] = $superuser;
@@ -70,13 +58,6 @@ class UseraccountTest extends EntityCommonTests
         $entity->departments = $entity->getDepartmentList()->getArrayCopy();
         $this->assertEquals(1, $entity->getDepartmentList()->count());
         $this->assertEntityList('\BO\Zmsentities\Department', $entity->getDepartmentList());
-    }
-
-    public function testRightsLevel()
-    {
-        $entity = $this->getExample();
-        $this->assertEquals(30, $entity->getRightsLevel());
-        $this->assertFalse($entity->isSuperUser());
     }
 
     public function testIsOveraged()
@@ -118,34 +99,33 @@ class UseraccountTest extends EntityCommonTests
         $this->assertFalse($entity->hasScope(456), "Department should not have scope 456");
     }
 
-    public function testRightChecks()
+    public function testPermissionChecks()
     {
         $entity = (new $this->entityclass())->getExample();
         $department = (new \BO\Zmsentities\Department())->getExample();
         $scope = new \BO\Zmsentities\Scope(['id' => 123]);
-        $this->assertFalse($entity->hasRights([
+        $this->assertFalse($entity->hasPermissions([
             new \BO\Zmsentities\Useraccount\EntityAccess($department)
-        ]), "User rights should not validate for department");
-        $this->assertFalse($entity->hasRights([
+        ]), "User permissions should not validate for department");
+        $this->assertFalse($entity->hasPermissions([
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
-        ]), "User rights should not validate for scope");
+        ]), "User permissions should not validate for scope");
         $entity->addDepartment($department);
-        $this->assertTrue($entity->hasRights([
+        $this->assertTrue($entity->hasPermissions([
             new \BO\Zmsentities\Useraccount\EntityAccess($department),
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
-        ]), "User rights should validate");
+        ]), "User permissions should validate");
         $this->assertStringContainsString(
             "EntityAccess(department#123)",
             (string)(new \BO\Zmsentities\Useraccount\EntityAccess($department))
         );
-        $this->assertTrue($entity->hasRights(['ticketprinter']), "User has tickerprinter right");
     }
 
-    public function testPermissions()
+    public function testHasPermissions()
     {
         $entity = (new $this->entityclass())->getExample();
-        $this->assertTrue($entity->hasRights(['appointment']), "User has appointment permission");
-        $this->assertFalse($entity->hasRights(['counter']), "User doesn't have counter permission");
+        $this->assertTrue($entity->hasPermissions(['appointment']), "User has appointment permission");
+        $this->assertFalse($entity->hasPermissions(['counter']), "User doesn't have counter permission");
     }
 
     public function testSetPermissions()
@@ -168,7 +148,6 @@ class UseraccountTest extends EntityCommonTests
         $this->assertTrue($entity->hasPermissions(['appointment', 'availability']));
         $this->assertFalse($entity->hasPermissions(['appointment', 'counter']));
 
-        $entity->rights['superuser'] = false;
         $entity->permissions['superuser'] = true;
         $this->assertTrue($entity->isSuperUser());
         $this->assertTrue($entity->hasPermissions(['counter', 'logs']), 'Superuser bypasses permission checks');
@@ -192,7 +171,6 @@ class UseraccountTest extends EntityCommonTests
         $this->assertTrue($entity->hasAnyPermission(['counter', 'appointment']));
         $this->assertFalse($entity->hasAnyPermission(['counter', 'logs']));
 
-        $entity->rights['superuser'] = false;
         $entity->permissions['superuser'] = true;
         $this->assertTrue($entity->hasAnyPermission(['counter', 'logs']));
     }
@@ -212,7 +190,6 @@ class UseraccountTest extends EntityCommonTests
         $this->assertFalse($withoutStatistic->hasExclusivePermission('statistic'));
 
         $statisticOnly->permissions['superuser'] = true;
-        $statisticOnly->rights['superuser'] = false;
         $this->assertFalse($statisticOnly->hasExclusivePermission('statistic'), 'Superuser is never exclusive');
     }
 
@@ -269,42 +246,11 @@ class UseraccountTest extends EntityCommonTests
         $this->assertSame($entity, $entity->testAnyPermission(['counter', 'appointment']));
     }
 
-    public function testMixedRightsAndPermissions()
-    {
-        $entity = (new $this->entityclass())->getExample();
-        $this->assertTrue($entity->hasRights(['basic', 'appointment']), "User has basic right and appointment permission");
-        $this->assertFalse($entity->hasRights(['basic', 'counter']), "User has basic right but not counter permission");
-        $this->assertFalse($entity->hasRights(['department', 'cherrypick']), "User neither has department right nor cherrypick permission");
-    }
-
     public function testIsSuperUserViaPermissionsOnly()
     {
         $entity = (new $this->entityclass())->getExample();
-        $entity->rights['superuser'] = false;
         $entity->permissions['superuser'] = true;
         $this->assertTrue($entity->isSuperUser());
-    }
-
-    public function testSuperuserBypassesHasRights()
-    {
-        $entity = (new $this->entityclass())->getExample();
-        $entity->rights['superuser'] = true;
-        $this->assertTrue($entity->hasRights(['department']), "Superuser right passes any string right check");
-    }
-
-    public function testTestRightsMissingLogin()
-    {
-        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingLogin');
-        $entity = (new $this->entityclass())->getExample();
-        unset($entity['id']);
-        $entity->testRights(['basic']);
-    }
-
-    public function testTestRightsMissingRights()
-    {
-        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
-        $entity = (new $this->entityclass())->getExample();
-        $entity->testRights(['counter']);
     }
 
     public function testWithCleanedUpFormData()

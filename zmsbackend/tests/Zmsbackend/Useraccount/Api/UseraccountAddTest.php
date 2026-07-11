@@ -167,5 +167,64 @@ class UseraccountAddTest extends \BO\Zmsbackend\Tests\Api\Base
             '__body' => '[]'
         ], []);
     }
-}
 
+    public function testMultipleRolesRejected()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
+        $this->setDepartment(74);
+
+        $this->expectException('\BO\Zmsbackend\Useraccount\Exception\UseraccountInvalidRoleAssignment');
+        $this->expectExceptionCode(400);
+
+        $this->render([], [
+            '__body' => '{
+                "roles": ["agent_queue", "appointment_admin"],
+                "departments": [
+                    {"id": 74}
+                ],
+                "id": "unittest-multiple-roles",
+                "password": "unittest"
+            }'
+        ], []);
+    }
+
+    public function testMissingRolesRejected()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
+        $this->setDepartment(74);
+
+        $this->expectException('\BO\Zmsbackend\Useraccount\Exception\UseraccountInvalidRoleAssignment');
+        $this->expectExceptionCode(400);
+
+        $this->render([], [
+            '__body' => '{
+                "departments": [
+                    {"id": 74}
+                ],
+                "id": "unittest-missing-roles",
+                "password": "unittest"
+            }'
+        ], []);
+    }
+
+
+    public function testUnknownRoleRejected()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
+        $this->setDepartment(74);
+
+        $this->expectException('\BO\Zmsbackend\Useraccount\Exception\UseraccountInvalidRoleAssignment');
+        $this->expectExceptionCode(400);
+
+        $this->render([], [
+            '__body' => '{
+                "roles": ["__unknown_role__"],
+                "departments": [
+                    {"id": 74}
+                ],
+                "id": "unittest-unknown-role",
+                "password": "unittest"
+            }'
+        ], []);
+    }
+}

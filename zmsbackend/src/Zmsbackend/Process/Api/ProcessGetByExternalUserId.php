@@ -26,7 +26,8 @@ class ProcessGetByExternalUserId extends \BO\Zmsbackend\Api\BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new \BO\Zmsbackend\Helper\User($request, 2))->checkRights();
+        (new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions();
+
 
         $resolveReferences = (int) (Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue() ?? 2);
         $processId = (int) $args['id'];

@@ -28,7 +28,34 @@ class OrganisationAddDepartmentTest extends \BO\Zmsbackend\Tests\Api\Base
             ->addDepartment([
                 'id' => 74
             ]);
-        $this->expectException('\BO\Mellon\Failure\Exception');
+        $this->expectException('\\BO\\Mellon\\Failure\\Exception');
         $this->render(['id' => 71], [], []);
+    }
+
+    public function testMissingPermission()
+    {
+        $this->setWorkstation()->getUseraccount()
+            ->addDepartment([
+                'id' => 74
+            ]);
+        $this->expectException('BO\\Zmsentities\\Exception\\UserAccountMissingRights');
+        $this->expectExceptionCode(403);
+        $this->render(['id' => 71], [
+            '__body' => '{
+                  "name": "Test Department"
+              }'
+        ], []);
+    }
+
+    public function testNoEntityAccess()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('department');
+        $this->expectException('BO\\Zmsentities\\Exception\\UserAccountMissingRights');
+        $this->expectExceptionCode(403);
+        $this->render(['id' => 71], [
+            '__body' => '{
+                  "name": "Test Department"
+              }'
+        ], []);
     }
 }

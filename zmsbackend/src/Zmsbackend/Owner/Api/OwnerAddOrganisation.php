@@ -27,7 +27,8 @@ class OwnerAddOrganisation extends \BO\Zmsbackend\Api\BaseController
         $user->checkPermissions('organisation');
         \BO\Zmsbackend\Connection\Select::getWriteConnection();
         $owner = (new \BO\Zmsbackend\Owner\Service\Owner())->readEntity($args['id'], 2);
-        $user->checkRights(
+        $user->checkPermissions(
+
             new \BO\Zmsentities\Useraccount\EntityAccess($owner)
         );
         $input = Validator::input()->isJson()->assertValid()->getValue();

@@ -17,7 +17,7 @@ class ScopeCalldisplayImageDataUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
     {
         $department = (new \BO\Zmsentities\Department());
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
-        $this->setWorkstation()->getUserAccount()->setRights('scope')->addDepartment($department);
+        $this->setWorkstation()->getUserAccount()->setPermissions('calldisplay')->addDepartment($department);
         $response = $this->render(['id' => self::SCOPE_ID], [
             '__body' => $this->readFixture("GetBase64Image.json")
         ], []);
@@ -28,17 +28,20 @@ class ScopeCalldisplayImageDataUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testNoRights()
     {
-        $this->setWorkstation();
+        $department = (new \BO\Zmsentities\Department());
+        $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
+        $this->setWorkstation()->getUserAccount()->addDepartment($department);
         $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->render(['id' => self::SCOPE_ID], [
-            '__body' => '',
+            '__body' => $this->readFixture("GetBase64Image.json"),
         ], []);
     }
 
     public function testScopeNotFound()
     {
-        $this->setWorkstation()->getUserAccount()->setRights('scope');
+        $this->setWorkstation()->getUserAccount()->setPermissions('scope');
         $this->expectException('\BO\Zmsbackend\Scope\Exception\ScopeNotFound');
+
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);
     }

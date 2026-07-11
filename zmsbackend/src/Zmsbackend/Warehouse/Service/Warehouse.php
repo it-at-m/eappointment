@@ -69,11 +69,6 @@ class Warehouse extends \BO\Zmsbackend\Base
             'right' => 'superuser'
         ],
         [
-            'subject' => 'useraccount',
-            'description' => 'Nutzerdaten mit E-Mail-Adresse und Rechten',
-            'right' => 'superuser'
-        ],
-        [
             'subject' => 'slotscope',
             'description' => 'Gebuchte Zeitschlitze eines Standortes gruppiert nach Datum',
             'right' => 'superuser'
@@ -95,7 +90,7 @@ class Warehouse extends \BO\Zmsbackend\Base
         $entity = (new Exchange())->withLessData();
         $entity->addDictionaryEntry('subject', 'string', 'subject name');
         $entity->addDictionaryEntry('description', 'string', 'subject description');
-        $entity->addDictionaryEntry('right', 'string', 'useraccount right for this subject', 'useraccount.rights');
+        $entity->addDictionaryEntry('right', 'string', 'useraccount permission for this subject', 'useraccount.permissions');
         foreach ($this->subjects as $subject) {
             $entity->addDataSet(array_values($subject));
         }

@@ -39,7 +39,7 @@ class ScopeUpdate extends \BO\Zmsbackend\Api\BaseController
             'scope'
         );
 
-        $user->checkRights(
+        $user->checkPermissions(
             new \BO\Zmsentities\Useraccount\EntityAccess($existingScope)
         );
 

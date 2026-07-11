@@ -35,6 +35,7 @@ class WorkstationUpdate extends \BO\Zmsbackend\Api\BaseController
         $entity->getUseraccount()->rights = $currentWorkstation->getUseraccount()->rights;
         $workstation = (new \BO\Zmsbackend\Workstation\Service\Workstation())->updateEntity($entity, $resolveReferences);
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
+
         $message->data = $workstation;
 
         $response = Render::withLastModified($response, time(), '0');

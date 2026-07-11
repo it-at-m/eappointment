@@ -37,19 +37,26 @@
       ],
       "description": "Indicates whether the service is publicly visible"
     },
-    "parent_id": {
+    "parentId": {
       "type": [
         "integer",
         "null"
       ],
       "description": "Parent-Service ID (falls diese Service-Variante zu einem Parent gehört)"
     },
-    "variant_id": {
+    "variantId": {
       "type": [
         "integer",
         "null"
       ],
       "description": "Variant-ID (z.B. ZMS-Variantenkennung)"
+    },
+    "rootParentId": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Root service ID for service info links; equals id for root services"
     },
     "showOnStartPage": {
       "type": [

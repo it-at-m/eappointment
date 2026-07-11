@@ -23,7 +23,8 @@ class AvailabilityGet extends \BO\Zmsbackend\Api\BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new \BO\Zmsbackend\Helper\User($request))->checkRights();
+        (new \BO\Zmsbackend\Helper\User($request))->checkPermissions();
+
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $availability = (new Query())->readEntity($args['id'], $resolveReferences);
         if (! $availability->hasId()) {

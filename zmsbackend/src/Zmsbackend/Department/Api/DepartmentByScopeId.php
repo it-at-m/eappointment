@@ -30,8 +30,10 @@ class DepartmentByScopeId extends \BO\Zmsbackend\Api\BaseController
         }
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
-        if ((new \BO\Zmsbackend\Helper\User($request))->hasRights()) {
-            (new \BO\Zmsbackend\Helper\User($request))->checkPermissions();
+        $user = new \BO\Zmsbackend\Helper\User($request);
+        if ($user->hasLogin()) {
+            $user->checkPermissions();
+
         } else {
             $department = $department->withLessData();
             $message->meta->reducedData = true;

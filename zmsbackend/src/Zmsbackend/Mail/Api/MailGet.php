@@ -23,7 +23,8 @@ class MailGet extends \BO\Zmsbackend\Api\BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new \BO\Zmsbackend\Helper\User($request))->checkRights('superuser');
+        (new \BO\Zmsbackend\Helper\User($request))->checkPermissions('superuser');
+
         $mailId = $args['id'];
         $mail = (new Query())->readEntity($mailId);
 

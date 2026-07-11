@@ -64,7 +64,7 @@ jobs:
         working-directory: ${{ matrix.project }}
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ matrix.project }}-${{ hashFiles(format('{0}/composer.lock', matrix.project)) }}
@@ -179,7 +179,7 @@ jobs:
         working-directory: zmsbackend
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache-monorepo.outputs.dir }}
           key: ${{ runner.os }}-composer-psalm-monorepo-${{ hashFiles('mellon/composer.lock', 'zmsadmin/composer.lock', 'zmsbackend/composer.lock', 'zmscalldisplay/composer.lock', 'zmscitizenapi/composer.lock', 'zmsclient/composer.lock', 'zmsdldb/composer.lock', 'zmsentities/composer.lock', 'zmsmessaging/composer.lock', 'zmsslim/composer.lock', 'zmsstatistic/composer.lock', 'zmsticketprinter/composer.lock') }}

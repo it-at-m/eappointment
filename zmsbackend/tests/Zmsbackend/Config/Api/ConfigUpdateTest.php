@@ -6,6 +6,7 @@ use \BO\Slim\Render;
 
 use BO\Zmsbackend\Helper\User;
 
+
 class ConfigUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ConfigUpdate";
@@ -29,8 +30,7 @@ class ConfigUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testWithSuperuser()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
         $response = $this->render([], [
             '__body' => '{
                   "cron": {
@@ -48,7 +48,6 @@ class ConfigUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->expectException('\BO\Zmsbackend\Config\Exception\ConfigAuthentificationFailed');
         $this->expectExceptionCode(401);
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('basic');
         $response = $this->render([], [
             '__body' => '{
                   "cron": {

@@ -1118,164 +1118,169 @@ Maintainable structure with clear patterns
 ### Phase 1: Core Entity Mappings (High Priority)
 
 Availability Query Class
-Current Mapping | New Mapping (camelCase) | Database Column (snake_case)
--- | -- | --
-'id' | 'id' | availability.availability_id
-'scope**id' | 'scopeId' | availability.scope_id
-'bookable**startInDays' | 'bookableStartInDays' | availability.open_from_days
-'bookable**endInDays' | 'bookableEndInDays' | availability.open_until_days
-'description' | 'description' | availability.comment
-'startDate' | 'startDate' | availability.start_date
-'startTime' | 'startTime' | availability.start_time
-'endDate' | 'endDate' | availability.end_date
-'endTime' | 'endTime' | availability.end_time
-'lastChange' | 'lastChange' | availability.updated_at
-'multipleSlotsAllowed' | 'multipleSlotsAllowed' | availability.multiple_slots_allowed
-'repeat**afterWeeks' | 'repeatAfterWeeks' | availability.every_x_weeks
-'repeat**weekOfMonth' | 'repeatWeekOfMonth' | availability.every_other_week
-'slotTimeInMinutes' | 'slotTimeInMinutes' | availability.time_slot
-'type' | 'type' | availability.type
-'weekday**monday' | 'weekdayMonday' | availability.weekday
-'weekday**tuesday' | 'weekdayTuesday' | availability.weekday
-'weekday**wednesday' | 'weekdayWednesday' | availability.weekday
-'weekday**thursday' | 'weekdayThursday' | availability.weekday
-'weekday**friday' | 'weekdayFriday' | availability.weekday
-'weekday**saturday' | 'weekdaySaturday' | availability.weekday
-'weekday**sunday' | 'weekdaySunday' | availability.weekday
-'workstationCount**callcenter' | 'workstationCountCallcenter' | availability.workstation_count_callcenter
-'workstationCount**intern' | 'workstationCountIntern' | availability.workstation_count_intern
-'workstationCount\_\_public' | 'workstationCountPublic' | availability.workstation_count_public
+
+| Current Mapping                  | New Mapping (camelCase)      | Database Column (snake_case)              |
+| -------------------------------- | ---------------------------- | ----------------------------------------- |
+| 'id'                             | 'id'                         | availability.availability_id              |
+| 'scope\*\*id'                    | 'scopeId'                    | availability.scope_id                     |
+| 'bookable\*\*startInDays'        | 'bookableStartInDays'        | availability.open_from_days               |
+| 'bookable\*\*endInDays'          | 'bookableEndInDays'          | availability.open_until_days              |
+| 'description'                    | 'description'                | availability.comment                      |
+| 'startDate'                      | 'startDate'                  | availability.start_date                   |
+| 'startTime'                      | 'startTime'                  | availability.start_time                   |
+| 'endDate'                        | 'endDate'                    | availability.end_date                     |
+| 'endTime'                        | 'endTime'                    | availability.end_time                     |
+| 'lastChange'                     | 'lastChange'                 | availability.updated_at                   |
+| 'multipleSlotsAllowed'           | 'multipleSlotsAllowed'       | availability.multiple_slots_allowed       |
+| 'repeat\*\*afterWeeks'           | 'repeatAfterWeeks'           | availability.every_x_weeks                |
+| 'repeat\*\*weekOfMonth'          | 'repeatWeekOfMonth'          | availability.every_other_week             |
+| 'slotTimeInMinutes'              | 'slotTimeInMinutes'          | availability.time_slot                    |
+| 'type'                           | 'type'                       | availability.type                         |
+| 'weekday\*\*monday'              | 'weekdayMonday'              | availability.weekday                      |
+| 'weekday\*\*tuesday'             | 'weekdayTuesday'             | availability.weekday                      |
+| 'weekday\*\*wednesday'           | 'weekdayWednesday'           | availability.weekday                      |
+| 'weekday\*\*thursday'            | 'weekdayThursday'            | availability.weekday                      |
+| 'weekday\*\*friday'              | 'weekdayFriday'              | availability.weekday                      |
+| 'weekday\*\*saturday'            | 'weekdaySaturday'            | availability.weekday                      |
+| 'weekday\*\*sunday'              | 'weekdaySunday'              | availability.weekday                      |
+| 'workstationCount\*\*callcenter' | 'workstationCountCallcenter' | availability.workstation_count_callcenter |
+| 'workstationCount\*\*intern'     | 'workstationCountIntern'     | availability.workstation_count_intern     |
+| 'workstationCount\_\_public'     | 'workstationCountPublic'     | availability.workstation_count_public     |
 
 Scope Query Class
-Current Mapping | New Mapping (camelCase) | Database Column (snake_case)
--- | -- | --
-'hint' | 'hint' | scope.hint
-'id' | 'id' | scope.scope_id
-'contact**name' | 'contactName' | scopeprovider.name
-'contact**street' | 'contactStreet' | scope.address
-'contact**email' | 'contactEmail' | scope.admin_email
-'contact**country' | 'contactCountry' | "Germany"
-'lastChange' | 'lastChange' | scope.updated_at
-'preferences**appointment**deallocationDuration' | 'preferencesAppointmentDeallocationDuration' | scope.deletion_duration
-'preferences**appointment**infoForAppointment' | 'preferencesAppointmentInfoForAppointment' | scope.info_for_appointment
-'preferences**appointment**infoForAllAppointments' | 'preferencesAppointmentInfoForAllAppointments' | scope.info_for_all_appointments
-'preferences**appointment**endInDaysDefault' | 'preferencesAppointmentEndInDaysDefault' | scope.appointments_until_days
-'preferences**appointment**multipleSlotsEnabled' | 'preferencesAppointmentMultipleSlotsEnabled' | scope.multiple_appointments
-'preferences**appointment**reservationDuration' | 'preferencesAppointmentReservationDuration' | scope.reservation_duration
-'preferences**appointment**activationDuration' | 'preferencesAppointmentActivationDuration' | scope.activation_duration
-'preferences**appointment**startInDaysDefault' | 'preferencesAppointmentStartInDaysDefault' | scope.appointments_from_days
-'preferences**appointment**notificationConfirmationEnabled' | 'preferencesAppointmentNotificationConfirmationEnabled' | scope.sms_confirmation_enabled
-'preferences**appointment**notificationHeadsUpEnabled' | 'preferencesAppointmentNotificationHeadsUpEnabled' | scope.sms_notification_enabled
-'preferences**client**alternateAppointmentUrl' | 'preferencesClientAlternateAppointmentUrl' | scope.qtv_url
-'preferences**client**amendmentActivated' | 'preferencesClientAmendmentActivated' | scope.comment_required
-'preferences**client**amendmentLabel' | 'preferencesClientAmendmentLabel' | scope.comment_label
-'preferences**client**emailFrom' | 'preferencesClientEmailFrom' | scopemail.sender_address
-'preferences**client**emailRequired' | 'preferencesClientEmailRequired' | scope.email_required
-'preferences**client**emailConfirmationActivated' | 'preferencesClientEmailConfirmationActivated' | scope.email_confirmation_activated
-'preferences**client**telephoneActivated' | 'preferencesClientTelephoneActivated' | scope.phone_enabled
-'preferences**client**telephoneRequired' | 'preferencesClientTelephoneRequired' | scope.phone_required
-'preferences**client**appointmentsPerMail' | 'preferencesClientAppointmentsPerMail' | scope.appointments_per_mail
-'preferences**client**slotsPerAppointment' | 'preferencesClientSlotsPerAppointment' | scope.slots_per_appointment
-'preferences**client**whitelistedMails' | 'preferencesClientWhitelistedMails' | scope.whitelisted_mails
-'preferences**client**customTextfieldActivated' | 'preferencesClientCustomTextfieldActivated' | scope.custom_text_field_active
-'preferences**client**customTextfieldRequired' | 'preferencesClientCustomTextfieldRequired' | scope.custom_text_field_required
-'preferences**client**customTextfieldLabel' | 'preferencesClientCustomTextfieldLabel' | scope.custom_text_field_label
-'preferences**client**customTextfield2Activated' | 'preferencesClientCustomTextfield2Activated' | scope.custom_text_field2_active
-'preferences**client**customTextfield2Required' | 'preferencesClientCustomTextfield2Required' | scope.custom_text_field2_required
-'preferences**client**customTextfield2Label' | 'preferencesClientCustomTextfield2Label' | scope.custom_text_field2_label
-'preferences**client**captchaActivatedRequired' | 'preferencesClientCaptchaActivatedRequired' | scope.captcha_activated_required
-'preferences**client**adminMailOnAppointment' | 'preferencesClientAdminMailOnAppointment' | scope.admin_mail_on_appointment
-'preferences**client**adminMailOnDeleted' | 'preferencesClientAdminMailOnDeleted' | scope.admin_mail_on_deleted
-'preferences**client**adminMailOnUpdated' | 'preferencesClientAdminMailOnUpdated' | scope.admin_mail_on_updated
-'preferences**client**adminMailOnMailSent' | 'preferencesClientAdminMailOnMailSent' | scope.admin_mail_on_mail_sent
-'preferences**notifications**confirmationContent' | 'preferencesNotificationsConfirmationContent' | scope.sms_confirmation_text
-'preferences**notifications**headsUpContent' | 'preferencesNotificationsHeadsUpContent' | scope.sms_notification_text
-'preferences**notifications**headsUpTime' | 'preferencesNotificationsHeadsUpTime' | scope.sms_notification_deadline
-'preferences**pickup**alternateName' | 'preferencesPickupAlternateName' | scope.pickup_counter_name
-'preferences**pickup**isDefault' | 'preferencesPickupIsDefault' | scope.default_pickup_location
-'preferences**queue**callCountMax' | 'preferencesQueueCallCountMax' | scope.recall_count
-'preferences**queue**callDisplayText' | 'preferencesQueueCallDisplayText' | scope.display_text
-'preferences**queue**firstNumber' | 'preferencesQueueFirstNumber' | scope.first_queue_number
-'preferences**queue**lastNumber' | 'preferencesQueueLastNumber' | scope.last_queue_number
-'preferences**queue**maxNumberContingent' | 'preferencesQueueMaxNumberContingent' | scope.queue_number_contingent
-'preferences**queue**processingTimeAverage' | 'preferencesQueueProcessingTimeAverage' | scope.processing_time
-'preferences**queue**publishWaitingTimeEnabled' | 'preferencesQueuePublishWaitingTimeEnabled' | scope.publish_waiting_time
-'preferences**queue**statisticsEnabled' | 'preferencesQueueStatisticsEnabled' | scope.statistics_enabled
-'preferences**survey**emailContent' | 'preferencesSurveyEmailContent' | scope.customer_survey_email_text
-'preferences**survey**enabled' | 'preferencesSurveyEnabled' | scope.customer_survey
-'preferences**survey**label' | 'preferencesSurveyLabel' | scope.customer_survey_label
-'preferences**ticketprinter**buttonName' | 'preferencesTicketprinterButtonName' | scope.location_info_line
-'preferences**ticketprinter**confirmationEnabled' | 'preferencesTicketprinterConfirmationEnabled' | scope.sms_wms_confirmation
-'preferences**ticketprinter**deactivatedText' | 'preferencesTicketprinterDeactivatedText' | scope.queue_hint
-'preferences**ticketprinter**notificationsAmendmentEnabled' | 'preferencesTicketprinterNotificationsAmendmentEnabled' | scope.sms_addition
-'preferences**ticketprinter**notificationsEnabled' | 'preferencesTicketprinterNotificationsEnabled' | scope.sms_queue
-'preferences**ticketprinter**notificationsDelay' | 'preferencesTicketprinterNotificationsDelay' | scope.sms_kiosk_offer_deadline
-'preferences**workstation**emergencyEnabled' | 'preferencesWorkstationEmergencyEnabled' | scope.emergency_function
-'preferences**workstation**emergencyRefreshInterval' | 'preferencesWorkstationEmergencyRefreshInterval' | scope.emergency_refresh_interval
-'shortName' | 'shortName' | scope.short_name
-'status**emergency**acceptedByWorkstation' | 'statusEmergencyAcceptedByWorkstation' | scope.emergency_response
-'status**emergency**activated' | 'statusEmergencyActivated' | scope.emergency_triggered
-'status**emergency**calledByWorkstation' | 'statusEmergencyCalledByWorkstation' | scope.emergency_initiation
-'status**queue**ghostWorkstationCount' | 'statusQueueGhostWorkstationCount' | scope.virtual_processor_count
-'status**queue**givenNumberCount' | 'statusQueueGivenNumberCount' | scope.assigned_queue_numbers
-'status**queue**lastGivenNumber' | 'statusQueueLastGivenNumber' | scope.last_queue_number
-'status**queue**lastGivenNumberTimestamp' | 'statusQueueLastGivenNumberTimestamp' | scope.queue_number_date
+
+| Current Mapping                                             | New Mapping (camelCase)                                 | Database Column (snake_case)       |
+| ----------------------------------------------------------- | ------------------------------------------------------- | ---------------------------------- |
+| 'hint'                                                      | 'hint'                                                  | scope.hint                         |
+| 'id'                                                        | 'id'                                                    | scope.scope_id                     |
+| 'contact\*\*name'                                           | 'contactName'                                           | scopeprovider.name                 |
+| 'contact\*\*street'                                         | 'contactStreet'                                         | scope.address                      |
+| 'contact\*\*email'                                          | 'contactEmail'                                          | scope.admin_email                  |
+| 'contact\*\*country'                                        | 'contactCountry'                                        | "Germany"                          |
+| 'lastChange'                                                | 'lastChange'                                            | scope.updated_at                   |
+| 'preferences**appointment**deallocationDuration'            | 'preferencesAppointmentDeallocationDuration'            | scope.deletion_duration            |
+| 'preferences**appointment**infoForAppointment'              | 'preferencesAppointmentInfoForAppointment'              | scope.info_for_appointment         |
+| 'preferences**appointment**infoForAllAppointments'          | 'preferencesAppointmentInfoForAllAppointments'          | scope.info_for_all_appointments    |
+| 'preferences**appointment**endInDaysDefault'                | 'preferencesAppointmentEndInDaysDefault'                | scope.appointments_until_days      |
+| 'preferences**appointment**multipleSlotsEnabled'            | 'preferencesAppointmentMultipleSlotsEnabled'            | scope.multiple_appointments        |
+| 'preferences**appointment**reservationDuration'             | 'preferencesAppointmentReservationDuration'             | scope.reservation_duration         |
+| 'preferences**appointment**activationDuration'              | 'preferencesAppointmentActivationDuration'              | scope.activation_duration          |
+| 'preferences**appointment**startInDaysDefault'              | 'preferencesAppointmentStartInDaysDefault'              | scope.appointments_from_days       |
+| 'preferences**appointment**notificationConfirmationEnabled' | 'preferencesAppointmentNotificationConfirmationEnabled' | scope.sms_confirmation_enabled     |
+| 'preferences**appointment**notificationHeadsUpEnabled'      | 'preferencesAppointmentNotificationHeadsUpEnabled'      | scope.sms_notification_enabled     |
+| 'preferences**client**alternateAppointmentUrl'              | 'preferencesClientAlternateAppointmentUrl'              | scope.qtv_url                      |
+| 'preferences**client**amendmentActivated'                   | 'preferencesClientAmendmentActivated'                   | scope.comment_required             |
+| 'preferences**client**amendmentLabel'                       | 'preferencesClientAmendmentLabel'                       | scope.comment_label                |
+| 'preferences**client**emailFrom'                            | 'preferencesClientEmailFrom'                            | scopemail.sender_address           |
+| 'preferences**client**emailRequired'                        | 'preferencesClientEmailRequired'                        | scope.email_required               |
+| 'preferences**client**emailConfirmationActivated'           | 'preferencesClientEmailConfirmationActivated'           | scope.email_confirmation_activated |
+| 'preferences**client**telephoneActivated'                   | 'preferencesClientTelephoneActivated'                   | scope.phone_enabled                |
+| 'preferences**client**telephoneRequired'                    | 'preferencesClientTelephoneRequired'                    | scope.phone_required               |
+| 'preferences**client**appointmentsPerMail'                  | 'preferencesClientAppointmentsPerMail'                  | scope.appointments_per_mail        |
+| 'preferences**client**slotsPerAppointment'                  | 'preferencesClientSlotsPerAppointment'                  | scope.slots_per_appointment        |
+| 'preferences**client**whitelistedMails'                     | 'preferencesClientWhitelistedMails'                     | scope.whitelisted_mails            |
+| 'preferences**client**customTextfieldActivated'             | 'preferencesClientCustomTextfieldActivated'             | scope.custom_text_field_active     |
+| 'preferences**client**customTextfieldRequired'              | 'preferencesClientCustomTextfieldRequired'              | scope.custom_text_field_required   |
+| 'preferences**client**customTextfieldLabel'                 | 'preferencesClientCustomTextfieldLabel'                 | scope.custom_text_field_label      |
+| 'preferences**client**customTextfield2Activated'            | 'preferencesClientCustomTextfield2Activated'            | scope.custom_text_field2_active    |
+| 'preferences**client**customTextfield2Required'             | 'preferencesClientCustomTextfield2Required'             | scope.custom_text_field2_required  |
+| 'preferences**client**customTextfield2Label'                | 'preferencesClientCustomTextfield2Label'                | scope.custom_text_field2_label     |
+| 'preferences**client**captchaActivatedRequired'             | 'preferencesClientCaptchaActivatedRequired'             | scope.captcha_activated_required   |
+| 'preferences**client**adminMailOnAppointment'               | 'preferencesClientAdminMailOnAppointment'               | scope.admin_mail_on_appointment    |
+| 'preferences**client**adminMailOnDeleted'                   | 'preferencesClientAdminMailOnDeleted'                   | scope.admin_mail_on_deleted        |
+| 'preferences**client**adminMailOnUpdated'                   | 'preferencesClientAdminMailOnUpdated'                   | scope.admin_mail_on_updated        |
+| 'preferences**client**adminMailOnMailSent'                  | 'preferencesClientAdminMailOnMailSent'                  | scope.admin_mail_on_mail_sent      |
+| 'preferences**notifications**confirmationContent'           | 'preferencesNotificationsConfirmationContent'           | scope.sms_confirmation_text        |
+| 'preferences**notifications**headsUpContent'                | 'preferencesNotificationsHeadsUpContent'                | scope.sms_notification_text        |
+| 'preferences**notifications**headsUpTime'                   | 'preferencesNotificationsHeadsUpTime'                   | scope.sms_notification_deadline    |
+| 'preferences**pickup**alternateName'                        | 'preferencesPickupAlternateName'                        | scope.pickup_counter_name          |
+| 'preferences**pickup**isDefault'                            | 'preferencesPickupIsDefault'                            | scope.default_pickup_location      |
+| 'preferences**queue**callCountMax'                          | 'preferencesQueueCallCountMax'                          | scope.recall_count                 |
+| 'preferences**queue**callDisplayText'                       | 'preferencesQueueCallDisplayText'                       | scope.display_text                 |
+| 'preferences**queue**firstNumber'                           | 'preferencesQueueFirstNumber'                           | scope.first_queue_number           |
+| 'preferences**queue**lastNumber'                            | 'preferencesQueueLastNumber'                            | scope.last_queue_number            |
+| 'preferences**queue**maxNumberContingent'                   | 'preferencesQueueMaxNumberContingent'                   | scope.queue_number_contingent      |
+| 'preferences**queue**processingTimeAverage'                 | 'preferencesQueueProcessingTimeAverage'                 | scope.processing_time              |
+| 'preferences**queue**publishWaitingTimeEnabled'             | 'preferencesQueuePublishWaitingTimeEnabled'             | scope.publish_waiting_time         |
+| 'preferences**queue**statisticsEnabled'                     | 'preferencesQueueStatisticsEnabled'                     | scope.statistics_enabled           |
+| 'preferences**survey**emailContent'                         | 'preferencesSurveyEmailContent'                         | scope.customer_survey_email_text   |
+| 'preferences**survey**enabled'                              | 'preferencesSurveyEnabled'                              | scope.customer_survey              |
+| 'preferences**survey**label'                                | 'preferencesSurveyLabel'                                | scope.customer_survey_label        |
+| 'preferences**ticketprinter**buttonName'                    | 'preferencesTicketprinterButtonName'                    | scope.location_info_line           |
+| 'preferences**ticketprinter**confirmationEnabled'           | 'preferencesTicketprinterConfirmationEnabled'           | scope.sms_wms_confirmation         |
+| 'preferences**ticketprinter**deactivatedText'               | 'preferencesTicketprinterDeactivatedText'               | scope.queue_hint                   |
+| 'preferences**ticketprinter**notificationsAmendmentEnabled' | 'preferencesTicketprinterNotificationsAmendmentEnabled' | scope.sms_addition                 |
+| 'preferences**ticketprinter**notificationsEnabled'          | 'preferencesTicketprinterNotificationsEnabled'          | scope.sms_queue                    |
+| 'preferences**ticketprinter**notificationsDelay'            | 'preferencesTicketprinterNotificationsDelay'            | scope.sms_kiosk_offer_deadline     |
+| 'preferences**workstation**emergencyEnabled'                | 'preferencesWorkstationEmergencyEnabled'                | scope.emergency_function           |
+| 'preferences**workstation**emergencyRefreshInterval'        | 'preferencesWorkstationEmergencyRefreshInterval'        | scope.emergency_refresh_interval   |
+| 'shortName'                                                 | 'shortName'                                             | scope.short_name                   |
+| 'status**emergency**acceptedByWorkstation'                  | 'statusEmergencyAcceptedByWorkstation'                  | scope.emergency_response           |
+| 'status**emergency**activated'                              | 'statusEmergencyActivated'                              | scope.emergency_triggered          |
+| 'status**emergency**calledByWorkstation'                    | 'statusEmergencyCalledByWorkstation'                    | scope.emergency_initiation         |
+| 'status**queue**ghostWorkstationCount'                      | 'statusQueueGhostWorkstationCount'                      | scope.virtual_processor_count      |
+| 'status**queue**givenNumberCount'                           | 'statusQueueGivenNumberCount'                           | scope.assigned_queue_numbers       |
+| 'status**queue**lastGivenNumber'                            | 'statusQueueLastGivenNumber'                            | scope.last_queue_number            |
+| 'status**queue**lastGivenNumberTimestamp'                   | 'statusQueueLastGivenNumberTimestamp'                   | scope.queue_number_date            |
 
 ### Phase 2: Process & Citizen Mappings (Medium Priority)
 
 Process Query Class
-Current Mapping | New Mapping (camelCase) | Database Column (snake_case)
--- | -- | --
-'amendment' | 'amendment' | process.comment
-'id' | 'id' | process.citizen_id
-'appointments**0**date' | 'appointments0Date' | process.appointment_datetime
-'scope**id' | 'scopeId' | process.scope_id
-'appointments**0**scope**id' | 'appointments0ScopeId' | process.scope_id
+
+| Current Mapping                | New Mapping (camelCase) | Database Column (snake_case) |
+| ------------------------------ | ----------------------- | ---------------------------- |
+| 'amendment'                    | 'amendment'             | process.comment              |
+| 'id'                           | 'id'                    | process.citizen_id           |
+| 'appointments**0**date'        | 'appointments0Date'     | process.appointment_datetime |
+| 'scope\*\*id'                  | 'scopeId'               | process.scope_id             |
+| 'appointments**0**scope\*\*id' | 'appointments0ScopeId'  | process.scope_id             |
 
 Citizen Query Class
-Current Mapping | New Mapping (camelCase) | Database Column (snake_case)
--- | -- | --
-'id' | 'id' | citizen.citizen_id
-'scopeId' | 'scopeId' | citizen.scope_id
-'pickupLocationId' | 'pickupLocationId' | citizen.pickup_location_id
-'userId' | 'userId' | citizen.user_id
-'name' | 'name' | citizen.name
-'email' | 'email' | citizen.email
-'phone' | 'phone' | citizen.phone
-'comment' | 'comment' | citizen.comment
-'provisionalBooking' | 'provisionalBooking' | citizen.provisional_booking
-'confirmed' | 'confirmed' | citizen.confirmed
-'callSuccessful' | 'callSuccessful' | citizen.call_successful
-'callTime' | 'callTime' | citizen.call_time
-'pickupPerson' | 'pickupPerson' | citizen.pickup_person
-'queueNumber' | 'queueNumber' | citizen.queue_number
-'queueNumberDate' | 'queueNumberDate' | citizen.queue_number_date
-'waitingTime' | 'waitingTime' | citizen.waiting_time
-'processingTime' | 'processingTime' | citizen.processing_time
-'parked' | 'parked' | citizen.parked
-'wasMissed' | 'wasMissed' | citizen.was_missed
-'apiClientId' | 'apiClientId' | citizen.api_client_id
-'source' | 'source' | citizen.source
-'lastChange' | 'lastChange' | citizen.updated_at
+
+| Current Mapping      | New Mapping (camelCase) | Database Column (snake_case) |
+| -------------------- | ----------------------- | ---------------------------- |
+| 'id'                 | 'id'                    | citizen.citizen_id           |
+| 'scopeId'            | 'scopeId'               | citizen.scope_id             |
+| 'pickupLocationId'   | 'pickupLocationId'      | citizen.pickup_location_id   |
+| 'userId'             | 'userId'                | citizen.user_id              |
+| 'name'               | 'name'                  | citizen.name                 |
+| 'email'              | 'email'                 | citizen.email                |
+| 'phone'              | 'phone'                 | citizen.phone                |
+| 'comment'            | 'comment'               | citizen.comment              |
+| 'provisionalBooking' | 'provisionalBooking'    | citizen.provisional_booking  |
+| 'confirmed'          | 'confirmed'             | citizen.confirmed            |
+| 'callSuccessful'     | 'callSuccessful'        | citizen.call_successful      |
+| 'callTime'           | 'callTime'              | citizen.call_time            |
+| 'pickupPerson'       | 'pickupPerson'          | citizen.pickup_person        |
+| 'queueNumber'        | 'queueNumber'           | citizen.queue_number         |
+| 'queueNumberDate'    | 'queueNumberDate'       | citizen.queue_number_date    |
+| 'waitingTime'        | 'waitingTime'           | citizen.waiting_time         |
+| 'processingTime'     | 'processingTime'        | citizen.processing_time      |
+| 'parked'             | 'parked'                | citizen.parked               |
+| 'wasMissed'          | 'wasMissed'             | citizen.was_missed           |
+| 'apiClientId'        | 'apiClientId'           | citizen.api_client_id        |
+| 'source'             | 'source'                | citizen.source               |
+| 'lastChange'         | 'lastChange'            | citizen.updated_at           |
 
 ### Phase 3: Provider & Request Mappings (Lower Priority)
 
 Provider Query Class
-Current Mapping | New Mapping (camelCase) | Database Column (snake_case)
--- | -- | --
-'contact**city' | 'contactCity' | provider.contact_city
-'contact**country' | 'contactCountry' | provider.contact_country
-'contact**name' | 'contactName' | provider.name
-'contact**postalCode' | 'contactPostalCode' | provider.contact_postal_code
-'contact**region' | 'contactRegion' | provider.contact_region
-'contact**street' | 'contactStreet' | provider.contact_street
-'contact\_\_streetNumber' | 'contactStreetNumber' | provider.contact_street_number
-'id' | 'id' | provider.id
-'link' | 'link' | provider.link
-'name' | 'name' | provider.name
-'displayName' | 'displayName' | provider.display_name
-'source' | 'source' | provider.source
-'data' | 'data' | provider.data
+
+| Current Mapping           | New Mapping (camelCase) | Database Column (snake_case)   |
+| ------------------------- | ----------------------- | ------------------------------ |
+| 'contact\*\*city'         | 'contactCity'           | provider.contact_city          |
+| 'contact\*\*country'      | 'contactCountry'        | provider.contact_country       |
+| 'contact\*\*name'         | 'contactName'           | provider.name                  |
+| 'contact\*\*postalCode'   | 'contactPostalCode'     | provider.contact_postal_code   |
+| 'contact\*\*region'       | 'contactRegion'         | provider.contact_region        |
+| 'contact\*\*street'       | 'contactStreet'         | provider.contact_street        |
+| 'contact\_\_streetNumber' | 'contactStreetNumber'   | provider.contact_street_number |
+| 'id'                      | 'id'                    | provider.id                    |
+| 'link'                    | 'link'                  | provider.link                  |
+| 'name'                    | 'name'                  | provider.name                  |
+| 'displayName'             | 'displayName'           | provider.display_name          |
+| 'source'                  | 'source'                | provider.source                |
+| 'data'                    | 'data'                  | provider.data                  |
 
 ## 4. Long-Term Schema Vision (Beyond Renaming)
 

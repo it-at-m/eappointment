@@ -8,7 +8,7 @@ class OwnerByOrganisationTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('basic');
+        $this->setWorkstation();
         $response = $this->render(['id' => 71], [], []); //Charlottenburg-Wilmersdorf
         $this->assertStringContainsString('Berlin', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -23,8 +23,9 @@ class OwnerByOrganisationTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testOrganisationNotFound()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser', 'useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser', 'useraccount');
         $this->expectException('BO\Zmsbackend\Organisation\Exception\OrganisationNotFound');
+
         $this->expectExceptionCode(404);
         $this->render(['id' => 9999], [], []);
     }

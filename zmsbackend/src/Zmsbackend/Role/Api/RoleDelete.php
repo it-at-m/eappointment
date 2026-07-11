@@ -24,7 +24,11 @@ class RoleDelete extends \BO\Zmsbackend\Api\BaseController
             throw new \BO\Zmsbackend\Role\Exception\RoleDoesNotExist();
         }
 
-        $roleModel->deleteRole($roleEntity->id);
+        try {
+            $roleModel->deleteRole($roleEntity->id);
+        } catch (\BO\Zmsbackend\Role\Exception\AssignedUserListNotEmpty $e) {
+            throw new \BO\Zmsbackend\Role\Exception\RoleHasAssignedUsers('', 0, $e);
+        }
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
         $message->data = $roleEntity;

@@ -264,6 +264,7 @@ const sidebarLabels = {
     codeFormatting: "Code Formatting",
     gitHooks: "Git Hooks (Husky)",
     localDbCache: "Local Database and Cache Operations",
+    databaseMigrations: "Database Migrations",
     dependencyUpgrade: "Dependency Upgrade Check",
     phpBaseImages: "PHP Base Images",
     testingAndAutomation: "Testing and Automation",
@@ -279,6 +280,7 @@ const sidebarLabels = {
     onTheFuture: "On the Future",
     databaseRefactor: "Database Refactor",
     standardizeDb: "Standardize Database Table and Field Naming",
+    zeroDowntime: "Zero-Downtime Deployments and Migrations",
     refarchRoadmap: "RefArch Roadmap",
     modernizeArch: "Modernize ZMS Architecture (3-5 Year Plan)",
     backendMergeRefarch: "Refactoring ZMS Backends into Spring RefArch",
@@ -314,6 +316,7 @@ const sidebarLabels = {
     codeFormatting: "Code-Formatierung",
     gitHooks: "Git-Hooks (Husky)",
     localDbCache: "Lokale Datenbank- und Cache-Operationen",
+    databaseMigrations: "Datenbank-Migrationen",
     dependencyUpgrade: "Abhängigkeits-Aktualisierungsprüfung",
     phpBaseImages: "PHP-Basis-Images",
     testingAndAutomation: "Tests und Automatisierung",
@@ -329,6 +332,7 @@ const sidebarLabels = {
     onTheFuture: "Ausblick",
     databaseRefactor: "Datenbank-Refactoring",
     standardizeDb: "Datenbanktabellen- und Feldbenennung standardisieren",
+    zeroDowntime: "Zero-Downtime-Deployments und Migrationen",
     refarchRoadmap: "RefArch-Roadmap",
     modernizeArch: "ZMS-Architektur modernisieren (3-5-Jahresplan)",
     backendMergeRefarch: "Refactoring ZMS Backends in Spring RefArch",
@@ -445,6 +449,10 @@ const buildSidebar = (prefix, lang) => {
           link: `${prefix}/setup-and-development/local-database-and-cache-operations`,
         },
         {
+          text: t.databaseMigrations,
+          link: `${prefix}/setup-and-development/database-migrations`,
+        },
+        {
           text: t.dependencyUpgrade,
           link: `${prefix}/setup-and-development/dependency-upgrade-check`,
         },
@@ -515,6 +523,10 @@ const buildSidebar = (prefix, lang) => {
             {
               text: t.standardizeDb,
               link: `${prefix}/on-the-future/database-refactor/standardize-database-table-and-field-naming`,
+            },
+            {
+              text: t.zeroDowntime,
+              link: `${prefix}/on-the-future/database-refactor/zero-downtime-deployments-and-migrations`,
             },
           ],
         },

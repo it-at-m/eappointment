@@ -22,7 +22,8 @@ class ClusterUpdate extends \BO\Zmsbackend\Api\BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new \BO\Zmsbackend\Helper\User($request))->checkRights('cluster');
+        (new \BO\Zmsbackend\Helper\User($request))->checkPermissions('cluster');
+
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Cluster($input);
         $cluster = (new Query())->readEntity($args['id']);

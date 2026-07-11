@@ -36,7 +36,6 @@ class UserAccountTest extends \BO\Zmsbackend\Tests\Service\Base
         $userAccount = $query->writeEntity($input, 2);
         $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $userAccount);
 
-        $userAccount->setRights('organisation');
         $userAccount = $query->writeUpdatedEntity($userAccount->id, $userAccount, 2);
 
         $workstation = (new \BO\Zmsbackend\Workstation\Service\Workstation())
@@ -224,6 +223,18 @@ class UserAccountTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertIsArray($createdBasicUser->roles);
         $this->assertCount(1, $createdBasicUser->roles);
         $this->assertSame(['agent_queue'], $createdBasicUser->roles);
+    }
+
+    public function testSystemAdminRoleProvidesSuperuserPermission()
+    {
+        $query = new Query();
+        $user = $this->getTestEntity();
+        $user->id = $user->id . rand();
+        $user['roles'] = ['system_admin'];
+        $createdUser = $query->writeEntity($user, 1);
+        $this->assertSame(['system_admin'], $createdUser->roles);
+        $this->assertTrue($createdUser->permissions['superuser']);
+        $this->assertTrue($createdUser->isSuperUser());
     }
 
     protected function getTestEntity()

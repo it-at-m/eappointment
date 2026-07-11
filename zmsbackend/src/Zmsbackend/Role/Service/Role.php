@@ -23,6 +23,21 @@ class Role extends \BO\Zmsbackend\Base
         return $role;
     }
 
+    public function readRoleByName(string $name, int $resolveReferences = 1): ?Entity
+    {
+        $query = new Query\Role(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionName($name);
+
+        $role = $this->fetchOne($query, new Entity());
+        if (! $role->hasId()) {
+            return null;
+        }
+
+        return $role;
+    }
+
     public function readAllRoles(string $order = 'ASC', int $resolveReferences = 1): Collection
     {
         $roleList = new Collection();
@@ -135,12 +150,20 @@ class Role extends \BO\Zmsbackend\Base
     public function deleteRole(int $roleId): ?Entity
     {
         $entity = $this->readRoleById($roleId);
-        $deleteAssignments = new \BO\Zmsbackend\Role\Repository\UserRole(\BO\Zmsbackend\Query\Base::DELETE);
-        $deleteAssignments->addConditionRoleId($roleId);
-        $this->deleteItem($deleteAssignments);
+        if (! $entity || ! $entity->hasId()) {
+            return null;
+        }
+
+        $assignedUserCount = (int) ($entity['assignedUserCount'] ?? 0);
+        if ($assignedUserCount > 0) {
+            throw new \BO\Zmsbackend\Role\Exception\AssignedUserListNotEmpty();
+        }
+
         $query = new \BO\Zmsbackend\Role\Repository\Role(\BO\Zmsbackend\Query\Base::DELETE);
+
         $query->addConditionRoleId($roleId);
         $deleted = ($this->deleteItem($query)) ? $entity : null;
+
         if ($deleted) {
             (new \BO\Zmsbackend\Useraccount\Service\Useraccount())->invalidateAllCaches();
         }

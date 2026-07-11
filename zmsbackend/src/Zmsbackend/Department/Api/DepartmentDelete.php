@@ -23,8 +23,9 @@ class DepartmentDelete extends \BO\Zmsbackend\Api\BaseController
         array $args
     ) {
         $query = new Query();
-        (new \BO\Zmsbackend\Helper\User($request, 2))->checkRights('department');
+        (new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions('department');
         $department = \BO\Zmsbackend\Helper\User::checkDepartment($args['id']);
+
         $query->deleteEntity($department->id);
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);

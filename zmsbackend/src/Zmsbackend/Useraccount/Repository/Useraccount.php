@@ -137,17 +137,6 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
                 . 'JOIN role r ON r.id = ur.role_id '
                 . 'WHERE ur.user_id = useraccount.NutzerID)'
             ),
-            'rights__superuser' => self::expression('`useraccount`.`Berechtigung` = 90'),
-            'rights__organisation' => self::expression('`useraccount`.`Berechtigung` >= 70'),
-            'rights__department' => self::expression('`useraccount`.`Berechtigung` >= 50'),
-            'rights__cluster' => self::expression('`useraccount`.`Berechtigung` >= 40'),
-            'rights__useraccount' => self::expression('`useraccount`.`Berechtigung` >= 40'),
-            'rights__scope' => self::expression('`useraccount`.`Berechtigung` >= 30'),
-            'rights__departmentStats' => self::expression('`useraccount`.`Berechtigung` >= 25'),
-            'rights__availability' => self::expression('`useraccount`.`Berechtigung` >= 20'),
-            'rights__ticketprinter' => self::expression('`useraccount`.`Berechtigung` >= 15'),
-            'rights__audit' => self::expression('`useraccount`.`Berechtigung` = 5 OR `useraccount`.`Berechtigung` = 90'),
-            'rights__basic' => self::expression('`useraccount`.`Berechtigung` >= 0'),
             'permissions__appointment' => $this->permissionExists('appointment'),
             'permissions__availability' => $this->permissionExists('availability'),
             'permissions__calldisplay' => $this->permissionExists('calldisplay'),
@@ -249,7 +238,6 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         $data = array();
         $data['Name'] = $entity->id;
         $data['Passworthash'] = (isset($entity->password)) ? $entity->password : null;
-        $data['Berechtigung'] = $entity->getRightsLevel();
         $data['BehoerdenID'] = 0;
         if (!$entity->isSuperUser() && isset($entity->departments) && 0 < $entity->departments->count()) {
             $data['BehoerdenID'] = $entity->departments->getFirst()->id;

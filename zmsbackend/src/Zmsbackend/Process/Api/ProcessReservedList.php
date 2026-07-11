@@ -23,7 +23,8 @@ class ProcessReservedList extends \BO\Zmsbackend\Api\BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new \BO\Zmsbackend\Helper\User($request))->checkRights('basic');
+        (new \BO\Zmsbackend\Helper\User($request))->checkPermissions();
+
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);

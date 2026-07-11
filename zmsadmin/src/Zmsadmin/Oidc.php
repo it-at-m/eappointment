@@ -9,6 +9,7 @@ namespace BO\Zmsadmin;
 
 use BO\Zmsclient\ModuleAccess;
 use BO\Zmsclient\OidcHandler;
+use BO\Zmsadmin\Helper\RestrictedRoleRedirect;
 
 class Oidc extends BaseController
 {
@@ -29,6 +30,10 @@ class Oidc extends BaseController
 
             if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_ADMIN, $result['workstation'], $response)) {
                 return $wrongModuleResponse;
+            }
+
+            if ($restrictedRoleRedirect = RestrictedRoleRedirect::create($result['workstation']->getUseraccount())) {
+                return $restrictedRoleRedirect;
             }
 
             if ($result['redirect_to_index']) {

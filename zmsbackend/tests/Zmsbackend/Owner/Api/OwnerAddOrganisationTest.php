@@ -9,7 +9,6 @@ class OwnerAddOrganisationTest extends \BO\Zmsbackend\Tests\Api\Base
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('organisation')
-            ->setRights('organisation')
             ->addDepartment([
                 'id' => 96 // Bürgeramt, Treptow-Köpenick (owner Berlin #23)
             ]);
@@ -26,7 +25,6 @@ class OwnerAddOrganisationTest extends \BO\Zmsbackend\Tests\Api\Base
     public function testUnvalidOrganisation()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('organisation')
-            ->setRights('organisation')
             ->addDepartment([
                 'id' => 96
             ]);

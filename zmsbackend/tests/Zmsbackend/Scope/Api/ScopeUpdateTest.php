@@ -20,7 +20,7 @@ class ScopeUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testEmpty()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('scope');
+        $this->setWorkstation();
         $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
@@ -28,7 +28,7 @@ class ScopeUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
     public function testUnvalidInput()
     {
         // unvalid email
-        $this->setWorkstation()->getUseraccount()->setRights('scope');
+        $this->setWorkstation();
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
         $this->render(['id' => 141], [
@@ -49,8 +49,9 @@ class ScopeUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testNotFound()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('scope');
+        $this->setWorkstation()->getUseraccount()->setPermissions('scope');
         $this->expectException('\BO\Zmsbackend\Scope\Exception\ScopeNotFound');
+
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [
             '__body' => $this->readFixture('GetScope_lessData.json')
