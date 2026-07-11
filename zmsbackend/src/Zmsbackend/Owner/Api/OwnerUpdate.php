@@ -30,7 +30,6 @@ class OwnerUpdate extends \BO\Zmsbackend\Api\BaseController
         if (! $owner->hasId()) {
             throw new \BO\Zmsbackend\Owner\Exception\OwnerNotFound();
         }(new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions(
-
             new \BO\Zmsentities\Useraccount\EntityAccess($owner)
         );
 

@@ -72,7 +72,6 @@ class AvailabilityListByScope extends \BO\Zmsbackend\Api\BaseController
     {
         try {
             (new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions(
-
                 'availability',
                 new \BO\Zmsentities\Useraccount\EntityAccess($scope)
             );

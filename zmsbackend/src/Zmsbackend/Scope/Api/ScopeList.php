@@ -31,7 +31,6 @@ class ScopeList extends \BO\Zmsbackend\Api\BaseController
         }
         if ((new \BO\Zmsbackend\Helper\User($request))->hasLogin()) {
             (new \BO\Zmsbackend\Helper\User($request))->checkAnyPermission('restrictedscope', 'scope');
-
         } else {
             $scopeList = $scopeList->withLessData();
             $message->meta->reducedData = true;

@@ -42,7 +42,6 @@ class ScopeGet extends \BO\Zmsbackend\Api\BaseController
             } else {
                 $userAccess->checkPermissions($entityAccess);
             }
-
         } else {
             $scope = ($hasGQL) ? $scope : $scope->withLessData($keepLessData);
             $message->meta->reducedData = true;

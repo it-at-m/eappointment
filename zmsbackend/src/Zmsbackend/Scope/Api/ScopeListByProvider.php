@@ -33,7 +33,6 @@ class ScopeListByProvider extends \BO\Zmsbackend\Api\BaseController
         $scopeList = (new Query())->readByProviderId($provider->id, $resolveReferences);
         $user = new \BO\Zmsbackend\Helper\User($request);
         if (! $user->hasLogin() && ! \BO\Zmsbackend\Helper\User::hasXApiKey($request)) {
-
             $scopeList = $scopeList->withLessData();
             $message->meta->reducedData = true;
         }

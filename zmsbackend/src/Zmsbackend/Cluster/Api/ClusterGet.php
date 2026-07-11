@@ -32,7 +32,6 @@ class ClusterGet extends \BO\Zmsbackend\Api\BaseController
         if ($user->hasLogin() || $resolveReferences > 0) {
             $resolveReferences = ($resolveReferences > 0 ) ? $resolveReferences : 1;
             $user->checkPermissions();
-
         } else {
             $message->meta->reducedData = true;
         }
