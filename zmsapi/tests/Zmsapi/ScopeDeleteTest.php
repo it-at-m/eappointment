@@ -10,7 +10,7 @@ class ScopeDeleteTest extends Base
     {
         $department = (new \BO\Zmsentities\Department());
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => 615]);
-        $this->setWorkstation()->getUserAccount()->setRights('scope')->addDepartment($department);
+        $this->setWorkstation()->getUserAccount()->setPermissions('scope')->addDepartment($department);
         $response = $this->render(['id' => 615], [], []); //Ordnungsamt Charlottenburg
         $this->assertStringContainsString('Ordnungsamt Charlottenburg-Wilmersdorf ', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -18,14 +18,14 @@ class ScopeDeleteTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('scope');
+        $this->setWorkstation()->getUseraccount()->setPermissions('scope');
         $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
 
     public function testScopeNotFound()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('scope');
+        $this->setWorkstation()->getUseraccount()->setPermissions('scope');
         $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);
@@ -33,8 +33,17 @@ class ScopeDeleteTest extends Base
 
     public function testNoRights()
     {
-        $this->setWorkstation();
-        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $department = (new \BO\Zmsentities\Department());
+        $department->scopes[] = new \BO\Zmsentities\Scope(['id' => 615]);
+        $this->setWorkstation()->getUserAccount()->addDepartment($department);
+        $this->expectException('BO\\Zmsentities\\Exception\\UserAccountMissingRights');
         $this->render(['id' => 615], [], []); //Ordnungsamt Charlottenburg
+    }
+
+    public function testNoEntityAccess()
+    {
+        $this->setWorkstation()->getUserAccount()->setPermissions('scope');
+        $this->expectException('BO\\Zmsentities\\Exception\\UserAccountMissingRights');
+        $this->render(['id' => 615], [], []);
     }
 }

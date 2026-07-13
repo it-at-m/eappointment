@@ -19,11 +19,19 @@ class ChangelogTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'secure-token',
+                    'response' => $this->readFixture("GET_config.json")
                 ]
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString('Changelog', (string)$response->getBody());
+        $this->assertStringContainsString('https://it-at-m.github.io/eappointment/overview/changelog.html', (string)$response->getBody()); 
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -36,13 +44,21 @@ class ChangelogTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'secure-token',
+                    'response' => $this->readFixture("GET_config.json")
                 ]
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString('Changelog', (string)$response->getBody());
         $this->assertStringContainsString('Bürgeramt Heerstraße', (string)$response->getBody());
-        $this->assertStringContainsString('Sachbearbeiterplatz', (string)$response->getBody());
+        $this->assertStringContainsString('Sachbearbeiter', (string)$response->getBody());
+        $this->assertStringContainsString('https://it-at-m.github.io/eappointment/overview/changelog.html', (string)$response->getBody()); 
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

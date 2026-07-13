@@ -2,8 +2,6 @@
 
 namespace BO\Zmsapi\Tests;
 
-use BO\Zmsapi\Helper\User;
-
 class ScopeQueueTest extends Base
 {
     protected $classname = "ScopeQueue";
@@ -11,7 +9,6 @@ class ScopeQueueTest extends Base
     public function testRendering()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('scope');
         $response = $this->render(['id' => 141], [], []);
         $this->assertStringContainsString('queue.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -28,7 +25,6 @@ class ScopeQueueTest extends Base
     public function testQueueEmpty()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('scope');
         $response = $this->render(['id' => 141], ['date' => '2015-04-01'], []);
         $this->assertTrue(200 == $response->getStatusCode());
     }
@@ -36,7 +32,6 @@ class ScopeQueueTest extends Base
     public function testScopeNotFound()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('scope');
         $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);

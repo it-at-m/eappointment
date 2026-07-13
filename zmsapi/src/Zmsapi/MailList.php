@@ -23,7 +23,7 @@ class MailList extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('superuser');
+        (new Helper\User($request))->checkPermissions('superuser');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $limit = Validator::param('limit')->isNumber()->setDefault(300)->getValue();
         $onlyIds = Validator::param('onlyIds')->isBool()->setDefault(false)->getValue();

@@ -21,7 +21,7 @@ class DepartmentWorkstationList extends BaseController
         ResponseInterface $response,
         array $args
     ): ResponseInterface {
-        (new Helper\User($request))->checkRights('useraccount');
+        (new Helper\User($request))->checkPermissions('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $department = Helper\User::checkDepartment($args['id']);
 

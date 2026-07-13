@@ -26,8 +26,8 @@ class ScopeCalldisplayImageDataDelete extends BaseController
         $scope = (new Query())->readEntity($args['id']);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
-        }(new Helper\User($request, 2))->checkRights(
-            'scope',
+        }(new Helper\User($request, 2))->checkPermissions(
+            'calldisplay',
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
         );
 

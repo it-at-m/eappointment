@@ -15,7 +15,7 @@ class OrganisationUpdateTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('organisation')
+        $this->setWorkstation()->getUseraccount()->setPermissions('organisation')
             ->addDepartment([
                 'id' => 55
             ]);
@@ -28,14 +28,14 @@ class OrganisationUpdateTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('organisation');
+        $this->setWorkstation()->getUseraccount()->setPermissions('organisation');
         $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
 
     public function testNotFound()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('organisation');
+        $this->setWorkstation()->getUseraccount()->setPermissions('organisation');
         $this->expectException('\BO\Zmsapi\Exception\Organisation\OrganisationNotFound');
         $this->expectExceptionCode(404);
         $this->render(["id" => 9999], [
@@ -45,7 +45,18 @@ class OrganisationUpdateTest extends Base
 
     public function testNoRights()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->setWorkstation()->getUseraccount()
+            ->addDepartment(['id' => 55]);
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectExceptionCode(403);
+        $this->render(["id" => 54], [
+            '__body' => $this->readFixture("GetOrganisation.json")
+        ], []);
+    }
+
+    public function testNoEntityAccess()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('organisation');
         $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->expectExceptionCode(403);
         $this->render(["id" => 54], [

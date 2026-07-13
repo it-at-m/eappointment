@@ -26,7 +26,7 @@ class ProcessGetByExternalUserId extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request, 2))->checkRights();
+        (new Helper\User($request, 2))->checkPermissions();
 
         $resolveReferences = (int) (Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue() ?? 2);
         $processId = (int) $args['id'];

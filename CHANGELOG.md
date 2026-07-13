@@ -1,3 +1,42 @@
+## Release Muc-44 (10.07.2026)
+                                
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1384'>ZMSKVR-1384</a>] -         Kundensuche zeigt bestehenden Termin nicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1435'>ZMSKVR-1435</a>] -         Link zu Hauptdienstleistung bei der Kombinierbarkeit Fehlerhaft
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1444'>ZMSKVR-1444</a>] -         Dienstleistungsstatistik: Im Excel-Export wird „Uncategorized“ statt „Dienstleistung wurde nicht erfasst“ angezeigt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1448'>ZMSKVR-1448</a>] -         Fehlermeldungen im Bürgerfrontend bleiben persistent nach Aktionen der Fehlerbehebung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1453'>ZMSKVR-1453</a>] -         Terminvarianten Verbesserungen (Link zur DL+ Orteingaben beim Verschieben,  Ort beim G-K- Kunde generell)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1501'>ZMSKVR-1501</a>] -         DLDB-Mapper: getSlotTime() berücksichtigt 45-Minuten-Slotzeit nicht
+</li>
+</ul>
+                                            
+<h2>        Spike
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1420'>ZMSKVR-1420</a>] -         Zero Downtime Deployments und DB Expand und Contract Migrationen
+</li>
+</ul>
+                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1377'>ZMSKVR-1377</a>] -         UX/UI von &quot;neue Öffnungszeit&quot; verbessern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1437'>ZMSKVR-1437</a>] -         Innenrevision/Benutzerverwaltung  weitere Anpassungen UI
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1491'>ZMSKVR-1491</a>] -         Anpassung der rechtlichen Hinweise im letzten Buchungsschritt
+</li>
+</ul>
+                                                        
+                                                        
+
 ## Release Muc-43 (19.06.2026) 
 
 <h2>        Bug

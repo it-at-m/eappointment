@@ -19,17 +19,6 @@ class Useraccount extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'rights' => [
-                "availability" => false,
-                "basic" => true,
-                "cluster" => false,
-                "department" => false,
-                "organisation" => false,
-                "scope" => false,
-                "superuser" => false,
-                "ticketprinter" => false,
-                "useraccount" => false,
-            ],
             'permissions' => [
                 "appointment" => false,
                 "availability" => false,
@@ -116,24 +105,6 @@ class Useraccount extends Schema\Entity
         return $this->getDepartmentList()->getUniqueScopeList()->hasEntity($scopeId);
     }
 
-    /**
-     * @todo Remove this function, keep no contraint on old DB schema in zmsentities
-     */
-    public function getRightsLevel()
-    {
-        return Helper\RightsLevelManager::getLevel($this->rights);
-    }
-
-    public function setRights()
-    {
-        $givenRights = func_get_args();
-        foreach ($givenRights as $right) {
-            if (Property::__keyExists($right, $this->rights)) {
-                $this->rights[$right] = true;
-            }
-        }
-        return $this;
-    }
 
     public function setPermissions()
     {
@@ -144,34 +115,6 @@ class Useraccount extends Schema\Entity
             }
         }
         return $this;
-    }
-
-    // @todo Legacy cleanup — remove rights path once migration to permissions is complete.
-    public function hasRights(array $requiredRights): bool
-    {
-        if ($this->isSuperUser()) {
-            return true;
-        }
-
-        $permissions = $this->toProperty()->permissions ?? null;
-        $rights = $this->toProperty()->rights ?? null;
-
-        foreach ($requiredRights as $required) {
-            if ($required instanceof Useraccount\RightsInterface) {
-                if (!$required->validateUseraccount($this)) {
-                    return false;
-                }
-                continue;
-            }
-
-            $hasPermission = $permissions?->$required?->get() ?? false;
-            $hasRight = $rights?->$required?->get() ?? false;
-
-            if (!$hasPermission && !$hasRight) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**
@@ -254,7 +197,6 @@ class Useraccount extends Schema\Entity
 
         return true;
     }
-
     public function getRoles(): array
     {
         $roles = $this->roles ?? [];
@@ -272,20 +214,6 @@ class Useraccount extends Schema\Entity
     public function hasRole(string $role): bool
     {
         return in_array($role, $this->getRoles(), true);
-    }
-
-    public function testRights(array $requiredRights)
-    {
-        if ($this->hasId()) {
-            if (!$this->hasRights($requiredRights)) {
-                throw new Exception\UserAccountMissingRights(
-                    "Missing rights " . htmlspecialchars(implode(',', $requiredRights))
-                );
-            }
-        } else {
-            throw new Exception\UserAccountMissingLogin();
-        }
-        return $this;
     }
 
     public function testPermissions(array $requiredPermissions)
@@ -329,9 +257,7 @@ class Useraccount extends Schema\Entity
 
     public function isSuperUser(): bool
     {
-        return $this->toProperty()->rights?->superuser?->get()
-            || $this->toProperty()->permissions?->superuser?->get()
-            ?? false;
+        return $this->toProperty()->permissions?->superuser?->get() ?? false;
     }
 
     public function getDepartmentById($departmentId)

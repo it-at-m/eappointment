@@ -26,7 +26,7 @@ class DepartmentUpdate extends BaseController
         $workstation = (new Helper\User($request, 2));
         $department =  $workstation::checkDepartment($args['id']);
         $department->addData($input)->testValid('de_DE', 1);
-        $workstation->checkRights(
+        $workstation->checkPermissions(
             'department',
             new \BO\Zmsentities\Useraccount\EntityAccess($department)
         );

@@ -25,7 +25,7 @@ class ProcessAddLog extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('superuser');
+        (new Helper\User($request))->checkPermissions('superuser');
         $processId = Validator::value($args['id'])->isNumber()->getValue();
 
         /** @var ProcessEntity $process */
