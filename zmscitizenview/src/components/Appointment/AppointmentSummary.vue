@@ -245,35 +245,34 @@
                 </div>
               </div>
             </div>
-            <div
-              v-if="isVideoVariant"
-              class="m-content"
-            >
-              <h4 class="smaller-front-size">
-                {{ t("termsOfUseForVideoConsultationLabel") }}
-              </h4>
-            </div>
-            <div class="m-content">
-              <div class="m-checkboxes">
-                <div class="m-checkboxes__item">
-                  <input
-                    id="checkbox-video-consultation"
-                    class="m-checkboxes__input"
-                    name="checkbox-video-consultation"
-                    type="checkbox"
-                    @click="clickVideoConsultation"
-                    aria-required="true"
-                  />
-                  <label
-                    class="m-label m-checkboxes__label"
-                    for="checkbox-video-consultation"
-                    v-html="
-                      sanitizeHtml(t('termsOfUseForVideoConsultationText'))
-                    "
-                  />
+            <template v-if="isVideoVariant">
+              <div class="m-content">
+                <h4 class="smaller-front-size">
+                  {{ t("termsOfUseForVideoConsultationLabel") }}
+                </h4>
+              </div>
+              <div class="m-content">
+                <div class="m-checkboxes">
+                  <div class="m-checkboxes__item">
+                    <input
+                      id="checkbox-video-consultation"
+                      class="m-checkboxes__input"
+                      name="checkbox-video-consultation"
+                      type="checkbox"
+                      @click="clickVideoConsultation"
+                      aria-required="true"
+                    />
+                    <label
+                      class="m-label m-checkboxes__label"
+                      for="checkbox-video-consultation"
+                      v-html="
+                        sanitizeHtml(t('termsOfUseForVideoConsultationText'))
+                      "
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            </template>
           </div>
         </div>
       </div>
