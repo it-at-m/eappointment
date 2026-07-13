@@ -650,17 +650,18 @@ const handleDaySelection = async (day: any) => {
   isLoadingAppointments.value = true;
   isLoadingComplete.value = false;
 
-  const reloaded = await reloadCalendarAvailability({
-    preserveSelectedDay: true,
-  });
-  if (reloaded) {
-    await getAppointmentsOfDay(toDayKey(day));
-  } else {
+  try {
+    const reloaded = await reloadCalendarAvailability({
+      preserveSelectedDay: true,
+    });
+    if (reloaded) {
+      await getAppointmentsOfDay(toDayKey(day));
+    }
+  } finally {
+    skipSelectedDayWatch = false;
     isLoadingAppointments.value = false;
     isLoadingComplete.value = true;
   }
-
-  skipSelectedDayWatch = false;
 
   if (!isSameDay) {
     // Reset to earliest available appointment after fresh data is loaded
@@ -845,7 +846,6 @@ const applyCalendarResponse = (
   const days = calendar?.availableDays;
   if (
     !Array.isArray(days) ||
-    days.length === 0 ||
     !days.every(
       (d) =>
         typeof d === "object" && d !== null && "time" in d && "providerIDs" in d
@@ -979,9 +979,7 @@ const getAppointmentsOfDay = async (date: string): Promise<void> => {
   );
 
   if (appointmentsCount.value === 0) {
-    if (!hasAppointmentsForSelectedProviders()) {
-      setNoAppointmentForThisDayError();
-    }
+    setNoAppointmentForThisDayError();
   } else {
     clearLocalApiErrors();
   }
