@@ -13,6 +13,7 @@ use BO\Zmscitizenapi\Models\AvailableAppointmentsByOffice;
 use BO\Zmscitizenapi\Models\AvailableDays;
 use BO\Zmscitizenapi\Models\AvailableAppointments;
 use BO\Zmscitizenapi\Models\AvailableDaysByOffice;
+use BO\Zmscitizenapi\Models\AvailableCalendarByOffice;
 use BO\Zmscitizenapi\Models\Office;
 use BO\Zmscitizenapi\Models\Service;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
@@ -628,6 +629,49 @@ class ZmsApiFacadeService
         return $groupByOffice
             ? new AvailableDaysByOffice($formattedDays)
             : new AvailableDays(array_column($formattedDays, 'time'));
+    }
+
+    public static function getCalendarAvailability(
+        array $officeIds,
+        array $serviceIds,
+        array $serviceCounts,
+        string $startDate,
+        string $endDate
+    ): AvailableCalendarByOffice|array {
+        $params = [
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'officeId' => implode(',', $officeIds),
+            'serviceId' => implode(',', $serviceIds),
+        ];
+        if ($serviceCounts !== []) {
+            $params['serviceCount'] = implode(',', $serviceCounts);
+        }
+
+        $availability = ZmsApiClientService::getCalendarAvailability($params);
+        $formattedDays = [];
+
+        foreach ($availability['days'] ?? [] as $day) {
+            $offices = [];
+            foreach ($day['appointments'] ?? [] as $officeId => $timestamps) {
+                $offices[] = [
+                    'officeId' => (string) $officeId,
+                    'appointments' => array_map('intval', array_values((array) $timestamps)),
+                ];
+            }
+
+            $formattedDays[] = [
+                'time' => (string) ($day['date'] ?? ''),
+                'providerIDs' => (string) ($day['providerIDs'] ?? ''),
+                'offices' => $offices,
+            ];
+        }
+
+        return new AvailableCalendarByOffice(
+            (string) ($availability['startDate'] ?? $startDate),
+            (string) ($availability['endDate'] ?? $endDate),
+            $formattedDays
+        );
     }
 
     public static function getFreeAppointments(int $officeId, array $serviceIds, array $serviceCounts, array $date): ProcessList|array

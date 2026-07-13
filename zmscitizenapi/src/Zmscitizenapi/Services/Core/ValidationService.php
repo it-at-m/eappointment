@@ -22,6 +22,15 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ValidationService
 {
+    /**
+     * @var array<string, array<int, string>>
+     */
+    private static array $officeServicesCache = [];
+
+    public static function clearOfficeServicesCacheForTesting(): void
+    {
+        self::$officeServicesCache = [];
+    }
     private const DATE_FORMAT = 'Y-m-d';
     private const MIN_PROCESS_ID = 1;
     private const PHONE_PATTERN = '/^\+?[0-9]\d{6,14}$/';
@@ -69,8 +78,6 @@ class ValidationService
 
     public static function validateServiceLocationCombination(int $officeId, array $serviceIds, bool $showUnpublished = false): array
     {
-        static $officeServicesCache = [];
-
         if ($officeId <= 0) {
             return ['errors' => [self::getError('invalidOfficeId')]];
         }
@@ -80,19 +87,19 @@ class ValidationService
         }
 
         $cacheKey = $officeId . '|' . ($showUnpublished ? '1' : '0');
-        if (!isset($officeServicesCache[$cacheKey])) {
+        if (!isset(self::$officeServicesCache[$cacheKey])) {
             $serviceList = ZmsApiFacadeService::getServicesByOfficeId($officeId, $showUnpublished);
             $ids = [];
             if (is_array($serviceList) && isset($serviceList['errors'])) {
-                $officeServicesCache[$cacheKey] = [];
+                self::$officeServicesCache[$cacheKey] = [];
             } else {
                 foreach ($serviceList->services as $service) {
                     $ids[] = (string)$service->id;
                 }
-                $officeServicesCache[$cacheKey] = $ids;
+                self::$officeServicesCache[$cacheKey] = $ids;
             }
         }
-        $availableServiceIds = $officeServicesCache[$cacheKey];
+        $availableServiceIds = self::$officeServicesCache[$cacheKey];
 
         $serviceIdsStr = array_map('strval', $serviceIds);
         $invalidServiceIds = array_diff($serviceIdsStr, $availableServiceIds);

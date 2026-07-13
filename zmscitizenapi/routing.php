@@ -234,6 +234,53 @@
 
 /**
  * @swagger
+ * /available-calendar-by-office/:
+ *   get:
+ *     summary: Get bookable days with appointment slots grouped by office
+ *     tags:
+ *       - appointments
+ *     parameters:
+ *       - name: startDate
+ *         description: Start date in format YYYY-MM-DD
+ *         in: query
+ *         required: true
+ *         type: string
+ *       - name: endDate
+ *         description: End date in format YYYY-MM-DD
+ *         in: query
+ *         required: true
+ *         type: string
+ *       - name: officeId
+ *         description: Comma separated Office IDs
+ *         in: query
+ *         required: true
+ *         type: string
+ *       - name: serviceId
+ *         description: Comma separated Service IDs
+ *         in: query
+ *         required: true
+ *         type: string
+ *       - name: serviceCount
+ *         description: Comma separated service counts matching serviceId order
+ *         in: query
+ *         required: false
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Combined list of available days and appointment slots
+ *         schema:
+ *           type: object
+ *           properties:
+ *             meta:
+ *               $ref: "schema/metaresult.json"
+ *             data:
+ *               $ref: "schema/citizenapi/availableCalendarByOffice.json"
+ */
+\App::$slim->get('/available-calendar-by-office/', '\BO\Zmscitizenapi\Controllers\Availability\AvailableCalendarByOfficeController')->setName("AvailableCalendarByOfficeController");
+\App::$slim->get('/available-calendar-by-office', '\BO\Zmscitizenapi\Controllers\Availability\AvailableCalendarByOfficeController')->setName("AvailableCalendarByOfficeController");
+
+/**
+ * @swagger
  * /available-appointments/:
  *   get:
  *     summary: Get available appointments for a specific day
