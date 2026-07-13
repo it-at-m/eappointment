@@ -428,9 +428,4 @@ class ValidationService
     {
         return !empty($officeId) && $officeId > 0;
     }
-
-    private static function isValidServiceId(?int $serviceId): bool
-    {
-        return !empty($serviceId) && $serviceId > 0;
-    }
 }
