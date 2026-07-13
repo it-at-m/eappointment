@@ -8,8 +8,6 @@ import {
 } from "@/api/ZMSAppointmentAPI";
 import {
   calendarResponse,
-  defaultMultiProviderOffices,
-  listViewHourNavigationSlots,
   officeOneAndTwoSlots,
   officeOneMorningSlots,
   officesForDayPartViewTest,
