@@ -123,7 +123,7 @@ class ReportClientService
                 $yearEnd = new DateTimeImmutable($year . '-12-31');
 
                 $yearFrom = $requestedFrom > $yearStart ? $requestedFrom : $yearStart;
-                $yearTo = $requestedTo > $yearEnd ? $requestedTo : $yearEnd;
+                $yearTo = $requestedTo < $yearEnd ? $requestedTo : $yearEnd;
 
                 if ($yearFrom > $yearTo) {
                     continue;
