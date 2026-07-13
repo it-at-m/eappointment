@@ -287,40 +287,6 @@ class ValidationServiceTest extends TestCase
         );
     }
 
-    public function testValidateGetScopeById(): void
-    {
-
-        $this->assertEmpty(ValidationService::validateGetScopeById(1));
-
-        $result = ValidationService::validateGetScopeById(0);
-        $this->assertEquals(
-            ['errors' => [ErrorMessages::get('invalidScopeId')]],
-            $result
-        );
-    }
-
-    public function testValidateGetServicesByOfficeId(): void
-    {
-        $this->assertEmpty(ValidationService::validateGetServicesByOfficeId(1));
-
-        $result = ValidationService::validateGetServicesByOfficeId(0);
-        $this->assertEquals(
-            ['errors' => [ErrorMessages::get('invalidOfficeId')]],
-            $result
-        );
-    }
-
-    public function testValidateGetOfficeListByServiceId(): void
-    {
-        $this->assertEmpty(ValidationService::validateGetOfficeListByServiceId(1));
-
-        $result = ValidationService::validateGetOfficeListByServiceId(0);
-        $this->assertEquals(
-            ['errors' => [ErrorMessages::get('invalidServiceId')]],
-            $result
-        );
-    }
-
     public function testValidateGetProcessNotFound(): void
     {
         // Test valid process

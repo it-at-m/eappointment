@@ -278,27 +278,6 @@ class ValidationService
         }
     }
 
-    public static function validateGetScopeById(?int $scopeId): array
-    {
-        return !self::isValidScopeId($scopeId)
-            ? ['errors' => [self::getError('invalidScopeId')]]
-            : [];
-    }
-
-    public static function validateGetServicesByOfficeId(?int $officeId): array
-    {
-        return !self::isValidOfficeId($officeId)
-            ? ['errors' => [self::getError('invalidOfficeId')]]
-            : [];
-    }
-
-    public static function validateGetOfficeListByServiceId(?int $serviceId): array
-    {
-        return !self::isValidServiceId($serviceId)
-            ? ['errors' => [self::getError('invalidServiceId')]]
-            : [];
-    }
-
     public static function validateGetProcessNotFound(?Process $process): array
     {
         return !$process
@@ -383,11 +362,6 @@ class ValidationService
     private static function isValidOfficeIds(?array $officeIds): bool
     {
         return !empty($officeIds) && self::isValidNumericArray($officeIds);
-    }
-
-    private static function isValidScopeId(?int $scopeId): bool
-    {
-        return !empty($scopeId) && $scopeId > 0;
     }
 
     private static function isValidProcessId(?int $processId): bool

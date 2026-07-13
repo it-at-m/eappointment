@@ -37,7 +37,6 @@ class ZmsApiFacadeService
     private const CACHE_KEY_SCOPES = 'processed_scopes';
     private const CACHE_KEY_SERVICES = 'processed_services';
     private const CACHE_KEY_OFFICES_AND_SERVICES = 'processed_offices_and_services';
-    private const CACHE_KEY_OFFICES_BY_SERVICE_PREFIX = 'processed_offices_by_service_';
     private const CACHE_KEY_SERVICES_BY_OFFICE_PREFIX = 'processed_services_by_office_';
 
     private static function getError(string $key): array
@@ -351,72 +350,6 @@ class ZmsApiFacadeService
      *
      *
      */
-
-    /**
-     * @SuppressWarnings(PHPMD.NPathComplexity)
-     * @TODO: Extract providerMap mapping logic into MapperService
-     */
-    public static function getOfficeListByServiceId(int $serviceId, bool $showUnpublished = false): OfficeList|array
-    {
-        $cacheKey = self::CACHE_KEY_OFFICES_BY_SERVICE_PREFIX . $serviceId . ($showUnpublished ? '_unpublished' : '');
-
-        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
-            return $cachedData;
-        }
-
-        $providerList = ZmsApiClientService::getOffices();
-        $requestRelationList = ZmsApiClientService::getRequestRelationList();
-        $providerMap = [];
-        foreach ($providerList as $provider) {
-            if (!$showUnpublished && isset($provider->data['public']) && !(bool) $provider->data['public']) {
-                continue;
-            }
-
-            $providerMap[$provider->id] = $provider;
-        }
-
-        $offices = [];
-        foreach ($requestRelationList as $relation) {
-            if ((int) $relation->request->id === $serviceId) {
-                $providerId = $relation->provider->id;
-                if (!isset($providerMap[$providerId])) {
-                    continue;
-                }
-
-                $provider = $providerMap[$providerId];
-                $scope = null;
-                $scopeData = self::getScopeByOfficeId((int) $provider->id);
-                if ($scopeData instanceof ThinnedScope) {
-                    $scope = $scopeData;
-                }
-
-                $offices[] = new Office(
-                    id: (int) $provider->id,
-                    name: $provider->name,
-                    showAlternativeLocations: $provider->data['showAlternativeLocations'] ?? null,
-                    displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [],
-                    organization: $provider->data['organization'] ?? null,
-                    organizationUnit: $provider->data['organizationUnit'] ?? null,
-                    slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null,
-                    address: $provider->address ?? null,
-                    geo: $provider->geo ?? null,
-                    scope: $scope,
-                    slotsPerAppointment: $scope ? ((string) $scope->getSlotsPerAppointment() === '' ? null : (string) $scope->getSlotsPerAppointment()) : null
-                );
-            }
-        }
-
-        $errors = ValidationService::validateOfficesNotFound($offices);
-        if (is_array($errors) && !empty($errors['errors'])) {
-            return $errors;
-        }
-
-        $result = new OfficeList($offices);
-
-        self::setMappedCache($cacheKey, $result);
-
-        return $result;
-    }
 
     /**
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
