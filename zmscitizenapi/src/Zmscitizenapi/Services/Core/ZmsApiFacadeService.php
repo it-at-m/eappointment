@@ -9,10 +9,6 @@ use BO\Zmscitizenapi\Exceptions\UnauthorizedException;
 use BO\Zmscitizenapi\Models\AuthenticatedUser;
 use BO\Zmscitizenapi\Utils\DateTimeFormatHelper;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
-use BO\Zmscitizenapi\Models\AvailableAppointmentsByOffice;
-use BO\Zmscitizenapi\Models\AvailableDays;
-use BO\Zmscitizenapi\Models\AvailableAppointments;
-use BO\Zmscitizenapi\Models\AvailableDaysByOffice;
 use BO\Zmscitizenapi\Models\AvailableCalendarByOffice;
 use BO\Zmscitizenapi\Models\Office;
 use BO\Zmscitizenapi\Models\Service;
@@ -23,7 +19,6 @@ use BO\Zmscitizenapi\Models\Collections\OfficeServiceRelationList;
 use BO\Zmscitizenapi\Models\Collections\OfficeServiceAndRelationList;
 use BO\Zmscitizenapi\Models\Collections\ServiceList;
 use BO\Zmscitizenapi\Models\Collections\ThinnedScopeList;
-use BO\Zmsentities\Calendar;
 use BO\Zmsentities\Collection\RequestRelationList;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Scope;
@@ -536,101 +531,6 @@ class ZmsApiFacadeService
         return $result;
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.NPathComplexity)
-     */
-    public static function getBookableFreeDays(
-        array $officeIds,
-        array $serviceIds,
-        array $serviceCounts,
-        string $startDate,
-        string $endDate,
-        ?bool $groupByOffice = false
-    ): AvailableDays|AvailableDaysByOffice|array {
-        $firstDay = DateTimeFormatHelper::getInternalDateFromISO($startDate);
-        $lastDay  = DateTimeFormatHelper::getInternalDateFromISO($endDate);
-
-        $providerList = ZmsApiClientService::getOffices();
-        $requestList  = ZmsApiClientService::getServices();
-
-        $providerSource = [];
-        foreach ($providerList as $p) {
-            $providerSource[(string)$p->id] = (string)($p->source ?? '');
-        }
-
-        $requestSource = [];
-        foreach ($requestList as $r) {
-            $requestSource[(string)$r->id] = (string)($r->source ?? '');
-        }
-
-        $services = [];
-        foreach ($serviceIds as $i => $serviceId) {
-            $sid = (string)$serviceId;
-            $src = $requestSource[$sid] ?? null;
-            if (!$src) {
-                return ['errors' => [['message' => 'Unknown service source for ID ' . $sid]]];
-            }
-            $services[] = [
-                'id'        => $serviceId,
-                'source'    => $src,
-                'slotCount' => (int)($serviceCounts[$i] ?? 1),
-            ];
-        }
-
-        $providers = [];
-        foreach ($officeIds as $officeId) {
-            $oid = (string)$officeId;
-            $src = $providerSource[$oid] ?? null;
-            if (!$src) {
-                return ['errors' => [['message' => 'Unknown provider source for ID ' . $oid]]];
-            }
-            $providers[] = [
-                'id'     => $officeId,
-                'source' => $src,
-            ];
-        }
-
-        $freeDays = ZmsApiClientService::getFreeDays(
-            new ProviderList($providers),
-            new RequestList($services),
-            $firstDay,
-            $lastDay
-        );
-
-        $daysCollection  = $freeDays->days;
-        $formattedDays   = [];
-        $scopeToProvider = [];
-
-        foreach ($freeDays->scopes as $scope) {
-            $scopeToProvider[$scope['id']] = $scope['provider']['id'];
-        }
-
-        foreach ($daysCollection as $day) {
-            $scopeIdList = isset($day->scopeIDs) && $day->scopeIDs !== ''
-                ? array_filter(explode(',', $day->scopeIDs))
-                : [];
-            $providerIds = [];
-            foreach ($scopeIdList as $scopeId) {
-                if (isset($scopeToProvider[$scopeId])) {
-                    $providerIds[] = $scopeToProvider[$scopeId];
-                }
-            }
-            $formattedDays[] = [
-                'time'        => sprintf('%04d-%02d-%02d', $day->year, $day->month, $day->day),
-                'providerIDs' => implode(',', $providerIds)
-            ];
-        }
-
-        $errors = ValidationService::validateAppointmentDaysNotFound($formattedDays);
-        if (is_array($errors) && !empty($errors['errors'])) {
-            return $errors;
-        }
-
-        return $groupByOffice
-            ? new AvailableDaysByOffice($formattedDays)
-            : new AvailableDays(array_column($formattedDays, 'time'));
-    }
-
     public static function getCalendarAvailability(
         array $officeIds,
         array $serviceIds,
@@ -715,126 +615,6 @@ class ZmsApiFacadeService
             $date,
             $date
         );
-    }
-
-    /**
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     */
-    private static function processFreeSlots(ProcessList $freeSlots, bool $groupByOffice = false): array
-    {
-        $errors = ValidationService::validateGetProcessFreeSlots($freeSlots);
-        if (is_array($errors) && !empty($errors['errors'])) {
-            return $errors;
-        }
-
-        $currentTimestamp = time();
-        if ($groupByOffice) {
-            $grouped = [];
-            foreach ($freeSlots as $slot) {
-                $officeId = (string)($slot->scope->provider->id ?? '');
-                if (!isset($grouped[$officeId])) {
-                    $grouped[$officeId] = [];
-                }
-                if (isset($slot->appointments) && is_iterable($slot->appointments)) {
-                    foreach ($slot->appointments as $appointment) {
-                        if (isset($appointment->date)) {
-                            $timestamp = (int) $appointment->date;
-                            if ($timestamp > $currentTimestamp) {
-                                $grouped[$officeId][] = $timestamp;
-                            }
-                        }
-                    }
-                }
-            }
-            // Sort each office's appointments
-            foreach ($grouped as &$arr) {
-                sort($arr);
-            }
-            unset($arr);
-            // Optionally validate grouped timestamps here if needed
-            return $grouped;
-        } else {
-            $timestamps = [];
-            foreach ($freeSlots as $slot) {
-                if (isset($slot->appointments) && is_iterable($slot->appointments)) {
-                    foreach ($slot->appointments as $appointment) {
-                        if (isset($appointment->date)) {
-                            $timestamp = (int) $appointment->date;
-                            if ($timestamp > $currentTimestamp) {
-                                $timestamps[] = $timestamp;
-                            }
-                        }
-                    }
-                }
-            }
-            sort($timestamps);
-
-            $errors = ValidationService::validateGetProcessByIdTimestamps($timestamps);
-            if (is_array($errors) && !empty($errors['errors'])) {
-                return $errors;
-            }
-
-            return $timestamps;
-        }
-    }
-
-    public static function getAvailableAppointments(
-        string $date,
-        array $officeIds,
-        array $serviceIds,
-        array $serviceCounts,
-        ?bool $groupByOffice = false
-    ): AvailableAppointments|AvailableAppointmentsByOffice|array {
-        $providerList = ZmsApiClientService::getOffices();
-        $requestList  = ZmsApiClientService::getServices();
-
-        $providerSource = [];
-        foreach ($providerList as $p) {
-            $providerSource[(string)$p->id] = (string)($p->source ?? '');
-        }
-        $requestSource  = [];
-        foreach ($requestList as $r) {
-            $requestSource[(string)$r->id] = (string)($r->source ?? '');
-        }
-
-        $requests = [];
-        foreach ($serviceIds as $id => $serviceId) {
-            $sid = (string)$serviceId;
-            $src = $requestSource[$sid] ?? null;
-            if (!$src) {
-                return ['errors' => [['message' => 'Unknown service source for ID ' . $sid]]];
-            }
-            $count = (int)($serviceCounts[$id] ?? 1);
-            for ($k = 0; $k < $count; $k++) {
-                $requests[] = ['id' => $serviceId, 'source' => $src];
-            }
-        }
-
-        $providers = [];
-        foreach ($officeIds as $officeId) {
-            $oid = (string)$officeId;
-            $src = $providerSource[$oid] ?? null;
-            if (!$src) {
-                return ['errors' => [['message' => 'Unknown provider source for ID ' . $oid]]];
-            }
-            $providers[] = ['id' => $officeId, 'source' => $src];
-        }
-
-        $freeSlots = ZmsApiClientService::getFreeTimeslots(
-            new ProviderList($providers),
-            new RequestList($requests),
-            DateTimeFormatHelper::getInternalDateFromISO($date),
-            DateTimeFormatHelper::getInternalDateFromISO($date)
-        );
-
-        $result = self::processFreeSlots($freeSlots, $groupByOffice);
-        if (isset($result['errors']) && !empty($result['errors'])) {
-            return $result;
-        }
-
-        return $groupByOffice
-            ? new AvailableAppointmentsByOffice($result)
-            : new AvailableAppointments($result);
     }
 
     public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): ThinnedProcess|array

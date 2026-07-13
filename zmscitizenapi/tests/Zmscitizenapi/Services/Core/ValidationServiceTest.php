@@ -102,66 +102,6 @@ class ValidationServiceTest extends TestCase
         );
     }
 
-    public function testValidateGetAvailableAppointments(): void
-    {
-        // Test valid input
-        $result = ValidationService::validateGetAvailableAppointments(
-            '2025-01-01',
-            [1],
-            [1],
-            [1]
-        );
-        $this->assertEmpty($result['errors']);
-
-        // Test invalid date
-        $result = ValidationService::validateGetAvailableAppointments(
-            'invalid',
-            [1],
-            [1],
-            [1]
-        );
-        $this->assertContains(
-            ErrorMessages::get('invalidDate'),
-            $result['errors']
-        );
-
-        // Test invalid office ID
-        $result = ValidationService::validateGetAvailableAppointments(
-            '2025-01-01',
-            [''],
-            [1],
-            [1]
-        );
-        $this->assertContains(
-            ErrorMessages::get('invalidOfficeId'),
-            $result['errors']
-        );
-
-        // Test invalid service IDs
-        $result = ValidationService::validateGetAvailableAppointments(
-            '2025-01-01',
-            [1],
-            ['invalid'],
-            [1]
-        );
-        $this->assertContains(
-            ErrorMessages::get('invalidServiceId'),
-            $result['errors']
-        );
-
-        // Test invalid service counts
-        $result = ValidationService::validateGetAvailableAppointments(
-            '2025-01-01',
-            [1],
-            [1],
-            ['invalid']
-        );
-        $this->assertContains(
-            ErrorMessages::get('invalidServiceCount'),
-            $result['errors']
-        );
-    }
-
     public function testValidatePostAppointmentReserve(): void
     {
         // Test valid input
@@ -381,26 +321,6 @@ class ValidationServiceTest extends TestCase
         );
     }
 
-    public function testValidateGetProcessByIdTimestamps(): void
-    {
-        // Test valid timestamps
-        $this->assertEmpty(ValidationService::validateGetProcessByIdTimestamps([1234567890]));
-
-        // Test empty timestamps
-        $result = ValidationService::validateGetProcessByIdTimestamps([]);
-        $this->assertEquals(
-            ['errors' => [ErrorMessages::get('appointmentNotAvailable')]],
-            $result
-        );
-
-        // Test null timestamps
-        $result = ValidationService::validateGetProcessByIdTimestamps(null);
-        $this->assertEquals(
-            ['errors' => [ErrorMessages::get('appointmentNotAvailable')]],
-            $result
-        );
-    }
-
     public function testValidateGetProcessNotFound(): void
     {
         // Test valid process
@@ -471,26 +391,6 @@ class ValidationServiceTest extends TestCase
         $result = ValidationService::validateOfficesNotFound(null);
         $this->assertEquals(
             ['errors' => [ErrorMessages::get('providerNotFound')]],
-            $result
-        );
-    }
-
-    public function testValidateAppointmentDaysNotFound(): void
-    {
-        // Test valid days array
-        $this->assertEmpty(ValidationService::validateAppointmentDaysNotFound(['day']));
-
-        // Test empty days array
-        $result = ValidationService::validateAppointmentDaysNotFound([]);
-        $this->assertEquals(
-            ['errors' => [ErrorMessages::get('noAppointmentForThisDay')]],
-            $result
-        );
-
-        // Test null days array
-        $result = ValidationService::validateAppointmentDaysNotFound(null);
-        $this->assertEquals(
-            ['errors' => [ErrorMessages::get('noAppointmentForThisDay')]],
             $result
         );
     }

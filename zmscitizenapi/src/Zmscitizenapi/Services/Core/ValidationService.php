@@ -10,7 +10,6 @@ use BO\Zmsentities\Helper\ProcessPlainText;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmsentities\Process;
-use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Collection\ScopeList;
 use DateTime;
 use Psr\Http\Message\ServerRequestInterface;
@@ -192,30 +191,6 @@ class ValidationService
         return ['errors' => $errors];
     }
 
-    public static function validateGetAvailableAppointments(?string $date, ?array $officeIds, ?array $serviceIds, ?array $serviceCounts, ?bool $captchaRequired = false, ?string $captchaToken = null, ?TokenValidationService $tokenValidator = null): array
-    {
-        $errors = [];
-        if (!$date || !self::isValidDate($date)) {
-            $errors[] = self::getError('invalidDate');
-        }
-
-        if (!self::isValidOfficeIds($officeIds)) {
-            $errors[] = self::getError('invalidOfficeId');
-        }
-
-        if (!self::isValidServiceIds($serviceIds)) {
-            $errors[] = self::getError('invalidServiceId');
-        }
-
-        if (!self::isValidServiceCounts($serviceCounts)) {
-            $errors[] = self::getError('invalidServiceCount');
-        }
-
-        $errors = array_merge($errors, self::validateCaptcha($captchaRequired, $captchaToken, $tokenValidator));
-
-        return ['errors' => $errors];
-    }
-
     public static function validatePostAppointmentReserve(?int $officeId, ?array $serviceIds, ?array $serviceCounts, ?int $timestamp, ?bool $captchaRequired = false, ?string $captchaToken = null, ?TokenValidationService $tokenValidator = null): array
     {
         $errors = [];
@@ -324,20 +299,6 @@ class ValidationService
             : [];
     }
 
-    public static function validateGetProcessFreeSlots(?ProcessList $freeSlots): array
-    {
-        return empty($freeSlots) || !is_iterable($freeSlots)
-            ? ['errors' => [self::getError('appointmentNotAvailable')]]
-            : [];
-    }
-
-    public static function validateGetProcessByIdTimestamps(?array $appointmentTimestamps): array
-    {
-        return empty($appointmentTimestamps)
-            ? ['errors' => [self::getError('appointmentNotAvailable')]]
-            : [];
-    }
-
     public static function validateGetProcessNotFound(?Process $process): array
     {
         return !$process
@@ -363,13 +324,6 @@ class ValidationService
     {
         return empty($offices)
             ? ['errors' => [self::getError('providerNotFound')]]
-            : [];
-    }
-
-    public static function validateAppointmentDaysNotFound(?array $formattedDays): array
-    {
-        return empty($formattedDays)
-            ? ['errors' => [self::getError('noAppointmentForThisDay')]]
             : [];
     }
 
