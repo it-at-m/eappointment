@@ -194,13 +194,70 @@ describe("AppointmentSummary", () => {
 
     it("renders privacy text and electronic communication checkbox", () => {
       const wrapper = createWrapper();
-      const privacyText = wrapper.find("p.m-label");
       const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
-      expect(privacyText.exists()).toBe(true);
-      expect(privacyText.text()).toContain("privacyText");
+      expect(wrapper.text()).toContain("privacyText");
+      expect(wrapper.text()).not.toContain("privacyVideoConsultationText");
+      expect(wrapper.text()).not.toContain("termsOfUseForVideoConsultationLabel");
+      expect(wrapper.text()).not.toContain("termsOfUseForVideoConsultationText");
       expect(wrapper.find('input[name="checkbox-privacy-policy"]').exists()).toBe(false);
       expect(communicationCheckbox.exists()).toBe(true);
       expect(wrapper.find('label[for="checkbox-electronic-communication"]').exists()).toBe(true);
+      expect(wrapper.find('input[name="checkbox-video-consultation"]').exists()).toBe(false);
+      expect(wrapper.find('label[for="checkbox-video-consultation"]').exists()).toBe(false);
+    });
+
+    it("renders additional video consultation privacy and terms only for video appointments", async () => {
+      mockSelectedService.value.variantId = 3;
+      const wrapper = createWrapper();
+      await nextTick();
+      expect(wrapper.text()).toContain("privacyText");
+      expect(wrapper.text()).toContain("privacyVideoConsultationText");
+      expect(wrapper.text()).toContain("termsOfUseForVideoConsultationLabel");
+      expect(wrapper.text()).toContain("termsOfUseForVideoConsultationText");
+      expect(wrapper.find('input[name="checkbox-electronic-communication"]').exists()).toBe(true);
+      expect(wrapper.find('input[name="checkbox-video-consultation"]').exists()).toBe(true);
+      expect(wrapper.find('label[for="checkbox-video-consultation"]').exists()).toBe(true);
+    });
+
+    it("keeps preconfirm button disabled for video appointments when only electronic communication is checked", async () => {
+      mockSelectedService.value.variantId = 3;
+      const wrapper = createWrapper();
+      const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
+      await communicationCheckbox.trigger("click");
+      await nextTick();
+      const bookButton = findButtonByIcon(wrapper, "check");
+      expect(bookButton).toBeTruthy();
+      expect(bookButton!.attributes("disabled")).toBeDefined();
+    });
+
+    it("enables preconfirm button for video appointments only when both required checkboxes are checked", async () => {
+      mockSelectedService.value.variantId = 3;
+      const wrapper = createWrapper();
+      const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
+      const videoConsultationCheckbox = wrapper.find('input[name="checkbox-video-consultation"]');
+      await communicationCheckbox.trigger("click");
+      await videoConsultationCheckbox.trigger("click");
+      await nextTick();
+      const bookButton = findButtonByIcon(wrapper, "check");
+      expect(bookButton).toBeTruthy();
+      expect(bookButton!.attributes("disabled")).toBeUndefined();
+    });
+
+    it("disables preconfirm button for video appointments when video consultation checkbox is unchecked again", async () => {
+      mockSelectedService.value.variantId = 3;
+      const wrapper = createWrapper();
+      const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
+      const videoConsultationCheckbox = wrapper.find('input[name="checkbox-video-consultation"]');
+      await communicationCheckbox.trigger("click");
+      await videoConsultationCheckbox.trigger("click");
+      await nextTick();
+      let bookButton = findButtonByIcon(wrapper, "check");
+      expect(bookButton).toBeTruthy();
+      expect(bookButton!.attributes("disabled")).toBeUndefined();
+      await videoConsultationCheckbox.trigger("click");
+      await nextTick();
+      bookButton = findButtonByIcon(wrapper, "check");
+      expect(bookButton!.attributes("disabled")).toBeDefined();
     });
 
     it("does not show consent checkbox in rebookOrCancelDialog mode", () => {
