@@ -1,6 +1,5 @@
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
-import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
-import { AvailableTimeSlotsDTO } from "@/api/models/AvailableTimeSlotsDTO";
+import { AvailableCalendarByOfficeDTO } from "@/api/models/AvailableCalendarByOfficeDTO";
 import { CaptchaDetailsDTO } from "@/api/models/CaptchaDetailsDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
 import { OfficesAndServicesDTO } from "@/api/models/OfficesAndServicesDTO";
@@ -9,8 +8,7 @@ import { GlobalState } from "@/types/GlobalState";
 import {
   getAPIBaseURL,
   VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT,
-  VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT,
-  VUE_APP_ZMS_API_CALENDAR_ENDPOINT,
+  VUE_APP_ZMS_API_CALENDAR_AVAILABILITY_ENDPOINT,
   VUE_APP_ZMS_API_CANCEL_APPOINTMENT_ENDPOINT,
   VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT,
   VUE_APP_ZMS_API_CONFIRM_APPOINTMENT_ENDPOINT,
@@ -135,13 +133,13 @@ export function fetchServicesAndProviders(
     });
 }
 
-export function fetchAvailableDays(
+export function fetchAvailableCalendar(
   globalState: GlobalState,
   providerIds: number[],
   serviceIds: string[],
   serviceCounts: number[],
   captchaToken?: string
-): Promise<AvailableDaysDTO | ErrorDTO> {
+): Promise<AvailableCalendarByOfficeDTO | ErrorDTO> {
   const params: Record<string, any> = {
     startDate: convertDateToString(TODAY),
     endDate: convertDateToString(MAXDATE),
@@ -154,31 +152,7 @@ export function fetchAvailableDays(
   return request({
     globalState,
     method: "GET",
-    path: VUE_APP_ZMS_API_CALENDAR_ENDPOINT,
-    params,
-  });
-}
-
-export function fetchAvailableTimeSlots(
-  globalState: GlobalState,
-  date: string,
-  providerIds: number[],
-  serviceIds: string[],
-  serviceCounts: number[],
-  captchaToken?: string
-): Promise<AvailableTimeSlotsDTO | ErrorDTO> {
-  const params: Record<string, any> = {
-    date: date,
-    officeId: providerIds,
-    serviceId: serviceIds,
-    serviceCount: serviceCounts,
-    ...(captchaToken && { captchaToken }),
-  };
-
-  return request({
-    globalState,
-    method: "GET",
-    path: VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT,
+    path: VUE_APP_ZMS_API_CALENDAR_AVAILABILITY_ENDPOINT,
     params,
   });
 }

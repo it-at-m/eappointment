@@ -6,12 +6,17 @@ import AppointmentSelection from "@/components/Appointment/AppointmentSelection.
 
 // Mock API to avoid real network calls
 vi.mock("@/api/ZMSAppointmentAPI", () => ({
-  fetchAvailableDays: vi.fn().mockResolvedValue({ 
+  fetchAvailableCalendar: vi.fn().mockResolvedValue({
+    startDate: "2025-06-17",
+    endDate: "2025-06-17",
     availableDays: [
-      { time: '2025-06-17', providerIDs: '1,2,3,4,102522,102523,102524,102526,10489,10502,54261' }
-    ] 
+      {
+        time: "2025-06-17",
+        providerIDs: "1,2,3,4,102522,102523,102524,102526,10489,10502,54261",
+        offices: [],
+      },
+    ],
   }),
-  fetchAvailableTimeSlots: vi.fn().mockResolvedValue({ offices: [] }),
 }));
 
 const t = vi.fn((key: string) => key);
