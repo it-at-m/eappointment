@@ -369,7 +369,10 @@ class Request extends Base
         }
 
         $query = new Query\Request(Query\Base::SELECT);
-        $query->addConditionRequestSource($source);
+        $query
+            ->setResolveLevel(0)
+            ->addEntityMapping()
+            ->addConditionRequestSource($source);
         if ($this->fetchOne($query, new Entity())->hasId()) {
             return;
         }
