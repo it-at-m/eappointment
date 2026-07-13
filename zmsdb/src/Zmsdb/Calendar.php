@@ -16,7 +16,8 @@ class Calendar extends Base
         \DateTimeInterface $now,
         $resolveOnlyScopes = false,
         $slotType = 'public',
-        $slotsRequired = 0
+        $slotsRequired = 0,
+        $resolveScopeReferences = true
     ) {
         $calendar['freeProcesses'] = new \BO\Zmsentities\Collection\ProcessList();
         $calendar['scopes'] = $calendar->getScopeList();
@@ -24,7 +25,9 @@ class Calendar extends Base
         $calendar = $this->readResolvedProviders($calendar);
         $calendar = $this->readResolvedClusters($calendar);
         $calendar = $this->readResolvedRequests($calendar);
-        $calendar = $this->readResolvedScopeReferences($calendar);
+        if ($resolveScopeReferences) {
+            $calendar = $this->readResolvedScopeReferences($calendar);
+        }
         if (count($calendar->scopes) < 1) {
             throw new Exception\CalendarWithoutScopes("No scopes resolved in $calendar");
         }

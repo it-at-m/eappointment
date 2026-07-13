@@ -327,6 +327,75 @@
 
 /**
  *  @swagger
+ *  "/calendar/availability/":
+ *      get:
+ *          summary: Get bookable days with appointment slots for a date range
+ *          tags:
+ *              - calendar
+ *          parameters:
+ *              -   name: startDate
+ *                  description: First day of the range (YYYY-MM-DD)
+ *                  in: query
+ *                  required: true
+ *                  type: string
+ *              -   name: endDate
+ *                  description: Last day of the range (YYYY-MM-DD)
+ *                  in: query
+ *                  required: true
+ *                  type: string
+ *              -   name: officeId
+ *                  description: Comma-separated provider IDs
+ *                  in: query
+ *                  required: true
+ *                  type: string
+ *              -   name: serviceId
+ *                  description: Comma-separated request/service IDs
+ *                  in: query
+ *                  required: true
+ *                  type: string
+ *              -   name: serviceCount
+ *                  description: Comma-separated slot counts per service
+ *                  in: query
+ *                  required: false
+ *                  type: string
+ *              -   name: providerSource
+ *                  description: Source for providers (default dldb)
+ *                  in: query
+ *                  required: false
+ *                  type: string
+ *              -   name: requestSource
+ *                  description: Source for requests (default dldb)
+ *                  in: query
+ *                  required: false
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: Bookable days with grouped appointment timestamps
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: object
+ *                              properties:
+ *                                  startDate:
+ *                                      type: string
+ *                                  endDate:
+ *                                      type: string
+ *                                  days:
+ *                                      type: array
+ *                                      items:
+ *                                          type: object
+ */
+\App::$slim->get(
+    '/calendar/availability/',
+    '\BO\Zmsapi\CalendarAvailabilityGet'
+)
+    ->setName("CalendarAvailabilityGet");
+
+/**
+ *  @swagger
  *  "/calldisplay/":
  *      post:
  *          summary: Get preferences for a calldisplay

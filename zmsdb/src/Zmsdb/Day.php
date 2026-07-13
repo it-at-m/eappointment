@@ -37,7 +37,14 @@ class Day extends Base
     {
         // We use a temporary table, so we can use create and insert on a readonly connection
         $this->writeTemporaryScopeList($calendar, $slotsRequiredForce);
-        //var_dump($this->getReader()->fetchAll('SELECT * FROM calendarscope'));
+
+        return $this->readListFromPreparedTemporaryScopeList($calendar, $slotsRequiredForce);
+    }
+
+    public function readListFromPreparedTemporaryScopeList(
+        \BO\Zmsentities\Calendar $calendar,
+        $slotsRequiredForce = null
+    ) {
         $dayList = new \BO\Zmsentities\Collection\DayList();
         $dayData = $this->getReader()->fetchAll(
             Query\Day::QUERY_DAYLIST_JOIN,
@@ -50,6 +57,7 @@ class Day extends Base
             $day = new \BO\Zmsentities\Day($day);
             $dayList[$day->getDayHash()] = $day;
         }
+
         return $dayList;
     }
 

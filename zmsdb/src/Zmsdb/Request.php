@@ -42,6 +42,54 @@ class Request extends Base
         return $request;
     }
 
+    public function readEntityById($requestId, $resolveReferences = 0, $disableCache = false)
+    {
+        $cacheKey = "request-byid-$requestId-$resolveReferences";
+
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            return App::$cache->get($cacheKey);
+        }
+
+        $query = new Query\Request(Query\Base::SELECT);
+        $query
+            ->setResolveLevel($resolveReferences)
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionRequestId($requestId);
+        $request = $this->fetchOne($query, new Entity());
+
+        if (App::$cache && $request->hasId()) {
+            App::$cache->set($cacheKey, $request);
+        }
+
+        return $request;
+    }
+
+    /**
+     * @param array<int|string> $requestIds
+     *
+     * @return array<string, string>
+     */
+    public function readSourceMapByIds(array $requestIds): array
+    {
+        if ($requestIds === []) {
+            return [];
+        }
+
+        $query = new Query\Request(Query\Base::SELECT);
+        $query
+            ->setResolveLevel(0)
+            ->addEntityMapping()
+            ->addConditionRequestIdList($requestIds);
+
+        $map = [];
+        foreach ($this->readCollection($query) as $request) {
+            $map[(string) $request->getId()] = (string) $request->getSource();
+        }
+
+        return $map;
+    }
+
     /**
      * @SuppressWarnings(Param)
      *
@@ -316,9 +364,17 @@ class Request extends Base
 
     protected function testSource($source)
     {
-        if (! (new Source())->readEntity($source)) {
-            throw new Exception\Source\UnknownDataSource();
+        if ((new Source())->readEntity($source)) {
+            return;
         }
+
+        $query = new Query\Request(Query\Base::SELECT);
+        $query->addConditionRequestSource($source);
+        if ($this->fetchOne($query, new Entity())->hasId()) {
+            return;
+        }
+
+        throw new Exception\Source\UnknownDataSource();
     }
 
     public function removeCache(Entity $request)

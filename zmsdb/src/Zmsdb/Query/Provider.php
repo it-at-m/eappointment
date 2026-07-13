@@ -51,6 +51,16 @@ class Provider extends Base
         return $this;
     }
 
+    /**
+     * @param array<int|string> $providerIds
+     */
+    public function addConditionProviderIdList(array $providerIds): self
+    {
+        $this->query->where('provider.id', 'IN', array_map('intval', $providerIds));
+
+        return $this;
+    }
+
     public function addConditionProviderSource($source)
     {
         $this->query->where('provider.source', '=', $source);
