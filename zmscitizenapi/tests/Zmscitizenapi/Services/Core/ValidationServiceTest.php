@@ -403,6 +403,13 @@ class ValidationServiceTest extends TestCase
             $result
         );
 
+        // Test service count of zero
+        $result = ValidationService::validateServiceArrays([1], [0]);
+        $this->assertContains(
+            ErrorMessages::get('invalidServiceCount'),
+            $result
+        );
+
         // Test service count above maximum
         $result = ValidationService::validateServiceArrays([1], [26]);
         $this->assertContains(

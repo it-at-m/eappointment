@@ -393,7 +393,7 @@ class ValidationService
     private static function isValidServiceCount(mixed $count): bool
     {
         return is_numeric($count)
-            && (int) $count >= 0
+            && (int) $count >= 1
             && (int) $count <= self::MAX_SERVICE_COUNT
             && preg_match(self::SERVICE_COUNT_PATTERN, (string) $count) === 1;
     }
