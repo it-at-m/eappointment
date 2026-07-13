@@ -136,10 +136,6 @@ class DepartmentTest extends EntityCommonTests
 
         $accessibleList = $collection->withAccess($useraccount);
         $this->assertEquals(2, $accessibleList->count());
-
-        $useraccount->setRights('organisation');
-        $accessibleList = $collection->withAccess($useraccount);
-        $this->assertEquals(2, $accessibleList->count());
     }
 
     public function testGetDayoffList()

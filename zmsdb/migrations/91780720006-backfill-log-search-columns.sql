@@ -6,6 +6,9 @@
 -- Batched via stored procedure: each UPDATE commits separately (short row locks).
 -- Batch count = CEILING(pending / batch_size) + buffer for rows written during the migration.
 -- Legacy JSON search in `data` remains available until backfill completes.
+--
+-- Skips stuck rows that cannot yield a citizen_name (action set, no Bürger*in in JSON).
+-- Exits only when no eligible rows remain (not on ROW_COUNT() = 0 alone).
 
 DELIMITER $$
 
@@ -34,7 +37,14 @@ proc: BEGIN
     WHERE `type` = 'buerger'
       AND `data` IS NOT NULL
       AND `data` != ''
-      AND `citizen_name` IS NULL;
+      AND `citizen_name` IS NULL
+      AND NOT (
+          `action` IS NOT NULL
+          AND (
+              JSON_EXTRACT(`data`, '$."Bürger*in"') IS NULL
+              OR JSON_UNQUOTE(JSON_EXTRACT(`data`, '$."Bürger*in"')) = ''
+          )
+      );
 
     SET v_max_batches = CEILING(v_pending / p_batch_size) + p_buffer_batches;
 
@@ -74,13 +84,34 @@ proc: BEGIN
           AND `data` IS NOT NULL
           AND `data` != ''
           AND `citizen_name` IS NULL
+          AND NOT (
+              `action` IS NOT NULL
+              AND (
+                  JSON_EXTRACT(`data`, '$."Bürger*in"') IS NULL
+                  OR JSON_UNQUOTE(JSON_EXTRACT(`data`, '$."Bürger*in"')) = ''
+              )
+          )
         ORDER BY `log_id` ASC
         LIMIT p_batch_size;
 
         SET v_affected = ROW_COUNT();
         SET v_batch = v_batch + 1;
 
-        IF v_affected = 0 THEN
+        SELECT COUNT(*) INTO v_pending
+        FROM `log`
+        WHERE `type` = 'buerger'
+          AND `data` IS NOT NULL
+          AND `data` != ''
+          AND `citizen_name` IS NULL
+          AND NOT (
+              `action` IS NOT NULL
+              AND (
+                  JSON_EXTRACT(`data`, '$."Bürger*in"') IS NULL
+                  OR JSON_UNQUOTE(JSON_EXTRACT(`data`, '$."Bürger*in"')) = ''
+              )
+          );
+
+        IF v_pending = 0 THEN
             LEAVE proc;
         END IF;
     END WHILE;

@@ -23,7 +23,7 @@ class DepartmentDelete extends BaseController
         array $args
     ) {
         $query = new Query();
-        (new Helper\User($request, 2))->checkRights('department');
+        (new Helper\User($request, 2))->checkPermissions('department');
         $department = Helper\User::checkDepartment($args['id']);
         $query->deleteEntity($department->id);
 

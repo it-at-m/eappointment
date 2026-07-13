@@ -3,7 +3,6 @@
 
 {% set userAccount = userAccount|default({}) %}
 {% set userAccountDepartments = userAccount.departments|default([]) %}
-{% set userAccountRights = userAccount.rights|default({}) %}
     
 {% set readonly = 1 %}
 {% if action == "add" %}
@@ -116,8 +115,8 @@
             {% set departmentOptionsGroup = [] %}
             {% set departmentOneSelected = 0 %}
 
-            {% if workstation.useraccount.rights.superuser %}
-                {% if userAccountRights.superuser|default(0) %}
+            {% if workstation.useraccount.permissions.superuser|default(false) %}
+                {% if userAccount.permissions.superuser|default(false) %}
                     {% set allOverSelected = 1 %}
                 {% endif %}
                 {% set departmentOptionsGroup = departmentOptionsGroup|merge([
@@ -137,7 +136,7 @@
                                 {% endif %}
                             {% endif %}
                         {% endfor %}
-                        {% if workstation.useraccount.rights.superuser %}
+                        {% if workstation.useraccount.permissions.superuser|default(false) %}
                             {% set departmentOptions = departmentOptions|merge([
                                 { "value": department.id, "name": department.name ~ " (Id: " ~ department.id ~ ")", "selected": selected }
                             ]) %}
@@ -178,16 +177,6 @@
         {% if userAccountRoles|length > 0 %}
             {% set selectedRoleName = userAccountRoles|first %}
         {% elseif action == "add" %}
-            {% set selectedRoleName = 'agent_queue' %}
-        {% elseif userAccountRights.superuser|default(false) %}
-            {% set selectedRoleName = 'system_admin' %}
-        {% elseif userAccountRights.cluster|default(false) %}
-            {% set selectedRoleName = 'user_admin' %}
-        {% elseif userAccountRights.scope|default(false) %}
-            {% set selectedRoleName = 'appointment_admin' %}
-        {% elseif userAccountRights.audit|default(false) %}
-            {% set selectedRoleName = 'audit_viewer' %}
-        {% else %}
             {% set selectedRoleName = 'agent_queue' %}
         {% endif %}
 

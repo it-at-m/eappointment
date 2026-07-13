@@ -33,4 +33,51 @@ class RoleDeleteTest extends Base
 
         $this->render(['id' => 0], [], []);
     }
+
+    /**
+     * Replace the database user_role relation for a user by loginname with the specified role id.
+     *
+     * This bypasses Useraccount::writeUpdatedEntity() intentionally because these tests use
+     * dynamic test roles
+     */
+    private function replaceUserRoleDirectly(\BO\Zmsdb\Useraccount $userQuery, string $loginName, int $roleId): void
+    {
+        $userQuery->perform(
+            'DELETE FROM user_role
+             WHERE user_id = (SELECT NutzerID FROM nutzer WHERE Name = ? LIMIT 1)',
+            [$loginName]
+        );
+
+        $userQuery->perform(
+            'INSERT INTO user_role (user_id, role_id)
+             SELECT NutzerID, ? FROM nutzer WHERE Name = ?',
+            [$roleId, $loginName]
+        );
+    }
+
+    public function testDeleteAssignedRoleReturnsConflict()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
+
+        $roleRepo = new RoleRepository();
+        $userRepo = new \BO\Zmsdb\Useraccount();
+
+        $createdRole = $roleRepo->addRole(new RoleEntity([
+            'name' => 'test_role_api_delete_assigned',
+            'description' => 'Assigned role',
+            'permissions' => ['useraccount'],
+        ]));
+        $roleId = (int) $createdRole->id;
+
+        $user = (new \BO\Zmsentities\Useraccount())->getExample();
+        $user->id = $user->id . rand();
+        $createdUser = $userRepo->writeEntity($user);
+
+        $this->replaceUserRoleDirectly($userRepo, $createdUser->id, $roleId);
+
+        $this->expectException(\BO\Zmsapi\Exception\Role\RoleHasAssignedUsers::class);
+        $this->expectExceptionCode(409);
+
+        $this->render(['id' => $roleId], [], []);
+    }
 }

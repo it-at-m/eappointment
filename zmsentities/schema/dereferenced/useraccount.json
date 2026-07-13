@@ -6,10 +6,6 @@
         "id": "johndoe",
         "email": "johndoe@berlinonline.de",
         "password": "secret",
-        "rights": {
-            "scope": true,
-            "ticketprinter": true
-        },
         "permissions": {
             "appointment": true,
             "availability": true
@@ -25,7 +21,6 @@
     },
     "required": [
         "id",
-        "rights",
         "permissions"
     ],
     "additionalProperties": false,
@@ -105,74 +100,6 @@
                     "messages": {
                         "format": "Die beiden Passwörter müssen identisch sein"
                     }
-                }
-            }
-        },
-        "rights": {
-            "type": "object",
-            "properties": {
-                "availability": {
-                    "description": "Allow editing availability with opening hours",
-                    "type": [
-                        "boolean",
-                        "number"
-                    ]
-                },
-                "basic": {
-                    "description": "Allow login and basic usage",
-                    "type": [
-                        "boolean",
-                        "number"
-                    ]
-                },
-                "cluster": {
-                    "description": "Allow editing clusters",
-                    "type": [
-                        "boolean",
-                        "number"
-                    ]
-                },
-                "department": {
-                    "description": "Allow editing departments",
-                    "type": [
-                        "boolean",
-                        "number"
-                    ]
-                },
-                "organisation": {
-                    "description": "Allow editing organisations",
-                    "type": [
-                        "boolean",
-                        "number"
-                    ]
-                },
-                "scope": {
-                    "description": "Allow editing scopes",
-                    "type": [
-                        "boolean",
-                        "number"
-                    ]
-                },
-                "superuser": {
-                    "description": "Special rights for administrators, especially for maintenance",
-                    "type": [
-                        "boolean",
-                        "number"
-                    ]
-                },
-                "ticketprinter": {
-                    "description": "Manage ticketprinter",
-                    "type": [
-                        "boolean",
-                        "number"
-                    ]
-                },
-                "useraccount": {
-                    "description": "Allow create, edit and delete user accounts",
-                    "type": [
-                        "boolean",
-                        "number"
-                    ]
                 }
             }
         },

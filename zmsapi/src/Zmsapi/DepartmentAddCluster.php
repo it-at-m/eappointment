@@ -24,7 +24,7 @@ class DepartmentAddCluster extends BaseController
         array $args
     ) {
         $department = (new \BO\Zmsdb\Department())->readEntity($args['id'], 1);
-        (new Helper\User($request, 2))->checkRights(
+        (new Helper\User($request, 2))->checkPermissions(
             'department',
             new \BO\Zmsentities\Useraccount\EntityAccess($department)
         );

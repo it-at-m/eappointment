@@ -22,7 +22,7 @@ class ClusterDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('cluster');
+        (new Helper\User($request))->checkPermissions('cluster');
         $query = new Query();
         $cluster = $query->readEntity($args['id']);
         if (! $cluster) {
