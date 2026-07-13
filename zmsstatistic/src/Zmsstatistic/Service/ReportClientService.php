@@ -134,8 +134,8 @@ class ReportClientService
                         '/warehouse/clientscope/' . $scopeId . '/' . $year . '/',
                         [
                             'groupby' => 'day',
-                            'fromDate' => $fromDate,
-                            'toDate' => $toDate
+                            'fromDate' => $yearFrom->format('Y-m-d'),
+                            'toDate' => $yearTo->format('Y-m-d')
                         ]
                     )
                     ->getEntity();
