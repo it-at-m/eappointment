@@ -11,7 +11,6 @@ use BO\Slim\Render;
 use BO\Mellon\Validator;
 use BO\Zmsdb\CalendarAvailability as CalendarAvailabilityQuery;
 use BO\Zmsdb\Exception\Calendar\InvalidAvailabilityInput;
-use BO\Zmsapi\Helper\CalendarFromQuery;
 
 class CalendarAvailabilityGet extends BaseController
 {
@@ -36,11 +35,17 @@ class CalendarAvailabilityGet extends BaseController
 
         try {
             $message = Response\Message::create($request);
-            $message->data = (new CalendarAvailabilityQuery())->readFromParams(
-                CalendarFromQuery::getParamsFromRequest(),
+            $message->data = (new CalendarAvailabilityQuery())->readFromQuery(
                 \App::getNow(),
                 $slotType,
-                $slotsRequired
+                $slotsRequired,
+                Validator::param('startDate')->isString()->getValue(),
+                Validator::param('endDate')->isString()->getValue(),
+                Validator::param('officeId')->isString()->getValue(),
+                Validator::param('serviceId')->isString()->getValue(),
+                Validator::param('serviceCount')->isString()->setDefault('')->getValue(),
+                Validator::param('providerSource')->isString()->getValue() ?: null,
+                Validator::param('requestSource')->isString()->getValue() ?: null
             );
         } catch (InvalidAvailabilityInput $exception) {
             throw new Exception\Calendar\InvalidFirstDay($exception->getMessage(), 0, $exception);

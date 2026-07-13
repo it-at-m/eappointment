@@ -13,26 +13,36 @@ use BO\Zmsentities\Collection\DayList;
 class CalendarAvailability extends Base
 {
     /**
-     * @param array{
-     *     startDate: string,
-     *     endDate: string,
-     *     officeIds: array<int|string>,
-     *     serviceIds: array<int|string>,
-     *     serviceCounts?: array<int|string>,
-     *     providerSource?: string|null,
-     *     requestSource?: string|null
-     * } $params
-     *
      * @return array<string, mixed>
      */
-    public function readFromParams(
-        array $params,
+    public function readFromQuery(
         \DateTimeInterface $now,
-        string $slotType = 'public',
-        $slotsRequired = 0
+        string $slotType,
+        $slotsRequired,
+        ?string $startDate,
+        ?string $endDate,
+        ?string $officeIds,
+        ?string $serviceIds,
+        ?string $serviceCounts = '',
+        ?string $providerSource = null,
+        ?string $requestSource = null
     ): array {
+        if (!$startDate || !$endDate || !$officeIds || !$serviceIds) {
+            throw new Exception\Calendar\InvalidAvailabilityInput(
+                'startDate, endDate, officeId and serviceId are required'
+            );
+        }
+
         return $this->readAvailability(
-            $this->buildCalendarFromParams($params),
+            $this->buildCalendarFromQuery(
+                $startDate,
+                $endDate,
+                $officeIds,
+                $serviceIds,
+                $serviceCounts ?? '',
+                $providerSource,
+                $requestSource
+            ),
             $now,
             $slotType,
             $slotsRequired
@@ -83,30 +93,25 @@ class CalendarAvailability extends Base
         return $this->buildResult($calendar, $processList);
     }
 
-    /**
-     * @param array{
-     *     startDate: string,
-     *     endDate: string,
-     *     officeIds: array<int|string>,
-     *     serviceIds: array<int|string>,
-     *     serviceCounts?: array<int|string>,
-     *     providerSource?: string|null,
-     *     requestSource?: string|null
-     * } $params
-     */
-    private function buildCalendarFromParams(array $params): Entity
-    {
+    private function buildCalendarFromQuery(
+        string $startDate,
+        string $endDate,
+        string $officeIds,
+        string $serviceIds,
+        string $serviceCounts,
+        ?string $providerSource,
+        ?string $requestSource
+    ): Entity {
         $calendar = new Entity();
-        $calendar->firstDay = $this->datePartsFromIso($params['startDate']);
-        $calendar->lastDay = $this->datePartsFromIso($params['endDate']);
+        $calendar->firstDay = $this->datePartsFromIso($startDate);
+        $calendar->lastDay = $this->datePartsFromIso($endDate);
 
-        $providerSource = $params['providerSource'] ?? null;
+        $officeIdList = $this->parseCsv($officeIds);
         $providerSources = $providerSource
             ? []
-            : (new Provider())->readSourceMapByIds($params['officeIds']);
+            : (new Provider())->readSourceMapByIds($officeIdList);
 
-        foreach ($params['officeIds'] as $officeId) {
-            $officeId = (string) $officeId;
+        foreach ($officeIdList as $officeId) {
             $source = $providerSource ?: ($providerSources[$officeId] ?? null);
             if (!$source) {
                 throw new Exception\Calendar\InvalidAvailabilityInput('Unknown officeId: ' . $officeId);
@@ -118,25 +123,19 @@ class CalendarAvailability extends Base
             ];
         }
 
-        $requestSource = $params['requestSource'] ?? null;
-        $uniqueServiceIds = array_values(array_filter(array_map('strval', $params['serviceIds'])));
+        $serviceIdList = $this->parseCsv($serviceIds);
+        $countList = $this->parseCsv($serviceCounts);
         $requestSources = $requestSource
             ? []
-            : (new Request())->readSourceMapByIds($uniqueServiceIds);
-        $serviceCounts = $params['serviceCounts'] ?? [];
+            : (new Request())->readSourceMapByIds(array_values(array_filter(array_map('strval', $serviceIdList))));
 
-        foreach ($params['serviceIds'] as $index => $serviceId) {
-            $serviceId = (string) $serviceId;
-            if ($serviceId === '') {
-                continue;
-            }
-
+        foreach ($serviceIdList as $index => $serviceId) {
             $source = $requestSource ?: ($requestSources[$serviceId] ?? null);
             if (!$source) {
                 throw new Exception\Calendar\InvalidAvailabilityInput('Unknown serviceId: ' . $serviceId);
             }
 
-            $count = max(1, (int) ($serviceCounts[$index] ?? 1));
+            $count = max(1, (int) ($countList[$index] ?? 1));
             for ($slot = 0; $slot < $count; $slot++) {
                 $calendar->requests[] = [
                     'id' => $serviceId,
@@ -146,6 +145,18 @@ class CalendarAvailability extends Base
         }
 
         return $calendar;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function parseCsv(string $value): array
+    {
+        if ($value === '') {
+            return [];
+        }
+
+        return array_values(array_filter(array_map('trim', explode(',', $value)), static fn (string $item): bool => $item !== ''));
     }
 
     /**
