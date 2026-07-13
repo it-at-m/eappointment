@@ -136,6 +136,11 @@ class CalendarAvailability extends Base
             }
 
             $count = max(1, (int) ($countList[$index] ?? 1));
+            if ($count > Slot::MAX_SLOTS) {
+                throw new Exception\Calendar\InvalidAvailabilityInput(
+                    'serviceCount exceeds maximum of ' . Slot::MAX_SLOTS
+                );
+            }
             for ($slot = 0; $slot < $count; $slot++) {
                 $calendar->requests[] = [
                     'id' => $serviceId,

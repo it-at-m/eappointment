@@ -253,6 +253,27 @@ class AvailableCalendarByOfficeControllerTest extends ControllerTestCase
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
+    public function testServiceCountExceedsMaximum()
+    {
+        $parameters = [
+            'startDate' => '2024-08-29',
+            'endDate' => '2024-09-04',
+            'officeId' => '102522',
+            'serviceId' => '1063424',
+            'serviceCount' => '26',
+        ];
+
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('invalidServiceCount')
+            ],
+        ];
+        $this->assertEquals(ErrorMessages::get('invalidServiceCount')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
     public function testAllParametersMissing()
     {
         $parameters = [];

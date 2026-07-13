@@ -48,4 +48,19 @@ class CalendarAvailabilityGetTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
         $this->assertSame([], $body['data']['days']);
     }
+
+    public function testServiceCountExceedsMaximum()
+    {
+        $this->expectException(\BO\Zmsapi\Exception\Calendar\InvalidFirstDay::class);
+
+        $now = \App::$now;
+        $end = (clone $now)->modify('+1 month');
+        $this->render([], [
+            'startDate' => $now->format('Y-m-d'),
+            'endDate' => $end->format('Y-m-t'),
+            'officeId' => '122217',
+            'serviceId' => '120703',
+            'serviceCount' => '26',
+        ], []);
+    }
 }

@@ -27,4 +27,25 @@ class CalendarAvailabilityTest extends Base
         $this->assertArrayHasKey('startDate', $result);
         $this->assertArrayHasKey('endDate', $result);
     }
+
+    public function testServiceCountExceedsMaximum()
+    {
+        $this->expectException(\BO\Zmsdb\Exception\Calendar\InvalidAvailabilityInput::class);
+        $this->expectExceptionMessage('serviceCount exceeds maximum of 25');
+
+        $start = \App::$now;
+        $end = (clone $start)->modify('+1 month');
+        (new Query())->readFromQuery(
+            \App::$now,
+            'public',
+            0,
+            $start->format('Y-m-d'),
+            $end->format('Y-m-t'),
+            '122217',
+            '120703',
+            '26',
+            'dldb',
+            'dldb'
+        );
+    }
 }

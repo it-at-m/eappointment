@@ -37,6 +37,8 @@ class ValidationService
     private const EMAIL_PATTERN = '/^(?!.*\.\.)(?!\.)(?!.*\.$)[^\s@+]+(?<!\.)@(?!\.)[^\s@+]+\.[^\s@]{2,}$/';
     private const MAX_FUTURE_DAYS = 365;
     // Maximum days in the future for appointments
+    /** Must match {@see \BO\Zmsdb\Slot::MAX_SLOTS} */
+    private const MAX_SERVICE_COUNT = 25;
     private const AUTH_KEY_LEGACY_HEX_LENGTH = 4;
     private const AUTH_KEY_NEW_HEX_LENGTH = 64;
 
@@ -330,7 +332,7 @@ class ValidationService
         }
 
         foreach ($serviceCounts as $count) {
-            if (!is_numeric($count) || $count < 0) {
+            if (!self::isValidServiceCount($count)) {
                 $errors[] = self::getError('invalidServiceCount');
                 break;
             }
@@ -388,6 +390,14 @@ class ValidationService
         return !empty($serviceIds) && self::isValidNumericArray($serviceIds);
     }
 
+    private static function isValidServiceCount(mixed $count): bool
+    {
+        return is_numeric($count)
+            && (int) $count >= 0
+            && (int) $count <= self::MAX_SERVICE_COUNT
+            && preg_match(self::SERVICE_COUNT_PATTERN, (string) $count) === 1;
+    }
+
     private static function isValidServiceCounts(?array $serviceCounts): bool
     {
         if (empty($serviceCounts) || !is_array($serviceCounts)) {
@@ -395,7 +405,7 @@ class ValidationService
         }
 
         foreach ($serviceCounts as $count) {
-            if (!is_numeric($count) || $count < 0 || !preg_match(self::SERVICE_COUNT_PATTERN, (string) $count)) {
+            if (!self::isValidServiceCount($count)) {
                 return false;
             }
         }
