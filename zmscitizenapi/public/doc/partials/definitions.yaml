@@ -11,10 +11,6 @@ definitions:
     $ref: "schema/citizenapi/appointmentReserve.json"
   appointmentUpdate:
     $ref: "schema/citizenapi/appointmentUpdate.json"
-  availableAppointments:
-    $ref: "schema/citizenapi/availableAppointments.json"
-  availableDays:
-    $ref: "schema/citizenapi/availableDays.json"
   captchaDetails:
     $ref: "schema/citizenapi/captcha/altchaCaptcha.json"
   offices:
