@@ -58,6 +58,10 @@ class Request extends Base
             ->addConditionRequestId($requestId);
         $request = $this->fetchOne($query, new Entity());
 
+        if ($request->hasId()) {
+            $this->attachRootParentIds(new Collection([$request]));
+        }
+
         if (App::$cache && $request->hasId()) {
             App::$cache->set($cacheKey, $request);
         }
