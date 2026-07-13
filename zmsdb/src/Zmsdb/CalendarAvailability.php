@@ -69,7 +69,7 @@ class CalendarAvailability extends Base
 
         $dayQuery = new Day();
         $dayQuery->writeTemporaryScopeList($calendar, $slotsRequired);
-        $dayList = $dayQuery->readListFromPreparedTemporaryScopeList($calendar, $slotsRequired);
+        $dayList = $dayQuery->readListFromPreparedTemporaryScopeList($slotsRequired);
         $calendar->days = $dayList
             ->setStatusByType($slotType, $now)
             ->withDaysInDateRange($calendar->getFirstDay(), $calendar->getLastDay());
