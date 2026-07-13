@@ -10,6 +10,7 @@ namespace BO\Zmsstatistic\Service;
 use BO\Zmsentities\Day;
 use BO\Zmsstatistic\Helper\ReportHelper;
 use DateTime;
+use DateTimeImmutable;
 use Exception;
 
 class ReportClientService
@@ -113,8 +114,21 @@ class ReportClientService
         $combinedData = [];
         $baseEntity = null;
 
+        $requestedFrom = new DateTimeImmutable($fromDate);
+        $requestedTo = new DateTimeImmutable($toDate);
+
         foreach ($years as $year) {
             try {
+                $yearStart = new DateTimeImmutable($year . '-01-01');
+                $yearEnd = new DateTimeImmutable($year . '-12-31');
+
+                $yearFrom = $requestedFrom > $yearStart ? $requestedFrom : $yearStart;
+                $yearTo = $requestedTo > $yearEnd ? $requestedTo : $yearEnd;
+
+                if ($yearFrom > $yearTo) {
+                    continue;
+                }
+
                 $exchangeClient = \App::$http
                     ->readGetResult(
                         '/warehouse/clientscope/' . $scopeId . '/' . $year . '/',
