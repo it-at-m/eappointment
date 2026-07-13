@@ -286,7 +286,7 @@
  *               $ref: "schema/citizenapi/captcha/altchaCaptcha.json"
  */
 \App::$slim->get('/captcha-details/', '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaController')->setName("CaptchaController");
-\App::$slim->get('/captcha-details', '\BO\Zmscitizenapi\Controllers\Security\CaptchaController')->setName("CaptchaController");
+\App::$slim->get('/captcha-details', '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaController')->setName("CaptchaController");
 
 /**
  * @swagger
