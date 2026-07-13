@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 /**
- * Response data for GET /available-appointments/ and GET /available-appointments-by-office/.
+ * Appointment slots for a selected day and office, extracted from calendar availability.
  * Can be either:
  * - plain: { "appointmentTimestamps": [ ... ] }
  * - grouped by office: { "offices": [ { "officeId": 10433958, "appointments": [ ... ] }, ... ] }
