@@ -284,11 +284,10 @@ const props = defineProps<{
   availableDays:
     | Array<{ time: string | number; providerIDs: string }>
     | undefined;
-  datesWithoutAppointments: Set<string>;
-  appointmentTimestampsByOffice: Array<{
-    officeId: number | string;
-    appointments: number[];
-  }>;
+  appointmentsByDay: Map<
+    string,
+    Array<{ officeId: number | string; appointments: number[] }>
+  >;
   officeOrder: Map<number, number>;
 }>();
 
@@ -501,16 +500,28 @@ function onToggleDay(day: AccordionDay) {
   }
 }
 
+const getOfficesForDay = (dateString: string) => {
+  return props.appointmentsByDay.get(dateString) ?? [];
+};
+
+const dayHasSlotsForSelectedProviders = (dateString: string): boolean => {
+  return getOfficesForDay(dateString).some(
+    (office) =>
+      props.selectedProviders[String(office.officeId)] &&
+      (office.appointments?.length ?? 0) > 0
+  );
+};
+
 const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
   if (!props.availableDays) return [];
 
   const availableForProviders = props.availableDays.filter((day) =>
-    day.providerIDs.split(",").some((id) => props.selectedProviders[id])
+    day.providerIDs.split(",").some((id) => props.selectedProviders[id.trim()])
   );
 
   const trulyAvailable = availableForProviders.filter((day) => {
     const dateStr = convertDateToString(new Date(day.time));
-    return !props.datesWithoutAppointments.has(dateStr);
+    return dayHasSlotsForSelectedProviders(dateStr);
   });
 
   return trulyAvailable.slice(0, daysToShow.value).map((dayObj) => {
@@ -529,12 +540,10 @@ const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
     const hourRows: AccordionDay["hourRows"] = [];
     const dayPartRows: AccordionDay["dayPartRows"] = [];
 
-    props.appointmentTimestampsByOffice.forEach((office) => {
-      if (!props.selectedProviders[office.officeId as any]) return;
+    getOfficesForDay(dateString).forEach((office) => {
+      if (!props.selectedProviders[String(office.officeId)]) return;
 
-      const times = office.appointments.filter((ts) => {
-        return convertDateToString(new Date(ts * 1000)) === dateString;
-      });
+      const times = office.appointments;
       appointmentsCount += times.length;
 
       const byHour: Record<number, number[]> = {};
@@ -642,7 +651,7 @@ const canLoadMore = computed(() => {
   );
   const trulyAvailableCount = availableForProviders.filter((day) => {
     const dateStr = convertDateToString(new Date(day.time));
-    return !props.datesWithoutAppointments.has(dateStr);
+    return dayHasSlotsForSelectedProviders(dateStr);
   }).length;
   return firstFiveAvailableDays.value.length < trulyAvailableCount;
 });

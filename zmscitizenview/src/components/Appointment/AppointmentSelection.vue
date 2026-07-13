@@ -115,8 +115,7 @@
       :officeNameById="officeNameById"
       :isSlotSelected="isSlotSelected"
       :availableDays="availableDays"
-      :datesWithoutAppointments="datesWithoutAppointments"
-      :appointmentTimestampsByOffice="appointmentTimestampsByOffice"
+      :appointmentsByDay="appointmentsByDay"
       :officeOrder="officeOrder"
       @update:selectedDay="handleDaySelection"
       @selectTimeSlot="
@@ -228,13 +227,9 @@ import {
   watch,
 } from "vue";
 
-import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
-import { AvailableTimeSlotsByOfficeDTO } from "@/api/models/AvailableTimeSlotsByOfficeDTO";
+import { AvailableCalendarByOfficeDTO } from "@/api/models/AvailableCalendarByOfficeDTO";
 import { OfficeAvailableTimeSlotsDTO } from "@/api/models/OfficeAvailableTimeSlotsDTO";
-import {
-  fetchAvailableDays,
-  fetchAvailableTimeSlots,
-} from "@/api/ZMSAppointmentAPI";
+import { fetchAvailableCalendar } from "@/api/ZMSAppointmentAPI";
 import { GlobalState } from "@/types/GlobalState";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import {
@@ -305,6 +300,9 @@ const appointmentsCount = ref<number>(0);
 
 const appointmentTimestampsByOffice = ref<OfficeAvailableTimeSlotsDTO[]>([]);
 const appointmentTimestamps = ref<number[]>([]);
+const appointmentsByDay = ref<Map<string, OfficeAvailableTimeSlotsDTO[]>>(
+  new Map()
+);
 
 const errorStates = createErrorStates();
 const errorStateMap = computed(() => errorStates.errorStateMap);
@@ -351,9 +349,6 @@ const availableDaysFetched = ref(false);
 const isLoadingAppointments = ref(false);
 const isSwitchingProvider = ref(false);
 
-const datesWithoutAppointments = ref(new Set<string>());
-const knownDaysWithoutAppointments = ref(new Set<string>());
-
 const isLoadingComplete = ref(false);
 
 let refetchTimer: ReturnType<typeof setTimeout> | undefined;
@@ -363,47 +358,22 @@ const toDayKey = (value: Date | string): string => {
   return convertDateToString(value);
 };
 
-const resetDatesWithoutAppointments = () => {
-  // Keep known empty days across available-days refreshes so stale API data
-  // cannot make those days selectable again until slots really exist.
-  datesWithoutAppointments.value = new Set<string>(
-    knownDaysWithoutAppointments.value
+const normalizeCalendarOffices = (
+  offices: Array<{ officeId: number | string; appointments?: number[] }>
+): OfficeAvailableTimeSlotsDTO[] => {
+  return offices.map((office) => ({
+    officeId: Number(office.officeId),
+    appointments: office.appointments ?? [],
+  }));
+};
+
+const dayHasSlotsForSelectedProviders = (dateKey: string): boolean => {
+  const offices = appointmentsByDay.value.get(dateKey) ?? [];
+  return offices.some(
+    (office) =>
+      !!selectedProviders.value[String(office.officeId)] &&
+      (office.appointments?.length ?? 0) > 0
   );
-  calendarKey.value++;
-};
-
-const addDateWithoutAppointments = (date: string) => {
-  const dayKey = toDayKey(date);
-  const known = new Set(knownDaysWithoutAppointments.value);
-  known.add(dayKey);
-  knownDaysWithoutAppointments.value = known;
-  const next = new Set(datesWithoutAppointments.value);
-  next.add(dayKey);
-  datesWithoutAppointments.value = next;
-  calendarKey.value++;
-};
-
-const removeDateWithoutAppointments = (date: string) => {
-  const dayKey = toDayKey(date);
-  const known = new Set(knownDaysWithoutAppointments.value);
-  known.delete(dayKey);
-  knownDaysWithoutAppointments.value = known;
-  const next = new Set(datesWithoutAppointments.value);
-  next.delete(dayKey);
-  datesWithoutAppointments.value = next;
-  calendarKey.value++;
-};
-
-const removeDayFromAvailableDays = (date: string) => {
-  const dayKey = toDayKey(date);
-  if (!availableDays.value?.length) return;
-  availableDays.value = availableDays.value.filter(
-    (day) => toDayKey(day.time) !== dayKey
-  );
-  // Do not auto-jump to another day in this edge case; keep the selected day
-  // so users can read the "no appointment for this day" callout.
-  updateDateRangeForSelectedProviders(true);
-  calendarKey.value++;
 };
 
 /**
@@ -578,25 +548,21 @@ const allowedDates = (date: Date) => {
 
   const dateString = toDayKey(date);
 
-  // Check if this date is known to have no appointments
-  if (datesWithoutAppointments.value.has(dateString)) {
-    return false;
-  }
-
   const dayEntry = availableDays.value?.find(
     (day) => toDayKey(day.time) === dateString
   );
 
   if (!dayEntry) return false;
 
-  // Check if the date has appointments for the selected providers
-  const hasAppointments = dayEntry.providerIDs
-    .split(",")
-    .some((id) => selectedProviders.value[id]);
+  if (
+    !dayEntry.providerIDs
+      .split(",")
+      .some((id) => selectedProviders.value[id.trim()])
+  ) {
+    return false;
+  }
 
-  if (!hasAppointments) return false;
-
-  return true;
+  return dayHasSlotsForSelectedProviders(dateString);
 };
 
 const hasAppointmentsForSelectedProviders = () => {
@@ -661,49 +627,65 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   }
 };
 
+let skipSelectedDayWatch = false;
+
 const handleDaySelection = async (day: any) => {
   if (!(day instanceof Date)) {
-    // Don't allow deselection - if day is not a Date, ignore the selection
     return;
   }
 
-  // If the same date is already selected, don't do anything
-  if (selectedDay.value && selectedDay.value.getTime() === day.getTime()) {
-    return;
-  }
+  const isSameDay =
+    !!selectedDay.value && selectedDay.value.getTime() === day.getTime();
 
-  // Clear stale booking and local availability errors when user chooses another date.
   clearVisibleErrors();
 
-  selectedDay.value = day;
-  selectedTimeslot.value = 0;
-  selectedHour.value = null;
-  selectedDayPart.value = null;
+  if (!isSameDay) {
+    selectedDay.value = day;
+    selectedTimeslot.value = 0;
+    selectedHour.value = null;
+    selectedDayPart.value = null;
+  }
 
-  // Reset to earliest available appointment
-  if (timeSlotsInHoursByOffice.value.size > 0) {
-    // For hourly view
-    const allHours = Array.from(
-      timeSlotsInHoursByOffice.value.values()
-    ).flatMap((office) => {
-      const hours = Array.from((office as any).appointments.keys());
-      return hours.filter((hour) => typeof hour === "number" && hour >= 0);
-    });
-    if (allHours.length > 0) {
-      selectedHour.value = Math.min(...(allHours as number[]));
-    }
-  } else if (timeSlotsInDayPartByOffice.value.size > 0) {
-    // For am/pm view
-    const allDayParts = Array.from(
-      timeSlotsInDayPartByOffice.value.values()
-    ).flatMap((office) => {
-      const dayParts = Array.from((office as any).appointments.keys());
-      return dayParts.filter((part) => part === "am" || part === "pm");
-    });
-    if (allDayParts.includes("am")) {
-      selectedDayPart.value = "am";
-    } else if (allDayParts.includes("pm")) {
-      selectedDayPart.value = "pm";
+  skipSelectedDayWatch = true;
+  isLoadingAppointments.value = true;
+  isLoadingComplete.value = false;
+
+  const reloaded = await reloadCalendarAvailability({
+    preserveSelectedDay: true,
+  });
+  if (reloaded) {
+    await getAppointmentsOfDay(toDayKey(day));
+  } else {
+    isLoadingAppointments.value = false;
+    isLoadingComplete.value = true;
+  }
+
+  skipSelectedDayWatch = false;
+
+  if (!isSameDay) {
+    // Reset to earliest available appointment after fresh data is loaded
+    if (timeSlotsInHoursByOffice.value.size > 0) {
+      const allHours = Array.from(
+        timeSlotsInHoursByOffice.value.values()
+      ).flatMap((office) => {
+        const hours = Array.from((office as any).appointments.keys());
+        return hours.filter((hour) => typeof hour === "number" && hour >= 0);
+      });
+      if (allHours.length > 0) {
+        selectedHour.value = Math.min(...(allHours as number[]));
+      }
+    } else if (timeSlotsInDayPartByOffice.value.size > 0) {
+      const allDayParts = Array.from(
+        timeSlotsInDayPartByOffice.value.values()
+      ).flatMap((office) => {
+        const dayParts = Array.from((office as any).appointments.keys());
+        return dayParts.filter((part) => part === "am" || part === "pm");
+      });
+      if (allDayParts.includes("am")) {
+        selectedDayPart.value = "am";
+      } else if (allDayParts.includes("pm")) {
+        selectedDayPart.value = "pm";
+      }
     }
   }
 };
@@ -857,14 +839,102 @@ const setNoAppointmentForThisDayError = (): void => {
 };
 
 // API calls
-const fetchAvailableDaysForSelection = async (): Promise<void> => {
-  // Always fetch available days for ALL providers to maintain the full list
+const applyCalendarResponse = (
+  calendar: AvailableCalendarByOfficeDTO
+): boolean => {
+  const days = calendar?.availableDays;
+  if (
+    !Array.isArray(days) ||
+    days.length === 0 ||
+    !days.every(
+      (d) =>
+        typeof d === "object" && d !== null && "time" in d && "providerIDs" in d
+    )
+  ) {
+    return false;
+  }
+
+  const nextByDay = new Map<string, OfficeAvailableTimeSlotsDTO[]>();
+  const normalizedDays: Array<{ time: string; providerIDs: string }> = [];
+
+  for (const day of days) {
+    const dateKey = toDayKey(day.time);
+    const offices = normalizeCalendarOffices(day.offices ?? []);
+    nextByDay.set(dateKey, offices);
+    if (offices.some((office) => office.appointments.length > 0)) {
+      normalizedDays.push({
+        time: day.time,
+        providerIDs: day.providerIDs,
+      });
+    }
+  }
+
+  appointmentsByDay.value = nextByDay;
+  availableDays.value = normalizedDays;
+  calendarKey.value++;
+  return true;
+};
+
+const reloadCalendarAvailability = async (options?: {
+  preserveSelectedDay?: boolean;
+}): Promise<boolean> => {
   const allProviderIds = (selectableProviders.value || []).map((p) =>
     Number(p.id)
   );
 
   if (allProviderIds.length === 0) {
-    // No providers available, clear available days
+    availableDays.value = [];
+    appointmentsByDay.value = new Map();
+    return false;
+  }
+
+  const data = await fetchAvailableCalendar(
+    props.globalState,
+    allProviderIds,
+    Array.from(props.selectedServiceMap.keys()),
+    Array.from(props.selectedServiceMap.values()),
+    props.captchaToken ?? undefined
+  );
+
+  if (data && typeof data === "object" && "errors" in data) {
+    handleError(data);
+    return false;
+  }
+
+  const calendar = data as AvailableCalendarByOfficeDTO;
+  if (!applyCalendarResponse(calendar)) {
+    handleError(data);
+    return false;
+  }
+
+  clearLocalApiErrors();
+
+  if (
+    !options?.preserveSelectedDay &&
+    !selectedDay.value &&
+    availableDays.value.length > 0
+  ) {
+    selectedDay.value = new Date(availableDays.value[0].time);
+  }
+
+  if (selectedDay.value) {
+    viewMonth.value = new Date(
+      selectedDay.value.getFullYear(),
+      selectedDay.value.getMonth(),
+      1
+    );
+  }
+
+  updateDateRangeForSelectedProviders(options?.preserveSelectedDay === true);
+  return true;
+};
+
+const fetchAvailableDaysForSelection = async (): Promise<void> => {
+  const allProviderIds = (selectableProviders.value || []).map((p) =>
+    Number(p.id)
+  );
+
+  if (allProviderIds.length === 0) {
     availableDays.value = [];
     availableDaysFetched.value = true;
     clearLocalApiErrors();
@@ -873,50 +943,14 @@ const fetchAvailableDaysForSelection = async (): Promise<void> => {
     return;
   }
 
-  const data = await fetchAvailableDays(
-    props.globalState,
-    allProviderIds,
-    Array.from(props.selectedServiceMap.keys()),
-    Array.from(props.selectedServiceMap.values()),
-    props.captchaToken ?? undefined
-  );
+  const reloaded = await reloadCalendarAvailability();
+  availableDaysFetched.value = true;
+  isSwitchingProvider.value = false;
 
-  const days = (data as AvailableDaysDTO)?.availableDays;
-  if (
-    Array.isArray(days) &&
-    days.length > 0 &&
-    days.every(
-      (d) =>
-        typeof d === "object" && d !== null && "time" in d && "providerIDs" in d
-    )
-  ) {
-    resetDatesWithoutAppointments();
-    availableDays.value = (
-      days as { time: string; providerIDs: string }[]
-    ).filter(
-      (day) => !knownDaysWithoutAppointments.value.has(toDayKey(day.time))
-    );
-    // Only set selectedDay on first load; otherwise preserve current selection
-    if (!selectedDay.value) {
-      selectedDay.value = new Date((days[0] as any).time);
-    }
-    // Keep viewMonth in sync with selectedDay and force calendar to re-render
-    viewMonth.value = new Date(
-      selectedDay.value.getFullYear(),
-      selectedDay.value.getMonth(),
-      1
-    );
-    calendarKey.value++;
+  if (reloaded && selectedDay.value) {
+    await getAppointmentsOfDay(toDayKey(selectedDay.value));
+  } else if (!reloaded) {
     availableDaysFetched.value = true;
-    clearLocalApiErrors();
-    isSwitchingProvider.value = false;
-
-    // Update date range based on selected providers
-    updateDateRangeForSelectedProviders();
-  } else {
-    handleError(data);
-    availableDaysFetched.value = true;
-    isSwitchingProvider.value = false;
   }
 };
 
@@ -925,83 +959,35 @@ const getAppointmentsOfDay = async (date: string): Promise<void> => {
   appointmentTimestamps.value = [];
   appointmentTimestampsByOffice.value = [];
 
-  // Only fetch appointments for selected providers
   const selectedProviderIds = Object.keys(selectedProviders.value).filter(
     (id) => selectedProviders.value[id]
   );
   if (selectedProviderIds.length === 0) {
-    // No providers selected, clear appointments
     isLoadingAppointments.value = false;
+    isLoadingComplete.value = true;
     return;
   }
 
-  const providerIds = selectedProviderIds.map(Number);
+  const officesForDay = appointmentsByDay.value.get(toDayKey(date)) ?? [];
+  appointmentTimestampsByOffice.value = officesForDay.filter(
+    (office) => selectedProviders.value[String(office.officeId)]
+  );
 
-  try {
-    const data = await fetchAvailableTimeSlots(
-      props.globalState,
-      date,
-      providerIds.map(Number),
-      Array.from(props.selectedServiceMap.keys()),
-      Array.from(props.selectedServiceMap.values()),
-      props.captchaToken ?? undefined
-    );
+  appointmentsCount.value = appointmentTimestampsByOffice.value.reduce(
+    (sum, office) => sum + (office.appointments?.length ?? 0),
+    0
+  );
 
-    // API errors (e.g. captchaMissing, rateLimitExceeded) must surface as callouts
-    // and must not be interpreted as "this day has no appointments".
-    if (data && typeof data === "object" && "errors" in data) {
-      handleError(data);
-      return;
-    }
-
-    if (data && "offices" in data && Array.isArray((data as any).offices)) {
-      appointmentTimestampsByOffice.value = (
-        data as AvailableTimeSlotsByOfficeDTO
-      ).offices;
-
-      appointmentsCount.value = (data as any).offices.reduce(
-        (sum: number, office: any) => sum + (office.appointments?.length ?? 0),
-        0
-      );
-
-      // Track dates without appointments
-      if (appointmentsCount.value === 0) {
-        addDateWithoutAppointments(date);
-        removeDayFromAvailableDays(date);
-        setNoAppointmentForThisDayError();
-      } else {
-        removeDateWithoutAppointments(date);
-        clearLocalApiErrors();
-      }
-
-      // Only show error if there are no appointments on any day
-      if (
-        appointmentsCount.value === 0 &&
-        !hasAppointmentsForSelectedProviders()
-      ) {
-        setNoAppointmentForThisDayError();
-      } else if (appointmentsCount.value !== 0) {
-        // Keep selectedDay; provider-change pipeline decides nearest available date
-      }
-    } else {
-      // Track dates without appointments
-      addDateWithoutAppointments(date);
-      removeDayFromAvailableDays(date);
+  if (appointmentsCount.value === 0) {
+    if (!hasAppointmentsForSelectedProviders()) {
       setNoAppointmentForThisDayError();
-
-      // Only show error if there are no appointments on any day
-      if (!hasAppointmentsForSelectedProviders()) {
-        setNoAppointmentForThisDayError();
-      } else {
-        // Keep selectedDay; provider-change pipeline decides nearest available date
-      }
     }
-  } catch (error) {
-    // Handle any errors from fetchAvailableTimeSlots
-  } finally {
-    isLoadingAppointments.value = false;
-    isLoadingComplete.value = true;
+  } else {
+    clearLocalApiErrors();
   }
+
+  isLoadingAppointments.value = false;
+  isLoadingComplete.value = true;
 };
 
 function getAvailableProviders(
@@ -1336,6 +1322,7 @@ watch(isLoadingAppointments, (loading) => {
 });
 
 watch(selectedDay, async (newDate) => {
+  if (skipSelectedDayWatch) return;
   selectedTimeslot.value = 0;
   if (newDate) {
     await getAppointmentsOfDay(toDayKey(selectedDay.value || newDate));
@@ -1387,11 +1374,6 @@ watch(appointmentTimestampsByOffice, () => {
 watch(
   selectedProviders,
   async () => {
-    // Provider combinations change day availability characteristics.
-    // Reset learned empty-day cache so we don't hide valid days for new selections.
-    knownDaysWithoutAppointments.value = new Set<string>();
-    datesWithoutAppointments.value = new Set<string>();
-
     // Sync single-selection provider immediately
     const selectedIds = Object.keys(selectedProviders.value).filter(
       (id) => selectedProviders.value[id]
