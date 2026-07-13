@@ -220,7 +220,10 @@ class Provider extends Base
         }
 
         $query = new Query\Provider(Query\Base::SELECT);
-        $query->addConditionProviderSource($source);
+        $query
+            ->setResolveLevel(0)
+            ->addEntityMapping()
+            ->addConditionProviderSource($source);
         if ($this->fetchOne($query, new Entity())->hasId()) {
             return;
         }
