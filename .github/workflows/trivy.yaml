@@ -22,7 +22,7 @@ jobs:
       actions: read
     steps:
       - name: Run Trivy Security check on Repository
-        uses: it-at-m/lhm_actions/action-templates/actions/action-trivy@6db6885319cb1f85f75cd2947caa96596047711b # v1.1.0
+        uses: it-at-m/lhm_actions/action-templates/actions/action-trivy@699d5d46ed8bcce2227e2d58101d1dde7a713d53 # v1.2.0
 
   scheduled:
     if: github.event_name == 'schedule'
