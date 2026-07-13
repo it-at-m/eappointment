@@ -38,13 +38,11 @@ class Day extends Base
         // We use a temporary table, so we can use create and insert on a readonly connection
         $this->writeTemporaryScopeList($calendar, $slotsRequiredForce);
 
-        return $this->readListFromPreparedTemporaryScopeList($calendar, $slotsRequiredForce);
+        return $this->readListFromPreparedTemporaryScopeList($slotsRequiredForce);
     }
 
-    public function readListFromPreparedTemporaryScopeList(
-        \BO\Zmsentities\Calendar $calendar,
-        $slotsRequiredForce = null
-    ) {
+    public function readListFromPreparedTemporaryScopeList($slotsRequiredForce = null)
+    {
         $dayList = new \BO\Zmsentities\Collection\DayList();
         $dayData = $this->getReader()->fetchAll(
             Query\Day::QUERY_DAYLIST_JOIN,
