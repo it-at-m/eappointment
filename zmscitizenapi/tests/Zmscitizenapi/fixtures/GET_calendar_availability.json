@@ -1,0 +1,29 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2019-02-08T14:45:15+01:00",
+        "server": "Zmsapi"
+    },
+    "data": {
+        "startDate": "2024-08-21",
+        "endDate": "2024-08-23",
+        "days": [
+            {
+                "date": "2024-08-22",
+                "providerIDs": "9999998",
+                "appointments": {
+                    "9999998": [32526616522]
+                }
+            },
+            {
+                "date": "2024-08-23",
+                "providerIDs": "9999998",
+                "appointments": {
+                    "9999998": [32526616622, 32526616652]
+                }
+            }
+        ]
+    }
+}

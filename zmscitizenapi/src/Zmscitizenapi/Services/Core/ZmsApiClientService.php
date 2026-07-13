@@ -234,6 +234,29 @@ class ZmsApiClientService
         }
     }
 
+    /**
+     * @return array{startDate: string, endDate: string, days: array<int, array<string, mixed>>}
+     */
+    public static function getCalendarAvailability(array $params): array
+    {
+        try {
+            $result = \App::$http->readGetResult('/calendar/availability/', $params);
+            $body = json_decode((string) $result->getResponse()->getBody(), true);
+            $data = $body['data'] ?? null;
+            if (!is_array($data)) {
+                return [
+                    'startDate' => '',
+                    'endDate' => '',
+                    'days' => [],
+                ];
+            }
+
+            return $data;
+        } catch (\Exception $e) {
+            ExceptionService::handleException($e);
+        }
+    }
+
     public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): Process
     {
         try {
