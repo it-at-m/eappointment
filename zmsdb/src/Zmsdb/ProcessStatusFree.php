@@ -18,6 +18,15 @@ class ProcessStatusFree extends Process
         $calendar = (new Calendar())->readResolvedEntity($calendar, $now, true);
         $dayquery = new Day();
         $dayquery->writeTemporaryScopeList($calendar, $slotsRequired);
+
+        return [$calendar, $dayquery, $this->buildDaysList($calendar)];
+    }
+
+    /**
+     * @return array<int, \DateTimeInterface>
+     */
+    private function buildDaysList(\BO\Zmsentities\Calendar $calendar): array
+    {
         $selectedDate = $calendar->getFirstDay();
         $days = [$selectedDate];
         if ($calendar->getLastDay(false)) {
@@ -27,7 +36,37 @@ class ProcessStatusFree extends Process
                 $selectedDate = $selectedDate->modify('+1 day');
             }
         }
-        return [$calendar, $dayquery, $days];
+
+        return $days;
+    }
+
+    public function readFreeProcessesMinimalFromPreparedCalendar(
+        \BO\Zmsentities\Calendar $calendar,
+        string $slotType = 'public',
+        ?int $slotsRequired = null,
+        bool $groupData = false
+    ): array {
+        $processData = $this->getProcessDataHandle(
+            $this->buildDaysList($calendar),
+            $slotType,
+            $slotsRequired,
+            $groupData
+        );
+
+        $unique = [];
+        while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
+            $processInfo = $this->extractProcessInfo($item, $calendar);
+            if ($processInfo) {
+                $key = $this->generateUniqueKey($processInfo['providerId'], $processInfo['date']);
+                if (!isset($unique[$key])) {
+                    $unique[$key] = $this->createMinimalProcess($processInfo);
+                }
+            }
+        }
+
+        $processData->closeCursor();
+
+        return array_values($unique);
     }
 
     private function getProcessDataHandle(

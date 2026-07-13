@@ -33,6 +33,54 @@ class Provider extends Base
         return $provider;
     }
 
+    public function readEntityById($providerId, $resolveReferences = 0, $disableCache = false)
+    {
+        $cacheKey = "provider-byid-$providerId-$resolveReferences";
+
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            return App::$cache->get($cacheKey);
+        }
+
+        $query = new Query\Provider(Query\Base::SELECT);
+        $query
+            ->setResolveLevel($resolveReferences)
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionProviderId($providerId);
+        $provider = $this->fetchOne($query, new Entity());
+
+        if (App::$cache && $provider->hasId()) {
+            App::$cache->set($cacheKey, $provider);
+        }
+
+        return $provider;
+    }
+
+    /**
+     * @param array<int|string> $providerIds
+     *
+     * @return array<string, string>
+     */
+    public function readSourceMapByIds(array $providerIds): array
+    {
+        if ($providerIds === []) {
+            return [];
+        }
+
+        $query = new Query\Provider(Query\Base::SELECT);
+        $query
+            ->setResolveLevel(0)
+            ->addEntityMapping()
+            ->addConditionProviderIdList($providerIds);
+
+        $map = [];
+        foreach ($this->readCollection($query) as $provider) {
+            $map[(string) $provider->getId()] = (string) $provider->getSource();
+        }
+
+        return $map;
+    }
+
     /**
      * @SuppressWarnings(Param)
      *
@@ -167,9 +215,17 @@ class Provider extends Base
 
     protected function testSource($source)
     {
-        if (! (new Source())->readEntity($source)) {
-            throw new Exception\Source\UnknownDataSource();
+        if ((new Source())->readEntity($source)) {
+            return;
         }
+
+        $query = new Query\Provider(Query\Base::SELECT);
+        $query->addConditionProviderSource($source);
+        if ($this->fetchOne($query, new Entity())->hasId()) {
+            return;
+        }
+
+        throw new Exception\Source\UnknownDataSource();
     }
 
     public function removeCache(Entity $provider)

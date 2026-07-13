@@ -38,6 +38,16 @@ class Request extends Base
         return $this;
     }
 
+    /**
+     * @param array<int|string> $requestIds
+     */
+    public function addConditionRequestIdList(array $requestIds): self
+    {
+        $this->query->where('request.id', 'IN', array_map('strval', $requestIds));
+
+        return $this;
+    }
+
     public function addConditionProcessId($processId)
     {
         $this->leftJoin(
