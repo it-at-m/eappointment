@@ -153,8 +153,8 @@ class ReportWaitingService
                         '/warehouse/waitingscope/' . $scopeId . '/' . $year . '/',
                         [
                             'groupby' => 'day',
-                            'fromDate' => $fromDate,
-                            'toDate' => $toDate
+                            'fromDate' => $bounds['from'],
+                            'toDate' => $bounds['to'],
                         ]
                     )
                     ->getEntity();
