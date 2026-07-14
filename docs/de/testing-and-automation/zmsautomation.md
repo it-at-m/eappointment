@@ -20,7 +20,7 @@ Dieses Modul enthält API- und UI-Tests für ZMS auf Basis von [ATAF](https://it
   - `zms/ataf/ui/steps/` – UI-Step-Definitionen (Selenium/[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) web)
   - `zms/ataf/ui/pages/**` – Page-Objects für Admin, Statistik, Buergeransicht, Mailinator
 - `src/test/resources/features/` – Cucumber-Feature-Dateien
-  - `rest/zmsapi/` – Features der ZMS-REST-API
+  - `rest/zmsapi/` - ZMS REST API features (legacy folder/tag name; targets `zmsbackend` at `/terminvereinbarung/api/2`)
   - `rest/zmscitizenapi/` – Features der Citizen-REST-API
   - `ui/zmsadmin/` – Admin-UI-Features
   - `ui/buergeransicht/` – veraltete Buergeransicht-UI-Features aus `it-at-m/eappointment-buergeransicht` (nicht für `zmscitizenview` verwendet)
@@ -60,10 +60,10 @@ Das Skript:
 3. Setzt die Datenbank zurück (Tabellen verwerfen)
 4. Importiert die Basis-Datenbank (`.resources/zms.sql`)
 5. Führt Flyway-Migrationen aus (Maven-Plugin)
-6. Führt PHP-Migrationen aus (`zmsapi` migrate)
+6. Führt PHP-Migrationen aus (`zmsbackend` migrate)
 7. Führt den Stunden-Cron aus (mit Wiederholungen)
 8. Führt den Minuten-Cron und die Slot-Berechnung aus (`calculateSlots`)
-9. Führt HTTP-Health-Checks aus (zmsapi, Citizen-API, CitizenView, optionales refarch-gateway)
+9. Führt HTTP-Health-Checks aus (zmsbackend, Citizen-API, CitizenView, optionales refarch-gateway)
 10. Richtet Display-/Browser-Tooling ein (Xvfb, Treiberprüfungen)
 11. Führt `mvn test` mit deinen Argumenten aus (Standard-Tag-Filter ergänzt `not @ignore`, sofern du `@ignore` nicht selbst einbeziehst)
 12. Druckt Test-Reports
@@ -233,7 +233,7 @@ cd zmsautomation && mvn test
 
 - API-Tags:
   - `@rest`
-  - `@zmsapi`
+  - `@zmsapi` (Legacy-Tag; REST-API wird von `zmsbackend` bereitgestellt)
   - `@zmscitizenapi`
 - UI-Tags:
   - `@web`
@@ -257,7 +257,7 @@ cd zmsautomation && mvn test
 
 ### API-Features (`src/test/resources/features/rest/`)
 
-- `rest/zmsapi/status.feature` – Tests des Status-Endpoints
+- `rest/zmsapi/status.feature` – Tests des Status-Endpoints (gegen `zmsbackend`)
 - `rest/zmscitizenapi/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature` – Buchungs-Flow der Citizen-API
 
 ### UI-Features (`src/test/resources/features/ui/`)

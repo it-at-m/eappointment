@@ -1,22 +1,22 @@
 # Cronjobs lokal ausführen
 
-ZMS-Cronjobs lassen sich lokal mit DDEV oder Podman ausführen.
+ZMS-Cronjobs lokal mit DDEV oder Podman ausführen. Die lokale Entwicklung nutzt **zmsbackend** (wie `./cli db full-setup` und root `.htaccess` für `/terminvereinbarung/api/2`).
 
 ## DDEV
 
 Stündlicher Cronjob (Standard und stadt-spezifisch):
 
 ```bash
-ddev exec zmsapi/cron/cronjob.hourly
-ddev exec zmsapi/cron/cronjob.hourly --city=berlin
-ddev exec zmsapi/cron/cronjob.hourly --city=munich
+ddev exec zmsbackend/cron/cronjob.hourly
+ddev exec zmsbackend/cron/cronjob.hourly --city=berlin
+ddev exec zmsbackend/cron/cronjob.hourly --city=munich
 ```
 
 Weitere Cronjobs:
 
 ```bash
-ddev exec zmsapi/cron/cronjob.minutly
-ddev exec zmsapi/cron/cronjob.daily
+ddev exec zmsbackend/cron/cronjob.minutly
+ddev exec zmsbackend/cron/cronjob.daily
 ```
 
 ## Podman
@@ -24,14 +24,14 @@ ddev exec zmsapi/cron/cronjob.daily
 Stündlicher Cronjob (Standard und stadt-spezifisch):
 
 ```bash
-podman exec -it zms-web bash -lc "zmsapi/cron/cronjob.hourly"
-podman exec -it zms-web bash -lc "zmsapi/cron/cronjob.hourly --city=berlin"
-podman exec -it zms-web bash -lc "zmsapi/cron/cronjob.hourly --city=munich"
+podman exec -it zms-web bash -lc "zmsbackend/cron/cronjob.hourly"
+podman exec -it zms-web bash -lc "zmsbackend/cron/cronjob.hourly --city=berlin"
+podman exec -it zms-web bash -lc "zmsbackend/cron/cronjob.hourly --city=munich"
 ```
 
 Weitere Cronjobs:
 
 ```bash
-podman exec -it zms-web bash -lc "zmsapi/cron/cronjob.minutly"
-podman exec -it zms-web bash -lc "zmsapi/cron/cronjob.daily"
+podman exec -it zms-web bash -lc "zmsbackend/cron/cronjob.minutly"
+podman exec -it zms-web bash -lc "zmsbackend/cron/cronjob.daily"
 ```

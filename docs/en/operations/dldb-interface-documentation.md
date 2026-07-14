@@ -32,21 +32,12 @@ flowchart TB
 
         subgraph eappointment
 
-            subgraph zmsapi
+            subgraph zmsbackend
                 a1[[cronjob.hourly]]
                 a2[(/data)]
-            end
-
-            b(zmsdldb)
-            a1 -- "(1) <br> getDldbData" --> b
-            b -- "(1.3)" --> a2
-            a1 -- "(2) <br> updateDldbData" --> c
-            c <-- "(2.1)" --> a2
-
-            subgraph zmsdb
-                c(zmsdb)
+                c(updateDldbData)
                 c <-- "(2.2)" --> db2
-                db2[(zmsdb)]
+                db2[(MariaDB)]
 
                 subgraph tables
                     direction TB
@@ -61,10 +52,15 @@ flowchart TB
 
             end
 
+            b(zmsdldb)
+            a1 -- "(1) <br> getDldbData" --> b
+            b -- "(1.3)" --> a2
+            a1 -- "(2) <br> updateDldbData" --> c
+
             c <-.-> d
             d <-.-> e
             c <-.-> f
-            d(zmsapi)
+            d(zmsbackend)
             e(zmsadmin)
             f(zmscitizenapi)
             g(zmscitizenview)
@@ -183,16 +179,16 @@ This section replaces the old Berlin-centric format examples with Munich-oriente
 }
 ```
 
-These examples show the key SADB input variables consumed by the Munich transformer (`ZMS_DAUER`, `ZMS_MAX_ANZAHL`, `ZMS_INTERN`, `TERMINVEREINBARUNG`, `FORMULARE_INFORMATIONEN`) before normalization into `zmsapi/data` and `zmsdb`.
+These examples show the key SADB input variables consumed by the Munich transformer (`ZMS_DAUER`, `ZMS_MAX_ANZAHL`, `ZMS_INTERN`, `TERMINVEREINBARUNG`, `FORMULARE_INFORMATIONEN`) before normalization into `zmsbackend/data` and the MariaDB tables.
 
-## Mapped Output in `zmsapi/data`
+## Mapped Output in `zmsbackend/data`
 
 After import + transformation (internal mapper and/or Munich transformer path), the normalized output is written to:
 
-- `zmsapi/data/locations_de.json`
-- `zmsapi/data/services_de.json`
+- `zmsbackend/data/locations_de.json`
+- `zmsbackend/data/services_de.json`
 
-From there, the update/import step writes the normalized entities into `zmsdb`, primarily into these database tables:
+From there, `bin/updateDldbData` writes the normalized entities into the database, primarily into these database tables:
 
 - `provider`: offices/locations (for example Bürgerbüro or department locations, including location visibility and metadata)
 - `request`: services/anliegen (for example service name and service-level additional data)
@@ -446,11 +442,11 @@ Quick lookup for where key SADB fields end up:
 flowchart LR
     A[Munich SADB Raw Export] --> B[Munich Transformer<br/>zmsdldb/src/Zmsdldb/Transformers/Munich.php]
     O[zmsdldb/resources/munich_sadb_overwrite.json] --> B
-    B --> C[zmsapi/data/services_de.json]
-    B --> D[zmsapi/data/locations_de.json]
-    C --> E[zmsdb request]
-    D --> F[zmsdb provider]
-    C --> G[zmsdb request_provider]
+    B --> C[zmsbackend/data/services_de.json]
+    B --> D[zmsbackend/data/locations_de.json]
+    C --> E[request table]
+    D --> F[provider table]
+    C --> G[request_provider table]
     D --> G
     E --> H[zmscitizenapi MapperService]
     F --> H
@@ -481,7 +477,7 @@ Use this order to debug a missing item in `zmscitizenapi`:
 
 1. Confirm service/location exists in raw Munich export (`id`, `public`, `fields`).
 2. Check if `ZMS_INTERN` is present on `services[].fields` or on `locations[].extendedServiceReferences[].fields` (after merge with `munich_sadb_overwrite.json` if used).
-3. Verify transformer output in `zmsapi/data/services_de.json` and `zmsapi/data/locations_de.json`.
+3. Verify transformer output in `zmsbackend/data/services_de.json` and `zmsbackend/data/locations_de.json`.
 4. Verify relation exists between service and location (join expectation for `request_provider`).
 5. Validate publication state across provider/service/relation after import.
 6. Check `showUnpublished` behavior and host override via `ACCESS_UNPUBLISHED_ON_DOMAIN`.

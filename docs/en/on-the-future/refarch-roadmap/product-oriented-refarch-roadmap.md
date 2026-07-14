@@ -29,7 +29,7 @@ Key drivers:
 
 ## Current Dependency Graph Architecture
 
-`zmscitizenview` and `refarch-gateway` are built on top of `zmscitizenapi`, but they do not directly pull dependencies from it. Similarly, while `zmscitizenapi` sends requests to `zmsapi`, `zmsapi` is not a direct dependency of `zmscitizenapi`.
+`zmscitizenview` and `refarch-gateway` are built on top of `zmscitizenapi`, but they do not directly pull dependencies from it. Similarly, while `zmscitizenapi` sends requests to `zmsbackend`, `zmsbackend` is not a direct dependency of `zmscitizenapi`.
 
 `zmsadmin` and `zmsstatistic` share vendored layout assets in `zmslayout` (npm `file:` dependencies). `zmscalldisplay` and `zmsticketprinter` use separate PHP/Twig stacks and do not depend on `zmslayout` today. Refactoring the internal PHP frontends to Vue/Vuetify (per the target architecture below) replaces `zmslayout` with RefArch UI patterns rather than growing the legacy SCSS/JS library.
 
@@ -37,14 +37,13 @@ Key drivers:
 %%{init: {"flowchart": {"defaultRenderer": "elk"}} }%%
 graph TD;
     %% Main ZMS module dependencies
-    zmsapi --> zmsslim & zmsclient & zmsdldb & zmsdb & zmsentities;
+    zmsbackend --> zmsslim & zmsclient & zmsdldb & zmsentities;
     zmsadmin --> mellon & zmsclient & zmsslim & zmsentities;
     zmscalldisplay --> mellon & zmsclient & zmsentities & zmsslim;
     zmsstatistic --> mellon & zmsentities & zmsslim & zmsclient;
     zmsmessaging --> mellon & zmsclient & zmsentities & zmsslim;
     zmsticketprinter --> mellon & zmsclient & zmsentities & zmsslim;
 
-    zmsdb --> zmsentities & zmsdldb & mellon;
     zmsclient --> zmsentities & zmsslim & mellon;
     zmsentities --> mellon;
     zmsslim --> mellon;
@@ -57,7 +56,7 @@ graph TD;
     zmsstatistic -.-> zmslayout;
 
     %% Build dependencies (dashed lines)
-    zmscitizenapi -.-> zmsapi;
+    zmscitizenapi -.-> zmsbackend;
     refarch-gateway -.-> zmscitizenapi;
     zmscitizenview -.-> refarch-gateway;
 
@@ -71,13 +70,12 @@ graph TD;
     %% Group remaining modules into dashed PHP-style subgraph
     subgraph zms_modules [ZMS PHP Modules]
         style zms_modules stroke-dasharray: 5, 5, 1, 5
-        zmsapi
+        zmsbackend
         zmsadmin
         zmscalldisplay
         zmsstatistic
         zmsmessaging
         zmsticketprinter
-        zmsdb
         zmsclient
         zmsentities
         zmsslim
@@ -236,8 +234,8 @@ graph TD;
 
 - **Frontend Modernization**: All frontend modules converted to Vue.js applications; `zmsadmin` and `zmsstatistic` no longer depend on `zmslayout`
 - **API Gateway Pattern**: Separate gateways for internal and citizen-facing applications
-- **Backend Refactoring**: Admin core consolidated in Spring Boot: `zmsapi`, `zmsdb`, `zmsclient`, `zmsentities`, `zmsslim`, `mellon` → **`zmsbackend`**
-- **Citizen backend**: `zmscitizenapi` → **`zmscitizenbackend`**; drops `ZmsApiClientService` / `ZmsApiFacadeService` HTTP calls to `zmsapi` in favour of direct JPA/SQL against the shared schema
+- **Backend Refactoring (PHP, done — [GH-2604](https://github.com/it-at-m/eappointment/issues/2604))**: `zmsapi`, `zmsdb`, and related layers consolidated into **`zmsbackend`** (PHP/Slim). **Target (Spring):** further consolidation into a Spring Boot **`zmsbackend`** service.
+- **Citizen backend**: `zmscitizenapi` → **`zmscitizenbackend`**; drops HTTP calls to the admin REST API in favour of direct JPA/SQL against the shared schema
 - **zmsmessaging**: Dedicated EAI service for notifications
 - **zmsdldb**: EAI service for Stadt München data integration with `zmsdldbmapper`. Even possible to add other mappers for other cities.
 - **Microservices Architecture**: Clear separation of concerns with dedicated services

@@ -1,0 +1,304 @@
+<?php
+
+namespace BO\Zmsbackend\Helper;
+
+use BO\Slim\Render;
+use BO\Zmsbackend\Workstation\Service\Workstation;
+use BO\Zmsbackend\Helper\UserAuth;
+use BO\Zmsentities\Collection\DepartmentList;
+
+/**
+ *
+ * @SuppressWarnings(CouplingBetweenObjects)
+ */
+class User
+{
+    public static $workstation = null;
+    public static $workstationResolved = null;
+
+    public static $assignedWorkstation = null;
+
+    public static $request = null;
+
+    private const SUPERUSER_ONLY_ROLES = [
+        'system_admin',
+        'audit_viewer',
+    ];
+
+    public function __construct($request, $resolveReferences = 0)
+    {
+        static::$request = $request;
+        static::readWorkstation($resolveReferences);
+    }
+
+    public static function readWorkstation($resolveReferences = 0)
+    {
+        $request = (static::$request) ? static::$request : Render::$request;
+        if (! static::$workstation) {
+            $useraccount = UserAuth::getUseraccountByAuthMethod($request);
+            if ($useraccount && $useraccount->hasId()) {
+                static::$workstation = (new \BO\Zmsbackend\Workstation\Service\Workstation())->readEntity($useraccount->id, $resolveReferences);
+                if ($resolveReferences < 1) {
+                    static::$workstation->useraccount = $useraccount;
+                }
+                static::$workstationResolved = $resolveReferences;
+            } else {
+                static::$workstation = new \BO\Zmsentities\Workstation();
+            }
+        }
+        if ($resolveReferences > static::$workstationResolved && static::$workstation->hasId()) {
+            static::$workstation = (new \BO\Zmsbackend\Workstation\Service\Workstation())
+                ->readResolvedReferences(static::$workstation, $resolveReferences);
+        }
+        return static::$workstation;
+    }
+
+    /**
+     * @throws \BO\Zmsbackend\Workstation\Exception\WorkstationAlreadyAssigned
+     *
+     */
+    public static function testWorkstationAssigend(\BO\Zmsentities\Workstation $entity, $resolveReferences = 0)
+    {
+        if (! static::$assignedWorkstation && $entity->name) {
+            static::$assignedWorkstation = (new \BO\Zmsbackend\Workstation\Service\Workstation())->readWorkstationByScopeAndName(
+                $entity->scope['id'],
+                $entity->name,
+                $resolveReferences
+            );
+        }
+        if (
+            static::$assignedWorkstation &&
+            static::$assignedWorkstation->id != $entity->id &&
+            static::$assignedWorkstation->name == $entity->name &&
+            static::$assignedWorkstation->scope['id'] == $entity->scope['id'] &&
+            ! static::$assignedWorkstation->getUseraccount()->isOveraged(\App::$now)
+        ) {
+            throw new \BO\Zmsbackend\Workstation\Exception\WorkstationAlreadyAssigned();
+        }
+    }
+
+    /**
+     * @throws \BO\Zmsentities\Exception\UserAccountAccessRightsFailed
+     *
+     */
+    public static function testWorkstationAccessRights($useraccount)
+    {
+        if (
+            (
+                ! static::$workstation->getUseraccount()->isSuperUser() &&
+                ! static::$workstation->hasAccessToUseraccount($useraccount)
+            ) ||
+            (
+                ! static::$workstation->getUseraccount()->isSuperUser() &&
+                $useraccount->isSuperUser()
+            )
+        ) {
+            throw new \BO\Zmsentities\Exception\UserAccountAccessRightsFailed();
+        }
+    }
+
+
+    public static function testWorkstationAssignedRoles($useraccount): void
+    {
+        if (! $useraccount->offsetExists('roles') || ! is_array($useraccount['roles'])) {
+            throw new \BO\Zmsbackend\Useraccount\Exception\UseraccountInvalidRoleAssignment();
+        }
+
+        $roleNames = array_values(array_unique(array_filter(
+            array_map(
+                static fn ($roleName) => is_string($roleName) ? trim($roleName) : '',
+                $useraccount['roles']
+            )
+        )));
+
+        if (count($roleNames) !== 1) {
+            throw new \BO\Zmsbackend\Useraccount\Exception\UseraccountInvalidRoleAssignment();
+        }
+
+        $roleName = $roleNames[0];
+        $existingRole = (new \BO\Zmsbackend\Role\Service\Role())->readRoleByName($roleName, 0);
+        if ($existingRole === null) {
+            throw new \BO\Zmsbackend\Useraccount\Exception\UseraccountInvalidRoleAssignment();
+        }
+
+        if (
+            ! static::$workstation->getUseraccount()->isSuperUser()
+            && array_intersect($roleNames, self::SUPERUSER_ONLY_ROLES)
+        ) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
+
+        $useraccount['roles'] = $roleNames;
+    }
+
+    public static function hasLogin(): bool
+    {
+        $userAccount = static::readWorkstation()->getUseraccount();
+        return $userAccount->hasId();
+    }
+
+    public static function checkPermissions(...$requiredPermissions)
+    {
+        $workstation = static::readWorkstation();
+
+        if (\App::RIGHTSCHECK_ENABLED) {
+            $workstation->getUseraccount()->testPermissions($requiredPermissions);
+        }
+
+        return $workstation;
+    }
+
+    public static function checkAnyPermission(...$requiredPermissions)
+    {
+        $workstation = static::readWorkstation();
+
+        if (\App::RIGHTSCHECK_ENABLED) {
+            $workstation->getUseraccount()->testAnyPermission($requiredPermissions);
+        }
+
+        return $workstation;
+    }
+
+    public static function checkDepartments($departmentIds)
+    {
+        $normalizedIds = self::normalizeDepartmentIds($departmentIds);
+        $departments = new DepartmentList();
+
+        if (empty($normalizedIds)) {
+            return $departments;
+        }
+
+        $workstation = static::readWorkstation(2);
+        $userAccount = $workstation->getUseraccount();
+
+        if (! $userAccount->hasId()) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingLogin();
+        }
+
+        if ($userAccount->isSuperUser()) {
+            // Bulk-load all departments in one query for superusers
+            $departmentMap = (new \BO\Zmsbackend\Department\Service\Department())->readEntitiesByIds($normalizedIds, 1);
+            foreach ($normalizedIds as $departmentId) {
+                if (!isset($departmentMap[$departmentId])) {
+                    throw new \BO\Zmsentities\Exception\UserAccountMissingDepartment(
+                        "No access to department " . htmlspecialchars((string) $departmentId)
+                    );
+                }
+                $departments->addEntity($departmentMap[$departmentId]);
+            }
+        } elseif ($userAccount->hasPermissions(['department'])) {
+            // Users with 'department' permission: need organisation-based access checks
+            // Group departments by organisation and load in batches
+            foreach ($normalizedIds as $departmentId) {
+                $departments->addEntity(self::checkDepartment($departmentId));
+            }
+        } else {
+            // Regular users: extract departments directly from already-loaded user department list
+            $userDepartmentList = $userAccount->getDepartmentList();
+            $accessibleDepartmentIds = $userDepartmentList->getIds();
+            $accessibleRequestedIds = array_intersect($normalizedIds, $accessibleDepartmentIds);
+
+            if (count($accessibleRequestedIds) !== count($normalizedIds)) {
+                // Some requested departments are not accessible
+                $missingIds = array_diff($normalizedIds, $accessibleRequestedIds);
+                throw new \BO\Zmsentities\Exception\UserAccountMissingDepartment(
+                    "No access to department(s): " . implode(', ', array_map('htmlspecialchars', $missingIds))
+                );
+            }
+
+            // Extract requested departments from already-loaded list (no DB query needed)
+            foreach ($accessibleRequestedIds as $departmentId) {
+                $department = $userDepartmentList->getEntity($departmentId);
+                if (!$department || !$department->hasId()) {
+                    throw new \BO\Zmsentities\Exception\UserAccountMissingDepartment(
+                        "No access to department " . htmlspecialchars((string) $departmentId)
+                    );
+                }
+                $departments->addEntity($department);
+            }
+        }
+
+        return $departments;
+    }
+
+    /**
+     * @return \BO\Zmsentities\Department
+     *
+     */
+    public static function checkDepartment($departmentId)
+    {
+        $workstation = static::readWorkstation(2);
+        $userAccount = $workstation->getUseraccount();
+        if (! $userAccount->hasId()) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingLogin();
+        }
+        if ($userAccount->isSuperUser()) {
+            $department = (new \BO\Zmsbackend\Department\Service\Department())->readEntity($departmentId);
+        } elseif ($userAccount->hasPermissions(['department'])) {
+            $department = self::testReadDepartmentByOrganisation($departmentId, $userAccount);
+        } else {
+            $department = $userAccount->testDepartmentById($departmentId);
+        }
+        if (! $department) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingDepartment(
+                "No access to department " . htmlspecialchars($departmentId)
+            );
+        }
+        return $department;
+    }
+
+
+    /**
+     * Get X-Api-Key from header
+     *
+    */
+    public static function hasXApiKey($request)
+    {
+        $xApiKeyEntity = null;
+        $xApiKey = $request->getHeaderLine('x-api-key');
+        if ($xApiKey) {
+            $xApiKeyEntity = (new \BO\Zmsbackend\Apikey\Service\Apikey())->readEntity($xApiKey);
+        }
+        return ($xApiKeyEntity && $xApiKeyEntity->hasId());
+    }
+
+    public static function testWorkstationIsOveraged($workstation)
+    {
+        if ($workstation->hasId() && $workstation->getUseraccount()->isOveraged(\App::$now)) {
+            $exception = new \BO\Zmsbackend\Useraccount\Exception\AuthKeyFound();
+            $exception->data = $workstation;
+            throw $exception;
+        }
+    }
+
+    protected static function testReadDepartmentByOrganisation($departmentId, $userAccount)
+    {
+        $organisation = (new \BO\Zmsbackend\Organisation\Service\Organisation())->readByDepartmentId($departmentId, 1);
+        $organisation->departments = $organisation->getDepartmentList()->withAccess($userAccount);
+        $department = $organisation->departments->getEntity($departmentId);
+        return $department;
+    }
+
+    public static function normalizeDepartmentIds(array $departmentIds)
+    {
+        $normalized = [];
+        foreach ($departmentIds as $departmentId) {
+            if ($departmentId === null) {
+                continue;
+            }
+            $departmentId = trim((string) $departmentId);
+            if ($departmentId === '') {
+                continue;
+            }
+            $validatedId = filter_var($departmentId, FILTER_VALIDATE_INT);
+            if ($validatedId === false) {
+                throw new \BO\Zmsbackend\Exception\BadRequest(
+                    "Invalid department ID: " . htmlspecialchars($departmentId)
+                );
+            }
+            $normalized[] = $validatedId;
+        }
+
+        return array_values(array_unique($normalized));
+    }
+}

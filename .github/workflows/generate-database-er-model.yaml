@@ -20,7 +20,7 @@ jobs:
       mariadb:
         image: mariadb:10.11
         env:
-          MYSQL_ROOT_PASSWORD: zmsdb
+          MYSQL_ROOT_PASSWORD: zmsbackend
           MYSQL_DATABASE: zmsbo
           MYSQL_CHARACTER_SET: utf8mb4
           MYSQL_COLLATION: utf8mb4_unicode_ci
@@ -50,24 +50,24 @@ jobs:
 
       - name: Install Composer Dependencies
         run: |
-          echo "Installing Composer dependencies for zmsdb"
-          (cd zmsdb && composer install --no-progress --prefer-dist --optimize-autoloader)
+          echo "Installing Composer dependencies for zmsbackend"
+          (cd zmsbackend && composer install --no-progress --prefer-dist --optimize-autoloader)
         shell: bash
 
       - name: Setup Database and Import Schema
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
           MYSQL_DATABASE: zmsbo
-          MYSQL_ROOT_PASSWORD: zmsdb
+          MYSQL_ROOT_PASSWORD: zmsbackend
         run: |
           set -e
           echo "Installing MariaDB client..."
           apt-get update && apt-get install -y mariadb-client
           echo "Setting up database and importing schema from .resources/zms.sql..."
           # Create database
-          mysql -h mariadb -u root -pzmsdb -e "CREATE DATABASE IF NOT EXISTS zmsbo;"
+          mysql -h mariadb -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS zmsbo;"
           # Import schema from .resources/zms.sql
-          mysql -h mariadb -u root -pzmsdb zmsbo < .resources/zms.sql
+          mysql -h mariadb -u root -p"$MYSQL_ROOT_PASSWORD" zmsbo < .resources/zms.sql
 
       - name: Create database schema generator script
         run: |
@@ -81,7 +81,7 @@ jobs:
           import re
 
           class DatabaseSchemaGenerator:
-              def __init__(self, host='mariadb', port=3306, user='root', password='zmsdb', database='zmsbo'):
+              def __init__(self, host='mariadb', port=3306, user='root', password='zmsbackend', database='zmsbo'):
                   self.connection = pymysql.connect(
                       host=host,
                       port=port,
@@ -546,7 +546,7 @@ jobs:
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
           MYSQL_DATABASE: zmsbo
-          MYSQL_ROOT_PASSWORD: zmsdb
+          MYSQL_ROOT_PASSWORD: zmsbackend
         run: python3 generate_schema.py
 
       - name: Upload database schema diagrams artifact

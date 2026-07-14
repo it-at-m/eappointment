@@ -25,6 +25,9 @@ import ataf.web.pages.BasePage;
 
 public class AdminPage extends BasePage {
 
+    private static final String HEADER_CHANGE_SELECTION_LOCATOR = ".page-header__scope a[title=\"Auswahl ändern\"]";
+    private static final String NAV_SELECT_LOCATION_LOCATOR = "//nav//a[normalize-space()='Standort auswählen']";
+
     protected final AdminPageContext CONTEXT;
 
     public AdminPage(RemoteWebDriver driver) {
@@ -127,8 +130,14 @@ public class AdminPage extends BasePage {
     }
 
     public void clickInHeaderOnChangeSelectionButton() {
+        CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to click on 'Auswahl ändern' Button");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//i[@class='fas fa-edit']", LocatorType.XPATH, true, CONTEXT);
+        if (isWebElementVisible(3, HEADER_CHANGE_SELECTION_LOCATOR, LocatorType.CSSSELECTOR, true)) {
+            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, HEADER_CHANGE_SELECTION_LOCATOR, LocatorType.CSSSELECTOR, true, CONTEXT);
+            return;
+        }
+        ScenarioLogManager.getLogger().info("Header 'Auswahl ändern' not visible, using nav link 'Standort auswählen'");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, NAV_SELECT_LOCATION_LOCATOR, LocatorType.XPATH, true, CONTEXT);
     }
 
     public void clickInNavigationOnTresenButton() {

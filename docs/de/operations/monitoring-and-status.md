@@ -6,7 +6,7 @@ Diese Seite beschreibt, was ZMS dafür bereitstellt und wie es mit [Monolog-Logg
 
 ## Status-Endpunkt (`GET /status/`)
 
-`zmsapi` liefert Betriebsmetriken unter:
+`zmsbackend` liefert Betriebsmetriken unter:
 
 ```http
 GET /terminvereinbarung/api/2/status/
@@ -14,7 +14,7 @@ GET /terminvereinbarung/api/2/status/
 
 (Host und API-Basispfad je nach Umgebung anpassen.)
 
-Die Antwort folgt [`status.json`](https://github.com/it-at-m/eappointment/blob/main/zmsentities/schema/status.json). ReDoc: [zmsapi API-Referenz](./api-reference.md).
+Die Antwort folgt [`status.json`](https://github.com/it-at-m/eappointment/blob/main/zmsentities/schema/status.json). ReDoc: [zmsbackend API-Referenz](./api-reference.md).
 
 ### Query-Parameter: `includeProcessStats`
 
@@ -64,12 +64,12 @@ Fertige Grafana-Dashboards liegen nicht in diesem Repository; Zielsysteme defini
 
 ```mermaid
 flowchart LR
-  zmsapi["zmsapi GET /status/"]
+  zmsbackend["zmsbackend GET /status/"]
   scraper["Metrik-Scraper\n(Prometheus / Agent)"]
   tsdb["Zeitreihen-DB"]
   grafana["Grafana-Dashboards"]
 
-  zmsapi --> scraper --> tsdb --> grafana
+  zmsbackend --> scraper --> tsdb --> grafana
 ```
 
 ## Logs vs. Metriken
@@ -83,6 +83,6 @@ Siehe [Monolog-Logging](./monolog-logging.md) für Log-Level, `DEBUGLEVEL` und d
 
 ## Verwandtes
 
-- [API-Referenz](./api-reference.md) — ReDoc für `zmsapi` und `zmscitizenapi`
+- [API-Referenz](./api-reference.md) — ReDoc für `zmsbackend` und `zmscitizenapi`
 - [Monolog-Logging](./monolog-logging.md) — Anwendungslogging
-- Implementierung: `zmsapi/src/Zmsapi/StatusGet.php`, `zmsdb/src/Zmsdb/Status.php`
+- Implementierung: `zmsbackend/src/Zmsbackend/Status/Api/StatusGet.php`, `zmsbackend/src/Zmsbackend/Status/Service/Status.php`

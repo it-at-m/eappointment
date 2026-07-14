@@ -20,7 +20,7 @@ This module contains API and UI tests for ZMS using [ATAF](https://it-at-m.githu
   - `zms/ataf/ui/steps/` - UI step definitions (Selenium/[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) web)
   - `zms/ataf/ui/pages/**` - page objects for Admin, Statistik, Buergeransicht, Mailinator
 - `src/test/resources/features/` - Cucumber feature files
-  - `rest/zmsapi/` - ZMS REST API features
+  - `rest/zmsapi/` - ZMS REST API features (legacy folder/tag name; targets `zmsbackend` at `/terminvereinbarung/api/2`)
   - `rest/zmscitizenapi/` - Citizen REST API features
   - `ui/zmsadmin/` - Admin UI features
   - `ui/buergeransicht/` - deprecated legacy citizen frontend UI features from `it-at-m/eappointment-buergeransicht` (not used for `zmscitizenview`)
@@ -60,10 +60,10 @@ The script will:
 3. Reset database (drop tables)
 4. Import base database (`.resources/zms.sql`)
 5. Run Flyway migrations (Maven plugin)
-6. Run PHP migrations (`zmsapi` migrate)
+6. Run PHP migrations (`zmsbackend` migrate)
 7. Run hourly cronjob (with retries)
 8. Run minutely cronjob and slot calculation (`calculateSlots`)
-9. Perform HTTP health checks (zmsapi, citizen API, CitizenView, optional refarch-gateway)
+9. Perform HTTP health checks (zmsbackend, citizen API, CitizenView, optional refarch-gateway)
 10. Set up display/browser tooling (Xvfb, driver checks)
 11. Run `mvn test` with your arguments (default tag filter adds `not @ignore` unless you include `@ignore`)
 12. Print test reports
@@ -233,7 +233,7 @@ cd zmsautomation && mvn test
 
 - API tags:
   - `@rest`
-  - `@zmsapi`
+  - `@zmsapi` (legacy tag; REST API served by `zmsbackend`)
   - `@zmscitizenapi`
 - UI tags:
   - `@web`
@@ -257,7 +257,7 @@ cd zmsautomation && mvn test
 
 ### API Features (`src/test/resources/features/rest/`)
 
-- `rest/zmsapi/status.feature` - status endpoint tests
+- `rest/zmsapi/status.feature` - status endpoint tests (against `zmsbackend`)
 - `rest/zmscitizenapi/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature` - Citizen API booking flow
 
 ### UI Features (`src/test/resources/features/ui/`)

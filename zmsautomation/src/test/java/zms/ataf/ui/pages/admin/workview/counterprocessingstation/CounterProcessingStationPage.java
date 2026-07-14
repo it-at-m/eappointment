@@ -7,7 +7,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,7 +18,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
@@ -442,26 +443,25 @@ public class CounterProcessingStationPage extends AdminPage {
                     switch (time) {
                     case "<beliebig>":
                     case "<nächste>":
+                        List<WebElement> bookableTimeSlots = options.stream()
+                                .filter(option -> !option.getText().contains("Spontankunde"))
+                                .filter(option -> timeSlotPattern.matcher(option.getText()).find())
+                                .collect(Collectors.toList());
+                        if (bookableTimeSlots.isEmpty()) {
+                            return false;
+                        }
                         WebElement webElement;
                         if (time.equals("<beliebig>")) {
                             final SecureRandom SECURE_RANDOM = new SecureRandom();
-                            webElement = options.get(SECURE_RANDOM.nextInt(options.size() - 1));
+                            webElement = bookableTimeSlots.get(SECURE_RANDOM.nextInt(bookableTimeSlots.size()));
                         } else {
-                            //webElement = options.get(0);
-                            // "Spontankunde" option is skipped when selecting the next available time slo
-                            webElement = options.stream()
-                                    .filter(option -> !option.getText().contains("Spontankunde"))
-                                    .findFirst()
-                                    .orElseThrow(() -> new NoSuchElementException("No available time slots"));
+                            webElement = bookableTimeSlots.get(0);
                         }
                         Matcher timeSlotMatcher = timeSlotPattern.matcher(webElement.getText());
-                        if (timeSlotMatcher.find()) {
-                            newAppointmentTimeDropDownListSelections.selectByValue(webElement.getAttribute("value"));
-                            ScenarioLogManager.getLogger().info("Time \"" + timeSlotMatcher.group(1) + "\" selected!");
-                            TestDataHelper.setTestData("new_appointment_time", timeSlotMatcher.group(1));
-                        } else {
-                            return false;
-                        }
+                        timeSlotMatcher.find();
+                        newAppointmentTimeDropDownListSelections.selectByValue(webElement.getAttribute("value"));
+                        ScenarioLogManager.getLogger().info("Time \"" + timeSlotMatcher.group(1) + "\" selected!");
+                        TestDataHelper.setTestData("new_appointment_time", timeSlotMatcher.group(1));
                         break;
                     default:
                         for (WebElement webElementInList : options) {
@@ -562,99 +562,99 @@ public class CounterProcessingStationPage extends AdminPage {
         CONTEXT.waitForSpinners();
     
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME * 2L));
-    
-        // Wait until button is clickable (more stable than presence)
-        WebElement bookButton = wait.until(
-                ExpectedConditions.elementToBeClickable(
-                        By.cssSelector("button.process-reserve")
-                )
-        );
-    
-        // Scroll into view to avoid click interception issues
-        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", bookButton);
-    
-        bookButton.click();
-    
-        // Wait for spinner again after click
-        CONTEXT.waitForSpinners();
-    
         AtomicReference<String> newAppointmentNumber = new AtomicReference<>("");
+        AtomicBoolean validationErrorsVisible = new AtomicBoolean(false);
+        final int maxBookingAttempts = 3;
     
-        try {
-            wait.until(driver -> {
-    
+        for (int attempt = 1; attempt <= maxBookingAttempts; attempt++) {
+            if (attempt > 1) {
+                ScenarioLogManager.getLogger().warn(
+                        "Retrying \"book appointment\" click (attempt " + attempt + "/" + maxBookingAttempts + ")...");
                 CONTEXT.waitForSpinners();
+            }
     
-                // -----------------------------
-                // Check for error messages
-                // -----------------------------
-                List<WebElement> errorElements = driver.findElements(By.xpath(
-                        "//li[@data-key='familyName'] | " +
-                        "//li[@data-key='email'] | " +
-                        "//li[@data-key='requests']"
-                ));
+            WebElement bookButton = wait.until(
+                    ExpectedConditions.elementToBeClickable(
+                            By.cssSelector("button.process-reserve")
+                    )
+            );
     
-                if (!errorElements.isEmpty()) {
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", bookButton);
     
-                    for (WebElement element : errorElements) {
+            if (attempt == 1) {
+                bookButton.click();
+            } else {
+                ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", bookButton);
+            }
     
-                        String key = element.getAttribute("data-key");
+            CONTEXT.waitForSpinners();
     
-                        switch (key) {
+            try {
+                wait.until(driver -> {
+                    CONTEXT.waitForSpinners();
+    
+                    List<WebElement> errorElements = driver.findElements(By.xpath(
+                            "//li[@data-key='familyName'] | " +
+                            "//li[@data-key='email'] | " +
+                            "//li[@data-key='requests']"
+                    ));
+    
+                    if (!errorElements.isEmpty()) {
+                        for (WebElement element : errorElements) {
+                            String key = element.getAttribute("data-key");
+                            switch (key) {
                             case "familyName":
                                 TestDataHelper.setTestData(
                                         "Fehler-Name",
                                         "Fehler: Es muss ein aussagekräftiger Name eingegeben werden."
                                 );
                                 break;
-    
                             case "email":
                                 TestDataHelper.setTestData(
                                         "Fehler-Email",
                                         "Fehler: Für den Email-Versand muss eine gültige E-Mail Adresse angegeben werden."
                                 );
                                 break;
-    
                             case "requests":
                                 TestDataHelper.setTestData(
                                         "Fehler-Dienstleistung",
                                         "Fehler: Es muss mindestens eine Dienstleistung ausgewählt werden!"
                                 );
                                 break;
+                            default:
+                                break;
+                            }
                         }
-                    }
-                    return true;
-                }
-    
-                // -----------------------------
-                // Check for success message
-                // -----------------------------
-                List<WebElement> successHeader = driver.findElements(
-                        By.xpath("//h2[normalize-space()='Termin erfolgreich eingetragen']")
-                );
-    
-                if (!successHeader.isEmpty()) {
-    
-                    WebElement dtElement = driver.findElement(
-                            By.xpath("//dt[starts-with(normalize-space(), 'Termin-Nr.')]")
-                    );
-    
-                    String text = dtElement.getText();
-    
-                    Pattern pattern = Pattern.compile("Termin-Nr\\.\\s*([0-9]+)");
-                    Matcher matcher = pattern.matcher(text);
-    
-                    if (matcher.find()) {
-                        newAppointmentNumber.set(matcher.group(1));
+                        validationErrorsVisible.set(true);
                         return true;
                     }
-                }
     
-                return false;
-            });
+                    List<WebElement> successHeader = driver.findElements(
+                            By.xpath("//h2[normalize-space()='Termin erfolgreich eingetragen']")
+                    );
     
-        } catch (TimeoutException e) {
-            ScenarioLogManager.getLogger().error("Timeout while waiting for success or error message after booking click.");
+                    if (!successHeader.isEmpty()) {
+                        WebElement dtElement = driver.findElement(
+                                By.xpath("//dt[starts-with(normalize-space(), 'Termin-Nr.')]")
+                        );
+                        Matcher matcher = Pattern.compile("Termin-Nr\\.\\s*([0-9]+)").matcher(dtElement.getText());
+                        if (matcher.find()) {
+                            newAppointmentNumber.set(matcher.group(1));
+                            return true;
+                        }
+                    }
+    
+                    return false;
+                });
+            } catch (TimeoutException e) {
+                ScenarioLogManager.getLogger().error(
+                        "Timeout while waiting for success or error message after booking click (attempt "
+                                + attempt + "/" + maxBookingAttempts + ").");
+            }
+    
+            if (validationErrorsVisible.get() || !newAppointmentNumber.get().isEmpty()) {
+                break;
+            }
         }
     
         // -----------------------------
