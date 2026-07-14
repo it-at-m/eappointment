@@ -237,7 +237,7 @@
 
             <template v-else>
               <muc-callout
-                v-if="confirmAppointmentSuccess"
+                v-if="confirmAppointmentSuccess && !appointmentHash"
                 type="success"
               >
                 <template #content>
@@ -249,7 +249,7 @@
               </muc-callout>
 
               <div
-                v-if="confirmAppointmentSuccess"
+                v-if="confirmAppointmentSuccess && !appointmentHash"
                 class="m-button-group"
               >
                 <div v-if="globalState.isLoggedIn && appointmentDetailUrl">
@@ -516,6 +516,8 @@ const bookingErrorKey = computed(() => {
 
 const confirmAppointmentSuccess = ref<boolean>(false);
 const confirmedAppointmentHash = ref<string | null>(null);
+const loadedAppointmentHash = ref<string | null>(null);
+const isLoadingAppointmentFromHash = ref<boolean>(false);
 const cancelAppointmentSuccess = ref<boolean>(false);
 const cancelAppointmentError = ref<boolean>(false);
 
@@ -1129,6 +1131,149 @@ const downloadIcsAppointment = () => {
   }
 };
 
+const resetConfirmRouteState = (): void => {
+  confirmAppointmentSuccess.value = false;
+  confirmedAppointmentHash.value = null;
+  isBookingAppointment.value = false;
+};
+
+const runAppointmentFromHash = (hash: string | undefined): void => {
+  if (
+    !hash ||
+    hash === loadedAppointmentHash.value ||
+    isLoadingAppointmentFromHash.value
+  ) {
+    return;
+  }
+
+  const appointmentData = parseAppointmentHash(hash);
+  if (!appointmentData) {
+    handleApiError(
+      "appointmentNotFound",
+      errorStateMap.value,
+      currentErrorData.value
+    );
+    return;
+  }
+
+  resetConfirmRouteState();
+  loadedAppointmentHash.value = hash;
+  isLoadingAppointmentFromHash.value = true;
+  clearContextErrors(errorStateMap.value);
+  rebookOrCancelDialog.value = true;
+
+  fetchServicesAndProviders(
+    props.serviceId ?? undefined,
+    props.locationId ?? undefined,
+    props.globalState?.baseUrl ?? undefined
+  )
+    .then((data) => {
+      handleErrorApiResponse(
+        data,
+        errorStates.errorStateMap,
+        currentErrorData.value
+      );
+
+      if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
+        return;
+      }
+
+      services.value = (data as any).services;
+      relations.value = (data as any).relations;
+      offices.value = (data as any).offices;
+
+      fetchAppointment(props.globalState, appointmentData).then((data) => {
+        if ((data as AppointmentDTO).processId != undefined) {
+          if ("captchaToken" in data && data.captchaToken) {
+            captchaToken.value = data.captchaToken as string;
+          }
+          appointment.value = data as AppointmentDTO;
+          selectedService.value = services.value.find(
+            (service) => service.id == appointment.value?.serviceId
+          );
+          if (selectedService.value) {
+            selectedService.value.count = appointment.value.serviceCount;
+            selectedService.value.providers = getProviders(
+              selectedService.value.id,
+              null
+            );
+
+            updateServiceLinkId(
+              String(
+                selectedService.value.rootParentId ??
+                  selectedService.value.id ??
+                  ""
+              )
+            );
+
+            preselectedLocationId.value = appointment.value.officeId;
+            const foundOffice = offices.value.find(
+              (office) => office.id == appointment.value?.officeId
+            );
+            if (foundOffice) {
+              selectedProvider.value = new OfficeImpl(
+                foundOffice.id,
+                foundOffice.name,
+                foundOffice.address,
+                foundOffice.showAlternativeLocations,
+                foundOffice.displayNameAlternatives,
+                foundOffice.organization,
+                foundOffice.organizationUnit,
+                foundOffice.slotTimeInMinutes,
+                undefined,
+                foundOffice.allowDisabledServicesMix,
+                foundOffice.scope,
+                foundOffice.slotsPerAppointment,
+                undefined,
+                foundOffice.priority || 1
+              );
+            }
+
+            if (appointment.value.subRequestCounts.length > 0) {
+              appointment.value.subRequestCounts.forEach((subRequestCount) => {
+                const subRequest = services.value.find(
+                  (service) => service.id == subRequestCount.id
+                ) as Service;
+                const subService = new SubService(
+                  subRequest.id,
+                  subRequest.name,
+                  subRequest.maxQuantity,
+                  getProviders(subRequest.id, null),
+                  subRequestCount.count
+                );
+                if (
+                  selectedService.value &&
+                  !selectedService.value.subServices
+                ) {
+                  selectedService.value.subServices = [];
+                }
+                selectedService.value?.subServices?.push(subService);
+              });
+            }
+            if (!appointmentData.action || isAppointmentInPast.value) {
+              currentView.value = 3;
+            } else if (
+              appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
+            ) {
+              nextRescheduleAppointment();
+            } else {
+              nextCancelAppointment();
+            }
+          }
+        } else {
+          handleApiError(
+            "appointmentNotFound",
+            errorStateMap.value,
+            currentErrorData.value
+          );
+        }
+      });
+    })
+    .finally(() => {
+      isLoadingAppointmentFromHash.value = false;
+    });
+};
+
 const runConfirmFromHash = (hash: string | undefined): void => {
   if (
     !hash ||
@@ -1150,6 +1295,7 @@ const runConfirmFromHash = (hash: string | undefined): void => {
   }
 
   confirmedAppointmentHash.value = hash;
+  loadedAppointmentHash.value = null;
   clearAllErrors();
   currentView.value = 5;
   isBookingAppointment.value = true;
@@ -1202,6 +1348,17 @@ watch(
   }
 );
 
+watch(
+  () => props.appointmentHash,
+  (hash) => {
+    if (!hash) {
+      loadedAppointmentHash.value = null;
+      return;
+    }
+    runAppointmentFromHash(hash);
+  }
+);
+
 onMounted(() => {
   runConfirmFromHash(props.confirmAppointmentHash);
 
@@ -1214,179 +1371,62 @@ onMounted(() => {
   }
 
   if (props.appointmentHash) {
-    clearContextErrors(errorStateMap.value);
-    rebookOrCancelDialog.value = true;
-    fetchServicesAndProviders(
-      props.serviceId ?? undefined,
-      props.locationId ?? undefined,
-      props.globalState?.baseUrl ?? undefined
-    ).then((data) => {
-      // Handle normal errors (like rate limit) first
-      handleErrorApiResponse(
-        data,
-        errorStates.errorStateMap,
-        currentErrorData.value
-      );
+    runAppointmentFromHash(props.appointmentHash);
+    if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
+      localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
+    }
+    focusActiveStepperItem();
+    return;
+  }
 
-      // Check if any error state should be activated (maintenance/system failure)
-      if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
-        return;
-      }
+  const localStorageAppointment = localStorage.getItem(
+    LOCALSTORAGE_PARAM_APPOINTMENT_DATA
+  );
+  if (localStorageAppointment) {
+    const localStorageData = parseLocalStorageAppointmentData(
+      localStorageAppointment
+    );
+    if (
+      localStorageData &&
+      Date.now() - localStorageData.timestamp < 30 * 60 * 1000
+    ) {
+      clearContextErrors(errorStateMap.value);
 
-      services.value = (data as any).services;
-      relations.value = (data as any).relations;
-      offices.value = (data as any).offices;
-
-      const appointmentData = parseAppointmentHash(props.appointmentHash ?? "");
-      if (!appointmentData) {
-        handleApiError(
-          "appointmentNotFound",
-          errorStateMap.value,
+      fetchServicesAndProviders(
+        props.serviceId ?? undefined,
+        props.locationId ?? undefined,
+        props.globalState?.baseUrl ?? undefined
+      ).then((data) => {
+        handleErrorApiResponse(
+          data,
+          errorStates.errorStateMap,
           currentErrorData.value
         );
-        return;
-      }
 
-      fetchAppointment(props.globalState, appointmentData).then((data) => {
-        if ((data as AppointmentDTO).processId != undefined) {
-          if ("captchaToken" in data && data.captchaToken) {
-            captchaToken.value = data.captchaToken as string;
-          }
-          appointment.value = data as AppointmentDTO;
-          selectedService.value = services.value.find(
-            (service) => service.id == appointment.value?.serviceId
-          );
-          if (selectedService.value) {
-            selectedService.value.count = appointment.value.serviceCount;
-            selectedService.value.providers = getProviders(
-              selectedService.value.id,
-              null
-            );
-
-            updateServiceLinkId(
-              String(
-                selectedService.value.rootParentId ??
-                  selectedService.value.id ??
-                  ""
-              )
-            );
-
-            preselectedLocationId.value = appointment.value.officeId;
-            const foundOffice = offices.value.find(
-              (office) => office.id == appointment.value?.officeId
-            );
-            if (foundOffice) {
-              selectedProvider.value = new OfficeImpl(
-                foundOffice.id,
-                foundOffice.name,
-                foundOffice.address,
-                foundOffice.showAlternativeLocations,
-                foundOffice.displayNameAlternatives,
-                foundOffice.organization,
-                foundOffice.organizationUnit,
-                foundOffice.slotTimeInMinutes,
-                undefined, // disabledByServices
-                foundOffice.allowDisabledServicesMix,
-                foundOffice.scope,
-                foundOffice.slotsPerAppointment,
-                undefined, // slots
-                foundOffice.priority || 1
-              );
-            }
-
-            if (appointment.value.subRequestCounts.length > 0) {
-              appointment.value.subRequestCounts.forEach((subRequestCount) => {
-                const subRequest = services.value.find(
-                  (service) => service.id == subRequestCount.id
-                ) as Service;
-                const subService = new SubService(
-                  subRequest.id,
-                  subRequest.name,
-                  subRequest.maxQuantity,
-                  getProviders(subRequest.id, null),
-                  subRequestCount.count
-                );
-                if (
-                  selectedService.value &&
-                  !selectedService.value.subServices
-                ) {
-                  selectedService.value.subServices = [];
-                }
-                selectedService.value?.subServices?.push(subService);
-              });
-            }
-            if (!appointmentData.action || isAppointmentInPast.value) {
-              currentView.value = 3;
-            } else if (
-              appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
-            ) {
-              nextRescheduleAppointment();
-            } else {
-              nextCancelAppointment();
-            }
-          }
-        } else {
-          handleApiError(
-            "appointmentNotFound",
-            errorStateMap.value,
-            currentErrorData.value
-          );
+        if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
+          return;
         }
+
+        services.value = (data as any).services;
+        relations.value = (data as any).relations;
+        offices.value = (data as any).offices;
+
+        selectedService.value = localStorageData.selectedService;
+        selectedServiceMap.value = new Map(
+          Object.entries(localStorageData.selectedServiceMap)
+        );
+        selectedProvider.value = localStorageData.selectedProvider;
+        selectedTimeslot.value = localStorageData.selectedTimeslot;
+        appointment.value = localStorageData.appointment;
+        captchaToken.value = localStorageData.captchaToken;
+
+        currentView.value = isAppointmentInPast.value
+          ? 3
+          : localStorageData.currentView;
       });
-    });
-  } else if (!props.confirmAppointmentHash) {
-    const localStorageAppointment = localStorage.getItem(
-      LOCALSTORAGE_PARAM_APPOINTMENT_DATA
-    );
-    if (localStorageAppointment) {
-      const localStorageData = parseLocalStorageAppointmentData(
-        localStorageAppointment
-      );
-      if (
-        localStorageData &&
-        Date.now() - localStorageData.timestamp < 30 * 60 * 1000
-      ) {
-        clearContextErrors(errorStateMap.value);
-
-        fetchServicesAndProviders(
-          props.serviceId ?? undefined,
-          props.locationId ?? undefined,
-          props.globalState?.baseUrl ?? undefined
-        ).then((data) => {
-          // Handle normal errors (like rate limit) first
-          handleErrorApiResponse(
-            data,
-            errorStates.errorStateMap,
-            currentErrorData.value
-          );
-
-          // Check if any error state should be activated (maintenance/system failure)
-          if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
-            return;
-          }
-
-          services.value = (data as any).services;
-          relations.value = (data as any).relations;
-          offices.value = (data as any).offices;
-
-          selectedService.value = localStorageData.selectedService;
-          selectedServiceMap.value = new Map(
-            Object.entries(localStorageData.selectedServiceMap)
-          );
-          selectedProvider.value = localStorageData.selectedProvider;
-          selectedTimeslot.value = localStorageData.selectedTimeslot;
-          // Functionality should be enabled in the future
-          // customerData.value = localStorageData.customerData;
-          appointment.value = localStorageData.appointment;
-          captchaToken.value = localStorageData.captchaToken;
-
-          currentView.value = isAppointmentInPast.value
-            ? 3
-            : localStorageData.currentView;
-        });
-      }
     }
   }
+
   if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
     localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
   }
