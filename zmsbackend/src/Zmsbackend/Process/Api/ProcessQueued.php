@@ -1,0 +1,74 @@
+<?php
+
+/**
+ * @package ZMS API
+ * @copyright BerlinOnline Stadtportal GmbH & Co. KG
+ **/
+
+namespace BO\Zmsbackend\Process\Api;
+
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsbackend\Process\Service\Process as Query;
+use BO\Zmsbackend\Process\Service\ProcessStatusQueued;
+
+/**
+ * @SuppressWarnings(Coupling)
+ */
+class ProcessQueued extends \BO\Zmsbackend\Api\BaseController
+{
+    /**
+     * @SuppressWarnings(Param)
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    #[\Override]
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $workstation = (new \BO\Zmsbackend\Helper\User($request))->checkPermissions('appointment');
+        $input = Validator::input()->isJson()->assertValid()->getValue();
+        $entity = new \BO\Zmsentities\Process($input);
+        $entity->testValid();
+        $this->testProcessData($entity);
+        $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 1);
+        $previousStatus = $process->status;
+        if (isset($entity->queue['waitingTime'])) {
+            $process->queue['waitingTime'] = $entity->queue['waitingTime'];
+        }
+        if (isset($entity->queue['arrivalTime'])) {
+            $process->queue['arrivalTime'] = $entity->queue['arrivalTime'];
+        }
+        $process->status = 'queued';
+        $process->queue['callCount'] = 0;
+        $process->queue['lastCallTime'] = 0;
+        $process->queue['priority'] = $entity->getPriority();
+        $cluster = (new \BO\Zmsbackend\Cluster\Service\Cluster())->readByScopeId($workstation->scope['id'], 1);
+        $workstation->validateProcessScopeAccess($workstation->getScopeList($cluster), $process);
+        $process = (new Query())->updateEntity(
+            $process,
+            \App::$now,
+            0,
+            $previousStatus,
+            $workstation->getUseraccount()
+        );
+        $message = \BO\Zmsbackend\Api\Response\Message::create($request);
+        $message->data = $process;
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
+    }
+
+    protected function testProcessData($entity)
+    {
+        $authCheck = (new Query())->readAuthKeyByProcessId($entity->id);
+        if (! $authCheck) {
+            throw new \BO\Zmsbackend\Process\Exception\ProcessNotFound();
+        } elseif ($authCheck['authKey'] !== $entity->authKey) {
+            throw new \BO\Zmsbackend\Process\Exception\AuthKeyMatchFailed();
+        }
+        \BO\Zmsbackend\Helper\Matching::testCurrentScopeHasRequest($entity);
+    }
+}

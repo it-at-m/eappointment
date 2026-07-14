@@ -62,6 +62,8 @@ section() {
 
 # Paths and variables
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ZMS_REST_MODULE="${ZMS_REST_MODULE:-zmsbackend}"
+ZMS_REST_DIR="$PROJECT_ROOT/$ZMS_REST_MODULE"
 
 # Default environment (devcontainer / City laptop). Override any value by exporting before running this script.
 export MYSQL_HOST="${MYSQL_HOST:-db}"
@@ -127,11 +129,11 @@ info "Test URLs: CITIZEN_VIEW_BASE_URI=$CITIZEN_VIEW_BASE_URI"
 KEYCLOAK_STATISTIC_JSON="$PROJECT_ROOT/zmsstatistic/keycloak.json"
 KEYCLOAK_ADMIN_JSON="$PROJECT_ROOT/zmsadmin/keycloak.json"
 
-# Cleanup function to clear zmsapi/data folder (preserve .gitignore)
+# Cleanup function to clear REST module data folder (preserve .gitignore)
 cleanup_data_folder() {
-  if [ -d "$PROJECT_ROOT/zmsapi/data" ]; then
-    find "$PROJECT_ROOT/zmsapi/data" -mindepth 1 -not -name ".gitignore" -delete || warn "Failed to clean data folder"
-    [ -f "$PROJECT_ROOT/zmsapi/data/.gitignore" ] || printf "*\n!.gitignore\n" > "$PROJECT_ROOT/zmsapi/data/.gitignore"
+  if [ -d "$ZMS_REST_DIR/data" ]; then
+    find "$ZMS_REST_DIR/data" -mindepth 1 -not -name ".gitignore" -delete || warn "Failed to clean data folder"
+    [ -f "$ZMS_REST_DIR/data/.gitignore" ] || printf "*\n!.gitignore\n" > "$ZMS_REST_DIR/data/.gitignore"
   fi
 }
 
@@ -300,15 +302,15 @@ install_dldb_bundled_fixtures() {
     warn "Bundled DLDB fixtures are missing under $DLDB_FIXTURE_DIR"
     return 1
   fi
-  mkdir -p "$PROJECT_ROOT/zmsapi/data"
+  mkdir -p "$ZMS_REST_DIR/data"
   for f in services_de.json locations_de.json topic_de.json services_en.json locations_en.json authority_de.json settings.json; do
     if [[ -f "$DLDB_FIXTURE_DIR/$f" ]]; then
-      cp -f "$DLDB_FIXTURE_DIR/$f" "$PROJECT_ROOT/zmsapi/data/$f"
+      cp -f "$DLDB_FIXTURE_DIR/$f" "$ZMS_REST_DIR/data/$f"
     fi
   done
   (
-    cd "$PROJECT_ROOT/zmsapi"
-    vendor/bin/updateDldbData --commit
+    cd "$ZMS_REST_DIR"
+    bin/updateDldbData --commit
   ) || {
     warn "updateDldbData failed after copying bundled DLDB fixtures"
     return 1
@@ -320,7 +322,7 @@ install_dldb_bundled_fixtures() {
 run_hourly_with_retries() {
   # Run hourly cronjob with up to 5 retries (6 attempts total).
   # Munich index fetch uses a 45s HTTP timeout — short delays rarely help; use longer backoff.
-  local cmd=("$PROJECT_ROOT/zmsapi/cron/cronjob.hourly" --city=munich)
+  local cmd=("$ZMS_REST_DIR/cron/cronjob.hourly" --city=munich)
   local delays=(0 15 30 45 60 90) # initial attempt has no delay
   local max_attempts=${#delays[@]}
   local attempt delay
@@ -411,7 +413,7 @@ exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM i
 
 # 6. PHP Migrations (inherit ZMS_TIMEADJUST from env)
 section "6. PHP Migrations"
-( cd "$PROJECT_ROOT/zmsapi" && vendor/bin/migrate --update )
+( cd "$ZMS_REST_DIR" && bin/configure && bin/migrate --update )
 
 # 7. Hourly Cronjob (inherit ZMS_TIMEADJUST from env)
 section "7. Hourly Cronjob"
@@ -432,14 +434,14 @@ export ZMS_CRONROOT=1
 export ZMS_ENV="${ZMS_ENV:-dev}"
 info "Running minutly cron with ZMS_TIMEADJUST=$ZMS_TIMEADJUST ..."
 (
-  cd "$PROJECT_ROOT/zmsapi" \
+  cd "$ZMS_REST_DIR" \
   && ZMS_TIMEADJUST="$ZMS_TIMEADJUST" ZMS_ENV="$ZMS_ENV" ZMS_CRONROOT=1 ./cron/cronjob.minutly
 ) || true
 
 info "Forcing slot calculation fallback (mocked time) ..."
 (
-  cd "$PROJECT_ROOT/zmsapi" \
-  && ZMS_TIMEADJUST="$ZMS_TIMEADJUST" php vendor/bin/calculateSlots --commit --delete
+  cd "$ZMS_REST_DIR" \
+  && ZMS_TIMEADJUST="$ZMS_TIMEADJUST" php bin/calculateSlots --commit --delete
 ) || true
 
 # 9. Health Checks (5 min total; 15s per try; curl uses explicit --noproxy)
@@ -500,13 +502,13 @@ wait_http_direct() { # name url
 
 fail=false
 
-DLDB_SERVICES_JSON="$PROJECT_ROOT/zmsapi/data/services_de.json"
+DLDB_SERVICES_JSON="$ZMS_REST_DIR/data/services_de.json"
 if [[ ! -f "$DLDB_SERVICES_JSON" ]]; then
   warn "Missing $DLDB_SERVICES_JSON after hourly cron — Munich SADB fetch/import failed."
   warn "citizenapi-available-calendar needs DLDB data (officeId=10502, serviceId=1063441); health checks will fail until import succeeds."
   fail=true
 fi
-wait_http "zmsapi"                     "$ZMS_API_HEALTH_URL"          || fail=true
+wait_http "zmsbackend"                 "$ZMS_API_HEALTH_URL"          || fail=true
 info "citizenapi ping uses direct PHP route (not gateway): ${CITIZEN_API_HEALTH_URL}"
 wait_http "citizenapi"                 "$CITIZEN_API_HEALTH_URL"      || fail=true
 wait_http "citizenapi-available-calendar"  "$CITIZEN_API_AVAIL_CALENDAR_URL"  || fail=true
@@ -766,9 +768,9 @@ fi
 
 # 15. Cleanup
 section "15. Cleanup"
-info "Cleaning up zmsapi/data folder..."
+info "Cleaning up $ZMS_REST_MODULE/data folder..."
 cleanup_data_folder
-info "Cleared zmsapi/data folder (preserved .gitignore)"
+info "Cleared $ZMS_REST_MODULE/data folder (preserved .gitignore)"
 
 if [[ $TEST_EXIT -eq 0 ]]; then
   info "Tests completed successfully."

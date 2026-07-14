@@ -434,7 +434,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
     public function testProcessInvalid()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessInvalid';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ProcessInvalid';
         
     
         $this->setApiCalls([
@@ -478,7 +478,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
     public function testProcessAlreadyExists()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyExists';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ProcessAlreadyExists';
         
         $this->setApiCalls([
             [

@@ -43,7 +43,7 @@ Useful flags for `./vendor/bin/phpunit`:
 --debug
 ```
 
-### Special Cases (zmsapi zmsdb & zmsclient)
+### Special Cases (zmsbackend & zmsclient)
 
 **zmsclient:**
 
@@ -68,52 +68,21 @@ The `zmsclient-test` script automatically detects and uses Docker or Podman, res
 
 #### Traditional Method (overwrites local DB)
 
-For the modules **zmsapi** and **zmsdb**, test data must be imported. Please note that this will overwrite your local database.
+For **zmsbackend**, test data must be imported. Please note that this will overwrite your local database.
 
-**zmsapi:**
+**zmsbackend** (unified REST API and database module for `/terminvereinbarung/api/2`):
 
-Using DDEV:
+Using DDEV or Podman:
 
 ```bash
-cd zmsapi
-rm -rf data
-ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
-ddev ssh
-cd zmsapi
-vendor/bin/importTestData --commit
-./vendor/bin/phpunit
+./zmsbackend/zmsbackend-test
 ```
 
-Using Podman:
+Or manually (inside `zms-web` / `ddev ssh`):
 
 ```bash
-cd zmsapi
-rm -rf data
-ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
-podman exec -it zms-web bash
-cd zmsapi
-vendor/bin/importTestData --commit
-./vendor/bin/phpunit
-```
-
-**zmsdb:**
-
-Using DDEV:
-
-```bash
-ddev ssh
-cd zmsdb
-bin/importTestData --commit
-./vendor/bin/phpunit
-```
-
-Using Podman:
-
-```bash
-podman exec -it zms-web bash
-cd zmsdb
-bin/importTestData --commit
-./vendor/bin/phpunit
+cd zmsbackend && bin/importTestData --commit
+cd zmsbackend && bin/configure && ./vendor/bin/phpunit
 ```
 
 ## PHP Containerized Unit Testing (Recommended - isolated environment)
@@ -125,13 +94,10 @@ Run your tests in clean, disposable containers to ensure they don’t affect you
 podman exec -it zms-web bash  # Podman
 ddev ssh                      # DDEV
 
-# Run zmsdb tests
-./zmsdb/zmsdb-test                    # Run all tests
-./zmsdb/zmsdb-test --filter="StatusTest::testBasic"  # Run specific test
-
-# Run zmsapi tests
-./zmsapi/zmsapi-test                   # Run all tests
-./zmsapi/zmsapi-test --filter="StatusGetTest::testRendering"  # Run specific test
+# Run zmsbackend tests
+./zmsbackend/zmsbackend-test                    # Run all tests
+./zmsbackend/zmsbackend-test --filter="StatusTest::testBasic"  # Run specific test
+./zmsbackend/zmsbackend-test --filter="StatusGetTest::testRendering"  # Run specific test
 ```
 
 **Available PHPUnit Flags:**
@@ -165,16 +131,16 @@ ddev ssh                      # DDEV
 
 ```bash
 # Run specific test with verbose output
-bash zmsdb-test --filter="StatusTest::testBasic" --verbose
+./zmsbackend/zmsbackend-test --filter="StatusTest::testBasic" --verbose
 
 # Run all tests in a class and stop on first failure
-bash zmsapi-test --filter="StatusGetTest" --stop-on-failure
+./zmsbackend/zmsbackend-test --filter="StatusGetTest" --stop-on-failure
 
 # Run tests with coverage report
-bash zmsdb-test --coverage-text
+./zmsbackend/zmsbackend-test --coverage-text
 
 # Run tests excluding a specific group
-bash zmsapi-test --exclude-group="slow"
+./zmsbackend/zmsbackend-test --exclude-group="slow"
 ```
 
 ## zmscitizenview Unit Testing

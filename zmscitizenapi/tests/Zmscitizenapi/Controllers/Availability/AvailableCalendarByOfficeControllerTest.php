@@ -600,7 +600,7 @@ class AvailableCalendarByOfficeControllerTest extends ControllerTestCase
     public function testInvalidDateRange()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Calendar\\InvalidFirstDay';
+        $exception->template = 'BO\\Zmsbackend\\Calendar\\Exception\\InvalidFirstDay';
 
         $this->setApiCalls([
             [
