@@ -251,19 +251,19 @@ Damit gilt:
 
 ### Phase 6: Daten- & Prozess-Tabellen
 
-| Current             | New (snake_case)            | Reason                                                                 |
-| ------------------- | --------------------------- | ---------------------------------------------------------------------- |
-| `closures`          | `closures`                  | Already snake_case                                                     |
-| `config`            | `config`                    | Already snake_case                                                     |
-| `eventlog`          | `event_log`                 | Event-Log; Nutzungsumfang prüfen (Abschnitt 4)                         |
-| `imagedata`         | `image_data`                | Bilddaten; Assets nach S3 (Abschnitt 4)                                |
-| `log`               | `log`                       | `data`-JSON für Suche aufteilen (Abschnitt 4)                          |
-| `migrations`        | `migrations`                | Already snake_case                                                     |
-| `preferences`       | `scope_preferences` / split | Scope- und Systemeinstellungen; umbenennen und aufteilen (Abschnitt 4) |
-| `process_sequence`  | `process_sequence`          | Already snake_case                                                     |
-| `sessiondata`       | `session_data`              | Session data                                                           |
-| `source`            | `source`                    | Already snake_case                                                     |
-| `overview_calendar` | `overview_calendar`         | Overview calendar (already snake_case)                                 |
+| Current             | New (snake_case)            | Reason                                                                                                   |
+| ------------------- | --------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `closures`          | `closures`                  | Already snake_case                                                                                       |
+| `config`            | `config`                    | Already snake_case                                                                                       |
+| `eventlog`          | `event_log`                 | Event-Log; Nutzungsumfang prüfen (Abschnitt 4)                                                           |
+| `imagedata`         | `image_data`                | Bilddaten; Assets nach S3 (Abschnitt 4)                                                                  |
+| `log`               | `log`                       | `data`-JSON in typisierte Suchspalten ausgelagert; `data` per Contract-Migration entfernen (Abschnitt 4) |
+| `migrations`        | `migrations`                | Already snake_case                                                                                       |
+| `preferences`       | `scope_preferences` / split | Scope- und Systemeinstellungen; umbenennen und aufteilen (Abschnitt 4)                                   |
+| `process_sequence`  | `process_sequence`          | Already snake_case                                                                                       |
+| `sessiondata`       | `session_data`              | Session data                                                                                             |
+| `source`            | `source`                    | Already snake_case                                                                                       |
+| `overview_calendar` | `overview_calendar`         | Overview calendar (already snake_case)                                                                   |
 
 ### Phase 7: Leistungs- & Anbieter-Tabellen
 
@@ -898,16 +898,29 @@ array (
 
 #### log
 
-| Aktuelle Spalte | Neue Spalte (snake_case) | Grund              |
-| --------------- | ------------------------ | ------------------ |
-| `log_id`        | `log_id`                 | Bereits snake_case |
-| `type`          | `type`                   | Bereits snake_case |
-| `reference_id`  | `reference_id`           | Bereits snake_case |
-| `ts`            | `ts`                     | Bereits snake_case |
-| `message`       | `message`                | Bereits snake_case |
-| `scope_id`      | `scope_id`               | Bereits snake_case |
-| `data`          | `data`                   | Bereits snake_case |
-| `user_id`       | `user_id`                | Bereits snake_case |
+| Aktuelle Spalte     | Neue Spalte (snake_case) | Grund                                                   |
+| ------------------- | ------------------------ | ------------------------------------------------------- |
+| `log_id`            | `log_id`                 | Bereits snake_case                                      |
+| `type`              | `type`                   | Bereits snake_case                                      |
+| `reference_id`      | `reference_id`           | Bereits snake_case                                      |
+| `ts`                | `ts`                     | Bereits snake_case                                      |
+| `message`           | `message`                | Bereits snake_case                                      |
+| `scope_id`          | `scope_id`               | Bereits snake_case                                      |
+| `user_id`           | `user_id`                | Bereits snake_case                                      |
+| `action`            | `action`                 | Aus `data.Aktion`; Suchspalte (`91780720002`)           |
+| `display_number`    | `display_number`         | Aus `data.Terminnummer`                                 |
+| `queue_number`      | `queue_number`           | Aus `data.Wartenummer`                                  |
+| `appointment_at`    | `appointment_at`         | Aus `data.Terminzeit`                                   |
+| `slot_count`        | `slot_count`             | Aus `data.Slots`                                        |
+| `citizen_name`      | `citizen_name`           | Aus `data.Bürger*in`                                    |
+| `services`          | `services`               | Aus `data.Dienstleistungen`                             |
+| `scope_name`        | `scope_name`             | Aus `data.Standort`                                     |
+| `citizen_email`     | `citizen_email`          | Aus `data.E-Mail`                                       |
+| `citizen_phone`     | `citizen_phone`          | Aus `data.Telefon`                                      |
+| `process_status`    | `process_status`         | Aus `data.Status`                                       |
+| `db_status`         | `db_status`              | Aus `data.DB Status`                                    |
+| `process_amendment` | `process_amendment`      | Aus `data.Anmerkung` (`91783691659`)                    |
+| `data`              | — (entfernen)            | Legacy-JSON; Backfill `91780720006`, Drop `91783691660` |
 
 #### migrations
 
@@ -1323,9 +1336,9 @@ Die Tabelle ist extrem breit: stündliche Spalten für geschätzte Wartezeit, ec
 
 #### Normalisierung von `log.data` (JSON)
 
-Neben indexierten Spalten (`type`, `scope_id`, `user_id`, `reference_id`) liegt ein JSON-Blob `data`. Suche darin ist langsam.
+Häufig gefilterte Felder aus dem JSON-Blob `data` sind in typisierte Spalten ausgelagert (`action`, `display_number`, `queue_number`, `appointment_at`, `slot_count`, `citizen_name`, `services`, `scope_name`, `citizen_email`, `citizen_phone`, `process_status`, `db_status`, `process_amendment`). Backfill der Suchspalten: `91780720006`; `process_amendment`: `91783691659`.
 
-**Richtung:** häufig gefilterte Felder als typisierte Spalten; `data` nur noch für Debug oder entfernen.
+**Expand/Contract:** `91783691659` (Spalte + Backfill aus `data.Anmerkung`), Code-Deploy ohne Lese-/Schreibzugriff auf `data`, danach `91783691660` (`DROP COLUMN data`).
 
 #### Aufteilen und umbenennen von `preferences`
 

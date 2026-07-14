@@ -24,43 +24,40 @@ class LogTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertEquals(12345, $logList[0]['reference']);
     }
 
-    public function testParseLegacyLogData()
+    public function testFormatDisplayFields()
     {
-        $json = json_encode([
-            'Aktion' => Query::ACTION_CALLED,
-            'Sachbearbeiter*in' => '_system_citizenapi',
-            'Terminnummer' => '100495',
-            'Wartenummer' => 100495,
-            'Terminzeit' => '24.06.2026 09:50:00',
-            'Slots' => 1,
-            'Bürger*in' => self::CITIZEN_MAX_MUSTERMANN,
-            'Dienstleistungen' => 'Reisepass',
-            'Standort' => 'Bürgerbüro Ruppertstraße (KVR-II/221)',
-            'E-Mail' => 't@t.com',
-            'Status' => 'reserved',
-            'DB Status' => 'free',
-        ], JSON_UNESCAPED_UNICODE);
+        $display = Query::formatDisplayFields([
+            'action' => 'called',
+            'user_id' => '_system_citizenapi',
+            'display_number' => '100495',
+            'queue_number' => 100495,
+            'appointment_at' => '2026-06-24 09:50:00',
+            'slot_count' => 1,
+            'citizen_name' => self::CITIZEN_MAX_MUSTERMANN,
+            'services' => 'Reisepass',
+            'scope_name' => 'Bürgerbüro Ruppertstraße (KVR-II/221)',
+            'citizen_email' => 't@t.com',
+            'process_status' => 'reserved',
+            'db_status' => 'free',
+        ]);
 
-        $parsed = Query::parseLegacyLogData($json);
-        $this->assertSame('called', $parsed['action']);
-        $this->assertSame(self::CITIZEN_MAX_MUSTERMANN, $parsed['citizen_name']);
-        $this->assertSame('100495', $parsed['display_number']);
-        $this->assertSame('2026-06-24 09:50:00', $parsed['appointment_at']);
-        $this->assertSame('Reisepass', $parsed['services']);
+        $this->assertSame(Query::ACTION_CALLED, $display['Aktion']);
+        $this->assertSame(self::CITIZEN_MAX_MUSTERMANN, $display['Bürger*in']);
+        $this->assertSame('100495', $display['Terminnummer']);
+        $this->assertSame('24.06.2026 09:50:00', $display['Terminzeit']);
+        $this->assertSame('Reisepass', $display['Dienstleistungen']);
     }
 
-    public function testParseLegacyLogDataEmptyNumbersStayNull()
+    public function testFormatDisplayFieldsEmptyNumbersStayOmitted()
     {
-        $json = json_encode([
-            'Aktion' => Query::ACTION_EDITED,
-            'Wartenummer' => '',
-            'Slots' => '',
-        ], JSON_UNESCAPED_UNICODE);
+        $display = Query::formatDisplayFields([
+            'action' => 'edited',
+            'queue_number' => '',
+            'slot_count' => '',
+        ]);
 
-        $parsed = Query::parseLegacyLogData($json);
-
-        $this->assertArrayNotHasKey('queue_number', $parsed);
-        $this->assertArrayNotHasKey('slot_count', $parsed);
+        $this->assertArrayNotHasKey('Wartenummer', $display);
+        $this->assertArrayNotHasKey('Slots', $display);
     }
 
     public function testEmptySearchOnlyReturnsProcessLogs()
@@ -79,21 +76,12 @@ class LogTest extends \BO\Zmsbackend\Tests\Service\Base
     {
         $referenceId = 987654;
         $citizenName = self::logSearchLabel('UniqueName');
-        $display = [
-            'Aktion' => Query::ACTION_EDITED,
-            'Sachbearbeiter*in' => 'testadmin',
-            'Terminnummer' => '555001',
-            'Bürger*in' => $citizenName,
-            'Dienstleistungen' => 'Reisepass',
-            'Standort' => 'Test Standort',
-        ];
         Query::writeLogEntry(
             'TEST indexed search',
             $referenceId,
             Query::PROCESS,
             141,
             'testadmin',
-            json_encode($display, JSON_UNESCAPED_UNICODE),
             [
                 'action' => 'edited',
                 'display_number' => '555001',
@@ -127,10 +115,6 @@ class LogTest extends \BO\Zmsbackend\Tests\Service\Base
             Query::PROCESS,
             141,
             'testadmin',
-            json_encode([
-                'Aktion' => Query::ACTION_EDITED,
-                'Dienstleistungen' => $serviceName,
-            ], JSON_UNESCAPED_UNICODE),
             [
                 'action' => 'edited',
                 'services' => $serviceName,
@@ -161,7 +145,6 @@ class LogTest extends \BO\Zmsbackend\Tests\Service\Base
             Query::PROCESS,
             172,
             'testadmin',
-            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => self::CITIZEN_MAX_MUSTERMANN], JSON_UNESCAPED_UNICODE),
             ['action' => 'edited', 'citizen_name' => self::CITIZEN_MAX_MUSTERMANN]
         );
         Query::writeLogEntry(
@@ -170,7 +153,6 @@ class LogTest extends \BO\Zmsbackend\Tests\Service\Base
             Query::PROCESS,
             172,
             'testadmin',
-            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => self::CITIZEN_ERIKA_MUSTERMANN], JSON_UNESCAPED_UNICODE),
             ['action' => 'edited', 'citizen_name' => self::CITIZEN_ERIKA_MUSTERMANN]
         );
         Query::writeLogEntry(
@@ -179,7 +161,6 @@ class LogTest extends \BO\Zmsbackend\Tests\Service\Base
             Query::PROCESS,
             172,
             'testadmin',
-            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => $citizenNameMatch], JSON_UNESCAPED_UNICODE),
             ['action' => 'edited', 'citizen_name' => $citizenNameMatch]
         );
 
@@ -222,7 +203,6 @@ class LogTest extends \BO\Zmsbackend\Tests\Service\Base
             Query::PROCESS,
             $scopeId,
             'testadmin',
-            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => $citizenNameMatch], JSON_UNESCAPED_UNICODE),
             ['action' => 'edited', 'citizen_name' => $citizenNameMatch]
         );
         Query::writeLogEntry(
@@ -231,7 +211,6 @@ class LogTest extends \BO\Zmsbackend\Tests\Service\Base
             Query::PROCESS,
             $scopeId,
             'testadmin',
-            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => self::CITIZEN_MAX_MUSTERMANN], JSON_UNESCAPED_UNICODE),
             ['action' => 'edited', 'citizen_name' => self::CITIZEN_MAX_MUSTERMANN]
         );
         Query::writeLogEntry(
@@ -240,7 +219,6 @@ class LogTest extends \BO\Zmsbackend\Tests\Service\Base
             Query::PROCESS,
             $scopeId,
             'testadmin',
-            json_encode(['Aktion' => Query::ACTION_EDITED, 'Bürger*in' => self::CITIZEN_ERIKA_MUSTERMANN], JSON_UNESCAPED_UNICODE),
             ['action' => 'edited', 'citizen_name' => self::CITIZEN_ERIKA_MUSTERMANN]
         );
 
@@ -286,20 +264,16 @@ class LogTest extends \BO\Zmsbackend\Tests\Service\Base
         );
     }
 
-    public function testUserActionFiltersAreMutuallyExclusiveForLegacyRows()
+    public function testUserActionFiltersAreMutuallyExclusive()
     {
         $humanReferenceId = 987662;
         $systemReferenceId = 987663;
         Query::writeLogEntry(
-            'TEST human legacy user action',
+            'TEST human user action',
             $humanReferenceId,
             Query::PROCESS,
             172,
-            null,
-            json_encode([
-                'Aktion' => Query::ACTION_EDITED,
-                'Sachbearbeiter*in' => 'testadmin',
-            ], JSON_UNESCAPED_UNICODE),
+            'testadmin',
             ['action' => 'edited', 'citizen_name' => self::CITIZEN_MAX_MUSTERMANN]
         );
         Query::writeLogEntry(
@@ -308,10 +282,6 @@ class LogTest extends \BO\Zmsbackend\Tests\Service\Base
             Query::PROCESS,
             172,
             '_system_citizenapi',
-            json_encode([
-                'Aktion' => Query::ACTION_EDITED,
-                'Sachbearbeiter*in' => '_system_citizenapi',
-            ], JSON_UNESCAPED_UNICODE),
             ['action' => 'edited', 'citizen_name' => self::CITIZEN_ERIKA_MUSTERMANN]
         );
 
