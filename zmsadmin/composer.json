@@ -1,6 +1,6 @@
 {
     "name": "eappointment/zmsadmin",
-    "description": "Manage eappointments using zmsapi",
+    "description": "Manage eappointments using zmsbackend",
     "license": "EUPL-1.2",
     "authors": [
         {

@@ -46,109 +46,109 @@ class ExceptionService
                     $error = self::getError('mailNotFound');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Mail\\MailNotFound':
+                case 'BO\\Zmsbackend\\Mail\\Exception\\MailNotFound':
                     $error = self::getError('mailNotFound');
 
                     break;
             // Process exceptions
-                case 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound':
+                case 'BO\\Zmsbackend\\Process\\Exception\\ProcessNotFound':
                     $error = self::getError('appointmentNotFound');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed':
-                case 'BO\\Zmsapi\\Exception\\Process\\ExternalUserIdMatchFailed':
+                case 'BO\\Zmsbackend\\Process\\Exception\\AuthKeyMatchFailed':
+                case 'BO\\Zmsbackend\\Process\\Exception\\ExternalUserIdMatchFailed':
                     $error = self::getError('authKeyMismatch');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyCalled':
+                case 'BO\\Zmsbackend\\Process\\Exception\\ProcessAlreadyCalled':
                     $error = self::getError('processAlreadyCalled');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Process\\ProcessNotReservedAnymore':
+                case 'BO\\Zmsbackend\\Process\\Exception\\ProcessNotReservedAnymore':
                     $error = self::getError('processNotReservedAnymore');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Process\\ProcessNotPreconfirmedAnymore':
+                case 'BO\\Zmsbackend\\Process\\Exception\\ProcessNotPreconfirmedAnymore':
                     $error = self::getError('processNotPreconfirmedAnymore');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Process\\ProcessDeleteFailed':
+                case 'BO\\Zmsbackend\\Process\\Exception\\ProcessDeleteFailed':
                     $error = self::getError('processDeleteFailed');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Process\\ProcessInvalid':
+                case 'BO\\Zmsbackend\\Process\\Exception\\ProcessInvalid':
                     $error = self::getError('processInvalid');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyExists':
+                case 'BO\\Zmsbackend\\Process\\Exception\\ProcessAlreadyExists':
                     $error = self::getError('processAlreadyExists');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Process\\EmailRequired':
+                case 'BO\\Zmsbackend\\Process\\Exception\\EmailRequired':
                     $error = self::getError('emailIsRequired');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Process\\TelephoneRequired':
+                case 'BO\\Zmsbackend\\Process\\Exception\\TelephoneRequired':
                     $error = self::getError('telephoneIsRequired');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail':
+                case 'BO\\Zmsbackend\\Process\\Exception\\MoreThanAllowedAppointmentsPerMail':
                     $error = self::getError('tooManyAppointmentsWithSameMail');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedSlotsPerAppointment':
+                case 'BO\\Zmsbackend\\Process\\Exception\\MoreThanAllowedSlotsPerAppointment':
                     $error = self::getError('tooManySlotsPerAppointment');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedQuantityPerService':
+                case 'BO\\Zmsbackend\\Process\\Exception\\MoreThanAllowedQuantityPerService':
                     $error = self::getError('tooManyServicesPerAppointment');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Process\\PreconfirmationExpired':
+                case 'BO\\Zmsbackend\\Process\\Exception\\PreconfirmationExpired':
                     $error = self::getError('preconfirmationExpired');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Process\\ApiclientInvalid':
+                case 'BO\\Zmsbackend\\Process\\Exception\\ApiclientInvalid':
                     $error = self::getError('invalidApiClient');
 
                     break;
             // Calendar exceptions
-                case 'BO\\Zmsapi\\Exception\\Calendar\\InvalidFirstDay':
+                case 'BO\\Zmsbackend\\Calendar\\Exception\\InvalidFirstDay':
                     $error = self::getError('invalidDateRange');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Calendar\\AppointmentsMissed':
+                case 'BO\\Zmsbackend\\Calendar\\Exception\\AppointmentsMissed':
                     $error = self::getError('noAppointmentForThisScope');
                     break;
-                case 'BO\\Zmsdb\\Exception\\CalendarWithoutScopes':
+                case 'BO\\Zmsbackend\\Calendar\\Exception\\CalendarWithoutScopes':
                     $error = self::getError('noAppointmentForThisScope');
                     break;
             // Other entity exceptions
-                case 'BO\\Zmsapi\\Exception\\Department\\DepartmentNotFound':
+                case 'BO\\Zmsbackend\\Department\\Exception\\DepartmentNotFound':
                     $error = self::getError('departmentNotFound');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Organisation\\OrganisationNotFound':
+                case 'BO\\Zmsbackend\\Organisation\\Exception\\OrganisationNotFound':
                     $error = self::getError('organisationNotFound');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Provider\\ProviderNotFound':
+                case 'BO\\Zmsbackend\\Provider\\Exception\\ProviderNotFound':
                     $error = self::getError('providerNotFound');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Request\\RequestNotFound':
+                case 'BO\\Zmsbackend\\Request\\Exception\\RequestNotFound':
                     $error = self::getError('requestNotFound');
 
                     break;
-                case 'BO\\Zmsdb\\Exception\\Request\\RequestNotFound':
+                case 'BO\\Zmsbackend\\Request\\Exception\\RequestNotFound':
                     $error = self::getError('requestNotFound');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Scope\\ScopeNotFound':
+                case 'BO\\Zmsbackend\\Scope\\Exception\\ScopeNotFound':
                     $error = self::getError('scopeNotFound');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Source\\SourceNotFound':
+                case 'BO\\Zmsbackend\\Source\\Exception\\SourceNotFound':
                     $error = self::getError('sourceNotFound');
 
                     break;
@@ -156,7 +156,7 @@ class ExceptionService
                     $error = self::getError('invalidSchema');
 
                     break;
-                case 'BO\\Zmsapi\\Exception\\Useraccount\\InvalidCredentials':
+                case 'BO\\Zmsbackend\\Useraccount\\Exception\\InvalidCredentials':
                     $error = self::getError('invalidCredentials');
 
                     break;

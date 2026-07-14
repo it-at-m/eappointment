@@ -255,7 +255,7 @@ class AppointmentCancelControllerTest extends ControllerTestCase
     public function testAppointmentNotFoundException()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ProcessNotFound';
 
         $this->setApiCalls([
             [
@@ -285,7 +285,7 @@ class AppointmentCancelControllerTest extends ControllerTestCase
     public function testAuthKeyMismatch()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\AuthKeyMatchFailed';
 
         $this->setApiCalls([
             [
@@ -315,7 +315,7 @@ class AppointmentCancelControllerTest extends ControllerTestCase
     public function testProcessAlreadyCalled()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyCalled';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ProcessAlreadyCalled';
     
         $this->setApiCalls([
             [
@@ -345,7 +345,7 @@ class AppointmentCancelControllerTest extends ControllerTestCase
     public function testProcessInvalidException()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessInvalid';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ProcessInvalid';
     
         $this->setApiCalls([
             [

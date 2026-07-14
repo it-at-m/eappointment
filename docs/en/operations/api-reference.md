@@ -5,10 +5,10 @@ Published HTML for the REST APIs and generated diagrams live on the same GitHub 
 ## Interactive API documentation (ReDoc)
 
 - [zmscitizenapi](https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html)
-- [zmsapi](https://it-at-m.github.io/eappointment/zmsapi/public/doc/index.html)
+- [zmsbackend](https://it-at-m.github.io/eappointment/zmsbackend/public/doc/index.html) (internal REST API at `/terminvereinbarung/api/2`)
 
 ## Class diagram schemas
 
 - [zmscitizenapi schema](https://it-at-m.github.io/eappointment/diagrams/zmscitizenapi.html)
-- [zmsapi schema](https://it-at-m.github.io/eappointment/diagrams/zmsapi.html)
+- [zmsbackend schema](https://it-at-m.github.io/eappointment/diagrams/zmsbackend.html)
 - [Database ER model](https://it-at-m.github.io/eappointment/diagrams/database-er-model.html)

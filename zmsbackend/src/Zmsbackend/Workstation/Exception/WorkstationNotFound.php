@@ -1,0 +1,13 @@
+<?php
+
+namespace BO\Zmsbackend\Workstation\Exception;
+
+/**
+ * example class to generate an exception
+ */
+class WorkstationNotFound extends \Exception
+{
+    protected $code = 404;
+
+    protected $message = 'workstation is not logged in anymore';
+}
