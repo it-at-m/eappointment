@@ -165,7 +165,7 @@ class OfficesListControllerTest extends ControllerTestCase
     public function testOfficesNotFound()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Provider\\ProviderNotFound';
+        $exception->template = 'BO\\Zmsbackend\\Provider\\Exception\\ProviderNotFound';
 
         $this->setApiCalls([
             [
@@ -192,7 +192,7 @@ class OfficesListControllerTest extends ControllerTestCase
     public function testInternalError()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Source\\SourceNotFound';
+        $exception->template = 'BO\\Zmsbackend\\Source\\Exception\\SourceNotFound';
 
         $this->setApiCalls([
             [

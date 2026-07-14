@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** today: zmsapi\\UseraccountListByDepartments, zmsdb\\Useraccount::readSearchByDepartmentIds */
+/** today: zmsbackend\\Useraccount\\Api\\UseraccountListByDepartments, zmsbackend\\Useraccount\\Service\\Useraccount::readSearchByDepartmentIds */
 @Service
 public class DepartmentUseraccountListService {
 

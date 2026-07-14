@@ -1,0 +1,12 @@
+<?php
+
+namespace BO\Zmsbackend\Process\Exception;
+
+/**
+ * example class to generate an exception
+ */
+class ProcessNoAccess extends \Exception
+{
+    protected $code = 403;
+    protected $message = 'Process scope does not match scope of current workstation';
+}

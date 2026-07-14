@@ -179,7 +179,7 @@ class ProcessQueue extends BaseController
                 ->withScope($scope)
                 ->isOpened(\App::$now);
         } catch (\BO\Zmsclient\Exception $exception) {
-            if ($exception->template == 'BO\\Zmsapi\\Exception\\Availability\\AvailabilityNotFound') {
+            if ($exception->template == 'BO\\Zmsbackend\\Availability\\Exception\\AvailabilityNotFound') {
                 $isOpened = false;
             }
         }
