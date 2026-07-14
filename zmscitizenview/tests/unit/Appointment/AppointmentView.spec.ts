@@ -48,11 +48,32 @@ describe("AppointmentView", () => {
     vi.unstubAllGlobals();
   });
 
+  beforeEach(() => {
+    vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockReset();
+  });
+
   const mockBaseUrl = "https://www.muenchen.de";
   const mockServiceId = "123";
   const mockLocationId = "456";
   const mockExclusiveLocation = "test-location";
-  const mockAppointmentHash = "test-hash";
+  const buildAppointmentHash = (
+    data: { id: string; authKey: string; scope?: Record<string, unknown> } = {
+      id: "12345",
+      authKey: "test-auth-key",
+      scope: {},
+    }
+  ) => btoa(JSON.stringify(data));
+
+  const mockPendingAppointmentRoute = () => {
+    vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockReturnValue(
+      new Promise(() => {})
+    );
+  };
+
+  const createWrapperWithAppointmentHash = (hash = buildAppointmentHash()) => {
+    mockPendingAppointmentRoute();
+    return createWrapper({ appointmentHash: hash });
+  };
 
   const mockSelectedService = ref({
     id: "123",
@@ -94,7 +115,7 @@ describe("AppointmentView", () => {
         serviceId: mockServiceId,
         locationId: mockLocationId,
         exclusiveLocation: mockExclusiveLocation,
-        appointmentHash: mockAppointmentHash,
+        appointmentHash: undefined,
         t: (key: string, params?: Record<string, unknown>) => {
           // load translation or get key
           let s = (de as any)[key] ?? key;
@@ -214,7 +235,7 @@ describe("AppointmentView", () => {
 
   describe("Error States", () => {
     it("shows appointment not found error", async () => {
-      const wrapper = createWrapper();
+      const wrapper = createWrapperWithAppointmentHash();
       wrapper.vm.errorStates.apiErrorAppointmentNotFound.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
@@ -222,7 +243,7 @@ describe("AppointmentView", () => {
     });
 
     it("shows booking error", async () => {
-      const wrapper = createWrapper();
+      const wrapper = createWrapperWithAppointmentHash();
       wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
@@ -315,7 +336,7 @@ describe("AppointmentView", () => {
     });
 
     it("disables previous steps in stepper when appointment hash is present", async () => {
-      const wrapper = createWrapper({ appointmentHash: "valid" });
+      const wrapper = createWrapperWithAppointmentHash();
       await nextTick();
       expect(wrapper.find('[data-test="muc-stepper"]').attributes('data-disable-previous-steps')).toBe("true");
     });
@@ -350,7 +371,7 @@ describe("AppointmentView", () => {
     });
 
     it("shows confirmAppointmentError callout after booking", async () => {
-      const wrapper = createWrapper();
+      const wrapper = createWrapperWithAppointmentHash();
       wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
@@ -360,7 +381,7 @@ describe("AppointmentView", () => {
 
   describe("Rebooking Flow", () => {
     it("starts at summary and disables previous steps when appointmentHash is present", async () => {
-      const wrapper = createWrapper({ appointmentHash: "somehash" });
+      const wrapper = createWrapperWithAppointmentHash();
       wrapper.vm.currentView = 3;
       await nextTick();
       expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(true);
@@ -368,7 +389,7 @@ describe("AppointmentView", () => {
     });
 
     it("shows cancellation success callout after cancelling in rebooking", async () => {
-      const wrapper = createWrapper({ appointmentHash: "somehash" });
+      const wrapper = createWrapperWithAppointmentHash();
       wrapper.vm.currentView = 4;
       wrapper.vm.cancelAppointmentSuccess = true;
       await nextTick();
@@ -499,7 +520,10 @@ describe("AppointmentView", () => {
     });
 
     it("shows success message after successful confirmation", async () => {
-      const wrapper = createWrapper({ confirmAppointmentHash: "valid" });
+      const wrapper = createWrapper({
+        appointmentHash: undefined,
+        confirmAppointmentHash: undefined,
+      });
       wrapper.vm.confirmAppointmentSuccess = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
@@ -1649,7 +1673,7 @@ describe("AppointmentView", () => {
     });
 
     it("calls confirmAppointment directly when rebooking with processId+authKey", async () => {
-      const wrapper = createWrapper({ appointmentHash: "somehash" });
+      const wrapper = createWrapperWithAppointmentHash();
 
       wrapper.vm.isRebooking = true;
       wrapper.vm.appointment = {
@@ -1678,7 +1702,7 @@ describe("AppointmentView", () => {
     });
 
     it("cancels old appointment after successful rebooking confirm", async () => {
-      const wrapper = createWrapper({ appointmentHash: "somehash" });
+      const wrapper = createWrapperWithAppointmentHash();
 
       wrapper.vm.isRebooking = true;
       wrapper.vm.rebookedAppointment = {
@@ -1707,7 +1731,7 @@ describe("AppointmentView", () => {
     });
 
     it("falls back to preconfirm when rebooking but missing authKey/processId", async () => {
-      const wrapper = createWrapper({ appointmentHash: "somehash" });
+      const wrapper = createWrapperWithAppointmentHash();
 
       wrapper.vm.isRebooking = true;
       wrapper.vm.appointment = {
