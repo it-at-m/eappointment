@@ -57,7 +57,7 @@ class ReportRequestService
         try {
             $reportHelper = new ReportHelper();
             $years = $reportHelper->getYearsForDateRange($fromDate, $toDate);
-            $combinedData = $this->fetchAndCombineDataFromYears($reportHelper,$scopeId, $years, $fromDate, $toDate);
+            $combinedData = $this->fetchAndCombineDataFromYears($reportHelper, $scopeId, $years, $fromDate, $toDate);
 
             if (empty($combinedData['data'])) {
                 return null;

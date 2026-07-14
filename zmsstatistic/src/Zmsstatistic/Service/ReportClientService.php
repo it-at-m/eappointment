@@ -59,7 +59,7 @@ class ReportClientService
         try {
             $reportHelper = new ReportHelper();
             $years = $reportHelper->getYearsForDateRange($fromDate, $toDate);
-            $combinedData = $this->fetchAndCombineDataFromYears($reportHelper,$scopeId, $years, $fromDate, $toDate);
+            $combinedData = $this->fetchAndCombineDataFromYears($reportHelper, $scopeId, $years, $fromDate, $toDate);
 
             if (empty($combinedData['data'])) {
                 return null;
@@ -109,7 +109,7 @@ class ReportClientService
     /**
      * Fetch and combine data from multiple years
      */
-    private function fetchAndCombineDataFromYears( ReportHelper $reportHelper, string $scopeId, array $years, string $fromDate, string $toDate): array
+    private function fetchAndCombineDataFromYears(ReportHelper $reportHelper, string $scopeId, array $years, string $fromDate, string $toDate): array
     {
         $combinedData = [];
         $baseEntity = null;

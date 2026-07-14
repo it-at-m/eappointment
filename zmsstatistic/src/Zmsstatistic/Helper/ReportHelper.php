@@ -217,7 +217,7 @@ class ReportHelper
         $yearFrom = $requestedFrom > $yearStart ? $requestedFrom : $yearStart;
         $yearTo = $requestedTo < $yearEnd ? $requestedTo : $yearEnd;
 
-        if($yearFrom > $yearTo) {
+        if ($yearFrom > $yearTo) {
             return null;
         }
 
