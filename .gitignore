@@ -169,6 +169,10 @@ logs
 # Covers Eclipse, based on https://www.toptal.com/developers/gitignore/api/eclipse , stripped to relevant java based rules
 .metadata
 bin/
+!zmsbackend/bin/
+!zmsbackend/bin/**
+!zmscitizenapi/bin/
+!zmscitizenapi/bin/build_swagger.js
 tmp/
 *.tmp
 *.bak

@@ -1,0 +1,102 @@
+<?php
+
+namespace BO\Zmsbackend\Exchange\Service;
+
+use BO\Zmsentities\Exchange;
+
+class ExchangeClientdepartment extends \BO\Zmsbackend\Base
+{
+    protected $groupBy = array(
+        'month' => '%Y-%m',
+        'day' => '%Y-%m-%d',
+        'hour' => '%H-%i'
+    );
+
+    public function readEntity(
+        $subjectid,
+        \DateTimeInterface $datestart,
+        \DateTimeInterface $dateend,
+        $period = 'day'
+    ) {
+        $department = (new \BO\Zmsbackend\Department\Service\Department())->readEntity($subjectid);
+        $organisation = (new \BO\Zmsbackend\Organisation\Service\Organisation())->readByDepartmentId($subjectid);
+        $entity = new Exchange();
+        $entity['title'] = "Kundenstatistik $organisation->name -> $department->name";
+        $entity->setPeriod($datestart, $dateend, $period);
+        $entity->addDictionaryEntry('subjectid', 'string', 'ID of a department', 'department.id');
+        $entity->addDictionaryEntry('date');
+        $entity->addDictionaryEntry('clientscount');
+        $entity->addDictionaryEntry('missed');
+        $entity->addDictionaryEntry('withappointment');
+        $entity->addDictionaryEntry('missedwithappointment');
+        $entity->addDictionaryEntry('requestscount');
+        $subjectIdList = explode(',', $subjectid);
+
+        foreach ($subjectIdList as $subjectid) {
+            $raw = $this
+                ->getReader()
+                ->fetchAll(
+                    constant("\BO\Zmsbackend\Exchange\Repository\ExchangeClientdepartment::QUERY_READ_REPORT"),
+                    [
+                        'departmentid' => $subjectid,
+                        'datestart' => $datestart->format('Y-m-d'),
+                        'dateend' => $dateend->format('Y-m-d'),
+                        'groupby' => $this->groupBy[$period]
+                    ]
+                );
+            foreach ($raw as $entry) {
+                $entity->addDataSet(array_values($entry));
+            }
+        }
+        return $entity;
+    }
+
+    public function readSubjectList()
+    {
+        $raw = $this->getReader()->fetchAll(\BO\Zmsbackend\Exchange\Repository\ExchangeClientdepartment::QUERY_SUBJECTS, []);
+        $entity = new Exchange();
+        $entity['title'] = "Kundenstatistik";
+        $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
+        $entity->addDictionaryEntry('subject', 'string', 'Behörden ID', 'department.id');
+        $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
+        $entity->addDictionaryEntry('periodend', 'string', 'Datum bis');
+        $entity->addDictionaryEntry('organisationname', 'string', 'Name der Organisation');
+        $entity->addDictionaryEntry('description', 'string', 'Name der Behörde');
+        foreach ($raw as $entry) {
+            $entity->addDataSet(array_values($entry));
+        }
+        return $entity;
+    }
+
+    public function readPeriodList($subjectid, $period = 'day')
+    {
+        $department = (new \BO\Zmsbackend\Department\Service\Department())->readEntity($subjectid);
+        $organisation = (new \BO\Zmsbackend\Organisation\Service\Organisation())->readByDepartmentId($subjectid);
+        $entity = new Exchange();
+        $entity['title'] = "Kundenstatistik $organisation->name -> $department->name";
+        $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
+        $entity->addDictionaryEntry('period');
+
+        $montsList = $this->getReader()->fetchAll(
+            constant("\BO\Zmsbackend\Exchange\Repository\ExchangeClientdepartment::QUERY_PERIODLIST_MONTH"),
+            [
+                'departmentid' => $subjectid,
+            ]
+        );
+        $raw = [];
+        foreach ($montsList as $month) {
+            $date = new \DateTimeImmutable($month['date']);
+            $raw[$date->format('Y')][] = $month['date'];
+            rsort($raw[$date->format('Y')]);
+        }
+        krsort($raw);
+
+        foreach ($raw as $year => $months) {
+            $entity->addDataSet([$year]);
+            foreach ($months as $month) {
+                $entity->addDataSet([$month]);
+            }
+        }
+        return $entity;
+    }
+}

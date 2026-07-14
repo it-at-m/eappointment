@@ -9,7 +9,7 @@ import de.muenchen.zms.department.view.DepartmentView;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** today: zmsapi\\DepartmentDelete, zmsdb\\Department::deleteEntity */
+/** today: zmsbackend\\Department\\Api\\DepartmentDelete, zmsbackend\\Department\\Service\\Department::deleteEntity */
 @Service
 public class DepartmentDeleteService {
 

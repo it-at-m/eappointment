@@ -82,7 +82,7 @@ jobs:
         include:
           - module: zmsadmin
             php_version: "8.3"
-          - module: zmsapi
+          - module: zmsbackend
             php_version: "8.3"
           - module: zmscalldisplay
             php_version: "8.3"

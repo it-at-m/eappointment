@@ -4,7 +4,7 @@ import de.muenchen.zms.department.view.ScopeView;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** today: zmsapi\\DepartmentAddScope, zmsdb\\Scope::writeEntity */
+/** today: zmsbackend\\Department\\Api\\DepartmentAddScope, zmsbackend\\Scope\\Service\\Scope::writeEntity */
 @Service
 public class DepartmentScopeCreateService {
 

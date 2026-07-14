@@ -4,7 +4,7 @@ import de.muenchen.zms.department.view.ClusterView;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** today: zmsapi\\DepartmentAddCluster, zmsdb\\Cluster::writeEntity */
+/** today: zmsbackend\\Department\\Api\\DepartmentAddCluster, zmsbackend\\Cluster\\Service\\Cluster::writeEntity */
 @Service
 public class DepartmentClusterCreateService {
 

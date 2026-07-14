@@ -121,7 +121,7 @@ const TABLE = 'standort';  // German table name
 ### Implementation Notes
 
 - Create comprehensive migration scripts for each table
-- Update all affected query classes in `zmsdb/src/Zmsdb/Query/`
+- Update all affected query classes in `zmsbackend/src/Zmsbackend/Query/`
 - Ensure backward compatibility during transition period
 - Update documentation and API references
 
@@ -251,19 +251,19 @@ This approach ensures:
 
 ### Phase 6: Data & Process Tables
 
-| Current             | New (snake_case)            | Reason                                                    |
-| ------------------- | --------------------------- | --------------------------------------------------------- |
-| `closures`          | `closures`                  | Already snake_case                                        |
-| `config`            | `config`                    | Already snake_case                                        |
-| `eventlog`          | `event_log`                 | Event log; verify scope of use (see section 4)            |
-| `imagedata`         | `image_data`                | Image data; move assets to S3 (see section 4)             |
-| `log`               | `log`                       | Split `data` JSON for searchability (see section 4)       |
-| `migrations`        | `migrations`                | Already snake_case                                        |
-| `preferences`       | `scope_preferences` / split | Scope + system settings; rename and split (see section 4) |
-| `process_sequence`  | `process_sequence`          | Already snake_case                                        |
-| `sessiondata`       | `session_data`              | Session data                                              |
-| `source`            | `source`                    | Already snake_case                                        |
-| `overview_calendar` | `overview_calendar`         | Overview calendar (already snake_case)                    |
+| Current             | New (snake_case)            | Reason                                                                                           |
+| ------------------- | --------------------------- | ------------------------------------------------------------------------------------------------ |
+| `closures`          | `closures`                  | Already snake_case                                                                               |
+| `config`            | `config`                    | Already snake_case                                                                               |
+| `eventlog`          | `event_log`                 | Event log; verify scope of use (see section 4)                                                   |
+| `imagedata`         | `image_data`                | Image data; move assets to S3 (see section 4)                                                    |
+| `log`               | `log`                       | `data` JSON promoted to typed search columns; drop `data` via contract migration (see section 4) |
+| `migrations`        | `migrations`                | Already snake_case                                                                               |
+| `preferences`       | `scope_preferences` / split | Scope + system settings; rename and split (see section 4)                                        |
+| `process_sequence`  | `process_sequence`          | Already snake_case                                                                               |
+| `sessiondata`       | `session_data`              | Session data                                                                                     |
+| `source`            | `source`                    | Already snake_case                                                                               |
+| `overview_calendar` | `overview_calendar`         | Overview calendar (already snake_case)                                                           |
 
 ### Phase 7: Service & Provider Tables
 
@@ -451,7 +451,7 @@ This approach ensures:
 
 ##### Dereference payload in `Anmerkung` / custom text fields (technical debt)
 
-When a process is finished or soft-deleted, `Process::writeBlockedEntity()` runs `QUERY_DEREFERENCED` (`zmsdb/src/Zmsdb/Query/Process.php`). That update clears PII and sets `StandortID = 0`, `Name = 'dereferenced'`, and `status = 'blocked'`. Because the row no longer has a usable `scope_id`, the original scope and metadata are **serialized into free-text columns** using PHP `var_export()`:
+When a process is finished or soft-deleted, `Process::writeBlockedEntity()` runs `QUERY_DEREFERENCED` (`zmsbackend/src/Zmsbackend/Query/Process.php`). That update clears PII and sets `StandortID = 0`, `Name = 'dereferenced'`, and `status = 'blocked'`. Because the row no longer has a usable `scope_id`, the original scope and metadata are **serialized into free-text columns** using PHP `var_export()`:
 
 | Column               | Written by                                | Payload shape                                                       |
 | -------------------- | ----------------------------------------- | ------------------------------------------------------------------- |
@@ -473,7 +473,7 @@ array (
 
 **Where this payload is read back (string parsing, not typed columns):**
 
-- `CalculateDailyWaitingStatisticByCron::extractScopeFromAnmerkung()` — regex on all three columns when `StandortID = 0` (`zmsdb/src/Zmsdb/Helper/CalculateDailyWaitingStatisticByCron.php`)
+- `CalculateDailyWaitingStatisticByCron::extractScopeFromAnmerkung()` — regex on all three columns when `StandortID = 0` (`zmsbackend/src/Zmsbackend/Helper/CalculateDailyWaitingStatisticByCron.php`)
 - Ad-hoc SQL in maintenance migrations (e.g. `SUBSTRING_INDEX` / `LIKE` on `'StandortID' =>` in `Anmerkung` and custom text fields)
 - Any code path that must resolve scope on a dereferenced shell row before the cron deletes it
 
@@ -898,16 +898,29 @@ array (
 
 #### log
 
-| Current Column | New Column (snake_case) | Reason             |
-| -------------- | ----------------------- | ------------------ |
-| `log_id`       | `log_id`                | Already snake_case |
-| `type`         | `type`                  | Already snake_case |
-| `reference_id` | `reference_id`          | Already snake_case |
-| `ts`           | `ts`                    | Already snake_case |
-| `message`      | `message`               | Already snake_case |
-| `scope_id`     | `scope_id`              | Already snake_case |
-| `data`         | `data`                  | Already snake_case |
-| `user_id`      | `user_id`               | Already snake_case |
+| Current Column      | New Column (snake_case) | Reason                                                  |
+| ------------------- | ----------------------- | ------------------------------------------------------- |
+| `log_id`            | `log_id`                | Already snake_case                                      |
+| `type`              | `type`                  | Already snake_case                                      |
+| `reference_id`      | `reference_id`          | Already snake_case                                      |
+| `ts`                | `ts`                    | Already snake_case                                      |
+| `message`           | `message`               | Already snake_case                                      |
+| `scope_id`          | `scope_id`              | Already snake_case                                      |
+| `user_id`           | `user_id`               | Already snake_case                                      |
+| `action`            | `action`                | From `data.Aktion`; search column (`91780720002`)       |
+| `display_number`    | `display_number`        | From `data.Terminnummer`                                |
+| `queue_number`      | `queue_number`          | From `data.Wartenummer`                                 |
+| `appointment_at`    | `appointment_at`        | From `data.Terminzeit`                                  |
+| `slot_count`        | `slot_count`            | From `data.Slots`                                       |
+| `citizen_name`      | `citizen_name`          | From `data.Bürger*in`                                   |
+| `services`          | `services`              | From `data.Dienstleistungen`                            |
+| `scope_name`        | `scope_name`            | From `data.Standort`                                    |
+| `citizen_email`     | `citizen_email`         | From `data.E-Mail`                                      |
+| `citizen_phone`     | `citizen_phone`         | From `data.Telefon`                                     |
+| `process_status`    | `process_status`        | From `data.Status`                                      |
+| `db_status`         | `db_status`             | From `data.DB Status`                                   |
+| `process_amendment` | `process_amendment`     | From `data.Anmerkung` (`91783691659`)                   |
+| `data`              | — (drop)                | Legacy JSON; backfill `91780720006`, drop `91783691660` |
 
 #### migrations
 
@@ -1328,9 +1341,9 @@ Benefits: simpler migrations, easier aggregation, room for new metrics without `
 
 #### Normalize `log.data` (JSON)
 
-The `log` table stores a JSON `data` blob alongside indexed columns (`type`, `scope_id`, `user_id`, `reference_id`). Searching inside JSON is slow and awkward.
+Frequently filtered fields from the JSON blob `data` are promoted to typed columns (`action`, `display_number`, `queue_number`, `appointment_at`, `slot_count`, `citizen_name`, `services`, `scope_name`, `citizen_email`, `citizen_phone`, `process_status`, `db_status`, `process_amendment`). Search-column backfill: `91780720006`; `process_amendment`: `91783691659`.
 
-**Direction:** promote frequently filtered fields to typed columns; keep `data` only for optional debug payload or drop it once structured columns cover admin search needs.
+**Expand/contract:** `91783691659` (column + backfill from `data.Anmerkung`), deploy code that no longer reads/writes `data`, then `91783691660` (`DROP COLUMN data`).
 
 #### Split and rename `preferences`
 
@@ -1366,7 +1379,7 @@ These tables are DLDB-synced. Several store a `data` JSON column with nested con
 | -------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `abrechnung`         | **Drop**                 | Billing/SMS accounting; no active use. Migration `91772633097-drop-abrechnung.sql` already drops the table.                                                                                                                                                            |
 | `ipausnahmen`        | **Verify → likely drop** | No references in PHP codebase at time of writing; confirm no external dependency before removal.                                                                                                                                                                       |
-| `apikey`             | **Verify**               | Routes exist in `zmsapi`; confirm whether any deployment still issues or validates API keys.                                                                                                                                                                           |
+| `apikey`             | **Verify**               | Routes exist in `zmsbackend`; confirm whether any deployment still issues or validates API keys.                                                                                                                                                                       |
 | `apiquota`           | **Verify**               | Tied to `apikey`; same audit as above.                                                                                                                                                                                                                                 |
 | `notificationqueue`  | **Drop**                 | Part of SMS/notification removal. Migration `91772633137-drop-notifcationqueue.sql` already drops the table.                                                                                                                                                           |
 | `eventlog`           | **Verify**               | Still used (e.g. `ProcessListSummaryMail`); clarify whether to keep, replace with `log`, or consolidate.                                                                                                                                                               |
