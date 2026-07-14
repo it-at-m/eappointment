@@ -211,8 +211,8 @@ class ReportHelper
     {
         $requestedFrom = new DateTimeImmutable($fromDate);
         $requestedTo = new DateTimeImmutable($toDate);
-        $yearStart = new DateTimeImmutable($year . '01-01');
-        $yearEnd = new DateTimeImmutable($year . '12-31');
+        $yearStart = new DateTimeImmutable($year . '-01-01');
+        $yearEnd = new DateTimeImmutable($year . '-12-31');
 
         $yearFrom = $requestedFrom > $yearStart ? $requestedFrom : $yearStart;
         $yearTo = $requestedTo < $yearEnd ? $requestedTo : $yearEnd;
