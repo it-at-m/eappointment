@@ -1,0 +1,103 @@
+{
+    "name": "eappointment/zmsbackend",
+    "description": "Unified REST API and database access layer for ZMS (merging zmsbackend and zmsbackend).",
+    "license": "EUPL-1.2",
+    "authors": [
+        {
+            "name": "Mathias Fischer",
+            "email": "mathias.fischer@berlinonline.de"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        },
+        "platform": {
+            "php": "8.3.0"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=8.3",
+        "ext-mbstring": ">=0",
+        "ext-intl": "*",
+        "ext-json": ">=1.0",
+        "ext-pcre": ">=0",
+        "ext-pdo": "*",
+        "eappointment/mellon": "@dev",
+        "eappointment/zmsslim": "@dev",
+        "eappointment/zmsclient": "@dev",
+        "eappointment/zmsdldb": "@dev",
+        "eappointment/zmsentities": "@dev",
+        "symfony/cache": "^6.0",
+        "psr/simple-cache": "^3.0",
+        "monolog/monolog": "^2.0",
+        "ulrichsg/getopt-php": "^2.3",
+        "league/climate": "^3.2",
+        "aura/sql": "^5",
+        "roave/security-advisories": "dev-latest"
+    },
+    "require-dev": {
+        "vimeo/psalm": "6.5.0",
+        "aronduby/dump": "*",
+        "phpmd/phpmd": "@stable",
+        "squizlabs/php_codesniffer": "*",
+        "mockery/mockery": "^1.0.0",
+        "phpunit/phpunit": "^11",
+        "roave/security-advisories": "dev-latest"
+    },
+    "scripts": {
+        "command": "bin/configure",
+        "prepare-dirs": "mkdir -p public/_test/assets && mkdir -p public/doc/assets",
+        "post-install-cmd": [
+            "@prepare-dirs"
+        ],
+        "post-update-cmd": [
+            "@prepare-dirs"
+        ]
+    },
+    "bin": [
+        "bin/archiveStatisticData",
+        "bin/anonymizeStatisticData",
+        "bin/calculateDailyWaitingStatistic",
+        "bin/cleanupOverviewCalendar",
+        "bin/calculateSlots",
+        "bin/calculateDayOffList",
+        "bin/deallocateAppointmentData",
+        "bin/deleteUnconfirmedAppointmentData",
+        "bin/deleteAppointmentData",
+        "bin/deleteBlacklistedMail",
+        "bin/deleteDayoffData",
+        "bin/deleteOldAvailabilityData",
+        "bin/deleteOldEventLogEntries",
+        "bin/deleteOldLogs",
+        "bin/deleteArchivedProcessForToday",
+        "bin/deleteReservedData",
+        "bin/deleteSessionData",
+        "bin/deleteTicketprinterData",
+        "bin/importTestData",
+        "bin/migrate",
+        "bin/resetApiQuota",
+        "bin/resetGhostWorkstationCount",
+        "bin/resetWorkstations",
+        "bin/sendMailReminder",
+        "bin/sendProcessListToScopeAdmin",
+        "bin/updateDldbData"
+    ],
+    "autoload": {
+        "psr-4": {
+            "BO\\Zmsbackend\\": "src/Zmsbackend/",
+            "BO\\Zmsbackend\\Tests\\": "tests/Zmsbackend/"
+        }
+    }
+}

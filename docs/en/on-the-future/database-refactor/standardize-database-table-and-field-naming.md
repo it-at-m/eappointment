@@ -121,7 +121,7 @@ const TABLE = 'standort';  // German table name
 ### Implementation Notes
 
 - Create comprehensive migration scripts for each table
-- Update all affected query classes in `zmsdb/src/Zmsdb/Query/`
+- Update all affected query classes in `zmsbackend/src/Zmsbackend/Query/`
 - Ensure backward compatibility during transition period
 - Update documentation and API references
 
@@ -451,7 +451,7 @@ This approach ensures:
 
 ##### Dereference payload in `Anmerkung` / custom text fields (technical debt)
 
-When a process is finished or soft-deleted, `Process::writeBlockedEntity()` runs `QUERY_DEREFERENCED` (`zmsdb/src/Zmsdb/Query/Process.php`). That update clears PII and sets `StandortID = 0`, `Name = 'dereferenced'`, and `status = 'blocked'`. Because the row no longer has a usable `scope_id`, the original scope and metadata are **serialized into free-text columns** using PHP `var_export()`:
+When a process is finished or soft-deleted, `Process::writeBlockedEntity()` runs `QUERY_DEREFERENCED` (`zmsbackend/src/Zmsbackend/Query/Process.php`). That update clears PII and sets `StandortID = 0`, `Name = 'dereferenced'`, and `status = 'blocked'`. Because the row no longer has a usable `scope_id`, the original scope and metadata are **serialized into free-text columns** using PHP `var_export()`:
 
 | Column               | Written by                                | Payload shape                                                       |
 | -------------------- | ----------------------------------------- | ------------------------------------------------------------------- |
@@ -473,7 +473,7 @@ array (
 
 **Where this payload is read back (string parsing, not typed columns):**
 
-- `CalculateDailyWaitingStatisticByCron::extractScopeFromAnmerkung()` — regex on all three columns when `StandortID = 0` (`zmsdb/src/Zmsdb/Helper/CalculateDailyWaitingStatisticByCron.php`)
+- `CalculateDailyWaitingStatisticByCron::extractScopeFromAnmerkung()` — regex on all three columns when `StandortID = 0` (`zmsbackend/src/Zmsbackend/Helper/CalculateDailyWaitingStatisticByCron.php`)
 - Ad-hoc SQL in maintenance migrations (e.g. `SUBSTRING_INDEX` / `LIKE` on `'StandortID' =>` in `Anmerkung` and custom text fields)
 - Any code path that must resolve scope on a dereferenced shell row before the cron deletes it
 
@@ -1379,7 +1379,7 @@ These tables are DLDB-synced. Several store a `data` JSON column with nested con
 | -------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `abrechnung`         | **Drop**                 | Billing/SMS accounting; no active use. Migration `91772633097-drop-abrechnung.sql` already drops the table.                                                                                                                                                            |
 | `ipausnahmen`        | **Verify → likely drop** | No references in PHP codebase at time of writing; confirm no external dependency before removal.                                                                                                                                                                       |
-| `apikey`             | **Verify**               | Routes exist in `zmsapi`; confirm whether any deployment still issues or validates API keys.                                                                                                                                                                           |
+| `apikey`             | **Verify**               | Routes exist in `zmsbackend`; confirm whether any deployment still issues or validates API keys.                                                                                                                                                                       |
 | `apiquota`           | **Verify**               | Tied to `apikey`; same audit as above.                                                                                                                                                                                                                                 |
 | `notificationqueue`  | **Drop**                 | Part of SMS/notification removal. Migration `91772633137-drop-notifcationqueue.sql` already drops the table.                                                                                                                                                           |
 | `eventlog`           | **Verify**               | Still used (e.g. `ProcessListSummaryMail`); clarify whether to keep, replace with `log`, or consolidate.                                                                                                                                                               |

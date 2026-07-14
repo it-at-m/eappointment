@@ -13,12 +13,12 @@ RewriteCond %{QUERY_STRING} ^$
 RewriteRule ^$ /terminvereinbarung/admin? [R=302,L]
 
 
-# zmsapi
-SetEnvIf Request_URI ^/zmsapi ZMS_MODULE_BASEPATH=/terminvereinbarung/api/2
+# zmsbackend
+SetEnvIf Request_URI ^/zmsbackend ZMS_MODULE_BASEPATH=/terminvereinbarung/api/2
 RewriteCond %{REQUEST_URI} !^/terminvereinbarung/api/2/+(_|doc)
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^terminvereinbarung/api/2(.*) /var/www/html/zmsapi/public/index.php?$1 [QSA]
-RewriteRule ^terminvereinbarung/api/2/+(doc|_)(.*) /var/www/html/zmsapi/public/$1$2 [QSA]
+RewriteRule ^terminvereinbarung/api/2(.*) /var/www/html/zmsbackend/public/index.php?$1 [QSA]
+RewriteRule ^terminvereinbarung/api/2/+(doc|_)(.*) /var/www/html/zmsbackend/public/$1$2 [QSA]
 
 
 # zmsadmin

@@ -4,7 +4,7 @@ import de.muenchen.zms.department.model.Department;
 import de.muenchen.zms.department.view.DepartmentView;
 import org.springframework.stereotype.Component;
 
-/** today: zmsdb\\Department writeDepartmentLinks/Dayoffs/Mail helpers */
+/** today: zmsbackend\\Department\\Service\\Department writeDepartmentLinks/Dayoffs/Mail helpers */
 @Component
 public class DepartmentWriteSupport {
 

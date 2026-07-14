@@ -1,0 +1,14 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+$now = new \DateTimeImmutable();
+if (class_exists('\App') && isset(\App::$now)) {
+    $now = \App::$now;
+}
+if (preg_grep('#^--commit$#', $argv)) {
+    $expiredQuota = new \BO\Zmsbackend\Helper\ApiQuotaDeleteByCron($now, preg_grep('#^--?v(erbose)?$#', $argv));
+    $expiredQuota->startProcessing(preg_grep('#^--commit$#', $argv));
+} else {
+    \App::$log->notice('resetApiQuota usage', ['usage' => 'Usage: resetApiQuota --commit [--verbose]']);
+}

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
-/** today: zmsdb\\Cluster::readByDepartmentId, writeEntity */
+/** today: zmsbackend\\Cluster\\Service\\Cluster::readByDepartmentId, writeEntity */
 public interface DepartmentClusterRepository extends Repository<Object, Long> {
 
     @Query("""
