@@ -44,13 +44,13 @@ jobs:
 
       - name: Install Node.js dependencies
         run: |
-          cd zmsbackend && npm install && cd ..
-          cd zmscitizenapi && npm install && cd ..
+          (cd zmsbackend && npm install)
+          (cd zmscitizenapi && npm install)
 
       - name: Build projects
         run: |
-          cd zmsbackend && npm run build && cd ..
-          cd zmscitizenapi && npm run build && cd ..
+          (cd zmsbackend && npm run build)
+          (cd zmscitizenapi && npm run build)
 
       - name: Generate Swagger documentation
         run: |
