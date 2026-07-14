@@ -1516,6 +1516,7 @@ describe("AppointmentView", () => {
     });
 
     expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(true);
+    expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(false);
   });
   });
   describe("Book another appointment button", () => {
@@ -1699,6 +1700,11 @@ describe("AppointmentView", () => {
       expect(wrapper.vm.currentView).toBe(5);
 
       expect(wrapper.vm.isBookingAppointment).toBe(false);
+
+      expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
+      expect(wrapper.find('[data-test="muc-callout"]').attributes("data-type")).toBe(
+        "success"
+      );
     });
 
     it("cancels old appointment after successful rebooking confirm", async () => {
