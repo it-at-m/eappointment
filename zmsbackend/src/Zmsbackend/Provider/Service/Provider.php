@@ -41,7 +41,7 @@ class Provider extends \BO\Zmsbackend\Base
             return App::$cache->get($cacheKey);
         }
 
-        $query = new Query\Provider(Query\Base::SELECT);
+        $query = new \BO\Zmsbackend\Provider\Repository\Provider(\BO\Zmsbackend\Query\Base::SELECT);
         $query
             ->setResolveLevel($resolveReferences)
             ->addEntityMapping()
@@ -67,7 +67,7 @@ class Provider extends \BO\Zmsbackend\Base
             return [];
         }
 
-        $query = new Query\Provider(Query\Base::SELECT);
+        $query = new \BO\Zmsbackend\Provider\Repository\Provider(\BO\Zmsbackend\Query\Base::SELECT);
         $query
             ->setResolveLevel(0)
             ->addEntityMapping()
@@ -218,17 +218,6 @@ class Provider extends \BO\Zmsbackend\Base
         if (! (new \BO\Zmsbackend\Source\Service\Source())->readEntity($source)) {
             throw new \BO\Zmsbackend\Source\Exception\UnknownDataSource();
         }
-
-        $query = new Query\Provider(Query\Base::SELECT);
-        $query
-            ->setResolveLevel(0)
-            ->addEntityMapping()
-            ->addConditionProviderSource($source);
-        if ($this->fetchOne($query, new Entity())->hasId()) {
-            return;
-        }
-
-        throw new Exception\Source\UnknownDataSource();
     }
 
     public function removeCache(Entity $provider)
