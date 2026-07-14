@@ -2300,7 +2300,7 @@
 
 /**
  *  @swagger
- *  "/mails/{id:\d{1,11}}/":
+ *  "/mails/{id}/":
  *      delete:
  *          summary: delete mail(s) by ID(s)
  *          tags:
@@ -2337,7 +2337,7 @@
 
 /**
  *  @swagger
- *  "/mails/{id:\d{1,11}}/":
+ *  "/mails/{id}/":
  *      get:
  *          summary: get a single mail by ID
  *          tags:
@@ -4161,9 +4161,9 @@
  *              200:
  *                  description: "success"
  *                  schema:
- *                       type: object
- *                       properties:
- *                           meta:
+ *                      type: object
+ *                      properties:
+ *                          meta:
  *                              $ref: "schema/metaresult.json"
  *                          data:
  *                              type: array

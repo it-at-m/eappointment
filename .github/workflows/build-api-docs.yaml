@@ -54,15 +54,8 @@ jobs:
 
       - name: Generate Swagger documentation
         run: |
-          cd zmsbackend
-          npm run doc
-          npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml
-          cd ..
-
-          cd zmscitizenapi
-          npm run doc
-          npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml
-          cd ..
+          (cd zmsbackend && npm run doc && npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml)
+          (cd zmscitizenapi && npm run doc && npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml)
 
       - name: Upload API docs artifact
         uses: actions/upload-artifact@v7
