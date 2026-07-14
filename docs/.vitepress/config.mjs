@@ -625,6 +625,14 @@ export default {
   base: SITE_BASE,
   lang: "en-US",
   vite: {
+    esbuild: {
+      target: "es2022",
+    },
+    optimizeDeps: {
+      esbuildOptions: {
+        target: "es2022",
+      },
+    },
     build: {
       target: "es2022",
     },

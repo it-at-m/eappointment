@@ -53,11 +53,10 @@ graph TD
         PHPBASE["zmsbase<br>PHP Docker Base Images<br>Runtime Environment"]
     end
 
-    zmsapi --> zmsslim
-    zmsapi --> zmsclient
-    zmsapi --> zmsdldb
-    zmsapi --> zmsdb
-    zmsapi --> zmsentities
+    zmsbackend --> zmsslim
+    zmsbackend --> zmsclient
+    zmsbackend --> zmsdldb
+    zmsbackend --> zmsentities
 
     zmsadmin --> mellon
     zmsadmin --> zmsclient
@@ -79,9 +78,6 @@ graph TD
     zmsmessaging --> zmsentities
     zmsmessaging --> zmsslim
 
-    zmsdb --> zmsentities
-    zmsdb --> zmsdldb
-    zmsdb --> mellon
 
     zmsclient --> zmsentities
     zmsclient --> zmsslim
@@ -95,16 +91,15 @@ graph TD
     zmscitizenapi --> zmsclient
     zmscitizenapi --> zmsentities
 
-    zmscitizenapi -.-> zmsapi
+    zmscitizenapi -.-> zmsbackend
     refarch_gateway -.-> zmscitizenapi
     zmscitizenview -.-> refarch_gateway
 
-    PHPBASE -->|stellt Laufzeit bereit für| zmsapi
+    PHPBASE -->|stellt Laufzeit bereit für| zmsbackend
     PHPBASE -->|stellt Laufzeit bereit für| zmsadmin
     PHPBASE -->|stellt Laufzeit bereit für| zmscalldisplay
     PHPBASE -->|stellt Laufzeit bereit für| zmsstatistic
     PHPBASE -->|stellt Laufzeit bereit für| zmsmessaging
-    PHPBASE -->|stellt Laufzeit bereit für| zmsdb
     PHPBASE -->|stellt Laufzeit bereit für| zmsclient
     PHPBASE -->|stellt Laufzeit bereit für| zmsentities
     PHPBASE -->|stellt Laufzeit bereit für| zmsslim
@@ -120,12 +115,11 @@ graph TD
 
     subgraph zms_modules["ZMS PHP Modules"]
         style zms_modules stroke-dasharray:5 5 1 5
-        zmsapi
+        zmsbackend
         zmsadmin
         zmscalldisplay
         zmsstatistic
         zmsmessaging
-        zmsdb
         zmsclient
         zmsentities
         zmsslim

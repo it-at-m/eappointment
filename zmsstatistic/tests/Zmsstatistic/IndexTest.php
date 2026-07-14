@@ -72,7 +72,7 @@ class IndexTest extends Base
     {
         $this->expectException('\BO\Zmsclient\Exception');
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn';
+        $exception->template = 'BO\Zmsbackend\Useraccount\Exception\UserAlreadyLoggedIn';
         $exception->data['authkey'] = 'unit';
         $this->setApiCalls(
             [
@@ -137,7 +137,7 @@ class IndexTest extends Base
     public function testLoginFailed()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\Zmsapi\Exception\Useraccount\InvalidCredentials';
+        $exception->template = 'BO\Zmsbackend\Useraccount\Exception\InvalidCredentials';
         $exception->data['password']['messages'] = [
             'Der Nutzername oder das Passwort wurden falsch eingegeben'
         ];
@@ -174,7 +174,7 @@ class IndexTest extends Base
     {
         $this->expectException('\BO\Zmsclient\Exception');
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn';
+        $exception->template = 'BO\Zmsbackend\Useraccount\Exception\UserAlreadyLoggedIn';
         $exception->data = json_decode($this->readFixture("GET_Workstation_Resolved2.json"), 1)['data'];
         $this->setApiCalls(
             [

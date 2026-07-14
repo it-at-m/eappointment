@@ -20,36 +20,36 @@ const TODAY_REPO_FILES = [
   "zmsentities/src/Zmsentities/Collection/DepartmentList.php",
   "zmsentities/src/Zmsentities/Schema/Validator.php",
   "zmsentities/src/Zmsentities/Exception/SchemaValidation.php",
-  "zmsdb/src/Zmsdb/Department.php",
-  "zmsdb/src/Zmsdb/Query/Department.php",
-  "zmsdb/src/Zmsdb/Link.php",
-  "zmsdb/src/Zmsdb/Query/Link.php",
-  "zmsdb/src/Zmsdb/DayOff.php",
-  "zmsdb/src/Zmsdb/Query/DayOff.php",
-  "zmsdb/src/Zmsdb/Cluster.php",
-  "zmsdb/src/Zmsdb/Query/Cluster.php",
-  "zmsdb/src/Zmsdb/Scope.php",
-  "zmsdb/src/Zmsdb/Query/Scope.php",
-  "zmsdb/src/Zmsdb/Workstation.php",
-  "zmsdb/src/Zmsdb/Query/Workstation.php",
-  "zmsdb/src/Zmsdb/Organisation.php",
-  "zmsdb/src/Zmsdb/Query/Organisation.php",
-  "zmsdb/src/Zmsdb/Query/Useraccount.php",
-  "zmsdb/src/Zmsdb/Exception/Department/ScopeListNotEmpty.php",
-  "zmsdb/src/Zmsdb/Exception/Department/InvalidId.php",
-  "zmsapi/src/Zmsapi/DepartmentGet.php",
-  "zmsapi/src/Zmsapi/DepartmentList.php",
-  "zmsapi/src/Zmsapi/DepartmentUpdate.php",
-  "zmsapi/src/Zmsapi/DepartmentDelete.php",
-  "zmsapi/src/Zmsapi/DepartmentAddScope.php",
-  "zmsapi/src/Zmsapi/DepartmentAddCluster.php",
-  "zmsapi/src/Zmsapi/DepartmentByScopeId.php",
-  "zmsapi/src/Zmsapi/DepartmentWorkstationList.php",
-  "zmsapi/src/Zmsapi/OrganisationByDepartment.php",
-  "zmsapi/src/Zmsapi/OrganisationAddDepartment.php",
-  "zmsapi/src/Zmsapi/UseraccountListByDepartments.php",
-  "zmsapi/src/Zmsapi/UseraccountListByRoleAndDepartments.php",
-  "zmsapi/src/Zmsapi/Exception/Department/DepartmentNotFound.php",
+  "zmsbackend/src/Zmsbackend/Department/Service/Department.php",
+  "zmsbackend/src/Zmsbackend/Department/Repository/Department.php",
+  "zmsbackend/src/Zmsbackend/Link/Service/Link.php",
+  "zmsbackend/src/Zmsbackend/Link/Repository/Link.php",
+  "zmsbackend/src/Zmsbackend/Dayoff/Service/DayOff.php",
+  "zmsbackend/src/Zmsbackend/Dayoff/Repository/DayOff.php",
+  "zmsbackend/src/Zmsbackend/Cluster/Service/Cluster.php",
+  "zmsbackend/src/Zmsbackend/Cluster/Repository/Cluster.php",
+  "zmsbackend/src/Zmsbackend/Scope/Service/Scope.php",
+  "zmsbackend/src/Zmsbackend/Query/Scope.php",
+  "zmsbackend/src/Zmsbackend/Workstation/Service/Workstation.php",
+  "zmsbackend/src/Zmsbackend/Workstation/Repository/Workstation.php",
+  "zmsbackend/src/Zmsbackend/Organisation/Service/Organisation.php",
+  "zmsbackend/src/Zmsbackend/Organisation/Repository/Organisation.php",
+  "zmsbackend/src/Zmsbackend/Useraccount/Repository/Useraccount.php",
+  "zmsbackend/src/Zmsbackend/Department/Exception/ScopeListNotEmpty.php",
+  "zmsbackend/src/Zmsbackend/Department/Exception/InvalidId.php",
+  "zmsbackend/src/Zmsbackend/Department/Api/DepartmentGet.php",
+  "zmsbackend/src/Zmsbackend/Department/Api/DepartmentList.php",
+  "zmsbackend/src/Zmsbackend/Department/Api/DepartmentUpdate.php",
+  "zmsbackend/src/Zmsbackend/Department/Api/DepartmentDelete.php",
+  "zmsbackend/src/Zmsbackend/Department/Api/DepartmentAddScope.php",
+  "zmsbackend/src/Zmsbackend/Department/Api/DepartmentAddCluster.php",
+  "zmsbackend/src/Zmsbackend/Department/Api/DepartmentByScopeId.php",
+  "zmsbackend/src/Zmsbackend/Department/Api/DepartmentWorkstationList.php",
+  "zmsbackend/src/Zmsbackend/Organisation/Api/OrganisationByDepartment.php",
+  "zmsbackend/src/Zmsbackend/Organisation/Api/OrganisationAddDepartment.php",
+  "zmsbackend/src/Zmsbackend/Useraccount/Api/UseraccountListByDepartments.php",
+  "zmsbackend/src/Zmsbackend/Useraccount/Api/UseraccountListByRoleAndDepartments.php",
+  "zmsbackend/src/Zmsbackend/Department/Exception/DepartmentNotFound.php",
 ];
 
 const ROUTING_RANGES = [
@@ -89,13 +89,15 @@ abstract class Entity extends \\ArrayObject
 }
 
 function excerptUseraccountDepartmentMethods() {
-  const lines = readRepo("zmsdb/src/Zmsdb/Useraccount.php").split("\n");
+  const relativePath =
+    "zmsbackend/src/Zmsbackend/Useraccount/Service/Useraccount.php";
+  const lines = readRepo(relativePath).split("\n");
   const header = `<?php
 
-namespace BO\\Zmsdb;
+namespace BO\\Zmsbackend\\Useraccount\\Service;
 
 /**
- * Excerpt from zmsdb/src/Zmsdb/Useraccount.php — department-related query methods.
+ * Excerpt from ${relativePath} — department-related query methods.
  * Full class: ${lines.length} lines.
  */
 class Useraccount extends Base
@@ -103,8 +105,8 @@ class Useraccount extends Base
     // … other methods …
 
 `;
-  const body = lines.slice(910, 999).join("\n");
-  const body2 = lines.slice(1060, 1119).join("\n");
+  const body = lines.slice(992, 1017).join("\n");
+  const body2 = lines.slice(1077, 1140).join("\n");
   return `${header}${body}
 
     // … other methods …
@@ -117,14 +119,14 @@ ${body2}
 }
 
 function excerptRouting() {
-  const lines = readRepo("zmsapi/routing.php").split("\n");
+  const lines = readRepo("zmsbackend/routing.php").split("\n");
   const parts = ROUTING_RANGES.map(([start, end], index) => {
     const chunk = lines.slice(start - 1, end).join("\n");
     if (index === 0) {
       return `<?php
 
 /**
- * Excerpt from zmsapi/routing.php — all department-related route registrations.
+ * Excerpt from zmsbackend/routing.php — all department-related route registrations.
  * Full file: ${lines.length} lines; controllers are registered on \\App::$slim (Slim).
  */
 
@@ -193,11 +195,16 @@ export const defaultPath = ${JSON.stringify(defaultPath)};
 }
 
 function buildTodayExplorer() {
-  const filePaths = ["zmsapi/routing.php", ...TODAY_REPO_FILES];
+  const useraccountExcerptPath =
+    "zmsbackend/src/Zmsbackend/Useraccount/Service/Useraccount.php";
+  const filePaths = ["zmsbackend/routing.php", ...TODAY_REPO_FILES];
   const files = {};
 
-  files["zmsapi/routing.php"] = { language: "php", content: excerptRouting() };
-  files["zmsdb/src/Zmsdb/Useraccount.php"] = {
+  files["zmsbackend/routing.php"] = {
+    language: "php",
+    content: excerptRouting(),
+  };
+  files[useraccountExcerptPath] = {
     language: "php",
     content: excerptUseraccountDepartmentMethods(),
   };
@@ -213,14 +220,14 @@ function buildTodayExplorer() {
     };
   }
 
-  filePaths.push("zmsdb/src/Zmsdb/Useraccount.php");
+  filePaths.push(useraccountExcerptPath);
   filePaths.push("zmsentities/src/Zmsentities/Schema/Entity.validation.php");
 
   writeExplorer(
     "departmentExplorerToday.js",
     buildTree(filePaths),
     files,
-    "zmsapi/routing.php"
+    "zmsbackend/routing.php"
   );
 
   console.log(`today: ${Object.keys(files).length} files`);

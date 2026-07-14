@@ -340,7 +340,7 @@ class Process extends Schema\Entity
      */
     public function getScopeId()
     {
-        //as current scope - see zmsdb Query/Process EntityMapping
+        //as current scope - see zmsbackend Query/Process EntityMapping
         return $this->toProperty()->scope->id->get();
     }
 

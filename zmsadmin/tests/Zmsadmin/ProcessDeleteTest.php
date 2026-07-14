@@ -96,7 +96,7 @@ class ProcessDeleteTest extends Base
     {
         $this->expectException('\BO\Zmsclient\Exception');
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\Zmsapi\Exception\Process\ProcessDeleteFailed';
+        $exception->template = 'BO\Zmsbackend\Process\Exception\ProcessDeleteFailed';
         $this->setApiCalls(
             [
                 [

@@ -7,7 +7,7 @@ if (!defined('MYSQL_USER')) {
 }
 // MYSQL_PASSWORD
 if (!defined('MYSQL_PASSWORD')) {
-    define('MYSQL_PASSWORD', getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') :'zmsapi');
+    define('MYSQL_PASSWORD', getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') :'zmsbackend');
 }
 // MYSQL_DATABASE is the database name containing the tables
 if (!defined('MYSQL_DATABASE')) {
@@ -48,10 +48,10 @@ if (getenv('MYSQL_PORT_RO')) {
 $value = getenv('ZMS_DLDB_TWIG_CACHE');
 define('ZMS_DLDB_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '/cache/'));
 
-class App extends \BO\Zmsapi\Application
+class App extends \BO\Zmsbackend\Application
 {
     const APP_PATH = APP_PATH;
-    const IDENTIFIER = 'Zmsapi-ENV';
+    const IDENTIFIER = 'Zmsbackend-ENV';
     const DEBUG = false;
     const DB_ENABLE_WSREPSYNCWAIT = true;
     /**
@@ -79,9 +79,7 @@ class App extends \BO\Zmsapi\Application
      *
      */
     const TWIG_CACHE = ZMS_DLDB_TWIG_CACHE;
-
-    // Uncomment the following line for testing with fixtures
-    // public static $data = "/vendor/bo/zmsdb/tests/Zmsdb/fixtures";
+    const MODULE_NAME = 'zmsdldb';
 }
 
 // Uncomment the following line for testing data with vendor/bin/importTestData
