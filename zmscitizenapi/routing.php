@@ -208,7 +208,7 @@
  *     tags:
  *       - appointments
  *     parameters:
- *       name: officeId
+ *       - name: officeId
  *         description: Comma separated Office IDs
  *         in: query
  *         required: true
