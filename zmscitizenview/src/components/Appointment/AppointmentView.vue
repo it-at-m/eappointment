@@ -237,7 +237,7 @@
 
             <template v-else>
               <muc-callout
-                v-if="confirmAppointmentSuccess && !appointmentHash"
+                v-if="confirmAppointmentSuccess"
                 type="success"
               >
                 <template #content>
@@ -249,7 +249,7 @@
               </muc-callout>
 
               <div
-                v-if="confirmAppointmentSuccess && !appointmentHash"
+                v-if="confirmAppointmentSuccess"
                 class="m-button-group"
               >
                 <div v-if="globalState.isLoggedIn && appointmentDetailUrl">
