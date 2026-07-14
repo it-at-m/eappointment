@@ -3,3 +3,7 @@
 /config.php
 /coverage/
 .phpunit.cache/
+public/doc/assets/redoc.min.js
+public/_test/assets/swagger-ui-bundle.js
+public/_test/assets/swagger-ui.css
+public/_test/assets/swagger-ui-standalone-preset.js
