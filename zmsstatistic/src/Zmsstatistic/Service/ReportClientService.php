@@ -59,7 +59,7 @@ class ReportClientService
         try {
             $reportHelper = new ReportHelper();
             $years = $reportHelper->getYearsForDateRange($fromDate, $toDate);
-            $combinedData = $this->fetchAndCombineDataFromYears($scopeId, $years, $fromDate, $toDate);
+            $combinedData = $this->fetchAndCombineDataFromYears($reportHelper,$scopeId, $years, $fromDate, $toDate);
 
             if (empty($combinedData['data'])) {
                 return null;
@@ -109,7 +109,7 @@ class ReportClientService
     /**
      * Fetch and combine data from multiple years
      */
-    private function fetchAndCombineDataFromYears(string $scopeId, array $years, string $fromDate, string $toDate): array
+    private function fetchAndCombineDataFromYears( ReportHelper $reportHelper, string $scopeId, array $years, string $fromDate, string $toDate): array
     {
         $combinedData = [];
         $baseEntity = null;
@@ -118,17 +118,11 @@ class ReportClientService
         $requestedTo = new DateTimeImmutable($toDate);
 
         foreach ($years as $year) {
+            $bounds = $reportHelper->getYearDateBounds($year, $fromDate, $toDate);
+            if ($bounds === null) {
+                continue;
+            }
             try {
-                $yearStart = new DateTimeImmutable($year . '-01-01');
-                $yearEnd = new DateTimeImmutable($year . '-12-31');
-
-                $yearFrom = $requestedFrom > $yearStart ? $requestedFrom : $yearStart;
-                $yearTo = $requestedTo < $yearEnd ? $requestedTo : $yearEnd;
-
-                if ($yearFrom > $yearTo) {
-                    continue;
-                }
-
                 $exchangeClient = \App::$http
                     ->readGetResult(
                         '/warehouse/clientscope/' . $scopeId . '/' . $year . '/',
