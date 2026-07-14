@@ -22,13 +22,16 @@ require_once(APP_PATH . '/config.php');
 \App::$now = (\App::$now instanceof \DateTimeInterface) ? \App::$now : new \DateTimeImmutable();
 
 // Set option for environment, routing, logging and templating
-\BO\Zmsdb\Connection\Select::$enableProfiling = \App::DEBUG;
-\BO\Zmsdb\Connection\Select::$readSourceName = \App::DB_DSN_READONLY;
-\BO\Zmsdb\Connection\Select::$writeSourceName = \App::DB_DSN_READWRITE;
-\BO\Zmsdb\Connection\Select::$username = \App::DB_USERNAME;
-\BO\Zmsdb\Connection\Select::$password = \App::DB_PASSWORD;
-\BO\Zmsdb\Connection\Select::$galeraConnection = \App::DB_IS_GALERA;
-\BO\Zmsdb\Connection\Select::$pdoOptions = [
+\BO\Zmsbackend\Connection\Select::$enableProfiling = \App::DEBUG;
+\BO\Zmsbackend\Connection\Select::$readSourceName = \App::DB_DSN_READONLY;
+\BO\Zmsbackend\Connection\Select::$writeSourceName = \App::DB_DSN_READWRITE;
+\BO\Zmsbackend\Connection\Select::$username = \App::DB_USERNAME;
+\BO\Zmsbackend\Connection\Select::$password = \App::DB_PASSWORD;
+\BO\Zmsbackend\Connection\Select::$galeraConnection = \App::DB_IS_GALERA;
+\BO\Zmsbackend\Connection\Select::$pdoOptions = [
     \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 ];
-\BO\Zmsdb\Connection\Select::$connectionTimezone = ' ' . \App::$now->getTimezone()->getName();
+\BO\Zmsbackend\Connection\Select::$connectionTimezone = ' ' . \App::$now->getTimezone()->getName();
+if (defined('MYSQL_DATABASE')) {
+    \BO\Zmsbackend\Connection\Select::$dbname_zms = MYSQL_DATABASE;
+}

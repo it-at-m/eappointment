@@ -7,7 +7,7 @@ import de.muenchen.zms.department.view.DepartmentView;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
-/** today: zmsapi\\Helper\\User::checkDepartment / checkDepartments */
+/** today: zmsbackend\\Helper\\User::checkDepartment / checkDepartments */
 @Service
 public class DepartmentAccessService {
 

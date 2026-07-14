@@ -169,6 +169,8 @@ logs
 # Covers Eclipse, based on https://www.toptal.com/developers/gitignore/api/eclipse , stripped to relevant java based rules
 .metadata
 bin/
+!zmsbackend/bin/
+!zmsbackend/bin/**
 tmp/
 *.tmp
 *.bak

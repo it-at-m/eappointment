@@ -68,7 +68,7 @@ class ScopeAvailabilityDayTest extends Base
     public function testNotFound()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound';
+        $exception->template = 'BO\Zmsbackend\Availability\Exception\AvailabilityNotFound';
         $startDate = new \DateTimeImmutable('2016-04-01');
         $endDate =  new \DateTimeImmutable('2016-04-01');
 

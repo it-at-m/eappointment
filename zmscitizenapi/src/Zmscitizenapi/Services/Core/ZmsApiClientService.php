@@ -401,7 +401,7 @@ class ZmsApiClientService
 
     /**
      * Load a process for a citizen authenticated via JWT (validated in zmscitizenapi).
-     * Calls zmsapi ProcessGetByExternalUserId — not WorkstationProcessGet — so access
+     * Calls zmsbackend ProcessGetByExternalUserId — not WorkstationProcessGet — so access
      * is limited to processes owned by the given external user id (GH-1582).
      */
     public static function getProcessByIdAuthenticated(int $processId, string $externalUserId): Process

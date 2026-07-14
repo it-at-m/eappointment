@@ -226,8 +226,8 @@ class Http
             } catch (Exception $exception) {
                 if (
                     $try < 3 && in_array($exception->template, [
-                    "BO\\Zmsdb\\Exception\\Pdo\\DeadLockFound",
-                    "BO\\Zmsdb\\Exception\\Pdo\\LockTimeout",
+                    "BO\\Zmsbackend\\Exception\\Pdo\\DeadLockFound",
+                    "BO\\Zmsbackend\\Exception\\Pdo\\LockTimeout",
                     ])
                 ) {
                     usleep(rand(1000000, 3000000));

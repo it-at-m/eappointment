@@ -44,55 +44,55 @@ class ExceptionServiceTest extends TestCase
     {
         return [
             'ProcessNotFound' => [
-                'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound',
+                'BO\\Zmsbackend\\Process\\Exception\\ProcessNotFound',
                 'appointmentNotFound'
             ],
             'AuthKeyMatchFailed' => [
-                'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed',
+                'BO\\Zmsbackend\\Process\\Exception\\AuthKeyMatchFailed',
                 'authKeyMismatch'
             ],
             'ProcessAlreadyCalled' => [
-                'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyCalled',
+                'BO\\Zmsbackend\\Process\\Exception\\ProcessAlreadyCalled',
                 'processAlreadyCalled'
             ],
             'ProcessNotReservedAnymore' => [
-                'BO\\Zmsapi\\Exception\\Process\\ProcessNotReservedAnymore',
+                'BO\\Zmsbackend\\Process\\Exception\\ProcessNotReservedAnymore',
                 'processNotReservedAnymore'
             ],
             'ProcessNotPreconfirmedAnymore' => [
-                'BO\\Zmsapi\\Exception\\Process\\ProcessNotPreconfirmedAnymore',
+                'BO\\Zmsbackend\\Process\\Exception\\ProcessNotPreconfirmedAnymore',
                 'processNotPreconfirmedAnymore'
             ],
             'ProcessDeleteFailed' => [
-                'BO\\Zmsapi\\Exception\\Process\\ProcessDeleteFailed',
+                'BO\\Zmsbackend\\Process\\Exception\\ProcessDeleteFailed',
                 'processDeleteFailed'
             ],
             'ProcessInvalid' => [
-                'BO\\Zmsapi\\Exception\\Process\\ProcessInvalid',
+                'BO\\Zmsbackend\\Process\\Exception\\ProcessInvalid',
                 'processInvalid'
             ],
             'ProcessAlreadyExists' => [
-                'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyExists',
+                'BO\\Zmsbackend\\Process\\Exception\\ProcessAlreadyExists',
                 'processAlreadyExists'
             ],
             'EmailRequired' => [
-                'BO\\Zmsapi\\Exception\\Process\\EmailRequired',
+                'BO\\Zmsbackend\\Process\\Exception\\EmailRequired',
                 'emailIsRequired'
             ],
             'TelephoneRequired' => [
-                'BO\\Zmsapi\\Exception\\Process\\TelephoneRequired',
+                'BO\\Zmsbackend\\Process\\Exception\\TelephoneRequired',
                 'telephoneIsRequired'
             ],
             'MoreThanAllowedAppointmentsPerMail' => [
-                'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail',
+                'BO\\Zmsbackend\\Process\\Exception\\MoreThanAllowedAppointmentsPerMail',
                 'tooManyAppointmentsWithSameMail'
             ],
             'PreconfirmationExpired' => [
-                'BO\\Zmsapi\\Exception\\Process\\PreconfirmationExpired',
+                'BO\\Zmsbackend\\Process\\Exception\\PreconfirmationExpired',
                 'preconfirmationExpired'
             ],
             'ApiclientInvalid' => [
-                'BO\\Zmsapi\\Exception\\Process\\ApiclientInvalid',
+                'BO\\Zmsbackend\\Process\\Exception\\ApiclientInvalid',
                 'invalidApiClient'
             ]
         ];
@@ -122,15 +122,15 @@ class ExceptionServiceTest extends TestCase
     {
         return [
             'InvalidFirstDay' => [
-                'BO\\Zmsapi\\Exception\\Calendar\\InvalidFirstDay',
+                'BO\\Zmsbackend\\Calendar\\Exception\\InvalidFirstDay',
                 'invalidDateRange'
             ],
             'AppointmentsMissed' => [
-                'BO\\Zmsapi\\Exception\\Calendar\\AppointmentsMissed',
+                'BO\\Zmsbackend\\Calendar\\Exception\\AppointmentsMissed',
                 'noAppointmentForThisScope'
             ],
             'CalendarWithoutScopes' => [
-                'BO\\Zmsdb\\Exception\\CalendarWithoutScopes',
+                'BO\\Zmsbackend\\Calendar\\Exception\\CalendarWithoutScopes',
                 'noAppointmentForThisScope'
             ]
         ];
@@ -160,31 +160,31 @@ class ExceptionServiceTest extends TestCase
     {
         return [
             'DepartmentNotFound' => [
-                'BO\\Zmsapi\\Exception\\Department\\DepartmentNotFound',
+                'BO\\Zmsbackend\\Department\\Exception\\DepartmentNotFound',
                 'departmentNotFound'
             ],
             'MailNotFound' => [
-                'BO\\Zmsapi\\Exception\\Mail\\MailNotFound',
+                'BO\\Zmsbackend\\Mail\\Exception\\MailNotFound',
                 'mailNotFound'
             ],
             'OrganisationNotFound' => [
-                'BO\\Zmsapi\\Exception\\Organisation\\OrganisationNotFound',
+                'BO\\Zmsbackend\\Organisation\\Exception\\OrganisationNotFound',
                 'organisationNotFound'
             ],
             'ProviderNotFound' => [
-                'BO\\Zmsapi\\Exception\\Provider\\ProviderNotFound',
+                'BO\\Zmsbackend\\Provider\\Exception\\ProviderNotFound',
                 'providerNotFound'
             ],
             'RequestNotFound' => [
-                'BO\\Zmsapi\\Exception\\Request\\RequestNotFound',
+                'BO\\Zmsbackend\\Request\\Exception\\RequestNotFound',
                 'requestNotFound'
             ],
             'ScopeNotFound' => [
-                'BO\\Zmsapi\\Exception\\Scope\\ScopeNotFound',
+                'BO\\Zmsbackend\\Scope\\Exception\\ScopeNotFound',
                 'scopeNotFound'
             ],
             'SourceNotFound' => [
-                'BO\\Zmsapi\\Exception\\Source\\SourceNotFound',
+                'BO\\Zmsbackend\\Source\\Exception\\SourceNotFound',
                 'sourceNotFound'
             ]
         ];

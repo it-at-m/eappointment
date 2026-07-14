@@ -1,0 +1,64 @@
+<?php
+
+/**
+ * @package ZMS API
+ * @copyright BerlinOnline Stadtportal GmbH & Co. KG
+ **/
+
+namespace BO\Zmsbackend\Useraccount\Api;
+
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsbackend\Department\Service\Department;
+use BO\Zmsentities\Collection\QueueList;
+use BO\Zmsentities\Helper\DateTime;
+
+class UserQueue extends \BO\Zmsbackend\Api\BaseController
+{
+    /**
+     * @SuppressWarnings(Param)
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    #[\Override]
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new \BO\Zmsbackend\Helper\User($request))->checkPermissions('waitingqueue');
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $statusParameter = Validator::param('status')->isString()->getValue();
+        $statuses = empty($statusParameter) ? [] : explode(',', $statusParameter);
+        $selectedDate = Validator::param('date')->isString()->getValue();
+        $dateTime = ($selectedDate) ? (new DateTime($selectedDate))->modify(\App::$now->format('H:i')) : \App::$now;
+
+        $message = \BO\Zmsbackend\Api\Response\Message::create($request);
+
+        $workstation = (new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions();
+        $queueList = new QueueList();
+        foreach ($workstation->getUseraccount()['departments'] as $department) {
+            $queueList->addList((new \BO\Zmsbackend\Department\Service\Department())->readQueueList($department->id, $dateTime, 2));
+        }
+        $queues = $queueList->withSortedWaitingTime();
+
+        $message->data = $queues;
+
+        if ($resolveReferences > 1) {
+            $filteredQueues = [];
+            foreach ($queues as $queue) {
+                if (! empty($statuses) && ! in_array($queue->status, $statuses)) {
+                    continue;
+                }
+
+                $queue->process = $queue->getProcess();
+                $filteredQueues[] = $queue;
+            }
+
+            $message->data = $filteredQueues;
+        }
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message, 200);
+        return $response;
+    }
+}

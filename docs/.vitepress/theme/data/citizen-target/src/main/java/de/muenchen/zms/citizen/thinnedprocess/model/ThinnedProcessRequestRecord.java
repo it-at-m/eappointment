@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 
 /**
  * Request (service) line on a process.
- * today: zmsdb\\Query\\Request::BATABLE = {@code buergeranliegen}
+ * today: zmsbackend\\Request\\Repository\\Request::BATABLE = {@code buergeranliegen}
  * future rename: {@code citizen_requests}
  */
 @Entity

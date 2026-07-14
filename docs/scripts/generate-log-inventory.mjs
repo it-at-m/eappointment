@@ -12,9 +12,8 @@ const OUTPUT = path.resolve(__dirname, "../.vitepress/data/log-inventory.json");
 
 const MODULE_PREFIXES = [
   "zmsslim",
-  "zmsapi",
+  "zmsbackend",
   "zmsadmin",
-  "zmsdb",
   "zmsdldb",
   "zmsentities",
   "zmsclient",
