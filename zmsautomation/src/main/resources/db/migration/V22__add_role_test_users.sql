@@ -1,5 +1,5 @@
 -- Flyway migration: Add workstation test users per role (login <role>@keycloak, password vorschau)
--- role/user_role are not in .resources/zms.sql; bootstrap them here so Flyway can run before zmsapi migrate
+-- role/user_role are not in .resources/zms.sql; bootstrap them here so Flyway can run before zmsbackend migrate
 
 CREATE TABLE IF NOT EXISTS role
 (

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
-/** today: zmsdb\\Link::readByDepartmentId */
+/** today: zmsbackend\\Link\\Service\\Link::readByDepartmentId */
 public interface DepartmentLinkRepository extends Repository<Object, Long> {
 
     @Query("""

@@ -1,0 +1,54 @@
+<?php
+
+/**
+ * @package ZMS API
+ * @copyright BerlinOnline Stadtportal GmbH & Co. KG
+ **/
+
+namespace BO\Zmsbackend\Mail\Api;
+
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsbackend\Mail\Service\Mail;
+use BO\Zmsbackend\Config\Service\Config;
+use BO\Zmsbackend\Mail\Service\MailTemplates as MailTemplatesQuery;
+use BO\Zmsbackend\Helper\User;
+
+class MailTemplatesPreview extends \BO\Zmsbackend\Api\BaseController
+{
+    /**
+     * @SuppressWarnings(Param)
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    #[\Override]
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new \BO\Zmsbackend\Helper\User($request))->checkPermissions('mailtemplates');
+
+        $mailStatus = $args['mailStatus'];
+        $providerId = $args['providerId'];
+
+        $mainProcessExample = ((new \BO\Zmsentities\Process())->getExample());
+        $mainProcessExample->id = 987654;
+        $mainProcessExample->scope->provider['id'] = $providerId;
+        $dateTime = new \DateTimeImmutable("2015-10-23 08:00:00", new \DateTimeZone('Europe/Berlin'));
+        $mainProcessExample->getFirstAppointment()->setDateTime($dateTime);
+        $mainProcessExample->requests[] = (new \BO\Zmsentities\Request())->getExample();
+
+        $config = (new \BO\Zmsbackend\Config\Service\Config())->readEntity();
+        $mail = (new \BO\Zmsentities\Mail())
+            ->setTemplateProvider(new \BO\Zmsbackend\Helper\MailTemplateProvider($mainProcessExample))
+            ->toResolvedEntity($mainProcessExample, $config, $mailStatus);
+
+        $message = \BO\Zmsbackend\Api\Response\Message::create($request);
+        $message->data = array('xy' => 'Missing dummy template.','previewHtml' => $mail->getHtmlPart(),'previewPlain' => $mail->getPlainPart());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message, $message->getStatuscode());
+
+        return $response;
+    }
+}
