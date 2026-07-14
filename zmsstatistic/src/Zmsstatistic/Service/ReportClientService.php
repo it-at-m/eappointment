@@ -114,9 +114,6 @@ class ReportClientService
         $combinedData = [];
         $baseEntity = null;
 
-        $requestedFrom = new DateTimeImmutable($fromDate);
-        $requestedTo = new DateTimeImmutable($toDate);
-
         foreach ($years as $year) {
             $bounds = $reportHelper->getYearDateBounds($year, $fromDate, $toDate);
             if ($bounds === null) {
