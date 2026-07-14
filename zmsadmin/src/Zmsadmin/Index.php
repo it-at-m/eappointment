@@ -110,7 +110,7 @@ class Index extends BaseController
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
             if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
                 $exceptionData = [
-                  'template' => 'exception/bo/zmsapi/exception/useraccount/invalidcredentials.twig'
+                  'template' => 'exception/bo/zmsbackend/useraccount/exception/invalidcredentials.twig'
                 ];
                 $exceptionData['data']['password']['messages'] = [
                     'Der Nutzername oder das Passwort wurden falsch eingegeben'
@@ -122,7 +122,7 @@ class Index extends BaseController
                     'error_type' => 'invalid_credentials',
                     'application' => 'zmsadmin'
                 ]);
-            } elseif ('BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn' == $exception->template) {
+            } elseif ('BO\Zmsbackend\Useraccount\Exception\UserAlreadyLoggedIn' == $exception->template) {
                 \BO\Zmsclient\Auth::setKey($exception->data['authkey'], time() + \App::SESSION_DURATION);
                 \App::$log->info('User already logged in - reusing existing session', [
                     'event' => 'auth_session_reuse',

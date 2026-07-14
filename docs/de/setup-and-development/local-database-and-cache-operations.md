@@ -14,9 +14,10 @@ Optionale manuelle Schritte:
 ddev exec ./cli db drop-all-tables
 ddev import-db --file=.resources/zms.sql
 ddev exec ./cli db migrate-test-data
-ddev exec zmsapi/vendor/bin/migrate --update
-ddev exec zmsapi/cron/cronjob.hourly --city=munich
-ddev exec zmsapi/cron/cronjob.minutly
+ddev exec zmsbackend/bin/configure
+ddev exec zmsbackend/bin/migrate --update
+ddev exec zmsbackend/cron/cronjob.hourly --city=munich
+ddev exec zmsbackend/cron/cronjob.minutly
 ddev exec ./cli modules clear-local-cache
 ```
 
@@ -42,8 +43,8 @@ Optionale manuelle Schritte:
 podman exec -it zms-web bash -lc "./cli db drop-all-tables"
 podman exec -i zms-db mysql -u root -proot db < .resources/zms.sql
 podman exec -it zms-web bash -lc "./cli db migrate-test-data"
-podman exec -it zms-web bash -lc "cd zmsapi && vendor/bin/migrate --update"
-podman exec -it zms-web bash -lc "cd zmsapi && ./cron/cronjob.hourly --city=munich"
-podman exec -it zms-web bash -lc "cd zmsapi && ./cron/cronjob.minutly"
+podman exec -it zms-web bash -lc "cd zmsbackend && bin/configure && bin/migrate --update"
+podman exec -it zms-web bash -lc "cd zmsbackend && ./cron/cronjob.hourly --city=munich"
+podman exec -it zms-web bash -lc "cd zmsbackend && ./cron/cronjob.minutly"
 podman exec -it zms-web bash -lc "./cli modules clear-local-cache"
 ```

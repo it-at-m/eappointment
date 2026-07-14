@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+info() { echo "[INFO] $*"; }
+warn() { echo "[WARN] $*"; }
+
+SECTION_BAR="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+SECTION_COLOR_RESET=$'\033[0m'
+SECTION_COLOR_INDEX=0
+SECTION_COLORS=()
+USE_SECTION_COLORS=false
+if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
+  SECTION_COLORS=(
+    $'\033[38;5;196m' # red
+    $'\033[38;5;208m' # orange
+    $'\033[38;5;226m' # yellow
+    $'\033[38;5;46m'  # green
+    $'\033[38;5;51m'  # cyan
+    $'\033[38;5;21m'  # blue
+    $'\033[38;5;201m' # magenta
+  )
+  if [[ ${#SECTION_COLORS[@]} -gt 0 ]]; then
+    USE_SECTION_COLORS=true
+  fi
+fi
+
+section() {
+  local title="$*"
+  local prefix="" suffix=""
+  if [[ "$USE_SECTION_COLORS" == true ]]; then
+    prefix="${SECTION_COLORS[$SECTION_COLOR_INDEX]}"
+    suffix="$SECTION_COLOR_RESET"
+    SECTION_COLOR_INDEX=$(((SECTION_COLOR_INDEX + 1) % ${#SECTION_COLORS[@]}))
+  fi
+  echo ""
+  echo "${prefix}${SECTION_BAR}${suffix}"
+  echo "${prefix}[SECTION] $title${suffix}"
+  echo "${prefix}${SECTION_BAR}${suffix}"
+  echo ""
+}
+
+# Paths and variables
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+MODULE_DIR="$PROJECT_ROOT/zmsbackend"
+DATA_DIR="$MODULE_DIR/data"
+
+# Validate required environment variables
+: "${MYSQL_PORT:?MYSQL_PORT must be set}"
+: "${MYSQL_DATABASE:?MYSQL_DATABASE must be set}"
+: "${MYSQL_USER:?MYSQL_USER must be set}"
+: "${CACHE_DIR:?CACHE_DIR must be set}"
+
+TEST_DB="zmsbackend_test"
+DB_PORT="${MYSQL_PORT##*:}"  # Extract port from "tcp://host:port" or just "port"
+
+# Cleanup function to clear zmsbackend/data folder (preserve .gitignore)
+cleanup_data_folder() {
+  if [ -d "$DATA_DIR" ]; then
+    find "$DATA_DIR" -mindepth 1 -not -name ".gitignore" -delete || warn "Failed to clean data folder"
+    [ -f "$DATA_DIR/.gitignore" ] || printf "*\n!.gitignore\n" > "$DATA_DIR/.gitignore"
+  fi
+}
+
+# Clear caches
+clear_caches() {
+  if [[ -n "${CACHE_DIR:-}" && -d "$CACHE_DIR" ]]; then
+    info "Clearing caches in $CACHE_DIR..."
+    find "$CACHE_DIR" -mindepth 1 -delete || warn "Failed to clear caches"
+  else
+    warn "CACHE_DIR not set or does not exist"
+  fi
+}
+
+# Ensure cleanup on exit
+trap 'clear_caches; cleanup_data_folder' EXIT INT TERM
+
+# 1. Test Database Setup
+section "1. Test Database Setup"
+mysql --ssl=0 -h "$MYSQL_DATABASE" -P "$DB_PORT" -u root --password="${MYSQL_ROOT_PASSWORD:-root}" \
+  -e "CREATE DATABASE IF NOT EXISTS \`$TEST_DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; \
+      GRANT ALL PRIVILEGES ON \`$TEST_DB\`.* TO '$MYSQL_USER'@'%'; FLUSH PRIVILEGES;"
+info "Test database '$TEST_DB' ready"
+
+# 2. Cache Clearing
+section "2. Cache Clearing"
+clear_caches
+
+# 3. Fixture Setup
+section "3. Fixture Setup"
+mkdir -p "$DATA_DIR"
+find "$DATA_DIR" -mindepth 1 -not -name ".gitignore" -delete || true
+for f in services_de.json locations_de.json topic_de.json; do
+  cp -f "$MODULE_DIR/tests/Zmsbackend/Service/fixtures/$f" "$DATA_DIR/$f" 2>/dev/null || warn "Failed to copy fixture: $f"
+done
+[ -f "$DATA_DIR/.gitignore" ] || printf "*\n!.gitignore\n" > "$DATA_DIR/.gitignore"
+
+if [[ ! -f "$MODULE_DIR/config.php" ]]; then
+  "$MODULE_DIR/bin/configure"
+  info "Created $MODULE_DIR/config.php from config.example.php"
+fi
+
+# 4. Test Data Import
+section "4. Test Data Import"
+export MYSQL_DATABASE="$TEST_DB"
+export TZ="UTC"
+export ZMS_DLDB_PATH="$DATA_DIR"
+info "Using DLDB import path: $ZMS_DLDB_PATH"
+cd "$MODULE_DIR"
+
+php -r 'require "vendor/autoload.php"; exit(class_exists("BO\\Zmsdldb\\FileAccess")?0:42);' \
+  || (composer update eappointment/zmsdldb -W --no-progress --prefer-dist && composer dump-autoload -o)
+
+php -d date.timezone="UTC" -d memory_limit="${PHP_MEMORY_LIMIT:-1G}" \
+  bin/importTestData --commit
+
+# 5. Running Tests
+section "5. Running Tests"
+export SKIP_DNS_VALIDATION=1
+cd "$MODULE_DIR"
+
+php -r 'require "vendor/autoload.php"; exit(class_exists("BO\\Zmsbackend\\Application")?0:42);' \
+  || (composer install --no-progress --prefer-dist && composer dump-autoload -o)
+
+php -d date.timezone="UTC" -d memory_limit="${PHP_MEMORY_LIMIT:-1G}" \
+  vendor/bin/phpunit --no-coverage "$@"
+
+# 6. Final Cache Clearing
+section "6. Final Cache Clearing"
+clear_caches
+
+# 7. Cleanup
+section "7. Cleanup"
+cleanup_data_folder
+info "Cleared zmsbackend/data folder (preserved .gitignore)"

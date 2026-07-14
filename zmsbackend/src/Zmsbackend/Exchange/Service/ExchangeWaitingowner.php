@@ -1,0 +1,117 @@
+<?php
+
+namespace BO\Zmsbackend\Exchange\Service;
+
+use BO\Zmsentities\Exchange;
+
+class ExchangeWaitingowner extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\ExchangeSubject
+{
+    #[\Override]
+    public function readEntity(
+        $subjectid,
+        \DateTimeInterface $datestart,
+        \DateTimeInterface $dateend,
+        $period = 'day'
+    ) {
+        $owner = (new \BO\Zmsbackend\Owner\Service\Owner())->readEntity($subjectid);
+        $entity = new Exchange();
+        $entity['title'] = "Wartestatistik $owner->name";
+        $entity->setPeriod($datestart, $dateend, $period);
+        $entity->addDictionaryEntry('subjectid', 'string', 'ID of an owner', 'owner.id');
+        $entity->addDictionaryEntry('date', 'string', 'date of report entry');
+        $entity->addDictionaryEntry('hour', 'string', 'hour of report entry');
+        $entity->addDictionaryEntry('waitingcount', 'number', 'amount of waiting spontaneous clients');
+        $entity->addDictionaryEntry('waitingtime', 'number', 'real waitingtime for spontaneous clients');
+        $entity->addDictionaryEntry('waytime', 'number', 'real waytime for spontaneous clients');
+        $entity->addDictionaryEntry('waitingcalculated', 'number', 'calculated waitingtime for spontaneous clients');
+        $entity->addDictionaryEntry('waitingcount_termin', 'number', 'amount of waiting clients with termin');
+        $entity->addDictionaryEntry('waitingtime_termin', 'number', 'real waitingtime with termin');
+        $entity->addDictionaryEntry('waytime_termin', 'number', 'real waytime with appointment');
+        $entity->addDictionaryEntry('waitingcalculated_termin', 'number', 'calculated waitingtime with termin');
+        $subjectIdList = explode(',', $subjectid);
+
+        foreach ($subjectIdList as $subjectid) {
+            $raw = $this
+                ->getReader()
+                ->fetchAll(
+                    constant("\BO\Zmsbackend\Exchange\Repository\ExchangeWaitingowner::QUERY_READ_" . strtoupper($period)),
+                    [
+                        'ownerid' => $subjectid,
+                        'datestart' => $datestart->format('Y-m-d'),
+                        'dateend' => $dateend->format('Y-m-d'),
+                    ]
+                );
+
+            $entry = array_shift($raw);
+            while ($entry) {
+                foreach (range(0, 23) as $hour) {
+                    $entity->addDataSet([
+                        $subjectid,
+                        $entry['datum'],
+                        $hour,
+                        $entry[sprintf('hour_%02d_waiting_count_spontaneous', $hour)],
+                        $entry[sprintf('hour_%02d_waiting_time_spontaneous', $hour)],
+                        $entry[sprintf('hour_%02d_way_time_spontaneous', $hour)],
+                        $entry[sprintf('hour_%02d_estimated_waiting_time_spontaneous', $hour)],
+                        $entry[sprintf('hour_%02d_waiting_count_appointment', $hour)],
+                        $entry[sprintf('hour_%02d_waiting_time_appointment', $hour)],
+                        $entry[sprintf('hour_%02d_way_time_appointment', $hour)],
+                        $entry[sprintf('hour_%02d_estimated_waiting_time_appointment', $hour)],
+                    ]);
+                }
+                $entry = array_shift($raw);
+            }
+        }
+        return $entity;
+    }
+
+    #[\Override]
+    public function readSubjectList()
+    {
+        $raw = $this->getReader()->fetchAll(\BO\Zmsbackend\Exchange\Repository\ExchangeWaitingowner::QUERY_SUBJECTS, []);
+        $entity = new Exchange();
+        $entity['title'] = "Wartestatistik";
+        $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
+        $entity->addDictionaryEntry('subject', 'string', 'Owner ID', 'owner.id');
+        $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
+        $entity->addDictionaryEntry('periodend', 'string', 'Datum bis');
+        $entity->addDictionaryEntry('description', 'string', 'Name des Inhabers');
+
+        foreach ($raw as $entry) {
+            $entity->addDataSet(array_values($entry));
+        }
+        return $entity;
+    }
+
+    #[\Override]
+    public function readPeriodList($subjectid, $period = 'day')
+    {
+        $owner = (new \BO\Zmsbackend\Owner\Service\Owner())->readEntity($subjectid);
+        $entity = new Exchange();
+        $entity['title'] = "Wartestatistik $owner->name";
+        $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
+        $entity->addDictionaryEntry('period');
+
+        $monthsList = $this->getReader()->fetchAll(
+            constant("\BO\Zmsbackend\Exchange\Repository\ExchangeWaitingowner::QUERY_PERIODLIST_MONTH"),
+            [
+                'ownerid' => $subjectid,
+            ]
+        );
+        $raw = [];
+        foreach ($monthsList as $month) {
+            $date = new \DateTimeImmutable($month['date']);
+            $raw[$date->format('Y')][] = $month['date'];
+            rsort($raw[$date->format('Y')]);
+        }
+        krsort($raw);
+
+        foreach ($raw as $year => $months) {
+            $entity->addDataSet([$year]);
+            foreach ($months as $month) {
+                $entity->addDataSet([$month]);
+            }
+        }
+        return $entity;
+    }
+}

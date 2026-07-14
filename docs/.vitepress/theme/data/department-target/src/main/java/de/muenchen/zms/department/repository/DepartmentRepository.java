@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-/** today: zmsdb\\Department + zmsdb\\Query\\Department */
+/** today: zmsbackend\\Department\\Service\\Department + zmsbackend\\Department\\Repository\\Department */
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
 
     @Query("""

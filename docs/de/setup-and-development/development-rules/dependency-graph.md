@@ -1,6 +1,6 @@
 # Abhängigkeitsgraph
 
-`zmscitizenview` und `refarch-gateway` setzen auf `zmscitizenapi` auf, ziehen aber keine direkten Abhängigkeiten von dort. Ebenso sendet `zmscitizenapi` Anfragen an `zmsapi`, doch `zmsapi` ist keine direkte Abhängigkeit von `zmscitizenapi`.
+`zmscitizenview` und `refarch-gateway` setzen auf `zmscitizenapi` auf, ziehen aber keine direkten Abhängigkeiten von dort. Ebenso sendet `zmscitizenapi` Anfragen an `zmsbackend`, doch `zmsbackend` ist keine direkte Abhängigkeit von `zmscitizenapi`.
 
 Der Graph zeigt zusätzlich die zur Laufzeit benötigten Dienste jedes Deployments:
 
@@ -21,14 +21,13 @@ Nur im Subgraph **Testautomatisierung**: Der gestrichelte Pfeil **`ataf -.-> zms
 %%{init: {"flowchart": {"defaultRenderer": "elk"}} }%%
 graph TD;
     %% Code-Abhängigkeiten (Composer)
-    zmsapi --> zmsslim & zmsclient & zmsdldb & zmsdb & zmsentities;
+    zmsbackend --> zmsslim & zmsclient & zmsdldb & zmsentities;
     zmsadmin --> mellon & zmsclient & zmsslim & zmsentities;
     zmscalldisplay --> mellon & zmsclient & zmsentities & zmsslim;
     zmsstatistic --> mellon & zmsentities & zmsslim & zmsclient;
     zmsmessaging --> mellon & zmsclient & zmsentities & zmsslim;
     zmsticketprinter --> mellon & zmsclient & zmsentities & zmsslim;
 
-    zmsdb --> zmsentities & zmsdldb & mellon;
     zmsclient --> zmsentities & zmsslim & mellon;
     zmsentities --> mellon;
     zmsslim --> mellon;
@@ -40,7 +39,7 @@ graph TD;
     zmsstatistic -.-> zmslayout;
 
     %% Build-/Integrationsabhängigkeiten (gestrichelt)
-    zmscitizenapi -.-> zmsapi;
+    zmscitizenapi -.-> zmsbackend;
     refarch-gateway -.-> zmscitizenapi;
     zmscitizenview -.-> refarch-gateway;
 
@@ -62,13 +61,12 @@ graph TD;
 
     subgraph zms_modules [ZMS PHP-Module]
         style zms_modules stroke-dasharray: 5, 5, 1, 5
-        zmsapi
+        zmsbackend
         zmsadmin
         zmscalldisplay
         zmsstatistic
         zmsmessaging
         zmsticketprinter
-        zmsdb
         zmsclient
         zmsentities
         zmsslim
@@ -141,8 +139,7 @@ Hinweise zu Gateway-Verhalten sowie Sicherheits-/Routing-Details siehe RefArch-A
 ### Backend-APIs und Kerndienste
 
 - `zmscitizenapi`: API-Schicht für Bürgerbuchungs-Flows; bildet Backend-Entitäten auf schlanke Frontend-DTOs ab.
-- `zmsapi`: Kern-Backend-API für Vorgangs-, Warteschlangen-, Termin- und Verwaltungs-Flows.
-- `zmsdb`: Datenbankzugriffs-/Abfrageschicht für Anbieter/Anliegen/Vorgänge.
+- `zmsbackend`: einheitliche Kern-Backend-REST-API und Datenbankzugriff für Vorgangs-, Warteschlangen-, Termin- und Verwaltungs-Flows.
 - `zmsdldb`: Importer/Transformer für externe DLDB-/SADB-Quellen.
 - `zmsclient`: HTTP-/API-Client-Abstraktionen, modulübergreifend genutzt.
 - `zmsslim`: Gemeinsame Slim-Framework-Schicht/-Helfer.
@@ -155,7 +152,7 @@ Hinweise zu Gateway-Verhalten sowie Sicherheits-/Routing-Details siehe RefArch-A
 
 ### Testautomatisierung
 
-- `zmsautomation`: Maven-Modul; **REST Assured** für API-Tests und **Selenium** ([ATAF](https://it-at-m.github.io/agile-test-automation-framework/) Web) für UI-Tests, angebunden über Cucumber unter **[ATAF](https://it-at-m.github.io/agile-test-automation-framework/)** (`de.muenchen.ataf`). Kein Teil des Composer-Graphen — es prüft laufende Deployments (CI [`zmsautomation-workflow`](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/zmsautomation-workflow.yaml), lokal [`zmsautomation-test`](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/zmsautomation-test)). Typische Ziele sind `zmsapi`, `zmscitizenapi` sowie Browser-Flows gegen `zmsadmin`, `zmscitizenview`, `zmsstatistic` und `refarch-gateway`.
+- `zmsautomation`: Maven-Modul; **REST Assured** für API-Tests und **Selenium** ([ATAF](https://it-at-m.github.io/agile-test-automation-framework/) Web) für UI-Tests, angebunden über Cucumber unter **[ATAF](https://it-at-m.github.io/agile-test-automation-framework/)** (`de.muenchen.ataf`). Kein Teil des Composer-Graphen — es prüft laufende Deployments (CI [`zmsautomation-workflow`](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/zmsautomation-workflow.yaml), lokal [`zmsautomation-test`](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/zmsautomation-test)). Typische Ziele sind `zmsbackend`, `zmscitizenapi` sowie Browser-Flows gegen `zmsadmin`, `zmscitizenview`, `zmsstatistic` und `refarch-gateway`.
 
 ### Laufzeitdienste und Infrastruktur
 

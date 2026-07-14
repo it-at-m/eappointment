@@ -1,0 +1,72 @@
+<?php
+
+namespace BO\Zmsbackend\Exchange\Repository;
+
+use BO\Zmsentities\Exchange;
+
+class ExchangeRequestscope extends \BO\Zmsbackend\Query\Base
+{
+    /**
+     * @var String TABLE mysql table reference
+     */
+    const TABLE = 'statistik';
+
+    const REQUESTTABLE = 'request';
+
+    const QUERY_READ_REPORT = '
+    SELECT
+        s.`standortid` as scopeid,
+        s.`behoerdenid` as departmentid,
+        s.`organisationsid` as organisationid,
+        DATE_FORMAT(s.`Datum`, :groupby) as date,
+        (
+            CASE
+              WHEN s.anliegenid = -1 THEN \'' . Exchange::REQUEST_STAT_NAME_UNCATEGORIZED . '\'
+              WHEN s.anliegenid = 0 THEN \'' . Exchange::REQUEST_STAT_NAME_NONEXISTENT . '\'
+              ELSE r.name
+            END
+        ) as name,
+        COUNT(s.anliegenid) as requestscount,
+        AVG(s.processing_time) as processingtime
+    FROM ' . self::TABLE . ' AS s
+        LEFT JOIN ' . self::REQUESTTABLE . ' as r ON r.id = s.anliegenid
+    WHERE s.`standortid` IN (:scopeid) AND s.`Datum` BETWEEN :datestart AND :dateend
+    GROUP BY date, s.anliegenid
+    ORDER BY r.name
+    ';
+
+    const QUERY_SUBJECTS = '
+      SELECT
+          scope.`StandortID` as subject,
+          periodstart,
+          periodend,
+          CONCAT(scope.`Bezeichnung`, " ", scope.`standortinfozeile`) AS description
+      FROM ' . \BO\Zmsbackend\Query\Scope::TABLE . ' AS scope
+          INNER JOIN
+            (
+              SELECT
+                s.standortid as scopeid,
+                MIN(s.`datum`) AS periodstart,
+                MAX(s.`datum`) AS periodend
+              FROM ' . self::TABLE . ' s
+              group by scopeid
+            )
+          maxAndminDate ON maxAndminDate.`scopeid` = scope.`StandortID`
+      GROUP BY scope.`StandortID`
+      ORDER BY scope.`StandortID` ASC
+    ';
+
+    const QUERY_PERIODLIST_MONTH = '
+        SELECT date
+        FROM ' . \BO\Zmsbackend\Query\Scope::TABLE . ' AS scope
+            INNER JOIN (
+              SELECT
+                `StandortID`,
+                DATE_FORMAT(`Datum`,"%Y-%m") AS date
+              FROM ' . self::TABLE . '
+            ) s ON scope.`StandortID` = s.`standortid`
+        WHERE scope.`StandortID` = :scopeid
+        GROUP BY date
+        ORDER BY date ASC
+    ';
+}

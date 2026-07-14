@@ -30,7 +30,7 @@ updates:
     target-branch: "next"
 
   - package-ecosystem: "npm"
-    directory: "/zmsapi"
+    directory: "/zmsadmin"
     schedule:
       interval: "daily"
       time: "04:00"
@@ -38,7 +38,7 @@ updates:
     target-branch: "next"
 
   - package-ecosystem: "npm"
-    directory: "/zmsadmin"
+    directory: "/zmsbackend"
     schedule:
       interval: "daily"
       time: "04:00"
@@ -98,14 +98,6 @@ updates:
     target-branch: "next"
 
   - package-ecosystem: "composer"
-    directory: "/zmsapi"
-    schedule:
-      interval: "daily"
-      time: "04:00"
-      timezone: "Europe/Berlin"
-    target-branch: "next"
-
-  - package-ecosystem: "composer"
     directory: "/zmscalldisplay"
     schedule:
       interval: "daily"
@@ -130,7 +122,7 @@ updates:
     target-branch: "next"
 
   - package-ecosystem: "composer"
-    directory: "/zmsdb"
+    directory: "/zmsbackend"
     schedule:
       interval: "daily"
       time: "04:00"
