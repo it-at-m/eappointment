@@ -3,6 +3,7 @@
 namespace BO\Zmsstatistic\Helper;
 
 use DateTime;
+use DateTimeImmutable;
 
 class ReportHelper
 {
@@ -205,5 +206,24 @@ class ReportHelper
         }
 
         return $years;
+    }
+    public function getYearDateBounds(int|string $year, string $fromDate, string $toDate): ?array
+    {
+        $requestedFrom = new DateTimeImmutable($fromDate);
+        $requestedTo = new DateTimeImmutable($toDate);
+        $yearStart = new DateTimeImmutable($year . '01-01');
+        $yearEnd = new DateTimeImmutable($year . '12-31');
+
+        $yearFrom = $requestedFrom > $yearStart ? $requestedFrom : $yearStart;
+        $yearTo = $requestedTo < $yearEnd ? $requestedTo : $yearEnd;
+
+        if($yearFrom > $yearTo) {
+            return null;
+        }
+
+        return [
+            'from' => $yearFrom->format('Y-m-d'),
+            'to' => $yearTo->format('Y-m-d'),
+        ];
     }
 }
