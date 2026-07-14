@@ -7,7 +7,7 @@ import de.muenchen.zms.department.view.DepartmentView;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** today: zmsapi\\OrganisationAddDepartment, zmsdb\\Department::writeEntity */
+/** today: zmsbackend\\Organisation\\Api\\OrganisationAddDepartment, zmsbackend\\Department\\Service\\Department::writeEntity */
 @Service
 public class DepartmentCreateService {
 

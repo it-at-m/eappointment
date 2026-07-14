@@ -60,7 +60,7 @@ class Calendar
                 ]
             )->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
-            if ($exception->template != 'BO\Zmsapi\Exception\Calendar\AppointmentsMissed') {
+            if ($exception->template != 'BO\Zmsbackend\Calendar\Exception\AppointmentsMissed') {
                 throw $exception;
             }
         }
@@ -96,7 +96,7 @@ class Calendar
                 ]
             )->getCollection();
         } catch (\BO\Zmsclient\Exception $exception) {
-            if ($exception->template != 'BO\Zmsapi\Exception\Process\FreeProcessListEmpty') {
+            if ($exception->template != 'BO\Zmsbackend\Process\Exception\FreeProcessListEmpty') {
                 throw $exception;
             }
         }

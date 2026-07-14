@@ -10,7 +10,7 @@ outline: deep
 
 ## Ziel
 
-Die Anzahl der API- und Datenbankzugriffe—insbesondere über `zmsapi` und `zmscitizenapi`—deutlich reduzieren, indem terminrelevante Zustände in einem **gemeinsamen, dynamischen Cache** gehalten werden statt bei jeder Slot-Abfrage, Reservierung, Bestätigung oder Stornierung die Datenbank anzusprechen.
+Die Anzahl der API- und Datenbankzugriffe—insbesondere über `zmsbackend` und `zmscitizenapi`—deutlich reduzieren, indem terminrelevante Zustände in einem **gemeinsamen, dynamischen Cache** gehalten werden statt bei jeder Slot-Abfrage, Reservierung, Bestätigung oder Stornierung die Datenbank anzusprechen.
 
 Heute werden nur wenige relativ statische `GET`-Endpunkte gecacht (z. B. `GET offices-and-services`). Kalenderdaten, Reservierungen, vorbestätigte/bestätigte Status und Löschungen werden weiterhin über wiederholte Einzelabfragen aufgelöst.
 
@@ -29,29 +29,29 @@ flowchart LR
 
     subgraph apis [API-Schicht]
         citizenapi[zmscitizenapi]
-        zmsapi[zmsapi]
+        zmsbackend[zmsbackend]
     end
 
     cache[(Redis / Memcached)]
     db[(MariaDB)]
 
     citizenview --> citizenapi
-    zmsadmin --> zmsapi
+    zmsadmin --> zmsbackend
     citizenapi <--> cache
-    zmsapi <--> cache
+    zmsbackend <--> cache
     cache -->|Bulk-Persistenz| db
     db -->|Cold Reload / Rebuild| cache
 ```
 
 ## Herausforderung: gemeinsamer, aktueller Cache
 
-Öffnungszeiten und Verfügbarkeit können zur Laufzeit ändern—z. B. wenn Mitarbeitende in `zmsadmin` Pläne bearbeiten oder **Cronjobs** Slots neu berechnen. `zmscitizenapi` und `zmsapi` brauchen daher einen **gemeinsamen Cache**, der diese Änderungen konsistent und schnell widerspiegelt.
+Öffnungszeiten und Verfügbarkeit können zur Laufzeit ändern—z. B. wenn Mitarbeitende in `zmsadmin` Pläne bearbeiten oder **Cronjobs** Slots neu berechnen. `zmscitizenapi` und `zmsbackend` brauchen daher einen **gemeinsamen Cache**, der diese Änderungen konsistent und schnell widerspiegelt.
 
 Mögliche Richtungen:
 
 - **Einheitlicher Cache-Namespace** mit expliziter Invalidierung oder Versionierung bei Admin- oder Cron-Änderungen.
 - **Event-gesteuerte Invalidierung** (Publish/Subscribe auf dem Cache-Bus oder Message Queue), damit alle API-Instanzen betroffene Keys gemeinsam verwerfen oder erneuern.
-- **Langfristig:** Zusammenführung von `zmscitizenapi` und `zmsapi` zu einer **einheitlichen API** hinter einem Gateway, um geteilte Cache-Verantwortung zu vermeiden (siehe [RefArch-Roadmap](./refarch-roadmap/product-oriented-refarch-roadmap.md)).
+- **Langfristig:** Zusammenführung von `zmscitizenapi` und `zmsbackend` zu einer **einheitlichen API** hinter einem Gateway, um geteilte Cache-Verantwortung zu vermeiden (siehe [RefArch-Roadmap](./refarch-roadmap/product-oriented-refarch-roadmap.md)).
 
 ## Erwartete Vorteile
 
@@ -78,7 +78,7 @@ Mögliche Richtungen:
 
 ## Nächste Schritte (bei Priorisierung)
 
-1. Aktuelles Query-Volumen und Latenz von `zmsapi` / `zmscitizenapi` auf repräsentativen Buchungsflows messen.
+1. Aktuelles Query-Volumen und Latenz von `zmsbackend` / `zmscitizenapi` auf repräsentativen Buchungsflows messen.
 2. Cache-Key-Formate und Invalidierungs-Trigger identifizieren (Standortänderungen, Öffnungszeiten, Feiertage, Prozess-Updates).
 3. Redis- (oder Memcached-)Integration an einem leseintensiven Pfad prototypen und Metriken sammeln, bevor der Scope erweitert wird.
 4. Mit dem [Datenbank-Naming-Refactoring](./database-refactor/standardize-database-table-and-field-naming.md) und der RefArch-Backend-Konsolidierung abstimmen, damit Cache-Grenzen zu künftigen Service-Grenzen passen.

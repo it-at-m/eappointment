@@ -32,21 +32,12 @@ flowchart TB
 
         subgraph eappointment
 
-            subgraph zmsapi
+            subgraph zmsbackend
                 a1[[cronjob.hourly]]
                 a2[(/data)]
-            end
-
-            b(zmsdldb)
-            a1 -- "(1) <br> getDldbData" --> b
-            b -- "(1.3)" --> a2
-            a1 -- "(2) <br> updateDldbData" --> c
-            c <-- "(2.1)" --> a2
-
-            subgraph zmsdb
-                c(zmsdb)
+                c(updateDldbData)
                 c <-- "(2.2)" --> db2
-                db2[(zmsdb)]
+                db2[(MariaDB)]
 
                 subgraph tables
                     direction TB
@@ -61,10 +52,15 @@ flowchart TB
 
             end
 
+            b(zmsdldb)
+            a1 -- "(1) <br> getDldbData" --> b
+            b -- "(1.3)" --> a2
+            a1 -- "(2) <br> updateDldbData" --> c
+
             c <-.-> d
             d <-.-> e
             c <-.-> f
-            d(zmsapi)
+            d(zmsbackend)
             e(zmsadmin)
             f(zmscitizenapi)
             g(zmscitizenview)
@@ -183,16 +179,16 @@ Dieser Abschnitt ersetzt die alten Berlin-lastigen Formatbeispiele durch Münche
 }
 ```
 
-Diese Beispiele zeigen die zentralen SADB-Eingabevariablen, die der München-Transformer (`ZMS_DAUER`, `ZMS_MAX_ANZAHL`, `ZMS_INTERN`, `TERMINVEREINBARUNG`, `FORMULARE_INFORMATIONEN`) vor der Normalisierung in `zmsapi/data` und `zmsdb` verarbeitet.
+Diese Beispiele zeigen die zentralen SADB-Eingabevariablen, die der München-Transformer (`ZMS_DAUER`, `ZMS_MAX_ANZAHL`, `ZMS_INTERN`, `TERMINVEREINBARUNG`, `FORMULARE_INFORMATIONEN`) vor der Normalisierung in `zmsbackend/data` und die MariaDB-Tabellen verarbeitet.
 
-## Gemappte Ausgabe in `zmsapi/data`
+## Gemappte Ausgabe in `zmsbackend/data`
 
 Nach Import und Transformation (interner Mapper und/oder München-Transformer-Pfad) wird die normalisierte Ausgabe geschrieben nach:
 
-- `zmsapi/data/locations_de.json`
-- `zmsapi/data/services_de.json`
+- `zmsbackend/data/locations_de.json`
+- `zmsbackend/data/services_de.json`
 
-Von dort schreibt der Update-/Import-Schritt die normalisierten Entitäten in `zmsdb`, vorrangig in diese Tabellen:
+Von dort schreibt `bin/updateDldbData` die normalisierten Entitäten in die Datenbank, vorrangig in diese Tabellen:
 
 - `provider`: Büros/Standorte (z. B. Bürgerbüros oder Abteilungsstandorte, inkl. Standortsichtbarkeit und Metadaten)
 - `request`: Leistungen/Anliegen (z. B. Leistungsname und zusätzliche Daten auf Leistungsebene)
@@ -446,11 +442,11 @@ Schnellreferenz, wo zentrale SADB-Felder landen:
 flowchart LR
     A[Münchner SADB Roh-Export] --> B[Münchner Transformer<br/>zmsdldb/src/Zmsdldb/Transformers/Munich.php]
     O[zmsdldb/resources/munich_sadb_overwrite.json] --> B
-    B --> C[zmsapi/data/services_de.json]
-    B --> D[zmsapi/data/locations_de.json]
-    C --> E[zmsdb request]
-    D --> F[zmsdb provider]
-    C --> G[zmsdb request_provider]
+    B --> C[zmsbackend/data/services_de.json]
+    B --> D[zmsbackend/data/locations_de.json]
+    C --> E[request-Tabelle]
+    D --> F[provider-Tabelle]
+    C --> G[request_provider-Tabelle]
     D --> G
     E --> H[zmscitizenapi MapperService]
     F --> H
@@ -481,7 +477,7 @@ Gehe in dieser Reihenfolge vor, wenn in `zmscitizenapi` etwas fehlt:
 
 1. Prüfen, ob Leistung/Standort im Roh-München-Export existiert (`id`, `public`, `fields`).
 2. Prüfen, ob `ZMS_INTERN` auf `services[].fields` oder auf `locations[].extendedServiceReferences[].fields` steht (nach Merge mit `munich_sadb_overwrite.json` falls genutzt).
-3. Transformer-Ausgabe in `zmsapi/data/services_de.json` und `zmsapi/data/locations_de.json` prüfen.
+3. Transformer-Ausgabe in `zmsbackend/data/services_de.json` und `zmsbackend/data/locations_de.json` prüfen.
 4. Prüfen, ob die Relation zwischen Leistung und Standort existiert (Join-Erwartung für `request_provider`).
 5. Veröffentlichungszustand über Provider/Leistung/Relation nach Import validieren.
 6. `showUnpublished`-Verhalten und Host-Override via `ACCESS_UNPUBLISHED_ON_DOMAIN` prüfen.

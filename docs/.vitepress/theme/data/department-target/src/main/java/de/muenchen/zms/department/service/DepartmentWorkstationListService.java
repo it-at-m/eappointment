@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** today: zmsapi\\DepartmentWorkstationList, zmsdb\\Workstation::readCollectionByDepartmentId */
+/** today: zmsbackend\\Department\\Api\\DepartmentWorkstationList, zmsbackend\\Workstation\\Service\\Workstation::readCollectionByDepartmentId */
 @Service
 public class DepartmentWorkstationListService {
 
