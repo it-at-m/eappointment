@@ -50,7 +50,7 @@ class Request extends \BO\Zmsbackend\Base
             return App::$cache->get($cacheKey);
         }
 
-        $query = new Query\Request(Query\Base::SELECT);
+        $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
         $query
             ->setResolveLevel($resolveReferences)
             ->addEntityMapping()
@@ -80,7 +80,7 @@ class Request extends \BO\Zmsbackend\Base
             return [];
         }
 
-        $query = new Query\Request(Query\Base::SELECT);
+        $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
         $query
             ->setResolveLevel(0)
             ->addEntityMapping()
@@ -157,7 +157,7 @@ class Request extends \BO\Zmsbackend\Base
     protected function readEntityWithoutRootParentResolution($source, $requestId): Entity
     {
         $this->testSource($source);
-        $query = new Query\Request(Query\Base::SELECT);
+        $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
         $query
             ->setResolveLevel(0)
             ->addEntityMapping()
@@ -371,17 +371,6 @@ class Request extends \BO\Zmsbackend\Base
         if (! (new \BO\Zmsbackend\Source\Service\Source())->readEntity($source)) {
             throw new \BO\Zmsbackend\Source\Exception\UnknownDataSource();
         }
-
-        $query = new Query\Request(Query\Base::SELECT);
-        $query
-            ->setResolveLevel(0)
-            ->addEntityMapping()
-            ->addConditionRequestSource($source);
-        if ($this->fetchOne($query, new Entity())->hasId()) {
-            return;
-        }
-
-        throw new Exception\Source\UnknownDataSource();
     }
 
     public function removeCache(Entity $request)
