@@ -52,6 +52,7 @@ class Log extends Base
         'citizen_phone',
         'process_status',
         'db_status',
+        'process_amendment',
     ];
 
     private const ACTION_LABEL_TO_CODE = [
@@ -77,7 +78,6 @@ class Log extends Base
         $type = self::PROCESS,
         ?int $scopeId = null,
         ?string $userId = null,
-        ?string $data = null,
         ?array $indexedFields = null
     ) {
         $message .= " [" . static::$operator . "]";
@@ -88,7 +88,6 @@ class Log extends Base
             '`type`=:type',
             '`scope_id`=:scopeId',
             '`user_id`=:userId',
-            '`data`=:dataString',
         ];
         $parameters = [
             'message' => $message . static::backtraceLogEntry(),
@@ -96,7 +95,6 @@ class Log extends Base
             'type' => $type,
             'scopeId' => $scopeId,
             'userId' => $userId,
-            'dataString' => $data,
         ];
 
         if ($indexedFields !== null) {
@@ -129,8 +127,7 @@ class Log extends Base
             $requests = (new Request())->readRequestsByIds($process->getRequestIds());
         }
 
-        $payload = self::buildProcessLogPayload($process, $action, $userAccount, $requests);
-        $data = json_encode($payload['display'], JSON_UNESCAPED_UNICODE);
+        $payload = self::buildProcessLogPayload($process, $action, $requests);
 
         Log::writeLogEntry(
             $method,
@@ -138,7 +135,6 @@ class Log extends Base
             self::PROCESS,
             $process->getScopeId(),
             $userAccount->getId(),
-            $data,
             $payload['indexed']
         );
     }
@@ -146,30 +142,9 @@ class Log extends Base
     public static function buildProcessLogPayload(
         \BO\Zmsentities\Process $process,
         string $action,
-        \BO\Zmsentities\Useraccount $userAccount,
         RequestList $requests
     ): array {
         $appointmentAt = $process->getFirstAppointment()->toDateTime();
-        $display = array_filter([
-            'Aktion' => $action,
-            'Sachbearbeiter*in' => $userAccount->getId(),
-            'Terminnummer' => $process->getDisplayNumber(),
-            'Wartenummer' => $process->getQueueNumber(),
-            'Terminzeit' => $appointmentAt->format('d.m.Y H:i:s'),
-            'Slots' => $process->getFirstAppointment()->slotCount ?? null,
-            'Bürger*in' => $process->getFirstClient()->familyName,
-            'Dienstleistungen' => implode(', ', array_map(function ($request) {
-                return $request->getName();
-            }, $requests->getAsArray())),
-            'Anmerkung' => $process->getAmendment(),
-            'Standort' => $process->scope->getName(),
-            'E-Mail' => $process->getFirstClient()->email,
-            'Telefon' => $process->getFirstClient()->telephone,
-            'Status' => $process->getStatus(),
-            'DB Status' => $process->dbstatus,
-        ], static function ($value) {
-            return $value !== null && $value !== '';
-        });
 
         $indexed = array_filter([
             'action' => self::actionCodeFromLabel($action),
@@ -186,12 +161,12 @@ class Log extends Base
             'citizen_phone' => $process->getFirstClient()->telephone,
             'process_status' => $process->getStatus(),
             'db_status' => $process->dbstatus,
+            'process_amendment' => $process->getAmendment(),
         ], static function ($value) {
             return $value !== null && $value !== '';
         });
 
         return [
-            'display' => $display,
             'indexed' => $indexed,
         ];
     }
@@ -201,46 +176,14 @@ class Log extends Base
         return self::ACTION_LABEL_TO_CODE[$label] ?? null;
     }
 
-    public static function parseLegacyLogData(?string $dataJson): ?array
+    public static function actionLabelFromCode(?string $code): ?string
     {
-        if ($dataJson === null || $dataJson === '') {
-            return null;
-        }
+        return Entity::actionLabelFromCode($code);
+    }
 
-        $display = json_decode($dataJson, true);
-        if (!is_array($display)) {
-            return null;
-        }
-
-        $actionLabel = $display['Aktion'] ?? null;
-        $appointmentAt = null;
-        if (!empty($display['Terminzeit'])) {
-            $parsed = \DateTimeImmutable::createFromFormat('d.m.Y H:i:s', (string) $display['Terminzeit']);
-            if ($parsed instanceof \DateTimeImmutable) {
-                $appointmentAt = $parsed->format('Y-m-d H:i:s');
-            }
-        }
-
-        return array_filter([
-            'action' => is_string($actionLabel) ? self::actionCodeFromLabel($actionLabel) : null,
-            'display_number' => $display['Terminnummer'] ?? null,
-            'queue_number' => isset($display['Wartenummer']) && $display['Wartenummer'] !== ''
-                ? (int) $display['Wartenummer']
-                : null,
-            'appointment_at' => $appointmentAt,
-            'slot_count' => isset($display['Slots']) && $display['Slots'] !== ''
-                ? (int) $display['Slots']
-                : null,
-            'citizen_name' => $display['Bürger*in'] ?? null,
-            'services' => $display['Dienstleistungen'] ?? null,
-            'scope_name' => $display['Standort'] ?? null,
-            'citizen_email' => $display['E-Mail'] ?? null,
-            'citizen_phone' => $display['Telefon'] ?? null,
-            'process_status' => $display['Status'] ?? null,
-            'db_status' => $display['DB Status'] ?? null,
-        ], static function ($value) {
-            return $value !== null && $value !== '';
-        });
+    public static function formatDisplayFields(array $log): array
+    {
+        return Entity::formatDisplayFields($log);
     }
 
     public function readByProcessId($processId)
@@ -298,7 +241,7 @@ class Log extends Base
             $this->buildGeneralSearchConditionList($generalSearch, $params),
             $this->buildScopeIdConditions($scopeIds, $params),
             $this->buildDateConditions($date, $params),
-            $this->buildUserActionConditions($userAction, $params)
+            $this->buildUserActionConditions($userAction)
         );
 
         $sql = 'SELECT * FROM log';
@@ -326,18 +269,14 @@ class Log extends Base
 
             $likeValue = '%' . $this->escapeLikeValue((string) $value) . '%';
             if ($field === 'scope_name') {
-                $conditions[] = '(scope_name LIKE :scopeName OR (scope_name IS NULL AND data LIKE :scopeNameLegacy))';
+                $conditions[] = 'scope_name LIKE :scopeName';
                 $params['scopeName'] = $likeValue;
-                $params['scopeNameLegacy'] = '%' . $this->escapeLikeValue('Standort') . '%'
-                    . $this->escapeLikeValue((string) $value) . '%';
                 continue;
             }
 
             if ($field === 'services') {
-                $conditions[] = '(services LIKE :services OR (services IS NULL AND data LIKE :servicesLegacy))';
+                $conditions[] = 'services LIKE :services';
                 $params['services'] = $likeValue;
-                $params['servicesLegacy'] = '%' . $this->escapeLikeValue('Dienstleistungen') . '%'
-                    . $this->escapeLikeValue((string) $value) . '%';
             }
         }
 
@@ -383,38 +322,16 @@ class Log extends Base
         return ['(ts >= :start AND ts < :end)'];
     }
 
-    private function buildUserActionConditions(int $userAction, array &$params): array
+    private function buildUserActionConditions(int $userAction): array
     {
-        if ($userAction === 1) {
-            $params['ua_yes'] = '%Sachbearbeiter*in%';
-            $params['ua_system'] = '%Sachbearbeiter*in\":\"_system_%';
+        $systemUserPattern = $this->escapeLikeValue('_system_') . '%';
 
-            return ['(
-                (user_id IS NOT NULL AND user_id != \'\' AND user_id NOT LIKE \'_system_%\')
-                OR (
-                    user_id IS NULL
-                    AND data IS NOT NULL
-                    AND data LIKE :ua_yes
-                    AND data NOT LIKE :ua_system
-                )
-            )'];
+        if ($userAction === 1) {
+            return ['(user_id IS NOT NULL AND user_id != \'\' AND user_id NOT LIKE \'' . $systemUserPattern . '\')'];
         }
 
         if ($userAction === 2) {
-            $params['ua_yes'] = '%Sachbearbeiter*in%';
-            $params['ua_system'] = '%Sachbearbeiter*in\":\"_system_%';
-
-            return ['(
-                user_id LIKE \'_system_%\'
-                OR (
-                    (user_id IS NULL OR user_id = \'\')
-                    AND (
-                        data IS NULL
-                        OR data LIKE :ua_system
-                        OR data NOT LIKE :ua_yes
-                    )
-                )
-            )'];
+            return ['(user_id LIKE \'' . $systemUserPattern . '\')'];
         }
 
         return [];

@@ -28,7 +28,6 @@ class Log extends Base
             'reference' => 'log.reference_id',
             'scope_id' => 'log.scope_id',
             'user_id' => 'log.user_id',
-            'data' => 'log.data',
             'message' => 'log.message',
             'ts' => 'log.ts',
             'action' => 'log.action',
@@ -43,6 +42,7 @@ class Log extends Base
             'citizen_phone' => 'log.citizen_phone',
             'process_status' => 'log.process_status',
             'db_status' => 'log.db_status',
+            'process_amendment' => 'log.process_amendment',
         ];
     }
 
