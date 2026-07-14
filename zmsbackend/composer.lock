@@ -180,11 +180,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-chore-gh-2604-refactor-zmsapi-and-zmsdb-into-zmsbackend",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "6a143d55651482ae9c2b25bc345387f85f5456d4"
+                "reference": "56a96a21f59476386e0604378dfbf249baedc26e"
             },
             "require": {
                 "ext-json": ">=0",
@@ -230,7 +230,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-chore-gh-2604-refactor-zmsapi-and-zmsdb-into-zmsbackend",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -290,11 +290,11 @@
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "dev-chore-gh-2604-refactor-zmsapi-and-zmsdb-into-zmsbackend",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "6a143d55651482ae9c2b25bc345387f85f5456d4"
+                "reference": "cabec25b438a9251d6dd432d2cc18779d5d5f671"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -368,11 +368,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-chore-gh-2604-refactor-zmsapi-and-zmsdb-into-zmsbackend",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "6a143d55651482ae9c2b25bc345387f85f5456d4"
+                "reference": "3b064145bcaa7f64c4a42eea05d1beca82f736c9"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -426,11 +426,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-chore-gh-2604-refactor-zmsapi-and-zmsdb-into-zmsbackend",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "6a143d55651482ae9c2b25bc345387f85f5456d4"
+                "reference": "c9601a848ea30ea12806a22a8d94be0cd6ea2c52"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -4076,16 +4076,16 @@
         },
         {
             "name": "symfony/cache",
-            "version": "v6.4.41",
+            "version": "v6.4.42",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/cache.git",
-                "reference": "5490a577195422c3c9cda09c64823580858af854"
+                "reference": "704edf29f1c97ff6e36e248def6ff4a51f765ce1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/cache/zipball/5490a577195422c3c9cda09c64823580858af854",
-                "reference": "5490a577195422c3c9cda09c64823580858af854",
+                "url": "https://api.github.com/repos/symfony/cache/zipball/704edf29f1c97ff6e36e248def6ff4a51f765ce1",
+                "reference": "704edf29f1c97ff6e36e248def6ff4a51f765ce1",
                 "shasum": ""
             },
             "require": {
@@ -4152,7 +4152,7 @@
                 "psr6"
             ],
             "support": {
-                "source": "https://github.com/symfony/cache/tree/v6.4.41"
+                "source": "https://github.com/symfony/cache/tree/v6.4.42"
             },
             "funding": [
                 {
@@ -4172,20 +4172,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-05-24T08:42:40+00:00"
+            "time": "2026-06-17T14:17:34+00:00"
         },
         {
             "name": "symfony/cache-contracts",
-            "version": "v3.7.0",
+            "version": "v3.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/cache-contracts.git",
-                "reference": "225e8a254166bd3442e370c6f50145465db63831"
+                "reference": "9789738bc19af1106dc54d6afba9a0b467516cf2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/cache-contracts/zipball/225e8a254166bd3442e370c6f50145465db63831",
-                "reference": "225e8a254166bd3442e370c6f50145465db63831",
+                "url": "https://api.github.com/repos/symfony/cache-contracts/zipball/9789738bc19af1106dc54d6afba9a0b467516cf2",
+                "reference": "9789738bc19af1106dc54d6afba9a0b467516cf2",
                 "shasum": ""
             },
             "require": {
@@ -4232,7 +4232,7 @@
                 "standards"
             ],
             "support": {
-                "source": "https://github.com/symfony/cache-contracts/tree/v3.7.0"
+                "source": "https://github.com/symfony/cache-contracts/tree/v3.7.1"
             },
             "funding": [
                 {
@@ -4252,20 +4252,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-05-05T15:33:14+00:00"
+            "time": "2026-06-05T06:23:12+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
-            "version": "v3.7.0",
+            "version": "v3.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/deprecation-contracts.git",
-                "reference": "50f59d1f3ca46d41ac911f97a78626b6756af35b"
+                "reference": "f3202fa1b5097b0af062dc978b32ecf63404e31d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/50f59d1f3ca46d41ac911f97a78626b6756af35b",
-                "reference": "50f59d1f3ca46d41ac911f97a78626b6756af35b",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/f3202fa1b5097b0af062dc978b32ecf63404e31d",
+                "reference": "f3202fa1b5097b0af062dc978b32ecf63404e31d",
                 "shasum": ""
             },
             "require": {
@@ -4303,7 +4303,7 @@
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.7.0"
+                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.7.1"
             },
             "funding": [
                 {
@@ -4323,7 +4323,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-04-13T15:52:40+00:00"
+            "time": "2026-06-05T06:23:12+00:00"
         },
         {
             "name": "symfony/intl",
@@ -4820,16 +4820,16 @@
         },
         {
             "name": "symfony/service-contracts",
-            "version": "v3.7.0",
+            "version": "v3.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/service-contracts.git",
-                "reference": "d25d82433a80eba6aa0e6c24b61d7370d99e444a"
+                "reference": "c0a284bab1ed8aa0417e3d69250ab437739563a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/d25d82433a80eba6aa0e6c24b61d7370d99e444a",
-                "reference": "d25d82433a80eba6aa0e6c24b61d7370d99e444a",
+                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/c0a284bab1ed8aa0417e3d69250ab437739563a0",
+                "reference": "c0a284bab1ed8aa0417e3d69250ab437739563a0",
                 "shasum": ""
             },
             "require": {
@@ -4883,7 +4883,7 @@
                 "standards"
             ],
             "support": {
-                "source": "https://github.com/symfony/service-contracts/tree/v3.7.0"
+                "source": "https://github.com/symfony/service-contracts/tree/v3.7.1"
             },
             "funding": [
                 {
@@ -4903,7 +4903,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-03-28T09:44:51+00:00"
+            "time": "2026-06-16T09:55:08+00:00"
         },
         {
             "name": "symfony/translation",
@@ -5203,16 +5203,16 @@
         },
         {
             "name": "symfony/var-exporter",
-            "version": "v7.4.9",
+            "version": "v7.4.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-exporter.git",
-                "reference": "22e03a49c95ef054a43601cd159b222bfab1c701"
+                "reference": "0118811b1d59f323bf131250b3fb919febfece28"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/22e03a49c95ef054a43601cd159b222bfab1c701",
-                "reference": "22e03a49c95ef054a43601cd159b222bfab1c701",
+                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/0118811b1d59f323bf131250b3fb919febfece28",
+                "reference": "0118811b1d59f323bf131250b3fb919febfece28",
                 "shasum": ""
             },
             "require": {
@@ -5260,7 +5260,7 @@
                 "serialize"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-exporter/tree/v7.4.9"
+                "source": "https://github.com/symfony/var-exporter/tree/v7.4.14"
             },
             "funding": [
                 {
@@ -5280,7 +5280,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-04-18T13:18:21+00:00"
+            "time": "2026-06-27T08:41:53+00:00"
         },
         {
             "name": "tracy/tracy",
