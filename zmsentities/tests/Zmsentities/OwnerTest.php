@@ -71,7 +71,7 @@ class OwnerTest extends EntityCommonTests
             1 == $accessible->getFirst()->getOrganisationList()->getFirst()->getDepartmentList()->count()
         );
 
-        $useraccount->setRights('superuser');
+        $useraccount->permissions['superuser'] = true;
         $accessible = $ownerList->withAccess($useraccount);
         //var_dump($accessible);
         $this->assertTrue(1 != $accessible->count());

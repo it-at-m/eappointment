@@ -1,6 +1,6 @@
 # Monolog-Logging (zmsslim)
 
-ZMS-Anwendungen nutzen einen gemeinsamen PSR-3-Logger auf der globalen `App`-Klasse: **`App::$log`**. Konfiguriert wird er in [`zmsslim`](https://github.com/it-at-m/eappointment/tree/main/zmsslim) durch `BO\Slim\Bootstrap` und von allen Slim-Modulen (`zmsapi`, `zmsadmin`, `zmscitizenapi`, …) geteilt.
+ZMS-Anwendungen nutzen einen gemeinsamen PSR-3-Logger auf der globalen `App`-Klasse: **`App::$log`**. Konfiguriert wird er in [`zmsslim`](https://github.com/it-at-m/eappointment/tree/main/zmsslim) durch `BO\Slim\Bootstrap` und von allen Slim-Modulen (`zmsbackend`, `zmsadmin`, `zmscitizenapi`, …) geteilt.
 
 Das **Mindest-Log-Level** wird ebenfalls in zmsslim zentral gesetzt: **`DEBUGLEVEL`** in der Umgebung → **`ZMS_DEBUGLEVEL`** in zmsslim → **`App::DEBUGLEVEL`** in jedem Modul für `Bootstrap::configureLogger()`.
 
@@ -38,7 +38,7 @@ flowchart LR
 3. `\BO\Slim\Application` deklariert **`const DEBUGLEVEL = ZMS_DEBUGLEVEL`**. Jedes Modul mit `class App extends \BO\Zmsapi\Application` (usw.) erbt dieselbe Konstante, sofern nicht lokal überschrieben.
 4. Beim Bootstrap rufen **`Bootstrap::init()`** / **`ensureLogger()`** / **`initForCli()`** **`configureLogger(App::DEBUGLEVEL, App::IDENTIFIER)`** auf. Das Level ist gemeinsam; in den JSON-Logs unterscheiden sich nur **`App::IDENTIFIER`** und **`App::MODULE_NAME`** pro Modul.
 
-**`ZMS_DEBUGLEVEL` ist damit die zentrale zmsslim-Vorgabe**, wie ausführlich zmsapi, zmsadmin, zmscitizenapi, zmsmessaging, Cron-Skripte und die anderen Slim-Apps loggen.
+**`ZMS_DEBUGLEVEL` ist damit die zentrale zmsslim-Vorgabe**, wie ausführlich zmsbackend, zmsadmin, zmscitizenapi, zmsmessaging, Cron-Skripte und die anderen Slim-Apps loggen.
 
 **Konfiguration:** `DEBUGLEVEL` in der Umgebung (kein separates Env `ZMS_DEBUGLEVEL`).
 
@@ -106,7 +106,7 @@ Erfolgreiche und fehlgeschlagene Request-Logs nutzen **getrennte Zähler** und d
 | Modul            | Env-Präfix                   | Typischer Traffic                 |
 | ---------------- | ---------------------------- | --------------------------------- |
 | zmscitizenapi    | `ZMS_CITIZENAPI_LOGGER_*`    | Öffentliche Buchungs-API          |
-| zmsapi           | `ZMS_API_LOGGER_*`           | Interne REST-API                  |
+| zmsbackend       | `ZMS_BACKEND_LOGGER_*`       | Interne REST-API                  |
 | zmsadmin         | `ZMS_ADMIN_LOGGER_*`         | Mitarbeiter-UI                    |
 | zmscalldisplay   | `ZMS_CALLDISPLAY_LOGGER_*`   | Aufrufmonitore (häufiges Polling) |
 | zmsstatistic     | `ZMS_STATISTIC_LOGGER_*`     | Statistik-UI                      |
@@ -141,7 +141,7 @@ ZMS_TICKETPRINTER_LOGGER_MAX_REQUESTS=120
 
 # Andere Module weiterhin mit Template-Default (1000)
 ZMS_ADMIN_LOGGER_MAX_REQUESTS=1000
-ZMS_API_LOGGER_MAX_REQUESTS=1000
+ZMS_BACKEND_LOGGER_MAX_REQUESTS=1000
 ```
 
 Ein niedrigeres `…_LOGGER_MAX_REQUESTS` drosselt nur **erfolgreiche** `HTTP Request`-Zeilen (Monolog `info`, Status &lt; 400). Fehlgeschlagene Requests (Status ≥ 400, Monolog `error`) nutzen `…_LOGGER_MAX_ERROR_REQUESTS`; Standard `0` bedeutet kein Limit.

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Regenerates thinnedProcessExplorerToday.js and thinnedProcessExplorerTarget.js
- * from zmscitizenapi PHP sources and docs/.vitepress/theme/data/citizen-target/.
+ * from zmscitizenapi + zmsbackend PHP sources and docs/.vitepress/theme/data/citizen-target/.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -36,28 +36,28 @@ const TODAY_REPO_FILES = [
   "zmscitizenapi/src/Zmscitizenapi/Services/Appointment/AppointmentPreconfirmService.php",
   "zmscitizenapi/src/Zmscitizenapi/Services/Appointment/AppointmentCancelService.php",
   "zmscitizenapi/src/Zmscitizenapi/Services/Appointment/MyAppointmentsService.php",
-  "zmsapi/src/Zmsapi/ProcessGet.php",
-  "zmsapi/src/Zmsapi/ProcessGetByExternalUserId.php",
-  "zmsapi/src/Zmsapi/ProcessListByExternalUserId.php",
-  "zmsapi/src/Zmsapi/ProcessUpdate.php",
-  "zmsapi/src/Zmsapi/ProcessReserve.php",
-  "zmsapi/src/Zmsapi/ProcessPreconfirm.php",
-  "zmsapi/src/Zmsapi/ProcessConfirm.php",
-  "zmsapi/src/Zmsapi/ProcessDelete.php",
-  "zmsapi/src/Zmsapi/ProcessConfirmationMail.php",
-  "zmsapi/src/Zmsapi/ProcessPreconfirmationMail.php",
-  "zmsapi/src/Zmsapi/ProcessDeleteMail.php",
-  "zmsapi/src/Zmsapi/Exception/Process/ProcessNotFound.php",
-  "zmsapi/src/Zmsapi/Exception/Process/AuthKeyMatchFailed.php",
-  "zmsdb/src/Zmsdb/Process.php",
-  "zmsdb/src/Zmsdb/Query/Process.php",
-  "zmsdb/src/Zmsdb/ProcessStatusQueued.php",
-  "zmsdb/src/Zmsdb/ProcessStatusFree.php",
+  "zmsbackend/src/Zmsbackend/Process/Api/ProcessGet.php",
+  "zmsbackend/src/Zmsbackend/Process/Api/ProcessGetByExternalUserId.php",
+  "zmsbackend/src/Zmsbackend/Process/Api/ProcessListByExternalUserId.php",
+  "zmsbackend/src/Zmsbackend/Process/Api/ProcessUpdate.php",
+  "zmsbackend/src/Zmsbackend/Process/Api/ProcessReserve.php",
+  "zmsbackend/src/Zmsbackend/Process/Api/ProcessPreconfirm.php",
+  "zmsbackend/src/Zmsbackend/Process/Api/ProcessConfirm.php",
+  "zmsbackend/src/Zmsbackend/Process/Api/ProcessDelete.php",
+  "zmsbackend/src/Zmsbackend/Process/Api/ProcessConfirmationMail.php",
+  "zmsbackend/src/Zmsbackend/Process/Api/ProcessPreconfirmationMail.php",
+  "zmsbackend/src/Zmsbackend/Process/Api/ProcessDeleteMail.php",
+  "zmsbackend/src/Zmsbackend/Process/Exception/ProcessNotFound.php",
+  "zmsbackend/src/Zmsbackend/Process/Exception/AuthKeyMatchFailed.php",
+  "zmsbackend/src/Zmsbackend/Process/Service/Process.php",
+  "zmsbackend/src/Zmsbackend/Process/Repository/Process.php",
+  "zmsbackend/src/Zmsbackend/Process/Service/ProcessStatusQueued.php",
+  "zmsbackend/src/Zmsbackend/Process/Repository/ProcessStatusFree.php",
 ];
 
-const ZMSAPI_ROUTING_RANGES = [
-  [2900, 3745],
-  [6555, 6605],
+const BACKEND_ROUTING_RANGES = [
+  [2882, 3740],
+  [6566, 6597],
 ];
 
 function readRepo(relativePath) {
@@ -108,7 +108,7 @@ function excerptZmsApiClientProcess() {
 namespace BO\\Zmscitizenapi\\Services\\Core;
 
 /**
- * Excerpt from ZmsApiClientService.php — HTTP calls to zmsapi for process/appointment flows.
+ * Excerpt from ZmsApiClientService.php — HTTP calls to zmsbackend for process/appointment flows.
  */
 class ZmsApiClientService
 {
@@ -147,7 +147,7 @@ function excerptZmsApiFacadeProcess() {
 namespace BO\\Zmscitizenapi\\Services\\Core;
 
 /**
- * Excerpt from ZmsApiFacadeService.php — orchestrates zmsapi calls + MapperService for appointments.
+ * Excerpt from ZmsApiFacadeService.php — orchestrates zmsbackend calls + MapperService for appointments.
  */
 class ZmsApiFacadeService
 {
@@ -195,15 +195,15 @@ ${chunk}
 `;
 }
 
-function excerptZmsApiRouting() {
-  const lines = readRepo("zmsapi/routing.php").split("\n");
-  const parts = ZMSAPI_ROUTING_RANGES.map(([start, end], index) => {
+function excerptBackendRouting() {
+  const lines = readRepo("zmsbackend/routing.php").split("\n");
+  const parts = BACKEND_ROUTING_RANGES.map(([start, end], index) => {
     const chunk = lines.slice(start - 1, end).join("\n");
     if (index === 0) {
       return `<?php
 
 /**
- * Excerpt from zmsapi/routing.php — process/appointment routes called by zmscitizenapi.
+ * Excerpt from zmsbackend/routing.php — process/appointment routes called by zmscitizenapi.
  * Full file: ${lines.length} lines.
  */
 
@@ -274,7 +274,7 @@ export const defaultPath = ${JSON.stringify(defaultPath)};
 function buildTodayExplorer() {
   const excerptPaths = [
     "zmscitizenapi/routing.php",
-    "zmsapi/routing.process.php",
+    "zmsbackend/routing.process.php",
     "zmscitizenapi/src/Zmscitizenapi/Services/Core/MapperService.process.php",
     "zmscitizenapi/src/Zmscitizenapi/Services/Core/ZmsApiClientService.process.php",
     "zmscitizenapi/src/Zmscitizenapi/Services/Core/ZmsApiFacadeService.process.php",
@@ -288,9 +288,9 @@ function buildTodayExplorer() {
     language: "php",
     content: excerptCitizenRouting(),
   };
-  files["zmsapi/routing.process.php"] = {
+  files["zmsbackend/routing.process.php"] = {
     language: "php",
-    content: excerptZmsApiRouting(),
+    content: excerptBackendRouting(),
   };
   files[
     "zmscitizenapi/src/Zmscitizenapi/Services/Core/MapperService.process.php"

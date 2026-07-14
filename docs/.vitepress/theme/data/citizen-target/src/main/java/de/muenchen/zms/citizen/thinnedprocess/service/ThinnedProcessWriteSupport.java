@@ -4,7 +4,7 @@ import de.muenchen.zms.citizen.thinnedprocess.model.ThinnedProcessRecord;
 import de.muenchen.zms.citizen.thinnedprocess.repository.ThinnedProcessRepository;
 import org.springframework.stereotype.Component;
 
-/** today: zmsdb\\Process status transitions (reserve, confirm, cancel) */
+/** today: zmsbackend\\Process\\Service\\Process status transitions (reserve, confirm, cancel) */
 @Component
 public class ThinnedProcessWriteSupport {
 

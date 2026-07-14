@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-/** today: zmsdb\\Query\\Request */
+/** today: zmsbackend\\Request\\Repository\\Request */
 public interface ThinnedProcessRequestRepository extends JpaRepository<ThinnedProcessRequestRecord, Long> {
 
     List<ThinnedProcessRequestRecord> findByProcessIdOrderById(Long processId);

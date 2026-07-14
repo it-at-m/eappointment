@@ -46,7 +46,7 @@ class QuickLogin extends BaseController
                 ->readPostResult('/workstation/login/', $userAccount)->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             //ignore double login exception on quick login
-            if ($exception->template == 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn') {
+            if ($exception->template == 'BO\Zmsbackend\Useraccount\Exception\UserAlreadyLoggedIn') {
                 $workstation = new Workstation($exception->data);
             } else {
                 throw new QuickLoginFailed();

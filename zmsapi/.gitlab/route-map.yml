@@ -1,3 +1,0 @@
-# Coverage
-- source: /src/Zmsapi/(.+?\.php).*/
-  public: '_tests/coverage/\1.html'

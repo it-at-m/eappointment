@@ -75,9 +75,9 @@
   - changed-files:
     - any-glob-to-any-file: ['zmsadmin/**']
 
-"Module: zmsapi":
+"Module: zmsbackend":
   - changed-files:
-    - any-glob-to-any-file: ['zmsapi/**']
+    - any-glob-to-any-file: ['zmsbackend/**']
 
 "Module: zmsautomation":
   - changed-files:
@@ -102,10 +102,6 @@
 "Module: zmsclient":
   - changed-files:
     - any-glob-to-any-file: ['zmsclient/**']
-
-"Module: zmsdb":
-  - changed-files:
-    - any-glob-to-any-file: ['zmsdb/**']
 
 "Module: zmsdldb":
   - changed-files:

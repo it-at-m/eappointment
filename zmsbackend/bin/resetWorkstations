@@ -1,0 +1,9 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+if (preg_grep('#^--commit$#', $argv)) {
+    \BO\Zmsbackend\Helper\LogoutWorkstations::init(preg_grep('#^--?v(erbose)?$#', $argv));
+} else {
+    \App::$log->notice('resetWorkstations usage', ['usage' => 'Usage: resetWorkstations --commit [--verbose]']);
+}

@@ -14,7 +14,7 @@
                 </p>
                 <h3>Zugeordnete Einheiten</h3>
                 <ul>
-                    {%- if useraccount.rights.superuser -%}
+                    {%- if useraccount.permissions.superuser|default(false) -%}
                         <li>Alle (Superuser)</li>
                     {%- else -%}
                     {% for department in useraccount.departments %}
@@ -24,32 +24,29 @@
                 </ul>
                 <h3>Sie haben die folgenden Berechtigungen</h3>
                 <ul>
-                    {%- if useraccount.rights.superuser -%}
+                    {%- if useraccount.permissions.superuser|default(false) -%}
                         <li>Superuser</li>
                     {%- endif -%}
-                    {%- if useraccount.rights.organisation -%}
+                    {%- if useraccount.permissions.organisation|default(false) -%}
                         <li>Administration von Bezirken</li>
                     {%- endif -%}
-                    {%- if useraccount.rights.department -%}
+                    {%- if useraccount.permissions.department|default(false) -%}
                         <li>Administration von Behörden</li>
                     {%- endif -%}
-                    {%- if useraccount.rights.cluster -%}
+                    {%- if useraccount.permissions.cluster|default(false) -%}
                         <li>Administration von Standortclustern</li>
                     {%- endif -%}
-                    {%- if useraccount.permissions.useraccount -%}
+                    {%- if useraccount.permissions.useraccount|default(false) -%}
                         <li>Administration von Nutzern</li>
                     {%- endif -%}
-                    {%- if useraccount.rights.scope -%}
+                    {%- if useraccount.permissions.scope|default(false) -%}
                         <li>Administration von Standorten</li>
                     {%- endif -%}
-                    {%- if useraccount.rights.availability -%}
+                    {%- if useraccount.permissions.availability|default(false) -%}
                         <li>Administration von Öffnungszeiten</li>
                     {%- endif -%}
-                    {%- if useraccount.rights.ticketprinter -%}
+                    {%- if useraccount.permissions.ticketprinter|default(false) -%}
                         <li>Ein- und Ausschalten des Kiosks</li>
-                    {%- endif -%}
-                    {%- if useraccount.rights.basic -%}
-                        <li>Nutzung des Systems</li>
                     {%- endif -%}
                 </ul>
             

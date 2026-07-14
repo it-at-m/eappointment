@@ -37,7 +37,7 @@ class Owner extends Schema\Entity implements Useraccount\AccessInterface
     #[\Override]
     public function hasAccess(Useraccount $useraccount)
     {
-        return $useraccount->hasRights(['superuser'])
+        return $useraccount->isSuperUser()
             || 0 < $this->getOrganisationList()->withAccess($useraccount)->count();
     }
 
