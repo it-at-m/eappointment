@@ -515,6 +515,7 @@ const bookingErrorKey = computed(() => {
 });
 
 const confirmAppointmentSuccess = ref<boolean>(false);
+const confirmedAppointmentHash = ref<string | null>(null);
 const cancelAppointmentSuccess = ref<boolean>(false);
 const cancelAppointmentError = ref<boolean>(false);
 
@@ -1128,6 +1129,33 @@ const downloadIcsAppointment = () => {
   }
 };
 
+const runConfirmFromHash = (hash: string | undefined): void => {
+  if (
+    !hash ||
+    hash === confirmedAppointmentHash.value ||
+    isBookingAppointment.value ||
+    confirmAppointmentSuccess.value
+  ) {
+    return;
+  }
+
+  const appointmentData = parseAppointmentHash(hash);
+  if (!appointmentData) {
+    handleApiError(
+      "appointmentNotFound",
+      errorStateMap.value,
+      currentErrorData.value
+    );
+    return;
+  }
+
+  confirmedAppointmentHash.value = hash;
+  clearAllErrors();
+  currentView.value = 5;
+  isBookingAppointment.value = true;
+  nextConfirmAppointment(appointmentData);
+};
+
 function nextConfirmAppointment(appointmentData: AppointmentHash) {
   confirmAppointment(props.globalState, appointmentData)
     .then((data) => {
@@ -1167,19 +1195,22 @@ function nextConfirmAppointment(appointmentData: AppointmentHash) {
     });
 }
 
+watch(
+  () => props.confirmAppointmentHash,
+  (hash) => {
+    runConfirmFromHash(hash);
+  }
+);
+
 onMounted(() => {
+  runConfirmFromHash(props.confirmAppointmentHash);
+
   if (props.confirmAppointmentHash) {
-    clearContextErrors(errorStateMap.value);
-    const appointmentData = parseAppointmentHash(props.confirmAppointmentHash);
-    if (!appointmentData) {
-      handleApiError(
-        "appointmentNotFound",
-        errorStateMap.value,
-        currentErrorData.value
-      );
-      return;
+    if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
+      localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
     }
-    nextConfirmAppointment(appointmentData);
+    focusActiveStepperItem();
+    return;
   }
 
   if (props.appointmentHash) {
@@ -1303,7 +1334,7 @@ onMounted(() => {
         }
       });
     });
-  } else {
+  } else if (!props.confirmAppointmentHash) {
     const localStorageAppointment = localStorage.getItem(
       LOCALSTORAGE_PARAM_APPOINTMENT_DATA
     );
