@@ -17,6 +17,7 @@ vi.mock("@/api/ZMSAppointmentAPI", async () => {
     confirmAppointment: vi.fn(),
     preconfirmAppointment: vi.fn(),
     cancelAppointment: vi.fn(),
+    fetchAppointment: vi.fn(),
   };
 });
 
@@ -1429,6 +1430,68 @@ describe("AppointmentView", () => {
     await nextTick();
 
     expect(mockConfirmAppointment).toHaveBeenCalledTimes(1);
+  });
+
+  it("loads appointment view when appointmentHash arrives after confirm success", async () => {
+    const mockFetchAppointment = vi.mocked(ZMSAppointmentAPI.fetchAppointment);
+    mockFetchAppointment.mockResolvedValueOnce({
+      processId: "12345",
+      authKey: "test-auth-key",
+      serviceId: "123",
+      officeId: "789",
+      serviceCount: 1,
+      subRequestCounts: [],
+      timestamp: nowUnixSeconds() + 3600,
+    } as any);
+
+    vi.mocked(globalThis.fetch).mockResolvedValueOnce({
+      status: 200,
+      json: async () => ({
+        offices: [
+          {
+            id: "789",
+            name: "Test Provider",
+            address: { street: "Test Street", house_number: "1" },
+          },
+        ],
+        services: [{ id: "123", name: "Test Service" }],
+        relations: [],
+      }),
+    } as any);
+
+    const appointmentData = {
+      id: "12345",
+      authKey: "test-auth-key",
+      scope: {},
+    };
+    const validHash = btoa(JSON.stringify(appointmentData));
+
+    const wrapper = createWrapper({
+      appointmentHash: undefined,
+      confirmAppointmentHash: undefined,
+    });
+
+    wrapper.vm.confirmAppointmentSuccess = true;
+    wrapper.vm.currentView = 5;
+    await nextTick();
+
+    expect(wrapper.find('[data-test="muc-callout"]').attributes("data-type")).toBe(
+      "success"
+    );
+
+    await wrapper.setProps({ appointmentHash: validHash });
+    await nextTick();
+
+    await vi.waitFor(() => {
+      expect(mockFetchAppointment).toHaveBeenCalledTimes(1);
+    });
+
+    await vi.waitFor(() => {
+      expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
+      expect(wrapper.vm.currentView).toBe(3);
+    });
+
+    expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(true);
   });
   });
   describe("Book another appointment button", () => {
