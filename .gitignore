@@ -171,6 +171,8 @@ logs
 bin/
 !zmsbackend/bin/
 !zmsbackend/bin/**
+!zmscitizenapi/bin/
+!zmscitizenapi/bin/build_swagger.js
 tmp/
 *.tmp
 *.bak
