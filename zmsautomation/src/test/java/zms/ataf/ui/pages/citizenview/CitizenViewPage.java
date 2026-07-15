@@ -1784,8 +1784,8 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: navigating to confirmation URL: {}", url);
         try {
             DriverUtil.getDriver().navigate().to(url);
-            // Reload so the app gets the confirm hash on initial load (in-app hash change often doesn't update the view).
-            DriverUtil.getDriver().navigate().refresh();
+            // Do not refresh. Same-tab hash routing now handles confirm links (ZMSKVR-1121).
+            // navigate()+refresh() can confirm twice and leave activation-expired UI instead of success.
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn("Navigate to confirm URL", e);
         }
@@ -1796,7 +1796,7 @@ public class CitizenViewPage extends BasePage {
         }
     }
 
-    /** Navigate to the appointment view URL extracted from the confirmation mail (link without /confirm/), then refresh so the app loads it. */
+    /** Navigate to the appointment view URL extracted from the confirmation mail (link without /confirm/). */
     public void openAppointmentViewDeepLinkInBrowser() {
         CONTEXT.set();
         String url = zms.ataf.rest.steps.CitizenApiSteps.getBookingAppointmentUrl();
@@ -1808,7 +1808,7 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: navigating to appointment view URL (from second email): {}", url);
         try {
             DriverUtil.getDriver().navigate().to(url);
-            DriverUtil.getDriver().navigate().refresh();
+            // Do not refresh — appointmentHash is applied via hashchange (ZMSKVR-1121).
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn("Navigate to appointment view URL", e);
         }
