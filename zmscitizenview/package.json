@@ -45,7 +45,7 @@
   },
   "// overrides.@tootallnate/once": "local-web-server -> lws-rewrite -> http-proxy-agent pins once@2; force ^3.0.1 (abort-signal hang / GHSA).",
   "// overrides.ws": "jsdom -> ws@8.18.x; force ^8.20.1 (CVE-2026-45736).",
-  "// overrides.undici": "jsdom -> undici@7.25.x; force ^7.28.0 (CVE-2026-9697, CVE-2026-9678).",
+  "// overrides.undici": "jsdom@29 requires undici@^7 (imports lib/handler/wrap-handler.js); force ^7.28.0 (CVE-2026-9697, CVE-2026-9678). Do not bump to undici@8 until jsdom supports it.",
   "// overrides.morgan": "local-web-server -> lws-log -> koa-morgan -> morgan@1.10.x; force ^1.11.0 (CVE-2026-5078).",
   "overrides": {
     "vite-plugin-vuetify": {
@@ -55,7 +55,7 @@
     "tmp": "^0.2.7",
     "ws": "^8.20.1",
     "js-yaml": "^5.0.0",
-    "undici": "^8.0.0",
+    "undici": "^7.28.0",
     "morgan": "^1.11.0"
   }
 }

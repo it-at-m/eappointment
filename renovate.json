@@ -7,5 +7,14 @@
   "baseBranches": ["next", "/^release\\/.*/"],
 
   "timezone": "Europe/Berlin",
-  "schedule": ["* 0-4 * * *"]
+  "schedule": ["* 0-4 * * *"],
+
+  "packageRules": [
+    {
+      "description": "jsdom@29 still requires undici@^7 (wrap-handler import); block undici major until jsdom supports v8",
+      "matchPackageNames": ["undici"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    }
+  ]
 }
