@@ -342,7 +342,10 @@ describe("CustomerInfo", () => {
 
   describe("Login failure", () => {
     it("shows emergency banner when loginFailed is true", async () => {
-      const wrapper = createWrapper({ loginFailed: true });
+      const wrapper = createWrapper({
+        showLoginOption: true,
+        loginFailed: true,
+      });
       await nextTick();
 
       const banner = wrapper.find(".muc-banner");
