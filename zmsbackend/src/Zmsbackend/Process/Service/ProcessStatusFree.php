@@ -40,14 +40,49 @@ class ProcessStatusFree extends Process
         return $days;
     }
 
+    /**
+     * Prefer concrete days already on the calendar (e.g. bookable days only).
+     * Falls back to the full firstDay→lastDay range when no days are set.
+     *
+     * @return array<int, \DateTimeInterface>
+     */
+    private function buildDaysListFromCalendarDays(\BO\Zmsentities\Calendar $calendar): array
+    {
+        if (!isset($calendar->days) || count($calendar->days) < 1) {
+            return $this->buildDaysList($calendar);
+        }
+
+        $daysByDate = [];
+        foreach ($calendar->days as $day) {
+            if (!$day instanceof \BO\Zmsentities\Day) {
+                $day = new \BO\Zmsentities\Day($day);
+            }
+            $dateTime = $day->toDateTime();
+            $daysByDate[$dateTime->format('Y-m-d')] = $dateTime;
+        }
+
+        if ($daysByDate === []) {
+            return $this->buildDaysList($calendar);
+        }
+
+        ksort($daysByDate);
+
+        return array_values($daysByDate);
+    }
+
     public function readFreeProcessesMinimalFromPreparedCalendar(
         \BO\Zmsentities\Calendar $calendar,
         string $slotType = 'public',
         ?int $slotsRequired = null,
         bool $groupData = false
     ): array {
+        $days = $this->buildDaysListFromCalendarDays($calendar);
+        if ($days === []) {
+            return [];
+        }
+
         $processData = $this->getProcessDataHandle(
-            $this->buildDaysList($calendar),
+            $days,
             $slotType,
             $slotsRequired,
             $groupData

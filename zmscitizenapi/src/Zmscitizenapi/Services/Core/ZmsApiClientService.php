@@ -211,9 +211,23 @@ class ZmsApiClientService
     public static function getCalendarAvailability(array $params): array
     {
         try {
+            $t0 = microtime(true);
             $result = \App::$http->readGetResult('/calendar/availability/', $params);
-            $body = json_decode((string) $result->getResponse()->getBody(), true);
+            $tAfterHttp = microtime(true);
+            $rawBody = (string) $result->getResponse()->getBody();
+            $body = json_decode($rawBody, true);
             $data = $body['data'] ?? null;
+            $tAfterDecode = microtime(true);
+
+            LoggerService::logInfo('calendar.availability.timing', [
+                'stage' => 'client.getCalendarAvailability',
+                'http_ms' => (int) round(($tAfterHttp - $t0) * 1000),
+                'decode_ms' => (int) round(($tAfterDecode - $tAfterHttp) * 1000),
+                'total_ms' => (int) round(($tAfterDecode - $t0) * 1000),
+                'body_bytes' => strlen($rawBody),
+                'day_count' => is_array($data['days'] ?? null) ? count($data['days']) : 0,
+            ]);
+
             if (!is_array($data)) {
                 return [
                     'startDate' => '',
@@ -438,8 +452,15 @@ class ZmsApiClientService
 
     private static function fetchSourceDataFor(string $sourceName): Source
     {
+        $t0 = microtime(true);
         $cacheKey = 'source_' . $sourceName;
         if (\App::$cache && ($data = \App::$cache->get($cacheKey))) {
+            LoggerService::logInfo('calendar.availability.timing', [
+                'stage' => 'client.fetchSourceDataFor',
+                'source' => $sourceName,
+                'cache' => 'hit',
+                'ms' => (int) round((microtime(true) - $t0) * 1000),
+            ]);
             return $data;
         }
 
@@ -448,6 +469,12 @@ class ZmsApiClientService
         ]);
         $entity = $result?->getEntity();
         if (!$entity instanceof Source) {
+            LoggerService::logInfo('calendar.availability.timing', [
+                'stage' => 'client.fetchSourceDataFor',
+                'source' => $sourceName,
+                'cache' => 'miss_empty',
+                'ms' => (int) round((microtime(true) - $t0) * 1000),
+            ]);
             return new Source();
         }
 
@@ -459,6 +486,13 @@ class ZmsApiClientService
                 'entity_type' => get_class($entity)
             ]);
         }
+
+        LoggerService::logInfo('calendar.availability.timing', [
+            'stage' => 'client.fetchSourceDataFor',
+            'source' => $sourceName,
+            'cache' => 'miss',
+            'ms' => (int) round((microtime(true) - $t0) * 1000),
+        ]);
 
         return $entity;
     }
