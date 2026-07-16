@@ -1,13 +1,13 @@
 # Global build args
 ARG COMPOSER_VERSION=2
-ARG NODE_MAJOR=18
-ARG PHP_VERSION=8.4-apache
+ARG NODE_MAJOR=22
+ARG PHP_VERSION=8.4-apache-trixie
 
 # Composer stage
 FROM composer:${COMPOSER_VERSION} AS composer-image
 
 # Node/npm/npx (official multi-arch image; NodeSource apt can miss npm on some Debian/arch combos)
-FROM node:${NODE_MAJOR}-bookworm AS node-tools
+FROM node:${NODE_MAJOR}-trixie AS node-tools
 
 # Main dev image
 FROM php:${PHP_VERSION}
