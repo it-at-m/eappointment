@@ -201,6 +201,7 @@
   "loggedinHeader": "You are logged in.",
   "loggedinText": "Your contact details have been copied from your account.",
   "login": "Login",
+  "loginFailedText": "Login failed. Please try again or enter your contact details manually.",
   "mailAddress": "e-mail address",
   "minutes": "minutes",
   "newAppointmentButton": "Schedule a new appointment",
