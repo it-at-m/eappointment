@@ -51,6 +51,13 @@
       <template #icon><muc-icon icon="user-fill" /></template>
     </muc-callout>
   </div>
+  <muc-banner
+    v-if="loginFailed && !isExpired"
+    type="emergency"
+    variant="content"
+  >
+    {{ t("loginFailedText") }}
+  </muc-banner>
   <h2
     v-if="!isExpired"
     class="m-component-form__title"
@@ -161,6 +168,7 @@ import type { SelectedTimeslotProvider } from "@/types/ProvideInjectTypes";
 import type { Ref } from "vue";
 
 import {
+  MucBanner,
   MucButton,
   MucCallout,
   MucIcon,
@@ -198,6 +206,7 @@ const handleInput2 = (event: Event) => {
 const props = defineProps<{
   globalState: GlobalState;
   showLoginOption: boolean;
+  loginFailed?: boolean;
   t: (key: string, params?: Record<string, unknown>) => string;
 }>();
 
