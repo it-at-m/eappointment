@@ -15,6 +15,8 @@
 </li>
 <li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1501'>ZMSKVR-1501</a>] -         DLDB-Mapper: getSlotTime() berücksichtigt 45-Minuten-Slotzeit nicht
 </li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1121'>ZMSKVR-1121</a>] -         SAFARI Fehlerhafte Fehlermeldung beim Aktivierungslink – trotz erfolgreicher Terminaktivierung
+</li>
 </ul>
                                             
 <h2>        Spike

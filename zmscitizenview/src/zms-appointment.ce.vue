@@ -27,7 +27,7 @@
 <script lang="ts" setup>
 import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/icons/custom-icons.svg?raw";
 import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.svg?raw";
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
@@ -115,36 +115,40 @@ const extractRouteParams = (urlElements: string[]) => {
   }
 };
 
-// Parse hash immediately (works most of the time)
-const initialUrlElements = parseUrlHash();
-console.log("[ZMS] Initial parse:", window.location.hash, initialUrlElements);
-extractRouteParams(initialUrlElements);
-console.log(
-  "[ZMS] After initial:",
-  appointmentHash.value,
-  confirmAppointmentHash.value
-);
+const syncRouteFromHash = () => {
+  serviceId.value = undefined;
+  locationId.value = undefined;
+  confirmAppointmentHash.value = undefined;
+  appointmentHash.value = undefined;
+  exclusiveLocation.value = undefined;
 
-// Re-parse in onMounted to handle Safari timing issues
-// This ensures the hash is read after the component is fully connected to the DOM
-onMounted(() => {
-  // Only re-parse if we didn't get appointment hash but URL contains "appointment"
-  const hash = window.location.hash;
-  if (
-    !appointmentHash.value &&
-    !confirmAppointmentHash.value &&
-    hash.includes("appointment")
-  ) {
-    console.log("[ZMS] onMounted re-parse triggered");
-    const urlElements = parseUrlHash();
-    console.log("[ZMS] onMounted parse:", hash, urlElements);
-    extractRouteParams(urlElements);
-    console.log(
-      "[ZMS] After onMounted:",
-      appointmentHash.value,
-      confirmAppointmentHash.value
-    );
+  extractRouteParams(parseUrlHash());
+};
+
+const onRouteHashChange = () => {
+  syncRouteFromHash();
+};
+
+const onPageShow = (event: PageTransitionEvent) => {
+  if (event.persisted) {
+    syncRouteFromHash();
   }
+};
+
+// Parse hash immediately (works most of the time)
+syncRouteFromHash();
+
+onMounted(() => {
+  // Re-sync after mount for Safari timing and when iOS reuses an existing tab
+  syncRouteFromHash();
+
+  window.addEventListener("hashchange", onRouteHashChange);
+  window.addEventListener("pageshow", onPageShow);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("hashchange", onRouteHashChange);
+  window.removeEventListener("pageshow", onPageShow);
 });
 // END Routing
 
