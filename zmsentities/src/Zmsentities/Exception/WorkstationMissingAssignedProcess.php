@@ -6,5 +6,5 @@ class WorkstationMissingAssignedProcess extends \Exception
 {
     protected $code = 404;
 
-    protected $message = 'No process is assigned to the selected workstation.';
+    protected $message = 'No process has been assigned to the selected workstation.';
 }
