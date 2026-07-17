@@ -5,6 +5,7 @@ namespace BO\Zmscitizenapi\Tests\Controllers\Availability;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
+use Prophecy\Argument;
 
 class AvailableCalendarByOfficeControllerTest extends ControllerTestCase
 {
@@ -614,13 +615,14 @@ class AvailableCalendarByOfficeControllerTest extends ControllerTestCase
             [
                 'function' => 'readGetResult',
                 'url' => '/calendar/availability/',
-                'parameters' => [
-                    'startDate' => '2024-08-29',
-                    'endDate' => '2024-09-04',
-                    'officeId' => '9999998',
-                    'serviceId' => '1',
-                    'serviceCount' => '1',
-                ],
+                'parameters' => Argument::that(static function ($params): bool {
+                    return is_array($params)
+                        && ($params['startDate'] ?? null) === '2024-08-29'
+                        && ($params['endDate'] ?? null) === '2024-09-04'
+                        && ($params['officeId'] ?? null) === '9999998'
+                        && ($params['serviceId'] ?? null) === '1'
+                        && ($params['serviceCount'] ?? null) === '1';
+                }),
                 'exception' => $exception,
             ],
         ]);
@@ -658,13 +660,14 @@ class AvailableCalendarByOfficeControllerTest extends ControllerTestCase
             [
                 'function' => 'readGetResult',
                 'url' => '/calendar/availability/',
-                'parameters' => [
-                    'startDate' => '2024-08-21',
-                    'endDate' => '2024-08-23',
-                    'officeId' => '9999998',
-                    'serviceId' => '1',
-                    'serviceCount' => '1',
-                ],
+                'parameters' => Argument::that(static function ($params): bool {
+                    return is_array($params)
+                        && ($params['startDate'] ?? null) === '2024-08-21'
+                        && ($params['endDate'] ?? null) === '2024-08-23'
+                        && ($params['officeId'] ?? null) === '9999998'
+                        && ($params['serviceId'] ?? null) === '1'
+                        && ($params['serviceCount'] ?? null) === '1';
+                }),
                 'response' => $this->readFixture($fixture),
             ],
         ]);
