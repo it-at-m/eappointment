@@ -18,7 +18,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     And the appointment status should be "reserved"
     And the appointment should be at office 10502
     And the appointment should be for service 1063441
-    When I update the appointment with contact details
+    When I update the appointment with contact details and customTextfield "ATAF Bemerkung"
     Then the update endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
     And the appointment status should be "reserved"
     And the appointment should be at office 10502
@@ -58,7 +58,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     And the appointment status should be "reserved"
     And the appointment should be at office 10489
     And the appointment should be for service 1063441
-    When I update the appointment with contact details
+    When I update the appointment with contact details and customTextfield "ATAF Bemerkung"
     Then the update endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
     And the appointment status should be "reserved"
     And the appointment should be at office 10489
@@ -98,7 +98,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     And the appointment status should be "reserved"
     And the appointment should be at office 10492
     And the appointment should be for service 10295182
-    When I update the appointment with contact details
+    When I update the appointment with contact details and customTextfield "ATAF Bemerkung"
     Then the update endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
     And the appointment status should be "reserved"
     And the appointment should be at office 10492
@@ -138,7 +138,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     And the appointment status should be "reserved"
     And the appointment should be at office 10502
     And the appointment should be for service 1063441
-    When I update the appointment with contact details
+    When I update the appointment with contact details and customTextfield "ATAF Bemerkung"
     Then the update endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
     And the appointment status should be "reserved"
     And the appointment should be at office 10502
