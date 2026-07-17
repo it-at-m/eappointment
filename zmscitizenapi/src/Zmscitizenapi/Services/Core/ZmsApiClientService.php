@@ -166,12 +166,19 @@ class ZmsApiClientService
 
             foreach (self::getSourceNames() as $name) {
                 $src = self::fetchSourceDataFor($name);
+                $providerMap = [];
+                foreach ($src->getProviderList() as $provider) {
+                    $providerMap[($provider->source ?? '') . '_' . $provider->id] = $provider;
+                }
                 $list = $src->getScopeList();
 
                 if ($list instanceof ScopeList) {
                     foreach ($list as $scope) {
                         $prov = $scope->getProvider();
                         $key = (($prov->source ?? '') . '_' . $prov->id);
+                        if (isset($providerMap[$key])) {
+                            $scope->provider = $providerMap[$key];
+                        }
                         if (!isset($seen[$key])) {
                             $combined->addEntity($scope);
                             $seen[$key] = true;

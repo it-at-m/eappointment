@@ -471,7 +471,7 @@ class ZmsApiFacadeService
             slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()),
             appointmentsPerMail: ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()),
             whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
-            reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
+            reservationDuration: MapperService::extractReservationDuration($matchingScope),
             activationDuration: MapperService::extractActivationDuration($matchingScope),
             hint: ((string) $matchingScope->getScopeHint() === '' ? null : (string) $matchingScope->getScopeHint())
         );
