@@ -371,7 +371,7 @@ class ZmsApiFacadeService
             return false;
         }
 
-        foreach ($wanted as $officeId => $_) {
+        foreach (array_keys($wanted) as $officeId) {
             $provider = $providerById[$officeId] ?? null;
             if ($provider === null) {
                 continue;
