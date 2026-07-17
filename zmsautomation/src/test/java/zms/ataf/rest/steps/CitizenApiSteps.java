@@ -408,8 +408,8 @@ public class CitizenApiSteps {
         // Skip `displayNumber` (varies) and `captchaToken` (captcha disabled in test data).
     }
 
-    @When("I update the appointment with contact details")
-    public void iUpdateTheAppointmentWithContactDetails() {
+    @When("I update the appointment with contact details and customTextfield {string}")
+    public void iUpdateTheAppointmentWithContactDetailsAndCustomTextfield(String customTextfield) {
         ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : getBookingProcess();
         if (process == null) {
             throw new IllegalStateException("Reserve an appointment first.");
@@ -425,8 +425,7 @@ public class CitizenApiSteps {
         body.put("familyName", "ATAF Test User");
         body.put("email", "ataf-citizenapi@example.com");
         body.put("telephone", "");
-        // Ruppertstraße scopes require customTextfield (same as citizenview Kontakt Bemerkung).
-        body.put("customTextfield", "ATAF Bemerkung");
+        body.put("customTextfield", customTextfield != null ? customTextfield : "");
         body.put("customTextfield2", "");
         response = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
