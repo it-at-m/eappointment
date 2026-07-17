@@ -677,10 +677,9 @@ public class CitizenApiSteps {
             .as("familyName must indicate cancellation")
             .isEqualTo("(abgesagt)");
 
-        // top-level strings reset
+        // top-level strings reset / preserved by cancel SQL (QUERY_CANCELED)
         Assertions.assertThat(response.jsonPath().getString("telephone")).as("telephone must be empty").isEqualTo("");
-        Assertions.assertThat(response.jsonPath().getString("customTextfield")).as("customTextfield must be empty").isEqualTo("");
-        Assertions.assertThat(response.jsonPath().getString("customTextfield2")).as("customTextfield2 must be empty").isEqualTo("");
+        // customTextfield / customTextfield2 are not cleared on cancel (see zmscitizenapi cancel fixtures)
         Assertions.assertThat(response.jsonPath().getString("captchaToken")).as("captchaToken must be empty in soft delete payload").isEqualTo("");
 
         // provider inside scope is nulled out (keeps provider.id=0/name="") in soft delete payload
