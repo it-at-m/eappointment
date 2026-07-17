@@ -465,14 +465,24 @@ class ZmsApiFacadeService
 
     public static function getServicesByOfficeId(int $officeId, bool $showUnpublished = false): ServiceList|array
     {
+        $t0 = microtime(true);
         $cacheKey = self::CACHE_KEY_SERVICES_BY_OFFICE_PREFIX . $officeId . ($showUnpublished ? '_unpublished' : '');
 
         if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            LoggerService::logInfo('calendar.availability.timing', [
+                'stage' => 'facade.getServicesByOfficeId',
+                'office_id' => $officeId,
+                'cache' => 'hit',
+                'ms' => (int) round((microtime(true) - $t0) * 1000),
+            ]);
             return $cachedData;
         }
 
+        $t1 = microtime(true);
         $requestList = ZmsApiClientService::getServices();
+        $t2 = microtime(true);
         $requestRelationList = ZmsApiClientService::getRequestRelationList();
+        $t3 = microtime(true);
         $requestMap = [];
         foreach ($requestList as $request) {
             $additionalData = $request->getAdditionalData();
@@ -507,6 +517,17 @@ class ZmsApiFacadeService
 
         self::setMappedCache($cacheKey, $result);
 
+        LoggerService::logInfo('calendar.availability.timing', [
+            'stage' => 'facade.getServicesByOfficeId',
+            'office_id' => $officeId,
+            'cache' => 'miss',
+            'get_services_ms' => (int) round(($t2 - $t1) * 1000),
+            'get_relations_ms' => (int) round(($t3 - $t2) * 1000),
+            'map_ms' => (int) round((microtime(true) - $t3) * 1000),
+            'total_ms' => (int) round((microtime(true) - $t0) * 1000),
+            'service_count' => count($services),
+        ]);
+
         return $result;
     }
 
@@ -515,8 +536,10 @@ class ZmsApiFacadeService
         array $serviceIds,
         array $serviceCounts,
         string $startDate,
-        string $endDate
+        string $endDate,
+        ?string $traceId = null
     ): AvailableCalendarByOffice|array {
+        $t0 = microtime(true);
         $params = [
             'startDate' => $startDate,
             'endDate' => $endDate,
@@ -526,8 +549,12 @@ class ZmsApiFacadeService
         if ($serviceCounts !== []) {
             $params['serviceCount'] = implode(',', $serviceCounts);
         }
+        if ($traceId !== null && $traceId !== '') {
+            $params['traceId'] = $traceId;
+        }
 
-        $availability = ZmsApiClientService::getCalendarAvailability($params);
+        $availability = ZmsApiClientService::getCalendarAvailability($params, $traceId);
+        $tAfterHttp = microtime(true);
 
         $formattedDays = [];
         foreach ($availability['days'] ?? [] as $day) {
@@ -545,12 +572,25 @@ class ZmsApiFacadeService
                 'offices' => $offices,
             ];
         }
+        $tAfterFormat = microtime(true);
 
-        return new AvailableCalendarByOffice(
+        $entity = new AvailableCalendarByOffice(
             (string) ($availability['startDate'] ?? $startDate),
             (string) ($availability['endDate'] ?? $endDate),
             $formattedDays
         );
+
+        LoggerService::logInfo('calendar.availability.timing', [
+            'trace_id' => $traceId,
+            'stage' => 'facade.getCalendarAvailability',
+            'http_ms' => (int) round(($tAfterHttp - $t0) * 1000),
+            'format_ms' => (int) round(($tAfterFormat - $tAfterHttp) * 1000),
+            'dto_ms' => (int) round((microtime(true) - $tAfterFormat) * 1000),
+            'total_ms' => (int) round((microtime(true) - $t0) * 1000),
+            'day_count' => count($formattedDays),
+        ]);
+
+        return $entity;
     }
 
     public static function getFreeAppointments(int $officeId, array $serviceIds, array $serviceCounts, array $date): ProcessList|array
