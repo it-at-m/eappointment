@@ -42,11 +42,10 @@ class WorkstationProcessCalled extends BaseController
             }
         }
 
-        $excludedIds = $validator->getParameter('exclude')->isString()->setDefault('')->getValue();
-        if ($excludedIds) {
-            $exclude = explode(',', $excludedIds);
-        }
-        $exclude[] = $workstation->process->toQueue(\App::$now)->number;
+        $excludedIds = Helper\ExcludeIds::fromQuery(
+            $validator->getParameter('exclude')->isString()->setDefault('')->getValue()
+        );
+        $excludedIds[] = $workstation->process->toQueue(\App::$now)->number;
 
         $error = $validator->getParameter('error')->isString()->getValue();
         if (isset($processId) && $workstation->process->getId() != $processId) {
@@ -68,7 +67,7 @@ class WorkstationProcessCalled extends BaseController
                 'workstation' => $workstation,
                 'menuActive' => 'workstation',
                 'process' => $process,
-                'exclude' => join(',', $exclude),
+                'exclude' => Helper\ExcludeIds::toQuery($excludedIds),
                 'error' => $error
             )
         );

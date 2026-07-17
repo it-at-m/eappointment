@@ -41,8 +41,9 @@ class WorkstationProcessNext extends BaseController
             'gql' => Helper\GraphDefaults::getWorkstation()
         ])->getEntity();
         $validator = $request->getAttribute('validator');
-        $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
-        $excludedIds = ($excludedIds) ? $excludedIds : '';
+        $excludedIds = Helper\ExcludeIds::fromQuery(
+            $validator->getParameter('exclude')->isString()->getValue()
+        );
 
         $selectedDateTime = \App::$now;
         $selectedDateTime = ($selectedDateTime < \App::$now) ? \App::$now : $selectedDateTime;
@@ -66,10 +67,7 @@ class WorkstationProcessNext extends BaseController
                 } elseif ($timeoutTimeUnix !== null && !($process->queue->callCount > 0 && ($currentTimeUnix - $timeoutTimeUnix) < 300)) {
                     $filteredProcessList->addEntity(clone $process);
                 } else {
-                    if (!empty($excludedIds)) {
-                        $excludedIds .= ",";
-                    }
-                    $excludedIds .= $process->queue->number;
+                    $excludedIds[] = $process->queue->number;
                 }
             }
         }
@@ -95,7 +93,7 @@ class WorkstationProcessNext extends BaseController
                     'authkey' => $process->authKey
                 ),
                 array(
-                    'exclude' => $excludedIds
+                    'exclude' => Helper\ExcludeIds::toQuery($excludedIds)
                 )
             );
         }
@@ -105,7 +103,7 @@ class WorkstationProcessNext extends BaseController
                 'id' => $process->id
             ),
             array(
-                'exclude' => $excludedIds
+                'exclude' => Helper\ExcludeIds::toQuery($excludedIds)
             )
         );
     }

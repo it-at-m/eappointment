@@ -25,8 +25,9 @@ class WorkstationProcessCancelNext extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $validator = $request->getAttribute('validator');
-        $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
-        $excludedIds = ($excludedIds) ? $excludedIds : '';
+        $excludedIds = Helper\ExcludeIds::fromQuery(
+            $validator->getParameter('exclude')->isString()->getValue()
+        );
         if ($workstation->process['id']) {
             \App::$http->readDeleteResult('/workstation/process/', ['action' => 'requeue_and_skip_to_next'])->getEntity();
         }
@@ -34,7 +35,7 @@ class WorkstationProcessCancelNext extends BaseController
             'workstationProcessNext',
             array(),
             array(
-                'exclude' => $excludedIds
+                'exclude' => Helper\ExcludeIds::toQuery($excludedIds)
             )
         );
     }
