@@ -102,6 +102,6 @@ class AppointmentUpdateService
             return $result;
         }
 
-        return ZmsApiFacadeService::toThinnedProcessWithProviderGeo($result);
+        return MapperService::processToThinnedProcess($result);
     }
 }
