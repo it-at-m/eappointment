@@ -2,7 +2,7 @@
 Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 10492, jump-in allow-mix)
   As a citizen
   I want to complete a full appointment booking from offices-and-services through confirm
-  So that the API behaviour matches the citizen frontend (offices → days → slots → reserve → preconfirm → confirm via mail)
+  So that the API behaviour matches the citizen frontend (offices → days → slots → reserve → update → preconfirm → confirm via mail)
 
   Background:
     Given the Citizen API is available
@@ -15,6 +15,11 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     And I request available appointments for the first available day
     And I reserve an appointment with the first available slot
     Then the reserve endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
+    And the appointment status should be "reserved"
+    And the appointment should be at office 10502
+    And the appointment should be for service 1063441
+    When I update the appointment with contact details
+    Then the update endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
     And the appointment status should be "reserved"
     And the appointment should be at office 10502
     And the appointment should be for service 1063441
@@ -53,6 +58,11 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     And the appointment status should be "reserved"
     And the appointment should be at office 10489
     And the appointment should be for service 1063441
+    When I update the appointment with contact details
+    Then the update endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
+    And the appointment status should be "reserved"
+    And the appointment should be at office 10489
+    And the appointment should be for service 1063441
     When I preconfirm the appointment
     Then the preconfirm endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
     And the appointment status should be "preconfirmed"
@@ -88,6 +98,11 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     And the appointment status should be "reserved"
     And the appointment should be at office 10492
     And the appointment should be for service 10295182
+    When I update the appointment with contact details
+    Then the update endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
+    And the appointment status should be "reserved"
+    And the appointment should be at office 10492
+    And the appointment should be for service 10295182
     When I preconfirm the appointment
     Then the preconfirm endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
     And the appointment status should be "preconfirmed"
@@ -120,6 +135,11 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     And I request available appointments for the first available day
     And I reserve an appointment with the first available slot
     Then the reserve endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
+    And the appointment status should be "reserved"
+    And the appointment should be at office 10502
+    And the appointment should be for service 1063441
+    When I update the appointment with contact details
+    Then the update endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
     And the appointment status should be "reserved"
     And the appointment should be at office 10502
     And the appointment should be for service 1063441

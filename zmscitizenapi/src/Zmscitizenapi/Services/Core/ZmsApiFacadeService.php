@@ -453,12 +453,19 @@ class ZmsApiFacadeService
 
         $providerMap = [];
         foreach ($providerList as $provider) {
-            $key = $provider->source . '_' . $provider->id;
+            $source = method_exists($provider, 'getSource') ? $provider->getSource() : ($provider->source ?? '');
+            $key = $source . '_' . $provider->id;
             $providerMap[$key] = $provider;
         }
 
         $scopeProvider = $matchingScope->getProvider();
-        $providerKey = $scopeProvider ? ($scopeProvider->source . '_' . $scopeProvider->id) : null;
+        $providerKey = null;
+        if ($scopeProvider) {
+            $scopeSource = method_exists($scopeProvider, 'getSource')
+                ? $scopeProvider->getSource()
+                : ($scopeProvider->source ?? '');
+            $providerKey = $scopeSource . '_' . $scopeProvider->id;
+        }
         $matchingProv = ($providerKey && isset($providerMap[$providerKey]))
             ? $providerMap[$providerKey]
             : $scopeProvider;
@@ -800,7 +807,46 @@ class ZmsApiFacadeService
             return $errors;
         }
         $process = ZmsApiClientService::reserveTimeslot($appointmentProcess, $serviceIds, $serviceCounts);
-        return MapperService::processToThinnedProcess($process);
+        return self::toThinnedProcessWithProviderGeo($process);
+    }
+
+    /**
+     * Map a process and ensure scope.provider lat/lon are filled from office provider data when missing.
+     */
+    public static function toThinnedProcessWithProviderGeo(Process $process): ThinnedProcess
+    {
+        return self::enrichThinnedProcessProviderGeo(MapperService::processToThinnedProcess($process));
+    }
+
+    /**
+     * Fill missing provider coordinates from the offices list (same source as /offices/).
+     */
+    public static function enrichThinnedProcessProviderGeo(ThinnedProcess $thinnedProcess): ThinnedProcess
+    {
+        if (!$thinnedProcess->scope instanceof ThinnedScope || !$thinnedProcess->scope->provider) {
+            return $thinnedProcess;
+        }
+
+        $existingProvider = $thinnedProcess->scope->provider;
+        if ($existingProvider->lat !== null && $existingProvider->lon !== null) {
+            return $thinnedProcess;
+        }
+
+        $providerList = ZmsApiClientService::getOffices();
+        $providerMap = [];
+        foreach ($providerList as $provider) {
+            $source = method_exists($provider, 'getSource') ? $provider->getSource() : ($provider->source ?? '');
+            $providerMap[$source . '_' . $provider->id] = $provider;
+        }
+
+        $source = $existingProvider->source ?? '';
+        $providerKey = $source . '_' . $existingProvider->id;
+        if (!isset($providerMap[$providerKey])) {
+            return $thinnedProcess;
+        }
+
+        $thinnedProcess->scope->provider = MapperService::providerToThinnedProvider($providerMap[$providerKey]);
+        return $thinnedProcess;
     }
 
     public static function getProcessById(?int $processId, ?string $authKey, ?AuthenticatedUser $user): Process
@@ -827,49 +873,7 @@ class ZmsApiFacadeService
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;
         }
-        $thinnedProcess = MapperService::processToThinnedProcess($process);
-
-        $providerList = ZmsApiClientService::getOffices();
-        $providerMap = [];
-        foreach ($providerList as $provider) {
-            $key = $provider->getSource() . '_' . $provider->id;
-            $providerMap[$key] = $provider;
-        }
-
-        $thinnedScope = null;
-        if ($process->scope instanceof Scope) {
-            $scopeProvider = $process->scope->getProvider();
-            $providerKey = $scopeProvider ? ($scopeProvider->getSource() . '_' . $scopeProvider->id) : null;
-            $matchingProvider = $providerKey && isset($providerMap[$providerKey]) ? $providerMap[$providerKey] : $scopeProvider;
-            $thinnedProvider = MapperService::providerToThinnedProvider($matchingProvider);
-            $thinnedScope = new ThinnedScope(
-                id: (int) $process->scope->id,
-                provider: $thinnedProvider,
-                shortName: (string) $process->scope->getShortName(),
-                emailFrom: (string) $process->scope->getEmailFrom(),
-                emailRequired: (bool) $process->scope->getEmailRequired(),
-                telephoneActivated: (bool) $process->scope->getTelephoneActivated(),
-                telephoneRequired: (bool) $process->scope->getTelephoneRequired(),
-                customTextfieldActivated: (bool) $process->scope->getCustomTextfieldActivated(),
-                customTextfieldRequired: (bool) $process->scope->getCustomTextfieldRequired(),
-                customTextfieldLabel: $process->scope->getCustomTextfieldLabel() ?? null,
-                customTextfield2Activated: (bool) $process->scope->getCustomTextfield2Activated(),
-                customTextfield2Required: (bool) $process->scope->getCustomTextfield2Required(),
-                customTextfield2Label: $process->scope->getCustomTextfield2Label() ?? null,
-                captchaActivatedRequired: (bool) $process->scope->getCaptchaActivatedRequired(),
-                infoForAppointment: $process->scope->getInfoForAppointment() ?? null,
-                infoForAllAppointments: $process->scope->getInfoForAllAppointments() ?? null,
-                slotsPerAppointment: ((string) $process->scope->getSlotsPerAppointment() === '' ? null : (string) $process->scope->getSlotsPerAppointment()),
-                appointmentsPerMail: ((string) $process->scope->getAppointmentsPerMail() === '' ? null : (string) $process->scope->getAppointmentsPerMail()),
-                whitelistedMails: ((string) $process->scope->getWhitelistedMails() === '' ? null : (string) $process->scope->getWhitelistedMails()),
-                reservationDuration: (int) MapperService::extractReservationDuration($process->scope),
-                activationDuration: MapperService::extractActivationDuration($process->scope),
-                hint: ((string) $process->scope->getScopeHint() === '' ? null : (string) $process->scope->getScopeHint())
-            );
-        }
-
-        $thinnedProcess->scope = $thinnedScope;
-        return $thinnedProcess;
+        return self::toThinnedProcessWithProviderGeo($process);
     }
 
     public static function updateClientData(Process $reservedProcess): Process|array

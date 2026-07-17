@@ -300,16 +300,14 @@ class MapperService
 
         $thinnedProvider = null;
         try {
-            if (isset($scope->provider)) {
+            $provider = null;
+            if (isset($scope->provider) && $scope->provider instanceof Provider) {
                 $provider = $scope->provider;
-                $contact = $provider->contact ?? null;
-                $thinnedProvider = new ThinnedProvider(
-                    id: isset($provider->id) ? (int)$provider->id : null,
-                    name: $provider->name ?? null,
-                    displayName: $provider->displayName ?? null,
-                    source: $provider->source ?? null,
-                    contact: $contact ? self::contactToThinnedContact($contact) : null
-                );
+            } elseif (isset($scope->provider) || method_exists($scope, 'getProvider')) {
+                $provider = $scope->getProvider();
+            }
+            if ($provider instanceof Provider) {
+                $thinnedProvider = self::providerToThinnedProvider($provider);
             }
         } catch (\BO\Zmsentities\Exception\ScopeMissingProvider $e) {
             $thinnedProvider = null;
@@ -524,6 +522,14 @@ class MapperService
                     $scope->provider->contact->street = $provider->contact->street ?? null;
                     $scope->provider->contact->streetNumber = $provider->contact->streetNumber ?? null;
                 }
+                if ($provider->lat !== null || $provider->lon !== null) {
+                    $scope->provider->data = [
+                        'geo' => [
+                            'lat' => $provider->lat,
+                            'lon' => $provider->lon,
+                        ],
+                    ];
+                }
             }
 
             $scope->provider->source = $thinnedProcess->scope->provider->source ?? null;
@@ -593,13 +599,18 @@ class MapperService
 
     public static function providerToThinnedProvider(Provider $provider): ThinnedProvider
     {
+        $geoLat = $provider->data['geo']['lat'] ?? null;
+        $geoLon = $provider->data['geo']['lon'] ?? null;
+        $contactLat = isset($provider->contact) ? ($provider->contact->lat ?? null) : null;
+        $contactLon = isset($provider->contact) ? ($provider->contact->lon ?? null) : null;
+
         return new ThinnedProvider(
             id: isset($provider->id) ? (int) $provider->id : null,
             name: isset($provider->name) ? $provider->name : null,
             displayName: isset($provider->displayName) ? $provider->displayName : null,
             source: isset($provider->source) ? $provider->source : null,
-            lon: isset($provider->data['geo']['lon']) ? (float) $provider->data['geo']['lon'] : null,
-            lat: isset($provider->data['geo']['lat']) ? (float) $provider->data['geo']['lat'] : null,
+            lon: isset($geoLon) ? (float) $geoLon : (isset($contactLon) ? (float) $contactLon : null),
+            lat: isset($geoLat) ? (float) $geoLat : (isset($contactLat) ? (float) $contactLat : null),
             contact: isset($provider->contact) ? self::contactToThinnedContact($provider->contact) : null
         );
     }

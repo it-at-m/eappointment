@@ -12,6 +12,8 @@ class Provider extends \BO\Zmsbackend\Query\Base
             'contact__city' => 'provider.contact__city',
             'contact__country' => self::expression('"Germany"'),
             'contact__name' => 'provider.name',
+            'contact__lat' => 'provider.contact__lat',
+            'contact__lon' => 'provider.contact__lon',
             'contact__postalCode' => 'provider.contact__postalCode',
             'contact__region' => 'provider.contact__region',
             'contact__street' => 'provider.contact__street',

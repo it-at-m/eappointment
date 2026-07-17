@@ -68,7 +68,7 @@ class AppointmentPreconfirmService
             return $result;
         }
 
-        return MapperService::processToThinnedProcess($result);
+        return ZmsApiFacadeService::toThinnedProcessWithProviderGeo($result);
     }
 
     private function sendPreconfirmationEmail(ThinnedProcess $process): void
