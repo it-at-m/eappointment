@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Controllers\Availability;
 
-use BO\Slim\LoggerService;
 use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Controllers\UnpublishedAccessTrait;
 use BO\Zmscitizenapi\Services\Availability\AvailableCalendarByOfficeService;
@@ -28,7 +27,6 @@ class AvailableCalendarByOfficeController extends BaseController
     #[\Override]
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $t0 = microtime(true);
         $requestErrors = ValidationService::validateServerGetRequest($request);
         if (!empty($requestErrors['errors'])) {
             return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest')['statusCode']);
@@ -36,25 +34,11 @@ class AvailableCalendarByOfficeController extends BaseController
 
         $result = $this->service->getAvailableCalendarByOffice($request->getQueryParams(), $this->showUnpublished);
 
-        $tAfterService = microtime(true);
         $isError = is_array($result) && isset($result['errors']);
-        $payload = $isError ? $result : $result->toArray();
-        $responseOut = $this->createJsonResponse(
+        return $this->createJsonResponse(
             $response,
-            $payload,
+            $isError ? $result : $result->toArray(),
             $isError ? ErrorMessages::getHighestStatusCode($result['errors']) : 200
         );
-
-        LoggerService::logInfo('calendar.availability.timing', [
-            'stage' => 'controller.total',
-            'service_ms' => (int) round(($tAfterService - $t0) * 1000),
-            'toArray_ms' => (int) round((microtime(true) - $tAfterService) * 1000),
-            'total_ms' => (int) round((microtime(true) - $t0) * 1000),
-            'office_count' => count(array_filter(explode(',', (string) ($request->getQueryParams()['officeId'] ?? '')))),
-            'service_count' => count(array_filter(explode(',', (string) ($request->getQueryParams()['serviceId'] ?? '')))),
-            'is_error' => $isError,
-        ]);
-
-        return $responseOut;
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Availability;
 
-use BO\Slim\LoggerService;
 use BO\Zmscitizenapi\Models\AvailableCalendarByOffice;
 use BO\Zmscitizenapi\Services\Captcha\CaptchaRequirementTrait;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
@@ -17,63 +16,37 @@ class AvailableCalendarByOfficeService
     use ServiceLocationValidationTrait;
 
     private TokenValidationService $tokenValidator;
+    private ZmsApiFacadeService $zmsApiFacadeService;
 
     public function __construct()
     {
         $this->tokenValidator = new TokenValidationService();
+        $this->zmsApiFacadeService = new ZmsApiFacadeService();
     }
 
-    public function getAvailableCalendarByOffice(array $queryParams, bool $showUnpublished = false): AvailableCalendarByOffice|array
-    {
-        $t0 = microtime(true);
+    public function getAvailableCalendarByOffice(
+        array $queryParams,
+        bool $showUnpublished = false
+    ): AvailableCalendarByOffice|array {
         $clientData = $this->extractClientData($queryParams);
 
-        $t1 = microtime(true);
         $errors = $this->validateClientData($clientData);
-        $validateClientMs = (int) round((microtime(true) - $t1) * 1000);
         if (!empty($errors['errors'])) {
-            LoggerService::logInfo('calendar.availability.timing', [
-                'stage' => 'service.validateClientData',
-                'ms' => $validateClientMs,
-                'early_return' => 'client_validation',
-            ]);
             return $errors;
         }
 
-        $t2 = microtime(true);
         $errors = $this->validateServiceLocations($clientData->officeIds, $clientData->serviceIds, $showUnpublished);
-        $validateLocationsMs = (int) round((microtime(true) - $t2) * 1000);
         if ($errors !== null) {
-            LoggerService::logInfo('calendar.availability.timing', [
-                'stage' => 'service.validateServiceLocations',
-                'ms' => $validateLocationsMs,
-                'office_count' => count($clientData->officeIds),
-                'early_return' => 'location_validation',
-            ]);
             return $errors;
         }
 
-        $t3 = microtime(true);
-        $result = ZmsApiFacadeService::getCalendarAvailability(
+        return ZmsApiFacadeService::getCalendarAvailability(
             $clientData->officeIds,
             $clientData->serviceIds,
             $clientData->serviceCounts,
             $clientData->startDate,
             $clientData->endDate
         );
-
-        LoggerService::logInfo('calendar.availability.timing', [
-            'stage' => 'service.total',
-            'extract_ms' => (int) round(($t1 - $t0) * 1000),
-            'validate_client_ms' => $validateClientMs,
-            'validate_locations_ms' => $validateLocationsMs,
-            'facade_ms' => (int) round((microtime(true) - $t3) * 1000),
-            'total_ms' => (int) round((microtime(true) - $t0) * 1000),
-            'office_count' => count($clientData->officeIds),
-            'service_count' => count($clientData->serviceIds),
-        ]);
-
-        return $result;
     }
 
     private function extractClientData(array $queryParams): object

@@ -9,7 +9,7 @@ namespace BO\Zmsbackend\Calendar\Api;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
-use BO\Zmsbackend\Calendar\Service\CalendarAvailability as CalendarAvailabilityQuery;
+use BO\Zmsbackend\Calendar\Service\CalendarAvailability;
 use BO\Zmsbackend\Slot\Exception\Calendar\InvalidAvailabilityInput;
 
 class CalendarAvailabilityGet extends \BO\Zmsbackend\Api\BaseController
@@ -35,7 +35,7 @@ class CalendarAvailabilityGet extends \BO\Zmsbackend\Api\BaseController
 
         try {
             $message = \BO\Zmsbackend\Api\Response\Message::create($request);
-            $message->data = (new CalendarAvailabilityQuery())->readFromQuery(
+            $message->data = (new CalendarAvailability())->readFromQuery(
                 \App::getNow(),
                 $slotType,
                 $slotsRequired,

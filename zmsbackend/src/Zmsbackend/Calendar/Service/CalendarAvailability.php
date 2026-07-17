@@ -58,7 +58,6 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         string $slotType = 'public',
         $slotsRequired = 0
     ): array {
-        $t0 = microtime(true);
         $calendar = (new Calendar())->readResolvedEntity(
             $calendar,
             $now,
@@ -67,7 +66,6 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             $slotsRequired,
             false
         );
-        $tAfterResolve = microtime(true);
 
         $dayQuery = new \BO\Zmsbackend\Day\Service\Day();
         $dayQuery->writeTemporaryScopeList($calendar, $slotsRequired);
@@ -84,7 +82,6 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             }
         }
         $calendar->days = $bookableDays;
-        $tAfterDays = microtime(true);
 
         $processList = [];
         if (count($bookableDays) > 0) {
@@ -96,25 +93,8 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
                     false
                 );
         }
-        $tAfterSlots = microtime(true);
 
-        $result = $this->buildResult($calendar, $processList);
-
-        if (\App::$log) {
-            \App::$log->info('calendar.availability.timing', [
-                'stage' => 'backend.readAvailability',
-                'resolve_ms' => (int) round(($tAfterResolve - $t0) * 1000),
-                'daylist_ms' => (int) round(($tAfterDays - $tAfterResolve) * 1000),
-                'slots_ms' => (int) round(($tAfterSlots - $tAfterDays) * 1000),
-                'build_ms' => (int) round((microtime(true) - $tAfterSlots) * 1000),
-                'total_ms' => (int) round((microtime(true) - $t0) * 1000),
-                'scope_count' => count($calendar->scopes),
-                'bookable_days' => count($bookableDays),
-                'slot_days_queried' => count($bookableDays),
-            ]);
-        }
-
-        return $result;
+        return $this->buildResult($calendar, $processList);
     }
 
     private function buildCalendarFromQuery(

@@ -11,23 +11,7 @@ trait CaptchaRequirementTrait
 {
     private function isCaptchaRequiredForOfficeIds(array $officeIds): bool
     {
-        foreach ($officeIds as $officeIdRaw) {
-            $officeId = (int) $officeIdRaw;
-            if ($officeId <= 0) {
-                continue;
-            }
-
-            try {
-                $scope = $this->zmsApiFacadeService->getScopeByOfficeId($officeId);
-                if (($scope->captchaActivatedRequired ?? false) === true) {
-                    return true;
-                }
-            } catch (\Throwable $e) {
-                continue;
-            }
-        }
-
-        return false;
+        return $this->zmsApiFacadeService->isCaptchaRequiredForAnyOffice($officeIds);
     }
 
     private function isCaptchaRequiredForOfficeId(?int $officeId): bool
