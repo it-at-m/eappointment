@@ -80,7 +80,7 @@ class AppointmentConfirmService
             return $result;
         }
 
-        return MapperService::processToThinnedProcess($result);
+        return ZmsApiFacadeService::toThinnedProcessWithProviderGeo($result);
     }
 
     private function sendConfirmationEmail(ThinnedProcess $process): void
