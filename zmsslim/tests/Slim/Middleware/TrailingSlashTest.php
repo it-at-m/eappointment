@@ -32,6 +32,48 @@ class TrailingSlashTest extends TestCase
         self::assertContainsEquals('//localhost/admin/', $response->getHeader('Location'));
     }
 
+    public function testInvokeDoesNotForceHttpsWhenXSslIsNo()
+    {
+        $uri = new Uri('http', 'localhost', 80, '/admin');
+
+        $request = new Request(
+            'GET',
+            $uri,
+            new Headers(['X-Ssl' => ['no']]),
+            [],
+            [],
+            new Stream(fopen('php://temp', 'wb+'))
+        );
+        $nextHandler = new RequestHandlerMock();
+
+        $sut = new TrailingSlash();
+        $response = $sut->__invoke($request, $nextHandler);
+
+        self::assertSame(StatusCodeInterface::STATUS_MOVED_PERMANENTLY, $response->getStatusCode());
+        self::assertContainsEquals('//localhost/admin/', $response->getHeader('Location'));
+    }
+
+    public function testInvokeForcesHttpsWhenXSslIsPresent()
+    {
+        $uri = new Uri('http', 'localhost', 80, '/admin');
+
+        $request = new Request(
+            'GET',
+            $uri,
+            new Headers(['X-Ssl' => ['yes']]),
+            [],
+            [],
+            new Stream(fopen('php://temp', 'wb+'))
+        );
+        $nextHandler = new RequestHandlerMock();
+
+        $sut = new TrailingSlash();
+        $response = $sut->__invoke($request, $nextHandler);
+
+        self::assertSame(StatusCodeInterface::STATUS_MOVED_PERMANENTLY, $response->getStatusCode());
+        self::assertContainsEquals('https://localhost:80/admin/', $response->getHeader('Location'));
+    }
+
     public function testInvokeRewritesApiPathsWithoutRedirect()
     {
         $uri = new Uri('http', 'localhost', 80, '/terminvereinbarung/api/2/status');

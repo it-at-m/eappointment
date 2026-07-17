@@ -30,7 +30,7 @@ class TrailingSlash
 
         // Non-API (HTML apps): permanently redirect to the trailing-slash URL.
         $uri = $uri->withPath($path . '/');
-        if ($request->getHeader('X-Ssl') && 'no' != $request->getHeader('X-Ssl')) {
+        if ($request->hasHeader('X-Ssl') && 'no' !== $request->getHeaderLine('X-Ssl')) {
             $uri = $uri->withScheme('https');
             $uriString = (string)$uri;
         } else {
