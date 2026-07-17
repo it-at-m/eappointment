@@ -65,10 +65,9 @@ jobs:
           echo "Installing MariaDB client..."
           apt-get update && apt-get install -y mariadb-client
           echo "Setting up database and importing schema from .resources/zms.sql..."
-          # Create database
-          mysql -h mariadb -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS zmsbo;"
-          # Import schema from .resources/zms.sql
-          mysql -h mariadb -u root -p"$MYSQL_ROOT_PASSWORD" zmsbo < .resources/zms.sql
+          # Trixie mariadb-client defaults to requiring TLS; the CI MariaDB service has no SSL.
+          mysql --skip-ssl -h mariadb -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS zmsbo;"
+          mysql --skip-ssl -h mariadb -u root -p"$MYSQL_ROOT_PASSWORD" zmsbo < .resources/zms.sql
 
       - name: Create database schema generator script
         run: |
@@ -89,7 +88,8 @@ jobs:
                       user=user,
                       password=password,
                       database=database,
-                      charset='utf8mb4'
+                      charset='utf8mb4',
+                      ssl_disabled=True
                   )
                   self.cursor = self.connection.cursor(pymysql.cursors.DictCursor)
 
