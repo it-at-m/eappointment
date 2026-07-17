@@ -949,7 +949,7 @@ CREATE TABLE `provider` (
   `contact__country` varchar(200) NOT NULL,
   `contact__lat` float NOT NULL,
   `contact__lon` float NOT NULL,
-  `contact__postalCode` int(5) NOT NULL,
+  `contact__postalCode` varchar(10) NOT NULL,
   `contact__region` varchar(200) NOT NULL,
   `contact__street` varchar(200) NOT NULL,
   `contact__streetNumber` varchar(20) NOT NULL,
