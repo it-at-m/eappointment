@@ -425,7 +425,8 @@ public class CitizenApiSteps {
         body.put("familyName", "ATAF Test User");
         body.put("email", "ataf-citizenapi@example.com");
         body.put("telephone", "");
-        body.put("customTextfield", "");
+        // Ruppertstraße scopes require customTextfield (same as citizenview Kontakt Bemerkung).
+        body.put("customTextfield", "ATAF Bemerkung");
         body.put("customTextfield2", "");
         response = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
