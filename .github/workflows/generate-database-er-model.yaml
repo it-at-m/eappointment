@@ -44,9 +44,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt-get update && apt-get install -y python3-pip
-          python3 -m pip install --upgrade pip
-          python3 -m pip install pymysql jinja2
+          apt-get update && apt-get install -y python3-pip python3-venv
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/pip install pymysql jinja2
 
       - name: Install Composer Dependencies
         run: |
@@ -547,7 +548,7 @@ jobs:
           MYSQL_PORT: "tcp://mariadb:3306"
           MYSQL_DATABASE: zmsbo
           MYSQL_ROOT_PASSWORD: zmsbackend
-        run: python3 generate_schema.py
+        run: .venv/bin/python generate_schema.py
 
       - name: Upload database schema diagrams artifact
         uses: actions/upload-artifact@v7
