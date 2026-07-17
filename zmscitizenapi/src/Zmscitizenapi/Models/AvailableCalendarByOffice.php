@@ -20,10 +20,15 @@ class AvailableCalendarByOffice extends Entity implements JsonSerializable
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->availableDays = $availableDays;
-        $this->ensureValid();
+        // Skip JSON-schema validation: payload is assembled from our own zmsbackend
+        // response, and Opis walks every appointment timestamp (~100ms+).
+        // $this->ensureValid();
     }
 
-    private function ensureValid(): void
+    /**
+     * Optional schema check for tests / non-hot paths.
+     */
+    public function ensureValid(): void
     {
         if (!$this->testValid()) {
             throw new InvalidArgumentException('The provided data is invalid according to the schema.');
