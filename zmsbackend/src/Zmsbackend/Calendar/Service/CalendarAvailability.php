@@ -25,7 +25,8 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         ?string $serviceIds,
         ?string $serviceCounts = '',
         ?string $providerSource = null,
-        ?string $requestSource = null
+        ?string $requestSource = null,
+        ?string $traceId = null
     ): array {
         if (!$startDate || !$endDate || !$officeIds || !$serviceIds) {
             throw new \BO\Zmsbackend\Slot\Exception\Calendar\InvalidAvailabilityInput(
@@ -33,19 +34,34 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             );
         }
 
+        $t0 = microtime(true);
+        $calendar = $this->buildCalendarFromQuery(
+            $startDate,
+            $endDate,
+            $officeIds,
+            $serviceIds,
+            $serviceCounts ?? '',
+            $providerSource,
+            $requestSource
+        );
+        $buildMs = (int) round((microtime(true) - $t0) * 1000);
+
+        if (\App::$log) {
+            \App::$log->info('calendar.availability.timing', [
+                'trace_id' => $traceId,
+                'stage' => 'backend.buildCalendarFromQuery',
+                'ms' => $buildMs,
+                'office_count' => count($calendar->providers ?? []),
+                'request_count' => count($calendar->requests ?? []),
+            ]);
+        }
+
         return $this->readAvailability(
-            $this->buildCalendarFromQuery(
-                $startDate,
-                $endDate,
-                $officeIds,
-                $serviceIds,
-                $serviceCounts ?? '',
-                $providerSource,
-                $requestSource
-            ),
+            $calendar,
             $now,
             $slotType,
-            $slotsRequired
+            $slotsRequired,
+            $traceId
         );
     }
 
@@ -56,20 +72,27 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         Entity $calendar,
         \DateTimeInterface $now,
         string $slotType = 'public',
-        $slotsRequired = 0
+        $slotsRequired = 0,
+        ?string $traceId = null
     ): array {
+        $t0 = microtime(true);
         $calendar = (new Calendar())->readResolvedEntity(
             $calendar,
             $now,
             true,
             $slotType,
             $slotsRequired,
-            false
+            false,
+            true,
+            $traceId
         );
+        $tAfterResolve = microtime(true);
 
         $dayQuery = new \BO\Zmsbackend\Day\Service\Day();
         $dayQuery->writeTemporaryScopeList($calendar, $slotsRequired);
+        $tAfterTempScope = microtime(true);
         $dayList = $dayQuery->readListFromPreparedTemporaryScopeList($slotsRequired);
+        $tAfterDaySql = microtime(true);
         $calendar->days = $dayList
             ->setStatusByType($slotType, $now)
             ->withDaysInDateRange($calendar->getFirstDay(), $calendar->getLastDay());
@@ -82,6 +105,7 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             }
         }
         $calendar->days = $bookableDays;
+        $tAfterDays = microtime(true);
 
         $processList = [];
         if (count($bookableDays) > 0) {
@@ -90,11 +114,34 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
                     $calendar,
                     $slotType,
                     $slotsRequired,
-                    false
+                    false,
+                    $traceId
                 );
         }
+        $tAfterSlots = microtime(true);
 
-        return $this->buildResult($calendar, $processList);
+        $result = $this->buildResult($calendar, $processList);
+
+        if (\App::$log) {
+            \App::$log->info('calendar.availability.timing', [
+                'trace_id' => $traceId,
+                'stage' => 'backend.readAvailability',
+                'resolve_ms' => (int) round(($tAfterResolve - $t0) * 1000),
+                'temp_scope_ms' => (int) round(($tAfterTempScope - $tAfterResolve) * 1000),
+                'day_sql_ms' => (int) round(($tAfterDaySql - $tAfterTempScope) * 1000),
+                'day_filter_ms' => (int) round(($tAfterDays - $tAfterDaySql) * 1000),
+                'daylist_ms' => (int) round(($tAfterDays - $tAfterResolve) * 1000),
+                'slots_ms' => (int) round(($tAfterSlots - $tAfterDays) * 1000),
+                'build_ms' => (int) round((microtime(true) - $tAfterSlots) * 1000),
+                'total_ms' => (int) round((microtime(true) - $t0) * 1000),
+                'scope_count' => count($calendar->scopes),
+                'bookable_days' => count($bookableDays),
+                'slot_days_queried' => count($bookableDays),
+                'process_count' => count($processList),
+            ]);
+        }
+
+        return $result;
     }
 
     private function buildCalendarFromQuery(

@@ -24,6 +24,9 @@ class CalendarAvailabilityGet extends \BO\Zmsbackend\Api\BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $t0 = microtime(true);
+        $traceId = Validator::param('traceId')->isString()->getValue() ?: bin2hex(random_bytes(8));
+
         $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
         $slotType = Validator::param('slotType')->isString()->getValue();
         if ($slotType || $slotsRequired) {
@@ -34,6 +37,7 @@ class CalendarAvailabilityGet extends \BO\Zmsbackend\Api\BaseController
         }
 
         try {
+            $tAfterAuth = microtime(true);
             $message = \BO\Zmsbackend\Api\Response\Message::create($request);
             $message->data = (new CalendarAvailability())->readFromQuery(
                 \App::getNow(),
@@ -45,8 +49,10 @@ class CalendarAvailabilityGet extends \BO\Zmsbackend\Api\BaseController
                 Validator::param('serviceId')->isString()->getValue(),
                 Validator::param('serviceCount')->isString()->setDefault('')->getValue(),
                 Validator::param('providerSource')->isString()->getValue() ?: null,
-                Validator::param('requestSource')->isString()->getValue() ?: null
+                Validator::param('requestSource')->isString()->getValue() ?: null,
+                $traceId
             );
+            $tAfterService = microtime(true);
         } catch (InvalidAvailabilityInput $exception) {
             throw new \BO\Zmsbackend\Calendar\Exception\InvalidFirstDay(
                 $exception->getMessage(),
@@ -56,6 +62,19 @@ class CalendarAvailabilityGet extends \BO\Zmsbackend\Api\BaseController
         }
 
         $response = Render::withLastModified($response, time(), '0');
-        return Render::withJson($response, $message->setUpdatedMetaData(), 200);
+        $responseOut = Render::withJson($response, $message->setUpdatedMetaData(), 200);
+
+        if (\App::$log) {
+            \App::$log->info('calendar.availability.timing', [
+                'trace_id' => $traceId,
+                'stage' => 'api.CalendarAvailabilityGet',
+                'auth_ms' => (int) round(($tAfterAuth - $t0) * 1000),
+                'service_ms' => (int) round(($tAfterService - $tAfterAuth) * 1000),
+                'json_ms' => (int) round((microtime(true) - $tAfterService) * 1000),
+                'total_ms' => (int) round((microtime(true) - $t0) * 1000),
+            ]);
+        }
+
+        return $responseOut;
     }
 }
