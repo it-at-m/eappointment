@@ -601,8 +601,8 @@ class MapperService
     {
         $geoLat = $provider->data['geo']['lat'] ?? null;
         $geoLon = $provider->data['geo']['lon'] ?? null;
-        $contactLat = isset($provider->contact) ? ($provider->contact->lat ?? null) : null;
-        $contactLon = isset($provider->contact) ? ($provider->contact->lon ?? null) : null;
+        $contactLat = self::contactCoordinate($provider->contact ?? null, 'lat');
+        $contactLon = self::contactCoordinate($provider->contact ?? null, 'lon');
 
         return new ThinnedProvider(
             id: isset($provider->id) ? (int) $provider->id : null,
@@ -613,6 +613,20 @@ class MapperService
             lat: isset($geoLat) ? (float) $geoLat : (isset($contactLat) ? (float) $contactLat : null),
             contact: isset($provider->contact) ? self::contactToThinnedContact($provider->contact) : null
         );
+    }
+
+    /**
+     * Read lat/lon from contact whether it is stored as array or object (see contact.json).
+     */
+    private static function contactCoordinate(mixed $contact, string $key): mixed
+    {
+        if ($contact === null) {
+            return null;
+        }
+        if (is_array($contact)) {
+            return $contact[$key] ?? null;
+        }
+        return $contact->$key ?? null;
     }
 
     private static function generateIcsContent(Process $process): ?string
