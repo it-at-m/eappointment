@@ -269,7 +269,9 @@ class ZmsApiClientService
                 $processEntity->queue = $appointmentProcess->queue;
             }
 
-            $result = \App::$http->readPostResult('/process/status/reserved/', $processEntity);
+            $result = \App::$http->readPostResult('/process/status/reserved/', $processEntity, [
+                'resolveReferences' => 2,
+            ]);
             $entity = $result?->getEntity();
             return $entity instanceof Process ? $entity : new Process();
         } catch (\Exception $e) {

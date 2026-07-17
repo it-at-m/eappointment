@@ -429,7 +429,6 @@ class ZmsApiFacadeService
     public static function getScopeById(?int $scopeId): ThinnedScope|array
     {
         $scopeList = ZmsApiClientService::getScopes();
-        $providerList = ZmsApiClientService::getOffices();
         $matchingScope = null;
         foreach ($scopeList as $scope) {
             if ((int) $scope->id === (int) $scopeId) {
@@ -451,27 +450,10 @@ class ZmsApiFacadeService
             return ValidationService::validateScopesNotFound(new ScopeList());
         }
 
-        $providerMap = [];
-        foreach ($providerList as $provider) {
-            $source = method_exists($provider, 'getSource') ? $provider->getSource() : ($provider->source ?? '');
-            $key = $source . '_' . $provider->id;
-            $providerMap[$key] = $provider;
-        }
-
         $scopeProvider = $matchingScope->getProvider();
-        $providerKey = null;
-        if ($scopeProvider) {
-            $scopeSource = method_exists($scopeProvider, 'getSource')
-                ? $scopeProvider->getSource()
-                : ($scopeProvider->source ?? '');
-            $providerKey = $scopeSource . '_' . $scopeProvider->id;
-        }
-        $matchingProv = ($providerKey && isset($providerMap[$providerKey]))
-            ? $providerMap[$providerKey]
-            : $scopeProvider;
         return new ThinnedScope(
             id: (int) $matchingScope->id,
-            provider: MapperService::providerToThinnedProvider($matchingProv),
+            provider: $scopeProvider ? MapperService::providerToThinnedProvider($scopeProvider) : null,
             shortName: (string) $matchingScope->getShortName(),
             emailFrom: (string) $matchingScope->getEmailFrom(),
             emailRequired: (bool) $matchingScope->getEmailRequired(),
@@ -807,46 +789,7 @@ class ZmsApiFacadeService
             return $errors;
         }
         $process = ZmsApiClientService::reserveTimeslot($appointmentProcess, $serviceIds, $serviceCounts);
-        return self::toThinnedProcessWithProviderGeo($process);
-    }
-
-    /**
-     * Map a process and ensure scope.provider lat/lon are filled from office provider data when missing.
-     */
-    public static function toThinnedProcessWithProviderGeo(Process $process): ThinnedProcess
-    {
-        return self::enrichThinnedProcessProviderGeo(MapperService::processToThinnedProcess($process));
-    }
-
-    /**
-     * Fill missing provider coordinates from the offices list (same source as /offices/).
-     */
-    public static function enrichThinnedProcessProviderGeo(ThinnedProcess $thinnedProcess): ThinnedProcess
-    {
-        if (!$thinnedProcess->scope instanceof ThinnedScope || !$thinnedProcess->scope->provider) {
-            return $thinnedProcess;
-        }
-
-        $existingProvider = $thinnedProcess->scope->provider;
-        if ($existingProvider->lat !== null && $existingProvider->lon !== null) {
-            return $thinnedProcess;
-        }
-
-        $providerList = ZmsApiClientService::getOffices();
-        $providerMap = [];
-        foreach ($providerList as $provider) {
-            $source = method_exists($provider, 'getSource') ? $provider->getSource() : ($provider->source ?? '');
-            $providerMap[$source . '_' . $provider->id] = $provider;
-        }
-
-        $source = $existingProvider->source ?? '';
-        $providerKey = $source . '_' . $existingProvider->id;
-        if (!isset($providerMap[$providerKey])) {
-            return $thinnedProcess;
-        }
-
-        $thinnedProcess->scope->provider = MapperService::providerToThinnedProvider($providerMap[$providerKey]);
-        return $thinnedProcess;
+        return MapperService::processToThinnedProcess($process);
     }
 
     public static function getProcessById(?int $processId, ?string $authKey, ?AuthenticatedUser $user): Process
@@ -873,7 +816,7 @@ class ZmsApiFacadeService
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;
         }
-        return self::toThinnedProcessWithProviderGeo($process);
+        return MapperService::processToThinnedProcess($process);
     }
 
     public static function updateClientData(Process $reservedProcess): Process|array
