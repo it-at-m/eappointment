@@ -214,6 +214,13 @@ class ZmsApiClientService
             $t0 = microtime(true);
             $result = \App::$http->readGetResult('/calendar/availability/', $params);
             $tAfterHttp = microtime(true);
+            if ($result === null) {
+                return [
+                    'startDate' => '',
+                    'endDate' => '',
+                    'days' => [],
+                ];
+            }
             $rawBody = (string) $result->getResponse()->getBody();
             $body = json_decode($rawBody, true);
             $data = $body['data'] ?? null;
