@@ -549,9 +549,6 @@ class ZmsApiFacadeService
         if ($serviceCounts !== []) {
             $params['serviceCount'] = implode(',', $serviceCounts);
         }
-        if ($traceId !== null && $traceId !== '') {
-            $params['traceId'] = $traceId;
-        }
 
         $availability = ZmsApiClientService::getCalendarAvailability($params, $traceId);
         $tAfterHttp = microtime(true);
