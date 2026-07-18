@@ -1,0 +1,11 @@
+id: ensure citizen user uses example.com email
+author: ZMS Development
+realm: zms
+changes:
+  # Idempotent follow-up if an older 11 set @mailinator.com before we switched.
+  # TODO: consider a unique @mailinator.com address later if ATAF login tests need
+  # to receive real mail (same pattern as zmscitizenview Kontakt fills).
+  - updateUser:
+      name: citizen
+      email: citizen@example.com
+      emailVerified: true

@@ -1,0 +1,39 @@
+id: add citizen access token profile claims
+author: ZMS Development
+realm: zms
+changes:
+  - addClientMapper:
+      clientId: dbs-fragments
+      name: email
+      protocolMapper: oidc-usermodel-property-mapper
+      config:
+        user.attribute: email
+        claim.name: email
+        jsonType.label: String
+        access.token.claim: "true"
+        id.token.claim: "true"
+        userinfo.token.claim: "true"
+
+  - addClientMapper:
+      clientId: dbs-fragments
+      name: given name
+      protocolMapper: oidc-usermodel-property-mapper
+      config:
+        user.attribute: firstName
+        claim.name: given_name
+        jsonType.label: String
+        access.token.claim: "true"
+        id.token.claim: "true"
+        userinfo.token.claim: "true"
+
+  - addClientMapper:
+      clientId: dbs-fragments
+      name: family name
+      protocolMapper: oidc-usermodel-property-mapper
+      config:
+        user.attribute: lastName
+        claim.name: family_name
+        jsonType.label: String
+        access.token.claim: "true"
+        id.token.claim: "true"
+        userinfo.token.claim: "true"

@@ -50,6 +50,26 @@ Verify:
 ping keycloak
 ```
 
+## Citizen login (zmscitizenview)
+
+Local Vite host pages (`appointment-view.html`, etc.) use the public Keycloak client `dbs-fragments` in realm `zms` (migrations `09_add-citizen-client.yml`, `10_add-citizen-token-mappers.yml`). Defaults live in `zmscitizenview/.env.development`.
+
+The external `dbs-login` loader CDN is often unreachable on local networks. With `VITE_USE_LOCAL_CITIZEN_LOGIN=true`, host pages load `src/local-dbs-login.ts` instead: it listens for `authorization-request`, runs OIDC authorization-code + PKCE against local Keycloak, then emits `authorization-event`.
+
+1. Apply migrations (restart the stack so `init-keycloak` runs, or recreate that service).
+2. Restart the Vite / citizenview process so env and the new login scripts load.
+3. Open the host page index [http://localhost:8082/webcomponents.html](http://localhost:8082/webcomponents.html) and pick a page (e.g. appointment-view), or go directly to [http://localhost:8082/appointment-view.html](http://localhost:8082/appointment-view.html). On the customer step with login enabled, click **Login**.
+4. Sign in on the Keycloak page, then you should return logged in.
+
+| Field    | Value      |
+| -------- | ---------- |
+| Username | `citizen`  |
+| Password | `vorschau` |
+
+Keycloak URL used by the host pages: `http://localhost:8080/auth` (matches the realm issuer in the browser). The `keycloak` hosts entry is still useful for admin/statistic and in-container DNS.
+
+The local API gateway often runs with security disabled, so authenticated citizen API calls may succeed without JWT checks. Turning on gateway JWT validation can reuse `SSO_URL` / `SSO_REALM` / `SSO_CLIENTID` from the ddev / devcontainer `.env.template` files.
+
 ## Podman (Linux) note
 
 Podman may merge host `/etc/hosts` into containers, which can break in-container `keycloak` resolution. Add this to `~/.config/containers/containers.conf`:
