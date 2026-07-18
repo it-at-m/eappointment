@@ -4,6 +4,9 @@
  * against local Keycloak, then emits `authorization-event` (same contract).
  *
  * Enabled when VITE_USE_LOCAL_CITIZEN_LOGIN=true (see .env.development).
+ *
+ * Tokens are kept in sessionStorage so overview/detail/slider pages on the same
+ * origin stay logged in after booking on appointment-view.
  */
 import { KEYCLOAK_AUTH_LEVEL1 } from "@/types/AuthorizationEventDetails";
 
@@ -11,11 +14,17 @@ const AUTH_REQUEST = "authorization-request";
 const AUTH_EVENT = "authorization-event";
 const STORAGE_STATE = "zms-local-oidc-state";
 const STORAGE_VERIFIER = "zms-local-oidc-verifier";
+const STORAGE_SESSION = "zms-local-oidc-session";
 
 type LoginConfig = {
   kcUrl: string;
   realm: string;
   clientId: string;
+};
+
+type StoredSession = {
+  accessToken: string;
+  idToken?: string;
 };
 
 function readConfig(): LoginConfig {
@@ -79,6 +88,43 @@ function parseJwt(token: string): Record<string, unknown> {
   );
 }
 
+function isTokenUsable(accessToken: string): boolean {
+  try {
+    const claims = parseJwt(accessToken);
+    const exp = Number(claims.exp);
+    if (!Number.isFinite(exp)) {
+      return false;
+    }
+    // 30s skew so we do not restore a token about to expire
+    return exp * 1000 > Date.now() + 30_000;
+  } catch {
+    return false;
+  }
+}
+
+function saveSession(accessToken: string, idToken?: string): void {
+  const session: StoredSession = { accessToken, idToken };
+  sessionStorage.setItem(STORAGE_SESSION, JSON.stringify(session));
+}
+
+function loadSession(): StoredSession | null {
+  const raw = sessionStorage.getItem(STORAGE_SESSION);
+  if (!raw) {
+    return null;
+  }
+  try {
+    const parsed = JSON.parse(raw) as StoredSession;
+    if (!parsed.accessToken || !isTokenUsable(parsed.accessToken)) {
+      sessionStorage.removeItem(STORAGE_SESSION);
+      return null;
+    }
+    return parsed;
+  } catch {
+    sessionStorage.removeItem(STORAGE_SESSION);
+    return null;
+  }
+}
+
 function emitAuthEvent(accessToken: string, idToken?: string): void {
   const claims = parseJwt(idToken || accessToken);
   const given = String(claims.given_name || claims.preferred_username || "");
@@ -97,6 +143,17 @@ function emitAuthEvent(accessToken: string, idToken?: string): void {
       },
     })
   );
+}
+
+/**
+ * Vue registers `authorization-event` in onMounted; this module may finish earlier.
+ * Emit now and again shortly after so late subscribers still receive the session.
+ */
+function publishSession(accessToken: string, idToken?: string): void {
+  saveSession(accessToken, idToken);
+  emitAuthEvent(accessToken, idToken);
+  window.setTimeout(() => emitAuthEvent(accessToken, idToken), 0);
+  window.setTimeout(() => emitAuthEvent(accessToken, idToken), 300);
 }
 
 async function startLogin(config: LoginConfig): Promise<void> {
@@ -181,7 +238,16 @@ async function handleCallback(config: LoginConfig): Promise<boolean> {
     redirectUri() + window.location.hash
   );
 
-  emitAuthEvent(tokens.access_token, tokens.id_token);
+  publishSession(tokens.access_token, tokens.id_token);
+  return true;
+}
+
+function restoreSession(): boolean {
+  const session = loadSession();
+  if (!session) {
+    return false;
+  }
+  publishSession(session.accessToken, session.idToken);
   return true;
 }
 
@@ -201,10 +267,15 @@ export async function initLocalDbsLogin(): Promise<void> {
   ensureCustomElement();
   const config = readConfig();
 
+  let handledCallback = false;
   try {
-    await handleCallback(config);
+    handledCallback = await handleCallback(config);
   } catch (err) {
     console.error("[local-dbs-login] Callback handling failed:", err);
+  }
+
+  if (!handledCallback) {
+    restoreSession();
   }
 
   document.addEventListener(AUTH_REQUEST, () => {

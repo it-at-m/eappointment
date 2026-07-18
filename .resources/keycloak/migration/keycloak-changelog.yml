@@ -11,4 +11,5 @@ includes:
   - path: 10_add-citizen-token-mappers.yml
   - path: 11_update-citizen-email.yml
   - path: 12_ensure-citizen-example-email.yml
+  - path: 13_add-citizen-lhmextid-claim.yml
 
