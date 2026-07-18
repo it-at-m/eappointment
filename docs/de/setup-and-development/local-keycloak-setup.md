@@ -56,7 +56,7 @@ Siehe auch GitHub-Issue [#2827](https://github.com/it-at-m/eappointment/issues/2
 
 Die lokalen Vite-Host-Seiten (`appointment-view.html` usw.) nutzen den öffentlichen Keycloak-Client `dbs-fragments` im Realm `zms` (Migrationen `09_add-citizen-client.yml`, `10_add-citizen-token-mappers.yml`). Defaults stehen in `zmscitizenview/.env.development`.
 
-Der externe `dbs-login`-Loader ist lokal oft nicht erreichbar. Mit `VITE_USE_LOCAL_CITIZEN_LOGIN=true` laden die Host-Seiten stattdessen `src/local-dbs-login.ts`: lauscht auf `authorization-request`, führt OIDC Authorization-Code + PKCE gegen lokales Keycloak aus und sendet `authorization-event`.
+Der externe `dbs-login`-Loader ist lokal oft nicht erreichbar. Mit `VITE_USE_LOCAL_CITIZEN_LOGIN=true` laden die Host-Seiten stattdessen `src/local-dev/local-dbs-login.ts`: lauscht auf `authorization-request`, führt OIDC Authorization-Code + PKCE gegen lokales Keycloak aus und sendet `authorization-event`.
 
 1. Migrationen anwenden (Stack neu starten, damit `init-keycloak` läuft, oder den Service neu erzeugen).
 2. Vite-/citizenview-Prozess neu starten, damit Env und Login-Skripte geladen werden.
