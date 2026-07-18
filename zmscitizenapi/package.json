@@ -21,7 +21,7 @@
     "postcss": "^8.5.10",
     "protobufjs": "^8.6.0",
     "js-yaml": "^5.0.0",
-    "ws": "^7.5.11",
+    "ws": "^8.0.0",
     "@opentelemetry/core": "^2.8.0"
   },
   "devDependencies": {
