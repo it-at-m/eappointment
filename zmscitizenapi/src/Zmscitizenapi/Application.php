@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi;
 
+use BO\Slim\Traits\CacheInitializationTrait;
 use Psr\SimpleCache\CacheInterface;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Symfony\Component\Cache\Psr16Cache;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyFields)
@@ -15,6 +14,8 @@ use Symfony\Component\Cache\Psr16Cache;
  */
 class Application extends \BO\Slim\Application
 {
+    use CacheInitializationTrait;
+
     public const IDENTIFIER = 'zms';
     public const MODULE_NAME = 'zmscitizenapi';
     public static string $source_name = "dldb,zms";
@@ -66,7 +67,7 @@ class Application extends \BO\Slim\Application
         self::initializeMaintenanceMode();
         self::initializeLogger();
         self::initializeCaptcha();
-        self::initializeCache();
+        self::initializeCache(__DIR__ . '/cache');
         self::initializeMiddleware();
     }
 
@@ -109,14 +110,6 @@ class Application extends \BO\Slim\Application
             ?: 'https://captcha.muenchen.de/api/v1/captcha/verify';
     }
 
-    private static function initializeCache(): void
-    {
-        self::$CACHE_DIR = getenv('CACHE_DIR') ?: __DIR__ . '/cache';
-        self::$SOURCE_CACHE_TTL = (int) (getenv('SOURCE_CACHE_TTL') ?: 3600);
-        self::validateCacheDirectory();
-        self::setupCache();
-    }
-
     /**
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @TODO: Extract middleware initialization logic into a dedicated MiddlewareInitializer class
@@ -145,26 +138,6 @@ class Application extends \BO\Slim\Application
     public static function reinitializeMiddlewareConfig(): void
     {
         self::initializeMiddleware();
-    }
-
-    private static function validateCacheDirectory(): void
-    {
-        if (!is_dir(self::$CACHE_DIR)) {
-            if (!@mkdir(self::$CACHE_DIR, 0750, true) && !is_dir(self::$CACHE_DIR)) {
-                throw new \RuntimeException(sprintf('Cache directory "%s" could not be created', self::$CACHE_DIR));
-            }
-        }
-
-        if (!is_writable(self::$CACHE_DIR)) {
-            throw new \RuntimeException(sprintf('Cache directory "%s" is not writable', self::$CACHE_DIR));
-        }
-    }
-
-    private static function setupCache(): void
-    {
-        $psr6 = new FilesystemAdapter(namespace: '', defaultLifetime: self::$SOURCE_CACHE_TTL, directory: self::$CACHE_DIR);
-        self::$cache = new Psr16Cache($psr6);
-        \BO\Slim\LoggerService::$cache = self::$cache;
     }
 
     public static function getLoggerConfig(): array
