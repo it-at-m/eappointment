@@ -1,6 +1,7 @@
 /**
  * Chooses local Keycloak login shim vs external dbs-login loader.
  * Host pages load this module instead of hardcoding the CDN script.
+ * Lives under src/local-dev/ — local host-page tooling only, not the webcomponent.
  */
 async function bootstrapLogin(): Promise<void> {
   const useLocal =

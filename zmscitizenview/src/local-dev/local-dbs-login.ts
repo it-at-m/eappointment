@@ -4,6 +4,7 @@
  * against local Keycloak, then emits `authorization-event` (same contract).
  *
  * Enabled when VITE_USE_LOCAL_CITIZEN_LOGIN=true (see .env.development).
+ * Lives under src/local-dev/ — local host-page tooling only, not the webcomponent.
  *
  * Tokens are kept in localStorage so overview/detail/slider pages stay logged
  * in across tabs on the same origin (sessionStorage is per-tab only).
