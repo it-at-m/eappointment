@@ -52,6 +52,8 @@ ping keycloak
 
 ## Bürger-Login (zmscitizenview)
 
+Siehe auch GitHub-Issue [#2827](https://github.com/it-at-m/eappointment/issues/2827).
+
 Die lokalen Vite-Host-Seiten (`appointment-view.html` usw.) nutzen den öffentlichen Keycloak-Client `dbs-fragments` im Realm `zms` (Migrationen `09_add-citizen-client.yml`, `10_add-citizen-token-mappers.yml`). Defaults stehen in `zmscitizenview/.env.development`.
 
 Der externe `dbs-login`-Loader ist lokal oft nicht erreichbar. Mit `VITE_USE_LOCAL_CITIZEN_LOGIN=true` laden die Host-Seiten stattdessen `src/local-dbs-login.ts`: lauscht auf `authorization-request`, führt OIDC Authorization-Code + PKCE gegen lokales Keycloak aus und sendet `authorization-event`.
