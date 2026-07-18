@@ -40,6 +40,14 @@ spring:
             - PreserveHostHeader
             - RewritePath=/buergeransicht/api/citizen/(?<segment>.*), /terminvereinbarung/api/citizen/${segment}
             - RemoveResponseHeader=WWW-Authenticate
+        - id: "citizen-api-authenticated"
+          uri: "http://zms-web:80"
+          predicates:
+            - Path=/buergeransicht/authenticated/api/citizen/**
+          filters:
+            - PreserveHostHeader
+            - RewritePath=/buergeransicht/authenticated/api/citizen/(?<segment>.*), /terminvereinbarung/api/citizen/${segment}
+            - RemoveResponseHeader=WWW-Authenticate
         - id: "webcomponent"
           uri: "${WEBCOMPONENT_URI}"
           predicates:

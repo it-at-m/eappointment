@@ -61,6 +61,8 @@ The external `dbs-login` loader CDN is often unreachable on local networks. With
 3. Open the host page index [http://localhost:8082/webcomponents.html](http://localhost:8082/webcomponents.html) and pick a page (e.g. appointment-view), or go directly to [http://localhost:8082/appointment-view.html](http://localhost:8082/appointment-view.html). On the customer step with login enabled, click **Login**.
 4. Sign in on the Keycloak page, then you should return logged in.
 
+After login, API calls use `/buergeransicht/authenticated/api/citizen/…`. The Vite dev proxy and local gateway both need that path (see `zmscitizenview/vite.config.ts` and `.devcontainer` / `.ddev` `local-gateway-application.yml`). Restart `refarch-gateway` and the Vite / citizenview process after pulling these changes.
+
 | Field    | Value      |
 | -------- | ---------- |
 | Username | `citizen`  |
