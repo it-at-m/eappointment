@@ -63,7 +63,7 @@ The external `dbs-login` loader CDN is often unreachable on local networks. With
 
 After login, API calls use `/buergeransicht/authenticated/api/citizen/…`. The Vite dev proxy and local gateway both need that path (see `zmscitizenview/vite.config.ts` and `.devcontainer` / `.ddev` `local-gateway-application.yml`). Restart `refarch-gateway` and the Vite / citizenview process after pulling these changes.
 
-The local login shim stores the access token in `sessionStorage` so [appointment-overview](http://localhost:8082/appointment-overview.html), [appointment-detail](http://localhost:8082/appointment-detail.html), and [appointment-slider](http://localhost:8082/appointment-slider.html) stay logged in on the same browser tab/origin. Tokens include claim `lhmExtID` (Keycloak username) so `my-appointments` can resolve the user. Re-login (and re-book if needed) after applying migration `13_add-citizen-lhmextid-claim.yml`.
+The local login shim stores the access token in `localStorage` so [appointment-overview](http://localhost:8082/appointment-overview.html), [appointment-detail](http://localhost:8082/appointment-detail.html), and [appointment-slider](http://localhost:8082/appointment-slider.html) stay logged in across tabs on the same origin. Tokens include claim `lhmExtID` (Keycloak username) so `my-appointments` can resolve the user. Re-login (and re-book if needed) after applying migration `13_add-citizen-lhmextid-claim.yml`.
 
 | Field    | Value      |
 | -------- | ---------- |

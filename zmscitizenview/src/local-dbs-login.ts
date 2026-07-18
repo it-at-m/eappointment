@@ -5,8 +5,8 @@
  *
  * Enabled when VITE_USE_LOCAL_CITIZEN_LOGIN=true (see .env.development).
  *
- * Tokens are kept in sessionStorage so overview/detail/slider pages on the same
- * origin stay logged in after booking on appointment-view.
+ * Tokens are kept in localStorage so overview/detail/slider pages stay logged
+ * in across tabs on the same origin (sessionStorage is per-tab only).
  */
 import { KEYCLOAK_AUTH_LEVEL1 } from "@/types/AuthorizationEventDetails";
 
@@ -104,22 +104,31 @@ function isTokenUsable(accessToken: string): boolean {
 
 function saveSession(accessToken: string, idToken?: string): void {
   const session: StoredSession = { accessToken, idToken };
-  sessionStorage.setItem(STORAGE_SESSION, JSON.stringify(session));
+  localStorage.setItem(STORAGE_SESSION, JSON.stringify(session));
+  // Drop any leftover per-tab copy from earlier builds.
+  sessionStorage.removeItem(STORAGE_SESSION);
 }
 
 function loadSession(): StoredSession | null {
-  const raw = sessionStorage.getItem(STORAGE_SESSION);
+  const raw =
+    localStorage.getItem(STORAGE_SESSION) ||
+    sessionStorage.getItem(STORAGE_SESSION);
   if (!raw) {
     return null;
   }
   try {
     const parsed = JSON.parse(raw) as StoredSession;
     if (!parsed.accessToken || !isTokenUsable(parsed.accessToken)) {
+      localStorage.removeItem(STORAGE_SESSION);
       sessionStorage.removeItem(STORAGE_SESSION);
       return null;
     }
+    // Migrate sessionStorage → localStorage once.
+    localStorage.setItem(STORAGE_SESSION, raw);
+    sessionStorage.removeItem(STORAGE_SESSION);
     return parsed;
   } catch {
+    localStorage.removeItem(STORAGE_SESSION);
     sessionStorage.removeItem(STORAGE_SESSION);
     return null;
   }
