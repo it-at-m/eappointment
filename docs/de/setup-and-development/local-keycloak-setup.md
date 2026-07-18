@@ -61,6 +61,8 @@ Der externe `dbs-login`-Loader ist lokal oft nicht erreichbar. Mit `VITE_USE_LOC
 3. Die Host-Seiten-Übersicht [http://localhost:8082/webcomponents.html](http://localhost:8082/webcomponents.html) öffnen und eine Seite wählen (z. B. appointment-view), oder direkt [http://localhost:8082/appointment-view.html](http://localhost:8082/appointment-view.html). Am Kundenschritt mit Login **Anmelden** klicken.
 4. Am Keycloak-Login anmelden; danach solltest du eingeloggt zurückkommen.
 
+Nach dem Login laufen API-Aufrufe über `/buergeransicht/authenticated/api/citizen/…`. Vite-Dev-Proxy und lokales Gateway brauchen diesen Pfad (siehe `zmscitizenview/vite.config.ts` sowie `.devcontainer` / `.ddev` `local-gateway-application.yml`). Nach dem Pull `refarch-gateway` und den Vite-/citizenview-Prozess neu starten.
+
 | Feld         | Wert       |
 | ------------ | ---------- |
 | Benutzername | `citizen`  |
