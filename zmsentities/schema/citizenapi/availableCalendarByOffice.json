@@ -32,7 +32,7 @@
       "items": {
         "type": ["array", "object", "null"],
         "properties": {
-          "time": {
+          "date": {
             "type": "string",
             "description": "Day in YYYY-MM-DD format"
           },

@@ -45,7 +45,7 @@ class AvailableCalendarByOfficeControllerTest extends ControllerTestCase
             'nextBookableDate' => null,
             'availableDays' => [
                 [
-                    'time' => '2024-08-22',
+                    'date' => '2024-08-22',
                     'providerIDs' => '9999998',
                     'offices' => [
                         [
@@ -55,7 +55,7 @@ class AvailableCalendarByOfficeControllerTest extends ControllerTestCase
                     ],
                 ],
                 [
-                    'time' => '2024-08-23',
+                    'date' => '2024-08-23',
                     'providerIDs' => '9999998',
                     'offices' => [
                         [

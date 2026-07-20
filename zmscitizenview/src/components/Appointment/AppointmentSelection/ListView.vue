@@ -282,7 +282,7 @@ const props = defineProps<{
   isSlotSelected: (officeId: number | string, time: number) => boolean;
   // New raw data to compute firstFiveAvailableDays inside this component
   availableDays:
-    | Array<{ time: string | number; providerIDs: string }>
+    | Array<{ date: string | number; providerIDs: string }>
     | undefined;
   appointmentsByDay: Map<
     string,
@@ -520,12 +520,12 @@ const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
   );
 
   const trulyAvailable = availableForProviders.filter((day) => {
-    const dateStr = convertDateToString(new Date(day.time));
+    const dateStr = convertDateToString(new Date(day.date));
     return dayHasSlotsForSelectedProviders(dateStr);
   });
 
   return trulyAvailable.slice(0, daysToShow.value).map((dayObj) => {
-    const d = new Date(dayObj.time);
+    const d = new Date(dayObj.date);
     const dateString = convertDateToString(d);
     const label =
       formatterWeekday.format(d) +
@@ -650,7 +650,7 @@ const canLoadMore = computed(() => {
     day.providerIDs.split(",").some((id) => props.selectedProviders[id])
   );
   const trulyAvailableCount = availableForProviders.filter((day) => {
-    const dateStr = convertDateToString(new Date(day.time));
+    const dateStr = convertDateToString(new Date(day.date));
     return dayHasSlotsForSelectedProviders(dateStr);
   }).length;
   return firstFiveAvailableDays.value.length < trulyAvailableCount;

@@ -1,8 +1,12 @@
 import { mount } from "@vue/test-utils";
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { nextTick } from "vue";
+
 import ListView from "@/components/Appointment/AppointmentSelection/ListView.vue";
-import { listViewDayPartNavigationSlots, listViewHourNavigationSlots } from "../../../helpers/calendarAvailability";
+import {
+  listViewDayPartNavigationSlots,
+  listViewHourNavigationSlots,
+} from "../../../helpers/calendarAvailability";
 
 describe("ListView", () => {
   const t = (key: string) => key;
@@ -11,9 +15,14 @@ describe("ListView", () => {
   const formatTime = (n: number) => String(n);
 
   const defaultAppointmentsByDay = new Map(
-    ["2025-06-10", "2025-06-11", "2025-06-12", "2025-06-13", "2025-06-14", "2025-06-15"].map(
-      (date) => [date, listViewDayPartNavigationSlots]
-    )
+    [
+      "2025-06-10",
+      "2025-06-11",
+      "2025-06-12",
+      "2025-06-13",
+      "2025-06-14",
+      "2025-06-15",
+    ].map((date) => [date, listViewDayPartNavigationSlots])
   );
 
   function mountListView(overrides: Partial<Record<string, any>> = {}) {
@@ -29,12 +38,12 @@ describe("ListView", () => {
         isSlotSelected,
         formatTime,
         availableDays: [
-          { time: "2025-06-10", providerIDs: "1" },
-          { time: "2025-06-11", providerIDs: "1" },
-          { time: "2025-06-12", providerIDs: "1" },
-          { time: "2025-06-13", providerIDs: "1" },
-          { time: "2025-06-14", providerIDs: "1" },
-          { time: "2025-06-15", providerIDs: "1" },
+          { date: "2025-06-10", providerIDs: "1" },
+          { date: "2025-06-11", providerIDs: "1" },
+          { date: "2025-06-12", providerIDs: "1" },
+          { date: "2025-06-13", providerIDs: "1" },
+          { date: "2025-06-14", providerIDs: "1" },
+          { date: "2025-06-15", providerIDs: "1" },
         ],
         appointmentsByDay: defaultAppointmentsByDay,
         officeOrder: new Map<number, number>([[1, 0]]),
@@ -59,14 +68,14 @@ describe("ListView", () => {
     ]);
     const wrapper = mountListView({
       availableDays: [
-        { time: "2025-06-10", providerIDs: "1" },
-        { time: "2025-06-11", providerIDs: "1" },
-        { time: "2025-06-12", providerIDs: "1" },
-        { time: "2025-06-13", providerIDs: "1" },
-        { time: "2025-06-14", providerIDs: "1" },
-        { time: "2025-06-15", providerIDs: "1" },
-        { time: "2025-06-16", providerIDs: "1" },
-        { time: "2025-06-17", providerIDs: "1" },
+        { date: "2025-06-10", providerIDs: "1" },
+        { date: "2025-06-11", providerIDs: "1" },
+        { date: "2025-06-12", providerIDs: "1" },
+        { date: "2025-06-13", providerIDs: "1" },
+        { date: "2025-06-14", providerIDs: "1" },
+        { date: "2025-06-15", providerIDs: "1" },
+        { date: "2025-06-16", providerIDs: "1" },
+        { date: "2025-06-17", providerIDs: "1" },
       ],
       appointmentsByDay,
     });
@@ -108,9 +117,14 @@ describe("ListView", () => {
   it("navigates between hours in list view", async () => {
     const wrapper = mountListView({
       appointmentsByDay: new Map(
-        ["2025-06-10", "2025-06-11", "2025-06-12", "2025-06-13", "2025-06-14", "2025-06-15"].map(
-          (date) => [date, listViewHourNavigationSlots]
-        )
+        [
+          "2025-06-10",
+          "2025-06-11",
+          "2025-06-12",
+          "2025-06-13",
+          "2025-06-14",
+          "2025-06-15",
+        ].map((date) => [date, listViewHourNavigationSlots])
       ),
     });
     await nextTick();

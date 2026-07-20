@@ -16,7 +16,7 @@ vi.mock("@/api/ZMSAppointmentAPI", () => ({
     nextBookableDate: null,
     availableDays: [
       {
-        time: "2025-06-17",
+        date: "2025-06-17",
         providerIDs: "1,2,3,4,102522,102523,102524,102526,10489,10502,54261",
         offices: [],
       },

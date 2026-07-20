@@ -296,7 +296,7 @@ const loadingStates = inject("loadingStates", {
 };
 
 const selectableProviders = ref<OfficeImpl[]>();
-const availableDays = ref<Array<{ time: string; providerIDs: string }>>();
+const availableDays = ref<Array<{ date: string; providerIDs: string }>>();
 /** YYYY-MM-DD bounds of the last loaded appointment-slots window */
 const loadedSlotsStartDate = ref<string | null>(null);
 const loadedSlotsEndDate = ref<string | null>(null);
@@ -605,7 +605,7 @@ const allowedDates = (date: Date) => {
   const dateString = toDayKey(date);
 
   const dayEntry = availableDays.value?.find(
-    (day) => toDayKey(day.time) === dateString
+    (day) => toDayKey(day.date) === dateString
   );
 
   if (!dayEntry) return false;
@@ -918,7 +918,7 @@ const applyCalendarResponse = (
     !Array.isArray(days) ||
     !days.every(
       (d) =>
-        typeof d === "object" && d !== null && "time" in d && "providerIDs" in d
+        typeof d === "object" && d !== null && "date" in d && "providerIDs" in d
     )
   ) {
     return false;
@@ -932,10 +932,10 @@ const applyCalendarResponse = (
   nextBookableDate.value = calendar.nextBookableDate ?? null;
 
   const nextByDay = new Map(appointmentsByDay.value);
-  const normalizedDays: Array<{ time: string; providerIDs: string }> = [];
+  const normalizedDays: Array<{ date: string; providerIDs: string }> = [];
 
   for (const day of days) {
-    const dateKey = toDayKey(day.time);
+    const dateKey = toDayKey(day.date);
     const offices = normalizeCalendarOffices(day.offices ?? []);
     const inFreeSlotWindow = dateKey >= slotsStart && dateKey <= slotsEnd;
 
@@ -947,7 +947,7 @@ const applyCalendarResponse = (
     // Bookable days are selectable from status + providerIDs (no timestamps required).
     if (day.providerIDs) {
       normalizedDays.push({
-        time: day.time,
+        date: day.date,
         providerIDs: day.providerIDs,
       });
     }
@@ -958,10 +958,10 @@ const applyCalendarResponse = (
 
   // Track the painted month from returned bookable days (not the free-slot SQL window).
   if (normalizedDays.length > 0) {
-    let earliest = toDayKey(normalizedDays[0].time);
+    let earliest = toDayKey(normalizedDays[0].date);
     let latest = earliest;
     for (const day of normalizedDays) {
-      const key = toDayKey(day.time);
+      const key = toDayKey(day.date);
       if (key < earliest) earliest = key;
       if (key > latest) latest = key;
     }
@@ -1056,10 +1056,10 @@ const reloadCalendarAvailability = async (options?: {
     availableDays.value.length > 0
   ) {
     const firstWithSlots = availableDays.value.find((day) =>
-      dayHasSlotsForSelectedProviders(toDayKey(day.time))
+      dayHasSlotsForSelectedProviders(toDayKey(day.date))
     );
     selectedDay.value = new Date(
-      (firstWithSlots ?? availableDays.value[0]).time
+      (firstWithSlots ?? availableDays.value[0]).date
     );
   }
 
@@ -1235,13 +1235,13 @@ function getAvailableProviders(
  * otherwise clamp to the loaded bookable range so the last/first month disables next/prev.
  */
 function updateCalendarNavigationBounds(
-  daysForBounds: Array<{ time: string }> = availableDays.value ?? []
+  daysForBounds: Array<{ date: string }> = availableDays.value ?? []
 ) {
   let earliest: string | null = loadedSlotsStartDate.value;
   let latest: string | null = loadedSlotsEndDate.value;
 
   for (const day of daysForBounds) {
-    const key = toDayKey(day.time);
+    const key = toDayKey(day.date);
     if (earliest === null || key < earliest) {
       earliest = key;
     }
@@ -1317,14 +1317,14 @@ async function validateAndUpdateSelectedDate(
   if (!selectedDay.value) return;
   const currentDate = toDayKey(selectedDay.value);
   const isCurrentDateAvailable = availableDaysForSelectedProviders.some(
-    (day: any) => toDayKey(day.time) === currentDate
+    (day: any) => toDayKey(day.date) === currentDate
   );
 
   if (!isCurrentDateAvailable) {
     // First try to find a date after the current date
     let nextAvailableDay = availableDaysForSelectedProviders.find(
       (day: any) => {
-        const dayDate = new Date(day.time);
+        const dayDate = new Date(day.date);
         return dayDate >= (selectedDay.value ?? new Date());
       }
     );
@@ -1334,18 +1334,18 @@ async function validateAndUpdateSelectedDate(
       nextAvailableDay = [...availableDaysForSelectedProviders]
         .reverse()
         .find((day: any) => {
-          const dayDate = new Date(day.time);
+          const dayDate = new Date(day.date);
           return dayDate <= (selectedDay.value ?? new Date());
         });
     }
 
     if (nextAvailableDay) {
-      const newDate = new Date(nextAvailableDay.time);
+      const newDate = new Date(nextAvailableDay.date);
       selectedDay.value = newDate;
       viewMonth.value = new Date(newDate.getFullYear(), newDate.getMonth(), 1);
       calendarKey.value++;
       await nextTick();
-      await getAppointmentsOfDay(nextAvailableDay.time);
+      await getAppointmentsOfDay(nextAvailableDay.date);
     }
   }
 }
@@ -1354,7 +1354,7 @@ async function validateCurrentDateHasAppointments() {
   if (!selectedDay.value) return;
   const currentDate = toDayKey(selectedDay.value);
   const dayEntry = availableDays.value?.find(
-    (day) => toDayKey(day.time) === currentDate
+    (day) => toDayKey(day.date) === currentDate
   );
   const hasAppointments = dayEntry?.providerIDs
     .split(",")
@@ -1366,7 +1366,7 @@ async function validateCurrentDateHasAppointments() {
     availableDays.value.length > 0
   ) {
     const nextAvailableDay = availableDays.value.find((day) => {
-      const dayDate = new Date(day.time);
+      const dayDate = new Date(day.date);
       return (
         dayDate >= (selectedDay.value ?? new Date()) &&
         day.providerIDs
@@ -1376,9 +1376,9 @@ async function validateCurrentDateHasAppointments() {
     });
 
     if (nextAvailableDay) {
-      selectedDay.value = new Date(nextAvailableDay.time);
+      selectedDay.value = new Date(nextAvailableDay.date);
       await nextTick();
-      await getAppointmentsOfDay(nextAvailableDay.time);
+      await getAppointmentsOfDay(nextAvailableDay.date);
     }
   }
 }
