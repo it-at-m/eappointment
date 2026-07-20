@@ -80,14 +80,45 @@ class CalendarAvailabilityGetTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertArrayHasKey('prevBookableDate', $body['data']);
         $this->assertArrayHasKey('nextBookableDate', $body['data']);
 
-        $slotsEndIso = $slotsEnd->format('Y-m-t');
+        $responseMonthEnd = (clone $slotsEnd)->modify('last day of this month')->format('Y-m-d');
         foreach ($body['data']['days'] as $day) {
             $this->assertGreaterThanOrEqual($now->format('Y-m-d'), $day['date']);
-            $this->assertLessThanOrEqual($slotsEndIso, $day['date']);
+            $this->assertLessThanOrEqual($responseMonthEnd, $day['date']);
         }
 
         if ($body['data']['nextBookableDate'] !== null) {
-            $this->assertGreaterThan($slotsEndIso, $body['data']['nextBookableDate']);
+            $this->assertGreaterThan($responseMonthEnd, $body['data']['nextBookableDate']);
+        }
+    }
+
+    public function testSingleDaySlotsReturnsBookableDaysForMonth()
+    {
+        $now = \App::$now;
+        $end = (clone $now)->modify('+2 months');
+        $day = $now->format('Y-m-d');
+        $monthEnd = (clone $now)->modify('last day of this month')->format('Y-m-d');
+        $response = $this->render([], [
+            'startDate' => $now->format('Y-m-d'),
+            'endDate' => $end->format('Y-m-t'),
+            'slotsStartDate' => $day,
+            'slotsEndDate' => $day,
+            'officeId' => '122217',
+            'serviceId' => '120703',
+            'serviceCount' => '1',
+        ], []);
+        $body = json_decode((string) $response->getBody(), true);
+
+        $this->assertTrue(200 == $response->getStatusCode());
+        $this->assertSame($day, $body['data']['slotsStartDate']);
+        $this->assertSame($day, $body['data']['slotsEndDate']);
+
+        foreach ($body['data']['days'] as $entry) {
+            $this->assertGreaterThanOrEqual($now->format('Y-m-d'), $entry['date']);
+            $this->assertLessThanOrEqual($monthEnd, $entry['date']);
+        }
+
+        if ($body['data']['nextBookableDate'] !== null) {
+            $this->assertGreaterThan($monthEnd, $body['data']['nextBookableDate']);
         }
     }
 
