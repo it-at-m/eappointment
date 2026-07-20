@@ -30,6 +30,7 @@ interface Request {
   params?: string[][] | Record<string, string>;
   forceAuth?: boolean;
   globalState: GlobalState;
+  signal?: AbortSignal;
 }
 
 type GetRequest = Request & {
@@ -58,6 +59,7 @@ export function request<TResponse>(
   }
   const requestInit: RequestInit = {
     method: request.method,
+    ...(request.signal && { signal: request.signal }),
   };
   if (request.method === "POST") {
     headers["Content-Type"] = "application/json";
@@ -140,7 +142,8 @@ export function fetchAvailableCalendar(
   serviceCounts: number[],
   captchaToken?: string,
   slotsStartDate?: string,
-  slotsEndDate?: string
+  slotsEndDate?: string,
+  signal?: AbortSignal
 ): Promise<AvailableCalendarByOfficeDTO | ErrorDTO> {
   const params: Record<string, any> = {
     startDate: convertDateToString(TODAY),
@@ -158,6 +161,7 @@ export function fetchAvailableCalendar(
     method: "GET",
     path: VUE_APP_ZMS_API_CALENDAR_AVAILABILITY_ENDPOINT,
     params,
+    signal,
   });
 }
 
