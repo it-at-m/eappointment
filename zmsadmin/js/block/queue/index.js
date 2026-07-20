@@ -19,6 +19,7 @@ class View extends BaseView {
         this.selectedDate = options.selectedDate;
         this.includeUrl = options.includeUrl || "";
         this.showLoader = options.showLoader || false;
+        this.includeWaitingClientsEffective = options.includeWaitingClientsEffective || false;
     }
 
     setCallbacks(options) {
@@ -37,7 +38,7 @@ class View extends BaseView {
 
 
     load(withCalled = false) {
-        const url = `${this.includeUrl}/queueTable/?selecteddate=${this.selectedDate}&withCalled=${withCalled ? 1 : 0}`;
+        const url = `${this.includeUrl}/queueTable/?selecteddate=${this.selectedDate}&withCalled=${withCalled ? 1 : 0}&includeWaitingClientsEffective=${this.includeWaitingClientsEffective ? 1 : 0}`;
 
         return this.loadContent(url, 'GET', null, null, this.showLoader)
             .then(() => {
@@ -56,9 +57,10 @@ class View extends BaseView {
     }
 
     updateWaitingClientsEffective() {
+        const $workstationView = this.$main.closest('.workstation-view');
         const $source = this.$main.find('[data-queue-waiting-clients-effective]');
-        const $target = this.$main.find('[data-waiting-clients-effective]');
-        const $row = this.$main.find('[data-waiting-clients-row]');
+        const $target = $workstationView.find('[data-waiting-clients-effective]');
+        const $row = $workstationView.find('[data-waiting-clients-row]');
 
         if ($source.length === 0 || $target.length === 0 || $row.length === 0) {
             return;
