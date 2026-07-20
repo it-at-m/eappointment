@@ -50,8 +50,56 @@ class View extends BaseView {
                     $('#called-appointments').next('.accordion-panel').css('display', 'none');
                     this.withCalled = false;
                 }
+                this.updateWaitingClientsEffective();
             })
             .catch(err => this.loadErrorCallback(err));
+    }
+
+    updateWaitingClientsEffective() {
+        const $source = this.$main.find('[data-queue-waiting-clients-effective]');
+        const $target = this.$main.find('[data-waiting-clients-effective]');
+        const $row = this.$main.find('[data-waiting-clients-row]');
+
+        if ($source.length === 0 || $target.length === 0 || $row.length === 0) {
+            return;
+        }
+
+        const waitingClients = Number($source.attr('data-count') || 0);
+        const trafficLightClass = this.getWaitingClientsTrafficLightClass(waitingClients, $row);
+
+        $target.text(waitingClients);
+
+        if (trafficLightClass === '') {
+            return;
+        }
+
+        $row
+            .removeClass('green yellow orange red')
+            .addClass(trafficLightClass);
+    }
+
+    getWaitingClientsTrafficLightClass(waitingClients, $row) {
+        const greenMax = Number($row.attr('data-waiting-clients-green-max'));
+        const yellowMax = Number($row.attr('data-waiting-clients-yellow-max'));
+        const orangeMax = Number($row.attr('data-waiting-clients-orange-max'));
+
+        if ([greenMax, yellowMax, orangeMax].some(Number.isNaN)) {
+            return '';
+        }
+
+        if (waitingClients >= 0 && waitingClients <= greenMax) {
+            return 'green';
+        }
+
+        if (waitingClients <= yellowMax) {
+            return 'yellow';
+        }
+
+        if (waitingClients <= orangeMax) {
+            return 'orange';
+        }
+
+        return 'red';
     }
 
 
