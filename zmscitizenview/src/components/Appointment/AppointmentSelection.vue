@@ -703,20 +703,14 @@ const handleDaySelection = async (day: any) => {
   isLoadingComplete.value = false;
 
   try {
-    const dateKey = toDayKey(day);
-    // Month already loaded: use cached slots — do not refetch the full calendar.
-    if (!isDateInLoadedSlotsWindow(dateKey)) {
-      const reloaded = await reloadCalendarAvailability({
-        preserveSelectedDay: true,
-      });
-      if (generation !== daySelectionGeneration || !reloaded) {
-        return;
-      }
-    } else if (generation !== daySelectionGeneration) {
+    const reloaded = await reloadCalendarAvailability({
+      preserveSelectedDay: true,
+    });
+    if (generation !== daySelectionGeneration || !reloaded) {
       return;
     }
 
-    await getAppointmentsOfDay(dateKey);
+    await getAppointmentsOfDay(toDayKey(day));
     if (generation !== daySelectionGeneration) {
       return;
     }

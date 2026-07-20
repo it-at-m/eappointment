@@ -1193,7 +1193,7 @@ describe("AppointmentSelection", () => {
         expect(wrapper.vm.allowedDates(new Date("2025-08-01"))).toBe(true);
       });
 
-      it("does not refetch calendar when selecting another day in the loaded slots window", async () => {
+      it("refetches calendar when selecting another day so slots stay up to date", async () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
           calendarResponse(
             [
@@ -1251,7 +1251,7 @@ describe("AppointmentSelection", () => {
         await wrapper.vm.handleDaySelection(new Date("2025-06-17"));
         await flushPromises();
 
-        expect((fetchAvailableCalendar as Mock).mock.calls.length).toBe(
+        expect((fetchAvailableCalendar as Mock).mock.calls.length).toBeGreaterThan(
           callsAfterLoad
         );
         expect(wrapper.vm.selectedDay).toEqual(new Date("2025-06-17"));
