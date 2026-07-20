@@ -106,8 +106,8 @@ describe("AppointmentSelection", () => {
 
   (fetchAvailableCalendar as Mock).mockResolvedValue(
     calendarResponse([
-      { time: "2025-05-14", providerIDs: "102522,54261,10489" },
-      { time: "2025-05-15", providerIDs: "102522,54261,10489" },
+      { date: "2025-05-14", providerIDs: "102522,54261,10489" },
+      { date: "2025-05-15", providerIDs: "102522,54261,10489" },
     ])
   );
 
@@ -121,7 +121,7 @@ describe("AppointmentSelection", () => {
       // Mock availableDays to include only Office AAA
       (fetchAvailableCalendar as Mock).mockResolvedValue(
         calendarResponse(
-          [{ time: "2025-06-17", providerIDs: "1" }],
+          [{ date: "2025-06-17", providerIDs: "1" }],
           officeOneMorningSlots
         )
       );
@@ -180,7 +180,7 @@ describe("AppointmentSelection", () => {
       // Mock availableDays to include both providers
       (fetchAvailableCalendar as Mock).mockResolvedValue(
         calendarResponse(
-          [{ time: "2025-06-17", providerIDs: "1,2" }],
+          [{ date: "2025-06-17", providerIDs: "1,2" }],
           officeOneAndTwoSlots
         )
       );
@@ -239,7 +239,7 @@ describe("AppointmentSelection", () => {
       // Mock availableDays to include Office BBB and CCC
       (fetchAvailableCalendar as Mock).mockResolvedValue(
         calendarResponse(
-          [{ time: "2025-06-17", providerIDs: "2,3" }],
+          [{ date: "2025-06-17", providerIDs: "2,3" }],
           officeTwoAndThreeSlots
         )
       );
@@ -308,7 +308,7 @@ describe("AppointmentSelection", () => {
     it("shows an error message when no provider is selected", async () => {
       // Mock available days with provider IDs
       (fetchAvailableCalendar as Mock).mockResolvedValue(
-        calendarResponse([{ time: "2025-06-17", providerIDs: "1,2" }])
+        calendarResponse([{ date: "2025-06-17", providerIDs: "1,2" }])
       );
 
       // Create component with two selectable providers
@@ -341,7 +341,7 @@ describe("AppointmentSelection", () => {
       // With new behavior, availableDays still contains data for all providers (we always fetch all)
       // The filtering happens in providersWithAvailableDays computed property
       expect(wrapper.vm.availableDays).toEqual([
-        { time: "2025-06-17", providerIDs: "1,2" },
+        { date: "2025-06-17", providerIDs: "1,2" },
       ]);
 
       // The error message should be shown when no provider with appointments is selected
@@ -401,7 +401,7 @@ describe("AppointmentSelection", () => {
 
     it("preselects provider when preselectedOfficeId matches office parentId", async () => {
       (fetchAvailableCalendar as Mock).mockResolvedValue(
-        calendarResponse([{ time: "2025-06-17", providerIDs: "1" }])
+        calendarResponse([{ date: "2025-06-17", providerIDs: "1" }])
       );
 
       const wrapper = createWrapper({
@@ -445,11 +445,11 @@ describe("AppointmentSelection", () => {
       (fetchAvailableCalendar as Mock).mockResolvedValue(
         calendarResponse([
           {
-            time: "2025-05-14",
+            date: "2025-05-14",
             providerIDs: "102522,54261,10489",
           },
           {
-            time: "2025-05-15",
+            date: "2025-05-15",
             providerIDs: "102522",
           },
         ])
@@ -552,12 +552,12 @@ describe("AppointmentSelection", () => {
           calendarResponse(
             [
               {
-                time: "2025-06-16",
+                date: "2025-06-16",
                 providerIDs: "10351880,10470",
                 offices: [],
               },
               {
-                time: "2025-06-17",
+                date: "2025-06-17",
                 providerIDs: "10351880,10470",
                 offices: officesWithSlots,
               },
@@ -596,12 +596,12 @@ describe("AppointmentSelection", () => {
           calendarResponse(
             [
               {
-                time: "2025-06-16",
+                date: "2025-06-16",
                 providerIDs: "10351880,10470",
                 offices: [],
               },
               {
-                time: "2025-06-17",
+                date: "2025-06-17",
                 providerIDs: "10351880,10470",
                 offices: officesWithSlots,
               },
@@ -624,7 +624,7 @@ describe("AppointmentSelection", () => {
           calendarResponse(
             [
               {
-                time: "2025-06-17",
+                date: "2025-06-17",
                 providerIDs: "10351880",
                 offices: officesWithSlots,
               },
@@ -642,8 +642,8 @@ describe("AppointmentSelection", () => {
       it("auto-selects the next available date on provider change when current date has no appointments", async () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
           calendarResponse([
-            { time: "2025-06-16", providerIDs: "10351880,10470" },
-            { time: "2025-06-17", providerIDs: "10351880,10470" },
+            { date: "2025-06-16", providerIDs: "10351880,10470" },
+            { date: "2025-06-17", providerIDs: "10351880,10470" },
           ])
         );
         const wrapper = createWrapper({
@@ -683,8 +683,8 @@ describe("AppointmentSelection", () => {
         // Mock availableDays where 2025-06-16 only has provider 10470, and 2025-06-17 has provider 10351880
         // This means when we select only 10351880, the current date (2025-06-16) becomes invalid
         setAvailableDays(wrapper, [
-          { time: "2025-06-16", providerIDs: "10470" },
-          { time: "2025-06-17", providerIDs: "10351880" },
+          { date: "2025-06-16", providerIDs: "10470" },
+          { date: "2025-06-17", providerIDs: "10351880" },
         ]);
         setAppointmentsByDay(wrapper, [
           ["2025-06-16", [{ officeId: 10470, appointments: [1750118400] }]],
@@ -725,7 +725,7 @@ describe("AppointmentSelection", () => {
       it("enables a date in availableDays if API returns appointments for it", async () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
           calendarResponse([
-            { time: "2025-06-17", providerIDs: "10351880,10470" },
+            { date: "2025-06-17", providerIDs: "10351880,10470" },
           ])
         );
         const wrapper = createWrapper({
@@ -765,7 +765,7 @@ describe("AppointmentSelection", () => {
         // Mock the availableDays to simulate what would be fetched for selected providers
         setAvailableDays(
           wrapper,
-          [{ time: "2025-06-17", providerIDs: "10351880,10470" }],
+          [{ date: "2025-06-17", providerIDs: "10351880,10470" }],
           offices10351880And10470
         );
 
@@ -777,7 +777,7 @@ describe("AppointmentSelection", () => {
       it("disables a date not in availableDays", async () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
           calendarResponse([
-            { time: "2025-06-16", providerIDs: "10351880,10470" },
+            { date: "2025-06-16", providerIDs: "10351880,10470" },
           ])
         );
         const wrapper = createWrapper({
@@ -808,7 +808,7 @@ describe("AppointmentSelection", () => {
         // Mock the availableDays to simulate what would be fetched for selected providers
         setAvailableDays(
           wrapper,
-          [{ time: "2025-06-16", providerIDs: "10351880,10470" }],
+          [{ date: "2025-06-16", providerIDs: "10351880,10470" }],
           offices10351880And10470
         );
 
@@ -845,9 +845,9 @@ describe("AppointmentSelection", () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
           calendarResponse(
             [
-              { time: toIso(firstOfMonth), providerIDs: "10351880,10470" },
-              { time: toIso(midMonth), providerIDs: "10351880,10470" },
-              { time: toIso(lastOfMonth), providerIDs: "10351880,10470" },
+              { date: toIso(firstOfMonth), providerIDs: "10351880,10470" },
+              { date: toIso(midMonth), providerIDs: "10351880,10470" },
+              { date: toIso(lastOfMonth), providerIDs: "10351880,10470" },
             ],
             offices10351880And10470,
             { nextBookableDate: null }
@@ -921,8 +921,8 @@ describe("AppointmentSelection", () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
           calendarResponse(
             [
-              { time: toIso(firstOfMonth), providerIDs: "10351880,10470" },
-              { time: toIso(lastOfMonth), providerIDs: "10351880,10470" },
+              { date: toIso(firstOfMonth), providerIDs: "10351880,10470" },
+              { date: toIso(lastOfMonth), providerIDs: "10351880,10470" },
             ],
             offices10351880And10470,
             { nextBookableDate: toIso(nextMonthDay) }
@@ -974,9 +974,9 @@ describe("AppointmentSelection", () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
           calendarResponse(
             [
-              { time: "2025-06-01", providerIDs: "10351880,10470" },
-              { time: "2025-06-17", providerIDs: "10351880,10470" },
-              { time: "2025-06-30", providerIDs: "10351880,10470" },
+              { date: "2025-06-01", providerIDs: "10351880,10470" },
+              { date: "2025-06-17", providerIDs: "10351880,10470" },
+              { date: "2025-06-30", providerIDs: "10351880,10470" },
             ],
             offices10351880And10470,
             { prevBookableDate: null }
@@ -1025,8 +1025,8 @@ describe("AppointmentSelection", () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
           calendarResponse(
             [
-              { time: "2025-06-01", providerIDs: "10351880,10470" },
-              { time: "2025-06-17", providerIDs: "10351880,10470" },
+              { date: "2025-06-01", providerIDs: "10351880,10470" },
+              { date: "2025-06-17", providerIDs: "10351880,10470" },
             ],
             offices10351880And10470,
             { prevBookableDate: "2025-05-31" }
@@ -1075,12 +1075,12 @@ describe("AppointmentSelection", () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
           calendarResponse(
             [
-              { time: "2025-06-16", providerIDs: "10351880" },
-              { time: "2025-06-17", providerIDs: "10351880" },
-              { time: "2025-07-01", providerIDs: "10351880" },
-              { time: "2025-06-16", providerIDs: "10470" },
-              { time: "2025-06-17", providerIDs: "10470" },
-              { time: "2025-08-01", providerIDs: "10470" },
+              { date: "2025-06-16", providerIDs: "10351880" },
+              { date: "2025-06-17", providerIDs: "10351880" },
+              { date: "2025-07-01", providerIDs: "10351880" },
+              { date: "2025-06-16", providerIDs: "10470" },
+              { date: "2025-06-17", providerIDs: "10470" },
+              { date: "2025-08-01", providerIDs: "10470" },
             ],
             offices10351880And10470,
             { nextBookableDate: "2025-08-01" }
@@ -1122,12 +1122,12 @@ describe("AppointmentSelection", () => {
         setAvailableDays(
           wrapper,
           [
-            { time: "2025-06-16", providerIDs: "10351880" },
-            { time: "2025-06-17", providerIDs: "10351880" },
-            { time: "2025-07-01", providerIDs: "10351880" },
-            { time: "2025-06-16", providerIDs: "10470" },
-            { time: "2025-06-17", providerIDs: "10470" },
-            { time: "2025-08-01", providerIDs: "10470" },
+            { date: "2025-06-16", providerIDs: "10351880" },
+            { date: "2025-06-17", providerIDs: "10351880" },
+            { date: "2025-07-01", providerIDs: "10351880" },
+            { date: "2025-06-16", providerIDs: "10470" },
+            { date: "2025-06-17", providerIDs: "10470" },
+            { date: "2025-08-01", providerIDs: "10470" },
           ],
           offices10351880And10470
         );
@@ -1158,12 +1158,12 @@ describe("AppointmentSelection", () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
           calendarResponse(
             [
-              { time: "2025-06-16", providerIDs: "10351880" },
-              { time: "2025-06-17", providerIDs: "10351880" },
-              { time: "2025-07-01", providerIDs: "10351880" },
-              { time: "2025-06-16", providerIDs: "10470" },
-              { time: "2025-06-17", providerIDs: "10470" },
-              { time: "2025-08-01", providerIDs: "10470" },
+              { date: "2025-06-16", providerIDs: "10351880" },
+              { date: "2025-06-17", providerIDs: "10351880" },
+              { date: "2025-07-01", providerIDs: "10351880" },
+              { date: "2025-06-16", providerIDs: "10470" },
+              { date: "2025-06-17", providerIDs: "10470" },
+              { date: "2025-08-01", providerIDs: "10470" },
             ],
             offices10351880And10470,
             { nextBookableDate: "2025-08-01" }
@@ -1205,12 +1205,12 @@ describe("AppointmentSelection", () => {
         setAvailableDays(
           wrapper,
           [
-            { time: "2025-06-16", providerIDs: "10351880" },
-            { time: "2025-06-17", providerIDs: "10351880" },
-            { time: "2025-07-01", providerIDs: "10351880" },
-            { time: "2025-06-16", providerIDs: "10470" },
-            { time: "2025-06-17", providerIDs: "10470" },
-            { time: "2025-08-01", providerIDs: "10470" },
+            { date: "2025-06-16", providerIDs: "10351880" },
+            { date: "2025-06-17", providerIDs: "10351880" },
+            { date: "2025-07-01", providerIDs: "10351880" },
+            { date: "2025-06-16", providerIDs: "10470" },
+            { date: "2025-06-17", providerIDs: "10470" },
+            { date: "2025-08-01", providerIDs: "10470" },
           ],
           offices10351880And10470
         );
@@ -1250,12 +1250,12 @@ describe("AppointmentSelection", () => {
           calendarResponse(
             [
               {
-                time: "2025-06-16",
+                date: "2025-06-16",
                 providerIDs: "10351880,10470",
                 offices: offices10351880And10470,
               },
               {
-                time: "2025-06-17",
+                date: "2025-06-17",
                 providerIDs: "10351880,10470",
                 offices: offices10351880And10470,
               },
@@ -1320,12 +1320,12 @@ describe("AppointmentSelection", () => {
           calendarResponse(
             [
               {
-                time: "2025-06-17",
+                date: "2025-06-17",
                 providerIDs: "1",
                 offices: [{ officeId: 1, appointments: [1750118400] }],
               },
               {
-                time: "2025-06-18",
+                date: "2025-06-18",
                 providerIDs: "1,2",
                 offices: [
                   { officeId: 1, appointments: [1750204800] },
@@ -1494,7 +1494,7 @@ describe("AppointmentSelection", () => {
           calendarResponse(
             [
               {
-                time: "2025-06-17",
+                date: "2025-06-17",
                 providerIDs: "1",
                 offices: [
                   {
@@ -1504,7 +1504,7 @@ describe("AppointmentSelection", () => {
                 ],
               },
               {
-                time: "2025-06-18",
+                date: "2025-06-18",
                 providerIDs: "1",
                 offices: [
                   {
@@ -1565,7 +1565,7 @@ describe("AppointmentSelection", () => {
           calendarResponse(
             [
               {
-                time: "2025-06-17",
+                date: "2025-06-17",
                 providerIDs: "1",
                 offices: [
                   {
@@ -1575,7 +1575,7 @@ describe("AppointmentSelection", () => {
                 ],
               },
               {
-                time: "2025-06-18",
+                date: "2025-06-18",
                 providerIDs: "1",
                 offices: [
                   {
@@ -1618,7 +1618,7 @@ describe("AppointmentSelection", () => {
 
       it("sets selectedHour to null if no hours are available for the selected day", async () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
-          calendarResponse([{ time: "2025-06-19", providerIDs: "1" }])
+          calendarResponse([{ date: "2025-06-19", providerIDs: "1" }])
         );
         const wrapper = createWrapper({
           selectedService: {
@@ -1648,8 +1648,8 @@ describe("AppointmentSelection", () => {
       it("resets selectedDayPart to 'am' if available when in day part view", async () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
           calendarResponse([
-            { time: "2025-06-20", providerIDs: "1" },
-            { time: "2025-06-21", providerIDs: "1" },
+            { date: "2025-06-20", providerIDs: "1" },
+            { date: "2025-06-21", providerIDs: "1" },
           ])
         );
         const wrapper = createWrapper({
@@ -1682,7 +1682,7 @@ describe("AppointmentSelection", () => {
 
       it("does not reset selectedDayPart when selecting the same day", async () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
-          calendarResponse([{ time: "2025-06-20", providerIDs: "1" }])
+          calendarResponse([{ date: "2025-06-20", providerIDs: "1" }])
         );
         const wrapper = createWrapper({
           selectedService: {
@@ -1711,7 +1711,7 @@ describe("AppointmentSelection", () => {
         await flushPromises();
 
         // Mock the availableDays to simulate what would be fetched for selected providers
-        setAvailableDays(wrapper, [{ time: "2025-06-20", providerIDs: "1" }]);
+        setAvailableDays(wrapper, [{ date: "2025-06-20", providerIDs: "1" }]);
 
         // Set the selected day first
         wrapper.vm.selectedDay = new Date("2025-06-20");
@@ -1728,7 +1728,7 @@ describe("AppointmentSelection", () => {
     describe("CalendarView snap-to-nearest hour and dayPart on provider deselection", () => {
       it("snaps to the nearest later hour if current hour is removed", async () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
-          calendarResponse([{ time: "2025-06-17", providerIDs: "1,2" }])
+          calendarResponse([{ date: "2025-06-17", providerIDs: "1,2" }])
         );
         const wrapper = createWrapper({
           selectedService: {
@@ -1772,7 +1772,7 @@ describe("AppointmentSelection", () => {
           calendarResponse(
             [
               {
-                time: "2025-06-17",
+                date: "2025-06-17",
                 providerIDs: "1,2",
                 offices: officesForProviderHourSnap,
               },
@@ -1834,7 +1834,7 @@ describe("AppointmentSelection", () => {
           calendarResponse(
             [
               {
-                time: "2025-06-17",
+                date: "2025-06-17",
                 providerIDs: "1,2",
                 offices: officesForProviderHourSnapEqualDistance,
               },
@@ -1893,7 +1893,7 @@ describe("AppointmentSelection", () => {
 
       it("snaps to the other dayPart if current is removed", async () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
-          calendarResponse([{ time: "2025-06-17", providerIDs: "1,2" }])
+          calendarResponse([{ date: "2025-06-17", providerIDs: "1,2" }])
         );
         const wrapper = createWrapper({
           selectedService: {
@@ -1934,7 +1934,7 @@ describe("AppointmentSelection", () => {
 
       it("snaps to null if no dayPart is available after deselection", async () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
-          calendarResponse([{ time: "2025-06-17", providerIDs: "1,2" }])
+          calendarResponse([{ date: "2025-06-17", providerIDs: "1,2" }])
         );
         const wrapper = createWrapper({
           selectedService: {
@@ -1980,7 +1980,7 @@ describe("AppointmentSelection", () => {
         calendarResponse(
           [
             {
-              time: "2025-07-02",
+              date: "2025-07-02",
               providerIDs: "1,2",
               offices: officesForHourlyViewTest,
             },
@@ -2029,7 +2029,7 @@ describe("AppointmentSelection", () => {
         calendarResponse(
           [
             {
-              time: "2025-07-02",
+              date: "2025-07-02",
               providerIDs: "1,2",
               offices: officesForDayPartViewTest,
             },
@@ -2207,7 +2207,7 @@ describe("AppointmentSelection", () => {
       wrapper.vm.selectedProviders = { "1": true, "2": true };
       setAvailableDays(
         wrapper,
-        [{ time: "2025-06-16", providerIDs: "1,2" }],
+        [{ date: "2025-06-16", providerIDs: "1,2" }],
         officeOneAndTwoSlots
       );
       wrapper.vm.selectedProvider = {
@@ -2265,7 +2265,7 @@ describe("AppointmentSelection", () => {
       wrapper.vm.selectedProviders = { "1": true, "2": true };
       setAvailableDays(
         wrapper,
-        [{ time: "2025-06-16", providerIDs: "1,2" }],
+        [{ date: "2025-06-16", providerIDs: "1,2" }],
         officeOneAndTwoSlots
       );
       wrapper.vm.selectedProvider = {
@@ -2328,7 +2328,7 @@ describe("AppointmentSelection", () => {
       wrapper.vm.selectedProviders = { "1": true, "2": true };
       setAvailableDays(
         wrapper,
-        [{ time: "2025-06-16", providerIDs: "1,2" }],
+        [{ date: "2025-06-16", providerIDs: "1,2" }],
         officeOneAndTwoSlots
       );
       wrapper.vm.selectedProvider = {
@@ -2487,7 +2487,7 @@ describe("AppointmentSelection", () => {
         // Ensure component state is in a rendered state similar to other callout tests
         setAvailableDays(
           wrapper,
-          [{ time: "2025-06-16", providerIDs: "1,2" }],
+          [{ date: "2025-06-16", providerIDs: "1,2" }],
           officeOneAndTwoSlots
         );
         wrapper.vm.selectedProvider = {
@@ -2851,7 +2851,7 @@ describe("AppointmentSelection", () => {
       // Mock the availableDays to simulate what would be fetched for selected providers
       setAvailableDays(
         wrapper,
-        [{ time: "2025-06-16", providerIDs: "1" }],
+        [{ date: "2025-06-16", providerIDs: "1" }],
         officeOneMorningSlots
       );
 
@@ -2884,7 +2884,7 @@ describe("AppointmentSelection", () => {
         calendarResponse(
           [
             {
-              time: "2025-06-10",
+              date: "2025-06-10",
               providerIDs: "1,2",
               offices: officesForHourlyViewTest,
             },
@@ -2942,7 +2942,7 @@ describe("AppointmentSelection", () => {
 
     it("hides navigation buttons for hourly view when single provider is selected", async () => {
       (fetchAvailableCalendar as Mock).mockResolvedValue(
-        calendarResponse([{ time: "2025-06-10", providerIDs: "1" }])
+        calendarResponse([{ date: "2025-06-10", providerIDs: "1" }])
       );
 
       const wrapper = createWrapper({
@@ -2972,7 +2972,7 @@ describe("AppointmentSelection", () => {
       await flushPromises();
 
       // Mock the availableDays to simulate what would be fetched for selected providers
-      setAvailableDays(wrapper, [{ time: "2025-06-10", providerIDs: "1" }]);
+      setAvailableDays(wrapper, [{ date: "2025-06-10", providerIDs: "1" }]);
 
       await nextTick();
       await flushPromises();
@@ -3023,7 +3023,7 @@ describe("AppointmentSelection", () => {
 
       // finish loading
       resolveDays(
-        calendarResponse([{ time: "2025-06-16", providerIDs: "1" }], [])
+        calendarResponse([{ date: "2025-06-16", providerIDs: "1" }], [])
       );
       await flushPromises();
       await nextTick();

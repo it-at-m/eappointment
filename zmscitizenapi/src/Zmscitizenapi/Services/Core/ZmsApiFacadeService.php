@@ -572,7 +572,7 @@ class ZmsApiFacadeService
             }
 
             $formattedDays[] = [
-                'time' => (string) ($day['date'] ?? ''),
+                'date' => (string) ($day['date'] ?? ''),
                 'providerIDs' => (string) ($day['providerIDs'] ?? ''),
                 'offices' => $offices,
             ];

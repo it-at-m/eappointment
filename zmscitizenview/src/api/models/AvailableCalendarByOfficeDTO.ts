@@ -1,7 +1,7 @@
 import { OfficeAvailableTimeSlotsDTO } from "@/api/models/OfficeAvailableTimeSlotsDTO";
 
 export interface AvailableCalendarDayDTO {
-  time: string;
+  date: string;
   providerIDs: string;
   offices: OfficeAvailableTimeSlotsDTO[];
 }

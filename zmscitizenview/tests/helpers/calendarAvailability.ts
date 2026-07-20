@@ -99,7 +99,7 @@ export const officeTwoAndThreeSlots = [
 ];
 
 export type CalendarDayMock = {
-  time: string;
+  date: string;
   providerIDs: string;
   offices?: Array<{ officeId: number | string; appointments: number[] }>;
 };
@@ -112,8 +112,8 @@ export function calendarResponse(
     nextBookableDate?: string | null;
   } = {}
 ) {
-  const startDate = days[0]?.time ?? "2025-01-01";
-  const endDate = days[days.length - 1]?.time ?? "2025-12-31";
+  const startDate = days[0]?.date ?? "2025-01-01";
+  const endDate = days[days.length - 1]?.date ?? "2025-12-31";
   return {
     startDate,
     endDate,
@@ -122,7 +122,7 @@ export function calendarResponse(
     prevBookableDate: markers.prevBookableDate ?? null,
     nextBookableDate: markers.nextBookableDate ?? null,
     availableDays: days.map((day) => ({
-      time: day.time,
+      date: day.date,
       providerIDs: day.providerIDs,
       offices: day.offices ?? defaultOffices,
     })),
@@ -131,7 +131,7 @@ export function calendarResponse(
 
 export function setAvailableDays(
   wrapper: { vm: any },
-  days: Array<{ time: string; providerIDs: string }>,
+  days: Array<{ date: string; providerIDs: string }>,
   offices: Array<{
     officeId: number | string;
     appointments: number[];
@@ -143,7 +143,7 @@ export function setAvailableDays(
     Array<{ officeId: number | string; appointments: number[] }>
   >();
   for (const day of days) {
-    map.set(day.time.slice(0, 10), offices);
+    map.set(day.date.slice(0, 10), offices);
   }
   wrapper.vm.appointmentsByDay = map;
 }
