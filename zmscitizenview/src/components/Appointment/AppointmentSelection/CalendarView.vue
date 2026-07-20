@@ -2,19 +2,24 @@
   <div>
     <!-- Calendar Component -->
     <div class="m-component calendar-root">
-      <muc-calendar
-        :key="calendarKey"
-        :model-value="selectedDay"
-        @update:model-value="
-          (date) => $emit('update:selectedDay', date as Date)
-        "
-        disable-view-change
-        variant="single"
-        :allowed-dates="allowedDates"
-        :min="minDate"
-        :max="maxDate"
-        :view-month="viewMonth"
-      />
+      <div
+        class="muc-calendar-wrap"
+        @click.capture="onCalendarClick"
+      >
+        <muc-calendar
+          :key="calendarKey"
+          :model-value="selectedDay"
+          @update:model-value="
+            (date) => $emit('update:selectedDay', date as Date)
+          "
+          disable-view-change
+          variant="single"
+          :allowed-dates="allowedDates"
+          :min="minDate"
+          :max="maxDate"
+          :view-month="viewMonth"
+        />
+      </div>
     </div>
 
     <!-- Hourly View (when appointments > threshold) -->
@@ -287,6 +292,8 @@ const props = defineProps<{
   minDate: Date | undefined;
   maxDate: Date | undefined;
   viewMonth: Date;
+  prevBookableDate: string | null;
+  nextBookableDate: string | null;
   timeSlotsInHoursByOffice: Map<
     number,
     { appointments: Map<number, number[]> }
@@ -314,6 +321,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "update:selectedDay", day: Date): void;
+  (e: "jumpToBookableDate", isoDate: string): void;
   (
     e: "selectTimeSlot",
     payload: { officeId: number | string; time: number }
@@ -322,6 +330,43 @@ const emit = defineEmits<{
   (e: "setSelectedHour", hour: number | null): void;
   (e: "setSelectedDayPart", part: "am" | "pm" | null): void;
 }>();
+
+const MONTH_PREV_LABEL = "Vorheriger Monat";
+const MONTH_NEXT_LABEL = "Nächster Monat";
+
+function findMonthNavButton(target: EventTarget | null): HTMLElement | null {
+  if (!(target instanceof Element)) {
+    return null;
+  }
+  return target.closest(
+    `button[aria-label="${MONTH_PREV_LABEL}"], button[aria-label="${MONTH_NEXT_LABEL}"]`
+  );
+}
+
+/**
+ * MucCalendar month chevrons only do ±1 month internally and do not emit.
+ * Capture those clicks and jump to the nearest bookable date instead.
+ */
+function onCalendarClick(event: MouseEvent) {
+  const button = findMonthNavButton(event.target);
+  if (!button) {
+    return;
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (props.isLoadingAppointments) {
+    return;
+  }
+
+  const label = button.getAttribute("aria-label");
+  if (label === MONTH_PREV_LABEL && props.prevBookableDate) {
+    emit("jumpToBookableDate", props.prevBookableDate);
+  } else if (label === MONTH_NEXT_LABEL && props.nextBookableDate) {
+    emit("jumpToBookableDate", props.nextBookableDate);
+  }
+}
 
 async function snapToNearestForCurrentSelection() {
   await nextTick();

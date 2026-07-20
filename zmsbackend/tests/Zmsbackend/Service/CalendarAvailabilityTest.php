@@ -28,6 +28,8 @@ class CalendarAvailabilityTest extends Base
         $this->assertArrayHasKey('endDate', $result);
         $this->assertArrayHasKey('slotsStartDate', $result);
         $this->assertArrayHasKey('slotsEndDate', $result);
+        $this->assertArrayHasKey('prevBookableDate', $result);
+        $this->assertArrayHasKey('nextBookableDate', $result);
         $this->assertSame($start->format('Y-m-d'), $result['slotsStartDate']);
         $this->assertSame($end->format('Y-m-t'), $result['slotsEndDate']);
     }

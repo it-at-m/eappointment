@@ -41,6 +41,8 @@ class AvailableCalendarByOfficeControllerTest extends ControllerTestCase
             'endDate' => '2024-08-23',
             'slotsStartDate' => '2024-08-21',
             'slotsEndDate' => '2024-08-23',
+            'prevBookableDate' => null,
+            'nextBookableDate' => null,
             'availableDays' => [
                 [
                     'time' => '2024-08-22',
@@ -86,6 +88,8 @@ class AvailableCalendarByOfficeControllerTest extends ControllerTestCase
             'endDate' => '2024-08-23',
             'slotsStartDate' => '2024-08-21',
             'slotsEndDate' => '2024-08-23',
+            'prevBookableDate' => null,
+            'nextBookableDate' => null,
             'availableDays' => [],
         ];
         $this->assertEquals(200, $response->getStatusCode());

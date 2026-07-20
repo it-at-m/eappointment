@@ -393,6 +393,16 @@
  *                                      type: string
  *                                  endDate:
  *                                      type: string
+ *                                  slotsStartDate:
+ *                                      type: string
+ *                                  slotsEndDate:
+ *                                      type: string
+ *                                  prevBookableDate:
+ *                                      type: string
+ *                                      description: Nearest bookable day before slots window (or null)
+ *                                  nextBookableDate:
+ *                                      type: string
+ *                                      description: Nearest bookable day after slots window (or null)
  *                                  days:
  *                                      type: array
  *                                      items:

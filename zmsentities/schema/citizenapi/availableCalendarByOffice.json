@@ -18,6 +18,14 @@
       "type": "string",
       "description": "End date of the appointment slots window in YYYY-MM-DD format"
     },
+    "prevBookableDate": {
+      "type": ["string", "null"],
+      "description": "Nearest bookable day before the slots window (may skip empty months)"
+    },
+    "nextBookableDate": {
+      "type": ["string", "null"],
+      "description": "Nearest bookable day after the slots window (may skip empty months)"
+    },
     "availableDays": {
       "type": ["array", "null"],
       "description": "Bookable days with appointment slots grouped by office",

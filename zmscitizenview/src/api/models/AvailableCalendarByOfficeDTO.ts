@@ -11,5 +11,7 @@ export interface AvailableCalendarByOfficeDTO {
   endDate: string;
   slotsStartDate?: string;
   slotsEndDate?: string;
+  prevBookableDate?: string | null;
+  nextBookableDate?: string | null;
   availableDays: AvailableCalendarDayDTO[];
 }

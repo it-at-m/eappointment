@@ -76,6 +76,8 @@
       :minDate="minDate"
       :maxDate="maxDate"
       :viewMonth="viewMonth"
+      :prevBookableDate="prevBookableDate"
+      :nextBookableDate="nextBookableDate"
       :timeSlotsInHoursByOffice="timeSlotsInHoursByOffice"
       :timeSlotsInDayPartByOffice="timeSlotsInDayPartByOffice"
       :currentHour="currentHour"
@@ -94,6 +96,7 @@
       :officeNameById="officeNameById"
       :isSlotSelected="isSlotSelected"
       @update:selectedDay="handleDaySelection"
+      @jumpToBookableDate="jumpToBookableDate"
       @selectTimeSlot="
         ({ officeId, time }) =>
           handleTimeSlotSelection(officeId as number, time)
@@ -296,6 +299,8 @@ const availableDays = ref<Array<{ time: string; providerIDs: string }>>();
 /** YYYY-MM-DD bounds of the last loaded appointment-slots window */
 const loadedSlotsStartDate = ref<string | null>(null);
 const loadedSlotsEndDate = ref<string | null>(null);
+const prevBookableDate = ref<string | null>(null);
+const nextBookableDate = ref<string | null>(null);
 const selectedHour = ref<number | null>(null);
 const selectedDayPart = ref<"am" | "pm" | null>(null);
 
@@ -597,13 +602,7 @@ const allowedDates = (date: Date) => {
     return false;
   }
 
-  // Inside the loaded slots window: only allow days that actually have times.
-  // Outside it: allow bookable days so the user can navigate / click to load that month.
-  if (isDateInLoadedSlotsWindow(dateString)) {
-    return dayHasSlotsForSelectedProviders(dateString);
-  }
-
-  return true;
+  return dayHasSlotsForSelectedProviders(dateString);
 };
 
 const hasAppointmentsForSelectedProviders = () => {
@@ -901,6 +900,8 @@ const applyCalendarResponse = (
     calendar.slotsEndDate ?? calendar.endDate ?? convertDateToString(MAXDATE);
   loadedSlotsStartDate.value = slotsStart;
   loadedSlotsEndDate.value = slotsEnd;
+  prevBookableDate.value = calendar.prevBookableDate ?? null;
+  nextBookableDate.value = calendar.nextBookableDate ?? null;
 
   const nextByDay = new Map<string, OfficeAvailableTimeSlotsDTO[]>();
   const normalizedDays: Array<{ time: string; providerIDs: string }> = [];
@@ -909,17 +910,15 @@ const applyCalendarResponse = (
     const dateKey = toDayKey(day.time);
     const offices = normalizeCalendarOffices(day.offices ?? []);
     const inSlotsWindow = dateKey >= slotsStart && dateKey <= slotsEnd;
+    if (!inSlotsWindow) {
+      continue;
+    }
+
     const hasAppointments = offices.some(
       (office) => office.appointments.length > 0
     );
-
-    if (inSlotsWindow) {
-      nextByDay.set(dateKey, offices);
-    }
-
-    // Keep bookable days outside the slots window for month navigation.
-    // Inside the window, only days with real free times are selectable.
-    if (!inSlotsWindow || hasAppointments) {
+    nextByDay.set(dateKey, offices);
+    if (hasAppointments) {
       normalizedDays.push({
         time: day.time,
         providerIDs: day.providerIDs,
@@ -927,14 +926,20 @@ const applyCalendarResponse = (
     }
   }
 
-  const mergedAppointments = new Map(appointmentsByDay.value);
-  for (const [dateKey, offices] of nextByDay) {
-    mergedAppointments.set(dateKey, offices);
-  }
-  appointmentsByDay.value = mergedAppointments;
+  appointmentsByDay.value = nextByDay;
   availableDays.value = normalizedDays;
+  minDate.value = TODAY;
+  maxDate.value = MAXDATE;
   calendarKey.value++;
   return true;
+};
+
+const jumpToBookableDate = async (isoDate: string) => {
+  const day = new Date(`${isoDate}T12:00:00`);
+  if (Number.isNaN(day.getTime())) {
+    return;
+  }
+  await handleDaySelection(day);
 };
 
 const reloadCalendarAvailability = async (options?: {
@@ -952,6 +957,8 @@ const reloadCalendarAvailability = async (options?: {
     appointmentsByDay.value = new Map();
     loadedSlotsStartDate.value = null;
     loadedSlotsEndDate.value = null;
+    prevBookableDate.value = null;
+    nextBookableDate.value = null;
     return false;
   }
 
@@ -1176,12 +1183,9 @@ function updateDateRangeForSelectedProviders(skipDateValidation = false) {
   );
 
   if (availableDaysForSelectedProviders.length > 0) {
-    minDate.value = new Date(availableDaysForSelectedProviders[0].time);
-    maxDate.value = new Date(
-      availableDaysForSelectedProviders[
-        availableDaysForSelectedProviders.length - 1
-      ].time
-    );
+    // Keep booking-horizon bounds so month jumps via prev/next markers stay valid.
+    minDate.value = TODAY;
+    maxDate.value = MAXDATE;
     // Ensure calendar updates min/max immediately
     if (selectedDay.value) {
       viewMonth.value = new Date(

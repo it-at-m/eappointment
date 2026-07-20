@@ -584,7 +584,9 @@ class ZmsApiFacadeService
             (string) ($availability['endDate'] ?? $endDate),
             $formattedDays,
             (string) ($availability['slotsStartDate'] ?? $slotsStartDate ?? $startDate),
-            (string) ($availability['slotsEndDate'] ?? $slotsEndDate ?? $endDate)
+            (string) ($availability['slotsEndDate'] ?? $slotsEndDate ?? $endDate),
+            isset($availability['prevBookableDate']) ? (string) $availability['prevBookableDate'] : null,
+            isset($availability['nextBookableDate']) ? (string) $availability['nextBookableDate'] : null
         );
 
         LoggerService::logInfo('calendar.availability.timing', [
@@ -597,6 +599,8 @@ class ZmsApiFacadeService
             'day_count' => count($formattedDays),
             'slots_start_date' => $entity->slotsStartDate,
             'slots_end_date' => $entity->slotsEndDate,
+            'prev_bookable_date' => $entity->prevBookableDate,
+            'next_bookable_date' => $entity->nextBookableDate,
         ]);
 
         return $entity;
