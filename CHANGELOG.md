@@ -1,3 +1,24 @@
+## Release Muc-45 (23.07.2026)
+                            
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1266'>ZMSKVR-1266</a>] -         Doppelte Tageseinträge in der Kundenstatistik  (inkl. Excel-Export betroffen)
+</li>
+</ul>                                                                                                                                                                                                                   
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1173'>ZMSKVR-1173</a>] -         Entfernung der Legacy-Berechtigungsstrukturen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1348'>ZMSKVR-1348</a>] -         Eigenständigen Link „Änderungshistorie“ einführen und Berliner Changelog entfernen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1492'>ZMSKVR-1492</a>] -         Erweiterung der rechtlichen Hinweise für die Terminvariante Videoberatung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1508'>ZMSKVR-1508</a>] -         Terminvarianten Kleinkunde und Großkunde als Vor-Or-Termin darstellen
+</li>
+</ul>
+
 ## Release Muc-44 (10.07.2026)
                                 
 <h2>        Bug
