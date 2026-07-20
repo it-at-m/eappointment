@@ -73,8 +73,10 @@ class CalendarAvailabilityGetTest extends \BO\Zmsbackend\Tests\Api\Base
 
         $this->assertTrue(200 == $response->getStatusCode());
         $this->assertArrayHasKey('days', $body['data']);
-        $this->assertSame($now->format('Y-m-d'), $body['data']['slotsStartDate']);
-        $this->assertSame($slotsEnd->format('Y-m-t'), $body['data']['slotsEndDate']);
+        // Multi-day slots windows are narrowed to the first bookable day for free-slot SQL.
+        $this->assertSame($body['data']['slotsStartDate'], $body['data']['slotsEndDate']);
+        $this->assertGreaterThanOrEqual($now->format('Y-m-d'), $body['data']['slotsStartDate']);
+        $this->assertLessThanOrEqual($slotsEnd->format('Y-m-t'), $body['data']['slotsStartDate']);
         $this->assertSame($now->format('Y-m-d'), $body['data']['startDate']);
         $this->assertSame($end->format('Y-m-t'), $body['data']['endDate']);
         $this->assertArrayHasKey('prevBookableDate', $body['data']);
