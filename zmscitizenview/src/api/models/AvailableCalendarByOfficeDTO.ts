@@ -9,5 +9,7 @@ export interface AvailableCalendarDayDTO {
 export interface AvailableCalendarByOfficeDTO {
   startDate: string;
   endDate: string;
+  slotsStartDate?: string;
+  slotsEndDate?: string;
   availableDays: AvailableCalendarDayDTO[];
 }

@@ -343,6 +343,16 @@
  *                  in: query
  *                  required: true
  *                  type: string
+ *              -   name: slotsStartDate
+ *                  description: First day for free appointment slots (YYYY-MM-DD). Defaults to startDate.
+ *                  in: query
+ *                  required: false
+ *                  type: string
+ *              -   name: slotsEndDate
+ *                  description: Last day for free appointment slots (YYYY-MM-DD). Defaults to endDate.
+ *                  in: query
+ *                  required: false
+ *                  type: string
  *              -   name: officeId
  *                  description: Comma-separated provider IDs
  *                  in: query

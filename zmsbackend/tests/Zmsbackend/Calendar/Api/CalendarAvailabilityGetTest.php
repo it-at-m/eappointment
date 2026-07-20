@@ -47,6 +47,43 @@ class CalendarAvailabilityGetTest extends \BO\Zmsbackend\Tests\Api\Base
 
         $this->assertTrue(200 == $response->getStatusCode());
         $this->assertSame([], $body['data']['days']);
+        $this->assertSame('2099-01-01', $body['data']['slotsStartDate']);
+        $this->assertSame('2099-01-31', $body['data']['slotsEndDate']);
+    }
+
+    public function testSlotsDateWindow()
+    {
+        $now = \App::$now;
+        $end = (clone $now)->modify('+2 months');
+        $slotsEnd = (clone $now)->modify('+1 month');
+        $response = $this->render([], [
+            'startDate' => $now->format('Y-m-d'),
+            'endDate' => $end->format('Y-m-t'),
+            'slotsStartDate' => $now->format('Y-m-d'),
+            'slotsEndDate' => $slotsEnd->format('Y-m-t'),
+            'officeId' => '122217',
+            'serviceId' => '120703',
+            'serviceCount' => '1',
+        ], []);
+        $body = json_decode((string) $response->getBody(), true);
+
+        $this->assertTrue(200 == $response->getStatusCode());
+        $this->assertArrayHasKey('days', $body['data']);
+        $this->assertSame($now->format('Y-m-d'), $body['data']['slotsStartDate']);
+        $this->assertSame($slotsEnd->format('Y-m-t'), $body['data']['slotsEndDate']);
+        $this->assertSame($now->format('Y-m-d'), $body['data']['startDate']);
+        $this->assertSame($end->format('Y-m-t'), $body['data']['endDate']);
+
+        foreach ($body['data']['days'] as $day) {
+            $hasAppointments = !empty($day['appointments']);
+            if ($hasAppointments) {
+                $this->assertLessThanOrEqual(
+                    $slotsEnd->format('Y-m-t'),
+                    $day['date'],
+                    'Appointment timestamps should only be loaded inside the slots window'
+                );
+            }
+        }
     }
 
     public function testServiceCountExceedsMaximum()

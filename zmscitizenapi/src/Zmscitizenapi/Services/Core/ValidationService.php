@@ -141,7 +141,7 @@ class ValidationService
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @TODO: Extract validation rules into separate rule objects using the specification pattern
      */
-    public static function validateGetBookableFreeDays(?array $officeIds, ?array $serviceIds, ?string $startDate, ?string $endDate, ?array $serviceCounts, ?bool $captchaRequired = false, ?string $captchaToken = null, ?TokenValidationService $tokenValidator = null): array
+    public static function validateGetBookableFreeDays(?array $officeIds, ?array $serviceIds, ?string $startDate, ?string $endDate, ?array $serviceCounts, ?bool $captchaRequired = false, ?string $captchaToken = null, ?TokenValidationService $tokenValidator = null, ?string $slotsStartDate = null, ?string $slotsEndDate = null): array
     {
         $errors = [];
         if (!self::isValidOfficeIds($officeIds)) {
@@ -168,6 +168,24 @@ class ValidationService
             if (!self::isDateRangeValid($startDate, $endDate)) {
                 $errors[] = self::getError('dateRangeTooLarge');
             }
+        }
+
+        if ($slotsStartDate !== null && !self::isValidDate($slotsStartDate)) {
+            $errors[] = self::getError('invalidSlotsStartDate');
+        }
+
+        if ($slotsEndDate !== null && !self::isValidDate($slotsEndDate)) {
+            $errors[] = self::getError('invalidSlotsEndDate');
+        }
+
+        if (
+            $slotsStartDate !== null
+            && $slotsEndDate !== null
+            && self::isValidDate($slotsStartDate)
+            && self::isValidDate($slotsEndDate)
+            && new DateTime($slotsStartDate) > new DateTime($slotsEndDate)
+        ) {
+            $errors[] = self::getError('slotsStartDateAfterEndDate');
         }
 
         if (!self::isValidServiceCounts($serviceCounts)) {

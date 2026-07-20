@@ -26,13 +26,22 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         ?string $serviceCounts = '',
         ?string $providerSource = null,
         ?string $requestSource = null,
-        ?string $traceId = null
+        ?string $traceId = null,
+        ?string $slotsStartDate = null,
+        ?string $slotsEndDate = null
     ): array {
         if (!$startDate || !$endDate || !$officeIds || !$serviceIds) {
             throw new \BO\Zmsbackend\Slot\Exception\Calendar\InvalidAvailabilityInput(
                 'startDate, endDate, officeId and serviceId are required'
             );
         }
+
+        [$slotsStartDate, $slotsEndDate] = $this->resolveSlotsDateRange(
+            $startDate,
+            $endDate,
+            $slotsStartDate,
+            $slotsEndDate
+        );
 
         $t0 = microtime(true);
         $calendar = $this->buildCalendarFromQuery(
@@ -53,6 +62,8 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
                 'ms' => $buildMs,
                 'office_count' => count($calendar->providers ?? []),
                 'request_count' => count($calendar->requests ?? []),
+                'slots_start_date' => $slotsStartDate,
+                'slots_end_date' => $slotsEndDate,
             ]);
         }
 
@@ -61,7 +72,9 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             $now,
             $slotType,
             $slotsRequired,
-            $traceId
+            $traceId,
+            $slotsStartDate,
+            $slotsEndDate
         );
     }
 
@@ -73,8 +86,19 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         \DateTimeInterface $now,
         string $slotType = 'public',
         $slotsRequired = 0,
-        ?string $traceId = null
+        ?string $traceId = null,
+        ?string $slotsStartDate = null,
+        ?string $slotsEndDate = null
     ): array {
+        $dayRangeStart = $this->formatCalendarDate($calendar->firstDay);
+        $dayRangeEnd = $this->formatCalendarDate($calendar->lastDay);
+        [$slotsStartDate, $slotsEndDate] = $this->resolveSlotsDateRange(
+            $dayRangeStart,
+            $dayRangeEnd,
+            $slotsStartDate,
+            $slotsEndDate
+        );
+
         $t0 = microtime(true);
         $calendar = (new Calendar())->readResolvedEntity(
             $calendar,
@@ -104,11 +128,13 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
                 $bookableDays->addEntity($day);
             }
         }
-        $calendar->days = $bookableDays;
+
+        $slotDays = $this->filterDaysInDateRange($bookableDays, $slotsStartDate, $slotsEndDate);
+        $calendar->days = $slotDays;
         $tAfterDays = microtime(true);
 
         $processList = [];
-        if (count($bookableDays) > 0) {
+        if (count($slotDays) > 0) {
             $processList = (new \BO\Zmsbackend\Process\Service\ProcessStatusFree())
                 ->readFreeProcessesMinimalFromPreparedCalendar(
                     $calendar,
@@ -120,7 +146,9 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         }
         $tAfterSlots = microtime(true);
 
-        $result = $this->buildResult($calendar, $processList);
+        // Day statuses cover the full horizon; appointments only for the slots window.
+        $calendar->days = $bookableDays;
+        $result = $this->buildResult($calendar, $processList, $slotsStartDate, $slotsEndDate);
 
         if (\App::$log) {
             \App::$log->info('calendar.availability.timing', [
@@ -136,12 +164,85 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
                 'total_ms' => (int) round((microtime(true) - $t0) * 1000),
                 'scope_count' => count($calendar->scopes),
                 'bookable_days' => count($bookableDays),
-                'slot_days_queried' => count($bookableDays),
+                'slot_days_queried' => count($slotDays),
+                'slots_start_date' => $slotsStartDate,
+                'slots_end_date' => $slotsEndDate,
                 'process_count' => count($processList),
             ]);
         }
 
         return $result;
+    }
+
+    /**
+     * Defaults slots window to the day range. When one side is missing, use the day range bound.
+     * Clamps the slots window to the day range intersection.
+     *
+     * @return array{0: string, 1: string}
+     */
+    private function resolveSlotsDateRange(
+        string $startDate,
+        string $endDate,
+        ?string $slotsStartDate,
+        ?string $slotsEndDate
+    ): array {
+        $slotsStart = $slotsStartDate ?: $startDate;
+        $slotsEnd = $slotsEndDate ?: $endDate;
+
+        try {
+            $slotsStart = (new \DateTimeImmutable($slotsStart))->format('Y-m-d');
+            $slotsEnd = (new \DateTimeImmutable($slotsEnd))->format('Y-m-d');
+        } catch (\Exception $exception) {
+            throw new \BO\Zmsbackend\Slot\Exception\Calendar\InvalidAvailabilityInput(
+                'slotsStartDate and slotsEndDate must be valid dates (YYYY-MM-DD)'
+            );
+        }
+
+        if ($slotsStart > $slotsEnd) {
+            throw new \BO\Zmsbackend\Slot\Exception\Calendar\InvalidAvailabilityInput(
+                'slotsStartDate must not be after slotsEndDate'
+            );
+        }
+
+        // Clamp to day-status range so slot SQL never exceeds the resolved calendar.
+        if ($slotsStart < $startDate) {
+            $slotsStart = $startDate;
+        }
+        if ($slotsEnd > $endDate) {
+            $slotsEnd = $endDate;
+        }
+        if ($slotsStart > $slotsEnd) {
+            throw new \BO\Zmsbackend\Slot\Exception\Calendar\InvalidAvailabilityInput(
+                'slots date range does not overlap startDate/endDate'
+            );
+        }
+
+        return [$slotsStart, $slotsEnd];
+    }
+
+    private function filterDaysInDateRange(DayList $days, string $startDate, string $endDate): DayList
+    {
+        $filtered = new DayList();
+        foreach ($days as $day) {
+            $date = $this->formatDayIso($day);
+            if ($date >= $startDate && $date <= $endDate) {
+                $filtered->addEntity($day);
+            }
+        }
+
+        return $filtered;
+    }
+
+    private function formatDayIso(mixed $day): string
+    {
+        $dayData = $this->dayToArray($day);
+
+        return sprintf(
+            '%04d-%02d-%02d',
+            (int) ($dayData['year'] ?? 0),
+            (int) ($dayData['month'] ?? 0),
+            (int) ($dayData['day'] ?? 0)
+        );
     }
 
     private function buildCalendarFromQuery(
@@ -240,8 +341,12 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
      *
      * @return array<string, mixed>
      */
-    private function buildResult(Entity $calendar, array $processList): array
-    {
+    private function buildResult(
+        Entity $calendar,
+        array $processList,
+        string $slotsStartDate,
+        string $slotsEndDate
+    ): array {
         $scopeToProvider = [];
         foreach ($calendar->scopes as $scope) {
             $scopeToProvider[(string) $scope['id']] = (string) $scope['provider']['id'];
@@ -291,6 +396,8 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         return [
             'startDate' => $this->formatCalendarDate($calendar->firstDay),
             'endDate' => $this->formatCalendarDate($calendar->lastDay),
+            'slotsStartDate' => $slotsStartDate,
+            'slotsEndDate' => $slotsEndDate,
             'days' => $days,
         ];
     }

@@ -293,6 +293,9 @@ const loadingStates = inject("loadingStates", {
 
 const selectableProviders = ref<OfficeImpl[]>();
 const availableDays = ref<Array<{ time: string; providerIDs: string }>>();
+/** YYYY-MM-DD bounds of the last loaded appointment-slots window */
+const loadedSlotsStartDate = ref<string | null>(null);
+const loadedSlotsEndDate = ref<string | null>(null);
 const selectedHour = ref<number | null>(null);
 const selectedDayPart = ref<"am" | "pm" | null>(null);
 
@@ -358,6 +361,13 @@ const toDayKey = (value: Date | string): string => {
   return convertDateToString(value);
 };
 
+const TODAY = new Date();
+const MAXDATE = new Date(
+  TODAY.getFullYear(),
+  TODAY.getMonth() + 6,
+  TODAY.getDate()
+);
+
 const normalizeCalendarOffices = (
   offices: Array<{ officeId: number | string; appointments?: number[] }>
 ): OfficeAvailableTimeSlotsDTO[] => {
@@ -374,6 +384,38 @@ const dayHasSlotsForSelectedProviders = (dateKey: string): boolean => {
       !!selectedProviders.value[String(office.officeId)] &&
       (office.appointments?.length ?? 0) > 0
   );
+};
+
+const isDateInLoadedSlotsWindow = (dateKey: string): boolean => {
+  if (!loadedSlotsStartDate.value || !loadedSlotsEndDate.value) {
+    return false;
+  }
+  return (
+    dateKey >= loadedSlotsStartDate.value && dateKey <= loadedSlotsEndDate.value
+  );
+};
+
+/**
+ * Slots are loaded per calendar month (clamped to TODAY..MAXDATE).
+ * Day statuses still cover the full booking horizon.
+ */
+const getSlotsWindowForDate = (
+  date: Date
+): { slotsStartDate: string; slotsEndDate: string } => {
+  const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
+  const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  const start = monthStart < TODAY ? TODAY : monthStart;
+  const end = monthEnd > MAXDATE ? MAXDATE : monthEnd;
+  if (start > end) {
+    return {
+      slotsStartDate: convertDateToString(TODAY),
+      slotsEndDate: convertDateToString(TODAY),
+    };
+  }
+  return {
+    slotsStartDate: convertDateToString(start),
+    slotsEndDate: convertDateToString(end),
+  };
 };
 
 /**
@@ -528,13 +570,6 @@ const showSelectionForProvider = async (provider: OfficeImpl) => {
   await fetchAvailableDaysForSelection();
 };
 
-const TODAY = new Date();
-const MAXDATE = new Date(
-  TODAY.getFullYear(),
-  TODAY.getMonth() + 6,
-  TODAY.getDate()
-);
-
 const allowedDates = (date: Date) => {
   const beforeMaxDate =
     date.getFullYear() < MAXDATE.getFullYear() ||
@@ -562,7 +597,13 @@ const allowedDates = (date: Date) => {
     return false;
   }
 
-  return dayHasSlotsForSelectedProviders(dateString);
+  // Inside the loaded slots window: only allow days that actually have times.
+  // Outside it: allow bookable days so the user can navigate / click to load that month.
+  if (isDateInLoadedSlotsWindow(dateString)) {
+    return dayHasSlotsForSelectedProviders(dateString);
+  }
+
+  return true;
 };
 
 const hasAppointmentsForSelectedProviders = () => {
@@ -854,14 +895,31 @@ const applyCalendarResponse = (
     return false;
   }
 
+  const slotsStart =
+    calendar.slotsStartDate ?? calendar.startDate ?? convertDateToString(TODAY);
+  const slotsEnd =
+    calendar.slotsEndDate ?? calendar.endDate ?? convertDateToString(MAXDATE);
+  loadedSlotsStartDate.value = slotsStart;
+  loadedSlotsEndDate.value = slotsEnd;
+
   const nextByDay = new Map<string, OfficeAvailableTimeSlotsDTO[]>();
   const normalizedDays: Array<{ time: string; providerIDs: string }> = [];
 
   for (const day of days) {
     const dateKey = toDayKey(day.time);
     const offices = normalizeCalendarOffices(day.offices ?? []);
-    nextByDay.set(dateKey, offices);
-    if (offices.some((office) => office.appointments.length > 0)) {
+    const inSlotsWindow = dateKey >= slotsStart && dateKey <= slotsEnd;
+    const hasAppointments = offices.some(
+      (office) => office.appointments.length > 0
+    );
+
+    if (inSlotsWindow) {
+      nextByDay.set(dateKey, offices);
+    }
+
+    // Keep bookable days outside the slots window for month navigation.
+    // Inside the window, only days with real free times are selectable.
+    if (!inSlotsWindow || hasAppointments) {
       normalizedDays.push({
         time: day.time,
         providerIDs: day.providerIDs,
@@ -869,7 +927,11 @@ const applyCalendarResponse = (
     }
   }
 
-  appointmentsByDay.value = nextByDay;
+  const mergedAppointments = new Map(appointmentsByDay.value);
+  for (const [dateKey, offices] of nextByDay) {
+    mergedAppointments.set(dateKey, offices);
+  }
+  appointmentsByDay.value = mergedAppointments;
   availableDays.value = normalizedDays;
   calendarKey.value++;
   return true;
@@ -885,15 +947,22 @@ const reloadCalendarAvailability = async (options?: {
   if (allProviderIds.length === 0) {
     availableDays.value = [];
     appointmentsByDay.value = new Map();
+    loadedSlotsStartDate.value = null;
+    loadedSlotsEndDate.value = null;
     return false;
   }
+
+  const slotsAnchor = selectedDay.value ?? viewMonth.value ?? TODAY;
+  const { slotsStartDate, slotsEndDate } = getSlotsWindowForDate(slotsAnchor);
 
   const data = await fetchAvailableCalendar(
     props.globalState,
     allProviderIds,
     Array.from(props.selectedServiceMap.keys()),
     Array.from(props.selectedServiceMap.values()),
-    props.captchaToken ?? undefined
+    props.captchaToken ?? undefined,
+    slotsStartDate,
+    slotsEndDate
   );
 
   if (data && typeof data === "object" && "errors" in data) {
@@ -909,12 +978,27 @@ const reloadCalendarAvailability = async (options?: {
 
   clearLocalApiErrors();
 
+  const hadSelectedDay = !!selectedDay.value;
+
   if (
     !options?.preserveSelectedDay &&
-    !selectedDay.value &&
+    !hadSelectedDay &&
     availableDays.value.length > 0
   ) {
-    selectedDay.value = new Date(availableDays.value[0].time);
+    const firstWithSlots = availableDays.value.find((day) =>
+      dayHasSlotsForSelectedProviders(toDayKey(day.time))
+    );
+    selectedDay.value = new Date(
+      (firstWithSlots ?? availableDays.value[0]).time
+    );
+  }
+
+  // Auto-selected (or preserved) day may fall outside the month we just loaded.
+  if (
+    selectedDay.value &&
+    !isDateInLoadedSlotsWindow(toDayKey(selectedDay.value))
+  ) {
+    return reloadCalendarAvailability({ preserveSelectedDay: true });
   }
 
   if (selectedDay.value) {

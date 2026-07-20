@@ -68,7 +68,9 @@ class AvailableCalendarByOfficeService
             $clientData->serviceCounts,
             $clientData->startDate,
             $clientData->endDate,
-            $traceId
+            $traceId,
+            $clientData->slotsStartDate,
+            $clientData->slotsEndDate
         );
 
         LoggerService::logInfo('calendar.availability.timing', [
@@ -81,6 +83,8 @@ class AvailableCalendarByOfficeService
             'total_ms' => (int) round((microtime(true) - $t0) * 1000),
             'office_count' => count($clientData->officeIds),
             'service_count' => count($clientData->serviceIds),
+            'slots_start_date' => $clientData->slotsStartDate,
+            'slots_end_date' => $clientData->slotsEndDate,
         ]);
 
         return $result;
@@ -95,12 +99,21 @@ class AvailableCalendarByOfficeService
             ? array_map('trim', explode(',', (string) $serviceCount))
             : [];
 
+        $slotsStartDate = isset($queryParams['slotsStartDate']) && $queryParams['slotsStartDate'] !== ''
+            ? (string) $queryParams['slotsStartDate']
+            : null;
+        $slotsEndDate = isset($queryParams['slotsEndDate']) && $queryParams['slotsEndDate'] !== ''
+            ? (string) $queryParams['slotsEndDate']
+            : null;
+
         return (object) [
             'officeIds' => array_map('trim', explode(',', $queryParams['officeId'])),
             'serviceIds' => array_map('trim', explode(',', $queryParams['serviceId'])),
             'serviceCounts' => $serviceCounts,
             'startDate' => $queryParams['startDate'] ?? null,
             'endDate' => $queryParams['endDate'] ?? null,
+            'slotsStartDate' => $slotsStartDate,
+            'slotsEndDate' => $slotsEndDate,
             'captchaToken' => isset($queryParams['captchaToken']) ? (string) $queryParams['captchaToken'] : null,
         ];
     }
@@ -117,7 +130,9 @@ class AvailableCalendarByOfficeService
             $data->serviceCounts,
             $captchaRequired,
             $data->captchaToken,
-            $this->tokenValidator
+            $this->tokenValidator,
+            $data->slotsStartDate,
+            $data->slotsEndDate
         );
     }
 }

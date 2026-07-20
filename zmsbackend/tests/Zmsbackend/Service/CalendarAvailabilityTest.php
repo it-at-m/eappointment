@@ -26,6 +26,10 @@ class CalendarAvailabilityTest extends Base
         $this->assertArrayHasKey('days', $result);
         $this->assertArrayHasKey('startDate', $result);
         $this->assertArrayHasKey('endDate', $result);
+        $this->assertArrayHasKey('slotsStartDate', $result);
+        $this->assertArrayHasKey('slotsEndDate', $result);
+        $this->assertSame($start->format('Y-m-d'), $result['slotsStartDate']);
+        $this->assertSame($end->format('Y-m-t'), $result['slotsEndDate']);
     }
 
     public function testServiceCountExceedsMaximum()
