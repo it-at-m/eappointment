@@ -817,12 +817,37 @@ describe("AppointmentSelection", () => {
       });
 
       it("omits nextBookableDate when no appointments are available beyond the slots window", async () => {
+        const firstOfMonth = new Date();
+        firstOfMonth.setDate(1);
+        firstOfMonth.setHours(12, 0, 0, 0);
+        const midMonth = new Date(firstOfMonth);
+        midMonth.setDate(
+          Math.min(
+            15,
+            new Date(
+              firstOfMonth.getFullYear(),
+              firstOfMonth.getMonth() + 1,
+              0
+            ).getDate()
+          )
+        );
+        const lastOfMonth = new Date(
+          firstOfMonth.getFullYear(),
+          firstOfMonth.getMonth() + 1,
+          0,
+          12,
+          0,
+          0
+        );
+        const toIso = (d: Date) =>
+          `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
         (fetchAvailableCalendar as Mock).mockResolvedValue(
           calendarResponse(
             [
-              { time: "2025-06-16", providerIDs: "10351880,10470" },
-              { time: "2025-06-17", providerIDs: "10351880,10470" },
-              { time: "2025-06-30", providerIDs: "10351880,10470" },
+              { time: toIso(firstOfMonth), providerIDs: "10351880,10470" },
+              { time: toIso(midMonth), providerIDs: "10351880,10470" },
+              { time: toIso(lastOfMonth), providerIDs: "10351880,10470" },
             ],
             offices10351880And10470,
             { nextBookableDate: null }
@@ -863,20 +888,44 @@ describe("AppointmentSelection", () => {
 
         const calendar = wrapper.findComponent({ name: "muc-calendar" });
         expect(calendar.exists()).toBe(true);
-        expect(calendar.props("max")).toEqual(wrapper.vm.maxDate);
         expect(wrapper.vm.nextBookableDate).toBeNull();
+        // Last available month: max stops at last bookable day so next chevron disables
+        expect(calendar.props("max")).toEqual(
+          new Date(`${toIso(lastOfMonth)}T12:00:00`)
+        );
       });
 
       it("exposes nextBookableDate when appointments are available after the slots window", async () => {
+        const firstOfMonth = new Date();
+        firstOfMonth.setDate(1);
+        firstOfMonth.setHours(12, 0, 0, 0);
+        const lastOfMonth = new Date(
+          firstOfMonth.getFullYear(),
+          firstOfMonth.getMonth() + 1,
+          0,
+          12,
+          0,
+          0
+        );
+        const nextMonthDay = new Date(
+          firstOfMonth.getFullYear(),
+          firstOfMonth.getMonth() + 1,
+          1,
+          12,
+          0,
+          0
+        );
+        const toIso = (d: Date) =>
+          `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
         (fetchAvailableCalendar as Mock).mockResolvedValue(
           calendarResponse(
             [
-              { time: "2025-06-16", providerIDs: "10351880,10470" },
-              { time: "2025-06-17", providerIDs: "10351880,10470" },
-              { time: "2025-06-30", providerIDs: "10351880,10470" },
+              { time: toIso(firstOfMonth), providerIDs: "10351880,10470" },
+              { time: toIso(lastOfMonth), providerIDs: "10351880,10470" },
             ],
             offices10351880And10470,
-            { nextBookableDate: "2025-07-01" }
+            { nextBookableDate: toIso(nextMonthDay) }
           )
         );
 
@@ -914,8 +963,11 @@ describe("AppointmentSelection", () => {
 
         const calendar = wrapper.findComponent({ name: "muc-calendar" });
         expect(calendar.exists()).toBe(true);
-        expect(calendar.props("max")).toEqual(wrapper.vm.maxDate);
-        expect(wrapper.vm.nextBookableDate).toBe("2025-07-01");
+        expect(wrapper.vm.nextBookableDate).toBe(toIso(nextMonthDay));
+        // Next marker extends max so the next chevron stays enabled for the jump
+        expect(calendar.props("max")).toEqual(
+          new Date(`${toIso(nextMonthDay)}T12:00:00`)
+        );
       });
 
       it("omits prevBookableDate when no appointments are available before the slots window", async () => {
@@ -1019,7 +1071,7 @@ describe("AppointmentSelection", () => {
         expect(wrapper.vm.prevBookableDate).toBe("2025-05-31");
       });
 
-      it("keeps booking-horizon navigation bounds when providers are deselected", async () => {
+      it("updates allowed dates when providers are deselected", async () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
           calendarResponse(
             [
@@ -1102,7 +1154,7 @@ describe("AppointmentSelection", () => {
         expect(wrapper.vm.allowedDates(new Date("2025-07-01"))).toBe(true);
       });
 
-      it("keeps booking-horizon navigation bounds when providers are selected", async () => {
+      it("updates allowed dates when providers are selected", async () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
           calendarResponse(
             [
@@ -1251,9 +1303,9 @@ describe("AppointmentSelection", () => {
         await wrapper.vm.handleDaySelection(new Date("2025-06-17"));
         await flushPromises();
 
-        expect((fetchAvailableCalendar as Mock).mock.calls.length).toBeGreaterThan(
-          callsAfterLoad
-        );
+        expect(
+          (fetchAvailableCalendar as Mock).mock.calls.length
+        ).toBeGreaterThan(callsAfterLoad);
         expect(wrapper.vm.selectedDay).toEqual(new Date("2025-06-17"));
       });
     });

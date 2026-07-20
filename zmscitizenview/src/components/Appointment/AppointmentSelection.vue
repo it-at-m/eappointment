@@ -947,8 +947,7 @@ const applyCalendarResponse = (
 
   appointmentsByDay.value = nextByDay;
   availableDays.value = normalizedDays;
-  minDate.value = TODAY;
-  maxDate.value = MAXDATE;
+  updateCalendarNavigationBounds(normalizedDays);
   calendarKey.value++;
   return true;
 };
@@ -1206,6 +1205,55 @@ function getAvailableProviders(
   });
 }
 
+/**
+ * MucCalendar enables/disables month chevrons from min/max.
+ * Use adjacent bookable markers when present so empty months stay skippable;
+ * otherwise clamp to the loaded bookable range so the last/first month disables next/prev.
+ */
+function updateCalendarNavigationBounds(
+  daysForBounds: Array<{ time: string }> = availableDays.value ?? []
+) {
+  let earliest: string | null = loadedSlotsStartDate.value;
+  let latest: string | null = loadedSlotsEndDate.value;
+
+  for (const day of daysForBounds) {
+    const key = toDayKey(day.time);
+    if (earliest === null || key < earliest) {
+      earliest = key;
+    }
+    if (latest === null || key > latest) {
+      latest = key;
+    }
+  }
+
+  const minIso =
+    prevBookableDate.value ?? earliest ?? convertDateToString(TODAY);
+  const maxIso =
+    nextBookableDate.value ?? latest ?? convertDateToString(MAXDATE);
+
+  let min = new Date(`${minIso}T12:00:00`);
+  let max = new Date(`${maxIso}T12:00:00`);
+
+  if (Number.isNaN(min.getTime())) {
+    min = new Date(TODAY);
+  }
+  if (Number.isNaN(max.getTime())) {
+    max = new Date(MAXDATE);
+  }
+  if (min < TODAY) {
+    min = new Date(TODAY);
+  }
+  if (max > MAXDATE) {
+    max = new Date(MAXDATE);
+  }
+  if (min > max) {
+    max = new Date(min);
+  }
+
+  minDate.value = min;
+  maxDate.value = max;
+}
+
 function updateDateRangeForSelectedProviders(skipDateValidation = false) {
   if (!availableDays.value) return [];
   const selectedProviderIds = Object.entries(selectedProviders.value)
@@ -1220,9 +1268,7 @@ function updateDateRangeForSelectedProviders(skipDateValidation = false) {
   );
 
   if (availableDaysForSelectedProviders.length > 0) {
-    // Keep booking-horizon bounds so month jumps via prev/next markers stay valid.
-    minDate.value = TODAY;
-    maxDate.value = MAXDATE;
+    updateCalendarNavigationBounds(availableDaysForSelectedProviders);
     // Ensure calendar updates min/max immediately
     if (selectedDay.value) {
       viewMonth.value = new Date(
