@@ -2,15 +2,19 @@
 
 namespace BO\Zmsadmin\Helper;
 
+use BO\Slim\Render;
 use BO\Zmsadmin\BaseController;
 use BO\Zmsadmin\Exception\BadRequest;
 use BO\Zmsentities\Collection\AvailabilityList;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class AvailabilityCheckDayOff extends BaseController
 {
+    #[\Override]
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $validator = $request->getAttribute('validator');
@@ -22,7 +26,7 @@ class AvailabilityCheckDayOff extends BaseController
 
         $collection = (new AvailabilityList())->addData($input['availabilityList']);
 
-        return \BO\Slim\Render::withJson($response, [
+        return Render::withJson($response, [
             'overridesDayOff' => $collection->hasDayOffOverride()
         ]);
     }

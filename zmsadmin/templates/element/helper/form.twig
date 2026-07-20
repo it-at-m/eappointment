@@ -127,7 +127,7 @@
 {% macro inputfield(args, fieldId, groupargs) %}
     {% import _self as self %}
     <input
-        type="{{ args.type|default('text') }}" 
+        type="{% if args.integer|default(false) %}number{% else %}{{ args.type|default('text') }}{% endif %}"
         title="{{ args.title|default('') }}"
         {% if args.autofocus %}autofocus{% endif %}
         tabindex="{{ args.tabindex|default(0)}}"
@@ -137,9 +137,15 @@
         {% if args.readonly %}readonly="readonly"{% endif %}
         {% if args.maxlength %}maxlength="{{ args.maxlength }}"{% endif %}
         {% if args.placeholder %}placeholder="{{ args.placeholder }}"{% endif %}
+        {% if args.integer|default(false) %}
+            inputmode="numeric"
+            step="{{ args.step|default(1) }}"
+            min="{{ args.min|default(0) }}"
+            {% if args.max is defined %}max="{{ args.max }}"{% endif %}
+        {% endif %}
         class="form-control {% if args.class %}{{ args.class }} {% endif %}form-input{% if args.width %} input--size-{{ args.width }}{% endif %}"
         {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
-        {% if groupargs.required or args.required %} aria-required="true"{% endif %}
+        {% if groupargs.required or args.required %}required aria-required="true"{% endif %}
         {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
         {{ self.eventHandler(args, fieldId, groupargs) }}
     >
@@ -362,13 +368,51 @@ aria-describedby="{%
         'drag', 'dragend', 'dragenter', 'dragleave', 'dragover', 'dragstart', 'drop',
         'copy', 'cut', 'paste', 'scroll','select']
     %}
+
+    {% set integerClampHandler %}
+        if (this.value !== '') {
+            if (this.max !== '' && Number(this.value) > Number(this.max)) {
+                this.value = this.max;
+            }
+            if (this.min !== '' && Number(this.value) < Number(this.min)) {
+                this.value = this.min;
+            }
+        }
+    {% endset %}
+
+    {% set integerBlurHandler %}
+        if (this.value === '') {
+            {% if not args.integerNullable|default(false) %}
+                this.value = '0';
+            {% endif %}
+        }
+        {{ integerClampHandler }}
+    {% endset %}
+
+    {% set eventHandlers = {} %}
+
     {% for key, handler in args %}
         {% if key in domEvents or (key[:2] == 'on' and key[2:] in domEvents) %}
-            {% if key[:2] != 'on' %}
-                {% set key = 'on' ~ key %}
-            {% endif %}
-                {{ key }}="{{ handler }}"
+            {% set eventName = key[:2] == 'on' ? key[2:] : key %}
+            {% set eventKey = 'on' ~ eventName %}
+            {% set eventHandlers = eventHandlers|merge({
+                (eventKey): handler
+            }) %}
         {% endif %}
+    {% endfor %}
+
+    {% if args.integer|default(false) %}
+        {% set inputHandler = eventHandlers.oninput|default('') %}
+        {% set blurHandler = eventHandlers.onblur|default('') %}
+
+        {% set eventHandlers = eventHandlers|merge({
+            'oninput': integerClampHandler ~ ';' ~ inputHandler,
+            'onblur': integerBlurHandler ~ ';' ~ blurHandler
+        }) %}
+    {% endif %}
+
+    {% for key, handler in eventHandlers %}
+        {{ key }}="{{ handler|e('html_attr') }}"
     {% endfor %}
 {% endmacro %}
 
@@ -411,8 +455,9 @@ aria-describedby="{%
 {% endmacro %}
 
 {% macro radiobuttonfield(args, fieldId, groupargs) %}
-    <div class="form-check form-check-inline">
-        <label class="form-check-label radio-label{% if args.inline %} radio-inline{% endif %}">
+    {% set inline = args.inline is defined ? args.inline : true %}
+    <div class="form-check{% if inline %} form-check-inline{% endif %}">
+        <label class="form-check-label radio-label{% if inline %} radio-inline{% endif %}">
             <input
                 className="form-check-input"
                 type="radio"

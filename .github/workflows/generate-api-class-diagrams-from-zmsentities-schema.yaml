@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Create public directory
         run: mkdir -p public/diagrams
@@ -294,7 +294,7 @@ jobs:
               <body>
                   <h1>{{ title }}</h1>
                   <div class="nav">
-                      <a href="zmsapi.html">ZMS API Schema</a>
+                      <a href="zmsbackend.html">ZMS Backend API Schema</a>
                       <a href="zmscitizenapi.html">ZMS Citizen API Schema</a>
                       <!--<a href="index.html">Combined View</a>-->
                   </div>
@@ -399,13 +399,13 @@ jobs:
               schemas = load_all_schemas()
               
               # Generate separate diagrams
-              zmsapi_mermaid = convert_schemas_to_mermaid(schemas, prefix_filter='')
+              zmsbackend_mermaid = convert_schemas_to_mermaid(schemas, prefix_filter='')
               zmscitizenapi_mermaid = convert_schemas_to_mermaid(schemas, prefix_filter='citizen')
               combined_mermaid = convert_schemas_to_mermaid(schemas)
               
               # Create pages
-              diagrams_dir.joinpath('zmsapi.html').write_text(
-                  create_diagram_page('ZMS API Schema', zmsapi_mermaid)
+              diagrams_dir.joinpath('zmsbackend.html').write_text(
+                  create_diagram_page('ZMS Backend API Schema', zmsbackend_mermaid)
               )
               diagrams_dir.joinpath('zmscitizenapi.html').write_text(
                   create_diagram_page('ZMS Citizen API Schema', zmscitizenapi_mermaid)
@@ -421,7 +421,7 @@ jobs:
         run: python convert_schema.py
 
       - name: Upload diagrams artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: schema-diagrams
           path: public/diagrams/

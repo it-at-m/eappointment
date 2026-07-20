@@ -14,6 +14,7 @@ class Workstation extends Schema\Entity
 
     public static $schema = "workstation.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -72,33 +73,14 @@ class Workstation extends Schema\Entity
         return $this->toProperty()->scope->provider->id->get();
     }
 
-    public function getUseraccountRights()
-    {
-        $rights = null;
-        if (Property::__keyExists('rights', $this->useraccount)) {
-            $rights = $this->useraccount['rights'];
-        }
-        return $rights;
-    }
-
     public function hasSuperUseraccount()
     {
-        $isSuperuser = false;
-        $userRights = $this->getUseraccountRights();
-        if (isset($userRights['superuser']) && $userRights['superuser']) {
-            $isSuperuser = true;
-        }
-        return $isSuperuser;
+        return $this->getUseraccount()->isSuperUser();
     }
 
     public function hasAuditAccount()
     {
-        $userRights = $this->getUseraccountRights();
-        if (isset($userRights['audit']) && $userRights['audit']) {
-            return true;
-        }
-
-        return false;
+        return $this->getUseraccount()->hasPermissions(['logs']);
     }
 
     public function getAuthKey()

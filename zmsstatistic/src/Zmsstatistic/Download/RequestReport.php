@@ -30,6 +30,7 @@ class RequestReport extends Base
      * @SuppressWarnings(Param)
      * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
@@ -63,7 +64,7 @@ class RequestReport extends Base
         $this->lastDayDate = $this->setDateTime($lastDay);
 
         $this->writeHeader($report, $sheet, $datePatternCol);
-        $this->writeReportData($report, $sheet, $datePatternCol);
+        $this->writeReportData($report, $sheet);
 
         return $spreadsheet;
     }
@@ -94,7 +95,13 @@ class RequestReport extends Base
         foreach ($report->data as $name => $entry) {
             if ($name !== 'sum' && $name !== 'average_processingtime') {
                 $rowData = [];
-                $rowData[] = $name;
+                if ($name === 'uncategorized') {
+                    $rowData[] = 'Dienstleistung wurde nicht erfasst';
+                } elseif ($name === 'nonexistent') {
+                    $rowData[] = 'Dienstleistung konnte nicht erbracht werden';
+                } else {
+                    $rowData[] = $name;
+                }
                 $rowData[] = isset($report->data['average_processingtime'][$name])
                     && is_numeric($report->data['average_processingtime'][$name])
                     ? ReportHelper::formatTimeValue($report->data['average_processingtime'][$name])

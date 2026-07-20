@@ -7,8 +7,11 @@
 
 namespace BO\Zmsadmin\Helper;
 
+use BO\Slim\Render;
 use BO\Zmsadmin\BaseController;
-use BO\Zmsentities\Collection\AvailabilityList as Collection;
+use BO\Zmsentities\Collection\AvailabilityList;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class AvailabilityCalcSlots extends BaseController
 {
@@ -16,21 +19,22 @@ class AvailabilityCalcSlots extends BaseController
      * @SuppressWarnings(Param)
      * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->assertValid()->getValue();
-        $collection = (new Collection())->addData($input['availabilityList']);
+        $collection = (new AvailabilityList())->addData($input['availabilityList']);
 
         $data['maxWorkstationCount'] = $collection->getMaxWorkstationCount();
         $data['maxSlots'] = $collection->getSummerizedSlotCount();
         $data['busySlots'] = $input['busySlots'];
 
-        return \BO\Slim\Render::withJson(
+        return Render::withJson(
             $response,
             $data
         );

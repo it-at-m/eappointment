@@ -2,13 +2,14 @@
 
 namespace BO\Zmsentities;
 
+use BO\Zmsentities\Helper\ProcessPlainText;
 use BO\Zmsentities\Helper\Property;
 
 /**
  * @SuppressWarnings(Complexity)
  * @SuppressWarnings(Coupling)
  * @SuppressWarnings(Public)
- *
+ * @SuppressWarnings(TooManyMethods)
  */
 class Process extends Schema\Entity
 {
@@ -30,6 +31,7 @@ class Process extends Schema\Entity
     public const STATUS_BLOCKED = 'blocked';
     public const STATUS_CONFLICT = 'conflict';
     public static $schema = "process.json";
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -338,8 +340,17 @@ class Process extends Schema\Entity
      */
     public function getScopeId()
     {
-        //as current scope - see zmsdb Query/Process EntityMapping
+        //as current scope - see zmsbackend Query/Process EntityMapping
         return $this->toProperty()->scope->id->get();
+    }
+
+    public function isDereferenced(): bool
+    {
+        if ($this->authKey === 'deref!0') {
+            return true;
+        }
+        $client = $this->getFirstClient();
+        return $client && isset($client->familyName) && $client->familyName === 'dereferenced';
     }
 
     public function getCurrentScope(): Scope
@@ -387,7 +398,7 @@ class Process extends Schema\Entity
     {
         $this->amendment = $notice;
         $this->amendment .= (isset($input['amendment']) && $input['amendment']) ? $input['amendment'] : '';
-        $this->amendment = trim($this->amendment);
+        $this->amendment = trim(ProcessPlainText::normalize($this->amendment));
         return $this;
     }
 
@@ -401,7 +412,7 @@ class Process extends Schema\Entity
         $this->customTextfield = (
             isset($input['customTextfield']) && $input['customTextfield']
         ) ? $input['customTextfield'] : '';
-        $this->customTextfield = trim($this->customTextfield);
+        $this->customTextfield = trim(ProcessPlainText::normalize($this->customTextfield));
         return $this;
     }
 
@@ -415,7 +426,7 @@ class Process extends Schema\Entity
         $this->customTextfield2 = (
             isset($input['customTextfield2']) && $input['customTextfield2']
         ) ? $input['customTextfield2'] : '';
-        $this->customTextfield2 = trim($this->customTextfield2);
+        $this->customTextfield2 = trim(ProcessPlainText::normalize($this->customTextfield2));
         return $this;
     }
 
@@ -521,6 +532,7 @@ class Process extends Schema\Entity
      * Reduce data of dereferenced entities to a required minimum
      *
      */
+    #[\Override]
     public function withLessData(array $keepArray = [])
     {
         $entity = clone $this;
@@ -607,7 +619,6 @@ class Process extends Schema\Entity
 
     public function hasArrivalTime()
     {
-        $arrivalTime = 0;
         if ($this->isWithAppointment()) {
             $arrivalTime = $this->getFirstAppointment()->date;
         } else {

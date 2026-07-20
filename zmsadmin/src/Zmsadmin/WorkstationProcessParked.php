@@ -7,23 +7,20 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Process as Entity;
+use BO\Slim\Render;
 
-/**
-  * Init Controller to display next Button Template only
-  *
-  */
 class WorkstationProcessParked extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $validator = $request->getAttribute('validator');
         $noRedirect = $validator->getParameter('noredirect')->isNumber()->getValue();
@@ -33,7 +30,7 @@ class WorkstationProcessParked extends BaseController
         if (1 == $noRedirect) {
             return $response;
         }
-        return \BO\Slim\Render::redirect(
+        return Render::redirect(
             'workstationProcessCallButton',
             array(),
             array()

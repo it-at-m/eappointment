@@ -9,6 +9,9 @@
 
 namespace BO\Zmsticketprinter;
 
+use BO\Slim\Helper\ModuleLoggerInitializer;
+use Psr\SimpleCache\CacheInterface;
+
 if (($token = getenv('ZMS_CONFIG_SECURE_TOKEN')) === false || $token === '') {
     throw new \RuntimeException('ZMS_CONFIG_SECURE_TOKEN environment variable must be set');
 }
@@ -29,6 +32,8 @@ class Application extends \BO\Slim\Application
 
     const MODULE_NAME = 'zmsticketprinter';
 
+    public static ?CacheInterface $cache = null;
+
     public const DEBUG = false;
     const TWIG_CACHE = ZMS_TICKETPRINTER_TWIG_CACHE;
 
@@ -36,6 +41,11 @@ class Application extends \BO\Slim\Application
      * language preferences
      */
     public static $locale = 'de';
+
+    /**
+     * Base path for static assets (_css, _js). Must match routing and js/settings.js.
+     */
+    public static $includeUrl = '/terminvereinbarung/ticketprinter';
 
     public static $supportedLanguages = array(
         // Default language
@@ -71,4 +81,12 @@ class Application extends \BO\Slim\Application
     public const SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
 
     public const CLIENTKEY = '';
+
+    public static function initialize(): void
+    {
+        ModuleLoggerInitializer::configure('ZMS_TICKETPRINTER');
+        self::$cache = ModuleLoggerInitializer::tryInitializeCache();
+    }
 }
+
+Application::initialize();

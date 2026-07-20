@@ -7,25 +7,33 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Render;
+use BO\Zmsentities\Helper\DateTime;
 use BO\Zmsentities\Collection\AvailabilityList;
+use BO\Zmsentities\Collection\ProcessList;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 
 class ScopeAvailabilityDay extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['availability'])) {
+            throw new UserAccountMissingRights();
+        }
         $data = static::getAvailabilityData(intval($args['id']), $args['date']);
         $data['title'] = 'Behörden und Standorte - Öffnungszeiten';
         $data['menuActive'] = 'owner';
         $data['workstation'] = $workstation;
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/availabilityday.twig',
             $data
@@ -87,7 +95,7 @@ class ScopeAvailabilityDay extends BaseController
     protected static function getAvailabilityData($scopeId, $dateString)
     {
         $scope = static::getScope($scopeId);
-        $dateTime = new \BO\Zmsentities\Helper\DateTime($dateString);
+        $dateTime = new DateTime($dateString);
         $dateWithTime = $dateTime->setTime(\App::$now->format('H'), \App::$now->format('i'));
         $availabilityList = static::readAvailabilityList($scopeId, $dateWithTime);
         $processList = \App::$http
@@ -97,7 +105,7 @@ class ScopeAvailabilityDay extends BaseController
                 ->withoutStatus(['fake'])
                 ->toProcessList();
         if (!$processList->count()) {
-            $processList = new \BO\Zmsentities\Collection\ProcessList();
+            $processList = new ProcessList();
         }
 
 
@@ -151,10 +159,10 @@ class ScopeAvailabilityDay extends BaseController
                 )
                 ->getCollection()->sortByCustomKey('startDate');
         } catch (\BO\Zmsclient\Exception $exception) {
-            if ($exception->template != 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound') {
+            if ($exception->template != 'BO\Zmsbackend\Availability\Exception\AvailabilityNotFound') {
                 throw $exception;
             }
-            $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
+            $availabilityList = new AvailabilityList();
         }
         return $availabilityList->withDateTime($dateTime); //withDateTime to check if opened
     }

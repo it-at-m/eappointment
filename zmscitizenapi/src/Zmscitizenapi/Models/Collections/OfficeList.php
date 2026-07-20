@@ -12,7 +12,6 @@ use JsonSerializable;
 class OfficeList extends Entity implements JsonSerializable
 {
     public static $schema = "citizenapi/collections/officeList.json";
-/** @var Office[] */
     public array $offices = [];
     public function __construct(array $offices = [])
     {
@@ -23,8 +22,7 @@ class OfficeList extends Entity implements JsonSerializable
                 }
                 $this->offices[] = $office;
             } catch (\Exception $e) {
-                error_log("Invalid Office encountered: " . $e->getMessage());
-            //Gracefully handle
+                \App::$log->warning('Invalid Office skipped', ['exception' => $e->getMessage()]);
             }
         }
 
@@ -45,6 +43,7 @@ class OfficeList extends Entity implements JsonSerializable
         ];
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         return $this->toArray();

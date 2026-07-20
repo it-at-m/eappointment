@@ -4,8 +4,8 @@
         <div class="grid__item one-sixth page-header__left">
 
             {% block pageheader_left -%}
-            <a class="page-header__logo" href="{{ includeUrl() }}/" title="Zur Startseite">
-                    <img src="{{ includeUrl() }}/_css/images/muc_logo_head2.png" alt="Home">
+            <a class="page-header__logo" href="{{ includeUrl }}/" title="Zur Startseite">
+                    <img src="{{ includeUrl }}/_css/images/muc_logo_head2.png" alt="Home">
             </a>
             
             {%- endblock %}
@@ -33,6 +33,16 @@
             ) }}
             </form>
             #}
+            {% set permissions = workstation.useraccount.permissions|default({}) %}
+            {% set isUserAdmin = 'user_admin' in workstation.useraccount.roles|default([]) %}
+            {% set hasScopeBoundWorkPermissions = not isUserAdmin and (
+                permissions.counter|default(false)
+                or permissions.appointment|default(false)
+                or permissions.calldisplay|default(false)
+                or permissions.ticketprinter|default(false)
+                or permissions.overviewcalendar|default(false)
+            ) %}
+            {% if hasScopeBoundWorkPermissions and workstation.scope.id|default(false) %}
             <div class="page-header__scope" data-header-scope="{{ workstation.scope.contact|json_encode }}">
                 {% set scopeName = workstation.scope.contact.name %}
         		{% if workstation.scope.contact.name|length > 30 %}
@@ -59,6 +69,7 @@
                     </li>
                 </ul>
             </div>
+            {% endif %}
             {%- endblock %}
             </div>
             <div class="grid__item min-width page-header__right">

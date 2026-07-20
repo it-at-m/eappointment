@@ -93,4 +93,20 @@ class RequestTest extends EntityCommonTests
         $entity = $this->getExample();
         $this->assertEquals('dldb', $entity->getSource());
     }
+
+    public function testRootParentIdFallsBackToId()
+    {
+        $entity = $this->getExample();
+        $this->assertEquals('120335', $entity->getRootParentId());
+    }
+
+    public function testRootParentIdUsesResolvedValue()
+    {
+        $entity = new \BO\Zmsentities\Request([
+            'id' => '2',
+            'root_parent_id' => '1080455',
+        ]);
+
+        $this->assertEquals('1080455', $entity->getRootParentId());
+    }
 }

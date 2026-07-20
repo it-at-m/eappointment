@@ -31,7 +31,7 @@
             >
               {{ selectedService.count }}x
               <a
-                :href="getServiceBaseURL() + +(serviceLinkId || '')"
+                :href="getServiceBaseURL() + resolvedServiceLinkId"
                 target="_blank"
                 class="m-link"
                 tabindex="0"
@@ -87,7 +87,7 @@
               </p>
             </template>
 
-            <template v-else-if="variantId === 1">
+            <template v-else-if="isVariantWithAddress(variantId)">
               <p class="no-bottom-margin smaller-front-size">
                 <strong>{{ t("address") }}</strong
                 ><br />
@@ -103,18 +103,20 @@
                 ></span>
               </p>
               <p class="no-bottom-margin smaller-front-size">
-                <strong>{{ t("appointmentTypes.1") }}</strong
+                <strong>{{ t(`appointmentTypes.${variantId}`) }}</strong
                 ><br />
               </p>
-              <p>{{ t("locationVariantText.1") }}</p>
+              <p v-if="getAppointmentLocationVariantHint(variantId, t)">
+                {{ getAppointmentLocationVariantHint(variantId, t) }}
+              </p>
             </template>
 
-            <template v-else-if="VARIANTS_WITH_HINTS.includes(variantId)">
+            <template v-else-if="isVariantWithHint(variantId)">
               <p class="no-bottom-margin smaller-front-size">
                 <strong>{{ t(`appointmentTypes.${variantId}`) }}</strong
                 ><br />
               </p>
-              <p>{{ getVariantHint(variantId, t) }}</p>
+              <p>{{ getAppointmentLocationVariantHint(variantId, t) }}</p>
             </template>
 
             <template v-else>
@@ -178,7 +180,9 @@
             >
               <strong>{{ appointment.scope.customTextfieldLabel }}</strong
               ><br />
-              <p>{{ appointment.customTextfield }}</p>
+              <p class="m-plain-text-multiline">
+                {{ appointment.customTextfield }}
+              </p>
               <br />
             </div>
             <div
@@ -189,7 +193,9 @@
             >
               <strong>{{ appointment.scope.customTextfield2Label }}</strong
               ><br />
-              <p>{{ appointment.customTextfield2 }}</p>
+              <p class="m-plain-text-multiline">
+                {{ appointment.customTextfield2 }}
+              </p>
               <br />
             </div>
           </div>
@@ -198,35 +204,27 @@
               <h3>{{ t("termsOfUse") }}</h3>
             </div>
             <div class="m-content">
-              <p class="smaller-front-size">
-                <strong>{{ t("privacyCheckboxLabel") }}</strong
-                ><br />
-              </p>
+              <h4 class="smaller-front-size">{{ t("privacyLabel") }}</h4>
             </div>
             <div class="m-content">
-              <div class="m-checkboxes">
-                <div class="m-checkboxes__item">
-                  <input
-                    id="checkbox-privacy-policy"
-                    class="m-checkboxes__input"
-                    name="checkbox-privacy-policy"
-                    type="checkbox"
-                    @click="clickPrivacyPolicy"
-                    aria-required="true"
-                  />
-                  <label
-                    class="m-label m-checkboxes__label"
-                    for="checkbox-privacy-policy"
-                    v-html="sanitizeHtml(t('privacyCheckboxText'))"
-                  />
-                </div>
-              </div>
+              <p
+                class="m-label"
+                v-html="sanitizeHtml(t('privacyText'))"
+              />
+            </div>
+            <div
+              v-if="isVideoVariant"
+              class="m-content"
+            >
+              <p
+                class="m-label"
+                v-html="sanitizeHtml(t('privacyVideoConsultationText'))"
+              />
             </div>
             <div class="m-content">
-              <p class="smaller-front-size">
-                <strong>{{ t("communicationCheckboxLabel") }}</strong
-                ><br />
-              </p>
+              <h4 class="smaller-front-size">
+                {{ t("communicationCheckboxLabel") }}
+              </h4>
             </div>
             <div class="m-content">
               <div class="m-checkboxes">
@@ -247,6 +245,34 @@
                 </div>
               </div>
             </div>
+            <template v-if="isVideoVariant">
+              <div class="m-content">
+                <h4 class="smaller-front-size">
+                  {{ t("termsOfUseForVideoConsultationLabel") }}
+                </h4>
+              </div>
+              <div class="m-content">
+                <div class="m-checkboxes">
+                  <div class="m-checkboxes__item">
+                    <input
+                      id="checkbox-video-consultation"
+                      class="m-checkboxes__input"
+                      name="checkbox-video-consultation"
+                      type="checkbox"
+                      @click="clickVideoConsultation"
+                      aria-required="true"
+                    />
+                    <label
+                      class="m-label m-checkboxes__label"
+                      for="checkbox-video-consultation"
+                      v-html="
+                        sanitizeHtml(t('termsOfUseForVideoConsultationText'))
+                      "
+                    />
+                  </div>
+                </div>
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -329,12 +355,15 @@ import {
   SelectedAppointmentProvider,
   SelectedServiceProvider,
   SelectedTimeslotProvider,
+  ServiceLinkProvider,
 } from "@/types/ProvideInjectTypes";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
+  getAppointmentLocationVariantHint,
   getServiceBaseURL,
-  getVariantHint,
-  VARIANTS_WITH_HINTS,
+  isVariantWithAddress,
+  isVariantWithHint,
+  VARIANT_ID_VIDEO,
 } from "@/utils/Constants";
 import { containsParagraphTag } from "@/utils/containsParagraphTag";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
@@ -388,8 +417,9 @@ const { serviceLinkId } = inject<ServiceLinkProvider>(
 
 const { isExpired } = useReservationTimer();
 
-const privacyPolicy = ref<boolean>(false);
 const electronicCommunication = ref<boolean>(false);
+
+const videoConsultation = ref<boolean>(false);
 
 const formatterDate = new Intl.DateTimeFormat("de-DE", {
   weekday: "long",
@@ -410,13 +440,16 @@ const formatTime = (time: any) => {
   return formatterDate.format(date) + ", " + formatterTime.format(date);
 };
 
-const clickPrivacyPolicy = () => (privacyPolicy.value = !privacyPolicy.value);
-
 const clickElectronicCommunication = () =>
   (electronicCommunication.value = !electronicCommunication.value);
 
+const clickVideoConsultation = () =>
+  (videoConsultation.value = !videoConsultation.value);
+
 const validForm = computed(
-  () => privacyPolicy.value && electronicCommunication.value
+  () =>
+    electronicCommunication.value &&
+    (!isVideoVariant.value || videoConsultation.value)
 );
 
 const bookAppointment = () => emit("bookAppointment");
@@ -439,6 +472,14 @@ const estimatedDuration = () => {
 const variantId = computed<number | null>(() => {
   const id = (selectedService.value as any)?.variantId;
   return typeof id === "number" && Number.isFinite(id) ? id : null;
+});
+
+const isVideoVariant = computed(() => variantId.value === VARIANT_ID_VIDEO);
+
+const resolvedServiceLinkId = computed(() => {
+  if (serviceLinkId.value) return serviceLinkId.value;
+  const service = selectedService.value;
+  return String(service?.rootParentId ?? service?.id ?? "");
 });
 
 const sanitizedInfoForAppointment = computed(() =>
@@ -471,5 +512,11 @@ const infoForAppointmentContainsPTag = computed(() =>
 }
 .smaller-front-size {
   font-size: 16px;
+}
+
+/* Preserve user line breaks in plain-text custom fields (same idea as nl2br / pre-wrap on server). */
+.m-plain-text-multiline {
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 </style>

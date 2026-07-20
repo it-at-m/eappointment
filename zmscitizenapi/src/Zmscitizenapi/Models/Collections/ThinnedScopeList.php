@@ -12,7 +12,6 @@ use JsonSerializable;
 class ThinnedScopeList extends Entity implements JsonSerializable
 {
     public static $schema = "citizenapi/collections/thinnedScopeList.json";
-/** @var ThinnedScope[] */
     public array $scopes = [];
     public function __construct(array $scopes = [])
     {
@@ -23,8 +22,7 @@ class ThinnedScopeList extends Entity implements JsonSerializable
                 }
                 $this->scopes[] = $scope;
             } catch (\Exception $e) {
-                error_log("Invalid ThinnedScope encountered: " . $e->getMessage());
-            //Gracefully handle
+                \App::$log->warning('Invalid ThinnedScope skipped', ['exception' => $e->getMessage()]);
             }
         }
 
@@ -45,6 +43,7 @@ class ThinnedScopeList extends Entity implements JsonSerializable
         ];
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         return $this->toArray();

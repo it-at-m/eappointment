@@ -42,12 +42,7 @@ $destinationPath = $args->getOpt('output');
 $indexUrl = $args->getOpt('base');
 
 $helpers = new DldbHelpers($destinationPath, $cli);
-
-// Ensure destination directory exists (aligned with default script)
-if (!is_dir($destinationPath) && !mkdir($destinationPath, 0777, true) && !is_dir($destinationPath)) {
-    print($cli->red("Failed to create the destination directory at $destinationPath\n\n"));
-    exit(1);
-}
+$helpers->ensureDestinationDirectory();
 
 // Check for rollback
 $rollbackDay = $helpers->getRollbackDay();
@@ -56,37 +51,37 @@ if ($rollbackDay !== "none") {
     exit(0);
 }
 
-print("No rollback is requested, fetching current Munich SADB export...\n\n");
+\App::$log->info('No rollback requested, fetching current Munich SADB export');
 
 $transformer = new Munich();
 try {
     $data = $transformer->fetchLatestExport($indexUrl);
 } catch (\Exception $e) {
-    echo "Error: Failed to fetch Munich SADB export: " . $e->getMessage() . "\n\n";
+    \App::$log->error('Failed to fetch Munich SADB export', ['message' => $e->getMessage()]);
     exit(1);
 }
 
 // Same as dldb-mapper mapImport mergeExports(prod.json): Passkalender 10502 + relations for E2E/prod parity
 $data = $transformer->applySadbOverwrite($data);
-print("Applied bundled munich_sadb_overwrite.json (dldb-mapper parity).\n\n");
+\App::$log->info('Applied bundled munich_sadb_overwrite.json');
 
 // Helper: write JSON to temp file (aligned with dldbget pattern)
 function writeJsonTempFile($data)
 {
     $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     if ($json === false) {
-        echo "Error: JSON encoding failed: " . json_last_error_msg() . "\n\n";
+        \App::$log->error('JSON encoding failed', ['message' => json_last_error_msg()]);
         exit(1);
     }
 
     $tempFile = tempnam(sys_get_temp_dir(), 'dldbget_');
     if ($tempFile === false) {
-        echo "Error: Failed to create temporary file\n\n";
+        \App::$log->error('Failed to create temporary file');
         exit(1);
     }
 
     if (file_put_contents($tempFile, $json) === false) {
-        echo "Error: Failed to write temporary file\n\n";
+        \App::$log->error('Failed to write temporary file');
         @unlink($tempFile);
         exit(1);
     }
@@ -96,15 +91,17 @@ function writeJsonTempFile($data)
 
 $downloadedFiles = [];
 
-// Transform services
-print("Transforming services...\n\n");
+\App::$log->info('Transforming services');
 $servicesData = $transformer->transformServices($data);
-$downloadedFiles['services_de.json'] = writeJsonTempFile($servicesData);
 
-// Transform locations
-print("Transforming locations...\n\n");
-$locationsData = $transformer->transformLocations($data, $servicesData);
-$downloadedFiles['locations_de.json'] = writeJsonTempFile($locationsData);
+\App::$log->info('Transforming locations and merging location refs into services');
+$locationTransform = $transformer->transformLocations($data, $servicesData);
+if (empty($locationTransform['services'])) {
+    \App::$log->error('transformLocations did not return enriched services payload');
+    exit(1);
+}
+$downloadedFiles['services_de.json'] = writeJsonTempFile($locationTransform['services']);
+$downloadedFiles['locations_de.json'] = writeJsonTempFile($locationTransform['locations']);
 
 // Empty placeholder data (Munich has no EN / topics / authority yet)
 $emptyData = [
@@ -132,4 +129,4 @@ try {
 // Cleanup old backups
 $helpers->cleanupOldBackups();
 
-print("Munich transformation completed!\n\n");
+\App::$log->info('Munich transformation completed');

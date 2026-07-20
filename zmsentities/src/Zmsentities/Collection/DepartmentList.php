@@ -57,7 +57,7 @@ class DepartmentList extends Base implements JsonUnindexed
         $list = new static();
         foreach ($this as $department) {
             if ($department->hasAccess($useraccount)) {
-                if ($useraccount->rights['organisation']) {
+                if ($useraccount->hasPermissions(['organisation'])) {
                     return $this;
                 }
                 $list->addEntity($department);
@@ -85,6 +85,7 @@ class DepartmentList extends Base implements JsonUnindexed
         return $list;
     }
 
+    #[\Override]
     public function sortByName()
     {
         parent::sortByName();
@@ -99,6 +100,7 @@ class DepartmentList extends Base implements JsonUnindexed
         return $this;
     }
 
+    #[\Override]
     public function getIds()
     {
         $ids = [];

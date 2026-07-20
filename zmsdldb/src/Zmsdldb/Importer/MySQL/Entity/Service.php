@@ -30,6 +30,7 @@ class Service extends Base
     /**
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
+    #[\Override]
     protected function setupMapping()
     {
         $this->referanceMapping = [
@@ -264,32 +265,18 @@ class Service extends Base
         ];
     }
 
+    #[\Override]
     public function preSetup()
     {
         try {
-            /*
-            if (false === $this->get('meta.translated')) {
-                $this->setStatus(static::STATUS_OLD);
-                error_log(
-                    'not translated service - (' . $this->get('id') . ' | ' .
-                    $this->get('meta.locale') . ') - ' . $this->get('name')
-                );
-                return false;
-            }
-            else {
-                error_log(
-                    'translated service - (' . $this->get('id') . ' | ' .
-                    $this->get('meta.locale') . ') - ' . $this->get('name')
-                );
-            }
-            */
             $fields = $this->get(['id', 'meta.locale', 'meta.hash']);
             $fields[] = static::getTableName();
 
-            if (is_array($fields[2])) {
-                error_log(print_r($fields[2]));
+            if (is_array($fields[2]) && class_exists('\App', false) && isset(\App::$log)) {
+                \App::$log->warning('Unexpected array in service meta hash during import', [
+                    'fields' => $fields,
+                ]);
             }
-            #error_log(print_r($fields[2]));
 
             $this->setStatus(static::STATUS_OLD);
             if ($this->itemNeedsUpdate(...array_values($fields))) {
@@ -303,6 +290,7 @@ class Service extends Base
         }
     }
 
+    #[\Override]
     public function deleteEntity(): bool
     {
         try {
@@ -314,6 +302,7 @@ class Service extends Base
         }
     }
 
+    #[\Override]
     public function clearEntity(array $addWhere = []): bool
     {
         try {

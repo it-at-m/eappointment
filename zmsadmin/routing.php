@@ -1,13 +1,13 @@
 <?php
+
 // @codingStandardsIgnoreFile
 /**
  *
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
-use BO\Slim\Helper;
-use \Psr\Http\Message\RequestInterface;
-use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Routing\RouteCollectorProxy;
 
 /*
@@ -79,7 +79,7 @@ use Slim\Routing\RouteCollectorProxy;
 
  \App::$slim->post('/mailtemplates/{id:\d+}/', \BO\Zmsadmin\Helper\MailTemplateHandler::class)
      ->setName("MailTemplateHandler");
-     
+
  \App::$slim->post('/mailtemplates/deleteCustomization/{id:\d+}/', \BO\Zmsadmin\Helper\MailTemplateDeleteCustomization::class)
      ->setName("MailTemplateDeleteCustomization");
 
@@ -91,7 +91,7 @@ use Slim\Routing\RouteCollectorProxy;
 
  \App::$slim->post('/mailtemplates/previewEmail/{mailStatus}/{scopeId:\d+}/', \BO\Zmsadmin\Helper\MailTemplatePreviewMail::class)
      ->setName("MailTemplatePreviewMail");
-     
+
 
  /*
   * ---------------------------------------------------------------------------
@@ -141,12 +141,6 @@ use Slim\Routing\RouteCollectorProxy;
 
 \App::$slim->get('/department/delete/{id:\d+}/', \BO\Zmsadmin\DepartmentDelete::class)
     ->setName("departmentDelete");
-
-\App::$slim->get('/users/department/{id:\d+}/', \BO\Zmsadmin\UseraccountListByDepartment::class)
-    ->setName("useraccountListByDepartment");
-
-\App::$slim->get('/users/role/{level:\d+}/', \BO\Zmsadmin\UseraccountListByRole::class)
-    ->setName("useraccountListByRole");
 
 \App::$slim->post('/department/{id:\d+}/useraccount/logout/', \BO\Zmsadmin\LogoutBySuperuser::class)
     ->setName("logoutBySuperuser");
@@ -300,7 +294,7 @@ use Slim\Routing\RouteCollectorProxy;
  * Search
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/search/', \BO\Zmsadmin\ProcessSearch::class)
+\App::$slim->get('/search/', \BO\Zmsadmin\Search::class)
     ->setName("search");
 
 /*
@@ -322,9 +316,6 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->map(['GET','POST'], '/source/{name}/', \BO\Zmsadmin\SourceEdit::class)
     ->setName("sourceEdit");
 
-\App::$slim->map(['POST'], '/source/delete/{loginname}/', \BO\Zmsadmin\SourceDelete::class)
-    ->setName("sourceDelete");
-
 
 /*
  * ---------------------------------------------------------------------------
@@ -333,6 +324,24 @@ use Slim\Routing\RouteCollectorProxy;
  */
 \App::$slim->get('/users/', \BO\Zmsadmin\UseraccountList::class)
     ->setName("useraccountList");
+
+\App::$slim->get('/users/department/{id:\d+}/', \BO\Zmsadmin\UseraccountListByDepartment::class)
+    ->setName("useraccountListByDepartment");
+
+\App::$slim->get('/users/role/{roleName:[a-z_]+}/', \BO\Zmsadmin\UseraccountListByRole::class)
+    ->setName("useraccountListByRole");
+
+\App::$slim->get('/roles/', \BO\Zmsadmin\Roles::class)
+    ->setName("roles");
+
+\App::$slim->map(['GET', 'POST'], '/roles/add/', \BO\Zmsadmin\RoleAdd::class)
+    ->setName("roleAdd");
+
+\App::$slim->map(['GET', 'POST'], '/roles/{id:\d+}/edit/', \BO\Zmsadmin\RoleEdit::class)
+    ->setName("roleEdit");
+
+\App::$slim->delete('/roles/delete/{id:\d+}/', \BO\Zmsadmin\RoleDelete::class)
+    ->setName("roleDelete");
 
 \App::$slim->map(['GET', 'POST'], '/users/add/', \BO\Zmsadmin\UseraccountAdd::class)
     ->setName("useraccountAdd");
@@ -433,9 +442,6 @@ use Slim\Routing\RouteCollectorProxy;
  * maintenance
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/testpage/', \BO\Zmsadmin\Testpage::class)
-    ->setName("testpage");
-
 \App::$slim->get('/changelog/', \BO\Zmsadmin\Changelog::class)
     ->setName("changelog");
 

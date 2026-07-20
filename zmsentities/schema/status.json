@@ -8,7 +8,7 @@
       "minor": 34,
       "patch": 56
     },
-    "server": "prod-zmsapi-01"
+    "server": "prod-zmsbackendkendkend-01"
   },
   "properties": {
     "generated": {
@@ -26,6 +26,10 @@
         "blocked": {
           "type": "number",
           "description": "Number of temporary blocked appointment IDs in the database."
+        },
+        "called": {
+          "type": "number",
+          "description": "Number of processes with status called (displayed on call displays, not yet in processing)."
         },
         "confirmed": {
           "type": "number",
@@ -62,6 +66,14 @@
         "reserved": {
           "type": "number",
           "description": "Number of reserved appointments in the database."
+        },
+        "withExternalUserId": {
+          "type": "number",
+          "description": "Number of processes with externalUserId set (buerger.external_user_id is not null and not empty), any status."
+        },
+        "confirmedWithExternalUserId": {
+          "type": "number",
+          "description": "Number of confirmed processes with externalUserId set (OIDC-linked appointments)."
         }
       }
     },

@@ -2,6 +2,8 @@
 
 namespace BO\Zmsadmin\Tests;
 
+use BO\Zmsentities\Exception\UserAccountMissingRights;
+
 class UseraccountAddTest extends Base
 {
     protected $arguments = [];
@@ -16,11 +18,8 @@ class UseraccountAddTest extends Base
             ['id' => 74],
             ['id' => 57],
         ),
-        'rights' => array(
-            'sms' => '1',
-            'ticketprinter' => '1',
-            'availability' => '1',
-            'scope' => '1'
+        'roles' => array(
+            'agent_queue'
         ),
         'save' => 'save'
     ];
@@ -49,12 +48,23 @@ class UseraccountAddTest extends Base
                     'parameters' => [],
                     'xtoken' => 'secure-token',
                     'response' => $this->readFixture("GET_config.json"),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture("GET_rolelist.json")
                 ]
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString('Nutzer: Einrichtung und Administration', (string)$response->getBody());
-        $this->assertStringContainsString('Nutzer anlegen', (string)$response->getBody());
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('Nutzer: Einrichtung und Administration', $body);
+        $this->assertStringContainsString('Nutzer anlegen', $body);
+
+        $this->assertStringContainsString('Rollen', $body);
+        $this->assertStringContainsString('name="roles[]"', $body);
+        $this->assertStringContainsString('value="agent_queue"', $body);
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -119,15 +129,24 @@ class UseraccountAddTest extends Base
                     'parameters' => [],
                     'xtoken' => 'secure-token',
                     'response' => $this->readFixture("GET_config.json"),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture("GET_rolelist.json")
                 ]
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertStringContainsString(
-            'Das Passwort muss mindestens 6 Zeichen lang sein.',
-            (string)$response->getBody()
-        );
+        $body = (string)$response->getBody();
+
+        $this->assertStringContainsString('Das Passwort muss mindestens 6 Zeichen lang sein.', $body);
         $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertStringContainsString('Rollen', $body);
+        $this->assertStringContainsString('name="roles[]"', $body);
+        $this->assertStringContainsString('value="agent_queue"', $body);
     }
 
     public function testUnkownException()
@@ -158,5 +177,22 @@ class UseraccountAddTest extends Base
             ]
         );
         $this->render($this->arguments, $this->parameters, [], 'POST');
+    }
+
+    public function testMissingUseraccountRights()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture('GET_Workstation_Resolved1_No_Useraccount_Permission.json'),
+                ],
+            ]
+        );
+
+        $this->expectException(UserAccountMissingRights::class);
+        $this->render($this->arguments, $this->parameters, []);
     }
 }

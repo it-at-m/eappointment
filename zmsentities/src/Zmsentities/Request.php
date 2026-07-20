@@ -8,6 +8,7 @@ class Request extends Schema\Entity
 
     public static $schema = "request.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -15,10 +16,12 @@ class Request extends Schema\Entity
             'name' => '',
             'source' => 'dldb',
             'parent_id' => null,
+            'root_parent_id' => null,
             'variant_id' => null
         ];
     }
 
+    #[\Override]
     public function withReference($additionalData = [])
     {
         $additionalData['id'] = $this->getId();
@@ -69,6 +72,16 @@ class Request extends Schema\Entity
     public function getParentId()
     {
         return $this->toProperty()->parent_id->get();
+    }
+
+    public function getRootParentId(): string
+    {
+        $rootParentId = $this->toProperty()->root_parent_id->get();
+        if ($rootParentId !== null && $rootParentId !== '') {
+            return (string) $rootParentId;
+        }
+
+        return (string) $this->getId();
     }
 
     public function getVariantId()

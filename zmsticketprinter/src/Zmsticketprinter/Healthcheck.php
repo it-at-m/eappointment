@@ -11,6 +11,7 @@ namespace BO\Zmsticketprinter;
 
 use BO\Slim\Render;
 use BO\Zmsclient\Status;
+use BO\Zmsentities\Schema\Entity;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -23,12 +24,13 @@ class Healthcheck extends BaseController
      * @SuppressWarnings(UnusedFormalParameter)
      * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
         array $args
     ) {
-        $response = Status::testStatus($response, function () {
+        $response = Status::testStatus($response, function (): Entity|false|null {
             return \App::$http->readGetResult('/status/', ['includeProcessStats' => 0])->getEntity();
         });
 

@@ -9,32 +9,36 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Scope as Entity;
 use BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Zmsentities\Scope as Entity;
 
 class Scope extends BaseController
 {
     /**
      *
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
 
         $workstation = \App::$http->readGetResult('/workstation/', [
             'resolveReferences' => 1,
             'gql' => Helper\GraphDefaults::getWorkstation()
         ])->getEntity();
-
+        if (!$workstation->getUseraccount()->hasAnyPermission(['scope','restrictedscope'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http
             ->readGetResult('/scope/' . $entityId . '/', [
                 'resolveReferences' => 1,
-                'accessRights' => 'scope',
+                'accessRights' => 'restrictedscope',
                 'gql' => Helper\GraphDefaults::getScope()
             ])
             ->getEntity();
@@ -48,16 +52,18 @@ class Scope extends BaseController
         $callDisplayImage = \App::$http->readGetResult('/scope/' . $entityId . '/imagedata/calldisplay/')->getEntity();
         $input = $request->getParsedBody();
         if ($request->getMethod() === 'POST') {
-            $result = $this->writeUpdatedEntity($input, $entityId);
+            $result = $this->writeUpdatedEntity($input, $entityId, $entity, $workstation);
             if ($result instanceof Entity) {
-                $this->writeUploadedImage($request, $entityId, $input);
-                return \BO\Slim\Render::redirect('scope', ['id' => $entityId], [
+                if ($workstation->getUseraccount()->hasPermissions(['scope'])) {
+                    $this->writeUploadedImage($request, $entityId, $input);
+                }
+                return Render::redirect('scope', ['id' => $entityId], [
                     'success' => 'scope_saved'
                 ]);
             }
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/scope.twig',
             array(
@@ -90,15 +96,17 @@ class Scope extends BaseController
         return $source;
     }
 
-    /**
-     * @param \BO\Zmsentities\Scope $input scope entity, if used without ID, a new scope is created
-     * @param Number $entityId Might be the entity scope or department if called from DepartmentAddScope
-     */
-    protected function writeUpdatedEntity($input, $entityId = null)
+    protected function writeUpdatedEntity($input, $entityId = null, Entity $existingScope = null, $workstation = null)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
-        return $this->handleEntityWrite(function () use ($entity, $entityId) {
-            if ($entity->id) {
+        if ($workstation && !$workstation->getUseraccount()->hasPermissions(['scope'])) {
+            if (!$existingScope) {
+                throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+            }
+            $entity = $entity->withProviderSourceFrom($existingScope);
+        }
+        return $this->handleEntityWrite(function () use ($entity, $entityId, $existingScope) {
+            if ($existingScope) {
                 $entity->id = $entityId;
                 return \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)->getEntity();
             }

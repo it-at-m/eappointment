@@ -7,26 +7,35 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Render;
 use BO\Zmsentities\Collection\ProcessList;
 
 class WorkstationProcessNext extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return int|null
      */
-
-    public function timeToUnix($timeString)
+    public function timeToUnix($timeValue): ?int
     {
-        list($hours, $minutes, $seconds) = explode(':', $timeString);
-        return mktime($hours, $minutes, $seconds);
+        if ($timeValue === null) {
+            return null;
+        }
+        $timeString = trim((string) $timeValue);
+        if ($timeString === '') {
+            return null;
+        }
+        $unixTimestamp = strtotime($timeString);
+
+        return $unixTimestamp !== false ? $unixTimestamp : null;
     }
 
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', [
             'resolveReferences' => 1,
             'gql' => Helper\GraphDefaults::getWorkstation()
@@ -49,12 +58,12 @@ class WorkstationProcessNext extends BaseController
 
         foreach ($processList as $process) {
             if ($process->status === "queued" || $process->status === "confirmed") {
-                $timeoutTimeUnix = isset($process->timeoutTime) ? $this->timeToUnix($process->timeoutTime) : null;
+                $timeoutTimeUnix = $this->timeToUnix($process->timeoutTime ?? null);
                 $currentTimeUnix = time();
 
                 if (!isset($process->timeoutTime)) {
                     $filteredProcessList->addEntity(clone $process);
-                } elseif (isset($timeoutTimeUnix) && !($process->queue->callCount > 0 && ($currentTimeUnix - $timeoutTimeUnix) < 300)) {
+                } elseif ($timeoutTimeUnix !== null && !($process->queue->callCount > 0 && ($currentTimeUnix - $timeoutTimeUnix) < 300)) {
                     $filteredProcessList->addEntity(clone $process);
                 } else {
                     if (!empty($excludedIds)) {
@@ -68,7 +77,7 @@ class WorkstationProcessNext extends BaseController
         $process = (new Helper\ClusterHelper($workstation))->getNextProcess($excludedIds);
 
         if (!$process || ! $process->hasId() || $process->getFirstAppointment()->date > \App::$now->getTimestamp()) {
-            return \BO\Slim\Render::withHtml(
+            return Render::withHtml(
                 $response,
                 'block/process/next.twig',
                 array(
@@ -79,7 +88,7 @@ class WorkstationProcessNext extends BaseController
             );
         }
         if ($process->toProperty()->amendment->get()) {
-            return \BO\Slim\Render::redirect(
+            return Render::redirect(
                 'workstationProcessPreCall',
                 array(
                     'id' => $process->id,
@@ -90,7 +99,7 @@ class WorkstationProcessNext extends BaseController
                 )
             );
         }
-        return \BO\Slim\Render::redirect(
+        return Render::redirect(
             'workstationProcessCalled',
             array(
                 'id' => $process->id

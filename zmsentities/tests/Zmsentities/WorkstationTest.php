@@ -45,41 +45,6 @@ class WorkstationTest extends EntityCommonTests
         $this->assertTrue($entity->getProviderOfGivenScope() == '123456', 'Provider does not exists in scope');
     }
 
-    public function testUseraccountRights()
-    {
-        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
-
-        $entity = (new $this->entityclass())->getExample();
-        $rights = $entity->getUseraccountRights();
-        $this->assertTrue(count($rights) > 0, 'Useraccount rights missed');
-
-        $userAccount = (new \BO\Zmsentities\Useraccount())->getExample();
-
-        $userAccount->rights['superuser'] = false;
-        $userAccount->setRights('superuser');
-        $entity->useraccount = $userAccount;
-        $userAccount->testRights(['superuser'], $now);
-        $this->assertTrue($entity->hasSuperUseraccount(), 'Useraccount should have a superuser right');
-
-        unset($userAccount->rights['superuser']);
-        $userAccount->setRights('superuser');
-        $entity->useraccount = $userAccount;
-
-        try {
-            $userAccount->testRights(array_keys(array('superuser')), $now);
-            $this->fail("Expected exception UserAccountMissingRights not thrown");
-        } catch (\BO\Zmsentities\Exception\UserAccountMissingRights $exception) {
-            $this->assertEquals(403, $exception->getCode());
-        }
-
-        unset($userAccount['id']);
-        try {
-            $userAccount->testRights(array_keys(array('superuser')), $now);
-            $this->fail("Expected exception UserAccountMissingRights not thrown");
-        } catch (\BO\Zmsentities\Exception\UserAccountMissingLogin $exception) {
-            $this->assertEquals(401, $exception->getCode());
-        }
-    }
 
     public function testGetUserAccount()
     {
@@ -198,6 +163,44 @@ class WorkstationTest extends EntityCommonTests
         $this->assertEquals('', $entity2->hint);
         $this->assertEquals(1, $entity2->queue['clusterEnabled']);
         $this->assertEquals(0, $entity2->queue['appointmentsOnly']);
+    }
+
+    public function testHasSuperUseraccountWithPermissions()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $userAccount = $entity->getUseraccount();
+        $userAccount->permissions['superuser'] = true;
+        $this->assertTrue($entity->hasSuperUseraccount());
+    }
+
+    public function testHasAuditAccountOnlyLogsPermission()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $userAccount = $entity->getUseraccount();
+
+        $userAccount->permissions['superuser'] = false;
+        $userAccount->permissions['logs'] = true;
+
+        $this->assertTrue($entity->hasAuditAccount());
+    }
+
+
+    public function testHasAuditAccountNeitherLogsNorSuperuserIsFalse()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $userAccount = $entity->getUseraccount();
+        $userAccount->permissions['logs'] = false;
+        $userAccount->permissions['superuser'] = false;
+        $this->assertFalse($entity->hasAuditAccount());
+    }
+
+    public function testHasAuditAccountSuperuserBypass()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $userAccount = $entity->getUseraccount();
+        $userAccount->permissions['logs'] = false;
+        $userAccount->permissions['superuser'] = true;
+        $this->assertTrue($entity->hasAuditAccount());
     }
 
     private function fromAdditionalParameters()

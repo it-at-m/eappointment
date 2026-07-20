@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% set years = [getNow()|date('Y')] %}
+{% if items and items.data is defined %}
 {% for key, entry in items.data %}
     {% if entry|first|length == 4 and entry|first not in years %}
         {% set years = years|merge([entry|first]) %}
@@ -59,4 +60,5 @@
 <div class="table-actions report-period--show-all" id="report-period--show-all">
     <a href="#">Alle Jahre anzeigen</a>
 </div>
+{% endif %}
 {% endif %}

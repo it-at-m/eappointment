@@ -4,11 +4,14 @@ test-automation-framework-example
 test-automation-framework
 zms-test-automation
 eappointment-buergeransicht
-zmsautomation/lib
-
+captchaservice
+muc-patternlab-vue
 dldb-mapper
+# Legacy sibling clone of the old php-base repo; runtime images live in zmsbase/
 eappointment-php-base
 zms-deployment
+
+zmsautomation/lib
 
 # =============== ddev =================
 .ddev/.env
@@ -74,6 +77,7 @@ buildNumber.properties
 
 # ================ Node ===============
 node_modules
+.husky/_
 dist/
 .vite
 
@@ -165,6 +169,10 @@ logs
 # Covers Eclipse, based on https://www.toptal.com/developers/gitignore/api/eclipse , stripped to relevant java based rules
 .metadata
 bin/
+!zmsbackend/bin/
+!zmsbackend/bin/**
+!zmscitizenapi/bin/
+!zmscitizenapi/bin/build_swagger.js
 tmp/
 *.tmp
 *.bak
@@ -220,6 +228,7 @@ nbdist/
 .vscode/settings.json
 .vscode/tasks.json
 .vscode/terminals.json
+.continue
 
 # Covers other editors
 *.suo

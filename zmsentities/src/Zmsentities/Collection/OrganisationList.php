@@ -23,7 +23,7 @@ class OrganisationList extends Base
         $list = new static();
         foreach ($this as $organisation) {
             $organisation = clone $organisation;
-            if ($useraccount->hasRights(['department'])) {
+            if ($useraccount->hasPermissions(['department'])) {
                 $organisation->departments = $organisation->getDepartmentList();
             } else {
                 $organisation->departments = $organisation->getDepartmentList()->withAccess($useraccount);
@@ -35,6 +35,7 @@ class OrganisationList extends Base
         return $list;
     }
 
+    #[\Override]
     public function sortByName()
     {
         parent::sortByName();

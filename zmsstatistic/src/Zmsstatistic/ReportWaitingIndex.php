@@ -21,6 +21,7 @@ class ReportWaitingIndex extends BaseController
      * @SuppressWarnings(Param)
      * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
@@ -34,9 +35,12 @@ class ReportWaitingIndex extends BaseController
             $validator->getParameter('scopes')->isArray()->getValue() ?? []
         );
 
-        $scopeIds = !empty($selectedScopes) ? implode(',', $selectedScopes) : $this->workstation->scope['id'];
+        $workstationScopeId = $reportHelper->getWorkstationScopeId($this->workstation);
+        $scopeIds = $reportHelper->resolveScopeIdParam($selectedScopes, $workstationScopeId);
 
-        $waitingPeriod = $reportWaitingService->getWaitingPeriod($this->workstation->scope['id']);
+        $waitingPeriod = $workstationScopeId !== null
+            ? $reportWaitingService->getWaitingPeriod((string) $workstationScopeId)
+            : null;
 
         $dateRange = $reportHelper->extractDateRange(
             $validator->getParameter('from')->isString()->getValue(),

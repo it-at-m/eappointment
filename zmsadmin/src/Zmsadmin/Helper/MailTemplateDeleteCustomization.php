@@ -8,9 +8,6 @@
 namespace BO\Zmsadmin\Helper;
 
 use BO\Zmsadmin\BaseController;
-use BO\Zmsentities\Availability as Entity;
-use BO\Zmsentities\Collection\AvailabilityList as Collection;
-use BO\Zmsentities\Collection\ProcessList;
 
 class MailTemplateDeleteCustomization extends BaseController
 {
@@ -18,6 +15,7 @@ class MailTemplateDeleteCustomization extends BaseController
      * @SuppressWarnings(Param)
      * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,

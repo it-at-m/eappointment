@@ -6,7 +6,7 @@ namespace BO\Zmscitizenapi\Middleware;
 
 use BO\Zmscitizenapi\Utils\ClientIpHelper;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
-use BO\Zmscitizenapi\Services\Core\LoggerService;
+use BO\Slim\LoggerService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -37,6 +37,7 @@ class RateLimitingMiddleware implements MiddlewareInterface
         $this->lockTimeout = $config['lockTimeout'];
     }
 
+    #[\Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {

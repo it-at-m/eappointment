@@ -7,24 +7,33 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsclient\ModuleAccess;
 use BO\Zmsadmin\Helper\LoginForm;
+use BO\Zmsadmin\Helper\RestrictedRoleRedirect;
 use BO\Mellon\Validator;
 
 class WorkstationSelect extends BaseController
 {
     /**
      * @SuppressWarnings(Parameter)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
-        /** @var \BO\Zmsentities\Workstation $workstation */
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect('index', array('error' => 'login_failed'));
+        }
+        if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_ADMIN, $workstation, $response)) {
+            return $wrongModuleResponse;
+        }
+
+        if ($restrictedRoleRedirect = RestrictedRoleRedirect::create($workstation->getUseraccount())) {
+            return $restrictedRoleRedirect;
         }
 
         $input = $request->getParsedBody();

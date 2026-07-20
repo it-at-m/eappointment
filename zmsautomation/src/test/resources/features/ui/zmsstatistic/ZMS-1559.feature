@@ -15,7 +15,7 @@ Funktionalität: Default
 		Und  Sie in der Statistik im Zeitraum von 14 Tagen vor heute bis heute filtern.
 		Und  die folgenden Dienstleistungen sollten in der Dienstleistungsstatistik angezeigt werden:
 			| dienstleistung                              |
-			| Güterkraftverkehr – Erlaubnis und Lizenz   |
+			| Güterkraftverkehr (Gemeinschaftslizenz) – Erstantrag oder erneuter Antrag   |
 			| Taxi oder Mietwagen – Unterlagen nachreichen |
 			| Zulassung Taxi oder Mietwagen              |
 		Wenn Sie In der Statistik auf den Download-Button klicken.

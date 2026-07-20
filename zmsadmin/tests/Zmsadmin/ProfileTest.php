@@ -37,6 +37,7 @@ class ProfileTest extends Base
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString('Nutzerinformation', (string)$response->getBody());
         $this->assertStringContainsString('testadmin', (string)$response->getBody());
+        $this->assertStringContainsString('Superuser', (string)$response->getBody());
         $this->assertStringContainsString('value="0"', (string)$response->getBody());
         $this->assertStringNotContainsString(
             'Dieser Nutzer wurde über einen OpenID Connect Anbieter angelegt.',

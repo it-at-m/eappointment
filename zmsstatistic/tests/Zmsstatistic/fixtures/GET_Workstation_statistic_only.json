@@ -1,0 +1,57 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2017-06-28T12:15:10+02:00",
+        "server": "Zmsbackend-ENV"
+    },
+    "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/workstation.json",
+        "useraccount": {
+            "roles": ["reporting_viewer"],
+            "rights": {
+                "availability": "0",
+                "basic": "1",
+                "cluster": "0",
+                "department": "0",
+                "organisation": "0",
+                "scope": "1",
+                "sms": "0",
+                "superuser": "0",
+                "ticketprinter": "0",
+                "useraccount": "0"
+            },
+            "permissions": {
+                "statistic": "1",
+                "superuser": "0"
+            },
+            "departments": [
+                {
+                    "id": "74",
+                    "scopes": [
+                        {
+                            "id": "141",
+                            "contact": {
+                                "name": "Bürgeramt Heerstraße"
+                            },
+                            "shortName": "141"
+                        }
+                    ]
+                }
+            ],
+            "id": "reporting.viewer",
+            "lastLogin": 1459461600
+        },
+        "name": "12",
+        "id": "136",
+        "authkey": "8520c285985b5bd209a0110442dc4e45",
+        "scope": {
+            "id": "141",
+            "contact": {
+                "name": "Bürgeramt Heerstraße"
+            },
+            "shortName": "141"
+        }
+    }
+}

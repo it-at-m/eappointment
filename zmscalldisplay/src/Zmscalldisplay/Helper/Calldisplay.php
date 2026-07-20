@@ -10,9 +10,7 @@
 namespace BO\Zmscalldisplay\Helper;
 
 use BO\Mellon\Validator;
-use BO\Slim\Request;
 use BO\Zmsentities\Calldisplay as Entity;
-use Psr\Http\Message\RequestInterface;
 
 class Calldisplay
 {
@@ -23,20 +21,11 @@ class Calldisplay
     const WAITING_STATUS = ['confirmed', 'queued', 'called', 'pending'];
 
 
-    /**
-     * @param Request|RequestInterface $request
-     */
     public function __construct($request)
     {
         $this->entity = static::createInstance($request);
     }
 
-    /**
-     * Get status for queue
-     *
-     * @param Request|RequestInterface $request
-     * @return array
-     */
     public static function getRequestedQueueStatus($request)
     {
         /** @var Validator $validator */
@@ -46,10 +35,6 @@ class Calldisplay
         return is_string($status) ? explode(',', $status) : static::DEFAULT_STATUS;
     }
 
-    /**
-     * @param bool $resolveEntity
-     * @return Entity
-     */
     public function getEntity($resolveEntity = true)
     {
         if (!$this->isEntityResolved && $resolveEntity) {
@@ -73,10 +58,6 @@ class Calldisplay
         return $scope;
     }
 
-    /**
-     * @param Request $request
-     * @return Entity
-     */
     protected static function createInstance($request)
     {
         $calldisplay = new Entity();
@@ -84,10 +65,6 @@ class Calldisplay
         return $calldisplay->withResolvedCollections(static::getCollections($request));
     }
 
-    /**
-     * @param Request $request
-     * @return mixed
-     */
     protected static function getCollections($request)
     {
         $validator = $request->getAttribute('validator');

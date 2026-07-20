@@ -18,14 +18,15 @@ class Service extends Base
 {
     /**
      *
-     * @return Entity\Service
+     * @return Entity
      */
-    public function fetchId($service_id)
+    #[\Override]
+    public function fetchId($itemId)
     {
-        if ($service_id) {
+        if ($itemId) {
             $query = Helper::boolFilteredQuery();
             $filter = new \Elastica\Filter\Ids();
-            $filter->setIds($this->locale . $service_id);
+            $filter->setIds($this->locale . $itemId);
             $query->getFilter()->addMust($filter);
             $result = $this->access()
                 ->getIndex()
@@ -41,8 +42,9 @@ class Service extends Base
 
     /**
      *
-     * @return Collection\Services
+     * @return Collection
      */
+    #[\Override]
     public function fetchList($location_csv = false)
     {
         $boolquery = Helper::boolFilteredQuery();
@@ -67,8 +69,9 @@ class Service extends Base
 
     /**
      *
-     * @return Collection\Services
+     * @return Collection
      */
+    #[\Override]
     public function fetchFromCsv($service_csv)
     {
         $query = Helper::boolFilteredQuery();
@@ -93,8 +96,9 @@ class Service extends Base
 
     /**
      *
-     * @return Collection\Services
+     * @return Collection
      */
+    #[\Override]
     public function searchAll($querystring, $service_csv = '', $location_csv = '')
     {
         $query = new \Elastica\Query();
@@ -118,7 +122,6 @@ class Service extends Base
         ]);
 
         $boolquery->addShould($searchquery);
-        $filter = null;
         $filter = new \Elastica\Filter\BoolFilter();
         $filter->addMust(Helper::localeFilter($this->locale));
         if ($location_csv) {
@@ -148,6 +151,7 @@ class Service extends Base
      *
      * @return Collection
      */
+    #[\Override]
     public function readSearchResultList($query, $service_csv = '')
     {
         $boolquery = Helper::boolFilteredQuery();

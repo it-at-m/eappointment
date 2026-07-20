@@ -7,7 +7,9 @@
 
 namespace BO\Zmsstatistic;
 
+use BO\Slim\Helper\ModuleLoggerInitializer;
 use BO\Zmsclient\Http;
+use Psr\SimpleCache\CacheInterface;
 
 define(
     'ZMS_STATISTIC_SESSION_DURATION',
@@ -34,6 +36,8 @@ class Application extends \BO\Slim\Application
     const IDENTIFIER = 'zms';
 
     const MODULE_NAME = 'zmsstatistic';
+
+    public static ?CacheInterface $cache = null;
 
     const DEBUG = false;
 
@@ -85,4 +89,12 @@ class Application extends \BO\Slim\Application
      * HTTP url for api
      */
     const HTTP_BASE_URL = 'http://user:pass@host.tdl';
+
+    public static function initialize(): void
+    {
+        ModuleLoggerInitializer::configure('ZMS_STATISTIC');
+        self::$cache = ModuleLoggerInitializer::tryInitializeCache();
+    }
 }
+
+Application::initialize();

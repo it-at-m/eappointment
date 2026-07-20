@@ -1,0 +1,37 @@
+$color-button-callnextclient:   $color-blue-button !default;
+
+.button-callnextclient {
+    position:               relative;
+    max-width:              11.5em;
+    height:                 auto;
+    text-align:             center;
+    margin:                 2em auto !important;
+    .button, button {
+        padding:            1em;
+    }
+    .user {
+        position:           relative;
+        display:            block;
+        font-size:          4em;
+        line-height:        1.2em;
+        color:              $color-white;
+        opacity:            0.6;
+    }
+    .arrow {
+        display:            block;
+        font-size:          1.5em;
+        line-height:        1.2em;
+        position:           absolute;
+        right:              1.75em;
+        top:                1.1em;
+        color:              $color-white;
+        opacity:            0.6;
+    }
+    .text {
+        display:            block;
+        margin-top:         0.0em;
+        font-weight:        400;
+        font-size:          1.1em;
+        color:              $color-white;
+    }
+}

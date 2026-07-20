@@ -18,6 +18,7 @@ class Ticketprinter extends Schema\Entity
         'r' => 'request'
     ];
 
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -48,7 +49,6 @@ class Ticketprinter extends Schema\Entity
 
         $buttonList = explode(',', (string) $ticketprinter->buttonlist);
         foreach ($buttonList as $string) {
-            $button = array();
             $button = $ticketprinter->getValidButtonWithType($string);
             $ticketprinter->buttons[] = $ticketprinter->getButtonData($string, $button);
         }

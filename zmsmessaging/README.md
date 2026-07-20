@@ -1,7 +1,7 @@
 # ZMS Messaging
 
-[![pipeline status](https://gitlab.com/eappointment/zmsmessaging/badges/main/pipeline.svg)](https://gitlab.com/eappointment/zmsmessaging/-/commits/main)
-[![coverage report](https://gitlab.com/eappointment/zmsmessaging/badges/main/coverage.svg)](https://eappointment.gitlab.io/zmsmessaging/_tests/coverage/index.html)
+[![CI](https://github.com/it-at-m/eappointment/actions/workflows/combined-workflow-with-docs.yaml/badge.svg?branch=main)](https://github.com/it-at-m/eappointment/actions/workflows/combined-workflow-with-docs.yaml)
+[![coverage report](https://img.shields.io/badge/coverage-report-blue)](https://it-at-m.github.io/eappointment/coverage/coverage-zmsmessaging/html/)
 
 # ZMS HTTP messaging
 
@@ -17,8 +17,8 @@ The variable `$WEBROOT` represents the parent path to install the application.
 
 ```bash
     cd $WEBROOT
-    git clone https://gitlab.com/eappointment/zmsmessaging.git
-    cd zmsmessaging
+    git clone https://github.com/it-at-m/eappointment.git
+    cd eappointment/zmsmessaging
     make live
     cp config.example.php config.php
 ```
@@ -55,4 +55,4 @@ To test application run the following command:
 
     bin/test
 
-For a detailed project description, see https://gitlab.com/eappointment/eappointment
+For a detailed project description, see https://github.com/it-at-m/eappointment

@@ -7,10 +7,12 @@
 
 namespace BO\Zmsstatistic\Download;
 
+use BO\Zmsentities\Exchange;
+use BO\Zmsstatistic\BaseController;
 use Exception;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
-class Base extends \BO\Zmsstatistic\BaseController
+class Base extends BaseController
 {
     public static $ignoreColumns = [
         'subjectid',
@@ -38,7 +40,9 @@ class Base extends \BO\Zmsstatistic\BaseController
         'raw-clientorganisation' => 'Rohdaten Wartende',
         'raw-requestscope' => 'Rohdaten Dienstleistungsstatistik',
         'raw-requestdepartment' => 'Rohdaten Dienstleistungsstatistik',
-        'raw-requestorganisation' => 'Rohdaten Dienstleistungsstatistik'
+        'raw-requestorganisation' => 'Rohdaten Dienstleistungsstatistik',
+        'capacityscope' => 'Terminkapazität',
+        'raw-capacityscope' => 'Rohdaten Terminkapazität'
     ];
 
     public static $headlines = [
@@ -56,8 +60,80 @@ class Base extends \BO\Zmsstatistic\BaseController
         'requestscount' => 'Dienstleistungen',
         'organisationname' => 'Organisation',
         'departmentname' => 'Behörde',
-        'scopename' => 'Standort'
+        'scopename' => 'Standort',
+        'bookedcount' => 'Gebuchte Kapazität (Zeitschlitze)',
+        'plannedcount' => 'Geplante Kapazität (Zeitschlitze)',
+        'bookedminutes' => 'Gebuchte Kapazität (Minuten)',
+        'plannedminutes' => 'Geplante Kapazität (Minuten)',
     ];
+
+    protected function sanitizeDownloadFilenamePart(string $part): string
+    {
+        return str_replace(',', '_', $part);
+    }
+
+    protected function resolveDictionaryHeader(array $item): string
+    {
+        if (!empty($item['description'])) {
+            return (string) $item['description'];
+        }
+
+        $variable = $item['variable'] ?? '';
+        if (isset(static::$headlines[$variable])) {
+            return static::$headlines[$variable];
+        }
+
+        return (string) $variable;
+    }
+
+    protected function writeRawReport(Exchange $report, Spreadsheet $spreadsheet): Spreadsheet
+    {
+        $sheet = $spreadsheet->getActiveSheet();
+        $reportData = [];
+        foreach ($report->dictionary as $item) {
+            $reportData['header'][] = $this->resolveDictionaryHeader($item);
+        }
+        foreach ($report->data as $row => $entry) {
+            foreach ($entry as $item) {
+                $reportData[$row][] = is_numeric($item) ? (string) $item : $item;
+            }
+        }
+        $sheet->fromArray($reportData, null, 'A' . ($sheet->getHighestRow()));
+
+        return $spreadsheet;
+    }
+
+    protected function writeFilteredExchangeReport(
+        Exchange $report,
+        Spreadsheet $spreadsheet,
+        array $skipVariables = [],
+        int $rowGap = 0
+    ): Spreadsheet {
+        $sheet = $spreadsheet->getActiveSheet();
+        $columnIndexes = [];
+        $reportData = [];
+
+        foreach ($report->dictionary as $index => $item) {
+            $variable = $item['variable'] ?? '';
+            if (in_array($variable, $skipVariables, true)) {
+                continue;
+            }
+            $columnIndexes[] = $index;
+            $reportData['header'][] = $this->resolveDictionaryHeader($item);
+        }
+
+        foreach ($report->data as $row => $entry) {
+            foreach ($columnIndexes as $index) {
+                $value = $entry[$index] ?? '';
+                $reportData[$row][] = is_numeric($value) ? (string) $value : $value;
+            }
+        }
+
+        $startRow = $sheet->getHighestRow() + $rowGap;
+        $sheet->fromArray($reportData, null, 'A' . $startRow);
+
+        return $spreadsheet;
+    }
 
     protected function writeInfoHeader(array $args, Spreadsheet $spreadsheet)
     {

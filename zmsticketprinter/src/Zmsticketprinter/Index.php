@@ -13,7 +13,6 @@ use BO\Mellon\Unvalidated;
 use BO\Mellon\Valid;
 use BO\Mellon\Validator;
 use BO\Slim\Render;
-use BO\Zmsentities\Ticketprinter;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -23,6 +22,7 @@ class Index extends BaseController
      * @SuppressWarnings(UnusedFormalParameter)
      * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
         Helper\HomeUrl::create($request);
@@ -111,7 +111,7 @@ class Index extends BaseController
         if (!strpos($queryString, 'lang=')) {
             $queryString .= '&lang=de';
         }
-        return str_replace('/&', '', $queryString ?? '');
+        return str_replace('/&', '', $queryString);
     }
 
     private function getTranslations($languageConfig, $currentLang)
@@ -172,12 +172,6 @@ class Index extends BaseController
         return false;
     }
 
-    /**
-     * @param Validator $validator
-     * @param Ticketprinter $ticketprinter
-     * @param Unvalidated|Valid $defaultTemplate
-     * @return array
-     */
     protected function getQueryString($validator, $ticketprinter, $defaultTemplate)
     {
         $query = ($defaultTemplate->getValue() === 'default') ? [] : ['template' => $defaultTemplate->getValue()];

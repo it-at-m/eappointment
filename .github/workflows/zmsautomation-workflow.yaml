@@ -1,29 +1,87 @@
 name: ⚙️ zmsautomation
-run-name: ${{ github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | 🦊 firefox + 🌐 chrome | default tags | branch next' || format('zmsautomation | {0} | {1}', ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && (contains(inputs.cucumber_tag_expressions, '@web') || contains(inputs.cucumber_tag_expressions, '@zmsadmin') || contains(inputs.cucumber_tag_expressions, '@zmscitizenview') || contains(inputs.cucumber_tag_expressions, '@zmsstatistic') || contains(inputs.cucumber_tag_expressions, '@zmsticketprinter') || contains(inputs.cucumber_tag_expressions, '@zmscalldisplay') || contains(inputs.cucumber_tag_expressions, '@buergeransicht'))) && format('{0} + 🔌 api', inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome')) || ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && '🔌 api' || (inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'))), inputs.cucumber_tag_expressions) }}
+run-name: >-
+  ${{
+    github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | UI × chrome+firefox, API once | main + next'
+    || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix
+        && 'zmsautomation | ▶️ manual | full shard matrix | UI × chrome+firefox, API once | main + next')
+    || format(
+         'zmsautomation | ▶️ manual | {0} | {1}{2}',
+         github.ref_name,
+         inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'),
+         inputs.use_custom_tags && format(' | {0}', inputs.cucumber_tag_expressions) || ''
+       )
+  }}
 
 on:
   workflow_dispatch:
     inputs:
+      run_main_next_matrix:
+        description: |
+          Run the full scheduled shard matrix: main + next; UI modules (zmsadmin,
+          zmscitizenview, zmsstatistic) on chrome + firefox; API modules (zmsapi,
+          zmscitizenapi) once each. Ignores module/browser inputs below.
+        required: true
+        type: boolean
+        default: false
+      run_all_in_one_job:
+        description: |
+          Run the full suite in one sequential job instead of parallel module shards.
+          Default (disabled): all checked modules below run in parallel on the branch
+          selected via "Use workflow from" above.
+        required: true
+        type: boolean
+        default: false
+      module_admin:
+        description: "Admin UI tests (@zmsadmin)"
+        required: true
+        type: boolean
+        default: true
+      module_citizenview:
+        description: "Citizenview UI tests (@zmscitizenview)"
+        required: true
+        type: boolean
+        default: true
+      module_statistic:
+        description: "Statistic UI tests (@zmsstatistic)"
+        required: true
+        type: boolean
+        default: true
+      module_zmsapi:
+        description: "zmsapi REST tests (@zmsapi)"
+        required: true
+        type: boolean
+        default: true
+      module_zmscitizenapi:
+        description: "zmscitizenapi REST tests (@zmscitizenapi)"
+        required: true
+        type: boolean
+        default: true
+      use_custom_tags:
+        description: |
+          Run a single job with custom Cucumber tag expressions (ignores module
+          checkboxes and run_all_in_one_job). Use test layer and tag fields below.
+        required: true
+        type: boolean
+        default: false
+      test_layer:
+        description: |
+          Only when use_custom_tags is enabled. API = REST, UI = Selenium, both = full suite in one job.
+        required: true
+        type: choice
+        options:
+          - both
+          - api
+          - ui
+        default: both
       cucumber_tag_expressions:
         description: |
-          Newline-separated Cucumber tag expressions. Each line is executed sequentially.
-          ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-          Examples:⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-          - @web and not @ignore 
-          - @rest and @zmsapi and not @ignore 
-          - @web and @zmscitizenview and @ZMSKVR-1124 
-          - @rest and @zmscitizenapi and @ZMSKVR-1124 
-          - (@rest or @web) and not @ignore 
-          ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-          Available tags: ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-          - @web @rest 
-          - @zmsadmin @zmsstatistic @zmscitizenview 
-          - @zmsapi @zmscitizenapi
-        required: true
-        default: |
-          (@rest or @web) and not @ignore
+          Only when use_custom_tags is enabled. Newline-separated Cucumber tag expressions; each line
+          runs sequentially. @ignore is excluded automatically.
+          Examples: @ZMSKVR-1328, @smoke
+        required: false
+        default: ""
       browser:
-        description: Choose browser for UI tests
+        description: Browser for UI tests (ignored for API-only modules zmsapi / zmscitizenapi)
         required: true
         type: choice
         options:
@@ -37,35 +95,174 @@ on:
         type: boolean
         default: true
   schedule:
-    - cron: "0 6 * * *"
+    # GitHub Actions cron uses UTC. 01:00 UTC ≈ 03:00 Europe/Berlin (CEST) / 02:00 (CET).
+    - cron: "0 1 * * *"
 
 permissions:
   contents: read
   packages: read
 
 jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      max_parallel: ${{ steps.set-matrix.outputs.max_parallel }}
+    steps:
+      - name: Build job matrix
+        id: set-matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          append_not_ignore() {
+            local expr="$1"
+            if [[ -z "$expr" ]]; then
+              printf '%s' "not @ignore"
+            else
+              printf '%s' "(${expr}) and not @ignore"
+            fi
+          }
+
+          FULL_MATRIX=false
+          if [[ "${{ github.event_name }}" == "schedule" ]] || [[ "${{ inputs.run_main_next_matrix }}" == "true" ]]; then
+            FULL_MATRIX=true
+          fi
+
+          if [[ "$FULL_MATRIX" == true ]]; then
+            jq -n \
+              --arg admin "$(append_not_ignore '@zmsadmin')" \
+              --arg citizenview "$(append_not_ignore '@zmscitizenview')" \
+              --arg statistic "$(append_not_ignore '@zmsstatistic')" \
+              --arg zmsapi "$(append_not_ignore '@zmsapi')" \
+              --arg zmscitizenapi "$(append_not_ignore '@zmscitizenapi')" \
+              '
+              {
+                include: (
+                  [
+                    ["main", "next"][] as $branch
+                    | [
+                        {shard: "zmsadmin", test_layer: "ui", tag_filter: $admin},
+                        {shard: "zmscitizenview", test_layer: "ui", tag_filter: $citizenview},
+                        {shard: "zmsstatistic", test_layer: "ui", tag_filter: $statistic}
+                      ][] as $shard
+                    | ["chrome", "firefox"][] as $browser
+                    | $shard + {branch: $branch, browser: $browser, use_custom_tags: false}
+                  ]
+                  + [
+                    ["main", "next"][] as $branch
+                    | [
+                        {shard: "zmsapi", test_layer: "api", tag_filter: $zmsapi},
+                        {shard: "zmscitizenapi", test_layer: "api", tag_filter: $zmscitizenapi}
+                      ][] as $shard
+                    | $shard + {branch: $branch, browser: "chrome", use_custom_tags: false}
+                  ]
+                )
+              }
+              ' > matrix.json
+            MATRIX_SIZE="$(jq '.include | length' matrix.json)"
+            echo "max_parallel=$MATRIX_SIZE" >> "$GITHUB_OUTPUT"
+          else
+            BRANCH="${{ github.ref_name }}"
+            BROWSER="${{ inputs.browser }}"
+            TEST_LAYER="${{ inputs.test_layer }}"
+
+            if [[ "${{ inputs.use_custom_tags }}" == "true" ]]; then
+              jq -n \
+                --arg branch "$BRANCH" \
+                --arg browser "$BROWSER" \
+                --arg test_layer "$TEST_LAYER" \
+                '{include: [{branch: $branch, browser: $browser, shard: "custom", test_layer: $test_layer, tag_filter: "", use_custom_tags: true}]}' \
+                > matrix.json
+              echo "max_parallel=1" >> "$GITHUB_OUTPUT"
+            elif [[ "${{ inputs.run_all_in_one_job }}" == "true" ]]; then
+              TAG_FILTER="$(append_not_ignore '')"
+              jq -n \
+                --arg branch "$BRANCH" \
+                --arg browser "$BROWSER" \
+                --arg tag_filter "$TAG_FILTER" \
+                '{include: [{branch: $branch, browser: $browser, shard: "all", test_layer: "both", tag_filter: $tag_filter, use_custom_tags: false}]}' \
+                > matrix.json
+              echo "max_parallel=1" >> "$GITHUB_OUTPUT"
+            else
+              jq -n \
+                --arg branch "$BRANCH" \
+                --arg browser "$BROWSER" \
+                --arg admin "$(append_not_ignore '@zmsadmin')" \
+                --arg citizenview "$(append_not_ignore '@zmscitizenview')" \
+                --arg statistic "$(append_not_ignore '@zmsstatistic')" \
+                --arg zmsapi "$(append_not_ignore '@zmsapi')" \
+                --arg zmscitizenapi "$(append_not_ignore '@zmscitizenapi')" \
+                --argjson module_admin "${{ inputs.module_admin }}" \
+                --argjson module_citizenview "${{ inputs.module_citizenview }}" \
+                --argjson module_statistic "${{ inputs.module_statistic }}" \
+                --argjson module_zmsapi "${{ inputs.module_zmsapi }}" \
+                --argjson module_zmscitizenapi "${{ inputs.module_zmscitizenapi }}" \
+                '
+                {
+                  include: [
+                    if $module_admin then
+                      {shard: "zmsadmin", test_layer: "ui", tag_filter: $admin, use_custom_tags: false}
+                    else empty end,
+                    if $module_citizenview then
+                      {shard: "zmscitizenview", test_layer: "ui", tag_filter: $citizenview, use_custom_tags: false}
+                    else empty end,
+                    if $module_statistic then
+                      {shard: "zmsstatistic", test_layer: "ui", tag_filter: $statistic, use_custom_tags: false}
+                    else empty end,
+                    if $module_zmsapi then
+                      {shard: "zmsapi", test_layer: "api", tag_filter: $zmsapi, use_custom_tags: false}
+                    else empty end,
+                    if $module_zmscitizenapi then
+                      {shard: "zmscitizenapi", test_layer: "api", tag_filter: $zmscitizenapi, use_custom_tags: false}
+                    else empty end
+                  ]
+                  | map(. + {branch: $branch, browser: $browser})
+                }
+                ' > matrix.json
+
+              SHARD_COUNT="$(jq '.include | length' matrix.json)"
+              if [[ "$SHARD_COUNT" -eq 0 ]]; then
+                echo "No modules selected. Enable run_all_in_one_job, use_custom_tags, or at least one module checkbox."
+                exit 1
+              fi
+              echo "max_parallel=$SHARD_COUNT" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+          if [[ "$FULL_MATRIX" == true ]]; then
+            jq '.include |= map(. + {job_name: "\(.branch) · \(.shard) · \(.browser)"})' matrix.json > matrix.tmp.json
+          else
+            jq '.include |= map(. + {job_name: "\(.shard) · \(.browser)"})' matrix.json > matrix.tmp.json
+          fi
+          mv matrix.tmp.json matrix.json
+
+          echo "matrix=$(jq -c . matrix.json)" >> "$GITHUB_OUTPUT"
+          echo "Generated matrix:"
+          jq . matrix.json
+
   zms-automation:
+    name: ${{ matrix.job_name }}
+    needs: generate-matrix
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        browser: ${{ fromJson(github.event_name == 'schedule' && '["chrome","firefox"]' || format('["{0}"]', inputs.browser)) }}
+      max-parallel: ${{ fromJson(needs.generate-matrix.outputs.max_parallel) }}
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
     env:
-      # Align with php-build-images.yaml tagging logic for branches
-      # (branch- + sanitize / and :)
       IMAGE_REGISTRY: ghcr.io
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
-          # Scheduled runs should execute against the `next` branch.
-          ref: ${{ github.event_name == 'schedule' && 'next' || github.ref }}
+          ref: ${{ matrix.branch }}
+          persist-credentials: false
 
       - name: Create runtime env file
         run: cp .devcontainer/.env.template .devcontainer/.env
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -76,22 +273,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # Schedule events don't provide the target branch as workflow_dispatch does.
-          # Force `next` as effective ref so scheduled runs consume `next` images/tags.
-          REF_TYPE="${{ github.event_name == 'schedule' && 'branch' || github.ref_type }}"
-          REF_NAME="${{ github.event_name == 'schedule' && 'next' || github.ref_name }}"
+          REF_TYPE="branch"
+          REF_NAME="${{ matrix.branch }}"
 
-          # Match `.github/workflows/php-build-images.yaml` tagging logic:
-          # - for branches: branch-<sanitized>
-          # - for tags: <tag-name> (no prefix)
-          if [ "$REF_TYPE" = "branch" ]; then
-            SANITIZED="$(echo "$REF_NAME" | sed 's/[\/:]/-/g')"
-            PHP_TAG="branch-${SANITIZED}"
-          else
-            PHP_TAG="$REF_NAME"
-          fi
+          SANITIZED="$(echo "$REF_NAME" | sed 's/[\/:]/-/g')"
+          PHP_TAG="branch-${SANITIZED}"
+          BRANCH_SLUG="$SANITIZED"
 
           echo "branch_name=$REF_NAME" >> "$GITHUB_OUTPUT"
+          echo "branch_slug=$BRANCH_SLUG" >> "$GITHUB_OUTPUT"
           echo "php_tag=$PHP_TAG" >> "$GITHUB_OUTPUT"
 
       - name: Pull prebuilt PHP module images
@@ -99,7 +289,7 @@ jobs:
         run: |
           set -euo pipefail
           PHP_TAG="${{ steps.tags.outputs.php_tag }}"
-          modules=(zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+          modules=(zmsadmin zmsbackend zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
           for m in "${modules[@]}"; do
             echo "Pulling $m:$PHP_TAG"
             docker pull "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG"
@@ -112,13 +302,10 @@ jobs:
 
           cd .devcontainer
 
-          # Omit phpmyadmin to keep CI lean.
           docker compose -f docker-compose.yaml down -v --remove-orphans || true
           docker compose -f docker-compose.yaml up -d \
             web db citizenview refarch-gateway keycloak init-keycloak
 
-          # Ensure Keycloak clients have been created before UI tests begin.
-          # (init-keycloak is a one-shot container.)
           for _ in {1..60}; do
             state="$(docker inspect -f '{{.State.Status}}' zms-init-keycloak 2>/dev/null || echo missing)"
             if [ "$state" = "exited" ]; then
@@ -130,7 +317,6 @@ jobs:
           done
 
       - name: Install missing tooling inside web container
-        # Some base images may not include Maven/Java and browser drivers.
         shell: bash
         run: |
           set -euo pipefail
@@ -141,20 +327,26 @@ jobs:
             set -euo pipefail
             apt-get update
 
-            # Core CLI utilities used by zmsautomation-test.
-            apt-get install -y --no-install-recommends \
+            CHROMIUM_APT_VERSION="150.0.7871.100-1~deb13u1"
+            if ! apt-cache show "chromium=${CHROMIUM_APT_VERSION}" >/dev/null 2>&1; then
+              CHROMIUM_APT_VERSION="$(apt-cache policy chromium 2>/dev/null | grep "^  Candidate:" | head -1 | sed "s/^  Candidate: //" | tr -d " ")"
+              echo "Pinned Chromium unavailable; using mirror candidate ${CHROMIUM_APT_VERSION}"
+            fi
+            apt-get install -y --no-install-recommends --allow-downgrades \
               curl wget unzip ca-certificates gnupg \
               mariadb-client \
               x11-utils x11-xserver-utils \
               xvfb \
               firefox-esr \
-              chromium chromium-driver \
+              "chromium-common=${CHROMIUM_APT_VERSION}" \
+              "chromium=${CHROMIUM_APT_VERSION}" \
+              "chromium-driver=${CHROMIUM_APT_VERSION}" \
               ;
+            dpkg-query -W -f="chromium=%Version\n" chromium chromium-driver
+            chromedriver --version
 
-            # Prefer symlink for "firefox" path used by Selenium setups.
             ln -sf /usr/bin/firefox-esr /usr/bin/firefox || true
 
-            # Install Edge + EdgeDriver only when edge browser is selected.
             if [[ "${TARGET_BROWSER:-}" == "edge" ]]; then
               mkdir -p /etc/apt/keyrings
               rm -f /etc/apt/keyrings/microsoft.gpg
@@ -175,7 +367,6 @@ jobs:
               rm -f /tmp/msedgedriver.zip
             fi
 
-            # geckodriver is not always present; install the version used by the devcontainer.
             if ! command -v geckodriver >/dev/null 2>&1; then
               GECKODRIVER_VERSION="v0.36.0"
               wget -O /tmp/geckodriver.tar.gz \
@@ -186,7 +377,6 @@ jobs:
               rm -f /tmp/geckodriver.tar.gz
             fi
 
-            # Ensure Java/Maven are available for Flyway migrations (via Maven plugin).
             if ! command -v mvn >/dev/null 2>&1; then
               apt-get install -y --no-install-recommends gnupg
               rm -f /usr/share/keyrings/adoptium.gpg
@@ -220,22 +410,67 @@ jobs:
           set -euo pipefail
           WEB_CONT="zms-web"
           PHP_TAG="${{ steps.tags.outputs.php_tag }}"
-          modules=(zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+          modules=(zmsadmin zmsbackend zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+          layout_modules=(zmsadmin zmsstatistic)
 
-          for m in "${modules[@]}"; do
+          retry() {
+            local max_attempts="$1"
+            local delay_seconds="$2"
+            shift 2
+            local attempt=1
+            until "$@"; do
+              if (( attempt >= max_attempts )); then
+                echo "All ${max_attempts} attempts failed."
+                return 1
+              fi
+              echo "Attempt ${attempt} failed; retrying in ${delay_seconds}s..."
+              sleep "$delay_seconds"
+              attempt=$((attempt + 1))
+            done
+          }
+
+          echo "Ensuring zmslayout is available at $WEB_CONT:/var/www/html/zmslayout"
+          if ! docker exec -u root "$WEB_CONT" bash -lc 'test -d /var/www/html/zmslayout/js && test -d /var/www/html/zmslayout/scss'; then
+            echo "zmslayout not on bind mount; streaming via tar"
+            docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/zmslayout"
+            retry 3 10 env WEB_CONT="$WEB_CONT" bash -c 'tar cf - -C ./zmslayout . | docker exec -i -u root "$WEB_CONT" tar -xf - -C /var/www/html/zmslayout/'
+          fi
+
+          inject_module() {
+            local m="$1"
             echo "Injecting $m from GHCR image tag $PHP_TAG into $WEB_CONT:/var/www/html/$m"
-            temp_id="$(docker create "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG")"
             docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/${m}"
-            # `docker cp` between two containers is not supported.
-            # Copy temp container -> runner filesystem -> zms-web container.
-            tmp_dir="$(mktemp -d)"
-            docker cp "${temp_id}:/var/www/html/." "$tmp_dir/"
-            docker cp "$tmp_dir/." "$WEB_CONT:/var/www/html/${m}/"
-            rm -rf "$tmp_dir"
-            docker rm "$temp_id" >/dev/null
+
+            if [[ " ${layout_modules[*]} " == *" ${m} "* ]]; then
+              docker run --rm \
+                -v "${GITHUB_WORKSPACE}/zmslayout:/var/www/zmslayout:ro" \
+                "ghcr.io/${GITHUB_REPOSITORY}/${m}:${PHP_TAG}" \
+                bash -lc 'set -euo pipefail
+                  cd /var/www/html
+                  for spec in bo-zms-layout-js:js bo-zms-layout-scss:scss; do
+                    name="${spec%%:*}"
+                    dir="${spec##*:}"
+                    if [[ -L "node_modules/${name}" ]]; then
+                      rm -f "node_modules/${name}"
+                      cp -a "/var/www/zmslayout/${dir}" "node_modules/${name}"
+                    fi
+                  done
+                  tar cf - -C /var/www/html .' \
+                | docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/"
+            else
+              docker run --rm --entrypoint tar "ghcr.io/${GITHUB_REPOSITORY}/${m}:${PHP_TAG}" \
+                -cf - -C /var/www/html . \
+                | docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/"
+            fi
 
             docker exec -u root "$WEB_CONT" bash -lc "chown -R www-data:www-data /var/www/html/${m} 2>/dev/null || true; chmod -R 755 /var/www/html/${m} 2>/dev/null || true"
+          }
+
+          for m in "${modules[@]}"; do
+            retry 3 10 inject_module "$m"
           done
+
+          docker exec -u root "$WEB_CONT" bash -lc "chown -R www-data:www-data /var/www/html/zmslayout 2>/dev/null || true; chmod -R 755 /var/www/html/zmslayout 2>/dev/null || true"
 
       - name: Ensure writable cache directories
         shell: bash
@@ -244,43 +479,94 @@ jobs:
           WEB_CONT="zms-web"
           docker exec -u root "$WEB_CONT" bash -lc '
             set -euo pipefail
-            # Global cache dir required by CACHE_DIR=/var/www/html/cache in .env.template
             mkdir -p /var/www/html/cache
             chown -R www-data:www-data /var/www/html/cache 2>/dev/null || true
             chmod -R 777 /var/www/html/cache 2>/dev/null || true
 
             # Module cache dirs (local devcontainer does similar in postStartCommand)
-            for dir in zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsstatistic zmsticketprinter zmsmessaging; do
+            for dir in zmsadmin zmsbackend zmscalldisplay zmscitizenapi zmsstatistic zmsticketprinter zmsmessaging; do
               mkdir -p "/var/www/html/$dir/cache"
               chown -R www-data:www-data "/var/www/html/$dir/cache" 2>/dev/null || true
               chmod -R 777 "/var/www/html/$dir/cache" 2>/dev/null || true
             done
           '
 
-      - name: Run zmsautomation ATAF tests sequentially (by tag lines)
+      - name: Run zmsautomation ATAF tests
         shell: bash
+        env:
+          MATRIX_SHARD: ${{ matrix.shard }}
+          MATRIX_TEST_LAYER: ${{ matrix.test_layer }}
+          MATRIX_TAG_FILTER: ${{ matrix.tag_filter }}
+          MATRIX_USE_CUSTOM_TAGS: ${{ matrix.use_custom_tags }}
+          CUSTOM_TAG_INPUT: ${{ inputs.cucumber_tag_expressions }}
+          SCREENSHOT: ${{ github.event_name == 'workflow_dispatch' && inputs.per_step_screenshots || 'false' }}
         run: |
           set -euo pipefail
 
           WEB_CONT="zms-web"
           BROWSER="${{ matrix.browser }}"
-          SCREENSHOT="${{ inputs.per_step_screenshots }}"
-          INPUTS="${{ github.event_name == 'schedule' && '(@rest or @web) and not @ignore' || inputs.cucumber_tag_expressions }}"
+          TEST_LAYER="$MATRIX_TEST_LAYER"
 
-          # Split by newlines and run sequentially.
+          case "$TEST_LAYER" in
+            api) PROFILES=(-Pataf-api) ;;
+            ui) PROFILES=(-Pataf-ui) ;;
+            both) PROFILES=(-Pataf-api -Pataf-ui) ;;
+            *)
+              echo "Unknown test layer: $TEST_LAYER"
+              exit 1
+              ;;
+          esac
+
+          append_not_ignore() {
+            local expr="$1"
+            if [[ -z "$expr" ]]; then
+              printf '%s' "not @ignore"
+            else
+              printf '%s' "(${expr}) and not @ignore"
+            fi
+          }
+
+          TAG_LINES=()
+          if [[ "$MATRIX_USE_CUSTOM_TAGS" == "true" ]]; then
+            if [[ -z "$(printf '%s' "$CUSTOM_TAG_INPUT" | tr -d '[:space:]')" ]]; then
+              TAG_LINES=("")
+            else
+              while IFS= read -r line; do
+                line="$(printf '%s' "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+                [[ -n "$line" ]] && TAG_LINES+=("$line")
+              done <<< "$CUSTOM_TAG_INPUT"
+              [[ ${#TAG_LINES[@]} -eq 0 ]] && TAG_LINES=("")
+            fi
+          else
+            TAG_LINES=("$MATRIX_TAG_FILTER")
+          fi
+
           fail_any=0
-          while IFS= read -r line; do
-            # Normalize input:
-            # - strip possible Windows CR (\r)
-            # - trim leading/trailing whitespace
-            expr="$(printf '%s' "$line" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-            if [ -z "$expr" ]; then
-              continue
+          for expr in "${TAG_LINES[@]}"; do
+            expr="$(printf '%s' "$expr" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+
+            if [[ "$MATRIX_USE_CUSTOM_TAGS" == "true" ]]; then
+              if [[ -n "$expr" ]]; then
+                if [[ "$expr" == *"@ignore"* ]]; then
+                  final_expr="$expr"
+                else
+                  final_expr="$(append_not_ignore "$expr")"
+                fi
+              else
+                final_expr="not @ignore"
+              fi
+            else
+              final_expr="$expr"
             fi
 
-            echo "Running zmsautomation-test for tags: $expr"
+            if [[ -n "$final_expr" ]]; then
+              echo "Running zmsautomation-test shard=${MATRIX_SHARD} layer=${TEST_LAYER} tags: ${final_expr}"
+            else
+              echo "Running zmsautomation-test shard=${MATRIX_SHARD} layer=${TEST_LAYER}, all tests (not @ignore)"
+              final_expr="not @ignore"
+            fi
+
             set +e
-            # Pass arguments positionally to avoid accidental quoting issues with -Dcucumber.filter.tags.
             docker exec -u root "$WEB_CONT" bash -lc '
               set -euo pipefail
               set -a
@@ -288,48 +574,34 @@ jobs:
               tags="$1"
               SCREENSHOT_EVERY_STEP="$2"
               ZMS_BROWSER="$3"
-              WEBDRIVER_RETRY_MAX_ATTEMPTS="${WEBDRIVER_RETRY_MAX_ATTEMPTS:-4}"
-              WEBDRIVER_RETRY_DELAY_SECONDS="${WEBDRIVER_RETRY_DELAY_SECONDS:-30}"
+              shift 3
 
-              # The zmsautomation pom enables Cucumber runners per profile:
-              # - `ataf-ui` runs `UiTestRunner`
-              # - `ataf-api` runs `ApiTestRunner`
-              # The base `ataf` profile can result in 0 discovered tests, so we
-              # activate the matching runner profile(s) based on the tag expression.
-              profiles=()
-              if [[ "$tags" == *"@web"* ]]; then
-                profiles+=("-Pataf-ui")
-              fi
-              if [[ "$tags" == *"@rest"* || "$tags" == *"@zmsapi"* || "$tags" == *"@zmscitizenapi"* ]]; then
-                profiles+=("-Pataf-api")
-              fi
-              if [ "${#profiles[@]}" -eq 0 ]; then
-                profiles=("-Pataf-ui")
+              args=("$@")
+              if [[ -n "$tags" ]]; then
+                args+=("-Dcucumber.filter.tags=$tags")
               fi
 
-              bash /var/www/html/zmsautomation/zmsautomation-test \
-                "${profiles[@]}" \
-                -Dcucumber.filter.tags="$tags"
-            ' -- "$expr" "$SCREENSHOT" "$BROWSER"
+              bash /var/www/html/zmsautomation/zmsautomation-test "${args[@]}"
+            ' -- "$final_expr" "$SCREENSHOT" "$BROWSER" "${PROFILES[@]}"
             rc=$?
             set -e
 
             if [ "$rc" -ne 0 ]; then
-              echo "Tag run failed (exit $rc): $expr"
+              echo "Run failed (exit $rc): shard=${MATRIX_SHARD}, layer=${TEST_LAYER}, tags=${final_expr}"
               fail_any=1
             fi
-          done <<< "$INPUTS"
+          done
 
           if [ "$fail_any" -ne 0 ]; then
-            echo "At least one tag expression run failed."
+            echo "At least one test run failed."
             exit 1
           fi
 
       - name: Upload test reports (best effort)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.browser }}
+          name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
             zmsautomation/target/cucumber.json
             zmsautomation/target/site/cucumber-pretty/**
@@ -344,7 +616,6 @@ jobs:
           set -euo pipefail
           mkdir -p artifacts/container-logs
 
-          # Always capture container overview for debugging.
           docker ps -a > artifacts/container-logs/docker-ps-a.txt 2>&1 || true
 
           containers=(
@@ -365,8 +636,8 @@ jobs:
 
       - name: Upload container logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.browser }}
+          name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: artifacts/container-logs/**
           if-no-files-found: warn

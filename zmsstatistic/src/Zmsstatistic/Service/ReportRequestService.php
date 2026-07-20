@@ -30,6 +30,10 @@ class ReportRequestService
      */
     public function getExchangeRequestData(string $scopeId, ?array $dateRange, array $args): mixed
     {
+        if ($scopeId === '') {
+            return null;
+        }
+
         if ($dateRange) {
             return $this->getExchangeRequestForDateRange($scopeId, $dateRange);
         }
@@ -81,7 +85,8 @@ class ReportRequestService
                 ->getEntity()
                 ->toGrouped($this->groupfields, $this->hashset)
                 ->withRequestsSum()
-                ->withAverage('processingtime');
+                ->withAverage('processingtime')
+                ->withUncapturedRequestRowSortedLast();
         } catch (Exception $exception) {
             return null;
         }
@@ -168,11 +173,7 @@ class ReportRequestService
                 ->withAverage('processingtime');
 
             if (is_array($exchangeRequest->data)) {
-                $locale = \App::$supportedLanguages[\App::$locale]['locale'] ?? 'de_DE';
-                $collator = new \Collator($locale);
-                uksort($exchangeRequest->data, static function ($itemA, $itemB) use ($collator) {
-                    return $collator->compare($itemA, $itemB);
-                });
+                $exchangeRequest = $exchangeRequest->withUncapturedRequestRowSortedLast();
             }
 
             return $exchangeRequest;

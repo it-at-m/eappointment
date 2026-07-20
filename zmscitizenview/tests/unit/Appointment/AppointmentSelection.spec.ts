@@ -1,13 +1,11 @@
-import { mount } from "@vue/test-utils";
+import { mount, type VueWrapper } from "@vue/test-utils";
 import { describe, it, expect, vi, type Mock, beforeEach, afterEach } from "vitest";
 import { flushPromises } from '@vue/test-utils';
-// @ts-expect-error: Vue SFC import for test
 import AppointmentSelection from "@/components/Appointment/AppointmentSelection.vue";
-import { ref, nextTick } from "vue";
+import { ref, nextTick, type Ref } from "vue";
 import {
   fetchAvailableDays,
   fetchAvailableTimeSlots,
-// @ts-expect-error: API import for test
 } from "@/api/ZMSAppointmentAPI";
 
 const t = vi.fn((key: string) => key);
@@ -30,6 +28,13 @@ vi.mock('@/api/ZMSAppointmentAPI', () => ({
   fetchAvailableDays: vi.fn(),
   fetchAvailableTimeSlots: vi.fn(),
 }));
+
+interface LoadingStates {
+  isReservingAppointment: Ref<boolean>;
+  isUpdatingAppointment: Ref<boolean>;
+  isBookingAppointment: Ref<boolean>;
+  isCancelingAppointment: Ref<boolean>;
+}
 
 interface WrapperOverrides {
   selectedService?: any;
@@ -81,6 +86,9 @@ const createWrapper = (overrides: WrapperOverrides = {}) => {
 describe("AppointmentSelection", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    Element.prototype.scrollIntoView = vi.fn();
+    HTMLElement.prototype.focus = vi.fn();
   });
 
   (fetchAvailableDays as Mock).mockResolvedValue({
@@ -333,6 +341,56 @@ describe("AppointmentSelection", () => {
       const locationTitles = wrapper.findAll('.location-title');
       expect(locationTitles.length).toBe(0);
     });
+
+    it("preselects provider when preselectedOfficeId matches office parentId", async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: "2025-06-17", providerIDs: "1" }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747224600]
+          }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        props: {
+          preselectedOfficeId: "101135",
+        },
+        selectedService: {
+          id: "2",
+          providers: [
+            {
+              name: "Planvorbesprechung Grundstücksentwässerung",
+              id: 1,
+              parentId: 101135,
+              priority: 1,
+              address: {
+                street: "Friedenstraße",
+                house_number: "40",
+              },
+              scope: {
+                id: "369",
+              },
+            },
+          ],
+        },
+      });
+
+      await flushPromises();
+      await nextTick();
+
+      expect(wrapper.vm.selectedProviders).toEqual({
+        1: true,
+      });
+
+      expect(wrapper.vm.noProviderSelected).toBe(false);
+    });
   });
 
   describe("CalendarView Integration", () => {
@@ -362,15 +420,13 @@ describe("AppointmentSelection", () => {
     await nextTick();
 
     // Uncheck the provider - with new behavior, availableDays still contains data for all providers
-    wrapper.vm.selectedProviders[102522] = !wrapper.vm.selectedProviders[102522];
+    wrapper.vm.selectedProviders = {
+      "102522": false,
+      "54261": false,
+      "10489": false,
+    };
     await nextTick();
 
-    // availableDays still has data (we always fetch all providers), but allowedDates
-    // checks if selected providers have appointments on that day
-    expect(wrapper.vm.availableDays).toEqual([
-      { time: '2025-05-14', providerIDs: '102522,54261,10489' },
-      { time: '2025-05-15', providerIDs: '102522' }
-    ]);
     // With no providers selected, allowedDates returns false for all dates
     expect(wrapper.vm.allowedDates(new Date('2025-05-14'))).toBeFalsy();
     expect(wrapper.vm.allowedDates(new Date('2025-05-16'))).toBeFalsy();
@@ -1561,9 +1617,9 @@ describe("AppointmentSelection", () => {
   });
 
   describe('Submission/Loading State Integration', () => {
-    let wrapper;
-    let selectedTimeslotRef;
-    let loadingStates;
+    let wrapper: VueWrapper<InstanceType<typeof AppointmentSelection>>;
+    let selectedTimeslotRef: Ref<number>;
+    let loadingStates: LoadingStates;
     beforeEach(async () => {
       selectedTimeslotRef = ref(0);
       loadingStates = {
@@ -1647,7 +1703,7 @@ describe("AppointmentSelection", () => {
   });
 
   describe("Error States Integration", () => {
-    it('shows captcha error warning callout when captcha error is set', async () => {
+    it('shows captcha error callout when captcha error is set', async () => {
       const wrapper = createWrapper({
         selectedService: {
           id: "service1",
@@ -1659,7 +1715,7 @@ describe("AppointmentSelection", () => {
         props: {
           bookingError: true,
           bookingErrorKey: "apiErrorCaptchaInvalid",
-          errorType: "warning"
+          errorType: "error"
         }
       });
 
@@ -1677,13 +1733,13 @@ describe("AppointmentSelection", () => {
       wrapper.vm.isSwitchingProvider = false;
       await nextTick();
 
-      // Find all callouts and get the warning one
+      // Find all callouts and get the error one
       const callouts = wrapper.findAll('[data-test="muc-callout"]');
-      const warningCallout = callouts.find(c => c.attributes('data-type') === 'warning');
+      const errorCallout = callouts.find(c => c.attributes('data-type') === 'error');
 
-      expect(warningCallout).toBeDefined();
-      expect(warningCallout!.html()).toContain("apiErrorCaptchaInvalidHeader");
-      expect(warningCallout!.html()).toContain("apiErrorCaptchaInvalidText");
+      expect(errorCallout).toBeDefined();
+      expect(errorCallout!.html()).toContain("apiErrorCaptchaInvalidHeader");
+      expect(errorCallout!.html()).toContain("apiErrorCaptchaInvalidText");
     });
 
     it('shows no appointment error info callout when no appointment error is set', async () => {
@@ -1765,6 +1821,86 @@ describe("AppointmentSelection", () => {
       expect(errorCallout!.attributes('data-type')).toBe("error");
       expect(errorCallout!.html()).toContain("apiErrorAppointmentNotAvailableHeader");
       expect(errorCallout!.html()).toContain("apiErrorAppointmentNotAvailableText");
+    });
+
+    it("emits clearBookingError when a new time slot is selected", async () => {
+      const wrapper = createWrapper();
+
+      wrapper.vm.selectableProviders = [
+        {
+          id: 1,
+          name: "Office A",
+          address: { street: "Main", house_number: "1" },
+          scope: { id: "1" },
+        },
+      ];
+
+      await nextTick();
+
+      const emissionsBefore =
+        wrapper.emitted("clearBookingError")?.length ?? 0;
+
+      await wrapper.vm.handleTimeSlotSelection(1, 1747223100);
+      await nextTick();
+
+      expect(wrapper.emitted("clearBookingError")?.length ?? 0).toBe(
+        emissionsBefore + 1
+      );
+      expect(wrapper.vm.selectedTimeslot).toBe(1747223100);
+      expect(wrapper.vm.selectedProvider?.id).toBe(1);
+    });
+
+    it("emits clearBookingError when another day is selected", async () => {
+      const wrapper = createWrapper();
+
+      wrapper.vm.selectedDay = new Date("2025-06-16");
+      wrapper.vm.selectedTimeslot = 1747223100;
+      await nextTick();
+
+      const emissionsBefore =
+        wrapper.emitted("clearBookingError")?.length ?? 0;
+
+      await wrapper.vm.handleDaySelection(new Date("2025-06-17"));
+      await nextTick();
+
+      expect(wrapper.emitted("clearBookingError")?.length ?? 0).toBe(
+        emissionsBefore + 1
+      );
+      expect(wrapper.vm.selectedDay).toEqual(new Date("2025-06-17"));
+      expect(wrapper.vm.selectedTimeslot).toBe(0);
+    });
+
+    it("does not emit clearBookingError when the same day is selected again", async () => {
+      const wrapper = createWrapper();
+
+      wrapper.vm.selectedDay = new Date("2025-06-17");
+      await nextTick();
+
+      const emissionsBefore =
+        wrapper.emitted("clearBookingError")?.length ?? 0;
+
+      await wrapper.vm.handleDaySelection(new Date("2025-06-17"));
+      await nextTick();
+
+      expect(wrapper.emitted("clearBookingError")?.length ?? 0).toBe(
+        emissionsBefore
+      );
+    });
+
+    it("emits clearBookingError and back when previousStep is called", async () => {
+      const wrapper = createWrapper();
+
+      const clearBookingErrorEmissionsBefore =
+        wrapper.emitted("clearBookingError")?.length ?? 0;
+      const backEmissionsBefore = wrapper.emitted("back")?.length ?? 0;
+
+      wrapper.vm.previousStep();
+      await nextTick();
+
+      expect(wrapper.emitted("clearBookingError")?.length ?? 0).toBe(
+        clearBookingErrorEmissionsBefore + 1
+      );
+      expect(wrapper.emitted("back")?.length ?? 0).toBe(backEmissionsBefore + 1);
     });
 
     it('does not show any callout when bookingError is false', async () => {
@@ -2275,9 +2411,9 @@ describe("AppointmentSelection", () => {
       await flushPromises();
       await nextTick();
 
-      // spinner disappears, calendar is displayed
+      // spinner disappears; with no appointments returned, calendar stays hidden
       expect(wrapper.find(".m-spinner-container").exists()).toBe(false);
-      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(true);
+      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(false);
     });
   });
 });

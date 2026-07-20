@@ -17,7 +17,7 @@ This module contains **API and UI tests** for ZMS using the ATAF (Test Automatio
   - `zms/ataf/ui/steps/` - UI step definitions (Selenium/ATAF web)  
   - `zms/ataf/ui/pages/**` - Page objects for Admin, Statistik, Bürgeransicht, Mailinator  
 - `src/test/resources/features/` - Cucumber feature files  
-  - `rest/zmsapi/` - ZMS REST API features  
+  - `rest/zmsapi/` - ZMS REST API features (legacy folder/tag name; targets `zmsbackend` at `/terminvereinbarung/api/2`)  
   - `rest/zmscitizenapi/` - Citizen REST API features  
   - `ui/zmsadmin/` - Admin UI features  
   - `ui/buergeransicht/` - Legacy eappointment citizen view UI features  
@@ -35,20 +35,21 @@ The `zmsautomation-test` script handles database setup, migrations, and test exe
 # Run all ATAF tests (API + UI)
 ./zmsautomation/zmsautomation-test -Pataf-api -Pataf-ui
 
-# Run specific tags (scenarios tagged @ignore are excluded unless you add @ignore to the expression)
-./zmsautomation/zmsautomation-test -Dcucumber.filter.tags="@smoke"
-# Run including ignored scenarios, e.g.:
-# ./zmsautomation/zmsautomation-test -Dcucumber.filter.tags="@ignore and @web"
-
-# Run specific API feature (path is relative to the zmsautomation module; use -Pataf-api for API-only runner)
-./zmsautomation/zmsautomation-test -Pataf-api -Dcucumber.features="src/test/resources/features/rest/zmsapi/status.feature"
-
-# Run only API tests (no Selenium)
+# Run only API tests (REST, features/rest)
 ./zmsautomation/zmsautomation-test -Pataf-api
 
-# Run only UI tests (Selenium/ATAF web)
+# Run only UI tests (Selenium, features/ui)
 ./zmsautomation/zmsautomation-test -Pataf-ui
+
+# Filter by tag (pass the Maven profile for the layer you want)
+./zmsautomation/zmsautomation-test -Pataf-ui -Dcucumber.filter.tags="@ZMSKVR-1328"
+./zmsautomation/zmsautomation-test -Pataf-api -Dcucumber.filter.tags="@ZMSKVR-1328"
+
+# Run specific API feature file
+./zmsautomation/zmsautomation-test -Pataf-api -Dcucumber.features="src/test/resources/features/rest/zmsapi/status.feature"
 ```
+
+Use `-Pataf-api` and/or `-Pataf-ui` to select the test layer. Each profile runs its own Cucumber runner (`ApiTestRunner` / `UiTestRunner`). When a Jira tag exists on both API and UI features, pass the profile for the layer you want — the script adds `not @web` / `not @rest` to the tag filter automatically.
 
 The script will:
 1. Backup the database
@@ -56,10 +57,10 @@ The script will:
 3. Reset database (drop tables)
 4. Import base database (`.resources/zms.sql`)
 5. Run Flyway migrations (Maven plugin)
-6. Run PHP migrations (`zmsapi` migrate)
+6. Run PHP migrations (`zmsbackend` migrate)
 7. Run hourly cronjob (with retries)
 8. Run minutely cronjob and slot calculation (`calculateSlots`)
-9. Perform HTTP health checks (zmsapi, citizen API, CitizenView, optional refarch-gateway)
+9. Perform HTTP health checks (zmsbackend, citizen API, CitizenView, optional refarch-gateway)
 10. Set up display / browser tooling (Xvfb, driver checks)
 11. Run `mvn test` with your arguments (default tag filter adds `not @ignore` unless you include `@ignore` in the expression)
 12. Print test reports
@@ -152,6 +153,8 @@ Required environment variables for ATAF tests:
 ### UI tests (SSO)
 For local UI tests (Statistik, Admin), the default SSO user is the Keycloak `ataf` user (password `vorschau`), created by Keycloak migration `.resources/keycloak/migration/07_add-system-users.yml` and related DB data in Flyway (e.g. `V16__add_keycloak_system_users.sql`). Credentials are set in `testautomation.properties` (`testautomation.userName` / `testautomation.userPassword`) or via ATAF environment variables. For other environments (e.g. ssodev.muenchen.de), override with the appropriate credentials.
 
+For role-specific local dev and API tests, use Keycloak users named after the role (password `vorschau`), e.g. `agent_basic`, from `.resources/keycloak/migration/08_add-role-test-users.yml` with matching ZMS accounts `<role>@keycloak` in Flyway `V22__add_role_test_users.sql`. Roles: `agent_basic`, `agent_queue`, `agent_queue_plus`, `appointment_admin`, `reporting_viewer`, `user_admin`, `audit_viewer`, `system_admin`.
+
 ### Example
 
 ```bash
@@ -174,7 +177,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 
 - **API tags**
   - `@rest` - All REST API tests
-  - `@zmsapi` - ZMS API tests (`features/rest/zmsapi/**`)
+  - `@zmsapi` - REST API tests (`features/rest/zmsapi/**`; served by `zmsbackend`)
   - `@zmscitizenapi` - Citizen API tests (`features/rest/zmscitizenapi/**`)
 - **UI tags**
   - `@web` - All web UI tests
@@ -198,7 +201,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 
 ### API Features (`src/test/resources/features/rest/`)
 
-#### ZMS API (`rest/zmsapi/`)
+#### REST API (`rest/zmsapi/`, served by `zmsbackend`)
 - `status.feature` - Status endpoint tests (converted from `StatusEndpointTest`)
 
 #### Citizen API (`rest/zmscitizenapi/`)
@@ -222,7 +225,7 @@ Additional REST features (availability, offices-and-services, etc.) may be added
 
 ## CI/CD
 
-GitHub Actions: `.github/workflows/zmsautomation-workflow.yaml` checks out the repo, copies `.devcontainer/.env.template` → `.env`, pulls **prebuilt PHP module images** from GHCR (`zmsadmin`, `zmsapi`, …), starts a subset of `.devcontainer/docker-compose.yaml` (`web`, `db`, `citizenview`, `refarch-gateway`, `keycloak`, `init-keycloak`; no phpMyAdmin), installs Java/Maven/browsers into `zms-web`, injects module trees from those images, then runs `zmsautomation/zmsautomation-test` inside `zms-web` via `docker exec`. **CitizenView** is the same Node + Vite dev service as in the devcontainer (`npm install` + dev server on port **8082**), not a separate prebuilt CitizenView image.
+GitHub Actions: `.github/workflows/zmsautomation-workflow.yaml` checks out the repo, copies `.devcontainer/.env.template` → `.env`, pulls **prebuilt PHP module images** from GHCR (`zmsadmin`, `zmsbackend`, …), starts a subset of `.devcontainer/docker-compose.yaml` (`web`, `db`, `citizenview`, `refarch-gateway`, `keycloak`, `init-keycloak`; no phpMyAdmin), installs Java/Maven/browsers into `zms-web`, injects `zmslayout` plus module trees from those images (layout symlinks in `zmsadmin`/`zmsstatistic` need `/var/www/html/zmslayout`), then runs `zmsautomation/zmsautomation-test` inside `zms-web` via `docker exec`. **CitizenView** is the same Node + Vite dev service as in the devcontainer (`npm install` + dev server on port **8082**), not a separate prebuilt CitizenView image.
 
 ## Migration Notes
 

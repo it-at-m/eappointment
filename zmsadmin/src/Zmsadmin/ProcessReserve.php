@@ -12,7 +12,7 @@ namespace BO\Zmsadmin;
 use BO\Mellon\Condition;
 use BO\Slim\Render;
 use BO\Zmsentities\Validator\ProcessValidator;
-use BO\Zmsentities\Process as Entity;
+use BO\Zmsentities\Process;
 
 /**
  * Reserve a process
@@ -21,20 +21,21 @@ class ProcessReserve extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $input = $request->getParams();
         $scope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
         $process = $this->getProcess($input, $scope);
         $validatedForm = static::getValidatedForm($request->getAttribute('validator'), $process);
         if ($validatedForm['failed']) {
-            return \BO\Slim\Render::withJson(
+            return Render::withJson(
                 $response,
                 $validatedForm
             );
@@ -54,7 +55,7 @@ class ProcessReserve extends BaseController
             ] :
             [];
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'element/helper/messageHandler.twig',
             $queryParams
@@ -63,7 +64,7 @@ class ProcessReserve extends BaseController
 
     protected function getProcess($input, $scope)
     {
-        $process = new \BO\Zmsentities\Process();
+        $process = new Process();
         $selectedTime = str_replace('-', ':', $input['selectedtime']);
         $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $input['selecteddate'] . ' ' . $selectedTime);
 
@@ -122,23 +123,20 @@ class ProcessReserve extends BaseController
             )
         ;
 
-        if (
-            isset($process->scope->preferences['client']['customTextfieldRequired'])
-            && $process->scope->preferences['client']['customTextfieldRequired']
-        ) {
-            $processValidator->validateCustomField(
+        $scope = $process->getCurrentScope();
+        if ((int) $scope->getCustomTextfieldActivated()) {
+            $processValidator->validateCustomTextfield(
                 $validator->getParameter('customTextfield'),
-                $delegatedProcess->setter('customTextfield')
+                $delegatedProcess->setter('customTextfield'),
+                (bool) (int) $scope->getCustomTextfieldRequired()
             );
         }
 
-        if (
-            isset($process->scope->preferences['client']['customTextfield2Required'])
-            && $process->scope->preferences['client']['customTextfield2Required']
-        ) {
-            $processValidator->validateCustomField(
+        if ((int) $scope->getCustomTextfield2Activated()) {
+            $processValidator->validateCustomTextfield(
                 $validator->getParameter('customTextfield2'),
-                $delegatedProcess->setter('customTextfield2')
+                $delegatedProcess->setter('customTextfield2'),
+                (bool) (int) $scope->getCustomTextfield2Required()
             );
         }
 

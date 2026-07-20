@@ -40,7 +40,7 @@ class RoutingTest extends Base
     public function testErrorHandlerWithExceptionTemplateData()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\Zmsapi\Exception\Workstation\WorkstationNotFound';
+        $exception->template = 'BO\Zmsbackend\Workstation\Exception\WorkstationNotFound';
         $this->setApiCalls(
             [
                 [

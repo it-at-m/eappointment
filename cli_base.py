@@ -19,21 +19,24 @@ def print_info(string):
 class EappointmentCli:
   """Base CLI: paths, DB/Flyway test data import, module and clean commands."""
 
+  # Dependency-first order (libraries before apps), matching legacy GitLab release order.
   MODULES = [
     "mellon",
-    "zmsadmin",
-    "zmsapi",
-    "zmscalldisplay",
-    "zmscitizenapi",
-    "zmsclient",
-    "zmsdb",
-    "zmsdldb",
-    "zmsentities",
-    "zmsmessaging",
     "zmsslim",
+    "zmsentities",
+    "zmsdldb",
+    "zmsclient",
+    "zmsadmin",
+    "zmsbackend",
+    "zmscalldisplay",
+    "zmsmessaging",
     "zmsstatistic",
+    "zmscitizenapi",
     "zmsticketprinter",
   ]
+
+  # Module used for local REST API, migrations, and cron (see root .htaccess).
+  REST_MODULE = "zmsbackend"
 
   def __init__(self, repo_dir: str):
     self.repo_dir = repo_dir
@@ -85,7 +88,9 @@ class EappointmentCli:
     subprocess.run(args, cwd=cwd, env=env, check=True)
 
   def apply_appointment_email_link_config(self, appointment_links_host: str, **db_kw):
-    """Set config keys used in appointment confirmation/change emails (host:port, no scheme)."""
+    """Set config keys used in appointment confirmation/change emails."""
+    if not appointment_links_host.startswith(("http://", "https://")):
+      appointment_links_host = f"http://{appointment_links_host}"
     db_host, db_port, db_name, db_user, db_password = self.db_env(**db_kw)
     esc = appointment_links_host.replace("\\", "\\\\").replace("'", "''")
     sql = f"""UPDATE `config`
@@ -119,7 +124,7 @@ WHERE `name` = 'appointments__urlChange';
   def run_flyway_test_data_migrations(
     self,
     citizenview_base_url=None,
-    appointment_links_host="localhost:8082/",
+    appointment_links_host="http://localhost:8082/",
     mysql_host=None,
     mysql_port=None,
     mysql_database=None,
@@ -208,9 +213,9 @@ SET FOREIGN_KEY_CHECKS = 1;"""
     @click.option("--citizenview-base-url", default=None, help="Flyway placeholder citizenviewBaseUrl (default: from env or http://citizenview:8082/).")
     @click.option(
       "--appointment-links-host",
-      default="localhost:8082/",
+      default="http://localhost:8082/",
       show_default=True,
-      help="Host:port written to appointments__urlAppointments and appointments__urlChange (email confirmation links).",
+      help="Base URL for appointments__urlAppointments and appointments__urlChange (email confirmation links).",
     )
     @click.option(
       "--mysql-host",
@@ -268,9 +273,9 @@ SET FOREIGN_KEY_CHECKS = 1;"""
     @click.option("--citizenview-base-url", default=None, help="Flyway placeholder citizenviewBaseUrl (default: from env or http://citizenview:8082/).")
     @click.option(
       "--appointment-links-host",
-      default="localhost:8082/",
+      default="http://localhost:8082/",
       show_default=True,
-      help="Host:port for appointments__urlAppointments / appointments__urlChange (after Flyway test migrations).",
+      help="Base URL for appointments__urlAppointments / appointments__urlChange (after Flyway test migrations).",
     )
     @click.option("--mysql-host", default=None, help="Override MYSQL_HOST (use 127.0.0.1 on the host).")
     @click.option("--mysql-port", default=None, help="Override MYSQL_PORT.")
@@ -303,7 +308,7 @@ SET FOREIGN_KEY_CHECKS = 1;"""
       )
       host, port, name, user, password = app.db_env(**db_kw)
       base_sql = os.path.join(app.repo_dir, ".resources", "zms.sql")
-      zmsapi_dir = os.path.join(app.repo_dir, "zmsapi")
+      rest_dir = os.path.join(app.repo_dir, app.REST_MODULE)
       run_env = os.environ.copy()
       run_env.setdefault("ZMS_CRONROOT", "1")
       run_env.setdefault("ZMS_ENV", "dev")
@@ -337,13 +342,14 @@ SET FOREIGN_KEY_CHECKS = 1;"""
         )
 
       if not skip_php_migrate:
-        app.run_cmd(["vendor/bin/migrate", "--update"], cwd=zmsapi_dir, env=run_env)
+        app.run_cmd(["bin/configure"], cwd=rest_dir, env=run_env)
+        app.run_cmd(["bin/migrate", "--update"], cwd=rest_dir, env=run_env)
 
       if not skip_hourly:
-        app.run_cmd(["./cron/cronjob.hourly", f"--city={city}"], cwd=zmsapi_dir, env=run_env)
+        app.run_cmd(["./cron/cronjob.hourly", f"--city={city}"], cwd=rest_dir, env=run_env)
 
       if not skip_minutly:
-        app.run_cmd(["./cron/cronjob.minutly"], cwd=zmsapi_dir, env=run_env)
+        app.run_cmd(["./cron/cronjob.minutly"], cwd=rest_dir, env=run_env)
 
       if not skip_clear_cache:
         app.clear_local_cache_folder()
@@ -383,7 +389,18 @@ SET FOREIGN_KEY_CHECKS = 1;"""
 
       for module in module_dependencies:
         module_dir = os.path.join(app.repo_dir, module)
-        os.system(f"cd {module_dir} && composer update {' '.join(module_dependencies[module])} --no-scripts --no-plugins 1>/dev/null")
+        deps = module_dependencies[module]
+        lock_file = os.path.join(module_dir, "composer.lock")
+        if os.path.isfile(lock_file):
+          print_info(f"Updating {module}: {' '.join(deps)}")
+          cmd = ["composer", "update", *deps, "--no-scripts", "--no-plugins"]
+        else:
+          print_info(f"Updating {module} (full update, no composer.lock)")
+          cmd = ["composer", "update", "--no-scripts", "--no-plugins"]
+        result = subprocess.run(cmd, cwd=module_dir)
+        if result.returncode != 0:
+          print_info(f"composer update failed in {module} (exit {result.returncode})")
+          sys.exit(result.returncode)
 
     @cli_modules.command("check-upgrade")
     @click.argument("php_version")
@@ -439,7 +456,7 @@ SET FOREIGN_KEY_CHECKS = 1;"""
       is_composer_install = len(commands) >= 2 and commands[0] == "composer" and commands[1] == "install"
 
       build_commands = {
-        "zmsadmin": ["npm run build"],
+        "zmsadmin": ["npm run build", "make libs"],
         "zmscalldisplay": ["npm run build"],
         "zmsstatistic": ["npm run build"],
         "zmsticketprinter": ["npm run build"]

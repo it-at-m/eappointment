@@ -13,13 +13,11 @@ use BO\Slim\Helper;
 use BO\Slim\Render;
 use BO\Zmsadmin\Exception\BadRequest;
 use BO\Zmsadmin\Exception\NotAllowed;
-use BO\Zmsentities\Collection\DepartmentList;
 use BO\Zmsentities\Department;
 use BO\Zmsentities\Exception\UserAccountAccessRightsFailed;
 use BO\Zmsentities\Helper\Property;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Http\Request as SlimRequest;
 
 /**
  * returning Signatures for signing requests
@@ -28,14 +26,15 @@ class UrlParameterSigning extends BaseController
 {
     /**
      * @SuppressWarnings(UnusedFormalParameter)
-     * @param SlimRequest $request
-     * @return String
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $validator = $request->getAttribute('validator');
         $data = $validator->getInput()->isJson()->assertValid()->getValue();
         $this->testData($data);
@@ -77,7 +76,6 @@ class UrlParameterSigning extends BaseController
         foreach ($organisation->departments as $departmentData) {
             $department = (new Department($departmentData))->withCompleteScopeList();
             if (Property::__keyExists('scopes', $department)) {
-                /** @var \BO\Zmsentities\Scope $scope */
                 foreach ($department['scopes'] as $scope) {
                     $scopeIds[$scope['id']] = $scope['id'];
                 }
@@ -97,7 +95,6 @@ class UrlParameterSigning extends BaseController
         foreach ($organisation->departments as $departmentData) {
             $department = (new Department($departmentData))->withCompleteScopeList();
             if (Property::__keyExists('clusters', $department)) {
-                /** @var \BO\Zmsentities\Cluster $scope */
                 foreach ($department['clusters'] as $cluster) {
                     $clusterIds[$cluster['id']] = $cluster['id'];
                 }

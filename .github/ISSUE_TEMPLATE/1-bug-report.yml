@@ -1,0 +1,156 @@
+name: 🐞 Bug report
+description: Report a bug to help the project improve.
+title: "[Bug] "
+labels: ["Type: Bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+        To expedite issue processing, please search open and closed issues before submitting a new one.
+        Please read our [Code of Conduct](../blob/main/.github/CODE_OF_CONDUCT.md).
+  - type: markdown
+    attributes:
+      value: "## General"
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug description
+      description: A clear and concise description of what the bug is
+    validations:
+      required: true
+  - type: textarea
+    id: expectation
+    attributes:
+      label: Expected behaviour
+      description: A clear and concise description of what you expected to happen
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps for reproduction
+      description: Detailed list of steps for reproducing the bug
+      placeholder: |
+        1. Use x argument / navigate to
+        2. Fill this information
+        3. Go to...
+        4. See error
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: "## Version and environment information"
+  - type: input
+    id: version
+    attributes:
+      label: Affected version
+      description: Version of the project the bug is concerned to
+      placeholder: e.g. 1.0.2
+    validations:
+      required: true
+  - type: dropdown
+    id: module
+    attributes:
+      label: Relevant module
+      multiple: true
+      description: Name(s) of the affected module(s) (if applicable)
+      options:
+        - mellon
+        - zmsadmin
+        - zmsbackend
+        - zmsautomation
+        - zmsbase
+        - zmscalldisplay
+        - zmscitizenapi
+        - zmscitizenview
+        - zmsclient
+        - zmsdldb
+        - zmsentities
+        - zmslayout
+        - zmsmessaging
+        - zmsslim
+        - zmsstatistic
+        - zmsticketprinter
+        - other
+    validations:
+      required: false
+  - type: input
+    id: last-working-version
+    attributes:
+      label: Last working version (optional)
+      description: Last version of the project where the bug was not present
+      placeholder: e.g. 1.0.1
+    validations:
+      required: false
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      multiple: true
+      description: Operating systems the bug occurs on (optional, only if applicable)
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Other
+    validations:
+      required: false
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      multiple: true
+      description: Browsers the bug occurs on (optional, only if applicable)
+      options:
+        - Firefox
+        - Chrome
+        - Safari
+        - Edge
+        - Other
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: "## Extras"
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output (optional)
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+    validations:
+      required: false
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots (optional)
+      description: You can attach images or log files by clicking this area to highlight it and then dragging files in.
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context (optional)
+      description: Additional context (references, links, ...) that might be helpful
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: "## Confirmations"
+  - type: checkboxes
+    id: check-duplicate
+    attributes:
+      label: No duplicate
+      description: By submitting this issue, you confirm to have checked for duplicate issues beforehand.
+      options:
+        - label: I confirm that this issue is not a duplicate
+          required: true
+  - type: checkboxes
+    id: conduct
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](../blob/main/.github/CODE_OF_CONDUCT.md).
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

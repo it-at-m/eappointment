@@ -10,10 +10,14 @@
 namespace BO\Zmsadmin\Helper;
 
 use BO\Zmsentities\Calendar as Entity;
+use BO\Zmsentities\Cluster;
 use BO\Zmsentities\Day;
 use BO\Zmsentities\Collection\DayList;
+use BO\Zmsentities\Collection\ScopeList;
 use BO\Zmsentities\Collection\ProcessList;
-use BO\Zmsentities\Scope;
+use BO\Zmsentities\Helper\DateTime;
+use BO\Zmsentities\Workstation;
+use DateTimeImmutable;
 
 class Calendar
 {
@@ -26,7 +30,7 @@ class Calendar
         if ($selectedWeek && $selectedYear) {
             $this->dateTime = $this->getDateTimeFromWeekAndYear($selectedWeek, $selectedYear);
         } else {
-            $this->dateTime = ($selectedDate) ? new \BO\Zmsentities\Helper\DateTime($selectedDate) : \App::$now;
+            $this->dateTime = ($selectedDate) ? new DateTime($selectedDate) : \App::$now;
         }
 
         $this->calendar = new Entity();
@@ -39,7 +43,7 @@ class Calendar
         return $this->dateTime;
     }
 
-    public function readMonthListByScopeList(\BO\Zmsentities\Collection\ScopeList $scopeList, $slotType, $slotsRequired)
+    public function readMonthListByScopeList(ScopeList $scopeList, $slotType, $slotsRequired)
     {
         // TODO Berechne die Tage im Kalendar
         $this->calendar->scopes = $scopeList;
@@ -56,7 +60,7 @@ class Calendar
                 ]
             )->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
-            if ($exception->template != 'BO\Zmsapi\Exception\Calendar\AppointmentsMissed') {
+            if ($exception->template != 'BO\Zmsbackend\Calendar\Exception\AppointmentsMissed') {
                 throw $exception;
             }
         }
@@ -64,7 +68,7 @@ class Calendar
     }
 
     public function readAvailableSlotsFromDayAndScopeList(
-        \BO\Zmsentities\Collection\ScopeList $scopeList,
+        ScopeList $scopeList,
         $slotType = 'intern',
         $slotsRequired = 0,
         $forWeek = false
@@ -92,7 +96,7 @@ class Calendar
                 ]
             )->getCollection();
         } catch (\BO\Zmsclient\Exception $exception) {
-            if ($exception->template != 'BO\Zmsapi\Exception\Process\FreeProcessListEmpty') {
+            if ($exception->template != 'BO\Zmsbackend\Process\Exception\FreeProcessListEmpty') {
                 throw $exception;
             }
         }
@@ -100,14 +104,14 @@ class Calendar
     }
 
     public function readWeekDayListWithProcessList(
-        ?\BO\Zmsentities\Cluster $cluster,
-        \BO\Zmsentities\Workstation $workstation
+        ?Cluster $cluster,
+        Workstation $workstation
     ) {
         $showAllInCluster = $cluster && 1 == $workstation->queue['clusterEnabled'];
         $scopeList = $workstation->getScopeList($cluster);
         $scope = $scopeList->getFirst();
 
-        $dayList = new \BO\Zmsentities\Collection\DayList();
+        $dayList = new DayList();
 
         if ($showAllInCluster) {
             $bookedProcessList = \App::$http
@@ -138,7 +142,7 @@ class Calendar
         while ($currentDate <= $endDate) {
             $day = (new Day())->setDateTime($currentDate);
             $day->status = Day::DETAIL;
-            $processList = new \BO\Zmsentities\Collection\ProcessList();
+            $processList = new ProcessList();
 
             $this->dateTime = $currentDate;
             if ($currentDate->format('Y-m-d') >= \App::$now->format('Y-m-d')) {
@@ -161,7 +165,7 @@ class Calendar
 
     protected function getDateTimeFromWeekAndYear($week, $year)
     {
-        $dateTime = new \DateTimeImmutable();
+        $dateTime = new DateTimeImmutable();
         return $dateTime->setISODate($year, $week);
     }
 
@@ -214,7 +218,7 @@ class Calendar
             ksort($list['hours'][$hour]);
         }
 
-        if (is_array($list['hours'])) {
+        if (isset($list['hours']) && is_array($list['hours'])) {
             ksort($list['hours']);
         }
 
@@ -228,7 +232,7 @@ class Calendar
         foreach ($processList as $process) {
             $dayKey = $process->getFirstAppointment()->toDateTime()->format("Y-m-d");
             if (! isset($list[$dayKey])) {
-                $list[$dayKey] = new \BO\Zmsentities\Collection\ProcessList();
+                $list[$dayKey] = new ProcessList();
                 ;
             }
 

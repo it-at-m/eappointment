@@ -41,7 +41,6 @@ class WaitingReport extends Base
 
     /**
      * @SuppressWarnings(Param)
-     * @return ResponseInterface
      */
     private function createAndPopulateSheet(
         Spreadsheet $spreadsheet,
@@ -62,6 +61,7 @@ class WaitingReport extends Base
         }
     }
 
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,

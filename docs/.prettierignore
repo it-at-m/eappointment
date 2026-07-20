@@ -1,0 +1,8 @@
+node_modules
+.vitepress/dist
+.vitepress/cache
+package-lock.json
+
+# Auto-generated cucumber docs (see .vitepress/config.mjs)
+en/testing-and-automation/zmsautomation-cucumber-current.md
+de/testing-and-automation/zmsautomation-cucumber-current.md

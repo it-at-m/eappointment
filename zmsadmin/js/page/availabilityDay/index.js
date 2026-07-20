@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import $ from 'jquery'
 import moment from 'moment'
-import validate from './form/validate'
+import validate, { hasBlockingErrors } from './form/validate'
 import Conflicts from './conflicts'
 import TabsBar from './tabsbar'
 import GraphView from './timetable/graphview.js'
@@ -63,43 +63,63 @@ class AvailabilityPage extends Component {
         }
 
         window.addEventListener('beforeunload', this.unloadHandler)
-        this.getValidationList()
     }
 
-    componentDidUnMount() {
+    componentWillUnmount() {
         window.removeEventListener('beforeunload', this.unloadHandler)
     }
 
     onPublishAvailability() {
-        this.getValidationList();
-        this.getConflictList();
-        let state = {};
-        state = { selectedAvailability: null }
-        this.setState(state, () => {
+        this.getValidationList({ scrollToErrors: true }).then((errorList) => {
+            if (hasBlockingErrors(errorList, this.state.availabilitylist)) {
+                const firstError = Object.values(errorList || {})[0];
+                const invalidAvailability = firstError
+                    ? this.state.availabilitylist.find(availability =>
+                        (availability.id && availability.id === firstError.id) ||
+                        (availability.tempId && availability.tempId === firstError.id)
+                    )
+                    : null;
+
+                if (invalidAvailability) {
+                    this.setState({ selectedAvailability: invalidAvailability }, () => {
+                        this.errorElement?.scrollIntoView();
+                    });
+                } else {
+                    this.errorElement?.scrollIntoView();
+                }
+
+                return;
+            }
+
             this.onSaveUpdates();
-        });
+        }).catch(() => {});
     }
 
     refreshData() {
         const currentDate = formatTimestampDate(this.props.timestamp)
         const url = `${this.props.links.includeurl}/scope/${this.props.scope.id}/availability/day/${currentDate}/conflicts/`
-        $.ajax(url, {
-            method: 'GET'
-        }).done(data => {
-            const newProps = {
-                conflicts: data.conflicts,
-                availabilitylist: data.availabilityList,
-                busyslots: data.busySlotsForAvailabilities,
-                maxslots: data.maxSlotsForAvailabilities,
-                slotbuckets: data.slotBuckets,
-            }
-            const mergedProps = Object.assign({}, this.props, newProps)
-            this.setState(() => Object.assign({}, getStateFromProps(mergedProps), {
-                stateChanged: false
-            }))
 
-        }).fail(err => {
-            console.log('refreshData error', err)
+        return new Promise((resolve) => {
+            $.ajax(url, {
+                method: 'GET'
+            }).done(data => {
+                const newProps = {
+                    conflicts: data.conflicts,
+                    availabilitylist: data.availabilityList,
+                    busyslots: data.busySlotsForAvailabilities,
+                    maxslots: data.maxSlotsForAvailabilities,
+                    slotbuckets: data.slotBuckets,
+                }
+                const mergedProps = Object.assign({}, this.props, newProps)
+                this.setState(() => Object.assign({}, getStateFromProps(mergedProps), {
+                    stateChanged: false
+                }), () => {
+                    resolve(this.state)
+                })
+
+            }).fail(() => {
+                resolve(null)
+            })
         })
     }
 
@@ -134,8 +154,6 @@ class AvailabilityPage extends Component {
                         code: err.status,
                         message: err.responseText
                     });
-                } else {
-                    console.error('checkdayoff error', err);
                 }
             }
         });
@@ -153,32 +171,60 @@ class AvailabilityPage extends Component {
                 showSpinner();
 
                 $.ajax(`${this.props.links.includeurl}/availability/`, {
-                method: 'POST',
-                data: JSON.stringify(payload),
-                contentType: 'application/json'
-            }).done((success) => {
-                this.refreshData();
-                this.getValidationList();
-                this.updateSaveBarState('save', true);
+                    method: 'POST',
+                    data: JSON.stringify(payload),
+                    contentType: 'application/json'
+                }).done((success) => {
+                    this.refreshData()
+                        .then(() => this.getConflictList({ scrollToErrors: false }))
+                        .then((conflictList) => {
+                            const hasConflicts = (conflictList?.conflictIdList?.length || 0) > 0;
 
-                if (this.successElement) {
-                    this.successElement.scrollIntoView();
-                }
-                hideSpinner();
-            }).fail((err) => {
-                let isException = err.responseText?.toLowerCase().includes('exception');
-                if (err.status >= 400 && isException) {
-                    new ExceptionHandler($('.opened'), {
-                        code: err.status,
-                        message: err.responseText
-                    });
-                } else {
-                    console.error('save error', err);
-                }
-                this.updateSaveBarState('save', false);
-                this.getValidationList();
-                hideSpinner();
-            });
+                            const firstConflictedAvailability = hasConflicts
+                                ? this.findFirstConflictedAvailability(
+                                    conflictList,
+                                    this.state.availabilitylist
+                                )
+                                : null;
+
+                            this.setState({
+                                errorList: [],
+                                selectedAvailability: firstConflictedAvailability,
+                                lastSave: new Date().getTime(),
+                                saveSuccess: true,
+                                saveType: 'save',
+                                saveHasConflicts: hasConflicts,
+                                saveConflictCheckFailed: false
+                            }, () => {
+                                this.scrollToSuccessMessage();
+                                hideSpinner();
+                            });
+                        })
+                        .catch(() => {
+                            this.setState({
+                                errorList: [],
+                                selectedAvailability: null,
+                                lastSave: new Date().getTime(),
+                                saveSuccess: true,
+                                saveType: 'save',
+                                saveHasConflicts: false,
+                                saveConflictCheckFailed: true
+                            }, () => {
+                                this.scrollToSuccessMessage();
+                                hideSpinner();
+                            });
+                        });
+                }).fail((err) => {
+                    let isException = err.responseText?.toLowerCase().includes('exception');
+                    if (err.status >= 400 && isException) {
+                        new ExceptionHandler($('.opened'), {
+                            code: err.status,
+                            message: err.responseText
+                        });
+                    }
+                    this.updateSaveBarState('save', false);
+                    hideSpinner();
+                });
             },
             () => {},
             { $main: $('body') }
@@ -194,9 +240,10 @@ class AvailabilityPage extends Component {
     const modifiedAvailabilities = this.state.availabilitylist.filter(availability => {
         const isModified = availability.__modified === true;
         const isTemporary = availability.tempId?.includes('__temp__');
-        const hasErrors = this.hasErrors(availability);
 
-        return (isModified || isTemporary) && !hasErrors;
+        // Keep conflicted/error availabilities in payload so backend can respond
+        // with detailed validation results instead of receiving an empty list.
+        return isModified || isTemporary;
     });
 
     const availabilityPayload = modifiedAvailabilities.map(availability => {
@@ -223,24 +270,34 @@ class AvailabilityPage extends Component {
     updateSaveBarState(type, success) {
 
         this.setState({
-
             lastSave: new Date().getTime(),
-
             saveSuccess: success,
-
-            saveType: type
-
+            saveType: type,
+            saveHasConflicts: false,
+            saveConflictCheckFailed: false
         });
+    }
 
+    scrollToSuccessMessage() {
+        if (!this.successElement) {
+            return;
+        }
+
+        window.requestAnimationFrame(() => {
+            this.successElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        });
     }
 
     onRevertUpdates() {
         this.isCreatingExclusion = false
         this.setState((prevState, props) => Object.assign({}, getInitialState(props), {
-            selectedTab: prevState.selectedTab
+            selectedTab: prevState.selectedTab,
+            errorList: []
         }), () => {
             this.refreshData()
-            this.getValidationList()
         })
     }
 
@@ -274,10 +331,9 @@ class AvailabilityPage extends Component {
                         return newState
                     }, () => {
                         this.refreshData();
-                        if (this.state.availabilitylist.length > 0) {
-                            this.getConflictList();
-                        }
-                        this.getValidationList();
+                        this.setState({
+                            conflictList: { itemList: {}, conflictIdList: [] }
+                        });
                     });
 
                     this.updateSaveBarState('delete', true);
@@ -294,8 +350,6 @@ class AvailabilityPage extends Component {
                             code: err.status,
                             message: responseText
                         });
-                    } else {
-                        console.error('delete error', err);
                     }
                     this.updateSaveBarState('delete', false);
                     hideSpinner();
@@ -320,18 +374,13 @@ class AvailabilityPage extends Component {
             {},
             mergeAvailabilityListIntoState(prevState, [copyAvailability]),
             { selectedAvailability: copyAvailability, stateChanged: true }
-        ), () => {
-            this.getValidationList()
-        })
+        ));
     }
 
     onSelectAvailability(availability) {
-        this.setState((prevState) => {
-            if (availability || !prevState.selectedAvailability) {
-                return { selectedAvailability: availability }
-            }
-            return { selectedAvailability: null }
-        })
+        this.setState({
+            selectedAvailability: availability || null
+        });
     }
 
     editExclusionAvailability(availability, startDate, endDate, description, kind) {
@@ -451,8 +500,9 @@ class AvailabilityPage extends Component {
                 stateChanged: true
             }
         ), () => {
-            this.getConflictList();
-            this.getValidationList();
+            this.setState({
+                conflictList: { itemList: {}, conflictIdList: [] }
+            });
             this.isCreatingExclusion = false;
         });
     }
@@ -493,8 +543,9 @@ class AvailabilityPage extends Component {
                 stateChanged: true
             }
         ), () => {
-            this.getConflictList(),
-                this.getValidationList()
+            this.setState({
+                conflictList: { itemList: {}, conflictIdList: [] }
+            });
         })
     }
 
@@ -505,9 +556,15 @@ class AvailabilityPage extends Component {
         this.setState((prevState) => Object.assign(
             {},
             updateAvailabilityInState(prevState, newAvailability),
-            { selectedAvailability: null, stateChanged: true }
-        ));
-        $('body').scrollTop(0);
+            {
+                selectedAvailability: newAvailability,
+                stateChanged: true,
+                errorList: [],
+                conflictList: { itemList: {}, conflictIdList: [] }
+            }
+        ), () => {
+            $('body').scrollTop(0);
+        });
     }
 
     onTabSelect(tab) {
@@ -542,7 +599,48 @@ class AvailabilityPage extends Component {
         return hasError || hasConflict;
     }
 
-    getValidationList() {
+    getSortedAvailabilityListForDisplay(availabilityList = this.state.availabilitylist) {
+        return [...availabilityList].sort((a, b) => {
+            if (a.type === 'appointment' && b.type !== 'appointment') return -1;
+            if (a.type !== 'appointment' && b.type === 'appointment') return 1;
+
+            const aTime = a.startTime || '';
+            const bTime = b.startTime || '';
+            return aTime.localeCompare(bTime);
+        });
+    }
+
+    findFirstConflictedAvailability(conflictList = this.state.conflictList, availabilityList = this.state.availabilitylist) {
+        const conflictIdList = conflictList?.conflictIdList || [];
+
+        if (!conflictIdList.length) {
+            return null;
+        }
+
+        const normalizedConflictIds = conflictIdList.map(id => String(id));
+
+        return this.getSortedAvailabilityListForDisplay(availabilityList).find(availability => {
+            const availabilityId = availability.id ? String(availability.id) : null;
+            const availabilityTempId = availability.tempId ? String(availability.tempId) : null;
+
+            return (
+                (availabilityId && normalizedConflictIds.includes(availabilityId)) ||
+                (availabilityTempId && normalizedConflictIds.includes(availabilityTempId))
+            );
+        }) || null;
+    }
+
+    clearValidationErrorsForAvailability(errorList, availability) {
+        const eventId = availability.id || availability.tempId;
+
+        if (!eventId) {
+            return Object.values(errorList || {});
+        }
+
+        return Object.values(errorList || {}).filter(error => error.id !== eventId);
+    }
+
+    getValidationList({ scrollToErrors = false } = {}) {
         return new Promise((resolve, reject) => {
             const validateData = (data) => {
                 const validationResult = validate(data, this.props);
@@ -558,34 +656,31 @@ class AvailabilityPage extends Component {
                         const list = prevState.availabilitylist
                             .map(validateData)
                             .flat();
+
                         return {
-                            errorList: list.length ? list : [],
-                        }
+                            errorList: list
+                        };
                     },
                     () => {
-                        const list = this.state.errorList
-                        if (list.length > 0) {
-                            const nonPastTimeErrors = list.filter(error =>
-                                !error.itemList?.flat(2).some(item => item?.type === 'endTimePast' || item?.type === 'timePastToday')
-                            );
+                        const list = this.state.errorList || [];
 
-                            if (nonPastTimeErrors.length > 0) {
-                                console.warn("Validation failed with errors:", nonPastTimeErrors);
-                                this.errorElement?.scrollIntoView();
-                            }
-                        } else {
-                            resolve();
+                        if (
+                            scrollToErrors &&
+                            hasBlockingErrors(list, this.state.availabilitylist)
+                        ) {
+                            this.errorElement?.scrollIntoView();
                         }
+
+                        resolve(list);
                     }
                 );
             } catch (error) {
-                console.error("Validation error:", error);
                 reject(error);
             }
         });
     }
 
-    getConflictList() {
+    getConflictList({ scrollToErrors = false } = {}) {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -595,37 +690,69 @@ class AvailabilityPage extends Component {
                 selectedAvailability: this.state.selectedAvailability
             }))
         };
+
         const url = `${this.props.links.includeurl}/availability/conflicts/`;
-        fetch(url, requestOptions)
-            .then(res => res.json())
-            .then(
-                (data) => {
-                    this.setState({
-                        conflictList: Object.assign({},
-                            {
-                                itemList: Object.assign({}, data.conflictList),
-                                conflictIdList: data.conflictIdList
-                            }
-                        )
-                    })
-                    if (data.conflictIdList.length > 0) {
-                        this.errorElement && this.errorElement.scrollIntoView()
-                    }
-                },
-                (err) => {
-                    const responseText = err.responseText || '';
-                    let isException = responseText.toLowerCase().includes('exception');
-                    if (err.status >= 400 && isException) {
-                        new ExceptionHandler($('.opened'), {
-                            code: err.status,
-                            message: responseText
-                        });
-                    } else {
-                        console.log('conflict error', err);
-                    }
-                    hideSpinner();
+
+        return fetch(url, requestOptions)
+            .then(async (res) => {
+                const responseText = await res.text();
+                let data = {};
+
+                try {
+                    data = responseText ? JSON.parse(responseText) : {};
+                } catch (parseError) {
+                    const error = new Error(responseText || res.statusText || 'Invalid JSON response');
+                    error.status = res.status;
+                    error.responseText = responseText;
+                    error.originalError = parseError;
+                    throw error;
                 }
-            )
+
+                if (!res.ok) {
+                    const error = new Error(data.message || responseText || res.statusText);
+                    error.status = res.status;
+                    error.responseText = responseText;
+                    error.data = data;
+                    throw error;
+                }
+
+                return data;
+            })
+            .then((data) => {
+                const conflictList = {
+                    itemList: Object.assign({}, data.conflictList),
+                    conflictIdList: data.conflictIdList || []
+                };
+
+                return new Promise((resolve) => {
+                    this.setState({ conflictList }, () => {
+                        if (
+                            scrollToErrors &&
+                            conflictList.conflictIdList.length > 0 &&
+                            this.errorElement
+                        ) {
+                            this.errorElement.scrollIntoView();
+                        }
+
+                        resolve(conflictList);
+                    });
+                });
+            })
+            .catch((err) => {
+                const responseText = err.responseText || '';
+                const isException = responseText.toLowerCase().includes('exception');
+
+                if (err.status >= 400 && isException) {
+                    new ExceptionHandler($('.opened'), {
+                        code: err.status,
+                        message: responseText
+                    });
+                }
+
+                hideSpinner();
+
+                throw err;
+            });
     }
 
     renderTimeTable() {
@@ -695,15 +822,16 @@ class AvailabilityPage extends Component {
         if (data.__modified) {
             clearTimeout(this.timer)
             this.setState(
-                (prevState) => Object.assign({}, updateAvailabilityInState(prevState, data)),
+                (prevState) => Object.assign(
+                    {},
+                    updateAvailabilityInState(prevState, data),
+                    {
+                        errorList: this.clearValidationErrorsForAvailability(prevState.errorList, data),
+                        conflictList: { itemList: {}, conflictIdList: [] }
+                    }
+                ),
                 () => {
                     this.readCalculatedAvailabilityList();
-                    if (data.tempId || data.id) {
-                        this.timer = setTimeout(() => {
-                            this.getConflictList()
-                            this.getValidationList()
-                        }, this.waitintervall)
-                    }
                 }
             );
         }
@@ -851,19 +979,21 @@ class AvailabilityPage extends Component {
             }
             conflictList={this.state.conflictList ?
                 this.state.conflictList :
-                { itemList: {}, conflictIdList: {} }
+                { itemList: {}, conflictIdList: [] }
             }
             isCreatingExclusion={this.isCreatingExclusion}
         />
     }
 
-    renderSaveBar() {
+    renderSaveBar({ setSuccessRef = false } = {}) {
         if (this.state.lastSave) {
             return (
                 <SaveBar
                     lastSave={this.state.lastSave}
                     success={this.state.saveSuccess}
-                    setSuccessRef={this.setSuccessRef}
+                    hasConflicts={this.state.saveHasConflicts}
+                    conflictCheckFailed={this.state.saveConflictCheckFailed}
+                    setSuccessRef={setSuccessRef ? this.setSuccessRef : null}
                     type={this.state.saveType}
                 />
             )
@@ -875,8 +1005,9 @@ class AvailabilityPage extends Component {
             <PageLayout
                 tabs={<TabsBar selected={this.state.selectedTab} tabs={this.props.tabs} onSelect={this.onTabSelect.bind(this)} />}
                 timeTable={this.renderTimeTable()}
-                saveBar={this.renderSaveBar()}
+                saveBarTop={this.renderSaveBar({ setSuccessRef: true })}
                 accordion={this.renderAvailabilityAccordion()}
+                saveBarBottom={this.renderSaveBar({ setSuccessRef: false })}
                 conflicts={<Conflicts conflicts={this.state.conflicts} onSelect={this.onConflictedIdSelect.bind(this)} />}
             />
         )

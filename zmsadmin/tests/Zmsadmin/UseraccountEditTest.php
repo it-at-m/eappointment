@@ -2,6 +2,9 @@
 
 namespace BO\Zmsadmin\Tests;
 
+use BO\Zmsentities\Exception\UserAccountMissingRights;
+use BO\Zmsentities\Exception\UserAccountAccessRightsFailed;
+
 class UseraccountEditTest extends Base
 {
     protected $arguments = [
@@ -39,20 +42,31 @@ class UseraccountEditTest extends Base
                     'parameters' => [],
                     'xtoken' => 'secure-token',
                     'response' => $this->readFixture("GET_config.json"),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture("GET_rolelist.json")
                 ]
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString('value="testuser"', (string)$response->getBody());
-        $this->assertStringContainsString('Nutzer: Einrichtung und Administration', (string)$response->getBody());
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('value="testuser"', $body);
+        $this->assertStringContainsString('Nutzer: Einrichtung und Administration', $body);
         $this->assertStringNotContainsString(
             'Dieser Nutzer wurde über einen OpenID Connect Anbieter angelegt.',
-            (string)$response->getBody()
+            $body
         );
         $this->assertStringContainsString(
             'Passwortwiederholung',
-            (string)$response->getBody()
+            $body
         );
+
+        $this->assertStringContainsString('name="roles[]"', $body);
+        $this->assertStringContainsString('value="agent_queue"', $body);
+
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -95,10 +109,8 @@ class UseraccountEditTest extends Base
                 ['id' => 74],
                 ['id' => 57],
             ),
-            'rights' => array(
-                'ticketprinter' => '1',
-                'availability' => '1',
-                'scope' => '1'
+            'roles' => array(
+                'agent_queue',
             ),
             'save' => 'save'
         ], [], 'POST');
@@ -144,6 +156,12 @@ class UseraccountEditTest extends Base
                     'parameters' => [],
                     'xtoken' => 'secure-token',
                     'response' => $this->readFixture("GET_config.json"),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture("GET_rolelist.json")
                 ]
             ]
         );
@@ -157,10 +175,8 @@ class UseraccountEditTest extends Base
                 ['id' => 74],
                 ['id' => 57],
             ),
-            'rights' => array(
-                'ticketprinter' => '1',
-                'availability' => '1',
-                'scope' => '1'
+            'roles' => array(
+                'agent_queue',
             ),
             'save' => 'save'
         ], [], 'POST');
@@ -209,6 +225,12 @@ class UseraccountEditTest extends Base
                     'parameters' => [],
                     'xtoken' => 'secure-token',
                     'response' => $this->readFixture("GET_config.json"),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture("GET_rolelist.json")
                 ]
             ]
         );
@@ -218,10 +240,8 @@ class UseraccountEditTest extends Base
                 '',
                 '',
             ),
-            'rights' => array(
-                'ticketprinter' => '1',
-                'availability' => '1',
-                'scope' => '1'
+            'roles' => array(
+                'agent_queue',
             ),
             'save' => 'save'
         ], [], 'POST');
@@ -271,12 +291,100 @@ class UseraccountEditTest extends Base
                 '',
                 '',
             ),
-            'rights' => array(
-                'ticketprinter' => '1',
-                'availability' => '1',
-                'scope' => '1'
+            'roles' => array(
+                'agent_queue',
             ),
             'save' => 'save'
         ], [], 'POST');
     }
+
+    public function testMissingUseraccountRights()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture('GET_Workstation_Resolved1_No_Useraccount_Permission.json'),
+                ],
+            ]
+        );
+
+        $this->expectException(UserAccountMissingRights::class);
+        $this->render($this->arguments, $this->parameters, []);
+    }
+
+    public function testAccessDeniedForSuperuserOnlyRole()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved1.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/useraccount/testuser/',
+                    'response' => $this->readFixture("GET_useraccount_testuser_system_admin.json")
+                ]
+            ]
+        );
+
+        $this->expectException(UserAccountAccessRightsFailed::class);
+        $this->render($this->arguments, $this->parameters, []);
+    }
+
+    public function testUserAdminShowsUserNavigationWithoutWorkViewsOnEdit(): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture('GET_Workstation_user_admin.json'),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/useraccount/testuser/',
+                    'response' => $this->readFixture('GET_useraccount_testuser.json'),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/owner/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture('GET_owner.json'),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'secure-token',
+                    'response' => $this->readFixture('GET_config.json'),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture('GET_rolelist.json'),
+                ],
+            ]
+        );
+
+        $response = $this->render($this->arguments, [], []);
+        $body = (string) $response->getBody();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringContainsString('navigation-primary', $body);
+        $this->assertStringContainsString('Nutzer*innen', $body);
+        $this->assertStringNotContainsString('Standort auswählen', $body);
+        $this->assertStringNotContainsString('Arbeitsansichten', $body);
+        $this->assertStringNotContainsString('Kundensuche', $body);
+        $this->assertStringNotContainsString('page-header__scope', $body);
+        $this->assertStringNotContainsString('Auswahl ändern', $body);
+    }
 }
+

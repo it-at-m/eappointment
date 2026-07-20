@@ -89,7 +89,7 @@ class AppointmentUpdateServiceTest extends TestCase
                 '$schema' => 'https://schema.berlin.de/queuemanagement/metaresult.json',
                 'error' => false,
                 'generated' => '2019-02-08T14:45:15+01:00',
-                'server' => 'Zmsapi'
+                'server' => 'Zmsbackend'
             ],
             'data' => [
                 '$schema' => 'https://schema.berlin.de/queuemanagement/process.json',
@@ -151,7 +151,7 @@ class AppointmentUpdateServiceTest extends TestCase
                 '$schema' => 'https://schema.berlin.de/queuemanagement/metaresult.json',
                 'error' => false,
                 'generated' => '2019-02-08T14:45:15+01:00',
-                'server' => 'Zmsapi'
+                'server' => 'Zmsbackend'
             ],
             'data' => [
                 '$schema' => 'https://schema.berlin.de/queuemanagement/source.json',
@@ -217,7 +217,7 @@ class AppointmentUpdateServiceTest extends TestCase
                 '$schema' => 'https://schema.berlin.de/queuemanagement/metaresult.json',
                 'error' => false,
                 'generated' => '2025-10-13T10:13:41+02:00',
-                'server' => 'zms'
+                'server' => 'zmsbackend'
             ],
             'data' => []
         ];
@@ -297,7 +297,7 @@ class AppointmentUpdateServiceTest extends TestCase
 
     public function testUpdateProcessWithClientData(): void
     {
-        $process = $this->createMock(ThinnedProcess::class);
+        $process = new ThinnedProcess();
         $process->familyName = 'Old Name';
         $process->email = 'old@example.com';
         

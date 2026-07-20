@@ -7,22 +7,22 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Availability;
-use BO\Zmsentities\Collection\AvailabilityList;
+use BO\Slim\Render;
 
 class ScopeAvailabilityDayConflicts extends ScopeAvailabilityDay
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $data = static::getAvailabilityData($args['id'], $args['date']);
-        return \BO\Slim\Render::withJson(
+        return Render::withJson(
             $response,
             $data
         );

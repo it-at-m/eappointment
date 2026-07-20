@@ -1,0 +1,89 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2018-03-13T15:26:41+01:00",
+    "server": "Zmsbackend-ENV (v2.15.03)"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/exchange.json",
+    "title": "Slotbelegung Bürgeramt Heerstraße 141",
+    "period": "hour",
+    "dictionary": [
+      {
+        "position": 0,
+        "variable": "subjectid",
+        "type": "string",
+        "description": "Standort-ID",
+        "reference": "scope.id"
+      },
+      {
+        "position": 1,
+        "variable": "date",
+        "type": "string",
+        "description": "Zeitpunkt"
+      },
+      {
+        "position": 2,
+        "variable": "bookedcount",
+        "type": "number",
+        "description": "Gebuchte Kapazität insgesamt (Zeitschlitze)"
+      },
+      {
+        "position": 3,
+        "variable": "plannedcount",
+        "type": "number",
+        "description": "Geplante Kapazität insgesamt (Zeitschlitze)"
+      },
+      {
+        "position": 4,
+        "variable": "bookedminutes",
+        "type": "number",
+        "description": "Gebuchte Kapazität insgesamt (Minuten)"
+      },
+      {
+        "position": 5,
+        "variable": "plannedminutes",
+        "type": "number",
+        "description": "Geplante Kapazität insgesamt (Minuten)"
+      },
+      {
+        "position": 6,
+        "variable": "bookedcount_public",
+        "type": "number",
+        "description": "Gebuchte Kapazität Internet (Zeitschlitze)"
+      },
+      {
+        "position": 7,
+        "variable": "plannedcount_public",
+        "type": "number",
+        "description": "Geplante Kapazität Internet (Zeitschlitze)"
+      },
+      {
+        "position": 8,
+        "variable": "bookedminutes_public",
+        "type": "number",
+        "description": "Gebuchte Kapazität Internet (Minuten)"
+      },
+      {
+        "position": 9,
+        "variable": "plannedminutes_public",
+        "type": "number",
+        "description": "Geplante Kapazität Internet (Minuten)"
+      }
+    ],
+    "visualization": {
+      "xlabel": ["date"],
+      "ylabel": ["bookedcount", "plannedcount"],
+      "ylabelMinutes": ["bookedminutes", "plannedminutes"],
+      "ylabelPublic": ["bookedcount_public", "plannedcount_public"],
+      "ylabelMinutesPublic": ["bookedminutes_public", "plannedminutes_public"],
+      "allowCapacityChannel": true
+    },
+    "data": [
+      ["141", "2016-04-01 08:00", 5, 10, 50, 100, 3, 6, 30, 60],
+      ["141", "2016-04-01 09:00", 8, 12, 80, 120, 5, 7, 50, 70]
+    ]
+  }
+}

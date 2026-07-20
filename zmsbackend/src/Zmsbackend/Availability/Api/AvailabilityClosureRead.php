@@ -1,0 +1,53 @@
+<?php
+
+namespace BO\Zmsbackend\Availability\Api;
+
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsbackend\Availability\Service\Closure as ClosureQuery;
+use DateTimeImmutable;
+
+class AvailabilityClosureRead extends \BO\Zmsbackend\Api\BaseController
+{
+    #[\Override]
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new \BO\Zmsbackend\Helper\User($request))->checkAnyPermission('availability', 'overviewcalendar');
+
+        try {
+            $scopeIdCsv = Validator::param('scopeIds')
+                ->isString()->isMatchOf('/^\d+(,\d+)*$/')->assertValid()->getValue();
+            $scopeIds = array_values(array_unique(array_map('intval', explode(',', $scopeIdCsv))));
+
+            $dateFrom  = Validator::param('dateFrom')->isDate('Y-m-d')->assertValid()->getValue();
+            $dateUntil = Validator::param('dateUntil')->isDate('Y-m-d')->assertValid()->getValue();
+        } catch (\BO\Mellon\Failure\Exception $e) {
+            $payload = ['error' => true, 'message' => $e->getMessage()];
+            return Render::withJson($response->withStatus(400), $payload, 400);
+        }
+
+        $dtFrom  = new DateTimeImmutable($dateFrom);
+        $dtUntil = new DateTimeImmutable($dateUntil);
+        if ($dtFrom > $dtUntil) {
+            $payload = ['error' => true, 'message' => 'dateFrom must be before or equal to dateUntil'];
+            return Render::withJson($response->withStatus(400), $payload, 400);
+        }
+
+        $items = (new ClosureQuery())->readByScopesInRange(
+            $scopeIds,
+            $dtFrom,
+            $dtUntil
+        );
+
+        $msg       = \BO\Zmsbackend\Api\Response\Message::create($request);
+        $msg->data = ['items' => $items];
+
+        $lastModified = (new DateTimeImmutable())->getTimestamp();
+        $response = Render::withLastModified($response, $lastModified, '0');
+
+        return Render::withJson($response, $msg->setUpdatedMetaData(), $msg->getStatuscode());
+    }
+}

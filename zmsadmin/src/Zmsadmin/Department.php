@@ -8,20 +8,25 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Department as Entity;
-use BO\Mellon\Validator;
 use BO\Zmsentities\Schema\Schema;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
+use BO\Mellon\Validator;
 
 class Department extends BaseController
 {
     /**
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['department'])) {
+            throw new UserAccountMissingRights();
+        }
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/department/' . $entityId . '/', ['resolveReferences' => 1])->getEntity();
@@ -50,7 +55,7 @@ class Department extends BaseController
             $response,
             'page/department.twig',
             array(
-                'title' => 'Standort',
+                'title' => 'Behörde bearbeiten',
                 'workstation' => $workstation,
                 'organisation' => $organisation,
                 'department' => $departmentData,

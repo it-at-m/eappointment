@@ -11,19 +11,12 @@ use JsonSerializable;
 class ThinnedProvider extends Entity implements JsonSerializable
 {
     public static $schema = "citizenapi/thinnedProvider.json";
-/** @var int|null */
     public ?int $id;
-/** @var string|null */
     public ?string $name;
-/** @var string|null */
     public ?string $displayName;
-/** @var string|null */
     public ?string $source;
-/** @var float|null */
     public ?float $lat;
-/** @var float|null */
     public ?float $lon;
-/** @var ThinnedContact|null */
     public ?ThinnedContact $contact;
     public function __construct(?int $id = null, ?string $name = null, ?string $displayName = null, ?float $lat = null, ?float $lon = null, ?string $source = null, ?ThinnedContact $contact = null,)
     {
@@ -44,11 +37,6 @@ class ThinnedProvider extends Entity implements JsonSerializable
         }
     }
 
-    /**
-     * Convert the ThinnedProvider object to an array.
-     *
-     * @return array
-     */
     public function toArray(): array
     {
         return [
@@ -62,6 +50,7 @@ class ThinnedProvider extends Entity implements JsonSerializable
         ];
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         return $this->toArray();

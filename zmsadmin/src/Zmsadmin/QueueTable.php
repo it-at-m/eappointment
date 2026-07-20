@@ -7,7 +7,6 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsadmin\Helper\ClusterHelper;
 use BO\Zmsentities\Collection\QueueList;
 
 class QueueTable extends BaseController
@@ -16,13 +15,14 @@ class QueueTable extends BaseController
 
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $validator = $request->getAttribute('validator');
         $success = $validator->getParameter('success')->isString()->getValue();
         $withCalledList = $validator->getParameter('withCalled')->isBool()->getValue();
@@ -66,7 +66,7 @@ class QueueTable extends BaseController
             )
             ->getCollection() ?? []) : [];
 
-        if ($queueListCalled instanceof \BO\Zmsentities\Collection\QueueList) {
+        if ($queueListCalled instanceof QueueList) {
             $queueListCalled->uasort(function ($queueA, $queueB) {
                 $statusOrder = ['called' => 0, 'processing' => 1];
 

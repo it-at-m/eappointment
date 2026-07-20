@@ -38,6 +38,10 @@ class ReportWaitingService
      */
     public function getExchangeWaitingData(string $scopeId, ?array $dateRange, array $args): mixed
     {
+        if ($scopeId === '') {
+            return null;
+        }
+
         if ($dateRange) {
             return $this->getExchangeWaitingForDateRange($scopeId, $dateRange);
         }

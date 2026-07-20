@@ -3,13 +3,77 @@ name: 🛡️ Trivy Security Check
 on:
   pull_request:
   workflow_call:
+  push:
+    branches:
+      - main
+      - next
+  schedule:
+    - cron: "0 5 * * *"
 
 jobs:
   build:
+    # Scheduled runs are triggered only from the default branch; scan main and next explicitly.
+    if: github.event_name != 'schedule'
     name: 🛡️ Trivy Security Check
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      security-events: write
+      actions: read
     steps:
       - name: Run Trivy Security check on Repository
-        uses: it-at-m/lhm_actions/action-templates/actions/action-trivy@7cb754b2056cebda6c36db344434f85be398c493 # v1.0.25
+        uses: it-at-m/lhm_actions/action-templates/actions/action-trivy@4ed8f906bab8111fbd9a7af8e3f4129f9b721757 # v1.2.3
+
+  scheduled:
+    if: github.event_name == 'schedule'
+    name: 🛡️ Trivy Security Check (${{ matrix.branch }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: [main, next]
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ matrix.branch }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Run Trivy vulnerability scanner in repository mode
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: json
+          exit-code: "1"
+          timeout: 15m0s
+          trivyignores: .trivyignore
+          output: trivy-report.json
+
+      - name: Convert Trivy report
+        if: always() && hashFiles('trivy-report.json') != ''
+        shell: bash
+        run: |
+          trivy convert --format table --output trivy-results.txt trivy-report.json
+          cat trivy-results.txt
+          trivy convert --format sarif --output trivy-results.sarif trivy-report.json
+
+      - name: Upload vulnerability scan results
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: trivy-report-${{ matrix.branch }}
+          path: trivy-report.json
+          retention-days: 7
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        if: always() && hashFiles('trivy-results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@7188fc363630916deb702c7fdcf4e481b751f97a # v4.37.1
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy-${{ matrix.branch }}

@@ -44,6 +44,12 @@
 				Dieser Arbeitsplatz hat schon einen Vorgang aufgerufen. Dieser wird weiterhin verwendet.
 			{{ block('error_end') }}
 		{% endblock %}
+		{% block role_deletion_failed %}
+			{% set errorTitle = "Rolle konnte nicht gelöscht werden" %}
+			{{ block('error_start') }}
+				Die Rolle konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.
+			{{ block('error_end') }}
+		{% endblock %}
     {% endif %}
 {% endblock %}
 
@@ -207,6 +213,24 @@
 	        {{ block('success_end') }}
     	{% endblock %}
 
+		{% block role_deleted %}
+	    	{{ block('success_start') }}
+	        	Die Rolle wurde {{ timeString }} erfolgreich entfernt.
+	        {{ block('success_end') }}
+    	{% endblock %}
+
+		{% block role_updated %}
+	    	{{ block('success_start') }}
+	        	Die Rolle wurde {{ timeString }} erfolgreich aktualisiert.
+	        {{ block('success_end') }}
+    	{% endblock %}
+
+		{% block role_added %}
+	    	{{ block('success_start') }}
+	        	Die Rolle wurde {{ timeString }} erfolgreich angelegt.
+	        {{ block('success_end') }}
+    	{% endblock %}
+
 		{% block dayoff_saved %}
 	    	{{ block('success_start') }}
 	        	Feiertage wurden {{ timeString }} erfolgreich aktualisiert.
@@ -250,7 +274,7 @@
 			{{ block('success_start') }}
 				Der Vorgang mit der Nummer {{ selectedprocess.displayNumber }} wurde erfolgreich entfernt.
 				<div class="form-actions">
-					<button type="button" onclick="location.href = '{{ includeUrl() }}/workstation/';" data-action-ok class="button button-ok btn right">OK</button>
+					<button type="button" onclick="location.href = '{{ includeUrl }}/workstation/';" data-action-ok class="button button-ok btn right">OK</button>
 				</div>
 	        {{ block('success_end') }}
     	{% endblock %}

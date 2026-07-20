@@ -6,6 +6,7 @@ class Client extends Schema\Entity
 {
     public static $schema = "client.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [

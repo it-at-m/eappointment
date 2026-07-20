@@ -16,6 +16,7 @@ use BO\Zmsdldb\Elastic\Topic as Base;
   */
 class Topic extends Base
 {
+    #[\Override]
     public function fetchList()
     {
         try {
@@ -43,6 +44,7 @@ class Topic extends Base
      *
      * @return Entity
      */
+    #[\Override]
     public function fetchPath($topic_path)
     {
         try {
@@ -67,10 +69,11 @@ class Topic extends Base
      *
      * @return Entity
      */
-    public function fetchId($topicId)
+    #[\Override]
+    public function fetchId($itemId)
     {
         try {
-            $sqlArgs = [$this->locale, (int)$topicId];
+            $sqlArgs = [$this->locale, (int)$itemId];
             $sql = 'SELECT data_json FROM topic WHERE locale = ? AND id = ?';
 
             $stm = $this->access()->prepare($sql);
@@ -87,11 +90,12 @@ class Topic extends Base
         }
     }
 
-    public function readSearchResultList($query)
+    #[\Override]
+    public function readSearchResultList($querystring)
     {
         try {
-            #$query = '+' . implode(' +', explode(' ', $query));
-            $sqlArgs = [$this->locale, $this->locale, $query];
+            #$querystring = '+' . implode(' +', explode(' ', $querystring));
+            $sqlArgs = [$this->locale, $this->locale, $querystring];
             $sql = "SELECT t.data_json 
             FROM search AS se
             LEFT JOIN topic AS t ON t.id = se.object_id AND t.locale = ?

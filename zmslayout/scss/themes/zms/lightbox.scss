@@ -1,0 +1,90 @@
+.lightbox {
+    display: flex;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  
+    justify-content: center;
+    padding-top: 0px;
+  
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 10;
+  
+    &.fixed {
+      position: fixed;
+      align-items: center;
+      padding-top: 0;
+    }
+
+    .calendar {
+        min-width:      auto !important;
+        max-width:      320px !important;
+        background:   #fff;
+        padding:        10px;
+        border-radius:  10px;
+    }
+
+    .board.dialog {
+      background: $color-blue-light;
+      border: 1px solid $color-blue-light;
+      padding: 1px;
+      .header {
+        padding:1em 1.125em 0;
+        h2 {
+          color:#fff;
+        }
+      }
+    }
+
+    .dialog.message--success, .dialog.message-success {
+      background: $color-text-success;
+      border: 1px solid $color-text-success;
+      padding: 1px;
+      .message__heading, .title {
+        padding:1em 1.125em 0;
+        color:#fff;
+      }
+      .message__body, .body {
+        background-color: #fff;
+        padding: 1.125em;
+      }
+    }
+
+    .dialog.message--info, .dialog.message-info {
+      background: $color-blue-light;
+      border: 1px solid $color-blue-light;
+      padding: 1px;
+      .message__heading, .title {
+        padding:1em 1.125em 0;
+        color:#fff;
+      }
+      .message__body, .body {
+        background-color: #fff;
+        padding: 1.125em;
+      }
+    }
+  }
+  
+  
+  .lightbox .lightbox__content {
+      overflow: auto;
+      max-width: 90%;
+      height:fit-content;
+      display: table-column;
+      .loader {
+          margin: 0 !important;
+          position: relative;
+          border-left: 1.1em solid #ddd;
+      }
+  }
+  
+  .lightbox__content.calendar {
+    display:table;
+  }
+  
+  .lightbox .lightbox__content div.table-responsive {
+      max-width:600px;
+  }
+  

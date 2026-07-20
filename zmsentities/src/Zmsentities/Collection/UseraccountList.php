@@ -6,17 +6,6 @@ class UseraccountList extends Base
 {
     public const ENTITY_CLASS = '\BO\Zmsentities\UserAccount';
 
-    public function withRights($requiredRights)
-    {
-        $collection = new static();
-        foreach ($this as $useraccount) {
-            if ($useraccount->hasRights($requiredRights)) {
-                $collection[] = $useraccount;
-            }
-        }
-        return $collection;
-    }
-
     public function withoutDublicates()
     {
         $collection = new self();
@@ -33,9 +22,7 @@ class UseraccountList extends Base
         $collection = new self();
         $departmentList = $workstation->getDepartmentList();
         foreach ($this as $useraccount) {
-            $accessedList = $departmentList->withAccess($useraccount);
-
-            if ($useraccount->hasRights(['department'])) {
+            if ($useraccount->hasPermissions(['department'])) {
                 $accessedList = $departmentList;
             } else {
                 $accessedList = $departmentList->withAccess($useraccount);

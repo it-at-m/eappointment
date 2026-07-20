@@ -1,7 +1,7 @@
 package zms.ataf.rest.steps;
 
-import static io.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.*;
+import static io.restassured.RestAssured.given;
+import org.assertj.core.api.Assertions;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -105,16 +105,16 @@ public class CitizenApiSteps {
             // Fallback to wrapped response if unwrapped fails
             ApiResponse<OfficesAndServicesResponse> apiResponse = as(response,
                 new TypeReference<ApiResponse<OfficesAndServicesResponse>>() {});
-            org.assertj.core.api.Assertions.assertThat(apiResponse).isNotNull();
-            org.assertj.core.api.Assertions.assertThat(apiResponse.getMeta()).isNotNull();
-            org.assertj.core.api.Assertions.assertThat(apiResponse.getMeta().getError()).isFalse();
+            Assertions.assertThat(apiResponse).isNotNull();
+            Assertions.assertThat(apiResponse.getMeta()).isNotNull();
+            Assertions.assertThat(apiResponse.getMeta().getError()).isFalse();
             officesAndServices = apiResponse.getData();
         }
         
-        org.assertj.core.api.Assertions.assertThat(officesAndServices).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(officesAndServices.getOffices()).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(officesAndServices.getServices()).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(officesAndServices.getRelations()).isNotNull();
+        Assertions.assertThat(officesAndServices).isNotNull();
+        Assertions.assertThat(officesAndServices.getOffices()).isNotNull();
+        Assertions.assertThat(officesAndServices.getServices()).isNotNull();
+        Assertions.assertThat(officesAndServices.getRelations()).isNotNull();
     }
 
     @When("I request available days for office {int} and service {int}")
@@ -146,7 +146,7 @@ public class CitizenApiSteps {
             officeId,
             serviceId,
             response.getStatusCode(),
-            daysBody.length() > 500 ? daysBody.substring(0, 1250) + "..." : daysBody
+            daysBody.length() > 1250 ? daysBody.substring(0, 1250) + "..." : daysBody
         ));
 
         // Citizen API may return either a plain AvailableDaysResponse payload
@@ -199,7 +199,7 @@ public class CitizenApiSteps {
             officeId,
             serviceId,
             response.getStatusCode(),
-            appointmentsBody.length() > 500 ? appointmentsBody.substring(0, 1250) + "..." : appointmentsBody
+            appointmentsBody.length() > 1250 ? appointmentsBody.substring(0, 1250) + "..." : appointmentsBody
         ));
 
         // As with available-days, available-appointments endpoints may return either
@@ -241,7 +241,7 @@ public class CitizenApiSteps {
         ScenarioLogManager.getLogger().info(String.format(
             "Citizen API /reserve-appointment/ status=%d body=%s",
             response.getStatusCode(),
-            reserveBody.length() > 500 ? reserveBody.substring(0, 1250) + "..." : reserveBody
+            reserveBody.length() > 1250 ? reserveBody.substring(0, 1250) + "..." : reserveBody
         ));
         response.then().statusCode(200);
 
@@ -252,20 +252,20 @@ public class CitizenApiSteps {
         } catch (Exception e) {
             reserved = parseDataResponse(response, ThinnedProcess.class);
         }
-        org.assertj.core.api.Assertions.assertThat(reserved)
+        Assertions.assertThat(reserved)
             .as("reserve-appointment response payload must deserialize")
             .isNotNull();
-        org.assertj.core.api.Assertions.assertThat(reserved.getProcessId()).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(reserved.getAuthKey()).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(reserved.getOfficeId()).isEqualTo(lastOfficeId);
+        Assertions.assertThat(reserved.getProcessId()).isNotNull();
+        Assertions.assertThat(reserved.getAuthKey()).isNotNull();
+        Assertions.assertThat(reserved.getOfficeId()).isEqualTo(lastOfficeId);
         // Skip `displayNumber` (it can vary across office/provider formatting) and skip `captchaToken`
         // (captcha is disabled for our test locations).
-        org.assertj.core.api.Assertions.assertThat(reserved.getServiceId()).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(reserved.getTimestamp())
+        Assertions.assertThat(reserved.getServiceId()).isNotNull();
+        Assertions.assertThat(reserved.getTimestamp())
             .as("reserve-appointment timestamp must exist")
             .isNotNull();
         long nowEpochSeconds = Instant.now().getEpochSecond();
-        org.assertj.core.api.Assertions.assertThat(reserved.getTimestamp())
+        Assertions.assertThat(reserved.getTimestamp())
             .as("reserve-appointment timestamp must be >= now - skew")
             .isGreaterThanOrEqualTo(nowEpochSeconds - 120);
 
@@ -298,7 +298,7 @@ public class CitizenApiSteps {
         ScenarioLogManager.getLogger().info(String.format(
             "Citizen API /preconfirm-appointment/ status=%d body=%s",
             response.getStatusCode(),
-            preconfirmBody.length() > 500 ? preconfirmBody.substring(0, 1250) + "..." : preconfirmBody
+            preconfirmBody.length() > 1250 ? preconfirmBody.substring(0, 1250) + "..." : preconfirmBody
         ));
         response.then().statusCode(200);
 
@@ -308,18 +308,18 @@ public class CitizenApiSteps {
         } catch (Exception e) {
             updated = parseDataResponse(response, ThinnedProcess.class);
         }
-        org.assertj.core.api.Assertions.assertThat(updated)
+        Assertions.assertThat(updated)
             .as("preconfirm-appointment response payload must deserialize")
             .isNotNull();
-        org.assertj.core.api.Assertions.assertThat(updated.getProcessId()).isEqualTo(pid);
-        org.assertj.core.api.Assertions.assertThat(updated.getAuthKey()).isEqualTo(auth);
-        org.assertj.core.api.Assertions.assertThat(updated.getOfficeId()).isEqualTo(lastOfficeId);
-        org.assertj.core.api.Assertions.assertThat(updated.getServiceId()).isEqualTo(process.getServiceId());
-        org.assertj.core.api.Assertions.assertThat(updated.getTimestamp())
+        Assertions.assertThat(updated.getProcessId()).isEqualTo(pid);
+        Assertions.assertThat(updated.getAuthKey()).isEqualTo(auth);
+        Assertions.assertThat(updated.getOfficeId()).isEqualTo(lastOfficeId);
+        Assertions.assertThat(updated.getServiceId()).isEqualTo(process.getServiceId());
+        Assertions.assertThat(updated.getTimestamp())
             .as("preconfirm-appointment timestamp must exist")
             .isNotNull();
         long nowEpochSeconds = Instant.now().getEpochSecond();
-        org.assertj.core.api.Assertions.assertThat(updated.getTimestamp())
+        Assertions.assertThat(updated.getTimestamp())
             .as("preconfirm-appointment timestamp must be >= now - skew")
             .isGreaterThanOrEqualTo(nowEpochSeconds - 120);
 
@@ -348,7 +348,7 @@ public class CitizenApiSteps {
         ScenarioLogManager.getLogger().info(String.format(
             "Citizen API /confirm-appointment/ status=%d body=%s",
             response.getStatusCode(),
-            confirmBody.length() > 500 ? confirmBody.substring(0, 1250) + "..." : confirmBody
+            confirmBody.length() > 1250 ? confirmBody.substring(0, 1250) + "..." : confirmBody
         ));
         response.then().statusCode(200);
 
@@ -358,23 +358,23 @@ public class CitizenApiSteps {
         } catch (Exception e) {
             confirmed = parseDataResponse(response, ThinnedProcess.class);
         }
-        org.assertj.core.api.Assertions.assertThat(confirmed)
+        Assertions.assertThat(confirmed)
             .as("confirm-appointment response payload must deserialize")
             .isNotNull();
         Integer expectedPid = parseIntOrFail(processId, "processId");
-        org.assertj.core.api.Assertions.assertThat(confirmed.getProcessId()).isEqualTo(expectedPid);
-        org.assertj.core.api.Assertions.assertThat(confirmed.getAuthKey()).isEqualTo(authKey);
+        Assertions.assertThat(confirmed.getProcessId()).isEqualTo(expectedPid);
+        Assertions.assertThat(confirmed.getAuthKey()).isEqualTo(authKey);
         // Prefer scenario requested office (via lastOfficeId), but fall back to the last preconfirmed payload.
         Integer expectedOfficeId = lastReserveProcess != null ? lastReserveProcess.getOfficeId() : lastOfficeId;
-        org.assertj.core.api.Assertions.assertThat(confirmed.getOfficeId())
+        Assertions.assertThat(confirmed.getOfficeId())
             .as("confirmed appointment should land at expected office")
             .isEqualTo(expectedOfficeId);
-        org.assertj.core.api.Assertions.assertThat(confirmed.getServiceId()).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(confirmed.getTimestamp())
+        Assertions.assertThat(confirmed.getServiceId()).isNotNull();
+        Assertions.assertThat(confirmed.getTimestamp())
             .as("confirm-appointment timestamp must exist")
             .isNotNull();
         long nowEpochSeconds = Instant.now().getEpochSecond();
-        org.assertj.core.api.Assertions.assertThat(confirmed.getTimestamp())
+        Assertions.assertThat(confirmed.getTimestamp())
             .as("confirm-appointment timestamp must be >= now - skew")
             .isGreaterThanOrEqualTo(nowEpochSeconds - 120);
 
@@ -394,14 +394,14 @@ public class CitizenApiSteps {
     public void theReserveResponseShouldBeReservedWithProcessAuthOfficeService() {
         response.then().statusCode(200);
         ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
-        org.assertj.core.api.Assertions.assertThat(process).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(process.getProcessId()).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(process.getAuthKey()).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(process.getOfficeId()).isEqualTo(lastOfficeId);
-        org.assertj.core.api.Assertions.assertThat(process.getServiceId()).isEqualTo(lastServiceId);
-        org.assertj.core.api.Assertions.assertThat(process.getTimestamp()).isNotNull();
+        Assertions.assertThat(process).isNotNull();
+        Assertions.assertThat(process.getProcessId()).isNotNull();
+        Assertions.assertThat(process.getAuthKey()).isNotNull();
+        Assertions.assertThat(process.getOfficeId()).isEqualTo(lastOfficeId);
+        Assertions.assertThat(process.getServiceId()).isEqualTo(lastServiceId);
+        Assertions.assertThat(process.getTimestamp()).isNotNull();
         long nowEpochSeconds = Instant.now().getEpochSecond();
-        org.assertj.core.api.Assertions.assertThat(process.getTimestamp())
+        Assertions.assertThat(process.getTimestamp())
             .as("reserve-appointment timestamp must be >= now - skew")
             .isGreaterThanOrEqualTo(nowEpochSeconds - 120);
         // Skip `displayNumber` (varies) and `captchaToken` (captcha disabled in test data).
@@ -411,14 +411,14 @@ public class CitizenApiSteps {
     public void thePreconfirmResponseShouldBePreconfirmedWithProcessAuthOfficeService() {
         response.then().statusCode(200);
         ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
-        org.assertj.core.api.Assertions.assertThat(process).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(process.getProcessId()).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(process.getAuthKey()).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(process.getOfficeId()).isEqualTo(lastOfficeId);
-        org.assertj.core.api.Assertions.assertThat(process.getServiceId()).isEqualTo(lastServiceId);
-        org.assertj.core.api.Assertions.assertThat(process.getTimestamp()).isNotNull();
+        Assertions.assertThat(process).isNotNull();
+        Assertions.assertThat(process.getProcessId()).isNotNull();
+        Assertions.assertThat(process.getAuthKey()).isNotNull();
+        Assertions.assertThat(process.getOfficeId()).isEqualTo(lastOfficeId);
+        Assertions.assertThat(process.getServiceId()).isEqualTo(lastServiceId);
+        Assertions.assertThat(process.getTimestamp()).isNotNull();
         long nowEpochSeconds = Instant.now().getEpochSecond();
-        org.assertj.core.api.Assertions.assertThat(process.getTimestamp())
+        Assertions.assertThat(process.getTimestamp())
             .as("preconfirm-appointment timestamp must be >= now - skew")
             .isGreaterThanOrEqualTo(nowEpochSeconds - 120);
         // Skip `displayNumber` and `captchaToken`.
@@ -426,10 +426,10 @@ public class CitizenApiSteps {
 
     @Then("the preconfirmation mail should provide confirm credentials")
     public void thePreconfirmationMailShouldProvideConfirmCredentials() {
-        org.assertj.core.api.Assertions.assertThat(getBookingConfirmProcessId())
+        Assertions.assertThat(getBookingConfirmProcessId())
             .as("bookingConfirmProcessId must be set")
             .isNotBlank();
-        org.assertj.core.api.Assertions.assertThat(getBookingConfirmAuthKey())
+        Assertions.assertThat(getBookingConfirmAuthKey())
             .as("bookingConfirmAuthKey must be set")
             .isNotBlank();
     }
@@ -438,14 +438,14 @@ public class CitizenApiSteps {
     public void theConfirmResponseShouldBeConfirmedWithProcessAuthOfficeService() {
         response.then().statusCode(200);
         ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
-        org.assertj.core.api.Assertions.assertThat(process).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(process.getProcessId()).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(process.getAuthKey()).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(process.getOfficeId()).isEqualTo(lastOfficeId);
-        org.assertj.core.api.Assertions.assertThat(process.getServiceId()).isEqualTo(lastServiceId);
-        org.assertj.core.api.Assertions.assertThat(process.getTimestamp()).isNotNull();
+        Assertions.assertThat(process).isNotNull();
+        Assertions.assertThat(process.getProcessId()).isNotNull();
+        Assertions.assertThat(process.getAuthKey()).isNotNull();
+        Assertions.assertThat(process.getOfficeId()).isEqualTo(lastOfficeId);
+        Assertions.assertThat(process.getServiceId()).isEqualTo(lastServiceId);
+        Assertions.assertThat(process.getTimestamp()).isNotNull();
         long nowEpochSeconds = Instant.now().getEpochSecond();
-        org.assertj.core.api.Assertions.assertThat(process.getTimestamp())
+        Assertions.assertThat(process.getTimestamp())
             .as("confirm-appointment timestamp must be >= now - skew")
             .isGreaterThanOrEqualTo(nowEpochSeconds - 120);
         // Skip `displayNumber` (varies) and `captchaToken` (captcha disabled in test data).
@@ -454,11 +454,11 @@ public class CitizenApiSteps {
     @Then("the confirmation mail should provide an appointment view url")
     public void theConfirmationMailShouldProvideAnAppointmentViewUrl() {
         String url = getBookingAppointmentUrl();
-        org.assertj.core.api.Assertions.assertThat(url)
+        Assertions.assertThat(url)
             .as("bookingAppointmentUrl must be set from confirmation mail")
             .isNotBlank();
-        org.assertj.core.api.Assertions.assertThat(url).contains("appointment/");
-        org.assertj.core.api.Assertions.assertThat(url).doesNotContain("appointment/confirm/");
+        Assertions.assertThat(url).contains("appointment/");
+        Assertions.assertThat(url).doesNotContain("appointment/confirm/");
     }
 
     @When("I fetch the appointment for the current process")
@@ -505,11 +505,11 @@ public class CitizenApiSteps {
     @Then("the appointment endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId")
     public void theAppointmentEndpointResponseShouldIncludeAThinnedBookingProcessWithProcessIdAuthOfficeAndServiceId() {
         ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
-        org.assertj.core.api.Assertions.assertThat(process).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(process.getProcessId()).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(process.getAuthKey()).isNotBlank();
-        org.assertj.core.api.Assertions.assertThat(process.getOfficeId()).isEqualTo(lastOfficeId);
-        org.assertj.core.api.Assertions.assertThat(process.getServiceId()).isEqualTo(lastServiceId);
+        Assertions.assertThat(process).isNotNull();
+        Assertions.assertThat(process.getProcessId()).isNotNull();
+        Assertions.assertThat(process.getAuthKey()).isNotBlank();
+        Assertions.assertThat(process.getOfficeId()).isEqualTo(lastOfficeId);
+        Assertions.assertThat(process.getServiceId()).isEqualTo(lastServiceId);
     }
 
     @Then("I cancel the appointment")
@@ -544,7 +544,7 @@ public class CitizenApiSteps {
         ScenarioLogManager.getLogger().info(String.format(
             "Citizen API /cancel-appointment/ status=%d body=%s",
             response.getStatusCode(),
-            cancelBody.length() > 500 ? cancelBody.substring(0, 1250) + "..." : cancelBody
+            cancelBody.length() > 1250 ? cancelBody.substring(0, 1250) + "..." : cancelBody
         ));
 
         // Basic sanity: 200 and a non-empty payload with a thinned process.
@@ -555,21 +555,21 @@ public class CitizenApiSteps {
         } catch (Exception e) {
             cancelled = parseDataResponse(response, ThinnedProcess.class);
         }
-        org.assertj.core.api.Assertions.assertThat(cancelled).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(cancelled.getProcessId()).isEqualTo(pid);
+        Assertions.assertThat(cancelled).isNotNull();
+        Assertions.assertThat(cancelled.getProcessId()).isEqualTo(pid);
         // Avoid strict checks on officeId/authKey because cancel returns a "deleted" payload where
         // officeId can be 0 and authKey may change.
         // Keep serviceId invariant checks, which are stable across our test flow.
         if (process.getServiceId() != null) {
-            org.assertj.core.api.Assertions.assertThat(cancelled.getServiceId())
+            Assertions.assertThat(cancelled.getServiceId())
                 .as("cancel-appointment should keep same serviceId as prior appointment")
                 .isEqualTo(process.getServiceId());
         }
-        org.assertj.core.api.Assertions.assertThat(cancelled.getTimestamp())
+        Assertions.assertThat(cancelled.getTimestamp())
             .as("cancel-appointment timestamp must exist")
             .isNotNull();
         long nowEpochSeconds = Instant.now().getEpochSecond();
-        org.assertj.core.api.Assertions.assertThat(cancelled.getTimestamp())
+        Assertions.assertThat(cancelled.getTimestamp())
             .as("cancel-appointment timestamp must be >= now - skew")
             .isGreaterThanOrEqualTo(nowEpochSeconds - 120);
         // Skip `displayNumber` and `captchaToken` assertions: display formatting varies by office/provider,
@@ -582,110 +582,110 @@ public class CitizenApiSteps {
     public void theCancelEndpointResponseShouldIncludeAThinnedBookingProcess() {
         response.then().statusCode(200);
         ThinnedProcess cancelled = lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
-        org.assertj.core.api.Assertions.assertThat(cancelled).isNotNull();
+        Assertions.assertThat(cancelled).isNotNull();
         // Avoid strict checks on officeId/authKey because cancel returns a "deleted" payload where
         // officeId can be 0 and authKey may change.
         // Soft-delete contract checks: officeId=0 and key appointment details are nulled.
-        org.assertj.core.api.Assertions.assertThat(response.jsonPath().getInt("officeId")).as("officeId must be 0 (soft delete)").isEqualTo(0);
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("officeName"))
+        Assertions.assertThat(response.jsonPath().getInt("officeId")).as("officeId must be 0 (soft delete)").isEqualTo(0);
+        Assertions.assertThat((Object) response.jsonPath().get("officeName"))
             .as("officeName must be null")
             .isNull();
 
-        org.assertj.core.api.Assertions.assertThat(response.jsonPath().getString("familyName"))
+        Assertions.assertThat(response.jsonPath().getString("familyName"))
             .as("familyName must indicate cancellation")
             .isEqualTo("(abgesagt)");
 
         // top-level strings reset
-        org.assertj.core.api.Assertions.assertThat(response.jsonPath().getString("telephone")).as("telephone must be empty").isEqualTo("");
-        org.assertj.core.api.Assertions.assertThat(response.jsonPath().getString("customTextfield")).as("customTextfield must be empty").isEqualTo("");
-        org.assertj.core.api.Assertions.assertThat(response.jsonPath().getString("customTextfield2")).as("customTextfield2 must be empty").isEqualTo("");
-        org.assertj.core.api.Assertions.assertThat(response.jsonPath().getString("captchaToken")).as("captchaToken must be empty in soft delete payload").isEqualTo("");
+        Assertions.assertThat(response.jsonPath().getString("telephone")).as("telephone must be empty").isEqualTo("");
+        Assertions.assertThat(response.jsonPath().getString("customTextfield")).as("customTextfield must be empty").isEqualTo("");
+        Assertions.assertThat(response.jsonPath().getString("customTextfield2")).as("customTextfield2 must be empty").isEqualTo("");
+        Assertions.assertThat(response.jsonPath().getString("captchaToken")).as("captchaToken must be empty in soft delete payload").isEqualTo("");
 
         // provider inside scope is nulled out (keeps provider.id=0/name="") in soft delete payload
-        org.assertj.core.api.Assertions.assertThat(response.jsonPath().getInt("scope.provider.id"))
+        Assertions.assertThat(response.jsonPath().getInt("scope.provider.id"))
             .as("scope.provider.id must be 0")
             .isEqualTo(0);
-        org.assertj.core.api.Assertions.assertThat(response.jsonPath().getString("scope.provider.name"))
+        Assertions.assertThat(response.jsonPath().getString("scope.provider.name"))
             .as("scope.provider.name must be empty")
             .isEqualTo("");
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.provider.displayName"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.provider.displayName"))
             .as("scope.provider.displayName must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.provider.lat"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.provider.lat"))
             .as("scope.provider.lat must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.provider.lon"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.provider.lon"))
             .as("scope.provider.lon must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.provider.contact"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.provider.contact"))
             .as("scope.provider.contact must be null")
             .isNull();
 
         // scope is mostly nulled out for soft delete payload
-        org.assertj.core.api.Assertions.assertThat(response.jsonPath().getString("scope.shortName"))
+        Assertions.assertThat(response.jsonPath().getString("scope.shortName"))
             .as("scope.shortName must be empty")
             .isEqualTo("");
-        org.assertj.core.api.Assertions.assertThat(response.jsonPath().getString("scope.emailFrom"))
+        Assertions.assertThat(response.jsonPath().getString("scope.emailFrom"))
             .as("scope.emailFrom must be empty")
             .isEqualTo("");
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.emailRequired"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.emailRequired"))
             .as("scope.emailRequired must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.telephoneActivated"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.telephoneActivated"))
             .as("scope.telephoneActivated must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.telephoneRequired"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.telephoneRequired"))
             .as("scope.telephoneRequired must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.customTextfieldActivated"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.customTextfieldActivated"))
             .as("scope.customTextfieldActivated must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.customTextfieldRequired"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.customTextfieldRequired"))
             .as("scope.customTextfieldRequired must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.customTextfieldLabel"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.customTextfieldLabel"))
             .as("scope.customTextfieldLabel must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.customTextfield2Activated"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.customTextfield2Activated"))
             .as("scope.customTextfield2Activated must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.customTextfield2Required"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.customTextfield2Required"))
             .as("scope.customTextfield2Required must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.customTextfield2Label"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.customTextfield2Label"))
             .as("scope.customTextfield2Label must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.captchaActivatedRequired"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.captchaActivatedRequired"))
             .as("scope.captchaActivatedRequired must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.infoForAppointment"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.infoForAppointment"))
             .as("scope.infoForAppointment must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.infoForAllAppointments"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.infoForAllAppointments"))
             .as("scope.infoForAllAppointments must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.slotsPerAppointment"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.slotsPerAppointment"))
             .as("scope.slotsPerAppointment must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.appointmentsPerMail"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.appointmentsPerMail"))
             .as("scope.appointmentsPerMail must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat(response.jsonPath().getString("scope.whitelistedMails"))
+        Assertions.assertThat(response.jsonPath().getString("scope.whitelistedMails"))
             .as("scope.whitelistedMails must be empty")
             .isEqualTo("");
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.reservationDuration"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.reservationDuration"))
             .as("scope.reservationDuration must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.activationDuration"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.activationDuration"))
             .as("scope.activationDuration must be null")
             .isNull();
-        org.assertj.core.api.Assertions.assertThat((Object) response.jsonPath().get("scope.hint"))
+        Assertions.assertThat((Object) response.jsonPath().get("scope.hint"))
             .as("scope.hint must be null")
             .isNull();
 
-        org.assertj.core.api.Assertions.assertThat(cancelled.getTimestamp()).isNotNull();
+        Assertions.assertThat(cancelled.getTimestamp()).isNotNull();
         long nowEpochSeconds = Instant.now().getEpochSecond();
-        org.assertj.core.api.Assertions.assertThat(cancelled.getTimestamp())
+        Assertions.assertThat(cancelled.getTimestamp())
             .as("cancel-appointment timestamp must be >= now - skew")
             .isGreaterThanOrEqualTo(nowEpochSeconds - 120);
         // Skip `displayNumber` and `captchaToken`.
@@ -695,42 +695,42 @@ public class CitizenApiSteps {
     public void theCancelEndpointResponseShouldStillIncludeProcessIdEmailDisplayNumberAndServiceIdAndServiceName() {
         response.then().statusCode(200);
 
-        org.assertj.core.api.Assertions.assertThat(response.jsonPath().getInt("processId"))
+        Assertions.assertThat(response.jsonPath().getInt("processId"))
             .as("processId should still be set in soft delete payload")
             .isNotEqualTo(0);
 
-        org.assertj.core.api.Assertions.assertThat(response.jsonPath().getString("email"))
+        Assertions.assertThat(response.jsonPath().getString("email"))
             .as("email must still be present so deletion/cancellation email can be sent")
             .isNotBlank();
 
         ThinnedProcess cancelled = lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
-        org.assertj.core.api.Assertions.assertThat(cancelled).isNotNull();
+        Assertions.assertThat(cancelled).isNotNull();
 
         String cancelledDisplayNumber = cancelled.getDisplayNumber();
-        org.assertj.core.api.Assertions.assertThat(cancelledDisplayNumber)
+        Assertions.assertThat(cancelledDisplayNumber)
             .as("displayNumber must still be present in soft delete payload")
             .isNotBlank();
         if (lastDisplayNumberBeforeCancel != null && !lastDisplayNumberBeforeCancel.isBlank()) {
-            org.assertj.core.api.Assertions.assertThat(cancelledDisplayNumber)
+            Assertions.assertThat(cancelledDisplayNumber)
                 .as("displayNumber should be preserved during soft delete")
                 .isEqualTo(lastDisplayNumberBeforeCancel);
         }
 
         Object scopeId = response.jsonPath().get("scope.id");
-        org.assertj.core.api.Assertions.assertThat(scopeId)
+        Assertions.assertThat(scopeId)
             .as("scope.id must still be present for email office-name lookup")
             .isNotNull();
-        org.assertj.core.api.Assertions.assertThat(scopeId)
+        Assertions.assertThat(scopeId)
             .as("scope.id must be numeric")
             .isInstanceOf(Number.class);
-        org.assertj.core.api.Assertions.assertThat(((Number) scopeId).intValue())
+        Assertions.assertThat(((Number) scopeId).intValue())
             .as("scope.id must be a positive office lookup id")
             .isGreaterThan(0);
 
-        org.assertj.core.api.Assertions.assertThat(cancelled.getServiceId())
+        Assertions.assertThat(cancelled.getServiceId())
             .as("cancel-appointment should keep same serviceId as prior appointment")
             .isEqualTo(lastServiceId);
-        org.assertj.core.api.Assertions.assertThat(response.jsonPath().getString("serviceName"))
+        Assertions.assertThat(response.jsonPath().getString("serviceName"))
             .as("serviceName should still exist")
             .isNotBlank();
     }
@@ -740,8 +740,8 @@ public class CitizenApiSteps {
     @Then("the appointment should be at office {int}")
     public void theAppointmentShouldBeAtOffice(int officeId) {
         ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
-        org.assertj.core.api.Assertions.assertThat(process).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(process.getOfficeId())
+        Assertions.assertThat(process).isNotNull();
+        Assertions.assertThat(process.getOfficeId())
             .as("Expected appointment to land at office %d", officeId)
             .isEqualTo(officeId);
     }
@@ -749,8 +749,8 @@ public class CitizenApiSteps {
     @Then("the appointment should be for service {int}")
     public void theAppointmentShouldBeForService(int serviceId) {
         ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
-        org.assertj.core.api.Assertions.assertThat(process).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(process.getServiceId())
+        Assertions.assertThat(process).isNotNull();
+        Assertions.assertThat(process.getServiceId())
             .as("Expected appointment to use service %d", serviceId)
             .isEqualTo(serviceId);
     }
@@ -758,10 +758,10 @@ public class CitizenApiSteps {
     @Then("the appointment status should be {string}")
     public void theAppointmentStatusShouldBe(String expectedStatus) {
         ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
-        org.assertj.core.api.Assertions.assertThat(process)
+        Assertions.assertThat(process)
             .as("expected a thinned process in order to assert appointment status")
             .isNotNull();
-        org.assertj.core.api.Assertions.assertThat(process.getStatus())
+        Assertions.assertThat(process.getStatus())
             .as("appointment status should match")
             .isEqualTo(expectedStatus);
     }

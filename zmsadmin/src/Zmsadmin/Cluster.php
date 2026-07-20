@@ -14,14 +14,18 @@ class Cluster extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['cluster'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $entityId = Validator::value($args['clusterId'])->isNumber()->getValue();
         $departmentId = Validator::value($args['departmentId'])->isNumber()->getValue();
 
@@ -42,7 +46,7 @@ class Cluster extends BaseController
         if (is_array($input) && array_key_exists('save', $input)) {
             $entity = (new Entity($input))->withCleanedUpFormData();
             $entity->id = $entityId;
-            $entity = \App::$http->readPostResult('/cluster/' . $entity->id . '/', $entity)->getEntity();
+            \App::$http->readPostResult('/cluster/' . $entity->id . '/', $entity)->getEntity();
             if (isset($input['removeImage']) && $input['removeImage']) {
                 \App::$http->readDeleteResult('/cluster/' . $entityId . '/imagedata/calldisplay/');
             } else {
@@ -61,7 +65,7 @@ class Cluster extends BaseController
             $response,
             'page/cluster.twig',
             array(
-                'title' => 'Cluster',
+                'title' => 'Cluster bearbeiten',
                 'menuActive' => 'owner',
                 'workstation' => $workstation,
                 'organisation' => $organisation,
@@ -79,7 +83,7 @@ class Cluster extends BaseController
         try {
             $organisation = \App::$http->readGetResult('/cluster/' . $entityId . '/organisation/')->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
-            if ($exception->template == 'BO\Zmsdb\Exception\ClusterWithoutScopes') {
+            if ($exception->template == 'BO\Zmsbackend\Cluster\Exception\ClusterWithoutScopes') {
                 $organisation = new \BO\Zmsentities\Organisation();
             } else {
                 throw $exception;

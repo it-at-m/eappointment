@@ -7,19 +7,22 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Render;
+use BO\Zmsentities\Helper\ProcessPlainText;
 use Psr\Http\Message\RequestInterface;
 
 class WorkstationProcessRedirect extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $department = \App::$http
             ->readGetResult(
@@ -27,14 +30,13 @@ class WorkstationProcessRedirect extends BaseController
                 ['resolveReferences' => 2]
             )->getEntity();
         $input = $request->getParsedBody();
-        $process = $workstation->process;
 
         if ($request->getMethod() === 'POST') {
             $validator = $request->getAttribute('validator');
             $selectedLocation = $validator->getParameter('location')->isNumber()->getValue();
 
             if (empty($selectedLocation)) {
-                return \BO\Slim\Render::redirect(
+                return Render::redirect(
                     'workstationProcessRedirect',
                     [],
                     [
@@ -51,21 +53,21 @@ class WorkstationProcessRedirect extends BaseController
                     ['resolveReferences' => 2]
                 )->getEntity();
 
-            $newProcess = clone $process;
+            $newProcess = clone $workstation->process;
             $newProcess->scope = $scope;
             $newProcess->appointments[0]->scope = $scope;
-            $newProcess->amendment = $input['amendment'];
+            $newProcess->amendment = ProcessPlainText::normalize($input['amendment'] ?? '');
 
-            $process = \App::$http->readPostResult('/process/status/redirect/', $newProcess)->getEntity();
+            \App::$http->readPostResult('/process/status/redirect/', $newProcess)->getEntity();
 
-            return \BO\Slim\Render::redirect(
+            return Render::redirect(
                 $workstation->getVariantName(),
                 array(),
                 array()
             );
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/workstationProcessRedirect.twig',
             array(

@@ -4,9 +4,24 @@
   "scripts": {
     "docs:dev": "vitepress dev .",
     "docs:build": "vitepress build .",
-    "docs:preview": "vitepress preview ."
+    "docs:preview": "vitepress preview .",
+    "docs:log-inventory": "node scripts/generate-log-inventory.mjs",
+    "docs:department-explorers": "node .vitepress/scripts/generate-department-explorers.mjs",
+    "docs:thinned-process-explorers": "node .vitepress/scripts/generate-thinned-process-explorers.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
+    "@muenchen/prettier-codeformat": "^1.0.2",
+    "markdown-it": "^14.1.0",
+    "prettier": "^3.5.3",
+    "mermaid": "^11.15.0",
     "vitepress": "^1.6.3"
+  },
+  "overrides": {
+    "uuid": "^11.1.1",
+    "vite": "^8.0.0",
+    "esbuild": "^0.28.1",
+    "dompurify": "^3.4.11"
   }
 }

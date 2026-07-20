@@ -1,0 +1,635 @@
+<?php
+
+namespace BO\Zmsbackend\Tests\Slot\Service;
+
+use \BO\Zmsbackend\Slot\Service\Slot;
+use \BO\Zmsentities\Collection\SlotList as Collection;
+
+class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
+{
+    const TEST_AVAILABILITY_ID = 68985;
+
+    public function testWriteOptimizedSlotTables()
+    {
+        //Attention, rollback does not work here!
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->writeOptimizedSlotTables();
+        $this->assertEquals(true, $status, "Optimization for tables should return true");
+    }
+
+    public function testChanged()
+    {
+        $changed = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTime();
+        //var_dump($changed->format('c'));
+        $this->assertTrue($changed instanceof \DateTimeInterface);
+    }
+
+    public function testNoChange()
+    {
+        $availability = $this->readTestAvailability();
+        $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        $lastChange = $now->modify("-1 second");
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $this->assertFalse($status, "Availability should not rebuild slots without change");
+    }
+
+    public function testChangedAvailability()
+    {
+        $availability = $this->readTestAvailability();
+        $availability->workstationCount['intern'] = 5;
+        $availability = (new \BO\Zmsbackend\Availability\Service\Availability())->updateEntity(static::TEST_AVAILABILITY_ID, $availability, 2);
+        $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        $lastChange = $now->modify("-1 second");
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $this->assertFalse(!$status, "Availability should rebuild slots on change");
+    }
+
+    public function testChangedScope()
+    {
+        $availability = $this->readTestAvailability();
+        $availability->scope['preferences']['appointment']['endInDaysDefault'] = 63;
+        $availability->scope = (new \BO\Zmsbackend\Scope\Service\Scope())->updateEntity($availability->scope->id, $availability->scope, 1);
+        $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        $lastChange = $now->modify("-1 second");
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $this->assertFalse(!$status, "Availability should rebuild slots on changed scope");
+    }
+
+    public function testNoChange2()
+    {
+        $availability = $this->readTestAvailability();
+        $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        $lastChange = $now->modify("-1 second");
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $this->assertFalse($status, "Availability should not rebuild slots without change");
+    }
+
+
+    public function testChangedDayoff()
+    {
+        $availability = new \BO\Zmsentities\Availability(['id' => static::TEST_AVAILABILITY_ID]);
+        $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        $dayoff = new \BO\Zmsentities\Dayoff([
+            'name' => 'unittest',
+            'date' => $now->modify('+1 day')->getTimestamp(),
+        ]);
+        (new \BO\Zmsbackend\Dayoff\Service\DayOff())->writeCommonDayoffsByYear([$dayoff], 2016);
+        $availability = $this->readTestAvailability();
+        $availability->bookable['startInDays'] = 0;
+        $availability->bookable['endInDays'] = 14;
+        $lastChange = $now->modify("-1 second");
+        
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $this->assertFalse(!$status, "Availability should rebuild slots on changed dayoff");
+    }
+
+    public function testChangedDayoffNotaffecting()
+    {
+        $availability = new \BO\Zmsentities\Availability(['id' => static::TEST_AVAILABILITY_ID]);
+        $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        $dayoff = new \BO\Zmsentities\Dayoff([
+            'name' => 'unittest',
+            'date' => $now->modify('+100 day')->getTimestamp(),
+        ]);
+        (new \BO\Zmsbackend\Dayoff\Service\DayOff())->writeCommonDayoffsByYear([$dayoff], 2016);
+        $availability = $this->readTestAvailability();
+        $lastChange = $now->modify("-1 second");
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $this->assertFalse(
+            $status,
+            "Availability should not rebuild slots on changed dayoff without affecting booking time"
+        );
+    }
+
+    public function testNoChangeByTime()
+    {
+        $availability = $this->readTestAvailability();
+        $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        $lastChange = $now;
+        $now = $now->modify('+1 hour -1 second');
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $this->assertFalse($status, "Should not rebuild slots without a change");
+        $availability->lastChange = $now->getTimestamp();
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $this->assertTrue($status, "If availability is changed, it should rebuild, even a rebuild happened before");
+    }
+
+    /**
+     * Test with availabilities bookable only on one day
+     *
+     * @codingStandardsIgnoreStart
+     *                timeline   ╠═bookable time═╣
+     *                day: -2 . 0 1 2 3 4 5 6 7 8 9
+     * now            ├─────────╳─╎───╎─╠═══════╣─╎─────────╼
+     * lastchange     ├─────╳─────╎─╠═══════╣─╎───╎─────────╼
+     * availability1  ├───────────╳───╎───╎───╎───╎─────────╼ no change
+     * availability2  ├───────────────╳───╎───╎───╎─────────╼ rebuild
+     * availability3  ├───────────────────╳───╎───╎─────────╼ no change
+     * availability4  ├───────────────────────╳───╎─────────╼ rebuild
+     * availability5  ├───────────────────────────╳─────────╼ no change
+     * @codingStandardsIgnoreEnd
+     */
+    public function testChangeOutdated()
+    {
+        $availability = $this->readTestAvailability();
+        $lastChange = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        $now = $lastChange->modify('+2 days');
+        $availability['bookable']['startInDays'] = 4;
+        $availability['bookable']['endInDays'] = 8;
+        $availability1 = clone $availability;
+        $availability1->startDate = $now->modify('+1 day')->getTimestamp();
+        $availability1->endDate = $now->modify('+1 day')->getTimestamp();
+        $availability2 = clone $availability;
+        $availability2->startDate = $now->modify('+3 day')->getTimestamp();
+        $availability2->endDate = $now->modify('+3 day')->getTimestamp();
+        $availability3 = clone $availability;
+        $availability3->startDate = $now->modify('+5 day')->getTimestamp();
+        $availability3->endDate = $now->modify('+5 day')->getTimestamp();
+        $availability4 = clone $availability;
+        $availability4->startDate = $now->modify('+7 day')->getTimestamp();
+        $availability4->endDate = $now->modify('+7 day')->getTimestamp();
+        $availability5 = clone $availability;
+        $availability5->startDate = $now->modify('+9 day')->getTimestamp();
+        $availability5->endDate = $now->modify('+9 day')->getTimestamp();
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability1, $now, $lastChange);
+        $this->assertFalse($status, "Should not rebuild in case 1");
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability2, $now, $lastChange);
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability3, $now, $lastChange);
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability4, $now, $lastChange);
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability5, $now, $lastChange);
+        $this->assertFalse($status, "Should not rebuild in case 5");
+    }
+
+    /**
+     * New slots should be calculated only if the daytime is after the opening start time
+     */
+    public function testChangeByDayTime()
+    {
+        $availability = $this->readTestAvailability();
+        $availability['bookable']['startInDays'] = 4;
+        $availability['bookable']['endInDays'] = 7;
+        $availability->weekday = [
+            'sunday' => 0,
+            'monday' => 1,
+            'tuesday' => 0,
+            'wednesday' => 0,
+            'thursday' => 0,
+            'friday' => 0,
+            'saturday' => 0
+        ];
+        $availability['startTime'] = '08:00:00';
+        $availability['endTime'] = '12:00:00';
+        $availability['lastChange'] = $availability->startDate;
+        $availability['scope']['lastChange'] = $availability->startDate;
+        //var_dump($availability);
+
+        $startDate = (new \DateTimeImmutable())->setTimestamp($availability->startDate);
+        $monday = $startDate->modify('next monday');
+
+        $this->assertOutdated(
+            $monday->modify('06:00:00'),
+            $monday->modify('06:00:00'),
+            false, //shouldRebuild
+            $availability,
+            "Availability should not rebuild slots if time is before start time"
+        );
+        $this->assertOutdated(
+            $monday->modify('06:00:00'),
+            $monday->modify('08:00:00'),
+            true, //shouldRebuild
+            $availability,
+            "Availability should rebuild slots at right time"
+        );
+        $this->assertOutdated(
+            $monday->modify('08:00:00'),
+            $monday->modify('09:00:00'),
+            false, //shouldRebuild
+            $availability,
+            "Availability should not rebuild slots if it already happened the day"
+        );
+        $this->assertOutdated(
+            $monday->modify('08:00:00'),
+            $monday->modify('+1 day 00:00:00'),
+            false, //shouldRebuild
+            $availability,
+            "Availability should not rebuild slots at midnight the following day"
+        );
+        $this->assertOutdated(
+            $monday->modify('08:00:00'),
+            $monday->modify('+1 day 09:00:00'),
+            false, //shouldRebuild
+            $availability,
+            "Availability should not rebuild slots at the following day"
+        );
+        $this->assertOutdated(
+            $monday->modify('07:00:00'),
+            $monday->modify('09:00:00'),
+            true, //shouldRebuild
+            $availability,
+            "Availability should rebuild slots if lastChange was before opening"
+        );
+        $this->assertOutdated(
+            $monday->modify('-2day 07:00:00'),
+            $monday->modify('09:00:00'),
+            true, //shouldRebuild
+            $availability,
+            "Availability should rebuild slots if lastChange was multiple days before"
+        );
+        $this->assertOutdated(
+            $monday->modify('-7day 08:00:00'),
+            $monday->modify('09:00:00'),
+            true, //shouldRebuild
+            $availability,
+            "Availability should rebuild slots if lastChange was a week before"
+        );
+    }
+
+    protected function assertOutdated($lastChange, $now, $shouldRebuild, $availability, $message)
+    {
+        $availability = clone $availability;
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        if (($status && !$shouldRebuild) || (!$status && $shouldRebuild)) {
+            $this->debugOutdated($availability, $now, $lastChange);
+        }
+        if ($shouldRebuild) {
+            $this->assertTrue($status, $message);
+        } else {
+            $this->assertFalse($status, $message);
+        }
+    }
+
+    public function testChangeByTime()
+    {
+        $availability = $this->readTestAvailability();
+        $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        $lastChange = $now;
+        $now = $now->modify('+2 day');
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $this->assertFalse(!$status, "Availability should rebuild slots if time allows new slots");
+        $lastChange = $now;
+        $now = $now->modify('+10 minutes');
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        //$this->debugOutdated($availability, $now, $lastChange);
+        $this->assertFalse($status, "Availability should not rebuild slots twice");
+    }
+
+    public function testNoChangeIntegration()
+    {
+        $availability = $this->readTestAvailability();
+        $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->writeByAvailability($availability, $now);
+        $this->assertFalse($status, "Availability should not rebuild slots without change");
+    }
+
+    public function testChangedScopeIntegration()
+    {
+        $availability = $this->readTestAvailability();
+        $availability->scope['preferences']['appointment']['endInDaysDefault'] = 63;
+        $availability->scope = (new \BO\Zmsbackend\Scope\Service\Scope())->updateEntity($availability->scope->id, $availability->scope, 1);
+        $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->writeByAvailability($availability, $now);
+        //$this->debugOutdated($availability, $now, $now->modify('-1 hour'));
+        $this->assertFalse(!$status, "Availability should rebuild slots on changed scope");
+    }
+
+    /**
+     *  @see https://projekte.berlinonline.de/issues/36088
+     */
+    public function testChangeOnCancel()
+    {
+        $now = new \DateTimeImmutable('2016-04-06 07:55:01');
+        $availability = $this->readTestAvailability();
+        $availability->bookable['startInDays'] = 0;
+        $availability->bookable['endInDays'] = 60;
+        $availability->lastChange = $now->modify('-1 minute')->getTimestamp();
+        (new \BO\Zmsbackend\Slot\Service\Slot())->perform(
+            "UPDATE slot SET updateTimestamp = :dateTime WHERE availabilityID = :availabilityID",
+            [
+                "availabilityID" => $availability->id,
+                "dateTime" => $now->modify('-2 minutes')->format('Y-m-d H:i:s'),
+            ]
+        );
+        (new \BO\Zmsbackend\Slot\Service\Slot())->writeCanceledByTimeAndScope($now->modify('+5 minutes'), $availability->scope);
+        $lastChange = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);      
+        $this->assertEquals(
+            '2016-04-06 07:53:01',
+            $lastChange->format('Y-m-d H:i:s'),
+            "readLastChangedTimeByAvailability should not return cancelled slots"
+        );
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->writeByAvailability($availability, $now);
+        $this->assertFalse(!$status, "Availability should rebuild slots if newer");
+    }
+
+    public function testChangeByTimeIntegration()
+    {
+        $availability = $this->readTestAvailability();
+        $availability->endDate = static::$now->modify('+1 year')->getTimestamp(); // Fixed end date to allow new slots
+        $availability->bookable['endInDays'] = 60; // Allow booking up to 60 days in advance so slots can be rebuilt when time advances
+        // Set lastChange to before static::$now so the test works correctly with historical test data
+        $availability->lastChange = static::$now->modify('-1 day')->getTimestamp();
+        $lastChange = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->writeByAvailability($availability, static::$now);
+        //$this->debugOutdated($availability, $now, $lastChange);
+        $availability = $this->readTestAvailability();
+        $availability->endDate = static::$now->modify('+1 year')->getTimestamp(); // Fixed end date to allow new slots
+        $availability->bookable['endInDays'] = 60; // Allow booking up to 60 days in advance so slots can be rebuilt when time advances
+        // Set lastChange to before static::$now so the test works correctly with historical test data
+        $availability->lastChange = static::$now->modify('-1 day')->getTimestamp();
+        // Update slot updateTimestamp in database to match our test scenario
+        // This ensures readLastChangedTimeByAvailability returns a time before static::$now
+        (new \BO\Zmsbackend\Slot\Service\Slot())->perform(
+            "UPDATE slot SET updateTimestamp = :dateTime WHERE availabilityID = :availabilityID",
+            [
+                "availabilityID" => $availability->id,
+                "dateTime" => static::$now->modify('-1 day')->format('Y-m-d H:i:s'),
+            ]
+        );
+        // Use static::$now as base time to test slot rebuilding when time advances
+        $now = static::$now;
+        $lastChange = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        $now = $now->modify('+1 day');
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->writeByAvailability($availability, $now);
+        //$this->debugOutdated($availability, $now, $lastChange);
+       
+        $this->assertFalse(!$status, "Availability should rebuild slots if time allows new slots");
+    }
+
+    public function testChangeByTimeIntegrationZeroEndInDays()
+    {
+        $availability = $this->readTestAvailability();
+        $availability->endDate = static::$now->modify('+1 year')->getTimestamp(); // Fixed end date to allow new slots
+        $availability->bookable['endInDays'] = 0; // Allow booking up to 0 days in advance so slots can be rebuilt when time advances
+        // Set lastChange to before static::$now so the test works correctly with historical test data
+        $availability->lastChange = static::$now->modify('-1 day')->getTimestamp();
+        $lastChange = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->writeByAvailability($availability, static::$now);
+        //$this->debugOutdated($availability, $now, $lastChange);
+        $availability = $this->readTestAvailability();
+        $availability->endDate = static::$now->modify('+1 year')->getTimestamp(); // Fixed end date to allow new slots
+        $availability->bookable['endInDays'] = 0; // Allow booking up to 0 days in advance so slots can be rebuilt when time advances
+        // Set lastChange to before static::$now so the test works correctly with historical test data
+        $availability->lastChange = static::$now->modify('-1 day')->getTimestamp();
+        // Update slot updateTimestamp in database to match our test scenario
+        // This ensures readLastChangedTimeByAvailability returns a time before static::$now
+        (new \BO\Zmsbackend\Slot\Service\Slot())->perform(
+            "UPDATE slot SET updateTimestamp = :dateTime WHERE availabilityID = :availabilityID",
+            [
+                "availabilityID" => $availability->id,
+                "dateTime" => static::$now->modify('-1 day')->format('Y-m-d H:i:s'),
+            ]
+        );
+        // Use static::$now as base time to test slot rebuilding when time advances
+        $now = static::$now;
+        $lastChange = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        $now = $now->modify('+1 day');
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->writeByAvailability($availability, $now);
+        //$this->debugOutdated($availability, $now, $lastChange);
+       
+        $this->assertFalse(!$status, "Availability should rebuild slots if time allows new slots");
+    }
+
+    public function testWriteCanceledByTime()
+    {
+        $scope = new \BO\Zmsentities\Scope(['id' => 141]);
+        $dateTime = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $slotList = (new \BO\Zmsbackend\Slot\Service\Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+7days'));
+        $this->assertEquals($slotList[0]['status'], 'free');
+        $slotList = (new \BO\Zmsbackend\Slot\Service\Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+14days'));
+        $this->assertEquals($slotList[0]['status'], 'free');
+
+        // Test change of month
+        $slotList = (new \BO\Zmsbackend\Slot\Service\Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+28days'));
+        $this->assertEquals($slotList[0]['status'], 'free');
+        (new \BO\Zmsbackend\Slot\Service\Slot())->writeCanceledByTime($dateTime->modify('+32days'));
+        $slotList = (new \BO\Zmsbackend\Slot\Service\Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+28days'));
+        $this->assertEquals($slotList[0]['status'], 'cancelled');
+        $slotList = (new \BO\Zmsbackend\Slot\Service\Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+35days'));
+        $this->assertEquals($slotList[0]['status'], 'free');
+    }
+
+    public function testDeleteSlotsOlderThan()
+    {
+        $scope = new \BO\Zmsentities\Scope(['id' => 141]);
+        $dateTime = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $slotList = (new \BO\Zmsbackend\Slot\Service\Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+7days'));
+        $this->assertEquals($slotList[0]['status'], 'free');
+        (new \BO\Zmsbackend\Slot\Service\Slot())->deleteSlotsOlderThan($dateTime->modify('+8days'));
+        $slotList = (new \BO\Zmsbackend\Slot\Service\Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+7days'));
+        $this->assertEquals(count($slotList), 0);
+        $slotList = (new \BO\Zmsbackend\Slot\Service\Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+14days'));
+        $this->assertEquals($slotList[0]['status'], 'free');
+
+        // Test change of month
+        $slotList = (new \BO\Zmsbackend\Slot\Service\Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+28days'));
+        $this->assertEquals($slotList[0]['status'], 'free');
+        (new \BO\Zmsbackend\Slot\Service\Slot())->deleteSlotsOlderThan($dateTime->modify('+32days'));
+        $slotList = (new \BO\Zmsbackend\Slot\Service\Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+28days'));
+        $this->assertEquals(count($slotList), 0);
+        $slotList = (new \BO\Zmsbackend\Slot\Service\Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+35days'));
+        $this->assertEquals($slotList[0]['status'], 'free');
+    }
+
+    public function testChangedDayoffSameDay()
+    {
+        $availability = new \BO\Zmsentities\Availability(['id' => static::TEST_AVAILABILITY_ID]);
+        $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        // Set both Offen_ab and Offen_bis to 0 for same-day availability
+        $availability->bookable['startInDays'] = 0;
+        $availability->bookable['endInDays'] = 0;
+        
+        // Add holiday for today
+        $dayoff = new \BO\Zmsentities\Dayoff([
+            'name' => 'unittest',
+            'date' => $now->getTimestamp(),
+        ]);
+        (new \BO\Zmsbackend\Dayoff\Service\DayOff())->writeCommonDayoffsByYear([$dayoff], 2016);
+        $availability = $this->readTestAvailability();
+        $availability->bookable['startInDays'] = 0;
+        $availability->bookable['endInDays'] = 0;
+        $lastChange = $now->modify("-1 second");
+        
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $this->assertTrue($status, "Availability should rebuild slots when holiday is on same day as Offen_ab=0 Offen_bis=0");
+    }
+
+    public function testChangedDayoffDifferentDay()
+    {
+        $availability = new \BO\Zmsentities\Availability(['id' => static::TEST_AVAILABILITY_ID]);
+        $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        // Set both Offen_ab and Offen_bis to 0 for same-day availability
+        $availability->bookable['startInDays'] = 0;
+        $availability->bookable['endInDays'] = 0;
+        
+        // Add holiday for tomorrow
+        $dayoff = new \BO\Zmsentities\Dayoff([
+            'name' => 'unittest',
+            'date' => $now->modify('+1 day')->getTimestamp(),
+        ]);
+        (new \BO\Zmsbackend\Dayoff\Service\DayOff())->writeCommonDayoffsByYear([$dayoff], 2016);
+        $availability = $this->readTestAvailability();
+        $availability->bookable['startInDays'] = 0;
+        $availability->bookable['endInDays'] = 0;
+        $lastChange = $now->modify("-1 second");
+        
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $this->assertFalse($status, "Availability should not rebuild slots when holiday is not on same day as Offen_ab=0 Offen_bis=0");
+    }
+
+    public function testChangeOnCancelSameDay()
+    {
+        $now = new \DateTimeImmutable('2016-04-06 07:55:01');
+        $availability = $this->readTestAvailability();
+        // Set both Offen_ab and Offen_bis to 0 for same-day availability
+        $availability->bookable['startInDays'] = 0;
+        $availability->bookable['endInDays'] = 0;
+        $availability->lastChange = $now->modify('-1 minute')->getTimestamp();
+        
+        // Create slots starting at 07:50:00 (before the cancellation time)
+        (new \BO\Zmsbackend\Slot\Service\Slot())->perform(
+            "INSERT INTO slot (scopeID, year, month, day, time, availabilityID, public, intern, status, slotTimeInMinutes, createTimestamp, updateTimestamp) 
+            VALUES 
+            (141, 2016, 4, 6, '07:50:00', 68985, 3, 3, 'free', 10, 1566573750, '2019-08-23 15:22:30'),
+            (141, 2016, 4, 6, '07:55:00', 68985, 3, 3, 'free', 10, 1566573750, '2019-08-23 15:22:30')"
+        );
+        
+        // First verify we have slots
+        $slotList = (new \BO\Zmsbackend\Slot\Service\Slot())->readRowsByScopeAndDate($availability->scope, $now);
+        $this->assertGreaterThan(0, count($slotList), "Should have slots before cancellation");
+        
+        // Cancel slots for today
+        $cancelTime = $now->modify('+5 minutes');
+        (new \BO\Zmsbackend\Slot\Service\Slot())->writeCanceledByTimeAndScope($cancelTime, $availability->scope);
+        
+        // Query parameters for slot checks
+        $params = [
+            "scopeID" => $availability->scope->id,
+            "year" => $now->format('Y'),
+            "month" => $now->format('n'),
+            "day" => $now->format('j')
+        ];
+        
+        // Verify slots are cancelled by checking specific slots that should be cancelled
+        $cancelledSlots = (new \BO\Zmsbackend\Slot\Service\Slot())->fetchAll(
+            "SELECT * FROM slot WHERE scopeID = :scopeID AND year = :year AND month = :month AND day = :day AND time <= :time ORDER BY time",
+            array_merge($params, ["time" => $cancelTime->format('H:i:s')])
+        );
+        $this->assertEquals('cancelled', $cancelledSlots[0]['status'], "Slots should be cancelled before the cancellation time");
+        
+        // Verify we don't rebuild slots
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->writeByAvailability($availability, $now);
+        $this->assertFalse($status, "Availability should not rebuild slots when Offen_ab=0 Offen_bis=0 and slots are cancelled");
+        
+        // Verify slots remain cancelled
+        $cancelledSlots = (new \BO\Zmsbackend\Slot\Service\Slot())->fetchAll(
+            "SELECT * FROM slot WHERE scopeID = :scopeID AND year = :year AND month = :month AND day = :day AND time <= :time ORDER BY time",
+            array_merge($params, ["time" => $cancelTime->format('H:i:s')])
+        );
+        $this->assertEquals('cancelled', $cancelledSlots[0]['status'], "Slots should remain cancelled");
+        
+        // Verify slots after cancellation time are still free
+        $futureSlots = (new \BO\Zmsbackend\Slot\Service\Slot())->fetchAll(
+            "SELECT * FROM slot WHERE scopeID = :scopeID AND year = :year AND month = :month AND day = :day AND time > :time ORDER BY time",
+            array_merge($params, ["time" => $cancelTime->format('H:i:s')])
+        );
+        $this->assertEquals('free', $futureSlots[0]['status'], "Slots after cancellation time should still be free");
+    }
+
+    public function testChangeOnCancelDifferentDay()
+    {
+        $now = new \DateTimeImmutable('2016-04-06 07:55:01');
+        $availability = $this->readTestAvailability();
+        // Set both Offen_ab and Offen_bis to 0 for same-day availability
+        $availability->bookable['startInDays'] = 0;
+        $availability->bookable['endInDays'] = 0;
+        $availability->lastChange = $now->modify('-1 minute')->getTimestamp();
+        
+        (new \BO\Zmsbackend\Slot\Service\Slot())->perform(
+            "UPDATE slot SET updateTimestamp = :dateTime WHERE availabilityID = :availabilityID",
+            [
+                "availabilityID" => $availability->id,
+                "dateTime" => $now->modify('-2 minutes')->format('Y-m-d H:i:s'),
+            ]
+        );
+        (new \BO\Zmsbackend\Slot\Service\Slot())->writeCanceledByTimeAndScope($now->modify('+1 day'), $availability->scope);
+        $lastChange = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        
+        $this->assertEquals(
+            '2016-04-06 07:53:01',
+            $lastChange->format('Y-m-d H:i:s'),
+            "readLastChangedTimeByAvailability should not return cancelled slots"
+        );
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->writeByAvailability($availability, $now);
+        $this->assertTrue($status, "Availability should rebuild slots when cancellation is not on same day as Offen_ab=0 Offen_bis=0 where slots are after the end of the bookable period");
+
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->writeByAvailability($availability, $now);
+        $this->assertFalse($status, "Availability should not rebuild slots when cancellation is not on same day as Offen_ab=0 Offen_bis=0 where slots are before the start of the bookable period");
+    }
+
+    protected function debugOutdated($availability, $now, $lastChange)
+    {
+        $proposedChange = new \BO\Zmsbackend\Helper\AvailabilitySnapShot($availability, $now);
+        $formerChange = new \BO\Zmsbackend\Helper\AvailabilitySnapShot($availability, $lastChange);
+        $debug = "\n$availability\n";
+        $values = "\t%s = %s\n";
+        $debug .= sprintf($values, 'now', $now->format('c l'));
+        $debug .= sprintf($values, 'last', $lastChange->format('c l'));
+        $debug .= sprintf($values, 'Availability(lastChange)', (new \DateTimeImmutable)
+            ->setTimestamp($availability->lastChange)->format('c l'));
+        $debug .= sprintf($values, 'BookableStart(now)', $availability->getBookableStart($now));
+        $debug .= sprintf($values, 'BookableStart(last)', $availability->getBookableStart($lastChange));
+        $debug .= sprintf($values, 'BookableEnd(now)', $availability->getBookableEnd($now));
+        $debug .= sprintf($values, 'BookableEnd(last)', $availability->getBookableEnd($lastChange));
+        $debug .= sprintf($values, 'BookEndTime', $availability->getBookableEnd($now)->modify($now->format('H:i:s')));
+        $debug .= sprintf(
+            $values,
+            'formerChange::isOpenedOnLastBookableDay',
+            $formerChange->isOpenedOnLastBookableDay() ? 'true' : 'false'
+        );
+        $debug .= sprintf(
+            $values,
+            'formerChange::isTimeOpenedOnLastBookableDay',
+            $formerChange->isTimeOpenedOnLastBookableDay() ? 'true' : 'false'
+        );
+        $debug .= sprintf(
+            $values,
+            'proposedChange::isOpenedOnLastBookableDay',
+            $proposedChange->isOpenedOnLastBookableDay() ? 'true' : 'false'
+        );
+        $debug .= sprintf(
+            $values,
+            'proposedChange::isTimeOpenedOnLastBookableDay',
+            $proposedChange->isTimeOpenedOnLastBookableDay() ? 'true' : 'false'
+        );
+        $debug .= sprintf(
+            $values,
+            'proposedChange::hasBookableDateTimeAfter(formerChange)',
+            $proposedChange->hasBookableDateTimeAfter($formerChange->getLastBookableDateTime()) ? 'true' : 'false'
+        );
+        $debug .= sprintf(
+            $values,
+            'processingNote',
+            (isset($availability['processingNote'])) ? json_encode($availability['processingNote']) : 'none'
+        );
+        \App::$log->debug('Slot availability debug', ['details' => $debug]);
+    }
+
+    protected function readTestAvailability()
+    {
+        $availability = (new \BO\Zmsbackend\Availability\Service\Availability())->readEntity(static::TEST_AVAILABILITY_ID, 2);
+        $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
+        $availability->endDate = $now->modify('+1 year')->getTimestamp();
+        // Set endInDays to allow booking in the future for tests that check slot rebuilding when time advances
+        if (!isset($availability->bookable['endInDays']) || $availability->bookable['endInDays'] == 0) {
+            $availability->bookable['endInDays'] = 60;
+        }
+        $availability->weekday = [
+            'sunday' => 1,
+            'monday' => 1,
+            'tuesday' => 1,
+            'wednesday' => 1,
+            'thursday' => 1,
+            'friday' => 1,
+            'saturday' => 1
+        ];
+        return $availability;
+    }
+}

@@ -1,0 +1,67 @@
+<?php
+
+namespace BO\Zmsbackend\Tests\Organisation\Api;
+
+use BO\Zmsbackend\Helper\User;
+use BO\Zmsentities\Useraccount;
+use BO\Zmsentities\Workstation;
+use BO\Zmsentities\Scope;
+
+class OrganisationUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
+{
+    protected $classname = "OrganisationUpdate";
+
+    const SCOPE_ID = 143;
+
+    public function testRendering()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('organisation')
+            ->addDepartment([
+                'id' => 55
+            ]);
+        $response = $this->render(['id' => 54], [
+            '__body' => $this->readFixture("GetOrganisation.json")
+        ], []);
+        $this->assertStringContainsString('organisation.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testEmpty()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('organisation');
+        $this->expectException('\BO\Mellon\Failure\Exception');
+        $this->render([], [], []);
+    }
+
+    public function testNotFound()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('organisation');
+        $this->expectException('\BO\Zmsbackend\Organisation\Exception\OrganisationNotFound');
+
+        $this->expectExceptionCode(404);
+        $this->render(["id" => 9999], [
+            '__body' => '{}'
+        ], []);
+    }
+
+    public function testNoRights()
+    {
+        $this->setWorkstation()->getUseraccount()
+            ->addDepartment(['id' => 55]);
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectExceptionCode(403);
+        $this->render(["id" => 54], [
+            '__body' => $this->readFixture("GetOrganisation.json")
+        ], []);
+    }
+
+    public function testNoEntityAccess()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('organisation');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectExceptionCode(403);
+        $this->render(["id" => 54], [
+            '__body' => $this->readFixture("GetOrganisation.json")
+        ], []);
+    }
+}

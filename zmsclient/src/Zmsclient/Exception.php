@@ -10,7 +10,7 @@ class Exception extends \Exception
     public $response;
 
     /**
-     * @var \Psr\Http\Message\RequestInterface $request
+     * @var \Psr\Http\Message\RequestInterface|null $request
      */
     public $request;
 
@@ -70,7 +70,7 @@ class Exception extends \Exception
     /**
      * Info about request intended for error messages
      *
-     * @return String
+     * @return string
      */
     protected function getRequestInfoString()
     {

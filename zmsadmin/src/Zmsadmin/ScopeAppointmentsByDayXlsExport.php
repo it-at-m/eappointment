@@ -9,9 +9,8 @@
 
 namespace BO\Zmsadmin;
 
-use League\Csv\Writer;
-use League\Csv\Reader;
-use League\Csv\EscapeFormula;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 /**
  * Handle requests concerning services
@@ -20,13 +19,14 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
 {
     /**
      *
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', [
             'resolveReferences' => 1,
             'gql' => Helper\GraphDefaults::getWorkstation()
@@ -38,6 +38,9 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
 
         $xlsSheetTitle = $selectedDateTime->format('d.m.Y');
         $clusterColumn = $workstation->isClusterEnabled() ? 'Kürzel' : 'Lfd. Nummer';
+        $customTextfieldActivated = (int) $scope->getCustomTextfieldActivated() === 1;
+        $customTextfield2Activated = (int) $scope->getCustomTextfield2Activated() === 1;
+
         $xlsHeaders = [
             $clusterColumn,
             'Uhrzeit/Ankunftszeit',
@@ -47,17 +50,23 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
             'Email',
             'Dienstleistung',
             'Anmerkungen',
-            'Freitextfeld',
-            'Freitextfeld2'
         ];
+
+        if ($customTextfieldActivated) {
+            $label = trim((string) $scope->getCustomTextfieldLabel());
+            $xlsHeaders[] = $label !== '' ? $label : 'Freitextfeld 1';
+        }
+        if ($customTextfield2Activated) {
+            $label = trim((string) $scope->getCustomTextfield2Label());
+            $xlsHeaders[] = $label !== '' ? $label : 'Freitextfeld 2';
+        }
 
         $rows = [];
         $key = 1;
         foreach ($processList as $queueItem) {
             $client = $queueItem->getFirstClient();
-            $request = count($queueItem->requests) > 0 ? $queueItem->requests[0] : [];
-            $rows[] = [
-                $workstation->isClusterEnabled() ? $queueItem->getCurrentScope()->shortName : $key++ ,
+            $row = [
+                $workstation->isClusterEnabled() ? $queueItem->getCurrentScope()->shortName : $key++,
                 $queueItem->getArrivalTime()->setTimezone(\App::$now->getTimezone())->format('H:i:s'),
                 $queueItem->queue['number'],
                 $client['familyName'],
@@ -65,26 +74,51 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
                 $client['email'],
                 $queueItem->requests->getCsvForProperty('name'),
                 $queueItem->amendment,
-                $queueItem->customTextfield,
-                $queueItem->customTextfield2,
             ];
+            if ($customTextfieldActivated) {
+                $row[] = $queueItem->customTextfield;
+            }
+            if ($customTextfield2Activated) {
+                $row[] = $queueItem->customTextfield2;
+            }
+            $rows[] = array_map([$this, 'escapeSpreadsheetFormula'], $row);
         }
-        $writer = Writer::createFromString();
-        $writer->setDelimiter(';');
-        $writer->addFormatter(new EscapeFormula());
-        $writer->insertOne($xlsHeaders);
-        $writer->setOutputBOM(Reader::BOM_UTF8);
-        $writer->insertAll($rows);
 
-        $response->getBody()->write($writer->toString());
-        $fileName = sprintf("Tagesübersicht_%s_%s.csv", $scope->contact['name'], $xlsSheetTitle);
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet->getProperties()
+            ->setCreator('eappointment')
+            ->setTitle('Tagesübersicht ' . $xlsSheetTitle);
+        $spreadsheet->getActiveSheet()->fromArray(
+            array_merge([$xlsHeaders], $rows),
+            null,
+            'A1'
+        );
+
+        $resource = fopen('php://temp', 'r+');
+        IOFactory::createWriter($spreadsheet, 'Xlsx')->save($resource);
+        rewind($resource);
+        $response->getBody()->write(stream_get_contents($resource));
+        fclose($resource);
+
+        $fileName = sprintf("Tagesübersicht_%s_%s.xlsx", $scope->contact['name'], $xlsSheetTitle);
         return $response
-            ->withHeader('Content-Type', 'text/csv; charset=UTF-8')
+            ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             ->withHeader('Content-Description', 'File Transfer')
             ->withHeader(
                 'Content-Disposition',
-                sprintf('download; filename="' . $this->convertspecialChars($fileName) . '"')
+                sprintf('attachment; filename="%s"', $this->convertspecialChars($fileName))
             );
+    }
+
+    protected function escapeSpreadsheetFormula($value)
+    {
+        if (!is_string($value) || $value === '') {
+            return $value;
+        }
+        if (preg_match('/^[=\-+@\t\r]/u', $value)) {
+            return "'" . $value;
+        }
+        return $value;
     }
 
     protected function convertspecialchars($string)

@@ -2,15 +2,20 @@
 
 namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
+/**
+ * @implements \ArrayAccess<int|string, Base>
+ */
 class Collection implements \Countable, \ArrayAccess
 {
     protected $entities = [];
 
+    #[\Override]
     final public function offsetExists($offset): bool
     {
         return array_key_exists($offset, $this->entities);
     }
 
+    #[\Override]
     final public function offsetGet($offset)
     {
         if ($this->offsetExists($offset)) {
@@ -19,6 +24,7 @@ class Collection implements \Countable, \ArrayAccess
         throw new \InvalidArgumentException(__METHOD__ . " offset({$offset}) has not been set!");
     }
 
+    #[\Override]
     final public function offsetSet($offset, $value): Collection
     {
         if (!$value instanceof Base) {
@@ -34,12 +40,14 @@ class Collection implements \Countable, \ArrayAccess
         return $this;
     }
 
+    #[\Override]
     final public function offsetUnset($offset): Collection
     {
         unset($this->entities[$offset]);
         return $this;
     }
 
+    #[\Override]
     final public function count(): int
     {
         return count($this->entities);
