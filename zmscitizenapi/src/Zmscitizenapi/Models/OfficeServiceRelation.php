@@ -18,15 +18,6 @@ class OfficeServiceRelation extends Entity implements JsonSerializable
     public bool $public;
     public ?int $maxQuantity;
 
-    /**
-     * Constructor.
-     *
-     * @param int $officeId
-     * @param int $serviceId
-     * @param int $slots
-     * @param bool $public
-     * @param ?int $maxQuantity
-     */
     public function __construct(int $officeId, int $serviceId, int $slots, bool $public, ?int $maxQuantity)
     {
         $this->officeId = $officeId;
@@ -44,11 +35,6 @@ class OfficeServiceRelation extends Entity implements JsonSerializable
         }
     }
 
-    /**
-     * Converts the model data back into an array for serialization.
-     *
-     * @return array
-     */
     public function toArray(): array
     {
         return [
@@ -60,11 +46,7 @@ class OfficeServiceRelation extends Entity implements JsonSerializable
         ];
     }
 
-    /**
-     * Implements JSON serialization.
-     *
-     * @return mixed
-     */
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         return $this->toArray();

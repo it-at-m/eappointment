@@ -8,6 +8,7 @@ class Closure extends Schema\Entity
 
     public static $schema = "closure.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [

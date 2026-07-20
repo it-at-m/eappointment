@@ -6,7 +6,7 @@
     sameDay: urlGet('scopeAvailabilityDay', {'id': scope.id, 'date': getNow()|date('Y-m-d')}, {}),
     nextDay: urlGet('scopeAvailabilityDay', {'id': scope.id, 'date': (timestamp + 86400)|date('Y-m-d')}, {}),
     monthView: urlGet('scopeAvailabilityMonth', {'id': scope.id}, {}),
-    includeurl: includeUrl(),
+    includeurl: includeUrl,
 } %}
 
 {% set tabs = [
@@ -51,7 +51,7 @@
                 }
 
                 const currentDate = '{{ dateString }}'
-                const url = `{{ includeUrl() }}/scope/{{ scope.id }}/availability/day/${currentDate}/closure/toggle/`
+                const url = `{{ includeUrl }}/scope/{{ scope.id }}/availability/day/${currentDate}/closure/toggle/`
                 $.ajax(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -101,5 +101,5 @@
 {% endblock %}
 
 {% block javascript %}
-        <script type="text/javascript" src="{{ includeUrl() }}/_js/reactcomponents.js?version={{ currentVersion() }}&ts={{ getNow()|date("U") }}"></script>
+        <script type="text/javascript" src="{{ includeUrl }}/_js/reactcomponents.js?version={{ currentVersion() }}&ts={{ getNow()|date("U") }}"></script>
 {% endblock %}

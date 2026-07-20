@@ -1,0 +1,14 @@
+/*
+#{$namespace}.extended-search {
+    //background-color:       $color-block-heavy;
+    //@include getRem('padding', $formPaddingPx); 
+    .form-group.field-add {
+        @include media-query('smallest') {
+            button {
+                width:      100%;
+            }
+        }
+ 
+   }
+}
+*/

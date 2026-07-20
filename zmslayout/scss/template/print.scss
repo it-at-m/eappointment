@@ -1,0 +1,92 @@
+@page {
+    margin: 1.5cm 1cm 1cm 1cm;
+}
+
+@media print {
+    html {
+        font-family:            Neo, Roboto, Arial, sans-serif;
+    }
+
+    #page-footer {
+        flex: 0 1 auto;
+    } 
+
+    #page-header, 
+    #page-footer, 
+    #httplog,
+    .main-title,
+    section.d-wrapper, 
+    div.nav__wrapper, 
+    .button, .emergency {
+        display:                none !important;
+    }
+    .no-print {
+        display:                none !important;
+    }
+    * {
+        page-break-before:      avoid;
+        page-break-after:       avoid;
+    }
+    #page-header,
+    #page-header *,
+    #page-footer,
+    #page-footer *,
+    .page-header__title {
+        background-color:   transparent !important;
+        color:              #000000 !important;
+    }
+    .page-header__logo img {
+        -webkit-filter: invert(100%); /* safari 6.0 - 9.0 */
+          filter: invert(100%);
+    }
+    #content-wrapper > .grid {
+        display:    block !important;
+        padding:    0 !important;
+        margin:     0 !important;
+        .grid, .grid__item {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .grid__item--navigation-primary {
+            display:            none !important;
+        }
+    }
+    .button {
+        color:  #000000 !important;
+        background-color: #FFFFFF !important;
+        border-color: #000000 !important;
+    }
+    .form-actions--sticky,
+    .page-header__right {
+        display:            none !important;
+    }
+    .grid__item--main-content {
+        width:              100% !important;
+    }
+    .table-responsive-wrapper {
+        overflow:           visible !important;
+    }
+    table td {
+        word-break:         break-all;
+    }
+
+    /*
+        Vorgangsnummer drucken 
+    */
+    .print-content {
+        position:absolute;
+        top:0;
+        left:50%;
+        width:7cm;
+        margin-left:-3.5cm;
+        text-align:center;
+        display: block;
+        font-size: 18px;
+    }
+
+    .print-number {
+        margin:0.3em 0;
+        font-size: 1.5cm;
+        font-weight: bold;
+    }
+}

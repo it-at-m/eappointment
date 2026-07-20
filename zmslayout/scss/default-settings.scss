@@ -1,0 +1,206 @@
+/***************************************************
+ * OUR DEFAULT PAGE SETTINGS 
+ */
+
+
+/* We can use a wrapperclass to make unique rules and 
+ * avoid conflicts with existing older css classes.
+ *
+ *   <div class="our-namespace-to-isolate-the-rules">
+ *       <div class="teaser">
+ *           [...]
+ *       </div>
+ *   </div>
+ */
+//We can set a global namespace...
+$namespace:                       null; //".mynamespace "; // to use as a wrapper we need a whitespace at the end!
+
+
+/*
+ * 
+ *  COLORS
+ * 
+ */
+// Base  
+$color-white:                   #FFFFFF !default; 
+$color-black:                   #000000 !default; 
+$color-red:                     #D83D0B !default; 
+$color-errorRed:                #D52F2E !default; // Destructibe Button, Requiered Star
+$color-blue:                    #33445E !default; // Main blue: Header,...
+$color-blue-light:              #049FE1 !default; // Spinner
+$color-blue-button:             #0053B4 !default;
+$color-green:                   #15846E !default; // power on icon
+$color-green-light:             #A2C83F !default; 
+$color-grey:                    #F5F5F5 !default; // Main grey: Page Background, Block Grey Background, Form Background,..
+$color-grey-dark:               #DDDDDD !default; // Border, Footer
+$color-yellow:                  #EDC00F !default; // Calendar
+
+// Decorative
+$color-decorative-active:       #82146F !default; //#699893; //#82146F
+$color-disabled:                #DDDDDD !default;
+$color-border:                  $color-grey-dark !default; 
+$color-border-dark:             #666666 !default; // Bei Barierefreiheien Rahmen
+$color-line:                    $color-grey-dark !default; 
+$color-decorative-primary:      $color-blue !default; // colored icons, primary navigation headings, listicons, seperation headings, tableheader, ...
+$color-decorative-positive:     $color-green !default;
+$color-decorative-destructive:  $color-errorRed !default;
+
+
+// Text
+$color-text-base:               $color-black !default;
+$color-text-negative:           $color-white !default;
+$color-text-lightest:           #454545 !default; // Hellster Text, Barrierefrei: Anzeige, Copyright(mobil)
+$color-text-link:               #0053B4 !default;
+$color-text-disabled:           $color-disabled !default; // Disabled font color
+$color-text-error:              #9B0000 !default; // Validation forms and messageboxes textcolor
+$color-text-success:            #3f6b25 !default; 
+$color-text-seperationheading:  $color-decorative-primary !default;
+
+// Box Backgrounds
+$color-block-light:                 $color-white !default;
+$color-block-heavy:                 $color-grey !default;
+$color-block-footer:                $color-grey !default;
+$color-object-panel:                #E8EDF2 !default;
+$color-message-default:             #F9F4E4 !default;
+$color-message-success:             #E2F1EB !default;
+$color-message-info:                #EBF1F7 !default;
+$color-message-error:               #FDECEE !default;
+$color-block-seperationheading:     $color-grey !default; // primary nav headings, tableheader, ...
+$color-block-seperationheading-dark:$color-grey-dark !default; // form legend background, tablesubheader, ...
+
+// Statistic Colors
+$sg-color-statistic-1_1:            #1865DE;
+$sg-color-statistic-1_2:            #42B2FF;
+$sg-color-statistic-1_3:            #2B2C80;
+$sg-color-statistic-1_4:            #8D9DD8;
+$sg-color-statistic-1_5:            #0085b5;
+$sg-color-statistic-1_6:            #75ddff;
+
+$sg-color-statistic-2_1:            #f75b00;
+$sg-color-statistic-2_2:            #ff8400;
+$sg-color-statistic-2_3:            #ffa94d;
+$sg-color-statistic-2_4:            #ffdbb5;
+$sg-color-statistic-2_5:            #bf7f39;
+$sg-color-statistic-2_6:            #7f4200;
+
+$sg-color-statistic-3_1:            #15846e;
+$sg-color-statistic-3_2:            #4bab61;
+$sg-color-statistic-3_3:            #deeb7c;
+$sg-color-statistic-3_4:            #cdebbc;
+$sg-color-statistic-3_5:            #7dd4aa;
+$sg-color-statistic-3_6:            #00c29e;
+
+$sg-color-statistic-4_1:            #82146f;
+$sg-color-statistic-4_2:            #990f3d;
+$sg-color-statistic-4_3:            #c2325d;
+$sg-color-statistic-4_4:            #d97ab0;
+$sg-color-statistic-4_5:            #c7abd1;
+$sg-color-statistic-4_6:            #503178;
+
+$color-tabfocus:                    #0076DD !default;
+
+// Button
+$buttonPaddingY:                    0.286em !default; // 4px 
+$buttonPaddingX:                    0.643em !default; // 9px
+$color-button-default:              $color-blue-button;
+$color-button-default-hover:        darken($color-button-default,7%) !default;
+$color-button-navigational:         $color-grey-dark !default;
+$color-button-navigational-hover:   darken($color-button-navigational,7%) !default;
+$color-button-positive:             $color-decorative-positive !default;
+$color-button-positive-hover:       darken($color-button-positive,7%) !default;
+$color-button-destructive:          $color-decorative-destructive !default;
+$color-button-destructive-hover:    darken($color-button-destructive,7%) !default;
+$color-button-diamond:              $color-white !default;
+$color-button-diamond-hover:        darken($color-button-diamond,7%) !default;
+
+// Page
+$color-page-body:               $color-grey !default;
+$color-page-header:             $color-blue !default;
+$color-page-footer:             $color-grey-dark !default;
+
+
+
+
+
+
+
+/*
+ * 
+ *  DIMENSIONS
+ * 
+ */
+$smallGapPx:                    12px !default;
+$mediumGapPx:                   24px !default;
+$largeGapPx:                    36px !default;
+// Grid
+$gridGutter:                    $mediumGapPx !default;;
+// Page
+$pageWidthDesk:                 1260px !default;
+$pagePaddingPx:                 $mediumGapPx !default; 
+$pagePaddingPalmPx:             $smallGapPx !default; 
+// Blocks
+$blockBottomMarginPx:           45px !default; 
+$boxPaddingPx:                  18px !default; // Block Grey, Accordion, Message, (all kinds of colored or bordered blocks that needs a padding)
+$blockHeadingMarginTop:         0px !default;
+// Form
+$formPaddingPx:                 $boxPaddingPx !default;
+$formInputHeightPx:             30px !default; // inputfield and button height
+$formItemPaddingPx:             6px !default; // Formgroups and searchfilter
+$formgoupBottomMarginPx:        24px !default; // Formgroups and searchfilter
+// Table
+$table-cell-padding:            1em 0.65em !default; // table, list--table
+// Breakpoints
+$breakointSmallest:             calc(420px / 16px) * 1rem !default;
+$breakointPalm:                 calc(768px / 16px) * 1rem !default;
+$breakointDesk:                 calc($pageWidthDesk / 16px) * 1rem !default;
+$breakpoints: (
+    "smallest" "(max-width: #{$breakointSmallest})",
+    "smallest-and-up" "(min-width: (#{$breakointSmallest + 0.001rem} ))",
+    "palm" "(max-width: #{$breakointPalm})",
+    "lap-and-up" "(min-width: #{$breakointPalm + 0.001rem} )",
+    "desk" "(min-width: #{$breakointDesk})",
+);
+// Sticky Header on small devices
+$stickyHeaderHeightPx:          3em !default;
+
+
+
+/*
+ *
+ *  FONT
+ *
+ */
+$base-font-family:              Arial, sans-serif !default;
+$base-font-size:                14px !default;
+$smallest-font-size:            11px !default;
+$base-line-height:              18px !default; 
+$inlineBottomGutter:            0.7em !default; // Margin bottom for paragraphs, lists, ...
+$font-size-h1:                  1.625rem !default; // 26px;
+$line-height-h1:                1.346em !default; //35px
+$font-size-h2:                  1rem !default; // 16px;
+$line-height-h2:                1.125em !default; //18px
+$font-size-h3:                  0.875rem !default; // 14px;
+$line-height-h3:                1.143em !default; // 16px
+$font-size-h4:                  0.875rem !default; // 14px;
+$line-height-h4:                1.143em !default; // 16px
+$font-color-h1:                 $color-text-base !default;
+$font-color-h2:                 $color-text-base !default;
+$font-color-h3:                 $color-text-base !default;
+$font-color-h4:                 $color-text-base !default;
+$font-family-h1:                $base-font-family !default;
+$font-family-h2:                $base-font-family !default;
+$font-family-h3:                $base-font-family !default;
+$font-family-h4:                $base-font-family !default;
+$font-weight-h1:                normal !default;
+$font-weight-h2:                bold !default;
+$font-weight-h3:                bold !default;
+$font-weight-h4:                bold !default;
+$font-weight-a:                 normal !default;
+
+$icon-size-big:                 18px !default;
+
+
+// Do we need some normalize rules (normalize.scss)?
+$use_simple_normalize:          true;
+$use_advanced_normalize:        false;
+$use_swiper:                    false;

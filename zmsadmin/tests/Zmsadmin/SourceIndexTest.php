@@ -36,8 +36,7 @@ class SourceIndexTest extends Base
 
     public function testNoSuperuser()
     {
-        $this->expectException('\BO\Zmsadmin\Exception\NotAllowed');
-        $this->expectExceptionCode(403);
+        $this->expectException(\BO\Zmsentities\Exception\UserAccountMissingRights::class);
         $this->setApiCalls(
             [
                 [

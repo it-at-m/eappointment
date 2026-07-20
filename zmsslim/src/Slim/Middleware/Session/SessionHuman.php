@@ -33,7 +33,7 @@ class SessionHuman extends SessionContainer
 
     /**
      * @SuppressWarnings(Complexity)
-     * @return Boolean
+     * @return bool
      */
     public function redirectOnSuspicion($request, $requiredSteps = array(), $referer = false)
     {

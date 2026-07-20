@@ -1,0 +1,24 @@
+#{$namespace}h1,
+#{$namespace}h2,
+#{$namespace}h3,
+#{$namespace}h4,
+#{$namespace}h5 {
+    @include heading--reset();
+    a {
+        font-weight:    inherit;
+    }
+}
+#{$namespace}h1 {
+    @include headline1();
+}
+#{$namespace}h2 {
+   @include headline2();
+}
+
+#{$namespace}h3 {
+    @include headline3();
+}
+
+#{$namespace}h4 {
+    @include headline4();
+}

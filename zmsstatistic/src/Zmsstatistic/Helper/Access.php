@@ -48,7 +48,7 @@ class Access extends \BO\Slim\Controller
 
     protected function readDepartment()
     {
-        if ($this->workstation->getUseraccount()->hasRights(['departmentStats'])) {
+        if ($this->workstation->getUseraccount()->hasPermissions(['statistic'])) {
             return \App::$http
                 ->readGetResult('/scope/' . $this->workstation->scope['id'] . '/department/')
                 ->getEntity();
@@ -57,7 +57,7 @@ class Access extends \BO\Slim\Controller
 
     protected function readOrganisation()
     {
-        if ($this->workstation->getUseraccount()->hasRights(['organisation'])) {
+        if ($this->workstation->getUseraccount()->isSuperUser()) {
             return \App::$http
                 ->readGetResult('/department/' . $this->department->getId() . '/organisation/')
                 ->getEntity();
@@ -107,6 +107,7 @@ class Access extends \BO\Slim\Controller
         return (false === strpos($path, 'select')
             && false === strpos($path, 'warehouse')
             && false === strpos($path, 'logout')
+            && false === strpos($path, 'report')
         );
     }
 
@@ -125,12 +126,12 @@ class Access extends \BO\Slim\Controller
             $template = TwigExceptionHandler::getExceptionTemplate($exception);
             if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
                 $exceptionData = [
-                  'template' => 'exception/bo/zmsapi/exception/useraccount/invalidcredentials.twig'
+                  'template' => 'exception/bo/zmsbackend/useraccount/exception/invalidcredentials.twig'
                 ];
                 $exceptionData['data']['password']['messages'] = [
                     'Der Nutzername oder das Passwort wurden falsch eingegeben'
                 ];
-            } elseif ('BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn' == $exception->template) {
+            } elseif ('BO\Zmsbackend\Useraccount\Exception\UserAlreadyLoggedIn' == $exception->template) {
                 Auth::setKey($exception->data['authkey'], time() + \App::SESSION_DURATION);
                 throw $exception;
             } elseif (

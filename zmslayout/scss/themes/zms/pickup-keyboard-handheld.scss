@@ -1,0 +1,64 @@
+.pickup-keyboard-handheld {
+    //font-size:                  1.3em;
+    margin-bottom:              0;
+    form {
+        input.number {
+            font-size:          2.5em;
+            text-align:         center;
+            width:              auto;
+        }
+        .actions {
+            margin-top:         1em;
+        }
+    }
+    .keyboard {
+        text-align: center;
+        table {
+            background:             transparent;
+            width:                  auto;
+            margin:                 0 auto;
+            td,th {
+                vertical-align:     middle;
+                text-align:         center;
+            }
+        }
+    }
+    
+    .button-submit {
+        font-size:              2em;
+        padding:                0.5em 3em;
+        //width:                  70%;
+    }
+
+    .button-keyboard {
+        width:                  4.8em;
+        height:                 4.8em;
+        margin:                 0.3em;
+        .number {
+            font-size:          2.5em;
+        }
+    }
+    .call-actions {
+        display:                flex;
+        flex-direction:         column;
+        justify-content:        center;
+        align-items:            center;
+        height:                 100%;
+    }
+    .grid__item {
+        margin-bottom:          0;
+    }
+}
+
+
+
+@include media-query(palm) {
+    .pickup-keyboard-handheld {
+        form {
+            .actions {
+                text-align:         center; 
+                margin-top:         3em;
+            }
+        }
+    }
+}

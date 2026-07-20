@@ -13,13 +13,14 @@ class Changelog extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         try {
             $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         } catch (\Exception $workstationexception) {
@@ -28,6 +29,8 @@ class Changelog extends BaseController
 
         $changelogHelper = new ChangelogHelper();
         $changelogContent = $changelogHelper->getChangelogHtml();
+        //TODO: Check if safe when refactoring to vue.js in the future
+        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -36,7 +39,8 @@ class Changelog extends BaseController
                 'title' => 'Changelog',
                 'menuActive' => 'changelog',
                 'workstation' => $workstation,
-                'changelogContent' => $changelogContent
+                'changelogContent' => $changelogContent,
+                'config' => $config
             )
         );
     }

@@ -1,0 +1,38 @@
+// ToDo: Build new or move to themes/zms
+// react-datepicker styles: import in the consuming module (admin.scss / statistic.scss)
+// before this file.
+
+.react-datepicker__year-read-view--down-arrow, 
+.react-datepicker__month-read-view--down-arrow, 
+.react-datepicker__month-year-read-view--down-arrow, 
+.react-datepicker__navigation-icon:before {
+    // Overwrite icon colors in react-datepicker
+    border-color:               #000000;
+}
+.react-datepicker__navigation:hover *::before {
+    border-color:               #666666;
+}
+
+.add-date-picker {
+    display:flex;
+    .calendar-placement {
+        height: auto;
+        margin-left: 5px;
+        font-size: 1.5em;
+    }
+    .form-control[readonly] {
+        background-color:       $color-white !important;
+        color:                  $color-text-base;
+        cursor:                 pointer;           
+    }
+
+    .day__selected__weekday__appointment:not(.react-datepicker__day--disabled) {
+        background:             $color-blue-light;
+        color:                  #ffffff;
+    }
+
+    .day__selected__weekday__openinghours:not(.react-datepicker__day--disabled) {
+        background:             $color-green-light;
+        color:                  #ffffff;
+    }  
+}

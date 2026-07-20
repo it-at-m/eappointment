@@ -1,6 +1,5 @@
 import { mount } from "@vue/test-utils";
 import { describe, it, expect, vi } from "vitest";
-// @ts-expect-error: SFC import for test
 import AppointmentPreview from "@/components/Appointment/AppointmentSelection/AppointmentPreview.vue";
 
 const t = vi.fn((key: string) => key);
@@ -55,13 +54,13 @@ describe("AppointmentPreview", () => {
     });
     expect(wrapper.exists()).toBe(true);
   });
-  it("displays appropriate icon and appointment type for variantId", () => {
+  it("displays appointment type for telephone and video variantId", () => {
     const variants = [
-      { id: 2, icon: "icon-telephone", textKey: `appointmentTypes.${2}` },
-      { id: 3, icon: "icon-video-camera", textKey: `appointmentTypes.${3}` },
+      { id: 2, textKey: `appointmentTypes.${2}` },
+      { id: 3, textKey: `appointmentTypes.${3}` },
     ];
 
-    variants.forEach(variant => {
+    variants.forEach((variant) => {
       const wrapper = mount(AppointmentPreview, {
         global: { stubs: { "muc-callout": { template: '<div data-test="muc-callout"><slot name="header"></slot><slot name="content"></slot></div>' } } },
         props: {
@@ -73,8 +72,8 @@ describe("AppointmentPreview", () => {
         },
       });
 
-      expect(wrapper.find(`use[xlink:href="#${variant.icon}"]`).exists()).toBe(true);
       expect(wrapper.text()).toContain(t(variant.textKey));
+      expect(wrapper.text()).not.toContain("Office A");
       expect(wrapper.text()).not.toContain("Elm");
       expect(wrapper.text()).not.toContain("99");
     });
@@ -100,8 +99,10 @@ describe("AppointmentPreview", () => {
     });
 
     const hintHeading = Array.from(
-      wrapper.element.querySelectorAll("h3")
-    ).find((element) => element.textContent?.trim() === "hint");
+      (wrapper.element as HTMLElement).querySelectorAll("h3")
+    ).find(
+      (element: Element) => element.textContent?.trim() === "hint"
+    ) as HTMLElement | undefined;
 
     expect(hintHeading).toBeTruthy();
 
@@ -135,8 +136,10 @@ describe("AppointmentPreview", () => {
     });
 
     const hintHeading = Array.from(
-      wrapper.element.querySelectorAll("h3")
-    ).find((element) => element.textContent?.trim() === "hint");
+      (wrapper.element as HTMLElement).querySelectorAll("h3")
+    ).find(
+      (element: Element) => element.textContent?.trim() === "hint"
+    ) as HTMLElement | undefined;
 
     expect(hintHeading).toBeTruthy();
 

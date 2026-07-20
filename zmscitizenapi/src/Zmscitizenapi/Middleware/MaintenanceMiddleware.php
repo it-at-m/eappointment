@@ -14,6 +14,7 @@ class MaintenanceMiddleware implements MiddlewareInterface
 {
     private const HTTP_UNAVAILABLE = 503;
     private const ERROR_UNAVAILABLE = 'serviceUnavailable';
+    #[\Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if (\App::MAINTENANCE_MODE_ENABLED) {

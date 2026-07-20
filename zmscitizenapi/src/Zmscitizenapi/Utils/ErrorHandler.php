@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Utils;
 
 use BO\Zmscitizenapi\Utils\ClientIpHelper;
-use BO\Zmscitizenapi\Services\Core\LoggerService;
+use BO\Slim\LoggerService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpException;
@@ -13,6 +13,7 @@ use Slim\Interfaces\ErrorHandlerInterface;
 
 class ErrorHandler implements ErrorHandlerInterface
 {
+    #[\Override]
     public function __invoke(
         ServerRequestInterface $request,
         \Throwable $exception,

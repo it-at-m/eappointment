@@ -7,20 +7,23 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Helper\DateTime;
+
 class CounterAppointmentTimes extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
-        $dateTime = new \BO\Zmsentities\Helper\DateTime($selectedDate);
+        $dateTime = new DateTime($selectedDate);
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
 
         try {

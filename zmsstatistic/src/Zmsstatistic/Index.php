@@ -7,7 +7,12 @@
 
 namespace BO\Zmsstatistic;
 
+use BO\Slim\Render;
+use BO\Zmsclient\ModuleAccess;
+use BO\Zmsentities\Useraccount;
 use BO\Zmsentities\Workstation;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class Index extends BaseController
 {
@@ -15,13 +20,14 @@ class Index extends BaseController
 
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
-    ) {
+    ): ResponseInterface {
         try {
             $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         } catch (\Exception $workstationexception) {
@@ -35,10 +41,11 @@ class Index extends BaseController
             $loginData = $this->testLogin($input);
             if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
                 \BO\Zmsclient\Auth::setKey($loginData->authkey);
-                return \BO\Slim\Render::redirect('workstationSelect', array(), array());
+                return ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_STATISTIC, $loginData, $response)
+                    ?? \BO\Slim\Render::redirect('workstationSelect', array(), array());
             }
 
-            return \BO\Slim\Render::withHtml(
+            return Render::withHtml(
                 $response,
                 'page/index.twig',
                 array(
@@ -52,7 +59,12 @@ class Index extends BaseController
                 )
             );
         } else {
-            return \BO\Slim\Render::withHtml(
+            if ($workstation instanceof Workstation && $workstation->hasId()) {
+                if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_STATISTIC, $workstation, $response)) {
+                    return $wrongModuleResponse;
+                }
+            }
+            return Render::withHtml(
                 $response,
                 'page/index.twig',
                 array(
@@ -67,15 +79,15 @@ class Index extends BaseController
         }
     }
 
+    #[\Override]
     protected function testLogin($input)
     {
-        $userAccount = new \BO\Zmsentities\Useraccount(array(
+        $userAccount = new Useraccount(array(
             'id' => $input['loginName'],
             'password' => $input['password'],
             'departments' => array('id' => 0) // required in schema validation
         ));
         try {
-            /** @var \BO\Zmsentities\Workstation $workstation */
             $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
 
             $sessionHash = hash('sha256', $workstation->authkey);
@@ -92,7 +104,7 @@ class Index extends BaseController
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
             if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
                 $exceptionData = [
-                  'template' => 'exception/bo/zmsapi/exception/useraccount/invalidcredentials.twig'
+                  'template' => 'exception/bo/zmsbackend/useraccount/exception/invalidcredentials.twig'
                 ];
                 $exceptionData['data']['password']['messages'] = [
                     'Der Nutzername oder das Passwort wurden falsch eingegeben'
@@ -104,7 +116,7 @@ class Index extends BaseController
                     'error_type' => 'invalid_credentials',
                     'application' => 'zmsstatistic'
                 ]);
-            } elseif ('BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn' == $exception->template) {
+            } elseif ('BO\Zmsbackend\Useraccount\Exception\UserAlreadyLoggedIn' == $exception->template) {
                 \BO\Zmsclient\Auth::setKey($exception->data['authkey'], time() + \App::SESSION_DURATION);
                 \App::$log->info('User already logged in - reusing existing session', [
                     'event' => 'auth_session_reuse',

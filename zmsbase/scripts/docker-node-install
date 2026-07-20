@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -eo pipefail
+
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor -o /usr/share/keyrings/nodesource.gpg
+
+echo "deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/${1} nodistro main" \
+  > /etc/apt/sources.list.d/nodesource.list
+echo "deb-src [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/${1} nodistro main" \
+  >> /etc/apt/sources.list.d/nodesource.list
+
+docker-apt-clean-install nodejs

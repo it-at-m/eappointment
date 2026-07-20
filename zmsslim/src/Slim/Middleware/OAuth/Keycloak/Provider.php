@@ -15,19 +15,8 @@ class Provider extends Keycloak
 {
     const PROVIDERNAME = 'keycloak';
 
-    /**
-     * @var \BO\Zmsclient\OAuthService
-     */
     protected $oauthService;
 
-    /**
-     * Sets the config options for keycloak access from json file.
-     *
-     * @param array $options An array of options to set on this provider.
-     *     Options include `clientId`, `clientSecret`, `redirectUri`, `authServerurl` and `realm`.
-     *     Individual providers may introduce more options, as needed.
-     * @return parent
-     */
     public function __construct($client = null, ?\BO\Zmsclient\OAuthService $oauthService = null)
     {
         $this->oauthService = $oauthService ?: new \BO\Zmsclient\OAuthService(\App::$http, \App::CONFIG_SECURE_TOKEN);
@@ -36,36 +25,19 @@ class Provider extends Keycloak
         return parent::__construct($options, ['httpClient' => $client]);
     }
 
-    /**
-     * Sets the HTTP client instance.
-     *
-     * @param  \BO\Zmsclient\PSR7\ClientInterface $client
-     * @return self
-     */
+    #[\Override]
     public function setHttpClient($client)
     {
         $this->httpClient = $client;
         return $this;
     }
 
-    /**
-     * Generate a user object from a successful user details request.
-     *
-     * @param array $response
-     * @param AccessToken $token
-     * @return ResourceOwner
-     */
+    #[\Override]
     protected function createResourceOwner(array $response, AccessToken $token): ResourceOwner
     {
         return new ResourceOwner($response);
     }
 
-    /**
-     * Requests and returns the resource owner data of given access token.
-     *
-     * @param  AccessToken $token
-     * @return array
-     */
     public function getResourceOwnerData(AccessToken $token): Useraccount
     {
         $resourceOwner = $this->getResourceOwner($token);

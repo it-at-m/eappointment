@@ -1,17 +1,23 @@
 "Type: Feature":
   - head-branch: [ '^feat', '-feature-' ]
 "Type: Bug":
-  - head-branch: [ '^bug', '-bug-' ]
+  - head-branch: [ '^bug', '^fix', '-bug-', '-fix-' ]
 "Type: Maintenance":
   - head-branch: [ '^maint', '-maintenance-' ]
 "Type: Documentation":
   - head-branch: [ '^docs', '-documentation-' ]
 "Type: Dependency":
-  - head-branch: [ '^dep', '-dependency-' ]
+  - head-branch: [ '^dep', '^renovate', '-dependency-', '-renovate-' ]
 "Type: Security":
   - head-branch: [ '^sec', '-security-' ]
 "Type: Chore":
   - head-branch: [ '^chore', '-chore-' ]
+"Type: Clean":
+  - head-branch: [ '^clean', '-cleanup-', '-clean-' ]
+
+"Documentation: docs":
+  - changed-files:
+    - any-glob-to-any-file: ['docs/**']
 
 "Documentation: README":
   - changed-files:
@@ -45,6 +51,22 @@
   - changed-files:
     - any-glob-to-any-file: ['.ddev/**']
 
+"Infrastructure: cli":
+  - changed-files:
+    - any-glob-to-any-file: ['cli', 'cli_base.py', 'cli_test.py']
+
+"Infrastructure: husky":
+  - changed-files:
+    - any-glob-to-any-file: ['.husky/**']
+
+"Infrastructure: resources":
+  - changed-files:
+    - any-glob-to-any-file: ['.resources/**']
+
+"Infrastructure: vscode":
+  - changed-files:
+    - any-glob-to-any-file: ['.vscode/**']
+
 "Module: mellon":
   - changed-files:
     - any-glob-to-any-file: ['mellon/**']
@@ -53,13 +75,17 @@
   - changed-files:
     - any-glob-to-any-file: ['zmsadmin/**']
 
-"Module: zmsapi":
+"Module: zmsbackend":
   - changed-files:
-    - any-glob-to-any-file: ['zmsapi/**']
+    - any-glob-to-any-file: ['zmsbackend/**']
 
 "Module: zmsautomation":
   - changed-files:
     - any-glob-to-any-file: ['zmsautomation/**']
+
+"Module: zmsbase":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsbase/**']
 
 "Module: zmscalldisplay":
   - changed-files:
@@ -77,10 +103,6 @@
   - changed-files:
     - any-glob-to-any-file: ['zmsclient/**']
 
-"Module: zmsdb":
-  - changed-files:
-    - any-glob-to-any-file: ['zmsdb/**']
-
 "Module: zmsdldb":
   - changed-files:
     - any-glob-to-any-file: ['zmsdldb/**']
@@ -88,6 +110,10 @@
 "Module: zmsentities":
   - changed-files:
     - any-glob-to-any-file: ['zmsentities/**']
+
+"Module: zmslayout":
+  - changed-files:
+    - any-glob-to-any-file: ['zmslayout/**']
 
 "Module: zmsmessaging":
   - changed-files:

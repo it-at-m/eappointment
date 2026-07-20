@@ -15,19 +15,25 @@ class WorkstationProcessCancel extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $validator = $request->getAttribute('validator');
         $noRedirect = $validator->getParameter('noredirect')->isNumber()->getValue();
+        $action = strtolower((string) $validator->getParameter('action')->isString()->setDefault('')->getValue());
 
         if ($workstation->process['id']) {
-            \App::$http->readDeleteResult('/workstation/process/')->getEntity();
+            $deleteParameters = [];
+            if ($action !== '') {
+                $deleteParameters['action'] = $action;
+            }
+            \App::$http->readDeleteResult('/workstation/process/', $deleteParameters)->getEntity();
         }
         if (1 == $noRedirect) {
             return $response;

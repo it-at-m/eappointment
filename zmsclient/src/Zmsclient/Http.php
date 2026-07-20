@@ -4,7 +4,6 @@ namespace BO\Zmsclient;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
-use Psr\Http\Client\ClientInterface;
 use Slim\Psr7\Headers;
 
 /**
@@ -15,10 +14,7 @@ use Slim\Psr7\Headers;
  */
 class Http
 {
-    /**
-     * @var ClientInterface|null
-     */
-    protected $client = null;
+    protected Psr7\Client $client;
 
     /**
      * @var string
@@ -32,9 +28,9 @@ class Http
     public static $authEnabled = true;
 
     /**
-     * @var Psr7\Uri|null
+     * @var UriInterface
      */
-    protected $uri = null;
+    protected UriInterface $uri;
 
     /**
      * @var bool
@@ -63,11 +59,7 @@ class Http
      */
     public static $jsonCompressLevel = null;
 
-    /**
-     *
-     * @param ClientInterface $client
-     */
-    public function __construct($baseUrl, ClientInterface $client = null)
+    public function __construct($baseUrl, ?Psr7\Client $client = null)
     {
         $this->http_baseurl = parse_url($baseUrl, PHP_URL_PATH) ?? '';
         $this->uri = new Psr7\Uri();
@@ -189,12 +181,6 @@ class Http
 
     /**
      * Creates a POST-Http-Request and fetches the response
-     *
-     * @param string $relativeUrl
-     * @param \BO\Zmsentities\Schema\Entity $entity
-     * @param array $getParameters (optional)
-     *
-     * @return Result
      */
     public function readPostResult($relativeUrl, $entity, array $getParameters = null)
     {
@@ -240,8 +226,8 @@ class Http
             } catch (Exception $exception) {
                 if (
                     $try < 3 && in_array($exception->template, [
-                    "BO\\Zmsdb\\Exception\\Pdo\\DeadLockFound",
-                    "BO\\Zmsdb\\Exception\\Pdo\\LockTimeout",
+                    "BO\\Zmsbackend\\Exception\\Pdo\\DeadLockFound",
+                    "BO\\Zmsbackend\\Exception\\Pdo\\LockTimeout",
                     ])
                 ) {
                     usleep(rand(1000000, 3000000));

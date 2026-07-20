@@ -14,6 +14,7 @@ class Contact extends Base
         'geo' => 'geo_json',
     ];
 
+    #[\Override]
     public function deleteEntity(): bool
     {
         try {

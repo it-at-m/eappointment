@@ -38,7 +38,6 @@ class SessionData implements SessionInterface
      */
     public static function getSession(Request $request)
     {
-        $session = array();
         if (headers_sent() === false && session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
             if (!count($_SESSION)) {
@@ -60,6 +59,7 @@ class SessionData implements SessionInterface
         $this->isLocked = true;
     }
 
+    #[\Override]
     public function setGroup(array $group, $clear)
     {
         foreach ($group as $index => $items) {
@@ -80,6 +80,7 @@ class SessionData implements SessionInterface
      *
      * @return array
      */
+    #[\Override]
     public function set($key, $value, $groupIndex = null)
     {
         if (null === $groupIndex) {
@@ -93,6 +94,7 @@ class SessionData implements SessionInterface
         $_SESSION = $this->data;
     }
 
+    #[\Override]
     public function get($key, $groupIndex = null, $default = null)
     {
         if (! $this->has($key, $groupIndex)) {
@@ -104,6 +106,7 @@ class SessionData implements SessionInterface
         }
     }
 
+    #[\Override]
     public function getEntity()
     {
         if (null === $this->entityClass) {
@@ -120,6 +123,7 @@ class SessionData implements SessionInterface
         return $this;
     }
 
+    #[\Override]
     public function remove($key, $groupIndex = null)
     {
         if (null === $groupIndex) {
@@ -135,6 +139,7 @@ class SessionData implements SessionInterface
      *
      * @return self
      */
+    #[\Override]
     public function clearGroup($groupIndex = null)
     {
         if (null !== $groupIndex) {
@@ -149,6 +154,7 @@ class SessionData implements SessionInterface
      *
      * @return self
      */
+    #[\Override]
     public function clear()
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
@@ -173,6 +179,7 @@ class SessionData implements SessionInterface
         }
     }
 
+    #[\Override]
     public function has($key, $groupIndex = null)
     {
         if (null === $groupIndex) {
@@ -184,6 +191,7 @@ class SessionData implements SessionInterface
         }
     }
 
+    #[\Override]
     public function isEmpty()
     {
         return empty($this->data);
@@ -192,6 +200,7 @@ class SessionData implements SessionInterface
     // TODO: Review the use of `mixed` return type.
     // This method delegates to getSession()->jsonSerialize(), which may return various types.
     // Consider adding stricter return typing if getSession() can be more precisely typed.
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         return json_encode($this->data);

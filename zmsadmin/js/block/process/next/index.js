@@ -55,9 +55,17 @@ class View extends BaseView {
         return this.loadInto(url).then(() => this.onNextProcess()).then(this.setTimeSinceCall);
     }
 
-    loadCancel() {
+    loadCancel(action = '') {
         this.cleanInstance();
-        const url = `${this.includeUrl}/workstation/process/cancel/`
+        let url = `${this.includeUrl}/workstation/process/cancel/`
+        const validActions = [
+            'requeue_pre_call',
+            'requeue_after_call_count_keep',
+            'requeue_after_call_count_decrement',
+        ];
+        if (validActions.includes(action)) {
+            url += `?action=${action}`
+        }
         return this.loadInto(url).then(() => {
             this.onNextProcess();
             this.updateURL();
@@ -113,20 +121,30 @@ class View extends BaseView {
             ev.stopPropagation();
             this.exclude = $(ev.target).data('exclude');
             this.loadClientNext();
+        }).on('click', '.client-precall_button-cancel', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.exclude = '';
+            this.loadCancel('requeue_pre_call');
+        }).on('click', '.client-called_button-success', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.loadProcessing();
         }).on('click', '.client-called_button-skip', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.exclude = $(ev.target).data('exclude');
             this.loadCancelClientNext();
-        }).on('click', '.client-called_button-success', (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            this.loadProcessing();
-        }).on('click', '.client-called_button-abort, .client-precall_button-abort, .button-cancel', (ev) => {
+        }).on('click', '.client-called_button-abort', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.exclude = '';
-            this.loadCancel();
+            this.loadCancel('requeue_after_call_count_keep');
+        }).on('click', '.client-info .button-cancel', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.exclude = '';
+            this.loadCancel('requeue_after_call_count_decrement');
         }).on('click', '.client-called_button-parked, .client-precall_button-parked, .button-parked', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();

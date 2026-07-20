@@ -15,24 +15,15 @@ class Useraccount extends Schema\Entity
 
     public static $schema = "useraccount.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [
-            'rights' => [
-                "availability" => false,
-                "basic" => true,
-                "cluster" => false,
-                "department" => false,
-                "organisation" => false,
-                "scope" => false,
-                "superuser" => false,
-                "ticketprinter" => false,
-                "useraccount" => false,
-            ],
             'permissions' => [
                 "appointment" => false,
                 "availability" => false,
                 "calldisplay" => false,
+                "capacityreport" => false,
                 "cherrypick" => false,
                 "cluster" => false,
                 "config" => false,
@@ -43,6 +34,7 @@ class Useraccount extends Schema\Entity
                 "emergency" => false,
                 "finishedqueue" => false,
                 "finishedqueuepast" => false,
+                "jurisdiction" => false,
                 "logs" => false,
                 "mailtemplates" => false,
                 "missedqueue" => false,
@@ -113,64 +105,144 @@ class Useraccount extends Schema\Entity
         return $this->getDepartmentList()->getUniqueScopeList()->hasEntity($scopeId);
     }
 
-    /**
-     * @todo Remove this function, keep no contraint on old DB schema in zmsentities
-     */
-    public function getRightsLevel()
-    {
-        return Helper\RightsLevelManager::getLevel($this->rights);
-    }
 
-    public function setRights()
+    public function setPermissions()
     {
-        $givenRights = func_get_args();
-        foreach ($givenRights as $right) {
-            if (Property::__keyExists($right, $this->rights)) {
-                $this->rights[$right] = true;
+        $givenPermissions = func_get_args();
+        foreach ($givenPermissions as $permission) {
+            if (Property::__keyExists($permission, $this->permissions)) {
+                $this->permissions[$permission] = true;
             }
         }
         return $this;
     }
 
-    // @todo Legacy cleanup — remove rights path once migration to permissions is complete.
-    public function hasRights(array $requiredRights): bool
+    /**
+     * Returns true when the user has all of the given permissions.
+     */
+    public function hasPermissions(array $requiredPermissions): bool
     {
         if ($this->isSuperUser()) {
             return true;
         }
 
         $permissions = $this->toProperty()->permissions ?? null;
-        $rights = $this->toProperty()->rights ?? null;
 
-        foreach ($requiredRights as $required) {
+        foreach ($requiredPermissions as $required) {
             if ($required instanceof Useraccount\RightsInterface) {
-                if (!$required->validateUseraccount($this)) {
+                if (! $required->validateUseraccount($this)) {
                     return false;
                 }
                 continue;
             }
 
-            $hasPermission = $permissions?->$required?->get() ?? false;
-            $hasRight = $rights?->$required?->get() ?? false;
-
-            if (!$hasPermission && !$hasRight) {
+            if (! ($permissions?->$required?->get() ?? false)) {
                 return false;
             }
         }
+
         return true;
     }
 
-    public function testRights(array $requiredRights)
+    /**
+     * Returns true when the user has any of the given permissions.
+     */
+    public function hasAnyPermission(array $requiredPermissions): bool
     {
-        if ($this->hasId()) {
-            if (!$this->hasRights($requiredRights)) {
-                throw new Exception\UserAccountMissingRights(
-                    "Missing rights " . htmlspecialchars(implode(',', $requiredRights))
-                );
+        if ($this->isSuperUser()) {
+            return true;
+        }
+
+        $permissions = $this->toProperty()->permissions ?? null;
+
+        foreach ($requiredPermissions as $required) {
+            if ($required instanceof Useraccount\RightsInterface) {
+                if ($required->validateUseraccount($this)) {
+                    return true;
+                }
+                continue;
             }
-        } else {
+
+            if ($permissions?->$required?->get() ?? false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns true when the user has only the given permission and no other permission.
+     */
+    public function hasExclusivePermission(string $permission): bool
+    {
+        if ($this->isSuperUser()) {
+            return false;
+        }
+
+        $permissions = $this['permissions'] ?? [];
+        $requiredPermission = $permissions[$permission] ?? false;
+        if (!is_array($permissions) || !$requiredPermission || '0' === $requiredPermission) {
+            return false;
+        }
+
+        foreach ($permissions as $name => $enabled) {
+            if ($permission === $name || 'superuser' === $name) {
+                continue;
+            }
+            if ($enabled && '0' !== $enabled) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    public function getRoles(): array
+    {
+        $roles = $this->roles ?? [];
+        if (is_array($roles)) {
+            return $roles;
+        }
+        if (is_string($roles)) {
+            return array_values(array_filter(array_map('trim', explode(',', $roles)), function ($role) {
+                return $role !== '';
+            }));
+        }
+        return [];
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return in_array($role, $this->getRoles(), true);
+    }
+
+    public function testPermissions(array $requiredPermissions)
+    {
+        if (! $this->hasId()) {
             throw new Exception\UserAccountMissingLogin();
         }
+
+        if (! $this->hasPermissions($requiredPermissions)) {
+            throw new Exception\UserAccountMissingRights(
+                "Missing permissions " . htmlspecialchars(implode(',', $requiredPermissions))
+            );
+        }
+
+        return $this;
+    }
+
+    public function testAnyPermission(array $requiredPermissions)
+    {
+        if (! $this->hasId()) {
+            throw new Exception\UserAccountMissingLogin();
+        }
+
+        if (! $this->hasAnyPermission($requiredPermissions)) {
+            throw new Exception\UserAccountMissingRights(
+                "Missing any of permissions " . htmlspecialchars(implode(',', $requiredPermissions))
+            );
+        }
+
         return $this;
     }
 
@@ -185,9 +257,7 @@ class Useraccount extends Schema\Entity
 
     public function isSuperUser(): bool
     {
-        return $this->toProperty()->rights?->superuser?->get()
-            || $this->toProperty()->permissions?->superuser?->get()
-            ?? false;
+        return $this->toProperty()->permissions?->superuser?->get() ?? false;
     }
 
     public function getDepartmentById($departmentId)
@@ -249,6 +319,7 @@ class Useraccount extends Schema\Entity
         return $entity;
     }
 
+    #[\Override]
     public function withCleanedUpFormData($keepPassword = false)
     {
         unset($this['save']);
@@ -278,17 +349,14 @@ class Useraccount extends Schema\Entity
     {
         // Do you have old, turbo-legacy, non-crypt hashes?
         if (strpos($this->password, '$') !== 0) {
-            //error_log(__METHOD__ . "::legacy_hash\n");
             $result = $this->password === md5($password);
         } else {
-            //error_log(__METHOD__ . "::password_verify\n");
             $result = password_verify($password, $this->password);
         }
 
         // on passed validation check if the hash needs updating.
         if ($result && $this->isPasswordNeedingRehash()) {
             $this->password = $this->getHash($password);
-            //error_log(__METHOD__ . "::rehash\n");
         }
 
         return $this;
@@ -319,6 +387,7 @@ class Useraccount extends Schema\Entity
         return $hash;
     }
 
+    #[\Override]
     public function withLessData()
     {
         unset($this->departments);

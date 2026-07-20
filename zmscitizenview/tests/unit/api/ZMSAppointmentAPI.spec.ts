@@ -1,5 +1,4 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-// @ts-expect-error: API import for test
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
 
 global.fetch = vi.fn();

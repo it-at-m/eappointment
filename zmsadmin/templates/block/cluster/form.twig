@@ -1,6 +1,6 @@
 {% from 'element/helper/form.twig' import formgroup, formbutton, checkboxfield, custombutton %}
 
-{% set rights = workstation.useraccount.rights %}
+{% set permissions = workstation.useraccount.permissions %}
 
 {#% embed "block/scaffholding/board.twig" with {'class': 'cluster-form'} %}
         {% block board_title %}
@@ -51,7 +51,7 @@
                     </div>
                 </fieldset>
 
-                {% if rights.superuser %}
+                {% if permissions.calldisplay %}
                     <fieldset class="superuser-only-field">
                         <legend>
                             Bild für Aufrufanlage

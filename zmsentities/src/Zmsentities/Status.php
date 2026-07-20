@@ -7,6 +7,7 @@ class Status extends Schema\Entity
     public const PRIMARY = 'version';
     public static $schema = "status.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -17,12 +18,15 @@ class Status extends Schema\Entity
             ),
             'processes' => array (
                 'blocked' => 0,
+                'called' => 0,
                 'confirmed' => 0,
                 'preconfirmed' => 0,
                 'deleted' => 0,
                 'missed' => 0,
                 'parked' => 0,
                 'reserved' => 0,
+                'withExternalUserId' => 0,
+                'confirmedWithExternalUserId' => 0,
                 'lastInsert' => 0,
             ),
             'mail' => array (

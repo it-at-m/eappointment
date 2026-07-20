@@ -12,13 +12,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GitHub Action
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - name: Configure Git Safe Directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Install python3
         run: sudo apt install -y python3 python3-click python3-git
       - name: Referencing local Modules and Libraries
         run: python3 ./cli modules reference-libraries --no-symlink
+      - name: Remove host vendor trees before image build
+        run: |
+          # reference-libraries materializes nested vendors for CI; .dockerignore excludes
+          # them from the build context, so drop them here to free runner disk.
+          find . -type d -name vendor -prune -exec rm -rf {} +
       - name: Download CHANGELOG.md for zmsadmin and zmsstatistic
         if: matrix.module == 'zmsadmin' || matrix.module == 'zmsstatistic'
         run: |
@@ -29,34 +36,53 @@ jobs:
           fi
           curl -sSL -o $DIR/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Free disk space before image build
+        run: |
+          docker system prune -af --volumes || true
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL || true
+          df -h
       - name: Set Swap Space
         uses: pierotofy/set-swap-space@master
         with:
-          swap-size-gb: 20
+          swap-size-gb: 10
       - name: Build Image
         run: |
           tag="${{ github.ref_name }}"
           if [ "${{ github.ref_type }}" = "branch" ]; then
             # Sanitize the tag by replacing invalid characters with a hyphen
             tag="branch-$(echo "$tag" | sed 's/[\/:]/-/g')"
+            # Show the short commit hash for non-tag builds
+            app_version="$(git rev-parse --short HEAD)"
+          else
+            # Show the release tag for tag builds (prod releases)
+            app_version="$(git describe --tags --always)"
           fi
           docker build . \
             --file ".resources/Containerfile" \
             --tag "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
             --build-arg "MODULE=${{ matrix.module }}" \
-            --build-arg "PHP_VERSION=${{ matrix.php_version }}"
-          docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
+            --build-arg "PHP_VERSION=${{ matrix.php_version }}" \
+            --build-arg "APP_VERSION=${app_version}"
+          echo "IMAGE_TAG=$tag" >> "$GITHUB_ENV"
+
+      - name: Push Image to GHCR
+        uses: nick-fields/retry@v4
+        with:
+          max_attempts: 5
+          retry_wait_seconds: 30
+          timeout_minutes: 10
+          command: docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:${{ env.IMAGE_TAG }}"
     strategy:
       matrix:
         include:
           - module: zmsadmin
             php_version: "8.3"
-          - module: zmsapi
+          - module: zmsbackend
             php_version: "8.3"
           - module: zmscalldisplay
             php_version: "8.3"

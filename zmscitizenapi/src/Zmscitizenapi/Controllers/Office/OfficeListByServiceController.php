@@ -25,6 +25,7 @@ class OfficeListByServiceController extends BaseController
         $this->initializeUnpublishedAccess();
     }
 
+    #[\Override]
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $requestErrors = ValidationService::validateServerGetRequest($request);

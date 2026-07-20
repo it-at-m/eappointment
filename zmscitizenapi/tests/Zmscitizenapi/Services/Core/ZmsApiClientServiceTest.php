@@ -580,9 +580,7 @@ class ZmsApiClientServiceTest extends TestCase
 
     public function testSubmitClientDataSuccess(): void
     {
-        $process = new Process();
-        $process->id = 1;
-        $process->authKey = 'cafe';
+        $process = new Process(['id' => 1, 'authKey' => 'cafe']);
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn($process);
@@ -594,14 +592,12 @@ class ZmsApiClientServiceTest extends TestCase
 
         $result = ZmsApiClientService::submitClientData($process);
         $this->assertInstanceOf(Process::class, $result);
-        $this->assertEquals(1, $result->id);
+        $this->assertEquals(1, $result->getId());
     }
 
     public function testSubmitClientDataInvalidResponse(): void
     {
-        $process = new Process();
-        $process->id = 1;
-        $process->authKey = 'cafe';
+        $process = new Process(['id' => 1, 'authKey' => 'cafe']);
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn(null);
@@ -612,14 +608,12 @@ class ZmsApiClientServiceTest extends TestCase
 
         $result = ZmsApiClientService::submitClientData($process);
         $this->assertInstanceOf(Process::class, $result);
-        $this->assertEquals(0, $result->id);
+        $this->assertSame(0, $result['id']);
     }
 
     public function testSubmitClientDataException(): void
     {
-        $process = new Process();
-        $process->id = 1;
-        $process->authKey = 'cafe';
+        $process = new Process(['id' => 1, 'authKey' => 'cafe']);
 
         $this->httpMock->method('readPostResult')
             ->willThrowException(new \Exception('Test error'));
@@ -657,7 +651,7 @@ class ZmsApiClientServiceTest extends TestCase
 
         $result = ZmsApiClientService::preconfirmProcess($process);
         $this->assertInstanceOf(Process::class, $result);
-        $this->assertEquals(0, $result->id);
+        $this->assertSame(0, $result['id']);
     }
 
     public function testPreconfirmProcessException(): void
@@ -700,7 +694,7 @@ class ZmsApiClientServiceTest extends TestCase
 
         $result = ZmsApiClientService::confirmProcess($process);
         $this->assertInstanceOf(Process::class, $result);
-        $this->assertEquals(0, $result->id);
+        $this->assertSame(0, $result['id']);
     }
 
     public function testConfirmProcessException(): void
@@ -716,9 +710,7 @@ class ZmsApiClientServiceTest extends TestCase
 
     public function testCancelAppointmentSuccess(): void
     {
-        $process = new Process();
-        $process->id = 1;
-        $process->authKey = 'cafe';
+        $process = new Process(['id' => 1, 'authKey' => 'cafe']);
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn($process);
@@ -734,9 +726,7 @@ class ZmsApiClientServiceTest extends TestCase
 
     public function testCancelAppointmentInvalidResponse(): void
     {
-        $process = new Process();
-        $process->id = 1;
-        $process->authKey = 'cafe';
+        $process = new Process(['id' => 1, 'authKey' => 'cafe']);
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn(null);
@@ -747,14 +737,12 @@ class ZmsApiClientServiceTest extends TestCase
 
         $result = ZmsApiClientService::cancelAppointment($process);
         $this->assertInstanceOf(Process::class, $result);
-        $this->assertEquals(0, $result->id);
+        $this->assertSame(0, $result['id']);
     }
 
     public function testCancelAppointmentException(): void
     {
-        $process = new Process();
-        $process->id = 1;
-        $process->authKey = 'cafe';
+        $process = new Process(['id' => 1, 'authKey' => 'cafe']);
 
         $this->httpMock->method('readDeleteResult')
             ->willThrowException(new \Exception('Test error'));
@@ -765,9 +753,7 @@ class ZmsApiClientServiceTest extends TestCase
 
     public function testSendConfirmationEmailSuccess(): void
     {
-        $process = new Process();
-        $process->id = 1;
-        $process->authKey = 'cafe';
+        $process = new Process(['id' => 1, 'authKey' => 'cafe']);
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn($process);
@@ -783,9 +769,7 @@ class ZmsApiClientServiceTest extends TestCase
 
     public function testSendConfirmationEmailInvalidResponse(): void
     {
-        $process = new Process();
-        $process->id = 1;
-        $process->authKey = 'cafe';
+        $process = new Process(['id' => 1, 'authKey' => 'cafe']);
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn(null);
@@ -796,14 +780,12 @@ class ZmsApiClientServiceTest extends TestCase
 
         $result = ZmsApiClientService::sendConfirmationEmail($process);
         $this->assertInstanceOf(Process::class, $result);
-        $this->assertEquals(0, $result->id);
+        $this->assertSame(0, $result['id']);
     }
 
     public function testSendConfirmationEmailException(): void
     {
-        $process = new Process();
-        $process->id = 1;
-        $process->authKey = 'cafe';
+        $process = new Process(['id' => 1, 'authKey' => 'cafe']);
 
         $this->httpMock->method('readPostResult')
             ->willThrowException(new \Exception('Test error'));
@@ -814,9 +796,7 @@ class ZmsApiClientServiceTest extends TestCase
 
     public function testSendPreconfirmationEmailSuccess(): void
     {
-        $process = new Process();
-        $process->id = 1;
-        $process->authKey = 'cafe';
+        $process = new Process(['id' => 1, 'authKey' => 'cafe']);
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn($process);
@@ -832,9 +812,7 @@ class ZmsApiClientServiceTest extends TestCase
 
     public function testSendPreconfirmationEmailInvalidResponse(): void
     {
-        $process = new Process();
-        $process->id = 1;
-        $process->authKey = 'cafe';
+        $process = new Process(['id' => 1, 'authKey' => 'cafe']);
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn(null);
@@ -845,14 +823,12 @@ class ZmsApiClientServiceTest extends TestCase
 
         $result = ZmsApiClientService::sendPreconfirmationEmail($process);
         $this->assertInstanceOf(Process::class, $result);
-        $this->assertEquals(0, $result->id);
+        $this->assertSame(0, $result['id']);
     }
 
     public function testSendPreconfirmationEmailException(): void
     {
-        $process = new Process();
-        $process->id = 1;
-        $process->authKey = 'cafe';
+        $process = new Process(['id' => 1, 'authKey' => 'cafe']);
 
         $this->httpMock->method('readPostResult')
             ->willThrowException(new \Exception('Test error'));
@@ -863,9 +839,7 @@ class ZmsApiClientServiceTest extends TestCase
 
     public function testSendCancelationEmailSuccess(): void
     {
-        $process = new Process();
-        $process->id = 1;
-        $process->authKey = 'cafe';
+        $process = new Process(['id' => 1, 'authKey' => 'cafe']);
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn($process);
@@ -881,9 +855,7 @@ class ZmsApiClientServiceTest extends TestCase
 
     public function testSendCancelationEmailInvalidResponse(): void
     {
-        $process = new Process();
-        $process->id = 1;
-        $process->authKey = 'cafe';
+        $process = new Process(['id' => 1, 'authKey' => 'cafe']);
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn(null);
@@ -894,14 +866,12 @@ class ZmsApiClientServiceTest extends TestCase
 
         $result = ZmsApiClientService::sendCancellationEmail($process);
         $this->assertInstanceOf(Process::class, $result);
-        $this->assertEquals(0, $result->id);
+        $this->assertSame(0, $result['id']);
     }
 
     public function testSendCancelationEmailException(): void
     {
-        $process = new Process();
-        $process->id = 1;
-        $process->authKey = 'cafe';
+        $process = new Process(['id' => 1, 'authKey' => 'cafe']);
 
         $this->httpMock->method('readPostResult')
             ->willThrowException(new \Exception('Test error'));
@@ -912,8 +882,7 @@ class ZmsApiClientServiceTest extends TestCase
 
     public function testGetProcessByIdSuccess(): void
     {
-        $process = new Process();
-        $process->id = 1;
+        $process = new Process(['id' => 1]);
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn($process);
@@ -925,7 +894,7 @@ class ZmsApiClientServiceTest extends TestCase
 
         $result = ZmsApiClientService::getProcessById(1, 'cafe');
         $this->assertInstanceOf(Process::class, $result);
-        $this->assertEquals(1, $result->id);
+        $this->assertEquals(1, $result->getId());
     }
 
     public function testGetProcessByIdInvalidResponse(): void
@@ -939,7 +908,7 @@ class ZmsApiClientServiceTest extends TestCase
 
         $result = ZmsApiClientService::getProcessById(1, 'cafe');
         $this->assertInstanceOf(Process::class, $result);
-        $this->assertEquals(0, $result->id);
+        $this->assertSame(0, $result['id']);
     }
 
     public function testGetProcessByIdException(): void

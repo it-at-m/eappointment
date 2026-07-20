@@ -36,12 +36,27 @@
                 </div>
 
                 <input type="hidden" name="perPage" value="{{ perPage }}">
+                {% if hideNavigation %}
+                    <input type="hidden" name="hideNavigation" value="1">
+                {% endif %}
 
                 <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
                     <button type="submit" class="btn btn-primary">Übernehmen</button>
                 </div>
             </div>
         </form>
+
+        {% if processSearchTotal is defined and (searchProcessQuery or service or provider or date) %}
+            <p class="m-5" style="margin-top: 0;">
+                {% set shownCount = processList.count() + processListOther.count() %}
+                {% if processSearchTotal > shownCount %}
+                    Es werden {{ shownCount }} von {{ processSearchTotal }} Treffern angezeigt.
+                    Bitte verfeinern Sie Ihre Suche oder blättern Sie zur nächsten Seite.
+                {% elseif processSearchTotal > 0 %}
+                    {{ processSearchTotal }} Treffer gefunden.
+                {% endif %}
+            </p>
+        {% endif %}
 
         <div tabindex="1" class="table-responsive-wrapper">
             <table class="table--base" data-processList-count="{{ processList.count() }}"  data-processListOther-count="{{ processListOther.count() }}">
@@ -73,7 +88,7 @@
                         <td>{{process.scope.contact.name}} {{process.scope.shortName}}</td>
                         <td>{{process.clients.0.telephone}}</td>
                         <td>{{process.clients.0.email}}</td>
-                        <td>{{process.amendment}}</td>
+                        <td class="limited-width"><div class="queue-table-text-cell queue-table-free-text">{{ process.amendment|default('')|e|nl2br }}</div></td>
                     </tr>
                 {% endfor %}
                 {% for process in processListOther %}
@@ -96,7 +111,7 @@
                         <th colspan="7">Log-Ergebnisse:</th>
                     </tr>
                     {% for log in logList %}
-                        {% set data = log.data %}
+                        {% set data = log.display %}
                         <tr>
                             <td>{{ log.reference }}</td>
                             <td>{{log.ts|date('d.m.Y, H:i:s')}}&nbsp;Uhr</td>
@@ -125,6 +140,9 @@
                 <input type="hidden" name="provider" value="{{ provider }}">
                 <input type="hidden" name="user" value="{{ userAction }}">
                 <input type="hidden" name="date" value="{{ date }}">
+                {% if hideNavigation %}
+                    <input type="hidden" name="hideNavigation" value="1">
+                {% endif %}
                 <label for="perPage">Pro Seite</label>
                 <input
                         type="number"
@@ -145,7 +163,8 @@
                     'service': service,
                     'provider': provider,
                     'user': userAction,
-                    'date': date
+                    'date': date,
+                    'hideNavigation': hideNavigation ? 1 : null
                 }) %}
 
                 {% set nextParams = (queryParams ?? {})|merge({
@@ -155,7 +174,8 @@
                     'service': service,
                     'provider': provider,
                     'user': userAction,
-                    'date': date
+                    'date': date,
+                    'hideNavigation': hideNavigation ? 1 : null
                 }) %}
 
                 {% if currentPage > 1 %}
@@ -164,7 +184,9 @@
 
                 Seite: {{ currentPage }}
 
-                {% if currentPage < 100 %}
+                {% if processSearchTotal is defined and (currentPage * currentPerPage) < processSearchTotal %}
+                    <a href="?{{ nextParams|url_encode }}">Nächste Seite &gt;</a>
+                {% elseif currentPage < 100 and not processSearchTotal is defined %}
                     <a href="?{{ nextParams|url_encode }}">Nächste Seite &gt;</a>
                 {% endif %}
             </div>

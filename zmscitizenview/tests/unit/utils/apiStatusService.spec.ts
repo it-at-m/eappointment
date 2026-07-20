@@ -7,7 +7,6 @@ import {
   isInMaintenanceMode,
   isInSystemFailureMode,
   setApiStatus,
-// @ts-expect-error: API import for test
 } from "@/utils/apiStatusService";
 
 vi.mock("@/api/ZMSAppointmentAPI", () => {
@@ -16,7 +15,6 @@ vi.mock("@/api/ZMSAppointmentAPI", () => {
   };
 });
 
-// @ts-expect-error: API import for test
 const mockedApi = await import("@/api/ZMSAppointmentAPI");
 
 describe("apiStatusService", () => {

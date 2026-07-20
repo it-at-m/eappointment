@@ -56,7 +56,7 @@ class ErrorMessages
             'errorCode' => 'captchaVerificationFailed',
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorMessage' => 'Captcha verification failed.',
-            'errorType' => 'warning'
+            'errorType' => 'error'
         ],
         'invalidLocationAndServiceCombination' => [
             'errorCode' => 'invalidLocationAndServiceCombination',
@@ -158,7 +158,13 @@ class ErrorMessages
             'errorCode' => 'invalidCustomTextfield',
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorType' => 'warning',
-            'errorMessage' => 'customTextfield should be a string.'
+            'errorMessage' => 'customTextfield must be non-empty when required and at most 250 characters after normalization.'
+        ],
+        'invalidCustomTextfield2' => [
+            'errorCode' => 'invalidCustomTextfield2',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorType' => 'warning',
+            'errorMessage' => 'customTextfield2 must be non-empty when required and at most 250 characters after normalization.'
         ],
         'appointmentCanNotBeCanceled' => [
             'errorCode' => 'appointmentCanNotBeCanceled',
@@ -181,25 +187,25 @@ class ErrorMessages
         'captchaVerificationError' => [
             'errorCode' => 'captchaVerificationError',
             'statusCode' => self::HTTP_BAD_REQUEST,
-            'errorType' => 'warning',
+            'errorType' => 'error',
             'errorMessage' => 'An error occurred during captcha verification.'
         ],
         'captchaMissing' => [
             'errorCode' => 'captchaMissing',
             'statusCode' => self::HTTP_BAD_REQUEST,
-            'errorType' => 'warning',
+            'errorType' => 'error',
             'errorMessage' => 'Missing captcha token.',
         ],
         'captchaInvalid' => [
             'errorCode' => 'captchaInvalid',
             'statusCode' => self::HTTP_BAD_REQUEST,
-            'errorType' => 'warning',
+            'errorType' => 'error',
             'errorMessage' => 'Invalid captcha token.',
         ],
         'captchaExpired' => [
             'errorCode' => 'captchaExpired',
             'statusCode' => self::HTTP_BAD_REQUEST,
-            'errorType' => 'warning',
+            'errorType' => 'error',
             'errorMessage' => 'Captcha token expired.',
         ],
         'serviceUnavailable' => [
@@ -215,7 +221,7 @@ class ErrorMessages
             'errorMessage' => 'Data does not match the required schema.'
         ],
 
-        //Zmsapi exceptions
+        //Zmsbackend exceptions
         'internalError' => [
             'errorCode' => 'internalError',
             'errorMessage' => 'An internal error occurred. Please try again later.',

@@ -1,0 +1,36 @@
+#{$namespace}.breadcrumb {
+    //@include fontsize($smallest-font-size);
+    @include getRem('margin-bottom', $mediumGapPx);
+    @include media-query(palm) {
+        display:            none;
+    }
+    ol {
+        display:                flex;
+        flex-wrap:              wrap;
+        list-style:             none;
+        padding:                0;
+        margin-top:             0;
+        > li {
+            margin:             0 0.7em 0 0;
+            padding:            0;
+            &::before {
+                color:          $color-blue;
+                content:        "\f054";
+                font-family:    "Font Awesome 5 Free", "FontAwesome";
+                font-size:      0.65em;
+                margin:         0 0.5em 0 0;
+                width:          1em;
+                vertical-align: 0.1em;
+                font-weight:    900;
+            }
+            &:first-child::before {
+                display:        none;
+            }
+        }
+    }
+    @include media-query(palm) {
+    }
+}
+
+
+

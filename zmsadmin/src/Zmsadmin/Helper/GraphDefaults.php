@@ -40,7 +40,8 @@ class GraphDefaults
         appointmentsOnly
     }
     useraccount {
-        rights
+        permissions
+        id
     }
 }
 EOS;
@@ -82,7 +83,7 @@ EOS;
         appointmentsOnly
     }
     useraccount {
-        rights
+        permissions
     }
 }
 EOS;
@@ -350,6 +351,7 @@ EOS;
             name 
             data { 
                 payment 
+                slotTimeInMinutes
             }
         }
         preferences{

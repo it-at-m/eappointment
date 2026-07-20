@@ -1,0 +1,24 @@
+#{$namespace}.form--search {
+    @include media-query('lap-and-up') {
+        .searchfield {
+            display:                flex;
+            justify-content: space-between;
+            > * {
+                flex-grow:          1;
+                margin-right:       $smallGapPx;
+                &:last-child {
+                    margin-right:   0; 
+                    flex-grow:      0;
+                }
+            }
+            button {
+                min-width:          10em;
+                margin-bottom:      0; // important
+            }
+        }
+    }
+    .show-all {
+        margin-top:                 1em;
+        display:                    inline-block;
+    }
+} 

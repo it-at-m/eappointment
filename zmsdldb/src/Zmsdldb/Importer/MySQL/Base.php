@@ -88,16 +88,6 @@ abstract class Base implements Options
                 $entityObject = $this->createEntity(json_decode($entity->data_json, true));
                 $this->entitysToDelete[$entity->id] = $entityObject;
             }
-            /*
-            error_log(
-                print_r([
-                    'current',
-                    $this->entityClass::getTableName(),
-                    $this->getLocale(),
-                    count($this->entitysToDelete)
-                ],1
-            ));
-            */
         } catch (\Exception $e) {
             throw $e;
         }

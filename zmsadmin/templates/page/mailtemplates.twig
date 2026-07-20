@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block content %}
-    {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless config-view', 'data': {'includeurl':includeUrl() }} %}
+    {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless config-view', 'data': {'includeurl':includeUrl }} %}
 
         {% block board_title %}
         {% endblock %}
@@ -47,14 +47,14 @@
 
 
     <!-- Load Require.js from CDN -->
-    <script src="{{ includeUrl() }}/_libs/requirejs/require.js"></script>
+    <script src="{{ includeUrl }}/_libs/requirejs/require.js"></script>
     <script>
         let editors = {};
         let templateObjects = [];
 
         require.config({
             paths: {
-                'vs': '{{ includeUrl() }}/_libs/monaco-editor/min/vs',
+                'vs': '{{ includeUrl }}/_libs/monaco-editor/min/vs',
             }
         });
 
@@ -103,7 +103,7 @@
 
 
         function saveMailTemplate(templateId, editorId) {
-            const url = '{{ includeUrl() }}/mailtemplates/{{ scopeId }}/';
+            const url = '{{ includeUrl }}/mailtemplates/{{ scopeId }}/';
             const data = {
                 templateId: templateId,
                 templateContent: getContentOfEditor(editorId)
@@ -128,7 +128,7 @@
         }
 
         function deleteCustomization(templateId, editorId) {
-            const url = '{{ includeUrl() }}/mailtemplates/deleteCustomization/{{ scopeId }}/';
+            const url = '{{ includeUrl }}/mailtemplates/deleteCustomization/{{ scopeId }}/';
             const data = {
                 templateId: templateId
             };
@@ -149,7 +149,7 @@
         }
 
         function createCustomization(templateName, editorId) {
-            const url = '{{ includeUrl() }}/mailtemplates/createCustomization/{{ scopeId }}/';
+            const url = '{{ includeUrl }}/mailtemplates/createCustomization/{{ scopeId }}/';
             const data = {
                 templateName: templateName,
                 templateContent: getContentOfEditor(editorId)
@@ -176,7 +176,7 @@
                 templateObject.templateContent = getContentOfEditor(templateObject.elementId)
             });
 
-            const url = '{{ includeUrl() }}/mailtemplates/previewEmail/'+mailStatus+'/{{ scopeId }}/';
+            const url = '{{ includeUrl }}/mailtemplates/previewEmail/'+mailStatus+'/{{ scopeId }}/';
             const data = {
                 templates: templateObjects
             };

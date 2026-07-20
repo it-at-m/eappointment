@@ -42,17 +42,20 @@ class Property implements \ArrayAccess
         return $default;
     }
 
+    #[\Override]
     public function offsetGet(mixed $property): mixed
     {
         return $this->__get($property);
     }
 
+    #[\Override]
     public function offsetExists(mixed $property): bool
     {
         return null !== $this->__get($property)
             ->get();
     }
 
+    #[\Override]
     public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new \BO\Zmsentities\Exception\PropertyOffsetReadOnly(
@@ -60,6 +63,7 @@ class Property implements \ArrayAccess
         );
     }
 
+    #[\Override]
     public function offsetUnset(mixed $offset): void
     {
         throw new \BO\Zmsentities\Exception\PropertyOffsetReadOnly(__CLASS__ . "[$offset] is readonly");

@@ -26,7 +26,6 @@ class Office extends Entity implements JsonSerializable
     public ?ThinnedScope $scope = null;
     public ?string $slotsPerAppointment = null;
     public ?int $parentId = null;
-    /** @var int[]|null Group of office IDs; JumpIn with one auto-selects equivalent in group */
     public ?array $allowDisabledServicesMix = null;
 
     public function __construct(
@@ -71,11 +70,6 @@ class Office extends Entity implements JsonSerializable
         }
     }
 
-    /**
-     * Converts the model data back into an array for serialization.
-     *
-     * @return array
-     */
     public function toArray(): array
     {
         return [
@@ -97,6 +91,7 @@ class Office extends Entity implements JsonSerializable
         ];
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         return $this->toArray();

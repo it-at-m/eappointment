@@ -2,7 +2,6 @@
 
 namespace BO\Zmsentities;
 
-use BO\Zmsdb\Process;
 use BO\Zmsentities\Collection\ClosureList;
 use BO\Zmsentities\Collection\DayoffList;
 
@@ -15,6 +14,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
 
     public static $schema = "scope.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -320,15 +320,28 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $telephoneRequired ? true : false;
     }
 
+    #[\Override]
     public function hasAccess(Useraccount $useraccount)
     {
-        return $useraccount->hasRights(['superuser']) ||  $useraccount->hasScope($this->id);
+        return $useraccount->isSuperUser() ||  $useraccount->hasScope($this->id);
+    }
+
+    /**
+     * Keep provider and source unchanged (non-superusers must not reassign scope location data).
+     */
+    public function withProviderSourceFrom(self $reference): self
+    {
+        $entity = clone $this;
+        $entity['source'] = $reference->getSource();
+        $entity->provider = new Provider($reference->getProvider()->getArrayCopy());
+        return $entity;
     }
 
     /**
      * Reduce data of dereferenced entities to a required minimum
      *
      */
+    #[\Override]
     public function withLessData(array $keepArray = [])
     {
         $entity = clone $this;

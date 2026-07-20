@@ -7,6 +7,9 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Render;
+use BO\Zmsentities\Collection\RoleList;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 use BO\Zmsentities\Schema\Loader;
 use BO\Zmsentities\Useraccount as Entity;
 
@@ -14,14 +17,19 @@ class UseraccountAdd extends BaseController
 {
     /**
      * @SuppressWarnings(unused)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (! $workstation->getUseraccount()->hasPermissions(['useraccount'])) {
+            throw new UserAccountMissingRights();
+        }
+
         $confirmSuccess = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $selectedDepartment = $request->getAttribute('validator')->getParameter('department')->isNumber()->getValue();
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
@@ -35,7 +43,7 @@ class UseraccountAdd extends BaseController
             $submittedUserAccount = $input; // Preserve submitted data for form re-population
             $result = $this->writeNewEntity($input);
             if ($result instanceof Entity) {
-                return \BO\Slim\Render::redirect(
+                return Render::redirect(
                     'useraccountEdit',
                     array(
                         'loginname' => $result->id
@@ -50,7 +58,16 @@ class UseraccountAdd extends BaseController
         $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider') ?? '');
 
-        return \BO\Slim\Render::withHtml(
+        $roleList = new RoleList();
+        $roleResult = \App::$http->readGetResult('/roles/', []);
+        if ($roleResult) {
+            $loaded = $roleResult->getCollection();
+            if ($loaded !== null) {
+                $roleList = $loaded;
+            }
+        }
+
+        return Render::withHtml(
             $response,
             'page/useraccountEdit.twig',
             [
@@ -64,7 +81,8 @@ class UseraccountAdd extends BaseController
                 'userAccount' => $submittedUserAccount, // Use submitted data to preserve form values on error
                 'selectedDepartment' => $selectedDepartment,
                 'oidcProviderList' => array_filter($allowedProviderList),
-                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema))
+                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
+                'roleList' => $roleList,
             ]
         );
     }

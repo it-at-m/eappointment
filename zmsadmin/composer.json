@@ -1,6 +1,6 @@
 {
     "name": "eappointment/zmsadmin",
-    "description": "Manage eappointments using zmsapi",
+    "description": "Manage eappointments using zmsbackend",
     "license": "EUPL-1.2",
     "authors": [
         {
@@ -26,6 +26,7 @@
         }
     },
     "require-dev": {
+        "vimeo/psalm": "6.5.0",
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
         "phpunit/phpunit": "^11",
@@ -40,6 +41,7 @@
         "eappointment/zmsentities": "@dev",
         "monolog/monolog": "^2.0",
         "league/csv": "^9.0",
+        "phpoffice/phpspreadsheet": "^1.30",
         "psr/http-message": "^1.0",
         "container-interop/container-interop": "^1.2",
         "twig/intl-extra": "^3.4",

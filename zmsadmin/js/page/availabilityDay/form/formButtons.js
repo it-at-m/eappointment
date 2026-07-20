@@ -49,9 +49,6 @@ const FormButtons = (props) => {
                     disabled={
                         (data && !data.id) ||
                         !data.__modified ||
-                        hasConflicts ||
-                        hasErrors ||
-                        hasSlotCountError ||
                         isCreatingExclusion ||
                         isPastDate
                     }

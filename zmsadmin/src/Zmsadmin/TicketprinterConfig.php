@@ -8,23 +8,28 @@
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
-use BO\Zmsdb\Request;
+use BO\Slim\Render;
 use BO\Zmsentities\Collection\RequestList;
-use BO\Zmsentities\Department as DepartmentEntity;
 use BO\Zmsentities\Collection\DepartmentList;
+use BO\Zmsentities\Department;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 
 class TicketprinterConfig extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['ticketprinter'])) {
+            throw new UserAccountMissingRights();
+        }
         $scopeId = Validator::value($workstation['scope']['id'])->isNumber()->getValue();
         $config = \App::$http->readGetResult('/config/')->getEntity();
         $organisation = \App::$http->readGetResult(
@@ -41,7 +46,7 @@ class TicketprinterConfig extends BaseController
         $departments = new DepartmentList();
 
         foreach ($organisation->departments as $departmentData) {
-            $department = (new DepartmentEntity($departmentData))->withCompleteScopeList();
+            $department = (new Department($departmentData))->withCompleteScopeList();
             foreach ($department->scopes as $scope) {
                 $scope->services = [];
 
@@ -64,7 +69,7 @@ class TicketprinterConfig extends BaseController
             }
             $departments->addEntity($department);
         }
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/ticketprinterConfig.twig',
             array(

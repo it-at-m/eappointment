@@ -1,0 +1,38 @@
+$searchfilter-spacing:                  0.75em;
+
+#{$namespace}.searchfilter {
+    //@include getRem('margin-bottom', $formgoupBottomMarginPx);  
+    //&.block {
+        padding-bottom:     0;
+    //}
+}
+
+.searchfilter__item {
+    padding:                $formItemPaddingPx;
+    margin:                 $searchfilter-spacing/2 $searchfilter-spacing $searchfilter-spacing/2 0;
+    background-color:       $color-white;
+    border:                 1px solid $color-border;
+    display:                inline-block;
+    font-size:              1em;
+    line-height:            1.2;
+    &:hover {
+        cursor:             pointer;
+    }
+    &.static {
+        background-color:   $color-grey;
+        color:              lighten($color-text-base, 50%);
+        cursor:             not-allowed;
+    }
+    &.active {
+        background-color:   $color-white;//$color-decorative-active; // #EBF1F7;
+        color:              $color-decorative-active; //$color-text-negative; // $color-text-base;
+        font-weight:        bold;
+    }
+    .icon-remove {
+        border:             0 none;
+        background:         transparent;
+        cursor:             pointer;
+        color:              $color-decorative-active;//$color-text-negative; // lighten($color-text-base, 30%);
+        margin-left:        0.5em;
+    }
+}

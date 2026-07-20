@@ -1,0 +1,30 @@
+// Block with grey Background (used in form fieldsets too)
+#{$namespace}.panel--heavy {
+    @include panel--heavy();
+    // Stacked Panels gets darker
+    .panel--heavy {
+        background:                 rgba(160,160,160,0.1);
+        border-color:               rgba(160,160,160,0.1);
+    }
+}
+
+// Block with grey Background (used in form fieldsets too)
+#{$namespace}.panel--light {
+    @include panel--light();
+}
+
+// Block with no border and no background (used in form fieldsets too)
+#{$namespace}.panel--clean {
+    @include panel--clean();
+}
+
+// Block with lesser margins (Statusbar edit DL; Dashboard Quickentry;)
+#{$namespace}.panel--tiny {
+    @include panel--tiny();
+}
+
+#{$namespace}.panel--bordered {
+    @include panel--bordered();
+}
+
+

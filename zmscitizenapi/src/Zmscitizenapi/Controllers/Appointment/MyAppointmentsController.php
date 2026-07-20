@@ -20,6 +20,7 @@ class MyAppointmentsController extends BaseController
         $this->service = new MyAppointmentsService();
     }
 
+    #[\Override]
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $filterId = Validator::param('filterId')->isNumber()->getValue();

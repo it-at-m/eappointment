@@ -7,21 +7,25 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsclient\ModuleAccess;
+use BO\Zmsentities\Useraccount;
 use BO\Zmsentities\Workstation;
 use BO\Zmsadmin\Helper\LoginForm;
+use BO\Zmsadmin\Helper\RestrictedRoleRedirect;
 use BO\Mellon\Validator;
 
 class Index extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         try {
             $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         } catch (\Exception $workstationexception) {
@@ -34,7 +38,16 @@ class Index extends BaseController
             $loginData = $this->testLogin($input);
             if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
                 \BO\Zmsclient\Auth::setKey($loginData->authkey, time() + \App::SESSION_DURATION);
-                return \BO\Slim\Render::redirect('workstationSelect', array(), array());
+
+                if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_ADMIN, $loginData, $response)) {
+                    return $wrongModuleResponse;
+                }
+
+                $useraccount = $loginData->getUseraccount();
+                if ($restrictedRoleRedirect = RestrictedRoleRedirect::create($useraccount)) {
+                    return $restrictedRoleRedirect;
+                }
+                return \BO\Slim\Render::redirect('workstationSelect', [], []);
             }
             return \BO\Slim\Render::withHtml(
                 $response,
@@ -49,6 +62,16 @@ class Index extends BaseController
                 )
             );
         }
+        if ($workstation instanceof Workstation && $workstation->hasId()) {
+            if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_ADMIN, $workstation, $response)) {
+                return $wrongModuleResponse;
+            }
+
+            if ($restrictedRoleRedirect = RestrictedRoleRedirect::create($workstation->getUseraccount())) {
+                return $restrictedRoleRedirect;
+            }
+        }
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/index.twig',
@@ -65,13 +88,12 @@ class Index extends BaseController
 
     protected function testLogin($input)
     {
-        $userAccount = new \BO\Zmsentities\Useraccount(array(
+        $userAccount = new Useraccount(array(
             'id' => $input['loginName'],
             'password' => $input['password'],
             'departments' => array('id' => 0) // required in schema validation
         ));
         try {
-            /** @var \BO\Zmsentities\Workstation $workstation */
             $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
 
             $sessionHash = hash('sha256', $workstation->authkey);
@@ -88,7 +110,7 @@ class Index extends BaseController
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
             if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
                 $exceptionData = [
-                  'template' => 'exception/bo/zmsapi/exception/useraccount/invalidcredentials.twig'
+                  'template' => 'exception/bo/zmsbackend/useraccount/exception/invalidcredentials.twig'
                 ];
                 $exceptionData['data']['password']['messages'] = [
                     'Der Nutzername oder das Passwort wurden falsch eingegeben'
@@ -100,7 +122,7 @@ class Index extends BaseController
                     'error_type' => 'invalid_credentials',
                     'application' => 'zmsadmin'
                 ]);
-            } elseif ('BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn' == $exception->template) {
+            } elseif ('BO\Zmsbackend\Useraccount\Exception\UserAlreadyLoggedIn' == $exception->template) {
                 \BO\Zmsclient\Auth::setKey($exception->data['authkey'], time() + \App::SESSION_DURATION);
                 \App::$log->info('User already logged in - reusing existing session', [
                     'event' => 'auth_session_reuse',

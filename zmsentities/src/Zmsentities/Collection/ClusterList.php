@@ -30,6 +30,7 @@ class ClusterList extends Base
         return $clusterList;
     }
 
+    #[\Override]
     public function sortByName()
     {
         parent::sortByName();

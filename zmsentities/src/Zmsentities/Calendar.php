@@ -14,6 +14,7 @@ class Calendar extends Schema\Entity
 
     public static $schema = "calendar.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -311,6 +312,7 @@ class Calendar extends Schema\Entity
      * Reduce data of dereferenced entities to a required minimum
      *
      */
+    #[\Override]
     public function withLessData()
     {
         $entity = clone $this;

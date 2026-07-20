@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Core;
 
+use BO\Zmsentities\Helper\ProcessPlainText;
 use BO\Zmscitizenapi\Models\Office;
 use BO\Zmscitizenapi\Models\Combinable;
 use BO\Zmscitizenapi\Models\OfficeServiceRelation;
@@ -22,6 +23,7 @@ use BO\Zmsentities\Client;
 use BO\Zmsentities\Contact;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Provider;
+use BO\Zmsentities\Queue;
 use BO\Zmsentities\Request;
 use BO\Zmsentities\Scope;
 use BO\Zmsentities\Collection\ProviderList;
@@ -85,7 +87,7 @@ class MapperService
             $reservationDuration = $scope->getReservationDuration();
             return $reservationDuration !== null ? (int) $reservationDuration : null;
         }
-        $reservationDuration = $scope?->toProperty()?->preferences?->appointment?->reservationDuration?->get();
+        $reservationDuration = $scope->toProperty()?->preferences?->appointment?->reservationDuration?->get();
         return $reservationDuration !== null ? (int) $reservationDuration : null;
     }
 
@@ -103,7 +105,7 @@ class MapperService
             return (int) $activationDuration;
         }
 
-        $activationDuration = $scope?->toProperty()?->preferences?->appointment?->activationDuration?->get();
+        $activationDuration = $scope->toProperty()?->preferences?->appointment?->activationDuration?->get();
         if ($activationDuration === null || $activationDuration === '') {
             return null;
         }
@@ -197,9 +199,6 @@ class MapperService
     /**
      * Map services with combinations based on request and relation lists.
      *
-     * @param RequestList $requestList
-     * @param RequestRelationList $relationList
-     * @return ServiceList
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public static function mapServicesWithCombinations(
@@ -219,7 +218,6 @@ class MapperService
             $servicesProviderIds[$serviceId][] = $relation->provider->id;
         }
 
-        /** @var Service[] $services */
         $services = [];
         $requestArray = iterator_to_array($requestList);
         usort($requestArray, function ($a, $b) {
@@ -259,6 +257,7 @@ class MapperService
                     parentId: $parentId,
                     variantId: $variantId,
                     showOnStartPage: $service->getAdditionalData()['showOnStartPage'] ?? true,
+                    rootParentId: (int) $service->getRootParentId(),
                 );
             }
         }
@@ -320,7 +319,7 @@ class MapperService
             id: (int) ($scope->id ?? 0),
             provider: $thinnedProvider,
             shortName: isset($scope->shortName) ? (string) $scope->shortName : null,
-            emailFrom: (string) $scope->getEmailFrom() ?? null,
+            emailFrom: (string) $scope->getEmailFrom(),
             emailRequired: $scope->getEmailRequired() === null
                 ? null
                 : (bool) $scope->getEmailRequired(),
@@ -387,27 +386,24 @@ class MapperService
         $mainServiceId = null;
         $mainServiceName = null;
         $mainServiceCount = 0;
-        $requests = $myProcess->getRequests() ?? [];
-        if ($requests) {
-            $requests = is_array($requests) ? $requests : iterator_to_array($requests);
-            if (count($requests) > 0) {
-                $mainServiceId = $requests[0]->id;
-                foreach ($requests as $request) {
-                    if ($request->id === $mainServiceId) {
-                        $mainServiceCount++;
-                        if (!$mainServiceName && isset($request->name)) {
-                            $mainServiceName = $request->name;
-                        }
-                    } else {
-                        if (!isset($subRequestCounts[$request->id])) {
-                            $subRequestCounts[$request->id] = [
-                                'id' => (int) $request->id,
-                                'name'  => $request->name,
-                                'count' => 0,
-                            ];
-                        }
-                        $subRequestCounts[$request->id]['count']++;
+        $requests = iterator_to_array($myProcess->getRequests());
+        if (count($requests) > 0) {
+            $mainServiceId = $requests[0]->id;
+            foreach ($requests as $request) {
+                if ($request->id === $mainServiceId) {
+                    $mainServiceCount++;
+                    if (!$mainServiceName && isset($request->name)) {
+                        $mainServiceName = $request->name;
                     }
+                } else {
+                    if (!isset($subRequestCounts[$request->id])) {
+                        $subRequestCounts[$request->id] = [
+                            'id' => (int) $request->id,
+                            'name'  => $request->name,
+                            'count' => 0,
+                        ];
+                    }
+                    $subRequestCounts[$request->id]['count']++;
                 }
             }
         }
@@ -428,10 +424,10 @@ class MapperService
             officeName: (isset($myProcess->scope->contact) && isset($myProcess->scope->contact->name)) ? $myProcess->scope->contact->name : null,
             officeId: (isset($myProcess->scope->provider) && isset($myProcess->scope->provider->id)) ? (int) $myProcess->scope->provider->id : 0,
             scope: isset($myProcess->scope) ? self::scopeToThinnedScope($myProcess->scope) : null,
-            subRequestCounts: isset($subRequestCounts) ? array_values($subRequestCounts) : [],
+            subRequestCounts: array_values($subRequestCounts),
             serviceId: isset($mainServiceId) ? (int) $mainServiceId : 0,
             serviceName: isset($mainServiceName) ? $mainServiceName : null,
-            serviceCount: isset($mainServiceCount) ? $mainServiceCount : 0,
+            serviceCount: $mainServiceCount,
             status: (isset($myProcess->queue) && isset($myProcess->queue->status)) ? $myProcess->queue->status : null,
             slotCount: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->slotCount)) ? (int) $myProcess->appointments[0]->slotCount : null,
             displayNumber: ($myProcess->getDisplayNumber() ?: null),
@@ -448,8 +444,12 @@ class MapperService
         $processEntity = new Process();
         $processEntity->id = $thinnedProcess->processId;
         $processEntity->authKey = $thinnedProcess->authKey ?? null;
-        $processEntity->customTextfield = $thinnedProcess->customTextfield ?? null;
-        $processEntity->customTextfield2 = $thinnedProcess->customTextfield2 ?? null;
+        $customTextfield = $thinnedProcess->customTextfield ?? null;
+        $processEntity->customTextfield = $customTextfield === null ? null : ProcessPlainText::normalize($customTextfield);
+        $customTextfield2 = $thinnedProcess->customTextfield2 ?? null;
+        $processEntity->customTextfield2 = $customTextfield2 === null
+            ? null
+            : ProcessPlainText::normalize($customTextfield2);
         $processEntity->captchaToken = $thinnedProcess->captchaToken ?? null;
 
         $client = new Client();
@@ -466,8 +466,7 @@ class MapperService
         $processEntity->requests = self::createRequests($thinnedProcess);
 
         if (isset($thinnedProcess->status)) {
-            $processEntity->queue = new \stdClass();
-            $processEntity->queue->status = $thinnedProcess->status;
+            $processEntity->queue = new Queue(['status' => $thinnedProcess->status]);
             $processEntity->status = $thinnedProcess->status;
         }
 
@@ -567,12 +566,6 @@ class MapperService
         return $requests;
     }
 
-    /**
-     * Converts a raw or existing contact object/array into a ThinnedContact model.
-     *
-     * @param object|array $contact
-     * @return ThinnedContact
-     */
     public static function contactToThinnedContact($contact): ThinnedContact
     {
         if (is_array($contact)) {
@@ -598,12 +591,6 @@ class MapperService
         );
     }
 
-    /**
-     * Convert a Provider object to a ThinnedProvider.
-     *
-     * @param Provider $provider
-     * @return ThinnedProvider
-     */
     public static function providerToThinnedProvider(Provider $provider): ThinnedProvider
     {
         return new ThinnedProvider(
@@ -617,19 +604,13 @@ class MapperService
         );
     }
 
-    /**
-     * Generate ICS content for a process if it has appointments with time.
-     *
-     * @param Process $process The process to generate ICS content for
-     * @return string|null The ICS content or null if generation fails or not applicable
-     */
     private static function generateIcsContent(Process $process): ?string
     {
         if (!isset($process->appointments[0]) || !$process->appointments[0]->hasTime()) {
             return null;
         }
 
-        $content = ZmsApiClientService::getIcsContent((int)($process->id ?? 0), (string)($process->authKey ?? ''));
+        $content = ZmsApiClientService::getIcsContent((int) $process->getId(), (string) $process->getAuthKey());
         return $content ?: null;
     }
 }

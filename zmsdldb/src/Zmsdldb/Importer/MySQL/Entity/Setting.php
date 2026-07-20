@@ -9,6 +9,7 @@ class Setting extends Base
         'value' => 'value',
     ];
 
+    #[\Override]
     public function deleteEntity(): bool
     {
         try {

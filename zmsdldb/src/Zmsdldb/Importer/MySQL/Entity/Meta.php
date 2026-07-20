@@ -15,6 +15,7 @@ class Meta extends Base
         'titles' => 'titles_json'
     ];
 
+    #[\Override]
     protected function setupMapping()
     {
         $this->referanceMapping = [
@@ -68,6 +69,7 @@ class Meta extends Base
         ];
     }
 
+    #[\Override]
     public function postSetupFields()
     {
         if (array_key_exists('lastupdate', $this->fields) && !empty($this->fields['lastupdate'])) {
@@ -77,6 +79,7 @@ class Meta extends Base
         }
     }
 
+    #[\Override]
     public function deleteEntity(): bool
     {
         try {
@@ -91,6 +94,7 @@ class Meta extends Base
         }
     }
 
+    #[\Override]
     public function clearEntity(array $addWhere = []): bool
     {
         try {

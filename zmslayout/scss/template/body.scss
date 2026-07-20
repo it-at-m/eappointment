@@ -1,0 +1,26 @@
+body {
+    // dont use namespace class on the html tag. we need the native 16px as a base font size for rem.
+    @include fontsize($base-font-size);    
+    margin:                     0;
+    background-color:           $color-page-body;
+    line-height:                calc($base-line-height / $base-font-size); // 1.429; // 20px_16px
+    @include media-query('palm') {
+        &.sticky-header {
+            //margin-top:         $stickyHeaderHeightPx;
+            #page-header {
+                //position:       fixed;
+                position:       -webkit-sticky; /* Safari */  
+                position:       sticky;
+                height:         $stickyHeaderHeightPx;
+                width:          100%;
+                top:            0;
+                left:           0;
+                z-index:        100;
+            }
+            .navigation-primary {
+                z-index:        150;
+            }
+        }
+    }
+}
+

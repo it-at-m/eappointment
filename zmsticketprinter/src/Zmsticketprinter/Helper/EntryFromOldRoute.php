@@ -51,10 +51,9 @@ class EntryFromOldRoute
 
     public static function getFromOldMehrfachKiosk($request)
     {
-        $buttonList = '';
         $scopes = self::getScopes($request);
         $clusters = self::getClusters($request);
-        $buttonList = implode(',', array_filter(array($scopes, $clusters)));
-        return $buttonList;
+
+        return implode(',', array_filter(array($scopes, $clusters)));
     }
 }

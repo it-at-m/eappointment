@@ -7,29 +7,30 @@
 
 namespace BO\Zmsadmin\Helper;
 
+use BO\Slim\Render;
 use BO\Zmsadmin\BaseController;
 use BO\Zmsentities\Availability;
 use BO\Zmsentities\Collection\AvailabilityList;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use DateTimeImmutable;
 
-/**
- * Check if new Availability is in conflict with existing availability
- *
- */
 class AvailabilityConflicts extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
-    ) {
+    ): ResponseInterface {
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->assertValid()->getValue();
         $data = static::getAvailabilityData($input);
-        return \BO\Slim\Render::withJson(
+        return Render::withJson(
             $response,
             $data
         );
@@ -37,11 +38,10 @@ class AvailabilityConflicts extends BaseController
 
     protected static function getAvailabilityData($input)
     {
-        $conflictList = new \BO\Zmsentities\Collection\ProcessList();
         $availabilityList = (new AvailabilityList())->addData($input['availabilityList']);
         $conflictedList = [];
 
-        $selectedDateTime = (new \DateTimeImmutable($input['selectedDate']))->modify(\App::$now->format('H:i:s'));
+        $selectedDateTime = (new DateTimeImmutable($input['selectedDate']))->modify(\App::$now->format('H:i:s'));
         $selectedAvailability = new Availability($input['selectedAvailability']);
         $startDateTime = ($selectedAvailability->getStartDateTime() >= \App::$now) ?
             $selectedAvailability->getStartDateTime() : $selectedDateTime;
@@ -65,27 +65,4 @@ class AvailabilityConflicts extends BaseController
             'conflictIdList' => (count($conflictedList)) ? $conflictedList : []
         ];
     }
-
-    /*
-    protected static function getAvailabilityList($scope, $dateTime)
-    {
-        try {
-            $availabilityList = \App::$http
-                ->readGetResult(
-                    '/scope/' . $scope->getId() . '/availability/',
-                    [
-                        'resolveReferences' => 0,
-                        'startDate' => $dateTime->format('Y-m-d') //for skipping old availabilities
-                    ]
-                )
-                ->getCollection();
-        } catch (\BO\Zmsclient\Exception $exception) {
-            if ($exception->template != 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound') {
-                throw $exception;
-            }
-            $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
-        }
-        return $availabilityList->withScope($scope);
-    }
-    */
 }

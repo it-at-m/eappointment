@@ -33,6 +33,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return 'bozmsclientExtension';
     }
 
+    #[\Override]
     public function getFunctions()
     {
         $safe = array('is_safe' => array('html'));

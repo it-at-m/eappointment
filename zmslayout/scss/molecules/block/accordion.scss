@@ -1,0 +1,133 @@
+$activeTriggerBGColor:              lighten($color-object-panel, 5%);
+
+
+#{$namespace}.accordion {
+    overflow:                       visible; // important for forms info-/helptexts inside accordion
+    @include getRem('margin-bottom', $blockBottomMarginPx);
+    margin-top:                     0;
+    > *:last-child {
+        margin-bottom:              0;
+    } 
+    .title {
+        flex-grow:              1;
+    }
+    .panel--heavy {
+        // remove fieldset background color if we are inside an accordion panel
+        background:             rgba(160,160,160,.1);
+        border:                 0 none;
+    }
+}
+
+.accordion__heading {
+    @include clearfix();
+    margin:                     0;
+    border:                     1px solid $color-border;
+    position:                   relative;
+    display:                    flex;
+    + .accordion__panel + .accordion__heading {
+        border-top:             0 none;
+    }        
+}
+
+#{$namespace}.accordion__panel {
+    @include getRem('padding', $boxPaddingPx);
+    margin:                     0;
+    border:                     1px solid $color-border;
+    border-width:               0 1px 1px 1px;
+    background-color:           $color-object-panel;
+    border-radius:              0 0 0.1em 0.1em;
+    -webkit-transition:         opacity 0.2s ease-out;
+    transition:                 opacity 0.2s ease-out;
+    opacity:                    0;
+    &.opened {   
+        opacity:                1;
+    }
+    > *:first-child {
+        margin-top:             0;
+    }
+    > *:last-child {
+        margin-bottom:          0;
+    }
+    &:focus,
+    &:active {
+        outline-offset:         -3px;
+    }
+    .panel-actions {
+        display:                  flex;
+        flex:                     0 0 auto;
+        float:                    right;
+        margin-top:               -$boxPaddingPx;                   
+        margin-right:             -$boxPaddingPx;
+        .action {
+            background-color:   $color-white;
+            border:             1px solid $color-border;
+            min-width:          2.0em;
+            min-height:         2.0em;
+            text-align:         center;
+            vertical-align:     middle;
+            padding:            0.0em;
+            margin:             1px; // focus fix
+            line-height:        1.8; // if its not a button
+            border-radius:      4px;
+            &:hover {
+                background-color:   darken($color-white, 5%);
+            }
+        }
+    }
+}
+
+#{$namespace}.accordion__trigger {
+    background-color:           $color-white;
+    display:                    flex;
+    justify-content:            space-between;
+    align-items:                center;
+    cursor:                     pointer;
+    font-size:                  $base-font-size;
+    font-weight:                normal;
+    @include getRem('padding', $boxPaddingPx);
+    @include getRem('padding-top', $boxPaddingPx / 1.5);
+    @include getRem('padding-bottom', $boxPaddingPx / 1.5);
+    position:                   relative;
+    width:                      100%;
+    text-align:                 left;
+    margin:                     0;
+    border:                     0 none;
+    border-radius:              2px 2px 0px 0px;
+    &:hover {
+        background-color:       $activeTriggerBGColor;
+        > * {
+            outline:            0;
+        }
+    }
+    &:focus,
+    &:hover {
+        outline-offset:         -3px;
+    }
+    &:after {
+        font-family:            "Font Awesome 5 Free", "FontAwesome";
+        content:                "\f107";
+        font-weight:            900;
+        font-size:              1.3em;
+        float:                  right;
+        color:                  $color-text-link;
+        outline:                0;
+        margin-left:            0.5em;
+        &:focus,
+        &:hover {
+            outline:                0;
+        }
+    }
+    &[aria-expanded="true"] {            
+        box-shadow:             0px 3px 4px rgba(150,150,150,0.1);
+        margin-bottom:          0px;
+        border-radius:          0.1em 0.1em 0 0;
+        &:after {
+            content:            "\f106";
+        }
+    }
+    .accordion__title {
+        pointer-events:         none;
+    }
+}
+
+

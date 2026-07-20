@@ -48,7 +48,7 @@
   </div>
   <div
     v-else-if="
-      !error &&
+      (!error || isNoAppointmentForThisDayError) &&
       (hasSelectedProviderWithAppointments ||
         !availableDaysFetched ||
         isSwitchingProvider)
@@ -245,6 +245,7 @@ import { toCalloutType } from "@/utils/callout";
 import {
   createErrorStates,
   getApiErrorTranslation,
+  handleApiError,
   handleApiResponse,
 } from "@/utils/errorHandler";
 import {
@@ -273,7 +274,7 @@ const props = defineProps<{
   t: (key: string) => string;
 }>();
 
-const emit = defineEmits<(e: "next" | "back") => void>();
+const emit = defineEmits<(e: "next" | "back" | "clearBookingError") => void>();
 
 const { selectedService } = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
@@ -312,6 +313,28 @@ const currentErrorData = computed(() => errorStates.currentErrorData);
 const error = ref<boolean>(false);
 const showError = computed(() => error.value || props.bookingError);
 
+const clearLocalApiErrors = (): void => {
+  error.value = false;
+
+  Object.values(errorStateMap.value).forEach((errorState) => {
+    errorState.value = false;
+  });
+
+  errorStates.currentErrorData.value = null;
+};
+
+const clearVisibleErrors = (notifyParent = true): void => {
+  clearLocalApiErrors();
+
+  if (notifyParent) {
+    emit("clearBookingError");
+  }
+};
+
+const isNoAppointmentForThisDayError = computed(
+  () => errorStateMap.value.apiErrorNoAppointmentForThisDay?.value ?? false
+);
+
 const selectedDay = ref<Date>();
 const minDate = ref<Date>();
 const maxDate = ref<Date>();
@@ -329,10 +352,59 @@ const isLoadingAppointments = ref(false);
 const isSwitchingProvider = ref(false);
 
 const datesWithoutAppointments = ref(new Set<string>());
+const knownDaysWithoutAppointments = ref(new Set<string>());
 
 const isLoadingComplete = ref(false);
 
 let refetchTimer: ReturnType<typeof setTimeout> | undefined;
+
+const toDayKey = (value: Date | string): string => {
+  if (typeof value === "string") return value.slice(0, 10);
+  return convertDateToString(value);
+};
+
+const resetDatesWithoutAppointments = () => {
+  // Keep known empty days across available-days refreshes so stale API data
+  // cannot make those days selectable again until slots really exist.
+  datesWithoutAppointments.value = new Set<string>(
+    knownDaysWithoutAppointments.value
+  );
+  calendarKey.value++;
+};
+
+const addDateWithoutAppointments = (date: string) => {
+  const dayKey = toDayKey(date);
+  const known = new Set(knownDaysWithoutAppointments.value);
+  known.add(dayKey);
+  knownDaysWithoutAppointments.value = known;
+  const next = new Set(datesWithoutAppointments.value);
+  next.add(dayKey);
+  datesWithoutAppointments.value = next;
+  calendarKey.value++;
+};
+
+const removeDateWithoutAppointments = (date: string) => {
+  const dayKey = toDayKey(date);
+  const known = new Set(knownDaysWithoutAppointments.value);
+  known.delete(dayKey);
+  knownDaysWithoutAppointments.value = known;
+  const next = new Set(datesWithoutAppointments.value);
+  next.delete(dayKey);
+  datesWithoutAppointments.value = next;
+  calendarKey.value++;
+};
+
+const removeDayFromAvailableDays = (date: string) => {
+  const dayKey = toDayKey(date);
+  if (!availableDays.value?.length) return;
+  availableDays.value = availableDays.value.filter(
+    (day) => toDayKey(day.time) !== dayKey
+  );
+  // Do not auto-jump to another day in this edge case; keep the selected day
+  // so users can read the "no appointment for this day" callout.
+  updateDateRangeForSelectedProviders(true);
+  calendarKey.value++;
+};
 
 /**
  * Reference to the appointment summary.
@@ -479,8 +551,8 @@ const currentDayPart = computed(() => {
 
 const showSelectionForProvider = async (provider: OfficeImpl) => {
   isSwitchingProvider.value = true;
+  clearVisibleErrors(false);
   selectedProvider.value = provider;
-  error.value = false;
   selectedDay.value = undefined;
   selectedTimeslot.value = 0;
   await fetchAvailableDaysForSelection();
@@ -504,7 +576,7 @@ const allowedDates = (date: Date) => {
 
   if (!beforeMaxDate) return false;
 
-  const dateString = convertDateToString(date);
+  const dateString = toDayKey(date);
 
   // Check if this date is known to have no appointments
   if (datesWithoutAppointments.value.has(dateString)) {
@@ -512,7 +584,7 @@ const allowedDates = (date: Date) => {
   }
 
   const dayEntry = availableDays.value?.find(
-    (day) => convertDateToString(new Date(day.time)) === dateString
+    (day) => toDayKey(day.time) === dateString
   );
 
   if (!dayEntry) return false;
@@ -577,6 +649,7 @@ const hasSelectedProviderWithAppointments = computed(() => {
 });
 
 const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
+  clearVisibleErrors();
   selectedTimeslot.value = timeSlot;
   selectedProvider.value = getOfficeById(officeId);
   if (summary.value) {
@@ -598,6 +671,9 @@ const handleDaySelection = async (day: any) => {
   if (selectedDay.value && selectedDay.value.getTime() === day.getTime()) {
     return;
   }
+
+  // Clear stale booking and local availability errors when user chooses another date.
+  clearVisibleErrors();
 
   selectedDay.value = day;
   selectedTimeslot.value = 0;
@@ -739,7 +815,10 @@ const isSlotSelected = (officeId: number | string, time: number) =>
   selectedProvider.value?.id?.toString() === officeId.toString();
 
 const nextStep = () => emit("next");
-const previousStep = () => emit("back");
+const previousStep = () => {
+  clearVisibleErrors();
+  emit("back");
+};
 
 // API error handling
 const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
@@ -768,6 +847,15 @@ const handleError = (data: any): void => {
   handleApiResponse(data, errorStateMap.value, currentErrorData.value);
 };
 
+const setNoAppointmentForThisDayError = (): void => {
+  error.value = true;
+  handleApiError(
+    "noAppointmentForThisDay",
+    errorStateMap.value,
+    currentErrorData.value
+  );
+};
+
 // API calls
 const fetchAvailableDaysForSelection = async (): Promise<void> => {
   // Always fetch available days for ALL providers to maintain the full list
@@ -779,7 +867,7 @@ const fetchAvailableDaysForSelection = async (): Promise<void> => {
     // No providers available, clear available days
     availableDays.value = [];
     availableDaysFetched.value = true;
-    error.value = false;
+    clearLocalApiErrors();
     isSwitchingProvider.value = false;
     updateDateRangeForSelectedProviders();
     return;
@@ -802,8 +890,12 @@ const fetchAvailableDaysForSelection = async (): Promise<void> => {
         typeof d === "object" && d !== null && "time" in d && "providerIDs" in d
     )
   ) {
-    datesWithoutAppointments.value.clear();
-    availableDays.value = days as { time: string; providerIDs: string }[];
+    resetDatesWithoutAppointments();
+    availableDays.value = (
+      days as { time: string; providerIDs: string }[]
+    ).filter(
+      (day) => !knownDaysWithoutAppointments.value.has(toDayKey(day.time))
+    );
     // Only set selectedDay on first load; otherwise preserve current selection
     if (!selectedDay.value) {
       selectedDay.value = new Date((days[0] as any).time);
@@ -816,7 +908,7 @@ const fetchAvailableDaysForSelection = async (): Promise<void> => {
     );
     calendarKey.value++;
     availableDaysFetched.value = true;
-    error.value = false;
+    clearLocalApiErrors();
     isSwitchingProvider.value = false;
 
     // Update date range based on selected providers
@@ -855,6 +947,13 @@ const getAppointmentsOfDay = async (date: string): Promise<void> => {
       props.captchaToken ?? undefined
     );
 
+    // API errors (e.g. captchaMissing, rateLimitExceeded) must surface as callouts
+    // and must not be interpreted as "this day has no appointments".
+    if (data && typeof data === "object" && "errors" in data) {
+      handleError(data);
+      return;
+    }
+
     if (data && "offices" in data && Array.isArray((data as any).offices)) {
       appointmentTimestampsByOffice.value = (
         data as AvailableTimeSlotsByOfficeDTO
@@ -867,9 +966,12 @@ const getAppointmentsOfDay = async (date: string): Promise<void> => {
 
       // Track dates without appointments
       if (appointmentsCount.value === 0) {
-        datesWithoutAppointments.value.add(date);
+        addDateWithoutAppointments(date);
+        removeDayFromAvailableDays(date);
+        setNoAppointmentForThisDayError();
       } else {
-        datesWithoutAppointments.value.delete(date);
+        removeDateWithoutAppointments(date);
+        clearLocalApiErrors();
       }
 
       // Only show error if there are no appointments on any day
@@ -877,21 +979,20 @@ const getAppointmentsOfDay = async (date: string): Promise<void> => {
         appointmentsCount.value === 0 &&
         !hasAppointmentsForSelectedProviders()
       ) {
-        error.value = true;
-      } else {
-        error.value = false;
-
+        setNoAppointmentForThisDayError();
+      } else if (appointmentsCount.value !== 0) {
         // Keep selectedDay; provider-change pipeline decides nearest available date
       }
     } else {
       // Track dates without appointments
-      datesWithoutAppointments.value.add(date);
+      addDateWithoutAppointments(date);
+      removeDayFromAvailableDays(date);
+      setNoAppointmentForThisDayError();
 
       // Only show error if there are no appointments on any day
       if (!hasAppointmentsForSelectedProviders()) {
-        error.value = true;
+        setNoAppointmentForThisDayError();
       } else {
-        error.value = false;
         // Keep selectedDay; provider-change pipeline decides nearest available date
       }
     }
@@ -985,7 +1086,7 @@ function getAvailableProviders(
   });
 }
 
-function updateDateRangeForSelectedProviders() {
+function updateDateRangeForSelectedProviders(skipDateValidation = false) {
   if (!availableDays.value) return [];
   const selectedProviderIds = Object.entries(selectedProviders.value)
     .filter(([_, isSelected]) => isSelected)
@@ -1016,7 +1117,9 @@ function updateDateRangeForSelectedProviders() {
     calendarKey.value++;
 
     // Validate that the currently selected date is still available for selected providers
-    validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
+    if (!skipDateValidation) {
+      validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
+    }
   }
   return availableDaysForSelectedProviders;
 }
@@ -1025,9 +1128,9 @@ async function validateAndUpdateSelectedDate(
   availableDaysForSelectedProviders: any[]
 ) {
   if (!selectedDay.value) return;
-  const currentDate = convertDateToString(selectedDay.value);
+  const currentDate = toDayKey(selectedDay.value);
   const isCurrentDateAvailable = availableDaysForSelectedProviders.some(
-    (day: any) => convertDateToString(new Date(day.time)) === currentDate
+    (day: any) => toDayKey(day.time) === currentDate
   );
 
   if (!isCurrentDateAvailable) {
@@ -1062,9 +1165,9 @@ async function validateAndUpdateSelectedDate(
 
 async function validateCurrentDateHasAppointments() {
   if (!selectedDay.value) return;
-  const currentDate = convertDateToString(selectedDay.value);
+  const currentDate = toDayKey(selectedDay.value);
   const dayEntry = availableDays.value?.find(
-    (day) => convertDateToString(new Date(day.time)) === currentDate
+    (day) => toDayKey(day.time) === currentDate
   );
   const hasAppointments = dayEntry?.providerIDs
     .split(",")
@@ -1153,6 +1256,7 @@ onMounted(() => {
     const preselectedMatches = (office: OfficeImpl) =>
       props.preselectedOfficeId &&
       (Number(office.id) === Number(props.preselectedOfficeId) ||
+        Number(office.parentId) === Number(props.preselectedOfficeId) ||
         (Array.isArray(office.allowDisabledServicesMix) &&
           office.allowDisabledServicesMix.includes(
             Number(props.preselectedOfficeId)
@@ -1234,9 +1338,7 @@ watch(isLoadingAppointments, (loading) => {
 watch(selectedDay, async (newDate) => {
   selectedTimeslot.value = 0;
   if (newDate) {
-    await getAppointmentsOfDay(
-      convertDateToString(selectedDay.value || new Date())
-    );
+    await getAppointmentsOfDay(toDayKey(selectedDay.value || newDate));
   }
 });
 
@@ -1285,6 +1387,11 @@ watch(appointmentTimestampsByOffice, () => {
 watch(
   selectedProviders,
   async () => {
+    // Provider combinations change day availability characteristics.
+    // Reset learned empty-day cache so we don't hide valid days for new selections.
+    knownDaysWithoutAppointments.value = new Set<string>();
+    datesWithoutAppointments.value = new Set<string>();
+
     // Sync single-selection provider immediately
     const selectedIds = Object.keys(selectedProviders.value).filter(
       (id) => selectedProviders.value[id]
@@ -1305,11 +1412,10 @@ watch(
     if (daysWereFetched && !hasAvailableDays && !availableDaysFetched.value) {
       availableDaysFetched.value = true;
     }
+    clearVisibleErrors(daysWereFetched);
 
     if (hasAvailableDays) {
       isSwitchingProvider.value = true;
-      error.value = false;
-      Object.values(errorStateMap.value).forEach((es) => (es.value = false));
     } else {
       isSwitchingProvider.value = false;
     }

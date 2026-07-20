@@ -1,0 +1,93 @@
+$use_swiper:            false !default;
+@if ($use_swiper == true) {
+
+    #{$namespace}.swiper {
+        .swiper-container {
+            padding-bottom:             0; 
+            z-index:                    0; // overwrite, sticky header problem        
+        }
+        ul.swiper-wrapper {
+            list-style:             none;
+            padding:                0;
+            margin:                 0;
+            > li {
+                margin-left:        0;
+                margin-right:        0;
+            }
+       }
+       .swiper-slide {
+            margin-bottom:          0;
+        }
+       .swiper-lazy-preloader {
+            position:               absolute;
+       }
+       .image {
+            position: relative;
+        }
+        .swiper-pagination-bullet {
+            background:             $color-white;
+            opacity:                0.5;
+        }
+        .swiper-pagination-bullet-active {
+            background:             $color-black;
+            opacity:                0.5;
+        }
+        // Make Headlines smaller in Swiperwidget 
+        @include media-query('smallest-and-up') {
+            .swiper-wrapper .swiper-slide > * > h3 {
+                @include getRem('font-size', $base-font-size);
+                margin-bottom:      0.7em;
+            }
+        }
+        .swiper-zoom-container {
+            width:                  100%;
+            img {
+                display:            block;
+            }
+        }
+        // PREV/NEXT BUTTONS:
+        .swiper-button-next,
+        .swiper-button-prev {
+            display:                inline;
+            position:               absolute;
+            z-index:                2;
+            background-color:       rgba(0, 0, 0, 0.5);
+            color:                  $color-blue;
+            height:                 2.5em;
+            width:                  1.7em;
+            border:                 0 none;
+            font-size:              1.5em;
+            line-height:            0;
+            padding:                0;
+            background-image:       none;
+            .fa {
+                color:              $color-white;
+                margin:             0;
+            }
+        }
+        .swiper-button-prev {
+            right:                  auto;
+            left:                   0em;
+            text-align:             center;
+            border-radius:          0 2px 2px 0;
+            .fa {
+                margin-right:       0.15em;
+            }
+        }
+        .swiper-button-next {
+            left:                   auto;
+            right:                  0em;
+            text-align:             center;
+            border-radius:          2px 0 0 2px;
+            .fa {
+                margin-left:        0.15em;
+            }
+        }
+        .swiper-button-disabled {
+            color:                  $color-blue;
+            cursor:                 inherit;
+            opacity:                0.25;
+        }
+    }
+
+}

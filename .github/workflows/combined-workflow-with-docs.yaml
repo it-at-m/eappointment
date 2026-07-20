@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 concurrency:
-  group: combined-php-build-with-docs-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -14,6 +14,7 @@ permissions:
   pages: write
   id-token: write
   actions: write
+  security-events: write
 
 jobs:
   call-php-code-quality:
@@ -38,7 +39,7 @@ jobs:
           mkdir -p public/coverage
 
       - name: Download coverage reports
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: 'coverage-*'
           path: public/coverage-temp
@@ -46,7 +47,7 @@ jobs:
 
       - name: Fix directory structure
         run: |
-          MODULES="zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient zmscitizenview"
+          MODULES="zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsbackend zmsclient zmscitizenview"
           # Fix coverage reports
           for module in $MODULES; do
             if [ -d "public/coverage-temp/coverage-$module" ]; then
@@ -62,7 +63,7 @@ jobs:
           ls -R public/coverage/
 
       - name: Upload aggregated reports
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: aggregated-reports
           path: public/

@@ -1,0 +1,68 @@
+// Our global page header
+#{$namespace}#page-header {
+    background-color:           $color-page-header;
+    border:                     1px solid $color-page-header; // Barrierefreiheit hoher Kontrast
+    color:                      $color-text-negative;
+    //display:                    flex;
+    //justify-content:            space-between;
+    //align-items:                center;
+    min-height:                 60px;
+    @include media-query('palm') {
+        max-width:                      100vw;
+    }
+    @include getRem('padding-left', $pagePaddingPalmPx);
+    //@include getRem('padding-right', 50px); // hamburger space
+    @include getRem('padding-top', 14px);
+    @include getRem('padding-bottom', 7px);
+    @include getRem('margin-bottom', 0px);
+    @include media-query(lap-and-up) {
+        @include getRem('padding-left', $pagePaddingPx);
+        @include getRem('padding-right', $pagePaddingPx);
+    }
+    a, .link {
+        color:                  $color-text-negative;
+    }
+    ul {
+        margin:                 0;       
+    }
+    .grid {
+        align-items: center !important;
+    }
+    .page-header__title {
+        text-align:             left;
+        @include getRem('font-size', 18px);
+        margin:                 0;
+        color:                  $color-white;
+        @include media-query('palm') {
+            font-size:          $base-font-size;
+        }
+        font-weight:            normal;
+        line-height:            1.2em;
+        @include media-query('palm') {
+            display:            none;
+        }
+    }
+    .page-header__logo {
+        width:                  auto;
+        max-width:              100%;
+        height:                 2.5em;
+        display:                flex;
+        margin-right:           1em;
+        @include media-query('palm') {
+            width:              40vw;
+            max-width:          100%;
+        }
+        svg {
+            max-height: 100%;
+            max-width: 100%;
+            border: 0;
+        }
+    }
+    .page-header__right {
+        display:                flex;
+        justify-content:        space-between;
+        align-items:            center;
+        
+    }
+    
+}

@@ -7,20 +7,25 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 use BO\Zmsentities\Organisation as Entity;
 use BO\Mellon\Validator;
 
 class OwnerAddOrganisation extends BaseController
 {
     /**
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['organisation'])) {
+            throw new UserAccountMissingRights();
+        }
         $input = $request->getParsedBody();
         $parentId = Validator::value($args['id'])->isNumber()->getValue();
         if (is_array($input) && array_key_exists('save', $input)) {
@@ -39,7 +44,7 @@ class OwnerAddOrganisation extends BaseController
         }
 
         return \BO\Slim\Render::withHtml($response, 'page/organisation.twig', array(
-            'title' => 'Kunde',
+            'title' => 'Referat einrichten',
             'action' => 'add',
             'menuActive' => 'organisation',
             'workstation' => $workstation

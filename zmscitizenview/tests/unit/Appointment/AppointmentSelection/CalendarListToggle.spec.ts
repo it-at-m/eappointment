@@ -1,7 +1,6 @@
 import { mount } from "@vue/test-utils";
 import { describe, it, expect, vi } from "vitest";
 import { nextTick } from "vue";
-// @ts-expect-error: SFC import for test
 import CalendarListToggle from "@/components/Appointment/AppointmentSelection/CalendarListToggle.vue";
 
 const t = vi.fn((key: string) => key);

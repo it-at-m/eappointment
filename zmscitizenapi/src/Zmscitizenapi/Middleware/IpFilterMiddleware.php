@@ -6,7 +6,7 @@ namespace BO\Zmscitizenapi\Middleware;
 
 use BO\Zmscitizenapi\Utils\ClientIpHelper;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
-use BO\Zmscitizenapi\Services\Core\LoggerService;
+use BO\Slim\LoggerService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -25,12 +25,13 @@ class IpFilterMiddleware implements MiddlewareInterface
         $this->blacklist = \App::getIpBlacklist();
     }
 
+    #[\Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {
             $ip = ClientIpHelper::getClientIp();
             $uri = (string)$request->getUri();
-            if ($ip === null || !filter_var($ip, FILTER_VALIDATE_IP)) {
+            if (!filter_var($ip, FILTER_VALIDATE_IP)) {
                 $this->logger->logInfo('Invalid IP address detected', [
                     'ip' => $ip,
                     'uri' => $uri

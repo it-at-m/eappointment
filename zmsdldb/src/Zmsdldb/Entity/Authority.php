@@ -91,7 +91,7 @@ class Authority extends Base
      *
      * @param Int $locationId
      *
-     * @return clone self
+     * @return self
      */
     public function removeLocation($locationId)
     {
@@ -106,7 +106,7 @@ class Authority extends Base
      * @param String $serviceCsv
      *            only check for this serviceCsv
      *
-     * @return clone self
+     * @return self
      */
     public function isInServiceList($servicelist = array())
     {

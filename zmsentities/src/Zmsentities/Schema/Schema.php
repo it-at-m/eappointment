@@ -37,11 +37,9 @@ class Schema extends \ArrayObject
 
     protected function resolveKey($key, $value, $resolveLevel)
     {
-        //error_log("Resolve($resolveLevel) Key = " . $key . " -> " . gettype($value));
         if (is_array($value)) {
             $value = $this->resolveReferences($value, $resolveLevel);
         } elseif ($key === '$ref' && $value[0] != '#') {
-            //error_log("Load $value");
             $value = Loader::asArray($value)->withResolvedReferences($resolveLevel - 1);
         }
         return $value;

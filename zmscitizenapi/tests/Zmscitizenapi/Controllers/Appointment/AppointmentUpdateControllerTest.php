@@ -138,7 +138,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'familyName' => 'TEST_USER',
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',
-            'customTextfield' => 'Some custom text'
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -184,7 +185,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'familyName' => '',
             'email' => 'invalid-email',
             'telephone' => '123',
-            'customTextfield' => ''
+            'customTextfield' => '',
+            'customTextfield2' => 'Another custom text',
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -236,7 +238,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'familyName' => '',
             'email' => 'invalid-email',
             'telephone' => '123',
-            'customTextfield' => 'Some custom text'
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -286,7 +289,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'familyName' => '',
             'email' => 'invalid-email',
             'telephone' => '123456789',
-            'customTextfield' => ''
+            'customTextfield' => '',
+            'customTextfield2' => 'Another custom text',
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -336,7 +340,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'familyName' => '',
             'email' => 'invalid-email',
             'telephone' => '123456789',
-            'customTextfield' => 'Some custom text'
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -384,7 +389,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'familyName' => '',
             'email' => 'test@muenchen.de',
             'telephone' => '123',
-            'customTextfield' => ''
+            'customTextfield' => '',
+            'customTextfield2' => 'Another custom text',
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -434,7 +440,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'familyName' => '',
             'email' => 'test@muenchen.de',
             'telephone' => '123',
-            'customTextfield' => 'Some custom text'
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -482,7 +489,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'familyName' => '',
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',
-            'customTextfield' => ''
+            'customTextfield' => '',
+            'customTextfield2' => 'Another custom text',
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -530,7 +538,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'familyName' => '',
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',
-            'customTextfield' => 'Some custom text'
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -576,7 +585,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'familyName' => 'TEST_USER',
             'email' => 'invalid-email',
             'telephone' => '123',
-            'customTextfield' => ''
+            'customTextfield' => '',
+            'customTextfield2' => 'Another custom text',
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -626,7 +636,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'familyName' => 'TEST_USER',
             'email' => 'invalid-email',
             'telephone' => '123',
-            'customTextfield' => 'Some custom text'
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -674,7 +685,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'familyName' => 'TEST_USER',
             'email' => 'invalid-email',
             'telephone' => '123456789',
-            'customTextfield' => ''
+            'customTextfield' => '',
+            'customTextfield2' => 'Another custom text',
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -722,7 +734,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'familyName' => 'TEST_USER',
             'email' => 'invalid-email',
             'telephone' => '123456789',
-            'customTextfield' => 'Some custom text'
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -768,7 +781,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'familyName' => 'TEST_USER',
             'email' => 'test@muenchen.de',
             'telephone' => '123',
-            'customTextfield' => ''
+            'customTextfield' => '',
+            'customTextfield2' => 'Another custom text',
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -816,7 +830,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'familyName' => 'TEST_USER',
             'email' => 'test@muenchen.de',
             'telephone' => '123',
-            'customTextfield' => 'Some custom text'
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -862,7 +877,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'familyName' => 'TEST_USER',
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',
-            'customTextfield' => ''
+            'customTextfield' => '',
+            'customTextfield2' => 'Another custom text',
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -880,7 +896,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
     {
 
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\MoreThanAllowedAppointmentsPerMail';
 
         $this->setApiCalls(
             [
@@ -920,6 +936,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'email' => "test@muenchen.de",
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
+            'customTextfield2' => "Another custom text",
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -937,7 +954,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
     {
 
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ProcessNotFound';
 
         $this->setApiCalls(
             [
@@ -959,6 +976,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'email' => "test@muenchen.de",
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
+            'customTextfield2' => "Another custom text",
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -975,7 +993,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
     {
 
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\AuthKeyMatchFailed';
 
         $this->setApiCalls(
             [
@@ -997,6 +1015,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'email' => "test@muenchen.de",
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
+            'customTextfield2' => "Another custom text",
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1012,7 +1031,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
     public function testProcessInvalid()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessInvalid';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ProcessInvalid';
         
     
         $this->setApiCalls([
@@ -1032,7 +1051,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'familyName' => 'TEST_USER',
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',
-            'customTextfield' => 'Some custom text'
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1048,7 +1068,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
     public function testProcessNotReservedAnymore()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessNotReservedAnymore';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ProcessNotReservedAnymore';
     
         $this->setApiCalls(
             [
@@ -1087,7 +1107,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'familyName' => 'TEST_USER',
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',
-            'customTextfield' => 'Some custom text'
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1104,7 +1125,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
     {
 
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\EmailRequired';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\EmailRequired';
 
         $this->setApiCalls(
             [
@@ -1144,6 +1165,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'email' => "test@muenchen.de",
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
+            'customTextfield2' => "Another custom text",
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1161,7 +1183,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
     {
 
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\TelephoneRequired';
+        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\TelephoneRequired';
 
         $this->setApiCalls(
             [
@@ -1201,6 +1223,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'email' => "test@muenchen.de",
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
+            'customTextfield2' => "Another custom text",
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);

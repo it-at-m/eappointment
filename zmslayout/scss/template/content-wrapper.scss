@@ -1,0 +1,30 @@
+// Our Wrapper around the main content area between header and footer
+#{$namespace}#content-wrapper {
+    @include clearfix();
+    @include getRem('padding-left', $pagePaddingPalmPx);
+    @include getRem('padding-right', $pagePaddingPalmPx);
+    @include getRem('padding-top', $mediumGapPx);
+    @include getRem('padding-bottom', 55px);
+    @include media-query(lap-and-up) {
+        @include getRem('padding-left', $pagePaddingPx);
+        @include getRem('padding-right', $pagePaddingPx);
+    }
+    //max-width:                      100vw;
+    display:                        block;
+    @include media-query('lap-and-up') { 
+        //display:                    inline-block;      // for over-widths page content
+    }
+    min-width:                      100%;
+    background-color:               $color-white;
+    flex:                           1 1 auto;
+
+
+}
+
+
+#{$namespace}#main-content {
+    > *:first-child {
+        margin-top:                 0;
+    }
+}
+

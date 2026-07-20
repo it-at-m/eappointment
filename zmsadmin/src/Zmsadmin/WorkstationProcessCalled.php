@@ -12,13 +12,14 @@ use BO\Mellon\Validator;
 class WorkstationProcessCalled extends BaseController
 {
     /**
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $validator = $request->getAttribute('validator');
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
@@ -29,7 +30,7 @@ class WorkstationProcessCalled extends BaseController
                     'allowClusterWideCall' => \App::$allowClusterWideCall
                 ])->getEntity();
             } catch (\BO\Zmsclient\Exception $e) {
-                if ($e->template === 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyCalled') {
+                if ($e->template === 'BO\\Zmsbackend\\Process\\Exception\\ProcessAlreadyCalled') {
                     return \BO\Slim\Render::redirect(
                         'workstationProcessCalled',
                         ['id' => $processId],

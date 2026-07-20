@@ -18,11 +18,13 @@ class Office extends Base
 {
     protected static $officeList = [];
 
+    #[\Override]
     protected function parseData($data)
     {
         return $this->getItemList();
     }
 
+    #[\Override]
     public function getItemList()
     {
         try {
@@ -43,17 +45,20 @@ class Office extends Base
         }
     }
 
+    #[\Override]
     public function fetchList()
     {
         return $this->getItemList();
     }
 
+    #[\Override]
     public function fetchId($itemId)
     {
         $list = $this->fetchList();
         return $list[$itemId] ?? false;
     }
 
+    #[\Override]
     public function fetchPath($itemId)
     {
         return $this->fetchId($itemId);

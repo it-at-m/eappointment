@@ -7,33 +7,42 @@
 
 namespace BO\Zmsstatistic;
 
-use BO\Slim\Render;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use BO\Zmsstatistic\Helper\ChangelogHelper;
 
 class Changelog extends BaseController
 {
     protected $withAccess = false;
+
     /**
      * @SuppressWarnings(Param)
-     * @return ResponseInterface
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
-        RequestInterface $request,
-        ResponseInterface $response,
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
+        try {
+            $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        } catch (\Exception $workstationexception) {
+            $workstation = null;
+        }
+
         $changelogHelper = new ChangelogHelper();
         $changelogContent = $changelogHelper->getChangelogHtml();
+         //TODO: Check if safe when refactoring to vue.js in the future
+        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
 
-        return Render::withHtml(
+        return \BO\Slim\Render::withHtml(
             $response,
             'page/changelog.twig',
             array(
                 'title' => 'Changelog',
                 'menuActive' => 'changelog',
-                'changelogContent' => $changelogContent
+                'workstation' => $workstation,
+                'changelogContent' => $changelogContent,
+                'config' => $config
             )
         );
     }

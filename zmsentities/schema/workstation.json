@@ -46,10 +46,6 @@
     "useraccount": {
       "lastLogin": 1447926465,
       "id": "johndoe",
-      "rights": {
-        "scope": true,
-        "ticketprinter": true
-      },
       "permissions": {
         "appointment": true,
         "availability": true

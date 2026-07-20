@@ -4,7 +4,7 @@
         "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
         "error": false,
         "generated": "2017-06-21T10:30:36+02:00",
-        "server": "Zmsapi-ENV"
+        "server": "Zmsbackend-ENV"
     },
     "data": {
         "$schema": "https://schema.berlin.de/queuemanagement/workstation.json",
@@ -19,6 +19,9 @@
                 "sms": "1",
                 "superuser": "0",
                 "ticketprinter": "1",
+                "useraccount": "1"
+            },
+            "permissions": {
                 "useraccount": "1"
             },
             "departments": [

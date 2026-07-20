@@ -9,33 +9,52 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Schema\Loader;
-use BO\Zmsentities\Useraccount as Entity;
+use BO\Slim\Render;
 use BO\Mellon\Validator;
-use BO\Zmsclient\Auth;
+use BO\Zmsentities\Collection\RoleList;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
+use BO\Zmsentities\Exception\UserAccountAccessRightsFailed;
+use BO\Zmsentities\Schema\Loader;
+use BO\Zmsentities\Useraccount;
 
 class UseraccountEdit extends BaseController
 {
+    private const SUPERUSER_ONLY_ROLES = [
+        'system_admin',
+        'audit_viewer',
+    ];
+
     /**
      *
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (! $workstation->getUseraccount()->hasPermissions(['useraccount'])) {
+            throw new UserAccountMissingRights();
+        }
+
         $userAccountName = Validator::value($args['loginname'])->isString()->getValue();
         $confirmSuccess = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $userAccount = \App::$http->readGetResult('/useraccount/' . $userAccountName . '/')->getEntity();
+        if (
+            ! $workstation->getUseraccount()->isSuperUser()
+            && $this->hasSuperuserOnlyRole($userAccount)
+        ) {
+            throw new UserAccountAccessRightsFailed();
+        }
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
 
         if ($request->getMethod() === 'POST') {
             $input = $request->getParsedBody();
             $result = $this->writeUpdatedEntity($input, $userAccountName);
-            if ($result instanceof Entity) {
-                return \BO\Slim\Render::redirect(
+            if ($result instanceof Useraccount) {
+                return Render::redirect(
                     'useraccountEdit',
                     array('loginname' => $result->id),
                     array('success' => 'useraccount_saved')
@@ -46,7 +65,14 @@ class UseraccountEdit extends BaseController
         $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider') ?? '');
 
-        return \BO\Slim\Render::withHtml(
+        $roleList = $this->loadRoleList();
+
+        $userAccountRoles = (isset($userAccount->roles) && is_array($userAccount->roles))
+            ? $userAccount->roles
+            : [];
+
+
+        return Render::withHtml(
             $response,
             'page/useraccountEdit.twig',
             [
@@ -57,16 +83,18 @@ class UseraccountEdit extends BaseController
                 'workstation' => $workstation,
                 'title' => 'Nutzer: Einrichtung und Administration','menuActive' => 'useraccount',
                 'exception' => (isset($result)) ? $result : null,
-                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
+                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Useraccount::$schema)),
                 'oidcProviderList' => array_filter($allowedProviderList),
-                'isFromOidc' => in_array($userAccount->getOidcProviderFromName(), $allowedProviderList)
+                'isFromOidc' => in_array($userAccount->getOidcProviderFromName(), $allowedProviderList),
+                'roleList' => $roleList,
+                'userAccountRoles' => $userAccountRoles,
             ]
         );
     }
 
     protected function writeUpdatedEntity($input, $userAccountName)
     {
-        $entity = (new Entity($input))->withCleanedUpFormData();
+        $entity = (new Useraccount($input))->withCleanedUpFormData();
         // TODO: Remove the password fields when password authentication is removed in the future
         $entity->setPassword($input);
         return $this->handleEntityWrite(function () use ($entity, $userAccountName) {
@@ -74,5 +102,31 @@ class UseraccountEdit extends BaseController
                 ->readPostResult('/useraccount/' . $userAccountName . '/', $entity)
                 ->getEntity();
         });
+    }
+
+    private function loadRoleList(): RoleList
+    {
+        $roleList = new RoleList();
+
+        $roleResult = \App::$http->readGetResult('/roles/', []);
+        if ($roleResult) {
+            $loaded = $roleResult->getCollection();
+            if ($loaded !== null) {
+                $roleList = $loaded;
+            }
+        }
+
+        return $roleList;
+    }
+
+    protected function hasSuperuserOnlyRole(Useraccount $userAccount): bool
+    {
+        $roles = $userAccount->roles ?? [];
+
+        if (! is_array($roles)) {
+            return false;
+        }
+
+        return (bool) array_intersect($roles, self::SUPERUSER_ONLY_ROLES);
     }
 }

@@ -18,6 +18,7 @@ class Day extends Schema\Entity
 
     public static $schema = "day.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [

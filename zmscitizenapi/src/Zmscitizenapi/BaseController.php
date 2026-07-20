@@ -10,6 +10,7 @@ use BO\Zmscitizenapi\Utils\ErrorMessages;
 
 abstract class BaseController extends \BO\Slim\Controller
 {
+    #[\Override]
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {

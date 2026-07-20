@@ -1,11 +1,11 @@
 # Eappointment HTTP client
 
-[![pipeline status](https://gitlab.com/eappointment/zmsclient/badges/main/pipeline.svg)](https://gitlab.com/eappointment/zmsclient/-/commits/main)
-[![coverage report](https://gitlab.com/eappointment/zmsclient/badges/main/coverage.svg)](https://eappointment.gitlab.io/zmsclient/_tests/coverage/index.html)
+[![CI](https://github.com/it-at-m/eappointment/actions/workflows/combined-workflow-with-docs.yaml/badge.svg?branch=main)](https://github.com/it-at-m/eappointment/actions/workflows/combined-workflow-with-docs.yaml)
+[![coverage report](https://img.shields.io/badge/coverage-report-blue)](https://it-at-m.github.io/eappointment/coverage/coverage-zmsclient/html/)
 
 Use this library to fetch data from the eappointment API via HTTP.
 
-For a detailed project description, see https://gitlab.com/eappointment/eappointment
+For a detailed project description, see https://github.com/it-at-m/eappointment
 
 ## Requirements
 
@@ -42,13 +42,13 @@ Setting up default CURL-Options, use the following line:
 
 ## Testing
 
-If you want to run the test, docker-compose is required. Testing needs an HTTP server to answer the HTTP calls from this library.
+If you want to run the test, Docker with the Compose V2 plugin (`docker compose`) is required. Testing needs an HTTP server to answer the HTTP calls from this library.
 
 Run the following command:
 
 ```sh
-docker-compose up
+docker compose up
 ```
 
-The docker-compose starts the mockup server, waits 10 seconds and starts the unit tests. After the tests are finished, the mockup server is still running. If there are failures, you need to lookup possible HTTP calls. There is a port forwarding and you can see the calls under http://localhost:8082/
+Docker Compose starts the mockup server, waits 10 seconds and starts the unit tests. After the tests are finished, the mockup server is still running. If there are failures, you need to lookup possible HTTP calls. There is a port forwarding and you can see the calls under http://localhost:8082/
 

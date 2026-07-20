@@ -1,10 +1,10 @@
 services:
-  # php-base uses per-arch tags. devcontainer initializeCommand runs
+  # zmsbase uses per-arch tags. devcontainer initializeCommand runs
   # .devcontainer/scripts/sync-php-base-tag.sh (see devcontainer.json) sets ZMS_PHP_BASE_TAG from host uname.
   # Fallback default is amd64 for plain `docker compose` without that step.
   web:
     container_name: zms-web
-    image: ghcr.io/it-at-m/eappointment-php-base:${ZMS_PHP_BASE_TAG:-8.3-local-amd64}
+    image: ghcr.io/it-at-m/eappointment/zmsbase:${ZMS_PHP_BASE_TAG:-8.3-local-amd64}
     volumes:
       - ..:/var/www/html:cached,z
       - ./php/xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini:ro,z
@@ -18,8 +18,32 @@ services:
     networks:
       - default
 
+  mail-viewer:
+    image: node:24
+    container_name: zms-mail-viewer
+    working_dir: /workspace/.devcontainer/mail-viewer
+    volumes:
+      - ..:/workspace:cached,z
+    command: sh -c "npm install && npm start"
+    ports:
+      - "8025:8025"
+    environment:
+      - PORT=8025
+      - ZMS_API_URL=http://web/terminvereinbarung/api/2
+      - ZMS_MAIL_VIEWER_API_USER=${ZMS_MAIL_VIEWER_API_USER:-superuser}
+      - ZMS_MAIL_VIEWER_API_PASSWORD=${ZMS_MAIL_VIEWER_API_PASSWORD:-vorschau}
+      - ZMS_MAIL_VIEWER_USER=${ZMS_MAIL_VIEWER_USER:-superuser}
+      - ZMS_MAIL_VIEWER_PASSWORD=${ZMS_MAIL_VIEWER_PASSWORD:-vorschau}
+    env_file:
+      - .env
+    depends_on:
+      - web
+    networks:
+      - default
+    restart: unless-stopped
+
   citizenview:
-    image: node:22
+    image: node:24
     container_name: zms-citizenview
     working_dir: /workspace/zmscitizenview
     volumes:
@@ -61,7 +85,7 @@ services:
       - db
 
   refarch-gateway:
-    image: ghcr.io/it-at-m/refarch/refarch-gateway:1.7.0
+    image: ghcr.io/it-at-m/refarch/refarch-gateway:1.9.0
     container_name: zms-refarch-gateway
     ports:
       - "8084:8080"
@@ -73,7 +97,7 @@ services:
     restart: unless-stopped
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.5.3@sha256:5a236ae4dd8ece77490115bace15a11a4d15e9cbcf58a490b95a7da2cd71d32a
+    image: quay.io/keycloak/keycloak:26.7.0@sha256:2eb3cd316835c990e69e26ade292ffa78f6fb0db7d5fc6377463c162e1979ac0
     container_name: zms-keycloak
     hostname: keycloak
     command:
@@ -96,7 +120,7 @@ services:
     restart: unless-stopped
 
   init-keycloak:
-    image: klg71/keycloakmigration:0.2.125@sha256:a326d3e50e2a35b70a3cf3a5d33288af9bcba27fef89146a2107622583e34231
+    image: klg71/keycloakmigration:0.2.129@sha256:356bb15df86d6476f1469789718f597ac70583f83c2ae9c90408a3e00e3a1796
     container_name: zms-init-keycloak
     depends_on:
       keycloak:

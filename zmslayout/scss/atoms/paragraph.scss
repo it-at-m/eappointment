@@ -1,0 +1,58 @@
+#{$namespace}p {
+    margin-top:             0;
+    > a {
+        text-decoration:    underline; // Barrierefreiheit
+    }
+}
+
+#{$namespace}small {
+    @include fontsize($smallest-font-size);
+    display:            inline-block;
+    line-height:        1.4;
+}
+
+code {
+    white-space:            pre;
+}
+
+p a,
+.inner a {
+    word-wrap:              break-word;
+}
+
+ins,
+#{$namespace}.ins {
+    background-color:       $color-message-success;
+    text-decoration:        none;
+    padding:                0.2em 0.3em;
+}
+
+del,
+.del {
+    background-color:       $color-message-error;
+    padding:                0.1em 0.3em;
+}
+
+.float-left {
+    float:                  left;
+}
+
+.float-right {
+    float:                  right;
+}
+
+.align-left {
+    text-align:             left;
+}
+
+.align-right {
+    text-align:             right;
+}
+
+.align-center {
+    text-align:             center;
+}
+
+pre {
+    white-space:            normal;
+}

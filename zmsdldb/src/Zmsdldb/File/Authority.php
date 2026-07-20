@@ -15,6 +15,7 @@ use BO\Zmsdldb\Collection\Authorities as Collection;
  */
 class Authority extends Base
 {
+    #[\Override]
     protected function parseData($data)
     {
         $itemList = new Collection();
@@ -58,7 +59,7 @@ class Authority extends Base
     /**
      * Take an file search result and return a authority list
      *
-     * @return Collection\Authorities
+     * @return Collection
      */
     public function fromLocationResults($resultList)
     {

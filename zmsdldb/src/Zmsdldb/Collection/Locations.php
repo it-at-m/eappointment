@@ -31,7 +31,7 @@ class Locations extends Base
      *
      * @param Int $locationId
      *
-     * @return clone self
+     * @return self
      */
     public function removeLocation($locationId)
     {

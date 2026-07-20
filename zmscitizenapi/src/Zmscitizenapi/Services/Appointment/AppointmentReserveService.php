@@ -6,6 +6,7 @@ namespace BO\Zmscitizenapi\Services\Appointment;
 
 use BO\Zmscitizenapi\Utils\DateTimeFormatHelper;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
+use BO\Zmscitizenapi\Services\Captcha\CaptchaRequirementTrait;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
@@ -13,6 +14,8 @@ use BO\Zmsentities\Process;
 
 class AppointmentReserveService
 {
+    use CaptchaRequirementTrait;
+
     private TokenValidationService $tokenValidator;
     private ZmsApiFacadeService $zmsApiFacadeService;
 
@@ -22,11 +25,11 @@ class AppointmentReserveService
         $this->zmsApiFacadeService = new ZmsApiFacadeService();
     }
 
-    public function processReservation(array $body): ThinnedProcess|array
+    public function processReservation(array $body, bool $showUnpublished = false): ThinnedProcess|array
     {
         $clientData = $this->extractClientData($body);
 
-        $captchaRequired = $this->isCaptchaRequired($clientData->officeId);
+        $captchaRequired = $this->isCaptchaRequiredForOfficeId($clientData->officeId);
         $captchaToken = $body['captchaToken'] ?? null;
 
         $errors = ValidationService::validatePostAppointmentReserve(
@@ -44,7 +47,8 @@ class AppointmentReserveService
 
         $errors = ValidationService::validateServiceLocationCombination(
             $clientData->officeId,
-            $clientData->serviceIds
+            $clientData->serviceIds,
+            $showUnpublished
         );
         if (!empty($errors['errors'])) {
             return $errors;
@@ -78,16 +82,6 @@ class AppointmentReserveService
             'serviceCounts' => $body['serviceCount'] ?? [1],
             'timestamp' => isset($body['timestamp']) && is_numeric($body['timestamp']) ? (int) $body['timestamp'] : null,
         ];
-    }
-
-    private function isCaptchaRequired(?int $officeId): bool
-    {
-        try {
-            $scope = $this->zmsApiFacadeService->getScopeByOfficeId((int) $officeId);
-            return $scope->captchaActivatedRequired ?? false;
-        } catch (\Throwable $e) {
-            return false;
-        }
     }
 
     private function findMatchingProcess(int $officeId, array $serviceIds, array $serviceCounts, int $timestamp): ?Process
@@ -131,7 +125,7 @@ class AppointmentReserveService
         if ($reservedProcess && $reservedProcess->scope && $reservedProcess->scope->id) {
             $scopeId = $reservedProcess->scope->id;
             $scope = ZmsApiFacadeService::getScopeById((int) $scopeId);
-            if (!isset($scope['errors']) && isset($scope) && !empty($scope)) {
+            if (!is_array($scope)) {
                 $reservedProcess->scope = $scope;
                 $reservedProcess->officeId = $officeId;
             }

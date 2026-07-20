@@ -8,8 +8,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Slim\Render;
-use BO\Zmsdb\Closure;
-use BO\Zmsentities\Collection\AvailabilityList;
+use BO\Zmsentities\Closure;
 use Psr\Http\Message\ResponseInterface;
 
 class ScopeAvailabilityDayClosure extends BaseController
@@ -18,6 +17,7 @@ class ScopeAvailabilityDayClosure extends BaseController
      * @SuppressWarnings(Param)
      * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,

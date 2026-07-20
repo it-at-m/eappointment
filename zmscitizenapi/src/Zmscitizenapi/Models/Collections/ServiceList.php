@@ -12,7 +12,6 @@ use JsonSerializable;
 class ServiceList extends Entity implements JsonSerializable
 {
     public static $schema = "citizenapi/collections/serviceList.json";
-/** @var Service[] */
     public array $services = [];
     public function __construct(array $services = [])
     {
@@ -23,8 +22,7 @@ class ServiceList extends Entity implements JsonSerializable
                 }
                 $this->services[] = $service;
             } catch (\Exception $e) {
-                error_log("Invalid Service encountered: " . $e->getMessage());
-            //Gracefully handle
+                \App::$log->warning('Invalid Service skipped', ['exception' => $e->getMessage()]);
             }
         }
 
@@ -38,11 +36,6 @@ class ServiceList extends Entity implements JsonSerializable
         }
     }
 
-    /**
-     * Converts the service list to an array for serialization.
-     *
-     * @return array
-     */
     public function toArray(): array
     {
         return [
@@ -50,6 +43,7 @@ class ServiceList extends Entity implements JsonSerializable
         ];
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         return $this->toArray();

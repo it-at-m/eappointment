@@ -1,6 +1,6 @@
 services:
   citizenview:
-    image: node:22
+    image: node:24
     container_name: ddev-${DDEV_SITENAME}-citizenview
     working_dir: /var/www/html/zmscitizenview
     volumes:

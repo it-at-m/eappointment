@@ -58,6 +58,7 @@ class GraphQLInterpreter implements \JsonSerializable
         return $this;
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         return $this->data;

@@ -10,6 +10,7 @@ namespace BO\Zmsmessaging;
 
 use BO\Zmsentities\Mail;
 use BO\Zmsentities\Mimepart;
+use BO\Zmsentities\Schema\Entity;
 use BO\Mellon\Validator;
 
 class BaseController
@@ -43,7 +44,7 @@ class BaseController
         return $time;
     }
 
-    protected function sendMailer(\BO\Zmsentities\Schema\Entity $entity, $mailer = null, $action = false)
+    protected function sendMailer(Entity $entity, $mailer = null, $action = false)
     {
         // @codeCoverageIgnoreStart
         $hasSendSuccess = ($action) ? $mailer->Send() : $action;
@@ -72,7 +73,7 @@ class BaseController
 
     public function deleteEntityFromQueue($entity)
     {
-        if (!($entity instanceof \BO\Zmsentities\Mail)) {
+        if (!($entity instanceof Mail)) {
             return false;
         }
         try {
@@ -162,15 +163,18 @@ class BaseController
 
         $time = $this->getSpendTime();
         $memory = memory_get_usage() / (1024 * 1024);
-        $text = sprintf("[MailProcessor log %07.3fs %07.1fmb] %s", $time, $memory, $message);
+        static::$logList[] = $message;
 
+        $context = [
+            'component' => 'zmsmessaging',
+            'elapsed' => $time,
+            'memory_mb' => $memory,
+        ];
         if ($this->verbose) {
-            //error_log($text);
+            \App::$log->debug($message, $context);
+        } else {
+            \App::$log->info($message, $context);
         }
-
-        // Explicitly flush the output buffer
-        echo $text . "\n";
-        flush();
     }
 
     protected function convertCollectionToArray($collection)

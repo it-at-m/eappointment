@@ -9,11 +9,11 @@ Funktionalität: Aufbau ZMS-Testautomatisierung,Kernsystem
 		Wenn Sie zur Webseite der Administration navigieren.
 		Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
 		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-		Und Sie für "Standort" den Wert "Bürgerbüro Ruppertstraße (KVR-II/225) Serviceschalter" auswählen.
+		Und Sie für "Standort" den Wert "Bürgerbüro Forstenrieder Allee (KVR-II/234 Team 1) Serviceschalter" auswählen.
 		Und Sie in Feld "Platz-Nr. oder Tresen" den Text "4" eingeben.
 		Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
 		Und Sie unter dem Menü Administration auf den Eintrag "Behörden und Standorte" klicken.
-		Und Sie unter Behörden und Standorte auf den Öffnungszeiten Eintrag von "Bürgerbüro Ruppertstraße (KVR-II/225) Serviceschalter" klicken.
+		Und Sie unter Behörden und Standorte auf den Öffnungszeiten Eintrag von "Bürgerbüro Forstenrieder Allee (KVR-II/234 Team 1) Serviceschalter" klicken.
 		Und Sie unter Öffnungszeiten auf Tag "<heute_tag>" klicken.
 		Und Sie im Zeitmanagementsystem auf die Schaltfläche "neue Öffnungszeit" klicken.
 		Und Sie die Öffnungszeit-Accordion "Neue Öffnungszeit" öffnen.

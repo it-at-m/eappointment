@@ -34,6 +34,7 @@ class TwigExtension extends AbstractExtension
         return 'boslimExtension';
     }
 
+    #[\Override]
     public function getFunctions()
     {
         $safe = array('is_safe' => array('html'));
@@ -44,9 +45,7 @@ class TwigExtension extends AbstractExtension
             new \Twig\TwigFunction('azPrefixListCollator', array($this, 'azPrefixListCollator')),
             new \Twig\TwigFunction('isValueInArray', array($this, 'isValueInArray')),
             new \Twig\TwigFunction('remoteInclude', array($this, 'remoteInclude'), $safe),
-            new \Twig\TwigFunction('includeUrl', array($this, 'includeUrl')),
             new \Twig\TwigFunction('getEsiFromPath', array($this, 'getEsiFromPath')),
-            new \Twig\TwigFunction('baseUrl', array($this, 'baseUrl')),
             new \Twig\TwigFunction('getLanguageDescriptor', array($this, 'getLanguageDescriptor')),
             new \Twig\TwigFunction('currentLang', array($this, 'currentLang')),
             new \Twig\TwigFunction('currentRoute', array($this, 'currentRoute')),
@@ -281,27 +280,6 @@ class TwigExtension extends AbstractExtension
             $context = stream_context_create($options);
             return $prepend . file_get_contents($uri, false, $context) . $append;
         }
-    }
-
-    public function includeUrl($withUri = true)
-    {
-        if (null === \App::$includeUrl) {
-            /** @var Request $request */
-            $request = $this->container['request'];
-            $uri = (string)$request->getBasePath();
-            if ($withUri) {
-                $uri = $request->getBaseUrl();
-                $uri = preg_replace('#^https?://[^/]+#', '', $uri); //Do not force protocoll or host
-            }
-            return Helper::proxySanitizeUri($uri);
-        } else {
-            return \App::$includeUrl;
-        }
-    }
-
-    public function baseUrl()
-    {
-        return $this->includeUrl(false);
     }
 
     public function getEsiFromPath($path, $locale = false)

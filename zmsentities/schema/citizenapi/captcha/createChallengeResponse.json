@@ -2,35 +2,72 @@
     "title": "AltchaCaptchaChallenge",
     "type": "object",
     "properties": {
-        "algorithm": {
-            "type": "string",
-            "description": "The algorithm used for HMAC signature"
-        },
-        "challenge": {
-            "type": "string",
-            "description": "The challenge itself"
-        },
-        "maxnumber": {
-            "type": "number",
-            "description": "The complexity of the challenge specified as a number"
-        },
-        "salt": {
-            "type": "string",
-            "minLength": 10,
-            "description": "Random string as part of the challenge"
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "algorithm": {
+                    "type": "string",
+                    "description": "Key-derivation algorithm used for the proof of work"
+                },
+                "nonce": {
+                    "type": "string",
+                    "description": "Random server-issued nonce used as part of the proof-of-work input"
+                },
+                "salt": {
+                    "type": "string",
+                    "minLength": 10,
+                    "description": "Random salt for key derivation"
+                },
+                "cost": {
+                    "type": "integer",
+                    "description": "Work factor (KDF iterations). Larger values are harder to solve"
+                },
+                "keyLength": {
+                    "type": "integer",
+                    "description": "Length of the derived key in bytes"
+                },
+                "keyPrefix": {
+                    "type": "string",
+                    "description": "Hex prefix the derived key must start with"
+                },
+                "keySignature": {
+                    "type": ["string", "null"],
+                    "description": "Optional HMAC of the expected derived key"
+                },
+                "memoryCost": {
+                    "type": ["integer", "null"],
+                    "description": "Memory cost for memory-hard algorithms"
+                },
+                "parallelism": {
+                    "type": ["integer", "null"],
+                    "description": "Parallelism for memory-hard algorithms"
+                },
+                "expiresAt": {
+                    "type": ["integer", "null"],
+                    "description": "Unix timestamp (seconds) after which verification fails"
+                },
+                "data": {
+                    "type": ["object", "null"],
+                    "description": "Optional custom metadata attached to the challenge"
+                }
+            },
+            "required": [
+                "algorithm",
+                "nonce",
+                "salt",
+                "cost",
+                "keyLength",
+                "keyPrefix"
+            ]
         },
         "signature": {
             "type": "string",
-            "description": "HMAC signature of the verification data"
+            "description": "HMAC signature over the challenge parameters"
         }
     },
     "required": [
-        "algorithm",
-        "challenge",
-        "maxnumber",
-        "salt",
+        "parameters",
         "signature"
     ],
-    "description": "Schema definition for an AltchaCaptcha challenge response"
+    "description": "Schema definition for an AltchaCaptcha v2 challenge response"
 }
-    

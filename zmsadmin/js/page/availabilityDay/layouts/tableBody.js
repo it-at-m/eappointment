@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment/min/moment-with-locales';
-import {weekDayList, availabilitySeries, availabilityTypes, repeat} from '../helpers'
+import {weekDayList, availabilitySeries, availabilityTypes, repeat, formatTime} from '../helpers'
 moment.locale('de')
 
 const TableBodyLayout = (props) => {
@@ -39,8 +39,8 @@ const renderTable = (onDelete, onSelect, onAbort, availabilityList, data) => {
 
             const startDate = moment(availability.startDate, 'X').format('DD.MM.YYYY');
             const endDate = moment(availability.endDate, 'X').format('DD.MM.YYYY');
-            const startTime = moment(availability.startTime, 'h:mm:ss').format('HH:mm');
-            const endTime = moment(availability.endTime, 'h:mm:ss').format('HH:mm');
+            const startTime = formatTime(availability.startTime);
+            const endTime = formatTime(availability.endTime);
 
             const titleEdit = `Bearbeiten von ${availability.id} (${startDate} - ${endDate})`
             const titleDelete = `Löschen von ${availability.id} (${startDate} - ${endDate})`

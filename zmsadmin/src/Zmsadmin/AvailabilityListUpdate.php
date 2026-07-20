@@ -9,7 +9,6 @@ namespace BO\Zmsadmin;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use BO\Zmsentities\Availability;
 use BO\Zmsentities\Collection\AvailabilityList;
 use BO\Slim\Render;
 
@@ -23,6 +22,7 @@ class AvailabilityListUpdate extends BaseController
      * @SuppressWarnings(UnusedFormalParameter)
      * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,

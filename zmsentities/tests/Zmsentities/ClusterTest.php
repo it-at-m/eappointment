@@ -70,4 +70,42 @@ class ClusterTest extends EntityCommonTests
         $entity['scopes'] = [(new \BO\Zmsentities\Scope)->getExample()];
         $this->assertEquals(1, $entity->getScopesWorkstationCount());
     }
+
+    public function testHasAccessReturnsTrueForSuperuser()
+        {
+            $cluster = $this->getExample();
+
+            $useraccount = new \BO\Zmsentities\Useraccount(['id' => 'test']);
+            $useraccount->setPermissions('superuser');
+
+            $this->assertTrue($cluster->hasAccess($useraccount));
+        }
+
+    public function testHasAccessReturnsTrueForUserWithMatchingScope()
+        {
+            $cluster = $this->getExample();
+            $scopeId = $cluster->scopes->getFirst()->id;
+
+            $scopeList = new \BO\Zmsentities\Collection\ScopeList();
+            $scopeList->addEntity(new \BO\Zmsentities\Scope(['id' => $scopeId]));
+
+            $department = new \BO\Zmsentities\Department([
+                'id' => 1,
+                'scopes' => $scopeList,
+            ]);
+
+            $useraccount = new \BO\Zmsentities\Useraccount(['id' => 'test']);
+            $useraccount->addDepartment($department);
+
+            $this->assertTrue($cluster->hasAccess($useraccount));
+        }
+
+    public function testHasAccessReturnsFalseForUserWithoutMatchingScope()
+        {
+            $cluster = $this->getExample();
+
+            $useraccount = new \BO\Zmsentities\Useraccount(['id' => 'test']);
+
+            $this->assertFalse($cluster->hasAccess($useraccount));
+        }
 }

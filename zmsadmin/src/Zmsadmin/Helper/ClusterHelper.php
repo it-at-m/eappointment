@@ -9,13 +9,16 @@
 
 namespace BO\Zmsadmin\Helper;
 
+use BO\Zmsentities\Workstation;
+use BO\Zmsentities\Collection\ProcessList;
+
 class ClusterHelper
 {
     protected static $cluster = null;
 
     protected static $workstation = null;
 
-    public function __construct(\BO\Zmsentities\Workstation $workstation)
+    public function __construct(Workstation $workstation)
     {
         static::$workstation = $workstation;
         static::$cluster = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/cluster/')->getEntity();
@@ -46,7 +49,7 @@ class ClusterHelper
                     ['gql' => GraphDefaults::getProcess()]
                 );
         }
-        return ($processList) ? $processList->getCollection() : new \BO\Zmsentities\Collection\ProcessList();
+        return ($processList) ? $processList->getCollection() : new ProcessList();
     }
 
     public static function getNextProcess($excludedIds)

@@ -1,5 +1,4 @@
 import { describe, it, expect } from "vitest";
-// @ts-expect-error: Vue SFC import for test
 import { getProviders } from "@/utils/getProviders";
 
 const relations = [

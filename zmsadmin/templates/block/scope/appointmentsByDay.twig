@@ -1,51 +1,84 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'scope-appointments-by-day'} %}
     {% from 'element/helper/form.twig' import formgroup, formbutton %}
+    {% set customTextfieldActivated = scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
+    {% set customTextfield2Activated = scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
+    {% set customTextfieldLabel = scope.preferences.client.customTextfieldLabel|default('')|trim %}
+    {% set customTextfield2Label = scope.preferences.client.customTextfield2Label|default('')|trim %}
+    {% set textColumnCount = 2 + (customTextfieldActivated ? 1 : 0) + (customTextfield2Activated ? 1 : 0) %}
+    {% set textColumnWidth = (58 / textColumnCount)|number_format(2, '.', '') %}
     {% block board_title %} {{title}}{% endblock %}
     {% block board_body %}
         <script>
-            let cssDef2 = '.board__body {padding:0px; margin:0px}';
-                cssDef2 += 'table {width: 100%;}';
-                cssDef2 += 'table th, table td {display: table-cell; white-space: nowrap; padding: 0px 10px; text-align:left;}';
-                cssDef2 += 'h1 {margin: 0px;}';
-                cssDef2 += 'td.wrap {white-space: break-spaces;}';
+            let cssDef2 = '.scope-appointments-by-day .appointments-by-day-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; table-layout: fixed; }';
+                cssDef2 += '.scope-appointments-by-day .appointments-by-day-table th, .scope-appointments-by-day .appointments-by-day-table td { padding: 3px 6px; text-align: left; vertical-align: top; border: 1px solid #ddd; }';
+                cssDef2 += '.scope-appointments-by-day .appointments-by-day-table .col-compact { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }';
+                cssDef2 += '.scope-appointments-by-day .appointments-by-day-table .col-text { white-space: normal; word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; line-height: 1.25; }';
+                cssDef2 += '.scope-appointments-by-day .board__body { padding: 0; margin: 0; }';
                 cssDef2 += '@media print {';
-                cssDef2 += ' .navigation-primary, .one-sixths {display:none !important;}';
-                cssDef2 += ' .grid {display:block !important;}';
-                cssDef2 += ' .five-sixths {width: 100% !important; margin:0px; padding:0px;}';
-                cssDef2 += ' #page-wrapper {margin:0px; padding:0px;}';
-                cssDef2 += ' table {margin:0px; padding:0px;}';
-                cssDef2 += ' table th, table td { display: table-cell; white-space: nowrap; padding: 0px 10px; text-align:left; vertical-align: top;}';
-                cssDef2 += ' .board {margin:0px; padding:0px;}';
+                cssDef2 += ' @page { size: A4 landscape; margin-top: 8mm; margin-bottom: 8mm; margin-left: 8mm; margin-right: 8mm; }';
+                cssDef2 += ' html, body { margin: 0 !important; padding: 0 !important; }';
+                cssDef2 += ' #page-header, #page-footer, .navigation-primary, .one-sixth, .one-sixths { display: none !important; }';
+                cssDef2 += ' #page-wrapper, #content-wrapper, #main-content, .grid, .grid__item { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; float: none !important; box-sizing: border-box; }';
+                cssDef2 += ' .grid { display: block !important; }';
+                cssDef2 += ' .five-sixths, .scope-appointments-by-day, .scope-appointments-by-day .board, .scope-appointments-by-day .board__body { width: 100% !important; margin: 0 !important; padding: 0 !important; }';
+                cssDef2 += ' .scope-appointments-by-day .appointments-by-day-table { font-size: 7pt; width: 100%; }';
+                cssDef2 += ' .scope-appointments-by-day .appointments-by-day-table th, .scope-appointments-by-day .appointments-by-day-table td { padding: 2px 4px; }';
                 cssDef2 += '}';
             let style2 = document.createElement('style');
-
             style2.appendChild(document.createTextNode(cssDef2));
             document.head.appendChild(style2);
         </script>
-        <table>
+        <table class="appointments-by-day-table">
+            <colgroup>
+                <col class="col-compact" style="width: 4%">
+                <col class="col-compact" style="width: 5%">
+                <col class="col-compact" style="width: 5%">
+                <col class="col-compact" style="width: 9%">
+                <col class="col-compact" style="width: 8%">
+                <col class="col-compact" style="width: 12%">
+                <col class="col-text" style="width: {{ textColumnWidth }}%">
+                {% if customTextfieldActivated %}
+                    <col class="col-text" style="width: {{ textColumnWidth }}%">
+                {% endif %}
+                {% if customTextfield2Activated %}
+                    <col class="col-text" style="width: {{ textColumnWidth }}%">
+                {% endif %}
+            </colgroup>
             <thead>
                 <tr>
-                    <th>{{ clusterEnabled ? 'Kürzel' : 'Lfd.Nr.'}}</th>
-                    <th>Uhrzeit</th>
-                    <th>Nr.</th>
-                    <th>Name</th>
-                    <th>Telefon</th>
-                    <th>Email</th>
-                    <th>Dienstleistung</th>
-                    <th>Anmerkungen</th>
+                    <th class="col-compact">{{ clusterEnabled ? 'Kürzel' : 'Lfd.Nr.'}}</th>
+                    <th class="col-compact">Uhrzeit</th>
+                    <th class="col-compact">Nr.</th>
+                    <th class="col-compact">Name</th>
+                    <th class="col-compact">Telefon</th>
+                    <th class="col-compact">Email</th>
+                    <th class="col-text">Dienstleistung</th>
+                    <th class="col-text">Anmerkungen</th>
+                    {% if customTextfieldActivated %}
+                        <th class="col-text">{{ customTextfieldLabel ?: 'Freitextfeld 1' }}</th>
+                    {% endif %}
+                    {% if customTextfield2Activated %}
+                        <th class="col-text">{{ customTextfield2Label ?: 'Freitextfeld 2' }}</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
                 {% for item in processList %}
                     <tr>
-                        <td>{{ clusterEnabled ? item.scope.shortName : loop.index }}</td>
-                        <td>{{ item.queue.arrivalTime|date('H:i') }}</td>
-                        <td>{{ item.displayNumber }}</td>
-                        <td>{{ item.clients.0.familyName }}</td>
-                        <td>{{ item.clients.0.telephone }}</td>
-                        <td>{{ item.clients.0.email }}</td>
-                        <td class="wrap">{{ item.requests.0.name }}</td>
-                        <td>{{ item.amendment }}</td>
+                        <td class="col-compact">{{ clusterEnabled ? item.scope.shortName : loop.index }}</td>
+                        <td class="col-compact">{{ item.queue.arrivalTime|date('H:i') }}</td>
+                        <td class="col-compact">{{ item.displayNumber }}</td>
+                        <td class="col-compact">{{ item.clients.0.familyName }}</td>
+                        <td class="col-compact">{{ item.clients.0.telephone }}</td>
+                        <td class="col-compact">{{ item.clients.0.email }}</td>
+                        <td class="col-text">{{ item.requests.0.name }}</td>
+                        <td class="col-text">{{ item.amendment|default('')|e|nl2br }}</td>
+                        {% if customTextfieldActivated %}
+                            <td class="col-text">{{ item.customTextfield|default('')|e|nl2br }}</td>
+                        {% endif %}
+                        {% if customTextfield2Activated %}
+                            <td class="col-text">{{ item.customTextfield2|default('')|e|nl2br }}</td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>

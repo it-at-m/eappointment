@@ -19,6 +19,7 @@ class CaptchaController extends BaseController
         $this->service = new CaptchaService();
     }
 
+    #[\Override]
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $requestErrors = ValidationService::validateServerGetRequest($request);

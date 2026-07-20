@@ -1,7 +1,6 @@
 import { mount } from "@vue/test-utils";
 import { describe, it, expect } from "vitest";
 import { nextTick } from "vue";
-// @ts-expect-error: SFC import for test
 import ListView from "@/components/Appointment/AppointmentSelection/ListView.vue";
 
 describe("ListView", () => {

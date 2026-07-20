@@ -60,6 +60,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         }
     }
 
+    #[\Override]
     public function exchangeArray(object|array $input): array
     {
         parent::exchangeArray($this->getDefaults());
@@ -113,7 +114,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Check if the given data validates against the given jsonSchema
      *
-     * @throws \BO\Zmsentities\Expcetion\SchemaValidation
+     * @throws \BO\Zmsentities\Exception\SchemaValidation
      * @return bool
      */
     public function testValid($locale = 'de_DE', $resolveLevel = 0): bool
@@ -177,6 +178,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         $schema = array(

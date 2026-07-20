@@ -25,7 +25,7 @@ fix: # run code fixing
 	npm run fix
 
 live: # init live system
-	$(COMPOSER) install --no-dev --prefer-dist
+	$(COMPOSER) install --no-dev --prefer-dist --optimize-autoloader
 	npm install --legacy-peer-deps
 	npm run build
 	npm install requirejs --no-save --legacy-peer-deps

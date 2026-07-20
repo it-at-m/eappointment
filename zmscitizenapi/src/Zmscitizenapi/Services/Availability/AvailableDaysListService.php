@@ -6,12 +6,14 @@ namespace BO\Zmscitizenapi\Services\Availability;
 
 use BO\Zmscitizenapi\Models\AvailableDays;
 use BO\Zmscitizenapi\Models\AvailableDaysByOffice;
+use BO\Zmscitizenapi\Services\Captcha\CaptchaRequirementTrait;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 
 class AvailableDaysListService
 {
+    use CaptchaRequirementTrait;
     use ServiceLocationValidationTrait;
 
     private TokenValidationService $tokenValidator;
@@ -23,7 +25,7 @@ class AvailableDaysListService
         $this->zmsApiFacadeService = new ZmsApiFacadeService();
     }
 
-    public function getAvailableDaysList(array $queryParams): AvailableDays|array
+    public function getAvailableDaysList(array $queryParams, bool $showUnpublished = false): AvailableDays|array
     {
         $clientData = $this->extractClientData($queryParams);
         $errors = $this->validateClientData($clientData);
@@ -31,7 +33,7 @@ class AvailableDaysListService
             return $errors;
         }
 
-        $errors = $this->validateServiceLocations($clientData->officeIds, $clientData->serviceIds);
+        $errors = $this->validateServiceLocations($clientData->officeIds, $clientData->serviceIds, $showUnpublished);
         if ($errors !== null) {
             return $errors;
         }
@@ -57,21 +59,9 @@ class AvailableDaysListService
         ];
     }
 
-    private function isCaptchaRequired(array $officeIds): bool
-    {
-        $officeId = (int)($officeIds[0] ?? 0);
-
-        try {
-            $scope = $this->zmsApiFacadeService->getScopeByOfficeId($officeId);
-            return $scope->captchaActivatedRequired ?? false;
-        } catch (\Throwable $e) {
-            return false;
-        }
-    }
-
     private function validateClientData(object $data): array
     {
-        $captchaRequired = $this->isCaptchaRequired($data->officeIds);
+        $captchaRequired = $this->isCaptchaRequiredForOfficeIds($data->officeIds);
 
         return ValidationService::validateGetBookableFreeDays(
             $data->officeIds,
@@ -97,11 +87,16 @@ class AvailableDaysListService
         );
     }
 
-    public function getAvailableDaysListByOffice($queryParams)
+    public function getAvailableDaysListByOffice($queryParams, bool $showUnpublished = false)
     {
         $clientData = $this->extractClientData($queryParams);
         $errors = $this->validateClientData($clientData);
         if (!empty($errors['errors'])) {
+            return $errors;
+        }
+
+        $errors = $this->validateServiceLocations($clientData->officeIds, $clientData->serviceIds, $showUnpublished);
+        if ($errors !== null) {
             return $errors;
         }
 

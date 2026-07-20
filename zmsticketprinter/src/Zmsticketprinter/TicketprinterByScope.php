@@ -21,6 +21,7 @@ class TicketprinterByScope extends BaseController
      * @SuppressWarnings(UnusedFormalParameter)
      * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,

@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
 
 /**
  * Response data for GET /available-days/ and GET /available-days-by-office/.
@@ -12,19 +13,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * non-by-office returns array of date strings (YYYY-MM-DD).
  * Use {@link #getFirstAvailableDay()} to obtain the first date for the test.
  */
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AvailableDaysResponse {
 
-    @JsonProperty("availableDays")
     private List<Object> availableDays;
-
-    public List<Object> getAvailableDays() {
-        return availableDays;
-    }
-
-    public void setAvailableDays(List<Object> availableDays) {
-        this.availableDays = availableDays;
-    }
 
     /**
      * Returns the first available day as YYYY-MM-DD for use in the next step.

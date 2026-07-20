@@ -8,6 +8,7 @@ class Source extends Schema\Entity
 
     public static $schema = 'source.json';
 
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -131,6 +132,7 @@ class Source extends Schema\Entity
         return ($this->isEditable() && 0 < $this->getProviderList()->count() && $this->getRequestList()->count());
     }
 
+    #[\Override]
     public function withCleanedUpFormData()
     {
         $entity = parent::withCleanedUpFormData();

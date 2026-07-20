@@ -38,7 +38,9 @@ class Ticketprinter
         try {
             $entity = $this->getByHash($hash, $entity);
         } catch (\Exception $e) {
-            error_log('Error in getByHash creating new organisation hash: ' . $e->getMessage());
+            \App::$log->warning('Error in getByHash, creating new organisation hash', [
+                'exception' => $e->getMessage(),
+            ]);
             $entity = $this->writeNewWithHash($request, $entity);
         }
 

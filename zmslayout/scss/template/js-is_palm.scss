@@ -1,0 +1,5 @@
+#js-is_palm {
+    @include media-query('palm') {
+        display:    none !important;
+    }
+}

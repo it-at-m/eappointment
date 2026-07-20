@@ -17,6 +17,12 @@ class OwnerDeleteTest extends Base
         $this->setApiCalls(
             [
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
                     'function' => 'readDeleteResult',
                     'url' => '/owner/23/',
                     'response' => $this->readFixture("GET_owner.json")

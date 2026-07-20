@@ -15,9 +15,10 @@ use BO\Zmsadmin\Helper\MailTemplateArrayProvider;
 use BO\Zmsentities\Client;
 use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Config;
+use BO\Zmsentities\Mail;
 use BO\Zmsentities\Helper\Messaging;
 use BO\Zmsentities\Validator\ProcessValidator;
-use BO\Zmsentities\Process as Entity;
+use BO\Zmsentities\Process;
 use BO\Zmsadmin\Helper\AppointmentFormHelper;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -30,6 +31,7 @@ class ProcessQueue extends BaseController
     /**
      * @SuppressWarnings(Param)
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
@@ -58,14 +60,14 @@ class ProcessQueue extends BaseController
         $process = $this->getProcess($input, $scope);
         $validatedForm = static::getValidatedForm($validator, $process);
         if ($validatedForm['failed']) {
-            return \BO\Slim\Render::withJson(
+            return Render::withJson(
                 $response,
                 $validatedForm
             );
         }
 
         $process = $this->writeQueuedProcess($input, $process);
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'element/helper/messageHandler.twig',
             array(
@@ -100,14 +102,25 @@ class ProcessQueue extends BaseController
                 $validator->getParameter('amendment'),
                 $delegatedProcess->setter('amendment')
             )
-            ->validateText(
+        ;
+
+        $scope = $process->getCurrentScope();
+        if ((int) $scope->getCustomTextfieldActivated()) {
+            $processValidator->validateCustomTextfield(
                 $validator->getParameter('customTextfield'),
-                $delegatedProcess->setter('customTextfield')
-            )
-            ->validateText(
+                $delegatedProcess->setter('customTextfield'),
+                (bool) (int) $scope->getCustomTextfieldRequired()
+            );
+        }
+        if ((int) $scope->getCustomTextfield2Activated()) {
+            $processValidator->validateCustomTextfield(
                 $validator->getParameter('customTextfield2'),
-                $delegatedProcess->setter('customTextfield2')
-            )
+                $delegatedProcess->setter('customTextfield2'),
+                (bool) (int) $scope->getCustomTextfield2Required()
+            );
+        }
+
+        $processValidator
             ->validateReminderTimestamp(
                 $validator->getParameter('headsUpTime'),
                 $delegatedProcess->setter('reminderTimestamp'),
@@ -115,7 +128,6 @@ class ProcessQueue extends BaseController
                     $validator->getParameter('sendReminder')->isNumber()->isNotEqualTo(1)
                 )
             )
-
         ;
         $processValidator->getCollection()->addValid(
             $validator->getParameter('sendConfirmation')->isNumber(),
@@ -138,7 +150,7 @@ class ProcessQueue extends BaseController
 
     protected function getProcess($input, $scope)
     {
-        $process = new \BO\Zmsentities\Process();
+        $process = new Process();
         $notice = (! $this->isOpened($scope)) ? 'Außerhalb der Öffnungszeiten gebucht! ' : '';
         return $process->withUpdatedData($input, \App::$now, $scope, $notice);
     }
@@ -159,6 +171,7 @@ class ProcessQueue extends BaseController
             ])
                 ->getEntity();
         }
+        $isOpened = false;
         try {
             $isOpened = \App::$http
                 ->readGetResult('/scope/' . $scope->getId() . '/availability/', ['resolveReferences' => 0])
@@ -166,7 +179,7 @@ class ProcessQueue extends BaseController
                 ->withScope($scope)
                 ->isOpened(\App::$now);
         } catch (\BO\Zmsclient\Exception $exception) {
-            if ($exception->template == 'BO\\Zmsapi\\Exception\\Availability\\AvailabilityNotFound') {
+            if ($exception->template == 'BO\\Zmsbackend\\Availability\\Exception\\AvailabilityNotFound') {
                 $isOpened = false;
             }
         }
@@ -175,7 +188,7 @@ class ProcessQueue extends BaseController
 
     private function printProcessResponse(
         ResponseInterface $response,
-        Entity $process,
+        Process $process,
         ?string $printType = null,
         ?int $providerId = null
     ): ResponseInterface {
@@ -194,11 +207,11 @@ class ProcessQueue extends BaseController
 
             $config = \App::$http->readGetResult('/config/')->getEntity();
 
-            $mail = (new \BO\Zmsentities\Mail())
+            $mail = (new Mail())
                 ->setTemplateProvider($templateProvider)
                 ->toResolvedEntity($process, $config, 'appointment');
 
-            return \BO\Slim\Render::withHtml(
+            return Render::withHtml(
                 $response,
                 'page/printAppointmentMail.twig',
                 [
@@ -207,7 +220,7 @@ class ProcessQueue extends BaseController
             );
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/printWaitingNumber.twig',
             array(

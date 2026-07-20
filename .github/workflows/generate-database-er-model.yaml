@@ -15,12 +15,12 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment-php-base:8.3-dev"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev"
     services:
       mariadb:
         image: mariadb:10.11
         env:
-          MYSQL_ROOT_PASSWORD: zmsdb
+          MYSQL_ROOT_PASSWORD: zmsbackend
           MYSQL_DATABASE: zmsbo
           MYSQL_CHARACTER_SET: utf8mb4
           MYSQL_COLLATION: utf8mb4_unicode_ci
@@ -35,7 +35,7 @@ jobs:
           --cpus=1
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Configure Git Safe Directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
@@ -44,30 +44,30 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt-get update && apt-get install -y python3-pip
-          python3 -m pip install --upgrade pip
-          python3 -m pip install pymysql jinja2
+          apt-get update && apt-get install -y python3-pip python3-venv
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/pip install pymysql jinja2
 
       - name: Install Composer Dependencies
         run: |
-          echo "Installing Composer dependencies for zmsdb"
-          (cd zmsdb && composer install --no-progress --prefer-dist --optimize-autoloader)
+          echo "Installing Composer dependencies for zmsbackend"
+          (cd zmsbackend && composer install --no-progress --prefer-dist --optimize-autoloader)
         shell: bash
 
       - name: Setup Database and Import Schema
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
           MYSQL_DATABASE: zmsbo
-          MYSQL_ROOT_PASSWORD: zmsdb
+          MYSQL_ROOT_PASSWORD: zmsbackend
         run: |
           set -e
           echo "Installing MariaDB client..."
           apt-get update && apt-get install -y mariadb-client
           echo "Setting up database and importing schema from .resources/zms.sql..."
-          # Create database
-          mysql -h mariadb -u root -pzmsdb -e "CREATE DATABASE IF NOT EXISTS zmsbo;"
-          # Import schema from .resources/zms.sql
-          mysql -h mariadb -u root -pzmsdb zmsbo < .resources/zms.sql
+          # Trixie mariadb-client defaults to requiring TLS; the CI MariaDB service has no SSL.
+          mysql --skip-ssl -h mariadb -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS zmsbo;"
+          mysql --skip-ssl -h mariadb -u root -p"$MYSQL_ROOT_PASSWORD" zmsbo < .resources/zms.sql
 
       - name: Create database schema generator script
         run: |
@@ -81,14 +81,15 @@ jobs:
           import re
 
           class DatabaseSchemaGenerator:
-              def __init__(self, host='mariadb', port=3306, user='root', password='zmsdb', database='zmsbo'):
+              def __init__(self, host='mariadb', port=3306, user='root', password='zmsbackend', database='zmsbo'):
                   self.connection = pymysql.connect(
                       host=host,
                       port=port,
                       user=user,
                       password=password,
                       database=database,
-                      charset='utf8mb4'
+                      charset='utf8mb4',
+                      ssl_disabled=True
                   )
                   self.cursor = self.connection.cursor(pymysql.cursors.DictCursor)
 
@@ -546,11 +547,11 @@ jobs:
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
           MYSQL_DATABASE: zmsbo
-          MYSQL_ROOT_PASSWORD: zmsdb
-        run: python3 generate_schema.py
+          MYSQL_ROOT_PASSWORD: zmsbackend
+        run: .venv/bin/python generate_schema.py
 
       - name: Upload database schema diagrams artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: database-schema-diagrams
           path: public/diagrams/database-er-model.html

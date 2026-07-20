@@ -1,3 +1,143 @@
+## Release Muc-44 (10.07.2026)
+                                
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1384'>ZMSKVR-1384</a>] -         Kundensuche zeigt bestehenden Termin nicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1435'>ZMSKVR-1435</a>] -         Link zu Hauptdienstleistung bei der Kombinierbarkeit Fehlerhaft
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1444'>ZMSKVR-1444</a>] -         Dienstleistungsstatistik: Im Excel-Export wird „Uncategorized“ statt „Dienstleistung wurde nicht erfasst“ angezeigt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1448'>ZMSKVR-1448</a>] -         Fehlermeldungen im Bürgerfrontend bleiben persistent nach Aktionen der Fehlerbehebung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1453'>ZMSKVR-1453</a>] -         Terminvarianten Verbesserungen (Link zur DL+ Orteingaben beim Verschieben,  Ort beim G-K- Kunde generell)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1501'>ZMSKVR-1501</a>] -         DLDB-Mapper: getSlotTime() berücksichtigt 45-Minuten-Slotzeit nicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1121'>ZMSKVR-1121</a>] -         SAFARI Fehlerhafte Fehlermeldung beim Aktivierungslink – trotz erfolgreicher Terminaktivierung
+</li>
+</ul>
+                                            
+<h2>        Spike
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1420'>ZMSKVR-1420</a>] -         Zero Downtime Deployments und DB Expand und Contract Migrationen
+</li>
+</ul>
+                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1377'>ZMSKVR-1377</a>] -         UX/UI von &quot;neue Öffnungszeit&quot; verbessern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1437'>ZMSKVR-1437</a>] -         Innenrevision/Benutzerverwaltung  weitere Anpassungen UI
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1491'>ZMSKVR-1491</a>] -         Anpassung der rechtlichen Hinweise im letzten Buchungsschritt
+</li>
+</ul>
+                                                        
+                                                        
+
+## Release Muc-43 (19.06.2026) 
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1321'>ZMSKVR-1321</a>] -         Entkopplung von Berliner Layout-Dependencies wegen kritischer Sicherheitslücke und fehlender Wartbarkeit
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1392'>ZMSKVR-1392</a>] -         Ungünstige Validierung bei Standort- und Behördenkonfiguration
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1449'>ZMSKVR-1449</a>] -         Callout-Box für Captcha: &quot;Ihre Sitzung ist abgelaufen&quot; Warning statt Error-Box (Farbe)
+</li>
+</ul>
+                                                                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1042'>ZMSKVR-1042</a>] -         Gesamtübersicht: Reihenfolge Terminkacheln in einem Standort ändern sich nach Datenaktualisierung nicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1328'>ZMSKVR-1328</a>] -         Testautomatisierung: Interner Terminkunde – Aufruf und Abschluss über ZMS Admin
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1345'>ZMSKVR-1345</a>] -         Sicherheitslücke: Unberechtigter Zugriff auf Standortdaten (nur technische Admins erlauben)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1378'>ZMSKVR-1378</a>] -         Neue Statistik: Auswertung von geplanten und gebuchten Terminkapazitäten MVP
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1400'>ZMSKVR-1400</a>] -         Finale UI-Umstellung Nutzerverwaltung auf neues Rollenmodell
+</li>
+</ul>
+
+## Release Muc-42 (29.05.2026) 
+                              
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1340'>ZMSKVR-1340</a>] -         Beim Verschieben, erster verfügbare Tag ausgegraut
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1373'>ZMSKVR-1373</a>] -         Bestehende Öffnungszeit wird überschrieben beim Anlegen einer neuen Öffnungszeit
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1374'>ZMSKVR-1374</a>] -         Öffnungszeit wird doppelt angelegt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1405'>ZMSKVR-1405</a>] -         [Kundenstatistik] Erste zwei Spalten mit Gesamtanzahl der Termine fehlen im Excel-Export
+</li>
+</ul>
+                                                                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-444'>ZMSKVR-444</a>] -         Bürgerfrontend2: Fehlermeldung für Captcha-Time-Out 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1172'>ZMSKVR-1172</a>] -         Umstellung Rechteprüfung – Statistik und Innenrevision
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1294'>ZMSKVR-1294</a>] -         Umstellung Rechteprüfung - Behörden, Standorte, Gesamtübersicht und Öffnungszeiten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1295'>ZMSKVR-1295</a>] -         Umstellung Rechteprüfung – Freie Tage, Mandanten, Mailtemplates, Wartenummern und Systemkonfiguration
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1296'>ZMSKVR-1296</a>] -         Umstellung Rechteprüfung – Sachbearbeitung, Tresen und Warteschlangen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1317'>ZMSKVR-1317</a>] -         MSE PDF-Export erweitern: Anzeige von Freitextfeld 1 und 2 analog zum Excel-Export
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1318'>ZMSKVR-1318</a>] -         MSE Terminvarianten „Entwässerungsplanvorbesprechung“ (Vor Ort / Video)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1319'>ZMSKVR-1319</a>] -         MSE Terminvarianten „Planeinsicht Grundstücksentwässerung“ (Kleinkunde / Gewerbekunde) mit separaten Kalendern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1398'>ZMSKVR-1398</a>] -         Rollen-Verwaltung und gezielte Zuordnung zu Nutzer*innen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1399'>ZMSKVR-1399</a>] -         Umstellung Rechteprüfung – Benutzerverwaltung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1412'>ZMSKVR-1412</a>] -         Captcha Altcha Version von 1.5.1 auf 3.0.5 Heben (automatisiert durch Dependapot nicht geklappt)
+</li>
+</ul>
+                                                        
+## Release Muc-41 (08.05.2026) 
+                                
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1018'>ZMSKVR-1018</a>] -         MSE Warteschlange: Tags statt Zeilenumbruch (Anmerkung, Freitextfeld)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1102'>ZMSKVR-1102</a>] -         Termine bleiben in Bearbeitung+ beim zweitem Aufruf verschwinden nach dem man auf Abbrechen klickt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1186'>ZMSKVR-1186</a>] -         PHP Warnings mit null checks beheben
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1344'>ZMSKVR-1344</a>] -         Tab der Dienstleistungsstatistik falsch benannt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1352'>ZMSKVR-1352</a>] -         Termindauer falsch, wenn zugehörige Öffnungszeit gelöscht wurde
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1355'>ZMSKVR-1355</a>] -         Demo Bürgeransicht: Verfügbare Tage werden nach Auswahl grau und „Weiter“-Button bleibt deaktiviert
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1386'>ZMSKVR-1386</a>] -         Anzeige nach Auswahl einer Dienstleistung im eKiosk bleibt zu lange sichtbar
+</li>
+</ul>
+                                                                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1314'>ZMSKVR-1314</a>] -         Verbesserung der Darstellung der Dienstleistungsstatistik
+</li>
+</ul>
+                
+
 ## Release Muc-40 (17.04.2026) 
 
 <h2>        Bug

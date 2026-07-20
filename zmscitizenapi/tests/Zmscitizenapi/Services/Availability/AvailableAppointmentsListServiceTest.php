@@ -217,7 +217,8 @@ class AvailableAppointmentsListServiceTest extends TestCase
 
                     public static function validateServiceLocationCombination(
                         int $officeId,
-                        array $serviceIds
+                        array $serviceIds,
+                        bool $showUnpublished = false
                     ): array {
                         if ($officeId === 999) {
                             return ["errors" => [["errorCode" => "invalidLocationAndServiceCombination"]]];

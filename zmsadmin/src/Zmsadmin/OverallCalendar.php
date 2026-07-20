@@ -3,29 +3,30 @@
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
-use BO\Zmsdb\Request;
 use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Department as DepartmentEntity;
 use BO\Zmsentities\Collection\DepartmentList;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 
 class OverallCalendar extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $result = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3]);
         if (!$result) {
             throw new \Exception('Unable to retrieve workstation data');
         }
         $workstation = $result->getEntity();
-        if (!$workstation->getUseraccount()->hasRights(['scope'])) {
-            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        if (!$workstation->getUseraccount()->hasPermissions(['overviewcalendar'])) {
+            throw new UserAccountMissingRights();
         }
 
         return \BO\Slim\Render::withHtml(

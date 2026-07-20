@@ -39,7 +39,7 @@ class Factory
     /**
      * Parse schema and return Entity name
      *
-     * @return String
+     * @return string
      */
     public function getEntityName()
     {

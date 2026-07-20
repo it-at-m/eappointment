@@ -12,24 +12,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
     <title>{{ title }} - ZMS</title>
-    <link rel="stylesheet" media="all" type="text/css" href="{{ includeUrl() }}/_css/admin.css?version={{ currentVersion() }}&ts={{ getNow()|date("U") }}">
-    <link rel="icon" type="image/png" href="{{ includeUrl() }}/_css/images/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="{{ includeUrl() }}/_css/images/favicon.svg" />
-    <link rel="shortcut-icon" href="{{ includeUrl() }}/_css/images/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ includeUrl() }}/_css/images/apple-touch-icon.png" />
-    <link rel="manifest" href="{{ includeUrl() }}/_css/images/site.webmanifest" />
+    <link rel="stylesheet" media="all" type="text/css" href="{{ includeUrl }}/_css/admin.css?version={{ currentVersion() }}&ts={{ getNow()|date("U") }}">
+    <link rel="icon" type="image/png" href="{{ includeUrl }}/_css/images/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="{{ includeUrl }}/_css/images/favicon.svg" />
+    <link rel="shortcut-icon" href="{{ includeUrl }}/_css/images/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ includeUrl }}/_css/images/apple-touch-icon.png" />
+    <link rel="manifest" href="{{ includeUrl }}/_css/images/site.webmanifest" />
     {% if getSystemStatus('ZMS_ENV') == 'dev' %}
-    <link rel="icon" type="image/svg+xml" href="{{ includeUrl() }}/_css/images/ZMS-Favicon-Dev.svg" />
+    <link rel="icon" type="image/svg+xml" href="{{ includeUrl }}/_css/images/ZMS-Favicon-Dev.svg" />
     {% elseif getSystemStatus('ZMS_ENV') == 'stage'%}
-     <link rel="icon" type="image/svg+xml" href="{{ includeUrl() }}/_css/images/ZMS-Favicon-Stage.svg" />
+     <link rel="icon" type="image/svg+xml" href="{{ includeUrl }}/_css/images/ZMS-Favicon-Stage.svg" />
      {% endif %}
-    {#<link rel="stylesheet" media="print" type="text/css" href="{{ includeUrl() }}/_css/print.css">#}
+    {#<link rel="stylesheet" media="print" type="text/css" href="{{ includeUrl }}/_css/print.css">#}
 </head>
-<body>
+<body{% if getSystemStatus('ZMS_ENV') == 'dev' %} class="zms-env-dev"{% elseif getSystemStatus('ZMS_ENV') == 'stage' %} class="zms-env-stage"{% endif %}>
     <span id="js-is_palm"></span>
     <div id="page-wrapper">
-        <header id="page-header" role="banner" style="{% if getSystemStatus('ZMS_ENV') == 'dev' %}background-color: #2ECC40;
-            {% elseif getSystemStatus('ZMS_ENV') == 'stage' %}background-color: #7FDBFF;{% endif %}">
+        <header id="page-header" role="banner">
             {% block pageheader %}
                 {{ parent() }}
             {%- endblock %}
@@ -42,7 +41,9 @@
             <div class="grid">
                 {% if not hideNavigation %}
                 <div class="grid__item one-sixth">
-                    {% include "block/emergency/emergency.twig" %}
+                    {% if workstation.useraccount.permissions.emergency|default(false) %}
+                        {% include "block/emergency/emergency.twig" %}
+                    {% endif %}
                     <nav class="navigation-primary" aria-labelledby="navigation-primary-title">
                         <h2 class="aural" id="navigation-primary-title">Hauptnavigation</h2>
                         <div class="nav__wrapper">
@@ -86,8 +87,9 @@
             </div>
             <div class="page-footer__right">
             <div class="page-version">
-                <a href="{{ urlGet('changelog', {}, {}) }}" class="version" title="Änderungshistorie anzeigen">Version {{ currentVersion() }}</a> | <a href="{{ urlGet('status', {}, {}) }}" class="version" title="Betriebsstatus des Systems">Status</a>
-                {% if getSystemStatus('ZMS_ENV') %} | {{ getSystemStatus('ZMS_ENV') }}{% endif %}
+                <a href="{{ urlGet('changelog', {}, {}) }}" class="version" title="Änderungshistorie anzeigen">Änderungshistorie</a> | <span>Version {{ currentVersion() }}</span>
+                <a href="{{ urlGet('status', {}, {}) }}" class="version" title="Betriebsstatus des Systems">Status</a>
+                {% if getSystemStatus('ZMS_ENV') %}<p>{{ getSystemStatus('ZMS_ENV') }}</p>{% endif %}
             </div>
             </div>
         </footer>
@@ -95,9 +97,9 @@
         
 
     </div>
-    {#<script src="{{ includeUrl() }}/_js/vendor.js?version={{ currentVersion() }}"></script>#}
-    <script src="{{ includeUrl() }}/_js/index.js?version={{ currentVersion() }}"></script>
-    {#<script src="{{ includeUrl() }}/_js/index.js?2"></script>#}
+    {#<script src="{{ includeUrl }}/_js/vendor.js?version={{ currentVersion() }}"></script>#}
+    <script src="{{ includeUrl }}/_js/index.js?version={{ currentVersion() }}"></script>
+    {#<script src="{{ includeUrl }}/_js/index.js?2"></script>#}
     {% block javascript %}
     {%- endblock %}
     {% if (debug)  %}

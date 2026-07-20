@@ -1,12 +1,12 @@
 # ZMS Admin
 
-[![pipeline status](https://gitlab.com/eappointment/zmsadmin/badges/main/pipeline.svg)](https://gitlab.com/eappointment/zmsadmin/-/commits/main)
-[![coverage report](https://gitlab.com/eappointment/zmsadmin/badges/main/coverage.svg)](https://eappointment.gitlab.io/zmsadmin/_tests/coverage/index.html)
+[![CI](https://github.com/it-at-m/eappointment/actions/workflows/combined-workflow-with-docs.yaml/badge.svg?branch=main)](https://github.com/it-at-m/eappointment/actions/workflows/combined-workflow-with-docs.yaml)
+[![coverage report](https://img.shields.io/badge/coverage-report-blue)](https://it-at-m.github.io/eappointment/coverage/coverage-zmsadmin/html/)
 
 
 # ZMS Administration
 
-This application offers an administrative web frontend as well as queue management for managing appointments by using the zmsapi.
+This application offers an administrative web frontend as well as queue management for managing appointments by using the zmsbackend REST API.
 
 ## Requirements
 
@@ -18,8 +18,8 @@ The variable `$WEBROOT` represents the parent path to install the application.
 
 ```bash
     cd $WEBROOT
-    git clone https://gitlab.com/eappointment/zmsadmin.git
-    cd zmsadmin
+    git clone https://github.com/it-at-m/eappointment.git
+    cd eappointment/zmsadmin
     make live
     cp config.example.php config.php
 ```
@@ -73,7 +73,7 @@ To test application run the following command:
     bin/test
 
 
-For a detailed project description, see https://gitlab.com/eappointment/eappointment
+For a detailed project description, see https://github.com/it-at-m/eappointment
 
 
 

@@ -7,12 +7,13 @@ use Psr\Http\Message\ResponseInterface;
 
 class TwigExceptionHandler extends \BO\Slim\TwigExceptionHandler
 {
+    #[\Override]
     public static function withHtml(
         RequestInterface $request,
         ResponseInterface $response,
         \Throwable $exception,
         $status = 500
-    ) {
+    ): ResponseInterface {
         $ticketprinterHash = \BO\Zmsclient\Ticketprinter::getHash();
         if ($ticketprinterHash) {
             // @codeCoverageIgnoreStart

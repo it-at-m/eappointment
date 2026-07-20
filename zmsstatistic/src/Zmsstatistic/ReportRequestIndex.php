@@ -21,6 +21,7 @@ class ReportRequestIndex extends BaseController
      * @SuppressWarnings(Param)
      * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
@@ -34,9 +35,12 @@ class ReportRequestIndex extends BaseController
             $validator->getParameter('scopes')->isArray()->getValue() ?? []
         );
 
-        $scopeIds = !empty($selectedScopes) ? implode(',', $selectedScopes) : $this->workstation->scope['id'];
+        $workstationScopeId = $reportHelper->getWorkstationScopeId($this->workstation);
+        $scopeIds = $reportHelper->resolveScopeIdParam($selectedScopes, $workstationScopeId);
 
-        $requestPeriod = $reportRequestService->getRequestPeriod($this->workstation->scope['id']);
+        $requestPeriod = $workstationScopeId !== null
+            ? $reportRequestService->getRequestPeriod((string) $workstationScopeId)
+            : null;
 
         $dateRange = $reportHelper->extractDateRange(
             $validator->getParameter('from')->isString()->getValue(),

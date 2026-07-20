@@ -7,20 +7,26 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Cluster as Entity;
+use BO\Zmsentities\Cluster;
+use BO\Zmsentities\Collection\ScopeList;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 use BO\Mellon\Validator;
 
 class DepartmentAddCluster extends BaseController
 {
     /**
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['cluster'])) {
+            throw new UserAccountMissingRights();
+        }
         $departmentId = Validator::value($args['departmentId'])->isNumber()->getValue();
         $department = \App::$http
             ->readGetResult('/department/' . $departmentId . '/', ['resolveReferences' => 2])->getEntity();
@@ -28,8 +34,8 @@ class DepartmentAddCluster extends BaseController
         $input = $request->getParsedBody();
 
         if (is_array($input) && array_key_exists('save', $input)) {
-            $entity = (new Entity($input))->withCleanedUpFormData();
-            $entity->scopes = (new \BO\Zmsentities\Collection\ScopeList($entity->scopes))->withUniqueScopes();
+            $entity = (new Cluster($input))->withCleanedUpFormData();
+            $entity->scopes = (new ScopeList($entity->scopes))->withUniqueScopes();
             $entity = \App::$http
                 ->readPostResult('/department/' . $department->id . '/cluster/', $entity)
                 ->getEntity();
@@ -47,7 +53,7 @@ class DepartmentAddCluster extends BaseController
         }
 
         return \BO\Slim\Render::withHtml($response, 'page/cluster.twig', array(
-            'title' => 'Cluster',
+            'title' => 'Cluster einrichten',
             'action' => 'add',
             'menuActive' => 'owner',
             'workstation' => $workstation,

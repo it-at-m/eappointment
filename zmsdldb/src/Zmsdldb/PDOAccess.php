@@ -55,6 +55,7 @@ abstract class PDOAccess extends AbstractAccess
         }
     }
 
+    #[\Override]
     public function __call($method, $args = [])
     {
         try {

@@ -63,6 +63,8 @@
                     "type":"input",
                     "parameter": {
                         "name": "email",
+                        "type": "email",
+                        "required": true,
                         "value":  department.email,
                     }
                 }]
@@ -88,6 +90,7 @@
                     "parameter": {
                         "name": "sendEmailReminderMinutesBefore",
                         "value": department.sendEmailReminderMinutesBefore|default(120),
+                        "integer": true
                     }
                 }]
             ) }}

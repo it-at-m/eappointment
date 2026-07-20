@@ -22,18 +22,18 @@ jobs:
         include:
           - app-path: zmscitizenview
     steps:
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@e012d3bda6f9d5511415e2d885f32826049284a4 # v1.0.23
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@4ed8f906bab8111fbd9a7af8e3f4129f9b721757 # v1.2.3
       - if: ${{hashFiles(format('./{0}/package.json', matrix.app-path))!=null}}
         id: node
-        uses: it-at-m/lhm_actions/action-templates/actions/action-npm-build@e012d3bda6f9d5511415e2d885f32826049284a4 # v1.0.23
+        uses: it-at-m/lhm_actions/action-templates/actions/action-npm-build@4ed8f906bab8111fbd9a7af8e3f4129f9b721757 # v1.2.3
         with:
           app-path: "${{ matrix.app-path }}"
       - if: ${{hashFiles(format('./{0}/pom.xml', matrix.app-path))!=null}}
         id: maven
-        uses: it-at-m/lhm_actions/action-templates/actions/action-maven-build@e012d3bda6f9d5511415e2d885f32826049284a4 # v1.0.23
+        uses: it-at-m/lhm_actions/action-templates/actions/action-maven-build@4ed8f906bab8111fbd9a7af8e3f4129f9b721757 # v1.2.3
         with:
           app-path: "${{ matrix.app-path }}"
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-build-image@e012d3bda6f9d5511415e2d885f32826049284a4 # v1.0.23
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-build-image@4ed8f906bab8111fbd9a7af8e3f4129f9b721757 # v1.2.3
         with:
           path: "${{  matrix.app-path }}"
           image-name: "${{  matrix.app-path }}"

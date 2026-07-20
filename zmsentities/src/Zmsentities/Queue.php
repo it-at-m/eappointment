@@ -10,6 +10,7 @@ class Queue extends Schema\Entity implements Helper\NoSanitize
 
     protected $process;
 
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -41,6 +42,7 @@ class Queue extends Schema\Entity implements Helper\NoSanitize
         return null;
     }
 
+    #[\Override]
     public function withReference($additionalData = [])
     {
         return clone $this;
@@ -50,6 +52,7 @@ class Queue extends Schema\Entity implements Helper\NoSanitize
      * Keep empty, no sub-instances
      * ATTENTION: Keep highly optimized, time critical function
      */
+    #[\Override]
     public function __clone()
     {
     }

@@ -1,0 +1,16 @@
+#{$namespace}.header-hamburger {
+    @include media-query('lap-and-up') {
+        display:                        none;   
+    }
+    font-size:                      2em;
+    position:                       absolute;
+    top:                            0;
+    right:                          0em;
+    color:                          $color-white;
+    background:                     transparent;
+    padding:                        0.5em;
+    border:                         0 none;
+    @include media-query('palm') {       
+        display:                    block;
+    }
+}

@@ -73,7 +73,7 @@ class QuickLoginTest extends Base
     public function testRenderingDoubleLogin()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn';
+        $exception->template = 'BO\Zmsbackend\Useraccount\Exception\UserAlreadyLoggedIn';
         $exception->data = json_decode($this->readFixture("GET_Workstation_Resolved2.json"), 1)['data'];
 
         $this->setApiCalls(

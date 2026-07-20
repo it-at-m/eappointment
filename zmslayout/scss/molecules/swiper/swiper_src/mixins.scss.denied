@@ -1,0 +1,12 @@
+@mixin preserve3d() {
+    -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+    -ms-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+}
+
+@mixin encoded-svg-background($svg) {
+    // this is a less function
+    //$url: "encodeURIComponent(#{$svg})";
+    //background-image: url("data:image/svg+xml;charset=utf-8,#{$url}");
+}

@@ -11,9 +11,13 @@
     "config": {
         "allow-plugins": {
             "php-http/discovery": true
+        },
+        "platform": {
+            "php": "8.3.0"
         }
     },
     "require-dev": {
+        "vimeo/psalm": "6.5.0",
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
         "phpunit/phpunit": "^11",
@@ -31,10 +35,9 @@
         "twig/twig": "3.*",
         "eappointment/mellon": "@dev",
         "eappointment/zmsentities": "@dev",
-        "eappointment/zmsdb": "@dev",
+        "eappointment/zmsbackend": "@dev",
         "eappointment/zmsslim": "@dev",
         "eappointment/zmsclient": "@dev",
-        "eappointment/zmsapi": "@dev",
         "symfony/cache": "^6.0",
         "psr/simple-cache": "^3.0",
         "roave/security-advisories": "dev-latest"

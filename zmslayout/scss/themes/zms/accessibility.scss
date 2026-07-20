@@ -1,0 +1,107 @@
+#{$namespace}ul.checkbox-list {
+    list-style:none;
+    padding-left:0px;
+}
+
+#{$namespace} fieldset .table-action-link {
+    margin:10px 0px;
+}
+
+#{$namespace} fieldset .table--base {
+    margin-bottom:0;
+}
+
+#{$namespace} .mail--templates .block {
+    margin-bottom:1em;
+}
+
+.calendar__tile {
+    &.today {
+        position:                   relative;
+        &:after {
+            top: 0px;
+            right: 0px;
+        }
+    }
+    &.today.small {
+        &:after {
+            top: 0px;
+            right: 0px;
+            border-top: 8px solid $color-calendar-today-marker;
+            border-left: 8px solid transparent;
+        }
+    }
+    
+}
+
+.calendar-legend {
+    .today {
+        &::after {
+            border-top: 8px solid $color-calendar-today-marker;
+            border-left: 8px solid transparent;
+        }
+    }
+}
+
+// bigger items
+.board__actions, .icon {
+    .fa, .fas, .far {
+        font-size:          $icon-size-big;
+    }
+}
+
+#{$namespace}.navigation-primary {
+    .nav__heading {
+        padding: 0 0 0 0;
+
+        .heading__label {
+            color: $color-text-base;
+            display: inline-block;
+            width: 100%;
+            padding: 0.9em 0.6em 0.9em;
+            @include getRem('padding-left', $pagePaddingPx);
+        }
+
+        .heading__button {
+            color: $color-text-base;
+            display: none;
+            width: 100%;
+            padding: 0.9em 0.6em 0.9em;
+            @include getRem('padding-left', $pagePaddingPx);
+        }
+    }
+
+    @include media-query('palm') {
+        .nav__block {
+            .nav__heading {
+                padding-left: 0;
+                &::after {
+                    content: '';
+                    display: none;
+                }
+            }
+            .heading__label {
+                display: none;
+            }
+            .heading__button {
+                display: inline-block;
+                @include getRem('padding-left', $pagePaddingPalmPx);
+                &::after {
+                    content:        "\f078";
+                    float:          right;
+                    display:        inline-block;
+                    font-family:    "Font Awesome 5 Free", "FontAwesome";
+                    font-weight:    900;
+                    font-size:      1.3em;
+                }
+            }
+            &.open {
+                .heading__button {
+                    &::after {
+                        transform: rotate(180deg);
+                    }
+                }
+            }
+        }
+    }
+}

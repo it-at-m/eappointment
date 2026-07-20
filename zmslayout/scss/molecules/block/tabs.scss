@@ -1,0 +1,91 @@
+$tabSpacing:                2px;
+$activeBorderWidthPx:       5px;
+$tabsPaddingY:              $buttonPaddingY *2 !default;            
+$tabsPaddingX:              $buttonPaddingX *2 !default;            
+
+#{$namespace}.tabs {
+    .tabs__tablist {
+        margin:             0 0 -1px;
+        overflow:           visible;
+        display:            flex;
+        position:           relative;
+        z-index:            1;
+    }
+    .tabs__tab {
+        position:           relative;
+        overflow:           visible;
+        background:         $color-disabled;
+        margin:             0;
+        border:             1px solid $color-border;
+        margin-top:         $activeBorderWidthPx;
+        padding:            $tabsPaddingY $tabsPaddingX;
+        border-radius:      0;
+        cursor:             pointer;
+        color:              $color-text-base;
+        border-left-color: $color-white;
+        border-bottom-color:transparent;
+        z-index:            0;
+        outline-offset:     -3px;
+        &.tab--wide {
+            padding-left:   $tabsPaddingX *3;
+            padding-right:  $tabsPaddingX *3;
+        }
+        &:first-child {
+            margin-left:        0 !important;
+            border-left-color:  $color-border;
+            &::after {
+                left:           0 !important;
+            }
+        }
+        &[aria-selected="true"] {
+            background-color:       $color-white;
+            color:                  $color-decorative-active;     
+            font-weight:            bold;
+            margin-top:             0px;
+            z-index:                1;
+            top:                    0;
+            box-shadow:             4px 0px 2px -2px rgba(150,150,150,.2);  
+            /*
+            &::after {
+                // hide the lower shadow and border of active tab
+                position:           absolute;
+                overflow:           visible;
+                z-index:            2;
+                bottom:             -6px;
+                height:             6px;
+                right:              -5px;
+                left:               -1px;
+                background:         $color-white;
+                box-shadow:         none;
+                content:            '';
+            }
+            */
+            &::before {
+                // add a active (fake)border on top of active tab
+                position:           absolute;
+                overflow:           visible;
+                z-index:            2;
+                top:                -1px;
+                bottom:             auto;
+                height:             $activeBorderWidthPx;
+                right:              -1px;
+                left:               -1px;
+                background:         $color-decorative-active;
+                box-shadow:         none;
+                content:            '';
+            }
+        }
+    }
+    .tabs__panel {
+        @include getRem('padding', $boxPaddingPx); 
+        position:           relative;
+        z-index:            0;
+        border:             1px solid $color-border;
+        background-color:   $color-white;
+        outline-offset:     -3px;
+        &.panel--spaceless {
+            padding:        0;
+            border:         0 none;
+        }
+    }
+}

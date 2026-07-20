@@ -471,6 +471,15 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         String sel = "#provider-" + officeId;
         waitWithThreeWindows(() -> deepElementExists(sel), "Provider summary " + sel);
+        if (!deepElementExists(sel)) {
+            ScenarioLogManager.getLogger()
+                    .warn("Provider summary {} not visible after 60s; waiting up to 30s more after deep-link navigation", sel);
+            try {
+                waitUntilDeepElementExists(sel, 30);
+            } catch (TimeoutException e) {
+                ScenarioLogManager.getLogger().warn("Provider summary {} still not visible after extended wait", sel);
+            }
+        }
         Assert.assertTrue(deepElementExists(sel), "Expected booking summary provider block: " + sel);
         Assert.assertTrue(
                 shadowDomContainsText("Bürgerbüro Ruppertstraße"),
@@ -548,15 +557,15 @@ public class CitizenViewPage extends BasePage {
 
     /**
      * After clicking Weiter on the Kontakt form: wait for the update-appointment response and for the preconfirm
-     * page (privacy checkboxes). The Kontakt Weiter is only disabled <em>after</em> click while the request runs.
+     * page (electronic communication checkbox). The Kontakt Weiter is only disabled <em>after</em> click while the request runs.
      */
     public void waitForPreconfirmPageAfterUpdate() {
         CONTEXT.set();
-        String sel = "#checkbox-privacy-policy";
+        String sel = "#checkbox-electronic-communication";
         waitWithThreeWindows(() -> deepElementExists(sel), "Preconfirm page " + sel);
         Assert.assertTrue(
                 deepElementExists(sel),
-                "Preconfirm page (privacy checkbox " + sel + ") not visible after Kontakt Weiter with retries.");
+                "Preconfirm page (electronic communication checkbox " + sel + ") not visible after Kontakt Weiter with retries.");
         ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm page visible");
     }
 
@@ -812,6 +821,17 @@ public class CitizenViewPage extends BasePage {
             Assert.assertTrue(
                     deepProviderCheckboxChecked(officeId),
                     "Expected provider checkbox " + officeId + " to be checked after provider normalization.");
+        }
+
+        if (allowed.size() == 1) {
+            lastSlotBookingOfficeId = allowed.iterator().next();
+            waitUntilProviderToggleSettled(30);
+            try {
+                waitUntilAppointmentSlotsReady(Math.min(60, slotBookingWaitTimeoutSeconds()));
+            } catch (Exception e) {
+                ScenarioLogManager.getLogger()
+                        .warn("zmscitizenview: slot wait after provider normalization: {}", e.toString());
+            }
         }
     }
 
@@ -1096,17 +1116,19 @@ public class CitizenViewPage extends BasePage {
                 + "function findGrid(root,id){if(!root)return null;var g=root.querySelector('#timeslot-grid-provider-'+id);"
                 + "if(g)return g;var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++)"
                 + "if(all[i].shadowRoot){var f=findGrid(all[i].shadowRoot,id);if(f)return f;}return null;}"
-                + "var grid=findGrid(document.body,oid);if(grid){grid.scrollIntoView({block:'start'});}"
+                + "var grid=findGrid(document.body,oid);if(!grid)return false;"
+                + "grid.scrollIntoView({block:'start'});"
                 + "window.scrollBy(0,200);"
                 + "function collectSlots(root,arr){if(!root)return;var n=root;"
                 + "if(n.nodeType===1){"
-                + " if((n.id&&n.id.indexOf('-timeslot-')>=0)||(n.classList&&n.classList.contains('timeslot'))){"
+                + " if(n.id&&n.id.indexOf('provider-'+oid+'-timeslot-')===0){arr.push(n);}"
+                + " else if((n.id&&n.id.indexOf('-timeslot-')>=0)||(n.classList&&n.classList.contains('timeslot'))){"
                 + "   arr.push(n);"
                 + " }"
                 + " if(n.shadowRoot)collectSlots(n.shadowRoot,arr);"
                 + "}"
                 + "var c=n.children; if(c)for(var i=0;i<c.length;i++)collectSlots(c[i],arr);}"
-                + "var slots=[];collectSlots(document.body,slots);"
+                + "var slots=[];collectSlots(grid,slots);"
                 + "if(!slots.length)return false;"
                 + "var minTs=Math.floor(Date.now()/1000)+3600;"
                 + "function slotTs(node){"
@@ -1151,16 +1173,33 @@ public class CitizenViewPage extends BasePage {
                 + "}"
                 + "highlightSlot(target);"
                 + "window.__zmsCitizenViewSlotTarget=target;"
+                + "window.__zmsCitizenViewSlotId=(target&&target.id)?target.id:'';"
+                + "window.__zmsCitizenViewSlotOfficeId=oid;"
                 + "return true;";
     }
 
-    private static final String SCROLL_SLOT_CLICK_SCRIPT =
+    /** Clicks {@code window.__zmsCitizenViewSlotTarget}; falls back to {@link #deepClick} on stored slot id. */
+    private static final String CLICK_STORED_TIMESLOT_SCRIPT =
             "var t=window.__zmsCitizenViewSlotTarget;"
                     + "if(!t)return false;"
-                    + "function clickSlotNode(node){if(!node)return false;"
-                    + " if(node.shadowRoot){var b=node.shadowRoot.querySelector('button:not([disabled])');if(b){b.click();return true;}}"
-                    + " try{node.click();return true;}catch(e){}"
-                    + " return false;}"
+                    + "function clickSlotNode(node){"
+                    + "if(!node)return false;"
+                    + "node.scrollIntoView({block:'center'});"
+                    + "if(node.shadowRoot){"
+                    + "var b=node.shadowRoot.querySelector('button:not([disabled])');"
+                    + "if(b){"
+                    + "b.scrollIntoView({block:'center'});"
+                    + "try{"
+                    + "['pointerdown','mousedown','mouseup','pointerup','click'].forEach(function(ev){"
+                    + "b.dispatchEvent(new MouseEvent(ev,{bubbles:true,cancelable:true,view:window}));"
+                    + "});"
+                    + "}catch(e){}"
+                    + "b.click();"
+                    + "return true;"
+                    + "}"
+                    + "}"
+                    + "try{node.click();return true;}catch(e){return false;}"
+                    + "}"
                     + "var ok=clickSlotNode(t);"
                     + "try{window.__zmsCitizenViewSlotTarget=null;}catch(e){}"
                     + "return ok;";
@@ -1197,13 +1236,121 @@ public class CitizenViewPage extends BasePage {
     public void clickHighlightedTimeslotSelection() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: click highlighted timeslot");
-        Object slotClickResult =
-                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(SCROLL_SLOT_CLICK_SCRIPT);
+        JavascriptExecutor js = (JavascriptExecutor) DriverUtil.getDriver();
+        int officeId = resolveStoredSlotOfficeId(js);
         Assert.assertTrue(
-                Boolean.TRUE.equals(slotClickResult),
-                "zmscitizenview: could not click highlighted timeslot");
+                officeId > 0,
+                "zmscitizenview: highlight step must run first (missing window.__zmsCitizenViewSlotOfficeId)");
+
+        boolean selected = false;
+        for (int attempt = 1; attempt <= 3 && !selected; attempt++) {
+            if (attempt > 1) {
+                ScenarioLogManager.getLogger()
+                        .warn("zmscitizenview: slot selection not registered; retry click attempt {}", attempt);
+                Boolean highlighted =
+                        (Boolean)
+                                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(15))
+                                        .until(
+                                                d ->
+                                                        Boolean.TRUE.equals(
+                                                                ((JavascriptExecutor) d)
+                                                                        .executeScript(
+                                                                                buildScrollSlotHighlightScript(),
+                                                                                officeId)));
+                Assert.assertTrue(
+                        Boolean.TRUE.equals(highlighted),
+                        "zmscitizenview: could not re-highlight timeslot on retry");
+                sleepQuiet(250L);
+            }
+            Assert.assertTrue(
+                    performStoredTimeslotClick(js),
+                    "zmscitizenview: could not click highlighted timeslot (attempt " + attempt + ")");
+            selected = waitForSlotSelectionVisible(officeId, attempt == 1 ? 12 : 20);
+        }
+        Assert.assertTrue(
+                selected,
+                "zmscitizenview: timeslot selection did not register in Vue after click (office " + officeId + ")");
+        sleepQuiet(400L);
+    }
+
+    private static int resolveStoredSlotOfficeId(JavascriptExecutor js) {
+        Object officeIdObj = js.executeScript("return window.__zmsCitizenViewSlotOfficeId;");
+        if (officeIdObj instanceof Number number) {
+            return number.intValue();
+        }
+        return 0;
+    }
+
+    private boolean performStoredTimeslotClick(JavascriptExecutor js) {
+        if (Boolean.TRUE.equals(js.executeScript(CLICK_STORED_TIMESLOT_SCRIPT))) {
+            return true;
+        }
+        Object sid = js.executeScript("return window.__zmsCitizenViewSlotId||'';");
+        if (sid instanceof String slotId && !slotId.isEmpty()) {
+            return deepClick("#" + slotId);
+        }
+        return false;
+    }
+
+    /**
+     * True when a timeslot for {@code officeId} shows primary (selected) styling or the selected-appointment callout
+     * is visible — i.e. Vue received {@code selectTimeSlot}.
+     */
+    private boolean isSlotSelectionVisibleForOffice(int officeId) {
+        if (isTimeslotPrimarySelectedForOffice(officeId)) {
+            return true;
+        }
+        String providerSelector = "#provider-" + officeId;
+        return (shadowDomContainsText("Ausgewählter Termin") || shadowDomContainsText("Selected Appointment"))
+                && deepElementExists(providerSelector);
+    }
+
+    /** {@code muc-button} with {@code data-variant="primary"} for {@code provider-{officeId}-timeslot-*}. */
+    private boolean isTimeslotPrimarySelectedForOffice(int officeId) {
+        CONTEXT.set();
+        String script =
+                "var oid=String(arguments[0]);"
+                        + "var prefix='provider-'+oid+'-timeslot-';"
+                        + "function isPrimaryHost(n){"
+                        + " if(!n||!n.id||n.id.indexOf(prefix)!==0)return false;"
+                        + " if(n.getAttribute&&n.getAttribute('data-variant')==='primary')return true;"
+                        + " if(n.shadowRoot){"
+                        + "  var b=n.shadowRoot.querySelector('button.m-button--primary,[data-variant=primary]');"
+                        + "  if(b)return true;"
+                        + " }"
+                        + " return false;"
+                        + "}"
+                        + "function walk(root){"
+                        + " if(!root)return false;"
+                        + " var hosts=root.querySelectorAll('[id^=\"'+prefix+'\"]');"
+                        + " for(var i=0;i<hosts.length;i++){if(isPrimaryHost(hosts[i]))return true;}"
+                        + " var all=root.querySelectorAll('*');"
+                        + " for(var j=0;j<all.length;j++){"
+                        + "  if(all[j].shadowRoot&&walk(all[j].shadowRoot))return true;"
+                        + " }"
+                        + " return false;"
+                        + "}"
+                        + "return walk(document.body);";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, officeId);
+        return Boolean.TRUE.equals(o);
+    }
+
+    private boolean waitForSlotSelectionVisible(int officeId, int timeoutSeconds) {
         try {
-            Thread.sleep(800L);
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(timeoutSeconds))
+                    .pollingEvery(Duration.ofMillis(500))
+                    .until(d -> isSlotSelectionVisibleForOffice(officeId));
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: slot selection registered for office {}", officeId);
+            return true;
+        } catch (TimeoutException e) {
+            return false;
+        }
+    }
+
+    private static void sleepQuiet(long millis) {
+        try {
+            Thread.sleep(millis);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -1263,15 +1410,27 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: reserve settle delay done");
     }
 
-    /** Info callout after slot pick: {@code Ausgewählter Termin} + {@code #provider-{officeId}}. */
+    /** Info callout after slot pick: selected-appointment header + {@code #provider-{officeId}}. */
     public void assertSelectedAppointmentCalloutShowsProvider(int officeId) {
         CONTEXT.set();
-        waitUntilShadowContains("Ausgewählter Termin", DEFAULT_EXPLICIT_WAIT_TIME);
+        String providerSelector = "#provider-" + officeId;
+        waitWithThreeWindows(
+                () -> (shadowDomContainsText("Ausgewählter Termin")
+                                || shadowDomContainsText("Selected Appointment"))
+                        && deepElementExists(providerSelector),
+                "Selected appointment callout for office " + officeId);
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(
+                        d ->
+                                (shadowDomContainsText("Ausgewählter Termin")
+                                                || shadowDomContainsText("Selected Appointment"))
+                                        && deepElementExists(providerSelector));
         Assert.assertTrue(
-                shadowDomContainsText("Ausgewählter Termin"),
-                "Ausgewählter Termin callout missing after slot click");
+                shadowDomContainsText("Ausgewählter Termin")
+                        || shadowDomContainsText("Selected Appointment"),
+                "Selected-appointment callout header missing after slot click");
         Assert.assertTrue(
-                deepElementExists("#provider-" + officeId),
+                deepElementExists(providerSelector),
                 "Expected #provider-" + officeId + " in selected-appointment callout");
         ScenarioLogManager.getLogger()
                 .info(
@@ -1399,9 +1558,8 @@ public class CitizenViewPage extends BasePage {
         }
     }
 
-    public void acceptPrivacyAndCommunication() {
+    public void acceptCommunication() {
         CONTEXT.set();
-        deepClick("#checkbox-privacy-policy");
         deepClick("#checkbox-electronic-communication");
     }
 
@@ -1423,7 +1581,7 @@ public class CitizenViewPage extends BasePage {
                         });
     }
 
-    /** Preconfirm page: after privacy checkboxes, primary "Termin reservieren" button leads to activation (“Aktivieren Sie Ihren Termin.”). */
+    /** Preconfirm page: after communication checkbox, primary "Termin reservieren" button leads to activation (“Aktivieren Sie Ihren Termin.”). */
     public void continueFromPreconfirmStep() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm → Termin reservieren (activation callout)");
@@ -1635,8 +1793,8 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: navigating to confirmation URL: {}", url);
         try {
             DriverUtil.getDriver().navigate().to(url);
-            // Reload so the app gets the confirm hash on initial load (in-app hash change often doesn't update the view).
-            DriverUtil.getDriver().navigate().refresh();
+            // Do not refresh. Same-tab hash routing now handles confirm links (ZMSKVR-1121).
+            // navigate()+refresh() can confirm twice and leave activation-expired UI instead of success.
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn("Navigate to confirm URL", e);
         }
@@ -1647,7 +1805,7 @@ public class CitizenViewPage extends BasePage {
         }
     }
 
-    /** Navigate to the appointment view URL extracted from the confirmation mail (link without /confirm/), then refresh so the app loads it. */
+    /** Navigate to the appointment view URL extracted from the confirmation mail (link without /confirm/). */
     public void openAppointmentViewDeepLinkInBrowser() {
         CONTEXT.set();
         String url = zms.ataf.rest.steps.CitizenApiSteps.getBookingAppointmentUrl();
@@ -1659,14 +1817,25 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: navigating to appointment view URL (from second email): {}", url);
         try {
             DriverUtil.getDriver().navigate().to(url);
-            DriverUtil.getDriver().navigate().refresh();
+            // Do not refresh — appointmentHash is applied via hashchange (ZMSKVR-1121).
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn("Navigate to appointment view URL", e);
         }
+        waitForAppointmentDetailShellAfterNavigation();
+    }
+
+    /**
+     * After opening an appointment-detail deep link, wait for the detail shell instead of a fixed sleep.
+     * Firefox can be slower than Chrome to render provider blocks after hash navigation.
+     */
+    private void waitForAppointmentDetailShellAfterNavigation() {
+        CONTEXT.set();
         try {
-            Thread.sleep(10000L);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
+            waitUntilDeepElementExists("#timeTitleElement", DEFAULT_EXPLICIT_WAIT_TIME);
+            ScenarioLogManager.getLogger().info("zmscitizenview: appointment detail shell visible (#timeTitleElement)");
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: appointment detail shell not visible after {}s; provider assertion will retry", DEFAULT_EXPLICIT_WAIT_TIME);
         }
     }
 
