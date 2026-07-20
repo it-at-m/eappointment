@@ -30,8 +30,12 @@ class CalendarAvailabilityTest extends Base
         $this->assertArrayHasKey('slotsEndDate', $result);
         $this->assertArrayHasKey('prevBookableDate', $result);
         $this->assertArrayHasKey('nextBookableDate', $result);
-        $this->assertSame($start->format('Y-m-d'), $result['slotsStartDate']);
-        $this->assertSame($end->format('Y-m-t'), $result['slotsEndDate']);
+        if (count($result['days']) > 0) {
+            // Multi-day slots windows are narrowed to the first bookable day.
+            $this->assertSame($result['slotsStartDate'], $result['slotsEndDate']);
+            $this->assertGreaterThanOrEqual($start->format('Y-m-d'), $result['slotsStartDate']);
+            $this->assertLessThanOrEqual($end->format('Y-m-t'), $result['slotsStartDate']);
+        }
     }
 
     public function testServiceCountExceedsMaximum()

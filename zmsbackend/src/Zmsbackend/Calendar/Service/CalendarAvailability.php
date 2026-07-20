@@ -136,6 +136,23 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
 
         $slotDays = $this->filterDaysInDateRange($bookableDays, $slotsStartDate, $slotsEndDate);
         $responseDays = $this->filterDaysInDateRange($bookableDays, $responseStartDate, $responseEndDate);
+
+        // Free-slot SQL: one day only — either the first bookable day in a multi-day
+        // window, or (for a single-day miss) the first bookable day in the painted month.
+        if ($slotsStartDate !== $slotsEndDate) {
+            [$slotsStartDate, $slotsEndDate, $slotDays] = $this->narrowSlotsWindowToFirstBookableDay(
+                $slotDays,
+                $slotsStartDate,
+                $slotsEndDate
+            );
+        } elseif (count($slotDays) === 0 && count($responseDays) > 0) {
+            [$slotsStartDate, $slotsEndDate, $slotDays] = $this->narrowSlotsWindowToFirstBookableDay(
+                $responseDays,
+                $responseStartDate,
+                $responseEndDate
+            );
+        }
+
         $calendar->days = $slotDays;
         $tAfterDays = microtime(true);
 
@@ -293,6 +310,35 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         }
 
         return $filtered;
+    }
+
+    /**
+     * When the client asks for free slots over a range, only query the earliest bookable day.
+     *
+     * @return array{0: string, 1: string, 2: DayList}
+     */
+    private function narrowSlotsWindowToFirstBookableDay(
+        DayList $slotDays,
+        string $slotsStartDate,
+        string $slotsEndDate
+    ): array {
+        $firstBookableDate = null;
+        foreach ($slotDays as $day) {
+            $date = $this->formatDayIso($day);
+            if ($firstBookableDate === null || $date < $firstBookableDate) {
+                $firstBookableDate = $date;
+            }
+        }
+
+        if ($firstBookableDate === null) {
+            return [$slotsStartDate, $slotsEndDate, new DayList()];
+        }
+
+        return [
+            $firstBookableDate,
+            $firstBookableDate,
+            $this->filterDaysInDateRange($slotDays, $firstBookableDate, $firstBookableDate),
+        ];
     }
 
     /**

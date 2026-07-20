@@ -402,41 +402,19 @@ const isDateInLoadedSlotsWindow = (dateKey: string): boolean => {
 };
 
 /**
- * Free-slot SQL window: selected day only when known (fresh times on click);
- * otherwise the visible calendar month for initial paint.
+ * Free-slot SQL window: one day only (selected day, otherwise today).
+ * Month bookable markers still come from the painted-month daylist; if the
+ * client ever sends a multi-day slots window, the backend narrows it to the
+ * first bookable day.
  */
 const getFreeSlotsWindow = (): {
   slotsStartDate: string;
   slotsEndDate: string;
 } => {
-  if (selectedDay.value) {
-    const dayKey = toDayKey(selectedDay.value);
-    return { slotsStartDate: dayKey, slotsEndDate: dayKey };
-  }
-  return getSlotsWindowForDate(viewMonth.value ?? TODAY);
-};
-
-/**
- * Slots are loaded per calendar month (clamped to TODAY..MAXDATE).
- * Day statuses still cover the full booking horizon.
- */
-const getSlotsWindowForDate = (
-  date: Date
-): { slotsStartDate: string; slotsEndDate: string } => {
-  const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
-  const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-  const start = monthStart < TODAY ? TODAY : monthStart;
-  const end = monthEnd > MAXDATE ? MAXDATE : monthEnd;
-  if (start > end) {
-    return {
-      slotsStartDate: convertDateToString(TODAY),
-      slotsEndDate: convertDateToString(TODAY),
-    };
-  }
-  return {
-    slotsStartDate: convertDateToString(start),
-    slotsEndDate: convertDateToString(end),
-  };
+  const dayKey = selectedDay.value
+    ? toDayKey(selectedDay.value)
+    : convertDateToString(TODAY);
+  return { slotsStartDate: dayKey, slotsEndDate: dayKey };
 };
 
 /**
@@ -928,6 +906,9 @@ const applyCalendarResponse = (
     calendar.slotsStartDate ?? calendar.startDate ?? convertDateToString(TODAY);
   const slotsEnd =
     calendar.slotsEndDate ?? calendar.endDate ?? convertDateToString(MAXDATE);
+  // Free-slot SQL window from the API (usually a single day), not the painted month.
+  loadedSlotsStartDate.value = slotsStart;
+  loadedSlotsEndDate.value = slotsEnd;
   prevBookableDate.value = calendar.prevBookableDate ?? null;
   nextBookableDate.value = calendar.nextBookableDate ?? null;
 
@@ -939,7 +920,7 @@ const applyCalendarResponse = (
     const offices = normalizeCalendarOffices(day.offices ?? []);
     const inFreeSlotWindow = dateKey >= slotsStart && dateKey <= slotsEnd;
 
-    // Overwrite appointments only for the free-slot SQL window (often a single day).
+    // Overwrite appointments only for the free-slot SQL window.
     if (inFreeSlotWindow || !nextByDay.has(dateKey)) {
       nextByDay.set(dateKey, offices);
     }
@@ -955,22 +936,6 @@ const applyCalendarResponse = (
 
   appointmentsByDay.value = nextByDay;
   availableDays.value = normalizedDays;
-
-  // Track the painted month from returned bookable days (not the free-slot SQL window).
-  if (normalizedDays.length > 0) {
-    let earliest = toDayKey(normalizedDays[0].date);
-    let latest = earliest;
-    for (const day of normalizedDays) {
-      const key = toDayKey(day.date);
-      if (key < earliest) earliest = key;
-      if (key > latest) latest = key;
-    }
-    loadedSlotsStartDate.value = earliest;
-    loadedSlotsEndDate.value = latest;
-  } else {
-    loadedSlotsStartDate.value = slotsStart;
-    loadedSlotsEndDate.value = slotsEnd;
-  }
 
   updateCalendarNavigationBounds(normalizedDays);
   calendarKey.value++;
@@ -1055,11 +1020,25 @@ const reloadCalendarAvailability = async (options?: {
     !hadSelectedDay &&
     availableDays.value.length > 0
   ) {
+    // Prefer a day that already has times loaded to avoid an immediate follow-up.
+    const firstWithSlotsInWindow = availableDays.value.find(
+      (day) =>
+        isDateInLoadedSlotsWindow(toDayKey(day.date)) &&
+        dayHasSlotsForSelectedProviders(toDayKey(day.date))
+    );
+    const firstInWindow = availableDays.value.find((day) =>
+      isDateInLoadedSlotsWindow(toDayKey(day.date))
+    );
     const firstWithSlots = availableDays.value.find((day) =>
       dayHasSlotsForSelectedProviders(toDayKey(day.date))
     );
     selectedDay.value = new Date(
-      (firstWithSlots ?? availableDays.value[0]).date
+      (
+        firstWithSlotsInWindow ??
+        firstInWindow ??
+        firstWithSlots ??
+        availableDays.value[0]
+      ).date
     );
   }
 
