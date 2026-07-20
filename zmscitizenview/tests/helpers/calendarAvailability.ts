@@ -106,7 +106,11 @@ export type CalendarDayMock = {
 
 export function calendarResponse(
   days: CalendarDayMock[],
-  defaultOffices = defaultMultiProviderOffices
+  defaultOffices = defaultMultiProviderOffices,
+  markers: {
+    prevBookableDate?: string | null;
+    nextBookableDate?: string | null;
+  } = {}
 ) {
   const startDate = days[0]?.time ?? "2025-01-01";
   const endDate = days[days.length - 1]?.time ?? "2025-12-31";
@@ -115,8 +119,8 @@ export function calendarResponse(
     endDate,
     slotsStartDate: startDate,
     slotsEndDate: endDate,
-    prevBookableDate: null,
-    nextBookableDate: null,
+    prevBookableDate: markers.prevBookableDate ?? null,
+    nextBookableDate: markers.nextBookableDate ?? null,
     availableDays: days.map((day) => ({
       time: day.time,
       providerIDs: day.providerIDs,
