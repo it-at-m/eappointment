@@ -48,7 +48,7 @@ class QueueTable extends BaseController
             ])->getEntity()
             : null;
 
-       $queueList = $processList->toQueueList(\App::$now);
+        $queueList = $processList->toQueueList(\App::$now);
 
         $waitingClientsEffective = 0;
 
