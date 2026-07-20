@@ -40,6 +40,16 @@
  *         in: query
  *         required: true
  *         type: string
+ *       - name: slotsStartDate
+ *         description: Start of appointment slots window (YYYY-MM-DD). Defaults to startDate.
+ *         in: query
+ *         required: false
+ *         type: string
+ *       - name: slotsEndDate
+ *         description: End of appointment slots window (YYYY-MM-DD). Defaults to endDate.
+ *         in: query
+ *         required: false
+ *         type: string
  *       - name: officeId
  *         description: Comma separated Office IDs
  *         in: query

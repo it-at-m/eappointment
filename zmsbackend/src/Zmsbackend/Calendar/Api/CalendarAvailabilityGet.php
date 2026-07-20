@@ -50,7 +50,9 @@ class CalendarAvailabilityGet extends \BO\Zmsbackend\Api\BaseController
                 Validator::param('serviceCount')->isString()->setDefault('')->getValue(),
                 Validator::param('providerSource')->isString()->getValue() ?: null,
                 Validator::param('requestSource')->isString()->getValue() ?: null,
-                $traceId
+                $traceId,
+                Validator::param('slotsStartDate')->isString()->getValue(),
+                Validator::param('slotsEndDate')->isString()->getValue()
             );
             $tAfterService = microtime(true);
         } catch (InvalidAvailabilityInput $exception) {

@@ -9,6 +9,8 @@
     "data": {
         "startDate": "2024-08-21",
         "endDate": "2024-08-23",
+        "slotsStartDate": "2024-08-21",
+        "slotsEndDate": "2024-08-23",
         "days": []
     }
 }

@@ -13,12 +13,21 @@ class AvailableCalendarByOffice extends Entity implements JsonSerializable
     public static $schema = 'citizenapi/availableCalendarByOffice.json';
     public string $startDate = '';
     public string $endDate = '';
+    public string $slotsStartDate = '';
+    public string $slotsEndDate = '';
     public array $availableDays = [];
 
-    public function __construct(string $startDate, string $endDate, array $availableDays = [])
-    {
+    public function __construct(
+        string $startDate,
+        string $endDate,
+        array $availableDays = [],
+        ?string $slotsStartDate = null,
+        ?string $slotsEndDate = null
+    ) {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->slotsStartDate = $slotsStartDate ?? $startDate;
+        $this->slotsEndDate = $slotsEndDate ?? $endDate;
         $this->availableDays = $availableDays;
         // Skip JSON-schema validation: payload is assembled from our own zmsbackend
         // response, and Opis walks every appointment timestamp (~100ms+).
@@ -40,6 +49,8 @@ class AvailableCalendarByOffice extends Entity implements JsonSerializable
         return [
             'startDate' => $this->startDate,
             'endDate' => $this->endDate,
+            'slotsStartDate' => $this->slotsStartDate,
+            'slotsEndDate' => $this->slotsEndDate,
             'availableDays' => $this->availableDays,
         ];
     }

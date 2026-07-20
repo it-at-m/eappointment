@@ -537,7 +537,9 @@ class ZmsApiFacadeService
         array $serviceCounts,
         string $startDate,
         string $endDate,
-        ?string $traceId = null
+        ?string $traceId = null,
+        ?string $slotsStartDate = null,
+        ?string $slotsEndDate = null
     ): AvailableCalendarByOffice|array {
         $t0 = microtime(true);
         $params = [
@@ -548,6 +550,12 @@ class ZmsApiFacadeService
         ];
         if ($serviceCounts !== []) {
             $params['serviceCount'] = implode(',', $serviceCounts);
+        }
+        if ($slotsStartDate !== null && $slotsStartDate !== '') {
+            $params['slotsStartDate'] = $slotsStartDate;
+        }
+        if ($slotsEndDate !== null && $slotsEndDate !== '') {
+            $params['slotsEndDate'] = $slotsEndDate;
         }
 
         $availability = ZmsApiClientService::getCalendarAvailability($params, $traceId);
@@ -574,7 +582,9 @@ class ZmsApiFacadeService
         $entity = new AvailableCalendarByOffice(
             (string) ($availability['startDate'] ?? $startDate),
             (string) ($availability['endDate'] ?? $endDate),
-            $formattedDays
+            $formattedDays,
+            (string) ($availability['slotsStartDate'] ?? $slotsStartDate ?? $startDate),
+            (string) ($availability['slotsEndDate'] ?? $slotsEndDate ?? $endDate)
         );
 
         LoggerService::logInfo('calendar.availability.timing', [
@@ -585,6 +595,8 @@ class ZmsApiFacadeService
             'dto_ms' => (int) round((microtime(true) - $tAfterFormat) * 1000),
             'total_ms' => (int) round((microtime(true) - $t0) * 1000),
             'day_count' => count($formattedDays),
+            'slots_start_date' => $entity->slotsStartDate,
+            'slots_end_date' => $entity->slotsEndDate,
         ]);
 
         return $entity;

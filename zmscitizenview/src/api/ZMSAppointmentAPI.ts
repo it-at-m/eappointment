@@ -138,7 +138,9 @@ export function fetchAvailableCalendar(
   providerIds: number[],
   serviceIds: string[],
   serviceCounts: number[],
-  captchaToken?: string
+  captchaToken?: string,
+  slotsStartDate?: string,
+  slotsEndDate?: string
 ): Promise<AvailableCalendarByOfficeDTO | ErrorDTO> {
   const params: Record<string, any> = {
     startDate: convertDateToString(TODAY),
@@ -147,6 +149,8 @@ export function fetchAvailableCalendar(
     serviceId: serviceIds,
     serviceCount: serviceCounts,
     ...(captchaToken && { captchaToken }),
+    ...(slotsStartDate && { slotsStartDate }),
+    ...(slotsEndDate && { slotsEndDate }),
   };
 
   return request({

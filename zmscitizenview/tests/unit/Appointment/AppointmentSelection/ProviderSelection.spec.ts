@@ -9,6 +9,8 @@ vi.mock("@/api/ZMSAppointmentAPI", () => ({
   fetchAvailableCalendar: vi.fn().mockResolvedValue({
     startDate: "2025-06-17",
     endDate: "2025-06-17",
+    slotsStartDate: "2025-06-17",
+    slotsEndDate: "2025-06-17",
     availableDays: [
       {
         time: "2025-06-17",

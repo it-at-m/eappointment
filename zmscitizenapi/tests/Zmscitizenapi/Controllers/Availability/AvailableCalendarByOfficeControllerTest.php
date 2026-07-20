@@ -39,6 +39,8 @@ class AvailableCalendarByOfficeControllerTest extends ControllerTestCase
         $expectedResponse = [
             'startDate' => '2024-08-21',
             'endDate' => '2024-08-23',
+            'slotsStartDate' => '2024-08-21',
+            'slotsEndDate' => '2024-08-23',
             'availableDays' => [
                 [
                     'time' => '2024-08-22',
@@ -82,9 +84,78 @@ class AvailableCalendarByOfficeControllerTest extends ControllerTestCase
         $expectedResponse = [
             'startDate' => '2024-08-21',
             'endDate' => '2024-08-23',
+            'slotsStartDate' => '2024-08-21',
+            'slotsEndDate' => '2024-08-23',
             'availableDays' => [],
         ];
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
+    public function testSlotsDateWindowPassedToBackend()
+    {
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/source/unittest/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture('GET_SourceGet_dldb.json'),
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/calendar/availability/',
+                'parameters' => [
+                    'startDate' => '2024-08-21',
+                    'endDate' => '2024-10-21',
+                    'officeId' => '9999998',
+                    'serviceId' => '1',
+                    'serviceCount' => '1',
+                    'slotsStartDate' => '2024-08-21',
+                    'slotsEndDate' => '2024-09-21',
+                ],
+                'response' => $this->readFixture('GET_calendar_availability.json'),
+            ],
+        ]);
+
+        $parameters = [
+            'officeId' => '9999998',
+            'serviceId' => '1',
+            'serviceCount' => '1',
+            'startDate' => '2024-08-21',
+            'endDate' => '2024-10-21',
+            'slotsStartDate' => '2024-08-21',
+            'slotsEndDate' => '2024-09-21',
+        ];
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame('2024-08-21', $responseBody['slotsStartDate']);
+        $this->assertSame('2024-08-23', $responseBody['slotsEndDate']);
+    }
+
+    public function testInvalidSlotsDateFormat()
+    {
+        $parameters = [
+            'officeId' => '9999998',
+            'serviceId' => '1',
+            'serviceCount' => '1',
+            'startDate' => '2024-08-21',
+            'endDate' => '2024-08-23',
+            'slotsStartDate' => 'not-a-date',
+            'slotsEndDate' => 'also-bad',
+        ];
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('invalidSlotsStartDate'),
+                ErrorMessages::get('invalidSlotsEndDate'),
+            ]
+        ];
+        $this->assertEquals(ErrorMessages::get('invalidSlotsStartDate')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 

@@ -106,9 +106,13 @@ export function calendarResponse(
   days: CalendarDayMock[],
   defaultOffices = defaultMultiProviderOffices
 ) {
+  const startDate = days[0]?.time ?? "2025-01-01";
+  const endDate = days[days.length - 1]?.time ?? "2025-12-31";
   return {
-    startDate: days[0]?.time ?? "2025-01-01",
-    endDate: days[days.length - 1]?.time ?? "2025-12-31",
+    startDate,
+    endDate,
+    slotsStartDate: startDate,
+    slotsEndDate: endDate,
     availableDays: days.map((day) => ({
       time: day.time,
       providerIDs: day.providerIDs,
