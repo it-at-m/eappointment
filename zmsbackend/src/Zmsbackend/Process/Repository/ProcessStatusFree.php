@@ -8,7 +8,10 @@ namespace BO\Zmsbackend\Process\Repository;
 class ProcessStatusFree extends \BO\Zmsbackend\Query\Base
 {
     /**
-     * see also \BO\Zmsbackend\Day\Service\Day::QUERY_DAYLIST_JOIN
+     * see also \BO\Zmsbackend\Day\Repository\Day::QUERY_DAYLIST_JOIN
+     *
+     * Occupancy is pre-aggregated from slot_process so the inner query does not need
+     * GROUP BY s.slotID, h.slotID (same approach as Day::QUERY_DAYLIST_JOIN).
      */
     const QUERY_SELECT_PROCESSLIST_DAYS = '
         SELECT
@@ -23,7 +26,7 @@ class ProcessStatusFree extends \BO\Zmsbackend\Query\Base
                IF(MIN(available - confirmed) > 0, MIN(available - confirmed), 0) as free,
                tmp_ancestor.*
             FROM (SELECT
-                IFNULL(COUNT(p.slotID), 0) confirmed,
+                IFNULL(occ.confirmed, 0) confirmed,
                 IF(:slotType = "intern", s.intern,
                     IF(:slotType = "public", s.`public`, 0)
                     ) available,
@@ -40,10 +43,13 @@ class ProcessStatusFree extends \BO\Zmsbackend\Query\Base
                 LEFT JOIN slot_hiera h ON h.ancestorID = s.slotID
                     AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots)
                 INNER JOIN slot s2 on h.slotID = s2.slotID and s2.status = "free"
-                LEFT JOIN slot_process p ON h.slotID = p.slotID
+                LEFT JOIN (
+                    SELECT slotID, COUNT(*) AS confirmed
+                    FROM slot_process
+                    GROUP BY slotID
+                ) occ ON occ.slotID = h.slotID
                 LEFT JOIN closures cc ON (s.scopeID = cc.StandortID AND s.year = cc.year AND s.month = cc.month and s.day = cc.day)
-            GROUP BY s.slotID, h.slotID
-            HAVING cc.id IS NULL
+            WHERE cc.id IS NULL
             ) AS tmp_ancestor
             GROUP BY slotID
             HAVING ancestorCount >= slotsRequired

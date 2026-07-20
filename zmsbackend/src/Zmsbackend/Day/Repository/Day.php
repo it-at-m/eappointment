@@ -29,7 +29,11 @@ class Day extends \BO\Zmsbackend\Query\Base
     const QUERY_DROP_TEMPORARY_SCOPELIST = 'DROP TEMPORARY TABLE IF EXISTS calendarscope;';
 
     /**
-     * see also \BO\Zmsbackend\Process\Service\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAY
+     * see also \BO\Zmsbackend\Process\Repository\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAYS
+     *
+     * Occupancy is pre-aggregated from slot_process so the inner query does not need
+     * GROUP BY s.slotID, h.slotID. That matters more when slotsRequired is high
+     * (multi-service), because slot_hiera returns more rows per starting slot.
      */
     const QUERY_DAYLIST_JOIN = '
         SELECT
@@ -61,7 +65,7 @@ class Day extends \BO\Zmsbackend\Query\Base
             FROM
             (
                 SELECT
-                    IFNULL(COUNT(p.slotID), 0) AS confirmed,
+                    IFNULL(occ.confirmed, 0) AS confirmed,
                     IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots) AS slotsRequired,
                     s.slotID,
                     s.year,
@@ -70,7 +74,6 @@ class Day extends \BO\Zmsbackend\Query\Base
                     s.time,
                     s.public,
                     s.intern,
-                    cc.id,
                     s.scopeID
                 FROM
                     calendarscope c
@@ -84,20 +87,23 @@ class Day extends \BO\Zmsbackend\Query\Base
                     LEFT JOIN slot_hiera h
                         ON h.ancestorID = s.slotID
                         AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots)
-                    LEFT JOIN slot_process p
-                        ON h.slotID = p.slotID
+                    LEFT JOIN (
+                        SELECT slotID, COUNT(*) AS confirmed
+                        FROM slot_process
+                        GROUP BY slotID
+                    ) occ
+                        ON occ.slotID = h.slotID
                     LEFT JOIN closures cc
                         ON s.scopeID = cc.StandortID
                         AND s.year = cc.year
                         AND s.month = cc.month
                         AND s.day = cc.day
-                GROUP BY s.slotID, h.slotID
-                HAVING cc.id IS NULL
+                WHERE cc.id IS NULL
             ) AS slotaggregate
             GROUP BY slotID, scopeID
             HAVING ancestorCount >= slotsRequired
         ) AS dayaggregate
         GROUP BY year, month, day
         ORDER BY year, month, day;
-';
+    ';
 }
