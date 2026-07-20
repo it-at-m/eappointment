@@ -48,7 +48,17 @@ class QueueTable extends BaseController
             ])->getEntity()
             : null;
 
-        $queueList = $processList->toQueueList(\App::$now);
+       $queueList = $processList->toQueueList(\App::$now);
+
+        $waitingClientsEffective = 0;
+
+        if ($selectedDateTime->format('Y-m-d') === \App::$now->format('Y-m-d')) {
+            $waitingClientsEffective = $queueList
+                ->withStatus(['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted', 'fake'])
+                ->withoutStatus(['fake'])
+                ->getCountWithWaitingTime()
+                ->count();
+        }
 
         $queueListVisible = $queueList
             ->withStatus(['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted']);
@@ -91,6 +101,7 @@ class QueueTable extends BaseController
                 'cluster' => $workstationRequest->readCluster(),
                 'clusterEnabled' => $workstation->isClusterEnabled(),
                 'processList' => $queueListVisible->toProcessList(),
+                'waitingClientsEffective' => $waitingClientsEffective,
                 'processListMissed' => $queueListMissed->toProcessList(),
                 'processListParked' => $queueListParked->toProcessList(),
                 'processListFinished' => $queueListFinished->toProcessList(),
