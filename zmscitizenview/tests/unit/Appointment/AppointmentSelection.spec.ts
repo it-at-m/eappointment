@@ -1306,6 +1306,9 @@ describe("AppointmentSelection", () => {
         expect(
           (fetchAvailableCalendar as Mock).mock.calls.length
         ).toBeGreaterThan(callsAfterLoad);
+        const lastCall = (fetchAvailableCalendar as Mock).mock.calls.at(-1);
+        expect(lastCall?.[5]).toBe("2025-06-17");
+        expect(lastCall?.[6]).toBe("2025-06-17");
         expect(wrapper.vm.selectedDay).toEqual(new Date("2025-06-17"));
       });
     });

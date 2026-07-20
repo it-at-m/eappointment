@@ -129,7 +129,16 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             }
         }
 
+        // Free-slot SQL only for slotsStart/End (may be a single day).
+        // Response days cover the calendar month(s) of that window so the UI keeps month markers.
+        [$responseStartDate, $responseEndDate] = $this->resolveResponseDaysRange(
+            $slotsStartDate,
+            $slotsEndDate,
+            $dayRangeStart,
+            $dayRangeEnd
+        );
         $slotDays = $this->filterDaysInDateRange($bookableDays, $slotsStartDate, $slotsEndDate);
+        $responseDays = $this->filterDaysInDateRange($bookableDays, $responseStartDate, $responseEndDate);
         $calendar->days = $slotDays;
         $tAfterDays = microtime(true);
 
@@ -148,12 +157,11 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
 
         [$prevBookableDate, $nextBookableDate] = $this->findAdjacentBookableDates(
             $bookableDays,
-            $slotsStartDate,
-            $slotsEndDate
+            $responseStartDate,
+            $responseEndDate
         );
 
-        // Detailed days (+ appointments) only for the visible slots window.
-        $calendar->days = $slotDays;
+        $calendar->days = $responseDays;
         $result = $this->buildResult(
             $calendar,
             $processList,
@@ -181,6 +189,8 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
                 'slot_days_queried' => count($slotDays),
                 'slots_start_date' => $slotsStartDate,
                 'slots_end_date' => $slotsEndDate,
+                'response_start_date' => $responseStartDate,
+                'response_end_date' => $responseEndDate,
                 'prev_bookable_date' => $prevBookableDate,
                 'next_bookable_date' => $nextBookableDate,
                 'process_count' => count($processList),
@@ -236,6 +246,38 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         return [$slotsStart, $slotsEnd];
     }
 
+    /**
+     * Bookable days returned to the client cover full calendar month(s) of the free-slots window
+     * (clamped to the overall day-status range), so a single-day slot query still paints the month.
+     *
+     * @return array{0: string, 1: string}
+     */
+    private function resolveResponseDaysRange(
+        string $slotsStartDate,
+        string $slotsEndDate,
+        string $dayRangeStart,
+        string $dayRangeEnd
+    ): array {
+        $monthStart = (new \DateTimeImmutable($slotsStartDate))
+            ->modify('first day of this month')
+            ->format('Y-m-d');
+        $monthEnd = (new \DateTimeImmutable($slotsEndDate))
+            ->modify('last day of this month')
+            ->format('Y-m-d');
+
+        if ($monthStart < $dayRangeStart) {
+            $monthStart = $dayRangeStart;
+        }
+        if ($monthEnd > $dayRangeEnd) {
+            $monthEnd = $dayRangeEnd;
+        }
+        if ($monthStart > $monthEnd) {
+            return [$slotsStartDate, $slotsEndDate];
+        }
+
+        return [$monthStart, $monthEnd];
+    }
+
     private function filterDaysInDateRange(DayList $days, string $startDate, string $endDate): DayList
     {
         $filtered = new DayList();
@@ -250,27 +292,27 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
     }
 
     /**
-     * Nearest bookable day before / after the visible slots window (may skip empty months).
+     * Nearest bookable day before / after the response days window (may skip empty months).
      *
      * @return array{0: ?string, 1: ?string}
      */
     private function findAdjacentBookableDates(
         DayList $bookableDays,
-        string $slotsStartDate,
-        string $slotsEndDate
+        string $responseStartDate,
+        string $responseEndDate
     ): array {
         $prevBookableDate = null;
         $nextBookableDate = null;
 
         foreach ($bookableDays as $day) {
             $date = $this->formatDayIso($day);
-            if ($date < $slotsStartDate) {
+            if ($date < $responseStartDate) {
                 if ($prevBookableDate === null || $date > $prevBookableDate) {
                     $prevBookableDate = $date;
                 }
                 continue;
             }
-            if ($date > $slotsEndDate) {
+            if ($date > $responseEndDate) {
                 if ($nextBookableDate === null || $date < $nextBookableDate) {
                     $nextBookableDate = $date;
                 }

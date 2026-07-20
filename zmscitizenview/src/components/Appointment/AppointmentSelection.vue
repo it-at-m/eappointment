@@ -402,6 +402,21 @@ const isDateInLoadedSlotsWindow = (dateKey: string): boolean => {
 };
 
 /**
+ * Free-slot SQL window: selected day only when known (fresh times on click);
+ * otherwise the visible calendar month for initial paint.
+ */
+const getFreeSlotsWindow = (): {
+  slotsStartDate: string;
+  slotsEndDate: string;
+} => {
+  if (selectedDay.value) {
+    const dayKey = toDayKey(selectedDay.value);
+    return { slotsStartDate: dayKey, slotsEndDate: dayKey };
+  }
+  return getSlotsWindowForDate(viewMonth.value ?? TODAY);
+};
+
+/**
  * Slots are loaded per calendar month (clamped to TODAY..MAXDATE).
  * Day statuses still cover the full booking horizon.
  */
@@ -595,15 +610,11 @@ const allowedDates = (date: Date) => {
 
   if (!dayEntry) return false;
 
-  if (
-    !dayEntry.providerIDs
-      .split(",")
-      .some((id) => selectedProviders.value[id.trim()])
-  ) {
-    return false;
-  }
-
-  return dayHasSlotsForSelectedProviders(dateString);
+  // Bookable-day status (+ providerIDs) is slotsRequired-aware; appointment
+  // timestamps are only loaded for the selected day.
+  return dayEntry.providerIDs
+    .split(",")
+    .some((id) => selectedProviders.value[id.trim()]);
 };
 
 const hasAppointmentsForSelectedProviders = () => {
@@ -917,27 +928,24 @@ const applyCalendarResponse = (
     calendar.slotsStartDate ?? calendar.startDate ?? convertDateToString(TODAY);
   const slotsEnd =
     calendar.slotsEndDate ?? calendar.endDate ?? convertDateToString(MAXDATE);
-  loadedSlotsStartDate.value = slotsStart;
-  loadedSlotsEndDate.value = slotsEnd;
   prevBookableDate.value = calendar.prevBookableDate ?? null;
   nextBookableDate.value = calendar.nextBookableDate ?? null;
 
-  const nextByDay = new Map<string, OfficeAvailableTimeSlotsDTO[]>();
+  const nextByDay = new Map(appointmentsByDay.value);
   const normalizedDays: Array<{ time: string; providerIDs: string }> = [];
 
   for (const day of days) {
     const dateKey = toDayKey(day.time);
     const offices = normalizeCalendarOffices(day.offices ?? []);
-    const inSlotsWindow = dateKey >= slotsStart && dateKey <= slotsEnd;
-    if (!inSlotsWindow) {
-      continue;
+    const inFreeSlotWindow = dateKey >= slotsStart && dateKey <= slotsEnd;
+
+    // Overwrite appointments only for the free-slot SQL window (often a single day).
+    if (inFreeSlotWindow || !nextByDay.has(dateKey)) {
+      nextByDay.set(dateKey, offices);
     }
 
-    const hasAppointments = offices.some(
-      (office) => office.appointments.length > 0
-    );
-    nextByDay.set(dateKey, offices);
-    if (hasAppointments) {
+    // Bookable days are selectable from status + providerIDs (no timestamps required).
+    if (day.providerIDs) {
       normalizedDays.push({
         time: day.time,
         providerIDs: day.providerIDs,
@@ -947,6 +955,23 @@ const applyCalendarResponse = (
 
   appointmentsByDay.value = nextByDay;
   availableDays.value = normalizedDays;
+
+  // Track the painted month from returned bookable days (not the free-slot SQL window).
+  if (normalizedDays.length > 0) {
+    let earliest = toDayKey(normalizedDays[0].time);
+    let latest = earliest;
+    for (const day of normalizedDays) {
+      const key = toDayKey(day.time);
+      if (key < earliest) earliest = key;
+      if (key > latest) latest = key;
+    }
+    loadedSlotsStartDate.value = earliest;
+    loadedSlotsEndDate.value = latest;
+  } else {
+    loadedSlotsStartDate.value = slotsStart;
+    loadedSlotsEndDate.value = slotsEnd;
+  }
+
   updateCalendarNavigationBounds(normalizedDays);
   calendarKey.value++;
   return true;
@@ -980,8 +1005,7 @@ const reloadCalendarAvailability = async (options?: {
     return false;
   }
 
-  const slotsAnchor = selectedDay.value ?? viewMonth.value ?? TODAY;
-  const { slotsStartDate, slotsEndDate } = getSlotsWindowForDate(slotsAnchor);
+  const { slotsStartDate, slotsEndDate } = getFreeSlotsWindow();
 
   calendarFetchAbort?.abort();
   const abortController = new AbortController();
