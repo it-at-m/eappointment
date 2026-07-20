@@ -1192,6 +1192,70 @@ describe("AppointmentSelection", () => {
         ).toEqual(wrapper.vm.maxDate);
         expect(wrapper.vm.allowedDates(new Date("2025-08-01"))).toBe(true);
       });
+
+      it("does not refetch calendar when selecting another day in the loaded slots window", async () => {
+        (fetchAvailableCalendar as Mock).mockResolvedValue(
+          calendarResponse(
+            [
+              {
+                time: "2025-06-16",
+                providerIDs: "10351880,10470",
+                offices: offices10351880And10470,
+              },
+              {
+                time: "2025-06-17",
+                providerIDs: "10351880,10470",
+                offices: offices10351880And10470,
+              },
+            ],
+            offices10351880And10470
+          )
+        );
+
+        const wrapper = createWrapper({
+          selectedService: {
+            id: "service1",
+            providers: [
+              {
+                name: "Office X",
+                id: 10351880,
+                address: { street: "Test", house_number: "1" },
+                scope: { id: "10351880" },
+              },
+              {
+                name: "Office Y",
+                id: 10470,
+                address: { street: "Test", house_number: "2" },
+                scope: { id: "10470" },
+              },
+            ],
+          },
+        });
+
+        wrapper.vm.selectedProviders[10351880] = true;
+        wrapper.vm.selectedProviders[10470] = true;
+        await nextTick();
+
+        await wrapper.vm.showSelectionForProvider({
+          name: "Office X",
+          id: 10351880,
+          address: { street: "Test", house_number: "1" },
+          scope: { id: "10351880" },
+        });
+        await flushPromises();
+
+        const callsAfterLoad = (fetchAvailableCalendar as Mock).mock.calls
+          .length;
+        expect(callsAfterLoad).toBeGreaterThan(0);
+
+        await wrapper.vm.handleDaySelection(new Date("2025-06-17"));
+        await flushPromises();
+
+        expect((fetchAvailableCalendar as Mock).mock.calls.length).toBe(
+          callsAfterLoad
+        );
+        expect(wrapper.vm.selectedDay).toEqual(new Date("2025-06-17"));
+      });
     });
 
     describe("CalendarView checkbox behavior", () => {

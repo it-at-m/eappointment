@@ -231,6 +231,7 @@ import {
 } from "vue";
 
 import { AvailableCalendarByOfficeDTO } from "@/api/models/AvailableCalendarByOfficeDTO";
+import { ErrorDTO } from "@/api/models/ErrorDTO";
 import { OfficeAvailableTimeSlotsDTO } from "@/api/models/OfficeAvailableTimeSlotsDTO";
 import { fetchAvailableCalendar } from "@/api/ZMSAppointmentAPI";
 import { GlobalState } from "@/types/GlobalState";
@@ -668,6 +669,16 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
 };
 
 let skipSelectedDayWatch = false;
+let daySelectionGeneration = 0;
+let calendarFetchAbort: AbortController | null = null;
+let calendarFetchGeneration = 0;
+
+const isAbortError = (error: unknown): boolean =>
+  (error instanceof DOMException && error.name === "AbortError") ||
+  (typeof error === "object" &&
+    error !== null &&
+    "name" in error &&
+    (error as { name: string }).name === "AbortError");
 
 const handleDaySelection = async (day: any) => {
   if (!(day instanceof Date)) {
@@ -686,47 +697,61 @@ const handleDaySelection = async (day: any) => {
     selectedDayPart.value = null;
   }
 
+  const generation = ++daySelectionGeneration;
   skipSelectedDayWatch = true;
   isLoadingAppointments.value = true;
   isLoadingComplete.value = false;
 
   try {
-    const reloaded = await reloadCalendarAvailability({
-      preserveSelectedDay: true,
-    });
-    if (reloaded) {
-      await getAppointmentsOfDay(toDayKey(day));
+    const dateKey = toDayKey(day);
+    // Month already loaded: use cached slots — do not refetch the full calendar.
+    if (!isDateInLoadedSlotsWindow(dateKey)) {
+      const reloaded = await reloadCalendarAvailability({
+        preserveSelectedDay: true,
+      });
+      if (generation !== daySelectionGeneration || !reloaded) {
+        return;
+      }
+    } else if (generation !== daySelectionGeneration) {
+      return;
+    }
+
+    await getAppointmentsOfDay(dateKey);
+    if (generation !== daySelectionGeneration) {
+      return;
+    }
+
+    if (!isSameDay) {
+      // Reset to earliest available appointment after fresh data is loaded
+      if (timeSlotsInHoursByOffice.value.size > 0) {
+        const allHours = Array.from(
+          timeSlotsInHoursByOffice.value.values()
+        ).flatMap((office) => {
+          const hours = Array.from((office as any).appointments.keys());
+          return hours.filter((hour) => typeof hour === "number" && hour >= 0);
+        });
+        if (allHours.length > 0) {
+          selectedHour.value = Math.min(...(allHours as number[]));
+        }
+      } else if (timeSlotsInDayPartByOffice.value.size > 0) {
+        const allDayParts = Array.from(
+          timeSlotsInDayPartByOffice.value.values()
+        ).flatMap((office) => {
+          const dayParts = Array.from((office as any).appointments.keys());
+          return dayParts.filter((part) => part === "am" || part === "pm");
+        });
+        if (allDayParts.includes("am")) {
+          selectedDayPart.value = "am";
+        } else if (allDayParts.includes("pm")) {
+          selectedDayPart.value = "pm";
+        }
+      }
     }
   } finally {
-    skipSelectedDayWatch = false;
-    isLoadingAppointments.value = false;
-    isLoadingComplete.value = true;
-  }
-
-  if (!isSameDay) {
-    // Reset to earliest available appointment after fresh data is loaded
-    if (timeSlotsInHoursByOffice.value.size > 0) {
-      const allHours = Array.from(
-        timeSlotsInHoursByOffice.value.values()
-      ).flatMap((office) => {
-        const hours = Array.from((office as any).appointments.keys());
-        return hours.filter((hour) => typeof hour === "number" && hour >= 0);
-      });
-      if (allHours.length > 0) {
-        selectedHour.value = Math.min(...(allHours as number[]));
-      }
-    } else if (timeSlotsInDayPartByOffice.value.size > 0) {
-      const allDayParts = Array.from(
-        timeSlotsInDayPartByOffice.value.values()
-      ).flatMap((office) => {
-        const dayParts = Array.from((office as any).appointments.keys());
-        return dayParts.filter((part) => part === "am" || part === "pm");
-      });
-      if (allDayParts.includes("am")) {
-        selectedDayPart.value = "am";
-      } else if (allDayParts.includes("pm")) {
-        selectedDayPart.value = "pm";
-      }
+    if (generation === daySelectionGeneration) {
+      skipSelectedDayWatch = false;
+      isLoadingAppointments.value = false;
+      isLoadingComplete.value = true;
     }
   }
 };
@@ -965,15 +990,33 @@ const reloadCalendarAvailability = async (options?: {
   const slotsAnchor = selectedDay.value ?? viewMonth.value ?? TODAY;
   const { slotsStartDate, slotsEndDate } = getSlotsWindowForDate(slotsAnchor);
 
-  const data = await fetchAvailableCalendar(
-    props.globalState,
-    allProviderIds,
-    Array.from(props.selectedServiceMap.keys()),
-    Array.from(props.selectedServiceMap.values()),
-    props.captchaToken ?? undefined,
-    slotsStartDate,
-    slotsEndDate
-  );
+  calendarFetchAbort?.abort();
+  const abortController = new AbortController();
+  calendarFetchAbort = abortController;
+  const generation = ++calendarFetchGeneration;
+
+  let data: AvailableCalendarByOfficeDTO | ErrorDTO;
+  try {
+    data = await fetchAvailableCalendar(
+      props.globalState,
+      allProviderIds,
+      Array.from(props.selectedServiceMap.keys()),
+      Array.from(props.selectedServiceMap.values()),
+      props.captchaToken ?? undefined,
+      slotsStartDate,
+      slotsEndDate,
+      abortController.signal
+    );
+  } catch (error) {
+    if (isAbortError(error) || abortController.signal.aborted) {
+      return false;
+    }
+    throw error;
+  }
+
+  if (generation !== calendarFetchGeneration) {
+    return false;
+  }
 
   if (data && typeof data === "object" && "errors" in data) {
     handleError(data);
@@ -1407,6 +1450,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (refetchTimer) clearTimeout(refetchTimer);
+  calendarFetchAbort?.abort();
 });
 
 watch(isLoadingAppointments, (loading) => {
