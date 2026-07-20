@@ -99,6 +99,15 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             $slotsEndDate
         );
 
+        // Free-slot SQL only for slotsStart/End (may be a single day).
+        // Bookable-day SQL only for the painted month of that window (not the full horizon).
+        [$responseStartDate, $responseEndDate] = $this->resolveResponseDaysRange(
+            $slotsStartDate,
+            $slotsEndDate,
+            $dayRangeStart,
+            $dayRangeEnd
+        );
+
         $t0 = microtime(true);
         $calendar = (new Calendar())->readResolvedEntity(
             $calendar,
@@ -113,30 +122,18 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         $tAfterResolve = microtime(true);
 
         $dayQuery = new \BO\Zmsbackend\Day\Service\Day();
-        $dayQuery->writeTemporaryScopeList($calendar, $slotsRequired);
-        $tAfterTempScope = microtime(true);
-        $dayList = $dayQuery->readListFromPreparedTemporaryScopeList($slotsRequired);
-        $tAfterDaySql = microtime(true);
-        $calendar->days = $dayList
-            ->setStatusByType($slotType, $now)
-            ->withDaysInDateRange($calendar->getFirstDay(), $calendar->getLastDay());
-
-        $bookableDays = new DayList();
-        foreach ($calendar->days as $day) {
-            $status = is_array($day) ? ($day['status'] ?? null) : ($day['status'] ?? null);
-            if ($status === 'bookable') {
-                $bookableDays->addEntity($day);
-            }
-        }
-
-        // Free-slot SQL only for slotsStart/End (may be a single day).
-        // Response days cover the calendar month(s) of that window so the UI keeps month markers.
-        [$responseStartDate, $responseEndDate] = $this->resolveResponseDaysRange(
-            $slotsStartDate,
-            $slotsEndDate,
-            $dayRangeStart,
-            $dayRangeEnd
+        $bookableDays = $this->readBookableDaysForRange(
+            $calendar,
+            $dayQuery,
+            $slotsRequired,
+            $slotType,
+            $now,
+            $responseStartDate,
+            $responseEndDate,
+            false
         );
+        $tAfterDaySql = microtime(true);
+
         $slotDays = $this->filterDaysInDateRange($bookableDays, $slotsStartDate, $slotsEndDate);
         $responseDays = $this->filterDaysInDateRange($bookableDays, $responseStartDate, $responseEndDate);
         $calendar->days = $slotDays;
@@ -155,11 +152,18 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         }
         $tAfterSlots = microtime(true);
 
-        [$prevBookableDate, $nextBookableDate] = $this->findAdjacentBookableDates(
-            $bookableDays,
+        [$prevBookableDate, $nextBookableDate] = $this->findAdjacentBookableDatesByScan(
+            $calendar,
+            $dayQuery,
+            $slotsRequired,
+            $slotType,
+            $now,
             $responseStartDate,
-            $responseEndDate
+            $responseEndDate,
+            $dayRangeStart,
+            $dayRangeEnd
         );
+        $tAfterNeighbors = microtime(true);
 
         $calendar->days = $responseDays;
         $result = $this->buildResult(
@@ -176,12 +180,12 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
                 'trace_id' => $traceId,
                 'stage' => 'backend.readAvailability',
                 'resolve_ms' => (int) round(($tAfterResolve - $t0) * 1000),
-                'temp_scope_ms' => (int) round(($tAfterTempScope - $tAfterResolve) * 1000),
-                'day_sql_ms' => (int) round(($tAfterDaySql - $tAfterTempScope) * 1000),
+                'day_sql_ms' => (int) round(($tAfterDaySql - $tAfterResolve) * 1000),
                 'day_filter_ms' => (int) round(($tAfterDays - $tAfterDaySql) * 1000),
                 'daylist_ms' => (int) round(($tAfterDays - $tAfterResolve) * 1000),
                 'slots_ms' => (int) round(($tAfterSlots - $tAfterDays) * 1000),
-                'build_ms' => (int) round((microtime(true) - $tAfterSlots) * 1000),
+                'neighbor_scan_ms' => (int) round(($tAfterNeighbors - $tAfterSlots) * 1000),
+                'build_ms' => (int) round((microtime(true) - $tAfterNeighbors) * 1000),
                 'total_ms' => (int) round((microtime(true) - $t0) * 1000),
                 'scope_count' => count($calendar->scopes),
                 'bookable_days' => count($bookableDays),
@@ -292,34 +296,193 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
     }
 
     /**
-     * Nearest bookable day before / after the response days window (may skip empty months).
+     * Run daylist for a date range only (calendarscope months derived from firstDay/lastDay).
+     * Restores the calendar horizon afterwards so response startDate/endDate stay full-range.
      *
-     * @return array{0: ?string, 1: ?string}
+     * @param bool $rewrite When false, create the temp table (first paint). When true, drop+rebuild.
      */
-    private function findAdjacentBookableDates(
-        DayList $bookableDays,
-        string $responseStartDate,
-        string $responseEndDate
-    ): array {
-        $prevBookableDate = null;
-        $nextBookableDate = null;
+    private function readBookableDaysForRange(
+        Entity $calendar,
+        \BO\Zmsbackend\Day\Service\Day $dayQuery,
+        $slotsRequired,
+        string $slotType,
+        \DateTimeInterface $now,
+        string $rangeStartDate,
+        string $rangeEndDate,
+        bool $rewrite
+    ): DayList {
+        $savedFirst = $calendar->firstDay;
+        $savedLast = $calendar->lastDay;
+        $calendar->firstDay = $this->datePartsFromIso($rangeStartDate);
+        $calendar->lastDay = $this->datePartsFromIso($rangeEndDate);
 
-        foreach ($bookableDays as $day) {
-            $date = $this->formatDayIso($day);
-            if ($date < $responseStartDate) {
-                if ($prevBookableDate === null || $date > $prevBookableDate) {
-                    $prevBookableDate = $date;
-                }
-                continue;
+        try {
+            if ($rewrite) {
+                $dayQuery->rewriteTemporaryScopeList($calendar, $slotsRequired);
+            } else {
+                $dayQuery->writeTemporaryScopeList($calendar, $slotsRequired);
             }
-            if ($date > $responseEndDate) {
-                if ($nextBookableDate === null || $date < $nextBookableDate) {
-                    $nextBookableDate = $date;
-                }
+            $dayList = $dayQuery->readListFromPreparedTemporaryScopeList($slotsRequired)
+                ->setStatusByType($slotType, $now)
+                ->withDaysInDateRange($calendar->getFirstDay(), $calendar->getLastDay());
+        } finally {
+            $calendar->firstDay = $savedFirst;
+            $calendar->lastDay = $savedLast;
+        }
+
+        $bookableDays = new DayList();
+        foreach ($dayList as $day) {
+            $status = is_array($day) ? ($day['status'] ?? null) : ($day['status'] ?? null);
+            if ($status === 'bookable') {
+                $bookableDays->addEntity($day);
             }
         }
 
-        return [$prevBookableDate, $nextBookableDate];
+        return $bookableDays;
+    }
+
+    /**
+     * Walk neighbor months until the first bookable date outside the painted window is found.
+     *
+     * @return array{0: ?string, 1: ?string}
+     */
+    private function findAdjacentBookableDatesByScan(
+        Entity $calendar,
+        \BO\Zmsbackend\Day\Service\Day $dayQuery,
+        $slotsRequired,
+        string $slotType,
+        \DateTimeInterface $now,
+        string $responseStartDate,
+        string $responseEndDate,
+        string $dayRangeStart,
+        string $dayRangeEnd
+    ): array {
+        return [
+            $this->findFirstBookableDateBefore(
+                $calendar,
+                $dayQuery,
+                $slotsRequired,
+                $slotType,
+                $now,
+                $responseStartDate,
+                $dayRangeStart
+            ),
+            $this->findFirstBookableDateAfter(
+                $calendar,
+                $dayQuery,
+                $slotsRequired,
+                $slotType,
+                $now,
+                $responseEndDate,
+                $dayRangeEnd
+            ),
+        ];
+    }
+
+    private function findFirstBookableDateAfter(
+        Entity $calendar,
+        \BO\Zmsbackend\Day\Service\Day $dayQuery,
+        $slotsRequired,
+        string $slotType,
+        \DateTimeInterface $now,
+        string $afterDate,
+        string $horizonEnd
+    ): ?string {
+        $cursor = (new \DateTimeImmutable($afterDate))->modify('+1 day');
+        $horizonEndDate = new \DateTimeImmutable($horizonEnd);
+        if ($cursor > $horizonEndDate) {
+            return null;
+        }
+
+        while ($cursor <= $horizonEndDate) {
+            $monthFirst = $cursor->modify('first day of this month');
+            $monthLast = $cursor->modify('last day of this month');
+            if ($monthLast > $horizonEndDate) {
+                $monthLast = $horizonEndDate;
+            }
+
+            $bookableDays = $this->readBookableDaysForRange(
+                $calendar,
+                $dayQuery,
+                $slotsRequired,
+                $slotType,
+                $now,
+                $monthFirst->format('Y-m-d'),
+                $monthLast->format('Y-m-d'),
+                true
+            );
+
+            $firstInMonth = null;
+            foreach ($bookableDays as $day) {
+                $date = $this->formatDayIso($day);
+                if ($date <= $afterDate || $date > $horizonEnd) {
+                    continue;
+                }
+                if ($firstInMonth === null || $date < $firstInMonth) {
+                    $firstInMonth = $date;
+                }
+            }
+            if ($firstInMonth !== null) {
+                return $firstInMonth;
+            }
+
+            $cursor = $monthFirst->modify('first day of next month');
+        }
+
+        return null;
+    }
+
+    private function findFirstBookableDateBefore(
+        Entity $calendar,
+        \BO\Zmsbackend\Day\Service\Day $dayQuery,
+        $slotsRequired,
+        string $slotType,
+        \DateTimeInterface $now,
+        string $beforeDate,
+        string $horizonStart
+    ): ?string {
+        $cursor = (new \DateTimeImmutable($beforeDate))->modify('-1 day');
+        $horizonStartDate = new \DateTimeImmutable($horizonStart);
+        if ($cursor < $horizonStartDate) {
+            return null;
+        }
+
+        while ($cursor >= $horizonStartDate) {
+            $monthFirst = $cursor->modify('first day of this month');
+            $monthLast = $cursor->modify('last day of this month');
+            if ($monthFirst < $horizonStartDate) {
+                $monthFirst = $horizonStartDate;
+            }
+
+            $bookableDays = $this->readBookableDaysForRange(
+                $calendar,
+                $dayQuery,
+                $slotsRequired,
+                $slotType,
+                $now,
+                $monthFirst->format('Y-m-d'),
+                $monthLast->format('Y-m-d'),
+                true
+            );
+
+            $lastInMonth = null;
+            foreach ($bookableDays as $day) {
+                $date = $this->formatDayIso($day);
+                if ($date >= $beforeDate || $date < $horizonStart) {
+                    continue;
+                }
+                if ($lastInMonth === null || $date > $lastInMonth) {
+                    $lastInMonth = $date;
+                }
+            }
+            if ($lastInMonth !== null) {
+                return $lastInMonth;
+            }
+
+            $cursor = $monthFirst->modify('last day of previous month');
+        }
+
+        return null;
     }
 
     private function formatDayIso(mixed $day): string

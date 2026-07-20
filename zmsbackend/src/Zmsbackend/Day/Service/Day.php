@@ -33,6 +33,19 @@ class Day extends \BO\Zmsbackend\Base
         $this->tempScopeListExists = true;
     }
 
+    /**
+     * Drop and rebuild calendarscope for the calendar's current firstDay/lastDay months.
+     * Used to shrink the daylist window (painted month) or scan one neighbor month at a time.
+     */
+    public function rewriteTemporaryScopeList(\BO\Zmsentities\Calendar $calendar, $slotsRequiredForce = null)
+    {
+        if ($this->tempScopeListExists) {
+            $this->getReader()->exec(\BO\Zmsbackend\Day\Repository\Day::QUERY_DROP_TEMPORARY_SCOPELIST);
+            $this->tempScopeListExists = false;
+        }
+        $this->writeTemporaryScopeList($calendar, $slotsRequiredForce);
+    }
+
     public function readByCalendar(\BO\Zmsentities\Calendar $calendar, $slotsRequiredForce = null)
     {
         // We use a temporary table, so we can use create and insert on a readonly connection
