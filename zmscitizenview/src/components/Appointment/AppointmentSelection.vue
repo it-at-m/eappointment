@@ -939,7 +939,10 @@ const applyCalendarResponse = (
 
 const reloadCalendarAvailability = async (options?: {
   preserveSelectedDay?: boolean;
+  /** Prevent infinite reload when API/mocks return a slots window that still excludes selectedDay */
+  allowSlotsFollowUp?: boolean;
 }): Promise<boolean> => {
+  const allowSlotsFollowUp = options?.allowSlotsFollowUp !== false;
   const allProviderIds = (selectableProviders.value || []).map((p) =>
     Number(p.id)
   );
@@ -994,11 +997,16 @@ const reloadCalendarAvailability = async (options?: {
   }
 
   // Auto-selected (or preserved) day may fall outside the month we just loaded.
+  // Follow up at most once — mocks that ignore slots params must not recurse forever.
   if (
+    allowSlotsFollowUp &&
     selectedDay.value &&
     !isDateInLoadedSlotsWindow(toDayKey(selectedDay.value))
   ) {
-    return reloadCalendarAvailability({ preserveSelectedDay: true });
+    return reloadCalendarAvailability({
+      preserveSelectedDay: true,
+      allowSlotsFollowUp: false,
+    });
   }
 
   if (selectedDay.value) {
