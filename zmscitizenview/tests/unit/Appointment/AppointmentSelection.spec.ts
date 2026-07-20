@@ -543,7 +543,7 @@ describe("AppointmentSelection", () => {
 
     // moved to CalendarView.spec.ts: CalendarView date disabling and auto-selection (all cases)
     describe("CalendarView date disabling and auto-selection", () => {
-      it("disables a date in availableDays if API returns no appointments for it", async () => {
+      it("enables bookable dates even when free-slot timestamps were not returned for that day", async () => {
         const officesWithSlots = [
           { officeId: 10351880, appointments: [1750118400] },
           { officeId: 10470, appointments: [1750118400] },
@@ -585,32 +585,10 @@ describe("AppointmentSelection", () => {
           },
         });
 
-        // Set up provider selection first
         wrapper.vm.selectedProviders[10351880] = true;
         wrapper.vm.selectedProviders[10470] = true;
         await nextTick();
 
-        // Prepare fetchAvailableCalendar to return both dates first, then only the next date after provider change
-        (fetchAvailableCalendar as Mock).mockReset();
-        (fetchAvailableCalendar as Mock).mockResolvedValueOnce(
-          calendarResponse(
-            [
-              {
-                date: "2025-06-16",
-                providerIDs: "10351880,10470",
-                offices: [],
-              },
-              {
-                date: "2025-06-17",
-                providerIDs: "10351880,10470",
-                offices: officesWithSlots,
-              },
-            ],
-            []
-          )
-        );
-
-        // Now show selection for provider (this will fetch available days)
         await wrapper.vm.showSelectionForProvider({
           name: "Office X",
           id: 10351880,
@@ -619,23 +597,8 @@ describe("AppointmentSelection", () => {
         });
         await nextTick();
 
-        // After provider change, only 2025-06-17 should remain available
-        (fetchAvailableCalendar as Mock).mockResolvedValueOnce(
-          calendarResponse(
-            [
-              {
-                date: "2025-06-17",
-                providerIDs: "10351880",
-                offices: officesWithSlots,
-              },
-            ],
-            []
-          )
-        );
-
-        await wrapper.vm.getAppointmentsOfDay("2025-06-16");
-        await nextTick();
-        expect(wrapper.vm.allowedDates(new Date("2025-06-16"))).toBe(false);
+        // Bookable-day status (providerIDs) enables the day; timestamps are optional until selected.
+        expect(wrapper.vm.allowedDates(new Date("2025-06-16"))).toBe(true);
         expect(wrapper.vm.allowedDates(new Date("2025-06-17"))).toBe(true);
       });
 
@@ -1414,12 +1377,12 @@ describe("AppointmentSelection", () => {
           calendarResponse(
             [
               {
-                time: provider1DateIso,
+                date: provider1DateIso,
                 providerIDs: "1",
                 offices: [{ officeId: 1, appointments: [1750118400] }],
               },
               {
-                time: provider2DateIso,
+                date: provider2DateIso,
                 providerIDs: "2",
                 offices: [{ officeId: 2, appointments: [1750118400] }],
               },
@@ -3021,14 +2984,12 @@ describe("AppointmentSelection", () => {
         false
       );
 
-      // finish loading
-      resolveDays(
-        calendarResponse([{ date: "2025-06-16", providerIDs: "1" }], [])
-      );
+      // finish loading with no bookable days
+      resolveDays(calendarResponse([], []));
       await flushPromises();
       await nextTick();
 
-      // spinner disappears; with no appointments returned, calendar stays hidden
+      // spinner disappears; with no bookable days, calendar stays hidden
       expect(wrapper.find(".m-spinner-container").exists()).toBe(false);
       expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(
         false
