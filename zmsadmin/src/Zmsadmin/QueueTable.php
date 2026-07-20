@@ -26,6 +26,10 @@ class QueueTable extends BaseController
         $validator = $request->getAttribute('validator');
         $success = $validator->getParameter('success')->isString()->getValue();
         $withCalledList = $validator->getParameter('withCalled')->isBool()->getValue();
+        $includeWaitingClientsEffective = $validator
+            ->getParameter('includeWaitingClientsEffective')
+            ->isBool()
+            ->getValue();
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $selectedDateTime = $selectedDate ? new \DateTimeImmutable($selectedDate) : \App::$now;
         $selectedDateTime = ($selectedDateTime < \App::$now) ? \App::$now : $selectedDateTime;
@@ -50,18 +54,20 @@ class QueueTable extends BaseController
 
         $queueList = $processList->toQueueList(\App::$now);
 
-        $waitingClientsEffective = 0;
+        $waitingClientsEffective = null;
 
-        if ($selectedDateTime->format('Y-m-d') === \App::$now->format('Y-m-d')) {
+        if (
+            $includeWaitingClientsEffective
+            && $selectedDateTime->format('Y-m-d') === \App::$now->format('Y-m-d')
+        ) {
             $waitingClientsEffective = $queueList
-                ->withStatus(['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted', 'fake'])
-                ->withoutStatus(['fake'])
+                ->withStatus($this->processStatusList)
                 ->getCountWithWaitingTime()
                 ->count();
         }
 
         $queueListVisible = $queueList
-            ->withStatus(['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted']);
+            ->withStatus($this->processStatusList);
         $queueListMissed = $queueList->withStatus(['missed']);
         $queueListParked = $queueList->withStatus(['parked']);
         $queueListFinished = $queueList->withStatus(['finished']);
