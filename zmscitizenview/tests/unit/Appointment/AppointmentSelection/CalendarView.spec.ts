@@ -1,6 +1,7 @@
 import { mount } from "@vue/test-utils";
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { nextTick } from "vue";
+
 import CalendarView from "@/components/Appointment/AppointmentSelection/CalendarView.vue";
 
 const t = (key: string) => key;
@@ -24,14 +25,23 @@ const MucButtonStub = {
   name: "muc-button",
   emits: ["click"],
   props: ["variant", "icon", "iconShownLeft", "iconShownRight", "disabled"],
-  template: '<button class="muc-button" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+  template:
+    '<button class="muc-button" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
 };
 
 const TimeSlotGridStub = {
   name: "TimeSlotGrid",
-  props: ["officeId", "times", "timeLabel", "showLocationTitle", "officeNameById", "isSlotSelected"],
+  props: [
+    "officeId",
+    "times",
+    "timeLabel",
+    "showLocationTitle",
+    "officeNameById",
+    "isSlotSelected",
+  ],
   emits: ["selectTimeSlot"],
-  template: '<div class="timeslot-grid"><span class="time-label">{{ timeLabel }}</span></div>',
+  template:
+    '<div class="timeslot-grid"><span class="time-label">{{ timeLabel }}</span></div>',
 };
 
 const MucSpinnerStub = {
@@ -41,8 +51,10 @@ const MucSpinnerStub = {
 };
 
 function mountCalendarView(overrides: Partial<Record<string, any>> = {}) {
-  const timeSlotsInHoursByOffice = overrides.timeSlotsInHoursByOffice ?? new Map();
-  const timeSlotsInDayPartByOffice = overrides.timeSlotsInDayPartByOffice ?? new Map();
+  const timeSlotsInHoursByOffice =
+    overrides.timeSlotsInHoursByOffice ?? new Map();
+  const timeSlotsInDayPartByOffice =
+    overrides.timeSlotsInDayPartByOffice ?? new Map();
   return mount(CalendarView, {
     global: {
       stubs: {
@@ -60,6 +72,8 @@ function mountCalendarView(overrides: Partial<Record<string, any>> = {}) {
       minDate: overrides.minDate ?? new Date("2025-06-01"),
       maxDate: overrides.maxDate ?? new Date("2025-06-30"),
       viewMonth: overrides.viewMonth ?? new Date("2025-06-01"),
+      prevBookableDate: overrides.prevBookableDate ?? null,
+      nextBookableDate: overrides.nextBookableDate ?? null,
       timeSlotsInHoursByOffice,
       timeSlotsInDayPartByOffice,
       currentHour: overrides.currentHour ?? 10,
@@ -68,9 +82,14 @@ function mountCalendarView(overrides: Partial<Record<string, any>> = {}) {
       currentDayPart: overrides.currentDayPart ?? "am",
       firstDayPart: overrides.firstDayPart ?? "am",
       lastDayPart: overrides.lastDayPart ?? "pm",
-      selectableProviders: overrides.selectableProviders ?? [{ id: 1, name: "Office" }],
+      selectableProviders: overrides.selectableProviders ?? [
+        { id: 1, name: "Office" },
+      ],
       selectedProviders: overrides.selectedProviders ?? { 1: true, 2: true },
-      providersWithAppointments: overrides.providersWithAppointments ?? [{ id: 1, name: "Office" }, { id: 2, name: "Office 2" }],
+      providersWithAppointments: overrides.providersWithAppointments ?? [
+        { id: 1, name: "Office" },
+        { id: 2, name: "Office 2" },
+      ],
       appointmentsCount: overrides.appointmentsCount ?? 20,
       isLoadingAppointments: overrides.isLoadingAppointments ?? false,
       isLoadingComplete: overrides.isLoadingComplete ?? false,
@@ -88,8 +107,31 @@ describe("CalendarView", () => {
     const newDate = new Date("2025-06-18");
     cal.vm.$emit("update:modelValue", newDate);
     await nextTick();
-    const emitted = wrapper.emitted("update:selectedDay");
-    expect(emitted && emitted[0][0]).toEqual(newDate);
+    expect(wrapper.emitted("update:selectedDay")?.[0]?.[0]).toEqual(newDate);
+  });
+
+  it("emits jumpToBookableDate when MucCalendar month chevrons are clicked", async () => {
+    const wrapper = mountCalendarView({
+      prevBookableDate: "2025-05-12",
+      nextBookableDate: "2025-08-03",
+    });
+    const wrap = wrapper.find(".muc-calendar-wrap");
+
+    const prevBtn = document.createElement("button");
+    prevBtn.setAttribute("aria-label", "Vorheriger Monat");
+    wrap.element.appendChild(prevBtn);
+    prevBtn.dispatchEvent(
+      new MouseEvent("click", { bubbles: true, cancelable: true })
+    );
+    expect(wrapper.emitted("jumpToBookableDate")?.[0]?.[0]).toBe("2025-05-12");
+
+    const nextBtn = document.createElement("button");
+    nextBtn.setAttribute("aria-label", "Nächster Monat");
+    wrap.element.appendChild(nextBtn);
+    nextBtn.dispatchEvent(
+      new MouseEvent("click", { bubbles: true, cancelable: true })
+    );
+    expect(wrapper.emitted("jumpToBookableDate")?.[1]?.[0]).toBe("2025-08-03");
   });
 
   describe("allowedDates", () => {
@@ -121,10 +163,30 @@ describe("CalendarView", () => {
 
   describe("min/max navigation bounds", () => {
     it.each([
-      ["sets max bound (no appointments beyond month)", { maxDate: new Date("2025-06-30") }, "max", new Date("2025-06-30")],
-      ["sets max bound (appointments in future months)", { maxDate: new Date("2025-07-01") }, "max", new Date("2025-07-01")],
-      ["sets min bound (no appointments before month)", { minDate: new Date("2025-06-01") }, "min", new Date("2025-06-01")],
-      ["sets min bound (appointments in past months)", { minDate: new Date("2025-05-31") }, "min", new Date("2025-05-31")],
+      [
+        "sets max bound (no appointments beyond month)",
+        { maxDate: new Date("2025-06-30") },
+        "max",
+        new Date("2025-06-30"),
+      ],
+      [
+        "sets max bound (appointments in future months)",
+        { maxDate: new Date("2025-07-01") },
+        "max",
+        new Date("2025-07-01"),
+      ],
+      [
+        "sets min bound (no appointments before month)",
+        { minDate: new Date("2025-06-01") },
+        "min",
+        new Date("2025-06-01"),
+      ],
+      [
+        "sets min bound (appointments in past months)",
+        { minDate: new Date("2025-05-31") },
+        "min",
+        new Date("2025-05-31"),
+      ],
     ])("%s", async (_title, propOverrides, key, expected) => {
       const wrapper = mountCalendarView(propOverrides as any);
       const cal = wrapper.findComponent(MucCalendarStub);
@@ -153,10 +215,15 @@ describe("CalendarView", () => {
   });
 
   it("resets to earliest hour when selecting a new day in the calendar", async () => {
-    const hoursMap = new Map<number, number[]>([[8, [1]], [14, [2]]]);
+    const hoursMap = new Map<number, number[]>([
+      [8, [1]],
+      [14, [2]],
+    ]);
     const wrapper = mountCalendarView({
       appointmentsCount: 19,
-      timeSlotsInHoursByOffice: new Map([[1, { appointments: new Map(hoursMap) }]]),
+      timeSlotsInHoursByOffice: new Map([
+        [1, { appointments: new Map(hoursMap) }],
+      ]),
       currentHour: 13,
       firstHour: 8,
       lastHour: 14,
@@ -169,10 +236,15 @@ describe("CalendarView", () => {
   });
 
   it("resets selectedHour to earliest available hour when selecting a new day", async () => {
-    const hoursMap = new Map<number, number[]>([[9, [1]], [14, [2]]]);
+    const hoursMap = new Map<number, number[]>([
+      [9, [1]],
+      [14, [2]],
+    ]);
     const wrapper = mountCalendarView({
       appointmentsCount: 19,
-      timeSlotsInHoursByOffice: new Map([[1, { appointments: new Map(hoursMap) }]]),
+      timeSlotsInHoursByOffice: new Map([
+        [1, { appointments: new Map(hoursMap) }],
+      ]),
       currentHour: null,
       firstHour: 8,
       lastHour: 14,
@@ -183,10 +255,15 @@ describe("CalendarView", () => {
   });
 
   it("resets selectedDayPart to 'am' if available when in day part view", async () => {
-    const dayPartMap = new Map<string, number[]>([["am", [1]],["pm", [2]]]);
+    const dayPartMap = new Map<string, number[]>([
+      ["am", [1]],
+      ["pm", [2]],
+    ]);
     const wrapper = mountCalendarView({
       appointmentsCount: 18,
-      timeSlotsInDayPartByOffice: new Map([[1, { appointments: new Map(dayPartMap) }]]),
+      timeSlotsInDayPartByOffice: new Map([
+        [1, { appointments: new Map(dayPartMap) }],
+      ]),
       currentDayPart: "pm",
     });
     const earlier = wrapper.findAllComponents(MucButtonStub)[0];
@@ -196,10 +273,15 @@ describe("CalendarView", () => {
   });
 
   it("does not reset selectedDayPart when selecting the same day", async () => {
-    const dayPartMap = new Map<string, number[]>([["am", [1]],["pm", [2]]]);
+    const dayPartMap = new Map<string, number[]>([
+      ["am", [1]],
+      ["pm", [2]],
+    ]);
     const wrapper = mountCalendarView({
       appointmentsCount: 18,
-      timeSlotsInDayPartByOffice: new Map([[1, { appointments: new Map(dayPartMap) }]]),
+      timeSlotsInDayPartByOffice: new Map([
+        [1, { appointments: new Map(dayPartMap) }],
+      ]),
       currentDayPart: "pm",
     });
     // No change when clicking later if already pm is last
@@ -213,7 +295,9 @@ describe("CalendarView", () => {
     const hoursMap = new Map<number, number[]>([[10, [1, 2]]]);
     const wrapper = mountCalendarView({
       appointmentsCount: 19,
-      timeSlotsInHoursByOffice: new Map([[1, { appointments: new Map(hoursMap) }]]),
+      timeSlotsInHoursByOffice: new Map([
+        [1, { appointments: new Map(hoursMap) }],
+      ]),
       selectedDay: new Date("2025-07-02"),
       firstHour: 10,
       currentHour: 10,
@@ -226,7 +310,9 @@ describe("CalendarView", () => {
     const dayPartMap = new Map<string, number[]>([["am", [1, 2]]]);
     const wrapper = mountCalendarView({
       appointmentsCount: 18,
-      timeSlotsInDayPartByOffice: new Map([[1, { appointments: new Map(dayPartMap) }]]),
+      timeSlotsInDayPartByOffice: new Map([
+        [1, { appointments: new Map(dayPartMap) }],
+      ]),
       selectedDay: new Date("2025-07-02"),
     });
     expect(wrapper.html()).toContain("availableTimes");
@@ -240,7 +326,9 @@ describe("CalendarView", () => {
       const wrapper = mountCalendarView({
         // hourly view
         appointmentsCount: 19,
-        timeSlotsInHoursByOffice: new Map([[1, { appointments: new Map(hoursMap) }]]),
+        timeSlotsInHoursByOffice: new Map([
+          [1, { appointments: new Map(hoursMap) }],
+        ]),
         currentHour: 10,
         firstHour: 10,
         lastHour: 10,
@@ -278,7 +366,9 @@ describe("CalendarView", () => {
       const wrapper = mountCalendarView({
         // day part view
         appointmentsCount: 18,
-        timeSlotsInDayPartByOffice: new Map([[1, { appointments: new Map(dayPartMap) }]]),
+        timeSlotsInDayPartByOffice: new Map([
+          [1, { appointments: new Map(dayPartMap) }],
+        ]),
         isLoadingAppointments: true,
         isLoadingComplete: false,
         availabilityInfoHtml: "some html",

@@ -49,6 +49,10 @@ class CalendarAvailabilityGetTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertSame([], $body['data']['days']);
         $this->assertSame('2099-01-01', $body['data']['slotsStartDate']);
         $this->assertSame('2099-01-31', $body['data']['slotsEndDate']);
+        $this->assertArrayHasKey('prevBookableDate', $body['data']);
+        $this->assertArrayHasKey('nextBookableDate', $body['data']);
+        $this->assertNull($body['data']['prevBookableDate']);
+        $this->assertNull($body['data']['nextBookableDate']);
     }
 
     public function testSlotsDateWindow()
@@ -73,16 +77,17 @@ class CalendarAvailabilityGetTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertSame($slotsEnd->format('Y-m-t'), $body['data']['slotsEndDate']);
         $this->assertSame($now->format('Y-m-d'), $body['data']['startDate']);
         $this->assertSame($end->format('Y-m-t'), $body['data']['endDate']);
+        $this->assertArrayHasKey('prevBookableDate', $body['data']);
+        $this->assertArrayHasKey('nextBookableDate', $body['data']);
 
+        $slotsEndIso = $slotsEnd->format('Y-m-t');
         foreach ($body['data']['days'] as $day) {
-            $hasAppointments = !empty($day['appointments']);
-            if ($hasAppointments) {
-                $this->assertLessThanOrEqual(
-                    $slotsEnd->format('Y-m-t'),
-                    $day['date'],
-                    'Appointment timestamps should only be loaded inside the slots window'
-                );
-            }
+            $this->assertGreaterThanOrEqual($now->format('Y-m-d'), $day['date']);
+            $this->assertLessThanOrEqual($slotsEndIso, $day['date']);
+        }
+
+        if ($body['data']['nextBookableDate'] !== null) {
+            $this->assertGreaterThan($slotsEndIso, $body['data']['nextBookableDate']);
         }
     }
 

@@ -18,7 +18,10 @@ const generateAppointmentTimestamps = (
   startTimestamp = JULY_2_2025_BASE_TIMESTAMP,
   intervalSeconds = 300
 ): number[] =>
-  Array.from({ length: count }, (_, index) => startTimestamp + index * intervalSeconds);
+  Array.from(
+    { length: count },
+    (_, index) => startTimestamp + index * intervalSeconds
+  );
 
 export const officesForHourlyViewTest = [
   {
@@ -27,7 +30,10 @@ export const officesForHourlyViewTest = [
   },
   {
     officeId: 2,
-    appointments: generateAppointmentTimestamps(20, JULY_2_2025_BASE_TIMESTAMP + 3600),
+    appointments: generateAppointmentTimestamps(
+      20,
+      JULY_2_2025_BASE_TIMESTAMP + 3600
+    ),
   },
 ];
 
@@ -84,15 +90,11 @@ export const officeOneAndTwoSlots = [
 export const officeTwoAndThreeSlots = [
   {
     officeId: 2,
-    appointments: [
-      1747223100, 1747223400, 1747223700, 1747224000, 1747224300,
-    ],
+    appointments: [1747223100, 1747223400, 1747223700, 1747224000, 1747224300],
   },
   {
     officeId: 3,
-    appointments: [
-      1747223100, 1747223400, 1747223700, 1747224000, 1747224300,
-    ],
+    appointments: [1747223100, 1747223400, 1747223700, 1747224000, 1747224300],
   },
 ];
 
@@ -113,6 +115,8 @@ export function calendarResponse(
     endDate,
     slotsStartDate: startDate,
     slotsEndDate: endDate,
+    prevBookableDate: null,
+    nextBookableDate: null,
     availableDays: days.map((day) => ({
       time: day.time,
       providerIDs: day.providerIDs,
@@ -124,7 +128,10 @@ export function calendarResponse(
 export function setAvailableDays(
   wrapper: { vm: any },
   days: Array<{ time: string; providerIDs: string }>,
-  offices: Array<{ officeId: number | string; appointments: number[] }> = defaultMultiProviderOffices
+  offices: Array<{
+    officeId: number | string;
+    appointments: number[];
+  }> = defaultMultiProviderOffices
 ) {
   wrapper.vm.availableDays = days;
   const map = new Map<

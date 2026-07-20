@@ -15,6 +15,8 @@ class AvailableCalendarByOffice extends Entity implements JsonSerializable
     public string $endDate = '';
     public string $slotsStartDate = '';
     public string $slotsEndDate = '';
+    public ?string $prevBookableDate = null;
+    public ?string $nextBookableDate = null;
     public array $availableDays = [];
 
     public function __construct(
@@ -22,12 +24,16 @@ class AvailableCalendarByOffice extends Entity implements JsonSerializable
         string $endDate,
         array $availableDays = [],
         ?string $slotsStartDate = null,
-        ?string $slotsEndDate = null
+        ?string $slotsEndDate = null,
+        ?string $prevBookableDate = null,
+        ?string $nextBookableDate = null
     ) {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->slotsStartDate = $slotsStartDate ?? $startDate;
         $this->slotsEndDate = $slotsEndDate ?? $endDate;
+        $this->prevBookableDate = $prevBookableDate;
+        $this->nextBookableDate = $nextBookableDate;
         $this->availableDays = $availableDays;
         // Skip JSON-schema validation: payload is assembled from our own zmsbackend
         // response, and Opis walks every appointment timestamp (~100ms+).
@@ -51,6 +57,8 @@ class AvailableCalendarByOffice extends Entity implements JsonSerializable
             'endDate' => $this->endDate,
             'slotsStartDate' => $this->slotsStartDate,
             'slotsEndDate' => $this->slotsEndDate,
+            'prevBookableDate' => $this->prevBookableDate,
+            'nextBookableDate' => $this->nextBookableDate,
             'availableDays' => $this->availableDays,
         ];
     }

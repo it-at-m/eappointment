@@ -146,9 +146,22 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         }
         $tAfterSlots = microtime(true);
 
-        // Day statuses cover the full horizon; appointments only for the slots window.
-        $calendar->days = $bookableDays;
-        $result = $this->buildResult($calendar, $processList, $slotsStartDate, $slotsEndDate);
+        [$prevBookableDate, $nextBookableDate] = $this->findAdjacentBookableDates(
+            $bookableDays,
+            $slotsStartDate,
+            $slotsEndDate
+        );
+
+        // Detailed days (+ appointments) only for the visible slots window.
+        $calendar->days = $slotDays;
+        $result = $this->buildResult(
+            $calendar,
+            $processList,
+            $slotsStartDate,
+            $slotsEndDate,
+            $prevBookableDate,
+            $nextBookableDate
+        );
 
         if (\App::$log) {
             \App::$log->info('calendar.availability.timing', [
@@ -164,9 +177,12 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
                 'total_ms' => (int) round((microtime(true) - $t0) * 1000),
                 'scope_count' => count($calendar->scopes),
                 'bookable_days' => count($bookableDays),
+                'days_returned' => count($result['days'] ?? []),
                 'slot_days_queried' => count($slotDays),
                 'slots_start_date' => $slotsStartDate,
                 'slots_end_date' => $slotsEndDate,
+                'prev_bookable_date' => $prevBookableDate,
+                'next_bookable_date' => $nextBookableDate,
                 'process_count' => count($processList),
             ]);
         }
@@ -231,6 +247,37 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         }
 
         return $filtered;
+    }
+
+    /**
+     * Nearest bookable day before / after the visible slots window (may skip empty months).
+     *
+     * @return array{0: ?string, 1: ?string}
+     */
+    private function findAdjacentBookableDates(
+        DayList $bookableDays,
+        string $slotsStartDate,
+        string $slotsEndDate
+    ): array {
+        $prevBookableDate = null;
+        $nextBookableDate = null;
+
+        foreach ($bookableDays as $day) {
+            $date = $this->formatDayIso($day);
+            if ($date < $slotsStartDate) {
+                if ($prevBookableDate === null || $date > $prevBookableDate) {
+                    $prevBookableDate = $date;
+                }
+                continue;
+            }
+            if ($date > $slotsEndDate) {
+                if ($nextBookableDate === null || $date < $nextBookableDate) {
+                    $nextBookableDate = $date;
+                }
+            }
+        }
+
+        return [$prevBookableDate, $nextBookableDate];
     }
 
     private function formatDayIso(mixed $day): string
@@ -345,7 +392,9 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         Entity $calendar,
         array $processList,
         string $slotsStartDate,
-        string $slotsEndDate
+        string $slotsEndDate,
+        ?string $prevBookableDate,
+        ?string $nextBookableDate
     ): array {
         $scopeToProvider = [];
         foreach ($calendar->scopes as $scope) {
@@ -398,6 +447,8 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             'endDate' => $this->formatCalendarDate($calendar->lastDay),
             'slotsStartDate' => $slotsStartDate,
             'slotsEndDate' => $slotsEndDate,
+            'prevBookableDate' => $prevBookableDate,
+            'nextBookableDate' => $nextBookableDate,
             'days' => $days,
         ];
     }
