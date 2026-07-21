@@ -179,6 +179,20 @@ This section replaces the old Berlin-centric format examples with Munich-oriente
 }
 ```
 
+### Location field mapping (`altname2`)
+
+For Munich SADB locations, `Munich.php` only emits a location into the normalized export when `altname2` is present on the raw export record (`processLocation()` returns early otherwise). Locations without `altname2` are skipped entirely, even if they have `extendedServiceReferences`.
+
+Field mapping in `buildLocationMetadata()`:
+
+| SADB field                                      | Normalized output (`locations_de.json`)       |
+| ----------------------------------------------- | --------------------------------------------- |
+| `altname2`                                      | `displayName`                                 |
+| `altname2` + optional `altname1` in parentheses | `name`                                        |
+| `names[]`                                       | `displayNameAlternatives` and `meta.keywords` |
+
+If `altname2` is missing, the location does not appear in `locations_de.json`. If `altname2` is present but empty, the location is emitted with an empty `displayName`.
+
 These examples show the key SADB input variables consumed by the Munich transformer (`ZMS_DAUER`, `ZMS_MAX_ANZAHL`, `ZMS_INTERN`, `TERMINVEREINBARUNG`, `FORMULARE_INFORMATIONEN`) before normalization into `zmsbackend/data` and the MariaDB tables.
 
 ## Mapped Output in `zmsbackend/data`

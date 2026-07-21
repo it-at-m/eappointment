@@ -19,6 +19,15 @@
                 }
             }
         },
+         "changelog": {
+            "type" : "object",
+            "properties" : {
+                "urlReleaseNotes" : {
+                    "type" :"string",
+                    "description" : "url to release notes"
+                }
+            }
+        },    
         "emergency": {
             "type": "object",
             "description": "Depending on scope settings, a workstation might have an emergency-button to call for help",
