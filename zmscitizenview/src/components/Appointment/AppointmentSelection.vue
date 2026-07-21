@@ -300,6 +300,11 @@ const availableDays = ref<Array<{ date: string; providerIDs: string }>>();
 /** YYYY-MM-DD bounds of the last loaded appointment-slots window */
 const loadedSlotsStartDate = ref<string | null>(null);
 const loadedSlotsEndDate = ref<string | null>(null);
+/**
+ * Days for which free-slot SQL has already run. Empty results stay non-selectable
+ * even after the free-slot window moves to another day (daylist may still return providerIDs).
+ */
+const freeSlotCheckedDates = ref<Set<string>>(new Set());
 const prevBookableDate = ref<string | null>(null);
 const nextBookableDate = ref<string | null>(null);
 const selectedHour = ref<number | null>(null);
@@ -588,11 +593,21 @@ const allowedDates = (date: Date) => {
 
   if (!dayEntry) return false;
 
-  // Bookable-day status (+ providerIDs) is slotsRequired-aware; appointment
-  // timestamps are only loaded for the selected day.
-  return dayEntry.providerIDs
+  // Bookable-day status (+ providerIDs) enables days not yet free-slot-checked.
+  // Once checked, require real appointments (persists after the slots window moves).
+  const hasProvider = dayEntry.providerIDs
     .split(",")
     .some((id) => selectedProviders.value[id.trim()]);
+  if (!hasProvider) {
+    return false;
+  }
+  if (
+    freeSlotCheckedDates.value.has(dateString) ||
+    isDateInLoadedSlotsWindow(dateString)
+  ) {
+    return dayHasSlotsForSelectedProviders(dateString);
+  }
+  return true;
 };
 
 const hasAppointmentsForSelectedProviders = () => {
@@ -913,6 +928,7 @@ const applyCalendarResponse = (
   nextBookableDate.value = calendar.nextBookableDate ?? null;
 
   const nextByDay = new Map(appointmentsByDay.value);
+  const nextCheckedDates = new Set(freeSlotCheckedDates.value);
   const normalizedDays: Array<{ date: string; providerIDs: string }> = [];
 
   for (const day of days) {
@@ -925,16 +941,42 @@ const applyCalendarResponse = (
       nextByDay.set(dateKey, offices);
     }
 
-    // Bookable days are selectable from status + providerIDs (no timestamps required).
-    if (day.providerIDs) {
-      normalizedDays.push({
-        date: day.date,
-        providerIDs: day.providerIDs,
-      });
+    if (!day.providerIDs) {
+      continue;
     }
+
+    const hasAppointments = offices.some(
+      (office) =>
+        !!selectedProviders.value[String(office.officeId)] &&
+        (office.appointments?.length ?? 0) > 0
+    );
+
+    if (inFreeSlotWindow) {
+      nextCheckedDates.add(dateKey);
+      // Persist empty results: do not re-enable from daylist providerIDs later.
+      if (!hasAppointments) {
+        continue;
+      }
+    } else if (nextCheckedDates.has(dateKey)) {
+      // Previously free-slot-checked; keep using cached appointment map.
+      const cachedHasSlots = (nextByDay.get(dateKey) ?? []).some(
+        (office) =>
+          !!selectedProviders.value[String(office.officeId)] &&
+          (office.appointments?.length ?? 0) > 0
+      );
+      if (!cachedHasSlots) {
+        continue;
+      }
+    }
+
+    normalizedDays.push({
+      date: day.date,
+      providerIDs: day.providerIDs,
+    });
   }
 
   appointmentsByDay.value = nextByDay;
+  freeSlotCheckedDates.value = nextCheckedDates;
   availableDays.value = normalizedDays;
 
   updateCalendarNavigationBounds(normalizedDays);
@@ -965,9 +1007,16 @@ const reloadCalendarAvailability = async (options?: {
     appointmentsByDay.value = new Map();
     loadedSlotsStartDate.value = null;
     loadedSlotsEndDate.value = null;
+    freeSlotCheckedDates.value = new Set();
     prevBookableDate.value = null;
     nextBookableDate.value = null;
     return false;
+  }
+
+  // Fresh calendar load (not a day re-click): drop prior free-slot verdicts.
+  if (!options?.preserveSelectedDay) {
+    freeSlotCheckedDates.value = new Set();
+    appointmentsByDay.value = new Map();
   }
 
   const { slotsStartDate, slotsEndDate } = getFreeSlotsWindow();
