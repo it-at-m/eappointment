@@ -28,7 +28,7 @@
         <div
           class="m-content"
           style="margin-top: 8px"
-          v-if="noneSelectedAvailabilityInfoHtml"
+          v-if="emptyStateAvailabilityInfoHtml"
         >
           <p>
             <muc-button
@@ -36,7 +36,7 @@
               icon="information"
               icon-shown-left
               class="no-bottom-margin"
-              @click="openNoneSelectedInfoModal"
+              @click="openEmptyStateInfoModal"
             >
               <template #default>{{ t("newAppointmentsInfoLink") }}</template>
             </muc-button>
@@ -834,6 +834,14 @@ const noneSelectedAvailabilityInfoHtml = computed(() => {
   );
 });
 
+// Empty-days callout: all locations when none selected, otherwise the current selection.
+const emptyStateAvailabilityInfoHtml = computed(() => {
+  if (noProviderSelected.value) {
+    return noneSelectedAvailabilityInfoHtml.value;
+  }
+  return availabilityInfoHtml.value;
+});
+
 const availabilityInfoHtmlForModal = computed(() => {
   return availabilityInfoHtmlOverride.value || availabilityInfoHtml.value;
 });
@@ -844,6 +852,14 @@ const openNoneSelectedInfoModal = () => {
     availabilityInfoHtmlOverride.value = html;
     showAvailabilityInfoModal.value = true;
   }
+};
+
+const openEmptyStateInfoModal = () => {
+  if (noProviderSelected.value) {
+    openNoneSelectedInfoModal();
+    return;
+  }
+  openAvailabilityInfoModal();
 };
 
 const onUpdateSelectedProviders = (val: { [id: string]: boolean }) => {

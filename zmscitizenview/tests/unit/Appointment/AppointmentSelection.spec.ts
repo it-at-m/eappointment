@@ -391,6 +391,47 @@ describe("AppointmentSelection", () => {
       );
     });
 
+    it("shows newAppointmentsInfoLink on empty calendar when selected locations have info", async () => {
+      (fetchAvailableCalendar as Mock).mockResolvedValue(
+        calendarResponse([])
+      );
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [
+            {
+              name: "Office A",
+              id: 1,
+              address: { street: "Main", house_number: "1" },
+              scope: {
+                id: "1",
+                infoForAllAppointments: "Neue Termine jeden Montag",
+              },
+            },
+            {
+              name: "Office B",
+              id: 2,
+              address: { street: "Main", house_number: "2" },
+              scope: {
+                id: "2",
+                infoForAllAppointments: "Neue Termine jeden Montag",
+              },
+            },
+          ],
+        },
+      });
+
+      await flushPromises();
+      wrapper.vm.isSwitchingProvider = false;
+      await nextTick();
+
+      expect(wrapper.text()).toContain("newAppointmentsInfoLink");
+      expect(wrapper.vm.emptyStateAvailabilityInfoHtml).toContain(
+        "Neue Termine jeden Montag"
+      );
+    });
+
     it("shows no providers when none have appointments", async () => {
       // Mock availableDays to include no providers
       (fetchAvailableCalendar as Mock).mockResolvedValue(calendarResponse([]));
