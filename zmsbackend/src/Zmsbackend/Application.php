@@ -8,9 +8,8 @@
 namespace BO\Zmsbackend;
 
 use BO\Slim\LoggerService;
+use BO\Slim\Traits\CacheInitializationTrait;
 use Psr\SimpleCache\CacheInterface;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Symfony\Component\Cache\Psr16Cache;
 
 if (($token = getenv('ZMS_CONFIG_SECURE_TOKEN')) === false || $token === '') {
     throw new \RuntimeException('ZMS_CONFIG_SECURE_TOKEN environment variable must be set');
@@ -36,6 +35,8 @@ define(
 
 class Application extends \BO\Slim\Application
 {
+    use CacheInitializationTrait;
+
     const IDENTIFIER = 'zms';
 
     const MODULE_NAME = 'zmsbackend';
@@ -93,14 +94,6 @@ class Application extends \BO\Slim\Application
         return new \DateTimeImmutable();
     }
 
-    private static function initializeCache(): void
-    {
-        self::$CACHE_DIR = getenv('CACHE_DIR') ?: __DIR__ . '/cache';
-        self::$SOURCE_CACHE_TTL = (int) (getenv('SOURCE_CACHE_TTL') ?: 3600);
-        self::validateCacheDirectory();
-        self::setupCache();
-    }
-
     /**
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
@@ -123,26 +116,6 @@ class Application extends \BO\Slim\Application
     {
         self::$MAX_STRING_LENGTH = (int) (getenv('MAX_STRING_LENGTH') ?: 32768);
         self::$MAX_RECURSION_DEPTH = (int) (getenv('MAX_RECURSION_DEPTH') ?: 10);
-    }
-
-    private static function validateCacheDirectory(): void
-    {
-        if (!is_dir(self::$CACHE_DIR)) {
-            if (!@mkdir(self::$CACHE_DIR, 0750, true) && !is_dir(self::$CACHE_DIR)) {
-                throw new \RuntimeException(sprintf('Cache directory "%s" could not be created', self::$CACHE_DIR));
-            }
-        }
-
-        if (!is_writable(self::$CACHE_DIR)) {
-            throw new \RuntimeException(sprintf('Cache directory "%s" is not writable', self::$CACHE_DIR));
-        }
-    }
-
-    private static function setupCache(): void
-    {
-        $psr6 = new FilesystemAdapter(namespace: '', defaultLifetime: self::$SOURCE_CACHE_TTL, directory: self::$CACHE_DIR);
-        self::$cache = new Psr16Cache($psr6);
-        LoggerService::$cache = self::$cache;
     }
 
     public static function getLoggerConfig(): array
@@ -172,7 +145,7 @@ class Application extends \BO\Slim\Application
     public static function initialize(): void
     {
         self::initializeLogger();
-        self::initializeCache();
+        self::initializeCache(__DIR__ . '/cache');
         self::initializeRequestLimits();
     }
 }
