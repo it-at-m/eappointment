@@ -256,7 +256,7 @@ class ReportClientScopeTest extends Base
                     'parameters' => [
                         'groupby' => 'day',
                         'fromDate' => '2015-12-31',
-                        'toDate' => '2016-04-01'
+                        'toDate' => '2015-12-31'
                     ],
                     'response' => $this->readFixture("GET_clientscope_141_2015.json")
                 ],
@@ -265,7 +265,7 @@ class ReportClientScopeTest extends Base
                     'url' => '/warehouse/clientscope/141/2016/',
                     'parameters' => [
                         'groupby' => 'day',
-                        'fromDate' => '2015-12-31',
+                        'fromDate' => '2016-01-01',
                         'toDate' => '2016-04-01'
                     ],
                     'response' => $this->readFixture("GET_clientscope_141_042016.json")
@@ -784,16 +784,6 @@ class ReportClientScopeTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/warehouse/clientscope/141/',
                     'response' => $this->readFixture("GET_clientscope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/warehouse/clientscope/141/2016/',
-                    'parameters' => [
-                        'groupby' => 'day',
-                        'fromDate' => '2016-04-30',
-                        'toDate' => '2016-04-01'
-                    ],
-                    'response' => $this->readFixture("GET_clientscope_141_042016.json")
                 ]
             ]
         );

@@ -1,12 +1,34 @@
 {% extends "layout/main.twig" %}
+{% use "block/breadcrumb/breadcrumb.twig" %}
 {% from 'element/helper/snippets.twig' import headline1 %}
 
+{% block pageheader_middle %}
+    {% if workstation %}
+        {{ parent() }}
+    {% else %}
+    <span class="sitename">Zeitmanagementsystem - Anmeldung für Behördenmitarbeiter</span>
+    {% endif %}
+{% endblock %}
+
+{% block pageheader_right %}
+    {% if workstation %}
+        {{ parent() }}
+    {% else %}
+    {% endif %}
+{% endblock %}
+
 {% block headline %}
-    {{ headline1("Changelog") }}
+    {{ headline1(title) }}
 {% endblock %}
 
 {% block content %}
 
+    {% if config.changelog.urlReleaseNotes %}
+    <p class="changelog-intro">
+        Aktuelle Release Notes und eine Beschreibung der letzten Änderungen finden Sie in unserem
+        <a href="{{ config.changelog.urlReleaseNotes }}" target="_blank" rel="noopener noreferrer">Wilma-Arbeitsraum</a>.
+    </p>
+    {% endif %} 
     {% include "block/changelog/changelogitem.twig" %}
 
 {% endblock %}

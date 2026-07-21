@@ -80,20 +80,19 @@ class ZmsApiClientService
             $combined = new ProviderList();
             $seen = [];
 
-            foreach (self::getSourceNames() as $name) {
-                $src = self::fetchSourceDataFor($name);
+            self::forEachAvailableSource(function (Source $src) use ($combined, &$seen): void {
                 $list = $src->getProviderList();
-
-                if ($list instanceof ProviderList) {
-                    foreach ($list as $provider) {
-                        $key = (($provider->source ?? '') . '_' . $provider->id);
-                        if (!isset($seen[$key])) {
-                            $combined->addEntity($provider);
-                            $seen[$key] = true;
-                        }
+                if (!$list instanceof ProviderList) {
+                    return;
+                }
+                foreach ($list as $provider) {
+                    $key = (($provider->source ?? '') . '_' . $provider->id);
+                    if (!isset($seen[$key])) {
+                        $combined->addEntity($provider);
+                        $seen[$key] = true;
                     }
                 }
-            }
+            });
 
             return $combined;
         } catch (\Exception $e) {
@@ -107,20 +106,19 @@ class ZmsApiClientService
             $combined = new RequestList();
             $seen = [];
 
-            foreach (self::getSourceNames() as $name) {
-                $src = self::fetchSourceDataFor($name);
+            self::forEachAvailableSource(function (Source $src) use ($combined, &$seen): void {
                 $list = $src->getRequestList();
-
-                if ($list instanceof RequestList) {
-                    foreach ($list as $request) {
-                        $key = (($request->source ?? '') . '_' . $request->id);
-                        if (!isset($seen[$key])) {
-                            $combined->addEntity($request);
-                            $seen[$key] = true;
-                        }
+                if (!$list instanceof RequestList) {
+                    return;
+                }
+                foreach ($list as $request) {
+                    $key = (($request->source ?? '') . '_' . $request->id);
+                    if (!isset($seen[$key])) {
+                        $combined->addEntity($request);
+                        $seen[$key] = true;
                     }
                 }
-            }
+            });
 
             return $combined;
         } catch (\Exception $e) {
@@ -134,23 +132,22 @@ class ZmsApiClientService
             $combined = new RequestRelationList();
             $seen = [];
 
-            foreach (self::getSourceNames() as $name) {
-                $src = self::fetchSourceDataFor($name);
+            self::forEachAvailableSource(function (Source $src) use ($combined, &$seen): void {
                 $list = $src->getRequestRelationList();
+                if (!$list instanceof RequestRelationList) {
+                    return;
+                }
+                foreach ($list as $rel) {
+                    $r = $rel->request ?? null;
+                    $p = $rel->provider ?? null;
 
-                if ($list instanceof RequestRelationList) {
-                    foreach ($list as $rel) {
-                        $r = $rel->request ?? null;
-                        $p = $rel->provider ?? null;
-
-                        $key = (($r->source ?? '') . '_' . $r->id) . '|' . (($p->source ?? '') . '_' . $p->id);
-                        if (!isset($seen[$key])) {
-                            $combined->addEntity($rel);
-                            $seen[$key] = true;
-                        }
+                    $key = (($r->source ?? '') . '_' . $r->id) . '|' . (($p->source ?? '') . '_' . $p->id);
+                    if (!isset($seen[$key])) {
+                        $combined->addEntity($rel);
+                        $seen[$key] = true;
                     }
                 }
-            }
+            });
 
             return $combined;
         } catch (\Exception $e) {
@@ -164,28 +161,27 @@ class ZmsApiClientService
             $combined = new ScopeList();
             $seen = [];
 
-            foreach (self::getSourceNames() as $name) {
-                $src = self::fetchSourceDataFor($name);
+            self::forEachAvailableSource(function (Source $src) use ($combined, &$seen): void {
                 $providerMap = [];
                 foreach ($src->getProviderList() as $provider) {
                     $providerMap[($provider->source ?? '') . '_' . $provider->id] = $provider;
                 }
                 $list = $src->getScopeList();
-
-                if ($list instanceof ScopeList) {
-                    foreach ($list as $scope) {
-                        $prov = $scope->getProvider();
-                        $key = (($prov->source ?? '') . '_' . $prov->id);
-                        if (isset($providerMap[$key])) {
-                            $scope->provider = $providerMap[$key];
-                        }
-                        if (!isset($seen[$key])) {
-                            $combined->addEntity($scope);
-                            $seen[$key] = true;
-                        }
+                if (!$list instanceof ScopeList) {
+                    return;
+                }
+                foreach ($list as $scope) {
+                    $prov = $scope->getProvider();
+                    $key = (($prov->source ?? '') . '_' . $prov->id);
+                    if (isset($providerMap[$key])) {
+                        $scope->provider = $providerMap[$key];
+                    }
+                    if (!isset($seen[$key])) {
+                        $combined->addEntity($scope);
+                        $seen[$key] = true;
                     }
                 }
-            }
+            });
 
             return $combined;
         } catch (\Exception $e) {
@@ -451,16 +447,55 @@ class ZmsApiClientService
         }
     }
 
-    private static function fetchSourceDataFor(string $sourceName): Source
+    /**
+     * Iterate configured sources; skip individual SourceNotFound and only fail when none load.
+     *
+     * @param callable(Source):void $callback
+     */
+    private static function forEachAvailableSource(callable $callback): void
+    {
+        $loaded = 0;
+        $notFound = 0;
+
+        foreach (self::getSourceNames() as $name) {
+            $src = self::fetchSourceDataFor($name);
+            if ($src === null) {
+                $notFound++;
+                continue;
+            }
+            $loaded++;
+            $callback($src);
+        }
+
+        if ($loaded === 0 && $notFound > 0) {
+            $exception = new \BO\Zmsclient\Exception('Source not found');
+            $exception->template = 'BO\\Zmsbackend\\Source\\Exception\\SourceNotFound';
+            throw $exception;
+        }
+    }
+
+    private static function fetchSourceDataFor(string $sourceName): ?Source
     {
         $cacheKey = 'source_' . $sourceName;
         if (\App::$cache && ($data = \App::$cache->get($cacheKey))) {
-            return $data;
+            return $data instanceof Source ? $data : null;
         }
 
-        $result = \App::$http->readGetResult('/source/' . $sourceName . '/', [
-            'resolveReferences' => 2,
-        ]);
+        try {
+            $result = \App::$http->readGetResult('/source/' . $sourceName . '/', [
+                'resolveReferences' => 2,
+            ]);
+        } catch (\Exception $e) {
+            if (self::isSourceNotFoundException($e)) {
+                LoggerService::logWarning('Configured source is unavailable; continuing with remaining sources', [
+                    'source' => $sourceName,
+                    'exception' => $e->getMessage(),
+                ]);
+                return null;
+            }
+            throw $e;
+        }
+
         $entity = $result?->getEntity();
         if (!$entity instanceof Source) {
             return new Source();
@@ -476,6 +511,18 @@ class ZmsApiClientService
         }
 
         return $entity;
+    }
+
+    private static function isSourceNotFoundException(\Throwable $e): bool
+    {
+        if ($e instanceof \BO\Zmsclient\Exception && is_string($e->template ?? null)) {
+            if (str_contains($e->template, 'SourceNotFound')) {
+                return true;
+            }
+        }
+
+        $previous = $e->getPrevious();
+        return $previous instanceof \Throwable ? self::isSourceNotFoundException($previous) : false;
     }
 
     /**

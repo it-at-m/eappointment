@@ -14,6 +14,9 @@ class Config extends Schema\Entity
                 'urlChange' => 'https://service.berlin.de/terminvereinbarung/termin/manage/',
                 'urlAppointments' => 'https://service.berlin.de/terminvereinbarung/',
             ],
+            'changelog' => [
+                'urlReleaseNotes' => 'https://it-at-m.github.io/eappointment/overview/changelog.html'
+            ],
             'ticketprinter' => [
                 'baseUrl' => '/terminvereinbarung/ticketprinter/'
             ],
