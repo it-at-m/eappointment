@@ -23,6 +23,12 @@
 
 {% block content %}
 
+    {% if config.changelog.urlReleaseNotes %}
+    <p class="changelog-intro">
+        Aktuelle Release Notes und eine Beschreibung der letzten Änderungen finden Sie in unserem
+        <a href="{{ config.changelog.urlReleaseNotes }}" target="_blank" rel="noopener noreferrer">Wilma-Arbeitsraum</a>.
+    </p>
+    {% endif %} 
     {% include "block/changelog/changelogitem.twig" %}
 
 {% endblock %}
