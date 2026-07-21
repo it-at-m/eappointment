@@ -65,10 +65,21 @@ class QueueTable extends BaseController
 
         $queueList = $processList->toQueueList(\App::$now);
 
-        $queueListVisible = $queueList->withStatus($this->processStatusList);
-        $queueListMissed = $queueList->withStatus(['missed']);
-        $queueListParked = $queueList->withStatus(['parked']);
-        $queueListFinished = $queueList->withStatus(['finished']);
+        $queueListVisible = $useraccount->hasPermissions(['waitingqueue'])
+            ? $queueList->withStatus($this->processStatusList)
+            : new QueueList();
+
+        $queueListMissed = $useraccount->hasPermissions(['missedqueue'])
+            ? $queueList->withStatus(['missed'])
+            : new QueueList();
+
+        $queueListParked = $useraccount->hasPermissions(['parkedqueue'])
+            ? $queueList->withStatus(['parked'])
+            : new QueueList();
+
+        $queueListFinished = $useraccount->hasPermissions(['finishedqueue'])
+            ? $queueList->withStatus(['finished'])
+            : new QueueList();
 
         $queueListCalled = (
             $withCalledList
