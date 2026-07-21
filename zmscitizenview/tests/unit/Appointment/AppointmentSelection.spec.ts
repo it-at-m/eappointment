@@ -548,8 +548,8 @@ describe("AppointmentSelection", () => {
           { officeId: 10351880, appointments: [1750118400] },
           { officeId: 10470, appointments: [1750118400] },
         ];
-        (fetchAvailableCalendar as Mock).mockResolvedValue(
-          calendarResponse(
+        (fetchAvailableCalendar as Mock).mockResolvedValue({
+          ...calendarResponse(
             [
               {
                 date: "2025-06-16",
@@ -563,8 +563,11 @@ describe("AppointmentSelection", () => {
               },
             ],
             []
-          )
-        );
+          ),
+          // Only 17 was free-slot checked; 16 keeps daylist selectability.
+          slotsStartDate: "2025-06-17",
+          slotsEndDate: "2025-06-17",
+        });
         const wrapper = createWrapper({
           selectedService: {
             id: "service1",
@@ -597,8 +600,131 @@ describe("AppointmentSelection", () => {
         });
         await nextTick();
 
-        // Bookable-day status (providerIDs) enables the day; timestamps are optional until selected.
+        // Bookable-day status enables days outside the free-slot window.
         expect(wrapper.vm.allowedDates(new Date("2025-06-16"))).toBe(true);
+        expect(wrapper.vm.allowedDates(new Date("2025-06-17"))).toBe(true);
+      });
+
+      it("disables a free-slot-checked day when it has no appointments left", async () => {
+        (fetchAvailableCalendar as Mock).mockResolvedValue({
+          ...calendarResponse(
+            [
+              {
+                date: "2025-06-16",
+                providerIDs: "10351880,10470",
+                offices: [],
+              },
+              {
+                date: "2025-06-17",
+                providerIDs: "10351880,10470",
+                offices: [],
+              },
+            ],
+            []
+          ),
+          slotsStartDate: "2025-06-17",
+          slotsEndDate: "2025-06-17",
+        });
+        const wrapper = createWrapper({
+          selectedService: {
+            id: "service1",
+            providers: [
+              {
+                name: "Office X",
+                id: 10351880,
+                address: { street: "Test", house_number: "1" },
+                scope: { id: "10351880" },
+              },
+              {
+                name: "Office Y",
+                id: 10470,
+                address: { street: "Test", house_number: "2" },
+                scope: { id: "10470" },
+              },
+            ],
+          },
+        });
+
+        wrapper.vm.selectedProviders[10351880] = true;
+        wrapper.vm.selectedProviders[10470] = true;
+        await nextTick();
+
+        await wrapper.vm.showSelectionForProvider({
+          name: "Office X",
+          id: 10351880,
+          address: { street: "Test", house_number: "1" },
+          scope: { id: "10351880" },
+        });
+        await nextTick();
+
+        expect(wrapper.vm.allowedDates(new Date("2025-06-16"))).toBe(true);
+        expect(wrapper.vm.allowedDates(new Date("2025-06-17"))).toBe(false);
+
+        (fetchAvailableCalendar as Mock).mockResolvedValue({
+          ...calendarResponse(
+            [
+              {
+                date: "2025-06-16",
+                providerIDs: "10351880,10470",
+                offices: [],
+              },
+              {
+                date: "2025-06-17",
+                providerIDs: "10351880,10470",
+                offices: [],
+              },
+              {
+                date: "2025-06-18",
+                providerIDs: "10351880,10470",
+                offices: [
+                  { officeId: 10351880, appointments: [1750118400] },
+                  { officeId: 10470, appointments: [1750118400] },
+                ],
+              },
+            ],
+            []
+          ),
+          // Moving the free-slot window must not revive a previously empty day.
+          slotsStartDate: "2025-06-18",
+          slotsEndDate: "2025-06-18",
+        });
+
+        await wrapper.vm.reloadCalendarAvailability({
+          preserveSelectedDay: true,
+        });
+        await nextTick();
+
+        expect(wrapper.vm.allowedDates(new Date("2025-06-17"))).toBe(false);
+        expect(wrapper.vm.allowedDates(new Date("2025-06-18"))).toBe(true);
+
+        (fetchAvailableCalendar as Mock).mockResolvedValue({
+          ...calendarResponse(
+            [
+              {
+                date: "2025-06-16",
+                providerIDs: "10351880,10470",
+                offices: [],
+              },
+              {
+                date: "2025-06-17",
+                providerIDs: "10351880,10470",
+                offices: [
+                  { officeId: 10351880, appointments: [1750118400] },
+                  { officeId: 10470, appointments: [1750118400] },
+                ],
+              },
+            ],
+            []
+          ),
+          slotsStartDate: "2025-06-17",
+          slotsEndDate: "2025-06-17",
+        });
+
+        await wrapper.vm.reloadCalendarAvailability({
+          preserveSelectedDay: true,
+        });
+        await nextTick();
+
         expect(wrapper.vm.allowedDates(new Date("2025-06-17"))).toBe(true);
       });
 
