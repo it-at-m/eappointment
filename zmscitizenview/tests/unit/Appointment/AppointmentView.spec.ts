@@ -17,6 +17,7 @@ vi.mock("@/api/ZMSAppointmentAPI", async () => {
     confirmAppointment: vi.fn(),
     preconfirmAppointment: vi.fn(),
     cancelAppointment: vi.fn(),
+    fetchAppointment: vi.fn(),
   };
 });
 
@@ -47,11 +48,32 @@ describe("AppointmentView", () => {
     vi.unstubAllGlobals();
   });
 
+  beforeEach(() => {
+    vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockReset();
+  });
+
   const mockBaseUrl = "https://www.muenchen.de";
   const mockServiceId = "123";
   const mockLocationId = "456";
   const mockExclusiveLocation = "test-location";
-  const mockAppointmentHash = "test-hash";
+  const buildAppointmentHash = (
+    data: { id: string; authKey: string; scope?: Record<string, unknown> } = {
+      id: "12345",
+      authKey: "test-auth-key",
+      scope: {},
+    }
+  ) => btoa(JSON.stringify(data));
+
+  const mockPendingAppointmentRoute = () => {
+    vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockReturnValue(
+      new Promise(() => {})
+    );
+  };
+
+  const createWrapperWithAppointmentHash = (hash = buildAppointmentHash()) => {
+    mockPendingAppointmentRoute();
+    return createWrapper({ appointmentHash: hash });
+  };
 
   const mockSelectedService = ref({
     id: "123",
@@ -93,7 +115,7 @@ describe("AppointmentView", () => {
         serviceId: mockServiceId,
         locationId: mockLocationId,
         exclusiveLocation: mockExclusiveLocation,
-        appointmentHash: mockAppointmentHash,
+        appointmentHash: undefined,
         t: (key: string, params?: Record<string, unknown>) => {
           // load translation or get key
           let s = (de as any)[key] ?? key;
@@ -213,7 +235,7 @@ describe("AppointmentView", () => {
 
   describe("Error States", () => {
     it("shows appointment not found error", async () => {
-      const wrapper = createWrapper();
+      const wrapper = createWrapperWithAppointmentHash();
       wrapper.vm.errorStates.apiErrorAppointmentNotFound.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
@@ -221,7 +243,7 @@ describe("AppointmentView", () => {
     });
 
     it("shows booking error", async () => {
-      const wrapper = createWrapper();
+      const wrapper = createWrapperWithAppointmentHash();
       wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
@@ -314,7 +336,7 @@ describe("AppointmentView", () => {
     });
 
     it("disables previous steps in stepper when appointment hash is present", async () => {
-      const wrapper = createWrapper({ appointmentHash: "valid" });
+      const wrapper = createWrapperWithAppointmentHash();
       await nextTick();
       expect(wrapper.find('[data-test="muc-stepper"]').attributes('data-disable-previous-steps')).toBe("true");
     });
@@ -349,7 +371,7 @@ describe("AppointmentView", () => {
     });
 
     it("shows confirmAppointmentError callout after booking", async () => {
-      const wrapper = createWrapper();
+      const wrapper = createWrapperWithAppointmentHash();
       wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
@@ -359,7 +381,7 @@ describe("AppointmentView", () => {
 
   describe("Rebooking Flow", () => {
     it("starts at summary and disables previous steps when appointmentHash is present", async () => {
-      const wrapper = createWrapper({ appointmentHash: "somehash" });
+      const wrapper = createWrapperWithAppointmentHash();
       wrapper.vm.currentView = 3;
       await nextTick();
       expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(true);
@@ -367,7 +389,7 @@ describe("AppointmentView", () => {
     });
 
     it("shows cancellation success callout after cancelling in rebooking", async () => {
-      const wrapper = createWrapper({ appointmentHash: "somehash" });
+      const wrapper = createWrapperWithAppointmentHash();
       wrapper.vm.currentView = 4;
       wrapper.vm.cancelAppointmentSuccess = true;
       await nextTick();
@@ -453,28 +475,55 @@ describe("AppointmentView", () => {
 
   describe("Edge Cases", () => {
     it("shows booking error callout if confirmAppointmentHash is invalid", async () => {
-      const wrapper = createWrapper({ confirmAppointmentHash: "invalid" });
-      wrapper.vm.confirmAppointmentError = true;
+      const wrapper = createWrapper({
+        appointmentHash: undefined,
+        confirmAppointmentHash: "invalid",
+      });
+
       await nextTick();
+
+      expect(wrapper.vm.errorStates.errorStateMap.apiErrorAppointmentNotFound.value).toBe(
+        true
+      );
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
-      expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
+      expect(wrapper.find('[data-test="muc-callout"]').attributes("data-type")).toBe(
+        "error"
+      );
     });
   });
 
   describe("Confirmation View", () => {
     it("shows only confirmation message when confirmAppointmentHash is present", async () => {
-      const wrapper = createWrapper({ confirmAppointmentHash: "valid" });
+      const mockConfirmAppointment = vi.mocked(ZMSAppointmentAPI.confirmAppointment);
+      mockConfirmAppointment.mockReturnValue(new Promise(() => {}));
+
+      const validHash = btoa(
+        JSON.stringify({
+          id: "test-id",
+          authKey: "test-auth-key",
+        })
+      );
+
+      const wrapper = createWrapper({
+        appointmentHash: undefined,
+        confirmAppointmentHash: validHash,
+      });
+
       await nextTick();
+
       expect(wrapper.find('[data-test="muc-stepper"]').exists()).toBe(false);
       expect(wrapper.find('[data-test="service-finder"]').exists()).toBe(false);
       expect(wrapper.find('[data-test="calendar-view"]').exists()).toBe(false);
       expect(wrapper.find('[data-test="customer-info"]').exists()).toBe(false);
       expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(false);
-      expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
+      expect(wrapper.vm.currentView).toBe(5);
     });
 
     it("shows success message after successful confirmation", async () => {
-      const wrapper = createWrapper({ confirmAppointmentHash: "valid" });
+      const wrapper = createWrapper({
+        appointmentHash: undefined,
+        confirmAppointmentHash: undefined,
+      });
       wrapper.vm.confirmAppointmentSuccess = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
@@ -482,11 +531,31 @@ describe("AppointmentView", () => {
     });
 
     it("shows error message if confirmation fails", async () => {
-      const wrapper = createWrapper({ confirmAppointmentHash: "invalid" });
-      wrapper.vm.confirmAppointmentError = true;
+      const mockConfirmAppointment = vi.mocked(ZMSAppointmentAPI.confirmAppointment);
+      mockConfirmAppointment.mockResolvedValueOnce({
+        errors: [{ errorCode: "processNotPreconfirmedAnymore" }],
+      });
+
+      const appointmentData = {
+        id: "test-id",
+        authKey: "test-auth-key",
+        scope: {},
+      };
+      const validHash = btoa(JSON.stringify(appointmentData));
+
+      const wrapper = createWrapper({
+        appointmentHash: undefined,
+        confirmAppointmentHash: validHash,
+      });
+
       await nextTick();
+      await vi.waitFor(() => {
+        expect(mockConfirmAppointment).toHaveBeenCalled();
+      });
+
+      expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(true);
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
-      expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
+      expect(wrapper.find('[data-test="muc-callout"]').attributes("data-type")).toBe("error");
     });
   });
 
@@ -1316,6 +1385,139 @@ describe("AppointmentView", () => {
     expect(errorCallout.attributes('data-type')).toBe('error');
     expect(errorCallout.text()).toContain(de.apiErrorGenericFallbackHeader);
   });
+
+  it("confirms when confirmAppointmentHash arrives after mount", async () => {
+    const mockSuccessResponse = {
+      processId: "12345",
+      authKey: "test-auth-key",
+      serviceId: "1",
+      officeId: "2",
+      timestamp: nowUnixSeconds() + 3600,
+    };
+    mockConfirmAppointment.mockResolvedValueOnce(mockSuccessResponse);
+
+    const appointmentData = {
+      id: "12345",
+      authKey: "test-auth-key",
+      scope: {},
+    };
+    const validHash = btoa(JSON.stringify(appointmentData));
+
+    const wrapper = createWrapper({
+      appointmentHash: undefined,
+      confirmAppointmentHash: undefined,
+    });
+
+    await nextTick();
+    expect(mockConfirmAppointment).not.toHaveBeenCalled();
+
+    await wrapper.setProps({ confirmAppointmentHash: validHash });
+    await nextTick();
+
+    await vi.waitFor(() => {
+      expect(mockConfirmAppointment).toHaveBeenCalledTimes(1);
+    });
+
+    expect(wrapper.vm.confirmAppointmentSuccess).toBe(true);
+    expect(wrapper.vm.currentView).toBe(5);
+  });
+
+  it("does not confirm twice when the same confirmAppointmentHash is set again", async () => {
+    const mockSuccessResponse = {
+      processId: "12345",
+      authKey: "test-auth-key",
+      serviceId: "1",
+      officeId: "2",
+      timestamp: nowUnixSeconds() + 3600,
+    };
+    mockConfirmAppointment.mockResolvedValue(mockSuccessResponse);
+
+    const appointmentData = {
+      id: "12345",
+      authKey: "test-auth-key",
+      scope: {},
+    };
+    const validHash = btoa(JSON.stringify(appointmentData));
+
+    const wrapper = createWrapper({
+      appointmentHash: undefined,
+      confirmAppointmentHash: undefined,
+    });
+
+    await wrapper.setProps({ confirmAppointmentHash: validHash });
+    await nextTick();
+    await vi.waitFor(() => {
+      expect(mockConfirmAppointment).toHaveBeenCalledTimes(1);
+    });
+
+    await wrapper.setProps({ confirmAppointmentHash: validHash });
+    await nextTick();
+
+    expect(mockConfirmAppointment).toHaveBeenCalledTimes(1);
+  });
+
+  it("loads appointment view when appointmentHash arrives after confirm success", async () => {
+    const mockFetchAppointment = vi.mocked(ZMSAppointmentAPI.fetchAppointment);
+    mockFetchAppointment.mockResolvedValueOnce({
+      processId: "12345",
+      authKey: "test-auth-key",
+      serviceId: "123",
+      officeId: "789",
+      serviceCount: 1,
+      subRequestCounts: [],
+      timestamp: nowUnixSeconds() + 3600,
+    } as any);
+
+    vi.mocked(globalThis.fetch).mockResolvedValueOnce({
+      status: 200,
+      json: async () => ({
+        offices: [
+          {
+            id: "789",
+            name: "Test Provider",
+            address: { street: "Test Street", house_number: "1" },
+          },
+        ],
+        services: [{ id: "123", name: "Test Service" }],
+        relations: [],
+      }),
+    } as any);
+
+    const appointmentData = {
+      id: "12345",
+      authKey: "test-auth-key",
+      scope: {},
+    };
+    const validHash = btoa(JSON.stringify(appointmentData));
+
+    const wrapper = createWrapper({
+      appointmentHash: undefined,
+      confirmAppointmentHash: undefined,
+    });
+
+    wrapper.vm.confirmAppointmentSuccess = true;
+    wrapper.vm.currentView = 5;
+    await nextTick();
+
+    expect(wrapper.find('[data-test="muc-callout"]').attributes("data-type")).toBe(
+      "success"
+    );
+
+    await wrapper.setProps({ appointmentHash: validHash });
+    await nextTick();
+
+    await vi.waitFor(() => {
+      expect(mockFetchAppointment).toHaveBeenCalledTimes(1);
+    });
+
+    await vi.waitFor(() => {
+      expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
+      expect(wrapper.vm.currentView).toBe(3);
+    });
+
+    expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(true);
+    expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(false);
+  });
   });
   describe("Book another appointment button", () => {
     it("renders with correct label and redirects to start when clicked", async () => {
@@ -1472,7 +1674,7 @@ describe("AppointmentView", () => {
     });
 
     it("calls confirmAppointment directly when rebooking with processId+authKey", async () => {
-      const wrapper = createWrapper({ appointmentHash: "somehash" });
+      const wrapper = createWrapperWithAppointmentHash();
 
       wrapper.vm.isRebooking = true;
       wrapper.vm.appointment = {
@@ -1498,10 +1700,15 @@ describe("AppointmentView", () => {
       expect(wrapper.vm.currentView).toBe(5);
 
       expect(wrapper.vm.isBookingAppointment).toBe(false);
+
+      expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
+      expect(wrapper.find('[data-test="muc-callout"]').attributes("data-type")).toBe(
+        "success"
+      );
     });
 
     it("cancels old appointment after successful rebooking confirm", async () => {
-      const wrapper = createWrapper({ appointmentHash: "somehash" });
+      const wrapper = createWrapperWithAppointmentHash();
 
       wrapper.vm.isRebooking = true;
       wrapper.vm.rebookedAppointment = {
@@ -1530,7 +1737,7 @@ describe("AppointmentView", () => {
     });
 
     it("falls back to preconfirm when rebooking but missing authKey/processId", async () => {
-      const wrapper = createWrapper({ appointmentHash: "somehash" });
+      const wrapper = createWrapperWithAppointmentHash();
 
       wrapper.vm.isRebooking = true;
       wrapper.vm.appointment = {

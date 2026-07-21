@@ -89,7 +89,7 @@
             <div class="page-version">
                 <a href="{{ urlGet('changelog', {}, {}) }}" class="version" title="Änderungshistorie anzeigen">Änderungshistorie</a> | <span>Version {{ currentVersion() }}</span>
                 <a href="{{ urlGet('status', {}, {}) }}" class="version" title="Betriebsstatus des Systems">Status</a>
-                {% if getSystemStatus('ZMS_ENV') %} | {{ getSystemStatus('ZMS_ENV') }}{% endif %}
+                {% if getSystemStatus('ZMS_ENV') %}<p>{{ getSystemStatus('ZMS_ENV') }}</p>{% endif %}
             </div>
             </div>
         </footer>
