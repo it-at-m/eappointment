@@ -3,11 +3,13 @@
 	{% use "block/workstation/scopeSwitch.twig" %}
 	{% from 'element/helper/form.twig' import formgroup, formbutton, inputfield %}
 	{% set permissions = workstation.useraccount.permissions %}
+	{% set showAnyQueues = permissions.parkedqueue or permissions.openqueue or permissions.waitingqueue or permissions.missedqueue or permissions.finishedqueue %}
 
 	{% block board_header_right %}
 		{% if cluster.scopes|length > 1 %}
 			{{ block('scope_switch') }}
 		{% endif %}
+		{% if permissions.waitingqueue %}
 		<form action="{{ urlGet('workstationSelect') }}" method="POST">
 			{{ formgroup(
                     {"label": "", "description": "", "class":"appointmentsOnly"},
@@ -31,10 +33,14 @@
 			{#{ inputfield({ "name":"selectedDate", "type":"hidden", "value":selectedDate }) }#}
 			{{ inputfield({ "name":"scope", "type":"hidden", "value":workstationScope }) }}
 		</form>
+		{% endif %}
+		{% if showAnyQueues %}
 		<a href="#" title="Liste neu laden" class="button button--diamond reload">
 			<i class="fas fa-sync" aria-hidden="true"></i>
 			<span class="aural">Liste neu laden</span>
 		</a>
+		{% endif %}
+		{% if permissions.waitingqueue %}
 		<a href="{{urlGet('scopeAppointmentsByDay', {id: workstation.scope.id, date: selectedDate})}}?print=1" target="_blank" title="Drucken" class="button button--diamond print">
 			<i class="fas fa-print" aria-hidden="true"></i>
 			<span class="aural">Drucken</span>
@@ -43,6 +49,7 @@
 			<i class="fas fa-download" aria-hidden="true"></i>
 			<span class="aural">Download</span>
 		</a>
+		{% endif %}
 	{% endblock %}
 	{% block board_title %}
 		{% trans %}
@@ -62,7 +69,9 @@
 	{% endblock %}
 	{% block board_title_aside %}
 		<strong class="date">{{ selectedDate|format_date(pattern="EE dd. MMMM y")}}</strong>
-		{{ block('calender_navigation_day') }}
+		{% if permissions.waitingqueue %}
+			{{ block('calender_navigation_day') }}
+		{% endif %}
 	{% endblock %}
 
 	{% block board_body %}
@@ -703,7 +712,7 @@ content.addClass('hidden')
 			</style>
 		</div>
 		{% endif %}
-		{% if permissions.parkedqueue or permissions.openqueue or permissions.waitingqueue or permissions.missedqueue or permissions.finishedqueue %}
+		{% if showAnyQueues %}
 		<div class="form-actions">
 			<div class="right">
 				<button title="{% trans %}Warteschlange neu laden{% endtrans %}" class="button button-reload reload">
