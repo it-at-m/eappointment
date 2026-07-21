@@ -179,6 +179,20 @@ Dieser Abschnitt ersetzt die alten Berlin-lastigen Formatbeispiele durch Münche
 }
 ```
 
+### Standort-Feld-Mapping (`altname2`)
+
+Für München-SADB-Standorte schreibt `Munich.php` einen Standort nur dann in den normalisierten Export, wenn `altname2` im Roh-Export gesetzt ist (`processLocation()` bricht sonst ab). Standorte ohne `altname2` werden vollständig übersprungen, auch wenn `extendedServiceReferences` vorhanden sind.
+
+Feld-Mapping in `buildLocationMetadata()`:
+
+| SADB-Feld                                    | Normalisierte Ausgabe (`locations_de.json`)   |
+| -------------------------------------------- | --------------------------------------------- |
+| `altname2`                                   | `displayName`                                 |
+| `altname2` + optional `altname1` in Klammern | `name`                                        |
+| `names[]`                                    | `displayNameAlternatives` und `meta.keywords` |
+
+Fehlt `altname2`, erscheint der Standort nicht in `locations_de.json`. Ist `altname2` gesetzt, aber leer, wird der Standort mit leerem `displayName` exportiert.
+
 Diese Beispiele zeigen die zentralen SADB-Eingabevariablen, die der München-Transformer (`ZMS_DAUER`, `ZMS_MAX_ANZAHL`, `ZMS_INTERN`, `TERMINVEREINBARUNG`, `FORMULARE_INFORMATIONEN`) vor der Normalisierung in `zmsbackend/data` und die MariaDB-Tabellen verarbeitet.
 
 ## Gemappte Ausgabe in `zmsbackend/data`

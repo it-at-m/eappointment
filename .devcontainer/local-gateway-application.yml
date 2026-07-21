@@ -14,36 +14,38 @@ logging:
 spring:
   cloud:
     gateway:
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOriginPatterns:
-              - "http://localhost:*"
-              - "https://localhost:*"
-              - "http://citizenview:*"
-              - "https://citizenview:*"
-              # Docker service names (any port) when the page is opened by host
-              - "http://zms-web:*"
-              - "https://zms-web:*"
-              - "http://refarch-gateway:*"
-              - "https://refarch-gateway:*"
-            allowedMethods:
-              - '*'
-            allowedHeaders:
-              - '*'
-      routes:
-        - id: "citizen-api"
-          uri: "http://zms-web:80"
-          predicates:
-            - Path=/buergeransicht/api/citizen/**
-          filters:
-            - PreserveHostHeader
-            - RewritePath=/buergeransicht/api/citizen/(?<segment>.*), /terminvereinbarung/api/citizen/${segment}
-            - RemoveResponseHeader=WWW-Authenticate
-        - id: "webcomponent"
-          uri: "${WEBCOMPONENT_URI}"
-          predicates:
-            - Path=/buergeransicht/**
-          filters:
-            - RewritePath=/buergeransicht/(?<segment>.*), /${segment}
-            - RemoveResponseHeader=WWW-Authenticate
+      server:
+        webflux:
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOriginPatterns:
+                  - "http://localhost:*"
+                  - "https://localhost:*"
+                  - "http://citizenview:*"
+                  - "https://citizenview:*"
+                  # Docker service names (any port) when the page is opened by host
+                  - "http://zms-web:*"
+                  - "https://zms-web:*"
+                  - "http://refarch-gateway:*"
+                  - "https://refarch-gateway:*"
+                allowedMethods:
+                  - '*'
+                allowedHeaders:
+                  - '*'
+          routes:
+            - id: "citizen-api"
+              uri: "http://zms-web:80"
+              predicates:
+                - Path=/buergeransicht/api/citizen/**
+              filters:
+                - PreserveHostHeader
+                - RewritePath=/buergeransicht/api/citizen/(?<segment>.*), /terminvereinbarung/api/citizen/${segment}
+                - RemoveResponseHeader=WWW-Authenticate
+            - id: "webcomponent"
+              uri: "${WEBCOMPONENT_URI}"
+              predicates:
+                - Path=/buergeransicht/**
+              filters:
+                - RewritePath=/buergeransicht/(?<segment>.*), /${segment}
+                - RemoveResponseHeader=WWW-Authenticate

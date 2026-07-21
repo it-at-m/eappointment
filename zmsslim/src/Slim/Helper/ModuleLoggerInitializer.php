@@ -9,8 +9,6 @@ use BO\Slim\Middleware\RequestLoggingMiddleware;
 use BO\Slim\Middleware\RequestSanitizerMiddleware;
 use BO\Slim\Middleware\SecurityHeadersMiddleware;
 use Psr\SimpleCache\CacheInterface;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Symfony\Component\Cache\Psr16Cache;
 
 final class ModuleLoggerInitializer
 {
@@ -35,15 +33,13 @@ final class ModuleLoggerInitializer
 
     public static function initializeCache(?string $cacheDir = null): CacheInterface
     {
-        $cacheDir ??= getenv('CACHE_DIR') ?: sys_get_temp_dir();
-        $ttl = (int) (getenv('SOURCE_CACHE_TTL') ?: 3600);
-        self::validateCacheDirectory($cacheDir);
+        if ($cacheDir !== null) {
+            $ttl = (int) (getenv('SOURCE_CACHE_TTL') ?: 3600);
 
-        $psr6 = new FilesystemAdapter(namespace: '', defaultLifetime: $ttl, directory: $cacheDir);
-        $cache = new Psr16Cache($psr6);
-        LoggerService::$cache = $cache;
+            return CacheBootstrap::create($cacheDir, $ttl);
+        }
 
-        return $cache;
+        return CacheBootstrap::createFromEnv(sys_get_temp_dir());
     }
 
     public static function tryInitializeCache(?string $cacheDir = null): ?CacheInterface
@@ -82,18 +78,5 @@ final class ModuleLoggerInitializer
             $requestLimits['maxRecursionDepth'],
             $requestLimits['maxStringLength']
         ));
-    }
-
-    private static function validateCacheDirectory(string $cacheDir): void
-    {
-        if (!is_dir($cacheDir)) {
-            if (!@mkdir($cacheDir, 0750, true) && !is_dir($cacheDir)) {
-                throw new \RuntimeException(sprintf('Cache directory "%s" could not be created', $cacheDir));
-            }
-        }
-
-        if (!is_writable($cacheDir)) {
-            throw new \RuntimeException(sprintf('Cache directory "%s" is not writable', $cacheDir));
-        }
     }
 }
