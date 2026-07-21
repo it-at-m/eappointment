@@ -9,6 +9,7 @@ namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Collection\QueueList;
+use BO\Zmsentities\Useraccount;
 
 class QueueTable extends BaseController
 {
