@@ -120,6 +120,51 @@ class ZmsApiClientServiceTest extends TestCase
         ZmsApiClientService::getOffices();
     }
 
+    public function testGetOfficesSkipsMissingSecondarySource(): void
+    {
+        Application::$source_name = 'unittest,missing';
+        $this->cacheMock->method('get')->willReturn(null);
+
+        $provider = new Provider(['id' => 1, 'source' => 'unittest', 'name' => 'Office']);
+        $this->source->providers->addEntity($provider);
+
+        $okResult = $this->createMock(Result::class);
+        $okResult->method('getEntity')->willReturn($this->source);
+
+        $missing = new \BO\Zmsclient\Exception('missing');
+        $missing->template = 'BO\\Zmsbackend\\Source\\Exception\\SourceNotFound';
+
+        $this->httpMock->expects($this->exactly(2))
+            ->method('readGetResult')
+            ->willReturnCallback(function (string $url) use ($okResult, $missing) {
+                if (str_contains($url, '/source/unittest/')) {
+                    return $okResult;
+                }
+                if (str_contains($url, '/source/missing/')) {
+                    throw $missing;
+                }
+                throw new \RuntimeException('Unexpected URL: ' . $url);
+            });
+
+        $result = ZmsApiClientService::getOffices();
+        $this->assertInstanceOf(ProviderList::class, $result);
+        $this->assertCount(1, $result);
+    }
+
+    public function testGetOfficesFailsWhenAllSourcesMissing(): void
+    {
+        Application::$source_name = 'missing';
+        $this->cacheMock->method('get')->willReturn(null);
+
+        $missing = new \BO\Zmsclient\Exception('missing');
+        $missing->template = 'BO\\Zmsbackend\\Source\\Exception\\SourceNotFound';
+
+        $this->httpMock->method('readGetResult')->willThrowException($missing);
+
+        $this->expectException(\RuntimeException::class);
+        ZmsApiClientService::getOffices();
+    }
+
     public function testGetScopesCacheHit(): void
     {
         $this->cacheMock->method('get')
