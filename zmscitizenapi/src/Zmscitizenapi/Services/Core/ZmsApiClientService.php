@@ -161,6 +161,10 @@ class ZmsApiClientService
             $seen = [];
 
             self::forEachAvailableSource(function (Source $src) use ($combined, &$seen): void {
+                $providerMap = [];
+                foreach ($src->getProviderList() as $provider) {
+                    $providerMap[($provider->source ?? '') . '_' . $provider->id] = $provider;
+                }
                 $list = $src->getScopeList();
                 if (!$list instanceof ScopeList) {
                     return;
@@ -168,6 +172,9 @@ class ZmsApiClientService
                 foreach ($list as $scope) {
                     $prov = $scope->getProvider();
                     $key = (($prov->source ?? '') . '_' . $prov->id);
+                    if (isset($providerMap[$key])) {
+                        $scope->provider = $providerMap[$key];
+                    }
                     if (!isset($seen[$key])) {
                         $combined->addEntity($scope);
                         $seen[$key] = true;
@@ -281,7 +288,9 @@ class ZmsApiClientService
                 $processEntity->queue = $appointmentProcess->queue;
             }
 
-            $result = \App::$http->readPostResult('/process/status/reserved/', $processEntity);
+            $result = \App::$http->readPostResult('/process/status/reserved/', $processEntity, [
+                'resolveReferences' => 2,
+            ]);
             $entity = $result?->getEntity();
             return $entity instanceof Process ? $entity : new Process();
         } catch (\Exception $e) {

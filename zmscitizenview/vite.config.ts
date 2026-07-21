@@ -62,6 +62,20 @@ export default defineConfig({
           })
         },
       },
+      // Logged-in flows use /buergeransicht/authenticated/api/citizen (see getAPIBaseURL).
+      '/buergeransicht/authenticated/api': {
+        target: 'http://refarch-gateway:8080',
+        changeOrigin: true,
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq, req) => {
+            const raw = req.headers.host
+            const host = Array.isArray(raw) ? raw[0] : raw
+            if (host) {
+              proxyReq.setHeader('X-Forwarded-Host', host)
+            }
+          })
+        },
+      },
     },
   },
   build: {
