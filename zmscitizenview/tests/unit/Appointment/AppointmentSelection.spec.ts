@@ -306,9 +306,12 @@ describe("AppointmentSelection", () => {
     });
 
     it("shows an error message when no provider is selected", async () => {
-      // Mock available days with provider IDs
+      // Mock available days with provider IDs and matching office slots
       (fetchAvailableCalendar as Mock).mockResolvedValue(
-        calendarResponse([{ date: "2025-06-17", providerIDs: "1,2" }])
+        calendarResponse(
+          [{ date: "2025-06-17", providerIDs: "1,2" }],
+          officeOneAndTwoSlots
+        )
       );
 
       // Create component with two selectable providers

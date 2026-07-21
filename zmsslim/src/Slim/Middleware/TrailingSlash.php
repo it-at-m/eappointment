@@ -17,30 +17,32 @@ class TrailingSlash
         $uri = $request->getUri();
         $path = $uri->getPath();
 
-        if (strpos($path, '/api/') !== false) {
+        $needsTrailingSlash = substr($path, -1) !== '/' && !pathinfo($path, PATHINFO_EXTENSION);
+        if (!$needsTrailingSlash) {
             return $next->handle($request);
         }
 
-        if (substr($path, -1) !== '/' && !pathinfo($path, PATHINFO_EXTENSION)) {
-            // permanently redirect paths without a trailing slash
-            // to their trailing counterpart
-            $uri = $uri->withPath($path . '/');
-            if ($request->getHeader('X-Ssl') && 'no' != $request->getHeader('X-Ssl')) {
-                $uri = $uri->withScheme('https');
-                $uriString = (string)$uri;
-            } else {
-                $uriString = preg_replace('#^https?:#', '', (string)$uri); //Do not force protocol
-            }
-
-            $redirects = \App::$slim->redirect(
-                (string) $request->getUri(),
-                $uriString,
-                StatusCodeInterface::STATUS_MOVED_PERMANENTLY
-            )->getCallable();
-
-            return $redirects();
+        // API paths: rewrite in-place so slashless URLs match routes defined with a trailing slash.
+        // Do not 301 — redirects break POST and are awkward for API clients.
+        if (strpos($path, '/api/') !== false) {
+            return $next->handle($request->withUri($uri->withPath($path . '/')));
         }
 
-        return $next->handle($request);
+        // Non-API (HTML apps): permanently redirect to the trailing-slash URL.
+        $uri = $uri->withPath($path . '/');
+        if ($request->hasHeader('X-Ssl') && 'no' !== $request->getHeaderLine('X-Ssl')) {
+            $uri = $uri->withScheme('https');
+            $uriString = (string)$uri;
+        } else {
+            $uriString = preg_replace('#^https?:#', '', (string)$uri); //Do not force protocol
+        }
+
+        $redirects = \App::$slim->redirect(
+            (string) $request->getUri(),
+            $uriString,
+            StatusCodeInterface::STATUS_MOVED_PERMANENTLY
+        )->getCallable();
+
+        return $redirects();
     }
 }

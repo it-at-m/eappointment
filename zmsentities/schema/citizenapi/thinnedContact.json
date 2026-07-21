@@ -16,7 +16,7 @@
         "description": "Optional name field displayed for contact."
       },
       "postalCode": {
-        "type": ["string", "null", "number"],
+        "type": ["string", "null"],
         "description": "The postal (ZIP) code."
       },
       "region": {
