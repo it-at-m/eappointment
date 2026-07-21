@@ -53,7 +53,7 @@ class UserQueue extends \BO\Zmsbackend\Api\BaseController
                 $departmentService->readQueueList(
                     $department->id,
                     $dateTime,
-                    2
+                    $resolveReferences
                 )
             );
         }
