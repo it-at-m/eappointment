@@ -66,6 +66,14 @@ The external `dbs-login` loader CDN is often unreachable on local networks. With
 3. Open the host page index `http://localhost:8082/` or `http://localhost:8082/webcomponents.html` (or `http://localhost:8082/appointment-view.html` directly). On the customer step with login enabled, click **Login**.
 4. Sign in on the Keycloak page, then you should return logged in.
 
+After a successful login, the contact step shows that you are signed in and contact fields are filled from the Keycloak profile claims (`given_name`, `family_name`, `email`):
+
+<img alt="Logged-in contact step with Citizen User and citizen@example.com" src="../../img/citizen_login_1.png" />
+
+After booking while logged in, appointment detail pages keep the session (token in `localStorage`) so you can open and manage the appointment:
+
+<img alt="Appointment detail for a booked Reisepass appointment while logged in" src="../../img/citizen_login_2.png" />
+
 After login, API calls use `/buergeransicht/authenticated/api/citizen/…`. The Vite dev proxy and local gateway both need that path (see `zmscitizenview/vite.config.ts` and `.devcontainer` / `.ddev` `local-gateway-application.yml`). Restart `refarch-gateway` and the Vite / citizenview process after pulling these changes.
 
 The local login shim stores the access token in `localStorage` so `http://localhost:8082/appointment-overview.html`, `http://localhost:8082/appointment-detail.html`, and `http://localhost:8082/appointment-slider.html` stay logged in across tabs on the same origin. Tokens include claim `lhmExtID` (Keycloak username) so `my-appointments` can resolve the user. Re-login (and re-book if needed) after applying migration `10_add-citizen-token-mappers.yml` (includes `lhmExtID`).
