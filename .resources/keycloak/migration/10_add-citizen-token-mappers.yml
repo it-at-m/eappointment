@@ -37,3 +37,17 @@ changes:
         access.token.claim: "true"
         id.token.claim: "true"
         userinfo.token.claim: "true"
+
+  # zmscitizenapi AuthenticatedUser expects claim lhmExtID (see config.example.php).
+  # Map Keycloak username so local JWTs can own appointments / my-appointments.
+  - addClientMapper:
+      clientId: dbs-fragments
+      name: lhmExtID
+      protocolMapper: oidc-usermodel-property-mapper
+      config:
+        user.attribute: username
+        claim.name: lhmExtID
+        jsonType.label: String
+        access.token.claim: "true"
+        id.token.claim: "true"
+        userinfo.token.claim: "true"

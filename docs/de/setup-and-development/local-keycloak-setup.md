@@ -65,7 +65,7 @@ Der externe `dbs-login`-Loader ist lokal oft nicht erreichbar. Mit `VITE_USE_LOC
 
 Nach dem Login laufen API-Aufrufe über `/buergeransicht/authenticated/api/citizen/…`. Vite-Dev-Proxy und lokales Gateway brauchen diesen Pfad (siehe `zmscitizenview/vite.config.ts` sowie `.devcontainer` / `.ddev` `local-gateway-application.yml`). Nach dem Pull `refarch-gateway` und den Vite-/citizenview-Prozess neu starten.
 
-Der lokale Login-Shim speichert den Access-Token in `localStorage`, damit [appointment-overview](http://localhost:8082/appointment-overview.html), [appointment-detail](http://localhost:8082/appointment-detail.html) und [appointment-slider](http://localhost:8082/appointment-slider.html) über Tabs hinweg auf derselben Origin eingeloggt bleiben. Tokens enthalten Claim `lhmExtID` (Keycloak-Benutzername) für `my-appointments`. Nach Migration `13_add-citizen-lhmextid-claim.yml` erneut einloggen (und bei Bedarf neu buchen).
+Der lokale Login-Shim speichert den Access-Token in `localStorage`, damit [appointment-overview](http://localhost:8082/appointment-overview.html), [appointment-detail](http://localhost:8082/appointment-detail.html) und [appointment-slider](http://localhost:8082/appointment-slider.html) über Tabs hinweg auf derselben Origin eingeloggt bleiben. Tokens enthalten Claim `lhmExtID` (Keycloak-Benutzername) für `my-appointments`. Nach Migration `10_add-citizen-token-mappers.yml` (inkl. `lhmExtID`) erneut einloggen (und bei Bedarf neu buchen).
 
 | Feld         | Wert       |
 | ------------ | ---------- |
