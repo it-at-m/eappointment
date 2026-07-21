@@ -56,11 +56,19 @@ class QueueTable extends BaseController
 
         $waitingClientsEffective = null;
 
-        if (
-            $includeWaitingClientsEffective
-            && $selectedDateTime->format('Y-m-d') === \App::$now->format('Y-m-d')
-        ) {
-            $waitingClientsEffective = $queueList
+        if ($includeWaitingClientsEffective) {
+            $waitingClientsQueueList = $queueList;
+
+            if ($selectedDateTime->format('Y-m-d') !== \App::$now->format('Y-m-d')) {
+                $waitingClientsProcessList = $workstationRequest->readProcessListByDate(
+                    \App::$now,
+                    Helper\GraphDefaults::getProcess()
+                );
+
+                $waitingClientsQueueList = $waitingClientsProcessList->toQueueList(\App::$now);
+            }
+
+            $waitingClientsEffective = $waitingClientsQueueList
                 ->withStatus($this->processStatusList)
                 ->getCountWithWaitingTime()
                 ->count();
