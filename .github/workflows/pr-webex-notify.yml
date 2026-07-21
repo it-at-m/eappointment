@@ -29,8 +29,13 @@ jobs:
             --arg base "$PR_BASE" \
             --arg url "$PR_URL" \
             '{roomId: $roomId, markdown: ("**New pull request opened in " + $repo + "**\n\n**#" + $number + ":** " + $title + "\n\n**Author:** " + $author + "\n**Branch:** `" + $head + "` → `" + $base + "`\n\n[View pull request](" + $url + ")")}' \
-            | curl -fsS -X POST \
+            | curl -fsS -o /dev/null -X POST \
               -H "Authorization: Bearer $WEBEX_BOT_TOKEN" \
               -H "Content-Type: application/json" \
               -d @- \
               "https://webexapis.com/v1/messages"
+          echo "Webex notification sent:"
+          echo "  #${PR_NUMBER}: ${PR_TITLE}"
+          echo "  Author: ${PR_AUTHOR}"
+          echo "  Branch: ${PR_HEAD} → ${PR_BASE}"
+          echo "  ${PR_URL}"
