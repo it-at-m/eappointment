@@ -56,6 +56,9 @@ Siehe auch GitHub-Issue [#2827](https://github.com/it-at-m/eappointment/issues/2
 
 Die lokalen Vite-Host-Seiten (`appointment-view.html` usw.) nutzen den öffentlichen Keycloak-Client `dbs-fragments` im Realm `zms` (Migrationen `09_add-citizen-client.yml`, `10_add-citizen-token-mappers.yml`). Defaults stehen in `zmscitizenview/.env.development`.
 
+- **`09`** legt den öffentlichen Client, den Audience-Scope und den Testbenutzer (`citizen` / `vorschau`) an.
+- **`10`** ergänzt **Client-Mapper** (Keycloak Protocol Mapper) an diesem Client. Ein Mapper kopiert ein Benutzerattribut beim Token-Ausstellen in einen JWT-Claim. Ohne sie fehlen im Access-Token die von `zmscitizenapi` erwarteten Profil-Felder — vor allem `lhmExtID` (aus dem Keycloak-Benutzernamen), außerdem `email`, `given_name` und `family_name`.
+
 Der externe `dbs-login`-Loader ist lokal oft nicht erreichbar. Mit `VITE_USE_LOCAL_CITIZEN_LOGIN=true` laden die Host-Seiten stattdessen `src/local-dev/local-dbs-login.ts`: lauscht auf `authorization-request`, führt OIDC Authorization-Code + PKCE gegen lokales Keycloak aus und sendet `authorization-event`.
 
 1. Migrationen anwenden (Stack neu starten, damit `init-keycloak` läuft, oder den Service neu erzeugen).
