@@ -65,21 +65,33 @@ class QueueTable extends BaseController
 
         $queueList = $processList->toQueueList(\App::$now);
 
-        $queueListVisible = $useraccount->hasPermissions(['waitingqueue'])
-            ? $queueList->withStatus($this->processStatusList)
-            : new QueueList();
+        $queueListVisible = $this->getQueueListByPermission(
+            $queueList,
+            $useraccount,
+            'waitingqueue',
+            $this->processStatusList
+        );
 
-        $queueListMissed = $useraccount->hasPermissions(['missedqueue'])
-            ? $queueList->withStatus(['missed'])
-            : new QueueList();
+        $queueListMissed = $this->getQueueListByPermission(
+            $queueList,
+            $useraccount,
+            'missedqueue',
+            ['missed']
+        );
 
-        $queueListParked = $useraccount->hasPermissions(['parkedqueue'])
-            ? $queueList->withStatus(['parked'])
-            : new QueueList();
+        $queueListParked = $this->getQueueListByPermission(
+            $queueList,
+            $useraccount,
+            'parkedqueue',
+            ['parked']
+        );
 
-        $queueListFinished = $useraccount->hasPermissions(['finishedqueue'])
-            ? $queueList->withStatus(['finished'])
-            : new QueueList();
+        $queueListFinished = $this->getQueueListByPermission(
+            $queueList,
+            $useraccount,
+            'finishedqueue',
+            ['finished']
+        );
 
         $queueListCalled = (
             $withCalledList
@@ -132,5 +144,18 @@ class QueueTable extends BaseController
                 'allowClusterWideCall' => \App::$allowClusterWideCall
             )
         );
+    }
+
+    private function getQueueListByPermission(
+    QueueList $queueList,
+    Useraccount $useraccount,
+    string $permission,
+    array $statuses
+    ): QueueList {
+        if (! $useraccount->hasPermissions([$permission])) {
+            return new QueueList();
+        }
+
+        return $queueList->withStatus($statuses);
     }
 }
