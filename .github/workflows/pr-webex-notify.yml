@@ -10,7 +10,8 @@ jobs:
     steps:
       - name: Notify Webex
         env:
-          WEBEX_WEBHOOK_URL: ${{ secrets.WEBEX_WEBHOOK_URL }}
+          WEBEX_BOT_TOKEN: ${{ secrets.WEBEX_BOT_TOKEN }}
+          WEBEX_ROOM_ID: ${{ secrets.WEBEX_ROOM_ID }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_URL: ${{ github.event.pull_request.html_url }}
@@ -19,6 +20,7 @@ jobs:
           PR_HEAD: ${{ github.event.pull_request.head.ref }}
         run: |
           jq -n \
+            --arg roomId "$WEBEX_ROOM_ID" \
             --arg repo "${{ github.repository }}" \
             --arg number "$PR_NUMBER" \
             --arg title "$PR_TITLE" \
@@ -26,5 +28,9 @@ jobs:
             --arg head "$PR_HEAD" \
             --arg base "$PR_BASE" \
             --arg url "$PR_URL" \
-            '{markdown: ("**New pull request opened in " + $repo + "**\n\n**#" + $number + ":** " + $title + "\n\n**Author:** " + $author + "\n**Branch:** `" + $head + "` → `" + $base + "`\n\n[View pull request](" + $url + ")")}' \
-            | curl -fsS -X POST -H "Content-Type: application/json" -d @- "$WEBEX_WEBHOOK_URL"
+            '{roomId: $roomId, markdown: ("**New pull request opened in " + $repo + "**\n\n**#" + $number + ":** " + $title + "\n\n**Author:** " + $author + "\n**Branch:** `" + $head + "` → `" + $base + "`\n\n[View pull request](" + $url + ")")}' \
+            | curl -fsS -X POST \
+              -H "Authorization: Bearer $WEBEX_BOT_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d @- \
+              "https://webexapis.com/v1/messages"
