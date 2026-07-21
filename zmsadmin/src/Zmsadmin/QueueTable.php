@@ -147,10 +147,10 @@ class QueueTable extends BaseController
     }
 
     private function getQueueListByPermission(
-    QueueList $queueList,
-    Useraccount $useraccount,
-    string $permission,
-    array $statuses
+        QueueList $queueList,
+        Useraccount $useraccount,
+        string $permission,
+        array $statuses
     ): QueueList {
         if (! $useraccount->hasPermissions([$permission])) {
             return new QueueList();
