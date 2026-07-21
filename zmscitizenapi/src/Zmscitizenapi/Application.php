@@ -65,6 +65,7 @@ class Application extends \BO\Slim\Application
     public static function initialize(): void
     {
         self::initializeMaintenanceMode();
+        self::initializeSource();
         self::initializeLogger();
         self::initializeCaptcha();
         self::initializeCache(__DIR__ . '/cache');
@@ -74,6 +75,14 @@ class Application extends \BO\Slim\Application
     private static function initializeMaintenanceMode(): void
     {
         self::$MAINTENANCE_MODE_ENABLED = filter_var(getenv('MAINTENANCE_ENABLED'), FILTER_VALIDATE_BOOLEAN);
+    }
+
+    private static function initializeSource(): void
+    {
+        $fromEnv = getenv('SOURCE_NAME');
+        if (is_string($fromEnv) && trim($fromEnv) !== '') {
+            self::$source_name = trim($fromEnv);
+        }
     }
 
     /**
