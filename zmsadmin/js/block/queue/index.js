@@ -69,11 +69,11 @@ class View extends BaseView {
         const waitingClients = Number($source.attr('data-count') || 0);
         const trafficLightClass = this.getWaitingClientsTrafficLightClass(waitingClients, $row);
 
-        $target.text(waitingClients);
-
         if (trafficLightClass === '') {
             return;
         }
+
+        $target.text(waitingClients);
 
         $row
             .removeClass('green yellow orange red')
