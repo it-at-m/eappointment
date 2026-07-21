@@ -161,6 +161,25 @@ class MapperServiceTest extends TestCase
         $this->assertNull($result->contact);
     }
 
+    public function testProviderToThinnedProviderFallsBackToArrayContactCoordinates()
+    {
+        $provider = new Provider();
+        $provider->id = 10502;
+        $provider->name = 'Test Provider';
+        $provider->source = 'dldb';
+        $provider->contact = [
+            'city' => 'München',
+            'lat' => 48.124681688670854,
+            'lon' => 11.549865797138638,
+        ];
+
+        $result = MapperService::providerToThinnedProvider($provider);
+        $this->assertEquals(48.124681688670854, $result->lat);
+        $this->assertEquals(11.549865797138638, $result->lon);
+        $this->assertInstanceOf(ThinnedContact::class, $result->contact);
+        $this->assertEquals('München', $result->contact->city);
+    }
+
     public function testProcessToThinnedProcess()
     {
         // Test with full process data
