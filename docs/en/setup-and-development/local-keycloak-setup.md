@@ -50,6 +50,35 @@ Verify:
 ping keycloak
 ```
 
+## Citizen login (zmscitizenview)
+
+See also GitHub issue [#2827](https://github.com/it-at-m/eappointment/issues/2827).
+
+Local Vite host pages (`appointment-view.html`, etc.) use the public Keycloak client `dbs-fragments` in realm `zms` (migrations `09_add-citizen-client.yml`, `10_add-citizen-token-mappers.yml`). Defaults live in `zmscitizenview/.env.development`.
+
+- **`09`** creates the public client, audience scope, and test user (`citizen` / `vorschau`).
+- **`10`** adds **client mappers** (Keycloak protocol mappers) on that client. A mapper copies a user attribute into a JWT claim when Keycloak issues a token. Without them, the access token lacks the profile fields `zmscitizenapi` expects — especially `lhmExtID` (mapped from the Keycloak username), plus `email`, `given_name`, and `family_name`.
+
+The external `dbs-login` loader CDN is often unreachable on local networks. With `VITE_USE_LOCAL_CITIZEN_LOGIN=true`, host pages load `src/local-dev/local-dbs-login.ts` instead: it listens for `authorization-request`, runs OIDC authorization-code + PKCE against local Keycloak, then emits `authorization-event`.
+
+1. Apply migrations (restart the stack so `init-keycloak` runs, or recreate that service).
+2. Restart the Vite / citizenview process so env and the new login scripts load.
+3. Open the host page index [http://localhost:8082/](http://localhost:8082/) or [http://localhost:8082/webcomponents.html](http://localhost:8082/webcomponents.html) (or [appointment-view](http://localhost:8082/appointment-view.html) directly). On the customer step with login enabled, click **Login**.
+4. Sign in on the Keycloak page, then you should return logged in.
+
+After login, API calls use `/buergeransicht/authenticated/api/citizen/…`. The Vite dev proxy and local gateway both need that path (see `zmscitizenview/vite.config.ts` and `.devcontainer` / `.ddev` `local-gateway-application.yml`). Restart `refarch-gateway` and the Vite / citizenview process after pulling these changes.
+
+The local login shim stores the access token in `localStorage` so [appointment-overview](http://localhost:8082/appointment-overview.html), [appointment-detail](http://localhost:8082/appointment-detail.html), and [appointment-slider](http://localhost:8082/appointment-slider.html) stay logged in across tabs on the same origin. Tokens include claim `lhmExtID` (Keycloak username) so `my-appointments` can resolve the user. Re-login (and re-book if needed) after applying migration `10_add-citizen-token-mappers.yml` (includes `lhmExtID`).
+
+| Field    | Value      |
+| -------- | ---------- |
+| Username | `citizen`  |
+| Password | `vorschau` |
+
+Keycloak URL used by the host pages: `http://localhost:8080/auth` (matches the realm issuer in the browser). The `keycloak` hosts entry is still useful for admin/statistic and in-container DNS.
+
+The local API gateway often runs with security disabled, so authenticated citizen API calls may succeed without JWT checks. Turning on gateway JWT validation can reuse `SSO_URL` / `SSO_REALM` / `SSO_CLIENTID` from the ddev / devcontainer `.env.template` files.
+
 ## Podman (Linux) note
 
 Podman may merge host `/etc/hosts` into containers, which can break in-container `keycloak` resolution. Add this to `~/.config/containers/containers.conf`:

@@ -363,7 +363,70 @@ public class CitizenApiSteps {
         Assertions.assertThat(process.getTimestamp())
             .as("reserve-appointment timestamp must be >= now - skew")
             .isGreaterThanOrEqualTo(nowEpochSeconds - 120);
+        assertScopeProviderGeoPresent("reserve-appointment");
         // Skip `displayNumber` (varies) and `captchaToken` (captcha disabled in test data).
+    }
+
+    @When("I update the appointment with contact details and customTextfield {string}")
+    public void iUpdateTheAppointmentWithContactDetailsAndCustomTextfield(String customTextfield) {
+        ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : getBookingProcess();
+        if (process == null) {
+            throw new IllegalStateException("Reserve an appointment first.");
+        }
+        Integer pid = process.getProcessId();
+        String auth = process.getAuthKey();
+        if (pid == null || auth == null) {
+            throw new IllegalStateException("Last reserve response has no processId or authKey.");
+        }
+        Map<String, Object> body = new java.util.LinkedHashMap<>();
+        body.put("processId", pid);
+        body.put("authKey", auth);
+        body.put("familyName", "ATAF Test User");
+        body.put("email", "ataf-citizenapi@example.com");
+        body.put("telephone", "");
+        body.put("customTextfield", customTextfield != null ? customTextfield : "");
+        body.put("customTextfield2", "");
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+            .contentType("application/json")
+            .body(body)
+        .when()
+            .post("/update-appointment/");
+        CommonApiSteps.setResponse(response);
+
+        String updateBody = response.asString();
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /update-appointment/ status=%d body=%s",
+            response.getStatusCode(),
+            updateBody.length() > 1250 ? updateBody.substring(0, 1250) + "..." : updateBody
+        ));
+        response.then().statusCode(200);
+
+        ThinnedProcess updated;
+        try {
+            updated = response.as(ThinnedProcess.class);
+        } catch (Exception e) {
+            updated = parseDataResponse(response, ThinnedProcess.class);
+        }
+        Assertions.assertThat(updated)
+            .as("update-appointment response payload must deserialize")
+            .isNotNull();
+        Assertions.assertThat(updated.getProcessId()).isEqualTo(pid);
+        Assertions.assertThat(updated.getAuthKey()).isEqualTo(auth);
+        lastReserveProcess = updated;
+        setLastReserveProcess(updated);
+    }
+
+    @Then("the update endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId")
+    public void theUpdateResponseShouldIncludeThinnedBookingProcess() {
+        response.then().statusCode(200);
+        ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
+        Assertions.assertThat(process).isNotNull();
+        Assertions.assertThat(process.getProcessId()).isNotNull();
+        Assertions.assertThat(process.getAuthKey()).isNotNull();
+        Assertions.assertThat(process.getOfficeId()).isEqualTo(lastOfficeId);
+        Assertions.assertThat(process.getServiceId()).isEqualTo(lastServiceId);
+        assertScopeProviderGeoPresent("update-appointment");
     }
 
     @Then("the preconfirm endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId")
@@ -380,6 +443,7 @@ public class CitizenApiSteps {
         Assertions.assertThat(process.getTimestamp())
             .as("preconfirm-appointment timestamp must be >= now - skew")
             .isGreaterThanOrEqualTo(nowEpochSeconds - 120);
+        assertScopeProviderGeoPresent("preconfirm-appointment");
         // Skip `displayNumber` and `captchaToken`.
     }
 
@@ -407,7 +471,25 @@ public class CitizenApiSteps {
         Assertions.assertThat(process.getTimestamp())
             .as("confirm-appointment timestamp must be >= now - skew")
             .isGreaterThanOrEqualTo(nowEpochSeconds - 120);
+        assertScopeProviderGeoPresent("confirm-appointment");
         // Skip `displayNumber` (varies) and `captchaToken` (captcha disabled in test data).
+    }
+
+    /**
+     * Assert scope.provider.lat and lon are present (non-null numbers) on the current response.
+     * Soft-delete/cancel responses intentionally clear geo; do not use this helper there.
+     */
+    private void assertScopeProviderGeoPresent(String endpointLabel) {
+        Object lat = response.jsonPath().get("scope.provider.lat");
+        Object lon = response.jsonPath().get("scope.provider.lon");
+        Assertions.assertThat(lat)
+            .as("%s response must include scope.provider.lat", endpointLabel)
+            .isNotNull()
+            .isInstanceOf(Number.class);
+        Assertions.assertThat(lon)
+            .as("%s response must include scope.provider.lon", endpointLabel)
+            .isNotNull()
+            .isInstanceOf(Number.class);
     }
 
     @Then("the confirmation mail should provide an appointment view url")
@@ -554,10 +636,9 @@ public class CitizenApiSteps {
             .as("familyName must indicate cancellation")
             .isEqualTo("(abgesagt)");
 
-        // top-level strings reset
+        // top-level strings reset / preserved by cancel SQL (QUERY_CANCELED)
         Assertions.assertThat(response.jsonPath().getString("telephone")).as("telephone must be empty").isEqualTo("");
-        Assertions.assertThat(response.jsonPath().getString("customTextfield")).as("customTextfield must be empty").isEqualTo("");
-        Assertions.assertThat(response.jsonPath().getString("customTextfield2")).as("customTextfield2 must be empty").isEqualTo("");
+        // customTextfield / customTextfield2 are not cleared on cancel (see zmscitizenapi cancel fixtures)
         Assertions.assertThat(response.jsonPath().getString("captchaToken")).as("captchaToken must be empty in soft delete payload").isEqualTo("");
 
         // provider inside scope is nulled out (keeps provider.id=0/name="") in soft delete payload
