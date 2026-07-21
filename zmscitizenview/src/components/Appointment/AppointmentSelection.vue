@@ -11,8 +11,7 @@
   <div
     v-if="
       availableDaysFetched &&
-      (noProviderSelected ||
-        (selectedProvider && !providersWithAppointments.length)) &&
+      !hasSelectedProviderWithAppointments &&
       !isSwitchingProvider
     "
     class="m-component"

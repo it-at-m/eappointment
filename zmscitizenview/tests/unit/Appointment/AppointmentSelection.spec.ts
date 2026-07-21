@@ -351,6 +351,46 @@ describe("AppointmentSelection", () => {
       expect(wrapper.text()).toContain("errorMessageProviderSelection");
     });
 
+    it("shows no-appointments callout when calendar returns empty availableDays", async () => {
+      (fetchAvailableCalendar as Mock).mockResolvedValue(
+        calendarResponse([])
+      );
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [
+            {
+              name: "Office A",
+              id: 1,
+              address: { street: "Main", house_number: "1" },
+              scope: { id: "1" },
+            },
+            {
+              name: "Office B",
+              id: 2,
+              address: { street: "Main", house_number: "2" },
+              scope: { id: "2" },
+            },
+          ],
+        },
+      });
+
+      await flushPromises();
+      wrapper.vm.isSwitchingProvider = false;
+      await nextTick();
+
+      expect(wrapper.vm.availableDays).toEqual([]);
+      expect(wrapper.vm.availableDaysFetched).toBe(true);
+      expect(wrapper.vm.hasSelectedProviderWithAppointments).toBe(false);
+      expect(wrapper.text()).toContain(
+        "apiErrorNoAppointmentForThisScopeHeader"
+      );
+      expect(wrapper.text()).toContain(
+        "apiErrorNoAppointmentForThisScopeText"
+      );
+    });
+
     it("shows no providers when none have appointments", async () => {
       // Mock availableDays to include no providers
       (fetchAvailableCalendar as Mock).mockResolvedValue(calendarResponse([]));
