@@ -1,0 +1,62 @@
+id: add citizen login client and user
+author: ZMS Development
+realm: zms
+changes:
+  # Public browser client for zmscitizenview host pages (dbs-login).
+  # Do not reuse confidential client "zms" (admin/statistic OIDC).
+  - addSimpleClient:
+      clientId: dbs-fragments
+      publicClient: true
+      enabled: true
+      serviceAccountsEnabled: false
+      redirectUris:
+        - http://localhost:8082/*
+        - http://localhost:8082
+        - http://127.0.0.1:8082/*
+        - http://127.0.0.1:8082
+        - http://citizenview:8082/*
+        - http://citizenview:8082
+        - https://*.ddev.site/*
+        - http://*.ddev.site/*
+
+  - updateClient:
+      clientId: dbs-fragments
+      standardFlowEnabled: true
+      directAccessGrantEnabled: true
+      implicitFlowEnabled: false
+      webOrigins:
+        - http://localhost:8082
+        - http://127.0.0.1:8082
+        - http://citizenview:8082
+        - "+"
+
+  - addClientScope:
+      name: dbs_fragments_audience
+      description: Add dbs-fragments client to audience claim
+      protocolMappers:
+        - name: dbs_fragments_audience
+          protocol: openid-connect
+          protocolMapper: oidc-audience-mapper
+          config:
+            access.token.claim: "true"
+            id.token.claim: "true"
+            included.client.audience: "dbs-fragments"
+            included.custom.audience: ""
+
+  - assignDefaultClientScope:
+      clientId: dbs-fragments
+      clientScopeName: dbs_fragments_audience
+
+  - addUser:
+      name: citizen
+      lastName: User
+      firstName: Citizen
+      enabled: true
+      emailVerified: true
+      # RFC 2606 reserved domain — safe for local Keycloak claims (not a real inbox).
+      # TODO: consider a unique @mailinator.com address later if ATAF login tests need
+      # to receive real mail (same pattern as zmscitizenview Kontakt fills).
+      email: citizen@example.com
+  - updateUserPassword:
+      name: citizen
+      password: "vorschau"
