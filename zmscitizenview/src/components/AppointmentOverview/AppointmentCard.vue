@@ -38,6 +38,7 @@ import CalendarIcon from "@/components/Common/CalendarIcon.vue";
 import {
   QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
+  resolveAgainstCurrentPage,
 } from "@/utils/Constants";
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { formatMultilineTitle } from "@/utils/formatMultilineTitle";
@@ -52,7 +53,7 @@ const props = defineProps<{
 const selectedProvider = ref<Office>();
 
 const getAppointmentLink = () => {
-  const url = new URL(props.appointmentDetailUrl, window.location.origin);
+  const url = resolveAgainstCurrentPage(props.appointmentDetailUrl);
   url.searchParams.set(
     QUERY_PARAM_APPOINTMENT_ID,
     props.appointment.processId!
