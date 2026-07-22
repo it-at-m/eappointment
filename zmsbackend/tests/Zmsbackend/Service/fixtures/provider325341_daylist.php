@@ -4,7 +4,7 @@
 return array (
   '13-04-2016' => 
   array (
-    'year' => '2016',
+    'year' => 2016,
     'month' => '04',
     'day' => '13',
     'status' => 'full',
@@ -23,7 +23,7 @@ return array (
   ),
   '11-05-2016' => 
   array (
-    'year' => '2016',
+    'year' => 2016,
     'month' => '05',
     'day' => '11',
     'status' => 'full',
