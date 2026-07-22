@@ -261,6 +261,71 @@ function restoreSession(): boolean {
   return true;
 }
 
+function clearSession(): void {
+  localStorage.removeItem(STORAGE_SESSION);
+  sessionStorage.removeItem(STORAGE_SESSION);
+  document.dispatchEvent(new CustomEvent(AUTH_EVENT, { detail: undefined }));
+}
+
+function displayNameFromSession(session: StoredSession | null): string {
+  if (!session) {
+    return "";
+  }
+  try {
+    const claims = parseJwt(session.idToken || session.accessToken);
+    const given = String(claims.given_name || claims.preferred_username || "");
+    const family = String(claims.family_name || "");
+    return [given, family].filter(Boolean).join(" ") || given || "Angemeldet";
+  } catch {
+    return "Angemeldet";
+  }
+}
+
+/**
+ * Minimal host chrome so local Keycloak login mirrors the CDN dbs-login button
+ * on non-embedded pages (localhost and zms host /buergeransicht paths).
+ * Uses MDE `m-button` classes (same as muc-button) from the host page stylesheet.
+ */
+function renderHostChrome(config: LoginConfig): void {
+  const host = document.querySelector("dbs-login");
+  if (!host) {
+    return;
+  }
+
+  const session = loadSession();
+  const loggedIn = !!session;
+  const name = displayNameFromSession(session);
+
+  host.replaceChildren();
+  host.setAttribute("style", "position:fixed;top:12px;left:12px;z-index:10000");
+
+  const button = document.createElement("button");
+  button.type = "button";
+  // Match muc-button default (primary) / secondary when signed in (Abmelden).
+  button.className = loggedIn
+    ? "m-button m-button--secondary"
+    : "m-button m-button--primary";
+  button.textContent = loggedIn
+    ? name
+      ? `Abmelden (${name})`
+      : "Abmelden"
+    : "Mein Bereich";
+  if (loggedIn && name) {
+    button.setAttribute("aria-label", `Abmelden, angemeldet als ${name}`);
+  }
+
+  button.addEventListener("click", () => {
+    if (loggedIn) {
+      clearSession();
+      renderHostChrome(config);
+      return;
+    }
+    void startLogin(config);
+  });
+
+  host.appendChild(button);
+}
+
 function ensureCustomElement(): void {
   if (customElements.get("dbs-login")) {
     return;
@@ -268,7 +333,7 @@ function ensureCustomElement(): void {
   customElements.define(
     "dbs-login",
     class extends HTMLElement {
-      // Present so host HTML `<dbs-login …>` upgrades; logic is on document.
+      // Upgraded by initLocalDbsLogin; chrome is rendered into light DOM.
     }
   );
 }
@@ -291,6 +356,8 @@ export async function initLocalDbsLogin(): Promise<void> {
   document.addEventListener(AUTH_REQUEST, () => {
     void startLogin(config);
   });
+
+  renderHostChrome(config);
 
   console.info(
     "[local-dbs-login] Ready — login uses",
