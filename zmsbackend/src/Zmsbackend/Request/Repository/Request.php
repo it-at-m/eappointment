@@ -38,9 +38,6 @@ class Request extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    /**
-     * @param array<int|string> $requestIds
-     */
     public function addConditionRequestIdList(array $requestIds): self
     {
         $this->query->where('request.id', 'IN', array_map('strval', $requestIds));

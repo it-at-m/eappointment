@@ -57,8 +57,6 @@ class Provider extends \BO\Zmsbackend\Base
     }
 
     /**
-     * @param array<int|string> $providerIds
-     *
      * @return array<string, string>
      */
     public function readSourceMapByIds(array $providerIds): array

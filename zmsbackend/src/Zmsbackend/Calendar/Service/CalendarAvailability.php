@@ -12,9 +12,6 @@ use BO\Zmsentities\Collection\DayList;
  */
 class CalendarAvailability extends \BO\Zmsbackend\Base
 {
-    /**
-     * @return array<string, mixed>
-     */
     public function readFromQuery(
         \DateTimeInterface $now,
         string $slotType,
@@ -62,9 +59,6 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         );
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function readAvailability(
         Entity $calendar,
         \DateTimeInterface $now,
@@ -170,8 +164,6 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
     /**
      * Defaults slots window to the day range. When one side is missing, use the day range bound.
      * Clamps the slots window to the day range intersection.
-     *
-     * @return array{0: string, 1: string}
      */
     private function resolveSlotsDateRange(
         string $startDate,
@@ -216,8 +208,6 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
     /**
      * Bookable days returned to the client cover full calendar month(s) of the free-slots window
      * (clamped to the overall day-status range), so a single-day slot query still paints the month.
-     *
-     * @return array{0: string, 1: string}
      */
     private function resolveResponseDaysRange(
         string $slotsStartDate,
@@ -260,8 +250,6 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
 
     /**
      * When the client asks for free slots over a range, only query the earliest bookable day.
-     *
-     * @return array{0: string, 1: string, 2: DayList}
      */
     private function narrowSlotsWindowToFirstBookableDay(
         DayList $slotDays,
@@ -290,8 +278,7 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
     /**
      * Run daylist for a date range only (calendarscope months derived from firstDay/lastDay).
      * Restores the calendar horizon afterwards so response startDate/endDate stay full-range.
-     *
-     * @param bool $rewrite When false, create the temp table (first paint). When true, drop+rebuild.
+     * When $rewrite is false, create the temp table (first paint); when true, drop+rebuild.
      */
     private function readBookableDaysForRange(
         Entity $calendar,
@@ -335,8 +322,6 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
 
     /**
      * Walk neighbor months until the first bookable date outside the painted window is found.
-     *
-     * @return array{0: ?string, 1: ?string}
      */
     private function findAdjacentBookableDatesByScan(
         Entity $calendar,

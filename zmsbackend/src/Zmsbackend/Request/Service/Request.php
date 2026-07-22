@@ -70,8 +70,6 @@ class Request extends \BO\Zmsbackend\Base
     }
 
     /**
-     * @param array<int|string> $requestIds
-     *
      * @return array<string, string>
      */
     public function readSourceMapByIds(array $requestIds): array
