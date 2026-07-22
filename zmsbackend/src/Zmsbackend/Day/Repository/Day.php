@@ -87,6 +87,9 @@ class Day extends \BO\Zmsbackend\Query\Base
                     LEFT JOIN slot_hiera h
                         ON h.ancestorID = s.slotID
                         AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots)
+                    INNER JOIN slot s2
+                        ON h.slotID = s2.slotID
+                        AND s2.status = "free"
                     LEFT JOIN (
                         SELECT slotID, COUNT(*) AS confirmed
                         FROM slot_process
