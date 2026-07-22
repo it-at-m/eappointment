@@ -17,46 +17,21 @@ class Calendar extends \BO\Zmsbackend\Base
         $resolveOnlyScopes = false,
         $slotType = 'public',
         $slotsRequired = 0,
-        $resolveScopeReferences = true,
-        bool $logTiming = false,
-        ?string $traceId = null
+        $resolveScopeReferences = true
     ) {
-        $t0 = microtime(true);
         $calendar['freeProcesses'] = new \BO\Zmsentities\Collection\ProcessList();
         $calendar['scopes'] = $calendar->getScopeList();
         $calendar = $this->readResolvedScopes($calendar);
-        $tAfterScopes = microtime(true);
         $calendar = $this->readResolvedProviders($calendar);
-        $tAfterProviders = microtime(true);
         $calendar = $this->readResolvedClusters($calendar);
-        $tAfterClusters = microtime(true);
         $calendar = $this->readResolvedRequests($calendar);
-        $tAfterRequests = microtime(true);
         if ($resolveScopeReferences) {
             $calendar = $this->readResolvedScopeReferences($calendar);
         }
-        $tAfterRefs = microtime(true);
         if (count($calendar->scopes) < 1) {
             throw new \BO\Zmsbackend\Calendar\Exception\CalendarWithoutScopes("No scopes resolved in $calendar");
         }
         $calendar = $this->readResolvedDays($calendar, $resolveOnlyScopes, $now, $slotType, $slotsRequired);
-
-        if ($logTiming && \App::$log) {
-            \App::$log->info('calendar.availability.timing', [
-                'trace_id' => $traceId,
-                'stage' => 'backend.readResolvedEntity',
-                'scopes_ms' => (int) round(($tAfterScopes - $t0) * 1000),
-                'providers_ms' => (int) round(($tAfterProviders - $tAfterScopes) * 1000),
-                'clusters_ms' => (int) round(($tAfterClusters - $tAfterProviders) * 1000),
-                'requests_ms' => (int) round(($tAfterRequests - $tAfterClusters) * 1000),
-                'scope_refs_ms' => (int) round(($tAfterRefs - $tAfterRequests) * 1000),
-                'days_ms' => (int) round((microtime(true) - $tAfterRefs) * 1000),
-                'total_ms' => (int) round((microtime(true) - $t0) * 1000),
-                'scope_count' => count($calendar->scopes),
-                'provider_count' => count($calendar->providers ?? []),
-                'request_count' => count($calendar->requests ?? []),
-            ]);
-        }
 
         return $calendar;
     }

@@ -26,7 +26,6 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         ?string $serviceCounts = '',
         ?string $providerSource = null,
         ?string $requestSource = null,
-        ?string $traceId = null,
         ?string $slotsStartDate = null,
         ?string $slotsEndDate = null
     ): array {
@@ -43,7 +42,6 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             $slotsEndDate
         );
 
-        $t0 = microtime(true);
         $calendar = $this->buildCalendarFromQuery(
             $startDate,
             $endDate,
@@ -53,26 +51,12 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             $providerSource,
             $requestSource
         );
-        $buildMs = (int) round((microtime(true) - $t0) * 1000);
-
-        if (\App::$log) {
-            \App::$log->info('calendar.availability.timing', [
-                'trace_id' => $traceId,
-                'stage' => 'backend.buildCalendarFromQuery',
-                'ms' => $buildMs,
-                'office_count' => count($calendar->providers ?? []),
-                'request_count' => count($calendar->requests ?? []),
-                'slots_start_date' => $slotsStartDate,
-                'slots_end_date' => $slotsEndDate,
-            ]);
-        }
 
         return $this->readAvailability(
             $calendar,
             $now,
             $slotType,
             $slotsRequired,
-            $traceId,
             $slotsStartDate,
             $slotsEndDate
         );
@@ -86,7 +70,6 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         \DateTimeInterface $now,
         string $slotType = 'public',
         $slotsRequired = 0,
-        ?string $traceId = null,
         ?string $slotsStartDate = null,
         ?string $slotsEndDate = null
     ): array {
@@ -108,18 +91,14 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             $dayRangeEnd
         );
 
-        $t0 = microtime(true);
         $calendar = (new Calendar())->readResolvedEntity(
             $calendar,
             $now,
             true,
             $slotType,
             $slotsRequired,
-            false,
-            true,
-            $traceId
+            false
         );
-        $tAfterResolve = microtime(true);
 
         $dayQuery = new \BO\Zmsbackend\Day\Service\Day();
         $bookableDays = $this->readBookableDaysForRange(
@@ -132,7 +111,6 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             $responseEndDate,
             false
         );
-        $tAfterDaySql = microtime(true);
 
         $slotDays = $this->filterDaysInDateRange($bookableDays, $slotsStartDate, $slotsEndDate);
         $responseDays = $this->filterDaysInDateRange($bookableDays, $responseStartDate, $responseEndDate);
@@ -154,7 +132,6 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         }
 
         $calendar->days = $slotDays;
-        $tAfterDays = microtime(true);
 
         $processList = [];
         if (count($slotDays) > 0) {
@@ -163,11 +140,9 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
                     $calendar,
                     $slotType,
                     $slotsRequired,
-                    false,
-                    $traceId
+                    false
                 );
         }
-        $tAfterSlots = microtime(true);
 
         [$prevBookableDate, $nextBookableDate] = $this->findAdjacentBookableDatesByScan(
             $calendar,
@@ -180,10 +155,9 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             $dayRangeStart,
             $dayRangeEnd
         );
-        $tAfterNeighbors = microtime(true);
 
         $calendar->days = $responseDays;
-        $result = $this->buildResult(
+        return $this->buildResult(
             $calendar,
             $processList,
             $slotsStartDate,
@@ -191,34 +165,6 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             $prevBookableDate,
             $nextBookableDate
         );
-
-        if (\App::$log) {
-            \App::$log->info('calendar.availability.timing', [
-                'trace_id' => $traceId,
-                'stage' => 'backend.readAvailability',
-                'resolve_ms' => (int) round(($tAfterResolve - $t0) * 1000),
-                'day_sql_ms' => (int) round(($tAfterDaySql - $tAfterResolve) * 1000),
-                'day_filter_ms' => (int) round(($tAfterDays - $tAfterDaySql) * 1000),
-                'daylist_ms' => (int) round(($tAfterDays - $tAfterResolve) * 1000),
-                'slots_ms' => (int) round(($tAfterSlots - $tAfterDays) * 1000),
-                'neighbor_scan_ms' => (int) round(($tAfterNeighbors - $tAfterSlots) * 1000),
-                'build_ms' => (int) round((microtime(true) - $tAfterNeighbors) * 1000),
-                'total_ms' => (int) round((microtime(true) - $t0) * 1000),
-                'scope_count' => count($calendar->scopes),
-                'bookable_days' => count($bookableDays),
-                'days_returned' => count($result['days'] ?? []),
-                'slot_days_queried' => count($slotDays),
-                'slots_start_date' => $slotsStartDate,
-                'slots_end_date' => $slotsEndDate,
-                'response_start_date' => $responseStartDate,
-                'response_end_date' => $responseEndDate,
-                'prev_bookable_date' => $prevBookableDate,
-                'next_bookable_date' => $nextBookableDate,
-                'process_count' => count($processList),
-            ]);
-        }
-
-        return $result;
     }
 
     /**
