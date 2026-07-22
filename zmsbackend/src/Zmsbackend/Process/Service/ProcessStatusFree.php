@@ -74,15 +74,12 @@ class ProcessStatusFree extends Process
         \BO\Zmsentities\Calendar $calendar,
         string $slotType = 'public',
         ?int $slotsRequired = null,
-        bool $groupData = false,
-        ?string $traceId = null
+        bool $groupData = false
     ): array {
-        $t0 = microtime(true);
         $days = $this->buildDaysListFromCalendarDays($calendar);
         if ($days === []) {
             return [];
         }
-        $tAfterDays = microtime(true);
 
         $processData = $this->getProcessDataHandle(
             $days,
@@ -90,12 +87,9 @@ class ProcessStatusFree extends Process
             $slotsRequired,
             $groupData
         );
-        $tAfterSql = microtime(true);
 
         $unique = [];
-        $rowCount = 0;
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
-            $rowCount++;
             $processInfo = $this->extractProcessInfo($item, $calendar);
             if ($processInfo) {
                 $key = $this->generateUniqueKey($processInfo['providerId'], $processInfo['date']);
@@ -106,20 +100,6 @@ class ProcessStatusFree extends Process
         }
 
         $processData->closeCursor();
-
-        if (\App::$log) {
-            \App::$log->info('calendar.availability.timing', [
-                'trace_id' => $traceId,
-                'stage' => 'backend.readFreeProcessesMinimal',
-                'build_days_ms' => (int) round(($tAfterDays - $t0) * 1000),
-                'sql_ms' => (int) round(($tAfterSql - $tAfterDays) * 1000),
-                'hydrate_ms' => (int) round((microtime(true) - $tAfterSql) * 1000),
-                'total_ms' => (int) round((microtime(true) - $t0) * 1000),
-                'day_count' => count($days),
-                'row_count' => $rowCount,
-                'unique_count' => count($unique),
-            ]);
-        }
 
         return array_values($unique);
     }
