@@ -16,7 +16,7 @@
             href="https://assets.muenchen.de/mde/1.1.15/css/style.css"
     />
 
-    <!-- login: local Keycloak shim or CDN dbs-login (see local-dev/bootstrap-login.ts). Hidden: host pages must not show the dbs-login chrome (Magnolia provides its own). Element stays for auth events. -->
+    <!-- login: local Keycloak shim or CDN dbs-login (see local-dev/bootstrap-login.ts). Direct host pages (localhost / zms-dev /buergeransicht) show this chrome; Magnolia embeds do not include these HTML shells. -->
     <script type="module" src="/src/local-dev/bootstrap-login.ts"></script>
 
     <!-- built files will be auto injected -->
@@ -30,7 +30,6 @@
 </noscript>
 
 <dbs-login
-        style="display: none"
         kc-url="%VITE_KC_URL%"
         kc-realm="%VITE_KC_REALM%"
         kc-client-id="%VITE_KC_CLIENT_ID%"
