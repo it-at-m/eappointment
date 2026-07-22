@@ -93,6 +93,8 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             $slotsRequired,
             false
         );
+        // Citizen-only: do not invent bookable scopes when slotsRequired would fall back to 1.
+        $calendar = $this->withoutUnrelatedScopes($calendar, $slotsRequired);
 
         $dayQuery = new \BO\Zmsbackend\Day\Service\Day();
         $bookableDays = $this->readBookableDaysForRange(
@@ -159,6 +161,27 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             $prevBookableDate,
             $nextBookableDate
         );
+    }
+
+    /**
+     * Drop scopes with no request-relation slot requirement when slots are not forced.
+     * Shared Day::writeTemporaryScopeList still defaults those to 1 for zmsadmin;
+     * citizen availability must not invent bookable offices that way.
+     */
+    private function withoutUnrelatedScopes(Entity $calendar, $slotsRequiredForce): Entity
+    {
+        if ($slotsRequiredForce) {
+            return $calendar;
+        }
+
+        // Keep the same ScopeList instance so slotsByID from resolve stays intact.
+        foreach ($calendar->scopes as $key => $scope) {
+            if ($calendar->scopes->getRequiredSlotsByScope($scope) < 1) {
+                unset($calendar->scopes[$key]);
+            }
+        }
+
+        return $calendar;
     }
 
     /**
@@ -301,7 +324,10 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             } else {
                 $dayQuery->writeTemporaryScopeList($calendar, $slotsRequired);
             }
-            $dayList = $dayQuery->readListFromPreparedTemporaryScopeList($slotsRequired)
+            $dayList = $dayQuery->readListFromPreparedTemporaryScopeList(
+                $slotsRequired,
+                \BO\Zmsbackend\Day\Repository\Day::QUERY_DAYLIST_JOIN_AVAILABILITY
+            )
                 ->setStatusByType($slotType, $now)
                 ->withDaysInDateRange($calendar->getFirstDay(), $calendar->getLastDay());
         } finally {

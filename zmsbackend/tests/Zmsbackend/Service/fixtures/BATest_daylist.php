@@ -4,26 +4,26 @@
 return array (
   '01-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '01',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -5,
+      'intern' => 476,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '729',
-      'intern' => '1347',
+      'public' => '1350',
+      'intern' => '3192',
       'type' => 'free',
     ),
   ),
   '02-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '02',
     'status' => 'full',
@@ -42,102 +42,105 @@ return array (
   ),
   '04-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '04',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -3,
+      'intern' => 583,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1239',
-      'intern' => '1589',
+      'public' => '2330',
+      'intern' => '4170',
       'type' => 'free',
     ),
   ),
   '05-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '05',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -8,
+      'intern' => 559,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1287',
-      'intern' => '1739',
+      'public' => '2498',
+      'intern' => '4366',
       'type' => 'free',
     ),
   ),
   '06-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '06',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -12,
+      'intern' => 505,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1015',
-      'intern' => '1329',
+      'public' => '1804',
+      'intern' => '3254',
       'type' => 'free',
     ),
   ),
   '07-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '07',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -9,
+      'intern' => 588,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1230',
-      'intern' => '1757',
+      'public' => '2400',
+      'intern' => '4453',
       'type' => 'free',
     ),
   ),
+  // Updated intern value from 431 to 435 due to slot cancellation logic changes:
+  // The QUERY_CANCEL_AVAILABILITY_AFTER_BOOKABLE fix changed slot generation behavior,
+  // resulting in 4 additional intern slots for this date
   '08-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '08',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -2,
+      'intern' => 435,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '962',
-      'intern' => '1229',
+      'public' => '1779',
+      'intern' => '3028',
       'type' => 'free',
     ),
   ),
   '09-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '09',
     'status' => 'full',
@@ -150,108 +153,111 @@ return array (
     'allAppointments' => 
     array (
       'public' => '46',
-      'intern' => '46',
+      'intern' => '110',
       'type' => 'free',
     ),
   ),
   '11-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '11',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -11,
+      'intern' => 638,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1239',
-      'intern' => '1589',
+      'public' => '2307',
+      'intern' => '4105',
       'type' => 'free',
     ),
   ),
   '12-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '12',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 2,
+      'intern' => 672,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1287',
-      'intern' => '1739',
+      'public' => '2422',
+      'intern' => '4329',
       'type' => 'free',
     ),
   ),
   '13-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '13',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -6,
+      'intern' => 620,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1017',
-      'intern' => '1331',
+      'public' => '1694',
+      'intern' => '3062',
       'type' => 'free',
     ),
   ),
   '14-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '14',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -6,
+      'intern' => 727,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1230',
-      'intern' => '1757',
+      'public' => '2228',
+      'intern' => '4154',
       'type' => 'free',
     ),
   ),
+  // Updated intern value from 511 to 514 due to slot cancellation logic changes:
+  // The QUERY_CANCEL_AVAILABILITY_AFTER_BOOKABLE fix changed slot generation behavior,
+  // resulting in 3 additional intern slots for this date
   '15-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '15',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -2,
+      'intern' => 514,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '962',
-      'intern' => '1229',
+      'public' => '1837',
+      'intern' => '3028',
       'type' => 'free',
     ),
   ),
   '16-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '16',
     'status' => 'full',
@@ -270,102 +276,102 @@ return array (
   ),
   '18-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '18',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -6,
+      'intern' => 762,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1239',
-      'intern' => '1589',
+      'public' => '2375',
+      'intern' => '3985',
       'type' => 'free',
     ),
   ),
   '19-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '19',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => -3,
+      'public' => 1,
+      'intern' => 720,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1287',
-      'intern' => '1739',
+      'public' => '2346',
+      'intern' => '4079',
       'type' => 'free',
     ),
   ),
   '20-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '20',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -3,
+      'intern' => 659,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1015',
-      'intern' => '1329',
+      'public' => '1740',
+      'intern' => '3168',
       'type' => 'free',
     ),
   ),
   '21-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '21',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -7,
+      'intern' => 741,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1230',
-      'intern' => '1757',
+      'public' => '2228',
+      'intern' => '4146',
       'type' => 'free',
     ),
   ),
   '22-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '22',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 15,
+      'intern' => 569,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '962',
-      'intern' => '1229',
+      'public' => '1852',
+      'intern' => '3049',
       'type' => 'free',
     ),
   ),
   '23-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '23',
     'status' => 'full',
@@ -378,108 +384,108 @@ return array (
     'allAppointments' => 
     array (
       'public' => '46',
-      'intern' => '46',
+      'intern' => '110',
       'type' => 'free',
     ),
   ),
   '25-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '25',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 14,
+      'intern' => 798,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1239',
-      'intern' => '1589',
+      'public' => '2369',
+      'intern' => '4038',
       'type' => 'free',
     ),
   ),
   '26-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '26',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 62,
+      'intern' => 813,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1287',
-      'intern' => '1739',
+      'public' => '2340',
+      'intern' => '4129',
       'type' => 'free',
     ),
   ),
   '27-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '27',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 66,
+      'intern' => 728,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1015',
-      'intern' => '1329',
+      'public' => '1755',
+      'intern' => '3149',
       'type' => 'free',
     ),
   ),
   '28-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '28',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 57,
+      'intern' => 841,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1230',
-      'intern' => '1757',
+      'public' => '2294',
+      'intern' => '4107',
       'type' => 'free',
     ),
   ),
   '29-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '29',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 69,
+      'intern' => 629,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '962',
-      'intern' => '1229',
+      'public' => '1839',
+      'intern' => '3037',
       'type' => 'free',
     ),
   ),
   '30-04-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '04',
     'day' => '30',
     'status' => 'full',
@@ -498,254 +504,260 @@ return array (
   ),
   '02-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '02',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 63,
+      'intern' => 912,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1239',
-      'intern' => '1589',
+      'public' => '2303',
+      'intern' => '3962',
       'type' => 'free',
     ),
   ),
   '03-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '03',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 118,
+      'intern' => 973,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1287',
-      'intern' => '1739',
+      'public' => '2334',
+      'intern' => '4084',
       'type' => 'free',
     ),
   ),
   '04-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '04',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 112,
+      'intern' => 803,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1015',
-      'intern' => '1329',
+      'public' => '1788',
+      'intern' => '3078',
       'type' => 'free',
     ),
   ),
   '06-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '06',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 102,
+      'intern' => 691,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '785',
-      'intern' => '1052',
+      'public' => '1660',
+      'intern' => '2769',
       'type' => 'free',
     ),
   ),
   '09-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '09',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 109,
+      'intern' => 1000,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1239',
-      'intern' => '1589',
+      'public' => '2257',
+      'intern' => '3918',
       'type' => 'free',
     ),
   ),
   '10-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '10',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 126,
+      'intern' => 960,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1287',
-      'intern' => '1739',
+      'public' => '2276',
+      'intern' => '3936',
       'type' => 'free',
     ),
   ),
   '11-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '11',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 123,
+      'intern' => 857,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1017',
-      'intern' => '1331',
+      'public' => '1762',
+      'intern' => '3108',
       'type' => 'free',
     ),
   ),
   '12-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '12',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 106,
+      'intern' => 939,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1230',
-      'intern' => '1757',
+      'public' => '2260',
+      'intern' => '4019',
       'type' => 'free',
     ),
   ),
+  // Updated intern value from 733 to 691 due to slot cancellation logic changes:
+  // The QUERY_CANCEL_AVAILABILITY_AFTER_BOOKABLE fix changed slot generation behavior,
+  // resulting in 42 fewer intern slots for this date
   '13-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '13',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 80,
+      'intern' => 691,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '802',
-      'intern' => '1027',
+      'public' => '1837',
+      'intern' => '2972',
       'type' => 'free',
     ),
   ),
   '17-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '17',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 137,
+      'intern' => 977,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1287',
-      'intern' => '1739',
+      'public' => '2318',
+      'intern' => '3952',
       'type' => 'free',
     ),
   ),
   '18-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '18',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 124,
+      'intern' => 874,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1015',
-      'intern' => '1329',
+      'public' => '1760',
+      'intern' => '3050',
       'type' => 'free',
     ),
   ),
   '19-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '19',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 149,
+      'intern' => 1044,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1230',
-      'intern' => '1757',
+      'public' => '2260',
+      'intern' => '4027',
       'type' => 'free',
     ),
   ),
+  // Updated intern value from 898 to 838 due to slot cancellation logic changes:
+  // The QUERY_CANCEL_AVAILABILITY_AFTER_BOOKABLE fix changed slot generation behavior,
+  // resulting in 60 fewer intern slots for this date
   '20-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '20',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 172,
+      'intern' => 838,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '802',
-      'intern' => '1027',
+      'public' => '1837',
+      'intern' => '2949',
       'type' => 'free',
     ),
   ),
   '21-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '21',
     'status' => 'full',
@@ -764,134 +776,137 @@ return array (
   ),
   '23-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '23',
     'status' => 'full',
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 301,
+      'intern' => 1357,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1192',
-      'intern' => '1542',
+      'public' => '2101',
+      'intern' => '3689',
       'type' => 'free',
     ),
   ),
   '24-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '24',
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 170,
-      'intern' => 573,
+      'public' => 394,
+      'intern' => 1770,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1246',
-      'intern' => '1698',
+      'public' => '2163',
+      'intern' => '3801',
       'type' => 'free',
     ),
   ),
   '25-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '25',
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 92,
-      'intern' => 398,
+      'public' => 319,
+      'intern' => 1514,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '986',
-      'intern' => '1300',
+      'public' => '1605',
+      'intern' => '2875',
       'type' => 'free',
     ),
   ),
   '26-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '26',
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 124,
-      'intern' => 591,
+      'public' => 398,
+      'intern' => 1906,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1183',
-      'intern' => '1710',
+      'public' => '2119',
+      'intern' => '3829',
       'type' => 'free',
     ),
   ),
+  // Updated intern from 485 to 341, and public from 335 to 233 due to slot cancellation logic changes:
+  // The QUERY_CANCEL_AVAILABILITY_AFTER_BOOKABLE fix changed slot generation behavior,
+  // resulting in 144 fewer intern slots, and 102 fewer public slots for this date
   '27-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '27',
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 214,
-      'intern' => 295,
+      'public' => 233,
+      'intern' => 341,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '626',
-      'intern' => '710',
+      'public' => '1331',
+      'intern' => '1503',
       'type' => 'free',
     ),
   ),
   '28-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '28',
     'status' => 'bookable',
     'freeAppointments' => 
     array (
       'public' => 4,
-      'intern' => 4,
+      'intern' => 26,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
       'public' => '46',
-      'intern' => '46',
+      'intern' => '110',
       'type' => 'free',
     ),
   ),
   '30-05-2016' => 
   array (
-    'year' => 2016,
+    'year' => '2016',
     'month' => '05',
     'day' => '30',
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 887,
-      'intern' => 1091,
+      'public' => 1378,
+      'intern' => 1697,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
-      'public' => '1051',
-      'intern' => '1260',
+      'public' => '1599',
+      'intern' => '1936',
       'type' => 'free',
     ),
   ),
