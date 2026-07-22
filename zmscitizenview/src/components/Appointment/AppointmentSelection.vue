@@ -407,9 +407,8 @@ const isDateInLoadedSlotsWindow = (dateKey: string): boolean => {
 
 /**
  * Free-slot SQL window hint: selected day (otherwise today).
- * Backend loads appointment timestamps only for that window; the painted month
- * still returns bookable days, but providerIDs are limited to offices verified
- * in the free-slot window.
+ * Backend loads appointment timestamps only for that window; other painted-month
+ * days keep daylist providerIDs with empty offices until that day is free-slot-checked.
  */
 const getFreeSlotsWindow = (): {
   slotsStartDate: string;
