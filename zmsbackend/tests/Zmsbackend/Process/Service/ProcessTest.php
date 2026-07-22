@@ -436,7 +436,9 @@ class ProcessTest extends \BO\Zmsbackend\Tests\Service\Base
             'requests' => $input['requests'],
             'status' => "free"
         ]);
-        $process = $query->writeEntityReserved($processTest, $now);
+        // Ensure calendarscope is populated (scopes without request relation are skipped).
+        // First reserve keeps slotsRequired=1 so multipleSlotsAllowed=false still yields 1 entity.
+        $process = $query->writeEntityReserved($processTest, $now, 'public', 1);
         $processEntityList = $query->readEntityList($process->getId());
         $this->assertEquals(1, $processEntityList->count());
         $processQuery->writeDeletedEntity($process->id);
@@ -444,7 +446,7 @@ class ProcessTest extends \BO\Zmsbackend\Tests\Service\Base
         $availability = $availabilityQuery->readEntity(94666, 0); // scope=141 date=2016-05-30
         $availability->multipleSlotsAllowed = true;
         $availability = $availabilityQuery->updateEntity($availability->id, $availability);
-        $process = $query->writeEntityReserved($processTest, $now);
+        $process = $query->writeEntityReserved($processTest, $now, 'public', 2);
         $processEntityList = $query->readEntityList($process->getId());
         $this->assertEquals(2, $processEntityList->count());
     }
@@ -476,7 +478,9 @@ class ProcessTest extends \BO\Zmsbackend\Tests\Service\Base
             'requests' => $input['requests'],
             'status' => "free"
         ]);
-        $process = $query->writeEntityReserved($processTest, $now);
+        // Ensure calendarscope is populated (scopes without request relation are skipped).
+        // First reserve keeps slotsRequired=1 so multipleSlotsAllowed=false still yields 1 entity.
+        $process = $query->writeEntityReserved($processTest, $now, 'public', 1);
         $processEntityList = $query->readEntityList($process->getId());
         $this->assertEquals(1, $processEntityList->count());
         $processQuery->writeDeletedEntity($process->id);
@@ -484,7 +488,7 @@ class ProcessTest extends \BO\Zmsbackend\Tests\Service\Base
         $availability = $availabilityQuery->readEntity(94666, 0); // scope=141 date=2016-05-30
         $availability->multipleSlotsAllowed = true;
         $availability = $availabilityQuery->updateEntity($availability->id, $availability);
-        $process = $query->writeEntityReserved($processTest, $now);
+        $process = $query->writeEntityReserved($processTest, $now, 'public', 2);
         $processEntityList = $query->readEntityList($process->getId());
         $this->assertEquals(2, $processEntityList->count());
     }

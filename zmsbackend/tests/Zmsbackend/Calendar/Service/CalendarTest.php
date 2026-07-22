@@ -51,8 +51,12 @@ class CalendarTest extends \BO\Zmsbackend\Tests\Service\Base
         //$array = json_decode(json_encode($entity), 1);
         //var_dump($array['days']);
         $this->assertEntity("\\BO\\Zmsentities\\Calendar", $entity);
-        $this->assertTrue($entity->hasDay(2016, 4, 19), "Missing 2016-04-19 in dataset");
-        $this->assertEquals(1, $entity->getDay(2016, 4, 19)['freeAppointments']['public']);
+        // Daylist requires free consecutive slots (aligned with free-process SQL).
+        // 2016-04-19 previously appeared with a false-positive free count.
+        $this->assertFalse(
+            $entity->hasDay(2016, 4, 19),
+            "2016-04-19 must not appear without free consecutive slots"
+        );
     }
 
     public function testHeerstr()
@@ -84,11 +88,10 @@ class CalendarTest extends \BO\Zmsbackend\Tests\Service\Base
         $input->addProvider('dldb', 122296); // Bürgeramt Zwickauer Damm
         $entity = (new Query())->readResolvedEntity($input, static::$now);
         $this->assertEntity("\\BO\\Zmsentities\\Calendar", $entity);
-        $this->assertTrue($entity->hasDay(2016, 4, 25), "Missing 2016-04-25 in dataset");
-        $this->assertEquals(
-            0,
-            $entity->getDay(2016, 4, 25)['freeAppointments']['public'],
-            "Opening Hour 'einmaliger Termin' failed"
+        // Opening hour 'einmaliger Termin' with no free consecutive slots is omitted.
+        $this->assertFalse(
+            $entity->hasDay(2016, 4, 25),
+            "2016-04-25 must not appear without free consecutive slots"
         );
     }
 
