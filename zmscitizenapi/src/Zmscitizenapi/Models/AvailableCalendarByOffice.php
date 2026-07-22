@@ -35,9 +35,7 @@ class AvailableCalendarByOffice extends Entity implements JsonSerializable
         $this->prevBookableDate = $prevBookableDate;
         $this->nextBookableDate = $nextBookableDate;
         $this->availableDays = $availableDays;
-        // Skip JSON-schema validation: payload is assembled from our own zmsbackend
-        // response, and Opis walks every appointment timestamp (~100ms+).
-        // $this->ensureValid();
+        $this->ensureValid();
     }
 
     /**
