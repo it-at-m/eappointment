@@ -78,10 +78,10 @@
     "chart.js": "^4.4.2",
     "react-chartjs-2": "^5.3.1"
   },
-  "// overrides.dompurify": "monaco-editor depends on dompurify@3.2.7; override to ^3.4.11 (patched) until Monaco ships a newer dompurify.",
+  "// overrides.dompurify": "monaco-editor depends on dompurify@3.2.7; override to ^3.4.12 (patched) until Monaco ships a newer dompurify.",
   "// overrides.brace-expansion": "Force patched majors for CVE-2026-13149 (DoS via exponential-time complexity).",
   "overrides": {
-    "dompurify": "^3.4.11",
+    "dompurify": "^3.4.12",
     "brace-expansion@1": "1.1.16",
     "brace-expansion@2": "2.1.2",
     "brace-expansion@5": "5.0.7"
