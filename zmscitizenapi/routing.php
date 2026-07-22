@@ -20,7 +20,6 @@
  *               $ref: "schema/citizenapi/collections/officeServiceAndRelationList.json"
  */
 \App::$slim->get('/offices-and-services/', '\BO\Zmscitizenapi\Controllers\Office\OfficesServicesRelationsController')->setName("OfficesServicesRelationsController");
-\App::$slim->get('/offices-and-services', '\BO\Zmscitizenapi\Controllers\Office\OfficesServicesRelationsController')->setName("OfficesServicesRelationsController");
 
 /**
  * @swagger
@@ -77,7 +76,6 @@
  *               $ref: "schema/citizenapi/availableCalendarByOffice.json"
  */
 \App::$slim->get('/available-calendar-by-office/', '\BO\Zmscitizenapi\Controllers\Availability\AvailableCalendarByOfficeController')->setName("AvailableCalendarByOfficeController");
-\App::$slim->get('/available-calendar-by-office', '\BO\Zmscitizenapi\Controllers\Availability\AvailableCalendarByOfficeController')->setName("AvailableCalendarByOfficeController");
 
 /**
  * @swagger
@@ -129,7 +127,6 @@
  *         description: Appointment not found
  */
 \App::$slim->get('/appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentByIdController')->setName("AppointmentByIdController");
-\App::$slim->get('/appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentByIdController')->setName("AppointmentByIdController");
 
 /**
  * @swagger
@@ -150,7 +147,6 @@
  *               $ref: "schema/citizenapi/captcha/altchaCaptcha.json"
  */
 \App::$slim->get('/captcha-details/', '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaController')->setName("CaptchaController");
-\App::$slim->get('/captcha-details', '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaController')->setName("CaptchaController");
 
 /**
  * @swagger
@@ -171,7 +167,6 @@
  *               $ref: "schema/citizenapi/captcha/createChallengeResponse.json"
  */
 \App::$slim->get('/captcha-challenge/', '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaChallengeController')->setName("CaptchaChallengeController");
-\App::$slim->get('/captcha-challenge', '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaChallengeController')->setName("CaptchaChallengeController");
 
 /**
  * @swagger
@@ -199,7 +194,6 @@
  *               $ref: "schema/citizenapi/captcha/verifySolutionResponse.json"
  */
 \App::$slim->post('/captcha-verify/', '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaVerifyController')->setName("CaptchaVerifyController");
-\App::$slim->post('/captcha-verify', '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaVerifyController')->setName("CaptchaVerifyController");
 
 /**
  * @swagger
@@ -247,7 +241,6 @@
  *         description: Appointment not found
  */
 \App::$slim->post('/reserve-appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentReserveController')->setName("AppointmentReserveController");
-\App::$slim->post('/reserve-appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentReserveController')->setName("AppointmentReserveController");
 
 /**
  * @swagger
@@ -295,7 +288,6 @@
  *         description: Appointment not found
  */
 \App::$slim->post('/update-appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentUpdateController')->setName("AppointmentUpdateController");
-\App::$slim->post('/update-appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentUpdateController')->setName("AppointmentUpdateController");
 
 /**
  * @swagger
@@ -343,7 +335,6 @@
  *         description: Appointment not found
  */
 \App::$slim->post('/confirm-appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentConfirmController')->setName("AppointmentConfirmController");
-\App::$slim->post('/confirm-appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentConfirmController')->setName("AppointmentConfirmController");
 
 /**
  * @swagger
@@ -391,7 +382,6 @@
  *         description: Appointment not found
  */
 \App::$slim->post('/preconfirm-appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentPreconfirmController')->setName("AppointmentPreconfirmController");
-\App::$slim->post('/preconfirm-appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentPreconfirmController')->setName("AppointmentPreconfirmController");
 
 /**
  * @swagger
@@ -439,7 +429,6 @@
  *         description: Appointment not found
  */
 \App::$slim->post('/cancel-appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentCancelController')->setName("AppointmentCancelController");
-\App::$slim->post('/cancel-appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentCancelController')->setName("AppointmentCancelController");
 
 /**
  * @swagger
@@ -469,7 +458,6 @@
  *         description: Unauthorized (if no user header is present)
  */
 \App::$slim->get('/my-appointments/', '\BO\Zmscitizenapi\Controllers\Appointment\MyAppointmentsController')->setName("MyAppointmentsController");
-\App::$slim->get('/my-appointments', '\BO\Zmscitizenapi\Controllers\Appointment\MyAppointmentsController')->setName("MyAppointmentsController");
 
 // Catch-all route for 404 errors
 \App::$slim->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], '/{routes:.+}', function ($request, $response) {
