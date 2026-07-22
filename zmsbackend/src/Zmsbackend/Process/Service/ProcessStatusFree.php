@@ -22,9 +22,6 @@ class ProcessStatusFree extends Process
         return [$calendar, $dayquery, $this->buildDaysList($calendar)];
     }
 
-    /**
-     * @return array<int, \DateTimeInterface>
-     */
     private function buildDaysList(\BO\Zmsentities\Calendar $calendar): array
     {
         $selectedDate = $calendar->getFirstDay();
@@ -43,8 +40,6 @@ class ProcessStatusFree extends Process
     /**
      * Prefer concrete days already on the calendar (e.g. bookable days only).
      * Falls back to the full firstDay→lastDay range when no days are set.
-     *
-     * @return array<int, \DateTimeInterface>
      */
     private function buildDaysListFromCalendarDays(\BO\Zmsentities\Calendar $calendar): array
     {
