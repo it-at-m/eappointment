@@ -812,12 +812,26 @@ describe("AppointmentSelection", () => {
         expect(wrapper.vm.allowedDates(new Date("2025-06-17"))).toBe(true);
       });
 
-      it("auto-selects the next available date on provider change when current date has no appointments", async () => {
+      it("selects the earliest available date on provider change", async () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
-          calendarResponse([
-            { date: "2025-06-16", providerIDs: "10351880,10470" },
-            { date: "2025-06-17", providerIDs: "10351880,10470" },
-          ])
+          calendarResponse(
+            [
+              {
+                date: "2025-06-16",
+                providerIDs: "10470",
+                offices: [{ officeId: 10470, appointments: [1750118400] }],
+              },
+              {
+                date: "2025-06-17",
+                providerIDs: "10351880,10470",
+                offices: [
+                  { officeId: 10351880, appointments: [1750118400] },
+                  { officeId: 10470, appointments: [1750118400] },
+                ],
+              },
+            ],
+            []
+          )
         );
         const wrapper = createWrapper({
           selectedService: {
@@ -839,60 +853,46 @@ describe("AppointmentSelection", () => {
           },
         });
 
-        // Set up provider selection first
-        wrapper.vm.selectedProviders[10351880] = true;
-        wrapper.vm.selectedProviders[10470] = true;
+        wrapper.vm.selectedProviders = {
+          "10351880": true,
+          "10470": false,
+        } as any;
         await nextTick();
 
-        // Now show selection for provider (this will fetch available days)
         await wrapper.vm.showSelectionForProvider({
           name: "Office X",
           id: 10351880,
           address: { street: "Test", house_number: "1" },
           scope: { id: "10351880" },
         });
+        await flushPromises();
+
+        wrapper.vm.selectedDay = new Date("2025-06-17");
         await nextTick();
 
-        // Mock availableDays where 2025-06-16 only has provider 10470, and 2025-06-17 has provider 10351880
-        // This means when we select only 10351880, the current date (2025-06-16) becomes invalid
-        setAvailableDays(wrapper, [
-          { date: "2025-06-16", providerIDs: "10470" },
-          { date: "2025-06-17", providerIDs: "10351880" },
-        ]);
-        setAppointmentsByDay(wrapper, [
-          ["2025-06-16", [{ officeId: 10470, appointments: [1750118400] }]],
-          ["2025-06-17", [{ officeId: 10351880, appointments: [1750118400] }]],
-        ]);
+        const callsBeforeCheck = (fetchAvailableCalendar as Mock).mock.calls
+          .length;
 
-        // Set current date to 2025-06-16 (only available for provider 10470)
-        wrapper.vm.selectedDay = new Date("2025-06-16");
-        await nextTick();
-        await wrapper.vm.getAppointmentsOfDay("2025-06-16");
-        await nextTick();
-
-        // Initially both providers are selected
+        // Checking Office Y makes 2025-06-16 the earliest day across the selection.
         wrapper.vm.selectedProviders = {
           "10351880": true,
           "10470": true,
         } as any;
         await nextTick();
         await flushPromises();
-
-        // Now deselect provider 10470, leaving only 10351880 selected
-        // Since 2025-06-16 only has 10470, the date should snap to 2025-06-17
-        wrapper.vm.selectedProviders = {
-          "10351880": true,
-          "10470": false,
-        } as any;
-        await nextTick();
-        await flushPromises();
-        // Wait for debounced pipeline (150ms) + updates to complete
         await new Promise((r) => setTimeout(r, 300));
         await nextTick();
         await flushPromises();
 
-        // Should snap to 2025-06-17 as nearest available date for selected provider
-        expect(wrapper.vm.selectedDay).toEqual(new Date("2025-06-17"));
+        expect(wrapper.vm.selectedDay.getFullYear()).toBe(2025);
+        expect(wrapper.vm.selectedDay.getMonth()).toBe(5);
+        expect(wrapper.vm.selectedDay.getDate()).toBe(16);
+        expect(
+          (fetchAvailableCalendar as Mock).mock.calls.length
+        ).toBeGreaterThan(callsBeforeCheck);
+        const lastCall = (fetchAvailableCalendar as Mock).mock.calls.at(-1);
+        expect(lastCall?.[5]).toBe("2025-06-16");
+        expect(lastCall?.[6]).toBe("2025-06-16");
       });
 
       it("enables a date in availableDays if API returns appointments for it", async () => {
@@ -1245,17 +1245,37 @@ describe("AppointmentSelection", () => {
       });
 
       it("updates allowed dates when providers are deselected", async () => {
+        const officeX = [
+          { officeId: 10351880, appointments: [1750118400] },
+        ];
+        const officeY = [{ officeId: 10470, appointments: [1750118400] }];
+        const bothOffices = [...officeX, ...officeY];
+
         (fetchAvailableCalendar as Mock).mockResolvedValue(
           calendarResponse(
             [
-              { date: "2025-06-16", providerIDs: "10351880" },
-              { date: "2025-06-17", providerIDs: "10351880" },
-              { date: "2025-07-01", providerIDs: "10351880" },
-              { date: "2025-06-16", providerIDs: "10470" },
-              { date: "2025-06-17", providerIDs: "10470" },
-              { date: "2025-08-01", providerIDs: "10470" },
+              {
+                date: "2025-06-16",
+                providerIDs: "10351880,10470",
+                offices: bothOffices,
+              },
+              {
+                date: "2025-06-17",
+                providerIDs: "10351880,10470",
+                offices: bothOffices,
+              },
+              {
+                date: "2025-07-01",
+                providerIDs: "10351880",
+                offices: officeX,
+              },
+              {
+                date: "2025-08-01",
+                providerIDs: "10470",
+                offices: officeY,
+              },
             ],
-            offices10351880And10470,
+            [],
             { nextBookableDate: "2025-08-01" }
           )
         );
@@ -1290,20 +1310,7 @@ describe("AppointmentSelection", () => {
           address: { street: "Test", house_number: "1" },
           scope: { id: "10351880" },
         });
-        await nextTick();
-
-        setAvailableDays(
-          wrapper,
-          [
-            { date: "2025-06-16", providerIDs: "10351880" },
-            { date: "2025-06-17", providerIDs: "10351880" },
-            { date: "2025-07-01", providerIDs: "10351880" },
-            { date: "2025-06-16", providerIDs: "10470" },
-            { date: "2025-06-17", providerIDs: "10470" },
-            { date: "2025-08-01", providerIDs: "10470" },
-          ],
-          offices10351880And10470
-        );
+        await flushPromises();
 
         const calendar = wrapper.findComponent({ name: "muc-calendar" });
         expect(calendar.exists()).toBe(true);
@@ -1317,6 +1324,7 @@ describe("AppointmentSelection", () => {
         await flushPromises();
         await new Promise((r) => setTimeout(r, 200));
         await nextTick();
+        await flushPromises();
 
         const calendarAfterDeselect = wrapper.findComponent({
           name: "muc-calendar",
@@ -1328,17 +1336,37 @@ describe("AppointmentSelection", () => {
       });
 
       it("updates allowed dates when providers are selected", async () => {
+        const officeX = [
+          { officeId: 10351880, appointments: [1750118400] },
+        ];
+        const officeY = [{ officeId: 10470, appointments: [1750118400] }];
+        const bothOffices = [...officeX, ...officeY];
+
         (fetchAvailableCalendar as Mock).mockResolvedValue(
           calendarResponse(
             [
-              { date: "2025-06-16", providerIDs: "10351880" },
-              { date: "2025-06-17", providerIDs: "10351880" },
-              { date: "2025-07-01", providerIDs: "10351880" },
-              { date: "2025-06-16", providerIDs: "10470" },
-              { date: "2025-06-17", providerIDs: "10470" },
-              { date: "2025-08-01", providerIDs: "10470" },
+              {
+                date: "2025-06-16",
+                providerIDs: "10351880,10470",
+                offices: bothOffices,
+              },
+              {
+                date: "2025-06-17",
+                providerIDs: "10351880,10470",
+                offices: bothOffices,
+              },
+              {
+                date: "2025-07-01",
+                providerIDs: "10351880",
+                offices: officeX,
+              },
+              {
+                date: "2025-08-01",
+                providerIDs: "10470",
+                offices: officeY,
+              },
             ],
-            offices10351880And10470,
+            [],
             { nextBookableDate: "2025-08-01" }
           )
         );
@@ -1373,20 +1401,7 @@ describe("AppointmentSelection", () => {
           address: { street: "Test", house_number: "1" },
           scope: { id: "10351880" },
         });
-        await nextTick();
-
-        setAvailableDays(
-          wrapper,
-          [
-            { date: "2025-06-16", providerIDs: "10351880" },
-            { date: "2025-06-17", providerIDs: "10351880" },
-            { date: "2025-07-01", providerIDs: "10351880" },
-            { date: "2025-06-16", providerIDs: "10470" },
-            { date: "2025-06-17", providerIDs: "10470" },
-            { date: "2025-08-01", providerIDs: "10470" },
-          ],
-          offices10351880And10470
-        );
+        await flushPromises();
 
         const calendar = wrapper.findComponent({ name: "muc-calendar" });
         expect(calendar.exists()).toBe(true);
@@ -1399,6 +1414,7 @@ describe("AppointmentSelection", () => {
         await flushPromises();
         await new Promise((r) => setTimeout(r, 200));
         await nextTick();
+        await flushPromises();
 
         expect(
           wrapper.findComponent({ name: "muc-calendar" }).props("max")
@@ -1411,6 +1427,7 @@ describe("AppointmentSelection", () => {
         await flushPromises();
         await new Promise((r) => setTimeout(r, 200));
         await nextTick();
+        await flushPromises();
 
         expect(
           wrapper.findComponent({ name: "muc-calendar" }).props("max")
@@ -1549,8 +1566,10 @@ describe("AppointmentSelection", () => {
         await new Promise((r) => setTimeout(r, 200));
         await nextTick();
 
-        // Should change to 2025-06-18 since that's the next date with appointments for provider 2
-        expect(wrapper.vm.selectedDay).toEqual(new Date("2025-06-18"));
+        // Earliest day for provider 2 only is 2025-06-18
+        expect(wrapper.vm.selectedDay.getFullYear()).toBe(2025);
+        expect(wrapper.vm.selectedDay.getMonth()).toBe(5);
+        expect(wrapper.vm.selectedDay.getDate()).toBe(18);
       });
 
       // (moved to ProviderSelection Integration) "shows no providers when none have appointments"

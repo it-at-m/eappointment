@@ -1363,73 +1363,20 @@ function updateDateRangeForSelectedProviders(skipDateValidation = false) {
 async function validateAndUpdateSelectedDate(
   availableDaysForSelectedProviders: any[]
 ) {
-  if (!selectedDay.value) return;
-  const currentDate = toDayKey(selectedDay.value);
-  const isCurrentDateAvailable = availableDaysForSelectedProviders.some(
-    (day: any) => toDayKey(day.date) === currentDate
+  if (availableDaysForSelectedProviders.length === 0) return;
+
+  const sortedDays = [...availableDaysForSelectedProviders].sort((a, b) =>
+    toDayKey(a.date).localeCompare(toDayKey(b.date))
   );
+  const earliestKey = toDayKey(sortedDays[0].date);
+  const currentKey = selectedDay.value ? toDayKey(selectedDay.value) : null;
 
-  if (!isCurrentDateAvailable) {
-    // First try to find a date after the current date
-    let nextAvailableDay = availableDaysForSelectedProviders.find(
-      (day: any) => {
-        const dayDate = new Date(day.date);
-        return dayDate >= (selectedDay.value ?? new Date());
-      }
-    );
-
-    // If no future date is available, find the closest date before the current date
-    if (!nextAvailableDay) {
-      nextAvailableDay = [...availableDaysForSelectedProviders]
-        .reverse()
-        .find((day: any) => {
-          const dayDate = new Date(day.date);
-          return dayDate <= (selectedDay.value ?? new Date());
-        });
-    }
-
-    if (nextAvailableDay) {
-      const newDate = new Date(nextAvailableDay.date);
-      selectedDay.value = newDate;
-      viewMonth.value = new Date(newDate.getFullYear(), newDate.getMonth(), 1);
-      calendarKey.value++;
-      await nextTick();
-      await getAppointmentsOfDay(nextAvailableDay.date);
-    }
+  if (currentKey === earliestKey) {
+    return;
   }
-}
 
-async function validateCurrentDateHasAppointments() {
-  if (!selectedDay.value) return;
-  const currentDate = toDayKey(selectedDay.value);
-  const dayEntry = availableDays.value?.find(
-    (day) => toDayKey(day.date) === currentDate
-  );
-  const hasAppointments = dayEntry?.providerIDs
-    .split(",")
-    .some((providerId) => selectedProviders.value[providerId]);
-
-  if (
-    !hasAppointments &&
-    availableDays.value &&
-    availableDays.value.length > 0
-  ) {
-    const nextAvailableDay = availableDays.value.find((day) => {
-      const dayDate = new Date(day.date);
-      return (
-        dayDate >= (selectedDay.value ?? new Date()) &&
-        day.providerIDs
-          .split(",")
-          .some((providerId) => selectedProviders.value[providerId])
-      );
-    });
-
-    if (nextAvailableDay) {
-      selectedDay.value = new Date(nextAvailableDay.date);
-      await nextTick();
-      await getAppointmentsOfDay(nextAvailableDay.date);
-    }
-  }
+  // Noon avoids UTC date-only parsing shifting the calendar day.
+  await handleDaySelection(new Date(`${earliestKey}T12:00:00`));
 }
 
 async function snapToNearestForCurrentView() {
@@ -1444,37 +1391,40 @@ function scheduleRefreshAfterProviderChange() {
   const selectionSnapshot = JSON.stringify(selectedProviders.value);
   if (refetchTimer) clearTimeout(refetchTimer);
   refetchTimer = setTimeout(async () => {
-    const prevSelectedDay = selectedDay.value
-      ? new Date(selectedDay.value)
-      : undefined;
-
-    isSwitchingProvider.value = false;
-
     if (selectionSnapshot !== JSON.stringify(selectedProviders.value)) {
       return;
     }
-    const availableDaysForSelectedProviders =
-      updateDateRangeForSelectedProviders();
 
-    if (availableDaysForSelectedProviders.length > 0) {
-      await validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
+    try {
+      const daysForSelection = updateDateRangeForSelectedProviders(true);
+      if (daysForSelection.length === 0) {
+        return;
+      }
+
+      const sortedDays = [...daysForSelection].sort((a, b) =>
+        toDayKey(a.date).localeCompare(toDayKey(b.date))
+      );
+      const earliestKey = toDayKey(sortedDays[0].date);
+      const currentKey = selectedDay.value ? toDayKey(selectedDay.value) : null;
+
+      // One deterministic rule: earliest day across checked offices, then fetch.
+      if (currentKey !== earliestKey) {
+        await handleDaySelection(new Date(`${earliestKey}T12:00:00`));
+      } else if (currentKey) {
+        const reloaded = await reloadCalendarAvailability({
+          preserveSelectedDay: true,
+        });
+        if (reloaded) {
+          await getAppointmentsOfDay(currentKey);
+        }
+      }
+
+      await snapToNearestForCurrentView();
+    } finally {
+      if (selectionSnapshot === JSON.stringify(selectedProviders.value)) {
+        isSwitchingProvider.value = false;
+      }
     }
-
-    const previousSelectedDateString = prevSelectedDay
-      ? convertDateToString(prevSelectedDay)
-      : null;
-    const currentSelectedDateString = selectedDay.value
-      ? convertDateToString(selectedDay.value)
-      : null;
-    if (
-      currentSelectedDateString &&
-      previousSelectedDateString === currentSelectedDateString
-    ) {
-      await getAppointmentsOfDay(currentSelectedDateString);
-    }
-
-    await validateCurrentDateHasAppointments();
-    await snapToNearestForCurrentView();
   }, 150);
 }
 
