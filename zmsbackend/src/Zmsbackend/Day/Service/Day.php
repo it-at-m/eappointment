@@ -21,6 +21,11 @@ class Day extends \BO\Zmsbackend\Base
             foreach ($calendar->scopes as $scope) {
                 if (!$slotsRequiredForce) {
                     $slotsRequired = $calendar->scopes->getRequiredSlotsByScope($scope);
+                    // Scopes with no request relation must not appear as bookable
+                    // (forcing slotsRequired=1 would invent false availability).
+                    if ($slotsRequired < 1) {
+                        continue;
+                    }
                 }
                 $this->getReader()->perform(\BO\Zmsbackend\Day\Repository\Day::QUERY_INSERT_TEMPORARY_SCOPELIST, [
                     'scopeID' => $scope->id,

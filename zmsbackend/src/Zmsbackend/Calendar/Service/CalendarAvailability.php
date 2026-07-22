@@ -584,6 +584,20 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         }
 
         $appointmentsByDateAndOffice = $this->groupAppointmentsByDateAndOffice($processList);
+
+        // Providers that actually have free appointments in the slots window.
+        // Used to keep daylist providerIDs for other days honest without free-slotting
+        // the whole month (daylist can list offices that cannot fit the request).
+        $verifiedProviders = [];
+        foreach ($appointmentsByDateAndOffice as $date => $byOffice) {
+            if ($date < $slotsStartDate || $date > $slotsEndDate) {
+                continue;
+            }
+            foreach (array_keys($byOffice) as $providerId) {
+                $verifiedProviders[(string) $providerId] = true;
+            }
+        }
+
         $days = [];
 
         foreach ($calendar->days as $day) {
@@ -599,22 +613,39 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
                 (int) $dayData['day']
             );
 
-            $scopeIdList = isset($dayData['scopeIDs']) && $dayData['scopeIDs'] !== ''
-                ? array_filter(explode(',', (string) $dayData['scopeIDs']))
-                : [];
-            $providerIds = [];
-            foreach ($scopeIdList as $scopeId) {
-                if (isset($scopeToProvider[$scopeId])) {
-                    $providerIds[] = $scopeToProvider[$scopeId];
-                }
-            }
-            $providerIds = array_values(array_unique($providerIds));
+            $inSlotsWindow = $date >= $slotsStartDate && $date <= $slotsEndDate;
+            $dayAppointments = $appointmentsByDateAndOffice[$date] ?? [];
 
-            $dayAppointments = [];
-            foreach ($providerIds as $providerId) {
-                if (isset($appointmentsByDateAndOffice[$date][$providerId])) {
-                    $dayAppointments[$providerId] = $appointmentsByDateAndOffice[$date][$providerId];
+            if ($inSlotsWindow) {
+                // Free-slot verified: only providers that actually have appointments.
+                $providerIds = array_map('strval', array_keys($dayAppointments));
+                sort($providerIds, SORT_STRING);
+                if ($providerIds === []) {
+                    continue;
                 }
+            } else {
+                // Daylist paints the rest of the month without free-slot payloads.
+                // Keep only providers already verified in the slots window.
+                $scopeIdList = isset($dayData['scopeIDs']) && $dayData['scopeIDs'] !== ''
+                    ? array_filter(explode(',', (string) $dayData['scopeIDs']))
+                    : [];
+                $providerIds = [];
+                foreach ($scopeIdList as $scopeId) {
+                    if (!isset($scopeToProvider[$scopeId])) {
+                        continue;
+                    }
+                    $providerId = $scopeToProvider[$scopeId];
+                    if (!isset($verifiedProviders[$providerId])) {
+                        continue;
+                    }
+                    $providerIds[] = $providerId;
+                }
+                $providerIds = array_values(array_unique($providerIds));
+                sort($providerIds, SORT_STRING);
+                if ($providerIds === []) {
+                    continue;
+                }
+                $dayAppointments = [];
             }
 
             $days[] = [
