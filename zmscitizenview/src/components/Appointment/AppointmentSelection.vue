@@ -11,7 +11,7 @@
   <div
     v-if="
       availableDaysFetched &&
-      !hasSelectedProviderWithAppointments &&
+      (noProviderSelected || !hasSelectedProviderWithAppointments) &&
       !isSwitchingProvider
     "
     class="m-component"
@@ -647,14 +647,10 @@ const providersWithAvailableDays = computed(() => {
 });
 
 const hasSelectedProviderWithAppointments = computed(() => {
-  if (!availableDays?.value || availableDays.value.length === 0) {
-    return false;
-  }
-
-  return Object.entries(selectedProviders.value).some(
-    ([id, isSelected]) =>
-      isSelected &&
-      providersWithAppointments.value.some((p) => p.id.toString() === id)
+  // True only when a selected office appears in availableDays.providerIDs
+  // (not merely because it is selectable).
+  return (providersWithAvailableDays.value || []).some(
+    (p) => !!selectedProviders.value[String(p.id)]
   );
 });
 
@@ -984,9 +980,20 @@ const applyCalendarResponse = (
       }
     }
 
+    // When free-slot office data is present, only keep offices that actually
+    // have appointments — daylist providerIDs can list offices with zero slots.
+    const officesForProviderIds = nextByDay.get(dateKey) ?? offices;
+    const providerIdsWithSlots = officesForProviderIds
+      .filter((office) => (office.appointments?.length ?? 0) > 0)
+      .map((office) => String(office.officeId));
+    const providerIDs =
+      providerIdsWithSlots.length > 0
+        ? providerIdsWithSlots.join(",")
+        : day.providerIDs;
+
     normalizedDays.push({
       date: day.date,
-      providerIDs: day.providerIDs,
+      providerIDs,
     });
   }
 
