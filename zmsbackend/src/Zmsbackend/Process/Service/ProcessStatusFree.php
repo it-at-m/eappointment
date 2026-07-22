@@ -80,7 +80,8 @@ class ProcessStatusFree extends Process
             $days,
             $slotType,
             $slotsRequired,
-            $groupData
+            $groupData,
+            true
         );
 
         $unique = [];
@@ -103,11 +104,16 @@ class ProcessStatusFree extends Process
         array $days,
         $slotType,
         $slotsRequired,
-        $groupData
+        $groupData,
+        bool $useAvailabilityQuery = false
     ) {
+        $query = $useAvailabilityQuery
+            ? \BO\Zmsbackend\Process\Repository\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAYS_AVAILABILITY
+            : \BO\Zmsbackend\Process\Repository\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAYS;
+
         return $this->fetchHandle(
             sprintf(
-                \BO\Zmsbackend\Process\Repository\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAYS,
+                $query,
                 \BO\Zmsbackend\Process\Repository\ProcessStatusFree::buildDaysCondition($days)
             )
             . ($groupData ? \BO\Zmsbackend\Process\Repository\ProcessStatusFree::GROUPBY_SELECT_PROCESSLIST_DAY : ''),

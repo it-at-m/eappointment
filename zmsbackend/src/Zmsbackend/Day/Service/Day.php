@@ -21,11 +21,6 @@ class Day extends \BO\Zmsbackend\Base
             foreach ($calendar->scopes as $scope) {
                 if (!$slotsRequiredForce) {
                     $slotsRequired = $calendar->scopes->getRequiredSlotsByScope($scope);
-                    // Scopes with no request relation must not appear as bookable
-                    // (forcing slotsRequired=1 would invent false availability).
-                    if ($slotsRequired < 1) {
-                        continue;
-                    }
                 }
                 $this->getReader()->perform(\BO\Zmsbackend\Day\Repository\Day::QUERY_INSERT_TEMPORARY_SCOPELIST, [
                     'scopeID' => $scope->id,
@@ -59,11 +54,11 @@ class Day extends \BO\Zmsbackend\Base
         return $this->readListFromPreparedTemporaryScopeList($slotsRequiredForce);
     }
 
-    public function readListFromPreparedTemporaryScopeList($slotsRequiredForce = null)
+    public function readListFromPreparedTemporaryScopeList($slotsRequiredForce = null, ?string $daylistQuery = null)
     {
         $dayList = new \BO\Zmsentities\Collection\DayList();
         $dayData = $this->getReader()->fetchAll(
-            \BO\Zmsbackend\Day\Repository\Day::QUERY_DAYLIST_JOIN,
+            $daylistQuery ?? \BO\Zmsbackend\Day\Repository\Day::QUERY_DAYLIST_JOIN,
             [
                 'forceRequiredSlots' =>
                     ($slotsRequiredForce === null || $slotsRequiredForce < 1) ? 1 : round($slotsRequiredForce),
