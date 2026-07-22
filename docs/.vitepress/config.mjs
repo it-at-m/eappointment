@@ -624,6 +624,8 @@ export default {
   description: "Technical documentation for it-at-m/eappointment",
   base: SITE_BASE,
   lang: "en-US",
+  // Local-dev URLs (e.g. Vite on :8082) are not reachable during CI docs builds.
+  ignoreDeadLinks: [/^https?:\/\/localhost(?::\d+)?(?:\/|$)/],
   vite: {
     esbuild: {
       target: "es2022",

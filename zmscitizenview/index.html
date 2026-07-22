@@ -16,6 +16,9 @@
             href="https://assets.muenchen.de/mde/1.1.15/css/style.css"
     />
 
+    <!-- login: local Keycloak shim or CDN dbs-login (see local-dev/bootstrap-login.ts) -->
+    <script type="module" src="/src/local-dev/bootstrap-login.ts"></script>
+
     <!-- built files will be auto injected -->
     <script src="src/zms-appointment-webcomponent.ts" type="module"></script>
 
@@ -26,8 +29,17 @@
     <strong>Damit das Widget korrekt funktioniert, muss Javascript aktiviert werden.</strong>
 </noscript>
 
+<dbs-login
+        kc-url="%VITE_KC_URL%"
+        kc-realm="%VITE_KC_REALM%"
+        kc-client-id="%VITE_KC_CLIENT_ID%"
+></dbs-login>
+
 <zms-appointment-i18n-host>
-    <zms-appointment-wrapped></zms-appointment-wrapped>
+    <zms-appointment-wrapped
+            appointment-detail-url="appointment-detail.html"
+            show-login-option="true"
+    ></zms-appointment-wrapped>
 </zms-appointment-i18n-host>
 
 </body>

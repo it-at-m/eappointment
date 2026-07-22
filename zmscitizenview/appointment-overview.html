@@ -16,11 +16,8 @@
             href="https://assets.muenchen.de/mde/1.1.15/css/style.css"
     />
 
-    <!-- login -->
-    <script
-            src="https://dbs-login-webcomponent-integration.muenchen.de/loader.js"
-            type="text/javascript"
-    ></script>
+    <!-- login: local Keycloak shim or CDN dbs-login (see local-dev/bootstrap-login.ts) -->
+    <script type="module" src="/src/local-dev/bootstrap-login.ts"></script>
 
     <!-- built files will be auto injected -->
     <script src="src/zms-appointment-overview-webcomponent.ts" type="module"></script>
@@ -33,9 +30,9 @@
 </noscript>
 
 <dbs-login
-        kc-url="https://ssodev.muenchen.de/auth"
-        kc-realm="A61"
-        kc-client-id="dbs-fragments"
+        kc-url="%VITE_KC_URL%"
+        kc-realm="%VITE_KC_REALM%"
+        kc-client-id="%VITE_KC_CLIENT_ID%"
 ></dbs-login>
 
 <zms-appointment-overview-i18n-host>

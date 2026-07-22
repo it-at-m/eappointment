@@ -46,12 +46,16 @@
     "jquery": "^4.0.0",
     "js-cookie": "^3.0.8",
     "parcel": "^2.16.4",
-    "postcss": "^8.5.19",
+    "postcss": "^8.5.21",
     "qrcode-generator": "2.0.4",
-    "sass": "^1.101.0",
+    "sass": "^1.101.3",
     "svgo": "^4.0.2"
   },
+  "// overrides.brace-expansion": "Force patched majors for CVE-2026-13149 (DoS via exponential-time complexity).",
   "overrides": {
-    "js-yaml": "^5.0.0"
+    "js-yaml": "^5.0.0",
+    "brace-expansion@1": "1.1.16",
+    "brace-expansion@2": "2.1.2",
+    "brace-expansion@5": "5.0.7"
   }
 }
