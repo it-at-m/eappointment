@@ -282,9 +282,92 @@ function displayNameFromSession(session: StoredSession | null): string {
 }
 
 /**
- * Minimal host chrome so local Keycloak login mirrors the CDN dbs-login button
- * on non-embedded pages (localhost and zms host /buergeransicht paths).
- * Uses MDE `m-button` classes (same as muc-button) from the host page stylesheet.
+ * muc-icon `user` path from @muenchen/muc-patternlab-vue (muc-icons.svg #icon-user).
+ * Inlined because host chrome lives outside the webcomponent shadow DOM sprite.
+ */
+function createUserIcon(): SVGSVGElement {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("viewBox", "0 0 32 32");
+  svg.setAttribute("class", "icon m-button__icon m-button__icon--before");
+  svg.setAttribute(
+    "style",
+    "width:1.5rem;height:1.5rem;flex-shrink:0;margin-right:.75rem;fill:currentColor"
+  );
+  svg.innerHTML =
+    '<path d="M26.219 23.855l-2.667-4c-0.485-0.72-1.297-1.188-2.219-1.188h-10.667c-0.922 0-1.734 0.468-2.212 1.179l-0.006 0.010-2.667 4c-0.281 0.416-0.448 0.928-0.448 1.48 0 0.46 0.117 0.893 0.322 1.271l-0.007-0.014c0.459 0.844 1.339 1.408 2.351 1.408h16c1.012 0 1.892-0.564 2.344-1.394l0.007-0.014c0.199-0.364 0.316-0.798 0.316-1.259 0-0.551-0.167-1.063-0.454-1.488l0.006 0.010zM8 25.333l2.667-4h10.667l2.667 4z"></path>' +
+    '<path d="M16 16c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zM16 6.667c1.841 0 3.333 1.492 3.333 3.333s-1.492 3.333-3.333 3.333-3.333-1.492-3.333-3.333 1.492-3.333 3.333-3.333z"></path>';
+  return svg;
+}
+
+/** App root: `/` locally, `/buergeransicht/` on zms hosts. */
+function citizenviewRootHref(): string {
+  const { origin, pathname } = window.location;
+  if (pathname.startsWith("/buergeransicht")) {
+    return `${origin}/buergeransicht/`;
+  }
+  return `${origin}/`;
+}
+
+/** Host-page URL under the citizenview root (works on localhost and /buergeransicht/). */
+function pageHref(file: string): string {
+  if (!file || file === "/" || file === "index.html") {
+    return citizenviewRootHref();
+  }
+  return `${citizenviewRootHref()}${file.replace(/^\//, "")}`;
+}
+
+function logoutAndReturnHome(): void {
+  clearSession();
+  window.location.assign(citizenviewRootHref());
+}
+
+const MENU_ITEM_STYLE = [
+  "display:block",
+  "width:100%",
+  "padding:.75rem 1rem",
+  "border:0",
+  "background:transparent",
+  "color:#005a9f",
+  "font:inherit",
+  "text-align:left",
+  "cursor:pointer",
+  "white-space:nowrap",
+  "text-decoration:none",
+  "box-sizing:border-box",
+].join(";");
+
+function styleMenuItem(el: HTMLElement): void {
+  el.setAttribute("style", MENU_ITEM_STYLE);
+  el.addEventListener("mouseenter", () => {
+    el.style.background = "#e8f1f8";
+  });
+  el.addEventListener("mouseleave", () => {
+    el.style.background = "transparent";
+  });
+}
+
+function currentPageFile(): string {
+  const path = window.location.pathname.replace(/\/$/, "");
+  const segment = path.split("/").pop() || "";
+  if (!segment || segment === "buergeransicht") {
+    return "index.html";
+  }
+  return segment;
+}
+
+type NavLink = { label: string; file: string };
+
+const HOST_NAV_LINKS: NavLink[] = [
+  { label: "Terminvereinbarung", file: "index.html" },
+  { label: "Terminübersicht", file: "appointment-overview.html" },
+  { label: "Termin-Detail", file: "appointment-detail.html" },
+  { label: "Termin-Slider", file: "appointment-slider.html" },
+];
+
+/**
+ * Host chrome for non-embedded pages (localhost and zms host /buergeransicht).
+ * Logged out: Anmelden. Logged in: Mein Bereich dropdown with nav + Abmelden.
  */
 function renderHostChrome(config: LoginConfig): void {
   const host = document.querySelector("dbs-login");
@@ -297,33 +380,114 @@ function renderHostChrome(config: LoginConfig): void {
   const name = displayNameFromSession(session);
 
   host.replaceChildren();
-  host.setAttribute("style", "position:fixed;top:12px;left:12px;z-index:10000");
+  host.setAttribute(
+    "style",
+    "position:fixed;top:0;left:0;z-index:10000;display:block"
+  );
 
   const button = document.createElement("button");
   button.type = "button";
-  // Match muc-button default (primary) / secondary when signed in (Abmelden).
-  button.className = loggedIn
-    ? "m-button m-button--secondary"
-    : "m-button m-button--primary";
-  button.textContent = loggedIn
-    ? name
-      ? `Abmelden (${name})`
-      : "Abmelden"
-    : "Mein Bereich";
-  if (loggedIn && name) {
-    button.setAttribute("aria-label", `Abmelden, angemeldet als ${name}`);
+  // Same primary MDE style logged in and out (CDN dbs-login does not flip to secondary).
+  button.className = "m-button m-button--primary";
+  button.appendChild(createUserIcon());
+  button.appendChild(
+    document.createTextNode(loggedIn ? "Mein Bereich" : "Anmelden")
+  );
+
+  if (!loggedIn) {
+    button.addEventListener("click", () => {
+      void startLogin(config);
+    });
+    host.appendChild(button);
+    return;
   }
 
-  button.addEventListener("click", () => {
-    if (loggedIn) {
-      clearSession();
-      renderHostChrome(config);
-      return;
+  button.setAttribute("aria-haspopup", "true");
+  button.setAttribute("aria-expanded", "false");
+  button.setAttribute(
+    "aria-label",
+    name ? `Mein Bereich, angemeldet als ${name}` : "Mein Bereich"
+  );
+
+  const menu = document.createElement("div");
+  menu.setAttribute("role", "menu");
+  menu.hidden = true;
+  menu.setAttribute(
+    "style",
+    [
+      "position:absolute",
+      "top:100%",
+      "left:0",
+      "min-width:14rem",
+      "margin:0",
+      "padding:0",
+      "background:#fff",
+      "border:1px solid #005a9f",
+      "box-shadow:0 2px 8px rgba(0,0,0,.15)",
+      "z-index:1",
+    ].join(";")
+  );
+
+  if (name) {
+    const identity = document.createElement("div");
+    identity.setAttribute(
+      "style",
+      "padding:.75rem 1rem;border-bottom:1px solid #dce3e8;font-size:.875rem;color:#3a5368;white-space:nowrap"
+    );
+    identity.textContent = name;
+    menu.appendChild(identity);
+  }
+
+  const activeFile = currentPageFile();
+  for (const link of HOST_NAV_LINKS) {
+    const item = document.createElement("a");
+    item.setAttribute("role", "menuitem");
+    item.href = pageHref(link.file);
+    item.textContent = link.label;
+    styleMenuItem(item);
+    if (link.file === activeFile) {
+      item.setAttribute("aria-current", "page");
+      item.style.fontWeight = "700";
+      item.style.background = "#e8f1f8";
     }
-    void startLogin(config);
+    menu.appendChild(item);
+  }
+
+  const separator = document.createElement("div");
+  separator.setAttribute("style", "border-top:1px solid #dce3e8;margin:0");
+  separator.setAttribute("role", "separator");
+  menu.appendChild(separator);
+
+  const logoutItem = document.createElement("button");
+  logoutItem.type = "button";
+  logoutItem.setAttribute("role", "menuitem");
+  logoutItem.textContent = "Abmelden";
+  styleMenuItem(logoutItem);
+  logoutItem.addEventListener("click", (event) => {
+    event.stopPropagation();
+    logoutAndReturnHome();
+  });
+  menu.appendChild(logoutItem);
+
+  const setOpen = (open: boolean): void => {
+    menu.hidden = !open;
+    button.setAttribute("aria-expanded", open ? "true" : "false");
+  };
+
+  button.addEventListener("click", (event) => {
+    event.stopPropagation();
+    setOpen(menu.hidden);
   });
 
+  const onDocClick = (event: MouseEvent): void => {
+    if (!host.contains(event.target as Node)) {
+      setOpen(false);
+    }
+  };
+  document.addEventListener("click", onDocClick);
+
   host.appendChild(button);
+  host.appendChild(menu);
 }
 
 function ensureCustomElement(): void {
