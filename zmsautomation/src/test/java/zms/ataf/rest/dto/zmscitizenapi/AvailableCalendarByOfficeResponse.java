@@ -22,8 +22,19 @@ public class AvailableCalendarByOfficeResponse {
         if (availableDays == null || availableDays.isEmpty()) {
             return null;
         }
+        // Prefer a day that already has free-slot appointments in the combined response.
+        for (CalendarDay day : availableDays) {
+            if (day == null || day.getDate() == null || day.getOffices() == null) {
+                continue;
+            }
+            for (OfficeSlot office : day.getOffices()) {
+                if (office != null && office.getAppointments() != null && !office.getAppointments().isEmpty()) {
+                    return day.getDate();
+                }
+            }
+        }
         CalendarDay first = availableDays.get(0);
-        return first != null ? first.getTime() : null;
+        return first != null ? first.getDate() : null;
     }
 
     public AvailableAppointmentsResponse getAppointmentsForDayAndOffice(String date, int officeId) {
@@ -32,7 +43,7 @@ public class AvailableCalendarByOfficeResponse {
 
         if (availableDays != null) {
             for (CalendarDay day : availableDays) {
-                if (day == null || !date.equals(day.getTime()) || day.getOffices() == null) {
+                if (day == null || !date.equals(day.getDate()) || day.getOffices() == null) {
                     continue;
                 }
                 for (OfficeSlot office : day.getOffices()) {
@@ -54,7 +65,8 @@ public class AvailableCalendarByOfficeResponse {
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class CalendarDay {
-        private String time;
+        /** ISO date YYYY-MM-DD (citizenapi availableCalendarByOffice schema). */
+        private String date;
         private String providerIDs;
         private List<OfficeSlot> offices;
     }
