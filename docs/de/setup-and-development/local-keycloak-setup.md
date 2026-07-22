@@ -63,12 +63,20 @@ Der externe `dbs-login`-Loader ist lokal oft nicht erreichbar. Mit `VITE_USE_LOC
 
 1. Migrationen anwenden (Stack neu starten, damit `init-keycloak` läuft, oder den Service neu erzeugen).
 2. Vite-/citizenview-Prozess neu starten, damit Env und Login-Skripte geladen werden.
-3. Die Startseite [http://localhost:8082/](http://localhost:8082/) oder [http://localhost:8082/webcomponents.html](http://localhost:8082/webcomponents.html) öffnen (oder direkt [appointment-view](http://localhost:8082/appointment-view.html)). Am Kundenschritt mit Login **Anmelden** klicken.
+3. Die Startseite `http://localhost:8082/` oder `http://localhost:8082/webcomponents.html` öffnen (oder direkt `http://localhost:8082/appointment-view.html`). Am Kundenschritt mit Login **Anmelden** klicken.
 4. Am Keycloak-Login anmelden; danach solltest du eingeloggt zurückkommen.
+
+Nach erfolgreichem Login zeigt der Kontakt-Schritt, dass du angemeldet bist, und die Kontaktdaten kommen aus den Keycloak-Profil-Claims (`given_name`, `family_name`, `email`):
+
+<img alt="Eingeloggter Kontakt-Schritt mit Citizen User und citizen@example.com" src="../../img/citizen_login_1.png" />
+
+Nach einer Buchung im eingeloggten Zustand bleiben Detailseiten über die Session (Token in `localStorage`) nutzbar:
+
+<img alt="Termindetail eines gebuchten Reisepass-Termins im eingeloggten Zustand" src="../../img/citizen_login_2.png" />
 
 Nach dem Login laufen API-Aufrufe über `/buergeransicht/authenticated/api/citizen/…`. Vite-Dev-Proxy und lokales Gateway brauchen diesen Pfad (siehe `zmscitizenview/vite.config.ts` sowie `.devcontainer` / `.ddev` `local-gateway-application.yml`). Nach dem Pull `refarch-gateway` und den Vite-/citizenview-Prozess neu starten.
 
-Der lokale Login-Shim speichert den Access-Token in `localStorage`, damit [appointment-overview](http://localhost:8082/appointment-overview.html), [appointment-detail](http://localhost:8082/appointment-detail.html) und [appointment-slider](http://localhost:8082/appointment-slider.html) über Tabs hinweg auf derselben Origin eingeloggt bleiben. Tokens enthalten Claim `lhmExtID` (Keycloak-Benutzername) für `my-appointments`. Nach Migration `10_add-citizen-token-mappers.yml` (inkl. `lhmExtID`) erneut einloggen (und bei Bedarf neu buchen).
+Der lokale Login-Shim speichert den Access-Token in `localStorage`, damit `http://localhost:8082/appointment-overview.html`, `http://localhost:8082/appointment-detail.html` und `http://localhost:8082/appointment-slider.html` über Tabs hinweg auf derselben Origin eingeloggt bleiben. Tokens enthalten Claim `lhmExtID` (Keycloak-Benutzername) für `my-appointments`. Nach Migration `10_add-citizen-token-mappers.yml` (inkl. `lhmExtID`) erneut einloggen (und bei Bedarf neu buchen).
 
 | Feld         | Wert       |
 | ------------ | ---------- |
