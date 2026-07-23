@@ -154,6 +154,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         $newQueueNumber = (new \BO\Zmsbackend\Scope\Service\Scope())->readWaitingNumberUpdated($scope->id, $datetime);
         $process->addQueue($newQueueNumber, $datetime);
         $process->queue['number'] = $waitingNumber;
+        $process->priority = \BO\Zmsentities\Collection\QueueList::DEFAULT_PRIORITY_WITH_APPOINTMENT;
         $process = $this->writeNewProcess($process, $datetime);
         \BO\Zmsbackend\Log\Service\Log::writeProcessLog("CREATE (\BO\Zmsbackend\Process\Service\Process::redirectToScope) $process ", \BO\Zmsbackend\Log\Service\Log::ACTION_REDIRECTED, $process, $useraccount);
         $this->writeRequestsToDb($process);
