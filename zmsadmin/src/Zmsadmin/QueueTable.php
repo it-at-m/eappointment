@@ -7,7 +7,9 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Collection\QueueList;
+use BO\Zmsentities\Useraccount;
 
 class QueueTable extends BaseController
 {
@@ -38,10 +40,24 @@ class QueueTable extends BaseController
         ])->getEntity();
         $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
         $department = $workstationRequest->readDepartment();
-        $processList = $workstationRequest->readProcessListByDate(
-            $selectedDateTime,
-            Helper\GraphDefaults::getProcess()
-        );
+
+        $useraccount = $workstation->getUseraccount();
+        $processList = new ProcessList();
+
+        if (
+            $useraccount->hasAnyPermission([
+                'waitingqueue',
+                'parkedqueue',
+                'missedqueue',
+                'finishedqueue',
+            ])
+        ) {
+            $processList = $workstationRequest->readProcessListByDate(
+                $selectedDateTime,
+                Helper\GraphDefaults::getProcess()
+            );
+        }
+
         $changedProcess = ($selectedProcessId)
             ? \App::$http->readGetResult('/process/' . $selectedProcessId . '/', [
                 'gql' => Helper\GraphDefaults::getProcess()
@@ -50,21 +66,48 @@ class QueueTable extends BaseController
 
         $queueList = $processList->toQueueList(\App::$now);
 
-        $queueListVisible = $queueList
-            ->withStatus(['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted']);
-        $queueListMissed = $queueList->withStatus(['missed']);
-        $queueListParked = $queueList->withStatus(['parked']);
-        $queueListFinished = $queueList->withStatus(['finished']);
+        $queueListVisible = $this->getQueueListByPermission(
+            $queueList,
+            $useraccount,
+            'waitingqueue',
+            $this->processStatusList
+        );
 
-        $queueListCalled = $withCalledList ? (\App::$http
-            ->readGetResult(
-                '/useraccount/queue/',
-                [
-                    'resolveReferences' => 2,
-                    'status' => 'called,processing',
-                ]
-            )
-            ->getCollection() ?? []) : [];
+        $queueListMissed = $this->getQueueListByPermission(
+            $queueList,
+            $useraccount,
+            'missedqueue',
+            ['missed']
+        );
+
+        $queueListParked = $this->getQueueListByPermission(
+            $queueList,
+            $useraccount,
+            'parkedqueue',
+            ['parked']
+        );
+
+        $queueListFinished = $this->getQueueListByPermission(
+            $queueList,
+            $useraccount,
+            'finishedqueue',
+            ['finished']
+        );
+
+        $queueListCalled = (
+            $withCalledList
+            && $useraccount->hasPermissions(['openqueue'])
+        ) ? (
+            \App::$http
+                ->readGetResult(
+                    '/useraccount/queue/',
+                    [
+                        'resolveReferences' => 2,
+                        'status' => 'called,processing',
+                    ]
+                )
+                ->getCollection() ?? []
+        ) : [];
 
         if ($queueListCalled instanceof QueueList) {
             $queueListCalled->uasort(function ($queueA, $queueB) {
@@ -102,5 +145,18 @@ class QueueTable extends BaseController
                 'allowClusterWideCall' => \App::$allowClusterWideCall
             )
         );
+    }
+
+    private function getQueueListByPermission(
+        QueueList $queueList,
+        Useraccount $useraccount,
+        string $permission,
+        array $statuses
+    ): QueueList {
+        if (! $useraccount->hasPermissions([$permission])) {
+            return new QueueList();
+        }
+
+        return $queueList->withStatus($statuses);
     }
 }

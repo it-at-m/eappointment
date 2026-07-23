@@ -8,7 +8,7 @@ class QueueTableTest extends Base
 
     protected $parameters = [
         'selecteddate' => '2016-04-01',
-        'withCalled' => 1
+        'withCalled' => 0
     ];
 
     protected $classname = "QueueTable";
@@ -43,15 +43,6 @@ class QueueTableTest extends Base
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/useraccount/queue/',
-                    'parameters' => [
-                        'resolveReferences' => 2,
-                        'status' => 'called,processing',
-                    ],
-                    'response' => $this->readFixture("GET_queuelist_141.json")
                 ]
             ]
         );
@@ -91,15 +82,6 @@ class QueueTableTest extends Base
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_processlist_cluster_109.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/useraccount/queue/',
-                    'parameters' => [
-                        'resolveReferences' => 2,
-                        'status' => 'called,processing',
-                    ],
-                    'response' => $this->readFixture("GET_queuelist_141.json")
                 ]
             ]
         );
@@ -140,15 +122,6 @@ class QueueTableTest extends Base
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_processlist_scope_169.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/useraccount/queue/',
-                    'parameters' => [
-                        'resolveReferences' => 2,
-                        'status' => 'called,processing',
-                    ],
-                    'response' => $this->readFixture("GET_queuelist_141.json")
                 ]
             ]
         );
@@ -201,15 +174,6 @@ class QueueTableTest extends Base
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $processFixtureJson
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/useraccount/queue/',
-                    'parameters' => [
-                        'resolveReferences' => 2,
-                        'status' => 'called,processing',
-                    ],
-                    'response' => $this->readFixture("GET_queuelist_141.json")
                 ]
             ]
         );
@@ -263,6 +227,43 @@ class QueueTableTest extends Base
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $processFixtureJson
+                ]
+            ]
+        );
+
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertStringContainsString('20&nbsp;Min.', (string)$response->getBody());
+    }
+
+    public function testOnlyOpenqueueLoadsOpenCallsOnly()
+    {
+        $workstationJson = $this->readFixture("GET_Workstation_Resolved2.json");
+        $data = json_decode($workstationJson, true);
+        $data['data']['useraccount']['permissions'] = [
+            'openqueue' => true
+        ];
+        $modifiedWorkstationJson = json_encode($data);
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
+                    'response' => $modifiedWorkstationJson
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -276,7 +277,63 @@ class QueueTableTest extends Base
             ]
         );
 
-        $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString('20&nbsp;Min.', (string)$response->getBody());
+        $response = $this->render($this->arguments, [
+            'selecteddate' => '2016-04-01',
+            'withCalled' => 1
+        ], []);
+
+        $this->assertStringContainsString('Offene Aufrufe', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testWaitingqueueWithoutOpenqueueLoadsProcessListOnly()
+    {
+        $workstationJson = $this->readFixture("GET_Workstation_Resolved2.json");
+        $data = json_decode($workstationJson, true);
+        $data['data']['useraccount']['permissions'] = [
+            'waitingqueue' => true
+        ];
+        $modifiedWorkstationJson = json_encode($data);
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
+                    'response' => $modifiedWorkstationJson
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/process/2016-04-01/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
+                ]
+            ]
+        );
+
+        $response = $this->render($this->arguments, [
+            'selecteddate' => '2016-04-01',
+            'withCalled' => 1
+        ], []);
+
+        $this->assertStringContainsString('Warteschlange', (string)$response->getBody());
+        $this->assertStringNotContainsString('Offene Aufrufe', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }
