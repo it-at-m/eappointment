@@ -3080,5 +3080,97 @@ describe("AppointmentSelection", () => {
         false
       );
     });
+
+    it("shows spinner (not empty callout) while refetching after unchecking a provider", async () => {
+      (fetchAvailableCalendar as Mock).mockResolvedValue(
+        calendarResponse(
+          [
+            {
+              date: "2025-08-01",
+              providerIDs: "1,2",
+              offices: [
+                { officeId: 1, appointments: [1754042400] },
+                { officeId: 2, appointments: [1754042400] },
+              ],
+            },
+          ],
+          []
+        )
+      );
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [
+            {
+              name: "Office A",
+              id: 1,
+              address: { street: "Test", house_number: "1" },
+              scope: { id: "1" },
+            },
+            {
+              name: "Office B",
+              id: 2,
+              address: { street: "Test", house_number: "2" },
+              scope: { id: "2" },
+            },
+          ],
+        },
+      });
+
+      await wrapper.vm.showSelectionForProvider({
+        name: "Office A",
+        id: 1,
+        address: { street: "Test", house_number: "1" },
+        scope: { id: "1" },
+      });
+      await flushPromises();
+
+      wrapper.vm.selectedProviders = { "1": true, "2": true } as any;
+      await nextTick();
+      await flushPromises();
+      await new Promise((r) => setTimeout(r, 200));
+      await flushPromises();
+
+      expect(wrapper.find(".m-spinner-container").exists()).toBe(false);
+
+      let resolveRefetch!: (v: any) => void;
+      (fetchAvailableCalendar as Mock).mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            resolveRefetch = resolve;
+          })
+      );
+
+      // Uncheck office 1 — pending refetch must keep the spinner, not the empty callout.
+      wrapper.vm.selectedProviders = { "1": false, "2": true } as any;
+      await nextTick();
+      await new Promise((r) => setTimeout(r, 160));
+      await nextTick();
+
+      expect(wrapper.vm.isSwitchingProvider).toBe(true);
+      expect(wrapper.find(".m-spinner-container").exists()).toBe(true);
+      expect(wrapper.text()).not.toContain(
+        "apiErrorNoAppointmentForThisScopeHeader"
+      );
+
+      resolveRefetch(
+        calendarResponse(
+          [
+            {
+              date: "2025-08-01",
+              providerIDs: "2",
+              offices: [{ officeId: 2, appointments: [1754042400] }],
+            },
+          ],
+          []
+        )
+      );
+      await flushPromises();
+      await nextTick();
+
+      expect(wrapper.vm.isSwitchingProvider).toBe(false);
+      expect(wrapper.find(".m-spinner-container").exists()).toBe(false);
+    });
   });
 });
