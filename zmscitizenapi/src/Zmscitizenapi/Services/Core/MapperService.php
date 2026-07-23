@@ -635,6 +635,15 @@ class MapperService
             return null;
         }
 
+        $status = $process->getStatus();
+        $queueStatus = $process->toProperty()->queue->status->get();
+        if (
+            in_array($status, [Process::STATUS_DELETED, Process::STATUS_BLOCKED], true)
+            || in_array($queueStatus, [Process::STATUS_DELETED, Process::STATUS_BLOCKED], true)
+        ) {
+            return null;
+        }
+
         $content = ZmsApiClientService::getIcsContent((int) $process->getId(), (string) $process->getAuthKey());
         return $content ?: null;
     }
