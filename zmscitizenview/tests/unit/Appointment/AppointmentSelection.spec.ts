@@ -99,14 +99,14 @@ describe("AppointmentSelection", () => {
 
     Element.prototype.scrollIntoView = vi.fn();
     HTMLElement.prototype.focus = vi.fn();
-  });
 
-  (fetchAvailableCalendar as Mock).mockResolvedValue(
-    calendarResponse([
-      { date: "2025-05-14", providerIDs: "102522,54261,10489" },
-      { date: "2025-05-15", providerIDs: "102522,54261,10489" },
-    ])
-  );
+    (fetchAvailableCalendar as Mock).mockResolvedValue(
+      calendarResponse([
+        { date: "2025-05-14", providerIDs: "102522,54261,10489" },
+        { date: "2025-05-15", providerIDs: "102522,54261,10489" },
+      ])
+    );
+  });
 
   describe("ProviderSelection Integration", () => {
     it("renders nothing if no provider is selected", () => {
@@ -2283,6 +2283,105 @@ describe("AppointmentSelection", () => {
       expect(errorCallout).toBeDefined();
       expect(errorCallout!.html()).toContain("apiErrorCaptchaInvalidHeader");
       expect(errorCallout!.html()).toContain("apiErrorCaptchaInvalidText");
+      // Captcha session errors hide provider selection and calendar
+      expect(wrapper.findComponent({ name: "ProviderSelection" }).exists()).toBe(
+        false
+      );
+      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(
+        false
+      );
+      expect(wrapper.text()).not.toContain(
+        "apiErrorNoAppointmentForThisScopeHeader"
+      );
+    });
+
+    it("locks UI to captchaExpired callout after available-calendar returns captchaExpired", async () => {
+      (fetchAvailableCalendar as Mock).mockResolvedValue(
+        calendarResponse(
+          [
+            {
+              date: "2025-06-16",
+              providerIDs: "1,2",
+              offices: officeOneAndTwoSlots,
+            },
+          ],
+          []
+        )
+      );
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [
+            {
+              name: "Office A",
+              id: 1,
+              address: { street: "Main", house_number: "1" },
+              scope: { id: "1" },
+            },
+            {
+              name: "Office B",
+              id: 2,
+              address: { street: "Main", house_number: "2" },
+              scope: { id: "2" },
+            },
+          ],
+        },
+      });
+
+      await wrapper.vm.showSelectionForProvider({
+        name: "Office A",
+        id: 1,
+        address: { street: "Main", house_number: "1" },
+        scope: { id: "1" },
+      });
+      await flushPromises();
+
+      wrapper.vm.selectedProviders = { "1": true, "2": true };
+      await nextTick();
+      await flushPromises();
+      await new Promise((r) => setTimeout(r, 200));
+      await flushPromises();
+
+      expect(wrapper.vm.captchaSessionExpired).toBe(false);
+      expect(wrapper.findComponent({ name: "ProviderSelection" }).exists()).toBe(
+        true
+      );
+
+      (fetchAvailableCalendar as Mock).mockResolvedValue({
+        errors: [
+          {
+            errorCode: "captchaExpired",
+            errorType: "error",
+            errorMessage: "Captcha token expired.",
+            statusCode: 400,
+          },
+        ],
+      });
+
+      await wrapper.vm.reloadCalendarAvailability({ preserveSelectedDay: true });
+      await flushPromises();
+      await nextTick();
+
+      expect(wrapper.vm.captchaSessionExpired).toBe(true);
+      expect(wrapper.vm.availableDays).toEqual([]);
+      expect(wrapper.findComponent({ name: "ProviderSelection" }).exists()).toBe(
+        false
+      );
+      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(
+        false
+      );
+      expect(wrapper.text()).not.toContain(
+        "apiErrorNoAppointmentForThisScopeHeader"
+      );
+
+      const callouts = wrapper.findAll('[data-test="muc-callout"]');
+      const errorCallout = callouts.find(
+        (c) => c.attributes("data-type") === "error"
+      );
+      expect(errorCallout).toBeDefined();
+      expect(errorCallout!.html()).toContain("apiErrorCaptchaExpiredHeader");
+      expect(errorCallout!.html()).toContain("apiErrorCaptchaExpiredText");
     });
 
     it("shows no appointment error info callout when no appointment error is set", async () => {
@@ -2902,6 +3001,9 @@ describe("AppointmentSelection", () => {
         [{ date: "2025-06-16", providerIDs: "1" }],
         officeOneMorningSlots
       );
+      wrapper.vm.isSwitchingProvider = false;
+      wrapper.vm.availableDaysFetched = true;
+      await nextTick();
 
       expect(wrapper.vm.isListView).toBe(false);
       expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(
