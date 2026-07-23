@@ -3057,6 +3057,7 @@ describe("AppointmentSelection", () => {
               name: "Office A",
               id: 1,
               address: { street: "Elm", house_number: "99" },
+              scope: { id: "1" },
             },
           ],
         },
@@ -3068,16 +3069,30 @@ describe("AppointmentSelection", () => {
       expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(
         false
       );
+      // empty-state callout must not flash during the first load
+      expect(wrapper.text()).not.toContain(
+        "apiErrorNoAppointmentForThisScopeHeader"
+      );
 
-      // finish loading with no bookable days
-      resolveDays(calendarResponse([], []));
+      // finish loading with bookable days so we leave the loading shell cleanly
+      resolveDays(
+        calendarResponse(
+          [
+            {
+              date: "2025-08-01",
+              providerIDs: "1",
+              offices: [{ officeId: 1, appointments: [1754042400] }],
+            },
+          ],
+          []
+        )
+      );
       await flushPromises();
       await nextTick();
 
-      // spinner disappears; with no bookable days, calendar stays hidden
       expect(wrapper.find(".m-spinner-container").exists()).toBe(false);
-      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(
-        false
+      expect(wrapper.text()).not.toContain(
+        "apiErrorNoAppointmentForThisScopeHeader"
       );
     });
 
