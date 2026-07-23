@@ -405,92 +405,6 @@ const isDateInLoadedSlotsWindow = (dateKey: string): boolean => {
   );
 };
 
-const getCheckedProviderIds = (): number[] =>
-  Object.entries(selectedProviders.value)
-    .filter(([, isSelected]) => isSelected)
-    .map(([id]) => Number(id));
-
-const getAvailableDaysForCheckedOffices = () => {
-  const selectedProviderIds = getCheckedProviderIds();
-  return (availableDays.value || []).filter((day) =>
-    day.providerIDs
-      .split(",")
-      .some((providerId) => selectedProviderIds.includes(Number(providerId)))
-  );
-};
-
-/**
- * Day is usable for checked offices: appears in their providerIDs, and if already
- * free-slot-checked / in the slots window, has real appointments for them.
- */
-const isDayAvailableForCheckedOffices = (dateKey: string): boolean => {
-  const dayEntry = availableDays.value?.find(
-    (day) => toDayKey(day.date) === dateKey
-  );
-  if (!dayEntry) {
-    return false;
-  }
-  const hasProvider = dayEntry.providerIDs
-    .split(",")
-    .some((id) => selectedProviders.value[id.trim()]);
-  if (!hasProvider) {
-    return false;
-  }
-  if (
-    freeSlotCheckedDates.value.has(dateKey) ||
-    isDateInLoadedSlotsWindow(dateKey)
-  ) {
-    return dayHasSlotsForSelectedProviders(dateKey);
-  }
-  return true;
-};
-
-/**
- * Day for checked offices in/near preferMonthOf.
- * - earliest: first day in that month (provider deselection)
- * - closest: day nearest the jump target (month chevrons — next and previous)
- * Falls back to earliest overall if none in that month.
- */
-const resolveSnapDayForCheckedOffices = (
-  preferMonthOf?: Date | null,
-  strategy: "earliest" | "closest" = "earliest"
-): string | null => {
-  const days = getAvailableDaysForCheckedOffices();
-  if (days.length === 0) {
-    return null;
-  }
-  const sorted = [...days].sort((a, b) =>
-    toDayKey(a.date).localeCompare(toDayKey(b.date))
-  );
-
-  if (preferMonthOf && !Number.isNaN(preferMonthOf.getTime())) {
-    const year = preferMonthOf.getFullYear();
-    const month = preferMonthOf.getMonth();
-    const inMonth = sorted.filter((day) => {
-      const dt = new Date(`${toDayKey(day.date)}T12:00:00`);
-      return dt.getFullYear() === year && dt.getMonth() === month;
-    });
-    if (inMonth.length > 0) {
-      if (strategy === "closest") {
-        const targetTime = preferMonthOf.getTime();
-        const byDistance = [...inMonth].sort((a, b) => {
-          const da = Math.abs(
-            new Date(`${toDayKey(a.date)}T12:00:00`).getTime() - targetTime
-          );
-          const db = Math.abs(
-            new Date(`${toDayKey(b.date)}T12:00:00`).getTime() - targetTime
-          );
-          return da - db || toDayKey(a.date).localeCompare(toDayKey(b.date));
-        });
-        return toDayKey(byDistance[0].date);
-      }
-      return toDayKey(inMonth[0].date);
-    }
-  }
-
-  return toDayKey(sorted[0].date);
-};
-
 /**
  * Free-slot SQL window hint: selected day (otherwise today).
  * Backend loads appointment timestamps only for that window; other painted-month
@@ -794,34 +708,12 @@ const handleDaySelection = async (day: any) => {
       return;
     }
 
-    // Global next/prevBookableDate may only belong to unchecked offices.
-    // Snap to the closest day in that month for currently checked offices.
-    const preferMonth = selectedDay.value ?? day;
-    let activeDayKey = toDayKey(preferMonth);
-    if (!isDayAvailableForCheckedOffices(activeDayKey)) {
-      const snapKey = resolveSnapDayForCheckedOffices(preferMonth, "closest");
-      if (snapKey && snapKey !== activeDayKey) {
-        selectedDay.value = new Date(`${snapKey}T12:00:00`);
-        selectedTimeslot.value = 0;
-        selectedHour.value = null;
-        selectedDayPart.value = null;
-        activeDayKey = snapKey;
-        const reloadedSnap = await reloadCalendarAvailability({
-          preserveSelectedDay: true,
-        });
-        if (generation !== daySelectionGeneration || !reloadedSnap) {
-          return;
-        }
-      }
-    }
-
-    await getAppointmentsOfDay(activeDayKey);
+    await getAppointmentsOfDay(toDayKey(day));
     if (generation !== daySelectionGeneration) {
       return;
     }
 
-    const dayChanged = toDayKey(day) !== activeDayKey || !isSameDay;
-    if (dayChanged) {
+    if (!isSameDay) {
       // Reset to earliest available appointment after fresh data is loaded
       if (timeSlotsInHoursByOffice.value.size > 0) {
         const allHours = Array.from(
@@ -1437,7 +1329,16 @@ function updateCalendarNavigationBounds(
 
 function updateDateRangeForSelectedProviders(skipDateValidation = false) {
   if (!availableDays.value) return [];
-  const availableDaysForSelectedProviders = getAvailableDaysForCheckedOffices();
+  const selectedProviderIds = Object.entries(selectedProviders.value)
+    .filter(([_, isSelected]) => isSelected)
+    .map(([id]) => Number(id));
+
+  const availableDaysForSelectedProviders = (availableDays.value || []).filter(
+    (day) =>
+      day.providerIDs
+        .split(",")
+        .some((providerId) => selectedProviderIds.includes(Number(providerId)))
+  );
 
   if (availableDaysForSelectedProviders.length > 0) {
     updateCalendarNavigationBounds(availableDaysForSelectedProviders);
@@ -1460,20 +1361,22 @@ function updateDateRangeForSelectedProviders(skipDateValidation = false) {
 }
 
 async function validateAndUpdateSelectedDate(
-  _availableDaysForSelectedProviders: any[]
+  availableDaysForSelectedProviders: any[]
 ) {
-  const preferMonth = selectedDay.value;
-  const snapKey = resolveSnapDayForCheckedOffices(preferMonth);
-  if (!snapKey) {
-    return;
-  }
+  if (availableDaysForSelectedProviders.length === 0) return;
+
+  const sortedDays = [...availableDaysForSelectedProviders].sort((a, b) =>
+    toDayKey(a.date).localeCompare(toDayKey(b.date))
+  );
+  const earliestKey = toDayKey(sortedDays[0].date);
   const currentKey = selectedDay.value ? toDayKey(selectedDay.value) : null;
-  if (currentKey === snapKey) {
+
+  if (currentKey === earliestKey) {
     return;
   }
 
   // Noon avoids UTC date-only parsing shifting the calendar day.
-  await handleDaySelection(new Date(`${snapKey}T12:00:00`));
+  await handleDaySelection(new Date(`${earliestKey}T12:00:00`));
 }
 
 async function snapToNearestForCurrentView() {
@@ -1498,13 +1401,15 @@ function scheduleRefreshAfterProviderChange() {
         return;
       }
 
-      const preferMonth = selectedDay.value;
-      const snapKey = resolveSnapDayForCheckedOffices(preferMonth);
+      const sortedDays = [...daysForSelection].sort((a, b) =>
+        toDayKey(a.date).localeCompare(toDayKey(b.date))
+      );
+      const earliestKey = toDayKey(sortedDays[0].date);
       const currentKey = selectedDay.value ? toDayKey(selectedDay.value) : null;
 
-      // Prefer same-month earliest for checked offices (month nav + deselection).
-      if (snapKey && currentKey !== snapKey) {
-        await handleDaySelection(new Date(`${snapKey}T12:00:00`));
+      // One deterministic rule: earliest day across checked offices, then fetch.
+      if (currentKey !== earliestKey) {
+        await handleDaySelection(new Date(`${earliestKey}T12:00:00`));
       } else if (currentKey) {
         const reloaded = await reloadCalendarAvailability({
           preserveSelectedDay: true,
