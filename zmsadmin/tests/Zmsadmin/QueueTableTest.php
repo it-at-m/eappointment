@@ -40,7 +40,8 @@ class QueueTableTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
                     'parameters' => [
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess(),
+                        'strictQueuePermissions' => 1
                     ],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
@@ -79,7 +80,8 @@ class QueueTableTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/cluster/109/process/2016-04-01/',
                     'parameters' => [
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess(),
+                        'strictQueuePermissions' => 1
                     ],
                     'response' => $this->readFixture("GET_processlist_cluster_109.json")
                 ]
@@ -119,7 +121,8 @@ class QueueTableTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/169/process/2016-04-01/',
                     'parameters' => [
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess(),
+                        'strictQueuePermissions' => 1
                     ],
                     'response' => $this->readFixture("GET_processlist_scope_169.json")
                 ]
@@ -171,7 +174,8 @@ class QueueTableTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
                     'parameters' => [
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess(),
+                        'strictQueuePermissions' => 1
                     ],
                     'response' => $processFixtureJson
                 ]
@@ -224,7 +228,8 @@ class QueueTableTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
                     'parameters' => [
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess(),
+                        'strictQueuePermissions' => 1
                     ],
                     'response' => $processFixtureJson
                 ]
@@ -320,7 +325,8 @@ class QueueTableTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
                     'parameters' => [
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess(),
+                        'strictQueuePermissions' => 1
                     ],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]

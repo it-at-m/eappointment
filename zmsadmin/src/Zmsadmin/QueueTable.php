@@ -54,7 +54,8 @@ class QueueTable extends BaseController
         ) {
             $processList = $workstationRequest->readProcessListByDate(
                 $selectedDateTime,
-                Helper\GraphDefaults::getProcess()
+                Helper\GraphDefaults::getProcess(),
+                true
             );
         }
 
