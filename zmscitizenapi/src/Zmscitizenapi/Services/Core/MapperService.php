@@ -611,7 +611,11 @@ class MapperService
         }
 
         $status = $process->getStatus();
-        if (in_array($status, [Process::STATUS_DELETED, Process::STATUS_BLOCKED], true)) {
+        $queueStatus = $process->toProperty()->queue->status->get();
+        if (
+            in_array($status, [Process::STATUS_DELETED, Process::STATUS_BLOCKED], true)
+            || in_array($queueStatus, [Process::STATUS_DELETED, Process::STATUS_BLOCKED], true)
+        ) {
             return null;
         }
 
