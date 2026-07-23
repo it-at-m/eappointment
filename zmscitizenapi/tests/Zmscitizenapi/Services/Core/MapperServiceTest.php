@@ -201,6 +201,26 @@ class MapperServiceTest extends TestCase
         $this->assertEquals('confirmed', $result->status);
     }
 
+    public function testProcessToThinnedProcessSkipsIcsForDeletedStatus()
+    {
+        $process = new Process([
+            'id' => 1,
+            'authKey' => 'rotated-key',
+            'status' => Process::STATUS_DELETED,
+        ]);
+        $appointment = new class {
+            public $date = '1724907600';
+            public function hasTime() { return true; }
+        };
+        $process->appointments = [$appointment];
+        $process->queue = (object) ['status' => Process::STATUS_DELETED];
+
+        $result = MapperService::processToThinnedProcess($process);
+
+        $this->assertInstanceOf(ThinnedProcess::class, $result);
+        $this->assertNull($result->icsContent);
+    }
+
     public function testMinimalProcessToThinnedProcess()
     {
         $expectedResponse = [

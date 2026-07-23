@@ -128,9 +128,8 @@ class AppointmentCancelControllerTest extends ControllerTestCase
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArrayHasKey('icsContent', $responseBody);
-        $this->assertStringContainsString('BEGIN:VCALENDAR', $responseBody['icsContent']);
+        $this->assertNull($responseBody['icsContent']);
         unset($responseBody['icsContent']);
-        unset($expectedResponse['icsContent']);
         $this->assertEquals($expectedResponse, $responseBody);
     }
 
