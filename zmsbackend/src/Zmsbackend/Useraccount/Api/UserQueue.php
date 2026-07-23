@@ -58,33 +58,15 @@ class UserQueue extends \BO\Zmsbackend\Api\BaseController
             );
         }
 
-        $queues = $queueList->withSortedWaitingTime();
-
-        $permissionByStatus = [
-            'preconfirmed' => 'waitingqueue',
-            'confirmed' => 'waitingqueue',
-            'queued' => 'waitingqueue',
-            'reserved' => 'waitingqueue',
-            'deleted' => 'waitingqueue',
-            'called' => 'openqueue',
-            'processing' => 'openqueue',
-            'parked' => 'parkedqueue',
-            'missed' => 'missedqueue',
-            'finished' => 'finishedqueue',
-        ];
+        $queues = \BO\Zmsbackend\Helper\QueueStatusPermission::filterQueueList(
+            $queueList->withSortedWaitingTime(),
+            $useraccount,
+            false
+        );
 
         $filteredQueues = [];
 
         foreach ($queues as $queue) {
-            $requiredPermission = $permissionByStatus[$queue->status] ?? null;
-
-            if (
-                $requiredPermission === null
-                || ! $useraccount->hasPermissions([$requiredPermission])
-            ) {
-                continue;
-            }
-
             if (
                 ! empty($statuses)
                 && ! in_array($queue->status, $statuses, true)

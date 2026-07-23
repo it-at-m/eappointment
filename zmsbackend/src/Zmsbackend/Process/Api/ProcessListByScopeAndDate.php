@@ -26,6 +26,7 @@ class ProcessListByScopeAndDate extends \BO\Zmsbackend\Api\BaseController
         array $args
     ) {
         $showWeek = Validator::param('showWeek')->isNumber()->setDefault(0)->getValue();
+        $strictQueuePermissions = Validator::param('strictQueuePermissions')->isNumber()->setDefault(0)->getValue();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
         $dateTime = $dateTime->modify(\App::$now->format('H:i'));
         $dates = [$dateTime];
@@ -47,9 +48,10 @@ class ProcessListByScopeAndDate extends \BO\Zmsbackend\Api\BaseController
             throw new \BO\Zmsbackend\Scope\Exception\ScopeNotFound();
         }
 
-        (new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions(
+        $workstation = (new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions(
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
         );
+        $useraccount = $workstation->getUseraccount();
 
         $queueList = new QueueList();
         foreach ($dates as $date) {
@@ -64,9 +66,18 @@ class ProcessListByScopeAndDate extends \BO\Zmsbackend\Api\BaseController
         $archivedProcesses =
             (new \BO\Zmsbackend\Process\Service\ProcessStatusArchived())->readListByScopesAndDates([$scope->getId()], $dates);
 
+        $processList = $queueList->toProcessList()->sortByEstimatedWaitingTime()->withResolveLevel(2);
+        $processList->addData($archivedProcesses);
+        // strictQueuePermissions=1: queue UI (no appointment fallback for waiting statuses).
+        // Default: appointment holders may still see waiting-pipeline for calendar/planning.
+        $processList = \BO\Zmsbackend\Helper\QueueStatusPermission::filterProcessList(
+            $processList,
+            $useraccount,
+            ! $strictQueuePermissions
+        );
+
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
-        $message->data = $queueList->toProcessList()->sortByEstimatedWaitingTime()->withResolveLevel(2);
-        $message->data->addData($archivedProcesses);
+        $message->data = $processList;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);

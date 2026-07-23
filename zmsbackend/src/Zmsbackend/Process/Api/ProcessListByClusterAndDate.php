@@ -27,6 +27,7 @@ class ProcessListByClusterAndDate extends \BO\Zmsbackend\Api\BaseController
         array $args
     ) {
         $showWeek = Validator::param('showWeek')->isNumber()->setDefault(0)->getValue();
+        $strictQueuePermissions = Validator::param('strictQueuePermissions')->isNumber()->setDefault(0)->getValue();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
         $dateTime = $dateTime->modify(\App::$now->format('H:i'));
         $dates = [$dateTime];
@@ -48,10 +49,11 @@ class ProcessListByClusterAndDate extends \BO\Zmsbackend\Api\BaseController
             throw new \BO\Zmsbackend\Cluster\Exception\ClusterNotFound();
         }
 
-        (new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions(
+        $workstation = (new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions(
             'appointment',
             new \BO\Zmsentities\Useraccount\EntityAccess($cluster)
         );
+        $useraccount = $workstation->getUseraccount();
 
         $shortNames = [];
         foreach ($cluster->scopes as $scope) {
@@ -90,20 +92,26 @@ class ProcessListByClusterAndDate extends \BO\Zmsbackend\Api\BaseController
             ]);
         }
 
-        $queueList = $queueList->toProcessList()->sortByEstimatedWaitingTime()->withResolveLevel(2);
-        foreach ($queueList as $queue) {
-            if (!$queue->scope->id) {
+        $processList = $queueList->toProcessList()->sortByEstimatedWaitingTime()->withResolveLevel(2);
+        foreach ($processList as $process) {
+            if (!$process->scope->id) {
                 continue;
             }
 
-            $queue->scope->shortName = $shortNames[$queue->scope->id];
+            $process->scope->shortName = $shortNames[$process->scope->id];
         }
 
-        $message = \BO\Zmsbackend\Api\Response\Message::create($request);
-        $message->data = $queueList;
+        $processList->addData($allArchivedProcesses);
+        // strictQueuePermissions=1: queue UI (no appointment fallback for waiting statuses).
+        // Default: appointment holders may still see waiting-pipeline for calendar/planning.
+        $processList = \BO\Zmsbackend\Helper\QueueStatusPermission::filterProcessList(
+            $processList,
+            $useraccount,
+            ! $strictQueuePermissions
+        );
 
-        // Add all archived processes to the response data
-        $message->data->addData($allArchivedProcesses);
+        $message = \BO\Zmsbackend\Api\Response\Message::create($request);
+        $message->data = $processList;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
