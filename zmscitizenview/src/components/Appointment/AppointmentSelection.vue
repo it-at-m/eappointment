@@ -1013,17 +1013,34 @@ const jumpToBookableDate = async (isoDate: string) => {
   await handleDaySelection(day);
 };
 
+/**
+ * Office IDs for available-calendar-by-office. Once checkboxes exist, only
+ * checked offices are sent so next/prevBookableDate match the selection.
+ */
+const getOfficeIdsForCalendarRequest = (): number[] => {
+  const selectable = selectableProviders.value || [];
+  const selectableIds = new Set(selectable.map((p) => Number(p.id)));
+  const hasCheckboxState = Object.keys(selectedProviders.value).length > 0;
+
+  if (hasCheckboxState) {
+    return Object.entries(selectedProviders.value)
+      .filter(([, isSelected]) => isSelected)
+      .map(([id]) => Number(id))
+      .filter((id) => selectableIds.has(id));
+  }
+
+  return selectable.map((p) => Number(p.id));
+};
+
 const reloadCalendarAvailability = async (options?: {
   preserveSelectedDay?: boolean;
   /** Prevent infinite reload when API/mocks return a slots window that still excludes selectedDay */
   allowSlotsFollowUp?: boolean;
 }): Promise<boolean> => {
   const allowSlotsFollowUp = options?.allowSlotsFollowUp !== false;
-  const allProviderIds = (selectableProviders.value || []).map((p) =>
-    Number(p.id)
-  );
+  const officeIds = getOfficeIdsForCalendarRequest();
 
-  if (allProviderIds.length === 0) {
+  if (officeIds.length === 0) {
     availableDays.value = [];
     appointmentsByDay.value = new Map();
     loadedSlotsStartDate.value = null;
@@ -1051,7 +1068,7 @@ const reloadCalendarAvailability = async (options?: {
   try {
     data = await fetchAvailableCalendar(
       props.globalState,
-      allProviderIds,
+      officeIds,
       Array.from(props.selectedServiceMap.keys()),
       Array.from(props.selectedServiceMap.values()),
       props.captchaToken ?? undefined,
@@ -1138,11 +1155,7 @@ const reloadCalendarAvailability = async (options?: {
 };
 
 const fetchAvailableDaysForSelection = async (): Promise<void> => {
-  const allProviderIds = (selectableProviders.value || []).map((p) =>
-    Number(p.id)
-  );
-
-  if (allProviderIds.length === 0) {
+  if (!(selectableProviders.value || []).length) {
     availableDays.value = [];
     availableDaysFetched.value = true;
     clearLocalApiErrors();
@@ -1396,6 +1409,17 @@ function scheduleRefreshAfterProviderChange() {
     }
 
     try {
+      // Refetch with only checked offices so next/prevBookableDate match selection.
+      const reloaded = await reloadCalendarAvailability({
+        preserveSelectedDay: true,
+      });
+      if (
+        selectionSnapshot !== JSON.stringify(selectedProviders.value) ||
+        !reloaded
+      ) {
+        return;
+      }
+
       const daysForSelection = updateDateRangeForSelectedProviders(true);
       if (daysForSelection.length === 0) {
         return;
@@ -1411,12 +1435,7 @@ function scheduleRefreshAfterProviderChange() {
       if (currentKey !== earliestKey) {
         await handleDaySelection(new Date(`${earliestKey}T12:00:00`));
       } else if (currentKey) {
-        const reloaded = await reloadCalendarAvailability({
-          preserveSelectedDay: true,
-        });
-        if (reloaded) {
-          await getAppointmentsOfDay(currentKey);
-        }
+        await getAppointmentsOfDay(currentKey);
       }
 
       await snapToNearestForCurrentView();

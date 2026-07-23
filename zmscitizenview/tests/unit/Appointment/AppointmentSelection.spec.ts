@@ -888,8 +888,112 @@ describe("AppointmentSelection", () => {
           (fetchAvailableCalendar as Mock).mock.calls.length
         ).toBeGreaterThan(callsBeforeCheck);
         const lastCall = (fetchAvailableCalendar as Mock).mock.calls.at(-1);
+        expect(lastCall?.[1]).toEqual(
+          expect.arrayContaining([10351880, 10470])
+        );
+        expect(lastCall?.[1]).toHaveLength(2);
         expect(lastCall?.[5]).toBe("2025-06-16");
         expect(lastCall?.[6]).toBe("2025-06-16");
+      });
+
+      it("refetches calendar with only checked offices when a provider is unchecked", async () => {
+        (fetchAvailableCalendar as Mock).mockImplementation(
+          (_globalState, officeIds: number[]) => {
+            const ids = officeIds.map(Number).sort((a, b) => a - b);
+            if (ids.length === 1 && ids[0] === 10470) {
+              return Promise.resolve(
+                calendarResponse(
+                  [
+                    {
+                      date: "2025-08-02",
+                      providerIDs: "10470",
+                      offices: [
+                        { officeId: 10470, appointments: [1754128800] },
+                      ],
+                    },
+                  ],
+                  [],
+                  { nextBookableDate: "2025-08-02" }
+                )
+              );
+            }
+            return Promise.resolve(
+              calendarResponse(
+                [
+                  {
+                    date: "2025-08-01",
+                    providerIDs: "10351880,10470",
+                    offices: [
+                      { officeId: 10351880, appointments: [1754042400] },
+                      { officeId: 10470, appointments: [1754042400] },
+                    ],
+                  },
+                  {
+                    date: "2025-08-02",
+                    providerIDs: "10470",
+                    offices: [
+                      { officeId: 10470, appointments: [1754128800] },
+                    ],
+                  },
+                ],
+                [],
+                { nextBookableDate: "2025-08-01" }
+              )
+            );
+          }
+        );
+
+        const wrapper = createWrapper({
+          selectedService: {
+            id: "service1",
+            providers: [
+              {
+                name: "Office X",
+                id: 10351880,
+                address: { street: "Test", house_number: "1" },
+                scope: { id: "10351880" },
+              },
+              {
+                name: "Office Y",
+                id: 10470,
+                address: { street: "Test", house_number: "2" },
+                scope: { id: "10470" },
+              },
+            ],
+          },
+        });
+
+        await wrapper.vm.showSelectionForProvider({
+          name: "Office X",
+          id: 10351880,
+          address: { street: "Test", house_number: "1" },
+          scope: { id: "10351880" },
+        });
+        await flushPromises();
+
+        wrapper.vm.selectedProviders = {
+          "10351880": true,
+          "10470": true,
+        } as any;
+        await nextTick();
+        await flushPromises();
+        await new Promise((r) => setTimeout(r, 200));
+        await flushPromises();
+
+        expect(wrapper.vm.nextBookableDate).toBe("2025-08-01");
+
+        wrapper.vm.selectedProviders = {
+          "10351880": false,
+          "10470": true,
+        } as any;
+        await nextTick();
+        await flushPromises();
+        await new Promise((r) => setTimeout(r, 300));
+        await flushPromises();
+
+        const lastCall = (fetchAvailableCalendar as Mock).mock.calls.at(-1);
+        expect(lastCall?.[1]).toEqual([10470]);
+        expect(wrapper.vm.nextBookableDate).toBe("2025-08-02");
       });
 
       it("enables a date in availableDays if API returns appointments for it", async () => {
