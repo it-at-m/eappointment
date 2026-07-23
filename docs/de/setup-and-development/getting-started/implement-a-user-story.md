@@ -45,7 +45,7 @@ flowchart TD
     schemaModel --> apiController[In API-Controller propagieren<br/><code>Api</code>-Ordner in <code>zmsbackend</code>]
     maybeController --> apiController
     apiController --> apiElse{"Muss ich sonst noch etwas<br/>in der <code>zmsbackend</code>-<br/>API-Schicht ändern?"}
-    apiElse -->|Ja| apiMore[Routen, neue Endpunkte,<br/>Request-Handling, Statuscodes, …]
+    apiElse -->|Ja| apiMore[Neuer Controller → in<br/><code>zmsbackend/routing.php</code> eintragen<br/>plus Request-Handling, Statuscodes, …]
     apiElse -->|Nein| apiDone[API-Schicht für diese Story fertig]
     apiMore --> apiDone
   end
@@ -136,6 +136,7 @@ Typisches Layout:
 - `zmsentities/schema/` — JSON Schema für Entities (und zugehörige Citizen-API-Schemas)
 - `zmsentities` PHP-Entity-Klassen — die Modelle zu diesen Schemas
 - `zmsbackend/src/Zmsbackend/.../Api/` — API-Controller, die diese Entities in Responses zurückgeben
+- `zmsbackend/routing.php` — Slim-Routen, die URL-Pfade an diese Controller binden
 
 **Frage 4: Muss ich das JSON-Schema / Modell in `zmsentities` ändern oder ergänzen, damit ich die Änderung in der API-Controller-Response propagieren kann?**
 
@@ -146,13 +147,14 @@ Typisches Layout:
 
 Wenn die Response-Form stimmt, mache einen letzten Check der API-Oberfläche in `zmsbackend` (typisch unter `.../Api/`):
 
-- neue oder geänderte Routen / Endpunkte
+- **neuer Controller** → du **musst** ihn in [`zmsbackend/routing.php`](https://github.com/it-at-m/eappointment/blob/main/zmsbackend/routing.php) registrieren (Slim-Route → Controller-Klasse); die Controller-Datei allein reicht nicht
+- neue oder geänderte Routen / Endpunkte für bestehende Controller (ebenfalls in `routing.php`)
 - Request-Parsing oder Validierung
 - welcher Service-Aufruf im Controller
 - HTTP-Statuscodes, Fehler oder Auth-/Rechteprüfungen
 - verwandte Controller, die denselben Contract einhalten müssen
 
-- **Ja** — schließe diese API-Schicht-Änderungen ab, bevor du `zmsbackend` verlässt.
+- **Ja** — schließe diese API-Schicht-Änderungen ab (inkl. `routing.php`, wenn du einen Controller hinzugefügt hast), bevor du `zmsbackend` verlässt.
 - **Nein** — die API-Schicht ist für diese Story fertig.
 
 Beide Antworten **schließen** den Backend-Pfad für diese Story. Weiter unter [Oberhalb der API](#oberhalb-der-api).

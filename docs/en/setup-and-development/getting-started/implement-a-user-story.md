@@ -45,7 +45,7 @@ flowchart TD
     schemaModel --> apiController[Propagate in API controller<br/><code>Api</code> folders in <code>zmsbackend</code>]
     maybeController --> apiController
     apiController --> apiElse{"Do I need to change anything<br/>else in the <code>zmsbackend</code><br/>API layer?"}
-    apiElse -->|Yes| apiMore[Routes, new endpoints,<br/>request handling, status codes, …]
+    apiElse -->|Yes| apiMore[New controller → register in<br/><code>zmsbackend/routing.php</code><br/>plus request handling, status codes, …]
     apiElse -->|No| apiDone[API layer done for this story]
     apiMore --> apiDone
   end
@@ -136,6 +136,7 @@ Typical layout:
 - `zmsentities/schema/` — JSON Schema for entities (and related citizen API schemas)
 - `zmsentities` PHP entity classes — the models that follow those schemas
 - `zmsbackend/src/Zmsbackend/.../Api/` — API controllers that return those entities in responses
+- `zmsbackend/routing.php` — Slim routes that wire URL paths to those controllers
 
 **Question 4: Do I need to change or add the JSON schema / model in `zmsentities` so I can propagate the changes in my API controller response?**
 
@@ -146,13 +147,14 @@ Typical layout:
 
 After the response shape is right, do a final pass on the API surface in `zmsbackend` (typically under `.../Api/`):
 
-- new or changed routes / endpoints
+- **new controller** → you **must** register it in [`zmsbackend/routing.php`](https://github.com/it-at-m/eappointment/blob/main/zmsbackend/routing.php) (Slim route → controller class); a controller file alone is not enough
+- new or changed routes / endpoints for existing controllers (also in `routing.php`)
 - request parsing or validation
 - which service method the controller calls
 - HTTP status codes, errors, or auth/permission checks
 - related controllers that must stay consistent with the same contract
 
-- **Yes** — finish those API-layer changes before leaving `zmsbackend`.
+- **Yes** — finish those API-layer changes (including `routing.php` when you added a controller) before leaving `zmsbackend`.
 - **No** — the API layer is done for this story.
 
 Either answer **closes** the backend path for this story. Continue at [Above the API](#above-the-api).
