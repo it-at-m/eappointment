@@ -1,5 +1,6 @@
 <template>
   <ProviderSelection
+    v-if="!isCaptchaSessionExpired"
     :t="t"
     :selectableProviders="providerSelectionProviders"
     :providersWithAppointments="providersWithAppointments"
@@ -10,6 +11,7 @@
   />
   <div
     v-if="
+      !isCaptchaSessionExpired &&
       availableDaysFetched &&
       (noProviderSelected || !hasSelectedProviderWithAppointments) &&
       !isSwitchingProvider
@@ -47,6 +49,7 @@
   </div>
   <div
     v-else-if="
+      !isCaptchaSessionExpired &&
       (!error || isNoAppointmentForThisDayError) &&
       (hasSelectedProviderWithAppointments ||
         !availableDaysFetched ||
@@ -137,7 +140,11 @@
     </div>
   </div>
   <div
-    v-if="showError && !isSwitchingProvider && !noProviderSelected"
+    v-if="
+      showError &&
+      !isSwitchingProvider &&
+      (isCaptchaSessionExpired || !noProviderSelected)
+    "
     class="m-component"
   >
     <h2>{{ t("time") }}</h2>
@@ -324,7 +331,47 @@ const currentErrorData = computed(() => errorStates.currentErrorData);
 const error = ref<boolean>(false);
 const showError = computed(() => error.value || props.bookingError);
 
+/** Sticky until back: available-calendar captcha session expired — hide providers/calendar. */
+const captchaSessionExpired = ref(false);
+
+const CAPTCHA_SESSION_ERROR_CODES = new Set([
+  "captchaExpired",
+  "captchaInvalid",
+  "captchaMissing",
+]);
+
+const CAPTCHA_SESSION_BOOKING_KEYS = new Set([
+  "apiErrorCaptchaExpired",
+  "apiErrorCaptchaInvalid",
+  "apiErrorCaptchaMissing",
+  "altcha.invalidCaptcha",
+]);
+
+const isCaptchaSessionExpired = computed(() => {
+  if (captchaSessionExpired.value) {
+    return true;
+  }
+  if (props.bookingError && props.bookingErrorKey) {
+    return CAPTCHA_SESSION_BOOKING_KEYS.has(props.bookingErrorKey);
+  }
+  return (
+    !!errorStateMap.value.apiErrorCaptchaExpired?.value ||
+    !!errorStateMap.value.apiErrorCaptchaInvalid?.value ||
+    !!errorStateMap.value.apiErrorCaptchaMissing?.value
+  );
+});
+
+const getFirstErrorCode = (data: any): string | null => {
+  const code = data?.errors?.[0]?.errorCode;
+  return typeof code === "string" ? code : null;
+};
+
 const clearLocalApiErrors = (): void => {
+  // Keep captcha-expired lock until the user goes back.
+  if (captchaSessionExpired.value) {
+    return;
+  }
+
   error.value = false;
 
   Object.values(errorStateMap.value).forEach((errorState) => {
@@ -337,7 +384,7 @@ const clearLocalApiErrors = (): void => {
 const clearVisibleErrors = (notifyParent = true): void => {
   clearLocalApiErrors();
 
-  if (notifyParent) {
+  if (notifyParent && !captchaSessionExpired.value) {
     emit("clearBookingError");
   }
 };
@@ -680,7 +727,7 @@ const isAbortError = (error: unknown): boolean =>
     (error as { name: string }).name === "AbortError");
 
 const handleDaySelection = async (day: any) => {
-  if (!(day instanceof Date)) {
+  if (!(day instanceof Date) || captchaSessionExpired.value) {
     return;
   }
 
@@ -873,6 +920,7 @@ const isSlotSelected = (officeId: number | string, time: number) =>
 
 const nextStep = () => emit("next");
 const previousStep = () => {
+  captchaSessionExpired.value = false;
   clearVisibleErrors();
   emit("back");
 };
@@ -888,7 +936,7 @@ const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
     };
   }
   // If we're switching providers, don't show any error messages
-  if (isSwitchingProvider.value) {
+  if (isSwitchingProvider.value && !captchaSessionExpired.value) {
     return {
       headerKey: "",
       textKey: "",
@@ -899,9 +947,35 @@ const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
   return getApiErrorTranslation(errorStateMap.value, currentErrorData.value);
 });
 
+const lockUiForCaptchaSessionExpiry = (): void => {
+  captchaSessionExpired.value = true;
+  availableDays.value = [];
+  appointmentsByDay.value = new Map();
+  appointmentTimestampsByOffice.value = [];
+  appointmentTimestamps.value = [];
+  appointmentsCount.value = 0;
+  selectedDay.value = undefined;
+  selectedTimeslot.value = 0;
+  selectedHour.value = null;
+  selectedDayPart.value = null;
+  loadedSlotsStartDate.value = null;
+  loadedSlotsEndDate.value = null;
+  freeSlotCheckedDates.value = new Set();
+  prevBookableDate.value = null;
+  nextBookableDate.value = null;
+  availableDaysFetched.value = true;
+  isSwitchingProvider.value = false;
+  isLoadingAppointments.value = false;
+  isLoadingComplete.value = true;
+};
+
 const handleError = (data: any): void => {
   error.value = true;
   handleApiResponse(data, errorStateMap.value, currentErrorData.value);
+  const errorCode = getFirstErrorCode(data);
+  if (errorCode && CAPTCHA_SESSION_ERROR_CODES.has(errorCode)) {
+    lockUiForCaptchaSessionExpiry();
+  }
 };
 
 const setNoAppointmentForThisDayError = (): void => {
@@ -1405,6 +1479,9 @@ async function snapToNearestForCurrentView() {
 }
 
 function scheduleRefreshAfterProviderChange() {
+  if (captchaSessionExpired.value) {
+    return;
+  }
   // Bump generation so only the latest toggle owns the spinner / finally-clear.
   const generation = ++providerRefreshGeneration;
   const selectionSnapshot = JSON.stringify(selectedProviders.value);
@@ -1621,6 +1698,9 @@ watch(appointmentTimestampsByOffice, () => {
 watch(
   selectedProviders,
   async () => {
+    if (captchaSessionExpired.value) {
+      return;
+    }
     // Sync single-selection provider immediately
     const selectedIds = Object.keys(selectedProviders.value).filter(
       (id) => selectedProviders.value[id]
