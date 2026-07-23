@@ -28,6 +28,25 @@ class ConfigTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertArrayNotHasKey('test', (array) $config);
     }
 
+    public function testReadEntityIgnoresNullCacheEntry()
+    {
+        $previousCache = \App::$cache;
+        $cache = $this->createMock(\Psr\SimpleCache\CacheInterface::class);
+        $cache->method('get')->with('config')->willReturn(null);
+        $cache->expects($this->once())->method('set')->with(
+            'config',
+            $this->isInstanceOf(\BO\Zmsentities\Config::class)
+        );
+        \App::$cache = $cache;
+
+        try {
+            $entity = (new Query())->readEntity();
+            $this->assertEntity("\\BO\\Zmsentities\\Config", $entity);
+        } finally {
+            \App::$cache = $previousCache;
+        }
+    }
+
     public function testReadProperty()
     {
         $query = new Query();
