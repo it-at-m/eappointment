@@ -365,6 +365,7 @@ const isSwitchingProvider = ref(false);
 const isLoadingComplete = ref(false);
 
 let refetchTimer: ReturnType<typeof setTimeout> | undefined;
+let providerRefreshGeneration = 0;
 
 const toDayKey = (value: Date | string): string => {
   if (typeof value === "string") return value.slice(0, 10);
@@ -1401,9 +1402,14 @@ async function snapToNearestForCurrentView() {
 }
 
 function scheduleRefreshAfterProviderChange() {
+  // Bump generation so only the latest toggle owns the spinner / finally-clear.
+  const generation = ++providerRefreshGeneration;
   const selectionSnapshot = JSON.stringify(selectedProviders.value);
   if (refetchTimer) clearTimeout(refetchTimer);
   refetchTimer = setTimeout(async () => {
+    if (generation !== providerRefreshGeneration) {
+      return;
+    }
     if (selectionSnapshot !== JSON.stringify(selectedProviders.value)) {
       return;
     }
@@ -1413,10 +1419,10 @@ function scheduleRefreshAfterProviderChange() {
       const reloaded = await reloadCalendarAvailability({
         preserveSelectedDay: true,
       });
-      if (
-        selectionSnapshot !== JSON.stringify(selectedProviders.value) ||
-        !reloaded
-      ) {
+      if (generation !== providerRefreshGeneration) {
+        return;
+      }
+      if (!reloaded) {
         return;
       }
 
@@ -1438,9 +1444,14 @@ function scheduleRefreshAfterProviderChange() {
         await getAppointmentsOfDay(currentKey);
       }
 
+      if (generation !== providerRefreshGeneration) {
+        return;
+      }
+
       await snapToNearestForCurrentView();
     } finally {
-      if (selectionSnapshot === JSON.stringify(selectedProviders.value)) {
+      // Keep spinner up if a newer checkbox toggle already started another refresh.
+      if (generation === providerRefreshGeneration) {
         isSwitchingProvider.value = false;
       }
     }
@@ -1616,7 +1627,9 @@ watch(
     }
     clearVisibleErrors(daysWereFetched);
 
-    if (hasAvailableDays) {
+    // Keep the calendar spinner up for any checked-office refetch — do not flash
+    // the empty-state callout while availableDays still reflect the old office set.
+    if (selectedIds.length > 0) {
       isSwitchingProvider.value = true;
     } else {
       isSwitchingProvider.value = false;
