@@ -15,8 +15,11 @@ class Config extends \BO\Zmsbackend\Base
     {
         $cacheKey = "config";
 
-        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
-            return App::$cache->get($cacheKey);
+        if (!$disableCache && App::$cache) {
+            $cached = App::$cache->get($cacheKey);
+            if ($cached instanceof Entity) {
+                return $cached;
+            }
         }
 
         $query = \BO\Zmsbackend\Config\Repository\Config::QUERY_SELECT;
