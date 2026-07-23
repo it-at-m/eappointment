@@ -204,4 +204,47 @@ class AppointmentFormFreeProcessListTest extends Base
         $response = $this->render([], $this->parameters, []);
         $this->assertStringContainsString('disabled="disabled"', (string)$response->getBody());
     }
+
+    public function testClusterEnabledWithoutSelectedScope()
+    {
+        \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
+                    'response' => $this->readFixture("GET_Workstation_clusterEnabled.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/free/',
+                    'parameters' => [
+                        'slotType' => 'intern',
+                        'slotsRequired' => 0,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
+                    'response' => $this->readFixture("GET_freeprocesslist_empty.json")
+                ]
+            ]
+        );
+        $response = $this->render([], [
+            'selecteddate' => '2016-07-27',
+            'selectedscope' => 0,
+            'selectedprocess' => 0,
+            'slotType' => 'intern',
+            'slotsRequired' => 1,
+        ], []);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringContainsString('Keine freien Termine vorhanden', (string)$response->getBody());
+        $this->assertStringContainsString('disabled="disabled"', (string)$response->getBody());
+    }
 }
