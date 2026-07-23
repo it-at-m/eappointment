@@ -244,6 +244,7 @@ class AppointmentFormFreeProcessListTest extends Base
             'slotsRequired' => 1,
         ], []);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertStringContainsString('Spontankunde', (string)$response->getBody());
+        $this->assertStringContainsString('Keine freien Termine vorhanden', (string)$response->getBody());
+        $this->assertStringContainsString('disabled="disabled"', (string)$response->getBody());
     }
 }
