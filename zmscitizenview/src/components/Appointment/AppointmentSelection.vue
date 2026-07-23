@@ -1166,14 +1166,17 @@ const fetchAvailableDaysForSelection = async (): Promise<void> => {
   }
 
   const reloaded = await reloadCalendarAvailability();
+  // Aborted/superseded by another calendar fetch — leave spinner flags to that request.
+  if (!reloaded) {
+    return;
+  }
+
+  if (selectedDay.value) {
+    await getAppointmentsOfDay(toDayKey(selectedDay.value));
+  }
+
   availableDaysFetched.value = true;
   isSwitchingProvider.value = false;
-
-  if (reloaded && selectedDay.value) {
-    await getAppointmentsOfDay(toDayKey(selectedDay.value));
-  } else if (!reloaded) {
-    availableDaysFetched.value = true;
-  }
 };
 
 const getAppointmentsOfDay = async (date: string): Promise<void> => {
@@ -1414,6 +1417,17 @@ function scheduleRefreshAfterProviderChange() {
       return;
     }
 
+    const checkedIds = getOfficeIdsForCalendarRequest();
+    if (checkedIds.length === 0) {
+      if (generation === providerRefreshGeneration) {
+        isSwitchingProvider.value = false;
+      }
+      return;
+    }
+
+    // Ensure spinner is visible for the whole in-flight refetch (incl. initial races).
+    isSwitchingProvider.value = true;
+
     try {
       // Refetch with only checked offices so next/prevBookableDate match selection.
       const reloaded = await reloadCalendarAvailability({
@@ -1425,6 +1439,8 @@ function scheduleRefreshAfterProviderChange() {
       if (!reloaded) {
         return;
       }
+
+      availableDaysFetched.value = true;
 
       const daysForSelection = updateDateRangeForSelectedProviders(true);
       if (daysForSelection.length === 0) {
@@ -1633,6 +1649,12 @@ watch(
       isSwitchingProvider.value = true;
     } else {
       isSwitchingProvider.value = false;
+    }
+
+    // Initial checkbox population races showSelectionForProvider; let that own the
+    // first fetch so we don't abort it and flash the empty callout mid-load.
+    if (!availableDaysFetched.value) {
+      return;
     }
 
     // Debounced pipeline
