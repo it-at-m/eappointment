@@ -57,28 +57,24 @@ class WorkstationRequests
 
     public function readProcessListByDate(
         DateTimeInterface $selectedDate,
-        $gql = "",
-        bool $strictQueuePermissions = false
+        $gql = ""
     ): ProcessList {
-        $parameters = [
-            'gql' => $gql,
-        ];
-        if ($strictQueuePermissions) {
-            $parameters['strictQueuePermissions'] = 1;
-        }
-
         if ($this->workstation->isClusterEnabled()) {
             $processList = $this->http
                 ->readGetResult(
                     '/cluster/' . $this->readCluster()->id . '/process/' . $selectedDate->format('Y-m-d') . '/',
-                    $parameters
+                    [
+                        'gql' => $gql
+                    ]
                 )
                 ->getCollection();
         } else {
             $processList = $this->http
                 ->readGetResult(
                     '/scope/' . $this->scope['id'] . '/process/' . $selectedDate->format('Y-m-d') . '/',
-                    $parameters
+                    [
+                        'gql' => $gql
+                    ]
                 )
                 ->getCollection();
         }

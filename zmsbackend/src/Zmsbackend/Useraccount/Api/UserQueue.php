@@ -60,8 +60,7 @@ class UserQueue extends \BO\Zmsbackend\Api\BaseController
 
         $queues = \BO\Zmsbackend\Helper\QueueStatusPermission::filterQueueList(
             $queueList->withSortedWaitingTime(),
-            $useraccount,
-            false
+            $useraccount
         );
 
         $filteredQueues = [];

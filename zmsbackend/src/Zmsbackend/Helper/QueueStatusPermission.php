@@ -15,6 +15,7 @@ class QueueStatusPermission
 {
     /**
      * Status → required queue permission (same map as UserQueue).
+     * No appointment fallback: appointment alone must not expose waiting queue data.
      */
     public const PERMISSION_BY_STATUS = [
         'preconfirmed' => 'waitingqueue',
@@ -29,18 +30,6 @@ class QueueStatusPermission
         'finished' => 'finishedqueue',
     ];
 
-    /**
-     * Waiting-pipeline statuses also used by appointment planning screens that
-     * share ProcessListByScopeAndDate / ProcessListByClusterAndDate.
-     */
-    private const APPOINTMENT_FALLBACK_STATUSES = [
-        'preconfirmed',
-        'confirmed',
-        'queued',
-        'reserved',
-        'deleted',
-    ];
-
     public static function getRequiredPermission(?string $status): ?string
     {
         if ($status === null || $status === '') {
@@ -50,47 +39,23 @@ class QueueStatusPermission
         return self::PERMISSION_BY_STATUS[$status] ?? null;
     }
 
-    /**
-     * @param bool $allowAppointmentFallback When true, users with `appointment`
-     *        may see waiting-pipeline statuses even without `waitingqueue`.
-     *        Used by process-by-date APIs (shared with calendar/appointments).
-     *        UserQueue keeps this false (strict queue permissions only).
-     */
-    public static function isStatusAllowed(
-        Useraccount $useraccount,
-        ?string $status,
-        bool $allowAppointmentFallback = false
-    ): bool {
+    public static function isStatusAllowed(Useraccount $useraccount, ?string $status): bool
+    {
         $requiredPermission = self::getRequiredPermission($status);
 
         if ($requiredPermission === null) {
             return false;
         }
 
-        if ($useraccount->hasPermissions([$requiredPermission])) {
-            return true;
-        }
-
-        if (
-            $allowAppointmentFallback
-            && in_array($status, self::APPOINTMENT_FALLBACK_STATUSES, true)
-            && $useraccount->hasPermissions(['appointment'])
-        ) {
-            return true;
-        }
-
-        return false;
+        return $useraccount->hasPermissions([$requiredPermission]);
     }
 
-    public static function filterQueueList(
-        QueueList $queueList,
-        Useraccount $useraccount,
-        bool $allowAppointmentFallback = false
-    ): QueueList {
+    public static function filterQueueList(QueueList $queueList, Useraccount $useraccount): QueueList
+    {
         $filtered = new QueueList();
 
         foreach ($queueList as $queue) {
-            if (self::isStatusAllowed($useraccount, $queue->status ?? null, $allowAppointmentFallback)) {
+            if (self::isStatusAllowed($useraccount, $queue->status ?? null)) {
                 $filtered->addEntity($queue);
             }
         }
@@ -98,16 +63,12 @@ class QueueStatusPermission
         return $filtered;
     }
 
-    public static function filterProcessList(
-        ProcessList $processList,
-        Useraccount $useraccount,
-        bool $allowAppointmentFallback = false
-    ): ProcessList {
+    public static function filterProcessList(ProcessList $processList, Useraccount $useraccount): ProcessList
+    {
         $filtered = new ProcessList();
 
         foreach ($processList as $process) {
-            $status = $process->getStatus();
-            if (self::isStatusAllowed($useraccount, $status, $allowAppointmentFallback)) {
+            if (self::isStatusAllowed($useraccount, $process->getStatus())) {
                 $filtered->addEntity($process);
             }
         }

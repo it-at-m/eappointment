@@ -26,7 +26,6 @@ class ProcessListByScopeAndDate extends \BO\Zmsbackend\Api\BaseController
         array $args
     ) {
         $showWeek = Validator::param('showWeek')->isNumber()->setDefault(0)->getValue();
-        $strictQueuePermissions = Validator::param('strictQueuePermissions')->isNumber()->setDefault(0)->getValue();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
         $dateTime = $dateTime->modify(\App::$now->format('H:i'));
         $dates = [$dateTime];
@@ -68,12 +67,9 @@ class ProcessListByScopeAndDate extends \BO\Zmsbackend\Api\BaseController
 
         $processList = $queueList->toProcessList()->sortByEstimatedWaitingTime()->withResolveLevel(2);
         $processList->addData($archivedProcesses);
-        // strictQueuePermissions=1: queue UI (no appointment fallback for waiting statuses).
-        // Default: appointment holders may still see waiting-pipeline for calendar/planning.
         $processList = \BO\Zmsbackend\Helper\QueueStatusPermission::filterProcessList(
             $processList,
-            $useraccount,
-            ! $strictQueuePermissions
+            $useraccount
         );
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);

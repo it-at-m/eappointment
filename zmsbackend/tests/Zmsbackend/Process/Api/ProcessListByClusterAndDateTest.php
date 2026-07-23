@@ -47,7 +47,7 @@ class ProcessListByClusterAndDateTest extends \BO\Zmsbackend\Tests\Api\Base
     {
         $this->setWorkstation()
             ->getUseraccount()
-            ->setPermissions('appointment');
+            ->setPermissions('appointment', 'waitingqueue');
         User::$workstation->useraccount->addDepartment(new \BO\Zmsentities\Department([
             'id' => 1,
             'scopes' => [

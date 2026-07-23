@@ -12,30 +12,30 @@ use PHPUnit\Framework\TestCase;
 
 class QueueStatusPermissionTest extends TestCase
 {
-    public function testWaitingStatusRequiresWaitingqueueWithoutFallback(): void
+    public function testAppointmentAloneDoesNotAllowWaitingStatuses(): void
     {
         $user = (new Useraccount())->setPermissions('appointment');
 
-        $this->assertFalse(
-            QueueStatusPermission::isStatusAllowed($user, 'confirmed', false)
-        );
-        $this->assertTrue(
-            QueueStatusPermission::isStatusAllowed($user, 'confirmed', true)
-        );
+        $this->assertFalse(QueueStatusPermission::isStatusAllowed($user, 'confirmed'));
+        $this->assertFalse(QueueStatusPermission::isStatusAllowed($user, 'queued'));
     }
 
-    public function testParkedStatusIsAlwaysStrict(): void
+    public function testWaitingqueueAllowsWaitingStatuses(): void
+    {
+        $user = (new Useraccount())->setPermissions('waitingqueue');
+
+        $this->assertTrue(QueueStatusPermission::isStatusAllowed($user, 'confirmed'));
+        $this->assertTrue(QueueStatusPermission::isStatusAllowed($user, 'queued'));
+    }
+
+    public function testParkedStatusRequiresParkedqueue(): void
     {
         $user = (new Useraccount())->setPermissions('appointment');
 
-        $this->assertFalse(
-            QueueStatusPermission::isStatusAllowed($user, 'parked', true)
-        );
+        $this->assertFalse(QueueStatusPermission::isStatusAllowed($user, 'parked'));
 
         $user->setPermissions('parkedqueue');
-        $this->assertTrue(
-            QueueStatusPermission::isStatusAllowed($user, 'parked', true)
-        );
+        $this->assertTrue(QueueStatusPermission::isStatusAllowed($user, 'parked'));
     }
 
     public function testFilterProcessListDropsUnauthorizedStatuses(): void
@@ -48,7 +48,7 @@ class QueueStatusPermissionTest extends TestCase
         $list->addEntity(new Process(['id' => 3, 'status' => 'missed']));
         $list->addEntity(new Process(['id' => 4, 'status' => 'finished']));
 
-        $filtered = QueueStatusPermission::filterProcessList($list, $user, false);
+        $filtered = QueueStatusPermission::filterProcessList($list, $user);
 
         $this->assertCount(2, $filtered);
         $statuses = [];
@@ -66,7 +66,7 @@ class QueueStatusPermissionTest extends TestCase
         $list->addEntity(new Queue(['arrivalTime' => 1, 'status' => 'queued']));
         $list->addEntity(new Queue(['arrivalTime' => 2, 'status' => 'finished']));
 
-        $filtered = QueueStatusPermission::filterQueueList($list, $user, false);
+        $filtered = QueueStatusPermission::filterQueueList($list, $user);
 
         $this->assertCount(1, $filtered);
         $this->assertSame('finished', $filtered->getFirst()->status);
