@@ -122,7 +122,7 @@ class SendMailReminder
             $config = (new ConfigRepository())->readEntity();
             $collection = $this->getProcessListOverview($process, $config);
 
-            $entity = (new \BO\Zmsbackend\Mail\Service\Mail())
+            $entity = (new Mail())
             ->setTemplateProvider(new \BO\Zmsbackend\Helper\MailTemplateProvider($process))
             ->toResolvedEntity($collection, $config, 'reminder');
 
