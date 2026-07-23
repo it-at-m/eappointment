@@ -38,7 +38,7 @@
     "core-js": "^3.49.0",
     "cssnano": "^8.0.2",
     "eslint": "^9.0.0",
-    "flatted": "^3.4.2",
+    "flatted": "^3.4.3",
     "immutable": "^5.1.9",
     "minimatch": "^10.2.5",
     "picomatch": "^4.0.4",
