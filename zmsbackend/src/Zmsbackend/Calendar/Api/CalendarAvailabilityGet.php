@@ -12,6 +12,9 @@ use BO\Mellon\Validator;
 use BO\Zmsbackend\Calendar\Service\CalendarAvailability;
 use BO\Zmsbackend\Slot\Exception\Calendar\InvalidAvailabilityInput;
 
+/**
+ * Combined calendar availability endpoint used only by zmscitizenapi.
+ */
 class CalendarAvailabilityGet extends \BO\Zmsbackend\Api\BaseController
 {
     /**

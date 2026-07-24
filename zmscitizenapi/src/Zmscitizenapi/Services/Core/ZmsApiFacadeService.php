@@ -245,13 +245,6 @@ class ZmsApiFacadeService
         return $result;
     }
 
-    /* Todo add method
-     * getCombinableServicesByIds
-     *
-     *
-     *
-     */
-
     /**
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
