@@ -90,6 +90,35 @@ describe("ListView", () => {
     expect(wrapper.findAll(".m-accordion__section-header").length).toBe(8);
   });
 
+  it("lists daylist days even when only the free-slot window has appointments loaded", async () => {
+    // Combined calendar API only returns appointment timestamps for the free-slot
+    // window (typically one day). Other availableDays are daylist-only until opened.
+    const wrapper = mountListView({
+      availableDays: [
+        { date: "2025-06-10", providerIDs: "1" },
+        { date: "2025-06-11", providerIDs: "1" },
+        { date: "2025-06-12", providerIDs: "1" },
+        { date: "2025-06-13", providerIDs: "1" },
+        { date: "2025-06-14", providerIDs: "1" },
+        { date: "2025-06-15", providerIDs: "1" },
+      ],
+      appointmentsByDay: new Map([
+        ["2025-06-10", listViewDayPartNavigationSlots],
+        ["2025-06-11", [{ officeId: 1, appointments: [] }]],
+        ["2025-06-12", [{ officeId: 1, appointments: [] }]],
+        ["2025-06-13", [{ officeId: 1, appointments: [] }]],
+        ["2025-06-14", [{ officeId: 1, appointments: [] }]],
+        ["2025-06-15", [{ officeId: 1, appointments: [] }]],
+      ]),
+    });
+
+    expect(wrapper.findAll(".m-accordion__section-header").length).toBe(5);
+    const btn = wrapper
+      .findAll(".m-button")
+      .find((b) => b.text().includes("loadMore"));
+    expect(btn).toBeTruthy();
+  });
+
   it("opens the clicked accordion section and closes the previous one", async () => {
     const wrapper = mountListView();
     await wrapper
