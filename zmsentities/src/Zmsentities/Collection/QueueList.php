@@ -248,7 +248,11 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public function getNextProcess(\DateTimeInterface $dateTime, $exclude = null)
     {
-        $excludeNumbers = explode(',', $exclude === null ? '' : $exclude);
+        if (is_array($exclude)) {
+            $excludeNumbers = $exclude;
+        } else {
+            $excludeNumbers = explode(',', $exclude === null ? '' : (string) $exclude);
+        }
         $queueList = clone $this;
         // sort by waiting time to get realistic next process
         $queueList = $queueList

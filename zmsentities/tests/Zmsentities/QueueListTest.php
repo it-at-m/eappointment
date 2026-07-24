@@ -90,6 +90,12 @@ class QueueListTest extends EntityCommonTests
 
         $nextProcess = $queueList->getNextProcess($now, '999999,123456');
         $this->assertEquals(null, $nextProcess);
+
+        $nextProcess = $queueList->getNextProcess($now, ['999999']);
+        $this->assertEquals(123456, $nextProcess->id);
+
+        $nextProcess = $queueList->getNextProcess($now, ['999999', '123456']);
+        $this->assertEquals(null, $nextProcess);
     }
 
     public function testSetProcess()
