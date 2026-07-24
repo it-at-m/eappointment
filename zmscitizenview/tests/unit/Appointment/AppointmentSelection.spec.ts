@@ -1778,7 +1778,8 @@ describe("AppointmentSelection", () => {
           dateForProvider2.setFullYear(dateForProvider2.getFullYear() + 1);
         }
 
-        const toIsoDate = (date: Date) => date.toISOString().split("T")[0];
+        const toIsoDate = (date: Date) =>
+          `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
         const provider1DateIso = toIsoDate(dateForProvider1);
         const provider2DateIso = toIsoDate(dateForProvider2);
 
