@@ -349,9 +349,7 @@ describe("AppointmentSelection", () => {
     });
 
     it("shows no-appointments callout when calendar returns empty availableDays", async () => {
-      (fetchAvailableCalendar as Mock).mockResolvedValue(
-        calendarResponse([])
-      );
+      (fetchAvailableCalendar as Mock).mockResolvedValue(calendarResponse([]));
 
       const wrapper = createWrapper({
         selectedService: {
@@ -383,15 +381,11 @@ describe("AppointmentSelection", () => {
       expect(wrapper.text()).toContain(
         "apiErrorNoAppointmentForThisScopeHeader"
       );
-      expect(wrapper.text()).toContain(
-        "apiErrorNoAppointmentForThisScopeText"
-      );
+      expect(wrapper.text()).toContain("apiErrorNoAppointmentForThisScopeText");
     });
 
     it("shows newAppointmentsInfoLink on empty calendar when selected locations have info", async () => {
-      (fetchAvailableCalendar as Mock).mockResolvedValue(
-        calendarResponse([])
-      );
+      (fetchAvailableCalendar as Mock).mockResolvedValue(calendarResponse([]));
 
       const wrapper = createWrapper({
         selectedService: {
@@ -931,9 +925,7 @@ describe("AppointmentSelection", () => {
                   {
                     date: "2025-08-02",
                     providerIDs: "10470",
-                    offices: [
-                      { officeId: 10470, appointments: [1754128800] },
-                    ],
+                    offices: [{ officeId: 10470, appointments: [1754128800] }],
                   },
                 ],
                 [],
@@ -1305,9 +1297,7 @@ describe("AppointmentSelection", () => {
               {
                 date: "2025-07-03",
                 providerIDs: "10351880",
-                offices: [
-                  { officeId: 10351880, appointments: [1751515200] },
-                ],
+                offices: [{ officeId: 10351880, appointments: [1751515200] }],
               },
               {
                 date: "2025-07-15",
@@ -1440,9 +1430,7 @@ describe("AppointmentSelection", () => {
       });
 
       it("updates allowed dates when providers are deselected", async () => {
-        const officeX = [
-          { officeId: 10351880, appointments: [1750118400] },
-        ];
+        const officeX = [{ officeId: 10351880, appointments: [1750118400] }];
         const officeY = [{ officeId: 10470, appointments: [1750118400] }];
         const bothOffices = [...officeX, ...officeY];
 
@@ -1531,9 +1519,7 @@ describe("AppointmentSelection", () => {
       });
 
       it("updates allowed dates when providers are selected", async () => {
-        const officeX = [
-          { officeId: 10351880, appointments: [1750118400] },
-        ];
+        const officeX = [{ officeId: 10351880, appointments: [1750118400] }];
         const officeY = [{ officeId: 10470, appointments: [1750118400] }];
         const bothOffices = [...officeX, ...officeY];
 
@@ -2115,7 +2101,6 @@ describe("AppointmentSelection", () => {
     // dayPart on provider deselection (obsolete stubs removed — they never
     // exercised the snap path after calendarResponse shared default offices).
 
-
     // moved to CalendarView.spec.ts: shows hourly view if total appointments > 18
     it("shows hourly view if total appointments > 18", async () => {
       (fetchAvailableCalendar as Mock).mockResolvedValue(
@@ -2378,9 +2363,9 @@ describe("AppointmentSelection", () => {
       expect(errorCallout!.html()).toContain("apiErrorCaptchaInvalidHeader");
       expect(errorCallout!.html()).toContain("apiErrorCaptchaInvalidText");
       // Captcha session errors hide provider selection and calendar
-      expect(wrapper.findComponent({ name: "ProviderSelection" }).exists()).toBe(
-        false
-      );
+      expect(
+        wrapper.findComponent({ name: "ProviderSelection" }).exists()
+      ).toBe(false);
       expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(
         false
       );
@@ -2438,9 +2423,9 @@ describe("AppointmentSelection", () => {
       await flushPromises();
 
       expect(wrapper.vm.captchaSessionExpired).toBe(false);
-      expect(wrapper.findComponent({ name: "ProviderSelection" }).exists()).toBe(
-        true
-      );
+      expect(
+        wrapper.findComponent({ name: "ProviderSelection" }).exists()
+      ).toBe(true);
 
       (fetchAvailableCalendar as Mock).mockResolvedValue({
         errors: [
@@ -2453,15 +2438,17 @@ describe("AppointmentSelection", () => {
         ],
       });
 
-      await wrapper.vm.reloadCalendarAvailability({ preserveSelectedDay: true });
+      await wrapper.vm.reloadCalendarAvailability({
+        preserveSelectedDay: true,
+      });
       await flushPromises();
       await nextTick();
 
       expect(wrapper.vm.captchaSessionExpired).toBe(true);
       expect(wrapper.vm.availableDays).toEqual([]);
-      expect(wrapper.findComponent({ name: "ProviderSelection" }).exists()).toBe(
-        false
-      );
+      expect(
+        wrapper.findComponent({ name: "ProviderSelection" }).exists()
+      ).toBe(false);
       expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(
         false
       );
@@ -3114,13 +3101,16 @@ describe("AppointmentSelection", () => {
       );
       expect(wrapper.find(".m-component-accordion").exists()).toBe(true);
 
+      const keyBeforeReturn = wrapper.vm.calendarKey;
       await wrapper.find(".m-toggle-switch").trigger("click");
-      await nextTick();
+      await flushPromises();
 
       expect(wrapper.vm.isListView).toBe(false);
       expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(
         true
       );
+      // Remount calendar with synced state when leaving list view
+      expect(wrapper.vm.calendarKey).toBeGreaterThan(keyBeforeReturn);
     });
 
     it("shows navigation buttons for hourly view when multiple providers are selected", async () => {

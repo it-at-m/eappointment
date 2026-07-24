@@ -60,7 +60,7 @@
     <CalendarListToggle
       :t="t"
       :isListView="isListView"
-      @update:isListView="isListView = $event"
+      @update:isListView="onListViewToggle"
     />
     <div
       v-if="!availableDaysFetched || isSwitchingProvider"
@@ -839,6 +839,31 @@ const noProviderSelected = computed(() => {
 // Threshold moved to constants
 
 const isListView = ref(false);
+
+/**
+ * Switching back to calendar remounts MucCalendar; sync month + refresh the
+ * selected day so chevrons/slots are live (list-view paging can leave markers
+ * / slot window pointing at another month).
+ */
+const onListViewToggle = async (nextIsListView: boolean) => {
+  isListView.value = nextIsListView;
+  if (nextIsListView) {
+    return;
+  }
+
+  if (selectedDay.value) {
+    viewMonth.value = new Date(
+      selectedDay.value.getFullYear(),
+      selectedDay.value.getMonth(),
+      1
+    );
+  }
+  calendarKey.value++;
+
+  if (selectedDay.value) {
+    await handleDaySelection(selectedDay.value);
+  }
+};
 
 // Modal state and handlers
 const showAvailabilityInfoModal = ref(false);

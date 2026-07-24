@@ -144,6 +144,26 @@ describe("CalendarView", () => {
     expect(wrapper.emitted("jumpToBookableDate")?.[1]?.[0]).toBe("2025-08-03");
   });
 
+  it("does not swallow month chevron clicks when bookable markers are missing", async () => {
+    const wrapper = mountCalendarView({
+      prevBookableDate: null,
+      nextBookableDate: null,
+    });
+    const wrap = wrapper.find(".muc-calendar-wrap");
+
+    const nextBtn = document.createElement("button");
+    nextBtn.innerHTML = '<svg><use href="#icon-chevron-right"></use></svg>';
+    wrap.element.appendChild(nextBtn);
+    const event = new MouseEvent("click", {
+      bubbles: true,
+      cancelable: true,
+    });
+    nextBtn.dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(false);
+    expect(wrapper.emitted("jumpToBookableDate")).toBeUndefined();
+  });
+
   describe("allowedDates", () => {
     it.each([
       [
