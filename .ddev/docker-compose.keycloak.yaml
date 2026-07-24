@@ -31,9 +31,17 @@ services:
       - WAIT_FOR_KEYCLOAK=true
       - FAIL_ON_UNDEFINED_VARIABLES=true
       - KEYCLOAK_CHANGELOG=/migration/keycloak-changelog.yml
+      # One-shot exit makes `ddev start` fail ("container exited"). Stay idle after success.
+      - STAY_IDLE=true
     volumes:
       - ../.resources/keycloak/migration:/migration
     networks:
       - default
     restart: "no"
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x tail >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 36
+      start_period: 30s
 
