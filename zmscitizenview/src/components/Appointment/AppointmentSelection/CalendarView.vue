@@ -374,7 +374,8 @@ function findMonthNavDirection(
 
 /**
  * MucCalendar month chevrons only do ±1 month internally and do not emit.
- * Capture those clicks and jump to the nearest bookable date instead.
+ * When a bookable marker exists, jump there; otherwise let MucCalendar change
+ * the month normally (do not swallow the click — that leaves the calendar dead).
  */
 function onCalendarClick(event: MouseEvent) {
   const direction = findMonthNavDirection(event.target);
@@ -382,16 +383,21 @@ function onCalendarClick(event: MouseEvent) {
     return;
   }
 
-  event.preventDefault();
-  event.stopPropagation();
-
   if (props.isLoadingAppointments) {
+    event.preventDefault();
+    event.stopPropagation();
     return;
   }
 
   if (direction === "prev" && props.prevBookableDate) {
+    event.preventDefault();
+    event.stopPropagation();
     emit("jumpToBookableDate", props.prevBookableDate);
-  } else if (direction === "next" && props.nextBookableDate) {
+    return;
+  }
+  if (direction === "next" && props.nextBookableDate) {
+    event.preventDefault();
+    event.stopPropagation();
     emit("jumpToBookableDate", props.nextBookableDate);
   }
 }
