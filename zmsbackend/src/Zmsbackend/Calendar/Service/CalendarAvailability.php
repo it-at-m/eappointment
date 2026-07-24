@@ -32,6 +32,21 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             );
         }
 
+        try {
+            $startDate = (new \DateTimeImmutable($startDate))->format('Y-m-d');
+            $endDate = (new \DateTimeImmutable($endDate))->format('Y-m-d');
+        } catch (\Exception $exception) {
+            throw new \BO\Zmsbackend\Slot\Exception\Calendar\InvalidAvailabilityInput(
+                'startDate and endDate must be valid dates (YYYY-MM-DD)'
+            );
+        }
+
+        if ($startDate > $endDate) {
+            throw new \BO\Zmsbackend\Slot\Exception\Calendar\InvalidAvailabilityInput(
+                'startDate must not be after endDate'
+            );
+        }
+
         [$slotsStartDate, $slotsEndDate] = $this->resolveSlotsDateRange(
             $startDate,
             $endDate,
