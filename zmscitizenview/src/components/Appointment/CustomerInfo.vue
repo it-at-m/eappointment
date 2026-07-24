@@ -7,7 +7,11 @@
       <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
     </muc-callout>
   </div>
-  <div v-if="showLoginOption && !isExpired">
+  <div
+    v-if="showLoginOption && !isExpired"
+    class="login-option-block"
+    :class="{ 'login-option-block--with-error': showLoginErrorBanner }"
+  >
     <!--Can be replaced if MucCallout has been extended with buttons in @muenchen/muc-patternlab-vue https://github.com/it-at-m/muc-patternlab-vue/pull/573 -->
     <div
       v-if="!globalState.isLoggedIn"
@@ -50,10 +54,24 @@
       <template #header>{{ t("loggedinHeader") }}</template>
       <template #icon><muc-icon icon="user-fill" /></template>
     </muc-callout>
+    <div
+      v-if="showLoginErrorBanner"
+      class="login-failed-banner"
+    >
+      <muc-banner
+        type="emergency"
+        variant="content"
+      >
+        {{ t("loginFailedText") }}
+      </muc-banner>
+    </div>
   </div>
   <h2
     v-if="!isExpired"
     class="m-component-form__title"
+    :class="{
+      'm-component-form__title--after-login-error': showLoginErrorBanner,
+    }"
   >
     {{ t("contactDetails") }}
   </h2>
@@ -161,6 +179,7 @@ import type { SelectedTimeslotProvider } from "@/types/ProvideInjectTypes";
 import type { Ref } from "vue";
 
 import {
+  MucBanner,
   MucButton,
   MucCallout,
   MucIcon,
@@ -198,6 +217,7 @@ const handleInput2 = (event: Event) => {
 const props = defineProps<{
   globalState: GlobalState;
   showLoginOption: boolean;
+  loginFailed?: boolean;
   t: (key: string, params?: Record<string, unknown>) => string;
 }>();
 
@@ -224,6 +244,10 @@ const loadingStates = inject("loadingStates", {
 };
 
 const { isExpired } = useReservationTimer();
+
+const showLoginErrorBanner = computed(
+  () => Boolean(props.loginFailed) && !isExpired.value
+);
 
 const showErrorMessage = ref<boolean>(false);
 
@@ -398,6 +422,26 @@ const previousStep = () => emit("back");
 
 .m-button-group {
   margin-top: 48px;
+}
+
+.login-option-block--with-error {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 24px;
+
+  > .m-callout,
+  :deep(> .m-callout) {
+    margin-bottom: 0;
+  }
+
+  .login-failed-banner {
+    margin: 0;
+  }
+}
+
+.m-component-form__title--after-login-error {
+  margin-top: 0;
 }
 
 @include sm-up {

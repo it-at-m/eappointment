@@ -214,6 +214,7 @@
   "loggedinHeader": "Sie sind angemeldet.",
   "loggedinText": "Ihre Kontaktdaten wurden aus Ihrem Konto übernommen.",
   "login": "Anmelden",
+  "loginFailedText": "Die Anmeldung ist fehlgeschlagen. Bitte versuchen Sie es erneut oder füllen Sie die Kontaktdaten manuell aus.",
   "mailAddress": "E-Mail-Adresse",
   "minutes": "Minuten",
   "myAppointments": "Meine Termine",

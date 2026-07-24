@@ -117,6 +117,7 @@
               <customer-info
                 :global-state="globalState"
                 :show-login-option="showLoginOption"
+                :login-failed="loginFailed"
                 :t="t"
                 @back="decreaseCurrentView"
                 @next="nextUpdateAppointment"
@@ -471,17 +472,28 @@ const updateServiceLinkId = (id: string | null) => {
   serviceLinkId.value = id;
 };
 
+const loginFailed = ref(false);
+
 watch(
   () => props.globalState.accessToken,
   (newAccessToken) => {
-    if (!newAccessToken) return;
-    const tokenData = getTokenData(newAccessToken);
-    customerData.value.firstName =
-      customerData.value.firstName || tokenData.given_name || "";
-    customerData.value.lastName =
-      customerData.value.lastName || tokenData.family_name || "";
-    customerData.value.mailAddress =
-      customerData.value.mailAddress || tokenData.email || "";
+    if (!newAccessToken) {
+      loginFailed.value = false;
+      return;
+    }
+
+    try {
+      const tokenData = getTokenData(newAccessToken);
+      loginFailed.value = false;
+      customerData.value.firstName =
+        customerData.value.firstName || tokenData.given_name || "";
+      customerData.value.lastName =
+        customerData.value.lastName || tokenData.family_name || "";
+      customerData.value.mailAddress =
+        customerData.value.mailAddress || tokenData.email || "";
+    } catch {
+      loginFailed.value = true;
+    }
   },
   { immediate: true }
 );

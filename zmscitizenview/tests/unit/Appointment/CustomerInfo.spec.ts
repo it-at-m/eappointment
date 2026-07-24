@@ -38,10 +38,13 @@ describe("CustomerInfo", () => {
     mockReservationStartMs = ref<number | null>(Date.now());
   });
 
-  const createWrapper = () => {
+  const createWrapper = (props: Record<string, unknown> = {}) => {
     return mount(CustomerInfo, {
       props: {
+        globalState: { isLoggedIn: false, accessToken: null },
+        showLoginOption: false,
         t: (key: string) => key,
+        ...props,
       },
       global: {
         provide: {
@@ -74,6 +77,10 @@ describe("CustomerInfo", () => {
             template:
               '<div class="muc-callout"><slot name="header" /><slot name="content" /></div>',
             props: ["type"],
+          },
+          "muc-banner": {
+            template: '<div class="muc-banner" :data-type="type"><slot /></div>',
+            props: ["type", "variant"],
           },
         },
       },
@@ -332,6 +339,29 @@ describe("CustomerInfo", () => {
       expect(wrapper.html()).toContain("errorMessageMaxLength");
     });
   });
+
+  describe("Login failure", () => {
+    it("shows emergency banner when loginFailed is true", async () => {
+      const wrapper = createWrapper({
+        showLoginOption: true,
+        loginFailed: true,
+      });
+      await nextTick();
+
+      const banner = wrapper.find(".muc-banner");
+      expect(banner.exists()).toBe(true);
+      expect(banner.attributes("data-type")).toBe("emergency");
+      expect(banner.text()).toContain("loginFailedText");
+    });
+
+    it("hides login failure banner when loginFailed is false", async () => {
+      const wrapper = createWrapper({ loginFailed: false });
+      await nextTick();
+
+      expect(wrapper.find(".muc-banner").exists()).toBe(false);
+    });
+  });
+
   describe("Session timeout", () => {
     it("displays the timeout message when the reservation time has expired", async () => {
       // Reservationtime: 1 minute
