@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Models;
 
 use BO\Zmsentities\Schema\Entity;
-use InvalidArgumentException;
 use JsonSerializable;
 
 class AvailableCalendar extends Entity implements JsonSerializable
@@ -39,13 +38,13 @@ class AvailableCalendar extends Entity implements JsonSerializable
     }
 
     /**
-     * Optional schema check for tests / non-hot paths.
+     * Validates against citizenapi/availableCalendar.json.
+     *
+     * @throws \BO\Zmsentities\Exception\SchemaValidation
      */
     public function ensureValid(): void
     {
-        if (!$this->testValid()) {
-            throw new InvalidArgumentException('The provided data is invalid according to the schema.');
-        }
+        $this->testValid();
     }
 
     public function toArray(): array
