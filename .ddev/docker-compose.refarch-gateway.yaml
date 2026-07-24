@@ -1,12 +1,26 @@
+# Local API gateway for CitizenView.
+# Uses nginx instead of ghcr.io/it-at-m/refarch/refarch-gateway: the upstream image is
+# linux/amd64-only and since 1.8.x requires CPU x86-64-v3, which fails under Docker
+# Desktop on Apple Silicon ("Fatal glibc error: CPU does not support x86-64-v3").
+# Routes mirror .ddev/local-gateway-application.yml (kept as the Spring reference config
+# for the Podman/devcontainer stack that still runs the official image).
 services:
   refarch-gateway:
-    image: ghcr.io/it-at-m/refarch/refarch-gateway:1.9.0
+    image: nginx:1.27-alpine
     container_name: ddev-${DDEV_SITENAME}-refarch-gateway
     ports:
       - "8084:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=no-security
-      - WEBCOMPONENT_URI=http://localhost:8080
     volumes:
-      - ./local-gateway-application.yml:/deployments/application.yml:ro
-    restart: unless-stopped 
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+      - citizenview
+    networks:
+      - default
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
