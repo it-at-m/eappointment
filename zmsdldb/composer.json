@@ -34,6 +34,7 @@
         "nategood/httpful": "1.*",
         "twig/twig": "3.*",
         "eappointment/mellon": "@dev",
+        "eappointment/zmsentities": "@dev",
         "eappointment/zmsbackend": "@dev",
         "eappointment/zmsslim": "@dev",
         "eappointment/zmsclient": "@dev",
