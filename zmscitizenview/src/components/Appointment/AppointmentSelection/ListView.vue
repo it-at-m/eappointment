@@ -316,6 +316,8 @@ const isSlotSelected = props.isSlotSelected;
 
 const daysToShow = ref(5);
 const localOpenAccordionDate = ref<string | null>(null);
+/** Ensures first-day auto-open runs once per daylist population, not on Mehr laden. */
+const didAutoOpenFirstDay = ref(false);
 
 const listViewCurrentHour = ref<Map<string, number>>(new Map());
 const listViewCurrentDayPart = ref<Map<string, "am" | "pm">>(new Map());
@@ -649,17 +651,28 @@ const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
     });
 });
 
-// Auto-open only on first population (empty → days). Do not re-open when
-// "Mehr laden" grows the list or later months are merged in.
-watch(firstFiveAvailableDays, (newDays, oldDays) => {
-  if (
-    newDays.length > 0 &&
-    !localOpenAccordionDate.value &&
-    (!oldDays || oldDays.length === 0)
-  ) {
-    onToggleDay(newDays[0]);
+watch(daysForSelectedProviders, (days) => {
+  if (days.length === 0) {
+    didAutoOpenFirstDay.value = false;
+    localOpenAccordionDate.value = null;
   }
 });
+
+// Auto-open the first day once per daylist population — not when Mehr laden
+// grows firstFiveAvailableDays (that recomputes and would re-trigger a bare watch).
+watch(
+  firstFiveAvailableDays,
+  (newDays) => {
+    if (newDays.length === 0 || didAutoOpenFirstDay.value) {
+      return;
+    }
+    didAutoOpenFirstDay.value = true;
+    if (!localOpenAccordionDate.value) {
+      onToggleDay(newDays[0]);
+    }
+  },
+  { immediate: true }
+);
 
 const canLoadMore = computed(() => {
   return (
