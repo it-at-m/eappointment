@@ -21,9 +21,6 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ValidationService
 {
-    /**
-     * @var array<string, array<int, string>>
-     */
     private static array $officeServicesCache = [];
 
     public static function clearOfficeServicesCacheForTesting(): void
