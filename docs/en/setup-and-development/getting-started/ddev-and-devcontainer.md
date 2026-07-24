@@ -27,12 +27,16 @@ On **macOS**, see [Podman and Dev Containers on macOS](/setup-and-development/ge
 The following local containers are automatically created when running `ddev start` or `devcontainer up --workspace-folder .`:
 
 - `zms-web` (pre-built local PHP base image), app endpoint: `http://localhost:8090`
-- `zms-refarch-gateway` (RefArch API gateway image), endpoint: `http://localhost:8084`
+- `zms-refarch-gateway` (local nginx stand-in for the RefArch API gateway routes; see note below), endpoint: `http://localhost:8084`
 - `zms-keycloak` (same Keycloak image family as RefArch setup), endpoint: `http://localhost:8080/auth`
 - `zms-db` (MariaDB), DB port: `3306`
 - `zms-phpmyadmin`, endpoint: `http://localhost:8036`
 - `zms-citizenview`, Vite hot reload endpoint: `http://localhost:8082`
 - `zms-mail-viewer`, local outbound mail queue viewer: `http://localhost:8025` (login `superuser` / `vorschau`)
+
+### DDEV gateway on Apple Silicon
+
+DDEV uses an **nginx** service for `refarch-gateway` instead of `ghcr.io/it-at-m/refarch/refarch-gateway`. That image is `linux/amd64`-only and, from 1.8.x onward, requires CPU feature level **x86-64-v3**, which fails under Docker Desktop on Apple Silicon (`Fatal glibc error: CPU does not support x86-64-v3`). The nginx config in `.ddev/gateway/nginx.conf` mirrors the CitizenView routes from `.ddev/local-gateway-application.yml`. The Podman/devcontainer stack still runs the official Spring gateway image.
 
 ## Local mail queue viewer
 
