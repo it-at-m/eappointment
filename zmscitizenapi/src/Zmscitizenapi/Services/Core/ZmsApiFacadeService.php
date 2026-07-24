@@ -390,13 +390,6 @@ class ZmsApiFacadeService
         return false;
     }
 
-    /* Todo add method
-     * getOfficeById
-     *
-     *
-     *
-     */
-
     /**
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
