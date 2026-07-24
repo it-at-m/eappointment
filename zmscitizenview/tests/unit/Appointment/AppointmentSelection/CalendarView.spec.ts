@@ -65,7 +65,7 @@ function mountCalendarView(overrides: Partial<Record<string, any>> = {}) {
       },
     },
     props: {
-      t,
+      t: overrides.t ?? t,
       selectedDay: overrides.selectedDay ?? new Date("2025-06-17"),
       calendarKey: 1,
       allowedDates: overrides.allowedDates ?? ((d: Date) => d.getDate() !== 16),
@@ -114,19 +114,29 @@ describe("CalendarView", () => {
     const wrapper = mountCalendarView({
       prevBookableDate: "2025-05-12",
       nextBookableDate: "2025-08-03",
+      // Resolve translation keys so aria-label fallback matches i18n strings.
+      t: (key: string) =>
+        (
+          ({
+            calendarPreviousMonth: "Previous month",
+            calendarNextMonth: "Next month",
+          }) as Record<string, string>
+        )[key] ?? key,
     });
     const wrap = wrapper.find(".muc-calendar-wrap");
 
+    // Icon-based (locale-stable) — matches muc-patternlab MucIcon href.
     const prevBtn = document.createElement("button");
-    prevBtn.setAttribute("aria-label", "Vorheriger Monat");
+    prevBtn.innerHTML = '<svg><use href="#icon-chevron-left"></use></svg>';
     wrap.element.appendChild(prevBtn);
     prevBtn.dispatchEvent(
       new MouseEvent("click", { bubbles: true, cancelable: true })
     );
     expect(wrapper.emitted("jumpToBookableDate")?.[0]?.[0]).toBe("2025-05-12");
 
+    // Aria-label fallback via translation utils.
     const nextBtn = document.createElement("button");
-    nextBtn.setAttribute("aria-label", "Nächster Monat");
+    nextBtn.setAttribute("aria-label", "Next month");
     wrap.element.appendChild(nextBtn);
     nextBtn.dispatchEvent(
       new MouseEvent("click", { bubbles: true, cancelable: true })

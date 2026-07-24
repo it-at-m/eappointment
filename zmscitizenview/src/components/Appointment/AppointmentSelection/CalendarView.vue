@@ -331,16 +331,45 @@ const emit = defineEmits<{
   (e: "setSelectedDayPart", part: "am" | "pm" | null): void;
 }>();
 
-const MONTH_PREV_LABEL = "Vorheriger Monat";
-const MONTH_NEXT_LABEL = "Nächster Monat";
+type MonthNavDirection = "prev" | "next";
 
-function findMonthNavButton(target: EventTarget | null): HTMLElement | null {
+/**
+ * MucCalendar month chevrons: prefer icon href (locale-stable), fall back to
+ * translated aria-labels from our i18n (muc-patternlab currently hardcodes DE).
+ */
+function findMonthNavDirection(
+  target: EventTarget | null
+): MonthNavDirection | null {
   if (!(target instanceof Element)) {
     return null;
   }
-  return target.closest(
-    `button[aria-label="${MONTH_PREV_LABEL}"], button[aria-label="${MONTH_NEXT_LABEL}"]`
-  );
+
+  const button = target.closest("button");
+  if (!button) {
+    return null;
+  }
+
+  const useEl = button.querySelector("use");
+  const href =
+    useEl?.getAttribute("href") || useEl?.getAttribute("xlink:href") || "";
+  if (href.includes("chevron-left")) {
+    return "prev";
+  }
+  if (href.includes("chevron-right")) {
+    return "next";
+  }
+
+  const label = button.getAttribute("aria-label");
+  if (!label) {
+    return null;
+  }
+  if (label === props.t("calendarPreviousMonth")) {
+    return "prev";
+  }
+  if (label === props.t("calendarNextMonth")) {
+    return "next";
+  }
+  return null;
 }
 
 /**
@@ -348,8 +377,8 @@ function findMonthNavButton(target: EventTarget | null): HTMLElement | null {
  * Capture those clicks and jump to the nearest bookable date instead.
  */
 function onCalendarClick(event: MouseEvent) {
-  const button = findMonthNavButton(event.target);
-  if (!button) {
+  const direction = findMonthNavDirection(event.target);
+  if (!direction) {
     return;
   }
 
@@ -360,10 +389,9 @@ function onCalendarClick(event: MouseEvent) {
     return;
   }
 
-  const label = button.getAttribute("aria-label");
-  if (label === MONTH_PREV_LABEL && props.prevBookableDate) {
+  if (direction === "prev" && props.prevBookableDate) {
     emit("jumpToBookableDate", props.prevBookableDate);
-  } else if (label === MONTH_NEXT_LABEL && props.nextBookableDate) {
+  } else if (direction === "next" && props.nextBookableDate) {
     emit("jumpToBookableDate", props.nextBookableDate);
   }
 }
