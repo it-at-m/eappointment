@@ -28,11 +28,11 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         $this->setCalendarAvailabilityApiCalls();
 
         $parameters = [
-            'officeId' => '9999998',
-            'serviceId' => '1',
+            'officeIds' => '9999998',
+            'serviceIds' => '1',
             'startDate' => '2024-08-21',
             'endDate' => '2024-08-23',
-            'serviceCount' => '1',
+            'serviceCounts' => '1',
         ];
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -75,9 +75,9 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         $this->setCalendarAvailabilityApiCalls('GET_calendar_availability_empty.json');
 
         $parameters = [
-            'officeId' => '9999998',
-            'serviceId' => '1',
-            'serviceCount' => '1',
+            'officeIds' => '9999998',
+            'serviceIds' => '1',
+            'serviceCounts' => '1',
             'startDate' => '2024-08-21',
             'endDate' => '2024-08-23',
         ];
@@ -113,9 +113,9 @@ class AvailableCalendarControllerTest extends ControllerTestCase
                 'parameters' => [
                     'startDate' => '2024-08-21',
                     'endDate' => '2024-10-21',
-                    'officeId' => '9999998',
-                    'serviceId' => '1',
-                    'serviceCount' => '1',
+                    'officeIds' => '9999998',
+                    'serviceIds' => '1',
+                    'serviceCounts' => '1',
                     'slotsStartDate' => '2024-08-21',
                     'slotsEndDate' => '2024-09-21',
                 ],
@@ -124,9 +124,9 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         ]);
 
         $parameters = [
-            'officeId' => '9999998',
-            'serviceId' => '1',
-            'serviceCount' => '1',
+            'officeIds' => '9999998',
+            'serviceIds' => '1',
+            'serviceCounts' => '1',
             'startDate' => '2024-08-21',
             'endDate' => '2024-10-21',
             'slotsStartDate' => '2024-08-21',
@@ -143,9 +143,9 @@ class AvailableCalendarControllerTest extends ControllerTestCase
     public function testInvalidSlotsDateFormat()
     {
         $parameters = [
-            'officeId' => '9999998',
-            'serviceId' => '1',
-            'serviceCount' => '1',
+            'officeIds' => '9999998',
+            'serviceIds' => '1',
+            'serviceCounts' => '1',
             'startDate' => '2024-08-21',
             'endDate' => '2024-08-23',
             'slotsStartDate' => 'not-a-date',
@@ -166,9 +166,9 @@ class AvailableCalendarControllerTest extends ControllerTestCase
     public function testInvalidDateFormat()
     {
         $parameters = [
-            'officeId' => '9999998',
-            'serviceId' => '1',
-            'serviceCount' => '1',
+            'officeIds' => '9999998',
+            'serviceIds' => '1',
+            'serviceCounts' => '1',
             'startDate' => 'invalid-date',
             'endDate' => 'invalid-date',
         ];
@@ -190,9 +190,9 @@ class AvailableCalendarControllerTest extends ControllerTestCase
     {
         $parameters = [
             'endDate' => '2024-09-04',
-            'officeId' => '102522',
-            'serviceId' => '1063424',
-            'serviceCount' => '1',
+            'officeIds' => '102522',
+            'serviceIds' => '1063424',
+            'serviceCounts' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -210,9 +210,9 @@ class AvailableCalendarControllerTest extends ControllerTestCase
     {
         $parameters = [
             'startDate' => '2024-08-29',
-            'officeId' => '102522',
-            'serviceId' => '1063424',
-            'serviceCount' => '1',
+            'officeIds' => '102522',
+            'serviceIds' => '1063424',
+            'serviceCounts' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -231,8 +231,8 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         $parameters = [
             'startDate' => '2024-08-29',
             'endDate' => '2024-09-04',
-            'serviceId' => '1063424',
-            'serviceCount' => '1',
+            'serviceIds' => '1063424',
+            'serviceCounts' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -251,8 +251,8 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         $parameters = [
             'startDate' => '2024-08-29',
             'endDate' => '2024-09-04',
-            'officeId' => '102522',
-            'serviceCount' => '1',
+            'officeIds' => '102522',
+            'serviceCounts' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -271,8 +271,8 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         $parameters = [
             'startDate' => '2024-08-29',
             'endDate' => '2024-09-04',
-            'officeId' => '102522',
-            'serviceId' => '1063424',
+            'officeIds' => '102522',
+            'serviceIds' => '1063424',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -291,9 +291,9 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         $parameters = [
             'startDate' => '2024-08-29',
             'endDate' => '2024-09-04',
-            'officeId' => '102522',
-            'serviceId' => '1063424',
-            'serviceCount' => '',
+            'officeIds' => '102522',
+            'serviceIds' => '1063424',
+            'serviceCounts' => '',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -312,9 +312,9 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         $parameters = [
             'startDate' => '2024-08-29',
             'endDate' => '2024-09-04',
-            'officeId' => '102522',
-            'serviceId' => '1063424',
-            'serviceCount' => 'one,two',
+            'officeIds' => '102522',
+            'serviceIds' => '1063424',
+            'serviceCounts' => 'one,two',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -333,9 +333,9 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         $parameters = [
             'startDate' => '2024-08-29',
             'endDate' => '2024-09-04',
-            'officeId' => '102522',
-            'serviceId' => '1063424',
-            'serviceCount' => '26',
+            'officeIds' => '102522',
+            'serviceIds' => '1063424',
+            'serviceCounts' => '26',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -375,9 +375,9 @@ class AvailableCalendarControllerTest extends ControllerTestCase
     public function testMissingStartDateAndEndDate()
     {
         $parameters = [
-            'officeId' => '102522',
-            'serviceId' => '1063424',
-            'serviceCount' => '1',
+            'officeIds' => '102522',
+            'serviceIds' => '1063424',
+            'serviceCounts' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -398,7 +398,7 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         $parameters = [
             'startDate' => '2024-08-29',
             'endDate' => '2024-09-04',
-            'serviceCount' => '1',
+            'serviceCounts' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -419,7 +419,7 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         $parameters = [
             'startDate' => '2024-08-29',
             'endDate' => '2024-09-04',
-            'officeId' => '102522',
+            'officeIds' => '102522',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -439,8 +439,8 @@ class AvailableCalendarControllerTest extends ControllerTestCase
     {
         $parameters = [
             'endDate' => '2024-09-04',
-            'serviceId' => '1063424',
-            'serviceCount' => '1',
+            'serviceIds' => '1063424',
+            'serviceCounts' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -460,8 +460,8 @@ class AvailableCalendarControllerTest extends ControllerTestCase
     {
         $parameters = [
             'startDate' => '2024-08-29',
-            'officeId' => '102522',
-            'serviceId' => '1063424',
+            'officeIds' => '102522',
+            'serviceIds' => '1063424',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -482,7 +482,7 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         $parameters = [
             'startDate' => '2024-08-29',
             'endDate' => '2024-09-04',
-            'serviceId' => '1063424',
+            'serviceIds' => '1063424',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -501,8 +501,8 @@ class AvailableCalendarControllerTest extends ControllerTestCase
     public function testMissingStartDateEndDateAndOfficeId()
     {
         $parameters = [
-            'serviceId' => '1063424',
-            'serviceCount' => '1',
+            'serviceIds' => '1063424',
+            'serviceCounts' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -523,8 +523,8 @@ class AvailableCalendarControllerTest extends ControllerTestCase
     public function testMissingStartDateEndDateAndServiceId()
     {
         $parameters = [
-            'officeId' => '102522',
-            'serviceCount' => '1',
+            'officeIds' => '102522',
+            'serviceCounts' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -546,7 +546,7 @@ class AvailableCalendarControllerTest extends ControllerTestCase
     {
         $parameters = [
             'endDate' => '2024-09-04',
-            'serviceId' => '1063424',
+            'serviceIds' => '1063424',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -568,7 +568,7 @@ class AvailableCalendarControllerTest extends ControllerTestCase
     {
         $parameters = [
             'startDate' => '2024-08-29',
-            'serviceId' => '1063424',
+            'serviceIds' => '1063424',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -591,9 +591,9 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         $parameters = [
             'startDate' => '',
             'endDate' => '',
-            'officeId' => '102522',
-            'serviceId' => '1063424',
-            'serviceCount' => '1',
+            'officeIds' => '102522',
+            'serviceIds' => '1063424',
+            'serviceCounts' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -614,9 +614,9 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         $parameters = [
             'startDate' => '2024-08-29',
             'endDate' => '2024-09-04',
-            'officeId' => '102522',
-            'serviceId' => '1063424',
-            'serviceCount' => 'abc,123',
+            'officeIds' => '102522',
+            'serviceIds' => '1063424',
+            'serviceCounts' => 'abc,123',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -635,9 +635,9 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         $parameters = [
             'startDate' => '2024-08-29',
             'endDate' => '2024-09-04',
-            'officeId' => 'invalid',
-            'serviceId' => '1063424',
-            'serviceCount' => '1',
+            'officeIds' => 'invalid',
+            'serviceIds' => '1063424',
+            'serviceCounts' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -656,9 +656,9 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         $parameters = [
             'startDate' => '2024-08-29',
             'endDate' => '2024-09-04',
-            'officeId' => '102522',
-            'serviceId' => 'invalid',
-            'serviceCount' => '1',
+            'officeIds' => '102522',
+            'serviceIds' => 'invalid',
+            'serviceCounts' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -692,9 +692,9 @@ class AvailableCalendarControllerTest extends ControllerTestCase
                 'parameters' => [
                     'startDate' => '2024-08-29',
                     'endDate' => '2024-09-04',
-                    'officeId' => '9999998',
-                    'serviceId' => '1',
-                    'serviceCount' => '1',
+                    'officeIds' => '9999998',
+                    'serviceIds' => '1',
+                    'serviceCounts' => '1',
                 ],
                 'exception' => $exception,
             ],
@@ -703,9 +703,9 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         $parameters = [
             'startDate' => '2024-08-29',
             'endDate' => '2024-09-04',
-            'officeId' => '9999998',
-            'serviceId' => '1',
-            'serviceCount' => '1',
+            'officeIds' => '9999998',
+            'serviceIds' => '1',
+            'serviceCounts' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -736,9 +736,9 @@ class AvailableCalendarControllerTest extends ControllerTestCase
                 'parameters' => [
                     'startDate' => '2024-08-21',
                     'endDate' => '2024-08-23',
-                    'officeId' => '9999998',
-                    'serviceId' => '1',
-                    'serviceCount' => '1',
+                    'officeIds' => '9999998',
+                    'serviceIds' => '1',
+                    'serviceCounts' => '1',
                 ],
                 'response' => $this->readFixture($fixture),
             ],
