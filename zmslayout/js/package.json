@@ -9,7 +9,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
     "flatpickr": "^4.5.0",
-    "jquery": "^3.6",
+    "jquery": "^4.0.0",
     "magnific-popup": "^1.1.0",
     "shariff": "~2.0"
   }
