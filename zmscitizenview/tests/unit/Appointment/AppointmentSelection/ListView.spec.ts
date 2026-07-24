@@ -142,6 +142,50 @@ describe("ListView", () => {
     expect(wrapper.emitted("requestMoreDays")).toBeTruthy();
   });
 
+  it("does not reopen the first day when Mehr laden expands the list", async () => {
+    const wrapper = mountListView({
+      availableDays: [
+        { date: "2025-06-10", providerIDs: "1" },
+        { date: "2025-06-11", providerIDs: "1" },
+        { date: "2025-06-12", providerIDs: "1" },
+        { date: "2025-06-13", providerIDs: "1" },
+        { date: "2025-06-14", providerIDs: "1" },
+        { date: "2025-06-15", providerIDs: "1" },
+        { date: "2025-06-16", providerIDs: "1" },
+        { date: "2025-06-17", providerIDs: "1" },
+      ],
+      appointmentsByDay: new Map(
+        [
+          "2025-06-10",
+          "2025-06-11",
+          "2025-06-12",
+          "2025-06-13",
+          "2025-06-14",
+          "2025-06-15",
+          "2025-06-16",
+          "2025-06-17",
+        ].map((date) => [date, listViewDayPartNavigationSlots])
+      ),
+    });
+    await nextTick();
+
+    // Close the auto-opened first day
+    await wrapper
+      .find("#listHeading-0 .m-accordion__section-button")
+      .trigger("click");
+    await nextTick();
+    expect(wrapper.find("#listContent-0").classes()).not.toContain("show");
+
+    const btn = wrapper
+      .findAll(".m-button")
+      .find((b) => b.text().includes("loadMore"));
+    await btn!.trigger("click");
+    await nextTick();
+
+    expect(wrapper.findAll(".m-accordion__section-header").length).toBe(8);
+    expect(wrapper.find("#listContent-0").classes()).not.toContain("show");
+  });
+
   it("opens the clicked accordion section and closes the previous one", async () => {
     const wrapper = mountListView();
     await wrapper
