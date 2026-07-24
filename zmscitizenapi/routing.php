@@ -62,7 +62,7 @@
  *       - name: serviceCounts
  *         description: Comma-separated service counts matching serviceIds order (plural CSV list query param)
  *         in: query
- *         required: false
+ *         required: true
  *         type: string
  *     responses:
  *       200:
