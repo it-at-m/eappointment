@@ -236,7 +236,7 @@ import {
   watch,
 } from "vue";
 
-import { AvailableCalendarByOfficeDTO } from "@/api/models/AvailableCalendarByOfficeDTO";
+import { AvailableCalendarDTO } from "@/api/models/AvailableCalendarDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
 import { OfficeAvailableTimeSlotsDTO } from "@/api/models/OfficeAvailableTimeSlotsDTO";
 import { fetchAvailableCalendar } from "@/api/ZMSAppointmentAPI";
@@ -988,9 +988,7 @@ const setNoAppointmentForThisDayError = (): void => {
 };
 
 // API calls
-const applyCalendarResponse = (
-  calendar: AvailableCalendarByOfficeDTO
-): boolean => {
+const applyCalendarResponse = (calendar: AvailableCalendarDTO): boolean => {
   const days = calendar?.availableDays;
   if (
     !Array.isArray(days) ||
@@ -1089,7 +1087,7 @@ const jumpToBookableDate = async (isoDate: string) => {
 };
 
 /**
- * Office IDs for available-calendar-by-office. Once checkboxes exist, only
+ * Office IDs for available-calendar. Once checkboxes exist, only
  * checked offices are sent so next/prevBookableDate match the selection.
  */
 const getOfficeIdsForCalendarRequest = (): number[] => {
@@ -1139,7 +1137,7 @@ const reloadCalendarAvailability = async (options?: {
   calendarFetchAbort = abortController;
   const generation = ++calendarFetchGeneration;
 
-  let data: AvailableCalendarByOfficeDTO | ErrorDTO;
+  let data: AvailableCalendarDTO | ErrorDTO;
   try {
     data = await fetchAvailableCalendar(
       props.globalState,
@@ -1167,7 +1165,7 @@ const reloadCalendarAvailability = async (options?: {
     return false;
   }
 
-  const calendar = data as AvailableCalendarByOfficeDTO;
+  const calendar = data as AvailableCalendarDTO;
   if (!applyCalendarResponse(calendar)) {
     handleError(data);
     return false;

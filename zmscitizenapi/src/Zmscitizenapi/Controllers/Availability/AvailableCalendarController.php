@@ -6,22 +6,22 @@ namespace BO\Zmscitizenapi\Controllers\Availability;
 
 use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Controllers\UnpublishedAccessTrait;
-use BO\Zmscitizenapi\Services\Availability\AvailableCalendarByOfficeService;
+use BO\Zmscitizenapi\Services\Availability\AvailableCalendarService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class AvailableCalendarByOfficeController extends BaseController
+class AvailableCalendarController extends BaseController
 {
     use UnpublishedAccessTrait;
 
-    private AvailableCalendarByOfficeService $service;
+    private AvailableCalendarService $service;
 
     public function __construct()
     {
         $this->initializeUnpublishedAccess();
-        $this->service = new AvailableCalendarByOfficeService();
+        $this->service = new AvailableCalendarService();
     }
 
     #[\Override]
@@ -34,7 +34,7 @@ class AvailableCalendarByOfficeController extends BaseController
             return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest')['statusCode']);
         }
 
-        $result = $this->service->getAvailableCalendarByOffice($queryParams, $this->showUnpublished);
+        $result = $this->service->getAvailableCalendar($queryParams, $this->showUnpublished);
 
         $isError = is_array($result) && isset($result['errors']);
         return $this->createJsonResponse(

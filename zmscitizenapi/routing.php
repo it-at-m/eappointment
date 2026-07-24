@@ -23,7 +23,7 @@
 
 /**
  * @swagger
- * /available-calendar-by-office/:
+ * /available-calendar/:
  *   get:
  *     summary: Get bookable days with appointment slots grouped by office
  *     tags:
@@ -73,9 +73,9 @@
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/availableCalendarByOffice.json"
+ *               $ref: "schema/citizenapi/availableCalendar.json"
  */
-\App::$slim->get('/available-calendar-by-office/', '\BO\Zmscitizenapi\Controllers\Availability\AvailableCalendarByOfficeController')->setName("AvailableCalendarByOfficeController");
+\App::$slim->get('/available-calendar/', '\BO\Zmscitizenapi\Controllers\Availability\AvailableCalendarController')->setName("AvailableCalendarController");
 
 /**
  * @swagger

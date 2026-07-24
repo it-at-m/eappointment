@@ -6,9 +6,9 @@ use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 
-class AvailableCalendarByOfficeControllerTest extends ControllerTestCase
+class AvailableCalendarControllerTest extends ControllerTestCase
 {
-    protected $classname = "\BO\Zmscitizenapi\Controllers\Availability\AvailableCalendarByOfficeController";
+    protected $classname = "\BO\Zmscitizenapi\Controllers\Availability\AvailableCalendarController";
 
     public function setUp(): void
     {

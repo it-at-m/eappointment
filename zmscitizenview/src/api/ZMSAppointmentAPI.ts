@@ -1,5 +1,5 @@
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
-import { AvailableCalendarByOfficeDTO } from "@/api/models/AvailableCalendarByOfficeDTO";
+import { AvailableCalendarDTO } from "@/api/models/AvailableCalendarDTO";
 import { CaptchaDetailsDTO } from "@/api/models/CaptchaDetailsDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
 import { OfficesAndServicesDTO } from "@/api/models/OfficesAndServicesDTO";
@@ -144,7 +144,7 @@ export function fetchAvailableCalendar(
   slotsStartDate?: string,
   slotsEndDate?: string,
   signal?: AbortSignal
-): Promise<AvailableCalendarByOfficeDTO | ErrorDTO> {
+): Promise<AvailableCalendarDTO | ErrorDTO> {
   const params: Record<string, any> = {
     startDate: convertDateToString(TODAY),
     endDate: convertDateToString(MAXDATE),

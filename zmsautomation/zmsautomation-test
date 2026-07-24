@@ -470,7 +470,7 @@ AVAIL_DAYS_END_DATE="$(TZ=Europe/Berlin date -d "${AVAIL_DAYS_START_DATE} +6 mon
 
 # health check for combined calendar availability (zmskvr-1124 Ruppertstraße booking scenarios)
 # Personalausweis at Bürgerbüro Ruppertstraße (10502) – lands at 10502
-CITIZEN_API_AVAIL_CALENDAR_URL="$(join_url "${CITIZEN_API_BASE_URI}" "available-calendar-by-office/")?officeId=10502&serviceId=1063441&startDate=${AVAIL_DAYS_START_DATE}&endDate=${AVAIL_DAYS_END_DATE}&serviceCount=1"
+CITIZEN_API_AVAIL_CALENDAR_URL="$(join_url "${CITIZEN_API_BASE_URI}" "available-calendar/")?officeId=10502&serviceId=1063441&startDate=${AVAIL_DAYS_START_DATE}&endDate=${AVAIL_DAYS_END_DATE}&serviceCount=1"
 
 # one-shot warm-up (ignore exit code)
 curl -sS -o /dev/null --max-time 30 "$CITIZEN_API_HEALTH_URL" || true

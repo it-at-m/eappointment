@@ -8,11 +8,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 /**
- * Response data for GET /available-calendar-by-office/.
+ * Response data for GET /available-calendar/.
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AvailableCalendarByOfficeResponse {
+public class AvailableCalendarResponse {
 
     private String startDate;
     private String endDate;
@@ -65,7 +65,7 @@ public class AvailableCalendarByOfficeResponse {
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class CalendarDay {
-        /** ISO date YYYY-MM-DD (citizenapi availableCalendarByOffice schema). */
+        /** ISO date YYYY-MM-DD (citizenapi availableCalendar schema). */
         private String date;
         private String providerIDs;
         private List<OfficeSlot> offices;

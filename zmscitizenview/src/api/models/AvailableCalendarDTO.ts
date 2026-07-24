@@ -6,7 +6,7 @@ export interface AvailableCalendarDayDTO {
   offices: OfficeAvailableTimeSlotsDTO[];
 }
 
-export interface AvailableCalendarByOfficeDTO {
+export interface AvailableCalendarDTO {
   startDate: string;
   endDate: string;
   slotsStartDate?: string;
