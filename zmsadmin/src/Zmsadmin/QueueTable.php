@@ -26,6 +26,10 @@ class QueueTable extends BaseController
         $validator = $request->getAttribute('validator');
         $success = $validator->getParameter('success')->isString()->getValue();
         $withCalledList = $validator->getParameter('withCalled')->isBool()->getValue();
+        $includeWaitingClientsEffective = $validator
+            ->getParameter('includeWaitingClientsEffective')
+            ->isBool()
+            ->getValue();
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $selectedDateTime = $selectedDate ? new \DateTimeImmutable($selectedDate) : \App::$now;
         $selectedDateTime = ($selectedDateTime < \App::$now) ? \App::$now : $selectedDateTime;
@@ -50,8 +54,28 @@ class QueueTable extends BaseController
 
         $queueList = $processList->toQueueList(\App::$now);
 
+        $waitingClientsEffective = null;
+
+        if ($includeWaitingClientsEffective) {
+            $waitingClientsQueueList = $queueList;
+
+            if ($selectedDateTime->format('Y-m-d') !== \App::$now->format('Y-m-d')) {
+                $waitingClientsProcessList = $workstationRequest->readProcessListByDate(
+                    \App::$now,
+                    Helper\GraphDefaults::getProcess()
+                );
+
+                $waitingClientsQueueList = $waitingClientsProcessList->toQueueList(\App::$now);
+            }
+
+            $waitingClientsEffective = $waitingClientsQueueList
+                ->withStatus($this->processStatusList)
+                ->getCountWithWaitingTime(\App::$now)
+                ->count();
+        }
+
         $queueListVisible = $queueList
-            ->withStatus(['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted']);
+            ->withStatus($this->processStatusList);
         $queueListMissed = $queueList->withStatus(['missed']);
         $queueListParked = $queueList->withStatus(['parked']);
         $queueListFinished = $queueList->withStatus(['finished']);
@@ -91,6 +115,7 @@ class QueueTable extends BaseController
                 'cluster' => $workstationRequest->readCluster(),
                 'clusterEnabled' => $workstation->isClusterEnabled(),
                 'processList' => $queueListVisible->toProcessList(),
+                'waitingClientsEffective' => $waitingClientsEffective,
                 'processListMissed' => $queueListMissed->toProcessList(),
                 'processListParked' => $queueListParked->toProcessList(),
                 'processListFinished' => $queueListFinished->toProcessList(),
