@@ -292,12 +292,15 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
                 continue;
             }
 
-            if ($entity->waitingTime) {
-                $queueList->addEntity($entity);
+            if ($timestamp !== null) {
+                if ($entity->arrivalTime <= $timestamp) {
+                    $queueList->addEntity($entity);
+                }
+
                 continue;
             }
 
-            if ($timestamp !== null && $entity->arrivalTime <= $timestamp) {
+            if ($entity->waitingTime) {
                 $queueList->addEntity($entity);
             }
         }
