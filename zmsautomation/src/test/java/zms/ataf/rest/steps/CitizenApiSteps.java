@@ -33,6 +33,9 @@ public class CitizenApiSteps {
     private Response response;
     private String baseUri;
     private AvailableCalendarResponse lastAvailableCalendarResponse;
+    private Integer cachedCalendarOfficeId;
+    private Integer cachedCalendarServiceId;
+    private Integer cachedCalendarServiceCount;
     private AvailableAppointmentsResponse lastAvailableAppointmentsResponse;
     private ThinnedProcess lastReserveProcess;
     private String confirmProcessId;
@@ -56,6 +59,9 @@ public class CitizenApiSteps {
         clearBookingState();
         lastReserveProcess = null;
         lastAvailableCalendarResponse = null;
+        cachedCalendarOfficeId = null;
+        cachedCalendarServiceId = null;
+        cachedCalendarServiceCount = null;
         lastAvailableAppointmentsResponse = null;
     }
 
@@ -156,7 +162,14 @@ public class CitizenApiSteps {
         lastServiceId = serviceId;
         lastServiceCount = serviceCount;
 
-        if (lastAvailableCalendarResponse == null) {
+        boolean cacheMatchesRequest = lastAvailableCalendarResponse != null
+            && cachedCalendarOfficeId != null
+            && cachedCalendarOfficeId == officeId
+            && cachedCalendarServiceId != null
+            && cachedCalendarServiceId == serviceId
+            && cachedCalendarServiceCount != null
+            && cachedCalendarServiceCount == serviceCount;
+        if (!cacheMatchesRequest) {
             lastAvailableCalendarResponse = fetchAvailableCalendar(officeId, serviceId, serviceCount);
         }
 
@@ -838,6 +851,9 @@ public class CitizenApiSteps {
         } catch (Exception e) {
             calendar = parseDataResponse(response, AvailableCalendarResponse.class);
         }
+        cachedCalendarOfficeId = officeId;
+        cachedCalendarServiceId = serviceId;
+        cachedCalendarServiceCount = serviceCount;
         return calendar;
     }
 
