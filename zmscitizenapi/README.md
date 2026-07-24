@@ -12,6 +12,16 @@ The ZMS Citizen API offers endpoints for:
 * Booking, confirming, and canceling appointments
 * Managing appointment details
 
+### Query parameter conventions
+
+List values in query strings use **plural** names and comma-separated values, for example:
+
+* `officeIds=1,2,3`
+* `serviceIds=10,20`
+* `serviceCounts=1,1`
+
+Singular names (`officeId`, `serviceId`, …) remain reserved for single entity fields in JSON bodies and responses.
+
 ```mermaid
 sequenceDiagram
     participant Client

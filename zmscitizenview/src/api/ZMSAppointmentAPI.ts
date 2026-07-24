@@ -148,9 +148,9 @@ export function fetchAvailableCalendar(
   const params: Record<string, any> = {
     startDate: convertDateToString(TODAY),
     endDate: convertDateToString(MAXDATE),
-    officeId: providerIds,
-    serviceId: serviceIds,
-    serviceCount: serviceCounts,
+    officeIds: providerIds,
+    serviceIds: serviceIds,
+    serviceCounts: serviceCounts,
     ...(captchaToken && { captchaToken }),
     ...(slotsStartDate && { slotsStartDate }),
     ...(slotsEndDate && { slotsEndDate }),
