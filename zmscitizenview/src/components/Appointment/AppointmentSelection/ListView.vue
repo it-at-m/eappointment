@@ -247,6 +247,7 @@
       @click="loadMoreDays"
       icon="chevron-down"
       icon-animated
+      :disabled="isLoadingMoreDays"
       style="margin-top: 16px"
     >
       <template #default>{{ t("loadMore") }}</template>
@@ -289,6 +290,9 @@ const props = defineProps<{
     Array<{ officeId: number | string; appointments: number[] }>
   >;
   officeOrder: Map<number, number>;
+  /** True when later months may still be fetched beyond availableDays. */
+  hasMoreDaysAhead?: boolean;
+  isLoadingMoreDays?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -303,6 +307,7 @@ const emit = defineEmits<{
   (e: "later", payload: { day: AccordionDay; type: "hour" | "dayPart" }): void;
   (e: "openInfo"): void;
   (e: "update:selectedDay", date: Date): void;
+  (e: "requestMoreDays"): void;
 }>();
 
 const t = props.t;
@@ -390,7 +395,12 @@ function onLater(day: AccordionDay, type: "hour" | "dayPart") {
 }
 
 function loadMoreDays() {
+  const loadedCount = daysForSelectedProviders.value.length;
   daysToShow.value += 3;
+  // When local daylist is exhausted, ask parent to fetch the next month.
+  if (daysToShow.value >= loadedCount && props.hasMoreDaysAhead) {
+    emit("requestMoreDays");
+  }
 }
 
 async function snapToNearestForCurrentSelection() {
@@ -647,7 +657,8 @@ watch(firstFiveAvailableDays, (newDays) => {
 
 const canLoadMore = computed(() => {
   return (
-    firstFiveAvailableDays.value.length < daysForSelectedProviders.value.length
+    firstFiveAvailableDays.value.length <
+      daysForSelectedProviders.value.length || !!props.hasMoreDaysAhead
   );
 });
 </script>

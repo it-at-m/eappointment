@@ -1244,6 +1244,100 @@ describe("AppointmentSelection", () => {
         );
       });
 
+      it("merges later-month daylist into availableDays for ListView paging", async () => {
+        const juneOffices = [
+          { officeId: 10351880, appointments: [1749535200] },
+        ];
+        (fetchAvailableCalendar as Mock).mockResolvedValue({
+          ...calendarResponse(
+            [
+              {
+                date: "2025-06-10",
+                providerIDs: "10351880",
+                offices: juneOffices,
+              },
+              {
+                date: "2025-06-17",
+                providerIDs: "10351880",
+                offices: [],
+              },
+            ],
+            [],
+            { nextBookableDate: "2025-07-03" }
+          ),
+          slotsStartDate: "2025-06-10",
+          slotsEndDate: "2025-06-10",
+        });
+
+        const wrapper = createWrapper({
+          selectedService: {
+            id: "service1",
+            providers: [
+              {
+                name: "Office X",
+                id: 10351880,
+                address: { street: "Test", house_number: "1" },
+                scope: { id: "10351880" },
+              },
+            ],
+          },
+        });
+
+        wrapper.vm.selectedProviders[10351880] = true;
+        await nextTick();
+        await wrapper.vm.showSelectionForProvider({
+          name: "Office X",
+          id: 10351880,
+          address: { street: "Test", house_number: "1" },
+          scope: { id: "10351880" },
+        });
+        await flushPromises();
+
+        expect(wrapper.vm.availableDays.map((d: any) => d.date)).toEqual([
+          "2025-06-10",
+          "2025-06-17",
+        ]);
+        expect(wrapper.vm.hasMoreListDaysAhead).toBe(true);
+
+        (fetchAvailableCalendar as Mock).mockResolvedValue({
+          ...calendarResponse(
+            [
+              {
+                date: "2025-07-03",
+                providerIDs: "10351880",
+                offices: [
+                  { officeId: 10351880, appointments: [1751515200] },
+                ],
+              },
+              {
+                date: "2025-07-15",
+                providerIDs: "10351880",
+                offices: [],
+              },
+            ],
+            [],
+            { prevBookableDate: "2025-06-17", nextBookableDate: null }
+          ),
+          slotsStartDate: "2025-07-03",
+          slotsEndDate: "2025-07-03",
+        });
+
+        await wrapper.vm.loadMoreListViewDays();
+        await flushPromises();
+
+        expect(wrapper.vm.availableDays.map((d: any) => d.date)).toEqual([
+          "2025-06-10",
+          "2025-06-17",
+          "2025-07-03",
+          "2025-07-15",
+        ]);
+        expect(wrapper.vm.hasMoreListDaysAhead).toBe(false);
+
+        const lastCall = (fetchAvailableCalendar as Mock).mock.calls.at(-1);
+        expect(lastCall?.[5]).toBe("2025-07-03");
+        expect(lastCall?.[6]).toBe("2025-07-03");
+      });
+
       it("omits prevBookableDate when no appointments are available before the slots window", async () => {
         (fetchAvailableCalendar as Mock).mockResolvedValue(
           calendarResponse(

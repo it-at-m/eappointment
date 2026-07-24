@@ -119,6 +119,29 @@ describe("ListView", () => {
     expect(btn).toBeTruthy();
   });
 
+  it("keeps Mehr laden when later months may still be fetched", async () => {
+    const wrapper = mountListView({
+      availableDays: [
+        { date: "2025-06-10", providerIDs: "1" },
+        { date: "2025-06-11", providerIDs: "1" },
+      ],
+      appointmentsByDay: new Map([
+        ["2025-06-10", listViewDayPartNavigationSlots],
+        ["2025-06-11", listViewDayPartNavigationSlots],
+      ]),
+      hasMoreDaysAhead: true,
+    });
+
+    expect(wrapper.findAll(".m-accordion__section-header").length).toBe(2);
+    const btn = wrapper
+      .findAll(".m-button")
+      .find((b) => b.text().includes("loadMore"));
+    expect(btn).toBeTruthy();
+    await btn!.trigger("click");
+    await nextTick();
+    expect(wrapper.emitted("requestMoreDays")).toBeTruthy();
+  });
+
   it("opens the clicked accordion section and closes the previous one", async () => {
     const wrapper = mountListView();
     await wrapper
