@@ -18,7 +18,7 @@
   "// overrides.fast-uri": "ajv pins fast-uri@3.1.2; force ^3.1.4 (CVE-2026-13676, CVE-2026-16221).",
   "overrides": {
     "js-yaml": "^5.0.0",
-    "fast-uri": "^3.1.4",
+    "fast-uri": "^4.0.0",
     "brace-expansion@1": "1.1.16",
     "brace-expansion@2": "2.1.2",
     "brace-expansion@5": "5.0.7"
