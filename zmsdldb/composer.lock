@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e8c7c8459ff3e5d830500064481c19e3",
+    "content-hash": "29d94c3f2cb964f65a09affdb8c251e7",
     "packages": [
         {
             "name": "aronduby/dump",
