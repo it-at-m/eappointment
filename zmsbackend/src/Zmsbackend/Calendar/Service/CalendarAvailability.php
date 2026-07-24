@@ -548,7 +548,7 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         }
 
         $serviceIdList = $this->parseCsv($serviceIds);
-        $countList = $this->parseCsv($serviceCounts);
+        $countList = $serviceCounts === '' ? [] : array_map('trim', explode(',', $serviceCounts));
         $requestSources = $requestSource
             ? []
             : (new \BO\Zmsbackend\Request\Service\Request())->readSourceMapByIds(
