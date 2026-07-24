@@ -61,7 +61,7 @@ class ProcessListSummaryMail extends \BO\Zmsbackend\Api\BaseController
         $config = (new ConfigRepository())->readEntity();
         $department = $this->readDepartment($config, $collection->getFirst());
 
-        $mail = (new \BO\Zmsbackend\Mail\Service\Mail())->toResolvedEntity($collection, $config, 'overview')->withDepartment($department);
+        $mail = (new Mail())->toResolvedEntity($collection, $config, 'overview')->withDepartment($department);
         $mail = $this->setWithProcessClient($mail, $mailAddress);
         $mail->testValid();
 
