@@ -199,7 +199,7 @@ class ThinnedProcess {
   + toArray(): array
 }
 
-class AvailableCalendarByOffice {
+class AvailableCalendar {
   <<Entity>>
   - string startDate
   - string endDate

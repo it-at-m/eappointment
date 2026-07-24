@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Availability;
 
-use BO\Zmscitizenapi\Models\AvailableCalendarByOffice;
+use BO\Zmscitizenapi\Models\AvailableCalendar;
 use BO\Zmscitizenapi\Services\Captcha\CaptchaRequirementTrait;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 
-class AvailableCalendarByOfficeService
+class AvailableCalendarService
 {
     use CaptchaRequirementTrait;
     use ServiceLocationValidationTrait;
@@ -24,10 +24,10 @@ class AvailableCalendarByOfficeService
         $this->zmsApiFacadeService = new ZmsApiFacadeService();
     }
 
-    public function getAvailableCalendarByOffice(
+    public function getAvailableCalendar(
         array $queryParams,
         bool $showUnpublished = false
-    ): AvailableCalendarByOffice|array {
+    ): AvailableCalendar|array {
         $clientData = $this->extractClientData($queryParams);
 
         $errors = $this->validateClientData($clientData);

@@ -8,9 +8,9 @@ use BO\Zmsentities\Schema\Entity;
 use InvalidArgumentException;
 use JsonSerializable;
 
-class AvailableCalendarByOffice extends Entity implements JsonSerializable
+class AvailableCalendar extends Entity implements JsonSerializable
 {
-    public static $schema = 'citizenapi/availableCalendarByOffice.json';
+    public static $schema = 'citizenapi/availableCalendar.json';
     public string $startDate = '';
     public string $endDate = '';
     public string $slotsStartDate = '';

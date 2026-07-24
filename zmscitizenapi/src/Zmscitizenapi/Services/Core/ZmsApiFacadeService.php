@@ -9,7 +9,7 @@ use BO\Zmscitizenapi\Exceptions\UnauthorizedException;
 use BO\Zmscitizenapi\Models\AuthenticatedUser;
 use BO\Zmscitizenapi\Utils\DateTimeFormatHelper;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
-use BO\Zmscitizenapi\Models\AvailableCalendarByOffice;
+use BO\Zmscitizenapi\Models\AvailableCalendar;
 use BO\Zmscitizenapi\Models\Office;
 use BO\Zmscitizenapi\Models\Service;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
@@ -507,7 +507,7 @@ class ZmsApiFacadeService
         string $endDate,
         ?string $slotsStartDate = null,
         ?string $slotsEndDate = null
-    ): AvailableCalendarByOffice|array {
+    ): AvailableCalendar|array {
         $params = [
             'startDate' => $startDate,
             'endDate' => $endDate,
@@ -543,7 +543,7 @@ class ZmsApiFacadeService
             ];
         }
 
-        return new AvailableCalendarByOffice(
+        return new AvailableCalendar(
             (string) ($availability['startDate'] ?? $startDate),
             (string) ($availability['endDate'] ?? $endDate),
             $formattedDays,

@@ -21,7 +21,7 @@ import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 import zms.ataf.rest.dto.common.ApiResponse;
 import zms.ataf.rest.dto.zmscitizenapi.AvailableAppointmentsResponse;
-import zms.ataf.rest.dto.zmscitizenapi.AvailableCalendarByOfficeResponse;
+import zms.ataf.rest.dto.zmscitizenapi.AvailableCalendarResponse;
 import zms.ataf.rest.dto.zmscitizenapi.ReserveAppointmentRequest;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.rest.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
@@ -32,7 +32,7 @@ public class CitizenApiSteps {
 
     private Response response;
     private String baseUri;
-    private AvailableCalendarByOfficeResponse lastAvailableCalendarResponse;
+    private AvailableCalendarResponse lastAvailableCalendarResponse;
     private AvailableAppointmentsResponse lastAvailableAppointmentsResponse;
     private ThinnedProcess lastReserveProcess;
     private String confirmProcessId;
@@ -809,7 +809,7 @@ public class CitizenApiSteps {
     /* End Section: Non-sequential steps assertions for thinned booking process */
 
     /* Section: Response Parsing */
-    private AvailableCalendarByOfficeResponse fetchAvailableCalendar(int officeId, int serviceId, int serviceCount) {
+    private AvailableCalendarResponse fetchAvailableCalendar(int officeId, int serviceId, int serviceCount) {
         String startDate = LocalDate.now().format(DATE_FORMAT);
         String endDate = LocalDate.now().plusMonths(6).format(DATE_FORMAT);
         response = given()
@@ -820,23 +820,23 @@ public class CitizenApiSteps {
             .queryParam("endDate", endDate)
             .queryParam("serviceCount", String.valueOf(serviceCount))
         .when()
-            .get("/available-calendar-by-office/");
+            .get("/available-calendar/");
         CommonApiSteps.setResponse(response);
 
         String calendarBody = response.asString();
         ScenarioLogManager.getLogger().info(String.format(
-            "Citizen API /available-calendar-by-office/ (officeId=%d, serviceId=%d) status=%d body=%s",
+            "Citizen API /available-calendar/ (officeId=%d, serviceId=%d) status=%d body=%s",
             officeId,
             serviceId,
             response.getStatusCode(),
             calendarBody.length() > 1250 ? calendarBody.substring(0, 1250) + "..." : calendarBody
         ));
 
-        AvailableCalendarByOfficeResponse calendar;
+        AvailableCalendarResponse calendar;
         try {
-            calendar = response.as(AvailableCalendarByOfficeResponse.class);
+            calendar = response.as(AvailableCalendarResponse.class);
         } catch (Exception e) {
-            calendar = parseDataResponse(response, AvailableCalendarByOfficeResponse.class);
+            calendar = parseDataResponse(response, AvailableCalendarResponse.class);
         }
         return calendar;
     }
@@ -879,7 +879,7 @@ public class CitizenApiSteps {
         }
     }
 
-    public AvailableCalendarByOfficeResponse getLastAvailableCalendarResponse() {
+    public AvailableCalendarResponse getLastAvailableCalendarResponse() {
         return lastAvailableCalendarResponse;
     }
 
