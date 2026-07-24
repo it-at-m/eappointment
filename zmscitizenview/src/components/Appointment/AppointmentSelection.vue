@@ -1260,6 +1260,7 @@ const reloadCalendarAvailability = async (options?: {
     freeSlotCheckedDates.value = new Set();
     prevBookableDate.value = null;
     nextBookableDate.value = null;
+    availableDaysFetched.value = true;
     return false;
   }
 
@@ -1297,7 +1298,12 @@ const reloadCalendarAvailability = async (options?: {
     if (isAbortError(error) || abortController.signal.aborted) {
       return false;
     }
-    throw error;
+    if (generation === calendarFetchGeneration) {
+      handleError({ errors: [{ errorCode: "networkError" }] });
+      availableDaysFetched.value = true;
+      isSwitchingProvider.value = false;
+    }
+    return false;
   }
 
   if (generation !== calendarFetchGeneration) {
