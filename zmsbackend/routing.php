@@ -353,18 +353,18 @@
  *                  in: query
  *                  required: false
  *                  type: string
- *              -   name: officeId
- *                  description: Comma-separated provider IDs
+ *              -   name: officeIds
+ *                  description: Comma-separated provider IDs (plural CSV list query param)
  *                  in: query
  *                  required: true
  *                  type: string
- *              -   name: serviceId
- *                  description: Comma-separated request/service IDs
+ *              -   name: serviceIds
+ *                  description: Comma-separated request/service IDs (plural CSV list query param)
  *                  in: query
  *                  required: true
  *                  type: string
- *              -   name: serviceCount
- *                  description: Comma-separated slot counts per service
+ *              -   name: serviceCounts
+ *                  description: Comma-separated slot counts per service (plural CSV list query param)
  *                  in: query
  *                  required: false
  *                  type: string

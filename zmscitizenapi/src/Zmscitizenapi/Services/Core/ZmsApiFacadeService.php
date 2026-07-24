@@ -497,11 +497,11 @@ class ZmsApiFacadeService
         $params = [
             'startDate' => $startDate,
             'endDate' => $endDate,
-            'officeId' => implode(',', $officeIds),
-            'serviceId' => implode(',', $serviceIds),
+            'officeIds' => implode(',', $officeIds),
+            'serviceIds' => implode(',', $serviceIds),
         ];
         if ($serviceCounts !== []) {
-            $params['serviceCount'] = implode(',', $serviceCounts);
+            $params['serviceCounts'] = implode(',', $serviceCounts);
         }
         if ($slotsStartDate !== null && $slotsStartDate !== '') {
             $params['slotsStartDate'] = $slotsStartDate;

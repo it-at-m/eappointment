@@ -13,9 +13,9 @@ class CalendarAvailabilityGetTest extends \BO\Zmsbackend\Tests\Api\Base
         $response = $this->render([], [
             'startDate' => $now->format('Y-m-d'),
             'endDate' => $end->format('Y-m-t'),
-            'officeId' => '122217',
-            'serviceId' => '120703',
-            'serviceCount' => '1',
+            'officeIds' => '122217',
+            'serviceIds' => '120703',
+            'serviceCounts' => '1',
         ], []);
         $body = json_decode((string) $response->getBody(), true);
 
@@ -30,8 +30,8 @@ class CalendarAvailabilityGetTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->expectException(\BO\Zmsbackend\Calendar\Exception\InvalidFirstDay::class);
         $this->render([], [
             'endDate' => '2026-12-31',
-            'officeId' => '122217',
-            'serviceId' => '120703',
+            'officeIds' => '122217',
+            'serviceIds' => '120703',
         ], []);
     }
 
@@ -40,8 +40,8 @@ class CalendarAvailabilityGetTest extends \BO\Zmsbackend\Tests\Api\Base
         $response = $this->render([], [
             'startDate' => '2099-01-01',
             'endDate' => '2099-01-31',
-            'officeId' => '122217',
-            'serviceId' => '120703',
+            'officeIds' => '122217',
+            'serviceIds' => '120703',
         ], []);
         $body = json_decode((string) $response->getBody(), true);
 
@@ -65,9 +65,9 @@ class CalendarAvailabilityGetTest extends \BO\Zmsbackend\Tests\Api\Base
             'endDate' => $end->format('Y-m-t'),
             'slotsStartDate' => $now->format('Y-m-d'),
             'slotsEndDate' => $slotsEnd->format('Y-m-t'),
-            'officeId' => '122217',
-            'serviceId' => '120703',
-            'serviceCount' => '1',
+            'officeIds' => '122217',
+            'serviceIds' => '120703',
+            'serviceCounts' => '1',
         ], []);
         $body = json_decode((string) $response->getBody(), true);
 
@@ -107,9 +107,9 @@ class CalendarAvailabilityGetTest extends \BO\Zmsbackend\Tests\Api\Base
             'endDate' => $end->format('Y-m-t'),
             'slotsStartDate' => $day,
             'slotsEndDate' => $day,
-            'officeId' => '122217',
-            'serviceId' => '120703',
-            'serviceCount' => '1',
+            'officeIds' => '122217',
+            'serviceIds' => '120703',
+            'serviceCounts' => '1',
         ], []);
         $body = json_decode((string) $response->getBody(), true);
 
@@ -136,9 +136,9 @@ class CalendarAvailabilityGetTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->render([], [
             'startDate' => $now->format('Y-m-d'),
             'endDate' => $end->format('Y-m-t'),
-            'officeId' => '122217',
-            'serviceId' => '120703',
-            'serviceCount' => '26',
+            'officeIds' => '122217',
+            'serviceIds' => '120703',
+            'serviceCounts' => '26',
         ], []);
     }
 }
