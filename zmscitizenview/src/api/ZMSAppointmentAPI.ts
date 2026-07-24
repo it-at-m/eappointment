@@ -1,6 +1,5 @@
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
-import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
-import { AvailableTimeSlotsDTO } from "@/api/models/AvailableTimeSlotsDTO";
+import { AvailableCalendarDTO } from "@/api/models/AvailableCalendarDTO";
 import { CaptchaDetailsDTO } from "@/api/models/CaptchaDetailsDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
 import { OfficesAndServicesDTO } from "@/api/models/OfficesAndServicesDTO";
@@ -9,8 +8,7 @@ import { GlobalState } from "@/types/GlobalState";
 import {
   getAPIBaseURL,
   VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT,
-  VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT,
-  VUE_APP_ZMS_API_CALENDAR_ENDPOINT,
+  VUE_APP_ZMS_API_CALENDAR_AVAILABILITY_ENDPOINT,
   VUE_APP_ZMS_API_CANCEL_APPOINTMENT_ENDPOINT,
   VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT,
   VUE_APP_ZMS_API_CONFIRM_APPOINTMENT_ENDPOINT,
@@ -32,6 +30,7 @@ interface Request {
   params?: string[][] | Record<string, string>;
   forceAuth?: boolean;
   globalState: GlobalState;
+  signal?: AbortSignal;
 }
 
 type GetRequest = Request & {
@@ -60,6 +59,7 @@ export function request<TResponse>(
   }
   const requestInit: RequestInit = {
     method: request.method,
+    ...(request.signal && { signal: request.signal }),
   };
   if (request.method === "POST") {
     headers["Content-Type"] = "application/json";
@@ -135,13 +135,16 @@ export function fetchServicesAndProviders(
     });
 }
 
-export function fetchAvailableDays(
+export function fetchAvailableCalendar(
   globalState: GlobalState,
   providerIds: number[],
   serviceIds: string[],
   serviceCounts: number[],
-  captchaToken?: string
-): Promise<AvailableDaysDTO | ErrorDTO> {
+  captchaToken?: string,
+  slotsStartDate?: string,
+  slotsEndDate?: string,
+  signal?: AbortSignal
+): Promise<AvailableCalendarDTO | ErrorDTO> {
   const params: Record<string, any> = {
     startDate: convertDateToString(TODAY),
     endDate: convertDateToString(MAXDATE),
@@ -149,37 +152,16 @@ export function fetchAvailableDays(
     serviceId: serviceIds,
     serviceCount: serviceCounts,
     ...(captchaToken && { captchaToken }),
+    ...(slotsStartDate && { slotsStartDate }),
+    ...(slotsEndDate && { slotsEndDate }),
   };
 
   return request({
     globalState,
     method: "GET",
-    path: VUE_APP_ZMS_API_CALENDAR_ENDPOINT,
+    path: VUE_APP_ZMS_API_CALENDAR_AVAILABILITY_ENDPOINT,
     params,
-  });
-}
-
-export function fetchAvailableTimeSlots(
-  globalState: GlobalState,
-  date: string,
-  providerIds: number[],
-  serviceIds: string[],
-  serviceCounts: number[],
-  captchaToken?: string
-): Promise<AvailableTimeSlotsDTO | ErrorDTO> {
-  const params: Record<string, any> = {
-    date: date,
-    officeId: providerIds,
-    serviceId: serviceIds,
-    serviceCount: serviceCounts,
-    ...(captchaToken && { captchaToken }),
-  };
-
-  return request({
-    globalState,
-    method: "GET",
-    path: VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT,
-    params,
+    signal,
   });
 }
 

@@ -199,21 +199,11 @@ class ThinnedProcess {
   + toArray(): array
 }
 
-class AvailableAppointments {
+class AvailableCalendar {
   <<Entity>>
-  - array appointmentTimestamps
-  + toArray(): array
-}
-
-class AvailableDays {
-  <<Entity>>
+  - string startDate
+  - string endDate
   - array availableDays
-  + toArray(): array
-}
-
-class ProcessFreeSlots {
-  <<Entity>>
-  - array~0..1~ appointmentTimestamps
   + toArray(): array
 }
 

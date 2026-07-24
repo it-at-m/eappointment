@@ -1,0 +1,69 @@
+<?php
+
+declare(strict_types=1);
+
+namespace BO\Zmscitizenapi\Models;
+
+use BO\Zmsentities\Schema\Entity;
+use InvalidArgumentException;
+use JsonSerializable;
+
+class AvailableCalendar extends Entity implements JsonSerializable
+{
+    public static $schema = 'citizenapi/availableCalendar.json';
+    public string $startDate = '';
+    public string $endDate = '';
+    public string $slotsStartDate = '';
+    public string $slotsEndDate = '';
+    public ?string $prevBookableDate = null;
+    public ?string $nextBookableDate = null;
+    public array $availableDays = [];
+
+    public function __construct(
+        string $startDate,
+        string $endDate,
+        array $availableDays = [],
+        ?string $slotsStartDate = null,
+        ?string $slotsEndDate = null,
+        ?string $prevBookableDate = null,
+        ?string $nextBookableDate = null
+    ) {
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+        $this->slotsStartDate = $slotsStartDate ?? $startDate;
+        $this->slotsEndDate = $slotsEndDate ?? $endDate;
+        $this->prevBookableDate = $prevBookableDate;
+        $this->nextBookableDate = $nextBookableDate;
+        $this->availableDays = $availableDays;
+        $this->ensureValid();
+    }
+
+    /**
+     * Optional schema check for tests / non-hot paths.
+     */
+    public function ensureValid(): void
+    {
+        if (!$this->testValid()) {
+            throw new InvalidArgumentException('The provided data is invalid according to the schema.');
+        }
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'startDate' => $this->startDate,
+            'endDate' => $this->endDate,
+            'slotsStartDate' => $this->slotsStartDate,
+            'slotsEndDate' => $this->slotsEndDate,
+            'prevBookableDate' => $this->prevBookableDate,
+            'nextBookableDate' => $this->nextBookableDate,
+            'availableDays' => $this->availableDays,
+        ];
+    }
+
+    #[\Override]
+    public function jsonSerialize(): mixed
+    {
+        return $this->toArray();
+    }
+}
