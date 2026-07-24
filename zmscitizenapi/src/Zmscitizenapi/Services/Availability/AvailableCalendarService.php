@@ -53,11 +53,11 @@ class AvailableCalendarService
 
     private function extractClientData(array $queryParams): object
     {
-        $queryParams['officeId'] = isset($queryParams['officeId']) ? (string) $queryParams['officeId'] : '';
-        $queryParams['serviceId'] = isset($queryParams['serviceId']) ? (string) $queryParams['serviceId'] : '';
-        $serviceCount = $queryParams['serviceCount'] ?? '';
-        $serviceCounts = !empty($serviceCount)
-            ? array_map('trim', explode(',', (string) $serviceCount))
+        $queryParams['officeIds'] = isset($queryParams['officeIds']) ? (string) $queryParams['officeIds'] : '';
+        $queryParams['serviceIds'] = isset($queryParams['serviceIds']) ? (string) $queryParams['serviceIds'] : '';
+        $serviceCountsRaw = $queryParams['serviceCounts'] ?? '';
+        $serviceCounts = !empty($serviceCountsRaw)
+            ? array_map('trim', explode(',', (string) $serviceCountsRaw))
             : [];
 
         $slotsStartDate = isset($queryParams['slotsStartDate']) && $queryParams['slotsStartDate'] !== ''
@@ -68,8 +68,8 @@ class AvailableCalendarService
             : null;
 
         return (object) [
-            'officeIds' => array_map('trim', explode(',', $queryParams['officeId'])),
-            'serviceIds' => array_map('trim', explode(',', $queryParams['serviceId'])),
+            'officeIds' => array_map('trim', explode(',', $queryParams['officeIds'])),
+            'serviceIds' => array_map('trim', explode(',', $queryParams['serviceIds'])),
             'serviceCounts' => $serviceCounts,
             'startDate' => $queryParams['startDate'] ?? null,
             'endDate' => $queryParams['endDate'] ?? null,
