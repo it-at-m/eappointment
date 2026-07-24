@@ -174,7 +174,8 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             $slotsStartDate,
             $slotsEndDate,
             $prevBookableDate,
-            $nextBookableDate
+            $nextBookableDate,
+            $now
         );
     }
 
@@ -617,14 +618,15 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         string $slotsStartDate,
         string $slotsEndDate,
         ?string $prevBookableDate,
-        ?string $nextBookableDate
+        ?string $nextBookableDate,
+        \DateTimeInterface $now
     ): array {
         $scopeToProvider = [];
         foreach ($calendar->scopes as $scope) {
             $scopeToProvider[(string) $scope['id']] = (string) $scope['provider']['id'];
         }
 
-        $appointmentsByDateAndOffice = $this->groupAppointmentsByDateAndOffice($processList);
+        $appointmentsByDateAndOffice = $this->groupAppointmentsByDateAndOffice($processList, $now);
         $days = [];
 
         foreach ($calendar->days as $day) {
@@ -694,10 +696,10 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
      *
      * @return array<string, array<string, array<int, int>>>
      */
-    private function groupAppointmentsByDateAndOffice(array $processList): array
+    private function groupAppointmentsByDateAndOffice(array $processList, \DateTimeInterface $now): array
     {
         $grouped = [];
-        $now = time();
+        $nowTimestamp = $now->getTimestamp();
 
         foreach ($processList as $process) {
             $officeId = (string) ($process['scope']['provider']['id'] ?? '');
@@ -707,7 +709,7 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
 
             foreach ($process['appointments'] ?? [] as $appointment) {
                 $timestamp = (int) ($appointment['date'] ?? 0);
-                if ($timestamp <= $now) {
+                if ($timestamp <= $nowTimestamp) {
                     continue;
                 }
 
