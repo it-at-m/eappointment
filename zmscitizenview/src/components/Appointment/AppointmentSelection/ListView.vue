@@ -504,138 +504,139 @@ const getOfficesForDay = (dateString: string) => {
   return props.appointmentsByDay.get(dateString) ?? [];
 };
 
-const dayHasSlotsForSelectedProviders = (dateString: string): boolean => {
-  return getOfficesForDay(dateString).some(
-    (office) =>
-      props.selectedProviders[String(office.officeId)] &&
-      (office.appointments?.length ?? 0) > 0
-  );
+/** YYYY-MM-DD without UTC date-only shift (matches AppointmentSelection.toDayKey). */
+const toDayKey = (value: string | number | Date): string => {
+  if (typeof value === "string") return value.slice(0, 10);
+  if (typeof value === "number") return convertDateToString(new Date(value));
+  return convertDateToString(value);
 };
 
-const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
+const daysForSelectedProviders = computed(() => {
   if (!props.availableDays) return [];
-
-  const availableForProviders = props.availableDays.filter((day) =>
+  // availableDays already omits free-slot-checked empty days from the parent.
+  // Do not require appointmentsByDay slots here: only the free-slot window is
+  // loaded upfront; other daylist days fetch slots when the accordion opens.
+  return props.availableDays.filter((day) =>
     day.providerIDs.split(",").some((id) => props.selectedProviders[id.trim()])
   );
+});
 
-  const trulyAvailable = availableForProviders.filter((day) => {
-    const dateStr = convertDateToString(new Date(day.date));
-    return dayHasSlotsForSelectedProviders(dateStr);
-  });
+const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
+  return daysForSelectedProviders.value
+    .slice(0, daysToShow.value)
+    .map((dayObj) => {
+      const dateString = toDayKey(dayObj.date);
+      // Noon avoids UTC date-only parsing shifting the calendar day / weekday label.
+      const d = new Date(`${dateString}T12:00:00`);
+      const label =
+        formatterWeekday.format(d) +
+        ", " +
+        String(d.getDate()).padStart(2, "0") +
+        "." +
+        String(d.getMonth() + 1).padStart(2, "0") +
+        "." +
+        d.getFullYear();
 
-  return trulyAvailable.slice(0, daysToShow.value).map((dayObj) => {
-    const d = new Date(dayObj.date);
-    const dateString = convertDateToString(d);
-    const label =
-      formatterWeekday.format(d) +
-      ", " +
-      String(d.getDate()).padStart(2, "0") +
-      "." +
-      String(d.getMonth() + 1).padStart(2, "0") +
-      "." +
-      d.getFullYear();
+      let appointmentsCount = 0;
+      const hourRows: AccordionDay["hourRows"] = [];
+      const dayPartRows: AccordionDay["dayPartRows"] = [];
 
-    let appointmentsCount = 0;
-    const hourRows: AccordionDay["hourRows"] = [];
-    const dayPartRows: AccordionDay["dayPartRows"] = [];
+      getOfficesForDay(dateString).forEach((office) => {
+        if (!props.selectedProviders[String(office.officeId)]) return;
 
-    getOfficesForDay(dateString).forEach((office) => {
-      if (!props.selectedProviders[String(office.officeId)]) return;
+        const times = office.appointments;
+        appointmentsCount += times.length;
 
-      const times = office.appointments;
-      appointmentsCount += times.length;
+        const byHour: Record<number, number[]> = {};
+        const byPart: { am: number[]; pm: number[] } = { am: [], pm: [] };
 
-      const byHour: Record<number, number[]> = {};
-      const byPart: { am: number[]; pm: number[] } = { am: [], pm: [] };
+        times.forEach((ts) => {
+          const hr = parseInt(berlinHourFormatter.format(new Date(ts * 1000)));
+          (byHour[hr] ||= []).push(ts);
+          const part = hr >= 12 ? "pm" : "am";
+          byPart[part].push(ts);
+        });
 
-      times.forEach((ts) => {
-        const hr = parseInt(berlinHourFormatter.format(new Date(ts * 1000)));
-        (byHour[hr] ||= []).push(ts);
-        const part = hr >= 12 ? "pm" : "am";
-        byPart[part].push(ts);
+        Object.entries(byHour).forEach(([hour, tsArray]) => {
+          hourRows.push({
+            hour: Number(hour),
+            times: tsArray,
+            officeId: Number(office.officeId as any),
+          });
+        });
+        if (byPart.am.length) {
+          dayPartRows.push({
+            part: "am",
+            times: byPart.am,
+            officeId: Number(office.officeId as any),
+          });
+        }
+        if (byPart.pm.length) {
+          dayPartRows.push({
+            part: "pm",
+            times: byPart.pm,
+            officeId: Number(office.officeId as any),
+          });
+        }
       });
 
-      Object.entries(byHour).forEach(([hour, tsArray]) => {
-        hourRows.push({
-          hour: Number(hour),
-          times: tsArray,
-          officeId: Number(office.officeId as any),
-        });
+      // hourRows: first by hour, then by provider order (officeOrder)
+      hourRows.sort((hourRowLeft, hourRowRight) => {
+        if (hourRowLeft.hour !== hourRowRight.hour) {
+          return hourRowLeft.hour - hourRowRight.hour;
+        }
+        const left =
+          props.officeOrder.get(Number(hourRowLeft.officeId)) ??
+          Number.MAX_SAFE_INTEGER;
+        const right =
+          props.officeOrder.get(Number(hourRowRight.officeId)) ??
+          Number.MAX_SAFE_INTEGER;
+        return left - right;
       });
-      if (byPart.am.length) {
-        dayPartRows.push({
-          part: "am",
-          times: byPart.am,
-          officeId: Number(office.officeId as any),
-        });
-      }
-      if (byPart.pm.length) {
-        dayPartRows.push({
-          part: "pm",
-          times: byPart.pm,
-          officeId: Number(office.officeId as any),
-        });
-      }
-    });
 
-    // hourRows: first by hour, then by provider order (officeOrder)
-    hourRows.sort((hourRowLeft, hourRowRight) => {
-      if (hourRowLeft.hour !== hourRowRight.hour) {
-        return hourRowLeft.hour - hourRowRight.hour;
-      }
-      const left =
-        props.officeOrder.get(Number(hourRowLeft.officeId)) ??
-        Number.MAX_SAFE_INTEGER;
-      const right =
-        props.officeOrder.get(Number(hourRowRight.officeId)) ??
-        Number.MAX_SAFE_INTEGER;
-      return left - right;
-    });
+      // dayPartRows: first AM before PM, then by provider order (officeOrder)
+      dayPartRows.sort((dayPartRowLeft, dayPartRowRight) => {
+        if (dayPartRowLeft.part !== dayPartRowRight.part) {
+          return dayPartRowLeft.part === "am" ? -1 : 1;
+        }
+        const left =
+          props.officeOrder.get(Number(dayPartRowLeft.officeId)) ??
+          Number.MAX_SAFE_INTEGER;
+        const right =
+          props.officeOrder.get(Number(dayPartRowRight.officeId)) ??
+          Number.MAX_SAFE_INTEGER;
+        return left - right;
+      });
 
-    // dayPartRows: first AM before PM, then by provider order (officeOrder)
-    dayPartRows.sort((dayPartRowLeft, dayPartRowRight) => {
-      if (dayPartRowLeft.part !== dayPartRowRight.part) {
-        return dayPartRowLeft.part === "am" ? -1 : 1;
+      if (!listViewCurrentHour.value.has(dateString)) {
+        const availableHours = getListDayAvailableHours({
+          hourRows,
+          dayPartRows,
+        } as AccordionDay);
+        if (availableHours.length > 0) {
+          setCurrentHourForDay(dateString, availableHours[0]);
+        }
       }
-      const left =
-        props.officeOrder.get(Number(dayPartRowLeft.officeId)) ??
-        Number.MAX_SAFE_INTEGER;
-      const right =
-        props.officeOrder.get(Number(dayPartRowRight.officeId)) ??
-        Number.MAX_SAFE_INTEGER;
-      return left - right;
-    });
 
-    if (!listViewCurrentHour.value.has(dateString)) {
-      const availableHours = getListDayAvailableHours({
+      if (!listViewCurrentDayPart.value.has(dateString)) {
+        const availableDayParts = getListDayAvailableDayParts({
+          hourRows,
+          dayPartRows,
+        } as AccordionDay);
+        if (availableDayParts.length > 0) {
+          setCurrentDayPartForDay(dateString, availableDayParts[0]);
+        }
+      }
+
+      return {
+        date: d,
+        dateString,
+        label,
+        appointmentsCount,
         hourRows,
         dayPartRows,
-      } as AccordionDay);
-      if (availableHours.length > 0) {
-        setCurrentHourForDay(dateString, availableHours[0]);
-      }
-    }
-
-    if (!listViewCurrentDayPart.value.has(dateString)) {
-      const availableDayParts = getListDayAvailableDayParts({
-        hourRows,
-        dayPartRows,
-      } as AccordionDay);
-      if (availableDayParts.length > 0) {
-        setCurrentDayPartForDay(dateString, availableDayParts[0]);
-      }
-    }
-
-    return {
-      date: d,
-      dateString,
-      label,
-      appointmentsCount,
-      hourRows,
-      dayPartRows,
-    };
-  });
+      };
+    });
 });
 
 watch(firstFiveAvailableDays, (newDays) => {
@@ -645,15 +646,9 @@ watch(firstFiveAvailableDays, (newDays) => {
 });
 
 const canLoadMore = computed(() => {
-  if (!props.availableDays) return false;
-  const availableForProviders = props.availableDays.filter((day) =>
-    day.providerIDs.split(",").some((id) => props.selectedProviders[id])
+  return (
+    firstFiveAvailableDays.value.length < daysForSelectedProviders.value.length
   );
-  const trulyAvailableCount = availableForProviders.filter((day) => {
-    const dateStr = convertDateToString(new Date(day.date));
-    return dayHasSlotsForSelectedProviders(dateStr);
-  }).length;
-  return firstFiveAvailableDays.value.length < trulyAvailableCount;
 });
 </script>
 <style lang="scss" scoped>
