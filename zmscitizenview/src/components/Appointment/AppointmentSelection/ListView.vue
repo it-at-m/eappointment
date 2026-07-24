@@ -649,8 +649,14 @@ const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
     });
 });
 
-watch(firstFiveAvailableDays, (newDays) => {
-  if (newDays.length > 0 && !localOpenAccordionDate.value) {
+// Auto-open only on first population (empty → days). Do not re-open when
+// "Mehr laden" grows the list or later months are merged in.
+watch(firstFiveAvailableDays, (newDays, oldDays) => {
+  if (
+    newDays.length > 0 &&
+    !localOpenAccordionDate.value &&
+    (!oldDays || oldDays.length === 0)
+  ) {
     onToggleDay(newDays[0]);
   }
 });
