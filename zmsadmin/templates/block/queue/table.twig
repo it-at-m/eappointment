@@ -66,6 +66,13 @@
 	{% endblock %}
 
 	{% block board_body %}
+		{% if waitingClientsEffective is not null %}
+			<span
+				data-queue-waiting-clients-effective
+				data-count="{{ waitingClientsEffective }}"
+				hidden>
+			</span>
+		{% endif %}
 		{% set queueTextColumnCount = 1
 			+ (workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 ? 1 : 0)
 			+ (workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 ? 1 : 0) %}

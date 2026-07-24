@@ -586,6 +586,7 @@ class View extends BaseView {
             selectedDate: this.selectedDate,
             selectedScope: this.selectedScope,
             includeUrl: this.includeUrl,
+            includeWaitingClientsEffective: 'workstation' == this.page,
             onDatePick: this.onDatePick,
             onDateToday: this.onDateToday,
             onDeleteProcess: this.onDeleteProcess,
