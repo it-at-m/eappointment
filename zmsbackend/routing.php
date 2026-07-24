@@ -327,6 +327,95 @@
 
 /**
  *  @swagger
+ *  "/calendar/availability/":
+ *      get:
+ *          summary: Get bookable days with appointment slots for a date range
+ *          tags:
+ *              - calendar
+ *          parameters:
+ *              -   name: startDate
+ *                  description: First day of the range (YYYY-MM-DD)
+ *                  in: query
+ *                  required: true
+ *                  type: string
+ *              -   name: endDate
+ *                  description: Last day of the range (YYYY-MM-DD)
+ *                  in: query
+ *                  required: true
+ *                  type: string
+ *              -   name: slotsStartDate
+ *                  description: First day for free appointment slots (YYYY-MM-DD). Defaults to startDate.
+ *                  in: query
+ *                  required: false
+ *                  type: string
+ *              -   name: slotsEndDate
+ *                  description: Last day for free appointment slots (YYYY-MM-DD). Defaults to endDate.
+ *                  in: query
+ *                  required: false
+ *                  type: string
+ *              -   name: officeId
+ *                  description: Comma-separated provider IDs
+ *                  in: query
+ *                  required: true
+ *                  type: string
+ *              -   name: serviceId
+ *                  description: Comma-separated request/service IDs
+ *                  in: query
+ *                  required: true
+ *                  type: string
+ *              -   name: serviceCount
+ *                  description: Comma-separated slot counts per service
+ *                  in: query
+ *                  required: false
+ *                  type: string
+ *              -   name: providerSource
+ *                  description: Source for providers (default dldb)
+ *                  in: query
+ *                  required: false
+ *                  type: string
+ *              -   name: requestSource
+ *                  description: Source for requests (default dldb)
+ *                  in: query
+ *                  required: false
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: Bookable days with grouped appointment timestamps
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: object
+ *                              properties:
+ *                                  startDate:
+ *                                      type: string
+ *                                  endDate:
+ *                                      type: string
+ *                                  slotsStartDate:
+ *                                      type: string
+ *                                  slotsEndDate:
+ *                                      type: string
+ *                                  prevBookableDate:
+ *                                      type: string
+ *                                      description: Nearest bookable day before slots window (or null)
+ *                                  nextBookableDate:
+ *                                      type: string
+ *                                      description: Nearest bookable day after slots window (or null)
+ *                                  days:
+ *                                      type: array
+ *                                      items:
+ *                                          type: object
+ */
+\App::$slim->get(
+    '/calendar/availability/',
+    '\BO\Zmsbackend\Calendar\Api\CalendarAvailabilityGet'
+)
+    ->setName("CalendarAvailabilityGet");
+
+/**
+ *  @swagger
  *  "/calldisplay/":
  *      post:
  *          summary: Get preferences for a calldisplay

@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Availability;
 
-use BO\Zmscitizenapi\Models\AvailableDays;
-use BO\Zmscitizenapi\Models\AvailableDaysByOffice;
+use BO\Zmscitizenapi\Models\AvailableCalendar;
 use BO\Zmscitizenapi\Services\Captcha\CaptchaRequirementTrait;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 
-class AvailableDaysListService
+class AvailableCalendarService
 {
     use CaptchaRequirementTrait;
     use ServiceLocationValidationTrait;
@@ -25,9 +24,12 @@ class AvailableDaysListService
         $this->zmsApiFacadeService = new ZmsApiFacadeService();
     }
 
-    public function getAvailableDaysList(array $queryParams, bool $showUnpublished = false): AvailableDays|array
-    {
+    public function getAvailableCalendar(
+        array $queryParams,
+        bool $showUnpublished = false
+    ): AvailableCalendar|array {
         $clientData = $this->extractClientData($queryParams);
+
         $errors = $this->validateClientData($clientData);
         if (!empty($errors['errors'])) {
             return $errors;
@@ -38,7 +40,15 @@ class AvailableDaysListService
             return $errors;
         }
 
-        return $this->getAvailableDays($clientData);
+        return ZmsApiFacadeService::getCalendarAvailability(
+            $clientData->officeIds,
+            $clientData->serviceIds,
+            $clientData->serviceCounts,
+            $clientData->startDate,
+            $clientData->endDate,
+            $clientData->slotsStartDate,
+            $clientData->slotsEndDate
+        );
     }
 
     private function extractClientData(array $queryParams): object
@@ -49,13 +59,23 @@ class AvailableDaysListService
         $serviceCounts = !empty($serviceCount)
             ? array_map('trim', explode(',', (string) $serviceCount))
             : [];
+
+        $slotsStartDate = isset($queryParams['slotsStartDate']) && $queryParams['slotsStartDate'] !== ''
+            ? (string) $queryParams['slotsStartDate']
+            : null;
+        $slotsEndDate = isset($queryParams['slotsEndDate']) && $queryParams['slotsEndDate'] !== ''
+            ? (string) $queryParams['slotsEndDate']
+            : null;
+
         return (object) [
             'officeIds' => array_map('trim', explode(',', $queryParams['officeId'])),
             'serviceIds' => array_map('trim', explode(',', $queryParams['serviceId'])),
             'serviceCounts' => $serviceCounts,
             'startDate' => $queryParams['startDate'] ?? null,
             'endDate' => $queryParams['endDate'] ?? null,
-            'captchaToken' => isset($queryParams['captchaToken']) ? (string) $queryParams['captchaToken'] : null
+            'slotsStartDate' => $slotsStartDate,
+            'slotsEndDate' => $slotsEndDate,
+            'captchaToken' => isset($queryParams['captchaToken']) ? (string) $queryParams['captchaToken'] : null,
         ];
     }
 
@@ -71,35 +91,9 @@ class AvailableDaysListService
             $data->serviceCounts,
             $captchaRequired,
             $data->captchaToken,
-            $this->tokenValidator
+            $this->tokenValidator,
+            $data->slotsStartDate,
+            $data->slotsEndDate
         );
-    }
-
-    private function getAvailableDays(object $data, ?bool $groupByOffice = false): AvailableDays|AvailableDaysByOffice|array
-    {
-        return ZmsApiFacadeService::getBookableFreeDays(
-            $data->officeIds,
-            $data->serviceIds,
-            $data->serviceCounts,
-            $data->startDate,
-            $data->endDate,
-            $groupByOffice
-        );
-    }
-
-    public function getAvailableDaysListByOffice($queryParams, bool $showUnpublished = false)
-    {
-        $clientData = $this->extractClientData($queryParams);
-        $errors = $this->validateClientData($clientData);
-        if (!empty($errors['errors'])) {
-            return $errors;
-        }
-
-        $errors = $this->validateServiceLocations($clientData->officeIds, $clientData->serviceIds, $showUnpublished);
-        if ($errors !== null) {
-            return $errors;
-        }
-
-        return $this->getAvailableDays($clientData, true);
     }
 }

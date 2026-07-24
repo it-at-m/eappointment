@@ -1,0 +1,68 @@
+{
+  "title": "AvailableCalendar",
+  "type": ["array", "object", "null"],
+  "properties": {
+    "startDate": {
+      "type": "string",
+      "description": "Start date of the requested day-status range in YYYY-MM-DD format"
+    },
+    "endDate": {
+      "type": "string",
+      "description": "End date of the requested day-status range in YYYY-MM-DD format"
+    },
+    "slotsStartDate": {
+      "type": "string",
+      "description": "Start date of the appointment slots window in YYYY-MM-DD format"
+    },
+    "slotsEndDate": {
+      "type": "string",
+      "description": "End date of the appointment slots window in YYYY-MM-DD format"
+    },
+    "prevBookableDate": {
+      "type": ["string", "null"],
+      "description": "Nearest bookable day before the slots window (may skip empty months)"
+    },
+    "nextBookableDate": {
+      "type": ["string", "null"],
+      "description": "Nearest bookable day after the slots window (may skip empty months)"
+    },
+    "availableDays": {
+      "type": ["array", "null"],
+      "description": "Bookable days with appointment slots grouped by office",
+      "items": {
+        "type": ["array", "object", "null"],
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "Day in YYYY-MM-DD format"
+          },
+          "providerIDs": {
+            "type": "string",
+            "description": "Comma-separated office IDs"
+          },
+          "offices": {
+            "type": ["array", "null"],
+            "items": {
+              "type": ["array", "object", "null"],
+              "properties": {
+                "officeId": {
+                  "type": "string",
+                  "description": "Office ID"
+                },
+                "appointments": {
+                  "type": ["array", "null"],
+                  "items": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["startDate", "endDate", "availableDays"],
+  "description": "Schema defining available days and appointment slots for offices and services"
+}

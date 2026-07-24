@@ -2,40 +2,45 @@
 
 declare(strict_types=1);
 
-namespace BO\Zmscitizenapi\Controllers\Office;
+namespace BO\Zmscitizenapi\Controllers\Availability;
 
 use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Controllers\UnpublishedAccessTrait;
-use BO\Zmscitizenapi\Utils\ErrorMessages;
-use BO\Zmscitizenapi\Services\Office\OfficeListByServiceService;
+use BO\Zmscitizenapi\Services\Availability\AvailableCalendarService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class OfficeListByServiceController extends BaseController
+class AvailableCalendarController extends BaseController
 {
     use UnpublishedAccessTrait;
 
-    private OfficeListByServiceService $service;
-    private bool $showUnpublished;
+    private AvailableCalendarService $service;
 
     public function __construct()
     {
-        $this->service = new OfficeListByServiceService();
         $this->initializeUnpublishedAccess();
+        $this->service = new AvailableCalendarService();
     }
 
     #[\Override]
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
+        $queryParams = $request->getQueryParams();
+
         $requestErrors = ValidationService::validateServerGetRequest($request);
         if (!empty($requestErrors['errors'])) {
             return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest')['statusCode']);
         }
 
-        $result = $this->service->getOfficeList($request->getQueryParams(), $this->showUnpublished);
-        return is_array($result) && isset($result['errors'])
-                ? $this->createJsonResponse($response, $result, ErrorMessages::getHighestStatusCode($result['errors']))
-                : $this->createJsonResponse($response, $result->toArray(), 200);
+        $result = $this->service->getAvailableCalendar($queryParams, $this->showUnpublished);
+
+        $isError = is_array($result) && isset($result['errors']);
+        return $this->createJsonResponse(
+            $response,
+            $isError ? $result : $result->toArray(),
+            $isError ? ErrorMessages::getHighestStatusCode($result['errors']) : 200
+        );
     }
 }
