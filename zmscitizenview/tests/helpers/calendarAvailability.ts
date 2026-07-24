@@ -44,7 +44,10 @@ export const officesForDayPartViewTest = [
   },
   {
     officeId: 2,
-    appointments: generateAppointmentTimestamps(9, 1750165200),
+    appointments: generateAppointmentTimestamps(
+      9,
+      JULY_2_2025_BASE_TIMESTAMP + 3 * 60 * 60
+    ),
   },
 ];
 
