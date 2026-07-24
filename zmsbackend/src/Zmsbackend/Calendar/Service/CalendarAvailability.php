@@ -28,7 +28,7 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
     ): array {
         if (!$startDate || !$endDate || !$officeIds || !$serviceIds) {
             throw new \BO\Zmsbackend\Slot\Exception\Calendar\InvalidAvailabilityInput(
-                'startDate, endDate, officeId and serviceId are required'
+                'startDate, endDate, officeIds and serviceIds are required'
             );
         }
 
