@@ -122,7 +122,10 @@
       :availableDays="availableDays"
       :appointmentsByDay="appointmentsByDay"
       :officeOrder="officeOrder"
+      :hasMoreDaysAhead="hasMoreListDaysAhead"
+      :isLoadingMoreDays="isLoadingMoreListDays"
       @update:selectedDay="handleDaySelection"
+      @requestMoreDays="loadMoreListViewDays"
       @selectTimeSlot="
         ({ officeId, time }) =>
           handleTimeSlotSelection(officeId as number, time)
@@ -1010,6 +1013,16 @@ const applyCalendarResponse = (calendar: AvailableCalendarDTO): boolean => {
   prevBookableDate.value = calendar.prevBookableDate ?? null;
   nextBookableDate.value = calendar.nextBookableDate ?? null;
 
+  // Backend daylist covers the painted month(s) of the free-slot window only.
+  const slotsStartLocal = new Date(`${toDayKey(slotsStart)}T12:00:00`);
+  const slotsEndLocal = new Date(`${toDayKey(slotsEnd)}T12:00:00`);
+  const paintedMonthStart = toDayKey(
+    new Date(slotsStartLocal.getFullYear(), slotsStartLocal.getMonth(), 1)
+  );
+  const paintedMonthEnd = toDayKey(
+    new Date(slotsEndLocal.getFullYear(), slotsEndLocal.getMonth() + 1, 0)
+  );
+
   const nextByDay = new Map(appointmentsByDay.value);
   const nextCheckedDates = new Set(freeSlotCheckedDates.value);
   const normalizedDays: Array<{ date: string; providerIDs: string }> = [];
@@ -1071,9 +1084,24 @@ const applyCalendarResponse = (calendar: AvailableCalendarDTO): boolean => {
 
   appointmentsByDay.value = nextByDay;
   freeSlotCheckedDates.value = nextCheckedDates;
-  availableDays.value = normalizedDays;
 
-  updateCalendarNavigationBounds(normalizedDays);
+  // Merge daylists across months: replace only the painted month from this response
+  // so ListView / calendar can accumulate the full bookable horizon.
+  const mergedByDate = new Map<string, { date: string; providerIDs: string }>();
+  for (const day of availableDays.value ?? []) {
+    const key = toDayKey(day.date);
+    if (key < paintedMonthStart || key > paintedMonthEnd) {
+      mergedByDate.set(key, day);
+    }
+  }
+  for (const day of normalizedDays) {
+    mergedByDate.set(toDayKey(day.date), day);
+  }
+  availableDays.value = Array.from(mergedByDate.values()).sort((a, b) =>
+    toDayKey(a.date).localeCompare(toDayKey(b.date))
+  );
+
+  updateCalendarNavigationBounds(availableDays.value);
   calendarKey.value++;
   return true;
 };
@@ -1084,6 +1112,82 @@ const jumpToBookableDate = async (isoDate: string) => {
     return;
   }
   await handleDaySelection(day);
+};
+
+const isLoadingMoreListDays = ref(false);
+
+const firstOfNextMonth = (isoDate: string): string => {
+  const d = new Date(`${toDayKey(isoDate)}T12:00:00`);
+  return convertDateToString(new Date(d.getFullYear(), d.getMonth() + 1, 1));
+};
+
+const monthKey = (isoDate: string): string => toDayKey(isoDate).slice(0, 7);
+
+const hasDaysInMonth = (isoDate: string): boolean => {
+  const key = monthKey(isoDate);
+  return (availableDays.value ?? []).some((day) => monthKey(day.date) === key);
+};
+
+const lastLoadedListDayKey = computed(() => {
+  const days = availableDays.value ?? [];
+  if (days.length === 0) {
+    return null;
+  }
+  return days
+    .map((day) => toDayKey(day.date))
+    .sort((a, b) => a.localeCompare(b))
+    .at(-1)!;
+});
+
+/** Later months may still exist beyond the currently merged daylist. */
+const hasMoreListDaysAhead = computed(() => {
+  const lastKey = lastLoadedListDayKey.value;
+  if (!nextBookableDate.value) {
+    return false;
+  }
+  if (!lastKey) {
+    return true;
+  }
+  return nextBookableDate.value > lastKey;
+});
+
+/**
+ * ListView "Mehr laden": fetch the next month's daylist and merge it into availableDays.
+ * Does not change the open accordion / selected day.
+ */
+const loadMoreListViewDays = async () => {
+  if (isLoadingMoreListDays.value || captchaSessionExpired.value) {
+    return;
+  }
+
+  const maxKey = convertDateToString(MAXDATE);
+  const lastKey = lastLoadedListDayKey.value ?? convertDateToString(TODAY);
+  let fetchDate =
+    nextBookableDate.value && nextBookableDate.value > lastKey
+      ? nextBookableDate.value
+      : firstOfNextMonth(lastKey);
+
+  // Skip months already present in the merged daylist.
+  while (fetchDate <= maxKey && hasDaysInMonth(fetchDate)) {
+    fetchDate = firstOfNextMonth(fetchDate);
+  }
+
+  if (fetchDate > maxKey) {
+    return;
+  }
+
+  isLoadingMoreListDays.value = true;
+  try {
+    await reloadCalendarAvailability({
+      preserveSelectedDay: true,
+      replaceAvailableDays: false,
+      allowSlotsFollowUp: false,
+      slotsStartDate: fetchDate,
+      slotsEndDate: fetchDate,
+    });
+  } finally {
+    isLoadingMoreListDays.value = false;
+  }
 };
 
 /**
@@ -1109,8 +1213,18 @@ const reloadCalendarAvailability = async (options?: {
   preserveSelectedDay?: boolean;
   /** Prevent infinite reload when API/mocks return a slots window that still excludes selectedDay */
   allowSlotsFollowUp?: boolean;
+  /** Override free-slot window (e.g. ListView paging into later months). */
+  slotsStartDate?: string;
+  slotsEndDate?: string;
+  /**
+   * When true, drop accumulated daylist before applying the response.
+   * Defaults to true for fresh loads; false when preserving selection (merge months).
+   */
+  replaceAvailableDays?: boolean;
 }): Promise<boolean> => {
   const allowSlotsFollowUp = options?.allowSlotsFollowUp !== false;
+  const replaceAvailableDays =
+    options?.replaceAvailableDays ?? !options?.preserveSelectedDay;
   const officeIds = getOfficeIdsForCalendarRequest();
 
   if (officeIds.length === 0) {
@@ -1129,8 +1243,13 @@ const reloadCalendarAvailability = async (options?: {
     freeSlotCheckedDates.value = new Set();
     appointmentsByDay.value = new Map();
   }
+  if (replaceAvailableDays) {
+    availableDays.value = [];
+  }
 
-  const { slotsStartDate, slotsEndDate } = getFreeSlotsWindow();
+  const defaultSlots = getFreeSlotsWindow();
+  const slotsStartDate = options?.slotsStartDate ?? defaultSlots.slotsStartDate;
+  const slotsEndDate = options?.slotsEndDate ?? defaultSlots.slotsEndDate;
 
   calendarFetchAbort?.abort();
   const abortController = new AbortController();
@@ -1505,8 +1624,10 @@ function scheduleRefreshAfterProviderChange() {
 
     try {
       // Refetch with only checked offices so next/prevBookableDate match selection.
+      // Replace daylist: office set changed, do not keep prior offices' months.
       const reloaded = await reloadCalendarAvailability({
         preserveSelectedDay: true,
+        replaceAvailableDays: true,
       });
       if (generation !== providerRefreshGeneration) {
         return;
