@@ -1,13 +1,14 @@
 package zms.ataf.rest.steps;
 
 import static io.restassured.RestAssured.given;
-import org.assertj.core.api.Assertions;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+
+import org.assertj.core.api.Assertions;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -20,7 +21,7 @@ import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 import zms.ataf.rest.dto.common.ApiResponse;
 import zms.ataf.rest.dto.zmscitizenapi.AvailableAppointmentsResponse;
-import zms.ataf.rest.dto.zmscitizenapi.AvailableDaysResponse;
+import zms.ataf.rest.dto.zmscitizenapi.AvailableCalendarResponse;
 import zms.ataf.rest.dto.zmscitizenapi.ReserveAppointmentRequest;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.rest.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
@@ -31,7 +32,7 @@ public class CitizenApiSteps {
 
     private Response response;
     private String baseUri;
-    private AvailableDaysResponse lastAvailableDaysResponse;
+    private AvailableCalendarResponse lastAvailableCalendarResponse;
     private AvailableAppointmentsResponse lastAvailableAppointmentsResponse;
     private ThinnedProcess lastReserveProcess;
     private String confirmProcessId;
@@ -54,6 +55,8 @@ public class CitizenApiSteps {
     public void clearBookingStateBeforeScenario() {
         clearBookingState();
         lastReserveProcess = null;
+        lastAvailableCalendarResponse = null;
+        lastAvailableAppointmentsResponse = null;
     }
 
     /** Clear shared booking/confirm state (process, credentials, URLs). Call before each scenario to avoid cross-scenario leakage. */
@@ -127,45 +130,15 @@ public class CitizenApiSteps {
         lastOfficeId = officeId;
         lastServiceId = serviceId;
         lastServiceCount = serviceCount;
-        String startDate = LocalDate.now().format(DATE_FORMAT);
-        String endDate = LocalDate.now().plusMonths(6).format(DATE_FORMAT);
-        response = given()
-            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
-            .queryParam("officeId", String.valueOf(officeId))
-            .queryParam("serviceId", String.valueOf(serviceId))
-            .queryParam("startDate", startDate)
-            .queryParam("endDate", endDate)
-            .queryParam("serviceCount", String.valueOf(serviceCount))
-        .when()
-            .get("/available-days-by-office/");
-        CommonApiSteps.setResponse(response);
-
-        String daysBody = response.asString();
-        ScenarioLogManager.getLogger().info(String.format(
-            "Citizen API /available-days-by-office/ (officeId=%d, serviceId=%d) status=%d body=%s",
-            officeId,
-            serviceId,
-            response.getStatusCode(),
-            daysBody.length() > 1250 ? daysBody.substring(0, 1250) + "..." : daysBody
-        ));
-
-        // Citizen API may return either a plain AvailableDaysResponse payload
-        // or an ApiResponse-wrapped payload. Try plain first, then wrapped.
-        AvailableDaysResponse days;
-        try {
-            days = response.as(AvailableDaysResponse.class);
-        } catch (Exception e) {
-            days = parseDataResponse(response, AvailableDaysResponse.class);
-        }
-        lastAvailableDaysResponse = days;
+        lastAvailableCalendarResponse = fetchAvailableCalendar(officeId, serviceId, serviceCount);
     }
 
     @When("I request available appointments for the first available day")
     public void iRequestAvailableAppointmentsForTheFirstAvailableDay() {
-        if (lastAvailableDaysResponse == null) {
+        if (lastAvailableCalendarResponse == null) {
             throw new IllegalStateException("Request available days first.");
         }
-        String date = lastAvailableDaysResponse.getFirstAvailableDay();
+        String date = lastAvailableCalendarResponse.getFirstAvailableDay();
         if (date == null) {
             throw new IllegalStateException("No available day in last response.");
         }
@@ -182,35 +155,22 @@ public class CitizenApiSteps {
         lastOfficeId = officeId;
         lastServiceId = serviceId;
         lastServiceCount = serviceCount;
-        response = given()
-            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
-            .queryParam("date", date)
-            .queryParam("officeId", String.valueOf(officeId))
-            .queryParam("serviceId", String.valueOf(serviceId))
-            .queryParam("serviceCount", String.valueOf(serviceCount))
-        .when()
-            .get("/available-appointments-by-office/");
-        CommonApiSteps.setResponse(response);
 
-        String appointmentsBody = response.asString();
+        if (lastAvailableCalendarResponse == null) {
+            lastAvailableCalendarResponse = fetchAvailableCalendar(officeId, serviceId, serviceCount);
+        }
+
+        AvailableAppointmentsResponse appointments =
+            lastAvailableCalendarResponse.getAppointmentsForDayAndOffice(date, officeId);
+        lastAvailableAppointmentsResponse = appointments;
+
         ScenarioLogManager.getLogger().info(String.format(
-            "Citizen API /available-appointments-by-office/ (date=%s, officeId=%d, serviceId=%d) status=%d body=%s",
+            "Citizen API calendar slots for date=%s, officeId=%d, serviceId=%d: %d office(s) with slots",
             date,
             officeId,
             serviceId,
-            response.getStatusCode(),
-            appointmentsBody.length() > 1250 ? appointmentsBody.substring(0, 1250) + "..." : appointmentsBody
+            appointments.getOffices() != null ? appointments.getOffices().size() : 0
         ));
-
-        // As with available-days, available-appointments endpoints may return either
-        // a plain AvailableAppointmentsResponse payload or an ApiResponse-wrapped payload.
-        AvailableAppointmentsResponse appointments;
-        try {
-            appointments = response.as(AvailableAppointmentsResponse.class);
-        } catch (Exception e) {
-            appointments = parseDataResponse(response, AvailableAppointmentsResponse.class);
-        }
-        lastAvailableAppointmentsResponse = appointments;
     }
 
     @When("I reserve an appointment with the first available slot")
@@ -849,6 +809,38 @@ public class CitizenApiSteps {
     /* End Section: Non-sequential steps assertions for thinned booking process */
 
     /* Section: Response Parsing */
+    private AvailableCalendarResponse fetchAvailableCalendar(int officeId, int serviceId, int serviceCount) {
+        String startDate = LocalDate.now().format(DATE_FORMAT);
+        String endDate = LocalDate.now().plusMonths(6).format(DATE_FORMAT);
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+            .queryParam("officeId", String.valueOf(officeId))
+            .queryParam("serviceId", String.valueOf(serviceId))
+            .queryParam("startDate", startDate)
+            .queryParam("endDate", endDate)
+            .queryParam("serviceCount", String.valueOf(serviceCount))
+        .when()
+            .get("/available-calendar/");
+        CommonApiSteps.setResponse(response);
+
+        String calendarBody = response.asString();
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /available-calendar/ (officeId=%d, serviceId=%d) status=%d body=%s",
+            officeId,
+            serviceId,
+            response.getStatusCode(),
+            calendarBody.length() > 1250 ? calendarBody.substring(0, 1250) + "..." : calendarBody
+        ));
+
+        AvailableCalendarResponse calendar;
+        try {
+            calendar = response.as(AvailableCalendarResponse.class);
+        } catch (Exception e) {
+            calendar = parseDataResponse(response, AvailableCalendarResponse.class);
+        }
+        return calendar;
+    }
+
     private <T> T parseDataResponse(Response response, Class<T> dataClass) {
         try {
             com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
@@ -887,8 +879,8 @@ public class CitizenApiSteps {
         }
     }
 
-    public AvailableDaysResponse getLastAvailableDaysResponse() {
-        return lastAvailableDaysResponse;
+    public AvailableCalendarResponse getLastAvailableCalendarResponse() {
+        return lastAvailableCalendarResponse;
     }
 
     public AvailableAppointmentsResponse getLastAvailableAppointmentsResponse() {

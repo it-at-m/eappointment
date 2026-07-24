@@ -10,7 +10,6 @@ use BO\Zmsentities\Helper\ProcessPlainText;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmsentities\Process;
-use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Collection\ScopeList;
 use DateTime;
 use Psr\Http\Message\ServerRequestInterface;
@@ -22,6 +21,12 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ValidationService
 {
+    private static array $officeServicesCache = [];
+
+    public static function clearOfficeServicesCacheForTesting(): void
+    {
+        self::$officeServicesCache = [];
+    }
     private const DATE_FORMAT = 'Y-m-d';
     private const MIN_PROCESS_ID = 1;
     private const PHONE_PATTERN = '/^\+?[0-9]\d{6,14}$/';
@@ -29,6 +34,8 @@ class ValidationService
     private const EMAIL_PATTERN = '/^(?!.*\.\.)(?!\.)(?!.*\.$)[^\s@+]+(?<!\.)@(?!\.)[^\s@+]+\.[^\s@]{2,}$/';
     private const MAX_FUTURE_DAYS = 365;
     // Maximum days in the future for appointments
+    /** Must match {@see \BO\Zmsdb\Slot::MAX_SLOTS} */
+    private const MAX_SERVICE_COUNT = 25;
     private const AUTH_KEY_LEGACY_HEX_LENGTH = 4;
     private const AUTH_KEY_NEW_HEX_LENGTH = 64;
 
@@ -69,8 +76,6 @@ class ValidationService
 
     public static function validateServiceLocationCombination(int $officeId, array $serviceIds, bool $showUnpublished = false): array
     {
-        static $officeServicesCache = [];
-
         if ($officeId <= 0) {
             return ['errors' => [self::getError('invalidOfficeId')]];
         }
@@ -80,19 +85,19 @@ class ValidationService
         }
 
         $cacheKey = $officeId . '|' . ($showUnpublished ? '1' : '0');
-        if (!isset($officeServicesCache[$cacheKey])) {
+        if (!isset(self::$officeServicesCache[$cacheKey])) {
             $serviceList = ZmsApiFacadeService::getServicesByOfficeId($officeId, $showUnpublished);
             $ids = [];
             if (is_array($serviceList) && isset($serviceList['errors'])) {
-                $officeServicesCache[$cacheKey] = [];
+                self::$officeServicesCache[$cacheKey] = [];
             } else {
                 foreach ($serviceList->services as $service) {
                     $ids[] = (string)$service->id;
                 }
-                $officeServicesCache[$cacheKey] = $ids;
+                self::$officeServicesCache[$cacheKey] = $ids;
             }
         }
-        $availableServiceIds = $officeServicesCache[$cacheKey];
+        $availableServiceIds = self::$officeServicesCache[$cacheKey];
 
         $serviceIdsStr = array_map('strval', $serviceIds);
         $invalidServiceIds = array_diff($serviceIdsStr, $availableServiceIds);
@@ -133,7 +138,7 @@ class ValidationService
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @TODO: Extract validation rules into separate rule objects using the specification pattern
      */
-    public static function validateGetBookableFreeDays(?array $officeIds, ?array $serviceIds, ?string $startDate, ?string $endDate, ?array $serviceCounts, ?bool $captchaRequired = false, ?string $captchaToken = null, ?TokenValidationService $tokenValidator = null): array
+    public static function validateGetBookableFreeDays(?array $officeIds, ?array $serviceIds, ?string $startDate, ?string $endDate, ?array $serviceCounts, ?bool $captchaRequired = false, ?string $captchaToken = null, ?TokenValidationService $tokenValidator = null, ?string $slotsStartDate = null, ?string $slotsEndDate = null): array
     {
         $errors = [];
         if (!self::isValidOfficeIds($officeIds)) {
@@ -162,6 +167,24 @@ class ValidationService
             }
         }
 
+        if ($slotsStartDate !== null && !self::isValidDate($slotsStartDate)) {
+            $errors[] = self::getError('invalidSlotsStartDate');
+        }
+
+        if ($slotsEndDate !== null && !self::isValidDate($slotsEndDate)) {
+            $errors[] = self::getError('invalidSlotsEndDate');
+        }
+
+        if (
+            $slotsStartDate !== null
+            && $slotsEndDate !== null
+            && self::isValidDate($slotsStartDate)
+            && self::isValidDate($slotsEndDate)
+            && new DateTime($slotsStartDate) > new DateTime($slotsEndDate)
+        ) {
+            $errors[] = self::getError('slotsStartDateAfterEndDate');
+        }
+
         if (!self::isValidServiceCounts($serviceCounts)) {
             $errors[] = self::getError('invalidServiceCount');
         }
@@ -181,30 +204,6 @@ class ValidationService
         if (!self::isValidAuthKey($authKey)) {
             $errors[] = self::getError('invalidAuthKey');
         }
-
-        return ['errors' => $errors];
-    }
-
-    public static function validateGetAvailableAppointments(?string $date, ?array $officeIds, ?array $serviceIds, ?array $serviceCounts, ?bool $captchaRequired = false, ?string $captchaToken = null, ?TokenValidationService $tokenValidator = null): array
-    {
-        $errors = [];
-        if (!$date || !self::isValidDate($date)) {
-            $errors[] = self::getError('invalidDate');
-        }
-
-        if (!self::isValidOfficeIds($officeIds)) {
-            $errors[] = self::getError('invalidOfficeId');
-        }
-
-        if (!self::isValidServiceIds($serviceIds)) {
-            $errors[] = self::getError('invalidServiceId');
-        }
-
-        if (!self::isValidServiceCounts($serviceCounts)) {
-            $errors[] = self::getError('invalidServiceCount');
-        }
-
-        $errors = array_merge($errors, self::validateCaptcha($captchaRequired, $captchaToken, $tokenValidator));
 
         return ['errors' => $errors];
     }
@@ -296,41 +295,6 @@ class ValidationService
         }
     }
 
-    public static function validateGetScopeById(?int $scopeId): array
-    {
-        return !self::isValidScopeId($scopeId)
-            ? ['errors' => [self::getError('invalidScopeId')]]
-            : [];
-    }
-
-    public static function validateGetServicesByOfficeId(?int $officeId): array
-    {
-        return !self::isValidOfficeId($officeId)
-            ? ['errors' => [self::getError('invalidOfficeId')]]
-            : [];
-    }
-
-    public static function validateGetOfficeListByServiceId(?int $serviceId): array
-    {
-        return !self::isValidServiceId($serviceId)
-            ? ['errors' => [self::getError('invalidServiceId')]]
-            : [];
-    }
-
-    public static function validateGetProcessFreeSlots(?ProcessList $freeSlots): array
-    {
-        return empty($freeSlots) || !is_iterable($freeSlots)
-            ? ['errors' => [self::getError('appointmentNotAvailable')]]
-            : [];
-    }
-
-    public static function validateGetProcessByIdTimestamps(?array $appointmentTimestamps): array
-    {
-        return empty($appointmentTimestamps)
-            ? ['errors' => [self::getError('appointmentNotAvailable')]]
-            : [];
-    }
-
     public static function validateGetProcessNotFound(?Process $process): array
     {
         return !$process
@@ -359,13 +323,6 @@ class ValidationService
             : [];
     }
 
-    public static function validateAppointmentDaysNotFound(?array $formattedDays): array
-    {
-        return empty($formattedDays)
-            ? ['errors' => [self::getError('noAppointmentForThisDay')]]
-            : [];
-    }
-
     public static function validatenoAppointmentForThisScope(): array
     {
         return ['errors' => [self::getError('noAppointmentForThisScope')]];
@@ -390,7 +347,7 @@ class ValidationService
         }
 
         foreach ($serviceCounts as $count) {
-            if (!is_numeric($count) || $count < 0) {
+            if (!self::isValidServiceCount($count)) {
                 $errors[] = self::getError('invalidServiceCount');
                 break;
             }
@@ -424,11 +381,6 @@ class ValidationService
         return !empty($officeIds) && self::isValidNumericArray($officeIds);
     }
 
-    private static function isValidScopeId(?int $scopeId): bool
-    {
-        return !empty($scopeId) && $scopeId > 0;
-    }
-
     private static function isValidProcessId(?int $processId): bool
     {
         return !empty($processId) && $processId >= self::MIN_PROCESS_ID;
@@ -453,6 +405,14 @@ class ValidationService
         return !empty($serviceIds) && self::isValidNumericArray($serviceIds);
     }
 
+    private static function isValidServiceCount(mixed $count): bool
+    {
+        return is_numeric($count)
+            && (int) $count >= 1
+            && (int) $count <= self::MAX_SERVICE_COUNT
+            && preg_match(self::SERVICE_COUNT_PATTERN, (string) $count) === 1;
+    }
+
     private static function isValidServiceCounts(?array $serviceCounts): bool
     {
         if (empty($serviceCounts) || !is_array($serviceCounts)) {
@@ -460,7 +420,7 @@ class ValidationService
         }
 
         foreach ($serviceCounts as $count) {
-            if (!is_numeric($count) || $count < 0 || !preg_match(self::SERVICE_COUNT_PATTERN, (string) $count)) {
+            if (!self::isValidServiceCount($count)) {
                 return false;
             }
         }
@@ -492,10 +452,5 @@ class ValidationService
     private static function isValidOfficeId(?int $officeId): bool
     {
         return !empty($officeId) && $officeId > 0;
-    }
-
-    private static function isValidServiceId(?int $serviceId): bool
-    {
-        return !empty($serviceId) && $serviceId > 0;
     }
 }

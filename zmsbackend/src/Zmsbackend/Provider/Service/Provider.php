@@ -33,6 +33,52 @@ class Provider extends \BO\Zmsbackend\Base
         return $provider;
     }
 
+    public function readEntityById($providerId, $resolveReferences = 0, $disableCache = false)
+    {
+        $cacheKey = "provider-byid-$providerId-$resolveReferences";
+
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            return App::$cache->get($cacheKey);
+        }
+
+        $query = new \BO\Zmsbackend\Provider\Repository\Provider(\BO\Zmsbackend\Query\Base::SELECT);
+        $query
+            ->setResolveLevel($resolveReferences)
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionProviderId($providerId);
+        $provider = $this->fetchOne($query, new Entity());
+
+        if (App::$cache && $provider->hasId()) {
+            App::$cache->set($cacheKey, $provider);
+        }
+
+        return $provider;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function readSourceMapByIds(array $providerIds): array
+    {
+        if ($providerIds === []) {
+            return [];
+        }
+
+        $query = new \BO\Zmsbackend\Provider\Repository\Provider(\BO\Zmsbackend\Query\Base::SELECT);
+        $query
+            ->setResolveLevel(0)
+            ->addEntityMapping()
+            ->addConditionProviderIdList($providerIds);
+
+        $map = [];
+        foreach ($this->readCollection($query) as $provider) {
+            $map[(string) $provider->getId()] = (string) $provider->getSource();
+        }
+
+        return $map;
+    }
+
     /**
      * @SuppressWarnings(Param)
      *

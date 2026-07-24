@@ -162,6 +162,8 @@
   "bookAppointment": "Termin reservieren",
   "bookAppointmentStart": "Termin vereinbaren",
   "buttonBackToOverview": "Zurück zur Übersicht",
+  "calendarNextMonth": "Nächster Monat",
+  "calendarPreviousMonth": "Vorheriger Monat",
   "calendarView": "Kalenderansicht",
   "calendarViewActiveLabel": "Kalenderansicht aktiv.",
   "cancel": "Absagen",

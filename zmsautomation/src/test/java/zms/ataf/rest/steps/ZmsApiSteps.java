@@ -1,9 +1,10 @@
 package zms.ataf.rest.steps;
 
 import static io.restassured.RestAssured.given;
-import org.assertj.core.api.Assertions;
 
 import java.time.LocalDate;
+
+import org.assertj.core.api.Assertions;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;

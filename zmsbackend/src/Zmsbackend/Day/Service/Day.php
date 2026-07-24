@@ -33,14 +33,32 @@ class Day extends \BO\Zmsbackend\Base
         $this->tempScopeListExists = true;
     }
 
+    /**
+     * Drop and rebuild calendarscope for the calendar's current firstDay/lastDay months.
+     * Used to shrink the daylist window (painted month) or scan one neighbor month at a time.
+     */
+    public function rewriteTemporaryScopeList(\BO\Zmsentities\Calendar $calendar, $slotsRequiredForce = null)
+    {
+        if ($this->tempScopeListExists) {
+            $this->getReader()->exec(\BO\Zmsbackend\Day\Repository\Day::QUERY_DROP_TEMPORARY_SCOPELIST);
+            $this->tempScopeListExists = false;
+        }
+        $this->writeTemporaryScopeList($calendar, $slotsRequiredForce);
+    }
+
     public function readByCalendar(\BO\Zmsentities\Calendar $calendar, $slotsRequiredForce = null)
     {
         // We use a temporary table, so we can use create and insert on a readonly connection
         $this->writeTemporaryScopeList($calendar, $slotsRequiredForce);
-        //var_dump($this->getReader()->fetchAll('SELECT * FROM calendarscope'));
+
+        return $this->readListFromPreparedTemporaryScopeList($slotsRequiredForce);
+    }
+
+    public function readListFromPreparedTemporaryScopeList($slotsRequiredForce = null, ?string $daylistQuery = null)
+    {
         $dayList = new \BO\Zmsentities\Collection\DayList();
         $dayData = $this->getReader()->fetchAll(
-            \BO\Zmsbackend\Day\Repository\Day::QUERY_DAYLIST_JOIN,
+            $daylistQuery ?? \BO\Zmsbackend\Day\Repository\Day::QUERY_DAYLIST_JOIN,
             [
                 'forceRequiredSlots' =>
                     ($slotsRequiredForce === null || $slotsRequiredForce < 1) ? 1 : round($slotsRequiredForce),
@@ -50,6 +68,7 @@ class Day extends \BO\Zmsbackend\Base
             $day = new \BO\Zmsentities\Day($day);
             $dayList[$day->getDayHash()] = $day;
         }
+
         return $dayList;
     }
 
