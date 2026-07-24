@@ -27,13 +27,12 @@ class AvailableCalendarController extends BaseController
     #[\Override]
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $queryParams = $request->getQueryParams();
-
         $requestErrors = ValidationService::validateServerGetRequest($request);
         if (!empty($requestErrors['errors'])) {
             return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest')['statusCode']);
         }
 
+        $queryParams = $request->getQueryParams();
         $result = $this->service->getAvailableCalendar($queryParams, $this->showUnpublished);
 
         $isError = is_array($result) && isset($result['errors']);
