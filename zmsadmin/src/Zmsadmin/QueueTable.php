@@ -70,7 +70,7 @@ class QueueTable extends BaseController
 
             $waitingClientsEffective = $waitingClientsQueueList
                 ->withStatus($this->processStatusList)
-                ->getCountWithWaitingTime()
+                ->getCountWithWaitingTime(\App::$now)
                 ->count();
         }
 

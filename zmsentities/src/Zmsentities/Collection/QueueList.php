@@ -281,11 +281,23 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return null;
     }
 
-    public function getCountWithWaitingTime()
+    public function getCountWithWaitingTime(?\DateTimeInterface $dateTime = null)
     {
         $queueList = new self();
+        $timestamp = $dateTime ? $dateTime->getTimestamp() : null;
+
         foreach ($this as $entity) {
-            if ($entity->waitingTime || ! $entity->withAppointment) {
+            if (! $entity->withAppointment) {
+                $queueList->addEntity($entity);
+                continue;
+            }
+
+            if ($entity->waitingTime) {
+                $queueList->addEntity($entity);
+                continue;
+            }
+
+            if ($timestamp !== null && $entity->arrivalTime <= $timestamp) {
                 $queueList->addEntity($entity);
             }
         }
