@@ -168,12 +168,15 @@ describe("ListView", () => {
       ),
     });
     await nextTick();
+    // Initial auto-open
+    expect(wrapper.find("#listContent-0").classes()).toContain("show");
 
     // Close the auto-opened first day
     await wrapper
       .find("#listHeading-0 .m-accordion__section-button")
       .trigger("click");
     await nextTick();
+    expect((wrapper.vm as any).localOpenAccordionDate).toBeNull();
     expect(wrapper.find("#listContent-0").classes()).not.toContain("show");
 
     const btn = wrapper
@@ -183,15 +186,14 @@ describe("ListView", () => {
     await nextTick();
 
     expect(wrapper.findAll(".m-accordion__section-header").length).toBe(8);
+    expect((wrapper.vm as any).localOpenAccordionDate).toBeNull();
     expect(wrapper.find("#listContent-0").classes()).not.toContain("show");
   });
 
   it("opens the clicked accordion section and closes the previous one", async () => {
     const wrapper = mountListView();
-    await wrapper
-      .find("#listHeading-0 .m-accordion__section-button")
-      .trigger("click");
     await nextTick();
+    // First day is auto-opened on mount
     expect(wrapper.find("#listContent-0").classes()).toContain("show");
     expect(wrapper.find("#listContent-1").classes()).not.toContain("show");
 
