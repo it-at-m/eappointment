@@ -49,18 +49,18 @@
  *         in: query
  *         required: false
  *         type: string
- *       - name: officeId
- *         description: Comma separated Office IDs
+ *       - name: officeIds
+ *         description: Comma-separated office IDs (plural CSV list query param)
  *         in: query
  *         required: true
  *         type: string
- *       - name: serviceId
- *         description: Comma separated Service IDs
+ *       - name: serviceIds
+ *         description: Comma-separated service IDs (plural CSV list query param)
  *         in: query
  *         required: true
  *         type: string
- *       - name: serviceCount
- *         description: Comma separated service counts matching serviceId order
+ *       - name: serviceCounts
+ *         description: Comma-separated service counts matching serviceIds order (plural CSV list query param)
  *         in: query
  *         required: false
  *         type: string

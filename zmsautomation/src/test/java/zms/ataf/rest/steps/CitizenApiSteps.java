@@ -814,11 +814,11 @@ public class CitizenApiSteps {
         String endDate = LocalDate.now().plusMonths(6).format(DATE_FORMAT);
         response = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
-            .queryParam("officeId", String.valueOf(officeId))
-            .queryParam("serviceId", String.valueOf(serviceId))
+            .queryParam("officeIds", String.valueOf(officeId))
+            .queryParam("serviceIds", String.valueOf(serviceId))
             .queryParam("startDate", startDate)
             .queryParam("endDate", endDate)
-            .queryParam("serviceCount", String.valueOf(serviceCount))
+            .queryParam("serviceCounts", String.valueOf(serviceCount))
         .when()
             .get("/available-calendar/");
         CommonApiSteps.setResponse(response);
