@@ -227,16 +227,18 @@ class Provider extends \BO\Zmsbackend\Base
         $source = $provider->getSource();
         $providerId = $provider->getId();
 
-        if (App::$cache->has("request-$source-$providerId-0")) {
-            App::$cache->delete("request-$source-$providerId-0");
-        }
-
-        if (App::$cache->has("request-$source-$providerId-1")) {
-            App::$cache->delete("request-$source-$providerId-1");
-        }
-
-        if (App::$cache->has("request-$source-$providerId-2")) {
-            App::$cache->delete("request-$source-$providerId-2");
+        foreach ([0, 1, 2] as $resolveReferences) {
+            foreach (
+                [
+                    "provider-$source-$providerId-$resolveReferences",
+                    "provider-byid-$providerId-$resolveReferences",
+                    "request-$source-$providerId-$resolveReferences",
+                ] as $key
+            ) {
+                if (App::$cache->has($key)) {
+                    App::$cache->delete($key);
+                }
+            }
         }
     }
 }
