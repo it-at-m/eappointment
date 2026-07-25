@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8713cfd6c549190aa745d3791d4cda3c",
+    "content-hash": "94837e50ad1eb605dd507464e3f5d6e7",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -180,11 +180,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-main",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "19b03072277d0f58c2dd593850365263c5e6b870"
+                "reference": "56a96a21f59476386e0604378dfbf249baedc26e"
             },
             "require": {
                 "ext-json": ">=0",
@@ -230,7 +230,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-main",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -290,11 +290,11 @@
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "dev-main",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "19b03072277d0f58c2dd593850365263c5e6b870"
+                "reference": "cabec25b438a9251d6dd432d2cc18779d5d5f671"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -368,11 +368,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-main",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "19b03072277d0f58c2dd593850365263c5e6b870"
+                "reference": "3b064145bcaa7f64c4a42eea05d1beca82f736c9"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -426,11 +426,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-main",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "19b03072277d0f58c2dd593850365263c5e6b870"
+                "reference": "c9601a848ea30ea12806a22a8d94be0cd6ea2c52"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -5508,29 +5508,31 @@
         },
         {
             "name": "ulrichsg/getopt-php",
-            "version": "2.4.3",
+            "version": "v4.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getopt-php/getopt-php.git",
-                "reference": "23e564e947bca79bf867840fead957889e711967"
+                "reference": "9313ecde04f7bed262716e3a4d32a5e2cea3ffad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getopt-php/getopt-php/zipball/23e564e947bca79bf867840fead957889e711967",
-                "reference": "23e564e947bca79bf867840fead957889e711967",
+                "url": "https://api.github.com/repos/getopt-php/getopt-php/zipball/9313ecde04f7bed262716e3a4d32a5e2cea3ffad",
+                "reference": "9313ecde04f7bed262716e3a4d32a5e2cea3ffad",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "ext-mbstring": "*",
+                "php": "^7.1 || ^8.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.8",
-                "squizlabs/php_codesniffer": "^2.7"
+                "phpunit/phpunit": "*",
+                "squizlabs/php_codesniffer": "^3.5.8",
+                "tflori/phpunit-printer": "*"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Ulrichsg\\Getopt\\": "src"
+                    "GetOpt\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -5547,13 +5549,13 @@
                     "email": "thflori@gmail.com"
                 }
             ],
-            "description": "Command line arguments parser for PHP 5.3 - 7.1",
-            "homepage": "http://ulrichsg.github.io/getopt-php",
+            "description": "Command line arguments parser for PHP 7.1 and above",
+            "homepage": "http://getopt-php.github.io/getopt-php",
             "support": {
                 "issues": "https://github.com/getopt-php/getopt-php/issues",
-                "source": "https://github.com/getopt-php/getopt-php/tree/master"
+                "source": "https://github.com/getopt-php/getopt-php/tree/v4.0.4"
             },
-            "time": "2017-07-02T15:56:33+00:00"
+            "time": "2025-02-11T14:42:04+00:00"
         },
         {
             "name": "vanilla/garden-cli",
