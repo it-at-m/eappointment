@@ -19,19 +19,12 @@
             :id="`provider-${selectedProvider.id}`"
             class="m-teaser-contained-contact__summary"
           >
-            {{ selectedProvider.name }}
-            <br />
-            <span v-if="detailIcon">
-              <br />
-              <svg
-                aria-hidden="true"
-                class="icon icon--before"
-              >
-                <use :xlink:href="`#${detailIcon}`"></use>
-              </svg>
+            <span v-if="isTelephoneOrVideoVariant">
               {{ t(`appointmentTypes.${variantId}`) }}
             </span>
             <span v-else>
+              {{ selectedProvider.name }}
+              <br />
               {{ selectedProvider.address.street }}
               {{ selectedProvider.address.house_number }}
             </span>
@@ -74,6 +67,7 @@ import { computed, ref } from "vue";
 
 // Calculate duration locally
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
+import { VARIANT_ID_TELEPHONE, VARIANT_ID_VIDEO } from "@/utils/Constants";
 import { containsParagraphTag } from "@/utils/containsParagraphTag";
 import {
   formatDayFromDate,
@@ -107,11 +101,11 @@ const variantId = computed<number | null>(() => {
   return Number.isFinite(id) ? id : null;
 });
 
-const detailIcon = computed<string | null>(() => {
-  if (variantId.value === 2) return "icon-telephone";
-  if (variantId.value === 3) return "icon-video-camera";
-  return null;
-});
+const isTelephoneOrVideoVariant = computed(
+  () =>
+    variantId.value === VARIANT_ID_TELEPHONE ||
+    variantId.value === VARIANT_ID_VIDEO
+);
 
 const sanitizedInfoForAppointment = computed(() =>
   sanitizeHtml(props.selectedProvider?.scope?.infoForAppointment)

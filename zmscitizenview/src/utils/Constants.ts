@@ -42,6 +42,15 @@ export const OFTEN_SEARCHED_SERVICES = new Map<string, string>([
 export const QUERY_PARAM_APPOINTMENT_ID = "ap-id";
 export const QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER = "ap-display";
 
+/**
+ * Resolve a relative or absolute appointment URL against the current page.
+ * Must use `location.href` (not `location.origin`) so paths under a subdirectory
+ * like `/buergeransicht/` stay in that directory (e.g. appointment-detail.html).
+ */
+export function resolveAgainstCurrentPage(url: string): URL {
+  return new URL(url, window.location.href);
+}
+
 export const LOCALSTORAGE_PARAM_APPOINTMENT_DATA = "lhm-appointment-data";
 
 export enum APPOINTMENT_ACTION_TYPE {
@@ -155,6 +164,22 @@ export const getAppointmentLocationVariantHint = (
   }
 
   return getVariantHint(variantId, t);
+};
+
+export const getAppointmentLocationVariantLabel = (
+  variantId: number | null,
+  t: (key: string) => string
+): string | undefined => {
+  if (variantId == null) return undefined;
+
+  if (
+    variantId === VARIANT_ID_SMALL_CLIENT ||
+    variantId === VARIANT_ID_LARGE_CLIENT
+  ) {
+    return t(`appointmentTypes.${VARIANT_ID_PRESENCE}`);
+  }
+
+  return t(`appointmentTypes.${variantId}`);
 };
 
 export function shouldAddImplicitPresenceVariant(
