@@ -37,11 +37,6 @@ class AvailableCalendar extends Entity implements JsonSerializable
         $this->ensureValid();
     }
 
-    /**
-     * Validates against citizenapi/availableCalendar.json.
-     *
-     * @throws \BO\Zmsentities\Exception\SchemaValidation
-     */
     public function ensureValid(): void
     {
         $this->testValid();
