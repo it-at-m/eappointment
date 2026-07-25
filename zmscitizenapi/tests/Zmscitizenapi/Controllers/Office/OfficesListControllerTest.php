@@ -215,4 +215,38 @@ class OfficesListControllerTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('sourceNotFound')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
+
+    public function testMissingSecondarySourceIsSkipped()
+    {
+        \App::$source_name = 'unittest,missing';
+
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsbackend\\Source\\Exception\\SourceNotFound';
+
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/source/unittest/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/source/missing/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'exception' => $exception
+            ]
+        ]);
+
+        $response = $this->render();
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertArrayHasKey('offices', $responseBody);
+        $this->assertNotEmpty($responseBody['offices']);
+    }
 }

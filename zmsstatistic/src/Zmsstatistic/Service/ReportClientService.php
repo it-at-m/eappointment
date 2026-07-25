@@ -10,6 +10,7 @@ namespace BO\Zmsstatistic\Service;
 use BO\Zmsentities\Day;
 use BO\Zmsstatistic\Helper\ReportHelper;
 use DateTime;
+use DateTimeImmutable;
 use Exception;
 
 class ReportClientService
@@ -58,7 +59,7 @@ class ReportClientService
         try {
             $reportHelper = new ReportHelper();
             $years = $reportHelper->getYearsForDateRange($fromDate, $toDate);
-            $combinedData = $this->fetchAndCombineDataFromYears($scopeId, $years, $fromDate, $toDate);
+            $combinedData = $this->fetchAndCombineDataFromYears($reportHelper, $scopeId, $years, $fromDate, $toDate);
 
             if (empty($combinedData['data'])) {
                 return null;
@@ -108,20 +109,24 @@ class ReportClientService
     /**
      * Fetch and combine data from multiple years
      */
-    private function fetchAndCombineDataFromYears(string $scopeId, array $years, string $fromDate, string $toDate): array
+    private function fetchAndCombineDataFromYears(ReportHelper $reportHelper, string $scopeId, array $years, string $fromDate, string $toDate): array
     {
         $combinedData = [];
         $baseEntity = null;
 
         foreach ($years as $year) {
+            $bounds = $reportHelper->getYearDateBounds($year, $fromDate, $toDate);
+            if ($bounds === null) {
+                continue;
+            }
             try {
                 $exchangeClient = \App::$http
                     ->readGetResult(
                         '/warehouse/clientscope/' . $scopeId . '/' . $year . '/',
                         [
                             'groupby' => 'day',
-                            'fromDate' => $fromDate,
-                            'toDate' => $toDate
+                            'fromDate' => $bounds['from'],
+                            'toDate' => $bounds['to'],
                         ]
                     )
                     ->getEntity();

@@ -27,7 +27,10 @@
       },
       "emergency": {
         "refreshInterval": "5"
-      }
+      },
+       "changelog": {
+        "urlReleaseNotes": "https://it-at-m.github.io/eappointment/overview/changelog.html"
+      } 
     },
     "profiler": [
       {

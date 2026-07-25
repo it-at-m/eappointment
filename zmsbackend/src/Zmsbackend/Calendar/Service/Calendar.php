@@ -42,7 +42,9 @@ class Calendar extends \BO\Zmsbackend\Base
         $scopeReader = new \BO\Zmsbackend\Scope\Service\Scope();
         foreach ($calendar->scopes as $scope) {
             $scope = $scopeReader->readEntity($scope['id'], 1);
-            $scopeList->addEntity($scope);
+            if ($scope) {
+                $scopeList->addEntity($scope);
+            }
         }
         $calendar['scopes'] = $scopeList->withUniqueScopes();
         return $calendar;

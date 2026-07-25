@@ -50,6 +50,43 @@ Prüfen:
 ping keycloak
 ```
 
+## Bürger-Login (zmscitizenview)
+
+Siehe auch GitHub-Issue [#2827](https://github.com/it-at-m/eappointment/issues/2827).
+
+Die lokalen Vite-Host-Seiten (`appointment-view.html` usw.) nutzen den öffentlichen Keycloak-Client `dbs-fragments` im Realm `zms` (Migrationen `09_add-citizen-client.yml`, `10_add-citizen-token-mappers.yml`). Defaults stehen in `zmscitizenview/.env.development`.
+
+- **`09`** legt den öffentlichen Client, den Audience-Scope und den Testbenutzer (`citizen` / `vorschau`) an.
+- **`10`** ergänzt **Client-Mapper** (Keycloak Protocol Mapper) an diesem Client. Ein Mapper kopiert ein Benutzerattribut beim Token-Ausstellen in einen JWT-Claim. Ohne sie fehlen im Access-Token die von `zmscitizenapi` erwarteten Profil-Felder — vor allem `lhmExtID` (aus dem Keycloak-Benutzernamen), außerdem `email`, `given_name` und `family_name`.
+
+Der externe `dbs-login`-Loader ist lokal oft nicht erreichbar. Mit `VITE_USE_LOCAL_CITIZEN_LOGIN=true` laden die Host-Seiten stattdessen `src/local-dev/local-dbs-login.ts`: lauscht auf `authorization-request`, führt OIDC Authorization-Code + PKCE gegen lokales Keycloak aus und sendet `authorization-event`.
+
+1. Migrationen anwenden (Stack neu starten, damit `init-keycloak` läuft, oder den Service neu erzeugen).
+2. Vite-/citizenview-Prozess neu starten, damit Env und Login-Skripte geladen werden.
+3. Die Startseite `http://localhost:8082/` oder `http://localhost:8082/webcomponents.html` öffnen (oder direkt `http://localhost:8082/appointment-view.html`). Am Kundenschritt mit Login **Anmelden** klicken.
+4. Am Keycloak-Login anmelden; danach solltest du eingeloggt zurückkommen.
+
+Nach erfolgreichem Login zeigt der Kontakt-Schritt, dass du angemeldet bist, und die Kontaktdaten kommen aus den Keycloak-Profil-Claims (`given_name`, `family_name`, `email`):
+
+<img alt="Eingeloggter Kontakt-Schritt mit Citizen User und citizen@example.com" src="../../img/citizen_login_1.png" />
+
+Nach einer Buchung im eingeloggten Zustand bleiben Detailseiten über die Session (Token in `localStorage`) nutzbar:
+
+<img alt="Termindetail eines gebuchten Reisepass-Termins im eingeloggten Zustand" src="../../img/citizen_login_2.png" />
+
+Nach dem Login laufen API-Aufrufe über `/buergeransicht/authenticated/api/citizen/…`. Vite-Dev-Proxy und lokales Gateway brauchen diesen Pfad (siehe `zmscitizenview/vite.config.ts` sowie `.devcontainer` / `.ddev` `local-gateway-application.yml`). Nach dem Pull `refarch-gateway` und den Vite-/citizenview-Prozess neu starten.
+
+Der lokale Login-Shim speichert den Access-Token in `localStorage`, damit `http://localhost:8082/appointment-overview.html`, `http://localhost:8082/appointment-detail.html` und `http://localhost:8082/appointment-slider.html` über Tabs hinweg auf derselben Origin eingeloggt bleiben. Tokens enthalten Claim `lhmExtID` (Keycloak-Benutzername) für `my-appointments`. Nach Migration `10_add-citizen-token-mappers.yml` (inkl. `lhmExtID`) erneut einloggen (und bei Bedarf neu buchen).
+
+| Feld         | Wert       |
+| ------------ | ---------- |
+| Benutzername | `citizen`  |
+| Passwort     | `vorschau` |
+
+Keycloak-URL der Host-Seiten: `http://localhost:8080/auth` (passt zum Realm-Issuer im Browser). Der Hosts-Eintrag `keycloak` bleibt für Admin/Statistik und Container-DNS sinnvoll.
+
+Das lokale API-Gateway läuft oft ohne Security-Profil; authentifizierte Citizen-API-Aufrufe werden dann ggf. ohne JWT-Prüfung durchgelassen. Für JWT-Validierung können `SSO_URL` / `SSO_REALM` / `SSO_CLIENTID` aus den ddev-/devcontainer-`.env.template`-Dateien genutzt werden.
+
 ## Hinweis zu Podman (Linux)
 
 Podman fügt unter Umständen die Host-`/etc/hosts` in Container ein, was die Auflösung von `keycloak` im Container brechen kann. Ergänze in `~/.config/containers/containers.conf`:

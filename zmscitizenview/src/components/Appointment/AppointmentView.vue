@@ -397,6 +397,7 @@ import {
   LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
   QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
+  resolveAgainstCurrentPage,
 } from "@/utils/Constants";
 import {
   clearContextErrors,
@@ -982,7 +983,9 @@ const saveAppointmentToLocalstorage = () => {
 };
 
 const viewAppointment = () => {
-  const url = new URL(props.appointmentDetailUrl, window.location.origin);
+  const url = resolveAgainstCurrentPage(
+    props.appointmentDetailUrl || "appointment-detail.html"
+  );
   url.searchParams.set(
     QUERY_PARAM_APPOINTMENT_ID,
     appointment.value?.processId || ""
