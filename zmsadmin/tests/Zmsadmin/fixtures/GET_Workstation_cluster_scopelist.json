@@ -9,17 +9,8 @@
     "data": {
       "$schema": "https://schema.berlin.de/queuemanagement/workstation.json",
       "useraccount": {
-        "rights": {
-          "availability": "1",
-          "basic": "1",
-          "cluster": "1",
-          "department": "1",
-          "organisation": "1",
-          "scope": "1",
-          "sms": "1",
-          "superuser": "1",
-          "ticketprinter": "1",
-          "useraccount": "1"
+        "permissions": {
+          "waitingqueue": true
         },
         "departments": [
           {
