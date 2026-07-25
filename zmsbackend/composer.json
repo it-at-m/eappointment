@@ -42,7 +42,7 @@
         "symfony/cache": "^6.0",
         "psr/simple-cache": "^3.0",
         "monolog/monolog": "^2.0",
-        "ulrichsg/getopt-php": "^2.3",
+        "ulrichsg/getopt-php": "^4.0",
         "league/climate": "^3.2",
         "aura/sql": "^5",
         "roave/security-advisories": "dev-latest"
