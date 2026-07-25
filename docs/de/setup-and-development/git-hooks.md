@@ -55,9 +55,11 @@ Siehe auch [Code-Formatierung](./code-formatting.md) für manuelle PHPCS-/Pretti
 ```txt
 type(PROJECT-123): commit message
 type(PROJECT): commit message
+type(PROJECT-1 PROJECT-2): commit message
+type(PROJECT-1 PROJECT-2): type(PROJECT-3): commit message
 ```
 
-Die Ticketnummer ist **optional** — `PROJECT-123` oder nur `PROJECT` (Großbuchstaben).
+Die Ticketnummer ist **optional** — `PROJECT-123` oder nur `PROJECT` (Großbuchstaben). Mehrere Tickets/Projekte dürfen in einem Scope durch Leerzeichen getrennt stehen; mehrere `type(scope):`-Präfixe dürfen vor der Zusammenfassung verkettet werden.
 
 **Merge-Commits**
 

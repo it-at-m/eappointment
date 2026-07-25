@@ -55,9 +55,11 @@ See also [Code formatting](./code-formatting.md) for manual PHPCS/Prettier comma
 ```txt
 type(PROJECT-123): commit message
 type(PROJECT): commit message
+type(PROJECT-1 PROJECT-2): commit message
+type(PROJECT-1 PROJECT-2): type(PROJECT-3): commit message
 ```
 
-The ticket number is **optional** — use `PROJECT-123` or just `PROJECT` (uppercase).
+The ticket number is **optional** — use `PROJECT-123` or just `PROJECT` (uppercase). Multiple tickets/projects may be space-separated in one scope; multiple `type(scope):` prefixes may be chained before the summary.
 
 **Merge commits**
 

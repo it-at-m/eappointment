@@ -15,11 +15,23 @@ or without a ticket number:
 
 `<type>(<PROJECT>): <short summary>`
 
+Multiple tickets/projects in one scope (space-separated):
+
+`<type>(<PROJECT>-<ticket> <PROJECT>-<ticket>): <short summary>`
+
+Multiple `type(scope):` prefixes chained before the summary:
+
+`<type>(…): <type>(…): <short summary>`
+
 Example:
 
 `fix(ZMSKVR-1347): handle unpublished relation filtering`
 
 `chore(ZMS): update dependencies`
+
+`feat(ZMS-1 ZMS-2): shared change for two tickets`
+
+`feat(ZMS-1 ZMS-2): fix(GH-1 ZMS-3): multi-type multi-ticket change`
 
 The `commit-msg` Git hook validates only the subject line. Merge commits use Git’s default `Merge branch …` subject automatically. See [Git hooks (Husky)](../git-hooks.md) for setup and troubleshooting.
 
@@ -39,9 +51,9 @@ The `commit-msg` Git hook validates only the subject line. Merge commits use Git
    - `MUXDBS` for the MUXDBS project
    - `GH` for GitHub-only issue tracking
 
-3. **ticket number**: Optional digits matching the project ticket/issue ID (for example `ZMSKVR-1347`). You may omit the number and use only the project scope (for example `chore(ZMS): …`).
+3. **ticket number**: Optional digits matching the project ticket/issue ID (for example `ZMSKVR-1347`). You may omit the number and use only the project scope (for example `chore(ZMS): …`). Multiple `PROJECT` / `PROJECT-123` refs may be space-separated inside one scope.
 
-4. **summary**: A concise imperative statement describing the change intent.
+4. **summary**: A concise imperative statement describing the change intent. When several `type(scope):` prefixes are chained, the summary comes after the last prefix.
 
 ## Examples
 
@@ -52,12 +64,14 @@ The `commit-msg` Git hook validates only the subject line. Merge commits use Git
 - `docs(ZMS-123): document sadb visibility decision flow`
 - `chore(ZMS): merge main into feature branch`
 - `clean(GH): remove obsolete workflow`
+- `feat(ZMS-1 ZMS-2): shared change for two tickets`
+- `feat(ZMS-1 ZMS-2): fix(GH-1 ZMS-3): multi-type multi-ticket change`
 
 ## Regular Expression
 
 The subject line validated by the `commit-msg` hook matches:
 
-`^(feat|fix|clean|chore|docs)\((ZMS|ZMSKVR|MPDZBS|MUXDBS|GH)(-[0-9]+)?\): .+$`
+`^((feat|fix|clean|chore|docs)\(((ZMS|ZMSKVR|MPDZBS|MUXDBS|GH)(-[0-9]+)?)( (ZMS|ZMSKVR|MPDZBS|MUXDBS|GH)(-[0-9]+)?)*\): )+.+$`
 
 Merge commits with a subject starting with `Merge ` are exempt (see [Git hooks (Husky)](../git-hooks.md)).
 

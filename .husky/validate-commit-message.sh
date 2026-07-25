@@ -14,9 +14,18 @@ validate_commit_message() {
     return 0
   fi
 
+  # One or more type(scope): prefixes, then a summary.
+  # Scope may list multiple PROJECT or PROJECT-123 refs separated by spaces.
+  # Examples:
+  #   feat(ZMS-1): summary
+  #   feat(ZMS-1 ZMS-2): summary
+  #   feat(ZMS-1 ZMS-2): fix(GH-1 ZMS-3): summary
   valid_types="feat|fix|clean|chore|docs"
   valid_projects="ZMS|ZMSKVR|MPDZBS|MUXDBS|GH"
-  pattern="^($valid_types)\(($valid_projects)(-[0-9]+)?\): .+"
+  ref="($valid_projects)(-[0-9]+)?"
+  scope="$ref( $ref)*"
+  prefix="($valid_types)\\($scope\\): "
+  pattern="^($prefix)+.+"
 
   if echo "$commit_msg" | grep -qE "$pattern"; then
     printf "${GREEN}✓ Commit message format is valid.${NC}\n"
@@ -28,14 +37,20 @@ validate_commit_message() {
   echo "Commit messages must follow the conventional commits format:"
   echo "  type(PROJECT-123): commit message"
   echo "  type(PROJECT): commit message"
+  echo "  type(PROJECT-1 PROJECT-2): commit message"
+  echo "  type(PROJECT-1 PROJECT-2): type(PROJECT-3): commit message"
   echo ""
   echo "Valid types: feat, fix, clean, chore, docs"
   echo "Valid projects: ZMS, ZMSKVR, MPDZBS, MUXDBS, GH (must be uppercase)"
   echo "Ticket number is optional (e.g., PROJECT-123 or just PROJECT)"
+  echo "Multiple tickets/projects may be space-separated in one scope"
+  echo "Multiple type(scope): prefixes may be chained before the summary"
   echo ""
   echo "Examples:"
   echo "  feat(ZMS-123): add new feature"
   echo "  fix(ZMSKVR-123): fix bug in login"
+  echo "  feat(ZMS-1 ZMS-2): shared change for two tickets"
+  echo "  feat(ZMS-1 ZMS-2): fix(GH-1 ZMS-3): multi-type multi-ticket change"
   echo "  chore(GH): clean up"
   echo "  clean(ZMS): remove unused code"
   echo "  docs(ZMS-123): update README"
