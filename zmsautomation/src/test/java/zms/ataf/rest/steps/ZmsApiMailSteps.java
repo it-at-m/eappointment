@@ -1,10 +1,11 @@
 package zms.ataf.rest.steps;
 
 import static io.restassured.RestAssured.*;
-import org.assertj.core.api.Assertions;
 
 import java.util.List;
 import java.util.Map;
+
+import org.assertj.core.api.Assertions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
