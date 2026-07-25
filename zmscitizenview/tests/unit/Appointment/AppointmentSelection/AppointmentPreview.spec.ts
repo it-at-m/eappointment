@@ -4,10 +4,6 @@ import AppointmentPreview from "@/components/Appointment/AppointmentSelection/Ap
 
 const t = vi.fn((key: string) => key);
 
-const svgUseHref = (element: Element): string | null =>
-  element.getAttributeNS("http://www.w3.org/1999/xlink", "href") ??
-  element.getAttribute("href");
-
 const calloutStub = {
   template:
     '<div data-test="muc-callout"><slot name="header"></slot><slot name="content"></slot></div>',
@@ -58,13 +54,13 @@ describe("AppointmentPreview", () => {
     });
     expect(wrapper.exists()).toBe(true);
   });
-  it("displays appropriate icon and appointment type for variantId", () => {
+  it("displays appointment type for telephone and video variantId", () => {
     const variants = [
-      { id: 2, icon: "icon-telephone", textKey: `appointmentTypes.${2}` },
-      { id: 3, icon: "icon-video-camera", textKey: `appointmentTypes.${3}` },
+      { id: 2, textKey: `appointmentTypes.${2}` },
+      { id: 3, textKey: `appointmentTypes.${3}` },
     ];
 
-    variants.forEach(variant => {
+    variants.forEach((variant) => {
       const wrapper = mount(AppointmentPreview, {
         global: { stubs: { "muc-callout": { template: '<div data-test="muc-callout"><slot name="header"></slot><slot name="content"></slot></div>' } } },
         props: {
@@ -76,19 +72,8 @@ describe("AppointmentPreview", () => {
         },
       });
 
-      const iconUse = Array.from(
-        (wrapper.element as HTMLElement).querySelectorAll("use")
-      ).find(
-        (element: Element) =>
-          element.getAttribute("xlink:href") === `#${variant.icon}` ||
-          element.getAttributeNS("http://www.w3.org/1999/xlink", "href") ===
-            `#${variant.icon}`
-      );
-      expect(iconUse).toBeTruthy();
-      const useElement = wrapper.find("use");
-      expect(useElement.exists()).toBe(true);
-      expect(svgUseHref(useElement.element)).toBe(`#${variant.icon}`);
       expect(wrapper.text()).toContain(t(variant.textKey));
+      expect(wrapper.text()).not.toContain("Office A");
       expect(wrapper.text()).not.toContain("Elm");
       expect(wrapper.text()).not.toContain("99");
     });

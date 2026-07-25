@@ -299,7 +299,7 @@ class ReportWaitingScopeTest extends Base
                     'parameters' => [
                         'groupby' => 'day',
                         'fromDate' => '2015-12-31',
-                        'toDate' => '2016-03-01'
+                        'toDate' => '2015-12-31'
                     ],
                     'response' => $this->readFixture("GET_waitingscope_141_2015.json")
                 ],
@@ -308,7 +308,7 @@ class ReportWaitingScopeTest extends Base
                     'url' => '/warehouse/waitingscope/141/2016/',
                     'parameters' => [
                         'groupby' => 'day',
-                        'fromDate' => '2015-12-31',
+                        'fromDate' => '2016-01-01',
                         'toDate' => '2016-03-01'
                     ],
                     'response' => $this->readFixture("GET_waitingscope_141_032016.json")
