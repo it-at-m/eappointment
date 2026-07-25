@@ -14,8 +14,13 @@
   ],
   "author": "BerlinOnline GmbH & Co. KG",
   "license": "SEE LICENSE IN LICENSE FILE",
+  "// overrides.brace-expansion": "Force 5.0.8 for CVE-2026-14257 (DoS via unbounded expansion length); no 1.x/2.x backport.",
+  "// overrides.fast-uri": "ajv pins fast-uri@3.1.2; force ^3.1.4 (CVE-2026-13676, CVE-2026-16221).",
+  "// overrides.js-yaml": "Force >=5.2.2 for GHSA-pm4m-ph32-ghv5 (DoS via exponential parsing time).",
   "overrides": {
-    "js-yaml": "^5.0.0"
+    "js-yaml": "^5.2.2",
+    "fast-uri": "^4.0.0",
+    "brace-expansion": "5.0.8"
   },
   "dependencies": {
     "@apidevtools/swagger-cli": "^4.0.4"
@@ -24,6 +29,6 @@
         "swagger-jsdoc": "^6.1.0",
         "swagger-parser": "^10.0.0",
         "openapi-types": "^12.0.0",
-        "js-yaml": "^5.0.0"
+        "js-yaml": "^5.2.2"
     }
 }

@@ -16,7 +16,8 @@ class Calendar extends \BO\Zmsbackend\Base
         \DateTimeInterface $now,
         $resolveOnlyScopes = false,
         $slotType = 'public',
-        $slotsRequired = 0
+        $slotsRequired = 0,
+        $resolveScopeReferences = true
     ) {
         $calendar['freeProcesses'] = new \BO\Zmsentities\Collection\ProcessList();
         $calendar['scopes'] = $calendar->getScopeList();
@@ -24,11 +25,14 @@ class Calendar extends \BO\Zmsbackend\Base
         $calendar = $this->readResolvedProviders($calendar);
         $calendar = $this->readResolvedClusters($calendar);
         $calendar = $this->readResolvedRequests($calendar);
-        $calendar = $this->readResolvedScopeReferences($calendar);
+        if ($resolveScopeReferences) {
+            $calendar = $this->readResolvedScopeReferences($calendar);
+        }
         if (count($calendar->scopes) < 1) {
             throw new \BO\Zmsbackend\Calendar\Exception\CalendarWithoutScopes("No scopes resolved in $calendar");
         }
         $calendar = $this->readResolvedDays($calendar, $resolveOnlyScopes, $now, $slotType, $slotsRequired);
+
         return $calendar;
     }
 
@@ -42,7 +46,9 @@ class Calendar extends \BO\Zmsbackend\Base
         $scopeReader = new \BO\Zmsbackend\Scope\Service\Scope();
         foreach ($calendar->scopes as $scope) {
             $scope = $scopeReader->readEntity($scope['id'], 1);
-            $scopeList->addEntity($scope);
+            if ($scope) {
+                $scopeList->addEntity($scope);
+            }
         }
         $calendar['scopes'] = $scopeList->withUniqueScopes();
         return $calendar;
@@ -64,12 +70,20 @@ class Calendar extends \BO\Zmsbackend\Base
     {
         $requestReader = new \BO\Zmsbackend\Request\Service\Request();
         $requestRelationQuery = new \BO\Zmsbackend\RequestRelation\Service\RequestRelation();
+        $providerIds = [];
+        foreach ($calendar->providers as $provider) {
+            $providerIds[(string) $provider->getId()] = true;
+        }
         foreach ($calendar['requests'] as $key => $request) {
             $request = new \BO\Zmsentities\Request($request);
             $request = $requestReader->readEntity($request->getSource(), $request->getId());
             $calendar['requests'][$key] = $request;
             $requestRelationList = $requestRelationQuery->readListByRequestId($request->getId(), $request->getSource());
             foreach ($requestRelationList as $requestRelationItem) {
+                $providerId = (string) $requestRelationItem->getProvider()->getId();
+                if ($providerIds !== [] && !isset($providerIds[$providerId])) {
+                    continue;
+                }
                 // we do not check multipleSlotsEnabled here, because the availability might need this information
                 // so we calculate slots as if multipleSlotsEnabled is true
                 $calendar->scopes->addRequiredSlots(
