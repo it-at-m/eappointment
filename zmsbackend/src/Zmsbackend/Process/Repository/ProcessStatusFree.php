@@ -91,9 +91,15 @@ class ProcessStatusFree extends \BO\Zmsbackend\Query\Base
                     AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots)
                 INNER JOIN slot s2 on h.slotID = s2.slotID and s2.status = "free"
                 LEFT JOIN (
-                    SELECT slotID, COUNT(*) AS confirmed
-                    FROM slot_process
-                    GROUP BY slotID
+                    SELECT p.slotID, COUNT(*) AS confirmed
+                    FROM slot_process p
+                    INNER JOIN slot s_occ
+                        ON s_occ.slotID = p.slotID
+                    INNER JOIN calendarscope c_occ
+                        ON c_occ.scopeID = s_occ.scopeID
+                        AND c_occ.year = s_occ.year
+                        AND c_occ.month = s_occ.month
+                    GROUP BY p.slotID
                 ) occ ON occ.slotID = h.slotID
                 LEFT JOIN closures cc ON (s.scopeID = cc.StandortID AND s.year = cc.year AND s.month = cc.month and s.day = cc.day)
             WHERE cc.id IS NULL
