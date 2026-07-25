@@ -33,6 +33,52 @@ class Provider extends \BO\Zmsbackend\Base
         return $provider;
     }
 
+    public function readEntityById($providerId, $resolveReferences = 0, $disableCache = false)
+    {
+        $cacheKey = "provider-byid-$providerId-$resolveReferences";
+
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            return App::$cache->get($cacheKey);
+        }
+
+        $query = new \BO\Zmsbackend\Provider\Repository\Provider(\BO\Zmsbackend\Query\Base::SELECT);
+        $query
+            ->setResolveLevel($resolveReferences)
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionProviderId($providerId);
+        $provider = $this->fetchOne($query, new Entity());
+
+        if (App::$cache && $provider->hasId()) {
+            App::$cache->set($cacheKey, $provider);
+        }
+
+        return $provider;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function readSourceMapByIds(array $providerIds): array
+    {
+        if ($providerIds === []) {
+            return [];
+        }
+
+        $query = new \BO\Zmsbackend\Provider\Repository\Provider(\BO\Zmsbackend\Query\Base::SELECT);
+        $query
+            ->setResolveLevel(0)
+            ->addEntityMapping()
+            ->addConditionProviderIdList($providerIds);
+
+        $map = [];
+        foreach ($this->readCollection($query) as $provider) {
+            $map[(string) $provider->getId()] = (string) $provider->getSource();
+        }
+
+        return $map;
+    }
+
     /**
      * @SuppressWarnings(Param)
      *
@@ -181,16 +227,18 @@ class Provider extends \BO\Zmsbackend\Base
         $source = $provider->getSource();
         $providerId = $provider->getId();
 
-        if (App::$cache->has("request-$source-$providerId-0")) {
-            App::$cache->delete("request-$source-$providerId-0");
-        }
-
-        if (App::$cache->has("request-$source-$providerId-1")) {
-            App::$cache->delete("request-$source-$providerId-1");
-        }
-
-        if (App::$cache->has("request-$source-$providerId-2")) {
-            App::$cache->delete("request-$source-$providerId-2");
+        foreach ([0, 1, 2] as $resolveReferences) {
+            foreach (
+                [
+                    "provider-$source-$providerId-$resolveReferences",
+                    "provider-byid-$providerId-$resolveReferences",
+                    "request-$source-$providerId-$resolveReferences",
+                ] as $key
+            ) {
+                if (App::$cache->has($key)) {
+                    App::$cache->delete($key);
+                }
+            }
         }
     }
 }
