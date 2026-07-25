@@ -8,6 +8,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
+use BO\Zmsadmin\Helper\ExcludeIds;
 
 class WorkstationProcessPreCall extends BaseController
 {
@@ -25,7 +26,7 @@ class WorkstationProcessPreCall extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $process = \App::$http->readGetResult('/process/' . $processId . '/')->getEntity();
-        $excludedIds = Helper\ExcludeIds::fromQuery(
+        $excludedIds = ExcludeIds::fromQuery(
             $validator->getParameter('exclude')->isString()->setDefault('')->getValue()
         );
         $excludedIds[] = $process->toQueue(\App::$now)->number;
@@ -65,7 +66,7 @@ class WorkstationProcessPreCall extends BaseController
                 'menuActive' => 'workstation',
                 'process' => $process,
                 'timeDifference' => $waitingTime, // Pass this to Twig
-                'exclude' => Helper\ExcludeIds::toQuery($excludedIds),
+                'exclude' => ExcludeIds::toQuery($excludedIds),
                 'error' => $error
             )
         );

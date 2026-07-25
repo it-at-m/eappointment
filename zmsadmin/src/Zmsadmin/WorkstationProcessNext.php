@@ -8,6 +8,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Slim\Render;
+use BO\Zmsadmin\Helper\ExcludeIds;
 use BO\Zmsentities\Collection\ProcessList;
 
 class WorkstationProcessNext extends BaseController
@@ -41,7 +42,7 @@ class WorkstationProcessNext extends BaseController
             'gql' => Helper\GraphDefaults::getWorkstation()
         ])->getEntity();
         $validator = $request->getAttribute('validator');
-        $excludedIds = Helper\ExcludeIds::fromQuery(
+        $excludedIds = ExcludeIds::fromQuery(
             $validator->getParameter('exclude')->isString()->getValue()
         );
 
@@ -93,7 +94,7 @@ class WorkstationProcessNext extends BaseController
                     'authkey' => $process->authKey
                 ),
                 array(
-                    'exclude' => Helper\ExcludeIds::toQuery($excludedIds)
+                    'exclude' => ExcludeIds::toQuery($excludedIds)
                 )
             );
         }
@@ -103,7 +104,7 @@ class WorkstationProcessNext extends BaseController
                 'id' => $process->id
             ),
             array(
-                'exclude' => Helper\ExcludeIds::toQuery($excludedIds)
+                'exclude' => ExcludeIds::toQuery($excludedIds)
             )
         );
     }

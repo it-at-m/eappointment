@@ -8,6 +8,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
+use BO\Zmsadmin\Helper\ExcludeIds;
 
 class WorkstationProcessCalled extends BaseController
 {
@@ -42,7 +43,7 @@ class WorkstationProcessCalled extends BaseController
             }
         }
 
-        $excludedIds = Helper\ExcludeIds::fromQuery(
+        $excludedIds = ExcludeIds::fromQuery(
             $validator->getParameter('exclude')->isString()->setDefault('')->getValue()
         );
         $excludedIds[] = $workstation->process->toQueue(\App::$now)->number;
@@ -67,7 +68,7 @@ class WorkstationProcessCalled extends BaseController
                 'workstation' => $workstation,
                 'menuActive' => 'workstation',
                 'process' => $process,
-                'exclude' => Helper\ExcludeIds::toQuery($excludedIds),
+                'exclude' => ExcludeIds::toQuery($excludedIds),
                 'error' => $error
             )
         );
