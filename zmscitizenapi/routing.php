@@ -3,69 +3,6 @@
 
 /**
  * @swagger
- * /services/:
- *   get:
- *     summary: Get the list of services
- *     tags:
- *       - services
- *     responses:
- *       200:
- *         description: List of services
- *         schema:
- *           type: object
- *           properties:
- *             meta:
- *               $ref: "schema/metaresult.json"
- *             data:
- *               $ref: "schema/citizenapi/collections/serviceList.json"
- */
-\App::$slim->get('/services/', '\BO\Zmscitizenapi\Controllers\Service\ServicesListController')->setName("ServicesListController");
-\App::$slim->get('/services', '\BO\Zmscitizenapi\Controllers\Service\ServicesListController')->setName("ServicesListController");
-
-/**
- * @swagger
- * /scopes/:
- *   get:
- *     summary: Get the list of scopes
- *     tags:
- *       - scopes
- *     responses:
- *       200:
- *         description: List of scopes
- *         schema:
- *           type: object
- *           properties:
- *             meta:
- *               $ref: "schema/metaresult.json"
- *             data:
- *               $ref: "schema/citizenapi/collections/thinnedScopeList.json"
- */
-\App::$slim->get('/scopes/', '\BO\Zmscitizenapi\Controllers\Scope\ScopesListController')->setName("ScopesListController");
-\App::$slim->get('/scopes', '\BO\Zmscitizenapi\Controllers\Scope\ScopesListController')->setName("ScopesListController");
-
-/**
- * @swagger
- * /offices/:
- *   get:
- *     summary: Get the list of offices
- *     tags:
- *       - offices
- *     responses:
- *       200:
- *         description: List of offices
- *         schema:
- *           type: object
- *           properties:
- *             meta:
- *               $ref: "schema/metaresult.json"
- *             data:
- *               $ref: "schema/citizenapi/collections/officeList.json"
- */
-\App::$slim->get('/offices/', '\BO\Zmscitizenapi\Controllers\Office\OfficesListController')->setName("OfficesListController");
-\App::$slim->get('/offices', '\BO\Zmscitizenapi\Controllers\Office\OfficesListController')->setName("OfficesListController");
-
-/**
- * @swagger
  * /offices-and-services/:
  *   get:
  *     summary: Get the relations between offices and services
@@ -83,228 +20,62 @@
  *               $ref: "schema/citizenapi/collections/officeServiceAndRelationList.json"
  */
 \App::$slim->get('/offices-and-services/', '\BO\Zmscitizenapi\Controllers\Office\OfficesServicesRelationsController')->setName("OfficesServicesRelationsController");
-\App::$slim->get('/offices-and-services', '\BO\Zmscitizenapi\Controllers\Office\OfficesServicesRelationsController')->setName("OfficesServicesRelationsController");
 
 /**
  * @swagger
- * /scope-by-id/:
+ * /available-calendar/:
  *   get:
- *     summary: Get a scope by ID
- *     tags:
- *       - scopes
- *     parameters:
- *       - name: scopeId
- *         description: Scope ID
- *         in: query
- *         required: true
- *         type: integer
- *     responses:
- *       200:
- *         description: Scope details
- *         schema:
- *           type: object
- *           properties:
- *             meta:
- *               $ref: "schema/metaresult.json"
- *             data:
- *               $ref: "schema/citizenapi/thinnedScope.json"
- *       404:
- *         description: Scope not found
- */
-\App::$slim->get('/scope-by-id/', '\BO\Zmscitizenapi\Controllers\Scope\ScopeByIdController')->setName("ScopeByIdController");
-\App::$slim->get('/scope-by-id', '\BO\Zmscitizenapi\Controllers\Scope\ScopeByIdController')->setName("ScopeByIdController");
-
-/**
- * @swagger
- * /services-by-office/:
- *   get:
- *     summary: Get the services offered by a specific office
- *     tags:
- *       - services
- *     parameters:
- *       - name: officeId
- *         description: Office ID
- *         in: query
- *         required: true
- *         type: integer
- *     responses:
- *       200:
- *         description: List of services for the office
- *         schema:
- *           type: object
- *           properties:
- *             meta:
- *               $ref: "schema/metaresult.json"
- *             data:
- *               $ref: "schema/citizenapi/collections/serviceList.json"
- */
-\App::$slim->get('/services-by-office/', '\BO\Zmscitizenapi\Controllers\Service\ServiceListByOfficeController')->setName("ServiceListByOfficeController");
-\App::$slim->get('/services-by-office', '\BO\Zmscitizenapi\Controllers\Service\ServiceListByOfficeController')->setName("ServiceListByOfficeController");
-
-/**
- * @swagger
- * /offices-by-service/:
- *   get:
- *     summary: Get the offices that offer a specific service
- *     tags:
- *       - offices
- *     parameters:
- *       - name: serviceId
- *         description: Service ID
- *         in: query
- *         required: true
- *         type: integer
- *     responses:
- *       200:
- *         description: List of offices offering the service
- *         schema:
- *           type: object
- *           properties:
- *             meta:
- *               $ref: "schema/metaresult.json"
- *             data:
- *               $ref: "schema/citizenapi/collections/officeList.json"
- */
-\App::$slim->get('/offices-by-service/', '\BO\Zmscitizenapi\Controllers\Office\OfficeListByServiceController')->setName("OfficeListByServiceController");
-\App::$slim->get('/offices-by-service', '\BO\Zmscitizenapi\Controllers\Office\OfficeListByServiceController')->setName("OfficeListByServiceController");
-
-/**
- * @swagger
- * /available-days/:
- *   get:
- *     summary: Get the list of available days for appointments
+ *     summary: Get bookable days with appointment slots grouped by office
  *     tags:
  *       - appointments
  *     parameters:
- *       - name: officeId
- *         description: Office ID
- *         in: query
- *         required: true
- *         type: integer
- *       - name: serviceId
- *         description: Service ID
- *         in: query
- *         required: true
- *         type: integer
- *     responses:
- *       200:
- *         description: List of available days
- *         schema:
- *           type: object
- *           properties:
- *             meta:
- *               $ref: "schema/metaresult.json"
- *             data:
- *               $ref: "schema/citizenapi/availableDays.json"
- */
-\App::$slim->get('/available-days/', '\BO\Zmscitizenapi\Controllers\Availability\AvailableDaysListController')->setName("AvailableDaysListController");
-\App::$slim->get('/available-days', '\BO\Zmscitizenapi\Controllers\Availability\AvailableDaysListController')->setName("AvailableDaysListController");
-
-/**
- * @swagger
- * /available-days-by-office/:
- *   get:
- *     summary: Get the list of available days for appointments grouped by office
- *     tags:
- *       - appointments
- *     parameters:
- *       - name: officeId
- *         description: Comma separated Office IDs
+ *       - name: startDate
+ *         description: Start date in format YYYY-MM-DD
  *         in: query
  *         required: true
  *         type: string
- *       - name: serviceId
- *         description: Service ID
- *         in: query
- *         required: true
- *         type: integer
- *     responses:
- *       200:
- *         description: List of available days
- *         schema:
- *           type: object
- *           properties:
- *             meta:
- *               $ref: "schema/metaresult.json"
- *             data:
- *               $ref: "schema/citizenapi/availableDays.json"
- */
-\App::$slim->get('/available-days-by-office/', '\BO\Zmscitizenapi\Controllers\Availability\AvailableDaysListByOfficeController')->setName("AvailableDaysListByOfficeController");
-\App::$slim->get('/available-days-by-office', '\BO\Zmscitizenapi\Controllers\Availability\AvailableDaysListByOfficeController')->setName("AvailableDaysListByOfficeController");
-
-/**
- * @swagger
- * /available-appointments/:
- *   get:
- *     summary: Get available appointments for a specific day
- *     tags:
- *       - appointments
- *     parameters:
- *       - name: date
- *         description: Date in format YYYY-MM-DD
+ *       - name: endDate
+ *         description: End date in format YYYY-MM-DD
  *         in: query
  *         required: true
  *         type: string
- *       - name: officeId
- *         description: Office ID
+ *       - name: slotsStartDate
+ *         description: Start of appointment slots window (YYYY-MM-DD). Defaults to startDate.
  *         in: query
- *         required: true
- *         type: integer
- *       - name: serviceId
- *         description: Service ID
- *         in: query
- *         required: true
- *         type: integer
- *     responses:
- *       200:
- *         description: List of available appointments
- *         schema:
- *           type: object
- *           properties:
- *             meta:
- *               $ref: "schema/metaresult.json"
- *             data:
- *               $ref: "schema/citizenapi/availableAppointments.json"
- */
-\App::$slim->get('/available-appointments/', '\BO\Zmscitizenapi\Controllers\Availability\AvailableAppointmentsListController')->setName("AvailableAppointmentsListController");
-\App::$slim->get('/available-appointments', '\BO\Zmscitizenapi\Controllers\Availability\AvailableAppointmentsListController')->setName("AvailableAppointmentsListController");
-
-/**
- * @swagger
- * /available-appointments-by-office/:
- *   get:
- *     summary: Get available appointments for a specific day grouped by office
- *     tags:
- *       - appointments
- *     parameters:
- *       - name: date
- *         description: Date in format YYYY-MM-DD
- *         in: query
- *         required: true
+ *         required: false
  *         type: string
- *       - name: officeId
- *         description: Comma separated Office IDs
+ *       - name: slotsEndDate
+ *         description: End of appointment slots window (YYYY-MM-DD). Defaults to endDate.
+ *         in: query
+ *         required: false
+ *         type: string
+ *       - name: officeIds
+ *         description: Comma-separated office IDs (plural CSV list query param)
  *         in: query
  *         required: true
  *         type: string
  *       - name: serviceIds
- *         description: Comma separated Service IDs
+ *         description: Comma-separated service IDs (plural CSV list query param)
+ *         in: query
+ *         required: true
+ *         type: string
+ *       - name: serviceCounts
+ *         description: Comma-separated service counts matching serviceIds order (plural CSV list query param)
  *         in: query
  *         required: true
  *         type: string
  *     responses:
  *       200:
- *         description: List of available appointments grouped by office id
+ *         description: Combined list of available days and appointment slots
  *         schema:
  *           type: object
  *           properties:
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/availableAppointments.json"
+ *               $ref: "schema/citizenapi/availableCalendar.json"
  */
-\App::$slim->get('/available-appointments-by-office/', '\BO\Zmscitizenapi\Controllers\Availability\AvailableAppointmentsListByOfficeController')->setName("AvailableAppointmentsListByOfficeController");
-\App::$slim->get('/available-appointments-by-office', '\BO\Zmscitizenapi\Controllers\Availability\AvailableAppointmentsListByOfficeController')->setName("AvailableAppointmentsListByOfficeController");
+\App::$slim->get('/available-calendar/', '\BO\Zmscitizenapi\Controllers\Availability\AvailableCalendarController')->setName("AvailableCalendarController");
 
 /**
  * @swagger
@@ -356,7 +127,6 @@
  *         description: Appointment not found
  */
 \App::$slim->get('/appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentByIdController')->setName("AppointmentByIdController");
-\App::$slim->get('/appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentByIdController')->setName("AppointmentByIdController");
 
 /**
  * @swagger
@@ -377,7 +147,6 @@
  *               $ref: "schema/citizenapi/captcha/altchaCaptcha.json"
  */
 \App::$slim->get('/captcha-details/', '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaController')->setName("CaptchaController");
-\App::$slim->get('/captcha-details', '\BO\Zmscitizenapi\Controllers\Security\CaptchaController')->setName("CaptchaController");
 
 /**
  * @swagger
@@ -398,7 +167,6 @@
  *               $ref: "schema/citizenapi/captcha/createChallengeResponse.json"
  */
 \App::$slim->get('/captcha-challenge/', '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaChallengeController')->setName("CaptchaChallengeController");
-\App::$slim->get('/captcha-challenge', '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaChallengeController')->setName("CaptchaChallengeController");
 
 /**
  * @swagger
@@ -426,7 +194,6 @@
  *               $ref: "schema/citizenapi/captcha/verifySolutionResponse.json"
  */
 \App::$slim->post('/captcha-verify/', '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaVerifyController')->setName("CaptchaVerifyController");
-\App::$slim->post('/captcha-verify', '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaVerifyController')->setName("CaptchaVerifyController");
 
 /**
  * @swagger
@@ -474,7 +241,6 @@
  *         description: Appointment not found
  */
 \App::$slim->post('/reserve-appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentReserveController')->setName("AppointmentReserveController");
-\App::$slim->post('/reserve-appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentReserveController')->setName("AppointmentReserveController");
 
 /**
  * @swagger
@@ -522,7 +288,6 @@
  *         description: Appointment not found
  */
 \App::$slim->post('/update-appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentUpdateController')->setName("AppointmentUpdateController");
-\App::$slim->post('/update-appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentUpdateController')->setName("AppointmentUpdateController");
 
 /**
  * @swagger
@@ -570,7 +335,6 @@
  *         description: Appointment not found
  */
 \App::$slim->post('/confirm-appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentConfirmController')->setName("AppointmentConfirmController");
-\App::$slim->post('/confirm-appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentConfirmController')->setName("AppointmentConfirmController");
 
 /**
  * @swagger
@@ -618,7 +382,6 @@
  *         description: Appointment not found
  */
 \App::$slim->post('/preconfirm-appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentPreconfirmController')->setName("AppointmentPreconfirmController");
-\App::$slim->post('/preconfirm-appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentPreconfirmController')->setName("AppointmentPreconfirmController");
 
 /**
  * @swagger
@@ -666,7 +429,6 @@
  *         description: Appointment not found
  */
 \App::$slim->post('/cancel-appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentCancelController')->setName("AppointmentCancelController");
-\App::$slim->post('/cancel-appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentCancelController')->setName("AppointmentCancelController");
 
 /**
  * @swagger
@@ -696,7 +458,6 @@
  *         description: Unauthorized (if no user header is present)
  */
 \App::$slim->get('/my-appointments/', '\BO\Zmscitizenapi\Controllers\Appointment\MyAppointmentsController')->setName("MyAppointmentsController");
-\App::$slim->get('/my-appointments', '\BO\Zmscitizenapi\Controllers\Appointment\MyAppointmentsController')->setName("MyAppointmentsController");
 
 // Catch-all route for 404 errors
 \App::$slim->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], '/{routes:.+}', function ($request, $response) {

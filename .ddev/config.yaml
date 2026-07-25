@@ -32,7 +32,9 @@ hooks:
     - exec: "if ! pgrep -x Xvfb > /dev/null; then Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 & fi"
 
 timezone: Europe/Berlin
-
+# Keep DDEV Mailpit off 8025 — that host port is used by the custom mail-viewer service.
+mailpit_http_port: "8027"
+mailpit_https_port: "8028"
 
 # Key features of DDEV's config.yaml:
 

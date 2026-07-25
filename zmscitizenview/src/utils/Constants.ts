@@ -3,9 +3,8 @@
  */
 export const VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT =
   "/offices-and-services/";
-export const VUE_APP_ZMS_API_CALENDAR_ENDPOINT = "/available-days-by-office/";
-export const VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT =
-  "/available-appointments-by-office/";
+export const VUE_APP_ZMS_API_CALENDAR_AVAILABILITY_ENDPOINT =
+  "/available-calendar/";
 export const VUE_APP_ZMS_API_RESERVE_APPOINTMENT_ENDPOINT =
   "/reserve-appointment/";
 export const VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT = "/appointment/";
@@ -41,6 +40,15 @@ export const OFTEN_SEARCHED_SERVICES = new Map<string, string>([
 
 export const QUERY_PARAM_APPOINTMENT_ID = "ap-id";
 export const QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER = "ap-display";
+
+/**
+ * Resolve a relative or absolute appointment URL against the current page.
+ * Must use `location.href` (not `location.origin`) so paths under a subdirectory
+ * like `/buergeransicht/` stay in that directory (e.g. appointment-detail.html).
+ */
+export function resolveAgainstCurrentPage(url: string): URL {
+  return new URL(url, window.location.href);
+}
 
 export const LOCALSTORAGE_PARAM_APPOINTMENT_DATA = "lhm-appointment-data";
 

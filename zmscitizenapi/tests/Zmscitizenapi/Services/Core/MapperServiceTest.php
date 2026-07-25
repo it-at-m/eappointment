@@ -161,6 +161,25 @@ class MapperServiceTest extends TestCase
         $this->assertNull($result->contact);
     }
 
+    public function testProviderToThinnedProviderFallsBackToArrayContactCoordinates()
+    {
+        $provider = new Provider();
+        $provider->id = 10502;
+        $provider->name = 'Test Provider';
+        $provider->source = 'dldb';
+        $provider->contact = [
+            'city' => 'München',
+            'lat' => 48.124681688670854,
+            'lon' => 11.549865797138638,
+        ];
+
+        $result = MapperService::providerToThinnedProvider($provider);
+        $this->assertEquals(48.124681688670854, $result->lat);
+        $this->assertEquals(11.549865797138638, $result->lon);
+        $this->assertInstanceOf(ThinnedContact::class, $result->contact);
+        $this->assertEquals('München', $result->contact->city);
+    }
+
     public function testProcessToThinnedProcess()
     {
         // Test with full process data
@@ -199,6 +218,45 @@ class MapperServiceTest extends TestCase
         $this->assertEquals('Test Office', $result->officeName);
         $this->assertEquals(100, $result->officeId);
         $this->assertEquals('confirmed', $result->status);
+    }
+
+    public function testProcessToThinnedProcessSkipsIcsForDeletedStatus()
+    {
+        $process = new Process([
+            'id' => 1,
+            'authKey' => 'rotated-key',
+            'status' => Process::STATUS_DELETED,
+        ]);
+        $appointment = new class {
+            public $date = '1724907600';
+            public function hasTime() { return true; }
+        };
+        $process->appointments = [$appointment];
+        $process->queue = (object) ['status' => Process::STATUS_DELETED];
+
+        $result = MapperService::processToThinnedProcess($process);
+
+        $this->assertInstanceOf(ThinnedProcess::class, $result);
+        $this->assertNull($result->icsContent);
+    }
+
+    public function testProcessToThinnedProcessSkipsIcsForDeletedQueueStatus()
+    {
+        $process = new Process([
+            'id' => 1,
+            'authKey' => 'rotated-key',
+        ]);
+        $appointment = new class {
+            public $date = '1724907600';
+            public function hasTime() { return true; }
+        };
+        $process->appointments = [$appointment];
+        $process->queue = ['status' => Process::STATUS_DELETED];
+
+        $result = MapperService::processToThinnedProcess($process);
+
+        $this->assertInstanceOf(ThinnedProcess::class, $result);
+        $this->assertNull($result->icsContent);
     }
 
     public function testMinimalProcessToThinnedProcess()

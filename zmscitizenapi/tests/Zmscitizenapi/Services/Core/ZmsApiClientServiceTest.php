@@ -8,12 +8,10 @@ use BO\Zmscitizenapi\Services\Core\ZmsApiClientService;
 use BO\Zmsclient\Http;
 use BO\Zmsclient\Result;
 use BO\Zmsentities\Calendar;
-use BO\Zmsentities\Day;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Provider;
 use BO\Zmsentities\Scope;
 use BO\Zmsentities\Source;
-use BO\Zmsentities\Collection\DayList;
 use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Collection\ProviderList;
 use BO\Zmsentities\Collection\RequestList;
@@ -117,6 +115,51 @@ class ZmsApiClientServiceTest extends TestCase
 
         $this->httpMock->method('readGetResult')
             ->willThrowException(new \Exception('Test error'));
+
+        $this->expectException(\RuntimeException::class);
+        ZmsApiClientService::getOffices();
+    }
+
+    public function testGetOfficesSkipsMissingSecondarySource(): void
+    {
+        Application::$source_name = 'unittest,missing';
+        $this->cacheMock->method('get')->willReturn(null);
+
+        $provider = new Provider(['id' => 1, 'source' => 'unittest', 'name' => 'Office']);
+        $this->source->providers->addEntity($provider);
+
+        $okResult = $this->createMock(Result::class);
+        $okResult->method('getEntity')->willReturn($this->source);
+
+        $missing = new \BO\Zmsclient\Exception('missing');
+        $missing->template = 'BO\\Zmsbackend\\Source\\Exception\\SourceNotFound';
+
+        $this->httpMock->expects($this->exactly(2))
+            ->method('readGetResult')
+            ->willReturnCallback(function (string $url) use ($okResult, $missing) {
+                if (str_contains($url, '/source/unittest/')) {
+                    return $okResult;
+                }
+                if (str_contains($url, '/source/missing/')) {
+                    throw $missing;
+                }
+                throw new \RuntimeException('Unexpected URL: ' . $url);
+            });
+
+        $result = ZmsApiClientService::getOffices();
+        $this->assertInstanceOf(ProviderList::class, $result);
+        $this->assertCount(1, $result);
+    }
+
+    public function testGetOfficesFailsWhenAllSourcesMissing(): void
+    {
+        Application::$source_name = 'missing';
+        $this->cacheMock->method('get')->willReturn(null);
+
+        $missing = new \BO\Zmsclient\Exception('missing');
+        $missing->template = 'BO\\Zmsbackend\\Source\\Exception\\SourceNotFound';
+
+        $this->httpMock->method('readGetResult')->willThrowException($missing);
 
         $this->expectException(\RuntimeException::class);
         ZmsApiClientService::getOffices();
@@ -386,70 +429,6 @@ class ZmsApiClientServiceTest extends TestCase
 
         $this->expectException(\RuntimeException::class);
         ZmsApiClientService::getScopesByProviderId('unittest', 100);
-    }
-
-    public function testGetFreeDaysSuccess(): void
-    {
-        $providers = new ProviderList([['id' => 1]]);
-        $requests = new RequestList([['id' => 1]]);
-        $firstDay = ['year' => 2025, 'month' => 1, 'day' => 1];
-        $lastDay = ['year' => 2025, 'month' => 1, 'day' => 31];
-    
-        $calendar = new Calendar();
-        $dayList = new DayList();
-        $day = new Day([
-            'year' => 2025,
-            'month' => 1,
-            'day' => 15,
-            'status' => 'bookable'
-        ]);
-        $dayList->addEntity($day);
-        $calendar->days = $dayList;
-    
-        $result = $this->createMock(Result::class);
-        $result->method('getEntity')->willReturn($calendar);
-    
-        $this->httpMock->expects($this->once())
-            ->method('readPostResult')
-            ->with('/calendar/', $this->isInstanceOf(Calendar::class))
-            ->willReturn($result);
-    
-        $result = ZmsApiClientService::getFreeDays($providers, $requests, $firstDay, $lastDay);
-        $this->assertInstanceOf(Calendar::class, $result);
-        $this->assertCount(1, $result->days);
-    }
-
-    public function testGetFreeDaysInvalidResponse(): void
-    {
-        $providers = new ProviderList([['id' => 1]]);
-        $requests = new RequestList([['id' => 1]]);
-        $firstDay = ['year' => 2025, 'month' => 1, 'day' => 1];
-        $lastDay = ['year' => 2025, 'month' => 1, 'day' => 31];
-
-        $result = $this->createMock(Result::class);
-        $result->method('getEntity')->willReturn(null);
-
-        $this->httpMock->expects($this->once())
-            ->method('readPostResult')
-            ->willReturn($result);
-
-        $result = ZmsApiClientService::getFreeDays($providers, $requests, $firstDay, $lastDay);
-        $this->assertInstanceOf(Calendar::class, $result);
-        $this->assertEmpty($result->days);
-    }
-
-    public function testGetFreeDaysException(): void
-    {
-        $providers = new ProviderList([['id' => 1]]);
-        $requests = new RequestList([['id' => 1]]);
-        $firstDay = ['year' => 2025, 'month' => 1, 'day' => 1];
-        $lastDay = ['year' => 2025, 'month' => 1, 'day' => 31];
-
-        $this->httpMock->method('readPostResult')
-            ->willThrowException(new \Exception('Test error'));
-
-        $this->expectException(\RuntimeException::class);
-        ZmsApiClientService::getFreeDays($providers, $requests, $firstDay, $lastDay);
     }
 
     public function testGetFreeTimeslotsSuccess(): void

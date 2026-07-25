@@ -145,113 +145,22 @@ class AppointmentUpdateServiceTest extends TestCase
                 ]
             ]
         ];
-        $sourceJson = [
-            '$schema' => 'https://localhost/terminvereinbarung/api/2/',
-            'meta' => [
-                '$schema' => 'https://schema.berlin.de/queuemanagement/metaresult.json',
-                'error' => false,
-                'generated' => '2019-02-08T14:45:15+01:00',
-                'server' => 'Zmsbackend'
-            ],
-            'data' => [
-                '$schema' => 'https://schema.berlin.de/queuemanagement/source.json',
-                'source' => 'unittest',
-                'providers' => [
-                    [
-                        'id' => '9999998',
-                        'link' => 'https://www.berlinonline.de',
-                        'name' => 'Unittest Source Dienstleister',
-                        'source' => 'unittest',
-                        'data' => [
-                            'geo' => [
-                                'lat' => '48.12750898398659',
-                                'lon' => '11.604317899956524'
-                            ],
-                            'showAlternativeLocations' => false
-                        ],
-                        'contact' => [
-                            'city' => 'Berlin',
-                            'country' => 'Germany',
-                            'name' => 'Unittest Source Dienstleister',
-                            'postalCode' => '10178',
-                            'region' => 'Berlin',
-                            'street' => 'Alte Jakobstraße',
-                            'streetNumber' => '105'
-                        ]
-                    ]
-                ],
-                'requests' => [
-                    [
-                        'id' => '1',
-                        'name' => 'Unittest Source Dienstleistung',
-                        'source' => 'unittest'
-                    ]
-                ],
-                'scopes' => [
-                    [
-                        'id' => '1',
-                        'provider' => [
-                            'id' => '9999998',
-                            'source' => 'unittest'
-                        ],
-                        'shortName' => 'Scope 1',
-                        'preferences' => [
-                            'client' => [
-                                'emailFrom' => 'no-reply@muenchen.de',
-                                'emailRequired' => '1',
-                                'telephoneActivated' => '1',
-                                'telephoneRequired' => '1',
-                                'customTextfieldActivated' => '1',
-                                'customTextfieldRequired' => '1',
-                                'customTextfield2Activated' => '1',
-                                'customTextfield2Required' => '1'
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ];
-        $mailTemplatesJson = [
-            '$schema' => 'https://localhost/terminvereinbarung/api/2/',
-            'meta' => [
-                '$schema' => 'https://schema.berlin.de/queuemanagement/metaresult.json',
-                'error' => false,
-                'generated' => '2025-10-13T10:13:41+02:00',
-                'server' => 'zmsbackend'
-            ],
-            'data' => []
-        ];
-    
         $processResponse = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
         $processResponse->method('getBody')
             ->willReturn(\GuzzleHttp\Psr7\Utils::streamFor(json_encode($processJson)));
         $processResponse->method('getStatusCode')
             ->willReturn(200);
     
-        $sourceResponse = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
-        $sourceResponse->method('getBody')
-            ->willReturn(\GuzzleHttp\Psr7\Utils::streamFor(json_encode($sourceJson)));
-        $sourceResponse->method('getStatusCode')
-            ->willReturn(200);
-        
-        $mailTemplatesResponse = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
-        $mailTemplatesResponse->method('getBody')
-            ->willReturn(\GuzzleHttp\Psr7\Utils::streamFor(json_encode($mailTemplatesJson)));
-        $mailTemplatesResponse->method('getStatusCode')
-            ->willReturn(200);
 
         $mockHttpClient = $this->createMock(\BO\Zmsclient\Http::class);
-        $mockHttpClient->expects($this->exactly(3))
+        $mockHttpClient->expects($this->exactly(2))
             ->method('readGetResult')
-            ->willReturnCallback(function($url, $params) use ($processResponse, $sourceResponse, $mailTemplatesResponse) {
-                if (strpos($url, '/process/101002/fb43/') !== false) {
+            ->willReturnCallback(function($url, $params) use ($processResponse) {
+                if (strpos($url, '/process/101002/fb43/ics/') !== false) {
                     return new \BO\Zmsclient\Result($processResponse);
                 }
-                if (strpos($url, '/source/unittest/') !== false) {
-                    return new \BO\Zmsclient\Result($sourceResponse);
-                }
-                if (strpos($url, '/merged-mailtemplates/') !== false) {
-                    return new \BO\Zmsclient\Result($mailTemplatesResponse);
+                if (strpos($url, '/process/101002/fb43/') !== false) {
+                    return new \BO\Zmsclient\Result($processResponse);
                 }
                 throw new \RuntimeException("Unexpected URL: " . $url);
             });
