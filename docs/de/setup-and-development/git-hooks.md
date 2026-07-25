@@ -33,10 +33,11 @@ Alle Prüfungen laufen in diesem Hook, in **Fail-Fast**-Reihenfolge:
 2. **Vue-Code-Stil** — Prettier-Check in `zmscitizenview` (`npm run lint`)
 3. **Docs-Formatierung** — Prettier-Check in `docs/` (`npm run format:check`)
 4. **PHP-Code-Stil** — PHP CodeSniffer (PSR-12) über alle PHP-Module im Container `zms-web`
+5. **PHP Mess Detector** — PHPMD mit Root-`phpmd.rules.xml` (Komplexität, Größe, Unused) über `zms-web` — wie CI `php-code-quality`
 
 **Container-Erkennung**
 
-Die PHP-Prüfung erkennt die Laufzeit automatisch:
+Die PHP-Prüfungen erkennen die Laufzeit automatisch:
 
 - **Podman** — wenn ein Container `zms-web` läuft
 - **Docker** — Fallback, wenn Podman nicht verfügbar ist
@@ -45,7 +46,7 @@ Die PHP-Prüfung erkennt die Laufzeit automatisch:
 **Verhalten**
 
 - Commit-Message-, Vue- und Docs-Prüfungen **blockieren** den Commit bei Fehlern
-- PHP-Prüfungen nur bei laufendem `zms-web`; sonst Warnung und Überspringen
+- PHP-Prüfungen (PHPCS + PHPMD) nur bei laufendem `zms-web`; sonst Warnung und Überspringen
 
 Siehe auch [Code-Formatierung](./code-formatting.md) für manuelle PHPCS-/Prettier-Befehle.
 
@@ -97,6 +98,20 @@ podman exec -it zms-web bash -lc "./cli modules loop 'vendor/bin/phpcbf --standa
 # Docker
 docker exec -it zms-web bash -lc "./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src/'"
 ```
+
+### PHPMD schlägt fehl
+
+Denselben Befehl wie in CI erneut ausführen (Repo-Root im Container `zms-web`):
+
+```bash
+# Podman
+podman exec -it zms-web bash -lc "./cli modules loop 'vendor/bin/phpmd src/ text ../phpmd.rules.xml'"
+
+# Docker
+docker exec -it zms-web bash -lc "./cli modules loop 'vendor/bin/phpmd src/ text ../phpmd.rules.xml'"
+```
+
+Schwellenwerte und Regeln: [`phpmd.rules.xml`](../../../phpmd.rules.xml).
 
 ### Container nicht erkannt
 
