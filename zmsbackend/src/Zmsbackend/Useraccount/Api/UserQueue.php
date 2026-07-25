@@ -25,40 +25,85 @@ class UserQueue extends \BO\Zmsbackend\Api\BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new \BO\Zmsbackend\Helper\User($request))->checkPermissions('waitingqueue');
+        $workstation = (new \BO\Zmsbackend\Helper\User($request, 2))
+            ->checkAnyPermission(
+                'waitingqueue',
+                'openqueue',
+                'parkedqueue',
+                'missedqueue',
+                'finishedqueue'
+            );
+
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $statusParameter = Validator::param('status')->isString()->getValue();
-        $statuses = empty($statusParameter) ? [] : explode(',', $statusParameter);
+        $statuses = empty($statusParameter) ? [] : array_map('trim', explode(',', $statusParameter));
         $selectedDate = Validator::param('date')->isString()->getValue();
-        $dateTime = ($selectedDate) ? (new DateTime($selectedDate))->modify(\App::$now->format('H:i')) : \App::$now;
+        $dateTime = ($selectedDate)
+            ? (new DateTime($selectedDate))->modify(\App::$now->format('H:i'))
+            : \App::$now;
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
 
-        $workstation = (new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions();
+        $useraccount = $workstation->getUseraccount();
+        $departmentService = new Department();
         $queueList = new QueueList();
-        foreach ($workstation->getUseraccount()['departments'] as $department) {
-            $queueList->addList((new \BO\Zmsbackend\Department\Service\Department())->readQueueList($department->id, $dateTime, 2));
+
+        foreach ($useraccount['departments'] as $department) {
+            $queueList->addList(
+                $departmentService->readQueueList(
+                    $department->id,
+                    $dateTime,
+                    $resolveReferences
+                )
+            );
         }
+
         $queues = $queueList->withSortedWaitingTime();
 
-        $message->data = $queues;
+        $permissionByStatus = [
+            'preconfirmed' => 'waitingqueue',
+            'confirmed' => 'waitingqueue',
+            'queued' => 'waitingqueue',
+            'reserved' => 'waitingqueue',
+            'deleted' => 'waitingqueue',
+            'called' => 'openqueue',
+            'processing' => 'openqueue',
+            'parked' => 'parkedqueue',
+            'missed' => 'missedqueue',
+            'finished' => 'finishedqueue',
+        ];
 
-        if ($resolveReferences > 1) {
-            $filteredQueues = [];
-            foreach ($queues as $queue) {
-                if (! empty($statuses) && ! in_array($queue->status, $statuses)) {
-                    continue;
-                }
+        $filteredQueues = [];
 
-                $queue->process = $queue->getProcess();
-                $filteredQueues[] = $queue;
+        foreach ($queues as $queue) {
+            $requiredPermission = $permissionByStatus[$queue->status] ?? null;
+
+            if (
+                $requiredPermission === null
+                || ! $useraccount->hasPermissions([$requiredPermission])
+            ) {
+                continue;
             }
 
-            $message->data = $filteredQueues;
+            if (
+                ! empty($statuses)
+                && ! in_array($queue->status, $statuses, true)
+            ) {
+                continue;
+            }
+
+            if ($resolveReferences > 1) {
+                $queue->process = $queue->getProcess();
+            }
+
+            $filteredQueues[] = $queue;
         }
+
+        $message->data = $filteredQueues;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
+
         return $response;
     }
 }
