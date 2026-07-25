@@ -19,6 +19,7 @@ class View extends BaseView {
         this.selectedDate = options.selectedDate;
         this.includeUrl = options.includeUrl || "";
         this.showLoader = options.showLoader || false;
+        this.includeWaitingClientsEffective = options.includeWaitingClientsEffective || false;
     }
 
     setCallbacks(options) {
@@ -37,7 +38,7 @@ class View extends BaseView {
 
 
     load(withCalled = false) {
-        const url = `${this.includeUrl}/queueTable/?selecteddate=${this.selectedDate}&withCalled=${withCalled ? 1 : 0}`;
+        const url = `${this.includeUrl}/queueTable/?selecteddate=${this.selectedDate}&withCalled=${withCalled ? 1 : 0}&includeWaitingClientsEffective=${this.includeWaitingClientsEffective ? 1 : 0}`;
 
         return this.loadContent(url, 'GET', null, null, this.showLoader)
             .then(() => {
@@ -50,8 +51,57 @@ class View extends BaseView {
                     $('#called-appointments').next('.accordion-panel').css('display', 'none');
                     this.withCalled = false;
                 }
+                this.updateWaitingClientsEffective();
             })
             .catch(err => this.loadErrorCallback(err));
+    }
+
+    updateWaitingClientsEffective() {
+        const $workstationView = this.$main.closest('.workstation-view');
+        const $source = this.$main.find('[data-queue-waiting-clients-effective]');
+        const $target = $workstationView.find('[data-waiting-clients-effective]');
+        const $row = $workstationView.find('[data-waiting-clients-row]');
+
+        if ($source.length === 0 || $target.length === 0 || $row.length === 0) {
+            return;
+        }
+
+        const waitingClients = Number($source.attr('data-count') || 0);
+        const trafficLightClass = this.getWaitingClientsTrafficLightClass(waitingClients, $row);
+
+        $target.text(waitingClients);
+
+        if (trafficLightClass === '') {
+            return;
+        }
+
+        $row
+            .removeClass('green yellow orange red')
+            .addClass(trafficLightClass);
+    }
+
+    getWaitingClientsTrafficLightClass(waitingClients, $row) {
+        const greenMax = Number($row.attr('data-waiting-clients-green-max'));
+        const yellowMax = Number($row.attr('data-waiting-clients-yellow-max'));
+        const orangeMax = Number($row.attr('data-waiting-clients-orange-max'));
+
+        if ([greenMax, yellowMax, orangeMax].some(Number.isNaN)) {
+            return '';
+        }
+
+        if (waitingClients >= 0 && waitingClients <= greenMax) {
+            return 'green';
+        }
+
+        if (waitingClients <= yellowMax) {
+            return 'yellow';
+        }
+
+        if (waitingClients <= orangeMax) {
+            return 'orange';
+        }
+
+        return 'red';
     }
 
 

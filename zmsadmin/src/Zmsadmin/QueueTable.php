@@ -7,11 +7,21 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsclient\WorkstationRequests;
+use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Collection\QueueList;
+use BO\Zmsentities\Useraccount;
 
 class QueueTable extends BaseController
 {
     protected $processStatusList = ['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted'];
+
+    private const QUEUE_VIEW_PERMISSIONS = [
+        'waitingqueue',
+        'parkedqueue',
+        'missedqueue',
+        'finishedqueue',
+    ];
 
     /**
      * @SuppressWarnings(Param)
@@ -26,59 +36,63 @@ class QueueTable extends BaseController
         $validator = $request->getAttribute('validator');
         $success = $validator->getParameter('success')->isString()->getValue();
         $withCalledList = $validator->getParameter('withCalled')->isBool()->getValue();
-        $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
-        $selectedDateTime = $selectedDate ? new \DateTimeImmutable($selectedDate) : \App::$now;
-        $selectedDateTime = ($selectedDateTime < \App::$now) ? \App::$now : $selectedDateTime;
-
+        $includeWaitingClientsEffective = $validator
+            ->getParameter('includeWaitingClientsEffective')
+            ->isBool()
+            ->getValue();
+        $selectedDateTime = $this->resolveSelectedDateTime(
+            $validator->getParameter('selecteddate')->isString()->getValue()
+        );
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
 
         $workstation = \App::$http->readGetResult('/workstation/', [
             'resolveReferences' => 1,
             'gql' => Helper\GraphDefaults::getWorkstation()
         ])->getEntity();
-        $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
+        $workstationRequest = new WorkstationRequests(\App::$http, $workstation);
         $department = $workstationRequest->readDepartment();
-        $processList = $workstationRequest->readProcessListByDate(
-            $selectedDateTime,
-            Helper\GraphDefaults::getProcess()
+        $useraccount = $workstation->getUseraccount();
+
+        $processList = $this->readProcessListForDateIfAllowed(
+            $workstationRequest,
+            $useraccount,
+            $selectedDateTime
         );
-        $changedProcess = ($selectedProcessId)
-            ? \App::$http->readGetResult('/process/' . $selectedProcessId . '/', [
-                'gql' => Helper\GraphDefaults::getProcess()
-            ])->getEntity()
-            : null;
-
+        $changedProcess = $this->readChangedProcess($selectedProcessId);
         $queueList = $processList->toQueueList(\App::$now);
+        $waitingClientsEffective = $this->readWaitingClientsEffective(
+            $includeWaitingClientsEffective,
+            $queueList,
+            $workstationRequest,
+            $useraccount,
+            $selectedDateTime
+        );
 
-        $queueListVisible = $queueList
-            ->withStatus(['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted']);
-        $queueListMissed = $queueList->withStatus(['missed']);
-        $queueListParked = $queueList->withStatus(['parked']);
-        $queueListFinished = $queueList->withStatus(['finished']);
-
-        $queueListCalled = $withCalledList ? (\App::$http
-            ->readGetResult(
-                '/useraccount/queue/',
-                [
-                    'resolveReferences' => 2,
-                    'status' => 'called,processing',
-                ]
-            )
-            ->getCollection() ?? []) : [];
-
-        if ($queueListCalled instanceof QueueList) {
-            $queueListCalled->uasort(function ($queueA, $queueB) {
-                $statusOrder = ['called' => 0, 'processing' => 1];
-
-                $statusValueA = $statusOrder[$queueA->status] ?? PHP_INT_MAX;
-                $statusValueB = $statusOrder[$queueB->status] ?? PHP_INT_MAX;
-
-                $cmp = $statusValueA <=> $statusValueB;
-                return $cmp !== 0 ? $cmp : $queueB->callTime <=> $queueA->callTime;
-            });
-        } else {
-            $queueListCalled = [];
-        }
+        $queueListVisible = $this->getQueueListByPermission(
+            $queueList,
+            $useraccount,
+            'waitingqueue',
+            $this->processStatusList
+        );
+        $queueListMissed = $this->getQueueListByPermission(
+            $queueList,
+            $useraccount,
+            'missedqueue',
+            ['missed']
+        );
+        $queueListParked = $this->getQueueListByPermission(
+            $queueList,
+            $useraccount,
+            'parkedqueue',
+            ['parked']
+        );
+        $queueListFinished = $this->getQueueListByPermission(
+            $queueList,
+            $useraccount,
+            'finishedqueue',
+            ['finished']
+        );
+        $queueListCalled = $this->readCalledQueueList($withCalledList, $useraccount);
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -91,6 +105,7 @@ class QueueTable extends BaseController
                 'cluster' => $workstationRequest->readCluster(),
                 'clusterEnabled' => $workstation->isClusterEnabled(),
                 'processList' => $queueListVisible->toProcessList(),
+                'waitingClientsEffective' => $waitingClientsEffective,
                 'processListMissed' => $queueListMissed->toProcessList(),
                 'processListParked' => $queueListParked->toProcessList(),
                 'processListFinished' => $queueListFinished->toProcessList(),
@@ -102,5 +117,112 @@ class QueueTable extends BaseController
                 'allowClusterWideCall' => \App::$allowClusterWideCall
             )
         );
+    }
+
+    private function resolveSelectedDateTime(?string $selectedDate): \DateTimeImmutable
+    {
+        $selectedDateTime = $selectedDate ? new \DateTimeImmutable($selectedDate) : \App::$now;
+        return ($selectedDateTime < \App::$now) ? \App::$now : $selectedDateTime;
+    }
+
+    private function readProcessListForDateIfAllowed(
+        WorkstationRequests $workstationRequest,
+        Useraccount $useraccount,
+        \DateTimeInterface $selectedDateTime
+    ): ProcessList {
+        if (! $useraccount->hasAnyPermission(self::QUEUE_VIEW_PERMISSIONS)) {
+            return new ProcessList();
+        }
+
+        return $workstationRequest->readProcessListByDate(
+            $selectedDateTime,
+            Helper\GraphDefaults::getProcess()
+        );
+    }
+
+    private function readChangedProcess(?int $selectedProcessId)
+    {
+        if (! $selectedProcessId) {
+            return null;
+        }
+
+        return \App::$http->readGetResult('/process/' . $selectedProcessId . '/', [
+            'gql' => Helper\GraphDefaults::getProcess()
+        ])->getEntity();
+    }
+
+    private function readWaitingClientsEffective(
+        ?bool $includeWaitingClientsEffective,
+        QueueList $queueList,
+        WorkstationRequests $workstationRequest,
+        Useraccount $useraccount,
+        \DateTimeInterface $selectedDateTime
+    ): ?int {
+        if (! $includeWaitingClientsEffective) {
+            return null;
+        }
+
+        $waitingClientsQueueList = $queueList;
+        if ($selectedDateTime->format('Y-m-d') !== \App::$now->format('Y-m-d')) {
+            $waitingClientsQueueList = $this->readProcessListForDateIfAllowed(
+                $workstationRequest,
+                $useraccount,
+                \App::$now
+            )->toQueueList(\App::$now);
+        }
+
+        return $waitingClientsQueueList
+            ->withStatus($this->processStatusList)
+            ->getCountWithWaitingTime()
+            ->count();
+    }
+
+    /**
+     * @return QueueList|array
+     */
+    private function readCalledQueueList(?bool $withCalledList, Useraccount $useraccount)
+    {
+        if (! $withCalledList || ! $useraccount->hasPermissions(['openqueue'])) {
+            return [];
+        }
+
+        $queueListCalled = \App::$http
+            ->readGetResult(
+                '/useraccount/queue/',
+                [
+                    'resolveReferences' => 2,
+                    'status' => 'called,processing',
+                ]
+            )
+            ->getCollection() ?? [];
+
+        if (! ($queueListCalled instanceof QueueList)) {
+            return [];
+        }
+
+        $queueListCalled->uasort(function ($queueA, $queueB) {
+            $statusOrder = ['called' => 0, 'processing' => 1];
+
+            $statusValueA = $statusOrder[$queueA->status] ?? PHP_INT_MAX;
+            $statusValueB = $statusOrder[$queueB->status] ?? PHP_INT_MAX;
+
+            $cmp = $statusValueA <=> $statusValueB;
+            return $cmp !== 0 ? $cmp : $queueB->callTime <=> $queueA->callTime;
+        });
+
+        return $queueListCalled;
+    }
+
+    private function getQueueListByPermission(
+        QueueList $queueList,
+        Useraccount $useraccount,
+        string $permission,
+        array $statuses
+    ): QueueList {
+        if (! $useraccount->hasPermissions([$permission])) {
+            return new QueueList();
+        }
+
+        return $queueList->withStatus($statuses);
     }
 }

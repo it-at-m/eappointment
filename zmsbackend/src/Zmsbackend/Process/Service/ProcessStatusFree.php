@@ -18,6 +18,12 @@ class ProcessStatusFree extends Process
         $calendar = (new \BO\Zmsbackend\Calendar\Service\Calendar())->readResolvedEntity($calendar, $now, true);
         $dayquery = new \BO\Zmsbackend\Day\Service\Day();
         $dayquery->writeTemporaryScopeList($calendar, $slotsRequired);
+
+        return [$calendar, $dayquery, $this->buildDaysList($calendar)];
+    }
+
+    private function buildDaysList(\BO\Zmsentities\Calendar $calendar): array
+    {
         $selectedDate = $calendar->getFirstDay();
         $days = [$selectedDate];
         if ($calendar->getLastDay(false)) {
@@ -27,18 +33,87 @@ class ProcessStatusFree extends Process
                 $selectedDate = $selectedDate->modify('+1 day');
             }
         }
-        return [$calendar, $dayquery, $days];
+
+        return $days;
+    }
+
+    /**
+     * Prefer concrete days already on the calendar (e.g. bookable days only).
+     * Falls back to the full firstDay→lastDay range when no days are set.
+     */
+    private function buildDaysListFromCalendarDays(\BO\Zmsentities\Calendar $calendar): array
+    {
+        if (!isset($calendar->days) || count($calendar->days) < 1) {
+            return $this->buildDaysList($calendar);
+        }
+
+        $daysByDate = [];
+        foreach ($calendar->days as $day) {
+            if (!$day instanceof \BO\Zmsentities\Day) {
+                $day = new \BO\Zmsentities\Day($day);
+            }
+            $dateTime = $day->toDateTime();
+            $daysByDate[$dateTime->format('Y-m-d')] = $dateTime;
+        }
+
+        if ($daysByDate === []) {
+            return $this->buildDaysList($calendar);
+        }
+
+        ksort($daysByDate);
+
+        return array_values($daysByDate);
+    }
+
+    public function readFreeProcessesMinimalFromPreparedCalendar(
+        \BO\Zmsentities\Calendar $calendar,
+        string $slotType = 'public',
+        ?int $slotsRequired = null,
+        bool $groupData = false
+    ): array {
+        $days = $this->buildDaysListFromCalendarDays($calendar);
+        if ($days === []) {
+            return [];
+        }
+
+        $processData = $this->getProcessDataHandle(
+            $days,
+            $slotType,
+            $slotsRequired,
+            $groupData,
+            true
+        );
+
+        $unique = [];
+        while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
+            $processInfo = $this->extractProcessInfo($item, $calendar);
+            if ($processInfo) {
+                $key = $this->generateUniqueKey($processInfo['providerId'], $processInfo['date']);
+                if (!isset($unique[$key])) {
+                    $unique[$key] = $this->createMinimalProcess($processInfo);
+                }
+            }
+        }
+
+        $processData->closeCursor();
+
+        return array_values($unique);
     }
 
     private function getProcessDataHandle(
         array $days,
         $slotType,
         $slotsRequired,
-        $groupData
+        $groupData,
+        bool $useAvailabilityQuery = false
     ) {
+        $query = $useAvailabilityQuery
+            ? \BO\Zmsbackend\Process\Repository\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAYS_AVAILABILITY
+            : \BO\Zmsbackend\Process\Repository\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAYS;
+
         return $this->fetchHandle(
             sprintf(
-                \BO\Zmsbackend\Process\Repository\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAYS,
+                $query,
                 \BO\Zmsbackend\Process\Repository\ProcessStatusFree::buildDaysCondition($days)
             )
             . ($groupData ? \BO\Zmsbackend\Process\Repository\ProcessStatusFree::GROUPBY_SELECT_PROCESSLIST_DAY : ''),
