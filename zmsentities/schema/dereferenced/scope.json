@@ -150,7 +150,7 @@
                 },
                 "postalCode": {
                     "default": "",
-                    "type": ["string", "null", "number"]
+                    "type": ["string", "null"]
                 },
                 "region": {
                     "default": "",

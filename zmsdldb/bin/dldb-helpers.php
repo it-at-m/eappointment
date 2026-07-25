@@ -17,7 +17,7 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     }
 }
 
-require_once(__DIR__."/script_bootstrap.php");
+require_once(__DIR__ . "/script_bootstrap.php");
 
 use Garden\Cli\Cli;
 use BO\Zmsbackend\Config\Service\Config as ConfigRepository;
@@ -41,16 +41,16 @@ class DldbHelpers
     {
         $envValue = getenv('ZMS_ENV');
         if ($envValue !== false) {
-                    $retentionSetting = explode(',', $this->config->getPreference('dldbBackup', 'setRetentionPeriodDays'));
-                    $val = $retentionSetting[0] ?? '';
-                    if (strtolower((string)$val) !== 'none') {
-                        if (ctype_digit((string)$val) && (int)$val > 0) {
-                            \App::$log->info('Retention period set in admin system config', ['days' => (int) $val]);
-                            return (int)$val;
-                        }
-                        \App::$log->warning('Invalid retention value, falling back to 7 days', ['value' => $val]);
-                        return 7;
-                    }
+            $retentionSetting = explode(',', $this->config->getPreference('dldbBackup', 'setRetentionPeriodDays'));
+            $val = $retentionSetting[0] ?? '';
+            if (strtolower((string) $val) !== 'none') {
+                if (ctype_digit((string) $val) && (int) $val > 0) {
+                    \App::$log->info('Retention period set in admin system config', ['days' => (int) $val]);
+                    return (int) $val;
+                }
+                \App::$log->warning('Invalid retention value, falling back to 7 days', ['value' => $val]);
+                return 7;
+            }
         }
         \App::$log->info('Using default retention period', ['days' => 7]);
         return 7;
@@ -63,56 +63,56 @@ class DldbHelpers
             $rollbackDaySetting = explode(',', $this->config->getPreference('dldbBackup', 'setRollbackDay'));
             if ($rollbackDaySetting[0] !== "none") {
                 \App::$log->info('Rollback day set in admin system config', ['day' => (int) $rollbackDaySetting[0]]);
-                return (int)$rollbackDaySetting[0];
+                return (int) $rollbackDaySetting[0];
             }
         }
         \App::$log->info('Using default no rollback');
         return "none";
     }
 
-            public function performRollback($rollbackDay)
-            {
-                if ($rollbackDay === "none" || $rollbackDay === null || (int)$rollbackDay < 1) {
-                    return false;
-                }
+    public function performRollback($rollbackDay)
+    {
+        if ($rollbackDay === "none" || $rollbackDay === null || (int) $rollbackDay < 1) {
+            return false;
+        }
 
-                \App::$log->info('Rollback requested', ['day' => $rollbackDay]);
+        \App::$log->info('Rollback requested', ['day' => $rollbackDay]);
 
-                // Ensure target paths exist
-                $this->ensureDestinationDirectory();
-                if (!is_dir($this->backupPath)) {
-                    \App::$log->warning('No backups directory', ['path' => $this->backupPath]);
-                    return false;
-                }
+        // Ensure target paths exist
+        $this->ensureDestinationDirectory();
+        if (!is_dir($this->backupPath)) {
+            \App::$log->warning('No backups directory', ['path' => $this->backupPath]);
+            return false;
+        }
 
-                $backupDirectories = glob($this->backupPath . '/*', GLOB_ONLYDIR) ?: [];
-                usort($backupDirectories, function($a, $b) {
-                    return filemtime($b) - filemtime($a);
-                });
+        $backupDirectories = glob($this->backupPath . '/*', GLOB_ONLYDIR) ?: [];
+        usort($backupDirectories, function ($a, $b) {
+            return filemtime($b) - filemtime($a);
+        });
 
-                if (!isset($backupDirectories[$rollbackDay - 1])) {
-                    \App::$log->error('Specified rollback day does not exist in backups', ['day' => $rollbackDay]);
-                    return false;
-                }
+        if (!isset($backupDirectories[$rollbackDay - 1])) {
+            \App::$log->error('Specified rollback day does not exist in backups', ['day' => $rollbackDay]);
+            return false;
+        }
 
-                $rollbackDir = $backupDirectories[$rollbackDay - 1];
-                \App::$log->info('Rolling back using backup', ['backupDir' => $rollbackDir]);
+        $rollbackDir = $backupDirectories[$rollbackDay - 1];
+        \App::$log->info('Rolling back using backup', ['backupDir' => $rollbackDir]);
 
-                $hadError = false;
-                foreach (glob($rollbackDir . '/*.json') as $file) {
-                    $destFile = $this->destinationPath . '/' . basename($file);
-                    if (!@copy($file, $destFile)) {
-                        \App::$log->error('Failed to rollback file', ['source' => $file, 'destination' => $destFile]);
-                        $hadError = true;
-                    } else {
-                        \App::$log->info('Rolled back file', ['source' => $file, 'destination' => $destFile]);
-                    }
-                }
-
-                return $hadError ? false : true;
+        $hadError = false;
+        foreach (glob($rollbackDir . '/*.json') as $file) {
+            $destFile = $this->destinationPath . '/' . basename($file);
+            if (!@copy($file, $destFile)) {
+                \App::$log->error('Failed to rollback file', ['source' => $file, 'destination' => $destFile]);
+                $hadError = true;
+            } else {
+                \App::$log->info('Rolled back file', ['source' => $file, 'destination' => $destFile]);
             }
+        }
 
-    public function checkAndCreateBackup($newFiles)
+        return $hadError ? false : true;
+    }
+
+    public function checkAndCreateBackup($newFiles): void
     {
         \App::$log->info('Checking if backup is required');
         $backupRequired = false;
@@ -154,8 +154,18 @@ class DldbHelpers
             }
             \App::$log->info('Backup created', ['backupDir' => $backupDir]);
         }
+    }
 
-        return $backupRequired;
+    public function copyDownloadedTempFilesToDestinationAndUnlink(array $filenameToTempPath): void
+    {
+        foreach ($filenameToTempPath as $filename => $tempFile) {
+            $destFile = $this->destinationPath . '/' . basename($filename);
+            if (!@copy($tempFile, $destFile)) {
+                \App::$log->error('Failed to write file to destination', ['file' => $filename]);
+                continue;
+            }
+            @unlink($tempFile);
+        }
     }
 
     public function cleanupOldBackups()
@@ -163,7 +173,7 @@ class DldbHelpers
         \App::$log->info('Fetching the backup retention period');
         $retentionDays = $this->getBackupRetentionDays();
         $limitDate = time() - ($retentionDays * 24 * 60 * 60);
-        
+
         foreach (glob($this->backupPath . '/*', GLOB_ONLYDIR) as $dir) {
             if (filemtime($dir) < $limitDate) {
                 foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $item) {
@@ -179,11 +189,10 @@ class DldbHelpers
         }
     }
 
-            public function ensureDestinationDirectory()
-            {
-                if (!is_dir($this->destinationPath) && !mkdir($this->destinationPath, 0755, true) && !is_dir($this->destinationPath)) {
-                    throw new \RuntimeException("Failed to create the destination directory at {$this->destinationPath}");
-                }
-            }
+    public function ensureDestinationDirectory()
+    {
+        if (!is_dir($this->destinationPath) && !mkdir($this->destinationPath, 0755, true) && !is_dir($this->destinationPath)) {
+            throw new \RuntimeException("Failed to create the destination directory at {$this->destinationPath}");
+        }
+    }
 }
-

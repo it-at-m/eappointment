@@ -238,7 +238,7 @@ class ErrorMessages
             'errorCode' => 'sourceNotFound',
             'statusCode' => self::HTTP_NOT_FOUND,
             'errorMessage' => 'Source not found.',
-            'errorType' => 'error'
+            'errorType' => 'info'
         ],
         'departmentNotFound' => [
             'errorCode' => 'departmentNotFound',

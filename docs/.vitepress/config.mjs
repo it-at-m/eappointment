@@ -260,6 +260,7 @@ const sidebarLabels = {
     podmanDevContainers: "Podman and Dev Containers (6.x)",
     podmanDevContainersLegacy: "Podman and Dev Containers (5.8, legacy)",
     localHttpsDdev: "Local HTTPS SSL (DDEV)",
+    implementUserStory: "How do I implement a user story in ZMS?",
     keycloakLocal: "Local Keycloak Setup",
     codeFormatting: "Code Formatting",
     gitHooks: "Git Hooks (Husky)",
@@ -312,6 +313,7 @@ const sidebarLabels = {
     podmanDevContainers: "Podman und Dev Containers (6.x)",
     podmanDevContainersLegacy: "Podman und Dev Containers (5.8, Legacy)",
     localHttpsDdev: "Lokales HTTPS-SSL (DDEV)",
+    implementUserStory: "Wie setze ich eine User Story in ZMS um?",
     keycloakLocal: "Lokale Keycloak-Einrichtung",
     codeFormatting: "Code-Formatierung",
     gitHooks: "Git-Hooks (Husky)",
@@ -459,6 +461,10 @@ const buildSidebar = (prefix, lang) => {
         {
           text: t.phpBaseImages,
           link: `${prefix}/setup-and-development/php-base-images`,
+        },
+        {
+          text: t.implementUserStory,
+          link: `${prefix}/setup-and-development/getting-started/implement-a-user-story`,
         },
       ],
     },
@@ -624,6 +630,8 @@ export default {
   description: "Technical documentation for it-at-m/eappointment",
   base: SITE_BASE,
   lang: "en-US",
+  // Local-dev URLs (e.g. Vite on :8082) are not reachable during CI docs builds.
+  ignoreDeadLinks: [/^https?:\/\/localhost(?::\d+)?(?:\/|$)/],
   vite: {
     esbuild: {
       target: "es2022",

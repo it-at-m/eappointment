@@ -40,6 +40,9 @@ class AppointmentReserveControllerTest extends ControllerTestCase
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/reserved/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
                     'response' => $this->readFixture("POST_reserve_appointment.json")
                 ],
                 [
@@ -454,6 +457,9 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             [
                 'function' => 'readPostResult',
                 'url' => '/process/status/reserved/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
                 'exception' => $exception
             ]
         ]);
@@ -497,6 +503,9 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             [
                 'function' => 'readPostResult',
                 'url' => '/process/status/reserved/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
                 'exception' => $exception
             ]
         ]);

@@ -152,7 +152,7 @@ class AppointmentFormHelper
         return $slotType;
     }
 
-    protected static function setSlotsRequired($validator, Scope $scope, $process)
+    protected static function setSlotsRequired($validator, ?Scope $scope, $process)
     {
         $slotsRequired = 0;
         if ($scope && $scope->getPreference('appointment', 'multipleSlotsEnabled')) {
