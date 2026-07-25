@@ -766,6 +766,8 @@ describe("AppointmentSelection", () => {
 
         await wrapper.vm.reloadCalendarAvailability({
           preserveSelectedDay: true,
+          slotsStartDate: "2025-06-18",
+          slotsEndDate: "2025-06-18",
         });
         await nextTick();
 
@@ -797,6 +799,8 @@ describe("AppointmentSelection", () => {
 
         await wrapper.vm.reloadCalendarAvailability({
           preserveSelectedDay: true,
+          slotsStartDate: "2025-06-17",
+          slotsEndDate: "2025-06-17",
         });
         await nextTick();
 
@@ -2441,6 +2445,7 @@ describe("AppointmentSelection", () => {
 
       await wrapper.vm.reloadCalendarAvailability({
         preserveSelectedDay: true,
+        force: true,
       });
       await flushPromises();
       await nextTick();

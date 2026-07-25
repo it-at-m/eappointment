@@ -408,6 +408,14 @@ const listViewRef = ref<any>();
 const calendarViewRef = ref<any>();
 
 let initialized = false;
+/** True while onMounted owns the first calendar fetch — skip provider-refresh races. */
+let initialCalendarLoadPending = false;
+/** Full request key of the last successful available-calendar response. */
+let lastFetchedRequestKey: string | null = null;
+/** Full request key of the in-flight available-calendar call (if any). */
+let inFlightRequestKey: string | null = null;
+/** Shared promise for the in-flight available-calendar call (same-key callers join). */
+let inFlightCalendarPromise: Promise<boolean> | null = null;
 const availableDaysFetched = ref(false);
 const isLoadingAppointments = ref(false);
 const isSwitchingProvider = ref(false);
@@ -416,6 +424,22 @@ const isLoadingComplete = ref(false);
 
 let refetchTimer: ReturnType<typeof setTimeout> | undefined;
 let providerRefreshGeneration = 0;
+
+const officeIdsRequestKey = (ids: number[]): string =>
+  [...ids].sort((a, b) => a - b).join(",");
+
+const buildCalendarRequestKey = (
+  officeIds: number[],
+  slotsStartDate: string,
+  slotsEndDate: string
+): string =>
+  [
+    officeIdsRequestKey(officeIds),
+    Array.from(props.selectedServiceMap.keys()).join(","),
+    Array.from(props.selectedServiceMap.values()).join(","),
+    slotsStartDate,
+    slotsEndDate,
+  ].join("|");
 
 const toDayKey = (value: Date | string): string => {
   if (typeof value === "string") return value.slice(0, 10);
@@ -729,13 +753,42 @@ const isAbortError = (error: unknown): boolean =>
     "name" in error &&
     (error as { name: string }).name === "AbortError");
 
+const snapHourOrDayPartAfterDayLoad = () => {
+  if (timeSlotsInHoursByOffice.value.size > 0) {
+    const allHours = Array.from(
+      timeSlotsInHoursByOffice.value.values()
+    ).flatMap((office) => {
+      const hours = Array.from((office as any).appointments.keys());
+      return hours.filter((hour) => typeof hour === "number" && hour >= 0);
+    });
+    if (allHours.length > 0) {
+      selectedHour.value = Math.min(...(allHours as number[]));
+    }
+    return;
+  }
+  if (timeSlotsInDayPartByOffice.value.size > 0) {
+    const allDayParts = Array.from(
+      timeSlotsInDayPartByOffice.value.values()
+    ).flatMap((office) => {
+      const dayParts = Array.from((office as any).appointments.keys());
+      return dayParts.filter((part) => part === "am" || part === "pm");
+    });
+    if (allDayParts.includes("am")) {
+      selectedDayPart.value = "am";
+    } else if (allDayParts.includes("pm")) {
+      selectedDayPart.value = "pm";
+    }
+  }
+};
+
 const handleDaySelection = async (day: any) => {
   if (!(day instanceof Date) || captchaSessionExpired.value) {
     return;
   }
 
+  const dateKey = toDayKey(day);
   const isSameDay =
-    !!selectedDay.value && selectedDay.value.getTime() === day.getTime();
+    !!selectedDay.value && toDayKey(selectedDay.value) === dateKey;
 
   clearVisibleErrors();
 
@@ -752,6 +805,8 @@ const handleDaySelection = async (day: any) => {
   isLoadingComplete.value = false;
 
   try {
+    // reloadCalendarAvailability no-ops (cache / in-flight join) when muc-calendar
+    // re-emits the current day after calendarKey remounts.
     const reloaded = await reloadCalendarAvailability({
       preserveSelectedDay: true,
     });
@@ -759,36 +814,13 @@ const handleDaySelection = async (day: any) => {
       return;
     }
 
-    await getAppointmentsOfDay(toDayKey(day));
+    await getAppointmentsOfDay(dateKey);
     if (generation !== daySelectionGeneration) {
       return;
     }
 
     if (!isSameDay) {
-      // Reset to earliest available appointment after fresh data is loaded
-      if (timeSlotsInHoursByOffice.value.size > 0) {
-        const allHours = Array.from(
-          timeSlotsInHoursByOffice.value.values()
-        ).flatMap((office) => {
-          const hours = Array.from((office as any).appointments.keys());
-          return hours.filter((hour) => typeof hour === "number" && hour >= 0);
-        });
-        if (allHours.length > 0) {
-          selectedHour.value = Math.min(...(allHours as number[]));
-        }
-      } else if (timeSlotsInDayPartByOffice.value.size > 0) {
-        const allDayParts = Array.from(
-          timeSlotsInDayPartByOffice.value.values()
-        ).flatMap((office) => {
-          const dayParts = Array.from((office as any).appointments.keys());
-          return dayParts.filter((part) => part === "am" || part === "pm");
-        });
-        if (allDayParts.includes("am")) {
-          selectedDayPart.value = "am";
-        } else if (allDayParts.includes("pm")) {
-          selectedDayPart.value = "pm";
-        }
-      }
+      snapHourOrDayPartAfterDayLoad();
     }
   } finally {
     if (generation === daySelectionGeneration) {
@@ -1246,6 +1278,8 @@ const reloadCalendarAvailability = async (options?: {
    * Defaults to true for fresh loads; false when preserving selection (merge months).
    */
   replaceAvailableDays?: boolean;
+  /** Bypass same-key cache / in-flight join (tests or forced refresh). */
+  force?: boolean;
 }): Promise<boolean> => {
   const allowSlotsFollowUp = options?.allowSlotsFollowUp !== false;
   const replaceAvailableDays =
@@ -1261,8 +1295,39 @@ const reloadCalendarAvailability = async (options?: {
     prevBookableDate.value = null;
     nextBookableDate.value = null;
     availableDaysFetched.value = true;
+    lastFetchedRequestKey = null;
     return false;
   }
+
+  const defaultSlots = getFreeSlotsWindow();
+  const slotsStartDate = options?.slotsStartDate ?? defaultSlots.slotsStartDate;
+  const slotsEndDate = options?.slotsEndDate ?? defaultSlots.slotsEndDate;
+  const requestKey = buildCalendarRequestKey(
+    officeIds,
+    slotsStartDate,
+    slotsEndDate
+  );
+
+  // Identical request already applied — muc-calendar remounts must not refetch.
+  if (
+    !options?.force &&
+    lastFetchedRequestKey === requestKey &&
+    availableDaysFetched.value
+  ) {
+    return true;
+  }
+
+  // Identical request already in flight — join it (do not abort + restart).
+  if (
+    !options?.force &&
+    inFlightRequestKey === requestKey &&
+    inFlightCalendarPromise !== null
+  ) {
+    return inFlightCalendarPromise;
+  }
+
+  // Different params supersede any older in-flight call.
+  calendarFetchAbort?.abort();
 
   // Fresh calendar load (not a day re-click): drop prior free-slot verdicts.
   if (!options?.preserveSelectedDay) {
@@ -1273,108 +1338,115 @@ const reloadCalendarAvailability = async (options?: {
     availableDays.value = [];
   }
 
-  const defaultSlots = getFreeSlotsWindow();
-  const slotsStartDate = options?.slotsStartDate ?? defaultSlots.slotsStartDate;
-  const slotsEndDate = options?.slotsEndDate ?? defaultSlots.slotsEndDate;
-
-  calendarFetchAbort?.abort();
   const abortController = new AbortController();
   calendarFetchAbort = abortController;
   const generation = ++calendarFetchGeneration;
+  inFlightRequestKey = requestKey;
 
-  let data: AvailableCalendarDTO | ErrorDTO;
-  try {
-    data = await fetchAvailableCalendar(
-      props.globalState,
-      officeIds,
-      Array.from(props.selectedServiceMap.keys()),
-      Array.from(props.selectedServiceMap.values()),
-      props.captchaToken ?? undefined,
-      slotsStartDate,
-      slotsEndDate,
-      abortController.signal
-    );
-  } catch (error) {
-    if (isAbortError(error) || abortController.signal.aborted) {
+  const run = async (): Promise<boolean> => {
+    let data: AvailableCalendarDTO | ErrorDTO;
+    try {
+      data = await fetchAvailableCalendar(
+        props.globalState,
+        officeIds,
+        Array.from(props.selectedServiceMap.keys()),
+        Array.from(props.selectedServiceMap.values()),
+        props.captchaToken ?? undefined,
+        slotsStartDate,
+        slotsEndDate,
+        abortController.signal
+      );
+    } catch (error) {
+      if (isAbortError(error) || abortController.signal.aborted) {
+        return false;
+      }
+      if (generation === calendarFetchGeneration) {
+        handleError({ errors: [{ errorCode: "networkError" }] });
+        availableDaysFetched.value = true;
+        isSwitchingProvider.value = false;
+      }
       return false;
     }
-    if (generation === calendarFetchGeneration) {
-      handleError({ errors: [{ errorCode: "networkError" }] });
-      availableDaysFetched.value = true;
-      isSwitchingProvider.value = false;
+
+    if (generation !== calendarFetchGeneration) {
+      return false;
     }
-    return false;
-  }
 
-  if (generation !== calendarFetchGeneration) {
-    return false;
-  }
+    if (data && typeof data === "object" && "errors" in data) {
+      handleError(data);
+      return false;
+    }
 
-  if (data && typeof data === "object" && "errors" in data) {
-    handleError(data);
-    return false;
-  }
+    const calendar = data as AvailableCalendarDTO;
+    if (!applyCalendarResponse(calendar)) {
+      handleError(data);
+      return false;
+    }
 
-  const calendar = data as AvailableCalendarDTO;
-  if (!applyCalendarResponse(calendar)) {
-    handleError(data);
-    return false;
-  }
+    lastFetchedRequestKey = requestKey;
+    availableDaysFetched.value = true;
+    clearLocalApiErrors();
 
-  clearLocalApiErrors();
+    const hadSelectedDay = !!selectedDay.value;
 
-  const hadSelectedDay = !!selectedDay.value;
-
-  if (
-    !options?.preserveSelectedDay &&
-    !hadSelectedDay &&
-    availableDays.value.length > 0
-  ) {
-    // Prefer a day that already has times loaded to avoid an immediate follow-up.
-    const firstWithSlotsInWindow = availableDays.value.find(
-      (day) =>
-        isDateInLoadedSlotsWindow(toDayKey(day.date)) &&
+    if (
+      !options?.preserveSelectedDay &&
+      !hadSelectedDay &&
+      availableDays.value.length > 0
+    ) {
+      // Prefer a day that already has times loaded to avoid an immediate follow-up.
+      const firstWithSlotsInWindow = availableDays.value.find(
+        (day) =>
+          isDateInLoadedSlotsWindow(toDayKey(day.date)) &&
+          dayHasSlotsForSelectedProviders(toDayKey(day.date))
+      );
+      const firstInWindow = availableDays.value.find((day) =>
+        isDateInLoadedSlotsWindow(toDayKey(day.date))
+      );
+      const firstWithSlots = availableDays.value.find((day) =>
         dayHasSlotsForSelectedProviders(toDayKey(day.date))
-    );
-    const firstInWindow = availableDays.value.find((day) =>
-      isDateInLoadedSlotsWindow(toDayKey(day.date))
-    );
-    const firstWithSlots = availableDays.value.find((day) =>
-      dayHasSlotsForSelectedProviders(toDayKey(day.date))
-    );
-    selectedDay.value = new Date(
-      (
+      );
+      const picked =
         firstWithSlotsInWindow ??
         firstInWindow ??
         firstWithSlots ??
-        availableDays.value[0]
-      ).date
-    );
-  }
+        availableDays.value[0];
+      // Noon avoids UTC date-only parsing shifting the calendar day.
+      selectedDay.value = new Date(`${toDayKey(picked.date)}T12:00:00`);
+    }
 
-  // Auto-selected (or preserved) day may fall outside the month we just loaded.
-  // Follow up at most once — mocks that ignore slots params must not recurse forever.
-  if (
-    allowSlotsFollowUp &&
-    selectedDay.value &&
-    !isDateInLoadedSlotsWindow(toDayKey(selectedDay.value))
-  ) {
-    return reloadCalendarAvailability({
-      preserveSelectedDay: true,
-      allowSlotsFollowUp: false,
-    });
-  }
+    // Auto-selected (or preserved) day may fall outside the month we just loaded.
+    // Follow up at most once — mocks that ignore slots params must not recurse forever.
+    if (
+      allowSlotsFollowUp &&
+      selectedDay.value &&
+      !isDateInLoadedSlotsWindow(toDayKey(selectedDay.value))
+    ) {
+      return reloadCalendarAvailability({
+        preserveSelectedDay: true,
+        allowSlotsFollowUp: false,
+      });
+    }
 
-  if (selectedDay.value) {
-    viewMonth.value = new Date(
-      selectedDay.value.getFullYear(),
-      selectedDay.value.getMonth(),
-      1
-    );
-  }
+    if (selectedDay.value) {
+      viewMonth.value = new Date(
+        selectedDay.value.getFullYear(),
+        selectedDay.value.getMonth(),
+        1
+      );
+    }
 
-  updateDateRangeForSelectedProviders(options?.preserveSelectedDay === true);
-  return true;
+    updateDateRangeForSelectedProviders(options?.preserveSelectedDay === true);
+    return true;
+  };
+
+  inFlightCalendarPromise = run().finally(() => {
+    if (generation === calendarFetchGeneration) {
+      inFlightRequestKey = null;
+      inFlightCalendarPromise = null;
+    }
+  });
+  return inFlightCalendarPromise;
 };
 
 const fetchAvailableDaysForSelection = async (): Promise<void> => {
@@ -1627,7 +1699,7 @@ async function snapToNearestForCurrentView() {
 }
 
 function scheduleRefreshAfterProviderChange() {
-  if (captchaSessionExpired.value) {
+  if (captchaSessionExpired.value || initialCalendarLoadPending) {
     return;
   }
   // Bump generation so only the latest toggle owns the spinner / finally-clear.
@@ -1641,9 +1713,29 @@ function scheduleRefreshAfterProviderChange() {
     if (selectionSnapshot !== JSON.stringify(selectedProviders.value)) {
       return;
     }
+    if (initialCalendarLoadPending) {
+      if (generation === providerRefreshGeneration) {
+        isSwitchingProvider.value = false;
+      }
+      return;
+    }
 
     const checkedIds = getOfficeIdsForCalendarRequest();
     if (checkedIds.length === 0) {
+      if (generation === providerRefreshGeneration) {
+        isSwitchingProvider.value = false;
+      }
+      return;
+    }
+
+    // Same offices/services/slots as the last successful fetch — skip API.
+    const slots = getFreeSlotsWindow();
+    const nextKey = buildCalendarRequestKey(
+      checkedIds,
+      slots.slotsStartDate,
+      slots.slotsEndDate
+    );
+    if (availableDaysFetched.value && nextKey === lastFetchedRequestKey) {
       if (generation === providerRefreshGeneration) {
         isSwitchingProvider.value = false;
       }
@@ -1762,16 +1854,19 @@ onMounted(() => {
       });
     }
 
-    if (props.preselectedOfficeId) {
-      selectedProviders.value = selectableProviders.value.reduce(
-        (acc, item) => {
-          acc[item.id] = Boolean(preselectedMatches(item));
-          return acc;
-        },
-        {} as { [id: string]: boolean }
-      );
-      initialized = true;
-    }
+    // Claim the initial fetch before checkbox init so the selectedProviders watch
+    // cannot schedule a parallel refresh while onMounted loads the calendar.
+    initialCalendarLoadPending = true;
+    selectedProviders.value = selectableProviders.value.reduce(
+      (acc, item) => {
+        acc[item.id] = props.preselectedOfficeId
+          ? Boolean(preselectedMatches(item))
+          : true;
+        return acc;
+      },
+      {} as { [id: string]: boolean }
+    );
+    initialized = true;
 
     officeOrder.value = new Map(
       selectableProviders.value.map((office, index) => [
@@ -1780,7 +1875,11 @@ onMounted(() => {
       ])
     );
 
-    showSelectionForProvider(firstOfficeToShow ?? offices[0]);
+    void showSelectionForProvider(firstOfficeToShow ?? offices[0]).finally(
+      () => {
+        initialCalendarLoadPending = false;
+      }
+    );
   }
 });
 
@@ -1866,12 +1965,9 @@ watch(
 
     const hasAvailableDays =
       availableDays.value && availableDays.value.length > 0;
-    const daysWereFetched = availableDays.value !== undefined;
+    const daysWereFetched = availableDaysFetched.value;
 
-    if (daysWereFetched && !hasAvailableDays && !availableDaysFetched.value) {
-      availableDaysFetched.value = true;
-    }
-    clearVisibleErrors(daysWereFetched);
+    clearVisibleErrors(daysWereFetched || hasAvailableDays);
 
     // Keep the calendar spinner up for any checked-office refetch — do not flash
     // the empty-state callout while availableDays still reflect the old office set.
@@ -1881,9 +1977,8 @@ watch(
       isSwitchingProvider.value = false;
     }
 
-    // Initial checkbox population races showSelectionForProvider; let that own the
-    // first fetch so we don't abort it and flash the empty callout mid-load.
-    if (!availableDaysFetched.value) {
+    // Initial load owns the first fetch; checkbox init must not abort/refetch it.
+    if (initialCalendarLoadPending || !availableDaysFetched.value) {
       return;
     }
 
