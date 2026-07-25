@@ -54,18 +54,19 @@ class ClusterHelper
 
     public static function getNextProcess($excludedIds)
     {
+        $exclude = is_array($excludedIds) ? ExcludeIds::toQuery($excludedIds) : (string) $excludedIds;
         if (static::isClusterEnabled()) {
             $nextProcess =  \App::$http->readGetResult(
                 '/cluster/' . static::$cluster['id'] . '/queue/next/',
                 [
-                    'exclude' => $excludedIds,
+                    'exclude' => $exclude,
                     'allowClusterWideCall' => \App::$allowClusterWideCall
                 ]
             )?->getEntity();
         } else {
             $nextProcess = \App::$http->readGetResult(
                 '/scope/' . static::$workstation->scope['id'] . '/queue/next/',
-                ['exclude' => $excludedIds]
+                ['exclude' => $exclude]
             )?->getEntity();
         }
 

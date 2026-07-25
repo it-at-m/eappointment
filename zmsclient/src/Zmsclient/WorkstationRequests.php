@@ -84,15 +84,16 @@ class WorkstationRequests
 
     public function readNextProcess($excludedIds)
     {
+        $exclude = is_array($excludedIds) ? implode(',', $excludedIds) : $excludedIds;
         if ($this->workstation->isClusterEnabled()) {
             $process = $this->http
-                ->readGetResult('/cluster/' . $this->cluster['id'] . '/queue/next/', ['exclude' => $excludedIds])
+                ->readGetResult('/cluster/' . $this->cluster['id'] . '/queue/next/', ['exclude' => $exclude])
                 ->getEntity();
         } else {
             $process = $this->http
                 ->readGetResult(
                     '/scope/' . $this->scope['id'] . '/queue/next/',
-                    ['exclude' => $excludedIds]
+                    ['exclude' => $exclude]
                 )
                 ->getEntity();
         }
