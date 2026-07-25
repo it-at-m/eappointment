@@ -7,6 +7,8 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsadmin\Helper\ExcludeIds;
+
 /**
   * Init Controller to display next Button Template only
   *
@@ -25,7 +27,7 @@ class WorkstationProcessCancelNext extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $validator = $request->getAttribute('validator');
-        $excludedIds = Helper\ExcludeIds::fromQuery(
+        $excludedIds = ExcludeIds::fromQuery(
             $validator->getParameter('exclude')->isString()->getValue()
         );
         if ($workstation->process['id']) {
@@ -35,7 +37,7 @@ class WorkstationProcessCancelNext extends BaseController
             'workstationProcessNext',
             array(),
             array(
-                'exclude' => Helper\ExcludeIds::toQuery($excludedIds)
+                'exclude' => ExcludeIds::toQuery($excludedIds)
             )
         );
     }
