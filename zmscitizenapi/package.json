@@ -13,7 +13,7 @@
   ],
   "author": "it@m - opensource@muenchen.de",
   "license": "SEE LICENSE IN LICENSE FILE",
-  "// overrides.brace-expansion": "Force patched majors for CVE-2026-13149 (DoS via exponential-time complexity).",
+  "// overrides.brace-expansion": "Force 5.0.8 for CVE-2026-14257 (DoS via unbounded expansion length); no 1.x/2.x backport.",
   "overrides": {
     "handlebars": "^4.7.9",
     "dompurify": "^3.4.12",
@@ -21,18 +21,16 @@
     "fast-xml-builder": "^1.1.7",
     "postcss": "^8.5.10",
     "protobufjs": "^8.6.0",
-    "js-yaml": "^5.0.0",
+    "js-yaml": "^5.2.2",
     "ws": "^8.0.0",
     "@opentelemetry/core": "^2.8.0",
-    "brace-expansion@1": "1.1.16",
-    "brace-expansion@2": "2.1.2",
-    "brace-expansion@5": "5.0.7"
+    "brace-expansion": "5.0.8"
   },
   "devDependencies": {
     "@apidevtools/swagger-parser": "^12.1.0",
     "@redocly/cli": "^2.40.0",
     "fast-xml-parser": "^5.10.1",
-    "js-yaml": "^5.0.0",
+    "js-yaml": "^5.2.2",
     "openapi-types": "^12.0.0",
     "swagger-jsdoc": "^6.3.0"
   }
