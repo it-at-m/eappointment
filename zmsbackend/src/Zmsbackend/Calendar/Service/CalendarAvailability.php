@@ -528,7 +528,17 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         $calendar = new Entity();
         $calendar->firstDay = $this->datePartsFromIso($startDate);
         $calendar->lastDay = $this->datePartsFromIso($endDate);
+        $this->addProvidersFromQuery($calendar, $officeIds, $providerSource);
+        $this->addRequestsFromQuery($calendar, $serviceIds, $serviceCounts, $requestSource);
 
+        return $calendar;
+    }
+
+    private function addProvidersFromQuery(
+        Entity $calendar,
+        string $officeIds,
+        ?string $providerSource
+    ): void {
         $officeIdList = $this->parseCsv($officeIds);
         $providerSources = $providerSource
             ? []
@@ -547,7 +557,14 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
                 'source' => $source,
             ];
         }
+    }
 
+    private function addRequestsFromQuery(
+        Entity $calendar,
+        string $serviceIds,
+        string $serviceCounts,
+        ?string $requestSource
+    ): void {
         $serviceIdList = $this->parseCsv($serviceIds);
         $countList = $serviceCounts === '' ? [] : array_map('trim', explode(',', $serviceCounts));
         $requestSources = $requestSource
@@ -577,8 +594,6 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
                 ];
             }
         }
-
-        return $calendar;
     }
 
     /**
