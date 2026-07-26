@@ -29,7 +29,7 @@
     }
   },
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.4",
+    "@fortawesome/fontawesome-free": "^7.0.0",
     "@parcel/transformer-sass": "^2.16.4",
     "chart.js": "^4.0.0",
     "eslint": "^9.35.0",
