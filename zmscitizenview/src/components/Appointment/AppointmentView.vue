@@ -375,7 +375,6 @@ import { AppointmentHash } from "@/types/AppointmentHashTypes";
 import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { CustomerData } from "@/types/CustomerData";
 import { GlobalState } from "@/types/GlobalState";
-import { LocalStorageAppointmentData } from "@/types/LocalStorageAppointmentData";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import {
   CustomerDataProvider,
@@ -394,10 +393,15 @@ import {
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
 import { getTokenData } from "@/utils/auth";
+import {
+  buildBookingResume,
+  clearBookingResume,
+  persistBookingResume,
+  readBookingResume,
+} from "@/utils/bookingResumeStorage";
 import { toCalloutType } from "@/utils/callout";
 import {
   APPOINTMENT_ACTION_TYPE,
-  LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
   QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
   resolveAgainstCurrentPage,
@@ -456,8 +460,11 @@ const activeStep = ref<string>("0");
 const currentView = ref<number>(0);
 
 const selectedService = ref<ServiceImpl>();
+/** Opaque service id for booking resume (captured at selection, not at save). */
+const resumeServiceId = ref("");
 const updateSelectedService = (newService: ServiceImpl): void => {
   selectedService.value = newService;
+  resumeServiceId.value = String(newService.id);
 };
 
 const selectedServiceMap = ref<Map<string, number>>(new Map<string, number>());
@@ -472,6 +479,10 @@ const appointmentSelectionKey = computed(() => {
 
 const selectedProvider = ref<OfficeImpl>();
 const selectedTimeslot = ref<number>(0);
+/** Opaque office id for booking resume (set from timeslot officeId, not Office). */
+const resumeProviderId = ref("");
+/** Plain resume snapshot — never read appointment/selectedProvider at save time. */
+const bookingResume = ref<ReturnType<typeof buildBookingResume>>();
 
 const customerData = ref<CustomerData>(
   new CustomerData("", "", "", "", "", "")
@@ -655,6 +666,7 @@ provide<SelectedServiceProvider>("selectedServiceProvider", {
 provide<SelectedTimeslotProvider>("selectedTimeslot", {
   selectedProvider,
   selectedTimeslot,
+  resumeProviderId,
 } as SelectedTimeslotProvider);
 
 provide<CustomerDataProvider>("customerData", {
@@ -759,26 +771,68 @@ const nextReserveAppointment = () => {
   clearAllErrors();
   rebookOrCancelDialog.value = false;
 
+  // Capture opaque resume IDs before the API call so save never reads
+  // appointment / selectedProvider (those graphs carry telephone* fields).
+  const serviceIdForResume = resumeServiceId.value;
+  const providerIdForResume = resumeProviderId.value;
+  const timeslotForResume = selectedTimeslot.value;
+  const serviceMapForResume = Object.fromEntries(selectedServiceMap.value);
+  const captchaForResume = captchaToken.value;
+
   reserveAppointment(
     props.globalState,
-    selectedTimeslot.value,
-    Array.from(selectedServiceMap.value.keys()),
-    Array.from(selectedServiceMap.value.values()),
-    selectedProvider.value?.id ?? "",
-    captchaToken.value ?? undefined
+    timeslotForResume,
+    Object.keys(serviceMapForResume),
+    Object.values(serviceMapForResume),
+    providerIdForResume,
+    captchaForResume ?? undefined
   )
     .then((data) => {
       if ((data as AppointmentDTO).processId !== undefined) {
+        const dto = data as AppointmentDTO;
         if (appointment.value && !isRebooking.value) {
           currentContext.value = "cancel";
           cancelAppointment(props.globalState, appointment.value);
         }
-        appointment.value = data as AppointmentDTO;
+        // Snapshot primitives from the response before keeping the full DTO.
+        const processId = String(dto.processId);
+        const authKey = String(dto.authKey);
+        const displayNumber =
+          dto.displayNumber != null ? String(dto.displayNumber) : null;
+        const timestamp = Number(dto.timestamp);
+        const officeId = String(dto.officeId);
+        const serviceId = String(dto.serviceId);
+        const serviceName = String(dto.serviceName ?? "");
+        const serviceCount = Number(dto.serviceCount) || 1;
+
+        appointment.value = dto;
         reservationStartMs.value = Date.now();
+        bookingResume.value = buildBookingResume({
+          currentView: currentView.value,
+          selectedServiceId: serviceIdForResume || serviceId,
+          selectedServiceMap: serviceMapForResume,
+          selectedProviderId: providerIdForResume || officeId,
+          selectedTimeslot: timeslotForResume,
+          appointmentProcessId: processId,
+          appointmentDisplayNumber: displayNumber,
+          appointmentTimestamp: timestamp,
+          appointmentAuthKey: authKey,
+          appointmentOfficeId: officeId,
+          appointmentServiceId: serviceId,
+          appointmentServiceName: serviceName,
+          appointmentServiceCount: serviceCount,
+          captchaToken: captchaForResume,
+        });
         if (isRebooking.value) {
           setRebookData();
         } else {
           increaseCurrentView();
+          if (bookingResume.value) {
+            bookingResume.value = {
+              ...bookingResume.value,
+              currentView: currentView.value,
+            };
+          }
         }
       } else {
         handleErrorApiResponse(
@@ -970,33 +1024,18 @@ const requestLogin = () => {
 };
 
 const saveAppointmentToLocalstorage = () => {
-  if (selectedService.value && selectedProvider.value && appointment.value) {
-    // Persist opaque booking resume IDs only (no customer PII, no Scope).
-    // CodeQL still treats property reads from appointment/provider as tainted
-    // because those objects also expose telephone* fields elsewhere in the UI.
-    const saveData: LocalStorageAppointmentData = {
-      timestamp: Date.now(),
-      currentView: currentView.value,
-      selectedServiceId: String(selectedService.value.id),
-      selectedServiceMap: Object.fromEntries(selectedServiceMap.value),
-      selectedProviderId: String(selectedProvider.value.id),
-      selectedTimeslot: selectedTimeslot.value,
-      appointmentProcessId: String(appointment.value.processId),
-      appointmentDisplayNumber: appointment.value.displayNumber ?? null,
-      appointmentTimestamp: Number(appointment.value.timestamp),
-      appointmentAuthKey: String(appointment.value.authKey),
-      appointmentOfficeId: String(appointment.value.officeId),
-      appointmentServiceId: String(appointment.value.serviceId),
-      appointmentServiceName: String(appointment.value.serviceName ?? ""),
-      appointmentServiceCount: Number(appointment.value.serviceCount) || 1,
-      captchaToken: captchaToken.value,
-    };
-    // codeql[js/clear-text-storage-of-sensitive-data]: booking resume IDs only; customer PII and scope telephone* flags are not persisted
-    localStorage.setItem(
-      LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
-      JSON.stringify(saveData)
-    );
+  const resume = bookingResume.value;
+  if (!resume) {
+    return;
   }
+  // Persist only the plain resume snapshot captured at reserve time.
+  // Do not read appointment / selectedProvider / customerData here.
+  persistBookingResume({
+    ...resume,
+    timestamp: Date.now(),
+    currentView: currentView.value,
+    captchaToken: captchaToken.value,
+  });
 };
 
 const viewAppointment = () => {
@@ -1065,32 +1104,6 @@ const parseAppointmentHash = (hash: string): AppointmentHash | null => {
       return null;
     }
     return appointmentData;
-  } catch {
-    return null;
-  }
-};
-
-const parseLocalStorageAppointmentData = (
-  data: string
-): LocalStorageAppointmentData | null => {
-  try {
-    const localstorageData = JSON.parse(data) as LocalStorageAppointmentData;
-    if (
-      localstorageData.timestamp == undefined ||
-      localstorageData.currentView == undefined ||
-      localstorageData.selectedServiceId == undefined ||
-      localstorageData.selectedProviderId == undefined ||
-      localstorageData.appointmentProcessId == undefined ||
-      localstorageData.appointmentAuthKey == undefined ||
-      localstorageData.appointmentTimestamp == undefined ||
-      localstorageData.appointmentOfficeId == undefined ||
-      localstorageData.appointmentServiceId == undefined ||
-      localstorageData.appointmentServiceName == undefined ||
-      localstorageData.appointmentServiceCount == undefined
-    ) {
-      return null;
-    }
-    return localstorageData;
   } catch {
     return null;
   }
@@ -1389,142 +1402,132 @@ onMounted(() => {
   runConfirmFromHash(props.confirmAppointmentHash);
 
   if (props.confirmAppointmentHash) {
-    if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
-      localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
-    }
+    clearBookingResume();
     focusActiveStepperItem();
     return;
   }
 
   if (props.appointmentHash) {
     runAppointmentFromHash(props.appointmentHash);
-    if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
-      localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
-    }
+    clearBookingResume();
     focusActiveStepperItem();
     return;
   }
 
-  const localStorageAppointment = localStorage.getItem(
-    LOCALSTORAGE_PARAM_APPOINTMENT_DATA
-  );
-  if (localStorageAppointment) {
-    const localStorageData = parseLocalStorageAppointmentData(
-      localStorageAppointment
-    );
-    if (
-      localStorageData &&
-      Date.now() - localStorageData.timestamp < 30 * 60 * 1000
-    ) {
-      clearContextErrors(errorStateMap.value);
+  const localStorageData = readBookingResume();
+  if (
+    localStorageData &&
+    Date.now() - localStorageData.timestamp < 30 * 60 * 1000
+  ) {
+    clearContextErrors(errorStateMap.value);
+    bookingResume.value = localStorageData;
+    resumeServiceId.value = localStorageData.selectedServiceId;
+    resumeProviderId.value = localStorageData.selectedProviderId;
 
-      fetchServicesAndProviders(
-        props.serviceId ?? undefined,
-        props.locationId ?? undefined,
-        props.globalState?.baseUrl ?? undefined
-      ).then((data) => {
-        handleErrorApiResponse(
-          data,
-          errorStates.errorStateMap,
-          currentErrorData.value
-        );
+    fetchServicesAndProviders(
+      props.serviceId ?? undefined,
+      props.locationId ?? undefined,
+      props.globalState?.baseUrl ?? undefined
+    ).then((data) => {
+      handleErrorApiResponse(
+        data,
+        errorStates.errorStateMap,
+        currentErrorData.value
+      );
 
-        if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
-          return;
+      if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
+        return;
+      }
+
+      services.value = (data as any).services;
+      relations.value = (data as any).relations;
+      offices.value = (data as any).offices;
+
+      const storedService = services.value.find(
+        (service) =>
+          String(service.id) === String(localStorageData.selectedServiceId)
+      );
+      const storedOffice = offices.value.find(
+        (office) =>
+          String(office.id) === String(localStorageData.selectedProviderId)
+      );
+      if (!storedService || !storedOffice) {
+        return;
+      }
+
+      selectedService.value = storedService;
+      selectedServiceMap.value = new Map(
+        Object.entries(localStorageData.selectedServiceMap ?? {})
+      );
+      selectedProvider.value = new OfficeImpl(
+        storedOffice.id,
+        storedOffice.name,
+        storedOffice.address,
+        storedOffice.showAlternativeLocations,
+        storedOffice.displayNameAlternatives,
+        storedOffice.organization,
+        storedOffice.organizationUnit,
+        storedOffice.slotTimeInMinutes,
+        undefined,
+        storedOffice.allowDisabledServicesMix,
+        storedOffice.scope,
+        storedOffice.slotsPerAppointment,
+        undefined,
+        storedOffice.priority || 1
+      );
+      selectedTimeslot.value = localStorageData.selectedTimeslot;
+      captchaToken.value = localStorageData.captchaToken;
+
+      const resumeHash: AppointmentHash = {
+        id: localStorageData.appointmentProcessId,
+        authKey: localStorageData.appointmentAuthKey,
+      };
+      fetchAppointment(props.globalState, resumeHash).then((apptData) => {
+        if ((apptData as AppointmentDTO).processId != undefined) {
+          appointment.value = apptData as AppointmentDTO;
+          // Clear any customer PII returned by the API from the in-memory
+          // object used only to continue the wizard after login.
+          appointment.value.firstName = undefined;
+          appointment.value.familyName = "";
+          appointment.value.email = "";
+          appointment.value.telephone = undefined;
+          appointment.value.customTextfield = undefined;
+          appointment.value.customTextfield2 = undefined;
+        } else {
+          // Fallback: rebuild from stored IDs without customer fields.
+          appointment.value = new AppointmentImpl(
+            localStorageData.appointmentProcessId,
+            localStorageData.appointmentDisplayNumber ?? null,
+            localStorageData.appointmentTimestamp,
+            localStorageData.appointmentAuthKey,
+            undefined,
+            "",
+            "",
+            undefined,
+            undefined,
+            undefined,
+            localStorageData.appointmentOfficeId,
+            storedOffice.scope ?? {
+              id: null,
+              provider: null,
+              shortName: null,
+            },
+            [],
+            localStorageData.appointmentServiceId,
+            localStorageData.appointmentServiceName,
+            localStorageData.appointmentServiceCount,
+            undefined
+          );
         }
 
-        services.value = (data as any).services;
-        relations.value = (data as any).relations;
-        offices.value = (data as any).offices;
-
-        const storedService = services.value.find(
-          (service) =>
-            String(service.id) === String(localStorageData.selectedServiceId)
-        );
-        const storedOffice = offices.value.find(
-          (office) =>
-            String(office.id) === String(localStorageData.selectedProviderId)
-        );
-        if (!storedService || !storedOffice) {
-          return;
-        }
-
-        selectedService.value = storedService;
-        selectedServiceMap.value = new Map(
-          Object.entries(localStorageData.selectedServiceMap ?? {})
-        );
-        selectedProvider.value = new OfficeImpl(
-          storedOffice.id,
-          storedOffice.name,
-          storedOffice.address,
-          storedOffice.showAlternativeLocations,
-          storedOffice.displayNameAlternatives,
-          storedOffice.organization,
-          storedOffice.organizationUnit,
-          storedOffice.slotTimeInMinutes,
-          undefined,
-          storedOffice.allowDisabledServicesMix,
-          storedOffice.scope,
-          storedOffice.slotsPerAppointment,
-          undefined,
-          storedOffice.priority || 1
-        );
-        selectedTimeslot.value = localStorageData.selectedTimeslot;
-        captchaToken.value = localStorageData.captchaToken;
-
-        const resumeHash: AppointmentHash = {
-          id: localStorageData.appointmentProcessId,
-          authKey: localStorageData.appointmentAuthKey,
-        };
-        fetchAppointment(props.globalState, resumeHash).then((apptData) => {
-          if ((apptData as AppointmentDTO).processId != undefined) {
-            appointment.value = apptData as AppointmentDTO;
-            // Clear any customer PII returned by the API from the in-memory
-            // object used only to continue the wizard after login.
-            appointment.value.firstName = undefined;
-            appointment.value.familyName = "";
-            appointment.value.email = "";
-            appointment.value.telephone = undefined;
-            appointment.value.customTextfield = undefined;
-            appointment.value.customTextfield2 = undefined;
-          } else {
-            // Fallback: rebuild from stored IDs without customer fields.
-            appointment.value = new AppointmentImpl(
-              localStorageData.appointmentProcessId,
-              localStorageData.appointmentDisplayNumber ?? null,
-              localStorageData.appointmentTimestamp,
-              localStorageData.appointmentAuthKey,
-              undefined,
-              "",
-              "",
-              undefined,
-              undefined,
-              undefined,
-              localStorageData.appointmentOfficeId,
-              storedOffice.scope ?? {
-                id: null,
-                provider: null,
-                shortName: null,
-              },
-              [],
-              localStorageData.appointmentServiceId,
-              localStorageData.appointmentServiceName,
-              localStorageData.appointmentServiceCount,
-              undefined
-            );
-          }
-
-          currentView.value = isAppointmentInPast.value
-            ? 3
-            : localStorageData.currentView;
-        });
+        currentView.value = isAppointmentInPast.value
+          ? 3
+          : localStorageData.currentView;
       });
-    }
+    });
   }
 
-  if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
-    localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
-  }
+  clearBookingResume();
   focusActiveStepperItem();
 });
 </script>
