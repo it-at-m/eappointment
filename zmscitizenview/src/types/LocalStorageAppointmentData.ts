@@ -1,19 +1,23 @@
-import { AppointmentImpl } from "@/types/AppointmentImpl";
-import { OfficeImpl } from "@/types/OfficeImpl";
-import { ServiceImpl } from "@/types/ServiceImpl";
-
 /**
- * Persisted booking wizard state for resume after optional citizen login.
- * Must not include customer PII (name, mail, telephone) — see CodeQL
- * js/clear-text-storage-of-sensitive-data.
+ * Booking wizard resume payload after optional citizen login.
+ * IDs and primitives only — never persist customer PII or Scope objects
+ * (Scope contains telephoneActivated / telephoneRequired flags that must
+ * not be written to localStorage).
  */
 export interface LocalStorageAppointmentData {
   timestamp: number;
   currentView: number;
-  selectedService: ServiceImpl;
+  selectedServiceId: string;
   selectedServiceMap: Record<string, number>;
-  selectedProvider: OfficeImpl;
+  selectedProviderId: string;
   selectedTimeslot: number;
-  appointment: AppointmentImpl;
+  appointmentProcessId: string;
+  appointmentDisplayNumber?: string | null;
+  appointmentTimestamp: number;
+  appointmentAuthKey: string;
+  appointmentOfficeId: string;
+  appointmentServiceId: string;
+  appointmentServiceName: string;
+  appointmentServiceCount: number;
   captchaToken: string | undefined;
 }

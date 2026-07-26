@@ -969,45 +969,25 @@ const requestLogin = () => {
   );
 };
 
-/** Drop PII before persisting appointment state across the login redirect. */
-const appointmentWithoutCustomerPii = (
-  source: AppointmentImpl
-): AppointmentImpl => {
-  return new AppointmentImpl(
-    source.processId,
-    source.displayNumber ?? null,
-    source.timestamp,
-    source.authKey,
-    undefined,
-    "",
-    "",
-    undefined,
-    undefined,
-    undefined,
-    source.officeId,
-    source.scope,
-    source.subRequestCounts,
-    source.serviceId,
-    source.serviceName,
-    source.serviceCount,
-    undefined
-  );
-};
-
 const saveAppointmentToLocalstorage = () => {
   if (selectedService.value && selectedProvider.value && appointment.value) {
-    const selectedServiceMapObject = Object.fromEntries(
-      selectedServiceMap.value
-    );
-
+    // Persist IDs/primitives only. Do not serialize Appointment/Office/Scope
+    // objects — they carry customer fields and telephone* scope flags.
     const saveData: LocalStorageAppointmentData = {
       timestamp: Date.now(),
       currentView: currentView.value,
-      selectedService: selectedService.value,
-      selectedServiceMap: selectedServiceMapObject,
-      selectedProvider: selectedProvider.value,
+      selectedServiceId: String(selectedService.value.id),
+      selectedServiceMap: Object.fromEntries(selectedServiceMap.value),
+      selectedProviderId: String(selectedProvider.value.id),
       selectedTimeslot: selectedTimeslot.value,
-      appointment: appointmentWithoutCustomerPii(appointment.value),
+      appointmentProcessId: String(appointment.value.processId),
+      appointmentDisplayNumber: appointment.value.displayNumber ?? null,
+      appointmentTimestamp: Number(appointment.value.timestamp),
+      appointmentAuthKey: String(appointment.value.authKey),
+      appointmentOfficeId: String(appointment.value.officeId),
+      appointmentServiceId: String(appointment.value.serviceId),
+      appointmentServiceName: String(appointment.value.serviceName ?? ""),
+      appointmentServiceCount: Number(appointment.value.serviceCount) || 1,
       captchaToken: captchaToken.value,
     };
     localStorage.setItem(
@@ -1092,13 +1072,19 @@ const parseLocalStorageAppointmentData = (
   data: string
 ): LocalStorageAppointmentData | null => {
   try {
-    const localstorageData: LocalStorageAppointmentData = JSON.parse(data);
+    const localstorageData = JSON.parse(data) as LocalStorageAppointmentData;
     if (
       localstorageData.timestamp == undefined ||
       localstorageData.currentView == undefined ||
-      localstorageData.selectedService == undefined ||
-      localstorageData.selectedProvider == undefined ||
-      localstorageData.appointment == undefined
+      localstorageData.selectedServiceId == undefined ||
+      localstorageData.selectedProviderId == undefined ||
+      localstorageData.appointmentProcessId == undefined ||
+      localstorageData.appointmentAuthKey == undefined ||
+      localstorageData.appointmentTimestamp == undefined ||
+      localstorageData.appointmentOfficeId == undefined ||
+      localstorageData.appointmentServiceId == undefined ||
+      localstorageData.appointmentServiceName == undefined ||
+      localstorageData.appointmentServiceCount == undefined
     ) {
       return null;
     }
@@ -1449,13 +1435,63 @@ onMounted(() => {
         relations.value = (data as any).relations;
         offices.value = (data as any).offices;
 
-        selectedService.value = localStorageData.selectedService;
-        selectedServiceMap.value = new Map(
-          Object.entries(localStorageData.selectedServiceMap)
+        const storedService = services.value.find(
+          (service) =>
+            String(service.id) === String(localStorageData.selectedServiceId)
         );
-        selectedProvider.value = localStorageData.selectedProvider;
+        const storedOffice = offices.value.find(
+          (office) =>
+            String(office.id) === String(localStorageData.selectedProviderId)
+        );
+        if (!storedService || !storedOffice) {
+          return;
+        }
+
+        selectedService.value = storedService;
+        selectedServiceMap.value = new Map(
+          Object.entries(localStorageData.selectedServiceMap ?? {})
+        );
+        selectedProvider.value = new OfficeImpl(
+          storedOffice.id,
+          storedOffice.name,
+          storedOffice.address,
+          storedOffice.showAlternativeLocations,
+          storedOffice.displayNameAlternatives,
+          storedOffice.organization,
+          storedOffice.organizationUnit,
+          storedOffice.slotTimeInMinutes,
+          undefined,
+          storedOffice.allowDisabledServicesMix,
+          storedOffice.scope,
+          storedOffice.slotsPerAppointment,
+          undefined,
+          storedOffice.priority || 1
+        );
         selectedTimeslot.value = localStorageData.selectedTimeslot;
-        appointment.value = localStorageData.appointment;
+        // Rebuild without customer PII; scope comes from freshly fetched office.
+        appointment.value = new AppointmentImpl(
+          localStorageData.appointmentProcessId,
+          localStorageData.appointmentDisplayNumber ?? null,
+          localStorageData.appointmentTimestamp,
+          localStorageData.appointmentAuthKey,
+          undefined,
+          "",
+          "",
+          undefined,
+          undefined,
+          undefined,
+          localStorageData.appointmentOfficeId,
+          storedOffice.scope ?? {
+            id: null,
+            provider: null,
+            shortName: null,
+          },
+          [],
+          localStorageData.appointmentServiceId,
+          localStorageData.appointmentServiceName,
+          localStorageData.appointmentServiceCount,
+          undefined
+        );
         captchaToken.value = localStorageData.captchaToken;
 
         currentView.value = isAppointmentInPast.value
