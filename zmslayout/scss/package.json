@@ -8,6 +8,6 @@
   "author": "BerlinOnline GmbH & Co. KG",
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.12"
+    "@fortawesome/fontawesome-free": "^7.0.0"
   }
 }
