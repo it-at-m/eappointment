@@ -2,9 +2,6 @@
 
 namespace BO\Zmsbackend\Cli;
 
-use Ulrichsg\Getopt\Getopt;
-use Ulrichsg\Getopt\Option;
-
 /**
  * @codeCoverageIgnore
  *
