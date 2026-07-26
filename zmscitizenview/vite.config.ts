@@ -19,6 +19,8 @@ export default defineConfig({
       }
     })
   ],
+  // Expose SHOW_CITIZEN_LOGIN from .env / compose (same name as zms-deployment).
+  envPrefix: ['VITE_', 'SHOW_'],
   define: {'process.env': {}},
   resolve: {
     dedupe: ['vue'],

@@ -50,6 +50,11 @@ services:
       - ..:/workspace:cached,z
       # Keep Linux native bindings (Vite/Rolldown) off the macOS host node_modules bind.
       - citizenview-node-modules:/workspace/zmscitizenview/node_modules
+    env_file:
+      - .env
+    environment:
+      # Prefer .devcontainer/.env; zmscitizenview/.env.development is the Vite fallback.
+      SHOW_CITIZEN_LOGIN: ${SHOW_CITIZEN_LOGIN:-true}
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 8082"
     ports:
       - "8082:8082"
