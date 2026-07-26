@@ -969,6 +969,31 @@ const requestLogin = () => {
   );
 };
 
+/** Drop PII before persisting appointment state across the login redirect. */
+const appointmentWithoutCustomerPii = (
+  source: AppointmentImpl
+): AppointmentImpl => {
+  return new AppointmentImpl(
+    source.processId,
+    source.displayNumber ?? null,
+    source.timestamp,
+    source.authKey,
+    undefined,
+    "",
+    "",
+    undefined,
+    undefined,
+    undefined,
+    source.officeId,
+    source.scope,
+    source.subRequestCounts,
+    source.serviceId,
+    source.serviceName,
+    source.serviceCount,
+    undefined
+  );
+};
+
 const saveAppointmentToLocalstorage = () => {
   if (selectedService.value && selectedProvider.value && appointment.value) {
     const selectedServiceMapObject = Object.fromEntries(
@@ -982,8 +1007,7 @@ const saveAppointmentToLocalstorage = () => {
       selectedServiceMap: selectedServiceMapObject,
       selectedProvider: selectedProvider.value,
       selectedTimeslot: selectedTimeslot.value,
-      customerData: customerData.value,
-      appointment: appointment.value,
+      appointment: appointmentWithoutCustomerPii(appointment.value),
       captchaToken: captchaToken.value,
     };
     localStorage.setItem(
