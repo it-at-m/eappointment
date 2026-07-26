@@ -1,5 +1,5 @@
-// FONTAWESOME — import @fortawesome in the consuming module (admin.scss / statistic.scss)
-// before this file; set $fa-font-path there as needed.
+// FONTAWESOME — load @fortawesome via @use in the consuming module (admin.scss / statistic.scss)
+// before this file; configure $font-path there for Font Awesome 7.
 
 // TEXT COLOR CLASSES FOR EASY COLORING
 #{$namespace}.color-decorative-primary {
