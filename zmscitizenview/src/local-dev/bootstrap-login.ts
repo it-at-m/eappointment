@@ -6,16 +6,13 @@
  * SHOW_CITIZEN_LOGIN (runtime-config.json or env) disables the host-page chrome
  * on zms-* /buergeransicht shells. Magnolia embeds never include these shells.
  *
- * Deployed host pages also read kcUrl / kcRealm / kcClientId from runtime-config.json
- * so login matches the gateway SSO_* for that environment (avoids 401 after login).
+ * Keycloak / BayernID attributes stay on <dbs-login> from the built HTML
+ * (VITE_KC_*). Do not overwrite them from gateway SSO_* — that is a different client.
  */
 
 type RuntimeConfig = {
   showCitizenLogin?: unknown;
   SHOW_CITIZEN_LOGIN?: unknown;
-  kcUrl?: string;
-  kcRealm?: string;
-  kcClientId?: string;
 };
 
 function parseBool(value: unknown, fallback: boolean): boolean {
@@ -38,13 +35,14 @@ async function readRuntimeConfig(): Promise<RuntimeConfig | undefined> {
   try {
     const response = await fetch("./runtime-config.json", {
       cache: "no-store",
+      signal: AbortSignal.timeout(2000),
     });
     if (!response.ok) {
       return undefined;
     }
     return (await response.json()) as RuntimeConfig;
   } catch {
-    // Missing in local Vite / older images — fall back to build-time env / HTML attrs.
+    // Missing / slow / older images — fall back to build-time env. Never block CDN.
   }
   return undefined;
 }
@@ -68,28 +66,6 @@ function removeLoginHostChrome(): void {
   document.querySelector("dbs-login")?.remove();
 }
 
-/** Align <dbs-login> with gateway SSO for this environment before the CDN upgrades it. */
-function applyKeycloakAttributes(runtime: RuntimeConfig | undefined): void {
-  const host = document.querySelector("dbs-login");
-  if (!host) {
-    return;
-  }
-
-  const kcUrl = runtime?.kcUrl || import.meta.env.VITE_KC_URL;
-  const kcRealm = runtime?.kcRealm || import.meta.env.VITE_KC_REALM;
-  const kcClientId = runtime?.kcClientId || import.meta.env.VITE_KC_CLIENT_ID;
-
-  if (kcUrl) {
-    host.setAttribute("kc-url", kcUrl);
-  }
-  if (kcRealm) {
-    host.setAttribute("kc-realm", kcRealm);
-  }
-  if (kcClientId) {
-    host.setAttribute("kc-client-id", kcClientId);
-  }
-}
-
 async function bootstrapLogin(): Promise<void> {
   const runtime = await readRuntimeConfig();
 
@@ -97,8 +73,6 @@ async function bootstrapLogin(): Promise<void> {
     removeLoginHostChrome();
     return;
   }
-
-  applyKeycloakAttributes(runtime);
 
   const useLocal =
     String(import.meta.env.VITE_USE_LOCAL_CITIZEN_LOGIN || "").toLowerCase() ===
@@ -109,6 +83,7 @@ async function bootstrapLogin(): Promise<void> {
     return;
   }
 
+  // CDN dbs-login (BayernID). Uses kc-* from built HTML / VITE_KC_*.
   const loaderUrl = import.meta.env.VITE_DBS_LOGIN_LOADER_URL;
   if (!loaderUrl) {
     console.warn(
