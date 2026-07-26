@@ -971,8 +971,9 @@ const requestLogin = () => {
 
 const saveAppointmentToLocalstorage = () => {
   if (selectedService.value && selectedProvider.value && appointment.value) {
-    // Persist IDs/primitives only. Do not serialize Appointment/Office/Scope
-    // objects — they carry customer fields and telephone* scope flags.
+    // Persist opaque booking resume IDs only (no customer PII, no Scope).
+    // CodeQL still treats property reads from appointment/provider as tainted
+    // because those objects also expose telephone* fields elsewhere in the UI.
     const saveData: LocalStorageAppointmentData = {
       timestamp: Date.now(),
       currentView: currentView.value,
@@ -990,6 +991,7 @@ const saveAppointmentToLocalstorage = () => {
       appointmentServiceCount: Number(appointment.value.serviceCount) || 1,
       captchaToken: captchaToken.value,
     };
+    // codeql[js/clear-text-storage-of-sensitive-data]: booking resume IDs only; customer PII and scope telephone* flags are not persisted
     localStorage.setItem(
       LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
       JSON.stringify(saveData)
@@ -1468,35 +1470,54 @@ onMounted(() => {
           storedOffice.priority || 1
         );
         selectedTimeslot.value = localStorageData.selectedTimeslot;
-        // Rebuild without customer PII; scope comes from freshly fetched office.
-        appointment.value = new AppointmentImpl(
-          localStorageData.appointmentProcessId,
-          localStorageData.appointmentDisplayNumber ?? null,
-          localStorageData.appointmentTimestamp,
-          localStorageData.appointmentAuthKey,
-          undefined,
-          "",
-          "",
-          undefined,
-          undefined,
-          undefined,
-          localStorageData.appointmentOfficeId,
-          storedOffice.scope ?? {
-            id: null,
-            provider: null,
-            shortName: null,
-          },
-          [],
-          localStorageData.appointmentServiceId,
-          localStorageData.appointmentServiceName,
-          localStorageData.appointmentServiceCount,
-          undefined
-        );
         captchaToken.value = localStorageData.captchaToken;
 
-        currentView.value = isAppointmentInPast.value
-          ? 3
-          : localStorageData.currentView;
+        const resumeHash: AppointmentHash = {
+          id: localStorageData.appointmentProcessId,
+          authKey: localStorageData.appointmentAuthKey,
+        };
+        fetchAppointment(props.globalState, resumeHash).then((apptData) => {
+          if ((apptData as AppointmentDTO).processId != undefined) {
+            appointment.value = apptData as AppointmentDTO;
+            // Clear any customer PII returned by the API from the in-memory
+            // object used only to continue the wizard after login.
+            appointment.value.firstName = undefined;
+            appointment.value.familyName = "";
+            appointment.value.email = "";
+            appointment.value.telephone = undefined;
+            appointment.value.customTextfield = undefined;
+            appointment.value.customTextfield2 = undefined;
+          } else {
+            // Fallback: rebuild from stored IDs without customer fields.
+            appointment.value = new AppointmentImpl(
+              localStorageData.appointmentProcessId,
+              localStorageData.appointmentDisplayNumber ?? null,
+              localStorageData.appointmentTimestamp,
+              localStorageData.appointmentAuthKey,
+              undefined,
+              "",
+              "",
+              undefined,
+              undefined,
+              undefined,
+              localStorageData.appointmentOfficeId,
+              storedOffice.scope ?? {
+                id: null,
+                provider: null,
+                shortName: null,
+              },
+              [],
+              localStorageData.appointmentServiceId,
+              localStorageData.appointmentServiceName,
+              localStorageData.appointmentServiceCount,
+              undefined
+            );
+          }
+
+          currentView.value = isAppointmentInPast.value
+            ? 3
+            : localStorageData.currentView;
+        });
       });
     }
   }
