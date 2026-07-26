@@ -63,6 +63,7 @@ const createWrapper = (overrides: WrapperOverrides = {}) => {
         selectedTimeslot: {
           selectedProvider: ref(overrides.selectedProvider ?? null),
           selectedTimeslot: ref(overrides.selectedTimeslot ?? 0),
+          resumeProviderId: ref(""),
         },
         selectableProviders: ref([]),
         loadingStates: {
@@ -2232,6 +2233,7 @@ describe("AppointmentSelection", () => {
             selectedTimeslot: {
               selectedProvider: ref(null),
               selectedTimeslot: selectedTimeslotRef,
+              resumeProviderId: ref(""),
             },
             selectableProviders: ref([]),
             loadingStates,
