@@ -1,8 +1,12 @@
 import { AppointmentImpl } from "@/types/AppointmentImpl";
-import { CustomerData } from "@/types/CustomerData";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { ServiceImpl } from "@/types/ServiceImpl";
 
+/**
+ * Persisted booking wizard state for resume after optional citizen login.
+ * Must not include customer PII (name, mail, telephone) — see CodeQL
+ * js/clear-text-storage-of-sensitive-data.
+ */
 export interface LocalStorageAppointmentData {
   timestamp: number;
   currentView: number;
@@ -10,7 +14,6 @@ export interface LocalStorageAppointmentData {
   selectedServiceMap: Record<string, number>;
   selectedProvider: OfficeImpl;
   selectedTimeslot: number;
-  customerData: CustomerData;
   appointment: AppointmentImpl;
   captchaToken: string | undefined;
 }
