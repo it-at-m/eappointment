@@ -288,10 +288,12 @@ const { selectedService } = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
 ) as SelectedServiceProvider;
 
-const { selectedProvider, selectedTimeslot, resumeProviderId } =
-  inject<SelectedTimeslotProvider>(
-    "selectedTimeslot"
-  ) as SelectedTimeslotProvider;
+const selectedTimeslotInject = inject<SelectedTimeslotProvider>(
+  "selectedTimeslot"
+) as SelectedTimeslotProvider;
+const { selectedProvider, selectedTimeslot } = selectedTimeslotInject;
+// Tests may omit this; production AppointmentView always provides it.
+const resumeProviderId = selectedTimeslotInject.resumeProviderId ?? ref("");
 
 const loadingStates = inject("loadingStates", {
   isReservingAppointment: ref(false),
