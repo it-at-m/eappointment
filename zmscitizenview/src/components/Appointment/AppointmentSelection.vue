@@ -288,9 +288,10 @@ const { selectedService } = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
 ) as SelectedServiceProvider;
 
-const { selectedProvider, selectedTimeslot } = inject<SelectedTimeslotProvider>(
-  "selectedTimeslot"
-) as SelectedTimeslotProvider;
+const { selectedProvider, selectedTimeslot, resumeProviderId } =
+  inject<SelectedTimeslotProvider>(
+    "selectedTimeslot"
+  ) as SelectedTimeslotProvider;
 
 const loadingStates = inject("loadingStates", {
   isReservingAppointment: ref(false),
@@ -731,6 +732,8 @@ const hasSelectedProviderWithAppointments = computed(() => {
 const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   clearVisibleErrors();
   selectedTimeslot.value = timeSlot;
+  // Capture opaque id from the timeslot arg (not from the Office graph).
+  resumeProviderId.value = String(officeId);
   selectedProvider.value = getOfficeById(officeId);
   if (summary.value) {
     await nextTick();
