@@ -3,9 +3,8 @@
  */
 export const VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT =
   "/offices-and-services/";
-export const VUE_APP_ZMS_API_CALENDAR_ENDPOINT = "/available-days-by-office/";
-export const VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT =
-  "/available-appointments-by-office/";
+export const VUE_APP_ZMS_API_CALENDAR_AVAILABILITY_ENDPOINT =
+  "/available-calendar/";
 export const VUE_APP_ZMS_API_RESERVE_APPOINTMENT_ENDPOINT =
   "/reserve-appointment/";
 export const VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT = "/appointment/";

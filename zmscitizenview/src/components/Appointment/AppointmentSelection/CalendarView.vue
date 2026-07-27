@@ -2,19 +2,24 @@
   <div>
     <!-- Calendar Component -->
     <div class="m-component calendar-root">
-      <muc-calendar
-        :key="calendarKey"
-        :model-value="selectedDay"
-        @update:model-value="
-          (date) => $emit('update:selectedDay', date as Date)
-        "
-        disable-view-change
-        variant="single"
-        :allowed-dates="allowedDates"
-        :min="minDate"
-        :max="maxDate"
-        :view-month="viewMonth"
-      />
+      <div
+        class="muc-calendar-wrap"
+        @click.capture="onCalendarClick"
+      >
+        <muc-calendar
+          :key="calendarKey"
+          :model-value="selectedDay"
+          @update:model-value="
+            (date) => $emit('update:selectedDay', date as Date)
+          "
+          disable-view-change
+          variant="single"
+          :allowed-dates="allowedDates"
+          :min="minDate"
+          :max="maxDate"
+          :view-month="viewMonth"
+        />
+      </div>
     </div>
 
     <!-- Hourly View (when appointments > threshold) -->
@@ -287,6 +292,8 @@ const props = defineProps<{
   minDate: Date | undefined;
   maxDate: Date | undefined;
   viewMonth: Date;
+  prevBookableDate: string | null;
+  nextBookableDate: string | null;
   timeSlotsInHoursByOffice: Map<
     number,
     { appointments: Map<number, number[]> }
@@ -314,6 +321,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "update:selectedDay", day: Date): void;
+  (e: "jumpToBookableDate", isoDate: string): void;
   (
     e: "selectTimeSlot",
     payload: { officeId: number | string; time: number }
@@ -322,6 +330,77 @@ const emit = defineEmits<{
   (e: "setSelectedHour", hour: number | null): void;
   (e: "setSelectedDayPart", part: "am" | "pm" | null): void;
 }>();
+
+type MonthNavDirection = "prev" | "next";
+
+/**
+ * MucCalendar month chevrons: prefer icon href (locale-stable), fall back to
+ * translated aria-labels from our i18n (muc-patternlab currently hardcodes DE).
+ */
+function findMonthNavDirection(
+  target: EventTarget | null
+): MonthNavDirection | null {
+  if (!(target instanceof Element)) {
+    return null;
+  }
+
+  const button = target.closest("button");
+  if (!button) {
+    return null;
+  }
+
+  const useEl = button.querySelector("use");
+  const href =
+    useEl?.getAttribute("href") || useEl?.getAttribute("xlink:href") || "";
+  if (href.includes("chevron-left")) {
+    return "prev";
+  }
+  if (href.includes("chevron-right")) {
+    return "next";
+  }
+
+  const label = button.getAttribute("aria-label");
+  if (!label) {
+    return null;
+  }
+  if (label === props.t("calendarPreviousMonth")) {
+    return "prev";
+  }
+  if (label === props.t("calendarNextMonth")) {
+    return "next";
+  }
+  return null;
+}
+
+/**
+ * MucCalendar month chevrons only do ±1 month internally and do not emit.
+ * When a bookable marker exists, jump there; otherwise let MucCalendar change
+ * the month normally (do not swallow the click — that leaves the calendar dead).
+ */
+function onCalendarClick(event: MouseEvent) {
+  const direction = findMonthNavDirection(event.target);
+  if (!direction) {
+    return;
+  }
+
+  if (props.isLoadingAppointments) {
+    event.preventDefault();
+    event.stopPropagation();
+    return;
+  }
+
+  if (direction === "prev" && props.prevBookableDate) {
+    event.preventDefault();
+    event.stopPropagation();
+    emit("jumpToBookableDate", props.prevBookableDate);
+    return;
+  }
+  if (direction === "next" && props.nextBookableDate) {
+    event.preventDefault();
+    event.stopPropagation();
+    emit("jumpToBookableDate", props.nextBookableDate);
+  }
+}
 
 async function snapToNearestForCurrentSelection() {
   await nextTick();
