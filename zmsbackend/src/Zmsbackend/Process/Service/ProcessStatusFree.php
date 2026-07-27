@@ -85,13 +85,11 @@ class ProcessStatusFree extends Process
         );
 
         $unique = [];
+        $candidateCounts = [];
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
             $processInfo = $this->extractProcessInfo($item, $calendar);
             if ($processInfo) {
-                $key = $this->generateUniqueKey($processInfo['providerId'], $processInfo['date']);
-                if (!isset($unique[$key])) {
-                    $unique[$key] = $this->createMinimalProcess($processInfo);
-                }
+                $this->rememberRandomEligibleProcess($unique, $candidateCounts, $processInfo);
             }
         }
 
@@ -169,13 +167,11 @@ class ProcessStatusFree extends Process
         $processData = $this->getProcessDataHandle($days, $slotType, $slotsRequired, $groupData);
 
         $unique = [];
+        $candidateCounts = [];
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
             $processInfo = $this->extractProcessInfo($item, $calendar);
             if ($processInfo) {
-                $key = $this->generateUniqueKey($processInfo['providerId'], $processInfo['date']);
-                if (!isset($unique[$key])) {
-                    $unique[$key] = $this->createMinimalProcess($processInfo);
-                }
+                $this->rememberRandomEligibleProcess($unique, $candidateCounts, $processInfo);
             }
         }
 
@@ -183,6 +179,50 @@ class ProcessStatusFree extends Process
         unset($dayquery);
 
         return array_values($unique);
+    }
+
+    /**
+     * Keep one free process per provider+timestamp.
+     *
+     * When several scopes of the same provider offer the same wall-clock slot,
+     * reservoir-sample uniformly among those eligible scopes (ZMSKVR-1046).
+     * Scopes that cannot fit the slot never appear here, so fall-through is preserved.
+     *
+     * @param array<string, array<string, mixed>> $unique
+     * @param array<string, int> $candidateCounts
+     */
+    private function rememberRandomEligibleProcess(
+        array &$unique,
+        array &$candidateCounts,
+        array $processInfo
+    ): void {
+        $key = $this->generateUniqueKey($processInfo['providerId'], $processInfo['date']);
+        $process = $this->createMinimalProcess($processInfo);
+
+        if (!isset($unique[$key])) {
+            $unique[$key] = $process;
+            $candidateCounts[$key] = 1;
+            return;
+        }
+
+        $candidateCounts[$key]++;
+        // Reservoir sample of size 1: replace with probability 1/k for the k-th candidate.
+        if (self::shouldReplaceReservoirSample($candidateCounts[$key])) {
+            $unique[$key] = $process;
+        }
+    }
+
+    /**
+     * @internal Exposed for unit tests; $candidateCount is the running total of eligible scopes (k >= 2).
+     */
+    public static function shouldReplaceReservoirSample(int $candidateCount, ?callable $randomInt = null): bool
+    {
+        if ($candidateCount < 2) {
+            return false;
+        }
+        $randomInt = $randomInt ?? static fn (int $max): int => random_int(1, $max);
+
+        return $randomInt($candidateCount) === 1;
     }
 
     private function extractProcessInfo(array $item, \BO\Zmsentities\Calendar $calendar): ?array
