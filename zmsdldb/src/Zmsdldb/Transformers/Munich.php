@@ -667,7 +667,7 @@ class Munich
     /**
      * Calculate greatest common divisor for slot times
      */
-    function getSlotTime($a, $b)
+    protected function getSlotTime($a, $b): int
     {
         $a = (int) $a;
         $b = (int) $b;
@@ -676,7 +676,7 @@ class Munich
             return 5;
         }
 
-        $slotTime = getGreatestCommonDivisor($a, $b);
+        $slotTime = $this->getGreatestCommonDivisor($a, $b);
 
         if ($slotTime >= 5 && $slotTime % 5 === 0) {
             return $slotTime;
@@ -685,7 +685,7 @@ class Munich
         return 5;
     }
 
-    function getGreatestCommonDivisor($a, $b)
+    protected function getGreatestCommonDivisor(int $a, int $b): int
     {
         while ($b !== 0) {
             $tmp = $b;
