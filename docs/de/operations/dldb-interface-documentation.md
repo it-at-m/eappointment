@@ -231,6 +231,8 @@ Zusammen sind diese beiden erzeugten Dateien die lokalen kanonischen Snapshots f
 
 Diese Konstanten gehören zur München-Parity-Schicht und spiegeln die fachliche Regelabsicht des internen Mapper-Setups wider.
 
+Wie sich die Regeln für das Bürgerbüro Ruppertstraße auswirken (Multi-Scope-RR, Ausbildung Shared Booking, Pass exklusiv/gemischt) ist mit Diagrammen in [Terminvarianten Ruppertstraße (ZMSKVR-1046)](./ruppertstrasse-booking-variants.md) beschrieben.
+
 ## Wie `zmscitizenapi` das Mapping nutzt
 
 `zmscitizenapi/src/Zmscitizenapi/Services/Core/MapperService.php` ist der API-seitige Mapper, der die normalisierten Provider-/Request-Daten aus DLDB-Importen (einschließlich München-Transformer-Ausgabe) konsumiert.

@@ -231,6 +231,8 @@ Together, these two generated files are the local canonical snapshots consumed b
 
 These constants are part of the Munich parity layer and mirror the business-rule intent from the internal mapper setup.
 
+How these rules play out for Bürgerbüro Ruppertstraße (multi-scope RR, Ausbildung shared booking, Pass exclusive/mixed) is documented with diagrams in [Ruppertstraße booking variants (ZMSKVR-1046)](./ruppertstrasse-booking-variants.md).
+
 ## How `zmscitizenapi` Consumes the Mapping
 
 `zmscitizenapi/src/Zmscitizenapi/Services/Core/MapperService.php` is the API-facing mapper that consumes the normalized provider/request data produced by DLDB imports (including Munich transformer output).

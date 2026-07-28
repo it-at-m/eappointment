@@ -97,6 +97,7 @@
       :availabilityInfoHtml="availabilityInfoHtml"
       :officeNameById="officeNameById"
       :isSlotSelected="isSlotSelected"
+      :officeIdForTime="officeIdForTime"
       @update:selectedDay="handleDaySelection"
       @jumpToBookableDate="jumpToBookableDate"
       @selectTimeSlot="
@@ -119,6 +120,7 @@
       :providersWithAppointments="providersWithAppointments"
       :officeNameById="officeNameById"
       :isSlotSelected="isSlotSelected"
+      :officeIdForTime="officeIdForTime"
       :availableDays="availableDays"
       :appointmentsByDay="appointmentsByDayForDisplay"
       :officeOrder="officeOrder"
@@ -928,6 +930,12 @@ const resolveRealOfficeIdForSlot = (
 
   return Number(displayOrAnyId);
 };
+
+/** Real booking OfficeID for DOM / emit (shared-booking peers). */
+const officeIdForTime = (
+  timeSlot: number,
+  displayOfficeId: number | string
+): number => resolveRealOfficeIdForSlot(Number(displayOfficeId), timeSlot);
 
 const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   clearVisibleErrors();
