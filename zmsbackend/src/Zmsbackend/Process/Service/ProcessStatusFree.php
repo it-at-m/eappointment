@@ -84,20 +84,17 @@ class ProcessStatusFree extends Process
             true
         );
 
-        $unique = [];
+        $processInfos = [];
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
             $processInfo = $this->extractProcessInfo($item, $calendar);
             if ($processInfo) {
-                $key = $this->generateUniqueKey($processInfo['providerId'], $processInfo['date']);
-                if (!isset($unique[$key])) {
-                    $unique[$key] = $this->createMinimalProcess($processInfo);
-                }
+                $processInfos[] = $processInfo;
             }
         }
 
         $processData->closeCursor();
 
-        return array_values($unique);
+        return $this->deduplicateWithRoundRobin($processInfos);
     }
 
     private function getProcessDataHandle(
@@ -168,21 +165,86 @@ class ProcessStatusFree extends Process
         list($calendar, $dayquery, $days) = $this->prepareCalendarAndDays($calendar, $now, $slotsRequired);
         $processData = $this->getProcessDataHandle($days, $slotType, $slotsRequired, $groupData);
 
-        $unique = [];
+        $processInfos = [];
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
             $processInfo = $this->extractProcessInfo($item, $calendar);
             if ($processInfo) {
-                $key = $this->generateUniqueKey($processInfo['providerId'], $processInfo['date']);
-                if (!isset($unique[$key])) {
-                    $unique[$key] = $this->createMinimalProcess($processInfo);
-                }
+                $processInfos[] = $processInfo;
             }
         }
 
         $processData->closeCursor();
         unset($dayquery);
 
-        return array_values($unique);
+        return $this->deduplicateWithRoundRobin($processInfos);
+    }
+
+    /**
+     * Keep one free process per provider+timestamp.
+     *
+     * When several scopes of the same provider offer the same wall-clock slot,
+     * round-robin across successive timeslots among eligible scopes (ZMSKVR-1046).
+     * Scopes that cannot fit the slot never appear here, so fall-through is preserved.
+     *
+     * @param array<int, array<string, mixed>> $processInfos
+     * @return array<int, array<string, mixed>>
+     */
+    private function deduplicateWithRoundRobin(array $processInfos): array
+    {
+        $byKey = [];
+        $keyOrder = [];
+        foreach ($processInfos as $processInfo) {
+            $key = $this->generateUniqueKey($processInfo['providerId'], $processInfo['date']);
+            if (!isset($byKey[$key])) {
+                $keyOrder[] = $key;
+                $byKey[$key] = [];
+            }
+            $byKey[$key][] = $processInfo;
+        }
+
+        $rrByProvider = [];
+        $unique = [];
+        foreach ($keyOrder as $key) {
+            $candidates = self::uniqueCandidatesSortedByScopeId($byKey[$key]);
+            $providerId = (string) $candidates[0]['providerId'];
+            $index = $rrByProvider[$providerId] ?? 0;
+            $chosen = $candidates[self::pickRoundRobinIndex($index, count($candidates))];
+            $rrByProvider[$providerId] = $index + 1;
+            $unique[] = $this->createMinimalProcess($chosen);
+        }
+
+        return $unique;
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $candidates
+     * @return array<int, array<string, mixed>>
+     */
+    private static function uniqueCandidatesSortedByScopeId(array $candidates): array
+    {
+        $byScopeId = [];
+        foreach ($candidates as $candidate) {
+            $byScopeId[(string) $candidate['scopeId']] = $candidate;
+        }
+        $unique = array_values($byScopeId);
+        usort(
+            $unique,
+            static fn (array $a, array $b): int => ((int) $a['scopeId']) <=> ((int) $b['scopeId'])
+        );
+
+        return $unique;
+    }
+
+    /**
+     * @internal Exposed for unit tests.
+     */
+    public static function pickRoundRobinIndex(int $timeslotIndex, int $candidateCount): int
+    {
+        if ($candidateCount < 1) {
+            throw new \InvalidArgumentException('candidateCount must be >= 1');
+        }
+
+        return $timeslotIndex % $candidateCount;
     }
 
     private function extractProcessInfo(array $item, \BO\Zmsentities\Calendar $calendar): ?array
