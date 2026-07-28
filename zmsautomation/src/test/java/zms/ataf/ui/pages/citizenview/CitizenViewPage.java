@@ -464,6 +464,79 @@ public class CitizenViewPage extends BasePage {
     }
 
     /**
+     * True when at least one timeslot button for the real booking OfficeID is in the DOM
+     * ({@code #provider-{officeId}-timeslot-*} or {@code [data-provider-id="{officeId}"]}).
+     */
+    public boolean deepTimeslotPresentForProvider(int officeId) {
+        CONTEXT.set();
+        String script =
+                "var oid=String(arguments[0]);"
+                        + "var prefix='provider-'+oid+'-timeslot-';"
+                        + "function walk(root){"
+                        + " if(!root)return false;"
+                        + " if(root.nodeType===1){"
+                        + "  var id=root.id||'';"
+                        + "  if(id.indexOf(prefix)===0)return true;"
+                        + "  if(root.getAttribute&&root.getAttribute('data-provider-id')===oid"
+                        + "    &&((root.classList&&root.classList.contains('timeslot'))"
+                        + "      ||(root.classList&&root.classList.contains('grid-item'))))return true;"
+                        + "  if(root.shadowRoot&&walk(root.shadowRoot))return true;"
+                        + " }"
+                        + " var c=root.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;"
+                        + " return false;"
+                        + "}"
+                        + "return walk(document.body);";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, officeId));
+    }
+
+    /**
+     * Assert timeslot buttons exist for each real provider id (shared booking peers under one Ort grid).
+     * Clicks Später across hour/day-parts until every provider has been seen at least once.
+     */
+    public void assertTimeslotsPresentForProviders(int... officeIds) {
+        CONTEXT.set();
+        Assert.assertTrue(officeIds != null && officeIds.length > 0, "officeIds required");
+        Set<Integer> remaining = new HashSet<>();
+        for (int officeId : officeIds) {
+            remaining.add(officeId);
+        }
+        for (int attempt = 1; attempt <= 10 && !remaining.isEmpty(); attempt++) {
+            Set<Integer> foundThisPass = new HashSet<>();
+            for (int officeId : remaining) {
+                if (deepTimeslotPresentForProvider(officeId)) {
+                    foundThisPass.add(officeId);
+                    ScenarioLogManager.getLogger()
+                            .info("zmscitizenview: timeslot present for provider {}", officeId);
+                }
+            }
+            remaining.removeAll(foundThisPass);
+            if (remaining.isEmpty()) {
+                break;
+            }
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: still missing timeslots for providers {} (attempt {}); try Später",
+                            remaining,
+                            attempt);
+            if (!clickCitizenViewLaterOnceIfAvailable()) {
+                break;
+            }
+            sleepQuiet(1200L);
+            try {
+                waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
+            } catch (Exception e) {
+                ScenarioLogManager.getLogger()
+                        .warn("zmscitizenview slot wait after Später (assert providers): {}", e.toString());
+            }
+        }
+        Assert.assertTrue(
+                remaining.isEmpty(),
+                "Expected timeslots with data-provider-id / id for providers; still missing " + remaining);
+        scrollTimeSlotGridIntoViewForScreenshots();
+    }
+
+    /**
      * Reserve / preconfirm / confirm screens expose {@code <p id="provider-{officeId}">…</p>} (summary).
      * Asserts that block is present so the appointment is tied to the correct calendar/office.
      */
@@ -1110,26 +1183,40 @@ public class CitizenViewPage extends BasePage {
         scrollTimeSlotGridIntoViewForScreenshots();
     }
 
-    /** JS fragment: pick target slot + highlight + store in {@code window.__zmsCitizenViewSlotTarget} (no click). */
+    /**
+     * JS fragment: pick target slot + highlight + store in {@code window.__zmsCitizenViewSlotTarget} (no click).
+     * <p>
+     * Matches the <strong>real booking OfficeID</strong> via {@code provider-{oid}-timeslot-*} id or
+     * {@code data-provider-id} (shared booking: slots for peer 10503 live under display grid 10489).
+     */
     private static String buildScrollSlotHighlightScript() {
-        return "var oid=arguments[0];"
-                + "function findGrid(root,id){if(!root)return null;var g=root.querySelector('#timeslot-grid-provider-'+id);"
-                + "if(g)return g;var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++)"
-                + "if(all[i].shadowRoot){var f=findGrid(all[i].shadowRoot,id);if(f)return f;}return null;}"
-                + "var grid=findGrid(document.body,oid);if(!grid)return false;"
-                + "grid.scrollIntoView({block:'start'});"
-                + "window.scrollBy(0,200);"
-                + "function collectSlots(root,arr){if(!root)return;var n=root;"
-                + "if(n.nodeType===1){"
-                + " if(n.id&&n.id.indexOf('provider-'+oid+'-timeslot-')===0){arr.push(n);}"
-                + " else if((n.id&&n.id.indexOf('-timeslot-')>=0)||(n.classList&&n.classList.contains('timeslot'))){"
-                + "   arr.push(n);"
+        return "var oid=String(arguments[0]);"
+                + "var prefix='provider-'+oid+'-timeslot-';"
+                + "function collectSlots(root,arr,seen){"
+                + " if(!root)return;"
+                + " if(root.nodeType===1){"
+                + "  var id=root.id||'';"
+                + "  var dpi=root.getAttribute?root.getAttribute('data-provider-id'):null;"
+                + "  var match=id.indexOf(prefix)===0||String(dpi)===oid;"
+                + "  if(match){"
+                + "   var node=root;"
+                + "   if(!(id.indexOf(prefix)===0)&&root.classList&&root.classList.contains('grid-item')){"
+                + "    node=root.querySelector('[id^=\"'+prefix+'\"]')||root.querySelector('.timeslot')||root;"
+                + "   }"
+                + "   if(node&&!seen.has(node)){seen.add(node);arr.push(node);}"
+                + "  }"
+                + "  if(root.shadowRoot)collectSlots(root.shadowRoot,arr,seen);"
                 + " }"
-                + " if(n.shadowRoot)collectSlots(n.shadowRoot,arr);"
+                + " var c=root.children;if(c)for(var i=0;i<c.length;i++)collectSlots(c[i],arr,seen);"
                 + "}"
-                + "var c=n.children; if(c)for(var i=0;i<c.length;i++)collectSlots(c[i],arr);}"
-                + "var slots=[];collectSlots(grid,slots);"
+                + "var slots=[];collectSlots(document.body,slots,new Set());"
                 + "if(!slots.length)return false;"
+                + "function closestGrid(n){"
+                + " while(n){if(n.id&&String(n.id).indexOf('timeslot-grid-provider-')===0)return n;n=n.parentElement;}"
+                + " return null;}"
+                + "var grid=closestGrid(slots[0]);"
+                + "if(grid){grid.scrollIntoView({block:'start'});window.scrollBy(0,200);}"
+                + "else{slots[0].scrollIntoView({block:'start'});window.scrollBy(0,200);}"
                 + "var minTs=Math.floor(Date.now()/1000)+3600;"
                 + "function slotTs(node){"
                 + " if(!node||!node.id)return null;"
@@ -1174,7 +1261,7 @@ public class CitizenViewPage extends BasePage {
                 + "highlightSlot(target);"
                 + "window.__zmsCitizenViewSlotTarget=target;"
                 + "window.__zmsCitizenViewSlotId=(target&&target.id)?target.id:'';"
-                + "window.__zmsCitizenViewSlotOfficeId=oid;"
+                + "window.__zmsCitizenViewSlotOfficeId=parseInt(oid,10);"
                 + "return true;";
     }
 
@@ -1207,6 +1294,9 @@ public class CitizenViewPage extends BasePage {
     /**
      * Step 3a: scroll to grid and highlight the preferred timeslot (no click). The next Cucumber step’s
      * {@code @AfterStep} screenshot then shows the orange outline before Vue updates.
+     * <p>
+     * For shared booking, {@code officeId} is the real slot owner ({@code data-provider-id}), which may differ
+     * from the Ort display id. Retries with Später when no matching slot is in the current hour/day-part.
      */
     public void highlightPreferredTimeslotForOffice(int officeId) {
         CONTEXT.set();
@@ -1214,22 +1304,43 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info(
                 "zmscitizenview: highlight preferred slot (≥60min ahead; else ≥5min; else 3rd/2nd/1st) office {}",
                 officeId);
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(30))
-                .until(
-                        d ->
-                                Boolean.TRUE.equals(
-                                        ((JavascriptExecutor) d).executeScript(scrollSlotHighlight, officeId)));
-        try {
-            Thread.sleep(200L);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        boolean highlighted = false;
+        for (int attempt = 1; attempt <= 8 && !highlighted; attempt++) {
+            try {
+                highlighted =
+                        Boolean.TRUE.equals(
+                                ((JavascriptExecutor) DriverUtil.getDriver())
+                                        .executeScript(scrollSlotHighlight, officeId));
+            } catch (Exception e) {
+                ScenarioLogManager.getLogger()
+                        .warn("zmscitizenview: highlight script attempt {} failed: {}", attempt, e.toString());
+            }
+            if (highlighted) {
+                break;
+            }
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: no timeslot for provider {} in current view (attempt {}); try Später",
+                            officeId,
+                            attempt);
+            if (!clickCitizenViewLaterOnceIfAvailable()) {
+                break;
+            }
+            sleepQuiet(1200L);
+            try {
+                waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
+            } catch (Exception e) {
+                ScenarioLogManager.getLogger()
+                        .warn("zmscitizenview slot wait after Später (highlight): {}", e.toString());
+            }
         }
+        Assert.assertTrue(
+                highlighted,
+                "zmscitizenview: could not find/highlight timeslot for provider " + officeId
+                        + " (shared booking uses data-provider-id / provider-{id}-timeslot-*)");
+        sleepQuiet(200L);
         scrollTimeSlotGridIntoViewForScreenshots();
-        try {
-            Thread.sleep(250L);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        sleepQuiet(250L);
     }
 
     /** Step 3b: click the slot stored by {@link #highlightPreferredTimeslotForOffice(int)}. */
