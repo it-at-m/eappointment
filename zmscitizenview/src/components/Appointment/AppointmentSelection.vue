@@ -1527,7 +1527,7 @@ function getAvailableProviders(
   });
 
   // Filter out providers where any selected service is in their disabledByServices.
-  // Offices with allowDisabledServicesMix=true are kept and resolved later by grouping logic.
+  // Mix-group peers are kept here, then collapsed to one Ort below.
   const filteredProviders = Array.from(filteredProvidersMap.values()).filter(
     (p) => {
       const disabledServices = (p.disabledByServices ?? []).map(Number);
@@ -1543,8 +1543,6 @@ function getAvailableProviders(
         return true;
       }
 
-      // Offices with allowDisabledServicesMix (array or legacy true) participate in
-      // exclusive-vs-mixed logic in the grouping step and must not be filtered out.
       const participatesInMix =
         (Array.isArray(p.allowDisabledServicesMix) &&
           p.allowDisabledServicesMix.length > 0) ||
@@ -1557,11 +1555,25 @@ function getAvailableProviders(
     }
   );
 
-  // Group by name and return unique providers
+  // Collapse allowDisabledServicesMix peers to one Ort (exclusive vs mixed).
+  // Pair by mix group ids — not by display name.
+  const mixGroupKey = (p: OfficeImpl): string => {
+    if (
+      Array.isArray(p.allowDisabledServicesMix) &&
+      p.allowDisabledServicesMix.length > 0
+    ) {
+      return [...p.allowDisabledServicesMix]
+        .map(Number)
+        .sort((a, b) => a - b)
+        .join(",");
+    }
+    return `id:${p.id}`;
+  };
+
   return Object.values(
     filteredProviders.reduce<Record<string, OfficeImpl[]>>(
       (grouped, provider) => {
-        (grouped[provider.name] ||= []).push(provider);
+        (grouped[mixGroupKey(provider)] ||= []).push(provider);
         return grouped;
       },
       {}
