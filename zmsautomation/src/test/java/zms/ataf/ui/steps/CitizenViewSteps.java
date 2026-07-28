@@ -275,6 +275,23 @@ public class CitizenViewSteps {
         page.assertTimeslotsPresentForProviders(officeIds);
     }
 
+    @Then("timeslots for providers {string} should not appear in the citizen view")
+    public void timeslotsForProvidersShouldNotAppear(String officeIdsCsv) {
+        String raw = TestDataHelper.transformTestData(officeIdsCsv);
+        List<Integer> ids = new ArrayList<>();
+        for (String token : raw.split(",")) {
+            String trimmed = token.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            ids.add(parseIntOrFail(trimmed, "officeId"));
+        }
+        int[] officeIds = ids.stream().mapToInt(Integer::intValue).toArray();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert timeslots absent for providers {}", ids);
+        page.assertTimeslotsAbsentForProviders(officeIds);
+    }
+
     @When("I keep only providers {string} checked in the citizen view")
     public void iKeepOnlyProvidersCheckedInTheCitizenView(String officeIdsCsv) {
         String raw = TestDataHelper.transformTestData(officeIdsCsv);
