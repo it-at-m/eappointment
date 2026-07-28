@@ -242,12 +242,11 @@
                 class="callout-margin"
               >
                 <component
-                :is="infoForAppointmentContainsPTag ? 'div' : 'p'"
-                tabindex="0"
-                v-html="sanitizedInfoForAppointment"
+                  :is="infoForAppointmentContainsPTag ? 'div' : 'p'"
+                  tabindex="0"
+                  v-html="sanitizedInfoForAppointment"
                 />
-                  
-                
+
                 <template #header>{{ t("appointmentHintHeader") }}</template>
               </muc-callout>
             </div>
@@ -355,6 +354,7 @@ import {
   QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
 } from "@/utils/Constants";
+import containsParagraphTag from "@/utils/containsParagraphTag";
 import {
   createErrorStates,
   getApiErrorTranslation,
@@ -363,7 +363,6 @@ import {
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { getProviders } from "@/utils/getProviders";
 import sanitizeHtml from "@/utils/sanitizeHtml";
-import containsParagraphTag from "@/utils/containsParagraphTag";
 
 const props = defineProps<{
   globalState: GlobalState;
