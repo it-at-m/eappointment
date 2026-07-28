@@ -550,13 +550,8 @@ const isOfficeIdSelectedForCalendar = (officeId: number | string): boolean => {
 };
 
 const displayOfficeNameForId = (id: number | string): string | null => {
-  const peerOwner = (selectableProviders.value || []).find(
-    (p) =>
-      Array.isArray(p.sharedBookingOfficeIds) &&
-      p.sharedBookingOfficeIds.map(Number).includes(Number(id))
-  );
-  if (peerOwner) return peerOwner.name;
-  return getOfficeById(id)?.name ?? null;
+  const displayId = displayOfficeIdFor(Number(id));
+  return getOfficeById(displayId)?.name ?? getOfficeById(id)?.name ?? null;
 };
 
 const officeNameById = (id: number | string): string | null => {
