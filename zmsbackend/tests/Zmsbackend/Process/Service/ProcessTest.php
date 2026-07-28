@@ -874,4 +874,22 @@ class ProcessTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertSame(0, ProcessStatusFree::pickRoundRobinIndex(0, 1));
         $this->assertSame(0, ProcessStatusFree::pickRoundRobinIndex(5, 1));
     }
+
+    public function testResolveRoundRobinGroupKeyUsesProviderWhenNoSharedBooking()
+    {
+        $this->assertSame('10489', ProcessStatusFree::resolveRoundRobinGroupKey('10489', null));
+        $this->assertSame('10489', ProcessStatusFree::resolveRoundRobinGroupKey('10489', []));
+    }
+
+    public function testResolveRoundRobinGroupKeySortsSharedBookingPeers()
+    {
+        $this->assertSame(
+            '10489,10503',
+            ProcessStatusFree::resolveRoundRobinGroupKey('10503', [10503, 10489])
+        );
+        $this->assertSame(
+            '10489,10503',
+            ProcessStatusFree::resolveRoundRobinGroupKey('10489', [10489, 10503])
+        );
+    }
 }

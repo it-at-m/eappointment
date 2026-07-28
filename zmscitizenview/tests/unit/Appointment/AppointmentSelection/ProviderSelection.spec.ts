@@ -250,6 +250,80 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
     expect(resultIds).toEqual([10489, 10503]);
   });
 
+  it("collapses sharedBookingOfficeIds peers to one Ort (lowest id)", async () => {
+    const testProviders = [
+      {
+        id: 10489,
+        name: "Bürgerbüro Ruppertstraße",
+        disabledByServices: [],
+        sharedBookingOfficeIds: [10489, 10503],
+        address: { street: "Ruppertstraße", house_number: "19" },
+        scope: { id: "160" },
+      },
+      {
+        id: 10503,
+        name: "Bürgerbüro Ruppertstraße (Ausbildung)",
+        disabledByServices: [],
+        sharedBookingOfficeIds: [10489, 10503],
+        address: { street: "Ruppertstraße", house_number: "19" },
+        scope: { id: "372" },
+      },
+    ];
+
+    const wrapper = createWrapper({
+      selectedService: {
+        id: 1063475,
+        subServices: [],
+        providers: testProviders,
+      },
+    });
+
+    await nextTick();
+    await flushPromises();
+
+    const selectable = wrapper.vm.selectableProviders as typeof testProviders;
+    expect(selectable.map((p) => p.id)).toEqual([10489]);
+    expect(selectable[0].sharedBookingOfficeIds).toEqual([10489, 10503]);
+  });
+
+  it("expands sharedBookingOfficeIds into available-calendar officeIds", async () => {
+    const { fetchAvailableCalendar } = await import("@/api/ZMSAppointmentAPI");
+    const testProviders = [
+      {
+        id: 10489,
+        name: "Bürgerbüro Ruppertstraße",
+        disabledByServices: [],
+        sharedBookingOfficeIds: [10489, 10503],
+        address: { street: "Ruppertstraße", house_number: "19" },
+        scope: { id: "160" },
+      },
+      {
+        id: 10503,
+        name: "Bürgerbüro Ruppertstraße (Ausbildung)",
+        disabledByServices: [],
+        sharedBookingOfficeIds: [10489, 10503],
+        address: { street: "Ruppertstraße", house_number: "19" },
+        scope: { id: "372" },
+      },
+    ];
+
+    createWrapper({
+      selectedService: {
+        id: 1063475,
+        subServices: [],
+        providers: testProviders,
+      },
+    });
+
+    await nextTick();
+    await flushPromises();
+
+    expect(fetchAvailableCalendar).toHaveBeenCalled();
+    const officeIdsArg = (fetchAvailableCalendar as ReturnType<typeof vi.fn>)
+      .mock.calls[0][1] as number[];
+    expect([...officeIdsArg].sort((a, b) => a - b)).toEqual([10489, 10503]);
+  });
+
   it("auto-selects equivalent office in mix group when JumpIn has different ID (10489 vs 10502)", async () => {
     const testProviders = [
       {

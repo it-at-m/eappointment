@@ -89,7 +89,7 @@
       :firstDayPart="firstDayPart"
       :lastDayPart="lastDayPart"
       :selectableProviders="selectableProviders"
-      :selectedProviders="selectedProviders"
+      :selectedProviders="selectedProvidersForCalendar"
       :providersWithAppointments="providersWithAppointments"
       :appointmentsCount="appointmentsCount"
       :isLoadingAppointments="isLoadingAppointments"
@@ -115,12 +115,12 @@
       :isLoadingAppointments="isLoadingAppointments"
       :availabilityInfoHtml="availabilityInfoHtml"
       :selectableProviders="selectableProviders"
-      :selectedProviders="selectedProviders"
+      :selectedProviders="selectedProvidersForCalendar"
       :providersWithAppointments="providersWithAppointments"
       :officeNameById="officeNameById"
       :isSlotSelected="isSlotSelected"
       :availableDays="availableDays"
-      :appointmentsByDay="appointmentsByDay"
+      :appointmentsByDay="appointmentsByDayForDisplay"
       :officeOrder="officeOrder"
       :hasMoreDaysAhead="hasMoreListDaysAhead"
       :isLoadingMoreDays="isLoadingMoreListDays"
@@ -404,6 +404,19 @@ const officeOrder = ref<Map<number, number>>(new Map());
 const calendarKey = ref(0);
 
 const selectedProviders = ref<{ [id: string]: boolean }>({});
+
+/** Checkbox state plus shared-booking peer IDs so calendar/list show RR-chosen offices. */
+const selectedProvidersForCalendar = computed(() => {
+  const result: { [id: string]: boolean } = { ...selectedProviders.value };
+  for (const p of selectableProviders.value || []) {
+    if (!result[String(p.id)]) continue;
+    if (!Array.isArray(p.sharedBookingOfficeIds)) continue;
+    for (const peerId of p.sharedBookingOfficeIds) {
+      result[String(peerId)] = true;
+    }
+  }
+  return result;
+});
 const listViewRef = ref<any>();
 const calendarViewRef = ref<any>();
 
@@ -466,7 +479,7 @@ const dayHasSlotsForSelectedProviders = (dateKey: string): boolean => {
   const offices = appointmentsByDay.value.get(dateKey) ?? [];
   return offices.some(
     (office) =>
-      !!selectedProviders.value[String(office.officeId)] &&
+      isOfficeIdSelectedForCalendar(office.officeId) &&
       (office.appointments?.length ?? 0) > 0
   );
 };
@@ -504,12 +517,164 @@ const buttons = ref<HTMLElement | null>(null);
 
 const getOfficeById = (id: number | string): OfficeImpl | undefined => {
   const idStr = String(id);
-  return (selectableProviders.value || []).find((p) => String(p.id) === idStr);
+  const fromSelectable = (selectableProviders.value || []).find(
+    (p) => String(p.id) === idStr
+  );
+  if (fromSelectable) return fromSelectable;
+
+  // Peers collapsed out of the Ort list may still own a reserved/free slot.
+  const services = [
+    selectedService.value,
+    ...(selectedService.value?.subServices || []).filter((s) => s.count > 0),
+  ].filter(Boolean) as Array<{ providers?: OfficeImpl[] }>;
+  for (const service of services) {
+    const found = (service.providers || []).find((p) => String(p.id) === idStr);
+    if (found) return found as OfficeImpl;
+  }
+  return undefined;
+};
+
+/** True when the Ort checkbox for this office (or a shared-booking peer) is checked. */
+const isOfficeIdSelectedForCalendar = (officeId: number | string): boolean => {
+  const idStr = String(officeId);
+  if (selectedProviders.value[idStr]) return true;
+  return (selectableProviders.value || []).some((p) => {
+    if (!selectedProviders.value[String(p.id)]) return false;
+    return (
+      Array.isArray(p.sharedBookingOfficeIds) &&
+      p.sharedBookingOfficeIds.map(Number).includes(Number(officeId))
+    );
+  });
+};
+
+const displayOfficeNameForId = (id: number | string): string | null => {
+  const peerOwner = (selectableProviders.value || []).find(
+    (p) =>
+      Array.isArray(p.sharedBookingOfficeIds) &&
+      p.sharedBookingOfficeIds.map(Number).includes(Number(id))
+  );
+  if (peerOwner) return peerOwner.name;
+  return getOfficeById(id)?.name ?? null;
 };
 
 const officeNameById = (id: number | string): string | null => {
-  return getOfficeById(id)?.name ?? null;
+  return displayOfficeNameForId(id);
 };
+
+/** Map a peer OfficeID to the Ort checkbox office that represents the shared group. */
+const displayOfficeIdFor = (officeId: number): number => {
+  const id = Number(officeId);
+
+  const findOwner = (providers: OfficeImpl[] | undefined) =>
+    (providers || []).find(
+      (p) =>
+        Array.isArray(p.sharedBookingOfficeIds) &&
+        p.sharedBookingOfficeIds.map(Number).includes(id)
+    );
+
+  const selectableOwner = findOwner(selectableProviders.value);
+  if (selectableOwner) return Number(selectableOwner.id);
+
+  // Peers collapsed out of the Ort list still carry the group on the service.
+  const serviceProviders = [
+    ...(selectedService.value?.providers || []),
+    ...((selectedService.value?.subServices || [])
+      .filter((s) => (s.count ?? 0) > 0)
+      .flatMap((s) => s.providers || []) as OfficeImpl[]),
+  ] as OfficeImpl[];
+  const serviceOwner = findOwner(serviceProviders);
+  if (serviceOwner && Array.isArray(serviceOwner.sharedBookingOfficeIds)) {
+    const group = serviceOwner.sharedBookingOfficeIds.map(Number);
+    const selectableInGroup = (selectableProviders.value || [])
+      .map((p) => Number(p.id))
+      .filter((selectableId) => group.includes(selectableId));
+    if (selectableInGroup.length > 0) {
+      return Math.min(...selectableInGroup);
+    }
+    return Math.min(...group);
+  }
+
+  return id;
+};
+
+/**
+ * Merge shared-booking peer offices into one timeslot section (display Ort).
+ * slotOwnerByTimestamp keeps the real officeId for reserve/book.
+ */
+const aggregateSharedBookingOffices = (
+  offices: OfficeAvailableTimeSlotsDTO[]
+): {
+  aggregated: OfficeAvailableTimeSlotsDTO[];
+  slotOwnerByTimestamp: Map<number, number>;
+} => {
+  const slotOwnerByTimestamp = new Map<number, number>();
+  const byDisplay = new Map<number, number[]>();
+
+  for (const office of offices) {
+    const realId = Number(office.officeId);
+    let displayId = displayOfficeIdFor(realId);
+
+    // Fallback: peer expanded into calendar (not an Ort checkbox) → fold into
+    // the checked Ort that lists it, or the checked Ort with the same label.
+    if (
+      displayId === realId &&
+      !selectedProviders.value[String(realId)] &&
+      selectedProvidersForCalendar.value[String(realId)]
+    ) {
+      const peerOwner = (selectableProviders.value || []).find(
+        (p) =>
+          !!selectedProviders.value[String(p.id)] &&
+          Array.isArray(p.sharedBookingOfficeIds) &&
+          p.sharedBookingOfficeIds.map(Number).includes(realId)
+      );
+      if (peerOwner) {
+        displayId = Number(peerOwner.id);
+      } else {
+        const peerName = officeNameById(realId);
+        const sameNameOwner = (selectableProviders.value || []).find(
+          (p) =>
+            !!selectedProviders.value[String(p.id)] &&
+            officeNameById(p.id) === peerName
+        );
+        if (sameNameOwner) {
+          displayId = Number(sameNameOwner.id);
+        }
+      }
+    }
+
+    for (const time of office.appointments ?? []) {
+      if (!slotOwnerByTimestamp.has(time)) {
+        slotOwnerByTimestamp.set(time, realId);
+      }
+      const list = byDisplay.get(displayId) ?? [];
+      if (!list.includes(time)) {
+        list.push(time);
+      }
+      byDisplay.set(displayId, list);
+    }
+  }
+
+  const aggregated = [...byDisplay.entries()].map(
+    ([mergedOfficeId, appointments]) => ({
+      officeId: mergedOfficeId,
+      appointments: [...appointments].sort((a, b) => a - b),
+    })
+  );
+
+  return { aggregated, slotOwnerByTimestamp };
+};
+
+/** timestamp → real officeId (peer) for the currently shown day slots */
+const slotOwnerByTimestamp = ref<Map<number, number>>(new Map());
+
+/** appointmentsByDay with shared-booking peers merged for list/calendar display */
+const appointmentsByDayForDisplay = computed(() => {
+  const result = new Map<string, OfficeAvailableTimeSlotsDTO[]>();
+  for (const [dateKey, offices] of appointmentsByDay.value.entries()) {
+    result.set(dateKey, aggregateSharedBookingOffices(offices).aggregated);
+  }
+  return result;
+});
 
 const timeSlotsInHoursByOffice = computed(() => {
   const offices = new Map<
@@ -517,9 +682,14 @@ const timeSlotsInHoursByOffice = computed(() => {
     { officeId: number; appointments: Map<number, number[]> }
   >();
 
-  appointmentTimestampsByOffice.value.forEach((office) => {
-    if (!selectedProviders.value[office.officeId]) return;
+  // Always re-aggregate here so peer offices never render as duplicate sections
+  // even if appointmentTimestampsByOffice still has raw API office buckets.
+  const selectedOffices = appointmentTimestampsByOffice.value.filter((office) =>
+    isOfficeIdSelectedForCalendar(office.officeId)
+  );
+  const { aggregated } = aggregateSharedBookingOffices(selectedOffices);
 
+  aggregated.forEach((office) => {
     const timesByHours = new Map<number, number[]>();
 
     office.appointments?.forEach?.((time) => {
@@ -533,8 +703,8 @@ const timeSlotsInHoursByOffice = computed(() => {
     });
 
     if (timesByHours.size > 0) {
-      offices.set(office.officeId, {
-        officeId: office.officeId,
+      offices.set(Number(office.officeId), {
+        officeId: Number(office.officeId),
         appointments: timesByHours,
       });
     }
@@ -583,9 +753,12 @@ const timeSlotsInDayPartByOffice = computed(() => {
     { officeId: number; appointments: Map<string, number[]> }
   >();
 
-  appointmentTimestampsByOffice.value.forEach((office) => {
-    if (!selectedProviders.value[office.officeId]) return;
+  const selectedOffices = appointmentTimestampsByOffice.value.filter((office) =>
+    isOfficeIdSelectedForCalendar(office.officeId)
+  );
+  const { aggregated } = aggregateSharedBookingOffices(selectedOffices);
 
+  aggregated.forEach((office) => {
     const timesByPartOfDay = new Map<string, number[]>();
 
     office.appointments?.forEach?.((time) => {
@@ -600,8 +773,8 @@ const timeSlotsInDayPartByOffice = computed(() => {
     });
 
     if (timesByPartOfDay.size > 0) {
-      offices.set(office.officeId, {
-        officeId: office.officeId,
+      offices.set(Number(office.officeId), {
+        officeId: Number(office.officeId),
         appointments: timesByPartOfDay,
       });
     }
@@ -670,7 +843,7 @@ const allowedDates = (date: Date) => {
   // Once checked, require real appointments (persists after the slots window moves).
   const hasProvider = dayEntry.providerIDs
     .split(",")
-    .some((id) => selectedProviders.value[id.trim()]);
+    .some((id) => isOfficeIdSelectedForCalendar(id.trim()));
   if (!hasProvider) {
     return false;
   }
@@ -686,7 +859,7 @@ const allowedDates = (date: Date) => {
 const hasAppointmentsForSelectedProviders = () => {
   return (
     availableDays?.value?.some((day) =>
-      day.providerIDs.split(",").some((id) => selectedProviders.value[id])
+      day.providerIDs.split(",").some((id) => isOfficeIdSelectedForCalendar(id))
     ) || false
   );
 };
@@ -714,9 +887,17 @@ const providersWithAvailableDays = computed(() => {
     day.providerIDs.split(",").forEach((id) => idsWithDays.add(id.trim()));
   });
 
+  const officeHasAvailableDay = (p: OfficeImpl): boolean => {
+    if (idsWithDays.has(String(p.id))) return true;
+    if (!Array.isArray(p.sharedBookingOfficeIds)) return false;
+    return p.sharedBookingOfficeIds.some((peerId) =>
+      idsWithDays.has(String(peerId))
+    );
+  };
+
   // Filter to only providers with available days and sort by priority
   return selectableProviders.value
-    .filter((p) => idsWithDays.has(String(p.id)))
+    .filter((p) => officeHasAvailableDay(p))
     .sort((a, b) => (b.priority ?? -Infinity) - (a.priority ?? -Infinity));
 });
 
@@ -728,10 +909,31 @@ const hasSelectedProviderWithAppointments = computed(() => {
   );
 });
 
+const resolveRealOfficeIdForSlot = (
+  displayOrAnyId: number,
+  timeSlot: number
+): number => {
+  const fromDay = slotOwnerByTimestamp.value.get(timeSlot);
+  if (fromDay !== undefined) return fromDay;
+
+  const dayKey = selectedDay.value ? toDayKey(selectedDay.value) : null;
+  if (dayKey) {
+    const offices = appointmentsByDay.value.get(dayKey) ?? [];
+    for (const office of offices) {
+      if ((office.appointments ?? []).includes(timeSlot)) {
+        return Number(office.officeId);
+      }
+    }
+  }
+
+  return Number(displayOrAnyId);
+};
+
 const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   clearVisibleErrors();
   selectedTimeslot.value = timeSlot;
-  selectedProvider.value = getOfficeById(officeId);
+  const realOfficeId = resolveRealOfficeIdForSlot(officeId, timeSlot);
+  selectedProvider.value = getOfficeById(realOfficeId);
   if (summary.value) {
     await nextTick();
     summary.value.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -974,9 +1176,16 @@ const onUpdateSelectedProviders = (val: { [id: string]: boolean }) => {
   }
 };
 
-const isSlotSelected = (officeId: number | string, time: number) =>
-  selectedTimeslot.value === time &&
-  selectedProvider.value?.id?.toString() === officeId.toString();
+const isSlotSelected = (officeId: number | string, time: number) => {
+  if (selectedTimeslot.value !== time || !selectedProvider.value) {
+    return false;
+  }
+  const selectedId = Number(selectedProvider.value.id);
+  const sectionId = Number(officeId);
+  return (
+    selectedId === sectionId || displayOfficeIdFor(selectedId) === sectionId
+  );
+};
 
 const nextStep = () => emit("next");
 const previousStep = () => {
@@ -1100,7 +1309,7 @@ const applyCalendarResponse = (calendar: AvailableCalendarDTO): boolean => {
 
     const hasAppointments = offices.some(
       (office) =>
-        !!selectedProviders.value[String(office.officeId)] &&
+        isOfficeIdSelectedForCalendar(office.officeId) &&
         (office.appointments?.length ?? 0) > 0
     );
 
@@ -1114,7 +1323,7 @@ const applyCalendarResponse = (calendar: AvailableCalendarDTO): boolean => {
       // Previously free-slot-checked; keep using cached appointment map.
       const cachedHasSlots = (nextByDay.get(dateKey) ?? []).some(
         (office) =>
-          !!selectedProviders.value[String(office.officeId)] &&
+          isOfficeIdSelectedForCalendar(office.officeId) &&
           (office.appointments?.length ?? 0) > 0
       );
       if (!cachedHasSlots) {
@@ -1250,20 +1459,46 @@ const loadMoreListViewDays = async () => {
 /**
  * Office IDs for available-calendar. Once checkboxes exist, only
  * checked offices are sent so next/prevBookableDate match the selection.
+ * Shared-booking peers expand so both OfficeIDs participate in capacity.
  */
 const getOfficeIdsForCalendarRequest = (): number[] => {
   const selectable = selectableProviders.value || [];
   const selectableIds = new Set(selectable.map((p) => Number(p.id)));
   const hasCheckboxState = Object.keys(selectedProviders.value).length > 0;
 
-  if (hasCheckboxState) {
-    return Object.entries(selectedProviders.value)
-      .filter(([, isSelected]) => isSelected)
-      .map(([id]) => Number(id))
-      .filter((id) => selectableIds.has(id));
+  const baseIds = hasCheckboxState
+    ? Object.entries(selectedProviders.value)
+        .filter(([, isSelected]) => isSelected)
+        .map(([id]) => Number(id))
+        .filter((id) => selectableIds.has(id))
+    : selectable.map((p) => Number(p.id));
+
+  const offeringIds = new Set<number>();
+  const services = [
+    selectedService.value,
+    ...(selectedService.value?.subServices || []).filter((s) => s.count > 0),
+  ].filter(Boolean) as Array<{ providers?: Array<{ id: string | number }> }>;
+  for (const service of services) {
+    for (const p of service.providers || []) {
+      offeringIds.add(Number(p.id));
+    }
   }
 
-  return selectable.map((p) => Number(p.id));
+  const expanded = new Set<number>();
+  for (const id of baseIds) {
+    expanded.add(id);
+    const office =
+      selectable.find((p) => Number(p.id) === id) || getOfficeById(id);
+    if (!Array.isArray(office?.sharedBookingOfficeIds)) continue;
+    for (const peerId of office.sharedBookingOfficeIds) {
+      const peer = Number(peerId);
+      if (offeringIds.size === 0 || offeringIds.has(peer)) {
+        expanded.add(peer);
+      }
+    }
+  }
+
+  return [...expanded];
 };
 
 const reloadCalendarAvailability = async (options?: {
@@ -1488,9 +1723,13 @@ const getAppointmentsOfDay = async (date: string): Promise<void> => {
   }
 
   const officesForDay = appointmentsByDay.value.get(toDayKey(date)) ?? [];
-  appointmentTimestampsByOffice.value = officesForDay.filter(
-    (office) => selectedProviders.value[String(office.officeId)]
+  const selectedOffices = officesForDay.filter((office) =>
+    isOfficeIdSelectedForCalendar(office.officeId)
   );
+  const { aggregated, slotOwnerByTimestamp: owners } =
+    aggregateSharedBookingOffices(selectedOffices);
+  appointmentTimestampsByOffice.value = aggregated;
+  slotOwnerByTimestamp.value = owners;
 
   appointmentsCount.value = appointmentTimestampsByOffice.value.reduce(
     (sum, office) => sum + (office.appointments?.length ?? 0),
@@ -1555,6 +1794,34 @@ function getAvailableProviders(
     }
   );
 
+  // Collapse shared-booking peers to one Ort (lowest id as stable display).
+  // Distinct from allowDisabledServicesMix (exclusive vs mixed survivor).
+  const sharedGroupKey = (p: OfficeImpl): string => {
+    if (
+      Array.isArray(p.sharedBookingOfficeIds) &&
+      p.sharedBookingOfficeIds.length > 0
+    ) {
+      return [...p.sharedBookingOfficeIds]
+        .map(Number)
+        .sort((a, b) => a - b)
+        .join(",");
+    }
+    return `id:${p.id}`;
+  };
+
+  const afterSharedCollapse = Object.values(
+    filteredProviders.reduce<Record<string, OfficeImpl[]>>(
+      (grouped, provider) => {
+        (grouped[sharedGroupKey(provider)] ||= []).push(provider);
+        return grouped;
+      },
+      {}
+    )
+  ).map((group) => {
+    if (group.length === 1) return group[0];
+    return [...group].sort((a, b) => Number(a.id) - Number(b.id))[0];
+  });
+
   // Collapse allowDisabledServicesMix peers to one Ort (exclusive vs mixed).
   // Pair by mix group ids — not by display name.
   const mixGroupKey = (p: OfficeImpl): string => {
@@ -1571,7 +1838,7 @@ function getAvailableProviders(
   };
 
   return Object.values(
-    filteredProviders.reduce<Record<string, OfficeImpl[]>>(
+    afterSharedCollapse.reduce<Record<string, OfficeImpl[]>>(
       (grouped, provider) => {
         (grouped[mixGroupKey(provider)] ||= []).push(provider);
         return grouped;
@@ -1822,6 +2089,10 @@ onMounted(() => {
         Number(office.parentId) === Number(props.preselectedOfficeId) ||
         (Array.isArray(office.allowDisabledServicesMix) &&
           office.allowDisabledServicesMix.includes(
+            Number(props.preselectedOfficeId)
+          )) ||
+        (Array.isArray(office.sharedBookingOfficeIds) &&
+          office.sharedBookingOfficeIds.includes(
             Number(props.preselectedOfficeId)
           )));
 
