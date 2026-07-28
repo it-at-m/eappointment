@@ -211,7 +211,10 @@ class Munich
     }
 
     /**
-     * Path to bundled SADB overwrite (ex-dldb-mapper prod.json). Passkalender 10502 + Pass services.
+     * Path to bundled SADB overwrite (ex-dldb-mapper prod.json).
+     * Local extras: Passkalender 10502 (Pass services) + Ausbildungskalender 10503
+     * (Haushaltsbescheinigung 1080843, Wohnsitzanmeldung 1063475, Wohnsitzanmeldung Familie 10224132).
+     * TODO ZMSKVR-1046: Remove 10503 from the overwrite once a real Ausbildung office exists in SADB.
      */
     public static function defaultSadbOverwritePath(): string
     {
