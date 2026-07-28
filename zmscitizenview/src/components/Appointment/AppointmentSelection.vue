@@ -596,15 +596,17 @@ const displayOfficeIdFor = (officeId: number): number => {
 
 /**
  * Merge shared-booking peer offices into one timeslot section (display Ort).
- * slotOwnerByTimestamp keeps the real officeId for reserve/book.
+ * slotOwnerByTimestamp keeps the real officeId for reserve/book, keyed by
+ * display section + timestamp so unrelated Orte with the same wall-clock
+ * slot do not collide.
  */
 const aggregateSharedBookingOffices = (
   offices: OfficeAvailableTimeSlotsDTO[]
 ): {
   aggregated: OfficeAvailableTimeSlotsDTO[];
-  slotOwnerByTimestamp: Map<number, number>;
+  slotOwnerByTimestamp: Map<string, number>;
 } => {
-  const slotOwnerByTimestamp = new Map<number, number>();
+  const slotOwnerByTimestamp = new Map<string, number>();
   const byDisplay = new Map<number, number[]>();
 
   for (const office of offices) {
@@ -640,8 +642,9 @@ const aggregateSharedBookingOffices = (
     }
 
     for (const time of office.appointments ?? []) {
-      if (!slotOwnerByTimestamp.has(time)) {
-        slotOwnerByTimestamp.set(time, realId);
+      const ownerKey = `${displayId}_${time}`;
+      if (!slotOwnerByTimestamp.has(ownerKey)) {
+        slotOwnerByTimestamp.set(ownerKey, realId);
       }
       const list = byDisplay.get(displayId) ?? [];
       if (!list.includes(time)) {
@@ -661,8 +664,8 @@ const aggregateSharedBookingOffices = (
   return { aggregated, slotOwnerByTimestamp };
 };
 
-/** timestamp → real officeId (peer) for the currently shown day slots */
-const slotOwnerByTimestamp = ref<Map<number, number>>(new Map());
+/** displayId_timestamp → real officeId (peer) for the currently shown day slots */
+const slotOwnerByTimestamp = ref<Map<string, number>>(new Map());
 
 /** appointmentsByDay with shared-booking peers merged for list/calendar display */
 const appointmentsByDayForDisplay = computed(() => {
@@ -910,14 +913,18 @@ const resolveRealOfficeIdForSlot = (
   displayOrAnyId: number,
   timeSlot: number
 ): number => {
-  const fromDay = slotOwnerByTimestamp.value.get(timeSlot);
+  const displayId = displayOfficeIdFor(Number(displayOrAnyId));
+  const fromDay = slotOwnerByTimestamp.value.get(`${displayId}_${timeSlot}`);
   if (fromDay !== undefined) return fromDay;
 
   const dayKey = selectedDay.value ? toDayKey(selectedDay.value) : null;
   if (dayKey) {
     const offices = appointmentsByDay.value.get(dayKey) ?? [];
     for (const office of offices) {
-      if ((office.appointments ?? []).includes(timeSlot)) {
+      if (
+        displayOfficeIdFor(Number(office.officeId)) === displayId &&
+        (office.appointments ?? []).includes(timeSlot)
+      ) {
         return Number(office.officeId);
       }
     }
