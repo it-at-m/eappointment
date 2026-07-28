@@ -61,7 +61,11 @@ class QueueListHelper
     {
         $effectiveStatus = self::$status;
         unset($effectiveStatus['fake']);
-        return self::getList()->withoutStatus(['fake'])->getCountWithWaitingTime()->count();
+
+        return self::getList()
+            ->withoutStatus(['fake'])
+            ->getCountWithWaitingTime(\App::$now)
+            ->count();
     }
 
     public static function getWaitingClientsBeforeNext()
