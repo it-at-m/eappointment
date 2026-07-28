@@ -92,3 +92,15 @@ Feature: ZMSKVR-1046 Ruppertstraße shared booking — Citizen API (10489 + 1050
     And the appointment status should be "deleted"
     When I fetch the cancellation mail for the current process
     Then the cancellation mail should indicate the appointment was deleted with the word abgesagt
+
+  # Beglaubigung 1063426 is offered at Haupt 10489 only (not Ausbildung 10503).
+  @sharedBooking @mainCalendar
+  Scenario: Beglaubigung calendar for 10489 has slots only for 10489, not 10503
+    When I request available days for office 10489 and service 1063426
+    Then the available calendar should include appointments for offices "10489"
+    And the available calendar should not include appointments for offices "10503"
+
+  @sharedBooking
+  Scenario: Beglaubigung with both shared peers is rejected
+    When I request available days for offices "10489,10503" and service 1063426
+    Then the response status code should be 400

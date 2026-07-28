@@ -491,6 +491,22 @@ public class CitizenViewPage extends BasePage {
     }
 
     /**
+     * Assert no timeslot buttons exist for the given real provider ids (e.g. Ausbildung peer
+     * when the selected service is not offered there). Checks the current hour/day-part only.
+     */
+    public void assertTimeslotsAbsentForProviders(int... officeIds) {
+        CONTEXT.set();
+        Assert.assertTrue(officeIds != null && officeIds.length > 0, "officeIds required");
+        for (int officeId : officeIds) {
+            Assert.assertFalse(
+                    deepTimeslotPresentForProvider(officeId),
+                    "Expected no timeslot with data-provider-id / id for provider " + officeId);
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: no timeslot for provider {} (as expected)", officeId);
+        }
+    }
+
+    /**
      * Assert timeslot buttons exist for each real provider id (shared booking peers under one Ort grid).
      * Clicks Später across hour/day-parts until every provider has been seen at least once.
      */

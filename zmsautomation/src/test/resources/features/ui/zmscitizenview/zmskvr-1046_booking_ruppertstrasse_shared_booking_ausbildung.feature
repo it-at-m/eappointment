@@ -91,3 +91,17 @@ Feature: ZMSKVR-1046 Ruppertstraße shared booking — zmscitizenview (Haupt 104
     And the booking summary should show provider 10489 in the citizen view
     When I cancel the appointment in the citizen view
     Then the cancellation success callout should be visible in the citizen view
+
+  # --- Haupt-only service (Beglaubigung 1063426): FE must not expand peer 10503 into the calendar;
+  #     timeslots stay on 10489 only. ---
+  @jumpin @sharedBooking @mainCalendar
+  Scenario: Beglaubigung jump-in 10489 shows timeslots for 10489 only, not Ausbildung 10503
+    Given I open zmscitizenview with jump-in service "1063426" and location "10489"
+    Then the service combination step should be visible
+    When I continue from the service combination step
+    Then provider checkbox 10489 should be visible in the citizen view
+    And provider checkbox 10503 should not appear in the citizen view
+    When I select office 10489 in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    Then timeslots for providers "10489" should be visible in the citizen view
+    And timeslots for providers "10503" should not appear in the citizen view

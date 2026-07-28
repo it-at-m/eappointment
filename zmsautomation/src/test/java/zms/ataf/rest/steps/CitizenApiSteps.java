@@ -193,6 +193,20 @@ public class CitizenApiSteps {
             .isTrue();
     }
 
+    @Then("the available calendar should not include appointments for offices {string}")
+    public void theAvailableCalendarShouldNotIncludeAppointmentsForOffices(String officeIdsCsv) {
+        Assertions.assertThat(lastAvailableCalendarResponse)
+            .as("Request available days first")
+            .isNotNull();
+        for (int officeId : parseOfficeIdsCsv(officeIdsCsv)) {
+            Assertions.assertThat(lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId))
+                .as(
+                    "Expected available-calendar to have no appointment bucket for office %d",
+                    officeId)
+                .isNull();
+        }
+    }
+
     @Then("timestamps on each available calendar day should not be duplicated across offices")
     public void timestampsOnEachAvailableCalendarDayShouldNotBeDuplicatedAcrossOffices() {
         Assertions.assertThat(lastAvailableCalendarResponse)
@@ -952,15 +966,21 @@ public class CitizenApiSteps {
             calendarBody.length() > 1250 ? calendarBody.substring(0, 1250) + "..." : calendarBody
         ));
 
-        AvailableCalendarResponse calendar;
-        try {
-            calendar = response.as(AvailableCalendarResponse.class);
-        } catch (Exception e) {
-            calendar = parseDataResponse(response, AvailableCalendarResponse.class);
+        AvailableCalendarResponse calendar = null;
+        if (response.getStatusCode() == 200) {
+            try {
+                calendar = response.as(AvailableCalendarResponse.class);
+            } catch (Exception e) {
+                calendar = parseDataResponse(response, AvailableCalendarResponse.class);
+            }
+            cachedCalendarOfficeIds = officeIdsParam;
+            cachedCalendarServiceId = serviceId;
+            cachedCalendarServiceCount = serviceCount;
+        } else {
+            cachedCalendarOfficeIds = null;
+            cachedCalendarServiceId = null;
+            cachedCalendarServiceCount = null;
         }
-        cachedCalendarOfficeIds = officeIdsParam;
-        cachedCalendarServiceId = serviceId;
-        cachedCalendarServiceCount = serviceCount;
         return calendar;
     }
 
