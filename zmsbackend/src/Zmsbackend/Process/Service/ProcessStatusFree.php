@@ -180,11 +180,13 @@ class ProcessStatusFree extends Process
     }
 
     /**
-     * Keep one free process per provider+timestamp.
+     * Keep one free process per round-robin group + timestamp.
      *
-     * When several scopes of the same provider offer the same wall-clock slot,
-     * round-robin across successive timeslots among eligible scopes (ZMSKVR-1046).
-     * Scopes that cannot fit the slot never appear here, so fall-through is preserved.
+     * Default group is the provider id. When provider.data.sharedBookingOfficeIds
+     * is set, all peer providers share one group so the same wall-clock slot is
+     * offered once and successive timeslots round-robin across eligible scopes
+     * of every peer (ZMSKVR-1046). Scopes that cannot fit the slot never appear
+     * here, so fall-through is preserved.
      *
      * @param array<int, array<string, mixed>> $processInfos
      * @return array<int, array<string, mixed>>
@@ -194,7 +196,11 @@ class ProcessStatusFree extends Process
         $byKey = [];
         $keyOrder = [];
         foreach ($processInfos as $processInfo) {
-            $key = $this->generateUniqueKey($processInfo['providerId'], $processInfo['date']);
+            $groupKey = self::resolveRoundRobinGroupKey(
+                (string) $processInfo['providerId'],
+                $processInfo['sharedBookingOfficeIds'] ?? null
+            );
+            $key = $groupKey . '_' . $processInfo['date'];
             if (!isset($byKey[$key])) {
                 $keyOrder[] = $key;
                 $byKey[$key] = [];
@@ -202,14 +208,17 @@ class ProcessStatusFree extends Process
             $byKey[$key][] = $processInfo;
         }
 
-        $rrByProvider = [];
+        $rrByGroup = [];
         $unique = [];
         foreach ($keyOrder as $key) {
             $candidates = self::uniqueCandidatesSortedByScopeId($byKey[$key]);
-            $providerId = (string) $candidates[0]['providerId'];
-            $index = $rrByProvider[$providerId] ?? 0;
+            $groupKey = self::resolveRoundRobinGroupKey(
+                (string) $candidates[0]['providerId'],
+                $candidates[0]['sharedBookingOfficeIds'] ?? null
+            );
+            $index = $rrByGroup[$groupKey] ?? 0;
             $chosen = $candidates[self::pickRoundRobinIndex($index, count($candidates))];
-            $rrByProvider[$providerId] = $index + 1;
+            $rrByGroup[$groupKey] = $index + 1;
             $unique[] = $this->createMinimalProcess($chosen);
         }
 
@@ -233,6 +242,24 @@ class ProcessStatusFree extends Process
         );
 
         return $unique;
+    }
+
+    /**
+     * @internal Exposed for unit tests.
+     * @param array<int, int|string>|null $sharedBookingOfficeIds
+     */
+    public static function resolveRoundRobinGroupKey(
+        string $providerId,
+        ?array $sharedBookingOfficeIds
+    ): string {
+        if (!is_array($sharedBookingOfficeIds) || $sharedBookingOfficeIds === []) {
+            return $providerId;
+        }
+
+        $ids = array_map('intval', $sharedBookingOfficeIds);
+        sort($ids, SORT_NUMERIC);
+
+        return implode(',', $ids);
     }
 
     /**
@@ -271,17 +298,24 @@ class ProcessStatusFree extends Process
             return null;
         }
 
+        $sharedBookingOfficeIds = null;
+        $provider = $scope->getProvider();
+        if (
+            $provider
+            && isset($provider->data['sharedBookingOfficeIds'])
+            && is_array($provider->data['sharedBookingOfficeIds'])
+            && $provider->data['sharedBookingOfficeIds'] !== []
+        ) {
+            $sharedBookingOfficeIds = array_map('intval', $provider->data['sharedBookingOfficeIds']);
+        }
+
         return [
             'scopeId' => $scopeId,
             'source' => $scope->getSource(),
             'providerId' => $providerId,
+            'sharedBookingOfficeIds' => $sharedBookingOfficeIds,
             'date' => $date
         ];
-    }
-
-    private function generateUniqueKey(string $providerId, int $date): string
-    {
-        return $providerId . '_' . $date;
     }
 
     private function createMinimalProcess(array $processInfo): array
