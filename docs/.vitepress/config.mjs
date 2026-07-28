@@ -276,6 +276,7 @@ const sidebarLabels = {
     operations: "Operations",
     apiReference: "API reference",
     dldb: "DLDB Interface Documentation",
+    ruppertstrasseBookingVariants: "Ruppertstraße booking variants",
     reference: "Reference",
     moduleReadmes: "Module READMEs",
     onTheFuture: "On the Future",
@@ -329,6 +330,7 @@ const sidebarLabels = {
     operations: "Betrieb",
     apiReference: "API-Referenz",
     dldb: "DLDB-Schnittstellendokumentation",
+    ruppertstrasseBookingVariants: "Terminvarianten Ruppertstraße",
     reference: "Referenz",
     moduleReadmes: "Modul-READMEs",
     onTheFuture: "Ausblick",
@@ -499,6 +501,10 @@ const buildSidebar = (prefix, lang) => {
         {
           text: t.dldb,
           link: `${prefix}/operations/dldb-interface-documentation`,
+        },
+        {
+          text: t.ruppertstrasseBookingVariants,
+          link: `${prefix}/operations/ruppertstrasse-booking-variants`,
         },
         {
           text: t.monologLogging,
