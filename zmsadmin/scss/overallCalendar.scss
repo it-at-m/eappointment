@@ -198,15 +198,35 @@ body.no-page-scroll {
 
 .overall-calendar-filter {
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: .5rem;
+  gap: .5rem 1rem;
   margin: 0;
+  padding: 0;
+  border: 0;
   font-weight: 500;
-  cursor: pointer;
   user-select: none;
 }
 
-.overall-calendar-filter input[type="checkbox"] {
+.overall-calendar-filter-legend {
+  float: left;
+  width: auto;
+  margin: 0 1rem 0 0;
+  padding: 0;
+  font-size: inherit;
+  font-weight: 600;
+}
+
+.overall-calendar-filter label {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  margin: 0;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.overall-calendar-filter input[type="radio"] {
   margin: 0;
 }
 

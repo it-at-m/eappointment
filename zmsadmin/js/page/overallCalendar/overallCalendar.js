@@ -81,16 +81,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (form) form.addEventListener('submit', handleSubmit);
 
-    const hideEmptyDaysCheckbox = document.getElementById('hide-days-without-opening-hours');
-    if (hideEmptyDaysCheckbox) {
+    const emptyDaysRadios = document.querySelectorAll('input[name="emptyDaysVisibility"]');
+    if (emptyDaysRadios.length) {
         hideDaysWithoutOpeningHours = loadHideEmptyDaysPreference();
-        hideEmptyDaysCheckbox.checked = hideDaysWithoutOpeningHours;
-        hideEmptyDaysCheckbox.addEventListener('change', () => {
-            hideDaysWithoutOpeningHours = hideEmptyDaysCheckbox.checked;
-            saveHideEmptyDaysPreference(hideDaysWithoutOpeningHours);
-            if (calendarCache.length) {
-                renderCalendar();
-            }
+        emptyDaysRadios.forEach(radio => {
+            radio.checked = hideDaysWithoutOpeningHours
+                ? radio.value === 'hide'
+                : radio.value === 'show';
+            radio.addEventListener('change', () => {
+                if (!radio.checked) return;
+                hideDaysWithoutOpeningHours = radio.value === 'hide';
+                saveHideEmptyDaysPreference(hideDaysWithoutOpeningHours);
+                if (calendarCache.length) {
+                    renderCalendar();
+                }
+            });
         });
     }
 
