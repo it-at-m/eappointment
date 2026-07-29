@@ -35,6 +35,10 @@ class WorkstationProcessFinished extends BaseController
         if (!$nextProcessId && is_array($input) && isset($input['nextprocess'])) {
             $nextProcessId = (int) $input['nextprocess'];
         }
+        if ($nextProcessId && ! \App::$allowClusterWideCall) {
+            $nextProcess = \App::$http->readGetResult('/process/' . $nextProcessId . '/')->getEntity();
+            $workstation->validateProcessScopeAccess($workstation->getScopeList(), $nextProcess);
+        }
         $statisticEnabled = $workstation->getScope()->getPreference('queue', 'statisticsEnabled');
 
         if (! $statisticEnabled) {

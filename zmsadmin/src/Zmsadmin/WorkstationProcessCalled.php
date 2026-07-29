@@ -57,6 +57,10 @@ class WorkstationProcessCalled extends BaseController
         // without re-entering processing (which would reset Bearbeitungszeit).
         if ($error === 'has_called_process' && $workstation->process->getId() != $processId) {
             $selectedProcess = \App::$http->readGetResult('/process/' . $processId . '/')->getEntity();
+            // Match call API: when cluster-wide call is disabled, only own-scope processes are eligible
+            if (! \App::$allowClusterWideCall) {
+                $workstation->validateProcessScopeAccess($workstation->getScopeList(), $selectedProcess);
+            }
             return \BO\Slim\Render::withHtml(
                 $response,
                 'block/process/confirmCallOther.twig',
