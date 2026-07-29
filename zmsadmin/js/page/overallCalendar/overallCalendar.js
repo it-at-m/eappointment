@@ -5,8 +5,10 @@ let autoRefreshTimer = null;
 let currentRequest = null;
 let SCOPE_COLORS = {};
 let CLOSURES = new Set();
+let hideDaysWithoutOpeningHours = false;
 const STEP_MIN = 5;
 const MAX_DAYS = 14;
+const HIDE_EMPTY_DAYS_STORAGE_KEY = 'zmsadmin.overallCalendar.hideDaysWithoutOpeningHours';
 
 function inclusiveDayCount(dateFrom, dateUntil) {
     const from = new Date(dateFrom);
@@ -79,6 +81,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (form) form.addEventListener('submit', handleSubmit);
 
+    const hideEmptyDaysCheckbox = document.getElementById('hide-days-without-opening-hours');
+    if (hideEmptyDaysCheckbox) {
+        hideDaysWithoutOpeningHours = loadHideEmptyDaysPreference();
+        hideEmptyDaysCheckbox.checked = hideDaysWithoutOpeningHours;
+        hideEmptyDaysCheckbox.addEventListener('change', () => {
+            hideDaysWithoutOpeningHours = hideEmptyDaysCheckbox.checked;
+            saveHideEmptyDaysPreference(hideDaysWithoutOpeningHours);
+            if (calendarCache.length) {
+                renderCalendar();
+            }
+        });
+    }
+
     if (refreshButton) {
         refreshButton.addEventListener('click', async () => {
             if (!currentRequest) return;
@@ -88,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     fetchCalendar({scopeIds, dateFrom, dateUntil, fullReload: false}),
                     fetchClosures({scopeIds, dateFrom, dateUntil})
                 ]);
-                renderMultiDayCalendar(calendarCache);
+                renderCalendar();
             } catch (error) {
                 alert('Fehler beim Aktualisieren: ' + error.message);
             }
@@ -187,7 +202,7 @@ async function handleSubmit(event) {
             fetchClosures({scopeIds, dateFrom, dateUntil})
         ]);
         SCOPE_COLORS = buildScopeColorMap(calendarCache);
-        renderMultiDayCalendar(calendarCache);
+        renderCalendar();
         startAutoRefresh();
     } catch (error) {
         alert('Fehler beim Laden' + error.message);
@@ -220,7 +235,42 @@ async function fetchIncrementalUpdate() {
     }
 
     await fetchClosures({scopeIds, dateFrom, dateUntil});
-    renderMultiDayCalendar(calendarCache);
+    renderCalendar();
+}
+
+function loadHideEmptyDaysPreference() {
+    try {
+        return localStorage.getItem(HIDE_EMPTY_DAYS_STORAGE_KEY) === '1';
+    } catch (error) {
+        return false;
+    }
+}
+
+function saveHideEmptyDaysPreference(enabled) {
+    try {
+        localStorage.setItem(HIDE_EMPTY_DAYS_STORAGE_KEY, enabled ? '1' : '0');
+    } catch (error) {
+        // Ignore quota / private-mode errors; preference is optional.
+    }
+}
+
+function dayHasOpeningHoursOrAppointments(day) {
+    return (day.scopes || []).some(scope => {
+        const hasOpeningHours = Array.isArray(scope.intervals) && scope.intervals.length > 0;
+        const hasAppointments = Array.isArray(scope.events) && scope.events.length > 0;
+        return hasOpeningHours || hasAppointments;
+    });
+}
+
+function getVisibleDays(days) {
+    if (!hideDaysWithoutOpeningHours) {
+        return days;
+    }
+    return days.filter(dayHasOpeningHoursOrAppointments);
+}
+
+function renderCalendar() {
+    renderMultiDayCalendar(getVisibleDays(calendarCache));
 }
 
 function mergeDelta(deltaDays, deletedProcessIds = []) {

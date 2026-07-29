@@ -72,12 +72,22 @@
         </div>
     </form>
 
-    <div class="overall-calendar-legend" style="margin:10px 0;">
-        <strong>Legende:</strong>
-        <span class="overall-calendar-seat overall-calendar-closed" style="display:inline-block; width:80px; height:18px; margin-left:8px; vertical-align:middle;"></span>
-        <span style="margin-right:12px;">gesperrt</span>
-        <span class="overall-calendar-seat overall-calendar-open" style="display:inline-block; width:80px; height:18px; vertical-align:middle;"></span>
-        <span>frei</span>
+    <div class="overall-calendar-toolbar">
+        <label class="overall-calendar-filter"
+               title="Tage ohne Öffnungszeiten ein- / ausblenden">
+            <input type="checkbox"
+                   id="hide-days-without-opening-hours"
+                   name="hideDaysWithoutOpeningHours"
+                   value="1">
+            Tage ohne Öffnungszeiten ausblenden
+        </label>
+        <div class="overall-calendar-legend">
+            <strong>Legende:</strong>
+            <span class="overall-calendar-seat overall-calendar-closed" style="display:inline-block; width:80px; height:18px; margin-left:8px; vertical-align:middle;"></span>
+            <span style="margin-right:12px;">gesperrt</span>
+            <span class="overall-calendar-seat overall-calendar-open" style="display:inline-block; width:80px; height:18px; vertical-align:middle;"></span>
+            <span>frei</span>
+        </div>
     </div>
 
     <div class="overall-calendar-wrapper">
