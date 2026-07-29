@@ -12,7 +12,7 @@ class WorkstationProcessCalledTest extends Base
 
     protected $classname = "WorkstationProcessCalled";
 
-    protected function tearDown(): void
+    public function tearDown(): void
     {
         \App::$allowClusterWideCall = true;
         parent::tearDown();
