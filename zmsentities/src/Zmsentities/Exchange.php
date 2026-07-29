@@ -18,18 +18,6 @@ class Exchange extends Schema\Entity
 
     public const REQUEST_STAT_NAME_NONEXISTENT = 'nonexistent';
 
-    /**
-     * Synthetic request-stat rows that are shown in Dienstleistungsstatistik
-     * but must not count toward Gesamtsumme (aligns with Kundenstatistik).
-     */
-    public static function isSyntheticRequestStatName(string $name): bool
-    {
-        return in_array($name, [
-            self::REQUEST_STAT_NAME_UNCATEGORIZED,
-            self::REQUEST_STAT_NAME_NONEXISTENT,
-        ], true);
-    }
-
     public static $schema = "exchange.json";
 
     #[\Override]
@@ -221,7 +209,7 @@ class Exchange extends Schema\Entity
         ];
         $serviceRows = [];
         foreach ($entity->data as $key => $value) {
-            if (in_array($key, $reserved, true) || self::isSyntheticRequestStatName((string) $key)) {
+            if (in_array($key, $reserved, true) || in_array($key, $tailStatNames, true)) {
                 continue;
             }
             $serviceRows[$key] = $value;
