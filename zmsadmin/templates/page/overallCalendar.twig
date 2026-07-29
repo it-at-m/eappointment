@@ -57,6 +57,24 @@
                 <label for="calendar-date-until" class="form-label">Bis</label>
                 <input type="date" id="calendar-date-until" name="calendarDateUntil" class="form-control">
             </div>
+            <fieldset class="overall-calendar-filter"
+                      title="Darstellung der Tage ohne Öffnungszeiten">
+                <legend class="overall-calendar-filter-legend">Tage ohne Öffnungszeiten</legend>
+                <label>
+                    <input type="radio"
+                           name="emptyDaysVisibility"
+                           value="show"
+                           checked>
+                    Alle Tage anzeigen
+                </label>
+                <label>
+                    <input type="radio"
+                           name="emptyDaysVisibility"
+                           value="hide"
+                           id="hide-days-without-opening-hours">
+                    Ausblenden
+                </label>
+            </fieldset>
         </div>
 
         <div class="overall-calendar-actions">
@@ -72,32 +90,12 @@
         </div>
     </form>
 
-    <div class="overall-calendar-toolbar">
-        <fieldset class="overall-calendar-filter"
-                  title="Darstellung der Tage ohne Öffnungszeiten">
-            <legend class="overall-calendar-filter-legend">Tage ohne Öffnungszeiten</legend>
-            <label>
-                <input type="radio"
-                       name="emptyDaysVisibility"
-                       value="show"
-                       checked>
-                Alle Tage anzeigen
-            </label>
-            <label>
-                <input type="radio"
-                       name="emptyDaysVisibility"
-                       value="hide"
-                       id="hide-days-without-opening-hours">
-                Ausblenden
-            </label>
-        </fieldset>
-        <div class="overall-calendar-legend">
-            <strong>Legende:</strong>
-            <span class="overall-calendar-seat overall-calendar-closed" style="display:inline-block; width:80px; height:18px; margin-left:8px; vertical-align:middle;"></span>
-            <span style="margin-right:12px;">gesperrt</span>
-            <span class="overall-calendar-seat overall-calendar-open" style="display:inline-block; width:80px; height:18px; vertical-align:middle;"></span>
-            <span>frei</span>
-        </div>
+    <div class="overall-calendar-legend" style="margin:10px 0;">
+        <strong>Legende:</strong>
+        <span class="overall-calendar-seat overall-calendar-closed" style="display:inline-block; width:80px; height:18px; margin-left:8px; vertical-align:middle;"></span>
+        <span style="margin-right:12px;">gesperrt</span>
+        <span class="overall-calendar-seat overall-calendar-open" style="display:inline-block; width:80px; height:18px; vertical-align:middle;"></span>
+        <span>frei</span>
     </div>
 
     <div class="overall-calendar-wrapper">

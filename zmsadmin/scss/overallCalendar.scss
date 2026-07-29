@@ -94,7 +94,13 @@ $day-h: 2.2rem;
   z-index: 1;
 }
 
-.overall-calendar-daterange          { display:flex; gap:2rem; margin-bottom:1rem; flex-wrap:wrap; }
+.overall-calendar-daterange {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
 .overall-calendar-datefield          { display:flex; flex-direction:column; gap:.3rem; min-width:100px; }
 .overall-calendar-datefield label    { font-size:.97em; font-weight:500; margin-bottom:2px; color:#444; }
 .overall-calendar-datefield input[type="date"]{
@@ -187,21 +193,13 @@ body.no-page-scroll {
   margin-top: 1rem;
 }
 
-.overall-calendar-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: .75rem 1.5rem;
-  margin: 10px 0;
-}
-
 .overall-calendar-filter {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
+  align-self: flex-end;
   gap: .5rem 1rem;
-  margin: 0;
+  margin: 0 0 .35rem;
   padding: 0;
   border: 0;
   font-weight: 500;
