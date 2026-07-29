@@ -276,7 +276,6 @@ function getVisibleDays(days) {
     }
     return days.filter(dayHasOpeningHoursOrAppointments);
 }
-}
 
 function renderCalendar() {
     renderMultiDayCalendar(getVisibleDays(calendarCache));
