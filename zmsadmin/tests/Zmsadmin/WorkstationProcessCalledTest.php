@@ -127,4 +127,29 @@ class WorkstationProcessCalledTest extends Base
         $this->assertStringContainsString('nextprocess=100044', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testConflictRejectsOutOfScopeProcessWhenClusterWideCallDisabled()
+    {
+        \App::$allowClusterWideCall = false;
+        $selectedProcess = json_decode($this->readFixture("GET_process_100044_57c2.json"), true);
+        $selectedProcess['data']['scope']['id'] = 999;
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_with_process_processing.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/100044/',
+                    'response' => json_encode($selectedProcess)
+                ]
+            ]
+        );
+        $this->expectException('BO\Zmsentities\Exception\WorkstationProcessMatchScopeFailed');
+        $this->render(['id' => 100044], [], []);
+    }
 }
