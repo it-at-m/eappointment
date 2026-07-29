@@ -437,7 +437,7 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
     public void clickStayOnCurrentProcessInConfirmDialog() {
         ScenarioLogManager.getLogger().info("Clicking \"Zurück zum aktuellen Vorgang\"...");
         if (isWebElementVisible(
-                TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME),
+                DEFAULT_EXPLICIT_WAIT_TIME,
                 "section.board.dialog a.button-abort", LocatorType.CSSSELECTOR, true, CONTEXT)) {
             clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "section.board.dialog a.button-abort", LocatorType.CSSSELECTOR, false, CONTEXT);
             return;
@@ -448,7 +448,7 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
     public void clickFinishAndCallSelectedInConfirmDialog() {
         ScenarioLogManager.getLogger().info("Clicking \"Aktuellen Termin abschließen und Kunden aufrufen\"...");
         if (isWebElementVisible(
-                TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME),
+                DEFAULT_EXPLICIT_WAIT_TIME,
                 "section.board.dialog a.button-ok", LocatorType.CSSSELECTOR, true, CONTEXT)) {
             clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "section.board.dialog a.button-ok", LocatorType.CSSSELECTOR, false, CONTEXT);
             return;
@@ -458,17 +458,16 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
 
     public void completeStatisticsFinishIfPresent() {
         ScenarioLogManager.getLogger().info("Completing statistics finish form if present...");
-        long shortWait = TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME);
         final String submitLocator = "//button[contains(text(),'Bearbeitung abschließen') or @value='submit']"
                 + " | //input[@type='submit' and contains(@value,'Bearbeitung abschließen')]";
-        if (!isWebElementVisible(shortWait, submitLocator, LocatorType.XPATH, true, CONTEXT)
-                && !isWebElementVisible(shortWait, "form.form--base button[type='submit']", LocatorType.CSSSELECTOR, true, CONTEXT)) {
+        if (!isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, submitLocator, LocatorType.XPATH, true, CONTEXT)
+                && !isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "form.form--base button[type='submit']", LocatorType.CSSSELECTOR, true, CONTEXT)) {
             return;
         }
-        if (isWebElementVisible(shortWait, "input[name='noRequestsPerformed']", LocatorType.CSSSELECTOR, true, CONTEXT)) {
+        if (isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "input[name='noRequestsPerformed']", LocatorType.CSSSELECTOR, true, CONTEXT)) {
             clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "input[name='noRequestsPerformed']", LocatorType.CSSSELECTOR, false, CONTEXT);
         }
-        if (isWebElementVisible(shortWait, "form.form--base button[type='submit']", LocatorType.CSSSELECTOR, true, CONTEXT)) {
+        if (isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "form.form--base button[type='submit']", LocatorType.CSSSELECTOR, true, CONTEXT)) {
             clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "form.form--base button[type='submit']", LocatorType.CSSSELECTOR, false, CONTEXT);
         } else {
             clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, submitLocator, LocatorType.XPATH, false, CONTEXT);
