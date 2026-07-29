@@ -115,6 +115,12 @@ public class AdminSteps {
         case "Ok":
             COUNTER_PROCESSING_STATION_PAGE.clickOnOkButton();
             break;
+        case "Zurück zum aktuellen Vorgang":
+            PROCESSING_STATION_SECTION.clickStayOnCurrentProcessInConfirmDialog();
+            break;
+        case "Aktuellen Termin abschließen und Kunden aufrufen":
+            PROCESSING_STATION_SECTION.clickFinishAndCallSelectedInConfirmDialog();
+            break;
         default:
             throw new IllegalArgumentException("For button \"" + button + "\" no action is implemented yet!");
         }
@@ -947,6 +953,16 @@ public class AdminSteps {
     @Und("wird die Zeit seit Kundenaufruf unter Kundeninformation angezeigt.")
     public void wird_die_zeit_seit_kundenaufruf_unter_kundeninformation_angezeigt() {
         PROCESSING_STATION_SECTION.checkForTimeSinceCustomerCallUnderCustomerInformation();
+    }
+
+    @Dann("erscheint das Bestätigungsfenster zum Wechsel des Warteschlangen-Kunden.")
+    public void erscheint_das_bestaetigungsfenster_zum_wechsel_des_warteschlangen_kunden() {
+        PROCESSING_STATION_SECTION.assertCallOtherProcessConfirmDialogVisible();
+    }
+
+    @Und("Sie ggf. die Statistikbearbeitung abschließen.")
+    public void sie_ggf_die_statistikbearbeitung_abschliessen() {
+        PROCESSING_STATION_SECTION.completeStatisticsFinishIfPresent();
     }
 
     @Wenn("Sie unter der Standortkonfiguration auf die Schaltfläche {string} klicken.")
