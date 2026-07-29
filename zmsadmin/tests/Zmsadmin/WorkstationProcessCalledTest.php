@@ -117,14 +117,14 @@ class WorkstationProcessCalledTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/process/161275/',
-                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                    'url' => '/process/100044/',
+                    'response' => $this->readFixture("GET_process_100044_57c2.json")
                 ]
             ]
         );
-        $response = $this->render(['id' => 161275], [], []);
+        $response = $this->render(['id' => 100044], [], []);
         $this->assertStringContainsString('client-confirm-call-other', (string)$response->getBody());
-        $this->assertStringContainsString('nextprocess=161275', (string)$response->getBody());
+        $this->assertStringContainsString('nextprocess=100044', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }
