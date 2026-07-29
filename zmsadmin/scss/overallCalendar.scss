@@ -187,6 +187,29 @@ body.no-page-scroll {
   margin-top: 1rem;
 }
 
+.overall-calendar-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem 1.5rem;
+  margin: 10px 0;
+}
+
+.overall-calendar-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  margin: 0;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+}
+
+.overall-calendar-filter input[type="checkbox"] {
+  margin: 0;
+}
+
 .overall-calendar-closed {
   border: 0 !important;
   background: repeating-linear-gradient(

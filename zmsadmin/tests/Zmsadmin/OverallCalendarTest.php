@@ -27,6 +27,8 @@ class OverallCalendarTest extends Base
 
         $this->assertStringContainsString('Gesamtübersicht', (string)$response->getBody());
         $this->assertStringContainsString('overall-calendar', (string)$response->getBody());
+        $this->assertStringContainsString('hide-days-without-opening-hours', (string)$response->getBody());
+        $this->assertStringContainsString('Tage ohne Öffnungszeiten ausblenden', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
