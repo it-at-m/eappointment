@@ -54,6 +54,11 @@ class WorkstationProcessCalledTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_workstation_with_process_called.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/161275/',
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ]
             ]
         );
@@ -61,7 +66,11 @@ class WorkstationProcessCalledTest extends Base
             'exclude' => 82252
         ], []);
         $this->assertStringContainsString(
-            'Dieser Arbeitsplatz hat schon einen Vorgang aufgerufen. Dieser wird weiterhin verwendet.',
+            'Es befindet sich bereits ein Kunde in Bearbeitung',
+            (string)$response->getBody()
+        );
+        $this->assertStringContainsString(
+            'Zurück zum aktuellen Vorgang',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -94,5 +103,28 @@ class WorkstationProcessCalledTest extends Base
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertRedirect($response, '/workstation/process/processing/?');
         $this->assertEquals(302, $response->getStatusCode());
+    }
+
+    public function testConflictWhileProcessingShowsConfirmWithoutRedirect()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_with_process_processing.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/161275/',
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ]
+            ]
+        );
+        $response = $this->render(['id' => 161275], [], []);
+        $this->assertStringContainsString('client-confirm-call-other', (string)$response->getBody());
+        $this->assertStringContainsString('nextprocess=161275', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }

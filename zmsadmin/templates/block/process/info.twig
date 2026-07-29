@@ -1,4 +1,4 @@
-{% embed "block/scaffholding/board.twig" with {'class': 'client-info'} %}
+{% embed "block/scaffholding/board.twig" with {'class': 'client-info', 'data': {'process-id': workstation.process.id}} %}
 {% from "element/helper/snippets.twig" import namelist %}
         {% block board_title %}
             <span class="color-blue"><i class="fas fa-info-circle" aria-hidden="true"></i></span> 

@@ -1102,7 +1102,8 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         ) {
             $timeoutTime = $dateTime->format('Y-m-d H:i:s');
             $data['timeoutTime'] = $timeoutTime;
-        } elseif ($process->status == 'processing') {
+        } elseif ($process->status == 'processing' && empty($process->showUpTime)) {
+            // Do not reset showUpTime on re-save (preserves Bearbeitungszeit)
             $showUpTime = $dateTime->format('Y-m-d H:i:s');
             $data['showUpTime'] = $showUpTime;
         } elseif ($process->status == 'finished') {

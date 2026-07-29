@@ -150,6 +150,21 @@ class View extends BaseView {
             ev.stopPropagation();
             this.exclude = '';
             this.loadParked();
+        }).on('click', '.client-confirm-call-other_stay', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            const $panel = $(ev.currentTarget).closest('.client-confirm-call-other');
+            const status = $panel.data('current-status');
+            const currentId = $panel.data('current-process-id');
+            this.processId = 0;
+            if (status === 'processing') {
+                this.loadProcessing();
+            } else if (currentId) {
+                this.processId = currentId;
+                this.loadCalled();
+            } else {
+                this.load();
+            }
         })
     }
 

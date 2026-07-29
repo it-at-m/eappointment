@@ -30,11 +30,16 @@ class WorkstationProcessFinished extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $this->testProcess($workstation);
         $input = $request->getParsedBody();
+        $validator = $request->getAttribute('validator');
+        $nextProcessId = $validator->getParameter('nextprocess')->isNumber()->getValue();
+        if (!$nextProcessId && is_array($input) && isset($input['nextprocess'])) {
+            $nextProcessId = (int) $input['nextprocess'];
+        }
         $statisticEnabled = $workstation->getScope()->getPreference('queue', 'statisticsEnabled');
 
         if (! $statisticEnabled) {
             $workstation->process['status'] = 'finished';
-            return $this->getFinishedResponse($workstation);
+            return $this->getFinishedResponse($workstation, null, $nextProcessId);
         }
 
         $scopeId = $workstation->scope['id'];
@@ -50,7 +55,7 @@ class WorkstationProcessFinished extends BaseController
         if (is_array($input) && isset($input['process']) && array_key_exists('id', $input['process'])) {
             $source = $workstation->getScope()->getSource();
             $process = new ProcessFinishedHelper(clone $workstation->process, $input, $requestList, $source);
-            return $this->getFinishedResponse($workstation, $process);
+            return $this->getFinishedResponse($workstation, $process, $nextProcessId);
         }
 
         return Render::withHtml(
@@ -61,22 +66,28 @@ class WorkstationProcessFinished extends BaseController
                 'workstation' => $workstation,
                 'requestList' => $requestList->toSortedByGroup(),
                 'menuActive' => 'workstation',
-                'statisticEnabled' => $statisticEnabled
+                'statisticEnabled' => $statisticEnabled,
+                'nextProcessId' => $nextProcessId
             )
         );
     }
 
     protected function getFinishedResponse(
         Workstation $workstation,
-        Process $process = null
+        Process $process = null,
+        $nextProcessId = null
     ) {
         $process = ($process) ? $process : clone $workstation->process;
         $process->status = ('pending' != $process->status) ? 'finished' : $process->status;
         \App::$http->readPostResult('/process/status/finished/', new Process($process))->getEntity();
+        $redirectParams = [];
+        if ($nextProcessId) {
+            $redirectParams['calledprocess'] = $nextProcessId;
+        }
         return Render::redirect(
             $workstation->getVariantName(),
             array(),
-            array()
+            $redirectParams
         );
     }
 
