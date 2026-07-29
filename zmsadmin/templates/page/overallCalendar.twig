@@ -73,14 +73,24 @@
     </form>
 
     <div class="overall-calendar-toolbar">
-        <label class="overall-calendar-filter"
-               title="Tage ohne Öffnungszeiten ein- / ausblenden">
-            <input type="checkbox"
-                   id="hide-days-without-opening-hours"
-                   name="hideDaysWithoutOpeningHours"
-                   value="1">
-            Tage ohne Öffnungszeiten ausblenden
-        </label>
+        <fieldset class="overall-calendar-filter"
+                  title="Darstellung der Tage ohne Öffnungszeiten">
+            <legend class="overall-calendar-filter-legend">Tage ohne Öffnungszeiten</legend>
+            <label>
+                <input type="radio"
+                       name="emptyDaysVisibility"
+                       value="show"
+                       checked>
+                Alle Tage anzeigen
+            </label>
+            <label>
+                <input type="radio"
+                       name="emptyDaysVisibility"
+                       value="hide"
+                       id="hide-days-without-opening-hours">
+                Ausblenden
+            </label>
+        </fieldset>
         <div class="overall-calendar-legend">
             <strong>Legende:</strong>
             <span class="overall-calendar-seat overall-calendar-closed" style="display:inline-block; width:80px; height:18px; margin-left:8px; vertical-align:middle;"></span>
