@@ -268,10 +268,14 @@ function dayHasOpeningHoursOrAppointments(day) {
 }
 
 function getVisibleDays(days) {
+    if (!Array.isArray(days)) {
+        return days;
+    }
     if (!hideDaysWithoutOpeningHours) {
         return days;
     }
     return days.filter(dayHasOpeningHoursOrAppointments);
+}
 }
 
 function renderCalendar() {
