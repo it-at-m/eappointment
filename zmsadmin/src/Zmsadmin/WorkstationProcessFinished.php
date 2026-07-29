@@ -7,6 +7,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Mellon\Validator;
 use BO\Slim\Render;
 use Psr\Http\Message\RequestInterface;
 use BO\Zmsadmin\Helper\ProcessFinishedHelper;
@@ -33,7 +34,7 @@ class WorkstationProcessFinished extends BaseController
         $validator = $request->getAttribute('validator');
         $nextProcessId = $validator->getParameter('nextprocess')->isNumber()->getValue();
         if (!$nextProcessId && is_array($input) && isset($input['nextprocess'])) {
-            $nextProcessId = (int) $input['nextprocess'];
+            $nextProcessId = Validator::value($input['nextprocess'])->isNumber()->getValue();
         }
         if ($nextProcessId && ! \App::$allowClusterWideCall) {
             $nextProcess = \App::$http->readGetResult('/process/' . $nextProcessId . '/')->getEntity();
