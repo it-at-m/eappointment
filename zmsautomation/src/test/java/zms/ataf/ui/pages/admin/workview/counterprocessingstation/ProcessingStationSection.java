@@ -465,7 +465,11 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
             return;
         }
         if (isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "input[name='noRequestsPerformed']", LocatorType.CSSSELECTOR, true, CONTEXT)) {
-            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "input[name='noRequestsPerformed']", LocatorType.CSSSELECTOR, false, CONTEXT);
+            WebElement noRequestsPerformed = DRIVER.findElement(By.cssSelector("input[name='noRequestsPerformed']"));
+            // Ensure checked so submit can proceed without selecting services (default is unchecked).
+            if (!noRequestsPerformed.isSelected()) {
+                noRequestsPerformed.click();
+            }
         }
         if (isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "form.form--base button[type='submit']", LocatorType.CSSSELECTOR, true, CONTEXT)) {
             clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "form.form--base button[type='submit']", LocatorType.CSSSELECTOR, false, CONTEXT);
