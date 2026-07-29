@@ -53,6 +53,20 @@ class WorkstationProcessCalled extends BaseController
             $error = 'has_called_process';
         }
 
+        // Another queue customer was selected while one is already active: confirm switch
+        // without re-entering processing (which would reset Bearbeitungszeit).
+        if ($error === 'has_called_process' && $workstation->process->getId() != $processId) {
+            $selectedProcess = \App::$http->readGetResult('/process/' . $processId . '/')->getEntity();
+            return \BO\Slim\Render::withHtml(
+                $response,
+                'block/process/confirmCallOther.twig',
+                array(
+                    'workstation' => $workstation,
+                    'selectedProcess' => $selectedProcess,
+                )
+            );
+        }
+
         if ($workstation->process->getStatus() == 'processing') {
             return \BO\Slim\Render::redirect('workstationProcessProcessing', [], ['error' => $error]);
         }
