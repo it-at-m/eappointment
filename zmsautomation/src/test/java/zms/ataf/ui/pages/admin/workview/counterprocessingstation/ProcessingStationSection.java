@@ -9,6 +9,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -409,6 +410,70 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
     public void checkForTimeSinceCustomerCallUnderCustomerInformation() {
         ScenarioLogManager.getLogger().info("Checking if time since customer call is visible under 'Kundeninformation'...");
         Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "clock", LocatorType.ID, false));
+    }
+
+    public void assertCallOtherProcessConfirmDialogVisible() {
+        ScenarioLogManager.getLogger().info("Checking confirm dialog for switching queue customer...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("Confirm dialog for switching queue customer is not visible!");
+        wait.until(ExpectedConditions.or(
+                ExpectedConditions.visibilityOfElementLocated(
+                        By.cssSelector("section.board.dialog a.button-abort")),
+                ExpectedConditions.visibilityOfElementLocated(
+                        By.cssSelector("section.client-confirm-call-other, section.board.client-confirm-call-other"))
+        ));
+        boolean lightboxVisible = !findElementsByLocatorType(
+                TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME),
+                "//section[contains(@class,'dialog')]//*[contains(text(),'Es befindet sich bereits ein Kunde in Bearbeitung')]",
+                LocatorType.XPATH).isEmpty();
+        boolean panelVisible = !findElementsByLocatorType(
+                TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME),
+                "//section[contains(@class,'client-confirm-call-other')]//*[contains(text(),'Es befindet sich bereits ein Kunde in Bearbeitung')]",
+                LocatorType.XPATH).isEmpty();
+        Assert.assertTrue(lightboxVisible || panelVisible,
+                "Expected confirm dialog text about a customer already in progress.");
+    }
+
+    public void clickStayOnCurrentProcessInConfirmDialog() {
+        ScenarioLogManager.getLogger().info("Clicking \"Zurück zum aktuellen Vorgang\"...");
+        if (isWebElementVisible(
+                TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME),
+                "section.board.dialog a.button-abort", LocatorType.CSSSELECTOR, true, CONTEXT)) {
+            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "section.board.dialog a.button-abort", LocatorType.CSSSELECTOR, false, CONTEXT);
+            return;
+        }
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, ".client-confirm-call-other_stay", LocatorType.CSSSELECTOR, false, CONTEXT);
+    }
+
+    public void clickFinishAndCallSelectedInConfirmDialog() {
+        ScenarioLogManager.getLogger().info("Clicking \"Aktuellen Termin abschließen und Kunden aufrufen\"...");
+        if (isWebElementVisible(
+                TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME),
+                "section.board.dialog a.button-ok", LocatorType.CSSSELECTOR, true, CONTEXT)) {
+            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "section.board.dialog a.button-ok", LocatorType.CSSSELECTOR, false, CONTEXT);
+            return;
+        }
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, ".client-confirm-call-other_switch", LocatorType.CSSSELECTOR, false, CONTEXT);
+    }
+
+    public void completeStatisticsFinishIfPresent() {
+        ScenarioLogManager.getLogger().info("Completing statistics finish form if present...");
+        long shortWait = TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME);
+        final String submitLocator = "//button[contains(text(),'Bearbeitung abschließen') or @value='submit']"
+                + " | //input[@type='submit' and contains(@value,'Bearbeitung abschließen')]";
+        if (!isWebElementVisible(shortWait, submitLocator, LocatorType.XPATH, true, CONTEXT)
+                && !isWebElementVisible(shortWait, "form.form--base button[type='submit']", LocatorType.CSSSELECTOR, true, CONTEXT)) {
+            return;
+        }
+        if (isWebElementVisible(shortWait, "input[name='noRequestsPerformed']", LocatorType.CSSSELECTOR, true, CONTEXT)) {
+            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "input[name='noRequestsPerformed']", LocatorType.CSSSELECTOR, false, CONTEXT);
+        }
+        if (isWebElementVisible(shortWait, "form.form--base button[type='submit']", LocatorType.CSSSELECTOR, true, CONTEXT)) {
+            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "form.form--base button[type='submit']", LocatorType.CSSSELECTOR, false, CONTEXT);
+        } else {
+            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, submitLocator, LocatorType.XPATH, false, CONTEXT);
+        }
+        CONTEXT.waitForSpinners();
     }
 
 }
