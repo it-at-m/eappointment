@@ -221,6 +221,22 @@ class ExchangeTest extends EntityCommonTests
         $entity->testValid();
     }
 
+    public function testIsSyntheticRequestStatName()
+    {
+        $this->assertTrue(
+            \BO\Zmsentities\Exchange::isSyntheticRequestStatName(
+                \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_UNCATEGORIZED
+            )
+        );
+        $this->assertTrue(
+            \BO\Zmsentities\Exchange::isSyntheticRequestStatName(
+                \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_NONEXISTENT
+            )
+        );
+        $this->assertFalse(\BO\Zmsentities\Exchange::isSyntheticRequestStatName('Reisepass beantragen'));
+        $this->assertFalse(\BO\Zmsentities\Exchange::isSyntheticRequestStatName('sum'));
+    }
+
     public function testWithUncapturedRequestRowSortedLast()
     {
         $exchange = new \BO\Zmsentities\Exchange();

@@ -13,7 +13,6 @@ use BO\Zmsstatistic\Helper\ReportHelper;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class RequestReport extends Base
 {
@@ -89,15 +88,16 @@ class RequestReport extends Base
     public function writeReportData(ReportEntity $report, $sheet)
     {
         $reportData = [];
-        $rowIndex = $sheet->getHighestRow() + 1;
-        $firstDataRow = $rowIndex;
+        $firstDataRow = $sheet->getHighestRow() + 1;
+        $totalSum = 0;
+        $dateSums = [];
 
         foreach ($report->data as $name => $entry) {
             if ($name !== 'sum' && $name !== 'average_processingtime') {
                 $rowData = [];
-                if ($name === 'uncategorized') {
+                if ($name === ReportEntity::REQUEST_STAT_NAME_UNCATEGORIZED) {
                     $rowData[] = 'Dienstleistung wurde nicht erfasst';
-                } elseif ($name === 'nonexistent') {
+                } elseif ($name === ReportEntity::REQUEST_STAT_NAME_NONEXISTENT) {
                     $rowData[] = 'Dienstleistung konnte nicht erbracht werden';
                 } else {
                     $rowData[] = $name;
@@ -108,31 +108,31 @@ class RequestReport extends Base
                     : "0";
                 $rowData[] = $report->data['sum'][$name];
 
+                $includeInTotal = !ReportEntity::isSyntheticRequestStatName((string)$name);
+                if ($includeInTotal) {
+                    $totalSum += (int)($report->data['sum'][$name] ?? 0);
+                }
+
                 $dateTime = clone $this->firstDayDate;
+                $dateColumn = 0;
                 do {
                     $dateString = $dateTime->format($this->dateFormatter[$report->period]);
-                    $rowData[] = isset($entry[$dateString]) ? (int)$entry[$dateString]['requestscount'] : '0';
-
-
+                    $requestCount = isset($entry[$dateString]) ? (int)$entry[$dateString]['requestscount'] : 0;
+                    $rowData[] = $requestCount;
+                    if ($includeInTotal) {
+                        $dateSums[$dateColumn] = ($dateSums[$dateColumn] ?? 0) + $requestCount;
+                    }
+                    $dateColumn++;
                     $dateTime->modify('+1 ' . $report->period);
                 } while ($dateTime <= $this->lastDayDate);
 
-                $reportData[$name] = $rowData;
+                $reportData[] = $rowData;
             }
         }
 
-        $sheet->fromArray($reportData, null, 'A' . $rowIndex);
-        $lastColumn = $sheet->getHighestColumn();
-        $lastRow = $sheet->getHighestRow();
-        $sumRowIndex = $lastRow + 2;
-        $sumRow = ["Summe", "", ""];
-        $sumRow[2] = "=SUM(C{$firstDataRow}:C{$lastRow})";
-        $lastColumnIndex = Coordinate::columnIndexFromString($lastColumn);
-
-        for ($colIndex = 4; $colIndex <= $lastColumnIndex; $colIndex++) {
-            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
-            $sumRow[] = "=SUM({$colLetter}{$firstDataRow}:{$colLetter}{$lastRow})";
-        }
+        $sheet->fromArray($reportData, null, 'A' . $firstDataRow);
+        $sumRowIndex = $sheet->getHighestRow() + 2;
+        $sumRow = array_merge(['Summe', '', $totalSum], $dateSums);
 
         $sheet->fromArray($sumRow, null, 'A' . $sumRowIndex);
     }
