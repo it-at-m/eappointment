@@ -108,7 +108,8 @@ class RequestReport extends Base
                     : "0";
                 $rowData[] = $report->data['sum'][$name];
 
-                $includeInTotal = !ReportEntity::isSyntheticRequestStatName((string)$name);
+                $includeInTotal = $name !== ReportEntity::REQUEST_STAT_NAME_UNCATEGORIZED
+                    && $name !== ReportEntity::REQUEST_STAT_NAME_NONEXISTENT;
                 if ($includeInTotal) {
                     $totalSum += (int)($report->data['sum'][$name] ?? 0);
                 }
