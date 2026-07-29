@@ -371,7 +371,7 @@ class View extends BaseView {
         const selectedId = $(event.currentTarget).data('process');
         const activeId = $('.client-info[data-process-id], .client-called[data-process-id]')
             .first()
-            .data('process-id');
+            .attr('data-process-id');
         if (!selectedId || !activeId || String(selectedId) === String(activeId)) {
             return false;
         }
