@@ -184,7 +184,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "18aa9421beb25c44bbb6561f3605dfb524ccd371"
+                "reference": "56a96a21f59476386e0604378dfbf249baedc26e"
             },
             "require": {
                 "ext-json": ">=0",
@@ -294,7 +294,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "18aa9421beb25c44bbb6561f3605dfb524ccd371"
+                "reference": "cabec25b438a9251d6dd432d2cc18779d5d5f671"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -372,7 +372,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "18aa9421beb25c44bbb6561f3605dfb524ccd371"
+                "reference": "3b064145bcaa7f64c4a42eea05d1beca82f736c9"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -430,7 +430,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "18aa9421beb25c44bbb6561f3605dfb524ccd371"
+                "reference": "c9601a848ea30ea12806a22a8d94be0cd6ea2c52"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -4076,16 +4076,16 @@
         },
         {
             "name": "symfony/cache",
-            "version": "v6.4.42",
+            "version": "v6.4.43",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/cache.git",
-                "reference": "704edf29f1c97ff6e36e248def6ff4a51f765ce1"
+                "reference": "8f0b5de5d9f5131aa99fdab78d7802efef9322dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/cache/zipball/704edf29f1c97ff6e36e248def6ff4a51f765ce1",
-                "reference": "704edf29f1c97ff6e36e248def6ff4a51f765ce1",
+                "url": "https://api.github.com/repos/symfony/cache/zipball/8f0b5de5d9f5131aa99fdab78d7802efef9322dc",
+                "reference": "8f0b5de5d9f5131aa99fdab78d7802efef9322dc",
                 "shasum": ""
             },
             "require": {
@@ -4152,7 +4152,7 @@
                 "psr6"
             ],
             "support": {
-                "source": "https://github.com/symfony/cache/tree/v6.4.42"
+                "source": "https://github.com/symfony/cache/tree/v6.4.43"
             },
             "funding": [
                 {
@@ -4172,7 +4172,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-17T14:17:34+00:00"
+            "time": "2026-07-28T21:33:22+00:00"
         },
         {
             "name": "symfony/cache-contracts",
