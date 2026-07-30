@@ -209,7 +209,7 @@
                     {{ t("minutes") }}
                   </p>
                 </div>
-                <p>
+                <p v-if="!isRemoteVariant">
                   {{ t("detailTimeHint") }}
                 </p>
               </div>
@@ -311,7 +311,7 @@
                   <li class="m-linklist__list__item">
                     <a
                       class="m-linklist-element m-linklist-element--external"
-                      :href="getServiceBaseURL() + appointment.serviceId"
+                      :href="getServiceBaseURL() + resolvedServiceLinkId"
                       target="_blank"
                       :id="`service-${appointment.serviceId}`"
                     >
@@ -438,6 +438,10 @@ const isTelephoneVariant = computed(
 
 const isVideoVariant = computed(() => variantId.value === VARIANT_ID_VIDEO);
 
+const isRemoteVariant = computed(
+  () => isTelephoneVariant.value || isVideoVariant.value
+);
+
 const timeTitleElement = ref<HTMLElement | null>(null);
 const locationTitleElement = ref<HTMLElement | null>(null);
 
@@ -467,6 +471,14 @@ const estimatedDuration = () => {
     selectedProvider.value
   );
 };
+
+const resolvedServiceLinkId = computed<string>(() => {
+  const service = selectedService.value;
+
+  return String(
+    service?.rootParentId ?? service?.id ?? appointment.value?.serviceId ?? ""
+  );
+});
 
 const openRescheduleModal = () => (rescheduleModalOpen.value = true);
 

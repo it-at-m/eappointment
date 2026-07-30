@@ -25,7 +25,7 @@
         v-if="introLocation"
         :id="selectedProvider ? `provider-${selectedProvider.id}` : undefined"
         :label="introLocation"
-        prepend-icon="map-pin"
+        :prepend-icon="introLocationIcon"
         :aria-label="introLocationAriaLabel"
         @click.prevent="focusLocation"
       />
@@ -67,7 +67,11 @@ import { computed } from "vue";
 
 import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { OfficeImpl } from "@/types/OfficeImpl";
-import { VARIANT_ID_TELEPHONE, VARIANT_ID_VIDEO } from "@/utils/Constants";
+import {
+  VARIANT_ID_PRESENCE,
+  VARIANT_ID_TELEPHONE,
+  VARIANT_ID_VIDEO,
+} from "@/utils/Constants";
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { formatMultilineTitle } from "@/utils/formatMultilineTitle";
 
@@ -87,7 +91,7 @@ const introTagline = computed(() => {
     return props.t(`appointmentTypes.${VARIANT_ID_VIDEO}`);
   }
 
-  return props.t("appointment");
+  return props.t(`appointmentTypes.${VARIANT_ID_PRESENCE}`);
 });
 
 const introLocation = computed(() => {
@@ -108,6 +112,18 @@ const introLocation = computed(() => {
     " " +
     props.selectedProvider.address.house_number
   );
+});
+
+const introLocationIcon = computed(() => {
+  if (props.variantId === VARIANT_ID_TELEPHONE) {
+    return "telephone";
+  }
+
+  if (props.variantId === VARIANT_ID_VIDEO) {
+    return "video-camera";
+  }
+
+  return "map-pin";
 });
 
 const introLocationAriaLabel = computed(() => {
