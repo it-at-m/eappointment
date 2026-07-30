@@ -6,6 +6,18 @@ import { nextTick } from "vue";
 import AppointmentDetailHeader from "@/components/AppointmentDetail/AppointmentDetailHeader.vue";
 
 describe("AppointmentDetailHeader", () => {
+  const translate = (key: string): string => {
+    const value = key.split(".").reduce<unknown>((current, part) => {
+      if (typeof current !== "object" || current === null) {
+        return undefined;
+      }
+
+      return (current as Record<string, unknown>)[part];
+    }, de);
+
+    return typeof value === "string" ? value : key;
+  };
+
   const mockAppointment =
     {
       timestamp: Math.floor(Date.now() / 1000),
@@ -34,10 +46,8 @@ describe("AppointmentDetailHeader", () => {
       props: {
         appointment: mockAppointment,
         selectedProvider: mockProvider,
-        t: (key: string) => {
-          const translations = de as any;
-          return translations[key] || key;
-        },
+        variantId: null,
+        t: translate,
         ...props,
       },
       global: {
@@ -51,6 +61,18 @@ describe("AppointmentDetailHeader", () => {
           'muc-button': {
             template: "<div data-test='muc-button'></div>",
             props: ["icon", "variant"],
+          },
+          "muc-link": {
+            template: `
+              <a
+                data-test="muc-link"
+                :data-label="label"
+                :data-prepend-icon="prependIcon"
+              >
+                {{ label }}
+              </a>
+            `,
+            props: ["id", "label", "prependIcon", "ariaLabel"],
           },
         },
       },
@@ -70,6 +92,42 @@ describe("AppointmentDetailHeader", () => {
     expect(wrapper.text()).toContain(wrapper.vm.formatAppointmentDateTime(mockAppointment.timestamp));
     expect(wrapper.text()).toContain(mockProvider.address.street);
     expect(wrapper.text()).toContain(mockProvider.address.house_number);
+  });
+
+  it("renders telephone appointment header", async () => {
+    const wrapper = createWrapper({ variantId: 2 });
+    await nextTick();
+
+    expect(
+      wrapper.find('[data-test="muc-intro"]').attributes("tagline")
+    ).toBe(de.appointmentTypes["2"]);
+
+    const locationLink = wrapper.find(
+      '[data-test="muc-link"][data-prepend-icon="map-pin"]'
+    );
+
+    expect(locationLink.exists()).toBe(true);
+    expect(locationLink.attributes("data-label")).toBe(
+      mockAppointment.telephone
+    );
+  });
+
+  it("renders video appointment header", async () => {
+    const wrapper = createWrapper({ variantId: 3 });
+    await nextTick();
+
+    expect(
+      wrapper.find('[data-test="muc-intro"]').attributes("tagline")
+    ).toBe(de.appointmentTypes["3"]);
+
+    const locationLink = wrapper.find(
+      '[data-test="muc-link"][data-prepend-icon="map-pin"]'
+    );
+
+    expect(locationLink.exists()).toBe(true);
+    expect(locationLink.attributes("data-label")).toBe(
+      de.appointmentDetailVideoIntroLocation
+    );
   });
 
   it("renders header without provider", async () => {
