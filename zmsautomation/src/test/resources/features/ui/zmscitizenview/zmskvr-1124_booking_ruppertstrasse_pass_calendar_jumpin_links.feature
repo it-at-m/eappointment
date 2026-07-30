@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @ZMSKVR-1124 @executeLocally
+@web @zmscitizenview @ZMSKVR-1124 @ZMSKVR-1500 @executeLocally
 Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 10502, Hauptkalender 10489, Abholung 10492, jump-in)
   As a citizen
   I want to book via the citizen view UI
@@ -47,6 +47,9 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
     Then the confirmation success callout should be visible in the citizen view
+    # ZMSKVR-1500: reopening the same confirm link shows MucBanner success (already activated)
+    When I open the confirmation deep link in the browser
+    Then the already activated appointment banner should be visible in the citizen view
     # Second mail fetch: confirmation mail (with appointment view link) exists only after opening the confirm link above
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
@@ -82,6 +85,9 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
     Then the confirmation success callout should be visible in the citizen view
+    # ZMSKVR-1500: reopening the same confirm link shows MucBanner success (already activated)
+    When I open the confirmation deep link in the browser
+    Then the already activated appointment banner should be visible in the citizen view
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
     And the booking summary should show provider 10502 in the citizen view
@@ -115,6 +121,9 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
     Then the confirmation success callout should be visible in the citizen view
+    # ZMSKVR-1500: reopening the same confirm link shows MucBanner success (already activated)
+    When I open the confirmation deep link in the browser
+    Then the already activated appointment banner should be visible in the citizen view
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
     And the booking summary should show provider 10489 in the citizen view
@@ -148,6 +157,9 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
     Then the confirmation success callout should be visible in the citizen view
+    # ZMSKVR-1500: reopening the same confirm link shows MucBanner success (already activated)
+    When I open the confirmation deep link in the browser
+    Then the already activated appointment banner should be visible in the citizen view
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
     And the booking summary should show provider 10492 in the citizen view
@@ -182,6 +194,9 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
     Then the confirmation success callout should be visible in the citizen view
+    # ZMSKVR-1500: reopening the same confirm link shows MucBanner success (already activated)
+    When I open the confirmation deep link in the browser
+    Then the already activated appointment banner should be visible in the citizen view
     # Second mail fetch: confirmation mail (with appointment view link) exists only after opening the confirm link above
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
@@ -219,6 +234,9 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
     Then the confirmation success callout should be visible in the citizen view
+    # ZMSKVR-1500: reopening the same confirm link shows MucBanner success (already activated)
+    When I open the confirmation deep link in the browser
+    Then the already activated appointment banner should be visible in the citizen view
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
     And the booking summary should show provider 10489 in the citizen view
