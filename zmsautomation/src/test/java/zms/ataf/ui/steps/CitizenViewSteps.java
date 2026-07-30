@@ -214,6 +214,14 @@ public class CitizenViewSteps {
         page.assertConfirmationSuccessCalloutVisible();
     }
 
+    /** ZMSKVR-1500 */
+    @Then("the already activated appointment banner should be visible in the citizen view")
+    public void theAlreadyActivatedAppointmentBannerShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert already-activated appointment MucBanner success visible");
+        page.assertAlreadyActivatedAppointmentBannerVisible();
+    }
+
     @When("I cancel the appointment in the citizen view")
     public void iCancelTheAppointmentInTheCitizenView() {
         ScenarioLogManager.getLogger().info("zmscitizenview: cancel appointment via Termin absagen");

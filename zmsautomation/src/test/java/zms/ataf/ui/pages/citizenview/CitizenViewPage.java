@@ -1621,6 +1621,19 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: confirmation success callout found");
     }
 
+    /** ZMSKVR-1500: MucBanner success after reopening an already-used confirm deep link. */
+    public void assertAlreadyActivatedAppointmentBannerVisible() {
+        CONTEXT.set();
+        String marker = "Sie haben Ihren Termin bereits aktiviert.";
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: waiting for already-activated MucBanner success ({})", marker);
+        waitWithThreeWindows(() -> shadowDomContainsText(marker), "Already-activated appointment banner");
+        Assert.assertTrue(
+                shadowDomContainsText(marker),
+                "Already-activated MucBanner success not found after reopening confirm link.");
+        ScenarioLogManager.getLogger().info("zmscitizenview: already-activated appointment banner found");
+    }
+
     public void assertSelectedAppointmentCalloutVisible() {
         assertShadowContains(
                 "Ausgewählter Termin",
