@@ -1774,6 +1774,54 @@ public class CitizenViewPage extends BasePage {
     /** Navigate to zmscitizenview confirm page. Prefer URL extracted from mail body (GET /mails/); else build from confirm credentials or booking process. */
     public void openConfirmationDeepLinkInBrowser() {
         CONTEXT.set();
+        String url = resolveConfirmationDeepLinkUrl();
+        ScenarioLogManager.getLogger().info("zmscitizenview: navigating to confirmation URL: {}", url);
+        try {
+            DriverUtil.getDriver().navigate().to(url);
+            // Do not refresh. Same-tab hash routing now handles confirm links (ZMSKVR-1121).
+            // navigate()+refresh() can confirm twice and leave activation-expired UI instead of success.
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Navigate to confirm URL", e);
+        }
+        try {
+            Thread.sleep(10000L);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * ZMSKVR-1500: reopen the same confirm deep link after a successful activation.
+     * Leaving the confirm hash first is required so the SPA hash watch re-fires; navigating to the
+     * identical URL does not remount and would leave the first success callout on screen.
+     */
+    public void reopenConfirmationDeepLinkInBrowser() {
+        CONTEXT.set();
+        String confirmUrl = resolveConfirmationDeepLinkUrl();
+        String base = confirmUrl;
+        int hashIdx = base.indexOf('#');
+        if (hashIdx >= 0) {
+            base = base.substring(0, hashIdx);
+        }
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: reopening confirmation deep link (leave hash, then confirm again)");
+        try {
+            DriverUtil.getDriver().navigate().to(base + "#/");
+            Thread.sleep(1000L);
+            DriverUtil.getDriver().navigate().to(confirmUrl);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Reopen confirm URL", e);
+        }
+        try {
+            Thread.sleep(10000L);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private String resolveConfirmationDeepLinkUrl() {
         String url = zms.ataf.rest.steps.CitizenApiSteps.getBookingConfirmUrl();
         if (url != null && !url.isBlank()) {
             ScenarioLogManager.getLogger().info("zmscitizenview: opening confirmation deep link (URL from mail body)");
@@ -1802,20 +1850,7 @@ public class CitizenViewPage extends BasePage {
             }
             url = base + "#/appointment/confirm/" + b64;
         }
-        url = ensureAbsoluteCitizenViewUrl(url);
-        ScenarioLogManager.getLogger().info("zmscitizenview: navigating to confirmation URL: {}", url);
-        try {
-            DriverUtil.getDriver().navigate().to(url);
-            // Do not refresh. Same-tab hash routing now handles confirm links (ZMSKVR-1121).
-            // navigate()+refresh() can confirm twice and leave activation-expired UI instead of success.
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger().warn("Navigate to confirm URL", e);
-        }
-        try {
-            Thread.sleep(10000L);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-        }
+        return ensureAbsoluteCitizenViewUrl(url);
     }
 
     /** Navigate to the appointment view URL extracted from the confirmation mail (link without /confirm/). */

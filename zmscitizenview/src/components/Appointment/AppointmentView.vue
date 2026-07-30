@@ -1312,13 +1312,30 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
 };
 
 const runConfirmFromHash = (hash: string | undefined): void => {
+  if (!hash || isBookingAppointment.value) {
+    return;
+  }
+
+  // Already showing the activated overview for this confirm link.
   if (
-    !hash ||
-    hash === confirmedAppointmentHash.value ||
-    isBookingAppointment.value ||
-    confirmAppointmentSuccess.value ||
-    appointmentAlreadyActivated.value
+    appointmentAlreadyActivated.value &&
+    hash === confirmedAppointmentHash.value
   ) {
+    return;
+  }
+
+  // Same confirm link opened again after a successful activation in this session
+  // (hash watch re-fired without a full remount — e.g. leave route then reopen).
+  if (
+    confirmAppointmentSuccess.value &&
+    hash === confirmedAppointmentHash.value
+  ) {
+    showAlreadyActivatedAppointment(hash);
+    return;
+  }
+
+  // Duplicate in-flight confirm for the same hash.
+  if (hash === confirmedAppointmentHash.value) {
     return;
   }
 
@@ -1345,6 +1362,7 @@ function showAlreadyActivatedAppointment(hash: string): void {
   // runAppointmentFromHash resets confirm route state; re-apply afterwards.
   runAppointmentFromHash(hash);
   appointmentAlreadyActivated.value = true;
+  confirmedAppointmentHash.value = hash;
 }
 
 function nextConfirmAppointment(

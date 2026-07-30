@@ -1370,6 +1370,70 @@ describe("AppointmentView", () => {
       expect(wrapper.html()).toContain(de.appointmentAlreadyActivatedHeader);
     });
 
+    it("should show already-activated banner when the same confirm hash is reopened after success", async () => {
+      mockConfirmAppointment.mockResolvedValueOnce({
+        processId: "test-id",
+        authKey: "test-auth-key",
+        serviceId: "123",
+        officeId: "789",
+        serviceCount: 1,
+        subRequestCounts: [],
+        timestamp: nowUnixSeconds() + 3600,
+      } as any);
+
+      const appointmentData = {
+        id: "test-id",
+        authKey: "test-auth-key",
+        scope: {},
+      };
+      const validHash = btoa(JSON.stringify(appointmentData));
+
+      const wrapper = createWrapper({
+        confirmAppointmentHash: validHash,
+      });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.confirmAppointmentSuccess).toBe(true);
+      });
+      expect(mockConfirmAppointment).toHaveBeenCalledTimes(1);
+
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "test-id",
+        authKey: "test-auth-key",
+        serviceId: "123",
+        officeId: "789",
+        serviceCount: 1,
+        subRequestCounts: [],
+        timestamp: nowUnixSeconds() + 3600,
+      } as any);
+      vi.mocked(globalThis.fetch).mockResolvedValue({
+        status: 200,
+        json: async () => ({
+          offices: [
+            {
+              id: "789",
+              name: "Test Provider",
+              address: { street: "Test Street", house_number: "1" },
+            },
+          ],
+          services: [{ id: "123", name: "Test Service" }],
+          relations: [],
+        }),
+      } as any);
+
+      // Leave confirm route then reopen the same link (SPA hash watch re-fires).
+      await wrapper.setProps({ confirmAppointmentHash: undefined });
+      await nextTick();
+      await wrapper.setProps({ confirmAppointmentHash: validHash });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointmentAlreadyActivated).toBe(true);
+        expect(wrapper.vm.currentView).toBe(3);
+      });
+      expect(mockConfirmAppointment).toHaveBeenCalledTimes(1);
+      expect(wrapper.html()).toContain(de.appointmentAlreadyActivatedHeader);
+    });
+
   it("should display activation expired error when API returns appointmentNotFound", async () => {
     const mockErrorResponse = {
       errors: [

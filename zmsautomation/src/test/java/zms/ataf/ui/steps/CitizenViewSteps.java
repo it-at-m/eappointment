@@ -202,6 +202,13 @@ public class CitizenViewSteps {
         page.openConfirmationDeepLinkInBrowser();
     }
 
+    /** ZMSKVR-1500: reopen after success; leaves confirm hash first so the SPA remounts the route. */
+    @When("I reopen the confirmation deep link in the browser")
+    public void iReopenTheConfirmationDeepLinkInTheBrowser() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: reopen confirmation deep link in browser");
+        page.reopenConfirmationDeepLinkInBrowser();
+    }
+
     @When("I open the appointment view deep link in the browser")
     public void iOpenTheAppointmentViewDeepLinkInTheBrowser() {
         ScenarioLogManager.getLogger().info("zmscitizenview: open appointment view deep link in browser");
