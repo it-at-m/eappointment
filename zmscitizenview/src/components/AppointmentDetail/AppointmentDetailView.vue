@@ -255,7 +255,18 @@
                     <strong>{{ t("appointmentTypes.2") }}</strong
                     ><br />
                     {{ t("appointmentDetailTelephoneLocationText") }}<br />
-                    {{ appointment?.telephone }}
+                    <br />
+
+                    <span v-if="appointment?.telephone">
+                      <svg
+                        data-test="telephone-icon"
+                        aria-hidden="true"
+                        class="icon icon--before"
+                      >
+                        <use xlink:href="#icon-telephone"></use>
+                      </svg>
+                      {{ appointment.telephone }}
+                    </span>
                   </p>
 
                   <p>

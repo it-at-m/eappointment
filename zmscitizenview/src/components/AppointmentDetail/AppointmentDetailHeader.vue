@@ -30,6 +30,12 @@
         @click.prevent="focusLocation"
       />
       <br />
+      <muc-link
+        v-if="appointment.icsContent"
+        :label="t('downloadAppointment')"
+        prepend-icon="calendar-down"
+        @click.prevent="downloadIcsAppointment"
+      />
       <!--      Used after the content of hint has been checked-->
       <!--      <p-->
       <!--        v-if="-->
@@ -72,6 +78,7 @@ import {
   VARIANT_ID_TELEPHONE,
   VARIANT_ID_VIDEO,
 } from "@/utils/Constants";
+import { downloadIcsFile } from "@/utils/downloadIcsFile";
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { formatMultilineTitle } from "@/utils/formatMultilineTitle";
 
@@ -148,6 +155,10 @@ const emit =
         | "rescheduleAppointment"
     ) => void
   >();
+
+const downloadIcsAppointment = () => {
+  downloadIcsFile(props.appointment?.icsContent);
+};
 
 const cancelAppointment = () => emit("cancelAppointment");
 const focusLocation = () => emit("focusLocation");
