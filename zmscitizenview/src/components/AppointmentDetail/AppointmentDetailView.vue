@@ -173,6 +173,7 @@
       <appointment-detail-header
         :appointment="appointment"
         :selected-provider="selectedProvider"
+        :variant-id="variantId"
         :t="t"
         @cancel-appointment="openCancelModal"
         @focus-location="focusLocationTitle"
@@ -218,23 +219,68 @@
                 </h2>
               </div>
               <div
-                v-if="selectedProvider"
+                v-if="selectedProvider || isTelephoneVariant || isVideoVariant"
                 class="m-content location-text-margin-top"
-                :id="`provider-${selectedProvider.id}`"
+                :id="
+                  selectedProvider
+                    ? `provider-${selectedProvider.id}`
+                    : undefined
+                "
               >
-                <p>
-                  {{ selectedProvider.organization }}<br />
-                  <strong> {{ selectedProvider.name }} </strong><br />
-                </p>
-                <p>
-                  {{ selectedProvider.address.street }}
-                  {{ selectedProvider.address.house_number }}<br />
-                  {{ selectedProvider.address.postal_code }}
-                  {{ selectedProvider.address.city }}
-                </p>
-                <p v-if="appointment?.scope?.hint">
-                  <strong> {{ appointment.scope.hint }} </strong>
-                </p>
+                <template v-if="isVideoVariant">
+                  <p>
+                    <strong>{{ t("appointmentTypes.3") }}</strong
+                    ><br />
+                    {{ t("appointmentDetailVideoLocationText") }}
+                  </p>
+
+                  <p>
+                    {{ t("appointmentDetailVideoPreparationHint") }}
+                    <a
+                      :href="VIDEO_CONSULTATION_INFO_URL"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {{ t("appointmentDetailVideoInfoLink") }}</a
+                    >.
+                  </p>
+
+                  <p>
+                    {{ t("appointmentDetailVideoDelayHint") }}
+                  </p>
+                </template>
+
+                <template v-else-if="isTelephoneVariant">
+                  <p>
+                    <strong>{{ t("appointmentTypes.2") }}</strong
+                    ><br />
+                    {{ t("appointmentDetailTelephoneLocationText") }}<br />
+                    {{ appointment?.telephone }}
+                  </p>
+
+                  <p>
+                    {{ t("appointmentDetailTelephonePreparationHint") }}
+                  </p>
+                </template>
+
+                <template v-else-if="selectedProvider">
+                  <p>
+                    {{ selectedProvider.organization }}<br />
+                    <strong>{{ selectedProvider.name }}</strong
+                    ><br />
+                  </p>
+
+                  <p>
+                    {{ selectedProvider.address.street }}
+                    {{ selectedProvider.address.house_number }}<br />
+                    {{ selectedProvider.address.postal_code }}
+                    {{ selectedProvider.address.city }}
+                  </p>
+
+                  <p v-if="appointment?.scope?.hint">
+                    <strong>{{ appointment.scope.hint }}</strong>
+                  </p>
+                </template>
               </div>
               <muc-callout
                 v-if="appointment?.scope?.infoForAppointment"
@@ -350,6 +396,9 @@ import {
   getServiceBaseURL,
   QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
+  VARIANT_ID_TELEPHONE,
+  VARIANT_ID_VIDEO,
+  VIDEO_CONSULTATION_INFO_URL,
 } from "@/utils/Constants";
 import {
   createErrorStates,
@@ -378,6 +427,16 @@ const selectedProvider = ref<OfficeImpl>();
 const loading = ref(true);
 const loadingError = ref(false);
 const isMobile = ref(false);
+
+const variantId = computed<number | null>(
+  () => selectedService.value?.variantId ?? null
+);
+
+const isTelephoneVariant = computed(
+  () => variantId.value === VARIANT_ID_TELEPHONE
+);
+
+const isVideoVariant = computed(() => variantId.value === VARIANT_ID_VIDEO);
 
 const timeTitleElement = ref<HTMLElement | null>(null);
 const locationTitleElement = ref<HTMLElement | null>(null);
