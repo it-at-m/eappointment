@@ -535,6 +535,9 @@ describe("AppointmentView", () => {
       mockConfirmAppointment.mockResolvedValueOnce({
         errors: [{ errorCode: "processNotPreconfirmedAnymore" }],
       });
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValueOnce({
+        errors: [{ errorCode: "appointmentNotFound" }],
+      } as any);
 
       const appointmentData = {
         id: "test-id",
@@ -553,7 +556,9 @@ describe("AppointmentView", () => {
         expect(mockConfirmAppointment).toHaveBeenCalled();
       });
 
-      expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(true);
+      await vi.waitFor(() => {
+        expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(true);
+      });
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
       expect(wrapper.find('[data-test="muc-callout"]').attributes("data-type")).toBe("error");
     });
@@ -1250,6 +1255,9 @@ describe("AppointmentView", () => {
         ]
       };
       mockConfirmAppointment.mockResolvedValueOnce(mockErrorResponse);
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValueOnce({
+        errors: [{ errorCode: "appointmentNotFound" }],
+      } as any);
 
       const appointmentData = {
         id: "test-id",
@@ -1279,8 +1287,11 @@ describe("AppointmentView", () => {
         },
       );
 
-      expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(true);
+      await vi.waitFor(() => {
+        expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(true);
+      });
       expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
+      expect(wrapper.vm.appointmentAlreadyActivated).toBe(false);
 
       const errorCallout = wrapper.find('[data-test="muc-callout"]');
       expect(errorCallout.exists()).toBe(true);
@@ -1288,7 +1299,68 @@ describe("AppointmentView", () => {
 
       expect(errorCallout.text()).toContain(de.apiErrorPreconfirmationExpiredHeader);
       expect(errorCallout.text()).toContain(de.apiErrorPreconfirmationExpiredText);
-  });
+    });
+
+    it("should show already-activated info banner and appointment details when confirm link is reused", async () => {
+      mockConfirmAppointment.mockResolvedValueOnce({
+        errors: [
+          {
+            errorCode: "processNotPreconfirmedAnymore",
+            message: "Process not preconfirmed anymore",
+          },
+        ],
+      });
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "test-id",
+        authKey: "test-auth-key",
+        serviceId: "123",
+        officeId: "789",
+        serviceCount: 1,
+        subRequestCounts: [],
+        timestamp: nowUnixSeconds() + 3600,
+      } as any);
+      vi.mocked(globalThis.fetch).mockResolvedValue({
+        status: 200,
+        json: async () => ({
+          offices: [
+            {
+              id: "789",
+              name: "Test Provider",
+              address: { street: "Test Street", house_number: "1" },
+            },
+          ],
+          services: [{ id: "123", name: "Test Service" }],
+          relations: [],
+        }),
+      } as any);
+
+      const appointmentData = {
+        id: "test-id",
+        authKey: "test-auth-key",
+        scope: {},
+      };
+      const validHash = btoa(JSON.stringify(appointmentData));
+
+      const wrapper = createWrapper({
+        confirmAppointmentHash: validHash,
+      });
+
+      await vi.waitFor(() => {
+        expect(mockConfirmAppointment).toHaveBeenCalled();
+      });
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointmentAlreadyActivated).toBe(true);
+        expect(wrapper.vm.currentView).toBe(3);
+      });
+
+      expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(
+        false
+      );
+      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
+        true
+      );
+      expect(wrapper.html()).toContain(de.appointmentAlreadyActivatedHeader);
+    });
 
   it("should display activation expired error when API returns appointmentNotFound", async () => {
     const mockErrorResponse = {

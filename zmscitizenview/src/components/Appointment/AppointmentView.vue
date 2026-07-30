@@ -60,7 +60,7 @@
         !isInMaintenanceModeComputed &&
         !isInSystemFailureModeComputed &&
         !errorStates.errorStateMap.apiErrorRateLimitExceeded.value &&
-        !confirmAppointmentHash &&
+        (!confirmAppointmentHash || appointmentAlreadyActivated) &&
         !apiErrorAppointmentNotFound &&
         !apiErrorInvalidJumpinLink &&
         currentView < 4
@@ -71,13 +71,21 @@
         ref="stepperRef"
         :step-items="STEPPER_ITEMS"
         :active-item="activeStep"
-        :disable-previous-steps="!!appointmentHash"
+        :disable-previous-steps="
+          !!appointmentHash || appointmentAlreadyActivated
+        "
         @change-step="changeStep"
       />
       <div class="container">
         <div class="m-component__grid">
           <div class="m-component__column">
-            <div v-if="currentView === 0 && !appointmentHash">
+            <div
+              v-if="
+                currentView === 0 &&
+                !appointmentHash &&
+                !appointmentAlreadyActivated
+              "
+            >
               <service-finder
                 :global-state="globalState"
                 :preselected-service-id="serviceId"
@@ -127,6 +135,15 @@
               />
             </div>
             <div v-if="currentView === 3">
+              <muc-callout
+                v-if="appointmentAlreadyActivated"
+                type="info"
+                data-test="appointment-already-activated-callout"
+              >
+                <template #header>
+                  {{ t("appointmentAlreadyActivatedHeader") }}
+                </template>
+              </muc-callout>
               <appointment-summary
                 v-if="
                   !hasUpdateAppointmentError &&
@@ -279,7 +296,11 @@
               </div>
 
               <muc-callout
-                v-if="!confirmAppointmentSuccess && hasConfirmAppointmentError"
+                v-if="
+                  !confirmAppointmentSuccess &&
+                  !appointmentAlreadyActivated &&
+                  hasConfirmAppointmentError
+                "
                 :type="toCalloutType(apiErrorTranslation.errorType)"
               >
                 <template #content>
@@ -527,6 +548,7 @@ const bookingErrorKey = computed(() => {
 });
 
 const confirmAppointmentSuccess = ref<boolean>(false);
+const appointmentAlreadyActivated = ref<boolean>(false);
 const confirmedAppointmentHash = ref<string | null>(null);
 const loadedAppointmentHash = ref<string | null>(null);
 const isLoadingAppointmentFromHash = ref<boolean>(false);
@@ -1147,6 +1169,7 @@ const downloadIcsAppointment = () => {
 
 const resetConfirmRouteState = (): void => {
   confirmAppointmentSuccess.value = false;
+  appointmentAlreadyActivated.value = false;
   confirmedAppointmentHash.value = null;
   isBookingAppointment.value = false;
 };
@@ -1293,7 +1316,8 @@ const runConfirmFromHash = (hash: string | undefined): void => {
     !hash ||
     hash === confirmedAppointmentHash.value ||
     isBookingAppointment.value ||
-    confirmAppointmentSuccess.value
+    confirmAppointmentSuccess.value ||
+    appointmentAlreadyActivated.value
   ) {
     return;
   }
@@ -1313,10 +1337,20 @@ const runConfirmFromHash = (hash: string | undefined): void => {
   clearAllErrors();
   currentView.value = 5;
   isBookingAppointment.value = true;
-  nextConfirmAppointment(appointmentData);
+  nextConfirmAppointment(appointmentData, hash);
 };
 
-function nextConfirmAppointment(appointmentData: AppointmentHash) {
+function showAlreadyActivatedAppointment(hash: string): void {
+  clearContextErrors(errorStateMap.value);
+  // runAppointmentFromHash resets confirm route state; re-apply afterwards.
+  runAppointmentFromHash(hash);
+  appointmentAlreadyActivated.value = true;
+}
+
+function nextConfirmAppointment(
+  appointmentData: AppointmentHash,
+  hash: string
+) {
   confirmAppointment(props.globalState, appointmentData)
     .then((data) => {
       currentView.value = 5;
@@ -1332,10 +1366,21 @@ function nextConfirmAppointment(appointmentData: AppointmentHash) {
       } else {
         const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
 
-        if (
-          firstErrorCode === "processNotPreconfirmedAnymore" ||
-          firstErrorCode === "appointmentNotFound"
-        ) {
+        if (firstErrorCode === "processNotPreconfirmedAnymore") {
+          Promise.resolve(
+            fetchAppointment(props.globalState, appointmentData)
+          ).then((fetched) => {
+            if ((fetched as AppointmentDTO)?.processId != undefined) {
+              showAlreadyActivatedAppointment(hash);
+              return;
+            }
+            handleApiError(
+              "preconfirmationExpired",
+              errorStateMap.value,
+              currentErrorData.value
+            );
+          });
+        } else if (firstErrorCode === "appointmentNotFound") {
           handleApiError(
             "preconfirmationExpired",
             errorStateMap.value,
