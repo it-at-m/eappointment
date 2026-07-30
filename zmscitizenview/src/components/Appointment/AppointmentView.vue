@@ -135,15 +135,14 @@
               />
             </div>
             <div v-if="currentView === 3">
-              <muc-callout
+              <muc-banner
                 v-if="appointmentAlreadyActivated"
-                type="info"
-                data-test="appointment-already-activated-callout"
+                variant="content"
+                type="success"
+                data-test="appointment-already-activated-banner"
               >
-                <template #header>
-                  {{ t("appointmentAlreadyActivatedHeader") }}
-                </template>
-              </muc-callout>
+                {{ t("appointmentAlreadyActivatedHeader") }}
+              </muc-banner>
               <appointment-summary
                 v-if="
                   !hasUpdateAppointmentError &&
@@ -360,6 +359,7 @@
 import type { ApiErrorTranslation, ErrorStateMap } from "@/utils/errorHandler";
 
 import {
+  MucBanner,
   MucButton,
   MucCallout,
   MucStepper,
