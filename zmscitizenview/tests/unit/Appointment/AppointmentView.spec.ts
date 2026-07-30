@@ -181,6 +181,14 @@ describe("AppointmentView", () => {
             props: ["stepItems", "activeItem", "disablePreviousSteps"],
             emits: ["changeStep"],
           },
+          'muc-banner': {
+            props: ["type", "variant"],
+            template: `
+            <div data-test='muc-banner' :data-type="type" :data-variant="variant">
+              <slot></slot>
+            </div>
+          `
+          },
           'muc-callout': {
             props: ["type", "variant"],
             template: `
