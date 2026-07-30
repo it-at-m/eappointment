@@ -219,7 +219,7 @@
                 </h2>
               </div>
               <div
-                v-if="selectedProvider || isTelephoneVariant || isVideoVariant"
+                v-if="selectedProvider || isRemoteVariant"
                 class="m-content location-text-margin-top"
                 :id="
                   selectedProvider
