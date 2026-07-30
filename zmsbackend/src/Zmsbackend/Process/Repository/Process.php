@@ -1110,10 +1110,12 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
             $finishTime = $dateTime->format('Y-m-d H:i:s');
             $data['finishTime'] = $finishTime;
         } elseif (
-            $process->status == 'queued'
-            && isset($previousStatus)
+            isset($previousStatus)
             && in_array($previousStatus, ['called', 'processing'], true)
+            && in_array($process->status, ['queued', 'parked'], true)
         ) {
+            // Drop open processing segment when leaving to queue/park so a later
+            // resume starts a fresh showUpTime (park-and-resume ATAF expectation).
             $data['showUpTime'] = null;
             $data['timeoutTime'] = null;
         }

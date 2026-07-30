@@ -369,7 +369,9 @@ class View extends BaseView {
 
     onCallOtherProcess(event) {
         const selectedId = $(event.currentTarget).data('process');
-        const activeId = $('.client-info[data-process-id], .client-called[data-process-id]')
+        // Only while actively processing (client-info). During "called", allow normal call flow.
+        const activeId = $('.client-info[data-process-id]')
+            .filter(':visible')
             .first()
             .attr('data-process-id');
         if (!selectedId || !activeId || String(selectedId) === String(activeId)) {
