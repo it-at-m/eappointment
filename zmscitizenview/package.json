@@ -15,7 +15,7 @@
     "serve-loader-test": "npm run build && ws -o -r \"/ -> /resources/loader-test\" -r \"/dist -> ../../dist\""
   },
   "dependencies": {
-    "@muenchen/muc-patternlab-vue": "10.0.1",
+    "@muenchen/muc-patternlab-vue": "10.0.2",
     "altcha": "^3.2.1",
     "dompurify": "^3.4.12",
     "jsdom": "^30.0.0",
