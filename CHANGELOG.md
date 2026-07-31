@@ -11,8 +11,6 @@
 <h2>        Story
 </h2>
 <ul>
-<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1422'>ZMSKVR-1422</a>] -         Aufrufanlagen-Datenbanken heben (Umstieg auf PostgreSQL)
-</li>
 <li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1499'>ZMSKVR-1499</a>] -         Admin-Terminübersicht: Aktionsleiste abhängig von Warteschlangen und Standortkontext anzeigen
 </li>
 <li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1504'>ZMSKVR-1504</a>] -         Automatische Aktualisierung der Anzahl der Wartenden
