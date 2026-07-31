@@ -101,7 +101,6 @@ class CalendarAvailabilityGetTest extends \BO\Zmsbackend\Tests\Api\Base
         $now = \App::$now;
         $end = (clone $now)->modify('+2 months');
         $day = $now->format('Y-m-d');
-        $monthEnd = (clone $now)->modify('last day of this month')->format('Y-m-d');
         $response = $this->render([], [
             'startDate' => $now->format('Y-m-d'),
             'endDate' => $end->format('Y-m-t'),
@@ -114,16 +113,20 @@ class CalendarAvailabilityGetTest extends \BO\Zmsbackend\Tests\Api\Base
         $body = json_decode((string) $response->getBody(), true);
 
         $this->assertTrue(200 == $response->getStatusCode());
-        $this->assertSame($day, $body['data']['slotsStartDate']);
-        $this->assertSame($day, $body['data']['slotsEndDate']);
+        // Vorlauf: if today is not bookable, slots snap to the first bookable day.
+        $this->assertSame($body['data']['slotsStartDate'], $body['data']['slotsEndDate']);
+        $this->assertGreaterThanOrEqual($day, $body['data']['slotsStartDate']);
 
+        $slotsMonthEnd = (new \DateTimeImmutable($body['data']['slotsStartDate']))
+            ->modify('last day of this month')
+            ->format('Y-m-d');
         foreach ($body['data']['days'] as $entry) {
             $this->assertGreaterThanOrEqual($now->format('Y-m-d'), $entry['date']);
-            $this->assertLessThanOrEqual($monthEnd, $entry['date']);
+            $this->assertLessThanOrEqual($slotsMonthEnd, $entry['date']);
         }
 
         if ($body['data']['nextBookableDate'] !== null) {
-            $this->assertGreaterThan($monthEnd, $body['data']['nextBookableDate']);
+            $this->assertGreaterThan($slotsMonthEnd, $body['data']['nextBookableDate']);
         }
     }
 
