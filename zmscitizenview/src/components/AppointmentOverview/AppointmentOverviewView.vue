@@ -102,6 +102,7 @@
           :appointment="appointment"
           :appointment-detail-url="appointmentDetailUrl"
           :offices="offices"
+          :services="services"
           :t="t"
         >
         </appointment-card>
@@ -129,6 +130,7 @@ import { computed, onMounted, ref } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
+import { Service } from "@/api/models/Service";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
 import { getMyAppointments } from "@/api/ZMSAppointmentUserAPI";
 import AddAppointmentCard from "@/components/AppointmentOverview/AddAppointmentCard.vue";
@@ -158,6 +160,7 @@ const props = defineProps<{
 
 const appointments = ref<AppointmentDTO[]>([]);
 const offices = ref<Office[]>([]);
+const services = ref<Service[]>([]);
 const loading = ref(true);
 const loadingError = ref(false);
 
@@ -197,6 +200,7 @@ onMounted(() => {
       );
 
       offices.value = data.offices;
+      services.value = data.services;
       getMyAppointments(props.globalState).then((data) => {
         if (
           Array.isArray(data) &&

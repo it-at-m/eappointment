@@ -116,6 +116,7 @@
             :appointment-detail-url="appointmentDetailUrl"
             :displayed-on-detail-screen="displayedOnDetailScreen"
             :offices="offices"
+            :services="services"
             :t="t"
           />
           <muc-link
@@ -139,6 +140,7 @@ import { computed, onMounted, onUnmounted, ref } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
+import { Service } from "@/api/models/Service";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
 import { getMyAppointments } from "@/api/ZMSAppointmentUserAPI";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
@@ -173,6 +175,7 @@ const resizeSliderContent = ref(false);
 
 const appointments = ref<AppointmentDTO[]>([]);
 const offices = ref<Office[]>([]);
+const services = ref<Service[]>([]);
 
 // API status state
 const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
@@ -214,6 +217,7 @@ onMounted(() => {
       );
 
       offices.value = data.offices;
+      services.value = data.services;
       getMyAppointments(props.globalState).then((data) => {
         if (
           Array.isArray(data) &&
