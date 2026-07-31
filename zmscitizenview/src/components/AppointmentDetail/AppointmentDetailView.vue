@@ -242,10 +242,11 @@
                 class="callout-margin"
               >
                 <template #content>
-                  <div
-                    tabindex="0"
-                    v-html="sanitizeHtml(appointment.scope.infoForAppointment)"
-                  ></div>
+                  <component
+                   :is="infoForAppointmentContainsPTag ? 'div' : 'p'"
+                   tabindex="0"
+                    v-html="sanitizedInfoForAppointment"
+                  />
                 </template>
 
                 <template #header>{{ t("appointmentHintHeader") }}</template>
@@ -621,6 +622,13 @@ const loadAppointment = () => {
     }
   });
 };
+const sanitizedInfoForAppointment = computed(() => 
+  sanitizeHtml(appointment.value?.scope.infoForAppointment)
+);
+
+const infoForAppointmentContainsPTag = computed(() =>
+containsParagraphTag(sanitizedInfoForAppointment.value) 
+);
 
 watch(
   () => props.globalState.accessToken,
