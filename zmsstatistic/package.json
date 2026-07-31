@@ -29,7 +29,7 @@
     }
   },
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.4",
+    "@fortawesome/fontawesome-free": "^7.0.0",
     "@parcel/transformer-sass": "^2.16.4",
     "chart.js": "^4.0.0",
     "eslint": "^9.35.0",
@@ -52,6 +52,6 @@
   "// overrides.brace-expansion": "Force 5.0.8 for CVE-2026-14257 (DoS via unbounded expansion length); no 1.x/2.x backport.",
   "overrides": {
     "js-yaml": "^5.2.2",
-    "brace-expansion": "5.0.8"
+    "brace-expansion": "5.0.9"
   }
 }

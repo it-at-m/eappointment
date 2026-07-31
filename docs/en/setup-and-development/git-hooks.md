@@ -33,10 +33,11 @@ All checks run in this hook, in **fail-fast** order:
 2. **Vue code style** — Prettier check in `zmscitizenview` (`npm run lint`)
 3. **Docs formatting** — Prettier check in `docs/` (`npm run format:check`)
 4. **PHP code style** — PHP CodeSniffer (PSR-12) across PHP modules via the `zms-web` container
+5. **PHP Mess Detector** — PHPMD with root `phpmd.rules.xml` (complexity, size, unused) via `zms-web` — same as CI `php-code-quality`
 
 **Container detection**
 
-The PHP check detects your runtime automatically:
+The PHP checks detect your runtime automatically:
 
 - **Podman** — if a container named `zms-web` is running
 - **Docker** — fallback when Podman is unavailable
@@ -45,7 +46,7 @@ The PHP check detects your runtime automatically:
 **Behavior**
 
 - Commit message, Vue, and docs checks **block** the commit on failure
-- PHP checks run only when `zms-web` is up; otherwise they are skipped with a warning
+- PHP checks (PHPCS + PHPMD) run only when `zms-web` is up; otherwise they are skipped with a warning
 
 See also [Code formatting](./code-formatting.md) for manual PHPCS/Prettier commands.
 
@@ -54,9 +55,11 @@ See also [Code formatting](./code-formatting.md) for manual PHPCS/Prettier comma
 ```txt
 type(PROJECT-123): commit message
 type(PROJECT): commit message
+type(PROJECT-1 PROJECT-2): commit message
+type(PROJECT-1 PROJECT-2): type(PROJECT-3): commit message
 ```
 
-The ticket number is **optional** — use `PROJECT-123` or just `PROJECT` (uppercase).
+The ticket number is **optional** — use `PROJECT-123` or just `PROJECT` (uppercase). Multiple tickets/projects may be space-separated in one scope; multiple `type(scope):` prefixes may be chained before the summary.
 
 **Merge commits**
 
@@ -97,6 +100,20 @@ podman exec -it zms-web bash -lc "./cli modules loop 'vendor/bin/phpcbf --standa
 # Docker
 docker exec -it zms-web bash -lc "./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src/'"
 ```
+
+### PHPMD fails
+
+Re-run the same command CI uses (from the repo root inside `zms-web`):
+
+```bash
+# Podman
+podman exec -it zms-web bash -lc "./cli modules loop 'vendor/bin/phpmd src/ text ../phpmd.rules.xml'"
+
+# Docker
+docker exec -it zms-web bash -lc "./cli modules loop 'vendor/bin/phpmd src/ text ../phpmd.rules.xml'"
+```
+
+Thresholds and rules live in [`phpmd.rules.xml`](../../../phpmd.rules.xml).
 
 ### Container not detected
 

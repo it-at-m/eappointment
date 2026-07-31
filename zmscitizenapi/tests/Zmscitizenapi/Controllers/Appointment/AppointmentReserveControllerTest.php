@@ -56,7 +56,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
         $parameters = [
             'officeId' => 10546,
             'serviceId' => ['1063423'],
-            'serviceCount' => [0],
+            'serviceCount' => [1],
             'timestamp' => "32526616522"
         ];
     
@@ -160,7 +160,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
         $parameters = [
             'officeId' => 10546,
             'serviceId' => ['1063423'],
-            'serviceCount' => [0],
+            'serviceCount' => [1],
             'timestamp' => "32526616300"
         ];
     
@@ -181,7 +181,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
         $parameters = [
             'serviceId' => ['1063423'],
-            'serviceCount' => [0],
+            'serviceCount' => [1],
             'timestamp' => "32526616522"
         ];
 
@@ -202,7 +202,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
         $parameters = [
             'officeId' => 10546,
-            'serviceCount' => [0],
+            'serviceCount' => [1],
             'timestamp' => "32526616522"
         ];
 
@@ -224,7 +224,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
         $parameters = [
             'officeId' => 10546,
             'serviceId' => ['1063423'],
-            'serviceCount' => [0]
+            'serviceCount' => [1]
         ];
 
         $response = $this->render([], $parameters, [], 'POST');
@@ -243,7 +243,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
         $this->setApiCalls([]);
 
         $parameters = [
-            'serviceCount' => [0],
+            'serviceCount' => [1],
             'timestamp' => "32526616522"
         ];
 
@@ -266,7 +266,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
         $parameters = [
             'serviceId' => ['1063423'],
-            'serviceCount' => [0]
+            'serviceCount' => [1]
         ];
 
         $response = $this->render([], $parameters, [], 'POST');
@@ -288,7 +288,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
         $parameters = [
             'officeId' => 10546,
-            'serviceCount' => [0]
+            'serviceCount' => [1]
         ];
 
         $response = $this->render([], $parameters, [], 'POST');
@@ -332,7 +332,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
         $parameters = [
             'officeId' => 'invalid_id',
             'serviceId' => ['1063423'],
-            'serviceCount' => [0],
+            'serviceCount' => [1],
             'timestamp' => "32526616522"
         ];
     
@@ -354,7 +354,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
         $parameters = [
             'officeId' => 10546,
             'serviceId' => ['invalid_service_id'],
-            'serviceCount' => [0],
+            'serviceCount' => [1],
             'timestamp' => "32526616522"
         ];
     
@@ -376,7 +376,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
         $parameters = [
             'officeId' => 10546,
             'serviceId' => ['1063423'],
-            'serviceCount' => [0],
+            'serviceCount' => [1],
             'timestamp' => 'invalid_timestamp'
         ];
     
@@ -397,7 +397,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
         $parameters = [
             'officeId' => 10546,
             'serviceId' => [],
-            'serviceCount' => [0],
+            'serviceCount' => [1],
             'timestamp' => "32526616522"
         ];
     
@@ -467,7 +467,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
         $parameters = [
             'officeId' => 10546,
             'serviceId' => ['1063423'],
-            'serviceCount' => [0],
+            'serviceCount' => [1],
             'timestamp' => "32526616522"
         ];
         $response = $this->render([], $parameters, [], 'POST');
@@ -513,7 +513,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
         $parameters = [
             'officeId' => 10546,
             'serviceId' => ['1063423'],
-            'serviceCount' => [0],
+            'serviceCount' => [1],
             'timestamp' => "32526616522"
         ];
         $response = $this->render([], $parameters, [], 'POST');

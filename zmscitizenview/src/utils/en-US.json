@@ -154,6 +154,8 @@
   "bookAnotherAppointment": "Book another appointment",
   "bookAppointment": "Book appointment",
   "bookAppointmentStart": "Book appointment",
+  "calendarNextMonth": "Next month",
+  "calendarPreviousMonth": "Previous month",
   "calendarView": "Calendar view",
   "calendarViewActiveLabel": "Calendar view active.",
   "cancelAppointment": "Cancel appointment",

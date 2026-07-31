@@ -54,6 +54,27 @@ if [ -n "$container_engine" ]; then
   else
     printf "${GREEN}✓ PHP code style OK.${NC}\n"
   fi
+
+  # Same command as .github/workflows/php-code-quality.yaml (complexity / size / unused).
+  echo "Running PHP Mess Detector check..."
+  phpmd_output=$($container_engine exec zms-web bash -lc "./cli modules loop 'vendor/bin/phpmd src/ text ../phpmd.rules.xml'" 2>&1)
+  phpmd_status=$?
+  if [ "$phpmd_status" -gt 2 ]; then
+    printf "${RED}✗ PHPMD failed to run (container exec error).${NC}\n"
+    echo "$phpmd_output"
+    exit 1
+  fi
+  # cli modules loop ignores per-module exit codes; detect PHPMD text-format violations.
+  phpmd_violations=$(echo "$phpmd_output" | grep -E '\.php:[0-9]+[[:space:]]+[A-Za-z]+' || true)
+  if [ -n "$phpmd_violations" ]; then
+    printf "${RED}✗ PHPMD found rule violations (see phpmd.rules.xml).${NC}\n"
+    echo "$phpmd_output"
+    echo "Re-run with:"
+    echo "  $container_engine exec -it zms-web bash -lc \"./cli modules loop 'vendor/bin/phpmd src/ text ../phpmd.rules.xml'\""
+    exit 1
+  else
+    printf "${GREEN}✓ PHP Mess Detector OK.${NC}\n"
+  fi
 else
-  printf "${YELLOW}⚠ zms-web container is not running. Skipping PHP code style check.${NC}\n"
+  printf "${YELLOW}⚠ zms-web container is not running. Skipping PHP code style and PHPMD checks.${NC}\n"
 fi

@@ -42,6 +42,56 @@ class Request extends \BO\Zmsbackend\Base
         return $request;
     }
 
+    public function readEntityById($requestId, $resolveReferences = 0, $disableCache = false)
+    {
+        $cacheKey = "request-byid-$requestId-$resolveReferences";
+
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            return App::$cache->get($cacheKey);
+        }
+
+        $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
+        $query
+            ->setResolveLevel($resolveReferences)
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionRequestId($requestId);
+        $request = $this->fetchOne($query, new Entity());
+
+        if ($request->hasId()) {
+            $this->attachRootParentIds(new Collection([$request]));
+        }
+
+        if (App::$cache && $request->hasId()) {
+            App::$cache->set($cacheKey, $request);
+        }
+
+        return $request;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function readSourceMapByIds(array $requestIds): array
+    {
+        if ($requestIds === []) {
+            return [];
+        }
+
+        $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
+        $query
+            ->setResolveLevel(0)
+            ->addEntityMapping()
+            ->addConditionRequestIdList($requestIds);
+
+        $map = [];
+        foreach ($this->readCollection($query) as $request) {
+            $map[(string) $request->getId()] = (string) $request->getSource();
+        }
+
+        return $map;
+    }
+
     /**
      * @SuppressWarnings(Param)
      *
@@ -105,7 +155,7 @@ class Request extends \BO\Zmsbackend\Base
     protected function readEntityWithoutRootParentResolution($source, $requestId): Entity
     {
         $this->testSource($source);
-        $query = new Query\Request(Query\Base::SELECT);
+        $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
         $query
             ->setResolveLevel(0)
             ->addEntityMapping()

@@ -91,8 +91,11 @@
               />
             </div>
 
-            <div v-if="currentView === 1">
+            <!-- Keep mounted across customer-info (view 2) so back does not remount/refetch. -->
+            <div v-show="currentView === 1">
               <AppointmentSelection
+                v-if="currentView === 1 || currentView === 2"
+                :key="appointmentSelectionKey"
                 :global-state="globalState"
                 :is-rebooking="isRebooking"
                 :exclusive-location="exclusiveLocation"
@@ -459,6 +462,14 @@ const updateSelectedService = (newService: ServiceImpl): void => {
 };
 
 const selectedServiceMap = ref<Map<string, number>>(new Map<string, number>());
+
+/** Remount AppointmentSelection only when the chosen services change. */
+const appointmentSelectionKey = computed(() => {
+  const entries = Array.from(selectedServiceMap.value.entries())
+    .map(([id, count]) => `${id}:${count}`)
+    .sort();
+  return entries.length > 0 ? entries.join("|") : "none";
+});
 
 const selectedProvider = ref<OfficeImpl>();
 const selectedTimeslot = ref<number>(0);
