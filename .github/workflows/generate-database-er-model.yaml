@@ -1,4 +1,4 @@
-name: 🗄️ Generate Database Schema Diagrams
+name: 🛢️ Generate Database Schema Diagrams
 
 on:
   workflow_call:
