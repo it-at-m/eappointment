@@ -370,7 +370,7 @@ button, input, optgroup, select, textarea {
     &::after {
         z-index:            0; // icon has to be under the input to not block mouseclick
         content:            "\f073";
-        font-family:        "Font Awesome 5 Free", "FontAwesome";
+        font-family:        "Font Awesome 7 Free", "FontAwesome";
         display:            block;
         @include getRem('height', $formInputHeightPx);
         position:           absolute;
