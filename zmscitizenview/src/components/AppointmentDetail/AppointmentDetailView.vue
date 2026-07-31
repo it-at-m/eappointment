@@ -241,12 +241,12 @@
                 type="info"
                 class="callout-margin"
               >
-               <template #content>
-                <div
-                tabindex="0"
-                v-html="sanitizeHtml(appointment.scope.infoForAppointment)"
-                ></div>
-               </template>
+                <template #content>
+                  <div
+                    tabindex="0"
+                    v-html="sanitizeHtml(appointment.scope.infoForAppointment)"
+                  ></div>
+                </template>
 
                 <template #header>{{ t("appointmentHintHeader") }}</template>
               </muc-callout>
@@ -621,9 +621,6 @@ const loadAppointment = () => {
     }
   });
 };
-
-
-
 
 watch(
   () => props.globalState.accessToken,
