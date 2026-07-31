@@ -241,11 +241,12 @@
                 type="info"
                 class="callout-margin"
               >
-                <component
-                  :is="infoForAppointmentContainsPTag ? 'div' : 'p'"
-                  tabindex="0"
-                  v-html="sanitizedInfoForAppointment"
-                />
+               <template #content>
+                <div
+                tabindex="0"
+                v-html="sanitizeHtml(appointment.scope.infoForAppointment)"
+                ></div>
+               </template>
 
                 <template #header>{{ t("appointmentHintHeader") }}</template>
               </muc-callout>
@@ -620,13 +621,9 @@ const loadAppointment = () => {
     }
   });
 };
-const sanitizedInfoForAppointment = computed(() =>
-  sanitizeHtml(appointment.value?.scope?.infoForAppointment)
-);
 
-const infoForAppointmentContainsPTag = computed(() =>
-  containsParagraphTag(sanitizedInfoForAppointment.value)
-);
+
+
 
 watch(
   () => props.globalState.accessToken,
