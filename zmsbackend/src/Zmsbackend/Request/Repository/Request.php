@@ -38,6 +38,13 @@ class Request extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
+    public function addConditionRequestIdList(array $requestIds): self
+    {
+        $this->query->where('request.id', 'IN', array_map('strval', $requestIds));
+
+        return $this;
+    }
+
     public function addConditionProcessId($processId)
     {
         $this->leftJoin(

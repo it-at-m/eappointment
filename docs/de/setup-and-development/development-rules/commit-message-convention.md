@@ -15,11 +15,23 @@ oder ohne Ticketnummer:
 
 `<type>(<PROJECT>): <kurze Zusammenfassung>`
 
+Mehrere Tickets/Projekte in einem Scope (durch Leerzeichen getrennt):
+
+`<type>(<PROJECT>-<ticket> <PROJECT>-<ticket>): <kurze Zusammenfassung>`
+
+Mehrere `type(scope):`-Präfixe vor der Zusammenfassung:
+
+`<type>(…): <type>(…): <kurze Zusammenfassung>`
+
 Beispiel:
 
 `fix(ZMSKVR-1347): handle unpublished relation filtering`
 
 `chore(ZMS): Abhängigkeiten aktualisieren`
+
+`feat(ZMS-1 ZMS-2): gemeinsame Änderung für zwei Tickets`
+
+`feat(ZMS-1 ZMS-2): fix(GH-1 ZMS-3): Multi-Type-/Multi-Ticket-Änderung`
 
 Der Git-Hook `commit-msg` prüft nur die Subject-Zeile. Merge-Commits nutzen automatisch Gits Standard-Subject `Merge branch …`. Siehe [Git-Hooks (Husky)](../git-hooks.md) für Einrichtung und Fehlerbehebung.
 
@@ -39,9 +51,9 @@ Der Git-Hook `commit-msg` prüft nur die Subject-Zeile. Merge-Commits nutzen aut
    - `MUXDBS` für das MUXDBS-Projekt
    - `GH` ausschließliche Issue-Nachverfolgung in GitHub
 
-3. **ticket number**: Optionale Ziffern passend zur Ticket-/Issue-ID (z. B. `ZMSKVR-1347`). Die Nummer kann entfallen; dann nur der Projektscope (z. B. `chore(ZMS): …`).
+3. **ticket number**: Optionale Ziffern passend zur Ticket-/Issue-ID (z. B. `ZMSKVR-1347`). Die Nummer kann entfallen; dann nur der Projektscope (z. B. `chore(ZMS): …`). Mehrere `PROJECT` / `PROJECT-123`-Angaben dürfen in einem Scope durch Leerzeichen getrennt stehen.
 
-4. **summary**: Eine knappe, in der Befehlsform formulierte Aussage zur Absicht der Änderung.
+4. **summary**: Eine knappe, in der Befehlsform formulierte Aussage zur Absicht der Änderung. Bei mehreren verketteten `type(scope):`-Präfixen folgt die Zusammenfassung nach dem letzten Präfix.
 
 ## Beispiele
 
@@ -52,12 +64,14 @@ Der Git-Hook `commit-msg` prüft nur die Subject-Zeile. Merge-Commits nutzen aut
 - `docs(ZMS-123): document sadb visibility decision flow`
 - `chore(ZMS): main in Feature-Branch mergen`
 - `clean(GH): veralteten Workflow entfernen`
+- `feat(ZMS-1 ZMS-2): gemeinsame Änderung für zwei Tickets`
+- `feat(ZMS-1 ZMS-2): fix(GH-1 ZMS-3): Multi-Type-/Multi-Ticket-Änderung`
 
 ## Regulärer Ausdruck
 
 Die vom Hook `commit-msg` geprüfte Subject-Zeile entspricht:
 
-`^(feat|fix|clean|chore|docs)\((ZMS|ZMSKVR|MPDZBS|MUXDBS|GH)(-[0-9]+)?\): .+$`
+`^((feat|fix|clean|chore|docs)\(((ZMS|ZMSKVR|MPDZBS|MUXDBS|GH)(-[0-9]+)?)( (ZMS|ZMSKVR|MPDZBS|MUXDBS|GH)(-[0-9]+)?)*\): )+.+$`
 
 Merge-Commits mit Subject `Merge …` sind ausgenommen (siehe [Git-Hooks (Husky)](../git-hooks.md)).
 

@@ -1,3 +1,11 @@
+// Font Awesome 7 requires @use before other rules (see docs.fontawesome.com/upgrade/scss)
+@use "@fortawesome/fontawesome-free/scss/variables" with (
+  $font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts"
+);
+@use "@fortawesome/fontawesome-free/scss/fontawesome";
+@use "@fortawesome/fontawesome-free/scss/regular";
+@use "@fortawesome/fontawesome-free/scss/solid";
+
 //@import "bo-zms-layout-scss/zms-styles.scss"; // <- ToDo: do this work again
 
 // Settings & Mixins
@@ -15,10 +23,6 @@
 @import 'bo-zms-layout-scss/template/body.scss';
 @import 'bo-zms-layout-scss/template/content-wrapper.scss';
 @import 'bo-zms-layout-scss/template/flatpickr.scss';
-$fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
-@import "@fortawesome/fontawesome-free/scss/fontawesome.scss";
-@import "@fortawesome/fontawesome-free/scss/regular.scss";
-@import "@fortawesome/fontawesome-free/scss/solid.scss";
 @import 'bo-zms-layout-scss/template/font.scss';
 @import 'bo-zms-layout-scss/template/grids.scss';
 @import 'bo-zms-layout-scss/template/html.scss';

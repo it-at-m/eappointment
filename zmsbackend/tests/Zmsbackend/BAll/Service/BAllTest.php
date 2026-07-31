@@ -59,6 +59,7 @@ class BAllTest extends \BO\Zmsbackend\Tests\Service\Base
                 . "-"
                 . str_pad($day->month, 2, '0', STR_PAD_LEFT)
                 . "-$day->year";
+            $this->assertArrayHasKey($key, $dayList, "Day $key missing from BATest_daylist fixture");
             $testDay = new \BO\Zmsentities\Day($dayList[$key]);
             $message = "Day $key has different value for ";
             $testSlots = $testDay->freeAppointments;
@@ -70,24 +71,34 @@ class BAllTest extends \BO\Zmsbackend\Tests\Service\Base
         }
     }
 
+    /**
+     * Regenerate golden daylist fixtures after daylist SQL changes:
+     *   BALL_EXPORT=1 vendor/bin/phpunit --filter BAllTest
+     */
     protected function writeTestExport(Entity $entity, $filename)
     {
-        if (getenv("BALL_EXPORT")) {
-            $testExport = [];
-            $export = "<?php\n\n// @codingStandardsIgnoreFile\nreturn ";
-            foreach ($entity->days as $key => $day) {
-                $day = clone $day;
-                $day->month = str_pad($day->month, 2, '0', STR_PAD_LEFT);
-                $day->day = str_pad($day->day, 2, '0', STR_PAD_LEFT);
-                $day->freeAppointments->intern = intval($day->freeAppointments->intern);
-                $day->freeAppointments->public = intval($day->freeAppointments->public);
-                $day->freeAppointments = $day->freeAppointments->getArrayCopy();
-                $testExport[$key] = $day->getArrayCopy();
-            }
-            $export .= var_export($testExport, true);
-            $export .= ";\n";
-            file_put_contents($this->getFixturePath($filename), $export);
+        if (!getenv('BALL_EXPORT')) {
+            return;
         }
+
+        $testExport = [];
+        $export = "<?php\n\n// @codingStandardsIgnoreFile\nreturn ";
+        foreach ($entity->days as $key => $day) {
+            $day = clone $day;
+            $day->month = str_pad($day->month, 2, '0', STR_PAD_LEFT);
+            $day->day = str_pad($day->day, 2, '0', STR_PAD_LEFT);
+            $day->freeAppointments->intern = intval($day->freeAppointments->intern);
+            $day->freeAppointments->public = intval($day->freeAppointments->public);
+            $day->freeAppointments = $day->freeAppointments->getArrayCopy();
+            // Slot has no __set_state(); export plain arrays so fixtures can be included.
+            $day->allAppointments = $day->allAppointments->getArrayCopy();
+            $dayData = $day->getArrayCopy();
+            unset($dayData['scopeIDs']);
+            $testExport[$key] = $dayData;
+        }
+        $export .= var_export($testExport, true);
+        $export .= ";\n";
+        file_put_contents($this->getFixturePath($filename), $export);
     }
 
     protected function getTestEntity()

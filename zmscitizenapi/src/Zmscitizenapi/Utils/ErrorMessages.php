@@ -76,6 +76,24 @@ class ErrorMessages
             'errorMessage' => 'endDate is required and must be a valid date.',
             'errorType' => 'warning'
         ],
+        'invalidSlotsStartDate' => [
+            'errorCode' => 'invalidSlotsStartDate',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'slotsStartDate must be a valid date.',
+            'errorType' => 'warning'
+        ],
+        'invalidSlotsEndDate' => [
+            'errorCode' => 'invalidSlotsEndDate',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'slotsEndDate must be a valid date.',
+            'errorType' => 'warning'
+        ],
+        'slotsStartDateAfterEndDate' => [
+            'errorCode' => 'slotsStartDateAfterEndDate',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'slotsStartDate must not be after slotsEndDate.',
+            'errorType' => 'warning'
+        ],
         'invalidOfficeId' => [
             'errorCode' => 'invalidOfficeId',
             'statusCode' => self::HTTP_BAD_REQUEST,
