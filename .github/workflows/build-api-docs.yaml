@@ -1,4 +1,4 @@
-name: Build API Documentation
+name: 📚 Build API Documentation
 
 on:
   workflow_call:
