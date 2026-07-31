@@ -1,3 +1,24 @@
+## Release Muc-46 (31.07.2026)
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1457'>ZMSKVR-1457</a>] -         Aktiver ausgegrauter Tag trotz fehlender Terminverfügbarkeit
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1493'>ZMSKVR-1493</a>] -         Tresen (Informationen): Terminkunden erst 1 Minute nach Termin als Wartende gezählt
+</li>
+</ul>
+                                                                                                                                                                                                                                    
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1499'>ZMSKVR-1499</a>] -         Admin-Terminübersicht: Aktionsleiste abhängig von Warteschlangen und Standortkontext anzeigen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1504'>ZMSKVR-1504</a>] -         Automatische Aktualisierung der Anzahl der Wartenden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1506'>ZMSKVR-1506</a>] -         Basis: Priorisierung weitergeleiteter Termine anhand des Terminzeitpunkts
+</li>
+</ul>
+
 ## Release Muc-45 (23.07.2026)
                             
 <h2>        Bug
