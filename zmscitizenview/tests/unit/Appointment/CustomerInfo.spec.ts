@@ -78,6 +78,11 @@ describe("CustomerInfo", () => {
               '<div class="muc-callout" :data-type="type"><slot name="header" /><slot name="content" /></div>',
             props: ["type"],
           },
+          "muc-banner": {
+            template:
+              '<div class="muc-banner" :data-type="type"><slot /></div>',
+            props: ["type", "variant"],
+          },
         },
       },
     });
@@ -337,30 +342,25 @@ describe("CustomerInfo", () => {
   });
 
   describe("Login failure", () => {
-    it("shows error callout when loginFailed is true", async () => {
+    it("shows emergency banner when loginFailed is true", async () => {
       const wrapper = createWrapper({
         showLoginOption: true,
         loginFailed: true,
       });
       await nextTick();
 
-      const callouts = wrapper.findAll(".muc-callout");
-      const errorCallout = callouts.find(
-        (c) => c.attributes("data-type") === "error"
-      );
-      expect(errorCallout?.exists()).toBe(true);
-      expect(errorCallout?.text()).toContain("loginFailedHeader");
-      expect(errorCallout?.text()).toContain("loginFailedText");
+      const banner = wrapper.find(".muc-banner");
+      expect(banner.exists()).toBe(true);
+      expect(banner.attributes("data-type")).toBe("emergency");
+      expect(banner.text()).toContain("loginFailedHeader");
+      expect(banner.text()).toContain("loginFailedText");
     });
 
-    it("hides login failure callout when loginFailed is false", async () => {
+    it("hides login failure banner when loginFailed is false", async () => {
       const wrapper = createWrapper({ loginFailed: false });
       await nextTick();
 
-      const errorCallouts = wrapper
-        .findAll(".muc-callout")
-        .filter((c) => c.attributes("data-type") === "error");
-      expect(errorCallouts).toHaveLength(0);
+      expect(wrapper.find(".muc-banner").exists()).toBe(false);
     });
   });
 

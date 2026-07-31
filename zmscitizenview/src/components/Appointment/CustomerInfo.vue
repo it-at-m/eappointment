@@ -54,16 +54,16 @@
       <template #header>{{ t("loggedinHeader") }}</template>
       <template #icon><muc-icon icon="user-fill" /></template>
     </muc-callout>
-    <muc-callout
+    <muc-banner
       v-if="showLoginErrorBanner"
-      type="error"
+      type="emergency"
+      variant="content"
       class="login-failed-banner"
     >
-      <template #header>{{ t("loginFailedHeader") }}</template>
-      <template #content>
-        <p>{{ t("loginFailedText") }}</p>
-      </template>
-    </muc-callout>
+      <strong>{{ t("loginFailedHeader") }}</strong>
+      <br />
+      {{ t("loginFailedText") }}
+    </muc-banner>
   </div>
   <h2
     v-if="!isExpired"
@@ -178,6 +178,7 @@ import type { SelectedTimeslotProvider } from "@/types/ProvideInjectTypes";
 import type { Ref } from "vue";
 
 import {
+  MucBanner,
   MucButton,
   MucCallout,
   MucIcon,
