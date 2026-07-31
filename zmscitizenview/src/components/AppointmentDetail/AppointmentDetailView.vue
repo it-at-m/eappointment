@@ -243,8 +243,8 @@
               >
                 <template #content>
                   <component
-                   :is="infoForAppointmentContainsPTag ? 'div' : 'p'"
-                   tabindex="0"
+                    :is="infoForAppointmentContainsPTag ? 'div' : 'p'"
+                    tabindex="0"
                     v-html="sanitizedInfoForAppointment"
                   />
                 </template>
@@ -622,12 +622,12 @@ const loadAppointment = () => {
     }
   });
 };
-const sanitizedInfoForAppointment = computed(() => 
+const sanitizedInfoForAppointment = computed(() =>
   sanitizeHtml(appointment.value?.scope.infoForAppointment)
 );
 
 const infoForAppointmentContainsPTag = computed(() =>
-containsParagraphTag(sanitizedInfoForAppointment.value) 
+  containsParagraphTag(sanitizedInfoForAppointment.value)
 );
 
 watch(
