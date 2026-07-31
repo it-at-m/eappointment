@@ -1,0 +1,60 @@
+name: 🛡️ Trivy Security Check (scheduled)
+
+on:
+  schedule:
+    # Scheduled workflows run on the default branch only; scan main and next explicitly.
+    - cron: "0 5 * * *"
+
+jobs:
+  scheduled:
+    name: 🛡️ Trivy Security Check (${{ matrix.branch }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: [main, next]
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ matrix.branch }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Run Trivy vulnerability scanner in repository mode
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: json
+          exit-code: "1"
+          timeout: 15m0s
+          trivyignores: .trivyignore
+          output: trivy-report.json
+
+      - name: Convert Trivy report
+        if: always() && hashFiles('trivy-report.json') != ''
+        shell: bash
+        run: |
+          trivy convert --format table --output trivy-results.txt trivy-report.json
+          cat trivy-results.txt
+          trivy convert --format sarif --output trivy-results.sarif trivy-report.json
+
+      - name: Upload vulnerability scan results
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: trivy-report-${{ matrix.branch }}
+          path: trivy-report.json
+          retention-days: 7
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        if: always() && hashFiles('trivy-results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4.37.3
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy-${{ matrix.branch }}
