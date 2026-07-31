@@ -117,6 +117,10 @@ class CalendarAvailabilityGetTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertSame($body['data']['slotsStartDate'], $body['data']['slotsEndDate']);
         $this->assertGreaterThanOrEqual($day, $body['data']['slotsStartDate']);
 
+        $returnedDates = array_column($body['data']['days'], 'date');
+        $this->assertNotEmpty($returnedDates);
+        $this->assertContains($body['data']['slotsStartDate'], $returnedDates);
+
         $slotsMonthEnd = (new \DateTimeImmutable($body['data']['slotsStartDate']))
             ->modify('last day of this month')
             ->format('Y-m-d');
