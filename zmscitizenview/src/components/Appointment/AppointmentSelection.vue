@@ -1906,15 +1906,18 @@ function updateCalendarNavigationBounds(
 
   let min = new Date(`${minIso}T12:00:00`);
   let max = new Date(`${maxIso}T12:00:00`);
+  // Noon-normalized "today" so wall-clock time cannot push min past same-day max.
+  const todayNoon = new Date(TODAY);
+  todayNoon.setHours(12, 0, 0, 0);
 
   if (Number.isNaN(min.getTime())) {
-    min = new Date(TODAY);
+    min = new Date(todayNoon);
   }
   if (Number.isNaN(max.getTime())) {
     max = new Date(MAXDATE);
   }
-  if (min < TODAY) {
-    min = new Date(TODAY);
+  if (min < todayNoon) {
+    min = new Date(todayNoon);
   }
   if (max > MAXDATE) {
     max = new Date(MAXDATE);
