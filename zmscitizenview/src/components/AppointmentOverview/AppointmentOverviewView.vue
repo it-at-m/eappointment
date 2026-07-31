@@ -200,7 +200,7 @@ onMounted(() => {
       );
 
       offices.value = data.offices;
-      services.value = data.services;
+      services.value = data.services ?? [];
       getMyAppointments(props.globalState).then((data) => {
         if (
           Array.isArray(data) &&
