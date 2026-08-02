@@ -9,6 +9,7 @@ permissions:
 
 jobs:
   assign-author:
+    if: ${{ !contains(fromJSON('["dependabot[bot]", "renovate[bot]"]'), github.event.pull_request.user.login) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v7
