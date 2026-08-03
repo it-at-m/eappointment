@@ -1,13 +1,13 @@
 -- Additive: opening-hours change history for tech admins (ZMSKVR-1249).
 -- No FKs: availability_id must survive deletes; scope_id is logical only.
--- Columns mirror the admin day-table snapshot (not a free-text summary).
+-- weekday uses the same bit matrix as availability.weekday.
 
 CREATE TABLE IF NOT EXISTS `availability_history` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `scope_id` INT UNSIGNED NOT NULL,
     `availability_id` INT UNSIGNED DEFAULT NULL,
     `action` ENUM('created', 'updated', 'deleted', 'dldb_slot_update') NOT NULL,
-    `weekdays` VARCHAR(255) NOT NULL DEFAULT '',
+    `weekday` INT(5) UNSIGNED NOT NULL DEFAULT 0,
     `series` VARCHAR(100) NOT NULL DEFAULT '',
     `valid_from` VARCHAR(10) NOT NULL DEFAULT '',
     `valid_to` VARCHAR(10) NOT NULL DEFAULT '',

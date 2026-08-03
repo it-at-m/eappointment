@@ -71,6 +71,28 @@
             + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes());
     }
 
+    var weekdayLabels = {
+        monday: 'Montag',
+        tuesday: 'Dienstag',
+        wednesday: 'Mittwoch',
+        thursday: 'Donnerstag',
+        friday: 'Freitag',
+        saturday: 'Samstag',
+        sunday: 'Sonntag'
+    };
+    var weekdayOrder = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+    function formatWeekdays(weekday) {
+        if (!weekday || typeof weekday !== 'object') {
+            return '';
+        }
+        return weekdayOrder.filter(function (key) {
+            return parseInt(weekday[key], 10) > 0;
+        }).map(function (key) {
+            return weekdayLabels[key];
+        }).join(', ');
+    }
+
     function cell(text) {
         var td = document.createElement('td');
         td.textContent = text || '–';
@@ -101,7 +123,7 @@
                 meta.appendChild(changedByEl);
             }
             tr.appendChild(meta);
-            tr.appendChild(cell(row.weekdays));
+            tr.appendChild(cell(formatWeekdays(row.weekday)));
             tr.appendChild(cell(row.series));
             tr.appendChild(cell(row.validFrom));
             tr.appendChild(cell(row.validTo));

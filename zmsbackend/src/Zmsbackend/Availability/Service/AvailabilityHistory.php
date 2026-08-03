@@ -30,17 +30,6 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         'appointment' => 'Terminkunden',
     ];
 
-    /** @var array<string, string> monday-first like admin day table */
-    private const WEEKDAY_LABELS = [
-        'monday' => 'Montag',
-        'tuesday' => 'Dienstag',
-        'wednesday' => 'Mittwoch',
-        'thursday' => 'Donnerstag',
-        'friday' => 'Freitag',
-        'saturday' => 'Samstag',
-        'sunday' => 'Sonntag',
-    ];
-
     /** @var array<int, string> afterWeeks series labels (admin availabilitySeries) */
     private const SERIES_AFTER_WEEKS = [
         1 => 'jede Woche',
@@ -85,7 +74,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
      *     scopeId:int,
      *     availabilityId:?int,
      *     action:string,
-     *     weekdays:string,
+     *     weekday:array<string, int>,
      *     series:string,
      *     validFrom:string,
      *     validTo:string,
@@ -137,7 +126,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
                 'scopeId' => (int) $row['scopeId'],
                 'availabilityId' => $row['availabilityId'] !== null ? (int) $row['availabilityId'] : null,
                 'action' => (string) $row['action'],
-                'weekdays' => (string) $row['weekdays'],
+                'weekday' => $this->decodeWeekdayMask((int) $row['weekday']),
                 'series' => (string) $row['series'],
                 'validFrom' => (string) $row['validFrom'],
                 'validTo' => (string) $row['validTo'],
@@ -175,7 +164,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
      * Day-table snapshot values for history persistence.
      *
      * @return array{
-     *     weekdays:string,
+     *     weekday:int,
      *     series:string,
      *     valid_from:string,
      *     valid_to:string,
@@ -204,7 +193,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         }
 
         return [
-            'weekdays' => $this->resolveWeekdayList($availability),
+            'weekday' => $this->encodeWeekdayMask($availability),
             'series' => $this->resolveSeriesLabel($availability),
             'valid_from' => $startDate,
             'valid_to' => $endDate,
@@ -235,16 +224,34 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         return 'einmaliger Termin';
     }
 
-    protected function resolveWeekdayList(Availability $availability): string
+    /**
+     * Encode availability.weekday flags to the same INT bit matrix as availability.weekday.
+     */
+    protected function encodeWeekdayMask(Availability $availability): int
     {
-        $weekdayLabels = [];
-        foreach (self::WEEKDAY_LABELS as $key => $label) {
-            if (!empty($availability->weekday[$key])) {
-                $weekdayLabels[] = $label;
+        $mask = 0;
+        foreach (AvailabilityHistoryQuery::WEEKDAY_BITS as $weekday => $bit) {
+            if (!empty($availability->weekday[$weekday])) {
+                $mask |= $bit;
             }
         }
 
-        return implode(', ', $weekdayLabels);
+        return $mask;
+    }
+
+    /**
+     * Decode INT bit matrix to availability-style weekday map.
+     *
+     * @return array<string, int>
+     */
+    protected function decodeWeekdayMask(int $mask): array
+    {
+        $weekday = [];
+        foreach (AvailabilityHistoryQuery::WEEKDAY_BITS as $name => $bit) {
+            $weekday[$name] = ($mask & $bit) ? $bit : 0;
+        }
+
+        return $weekday;
     }
 
     protected function formatBookableRange($from, $to): string

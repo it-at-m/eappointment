@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
+import { weekDayList } from '../helpers'
 
 export const ACTION_LABELS = {
     created: 'Erstellt',
@@ -19,6 +20,17 @@ export const formatChangedAt = (value) => {
     const pad = (n) => (n < 10 ? `0${n}` : String(n))
     return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()}`
         + ` ${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
+/** Same weekday formatting as the day table (availability.weekday bit flags). */
+export const formatWeekdays = (weekday) => {
+    if (!weekday || typeof weekday !== 'object') {
+        return ''
+    }
+    return weekDayList
+        .filter((element) => parseInt(weekday[element.value], 10) > 0)
+        .map((item) => item.label)
+        .join(', ')
 }
 
 export const HistoryRowsTable = ({ rows }) => (
@@ -47,7 +59,7 @@ export const HistoryRowsTable = ({ rows }) => (
                             <div>{formatChangedAt(row.changedAt)}</div>
                             {row.changedBy ? <div>{row.changedBy}</div> : null}
                         </td>
-                        <td>{row.weekdays || '–'}</td>
+                        <td>{formatWeekdays(row.weekday) || '–'}</td>
                         <td>{row.series || '–'}</td>
                         <td>{row.validFrom || '–'}</td>
                         <td>{row.validTo || '–'}</td>

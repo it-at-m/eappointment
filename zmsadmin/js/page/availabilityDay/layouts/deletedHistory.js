@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import {
     ACTION_LABELS,
     formatChangedAt,
+    formatWeekdays,
     AvailabilityHistoryPanel
 } from './historyShared'
 
@@ -138,7 +139,7 @@ const DeletedAvailabilityHistory = ({ historyUrl, refreshKey }) => {
                                                     <div>{formatChangedAt(row.changedAt)}</div>
                                                     {row.changedBy ? <div>{row.changedBy}</div> : null}
                                                 </td>
-                                                <td>{row.weekdays || '–'}</td>
+                                                <td>{formatWeekdays(row.weekday) || '–'}</td>
                                                 <td>{row.series || '–'}</td>
                                                 <td>{row.validFrom || '–'}</td>
                                                 <td>{row.validTo || '–'}</td>
