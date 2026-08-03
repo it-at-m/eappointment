@@ -1,4 +1,4 @@
-name: build images
+name: 🐳 build images
 
 on:
   workflow_call:
