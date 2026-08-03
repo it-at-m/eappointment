@@ -59,7 +59,7 @@ class AvailabilityHistoryByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->seedHistoryRow(68985);
         $this->seedHistoryRow(99999);
 
-        $response = $this->render(['id' => self::SCOPE_ID], [], ['availabilityId' => 68985]);
+        $response = $this->render(['id' => self::SCOPE_ID], ['availabilityId' => 68985]);
         $this->assertTrue(200 == $response->getStatusCode());
         $body = json_decode((string) $response->getBody(), true);
         $this->assertNotEmpty($body['data']);
@@ -74,7 +74,7 @@ class AvailabilityHistoryByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->seedHistoryRow(68985, 'created');
         $this->seedHistoryRow(68986, 'deleted');
 
-        $response = $this->render(['id' => self::SCOPE_ID], [], ['action' => 'deleted']);
+        $response = $this->render(['id' => self::SCOPE_ID], ['action' => 'deleted']);
         $this->assertTrue(200 == $response->getStatusCode());
         $body = json_decode((string) $response->getBody(), true);
         $this->assertNotEmpty($body['data']);
