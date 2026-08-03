@@ -402,6 +402,7 @@ import {
   QUERY_PARAM_APPOINTMENT_ID,
   resolveAgainstCurrentPage,
 } from "@/utils/Constants";
+import { downloadIcsFile } from "@/utils/downloadIcsFile";
 import {
   clearContextErrors,
   createErrorStates,
@@ -1130,19 +1131,7 @@ const redirectToAppointmentStart = () => {
 };
 
 const downloadIcsAppointment = () => {
-  if (appointment.value?.icsContent) {
-    const blob = new Blob([appointment.value.icsContent], {
-      type: "text/calendar;charset=utf-8",
-    });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `Termin.ics`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  }
+  downloadIcsFile(appointment.value?.icsContent);
 };
 
 const resetConfirmRouteState = (): void => {
