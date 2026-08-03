@@ -19,7 +19,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Query\Base
             scope_id AS scopeId,
             availability_id AS availabilityId,
             action,
-            weekdays,
+            weekday,
             series,
             valid_from AS validFrom,
             valid_to AS validTo,
@@ -47,6 +47,21 @@ class AvailabilityHistory extends \BO\Zmsbackend\Query\Base
         'dldb_slot_update',
     ];
 
+    /**
+     * Same bit codes as availability.weekday / Availability::reverseEntityMapping.
+     *
+     * @var array<string, int>
+     */
+    public const WEEKDAY_BITS = [
+        'sunday' => 1,
+        'monday' => 2,
+        'tuesday' => 4,
+        'wednesday' => 8,
+        'thursday' => 16,
+        'friday' => 32,
+        'saturday' => 64,
+    ];
+
     protected $resolveLevel = 0;
 
     /**
@@ -54,7 +69,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Query\Base
      *     scope_id:int,
      *     availability_id:?int,
      *     action:string,
-     *     weekdays:string,
+     *     weekday:int,
      *     series:string,
      *     valid_from:string,
      *     valid_to:string,
@@ -73,7 +88,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Query\Base
             'scope_id' => (int) $row['scope_id'],
             'availability_id' => $row['availability_id'] !== null ? (int) $row['availability_id'] : null,
             'action' => $row['action'],
-            'weekdays' => (string) $row['weekdays'],
+            'weekday' => (int) $row['weekday'],
             'series' => (string) $row['series'],
             'valid_from' => (string) $row['valid_from'],
             'valid_to' => (string) $row['valid_to'],
