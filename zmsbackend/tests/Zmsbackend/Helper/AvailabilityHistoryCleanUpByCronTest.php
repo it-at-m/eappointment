@@ -37,14 +37,27 @@ class AvailabilityHistoryCleanUpByCronTest extends \BO\Zmsbackend\Tests\Service\
     {
         $service->perform(
             'INSERT INTO availability_history
-                (scope_id, availability_id, action, summary, changed_at, changed_by)
+                (scope_id, availability_id, action, weekdays, series, valid_from, valid_to,
+                 time_range, type, slot_time, workstations, bookable, description,
+                 changed_at, changed_by)
              VALUES
-                (:scopeId, :availabilityId, :action, :summary, :changedAt, :changedBy)',
+                (:scopeId, :availabilityId, :action, :weekdays, :series, :validFrom, :validTo,
+                 :timeRange, :type, :slotTime, :workstations, :bookable, :description,
+                 :changedAt, :changedBy)',
             [
                 'scopeId' => self::SCOPE_ID,
                 'availabilityId' => 68985,
                 'action' => 'updated',
-                'summary' => 'Zeitraum: 01.01.2016 bis 31.12.2016, Uhrzeit: von 07:00 bis 17:00,',
+                'weekdays' => 'Montag',
+                'series' => 'jede Woche',
+                'validFrom' => '01.01.2016',
+                'validTo' => '31.12.2016',
+                'timeRange' => '07:00 - 17:00',
+                'type' => 'Terminkunden',
+                'slotTime' => '15min',
+                'workstations' => '2/0',
+                'bookable' => '0-60',
+                'description' => 'Test',
                 'changedAt' => $changedAt,
                 'changedBy' => $changedBy,
             ]

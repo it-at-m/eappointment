@@ -74,18 +74,46 @@ const AvailabilityHistoryPanel = ({ historyUrl, availabilityId }) => {
     }
 
     return (
-        <ul className="list--table availability-history-list">
-            {rows.map((row) => (
-                <li key={row.id}>
-                    <div className="cell cell--meta">
-                        {(ACTION_LABELS[row.action] || row.action)
-                            + ' · ' + formatChangedAt(row.changedAt)
-                            + (row.changedBy ? ` · ${row.changedBy}` : '')}
-                    </div>
-                    <div className="cell cell--summary">{row.summary || ''}</div>
-                </li>
-            ))}
-        </ul>
+        <div className="availability-history-table-wrap">
+            <table className="table--base availability-history-table">
+                <thead>
+                    <tr>
+                        <th>Aktion</th>
+                        <th>Wochentage</th>
+                        <th>Serie</th>
+                        <th>Von</th>
+                        <th>Bis</th>
+                        <th>Uhrzeit</th>
+                        <th>Typ</th>
+                        <th>Zeitschlitz</th>
+                        <th>Arbeitsplätze</th>
+                        <th>Buchung</th>
+                        <th>Anmerkung</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows.map((row) => (
+                        <tr key={row.id}>
+                            <td className="cell--meta">
+                                {(ACTION_LABELS[row.action] || row.action)
+                                    + ' · ' + formatChangedAt(row.changedAt)
+                                    + (row.changedBy ? ` · ${row.changedBy}` : '')}
+                            </td>
+                            <td>{row.weekdays || '–'}</td>
+                            <td>{row.series || '–'}</td>
+                            <td>{row.validFrom || '–'}</td>
+                            <td>{row.validTo || '–'}</td>
+                            <td>{row.timeRange || '–'}</td>
+                            <td>{row.type || '–'}</td>
+                            <td>{row.slotTime || '–'}</td>
+                            <td>{row.workstations || '–'}</td>
+                            <td>{row.bookable || '–'}</td>
+                            <td>{row.description || '–'}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
     )
 }
 
@@ -139,14 +167,16 @@ const TableBodyLayout = (props) => {
                 </tbody>
             </table>
             <style>{`
-                .availability-history-list .cell--meta {
-                    white-space: nowrap;
-                    color: #555;
+                .availability-history-table-wrap {
+                    overflow-x: auto;
+                }
+                .availability-history-table {
+                    margin-top: 0.5rem;
                     font-size: 0.9em;
                 }
-                .availability-history-list .cell--summary {
-                    word-break: break-word;
-                    white-space: pre-line;
+                .availability-history-table .cell--meta {
+                    white-space: nowrap;
+                    color: #555;
                 }
                 .availability-history-row td {
                     background: #f7f7f7;

@@ -22,7 +22,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
     /** Default retention window for history rows (ZMSKVR-1249). */
     public const DEFAULT_RETENTION_DAYS = 180;
 
-    private const SUMMARY_MAX_LENGTH = 4000;
+    private const DESCRIPTION_MAX_LENGTH = 512;
 
     /** @var array<string, string> */
     private const TYPE_LABELS = [
@@ -30,7 +30,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         'appointment' => 'Terminkunden',
     ];
 
-    /** @var array<string, string> monday-first like admin accordionTitle() */
+    /** @var array<string, string> monday-first like admin day table */
     private const WEEKDAY_LABELS = [
         'monday' => 'Montag',
         'tuesday' => 'Dienstag',
@@ -85,7 +85,16 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
      *     scopeId:int,
      *     availabilityId:?int,
      *     action:string,
-     *     summary:string,
+     *     weekdays:string,
+     *     series:string,
+     *     validFrom:string,
+     *     validTo:string,
+     *     timeRange:string,
+     *     type:string,
+     *     slotTime:string,
+     *     workstations:string,
+     *     bookable:string,
+     *     description:string,
      *     changedAt:string,
      *     changedBy:string
      * }>
@@ -116,7 +125,16 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
                 'scopeId' => (int) $row['scopeId'],
                 'availabilityId' => $row['availabilityId'] !== null ? (int) $row['availabilityId'] : null,
                 'action' => (string) $row['action'],
-                'summary' => (string) $row['summary'],
+                'weekdays' => (string) $row['weekdays'],
+                'series' => (string) $row['series'],
+                'validFrom' => (string) $row['validFrom'],
+                'validTo' => (string) $row['validTo'],
+                'timeRange' => (string) $row['timeRange'],
+                'type' => (string) $row['type'],
+                'slotTime' => (string) $row['slotTime'],
+                'workstations' => (string) $row['workstations'],
+                'bookable' => (string) $row['bookable'],
+                'description' => (string) $row['description'],
                 'changedAt' => (string) $row['changedAt'],
                 'changedBy' => (string) $row['changedBy'],
             ];
@@ -142,48 +160,49 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
     }
 
     /**
-     * Full form snapshot for tech-admin history (labels mirror the day form).
+     * Day-table snapshot values for history persistence.
+     *
+     * @return array{
+     *     weekdays:string,
+     *     series:string,
+     *     valid_from:string,
+     *     valid_to:string,
+     *     time_range:string,
+     *     type:string,
+     *     slot_time:string,
+     *     workstations:string,
+     *     bookable:string,
+     *     description:string
+     * }
      */
-    public function buildSummary(Availability $availability): string
+    public function buildSnapshot(Availability $availability): array
     {
         $startDate = $availability->getStartDateTime()->format('d.m.Y');
         $endDate = $availability->getEndDateTime()->format('d.m.Y');
         $startTime = $this->formatTime((string) $availability->startTime);
         $endTime = $this->formatTime((string) $availability->endTime);
-
-        $description = trim((string) ($availability->description ?? ''));
-        $typeLabel = self::TYPE_LABELS[$availability->type] ?? (string) $availability->type;
-        $seriesLabel = $this->resolveSeriesLabel($availability);
-        $weekdayList = $this->resolveWeekdayList($availability);
         $slotMinutes = (int) ($availability->slotTimeInMinutes ?? $availability->getSlotTimeInMinutes());
         $bookableFrom = $availability->bookable['startInDays'] ?? null;
         $bookableTo = $availability->bookable['endInDays'] ?? null;
         $intern = (int) ($availability->workstationCount['intern'] ?? 0);
         $public = (int) ($availability->workstationCount['public'] ?? 0);
+        $description = trim((string) ($availability->description ?? ''));
+        if (mb_strlen($description) > self::DESCRIPTION_MAX_LENGTH) {
+            $description = mb_substr($description, 0, self::DESCRIPTION_MAX_LENGTH - 3) . '...';
+        }
 
-        $lines = [
-            'Anmerkung: ' . ($description !== '' ? $description : '–'),
-            'Typ: ' . $typeLabel,
-            'Serie: ' . $seriesLabel,
-            'Wochentage: ' . ($weekdayList !== '' ? $weekdayList : '–'),
-            'Terminabstand: ' . $slotMinutes . ' min',
-            "Öffnungszeit: {$startDate} {$startTime} – {$endDate} {$endTime}",
-            'Buchbar: von ' . $this->formatBookableDay($bookableFrom)
-                . ' bis ' . $this->formatBookableDay($bookableTo) . ' Tage im voraus',
-            "Terminarbeitsplätze: Insgesamt {$intern} / Internet {$public}",
+        return [
+            'weekdays' => $this->resolveWeekdayList($availability),
+            'series' => $this->resolveSeriesLabel($availability),
+            'valid_from' => $startDate,
+            'valid_to' => $endDate,
+            'time_range' => "{$startTime} - {$endTime}",
+            'type' => self::TYPE_LABELS[$availability->type] ?? (string) $availability->type,
+            'slot_time' => $slotMinutes . 'min',
+            'workstations' => "{$intern}/{$public}",
+            'bookable' => $this->formatBookableRange($bookableFrom, $bookableTo),
+            'description' => $description,
         ];
-
-        if ($availability->hasId()) {
-            $lines[] = 'ID: ' . $availability->getId();
-        }
-
-        $summary = implode("\n", $lines);
-
-        if (mb_strlen($summary) > self::SUMMARY_MAX_LENGTH) {
-            return mb_substr($summary, 0, self::SUMMARY_MAX_LENGTH - 3) . '...';
-        }
-
-        return $summary;
     }
 
     protected function resolveSeriesLabel(Availability $availability): string
@@ -216,13 +235,12 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         return implode(', ', $weekdayLabels);
     }
 
-    protected function formatBookableDay($value): string
+    protected function formatBookableRange($from, $to): string
     {
-        if ($value === null || $value === '') {
-            return 'Standort-Standard';
-        }
+        $fromLabel = ($from === null || $from === '') ? '?' : (string) $from;
+        $toLabel = ($to === null || $to === '') ? '?' : (string) $to;
 
-        return (string) $value;
+        return "{$fromLabel}-{$toLabel}";
     }
 
     protected function write(string $action, Availability $availability, ?string $changedBy): bool
@@ -237,14 +255,14 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
                 return false;
             }
 
+            $snapshot = $this->buildSnapshot($availability);
             $query = new AvailabilityHistoryQuery(\BO\Zmsbackend\Query\Base::INSERT);
-            $query->addValues($query->reverseEntityMapping([
+            $query->addValues($query->reverseEntityMapping(array_merge($snapshot, [
                 'scope_id' => $scopeId,
                 'availability_id' => $availability->hasId() ? (int) $availability->getId() : null,
                 'action' => $action,
-                'summary' => $this->buildSummary($availability),
                 'changed_by' => $changedBy ?? $this->resolveChangedBy(),
-            ]));
+            ])));
 
             return (bool) $this->writeItem($query);
         } catch (\Throwable $exception) {

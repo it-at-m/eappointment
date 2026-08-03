@@ -10,26 +10,42 @@
     </div>
     <div id="availability-history-panel" class="board__body body" aria-labelledby="availability-history-heading">
         <p class="availability-history-status" id="availability-history-status">Wird geladen…</p>
-        <ul class="list--table availability-history-list" id="availability-history-list" hidden></ul>
+        <div class="table-responsive-wrapper" id="availability-history-table-wrap" hidden>
+            <table class="table--base availability-history-table" id="availability-history-table">
+                <thead>
+                    <tr>
+                        <th>Aktion</th>
+                        <th>Wochentage</th>
+                        <th>Serie</th>
+                        <th>Von</th>
+                        <th>Bis</th>
+                        <th>Uhrzeit</th>
+                        <th>Typ</th>
+                        <th>Zeitschlitz</th>
+                        <th>Arbeitsplätze</th>
+                        <th>Buchung</th>
+                        <th>Anmerkung</th>
+                    </tr>
+                </thead>
+                <tbody id="availability-history-tbody"></tbody>
+            </table>
+        </div>
     </div>
 </section>
 <style>
-    .availability-history-list .cell--meta {
+    .availability-history-table .cell--meta {
         white-space: nowrap;
         color: #555;
         font-size: 0.9em;
-    }
-    .availability-history-list .cell--summary {
-        word-break: break-word;
-        white-space: pre-line;
     }
 </style>
 <script>
 (function () {
     var heading = document.getElementById('availability-history-heading');
     var statusEl = document.getElementById('availability-history-status');
-    var listEl = document.getElementById('availability-history-list');
-    if (!heading || !statusEl || !listEl) {
+    var wrapEl = document.getElementById('availability-history-table-wrap');
+    var tbodyEl = document.getElementById('availability-history-tbody');
+    if (!heading || !statusEl || !wrapEl || !tbodyEl) {
         return;
     }
 
@@ -54,35 +70,47 @@
             + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes());
     }
 
+    function cell(text) {
+        var td = document.createElement('td');
+        td.textContent = text || '–';
+        return td;
+    }
+
     function renderRows(rows) {
-        listEl.innerHTML = '';
+        tbodyEl.innerHTML = '';
         if (!rows || !rows.length) {
             statusEl.textContent = 'Kein Änderungsverlauf im gewählten Zeitraum.';
             statusEl.hidden = false;
-            listEl.hidden = true;
+            wrapEl.hidden = true;
             return;
         }
         rows.forEach(function (row) {
-            var li = document.createElement('li');
-            var meta = document.createElement('div');
-            meta.className = 'cell cell--meta';
+            var tr = document.createElement('tr');
+            var meta = document.createElement('td');
+            meta.className = 'cell--meta';
             meta.textContent = (actionLabels[row.action] || row.action)
                 + ' · ' + formatChangedAt(row.changedAt)
                 + (row.changedBy ? ' · ' + row.changedBy : '');
-            var summary = document.createElement('div');
-            summary.className = 'cell cell--summary';
-            summary.textContent = row.summary || '';
-            li.appendChild(meta);
-            li.appendChild(summary);
-            listEl.appendChild(li);
+            tr.appendChild(meta);
+            tr.appendChild(cell(row.weekdays));
+            tr.appendChild(cell(row.series));
+            tr.appendChild(cell(row.validFrom));
+            tr.appendChild(cell(row.validTo));
+            tr.appendChild(cell(row.timeRange));
+            tr.appendChild(cell(row.type));
+            tr.appendChild(cell(row.slotTime));
+            tr.appendChild(cell(row.workstations));
+            tr.appendChild(cell(row.bookable));
+            tr.appendChild(cell(row.description));
+            tbodyEl.appendChild(tr);
         });
         statusEl.hidden = true;
-        listEl.hidden = false;
+        wrapEl.hidden = false;
     }
 
     statusEl.hidden = false;
     statusEl.textContent = 'Wird geladen…';
-    listEl.hidden = true;
+    wrapEl.hidden = true;
 
     fetch(heading.getAttribute('data-url'), {
         method: 'GET',
@@ -98,7 +126,7 @@
     }).catch(function () {
         statusEl.textContent = 'Änderungsverlauf konnte nicht geladen werden.';
         statusEl.hidden = false;
-        listEl.hidden = true;
+        wrapEl.hidden = true;
     });
 })();
 </script>

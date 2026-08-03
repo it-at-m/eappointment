@@ -19,8 +19,11 @@ class AvailabilityHistoryByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertIsArray($body['data']);
         $this->assertNotEmpty($body['data']);
         $this->assertSame('created', $body['data'][0]['action']);
-        $this->assertStringContainsString('Öffnungszeit:', $body['data'][0]['summary']);
-        $this->assertStringContainsString('Terminabstand:', $body['data'][0]['summary']);
+        $this->assertSame('Terminkunden', $body['data'][0]['type']);
+        $this->assertSame('15min', $body['data'][0]['slotTime']);
+        $this->assertSame('3/3', $body['data'][0]['workstations']);
+        $this->assertSame('0-5', $body['data'][0]['bookable']);
+        $this->assertSame('Neue Öffnungszeit', $body['data'][0]['description']);
     }
 
     public function testMissingAccessRights()
@@ -69,18 +72,25 @@ class AvailabilityHistoryByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
     {
         (new \BO\Zmsbackend\Availability\Service\AvailabilityHistory())->perform(
             'INSERT INTO availability_history
-                (scope_id, availability_id, action, summary, changed_by)
+                (scope_id, availability_id, action, weekdays, series, valid_from, valid_to,
+                 time_range, type, slot_time, workstations, bookable, description, changed_by)
              VALUES
-                (:scopeId, :availabilityId, :action, :summary, :changedBy)',
+                (:scopeId, :availabilityId, :action, :weekdays, :series, :validFrom, :validTo,
+                 :timeRange, :type, :slotTime, :workstations, :bookable, :description, :changedBy)',
             [
                 'scopeId' => self::SCOPE_ID,
                 'availabilityId' => $availabilityId,
                 'action' => 'created',
-                'summary' => "Anmerkung: Test\nTyp: Terminkunden\nSerie: einmaliger Termin\n"
-                    . "Wochentage: Montag\nTerminabstand: 15 min\n"
-                    . "Öffnungszeit: 01.01.2016 07:00 – 31.12.2016 17:00\n"
-                    . "Buchbar: von 0 bis 60 Tage im voraus\n"
-                    . "Terminarbeitsplätze: Insgesamt 2 / Internet 0",
+                'weekdays' => 'Montag, Dienstag, Mittwoch, Donnerstag, Freitag',
+                'series' => 'jede Woche',
+                'validFrom' => '03.08.2026',
+                'validTo' => '06.09.2026',
+                'timeRange' => '10:00 - 12:00',
+                'type' => 'Terminkunden',
+                'slotTime' => '15min',
+                'workstations' => '3/3',
+                'bookable' => '0-5',
+                'description' => 'Neue Öffnungszeit',
                 'changedBy' => 'unittest',
             ]
         );
