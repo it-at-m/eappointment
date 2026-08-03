@@ -1,32 +1,19 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, Fragment } from 'react'
 import PropTypes from 'prop-types'
-
-const ACTION_LABELS = {
-    created: 'Erstellt',
-    updated: 'Geändert',
-    deleted: 'Gelöscht',
-    dldb_slot_update: 'DLDB Slotlänge'
-}
-
-const formatChangedAt = (value) => {
-    if (!value) {
-        return ''
-    }
-    const date = new Date(String(value).replace(' ', 'T'))
-    if (isNaN(date.getTime())) {
-        return value
-    }
-    const pad = (n) => (n < 10 ? `0${n}` : String(n))
-    return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()}`
-        + ` ${pad(date.getHours())}:${pad(date.getMinutes())}`
-}
+import {
+    ACTION_LABELS,
+    formatChangedAt,
+    AvailabilityHistoryPanel
+} from './historyShared'
 
 /**
  * Scope-wide list of deleted Öffnungszeiten for tech admins (ZMSKVR-1249 option 3).
+ * Expand icon loads full history for that availability_id.
  */
 const DeletedAvailabilityHistory = ({ historyUrl, refreshKey }) => {
     const [status, setStatus] = useState('loading')
     const [rows, setRows] = useState([])
+    const [openHistoryId, setOpenHistoryId] = useState(null)
 
     useEffect(() => {
         if (!historyUrl) {
@@ -69,6 +56,16 @@ const DeletedAvailabilityHistory = ({ historyUrl, refreshKey }) => {
         }
     }, [historyUrl, refreshKey])
 
+    useEffect(() => {
+        if (openHistoryId == null) {
+            return
+        }
+        const stillPresent = rows.some((row) => row.availabilityId == openHistoryId)
+        if (!stillPresent) {
+            setOpenHistoryId(null)
+        }
+    }, [rows, openHistoryId])
+
     return (
         <section className="availability-history board board--spaceless" style={{ marginTop: '1.5rem' }}>
             <div className="board__header">
@@ -90,6 +87,7 @@ const DeletedAvailabilityHistory = ({ historyUrl, refreshKey }) => {
                         <table className="table--base availability-history-table">
                             <thead>
                                 <tr>
+                                    <th></th>
                                     <th>Aktion</th>
                                     <th>Wochentage</th>
                                     <th>Serie</th>
@@ -104,25 +102,68 @@ const DeletedAvailabilityHistory = ({ historyUrl, refreshKey }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {rows.map((row) => (
-                                    <tr key={row.id}>
-                                        <td className="cell--meta">
-                                            <div>{ACTION_LABELS[row.action] || row.action}</div>
-                                            <div>{formatChangedAt(row.changedAt)}</div>
-                                            {row.changedBy ? <div>{row.changedBy}</div> : null}
-                                        </td>
-                                        <td>{row.weekdays || '–'}</td>
-                                        <td>{row.series || '–'}</td>
-                                        <td>{row.validFrom || '–'}</td>
-                                        <td>{row.validTo || '–'}</td>
-                                        <td>{row.timeRange || '–'}</td>
-                                        <td>{row.type || '–'}</td>
-                                        <td>{row.slotTime || '–'}</td>
-                                        <td>{row.workstations || '–'}</td>
-                                        <td>{row.bookable || '–'}</td>
-                                        <td>{row.description || '–'}</td>
-                                    </tr>
-                                ))}
+                                {rows.map((row) => {
+                                    const availabilityId = row.availabilityId
+                                    const canExpand = Boolean(historyUrl && availabilityId)
+                                    const historyOpen = canExpand && openHistoryId == availabilityId
+                                    const titleHistory = `Änderungsverlauf von ${availabilityId}`
+
+                                    const onClickHistory = (ev) => {
+                                        ev.preventDefault()
+                                        if (!canExpand) {
+                                            return
+                                        }
+                                        setOpenHistoryId(historyOpen ? null : availabilityId)
+                                    }
+
+                                    return (
+                                        <Fragment key={row.id}>
+                                            <tr>
+                                                <td className="center" style={{ whiteSpace: 'nowrap' }}>
+                                                    {canExpand ?
+                                                        <a
+                                                            href="#"
+                                                            className="icon"
+                                                            title={titleHistory}
+                                                            aria-label={titleHistory}
+                                                            aria-expanded={historyOpen ? 'true' : 'false'}
+                                                            onClick={onClickHistory}
+                                                        >
+                                                            <i className="fas fa-history" aria-hidden="true"></i>
+                                                        </a>
+                                                        : null}
+                                                </td>
+                                                <td className="cell--meta">
+                                                    <div>{ACTION_LABELS[row.action] || row.action}</div>
+                                                    <div>{formatChangedAt(row.changedAt)}</div>
+                                                    {row.changedBy ? <div>{row.changedBy}</div> : null}
+                                                </td>
+                                                <td>{row.weekdays || '–'}</td>
+                                                <td>{row.series || '–'}</td>
+                                                <td>{row.validFrom || '–'}</td>
+                                                <td>{row.validTo || '–'}</td>
+                                                <td>{row.timeRange || '–'}</td>
+                                                <td>{row.type || '–'}</td>
+                                                <td>{row.slotTime || '–'}</td>
+                                                <td>{row.workstations || '–'}</td>
+                                                <td>{row.bookable || '–'}</td>
+                                                <td>{row.description || '–'}</td>
+                                            </tr>
+                                            {historyOpen ?
+                                                <tr className="availability-history-row">
+                                                    <td colSpan={12}>
+                                                        <strong>Änderungsverlauf</strong>
+                                                        <AvailabilityHistoryPanel
+                                                            historyUrl={historyUrl}
+                                                            availabilityId={availabilityId}
+                                                            refreshKey={refreshKey}
+                                                        />
+                                                    </td>
+                                                </tr>
+                                                : null}
+                                        </Fragment>
+                                    )
+                                })}
                             </tbody>
                         </table>
                     </div> : null}
@@ -132,6 +173,10 @@ const DeletedAvailabilityHistory = ({ historyUrl, refreshKey }) => {
                     white-space: nowrap;
                     color: #555;
                     line-height: 1.35;
+                }
+                .availability-history-row td {
+                    background: #f7f7f7;
+                    padding: 0.75rem 1rem;
                 }
             `}</style>
         </section>
