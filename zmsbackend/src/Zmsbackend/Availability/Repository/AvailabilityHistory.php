@@ -13,6 +13,22 @@ class AvailabilityHistory extends \BO\Zmsbackend\Query\Base
 
     public const ALIAS = 'availabilityHistory';
 
+    public const QUERY_SELECT_BY_SCOPE = '
+        SELECT
+            id,
+            scope_id AS scopeId,
+            availability_id AS availabilityId,
+            action,
+            summary,
+            changed_at AS changedAt,
+            changed_by AS changedBy
+        FROM availability_history
+        WHERE scope_id = :scopeId
+          AND changed_at >= :from
+          AND changed_at <= :to
+        ORDER BY changed_at DESC, id DESC
+    ';
+
     protected $resolveLevel = 0;
 
     /**

@@ -59,6 +59,46 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
     }
 
     /**
+     * Newest-first history for a scope within [from, to] (inclusive timestamps).
+     *
+     * @return list<array{
+     *     id:int,
+     *     scopeId:int,
+     *     availabilityId:?int,
+     *     action:string,
+     *     summary:string,
+     *     changedAt:string,
+     *     changedBy:string
+     * }>
+     */
+    public function readListByScopeId(
+        int $scopeId,
+        \DateTimeInterface $from,
+        \DateTimeInterface $to
+    ): array {
+        $rows = $this->fetchAll(AvailabilityHistoryQuery::QUERY_SELECT_BY_SCOPE, [
+            'scopeId' => $scopeId,
+            'from' => $from->format('Y-m-d H:i:s'),
+            'to' => $to->format('Y-m-d H:i:s'),
+        ]);
+
+        $list = [];
+        foreach ($rows as $row) {
+            $list[] = [
+                'id' => (int) $row['id'],
+                'scopeId' => (int) $row['scopeId'],
+                'availabilityId' => $row['availabilityId'] !== null ? (int) $row['availabilityId'] : null,
+                'action' => (string) $row['action'],
+                'summary' => (string) $row['summary'],
+                'changedAt' => (string) $row['changedAt'],
+                'changedBy' => (string) $row['changedBy'],
+            ];
+        }
+
+        return $list;
+    }
+
+    /**
      * Accordion-style one-liner matching zmsadmin accordionTitle().
      */
     public function buildSummary(Availability $availability): string
@@ -84,7 +124,8 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
             ? ': ' . $availability->description
             : '';
 
-        $summary = "Zeitraum: {$startDate} bis {$endDate}, Uhrzeit: von {$startTime} bis {$endTime},{$type}{$description}";
+        $summary = "Zeitraum: {$startDate} bis {$endDate}, "
+            . "Uhrzeit: von {$startTime} bis {$endTime},{$type}{$description}";
 
         if (mb_strlen($summary) > self::SUMMARY_MAX_LENGTH) {
             return mb_substr($summary, 0, self::SUMMARY_MAX_LENGTH - 3) . '...';
