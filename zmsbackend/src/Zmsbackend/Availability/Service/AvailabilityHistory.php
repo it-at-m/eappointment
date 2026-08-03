@@ -103,18 +103,30 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         int $scopeId,
         \DateTimeInterface $from,
         \DateTimeInterface $to,
-        ?int $availabilityId = null
+        ?int $availabilityId = null,
+        ?string $action = null
     ): array {
         $parameters = [
             'scopeId' => $scopeId,
             'from' => $from->format('Y-m-d H:i:s'),
             'to' => $to->format('Y-m-d H:i:s'),
         ];
-        $query = AvailabilityHistoryQuery::QUERY_SELECT_BY_SCOPE;
+
+        $query = AvailabilityHistoryQuery::QUERY_SELECT_COLUMNS
+            . ' WHERE scope_id = :scopeId'
+            . ' AND changed_at >= :from'
+            . ' AND changed_at <= :to';
+
         if ($availabilityId !== null) {
-            $query = AvailabilityHistoryQuery::QUERY_SELECT_BY_SCOPE_AND_AVAILABILITY;
+            $query .= ' AND availability_id = :availabilityId';
             $parameters['availabilityId'] = $availabilityId;
         }
+        if ($action !== null) {
+            $query .= ' AND action = :action';
+            $parameters['action'] = $action;
+        }
+
+        $query .= ' ORDER BY changed_at DESC, id DESC';
 
         $rows = $this->fetchAll($query, $parameters);
 
