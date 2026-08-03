@@ -61,6 +61,7 @@ describe("AppointmentCardViewer", () => {
         appointmentDetailUrl: mockAppointmentDetailUrl,
         displayedOnDetailScreen: false,
         offices: [],
+        services: [],
         t: (key: string) => {
           const translations = de as any;
           return translations[key] || key;
@@ -80,7 +81,7 @@ describe("AppointmentCardViewer", () => {
           },
           'appointment-card': {
             template: "<div data-test='appointment-card'></div>",
-            props: ["appointment", "appointmentDetailUrl", "offices", "t"],
+            props: ["appointment", "appointmentDetailUrl", "offices", "services", "t"],
           },
           'add-appointment-card': {
             template: "<div data-test='add-appointment-card'><slot name='content'></slot></div>",

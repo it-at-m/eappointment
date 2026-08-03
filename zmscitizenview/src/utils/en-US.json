@@ -145,6 +145,7 @@
   "appointment": "Appointment",
   "appointmentBookingErrorHeader": "Activation failed.",
   "appointmentBookingErrorText": "Activation failed.",
+  "appointmentDetailVideoIntroLocation": "Webex (online meeting)",
   "appointmentSuccessfullyBookedHeader": " Your appointment has been booked.",
   "appointmentSuccessfullyBookedText": "You will receive confirmation and further information about your appointment by e-mail. We look forward to your visit.",
   "appointmentSuccessfullyCanceledHeader": "You have successfully cancelled your appointment.",

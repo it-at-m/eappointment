@@ -149,6 +149,7 @@
   "appointment": "Termin",
   "appointmentBookingErrorHeader": "Aktivierung fehlgeschlagen",
   "appointmentBookingErrorText": "Aktivierung fehlgeschlagen",
+  "appointmentDetailVideoIntroLocation": "Webex (Online-Meeting)",
   "appointmentHintHeader": "Hinweis zu Ihrem Termin",
   "appointmentNumber": "Terminnummer",
   "appointmentSuccessfullyBookedHeader": "Ihr Termin wurde gebucht.",
