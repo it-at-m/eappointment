@@ -146,6 +146,7 @@ const TableBodyLayout = (props) => {
                 }
                 .availability-history-list .cell--summary {
                     word-break: break-word;
+                    white-space: pre-line;
                 }
                 .availability-history-row td {
                     background: #f7f7f7;

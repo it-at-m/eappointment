@@ -22,7 +22,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
     /** Default retention window for history rows (ZMSKVR-1249). */
     public const DEFAULT_RETENTION_DAYS = 180;
 
-    private const SUMMARY_MAX_LENGTH = 512;
+    private const SUMMARY_MAX_LENGTH = 4000;
 
     /** @var array<string, string> */
     private const TYPE_LABELS = [
@@ -39,6 +39,22 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         'friday' => 'Freitag',
         'saturday' => 'Samstag',
         'sunday' => 'Sonntag',
+    ];
+
+    /** @var array<int, string> afterWeeks series labels (admin availabilitySeries) */
+    private const SERIES_AFTER_WEEKS = [
+        1 => 'jede Woche',
+        2 => 'alle 2 Wochen',
+        3 => 'alle 3 Wochen',
+    ];
+
+    /** @var array<int, string> weekOfMonth series labels */
+    private const SERIES_WEEK_OF_MONTH = [
+        1 => 'jede 1. Woche im Monat',
+        2 => 'jede 2. Woche im Monat',
+        3 => 'jede 3. Woche im Monat',
+        4 => 'jede 4. Woche im Monat',
+        5 => 'jede letzte Woche im Monat',
     ];
 
     public function writeCreated(Availability $availability, ?string $changedBy = null): bool
@@ -126,7 +142,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
     }
 
     /**
-     * Accordion-style one-liner matching zmsadmin accordionTitle().
+     * Full form snapshot for tech-admin history (labels mirror the day form).
      */
     public function buildSummary(Availability $availability): string
     {
@@ -135,30 +151,78 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         $startTime = $this->formatTime((string) $availability->startTime);
         $endTime = $this->formatTime((string) $availability->endTime);
 
-        $typeLabel = self::TYPE_LABELS[$availability->type] ?? null;
-        $weekdayLabels = [];
-        foreach (self::WEEKDAY_LABELS as $key => $label) {
-            if (!empty($availability->weekday[$key])) {
-                $weekdayLabels[] = $label;
-            }
+        $description = trim((string) ($availability->description ?? ''));
+        $typeLabel = self::TYPE_LABELS[$availability->type] ?? (string) $availability->type;
+        $seriesLabel = $this->resolveSeriesLabel($availability);
+        $weekdayList = $this->resolveWeekdayList($availability);
+        $slotMinutes = (int) ($availability->slotTimeInMinutes ?? $availability->getSlotTimeInMinutes());
+        $bookableFrom = $availability->bookable['startInDays'] ?? null;
+        $bookableTo = $availability->bookable['endInDays'] ?? null;
+        $intern = (int) ($availability->workstationCount['intern'] ?? 0);
+        $public = (int) ($availability->workstationCount['public'] ?? 0);
+
+        $lines = [
+            'Anmerkung: ' . ($description !== '' ? $description : '–'),
+            'Typ: ' . $typeLabel,
+            'Serie: ' . $seriesLabel,
+            'Wochentage: ' . ($weekdayList !== '' ? $weekdayList : '–'),
+            'Terminabstand: ' . $slotMinutes . ' min',
+            "Öffnungszeit: {$startDate} {$startTime} – {$endDate} {$endTime}",
+            'Buchbar: von ' . $this->formatBookableDay($bookableFrom)
+                . ' bis ' . $this->formatBookableDay($bookableTo) . ' Tage im voraus',
+            "Terminarbeitsplätze: Insgesamt {$intern} / Internet {$public}",
+        ];
+
+        if ($availability->hasId()) {
+            $lines[] = 'ID: ' . $availability->getId();
         }
-        $weekdayList = implode(', ', $weekdayLabels);
 
-        $type = ($typeLabel && $weekdayList !== '')
-            ? " Typ: {$typeLabel}, Wochentag: {$weekdayList}"
-            : '';
-        $description = $availability->description !== '' && $availability->description !== null
-            ? ': ' . $availability->description
-            : '';
-
-        $summary = "Zeitraum: {$startDate} bis {$endDate}, "
-            . "Uhrzeit: von {$startTime} bis {$endTime},{$type}{$description}";
+        $summary = implode("\n", $lines);
 
         if (mb_strlen($summary) > self::SUMMARY_MAX_LENGTH) {
             return mb_substr($summary, 0, self::SUMMARY_MAX_LENGTH - 3) . '...';
         }
 
         return $summary;
+    }
+
+    protected function resolveSeriesLabel(Availability $availability): string
+    {
+        $afterWeeks = (int) ($availability->repeat['afterWeeks'] ?? 0);
+        $weekOfMonth = (int) ($availability->repeat['weekOfMonth'] ?? 0);
+
+        if ($afterWeeks > 0) {
+            return self::SERIES_AFTER_WEEKS[$afterWeeks] ?? "alle {$afterWeeks} Wochen";
+        }
+        if ($weekOfMonth > 0) {
+            return self::SERIES_WEEK_OF_MONTH[$weekOfMonth]
+                ?? ($weekOfMonth >= 5
+                    ? self::SERIES_WEEK_OF_MONTH[5]
+                    : "jede {$weekOfMonth}. Woche im Monat");
+        }
+
+        return 'einmaliger Termin';
+    }
+
+    protected function resolveWeekdayList(Availability $availability): string
+    {
+        $weekdayLabels = [];
+        foreach (self::WEEKDAY_LABELS as $key => $label) {
+            if (!empty($availability->weekday[$key])) {
+                $weekdayLabels[] = $label;
+            }
+        }
+
+        return implode(', ', $weekdayLabels);
+    }
+
+    protected function formatBookableDay($value): string
+    {
+        if ($value === null || $value === '') {
+            return 'Standort-Standard';
+        }
+
+        return (string) $value;
     }
 
     protected function write(string $action, Availability $availability, ?string $changedBy): bool
