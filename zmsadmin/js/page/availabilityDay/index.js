@@ -776,6 +776,8 @@ class AvailabilityPage extends Component {
             onDelete={onDelete}
             onAbort={this.onRevertUpdates.bind(this)}
             slotBuckets={this.state.slotbuckets}
+            historyUrl={this.props.historyurl}
+            canViewAvailabilityHistory={Boolean(this.props.canviewavailabilityhistory)}
         />
     }
 
@@ -1019,7 +1021,9 @@ AvailabilityPage.propTypes = {
     timestamp: PropTypes.number,
     scope: PropTypes.object,
     links: PropTypes.object,
-    tabs: PropTypes.array
+    tabs: PropTypes.array,
+    historyurl: PropTypes.string,
+    canviewavailabilityhistory: PropTypes.bool
 }
 
 export default AvailabilityPage

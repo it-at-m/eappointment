@@ -49,7 +49,22 @@ class AvailabilityHistoryByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    protected function seedHistoryRow(): void
+    public function testFilterByAvailabilityId()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
+        $this->seedHistoryRow(68985);
+        $this->seedHistoryRow(99999);
+
+        $response = $this->render(['id' => self::SCOPE_ID], [], ['availabilityId' => 68985]);
+        $this->assertTrue(200 == $response->getStatusCode());
+        $body = json_decode((string) $response->getBody(), true);
+        $this->assertNotEmpty($body['data']);
+        foreach ($body['data'] as $row) {
+            $this->assertSame(68985, $row['availabilityId']);
+        }
+    }
+
+    protected function seedHistoryRow(int $availabilityId = 68985): void
     {
         (new \BO\Zmsbackend\Availability\Service\AvailabilityHistory())->perform(
             'INSERT INTO availability_history
@@ -58,7 +73,7 @@ class AvailabilityHistoryByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
                 (:scopeId, :availabilityId, :action, :summary, :changedBy)',
             [
                 'scopeId' => self::SCOPE_ID,
-                'availabilityId' => 68985,
+                'availabilityId' => $availabilityId,
                 'action' => 'created',
                 'summary' => 'Zeitraum: 01.01.2016 bis 31.12.2016, Uhrzeit: von 07:00 bis 17:00,',
                 'changedBy' => 'unittest',
