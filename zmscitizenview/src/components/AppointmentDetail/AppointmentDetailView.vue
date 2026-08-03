@@ -623,7 +623,7 @@ const loadAppointment = () => {
   });
 };
 const sanitizedInfoForAppointment = computed(() =>
-  sanitizeHtml(appointment.value?.scope.infoForAppointment)
+  sanitizeHtml(appointment.value?.scope?.infoForAppointment)
 );
 
 const infoForAppointmentContainsPTag = computed(() =>
