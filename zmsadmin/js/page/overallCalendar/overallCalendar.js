@@ -259,14 +259,20 @@ function saveHideEmptyDaysPreference(enabled) {
     }
 }
 
-function dayHasOpeningHoursOrAppointments(day) {
-    return (day.scopes || []).some(scope => {
-        const hasOpeningHours = Array.isArray(scope.intervals) && scope.intervals.length > 0;
-        const hasAppointments = Array.isArray(scope.events) && scope.events.length > 0;
-        return hasOpeningHours || hasAppointments;
-    });
+function scopeHasOpeningHoursOrAppointments(scope) {
+    const hasOpeningHours = Array.isArray(scope.intervals) && scope.intervals.length > 0;
+    const hasAppointments = Array.isArray(scope.events) && scope.events.length > 0;
+    return hasOpeningHours || hasAppointments;
 }
 
+function dayHasOpeningHoursOrAppointments(day) {
+    return (day.scopes || []).some(scopeHasOpeningHoursOrAppointments);
+}
+
+/**
+ * When "Ausblenden" is active: drop days with no open offices, and on remaining
+ * days drop offices that have neither opening hours nor appointments that day.
+ */
 function getVisibleDays(days) {
     if (!Array.isArray(days)) {
         return days;
@@ -274,7 +280,13 @@ function getVisibleDays(days) {
     if (!hideDaysWithoutOpeningHours) {
         return days;
     }
-    return days.filter(dayHasOpeningHoursOrAppointments);
+    return days
+        .filter(dayHasOpeningHoursOrAppointments)
+        .map(day => ({
+            ...day,
+            scopes: (day.scopes || []).filter(scopeHasOpeningHoursOrAppointments)
+        }))
+        .filter(day => (day.scopes || []).length > 0);
 }
 
 function renderCalendar() {
