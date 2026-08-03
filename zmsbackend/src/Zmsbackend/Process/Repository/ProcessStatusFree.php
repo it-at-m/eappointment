@@ -29,7 +29,7 @@ class ProcessStatusFree extends \BO\Zmsbackend\Query\Base
                 IF(:slotType = "intern", s.intern,
                     IF(:slotType = "public", s.`public`, 0)
                     ) available,
-                IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots) slotsRequired,
+                IF(a.multiple_slots_allowed, c.slotsRequired, :forceRequiredSlots) slotsRequired,
                 s.*,
                 cc.id
             FROM
@@ -40,7 +40,7 @@ class ProcessStatusFree extends \BO\Zmsbackend\Query\Base
                         AND s.status = "free"
                 LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
                 LEFT JOIN slot_hiera h ON h.ancestorID = s.slotID
-                    AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots)
+                    AND h.ancestorLevel <= IF(a.multiple_slots_allowed, c.slotsRequired, :forceRequiredSlots)
                 INNER JOIN slot s2 on h.slotID = s2.slotID and s2.status = "free"
                 LEFT JOIN slot_process p ON h.slotID = p.slotID
                 LEFT JOIN closures cc ON (s.scopeID = cc.StandortID AND s.year = cc.year AND s.month = cc.month and s.day = cc.day)
@@ -77,7 +77,7 @@ class ProcessStatusFree extends \BO\Zmsbackend\Query\Base
                 IF(:slotType = "intern", s.intern,
                     IF(:slotType = "public", s.`public`, 0)
                     ) available,
-                IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots) slotsRequired,
+                IF(a.multiple_slots_allowed, c.slotsRequired, :forceRequiredSlots) slotsRequired,
                 s.*,
                 cc.id
             FROM
@@ -88,7 +88,7 @@ class ProcessStatusFree extends \BO\Zmsbackend\Query\Base
                         AND s.status = "free"
                 LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
                 LEFT JOIN slot_hiera h ON h.ancestorID = s.slotID
-                    AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots)
+                    AND h.ancestorLevel <= IF(a.multiple_slots_allowed, c.slotsRequired, :forceRequiredSlots)
                 INNER JOIN slot s2 on h.slotID = s2.slotID and s2.status = "free"
                 LEFT JOIN (
                     SELECT p.slotID, COUNT(*) AS confirmed

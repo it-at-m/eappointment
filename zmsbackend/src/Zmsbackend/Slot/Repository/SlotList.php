@@ -27,84 +27,84 @@ class SlotList extends \BO\Zmsbackend\Query\Base
             b.Datum AS slotdate,
 
             -- as grouped by slot, we can calculate available free appointments
-            GREATEST(0, o.Anzahlterminarbeitsplaetze - o.reduktionTermineImInternet - COUNT(b.Datum))
+            GREATEST(0, o.appointment_workstation_count - o.internet_reduction - COUNT(b.Datum))
                 AS `freeAppointments__public`,
-            o.Anzahlterminarbeitsplaetze - COUNT(b.Datum)
+            o.appointment_workstation_count - COUNT(b.Datum)
                 AS `freeAppointments__intern`,
 
             -- calculate the incrementing slotnr for the availability
-            FLOOR(((TIME_TO_SEC(b.Uhrzeit) - TIME_TO_SEC(o.Terminanfangszeit)) / TIME_TO_SEC(o.Timeslot))) AS `slotnr`,
+            FLOOR(((TIME_TO_SEC(b.Uhrzeit) - TIME_TO_SEC(o.appointment_start_time)) / TIME_TO_SEC(o.time_slot))) AS `slotnr`,
 
             -- collect settings for the availability to calculate missing slots
             o.OeffnungszeitID AS availability__id,
-            o.erlaubemehrfachslots AS availability__multipleSlotsAllowed,
-            o.allexWochen AS availability__repeat__afterWeeks,
-            o.jedexteWoche AS availability__repeat__weekOfMonth,
-            FLOOR(TIME_TO_SEC(o.Timeslot) / 60) AS availability__slotTimeInMinutes,
-            o.Startdatum AS availability__startDate,
-            o.Endedatum AS availability__endDate,
-            o.Terminanfangszeit	 AS availability__startTime,
-            o.Terminendzeit	 AS availability__endTime,
+            o.multiple_slots_allowed AS availability__multipleSlotsAllowed,
+            o.every_x_weeks AS availability__repeat__afterWeeks,
+            o.every_other_week AS availability__repeat__weekOfMonth,
+            FLOOR(TIME_TO_SEC(o.time_slot) / 60) AS availability__slotTimeInMinutes,
+            o.start_date AS availability__startDate,
+            o.end_date AS availability__endDate,
+            o.appointment_start_time AS availability__startTime,
+            o.appointment_end_time AS availability__endTime,
 
             -- weekday is saved bitwise
-            o.Wochentag & 2 AS availability__weekday__monday,
-            o.Wochentag & 4 AS availability__weekday__tuesday,
-            o.Wochentag & 8 AS availability__weekday__wednesday,
-            o.Wochentag & 16 AS availability__weekday__thursday,
-            o.Wochentag & 32 AS availability__weekday__friday,
-            o.Wochentag & 64 AS availability__weekday__saturday,
-            o.Wochentag & 1 AS availability__weekday__sunday,
+            o.weekday & 2 AS availability__weekday__monday,
+            o.weekday & 4 AS availability__weekday__tuesday,
+            o.weekday & 8 AS availability__weekday__wednesday,
+            o.weekday & 16 AS availability__weekday__thursday,
+            o.weekday & 32 AS availability__weekday__friday,
+            o.weekday & 64 AS availability__weekday__saturday,
+            o.weekday & 1 AS availability__weekday__sunday,
 
             -- calculate available slots, do not use reduction values
-            o.Anzahlterminarbeitsplaetze - o.reduktionTermineImInternet AS availability__workstationCount__public,
-            o.Anzahlterminarbeitsplaetze AS availability__workstationCount__intern,
+            o.appointment_workstation_count - o.internet_reduction AS availability__workstationCount__public,
+            o.appointment_workstation_count AS availability__workstationCount__intern,
 
             -- availability overwrites scope settings if greater zero
-            IF(o.Offen_ab, o.Offen_ab, s.Termine_ab) AS availability__bookable__startInDays,
-            IF(o.Offen_bis, o.Offen_bis, s.Termine_bis) AS availability__bookable__endInDays
+            IF(o.open_from_days, o.open_from_days, s.Termine_ab) AS availability__bookable__startInDays,
+            IF(o.open_until_days, o.open_until_days, s.Termine_bis) AS availability__bookable__endInDays
         FROM
             standort s
-            LEFT JOIN oeffnungszeit o USING(StandortID)
+            LEFT JOIN oeffnungszeit o ON o.scope_id = s.StandortID
             LEFT JOIN buerger b ON
                 (
-                    b.StandortID = o.StandortID
+                    b.StandortID = o.scope_id
 
                     -- match weekday
-                    AND o.Wochentag & POW(2, DAYOFWEEK(b.Datum) - 1)
+                    AND o.weekday & POW(2, DAYOFWEEK(b.Datum) - 1)
 
                     -- match week
                     AND (
                         (
-                            o.allexWochen
+                            o.every_x_weeks
                             -- The following line would be correct by logic, but does not work :-/
                                 AND FLOOR(
                                     (FLOOR(UNIX_TIMESTAMP(b.Datum))
-                                    - FLOOR(UNIX_TIMESTAMP(o.Startdatum)))
+                                    - FLOOR(UNIX_TIMESTAMP(o.start_date)))
                                     / 86400
                                     / 7
-                                ) % o.allexWochen = 0
+                                ) % o.every_x_weeks = 0
                         )
                         OR (
-                            o.jedexteWoche
+                            o.every_other_week
                             AND (
-                                CEIL(DAYOFMONTH(b.Datum) / 7) = o.jedexteWoche
+                                CEIL(DAYOFMONTH(b.Datum) / 7) = o.every_other_week
                                 OR (
-                                    o.jedexteWoche = 5
+                                    o.every_other_week = 5
                                     AND CEIL(LAST_DAY(b.Datum) / 7) = CEIL(DAYOFMONTH(b.Datum) / 7)
                                 )
                             )
                         )
-                        OR (o.allexWochen = 0 AND o.jedexteWoche = 0)
+                        OR (o.every_x_weeks = 0 AND o.every_other_week = 0)
                     )
 
                     -- ignore slots out of date range
                     AND b.Datum BETWEEN :start_process AND :end_process
 
                     -- match time and date
-                    AND b.Uhrzeit >= o.Terminanfangszeit
-                    AND b.Uhrzeit < o.Terminendzeit
-                    AND b.Datum >= o.Startdatum
-                    AND b.Datum <= o.Endedatum
+                    AND b.Uhrzeit >= o.appointment_start_time
+                    AND b.Uhrzeit < o.appointment_end_time
+                    AND b.Datum >= o.start_date
+                    AND b.Datum <= o.end_date
 
                     -- match day off
                     AND (
@@ -112,7 +112,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
                             SELECT Datum FROM feiertage f WHERE f.BehoerdenID = s.BehoerdenID OR f.BehoerdenID = 0
                         )
                         -- ignore day off if availabilty is valid for two or less days
-                        OR UNIX_TIMESTAMP(o.Endedatum) - UNIX_TIMESTAMP(o.Startdatum) < 172800
+                        OR UNIX_TIMESTAMP(o.end_date) - UNIX_TIMESTAMP(o.start_date) < 172800
                     )
                 )
         WHERE
@@ -120,15 +120,15 @@ class SlotList extends \BO\Zmsbackend\Query\Base
             AND o.OeffnungszeitID IS NOT NULL
 
             -- ignore availability out of date range
-            AND o.Endedatum >= :start_availability
-            AND o.Startdatum <= :end_availability
+            AND o.end_date >= :start_availability
+            AND o.start_date <= :end_availability
 
             -- ignore availability on midnight
-            AND o.Terminanfangszeit != "00:00:00"
-            AND o.Terminendzeit != "00:00:00"
+            AND o.appointment_start_time != "00:00:00"
+            AND o.appointment_end_time != "00:00:00"
 
             -- ignore availability without appointment slots
-            AND o.Anzahlterminarbeitsplaetze != 0
+            AND o.appointment_workstation_count != 0
         GROUP BY o.OeffnungszeitID, b.Datum, `slotnr`
         HAVING
             -- reduce results cause processing them costs time even with query cache
