@@ -232,7 +232,12 @@ BEGIN
         SET NEW.`Offen_bis` = NEW.`open_until_days`;
     END IF;
 
-    SET NEW.`updated_at` = NEW.`updateTimestamp`;
+    -- Prefer an explicitly supplied updated_at over the auto default on updateTimestamp.
+    IF NEW.`updated_at` != NEW.`updateTimestamp` THEN
+        SET NEW.`updateTimestamp` = NEW.`updated_at`;
+    ELSE
+        SET NEW.`updated_at` = NEW.`updateTimestamp`;
+    END IF;
 END$$
 
 CREATE TRIGGER `oeffnungszeit_english_bu`
@@ -347,12 +352,12 @@ BEGIN
         SET NEW.`Offen_bis` = NEW.`open_until_days`;
     END IF;
 
-    IF NEW.`updateTimestamp` != OLD.`updateTimestamp` THEN
-        SET NEW.`updated_at` = NEW.`updateTimestamp`;
-    ELSEIF NEW.`updated_at` != OLD.`updated_at` THEN
+    -- Prefer an explicit updated_at write over ON UPDATE CURRENT_TIMESTAMP on updateTimestamp.
+    IF NEW.`updated_at` != OLD.`updated_at` THEN
         SET NEW.`updateTimestamp` = NEW.`updated_at`;
+    ELSEIF NEW.`updateTimestamp` != OLD.`updateTimestamp` THEN
+        SET NEW.`updated_at` = NEW.`updateTimestamp`;
     ELSE
-        -- Row change without explicit timestamp: keep both in sync with auto-update on updateTimestamp
         SET NEW.`updated_at` = NEW.`updateTimestamp`;
     END IF;
 END$$
