@@ -778,6 +778,7 @@ class AvailabilityPage extends Component {
             slotBuckets={this.state.slotbuckets}
             historyUrl={this.props.historyurl}
             canViewAvailabilityHistory={Boolean(this.props.canviewavailabilityhistory)}
+            historyRefreshKey={this.state.lastSave || 0}
         />
     }
 
