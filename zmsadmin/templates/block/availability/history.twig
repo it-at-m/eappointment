@@ -37,6 +37,7 @@
         white-space: nowrap;
         color: #555;
         font-size: 0.9em;
+        line-height: 1.35;
     }
 </style>
 <script>
@@ -88,9 +89,17 @@
             var tr = document.createElement('tr');
             var meta = document.createElement('td');
             meta.className = 'cell--meta';
-            meta.textContent = (actionLabels[row.action] || row.action)
-                + ' · ' + formatChangedAt(row.changedAt)
-                + (row.changedBy ? ' · ' + row.changedBy : '');
+            var actionEl = document.createElement('div');
+            actionEl.textContent = actionLabels[row.action] || row.action;
+            meta.appendChild(actionEl);
+            var changedAtEl = document.createElement('div');
+            changedAtEl.textContent = formatChangedAt(row.changedAt);
+            meta.appendChild(changedAtEl);
+            if (row.changedBy) {
+                var changedByEl = document.createElement('div');
+                changedByEl.textContent = row.changedBy;
+                meta.appendChild(changedByEl);
+            }
             tr.appendChild(meta);
             tr.appendChild(cell(row.weekdays));
             tr.appendChild(cell(row.series));
