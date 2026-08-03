@@ -1,0 +1,133 @@
+{# Lazy-loaded Öffnungszeiten change history (tech admin only). #}
+{% if canViewAvailabilityHistory|default(false) %}
+<section class="availability-history board board--spaceless" style="margin-top: 1.5rem;">
+    <div class="board__actions">
+        <div class="left aside">
+            <a href="#availability-history-panel"
+               id="availability-history-toggle"
+               data-url="{{ urlGet('scopeAvailabilityHistory', {'id': scope.id}, {}) }}"
+               aria-expanded="false"
+               aria-controls="availability-history-panel">
+                Änderungsverlauf
+            </a>
+        </div>
+    </div>
+    <div id="availability-history-panel" class="board__body body" hidden>
+        <p class="availability-history-status" id="availability-history-status">Wird geladen…</p>
+        <ul class="list--table availability-history-list" id="availability-history-list" hidden></ul>
+    </div>
+</section>
+<style>
+    .availability-history-list .cell--meta {
+        white-space: nowrap;
+        color: #555;
+        font-size: 0.9em;
+    }
+    .availability-history-list .cell--summary {
+        word-break: break-word;
+    }
+</style>
+<script>
+(function () {
+    var toggle = document.getElementById('availability-history-toggle');
+    var panel = document.getElementById('availability-history-panel');
+    var statusEl = document.getElementById('availability-history-status');
+    var listEl = document.getElementById('availability-history-list');
+    if (!toggle || !panel || !statusEl || !listEl) {
+        return;
+    }
+
+    var actionLabels = {
+        created: 'Erstellt',
+        updated: 'Geändert',
+        deleted: 'Gelöscht',
+        dldb_slot_update: 'DLDB Slotlänge'
+    };
+    var loaded = false;
+    var loading = false;
+
+    function formatChangedAt(value) {
+        if (!value) {
+            return '';
+        }
+        var normalized = String(value).replace(' ', 'T');
+        var date = new Date(normalized);
+        if (isNaN(date.getTime())) {
+            return value;
+        }
+        var pad = function (n) { return n < 10 ? '0' + n : String(n); };
+        return pad(date.getDate()) + '.' + pad(date.getMonth() + 1) + '.' + date.getFullYear()
+            + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes());
+    }
+
+    function renderRows(rows) {
+        listEl.innerHTML = '';
+        if (!rows || !rows.length) {
+            statusEl.textContent = 'Kein Änderungsverlauf im gewählten Zeitraum.';
+            statusEl.hidden = false;
+            listEl.hidden = true;
+            return;
+        }
+        rows.forEach(function (row) {
+            var li = document.createElement('li');
+            var meta = document.createElement('div');
+            meta.className = 'cell cell--meta';
+            meta.textContent = (actionLabels[row.action] || row.action)
+                + ' · ' + formatChangedAt(row.changedAt)
+                + (row.changedBy ? ' · ' + row.changedBy : '');
+            var summary = document.createElement('div');
+            summary.className = 'cell cell--summary';
+            summary.textContent = row.summary || '';
+            li.appendChild(meta);
+            li.appendChild(summary);
+            listEl.appendChild(li);
+        });
+        statusEl.hidden = true;
+        listEl.hidden = false;
+    }
+
+    function loadHistory() {
+        if (loaded || loading) {
+            return;
+        }
+        loading = true;
+        statusEl.hidden = false;
+        statusEl.textContent = 'Wird geladen…';
+        listEl.hidden = true;
+
+        fetch(toggle.getAttribute('data-url'), {
+            method: 'GET',
+            credentials: 'same-origin',
+            headers: { 'Accept': 'application/json' }
+        }).then(function (response) {
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+            return response.json();
+        }).then(function (payload) {
+            loaded = true;
+            renderRows(payload.data || []);
+        }).catch(function () {
+            statusEl.textContent = 'Änderungsverlauf konnte nicht geladen werden.';
+            statusEl.hidden = false;
+            listEl.hidden = true;
+        }).finally(function () {
+            loading = false;
+        });
+    }
+
+    toggle.addEventListener('click', function (event) {
+        event.preventDefault();
+        var open = panel.hasAttribute('hidden');
+        if (open) {
+            panel.removeAttribute('hidden');
+            toggle.setAttribute('aria-expanded', 'true');
+            loadHistory();
+        } else {
+            panel.setAttribute('hidden', 'hidden');
+            toggle.setAttribute('aria-expanded', 'false');
+        }
+    });
+})();
+</script>
+{% endif %}

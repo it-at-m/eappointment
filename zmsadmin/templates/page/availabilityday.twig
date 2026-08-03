@@ -93,6 +93,8 @@
         data-maxslots="{{ maxSlotsForAvailabilities|json_encode }}"
         data-busyslots="{{ busySlotsForAvailabilities|json_encode }}" ></div>
 
+    {% include "block/availability/history.twig" %}
+
     <style>
         .hidden {
             display: none;
