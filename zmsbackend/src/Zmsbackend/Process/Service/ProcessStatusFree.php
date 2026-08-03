@@ -361,7 +361,9 @@ class ProcessStatusFree extends Process
             try {
                 $connection->rollBack();
             } catch (\PDOException $exception) {
-                // Transaction may already have been rolled back by the server.
+                \App::$log->warning('Rollback after deadlock failed', [
+                    'error' => $exception->getMessage(),
+                ]);
             }
         }
         if (!$connection->inTransaction()) {
