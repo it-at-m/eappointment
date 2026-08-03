@@ -53,7 +53,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
 
     public function writeDeleted(Availability $availability, ?string $changedBy = null): bool
     {
-        return $this->write(self::ACTION_DELETED, $availability, $changedBy ?? 'system');
+        return $this->write(self::ACTION_DELETED, $availability, $changedBy);
     }
 
     public function writeDldbSlotUpdate(Availability $availability): bool
@@ -195,7 +195,9 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
                 }
             }
         } catch (\Throwable $exception) {
-            // Fall through to system actor.
+            App::$log->warning('availability_history actor resolution failed', [
+                'exception' => $exception->getMessage(),
+            ]);
         }
 
         return 'system';
