@@ -68,7 +68,22 @@ class AvailabilityHistoryByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
         }
     }
 
-    protected function seedHistoryRow(int $availabilityId = 68985): void
+    public function testFilterByActionDeleted()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
+        $this->seedHistoryRow(68985, 'created');
+        $this->seedHistoryRow(68986, 'deleted');
+
+        $response = $this->render(['id' => self::SCOPE_ID], [], ['action' => 'deleted']);
+        $this->assertTrue(200 == $response->getStatusCode());
+        $body = json_decode((string) $response->getBody(), true);
+        $this->assertNotEmpty($body['data']);
+        foreach ($body['data'] as $row) {
+            $this->assertSame('deleted', $row['action']);
+        }
+    }
+
+    protected function seedHistoryRow(int $availabilityId = 68985, string $action = 'created'): void
     {
         (new \BO\Zmsbackend\Availability\Service\AvailabilityHistory())->perform(
             'INSERT INTO availability_history
@@ -80,7 +95,7 @@ class AvailabilityHistoryByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
             [
                 'scopeId' => self::SCOPE_ID,
                 'availabilityId' => $availabilityId,
-                'action' => 'created',
+                'action' => $action,
                 'weekdays' => 'Montag, Dienstag, Mittwoch, Donnerstag, Freitag',
                 'series' => 'jede Woche',
                 'validFrom' => '03.08.2026',

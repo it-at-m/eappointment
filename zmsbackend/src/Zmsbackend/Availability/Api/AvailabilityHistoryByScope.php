@@ -40,13 +40,30 @@ class AvailabilityHistoryByScope extends \BO\Zmsbackend\Api\BaseController
 
         [$from, $to] = $this->resolveDateRange();
         $availabilityId = Validator::param('availabilityId')->isNumber()->getValue();
+        $action = Validator::param('action')->isString()->getValue();
+        if ($action !== null && $action !== '') {
+            if (
+                !in_array(
+                    $action,
+                    \BO\Zmsbackend\Availability\Repository\AvailabilityHistory::ALLOWED_ACTIONS,
+                    true
+                )
+            ) {
+                throw new \BO\Zmsbackend\Exception\BadRequest(
+                    'Parameter action must be one of: created, updated, deleted, dldb_slot_update'
+                );
+            }
+        } else {
+            $action = null;
+        }
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
         $message->data = (new AvailabilityHistoryService())->readListByScopeId(
             (int) $scope->getId(),
             $from,
             $to,
-            $availabilityId ? (int) $availabilityId : null
+            $availabilityId ? (int) $availabilityId : null,
+            $action
         );
 
         $response = Render::withLastModified($response, time(), '0');

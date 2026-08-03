@@ -12,6 +12,7 @@ const PageLayout = (props) => {
             {props.saveBarTop}
             {props.accordion}
             {props.saveBarBottom}
+            {props.deletedHistory}
         </div>
     )
 }
@@ -22,7 +23,8 @@ PageLayout.propTypes = {
     conflicts: PropTypes.node,
     tabs: PropTypes.node,
     saveBarTop: PropTypes.node,
-    saveBarBottom: PropTypes.node
+    saveBarBottom: PropTypes.node,
+    deletedHistory: PropTypes.node
 }
 
 export default PageLayout

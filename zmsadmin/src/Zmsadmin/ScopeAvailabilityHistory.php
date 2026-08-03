@@ -37,10 +37,12 @@ class ScopeAvailabilityHistory extends BaseController
         $from = Validator::param('from')->isString()->getValue();
         $to = Validator::param('to')->isString()->getValue();
         $availabilityId = Validator::param('availabilityId')->isNumber()->getValue();
+        $action = Validator::param('action')->isString()->getValue();
         $params = array_filter([
             'from' => $from,
             'to' => $to,
             'availabilityId' => $availabilityId,
+            'action' => $action,
         ], static function ($value) {
             return $value !== null && $value !== '';
         });
