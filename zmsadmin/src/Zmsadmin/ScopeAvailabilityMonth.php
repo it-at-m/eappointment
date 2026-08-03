@@ -81,6 +81,9 @@ class ScopeAvailabilityMonth extends BaseController
                 'menuActive' => 'owner',
                 'title' => 'Behörden und Standorte - Öffnungszeiten',
                 'workstation' => $workstation,
+                'canViewAvailabilityHistory' => ScopeAvailabilityHistory::canViewAvailabilityHistory(
+                    $workstation->getUseraccount()
+                ),
                 'baseMonthString' => $startDate->format('m'),
                 'baseYearString' => $endDate->format('Y'),
                 'baseMonth_timestamp' => $startDate->getTimeStamp(),
