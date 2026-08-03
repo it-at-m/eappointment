@@ -298,7 +298,7 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
                         )
                     )
                 )
-                OR (availability.every_x_weeks = 0 AND availability.every_other_week = 0)
+                OR ($availability.every_x_weeks = 0 AND $availability.every_other_week = 0)
             )
 
             -- match time and date
