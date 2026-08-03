@@ -1,18 +1,14 @@
-{# Lazy-loaded Öffnungszeiten change history (tech admin only). #}
+{# Öffnungszeiten change history (tech admin only), loaded on page view. #}
 {% if canViewAvailabilityHistory|default(false) %}
 <section class="availability-history board board--spaceless" style="margin-top: 1.5rem;">
-    <div class="board__actions">
-        <div class="left aside">
-            <a href="#availability-history-panel"
-               id="availability-history-toggle"
-               data-url="{{ urlGet('scopeAvailabilityHistory', {'id': scope.id}, {}) }}"
-               aria-expanded="false"
-               aria-controls="availability-history-panel">
-                Änderungsverlauf
-            </a>
-        </div>
+    <div class="board__header">
+        <h2 class="board__heading heading"
+            id="availability-history-heading"
+            data-url="{{ urlGet('scopeAvailabilityHistory', {'id': scope.id}, {}) }}">
+            Änderungsverlauf
+        </h2>
     </div>
-    <div id="availability-history-panel" class="board__body body" hidden>
+    <div id="availability-history-panel" class="board__body body" aria-labelledby="availability-history-heading">
         <p class="availability-history-status" id="availability-history-status">Wird geladen…</p>
         <ul class="list--table availability-history-list" id="availability-history-list" hidden></ul>
     </div>
@@ -29,11 +25,10 @@
 </style>
 <script>
 (function () {
-    var toggle = document.getElementById('availability-history-toggle');
-    var panel = document.getElementById('availability-history-panel');
+    var heading = document.getElementById('availability-history-heading');
     var statusEl = document.getElementById('availability-history-status');
     var listEl = document.getElementById('availability-history-list');
-    if (!toggle || !panel || !statusEl || !listEl) {
+    if (!heading || !statusEl || !listEl) {
         return;
     }
 
@@ -43,8 +38,6 @@
         deleted: 'Gelöscht',
         dldb_slot_update: 'DLDB Slotlänge'
     };
-    var loaded = false;
-    var loading = false;
 
     function formatChangedAt(value) {
         if (!value) {
@@ -86,47 +79,25 @@
         listEl.hidden = false;
     }
 
-    function loadHistory() {
-        if (loaded || loading) {
-            return;
+    statusEl.hidden = false;
+    statusEl.textContent = 'Wird geladen…';
+    listEl.hidden = true;
+
+    fetch(heading.getAttribute('data-url'), {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: { 'Accept': 'application/json' }
+    }).then(function (response) {
+        if (!response.ok) {
+            throw new Error('HTTP ' + response.status);
         }
-        loading = true;
+        return response.json();
+    }).then(function (payload) {
+        renderRows(payload.data || []);
+    }).catch(function () {
+        statusEl.textContent = 'Änderungsverlauf konnte nicht geladen werden.';
         statusEl.hidden = false;
-        statusEl.textContent = 'Wird geladen…';
         listEl.hidden = true;
-
-        fetch(toggle.getAttribute('data-url'), {
-            method: 'GET',
-            credentials: 'same-origin',
-            headers: { 'Accept': 'application/json' }
-        }).then(function (response) {
-            if (!response.ok) {
-                throw new Error('HTTP ' + response.status);
-            }
-            return response.json();
-        }).then(function (payload) {
-            loaded = true;
-            renderRows(payload.data || []);
-        }).catch(function () {
-            statusEl.textContent = 'Änderungsverlauf konnte nicht geladen werden.';
-            statusEl.hidden = false;
-            listEl.hidden = true;
-        }).finally(function () {
-            loading = false;
-        });
-    }
-
-    toggle.addEventListener('click', function (event) {
-        event.preventDefault();
-        var open = panel.hasAttribute('hidden');
-        if (open) {
-            panel.removeAttribute('hidden');
-            toggle.setAttribute('aria-expanded', 'true');
-            loadHistory();
-        } else {
-            panel.setAttribute('hidden', 'hidden');
-            toggle.setAttribute('aria-expanded', 'false');
-        }
     });
 })();
 </script>
