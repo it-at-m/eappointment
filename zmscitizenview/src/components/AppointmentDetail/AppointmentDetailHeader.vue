@@ -1,7 +1,7 @@
 <template>
   <muc-intro
     v-if="appointment"
-    :tagline="t('appointment')"
+    :tagline="introTagline"
     :title="formatMultilineTitle(appointment)"
     variant="detail"
     :id="`process-${appointment?.processId}-displayNumber-${appointment?.displayNumber}`"
@@ -22,18 +22,20 @@
       />
       <br />
       <muc-link
-        v-if="selectedProvider"
-        :id="`provider-${selectedProvider.id}`"
-        :label="
-          selectedProvider.address.street +
-          ' ' +
-          selectedProvider.address.house_number
-        "
-        prepend-icon="map-pin"
-        :aria-label="selectedProvider.name"
+        v-if="introLocation"
+        :id="selectedProvider ? `provider-${selectedProvider.id}` : undefined"
+        :label="introLocation"
+        :prepend-icon="introLocationIcon"
+        :aria-label="introLocationAriaLabel"
         @click.prevent="focusLocation"
       />
       <br />
+      <muc-link
+        v-if="appointment.icsContent"
+        :label="t('downloadAppointment')"
+        prepend-icon="calendar-down"
+        @click.prevent="downloadIcsAppointment"
+      />
       <!--      Used after the content of hint has been checked-->
       <!--      <p-->
       <!--        v-if="-->
@@ -67,17 +69,81 @@
 
 <script setup lang="ts">
 import { MucButton, MucIntro, MucLink } from "@muenchen/muc-patternlab-vue";
+import { computed } from "vue";
 
 import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { OfficeImpl } from "@/types/OfficeImpl";
+import {
+  VARIANT_ID_PRESENCE,
+  VARIANT_ID_TELEPHONE,
+  VARIANT_ID_VIDEO,
+} from "@/utils/Constants";
+import { downloadIcsFile } from "@/utils/downloadIcsFile";
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { formatMultilineTitle } from "@/utils/formatMultilineTitle";
 
-defineProps<{
+const props = defineProps<{
   appointment: AppointmentImpl | undefined;
   selectedProvider: OfficeImpl | undefined;
+  variantId: number | null;
   t: (key: string) => string;
 }>();
+
+const introTagline = computed(() => {
+  if (props.variantId === VARIANT_ID_TELEPHONE) {
+    return props.t(`appointmentTypes.${VARIANT_ID_TELEPHONE}`);
+  }
+
+  if (props.variantId === VARIANT_ID_VIDEO) {
+    return props.t(`appointmentTypes.${VARIANT_ID_VIDEO}`);
+  }
+
+  return props.t(`appointmentTypes.${VARIANT_ID_PRESENCE}`);
+});
+
+const introLocation = computed(() => {
+  if (props.variantId === VARIANT_ID_VIDEO) {
+    return props.t("appointmentDetailVideoIntroLocation");
+  }
+
+  if (props.variantId === VARIANT_ID_TELEPHONE) {
+    return props.appointment?.telephone ?? "";
+  }
+
+  if (!props.selectedProvider) {
+    return "";
+  }
+
+  return (
+    props.selectedProvider.address.street +
+    " " +
+    props.selectedProvider.address.house_number
+  );
+});
+
+const introLocationIcon = computed(() => {
+  if (props.variantId === VARIANT_ID_TELEPHONE) {
+    return "telephone";
+  }
+
+  if (props.variantId === VARIANT_ID_VIDEO) {
+    return "video-camera";
+  }
+
+  return "map-pin";
+});
+
+const introLocationAriaLabel = computed(() => {
+  if (
+    props.variantId !== VARIANT_ID_TELEPHONE &&
+    props.variantId !== VARIANT_ID_VIDEO &&
+    props.selectedProvider
+  ) {
+    return props.selectedProvider.name;
+  }
+
+  return introLocation.value;
+});
 
 const emit =
   defineEmits<
@@ -89,6 +155,10 @@ const emit =
         | "rescheduleAppointment"
     ) => void
   >();
+
+const downloadIcsAppointment = () => {
+  downloadIcsFile(props.appointment?.icsContent);
+};
 
 const cancelAppointment = () => emit("cancelAppointment");
 const focusLocation = () => emit("focusLocation");
