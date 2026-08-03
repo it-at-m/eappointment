@@ -20,6 +20,7 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
         $API config cron deleteArchivedProcessForToday|grep -q "$ZMS_ENV" && $BIN/deleteArchivedProcessForToday --commit
         $API config cron cleanupOverviewCalendar|grep -q "$ZMS_ENV" && $BIN/cleanupOverviewCalendar --commit
         $API config cron deleteOldEventLogEntries|grep -q "$ZMS_ENV" && $BIN/deleteOldEventLogEntries --commit
+        $API config cron deleteOldAvailabilityHistory|grep -q "$ZMS_ENV" && $BIN/deleteOldAvailabilityHistory --commit
         $API config cron deleteAppointmentData|grep -q "$ZMS_ENV" && $BIN/deleteAppointmentData 0 --commit
         $API config cron deleteDayoffData|grep -q "$ZMS_ENV" && $BIN/deleteDayoffData 6 --commit
         $API config cron deleteBlacklistedMail|grep -q "$ZMS_ENV" && $BIN/deleteBlacklistedMail --commit

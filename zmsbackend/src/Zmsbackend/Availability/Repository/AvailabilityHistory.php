@@ -29,6 +29,11 @@ class AvailabilityHistory extends \BO\Zmsbackend\Query\Base
         ORDER BY changed_at DESC, id DESC
     ';
 
+    public const QUERY_DELETE_OLDER_THAN = '
+        DELETE FROM availability_history
+        WHERE changed_at < :cutoff
+    ';
+
     protected $resolveLevel = 0;
 
     /**

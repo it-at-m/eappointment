@@ -19,6 +19,9 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
     public const ACTION_DELETED = 'deleted';
     public const ACTION_DLDB_SLOT_UPDATE = 'dldb_slot_update';
 
+    /** Default retention window for history rows (ZMSKVR-1249). */
+    public const DEFAULT_RETENTION_DAYS = 180;
+
     private const SUMMARY_MAX_LENGTH = 512;
 
     /** @var array<string, string> */
@@ -96,6 +99,22 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         }
 
         return $list;
+    }
+
+    /**
+     * Delete history rows older than the given number of days.
+     *
+     * @return int number of deleted rows
+     */
+    public function deleteOlderThanDays(int $days): int
+    {
+        $days = max(1, $days);
+        $now = \DateTimeImmutable::createFromInterface(App::$now ?? new \DateTimeImmutable('now'));
+        $cutoff = $now->modify('-' . $days . ' days')->format('Y-m-d H:i:s');
+
+        return (int) $this->fetchAffected(AvailabilityHistoryQuery::QUERY_DELETE_OLDER_THAN, [
+            'cutoff' => $cutoff,
+        ]);
     }
 
     /**

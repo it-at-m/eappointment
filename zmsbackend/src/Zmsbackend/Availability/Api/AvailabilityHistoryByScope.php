@@ -22,8 +22,6 @@ use Psr\Http\Message\ResponseInterface;
  */
 class AvailabilityHistoryByScope extends \BO\Zmsbackend\Api\BaseController
 {
-    public const DEFAULT_RETENTION_DAYS = 180;
-
     /**
      * @SuppressWarnings(Param)
      */
@@ -79,7 +77,7 @@ class AvailabilityHistoryByScope extends \BO\Zmsbackend\Api\BaseController
             : $now->setTime(23, 59, 59);
         $from = $fromParam
             ? $this->parseDateParam($fromParam, false)
-            : $to->modify('-' . self::DEFAULT_RETENTION_DAYS . ' days')->setTime(0, 0, 0);
+            : $to->modify('-' . AvailabilityHistoryService::DEFAULT_RETENTION_DAYS . ' days')->setTime(0, 0, 0);
 
         if ($from > $to) {
             throw new \BO\Zmsbackend\Exception\BadRequest('Parameter from must be before or equal to to');
