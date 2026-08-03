@@ -30,6 +30,7 @@ const TableView = (props) => {
         onAbort={onAbort}
         historyUrl={props.historyUrl}
         canViewAvailabilityHistory={props.canViewAvailabilityHistory}
+        historyRefreshKey={props.historyRefreshKey}
     />
     return (
         <Board className="board--light availability-timetable"
@@ -57,7 +58,8 @@ TableView.propTypes = {
     onSelect: PropTypes.func.isRequired,
     onAbort: PropTypes.func.isRequired,
     historyUrl: PropTypes.string,
-    canViewAvailabilityHistory: PropTypes.bool
+    canViewAvailabilityHistory: PropTypes.bool,
+    historyRefreshKey: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
 }
 
 export default TableView

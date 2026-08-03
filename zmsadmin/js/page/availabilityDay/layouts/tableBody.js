@@ -24,7 +24,7 @@ const formatChangedAt = (value) => {
         + ` ${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
-const AvailabilityHistoryPanel = ({ historyUrl, availabilityId }) => {
+const AvailabilityHistoryPanel = ({ historyUrl, availabilityId, refreshKey }) => {
     const [status, setStatus] = useState('loading')
     const [rows, setRows] = useState([])
 
@@ -61,7 +61,7 @@ const AvailabilityHistoryPanel = ({ historyUrl, availabilityId }) => {
         return () => {
             cancelled = true
         }
-    }, [historyUrl, availabilityId])
+    }, [historyUrl, availabilityId, refreshKey])
 
     if (status === 'loading') {
         return <p className="availability-history-status">Wird geladen…</p>
@@ -119,7 +119,8 @@ const AvailabilityHistoryPanel = ({ historyUrl, availabilityId }) => {
 
 AvailabilityHistoryPanel.propTypes = {
     historyUrl: PropTypes.string.isRequired,
-    availabilityId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired
+    availabilityId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+    refreshKey: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
 }
 
 const TableBodyLayout = (props) => {
@@ -130,9 +131,22 @@ const TableBodyLayout = (props) => {
         availabilityList,
         data,
         historyUrl,
-        canViewAvailabilityHistory
+        canViewAvailabilityHistory,
+        historyRefreshKey
     } = props
     const [openHistoryId, setOpenHistoryId] = useState(null)
+
+    useEffect(() => {
+        if (openHistoryId == null) {
+            return
+        }
+        const stillPresent = (availabilityList || []).some(
+            (availability) => availability.id == openHistoryId
+        )
+        if (!stillPresent) {
+            setOpenHistoryId(null)
+        }
+    }, [availabilityList, openHistoryId])
 
     return (
         <div className="table-responsive-wrapper">
@@ -161,6 +175,7 @@ const TableBodyLayout = (props) => {
                         data,
                         canViewAvailabilityHistory,
                         historyUrl,
+                        historyRefreshKey,
                         openHistoryId,
                         setOpenHistoryId
                     )}
@@ -200,6 +215,7 @@ const renderTable = (
     data,
     canViewAvailabilityHistory,
     historyUrl,
+    historyRefreshKey,
     openHistoryId,
     setOpenHistoryId
 ) => {
@@ -364,6 +380,7 @@ const renderTable = (
                                 <AvailabilityHistoryPanel
                                     historyUrl={historyUrl}
                                     availabilityId={availability.id}
+                                    refreshKey={historyRefreshKey}
                                 />
                             </td>
                         </tr>
@@ -382,7 +399,8 @@ TableBodyLayout.propTypes = {
     onDelete: PropTypes.func.isRequired,
     onAbort: PropTypes.func.isRequired,
     historyUrl: PropTypes.string,
-    canViewAvailabilityHistory: PropTypes.bool
+    canViewAvailabilityHistory: PropTypes.bool,
+    historyRefreshKey: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
 }
 
 export default TableBodyLayout
