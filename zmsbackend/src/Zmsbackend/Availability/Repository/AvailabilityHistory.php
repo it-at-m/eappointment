@@ -1,0 +1,37 @@
+<?php
+
+declare(strict_types=1);
+
+namespace BO\Zmsbackend\Availability\Repository;
+
+/**
+ * Append-only opening-hours change history (ZMSKVR-1249).
+ */
+class AvailabilityHistory extends \BO\Zmsbackend\Query\Base
+{
+    public const TABLE = 'availability_history';
+
+    public const ALIAS = 'availabilityHistory';
+
+    protected $resolveLevel = 0;
+
+    /**
+     * @param array{
+     *     scope_id:int,
+     *     availability_id:?int,
+     *     action:string,
+     *     summary:string,
+     *     changed_by:string
+     * } $row
+     */
+    public function reverseEntityMapping(array $row): array
+    {
+        return [
+            'scope_id' => (int) $row['scope_id'],
+            'availability_id' => $row['availability_id'] !== null ? (int) $row['availability_id'] : null,
+            'action' => $row['action'],
+            'summary' => $row['summary'],
+            'changed_by' => $row['changed_by'],
+        ];
+    }
+}
