@@ -88,10 +88,12 @@ class AvailabilityHistoryByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
         (new \BO\Zmsbackend\Availability\Service\AvailabilityHistory())->perform(
             'INSERT INTO availability_history
                 (scope_id, availability_id, action, weekdays, series, valid_from, valid_to,
-                 time_range, type, slot_time, workstations, bookable, description, changed_by)
+                 time_range, type, slot_time, workstations, bookable, description,
+                 changed_at, changed_by)
              VALUES
                 (:scopeId, :availabilityId, :action, :weekdays, :series, :validFrom, :validTo,
-                 :timeRange, :type, :slotTime, :workstations, :bookable, :description, :changedBy)',
+                 :timeRange, :type, :slotTime, :workstations, :bookable, :description,
+                 :changedAt, :changedBy)',
             [
                 'scopeId' => self::SCOPE_ID,
                 'availabilityId' => $availabilityId,
@@ -106,6 +108,8 @@ class AvailabilityHistoryByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
                 'workstations' => '3/3',
                 'bookable' => '0-5',
                 'description' => 'Neue Öffnungszeit',
+                // Must fall inside App::$now default retention (tests freeze now at 2016-04-01).
+                'changedAt' => '2016-04-01 11:00:00',
                 'changedBy' => 'unittest',
             ]
         );
