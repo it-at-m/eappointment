@@ -193,36 +193,41 @@ class ProcessStatusFree extends Process
      */
     private function deduplicateWithRoundRobin(array $processInfos): array
     {
-        $byKey = [];
-        $keyOrder = [];
+        // Composite key: round-robin group (provider or shared-office set) + slot timestamp.
+        $candidatesByGroupTimestampKey = [];
+        $groupTimestampKeyOrder = [];
         foreach ($processInfos as $processInfo) {
-            $groupKey = self::resolveRoundRobinGroupKey(
+            $roundRobinGroupKey = self::resolveRoundRobinGroupKey(
                 (string) $processInfo['providerId'],
                 $processInfo['sharedBookingOfficeIds'] ?? null
             );
-            $key = $groupKey . '_' . $processInfo['date'];
-            if (!isset($byKey[$key])) {
-                $keyOrder[] = $key;
-                $byKey[$key] = [];
+            $groupTimestampKey = $roundRobinGroupKey . '_' . $processInfo['date'];
+            if (!isset($candidatesByGroupTimestampKey[$groupTimestampKey])) {
+                $groupTimestampKeyOrder[] = $groupTimestampKey;
+                $candidatesByGroupTimestampKey[$groupTimestampKey] = [];
             }
-            $byKey[$key][] = $processInfo;
+            $candidatesByGroupTimestampKey[$groupTimestampKey][] = $processInfo;
         }
 
-        $rrByGroup = [];
-        $unique = [];
-        foreach ($keyOrder as $key) {
-            $candidates = self::uniqueCandidatesSortedByScopeId($byKey[$key]);
-            $groupKey = self::resolveRoundRobinGroupKey(
+        $roundRobinIndexByGroup = [];
+        $deduplicatedProcesses = [];
+        foreach ($groupTimestampKeyOrder as $groupTimestampKey) {
+            $candidates = self::uniqueCandidatesSortedByScopeId(
+                $candidatesByGroupTimestampKey[$groupTimestampKey]
+            );
+            $roundRobinGroupKey = self::resolveRoundRobinGroupKey(
                 (string) $candidates[0]['providerId'],
                 $candidates[0]['sharedBookingOfficeIds'] ?? null
             );
-            $index = $rrByGroup[$groupKey] ?? 0;
-            $chosen = $candidates[self::pickRoundRobinIndex($index, count($candidates))];
-            $rrByGroup[$groupKey] = $index + 1;
-            $unique[] = $this->createMinimalProcess($chosen);
+            $roundRobinTimeslotIndex = $roundRobinIndexByGroup[$roundRobinGroupKey] ?? 0;
+            $chosenCandidate = $candidates[
+                self::pickRoundRobinIndex($roundRobinTimeslotIndex, count($candidates))
+            ];
+            $roundRobinIndexByGroup[$roundRobinGroupKey] = $roundRobinTimeslotIndex + 1;
+            $deduplicatedProcesses[] = $this->createMinimalProcess($chosenCandidate);
         }
 
-        return $unique;
+        return $deduplicatedProcesses;
     }
 
     /**
@@ -231,17 +236,18 @@ class ProcessStatusFree extends Process
      */
     private static function uniqueCandidatesSortedByScopeId(array $candidates): array
     {
-        $byScopeId = [];
+        $candidatesByScopeId = [];
         foreach ($candidates as $candidate) {
-            $byScopeId[(string) $candidate['scopeId']] = $candidate;
+            $candidatesByScopeId[(string) $candidate['scopeId']] = $candidate;
         }
-        $unique = array_values($byScopeId);
+        $uniqueCandidates = array_values($candidatesByScopeId);
         usort(
-            $unique,
-            static fn (array $a, array $b): int => ((int) $a['scopeId']) <=> ((int) $b['scopeId'])
+            $uniqueCandidates,
+            static fn (array $left, array $right): int =>
+                ((int) $left['scopeId']) <=> ((int) $right['scopeId'])
         );
 
-        return $unique;
+        return $uniqueCandidates;
     }
 
     /**
@@ -256,10 +262,10 @@ class ProcessStatusFree extends Process
             return $providerId;
         }
 
-        $ids = array_map('intval', $sharedBookingOfficeIds);
-        sort($ids, SORT_NUMERIC);
+        $sortedSharedOfficeIds = array_map('intval', $sharedBookingOfficeIds);
+        sort($sortedSharedOfficeIds, SORT_NUMERIC);
 
-        return implode(',', $ids);
+        return implode(',', $sortedSharedOfficeIds);
     }
 
     /**

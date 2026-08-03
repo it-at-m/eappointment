@@ -407,13 +407,13 @@ const calendarKey = ref(0);
 
 const selectedProviders = ref<{ [id: string]: boolean }>({});
 
-/** Checkbox state plus shared-booking peer IDs so calendar/list show RR-chosen offices. */
+/** Checkbox state plus shared-booking peer IDs so calendar/list show round-robin-chosen offices. */
 const selectedProvidersForCalendar = computed(() => {
   const result: { [id: string]: boolean } = { ...selectedProviders.value };
-  for (const p of selectableProviders.value || []) {
-    if (!result[String(p.id)]) continue;
-    if (!Array.isArray(p.sharedBookingOfficeIds)) continue;
-    for (const peerId of p.sharedBookingOfficeIds) {
+  for (const provider of selectableProviders.value || []) {
+    if (!result[String(provider.id)]) continue;
+    if (!Array.isArray(provider.sharedBookingOfficeIds)) continue;
+    for (const peerId of provider.sharedBookingOfficeIds) {
       result[String(peerId)] = true;
     }
   }
