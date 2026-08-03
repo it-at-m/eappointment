@@ -1,7 +1,7 @@
 permissions:
   contents: read
   actions: write
-name: ZMSCitizenView Coverage
+name: 📊 ZMSCitizenView Coverage
 
 on:
   workflow_call:

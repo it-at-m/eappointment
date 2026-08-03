@@ -20,7 +20,7 @@ services:
     restart: unless-stopped
 
   init-keycloak:
-    image: klg71/keycloakmigration:0.2.129@sha256:356bb15df86d6476f1469789718f597ac70583f83c2ae9c90408a3e00e3a1796
+    image: klg71/keycloakmigration:0.2.130@sha256:fbec0fbbec2f90e9e912576cfb2ff108fb5703a59383b5e51c8633c130173af8
     depends_on:
       keycloak:
         condition: service_started
