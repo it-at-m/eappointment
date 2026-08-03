@@ -7,6 +7,8 @@ namespace BO\Zmsbackend\Availability\Service;
 use BO\Zmsbackend\Availability\Repository\AvailabilityHistory as AvailabilityHistoryQuery;
 use BO\Zmsbackend\Helper\User;
 use BO\Zmsentities\Availability;
+use BO\Zmsentities\AvailabilityHistory as Entity;
+use BO\Zmsentities\Collection\AvailabilityHistoryList as Collection;
 use App;
 
 /**
@@ -14,10 +16,10 @@ use App;
  */
 class AvailabilityHistory extends \BO\Zmsbackend\Base
 {
-    public const ACTION_CREATED = 'created';
-    public const ACTION_UPDATED = 'updated';
-    public const ACTION_DELETED = 'deleted';
-    public const ACTION_DLDB_SLOT_UPDATE = 'dldb_slot_update';
+    public const ACTION_CREATED = Entity::ACTION_CREATED;
+    public const ACTION_UPDATED = Entity::ACTION_UPDATED;
+    public const ACTION_DELETED = Entity::ACTION_DELETED;
+    public const ACTION_DLDB_SLOT_UPDATE = Entity::ACTION_DLDB_SLOT_UPDATE;
 
     /** Default retention window for history rows (ZMSKVR-1249). */
     public const DEFAULT_RETENTION_DAYS = 180;
@@ -68,25 +70,6 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
 
     /**
      * Newest-first history for a scope within [from, to] (inclusive timestamps).
-     *
-     * @return list<array{
-     *     id:int,
-     *     scopeId:int,
-     *     availabilityId:?int,
-     *     action:string,
-     *     weekday:array<string, int>,
-     *     series:string,
-     *     validFrom:string,
-     *     validTo:string,
-     *     timeRange:string,
-     *     type:string,
-     *     slotTime:string,
-     *     workstations:string,
-     *     bookable:string,
-     *     description:string,
-     *     changedAt:string,
-     *     changedBy:string
-     * }>
      */
     public function readListByScopeId(
         int $scopeId,
@@ -94,7 +77,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         \DateTimeInterface $to,
         ?int $availabilityId = null,
         ?string $action = null
-    ): array {
+    ): Collection {
         $parameters = [
             'scopeId' => $scopeId,
             'from' => $from->format('Y-m-d H:i:s'),
@@ -118,15 +101,14 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         $query .= ' ORDER BY changed_at DESC, id DESC';
 
         $rows = $this->fetchAll($query, $parameters);
-
-        $list = [];
+        $collection = new Collection();
         foreach ($rows as $row) {
-            $list[] = [
+            $collection->addEntity(new Entity([
                 'id' => (int) $row['id'],
                 'scopeId' => (int) $row['scopeId'],
                 'availabilityId' => $row['availabilityId'] !== null ? (int) $row['availabilityId'] : null,
                 'action' => (string) $row['action'],
-                'weekday' => $this->decodeWeekdayMask((int) $row['weekday']),
+                'weekday' => Entity::decodeWeekdayMask((int) $row['weekday']),
                 'series' => (string) $row['series'],
                 'validFrom' => (string) $row['validFrom'],
                 'validTo' => (string) $row['validTo'],
@@ -138,10 +120,10 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
                 'description' => (string) $row['description'],
                 'changedAt' => (string) $row['changedAt'],
                 'changedBy' => (string) $row['changedBy'],
-            ];
+            ]));
         }
 
-        return $list;
+        return $collection;
     }
 
     /**
@@ -193,7 +175,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         }
 
         return [
-            'weekday' => $this->encodeWeekdayMask($availability),
+            'weekday' => Entity::encodeWeekdayMask($availability),
             'series' => $this->resolveSeriesLabel($availability),
             'valid_from' => $startDate,
             'valid_to' => $endDate,
@@ -222,36 +204,6 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         }
 
         return 'einmaliger Termin';
-    }
-
-    /**
-     * Encode availability.weekday flags to the same INT bit matrix as availability.weekday.
-     */
-    protected function encodeWeekdayMask(Availability $availability): int
-    {
-        $mask = 0;
-        foreach (AvailabilityHistoryQuery::WEEKDAY_BITS as $weekday => $bit) {
-            if (!empty($availability->weekday[$weekday])) {
-                $mask |= $bit;
-            }
-        }
-
-        return $mask;
-    }
-
-    /**
-     * Decode INT bit matrix to availability-style weekday map.
-     *
-     * @return array<string, int>
-     */
-    protected function decodeWeekdayMask(int $mask): array
-    {
-        $weekday = [];
-        foreach (AvailabilityHistoryQuery::WEEKDAY_BITS as $name => $bit) {
-            $weekday[$name] = ($mask & $bit) ? $bit : 0;
-        }
-
-        return $weekday;
     }
 
     protected function formatBookableRange($from, $to): string
