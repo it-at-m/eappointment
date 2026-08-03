@@ -19,7 +19,8 @@ class AvailabilityHistoryByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertIsArray($body['data']);
         $this->assertNotEmpty($body['data']);
         $this->assertSame('created', $body['data'][0]['action']);
-        $this->assertStringContainsString('Zeitraum:', $body['data'][0]['summary']);
+        $this->assertStringContainsString('Öffnungszeit:', $body['data'][0]['summary']);
+        $this->assertStringContainsString('Terminabstand:', $body['data'][0]['summary']);
     }
 
     public function testMissingAccessRights()
@@ -75,7 +76,11 @@ class AvailabilityHistoryByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
                 'scopeId' => self::SCOPE_ID,
                 'availabilityId' => $availabilityId,
                 'action' => 'created',
-                'summary' => 'Zeitraum: 01.01.2016 bis 31.12.2016, Uhrzeit: von 07:00 bis 17:00,',
+                'summary' => "Anmerkung: Test\nTyp: Terminkunden\nSerie: einmaliger Termin\n"
+                    . "Wochentage: Montag\nTerminabstand: 15 min\n"
+                    . "Öffnungszeit: 01.01.2016 07:00 – 31.12.2016 17:00\n"
+                    . "Buchbar: von 0 bis 60 Tage im voraus\n"
+                    . "Terminarbeitsplätze: Insgesamt 2 / Internet 0",
                 'changedBy' => 'unittest',
             ]
         );
