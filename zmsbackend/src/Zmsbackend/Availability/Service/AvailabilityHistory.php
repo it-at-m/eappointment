@@ -77,13 +77,21 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
     public function readListByScopeId(
         int $scopeId,
         \DateTimeInterface $from,
-        \DateTimeInterface $to
+        \DateTimeInterface $to,
+        ?int $availabilityId = null
     ): array {
-        $rows = $this->fetchAll(AvailabilityHistoryQuery::QUERY_SELECT_BY_SCOPE, [
+        $parameters = [
             'scopeId' => $scopeId,
             'from' => $from->format('Y-m-d H:i:s'),
             'to' => $to->format('Y-m-d H:i:s'),
-        ]);
+        ];
+        $query = AvailabilityHistoryQuery::QUERY_SELECT_BY_SCOPE;
+        if ($availabilityId !== null) {
+            $query = AvailabilityHistoryQuery::QUERY_SELECT_BY_SCOPE_AND_AVAILABILITY;
+            $parameters['availabilityId'] = $availabilityId;
+        }
+
+        $rows = $this->fetchAll($query, $parameters);
 
         $list = [];
         foreach ($rows as $row) {

@@ -39,12 +39,14 @@ class AvailabilityHistoryByScope extends \BO\Zmsbackend\Api\BaseController
         }
 
         [$from, $to] = $this->resolveDateRange();
+        $availabilityId = Validator::param('availabilityId')->isNumber()->getValue();
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
         $message->data = (new AvailabilityHistoryService())->readListByScopeId(
             (int) $scope->getId(),
             $from,
-            $to
+            $to,
+            $availabilityId ? (int) $availabilityId : null
         );
 
         $response = Render::withLastModified($response, time(), '0');

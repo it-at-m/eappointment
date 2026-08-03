@@ -29,6 +29,23 @@ class AvailabilityHistory extends \BO\Zmsbackend\Query\Base
         ORDER BY changed_at DESC, id DESC
     ';
 
+    public const QUERY_SELECT_BY_SCOPE_AND_AVAILABILITY = '
+        SELECT
+            id,
+            scope_id AS scopeId,
+            availability_id AS availabilityId,
+            action,
+            summary,
+            changed_at AS changedAt,
+            changed_by AS changedBy
+        FROM availability_history
+        WHERE scope_id = :scopeId
+          AND availability_id = :availabilityId
+          AND changed_at >= :from
+          AND changed_at <= :to
+        ORDER BY changed_at DESC, id DESC
+    ';
+
     public const QUERY_DELETE_OLDER_THAN = '
         DELETE FROM availability_history
         WHERE changed_at < :cutoff
