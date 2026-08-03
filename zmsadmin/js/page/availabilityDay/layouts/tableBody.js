@@ -95,9 +95,9 @@ const AvailabilityHistoryPanel = ({ historyUrl, availabilityId }) => {
                     {rows.map((row) => (
                         <tr key={row.id}>
                             <td className="cell--meta">
-                                {(ACTION_LABELS[row.action] || row.action)
-                                    + ' · ' + formatChangedAt(row.changedAt)
-                                    + (row.changedBy ? ` · ${row.changedBy}` : '')}
+                                <div>{ACTION_LABELS[row.action] || row.action}</div>
+                                <div>{formatChangedAt(row.changedAt)}</div>
+                                {row.changedBy ? <div>{row.changedBy}</div> : null}
                             </td>
                             <td>{row.weekdays || '–'}</td>
                             <td>{row.series || '–'}</td>
@@ -177,6 +177,7 @@ const TableBodyLayout = (props) => {
                 .availability-history-table .cell--meta {
                     white-space: nowrap;
                     color: #555;
+                    line-height: 1.35;
                 }
                 .availability-history-row td {
                     background: #f7f7f7;
