@@ -37,9 +37,13 @@ ALTER TABLE `oeffnungszeit`
     ADD COLUMN IF NOT EXISTS `open_until_days` INT(11) NOT NULL DEFAULT 0 AFTER `open_from_days`,
     ADD COLUMN IF NOT EXISTS `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `open_until_days`;
 
--- Backfill English columns from German (idempotent overwrite of defaults).
--- Do not touch updated_at here: changing other columns would bump updateTimestamp
--- via ON UPDATE CURRENT_TIMESTAMP and leave updated_at stale.
+-- Backfill English columns from German without destroying original timestamps.
+-- Any row UPDATE would bump updateTimestamp via ON UPDATE CURRENT_TIMESTAMP and
+-- make availability.lastChange look newer than slot rows → perpetual rebuilds /
+-- empty free lists in unit tests (importTestData runs this then CalculateSlots).
+ALTER TABLE `oeffnungszeit`
+    MODIFY COLUMN `updateTimestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
 UPDATE `oeffnungszeit`
 SET
     `scope_id` = `StandortID`,
@@ -59,13 +63,11 @@ SET
     `internet_reduction` = `reduktionTermineImInternet`,
     `multiple_slots_allowed` = `erlaubemehrfachslots`,
     `open_from_days` = `Offen_ab`,
-    `open_until_days` = `Offen_bis`;
+    `open_until_days` = `Offen_bis`,
+    `updated_at` = `updateTimestamp`;
 
--- Sync timestamps: explicitly assign updateTimestamp so ON UPDATE does not bump it.
-UPDATE `oeffnungszeit`
-SET
-    `updated_at` = `updateTimestamp`,
-    `updateTimestamp` = `updateTimestamp`;
+ALTER TABLE `oeffnungszeit`
+    MODIFY COLUMN `updateTimestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
 
 -- Indexes on English columns so new code keeps query plans after code switch.
 -- Old indexes on German columns remain until contract.
