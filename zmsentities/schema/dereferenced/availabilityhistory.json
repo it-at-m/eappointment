@@ -1,0 +1,195 @@
+{
+  "type": "object",
+  "description": "Append-only audit snapshot of an opening-hours (availability) change for tech-admin history (ZMSKVR-1249). Display fields mirror the admin day table; weekday uses the same bit-flag object shape as availability.weekday.",
+  "example": {
+    "id": 1,
+    "scopeId": 141,
+    "availabilityId": 68985,
+    "action": "created",
+    "weekday": {
+      "monday": 2,
+      "tuesday": 4,
+      "wednesday": 8,
+      "thursday": 16,
+      "friday": 32,
+      "saturday": 0,
+      "sunday": 0
+    },
+    "series": "jede Woche",
+    "validFrom": "03.08.2026",
+    "validTo": "06.09.2026",
+    "timeRange": "10:00 - 12:00",
+    "type": "Terminkunden",
+    "slotTime": "15min",
+    "workstations": "3/3",
+    "bookable": "0-5",
+    "description": "Neue Öffnungszeit",
+    "changedAt": "2016-04-01 11:00:00",
+    "changedBy": "unittest"
+  },
+  "required": [
+    "scopeId",
+    "action",
+    "weekday"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^[0-9]+$" },
+        { "type": "null" }
+      ],
+      "description": "History row ID"
+    },
+    "scopeId": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^[0-9]+$" }
+      ],
+      "description": "Scope the availability belongs to"
+    },
+    "availabilityId": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^[0-9]+$" },
+        { "type": "null" }
+      ],
+      "description": "Availability ID; kept after the availability row is deleted"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "created",
+        "updated",
+        "deleted",
+        "dldb_slot_update"
+      ],
+      "description": "Change action that produced this history row"
+    },
+    "weekday": {
+      "type": "object",
+      "description": "Same weekday bit-flag object as availability.weekday (decoded from availability_history.weekday INT)",
+      "properties": {
+        "monday": {
+          "default": false,
+          "oneOf": [
+            { "type": "null" },
+            { "type": "number" },
+            { "type": "boolean" },
+            { "type": "string", "pattern": "^[0-9]+$" }
+          ]
+        },
+        "tuesday": {
+          "default": false,
+          "oneOf": [
+            { "type": "null" },
+            { "type": "number" },
+            { "type": "boolean" },
+            { "type": "string", "pattern": "^[0-9]+$" }
+          ]
+        },
+        "wednesday": {
+          "default": false,
+          "oneOf": [
+            { "type": "null" },
+            { "type": "number" },
+            { "type": "boolean" },
+            { "type": "string", "pattern": "^[0-9]+$" }
+          ]
+        },
+        "thursday": {
+          "default": false,
+          "oneOf": [
+            { "type": "null" },
+            { "type": "number" },
+            { "type": "boolean" },
+            { "type": "string", "pattern": "^[0-9]+$" }
+          ]
+        },
+        "friday": {
+          "default": false,
+          "oneOf": [
+            { "type": "null" },
+            { "type": "number" },
+            { "type": "boolean" },
+            { "type": "string", "pattern": "^[0-9]+$" }
+          ]
+        },
+        "saturday": {
+          "default": false,
+          "oneOf": [
+            { "type": "null" },
+            { "type": "number" },
+            { "type": "boolean" },
+            { "type": "string", "pattern": "^[0-9]+$" }
+          ]
+        },
+        "sunday": {
+          "default": false,
+          "oneOf": [
+            { "type": "null" },
+            { "type": "number" },
+            { "type": "boolean" },
+            { "type": "string", "pattern": "^[0-9]+$" }
+          ]
+        }
+      }
+    },
+    "series": {
+      "type": "string",
+      "default": "",
+      "description": "Human-readable series label as shown in the admin day table"
+    },
+    "validFrom": {
+      "type": "string",
+      "default": "",
+      "description": "Validity start date formatted d.m.Y"
+    },
+    "validTo": {
+      "type": "string",
+      "default": "",
+      "description": "Validity end date formatted d.m.Y"
+    },
+    "timeRange": {
+      "type": "string",
+      "default": "",
+      "description": "Daily time range, e.g. '10:00 - 12:00'"
+    },
+    "type": {
+      "type": "string",
+      "default": "",
+      "description": "Human-readable availability type label (e.g. Terminkunden)"
+    },
+    "slotTime": {
+      "type": "string",
+      "default": "",
+      "description": "Slot length label, e.g. '15min'"
+    },
+    "workstations": {
+      "type": "string",
+      "default": "",
+      "description": "Workstation counts as intern/public, e.g. '3/3'"
+    },
+    "bookable": {
+      "type": "string",
+      "default": "",
+      "description": "Bookable day range as start-end, e.g. '0-5'"
+    },
+    "description": {
+      "type": "string",
+      "default": "",
+      "description": "Internal note snapshot"
+    },
+    "changedAt": {
+      "type": "string",
+      "default": "",
+      "description": "Change timestamp Y-m-d H:i:s"
+    },
+    "changedBy": {
+      "type": "string",
+      "default": "",
+      "description": "Actor user id or system identifier"
+    }
+  }
+}

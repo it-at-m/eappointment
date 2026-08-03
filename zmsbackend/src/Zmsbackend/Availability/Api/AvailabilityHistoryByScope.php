@@ -45,7 +45,7 @@ class AvailabilityHistoryByScope extends \BO\Zmsbackend\Api\BaseController
             if (
                 !in_array(
                     $action,
-                    \BO\Zmsbackend\Availability\Repository\AvailabilityHistory::ALLOWED_ACTIONS,
+                    \BO\Zmsentities\AvailabilityHistory::ACTIONS,
                     true
                 )
             ) {

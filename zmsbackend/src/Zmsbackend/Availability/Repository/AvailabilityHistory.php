@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace BO\Zmsbackend\Availability\Repository;
 
+use BO\Zmsentities\AvailabilityHistory as Entity;
+
 /**
  * Append-only opening-hours change history (ZMSKVR-1249).
  */
@@ -40,27 +42,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Query\Base
     ';
 
     /** @var list<string> */
-    public const ALLOWED_ACTIONS = [
-        'created',
-        'updated',
-        'deleted',
-        'dldb_slot_update',
-    ];
-
-    /**
-     * Same bit codes as availability.weekday / Availability::reverseEntityMapping.
-     *
-     * @var array<string, int>
-     */
-    public const WEEKDAY_BITS = [
-        'sunday' => 1,
-        'monday' => 2,
-        'tuesday' => 4,
-        'wednesday' => 8,
-        'thursday' => 16,
-        'friday' => 32,
-        'saturday' => 64,
-    ];
+    public const ALLOWED_ACTIONS = Entity::ACTIONS;
 
     protected $resolveLevel = 0;
 
