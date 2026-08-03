@@ -142,6 +142,51 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             );
         }
 
+        // Vorlauf / lead time: citizen starts with slotsStartDate=today, but bookable
+        // days may begin later. Snap free-slot + painted month to the first bookable
+        // day in the horizon instead of returning an empty calendar.
+        if (count($responseDays) === 0) {
+            $firstBookableDate = $this->findFirstBookableDateAfter(
+                $calendar,
+                $dayQuery,
+                $slotsRequired,
+                $slotType,
+                $now,
+                (new \DateTimeImmutable($responseStartDate))->modify('-1 day')->format('Y-m-d'),
+                $dayRangeEnd
+            );
+            if ($firstBookableDate !== null) {
+                $slotsStartDate = $firstBookableDate;
+                $slotsEndDate = $firstBookableDate;
+                [$responseStartDate, $responseEndDate] = $this->resolveResponseDaysRange(
+                    $slotsStartDate,
+                    $slotsEndDate,
+                    $dayRangeStart,
+                    $dayRangeEnd
+                );
+                $bookableDays = $this->readBookableDaysForRange(
+                    $calendar,
+                    $dayQuery,
+                    $slotsRequired,
+                    $slotType,
+                    $now,
+                    $responseStartDate,
+                    $responseEndDate,
+                    true
+                );
+                $responseDays = $this->filterDaysInDateRange(
+                    $bookableDays,
+                    $responseStartDate,
+                    $responseEndDate
+                );
+                $slotDays = $this->filterDaysInDateRange(
+                    $bookableDays,
+                    $slotsStartDate,
+                    $slotsEndDate
+                );
+            }
+        }
+
         $calendar->days = $slotDays;
 
         $processList = [];
