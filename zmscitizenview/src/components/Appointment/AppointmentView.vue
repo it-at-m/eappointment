@@ -1184,49 +1184,66 @@ const runLoginResumeFromHashAndLocalStorage = (
   }
 
   loadedAppointmentHash.value = hash;
-  clearAppointmentLocalStorage();
-  clearAppointmentAuthHashSession();
   clearContextErrors(errorStateMap.value);
 
   fetchServicesAndProviders(
     props.serviceId ?? undefined,
     props.locationId ?? undefined,
     props.globalState?.baseUrl ?? undefined
-  ).then((data) => {
-    handleErrorApiResponse(
-      data,
-      errorStates.errorStateMap,
-      currentErrorData.value
-    );
+  )
+    .then((data) => {
+      handleErrorApiResponse(
+        data,
+        errorStates.errorStateMap,
+        currentErrorData.value
+      );
 
-    if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
-      return;
-    }
-
-    services.value = (data as any).services;
-    relations.value = (data as any).relations;
-    offices.value = (data as any).offices;
-
-    applyLocalStorageUiData(uiData);
-
-    fetchAppointment(props.globalState, appointmentData).then((response) => {
-      if ((response as AppointmentDTO).processId != undefined) {
-        appointment.value = response as AppointmentDTO;
-        if ("captchaToken" in response && (response as any).captchaToken) {
-          captchaToken.value =
-            captchaToken.value || ((response as any).captchaToken as string);
-        }
-        // Keep wizard step from UI localStorage (do not open reschedule/cancel dialog).
-        currentView.value = isAppointmentInPast.value ? 3 : uiData.currentView;
-      } else {
-        handleErrorApiResponse(
-          response,
-          errorStates.errorStateMap,
-          currentErrorData.value
-        );
+      if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
+        return;
       }
+
+      if ((data as any)?.errors?.length) {
+        return;
+      }
+
+      services.value = (data as any).services;
+      relations.value = (data as any).relations;
+      offices.value = (data as any).offices;
+
+      applyLocalStorageUiData(uiData);
+
+      return fetchAppointment(props.globalState, appointmentData).then(
+        (response) => {
+          if ((response as AppointmentDTO).processId != undefined) {
+            appointment.value = response as AppointmentDTO;
+            if ("captchaToken" in response && (response as any).captchaToken) {
+              captchaToken.value =
+                captchaToken.value ||
+                ((response as any).captchaToken as string);
+            }
+            // Keep wizard step from UI localStorage (do not open reschedule/cancel dialog).
+            currentView.value = isAppointmentInPast.value
+              ? 3
+              : uiData.currentView;
+            clearAppointmentLocalStorage();
+            clearAppointmentAuthHashSession();
+          } else {
+            handleErrorApiResponse(
+              response,
+              errorStates.errorStateMap,
+              currentErrorData.value
+            );
+          }
+        }
+      );
+    })
+    .catch(() => {
+      handleApiError(
+        "appointmentNotFound",
+        errorStateMap.value,
+        currentErrorData.value
+      );
     });
-  });
 };
 
 const handleInvalidJumpinLink = () => {
@@ -1545,24 +1562,41 @@ onMounted(() => {
       props.serviceId ?? undefined,
       props.locationId ?? undefined,
       props.globalState?.baseUrl ?? undefined
-    ).then((data) => {
-      handleErrorApiResponse(
-        data,
-        errorStates.errorStateMap,
-        currentErrorData.value
-      );
+    )
+      .then((data) => {
+        handleErrorApiResponse(
+          data,
+          errorStates.errorStateMap,
+          currentErrorData.value
+        );
 
-      if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
-        return;
-      }
+        if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
+          return;
+        }
 
-      services.value = (data as any).services;
-      relations.value = (data as any).relations;
-      offices.value = (data as any).offices;
+        if ((data as any)?.errors?.length) {
+          return;
+        }
 
-      // UI-only restore — never apply authKey from localStorage (legacy or new).
-      applyLocalStorageUiData(uiData);
-    });
+        services.value = (data as any).services;
+        relations.value = (data as any).relations;
+        offices.value = (data as any).offices;
+
+        // UI-only restore — never apply authKey from localStorage (legacy or new).
+        applyLocalStorageUiData(uiData);
+        clearAppointmentLocalStorage();
+        clearAppointmentAuthHashSession();
+      })
+      .catch(() => {
+        handleApiError(
+          "appointmentNotFound",
+          errorStateMap.value,
+          currentErrorData.value
+        );
+      });
+
+    focusActiveStepperItem();
+    return;
   }
 
   clearAppointmentLocalStorage();
