@@ -157,21 +157,20 @@
                     <div class="statistic-additional-requests{% if additionalHasValues %} is-expanded{% endif %}">
                         <button
                             type="button"
-                            class="button button-callback statistic-additional-requests__toggle"
+                            class="button statistic-additional-requests__toggle"
                             aria-expanded="{{ additionalHasValues ? 'true' : 'false' }}"
                             aria-controls="statistic-additional-requests-panel"
                             data-label-more="Weitere Dienstleistungen anzeigen"
                             data-label-less="Weniger Dienstleistungen anzeigen"
                         >
-                            <i class="fas {{ additionalHasValues ? 'fa-chevron-up' : 'fa-chevron-down' }}" aria-hidden="true"></i>
                             <span class="statistic-additional-requests__label">
                                 {{ additionalHasValues ? 'Weniger Dienstleistungen anzeigen' : 'Weitere Dienstleistungen anzeigen' }}
                             </span>
+                            <i class="fas {{ additionalHasValues ? 'fa-chevron-up' : 'fa-chevron-down' }}" aria-hidden="true"></i>
                         </button>
                         <div
                             id="statistic-additional-requests-panel"
                             class="statistic-additional-requests__panel"
-                            {% if not additionalHasValues %}hidden{% endif %}
                         >
                             <h3 class="statistic-additional-requests__heading">Weitere Dienstleistungen</h3>
                             {% for name, group in additionalRequestList %}

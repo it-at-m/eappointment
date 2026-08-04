@@ -174,6 +174,10 @@
     font-size: 1.1em;
 }
 
-.statistic-additional-requests__panel[hidden] {
+.statistic-additional-requests__panel {
     display: none;
+}
+
+.statistic-additional-requests.is-expanded .statistic-additional-requests__panel {
+    display: block;
 }
