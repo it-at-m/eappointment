@@ -1814,15 +1814,6 @@ describe("AppointmentView", () => {
         },
       },
       selectedTimeslot: 1640995200,
-      customerData: {
-        firstName: "Max",
-        lastName: "Mustermann",
-        mailAddress: "max@example.com",
-        telephoneNumber: "",
-        customTextfield: "",
-        customTextfield2: "",
-      },
-      captchaToken: undefined as string | undefined,
     };
 
     beforeEach(() => {
@@ -1831,7 +1822,7 @@ describe("AppointmentView", () => {
       vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockReset();
     });
 
-    it("requestLogin stores UI data without authKey and writes auth hash to sessionStorage", () => {
+    it("requestLogin stores UI data without authKey, PII, or captchaToken", () => {
       const replaceStateSpy = vi
         .spyOn(history, "replaceState")
         .mockImplementation(() => {});
@@ -1840,7 +1831,15 @@ describe("AppointmentView", () => {
       wrapper.vm.selectedService = uiStoragePayload.selectedService as any;
       wrapper.vm.selectedProvider = uiStoragePayload.selectedProvider as any;
       wrapper.vm.selectedTimeslot = uiStoragePayload.selectedTimeslot;
-      wrapper.vm.customerData = uiStoragePayload.customerData as any;
+      wrapper.vm.customerData = {
+        firstName: "Max",
+        lastName: "Mustermann",
+        mailAddress: "max@example.com",
+        telephoneNumber: "089123456",
+        customTextfield: "secret-note",
+        customTextfield2: "",
+      } as any;
+      wrapper.vm.captchaToken = "captcha-secret";
       wrapper.vm.currentView = 2;
       wrapper.vm.appointment = {
         processId: "proc-1",
@@ -1862,7 +1861,14 @@ describe("AppointmentView", () => {
       expect(stored).toBeTruthy();
       expect(stored).not.toContain("secret-key");
       expect(stored).not.toContain("authKey");
-      expect(JSON.parse(stored as string).appointment).toBeUndefined();
+      expect(stored).not.toContain("max@example.com");
+      expect(stored).not.toContain("captcha-secret");
+      expect(stored).not.toContain("customerData");
+      expect(stored).not.toContain("captchaToken");
+      const parsed = JSON.parse(stored as string);
+      expect(parsed.appointment).toBeUndefined();
+      expect(parsed.customerData).toBeUndefined();
+      expect(parsed.captchaToken).toBeUndefined();
 
       expect(sessionStorage.getItem("lhm-appointment-auth-hash")).toBe(
         btoa(JSON.stringify({ id: "proc-1", authKey: "secret-key" }))
@@ -1880,6 +1886,12 @@ describe("AppointmentView", () => {
             processId: "legacy-id",
             authKey: "legacy-secret-should-be-ignored",
           },
+          customerData: {
+            firstName: "Legacy",
+            lastName: "User",
+            mailAddress: "legacy@example.com",
+          },
+          captchaToken: "legacy-captcha",
         })
       );
 
@@ -1915,12 +1927,14 @@ describe("AppointmentView", () => {
       expect(wrapper.vm.appointment?.authKey).not.toBe(
         "legacy-secret-should-be-ignored"
       );
+      expect(wrapper.vm.customerData?.mailAddress).not.toBe("legacy@example.com");
+      expect(wrapper.vm.captchaToken).not.toBe("legacy-captcha");
       expect(wrapper.vm.currentView).toBe(2);
       expect(wrapper.vm.rebookOrCancelDialog).toBe(false);
       expect(localStorage.getItem("lhm-appointment-data")).toBeNull();
     });
 
-    it("does not restore authKey from legacy localStorage when hash is missing", async () => {
+    it("does not restore authKey or PII from legacy localStorage when hash is missing", async () => {
       localStorage.setItem(
         "lhm-appointment-data",
         JSON.stringify({
@@ -1929,6 +1943,11 @@ describe("AppointmentView", () => {
             processId: "legacy-id",
             authKey: "legacy-secret",
           },
+          customerData: {
+            firstName: "Legacy",
+            mailAddress: "legacy@example.com",
+          },
+          captchaToken: "legacy-captcha",
         })
       );
 
@@ -1939,6 +1958,8 @@ describe("AppointmentView", () => {
       });
 
       expect(wrapper.vm.appointment?.authKey).toBeUndefined();
+      expect(wrapper.vm.customerData?.mailAddress).not.toBe("legacy@example.com");
+      expect(wrapper.vm.captchaToken).not.toBe("legacy-captcha");
       expect(localStorage.getItem("lhm-appointment-data")).toBeNull();
     });
   });

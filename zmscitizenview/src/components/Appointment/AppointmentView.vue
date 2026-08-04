@@ -1007,8 +1007,6 @@ const saveAppointmentToLocalstorage = () => {
     selectedServiceMap: selectedServiceMapObject,
     selectedProvider: selectedProvider.value,
     selectedTimeslot: selectedTimeslot.value,
-    customerData: customerData.value,
-    captchaToken: captchaToken.value,
   };
   localStorage.setItem(
     LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
@@ -1121,6 +1119,8 @@ const parseLocalStorageAppointmentData = (
   try {
     const localstorageData = JSON.parse(data) as LocalStorageAppointmentData & {
       appointment?: unknown;
+      customerData?: unknown;
+      captchaToken?: unknown;
     };
     if (
       localstorageData.timestamp == undefined ||
@@ -1130,8 +1130,13 @@ const parseLocalStorageAppointmentData = (
     ) {
       return null;
     }
-    // Legacy payloads may still contain appointment/authKey — never use them.
-    const { appointment: _ignoredAppointment, ...uiData } = localstorageData;
+    // Drop legacy sensitive fields if present — never restore them from LS.
+    const {
+      appointment: _ignoredAppointment,
+      customerData: _ignoredCustomerData,
+      captchaToken: _ignoredCaptchaToken,
+      ...uiData
+    } = localstorageData;
     return uiData;
   } catch {
     return null;
@@ -1159,8 +1164,6 @@ const applyLocalStorageUiData = (uiData: LocalStorageAppointmentData) => {
   );
   selectedProvider.value = uiData.selectedProvider;
   selectedTimeslot.value = uiData.selectedTimeslot;
-  customerData.value = uiData.customerData;
-  captchaToken.value = uiData.captchaToken;
   currentView.value = isAppointmentInPast.value ? 3 : uiData.currentView;
 };
 
