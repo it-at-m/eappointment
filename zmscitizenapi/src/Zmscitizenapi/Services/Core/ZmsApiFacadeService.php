@@ -66,12 +66,20 @@ class ZmsApiFacadeService
         ];
 
         $sourceName = \App::$source_name ?? 'dldb';
+        $sourceKeys = [];
         foreach (explode(',', (string) $sourceName) as $source) {
             $source = trim($source);
             if ($source !== '') {
-                $keys[] = 'source_' . $source;
+                $sourceKeys[] = 'source_' . $source;
             }
         }
+
+        foreach (self::collectCachedOfficeIds($sourceKeys) as $officeId) {
+            $keys[] = self::CACHE_KEY_SERVICES_BY_OFFICE_PREFIX . $officeId;
+            $keys[] = self::CACHE_KEY_SERVICES_BY_OFFICE_PREFIX . $officeId . '_unpublished';
+        }
+
+        $keys = array_merge($keys, $sourceKeys);
 
         $deleted = [];
         foreach (array_values(array_unique($keys)) as $key) {
@@ -85,6 +93,48 @@ class ZmsApiFacadeService
         ]);
 
         return $deleted;
+    }
+
+    /**
+     * Collect office IDs from still-cached source/office lists before those keys are deleted.
+     *
+     * @param list<string> $sourceKeys
+     * @return list<int>
+     */
+    private static function collectCachedOfficeIds(array $sourceKeys): array
+    {
+        $officeIds = [];
+
+        foreach (
+            [
+                self::CACHE_KEY_OFFICES,
+                self::CACHE_KEY_OFFICES . '_unpublished',
+            ] as $officeListKey
+        ) {
+            $officeList = \App::$cache->get($officeListKey);
+            if ($officeList instanceof OfficeList) {
+                foreach ($officeList->offices as $office) {
+                    if ($office instanceof Office) {
+                        $officeIds[] = (int) $office->id;
+                    }
+                }
+            }
+        }
+
+        foreach ($sourceKeys as $sourceKey) {
+            $source = \App::$cache->get($sourceKey);
+            if (!$source instanceof \BO\Zmsentities\Source) {
+                continue;
+            }
+            foreach ($source->getProviderList() as $provider) {
+                $officeIds[] = (int) $provider->id;
+            }
+        }
+
+        return array_values(array_unique(array_filter(
+            $officeIds,
+            static fn (int $id): bool => $id > 0
+        )));
     }
 
     private static function setMappedCache(string $cacheKey, mixed $data): void
