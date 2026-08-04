@@ -120,10 +120,9 @@ class Search extends BaseController
             || $parameters['provider'] !== null
             || $parameters['date'] !== null
             || $parameters['userAction'] !== 0;
-
     }
 
-    
+
 
     private function readProcessSearchResults($workstation, array $parameters, array $scopeIds): array
     {
@@ -215,7 +214,7 @@ class Search extends BaseController
             return null;
         }
 
-        if($parameters['isSearchRequested'] && !$isLogSearchRequested) {
+        if ($parameters['isSearchRequested'] && !$isLogSearchRequested) {
             return null;
         }
 
