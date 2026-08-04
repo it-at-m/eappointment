@@ -36,14 +36,12 @@ class View extends BaseView {
     toggleAdditionalRequests(button) {
         const $button = $(button);
         const $wrapper = $button.closest('.statistic-additional-requests');
-        const $panel = $wrapper.find('.statistic-additional-requests__panel');
         const $icon = $button.find('i');
         const $label = $button.find('.statistic-additional-requests__label');
         const expanded = !$wrapper.hasClass('is-expanded');
 
         $wrapper.toggleClass('is-expanded', expanded);
         $button.attr('aria-expanded', expanded ? 'true' : 'false');
-        $panel.prop('hidden', !expanded);
         $icon
             .toggleClass('fa-chevron-down', !expanded)
             .toggleClass('fa-chevron-up', expanded);
