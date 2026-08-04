@@ -479,8 +479,7 @@
  *       404:
  *         description: Warmup disabled (SOURCE_CACHE_WARMUP_TOKEN unset)
  */
-\App::$slim->map(
-    ['GET', 'POST'],
+\App::$slim->post(
     '/source-cache/warmup/',
     '\BO\Zmscitizenapi\Controllers\System\SourceCacheWarmupController'
 )->setName("SourceCacheWarmupController");
