@@ -154,28 +154,47 @@
                             {% endfor %}
                         {% endfor %}
                     {% endfor %}
-                    <details class="statistic-additional-requests" {% if additionalHasValues %}open{% endif %}>
-                        <summary>Weitere Dienstleistungen</summary>
-                        {% for name, group in additionalRequestList %}
-                            {% set groupOptions = [] %}
-                            {% for request in group %}
-                                {% set value = 0 %}
-                                {% for processRequest in workstation.process.requests %}
-                                    {% if processRequest.id == request.id %}
-                                        {% set value = value + 1  %}
-                                    {% endif %}
+                    <div class="statistic-additional-requests{% if additionalHasValues %} is-expanded{% endif %}">
+                        <button
+                            type="button"
+                            class="button button-callback statistic-additional-requests__toggle"
+                            aria-expanded="{{ additionalHasValues ? 'true' : 'false' }}"
+                            aria-controls="statistic-additional-requests-panel"
+                            data-label-more="Weitere Dienstleistungen anzeigen"
+                            data-label-less="Weniger Dienstleistungen anzeigen"
+                        >
+                            <i class="fas {{ additionalHasValues ? 'fa-chevron-up' : 'fa-chevron-down' }}" aria-hidden="true"></i>
+                            <span class="statistic-additional-requests__label">
+                                {{ additionalHasValues ? 'Weniger Dienstleistungen anzeigen' : 'Weitere Dienstleistungen anzeigen' }}
+                            </span>
+                        </button>
+                        <div
+                            id="statistic-additional-requests-panel"
+                            class="statistic-additional-requests__panel"
+                            {% if not additionalHasValues %}hidden{% endif %}
+                        >
+                            <h3 class="statistic-additional-requests__heading">Weitere Dienstleistungen</h3>
+                            {% for name, group in additionalRequestList %}
+                                {% set groupOptions = [] %}
+                                {% for request in group %}
+                                    {% set value = 0 %}
+                                    {% for processRequest in workstation.process.requests %}
+                                        {% if processRequest.id == request.id %}
+                                            {% set value = value + 1  %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% set groupOptions = groupOptions|merge([{ "type": "counter", "parameter": {"label": request.name, "name": "requestCountList["~ request.id ~"]", "value": value} }]) %}
                                 {% endfor %}
-                                {% set groupOptions = groupOptions|merge([{ "type": "counter", "parameter": {"label": request.name, "name": "requestCountList["~ request.id ~"]", "value": value} }]) %}
+                                <fieldset>
+                                    <legend>{{name}}</legend>
+                                    {{ formgroup(
+                                        {"label": null, "class": "form-group--nomaxwidth"},
+                                        groupOptions
+                                    ) }}
+                                </fieldset>
                             {% endfor %}
-                            <fieldset>
-                                <legend>{{name}}</legend>
-                                {{ formgroup(
-                                    {"label": null, "class": "form-group--nomaxwidth"},
-                                    groupOptions
-                                ) }}
-                            </fieldset>
-                        {% endfor %}
-                    </details>
+                        </div>
+                    </div>
                 {% endif %}
             </div>
         </fieldset>

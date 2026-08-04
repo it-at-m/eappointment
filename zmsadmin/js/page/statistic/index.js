@@ -27,7 +27,31 @@ class View extends BaseView {
             this.changeInputCounterFromInput(ev);
             this.checkboxDeselect()
             this.toggleButtons();
+        }).on('click', '.statistic-additional-requests__toggle', (ev) => {
+            ev.preventDefault();
+            this.toggleAdditionalRequests(ev.currentTarget);
         })
+    }
+
+    toggleAdditionalRequests(button) {
+        const $button = $(button);
+        const $wrapper = $button.closest('.statistic-additional-requests');
+        const $panel = $wrapper.find('.statistic-additional-requests__panel');
+        const $icon = $button.find('i');
+        const $label = $button.find('.statistic-additional-requests__label');
+        const expanded = !$wrapper.hasClass('is-expanded');
+
+        $wrapper.toggleClass('is-expanded', expanded);
+        $button.attr('aria-expanded', expanded ? 'true' : 'false');
+        $panel.prop('hidden', !expanded);
+        $icon
+            .toggleClass('fa-chevron-down', !expanded)
+            .toggleClass('fa-chevron-up', expanded);
+        $label.text(
+            expanded
+                ? $button.data('label-less')
+                : $button.data('label-more')
+        );
     }
 
     checkboxDeselect(ev) {

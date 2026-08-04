@@ -163,12 +163,17 @@
     margin-top: 1rem;
 }
 
-.statistic-additional-requests > summary {
-    cursor: pointer;
-    font-weight: bold;
-    margin-bottom: 0.75rem;
+.statistic-additional-requests__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.statistic-additional-requests[open] > summary {
-    margin-bottom: 1rem;
+.statistic-additional-requests__heading {
+    margin: 1rem 0 0.75rem;
+    font-size: 1.1em;
+}
+
+.statistic-additional-requests__panel[hidden] {
+    display: none;
 }

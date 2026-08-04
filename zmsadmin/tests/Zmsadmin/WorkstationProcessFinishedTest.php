@@ -51,8 +51,9 @@ class WorkstationProcessFinishedTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $body = (string) $response->getBody();
-        $this->assertStringContainsString('Weitere Dienstleistungen', $body);
-        $this->assertStringContainsString('statistic-additional-requests', $body);
+        $this->assertStringContainsString('Weitere Dienstleistungen anzeigen', $body);
+        $this->assertStringContainsString('statistic-additional-requests__toggle', $body);
+        $this->assertStringContainsString('fa-chevron-down', $body);
         $this->assertStringContainsString('Wohngeld - Bewilligung - Antragsannahme Lastenzuschuss', $body);
         $this->assertEquals(200, $response->getStatusCode());
     }
