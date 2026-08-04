@@ -26,14 +26,14 @@ class RequestListByScopeAndDepartmentTest extends \BO\Zmsbackend\Tests\Api\Base
         $response = $this->render(['id' => 141], [], []);
         $body = json_decode((string) $response->getBody(), true);
 
-        $scopeIds = array_map(static function ($request) {
-            return (string) $request['id'];
+        $scopeKeys = array_map(static function ($request) {
+            return ($request['source'] ?? '') . ':' . $request['id'];
         }, $body['data']['scope']);
-        $additionalIds = array_map(static function ($request) {
-            return (string) $request['id'];
+        $additionalKeys = array_map(static function ($request) {
+            return ($request['source'] ?? '') . ':' . $request['id'];
         }, $body['data']['additional']);
 
-        $this->assertSame([], array_values(array_intersect($scopeIds, $additionalIds)));
+        $this->assertSame([], array_values(array_intersect($scopeKeys, $additionalKeys)));
     }
 
     public function testEmpty()
