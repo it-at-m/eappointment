@@ -1,9 +1,9 @@
 /**
- * Non-sensitive wizard UI state persisted across Münchner Login.
+ * Non-sensitive UI state persisted across Münchner Login.
  * Store only IDs/counts — never authKey, PII, captchaToken, or full
  * service/provider objects (avoids clear-text storage of appointment-named fields).
  */
-export interface LocalStorageWizardUiData {
+export interface LocalStorageUiData {
   timestamp: number;
   currentView: number;
   selectedServiceId: string;
