@@ -51,6 +51,8 @@ class Search extends BaseController
                 'hideNavigation' => (bool) $parameters['hideNavigation'],
                 'service' => $parameters['service'],
                 'provider' => $parameters['provider'],
+                'customTextfield' => $parameters['customTextfield'],
+                'customTextfield2' => $parameters['customTextfield2'],
                 'userAction' => $parameters['userAction'],
                 'date' => $parameters['date'],
                 'page' => $parameters['page'],
@@ -79,6 +81,8 @@ class Search extends BaseController
 
         $service = $this->readStringParameter($validator, 'service');
         $provider = $this->readStringParameter($validator, 'provider');
+        $customTextfield = $this->readStringParameter($validator, 'customTextfield');
+        $customTextfield2 = $this->readStringParameter($validator, 'customTextfield2');
         $date = $validator->getParameter('date')->isString()->setDefault(null)->getValue();
         $page = $this->readNumberParameter($validator, 'page', 1);
         $userAction = $this->readNumberParameter($validator, 'user', 0);
@@ -91,6 +95,8 @@ class Search extends BaseController
             'page' => $page,
             'service' => $service ? trim($service) : null,
             'provider' => $provider ? trim($provider) : null,
+            'customTextfield' => $customTextfield ? trim($customTextfield) : null,
+            'customTextfield2' => $customTextfield2 ? trim($customTextfield2) : null,
             'date' => $date !== null && trim($date) !== '' ? trim($date) : null,
             'userAction' => $userAction,
             'perPage' => $resultsPerPage,
@@ -99,6 +105,8 @@ class Search extends BaseController
                 trim((string) $queryString) !== ''
                 || trim($service) !== ''
                 || trim($provider) !== ''
+                || trim($customTextfield) !== ''
+                || trim($customTextfield2) !== ''
                 || ($date !== null && trim($date) !== '')
                 || $userAction !== 0
             ),
@@ -145,6 +153,8 @@ class Search extends BaseController
     {
         return $parameters['service'] !== null
             || $parameters['provider'] !== null
+            || $parameters['customTextfield'] !== null
+            || $parameters['customTextfield2'] !== null
             || $parameters['date'] !== null;
     }
 
@@ -164,6 +174,12 @@ class Search extends BaseController
         }
         if ($parameters['provider'] !== null) {
             $searchParameters['provider'] = $parameters['provider'];
+        }
+        if ($parameters['customTextfield'] !== null) {
+            $searchParameters['customTextfield'] = $parameters['customTextfield'];
+        }
+        if ($parameters['customTextfield2'] !== null) {
+            $searchParameters['customTextfield2'] = $parameters['customTextfield2'];
         }
         if ($parameters['date'] !== null) {
             $searchParameters['date'] = $parameters['date'];

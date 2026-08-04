@@ -624,6 +624,8 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
             $query->orWith('process.Telefonnummer', 'LIKE', $likeContains);
             $query->orWith('process.telefonnummer_fuer_rueckfragen', 'LIKE', $likeContains);
             $query->orWith('process.displayNumber', 'LIKE', $likeContains);
+            $query->orWith('process.custom_text_field', 'LIKE', $likeContains);
+            $query->orWith('process.custom_text_field2', 'LIKE', $likeContains);
         };
         if ($orWhere) {
             $this->query->orWhere($condition);
