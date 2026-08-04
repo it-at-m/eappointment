@@ -25,6 +25,28 @@ class SourceCacheWarmupControllerTest extends ControllerTestCase
         parent::tearDown();
     }
 
+    public function testRendering()
+    {
+        // Inherited Slim base expects 200; warmup requires a token header.
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/source/unittest/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ]
+        ]);
+        $response = $this->render([], [
+            '__header' => [
+                'X-Source-Cache-Warmup-Token' => 'test-warmup-token',
+            ],
+        ], [], 'POST');
+        $this->assertEquals(200, $response->getStatusCode());
+        return $response;
+    }
+
     public function testWarmupDisabledWithoutToken()
     {
         putenv('SOURCE_CACHE_WARMUP_TOKEN');
