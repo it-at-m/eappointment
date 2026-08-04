@@ -13,6 +13,8 @@ describe("AppointmentOverviewView", () => {
       status: 200,
       json: async () => ({
         offices: [],
+        services: [],
+        relations: [],
       }),
     }));
   });
@@ -62,7 +64,7 @@ describe("AppointmentOverviewView", () => {
         stubs: {
           'appointment-card': {
             template: "<div data-test='appointment-card'></div>",
-            props: ["appointment", "appointmentDetailUrl", "offices", "t"],
+            props: ["appointment", "appointmentDetailUrl", "offices", "services", "t"],
           },
           'error-alert': {
             template: "<div data-test='error-alert'></div>",

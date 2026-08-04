@@ -1,11 +1,32 @@
 import { mount } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
-import de from '@/utils/de-DE.json';
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import de from "@/utils/de-DE.json";
 import { nextTick } from "vue";
 
 import AppointmentDetailHeader from "@/components/AppointmentDetail/AppointmentDetailHeader.vue";
+import { downloadIcsFile } from "@/utils/downloadIcsFile";
+
+vi.mock("@/utils/downloadIcsFile", () => ({
+  downloadIcsFile: vi.fn(),
+}));
 
 describe("AppointmentDetailHeader", () => {
+  const translate = (key: string): string => {
+    const value = key.split(".").reduce<unknown>((current, part) => {
+      if (typeof current !== "object" || current === null) {
+        return undefined;
+      }
+
+      return (current as Record<string, unknown>)[part];
+    }, de);
+
+    return typeof value === "string" ? value : key;
+  };
+
+  beforeEach(() => {
+    vi.mocked(downloadIcsFile).mockClear();
+  });
+
   const mockAppointment =
     {
       timestamp: Math.floor(Date.now() / 1000),
@@ -34,10 +55,8 @@ describe("AppointmentDetailHeader", () => {
       props: {
         appointment: mockAppointment,
         selectedProvider: mockProvider,
-        t: (key: string) => {
-          const translations = de as any;
-          return translations[key] || key;
-        },
+        variantId: null,
+        t: translate,
         ...props,
       },
       global: {
@@ -52,6 +71,20 @@ describe("AppointmentDetailHeader", () => {
             template: "<div data-test='muc-button'></div>",
             props: ["icon", "variant"],
           },
+          "muc-link": {
+            template: `
+              <a
+                data-test="muc-link"
+                :data-label="label"
+                :data-prepend-icon="prependIcon"
+                @click="$emit('click', $event)"
+              >
+                {{ label }}
+              </a>
+            `,
+            props: ["id", "label", "prependIcon", "ariaLabel"],
+            emits: ["click"],
+          },
         },
       },
     });
@@ -62,7 +95,7 @@ describe("AppointmentDetailHeader", () => {
     await nextTick();
 
     expect(wrapper.find('[data-test="muc-intro"]').exists()).toBe(true);
-    expect(wrapper.find('[data-test="muc-intro"]').attributes('tagline')).toBe(de.appointment);
+    expect(wrapper.find('[data-test="muc-intro"]').attributes('tagline')).toBe(de.appointmentTypes["1"]);
     expect(wrapper.find('[data-test="muc-intro"]').attributes('title')).toBe(wrapper.vm.formatMultilineTitle(mockAppointment));
     expect(wrapper.find('[data-test="muc-button"]').exists()).toBe(true);
     expect(wrapper.findAll('[data-test="muc-button"]')).toHaveLength(2);
@@ -72,12 +105,68 @@ describe("AppointmentDetailHeader", () => {
     expect(wrapper.text()).toContain(mockProvider.address.house_number);
   });
 
+  it.each([1, 4, 5, 6, 7])(
+    "renders presence tagline for variant %i",
+    async (variantId) => {
+      const wrapper = createWrapper({ variantId });
+      await nextTick();
+
+      expect(
+        wrapper.find('[data-test="muc-intro"]').attributes("tagline")
+      ).toBe(de.appointmentTypes["1"]);
+
+      const locationLink = wrapper.find(
+        '[data-test="muc-link"][data-prepend-icon="map-pin"]'
+      );
+
+      expect(locationLink.exists()).toBe(true);
+    }
+  );
+
+  it("renders telephone appointment header", async () => {
+    const wrapper = createWrapper({ variantId: 2 });
+    await nextTick();
+
+    expect(
+      wrapper.find('[data-test="muc-intro"]').attributes("tagline")
+    ).toBe(de.appointmentTypes["2"]);
+
+    const locationLink = wrapper.find(
+      '[data-test="muc-link"][data-prepend-icon="telephone"]'
+    );
+
+    expect(locationLink.exists()).toBe(true);
+    expect(locationLink.attributes("data-label")).toBe(
+      mockAppointment.telephone
+    );
+  });
+
+  it("renders video appointment header", async () => {
+    const wrapper = createWrapper({ variantId: 3 });
+    await nextTick();
+
+    expect(
+      wrapper.find('[data-test="muc-intro"]').attributes("tagline")
+    ).toBe(de.appointmentTypes["3"]);
+
+    const locationLink = wrapper.find(
+      '[data-test="muc-link"][data-prepend-icon="video-camera"]'
+    );
+
+    expect(locationLink.exists()).toBe(true);
+    expect(locationLink.attributes("data-label")).toBe(
+      de.appointmentDetailVideoIntroLocation
+    );
+  });
+
   it("renders header without provider", async () => {
     const wrapper = createWrapper({selectedProvider: undefined});
     await nextTick();
 
     expect(wrapper.find('[data-test="muc-intro"]').exists()).toBe(true);
-    expect(wrapper.find('[data-test="muc-intro"]').attributes('tagline')).toBe(de.appointment);
+    expect(
+      wrapper.find('[data-test="muc-intro"]').attributes("tagline")
+    ).toBe(de.appointmentTypes["1"]);
     expect(wrapper.find('[data-test="muc-intro"]').attributes('title')).toBe(wrapper.vm.formatMultilineTitle(mockAppointment));
     expect(wrapper.find('[data-test="muc-button"]').exists()).toBe(true);
     expect(wrapper.findAll('[data-test="muc-button"]')).toHaveLength(2);
@@ -93,4 +182,36 @@ describe("AppointmentDetailHeader", () => {
     expect(wrapper.find('.multiline-text').exists()).toBe(false);
     expect(wrapper.find('[data-test="muc-button"]').exists()).toBe(false);
   });
+
+  it.each([null, 1, 2, 3, 4, 5, 6, 7])(
+    "renders the ICS download link for variant %s",
+    async (variantId) => {
+      const icsContent =
+        "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nEND:VCALENDAR";
+
+      const wrapper = createWrapper({
+        variantId,
+        appointment: {
+          ...mockAppointment,
+          icsContent,
+        },
+      });
+
+      await nextTick();
+
+      const downloadLink = wrapper.find(
+        '[data-test="muc-link"][data-prepend-icon="calendar-down"]'
+      );
+
+      expect(downloadLink.exists()).toBe(true);
+      expect(downloadLink.attributes("data-label")).toBe(
+        de.downloadAppointment
+      );
+
+      await downloadLink.trigger("click");
+
+      expect(downloadIcsFile).toHaveBeenCalledOnce();
+      expect(downloadIcsFile).toHaveBeenCalledWith(icsContent);
+    }
+  );
 });

@@ -28,7 +28,9 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Log in to GitHub Container Registry
         run: echo "${{ env.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -61,7 +63,7 @@ jobs:
         run: docker run --rm -i "${{ env.IMAGE }}:${{ env.VERSION }}-dev" php-fpm -t
 
       - name: Push base image to GHCR
-        uses: nick-fields/retry@v4
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
         with:
           max_attempts: 5
           retry_wait_seconds: 30
@@ -69,7 +71,7 @@ jobs:
           command: docker push "${{ env.IMAGE }}:${{ env.VERSION }}-base"
 
       - name: Push dev image to GHCR
-        uses: nick-fields/retry@v4
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
         with:
           max_attempts: 5
           retry_wait_seconds: 30
@@ -88,7 +90,9 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Log in to GitHub Container Registry
         run: echo "${{ env.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -121,7 +125,7 @@ jobs:
         run: docker run --rm -i "${{ env.IMAGE }}:${{ env.VERSION }}-dev" php-fpm -t
 
       - name: Push base image to GHCR
-        uses: nick-fields/retry@v4
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
         with:
           max_attempts: 5
           retry_wait_seconds: 30
@@ -129,7 +133,7 @@ jobs:
           command: docker push "${{ env.IMAGE }}:${{ env.VERSION }}-base"
 
       - name: Push dev image to GHCR
-        uses: nick-fields/retry@v4
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
         with:
           max_attempts: 5
           retry_wait_seconds: 30
@@ -156,7 +160,9 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Log in to GitHub Container Registry
         run: echo "${{ env.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -172,7 +178,7 @@ jobs:
           echo "IMAGE_TAG=${TAG}" >> "$GITHUB_ENV"
 
       - name: Push single-arch image to GHCR
-        uses: nick-fields/retry@v4
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
         with:
           max_attempts: 5
           retry_wait_seconds: 30
@@ -203,7 +209,9 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Log in to GitHub Container Registry
         run: echo "${{ env.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -219,7 +227,7 @@ jobs:
           echo "IMAGE_TAG=${TAG}" >> "$GITHUB_ENV"
 
       - name: Push single-arch image to GHCR
-        uses: nick-fields/retry@v4
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
         with:
           max_attempts: 5
           retry_wait_seconds: 30
