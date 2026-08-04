@@ -137,6 +137,7 @@
             <div v-if="currentView === 3">
               <muc-banner
                 v-if="appointmentAlreadyActivated"
+                class="already-activated-banner"
                 variant="content"
                 type="success"
                 data-test="appointment-already-activated-banner"
@@ -1512,6 +1513,11 @@ onMounted(() => {
 </script>
 <style lang="scss" scoped>
 @use "@/styles/breakpoints.scss" as *;
+
+.already-activated-banner {
+  display: block;
+  margin-bottom: 1.5rem;
+}
 
 .m-button-group {
   display: flex;
