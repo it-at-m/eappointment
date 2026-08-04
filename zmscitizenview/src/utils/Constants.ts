@@ -52,6 +52,13 @@ export function resolveAgainstCurrentPage(url: string): URL {
 
 export const LOCALSTORAGE_PARAM_APPOINTMENT_DATA = "lhm-appointment-data";
 
+/**
+ * Short-lived OAuth hop bridge for appointment credentials (same payload as URL hash).
+ * Not localStorage — cleared after login resume (ZMSKVR-1002).
+ */
+export const SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH =
+  "lhm-appointment-auth-hash";
+
 export enum APPOINTMENT_ACTION_TYPE {
   RESCHEDULE = "reschedule",
   CANCEL = "cancel",

@@ -372,7 +372,6 @@ import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
-import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { CustomerData } from "@/types/CustomerData";
 import { GlobalState } from "@/types/GlobalState";
 import { LocalStorageAppointmentData } from "@/types/LocalStorageAppointmentData";
@@ -401,6 +400,7 @@ import {
   QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
   resolveAgainstCurrentPage,
+  SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH,
 } from "@/utils/Constants";
 import { downloadIcsFile } from "@/utils/downloadIcsFile";
 import {
@@ -958,8 +958,31 @@ const goToTop = async () => {
   window.scrollTo({ top: 0, behavior: "instant" });
 };
 
+const encodeAppointmentAuthHash = (
+  processId: string,
+  authKey: string
+): string => {
+  return btoa(JSON.stringify({ id: processId, authKey }));
+};
+
+const setAppointmentAuthHashForLogin = () => {
+  if (!appointment.value?.processId || !appointment.value?.authKey) {
+    return;
+  }
+
+  const encoded = encodeAppointmentAuthHash(
+    appointment.value.processId,
+    appointment.value.authKey
+  );
+  // Survive OAuth redirect (URL fragment is dropped by the IdP round-trip).
+  sessionStorage.setItem(SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH, encoded);
+  // Prefer replaceState so hashchange does not fire before leaving for IdP.
+  history.replaceState(null, "", `#/appointment/${encoded}`);
+};
+
 const requestLogin = () => {
   saveAppointmentToLocalstorage();
+  setAppointmentAuthHashForLogin();
   document.dispatchEvent(
     new CustomEvent("authorization-request", {
       detail: {
@@ -971,27 +994,54 @@ const requestLogin = () => {
 };
 
 const saveAppointmentToLocalstorage = () => {
-  if (selectedService.value && selectedProvider.value && appointment.value) {
-    const selectedServiceMapObject = Object.fromEntries(
-      selectedServiceMap.value
-    );
-
-    const saveData: LocalStorageAppointmentData = {
-      timestamp: Date.now(),
-      currentView: currentView.value,
-      selectedService: selectedService.value,
-      selectedServiceMap: selectedServiceMapObject,
-      selectedProvider: selectedProvider.value,
-      selectedTimeslot: selectedTimeslot.value,
-      customerData: customerData.value,
-      appointment: appointment.value,
-      captchaToken: captchaToken.value,
-    };
-    localStorage.setItem(
-      LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
-      JSON.stringify(saveData)
-    );
+  if (!selectedService.value || !selectedProvider.value) {
+    return;
   }
+
+  const selectedServiceMapObject = Object.fromEntries(selectedServiceMap.value);
+
+  const saveData: LocalStorageAppointmentData = {
+    timestamp: Date.now(),
+    currentView: currentView.value,
+    selectedService: selectedService.value,
+    selectedServiceMap: selectedServiceMapObject,
+    selectedProvider: selectedProvider.value,
+    selectedTimeslot: selectedTimeslot.value,
+    customerData: customerData.value,
+    captchaToken: captchaToken.value,
+  };
+  localStorage.setItem(
+    LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
+    JSON.stringify(saveData)
+  );
+};
+
+const clearAppointmentLocalStorage = () => {
+  if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
+    localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
+  }
+};
+
+const clearAppointmentAuthHashSession = () => {
+  if (sessionStorage.getItem(SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH)) {
+    sessionStorage.removeItem(SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH);
+  }
+};
+
+const resolveAppointmentAuthHash = (): string | undefined => {
+  if (props.appointmentHash) {
+    return props.appointmentHash;
+  }
+
+  const pendingHash = sessionStorage.getItem(
+    SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH
+  );
+  if (!pendingHash) {
+    return undefined;
+  }
+
+  history.replaceState(null, "", `#/appointment/${pendingHash}`);
+  return pendingHash;
 };
 
 const viewAppointment = () => {
@@ -1069,20 +1119,111 @@ const parseLocalStorageAppointmentData = (
   data: string
 ): LocalStorageAppointmentData | null => {
   try {
-    const localstorageData: LocalStorageAppointmentData = JSON.parse(data);
+    const localstorageData = JSON.parse(data) as LocalStorageAppointmentData & {
+      appointment?: unknown;
+    };
     if (
       localstorageData.timestamp == undefined ||
       localstorageData.currentView == undefined ||
       localstorageData.selectedService == undefined ||
-      localstorageData.selectedProvider == undefined ||
-      localstorageData.appointment == undefined
+      localstorageData.selectedProvider == undefined
     ) {
       return null;
     }
-    return localstorageData;
+    // Legacy payloads may still contain appointment/authKey — never use them.
+    const { appointment: _ignoredAppointment, ...uiData } = localstorageData;
+    return uiData;
   } catch {
     return null;
   }
+};
+
+const LOCALSTORAGE_UI_TTL_MS = 30 * 60 * 1000;
+
+const getFreshLocalStorageUiData = (): LocalStorageAppointmentData | null => {
+  const raw = localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
+  if (!raw) {
+    return null;
+  }
+  const parsed = parseLocalStorageAppointmentData(raw);
+  if (!parsed || Date.now() - parsed.timestamp >= LOCALSTORAGE_UI_TTL_MS) {
+    return null;
+  }
+  return parsed;
+};
+
+const applyLocalStorageUiData = (uiData: LocalStorageAppointmentData) => {
+  selectedService.value = uiData.selectedService;
+  selectedServiceMap.value = new Map(
+    Object.entries(uiData.selectedServiceMap ?? {})
+  );
+  selectedProvider.value = uiData.selectedProvider;
+  selectedTimeslot.value = uiData.selectedTimeslot;
+  customerData.value = uiData.customerData;
+  captchaToken.value = uiData.captchaToken;
+  currentView.value = isAppointmentInPast.value ? 3 : uiData.currentView;
+};
+
+const runLoginResumeFromHashAndLocalStorage = (
+  hash: string,
+  uiData: LocalStorageAppointmentData
+): void => {
+  const appointmentData = parseAppointmentHash(hash);
+  if (!appointmentData) {
+    handleApiError(
+      "appointmentNotFound",
+      errorStateMap.value,
+      currentErrorData.value
+    );
+    clearAppointmentLocalStorage();
+    clearAppointmentAuthHashSession();
+    return;
+  }
+
+  loadedAppointmentHash.value = hash;
+  clearAppointmentLocalStorage();
+  clearAppointmentAuthHashSession();
+  clearContextErrors(errorStateMap.value);
+
+  fetchServicesAndProviders(
+    props.serviceId ?? undefined,
+    props.locationId ?? undefined,
+    props.globalState?.baseUrl ?? undefined
+  ).then((data) => {
+    handleErrorApiResponse(
+      data,
+      errorStates.errorStateMap,
+      currentErrorData.value
+    );
+
+    if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
+      return;
+    }
+
+    services.value = (data as any).services;
+    relations.value = (data as any).relations;
+    offices.value = (data as any).offices;
+
+    applyLocalStorageUiData(uiData);
+
+    fetchAppointment(props.globalState, appointmentData).then((response) => {
+      if ((response as AppointmentDTO).processId != undefined) {
+        appointment.value = response as AppointmentDTO;
+        if ("captchaToken" in response && (response as any).captchaToken) {
+          captchaToken.value =
+            captchaToken.value || ((response as any).captchaToken as string);
+        }
+        // Keep wizard step from UI localStorage (do not open reschedule/cancel dialog).
+        currentView.value = isAppointmentInPast.value ? 3 : uiData.currentView;
+      } else {
+        handleErrorApiResponse(
+          response,
+          errorStates.errorStateMap,
+          currentErrorData.value
+        );
+      }
+    });
+  });
 };
 
 const handleInvalidJumpinLink = () => {
@@ -1358,6 +1499,11 @@ watch(
       loadedAppointmentHash.value = null;
       return;
     }
+    const uiData = getFreshLocalStorageUiData();
+    if (uiData) {
+      runLoginResumeFromHashAndLocalStorage(hash, uiData);
+      return;
+    }
     runAppointmentFromHash(hash);
   }
 );
@@ -1366,73 +1512,58 @@ onMounted(() => {
   runConfirmFromHash(props.confirmAppointmentHash);
 
   if (props.confirmAppointmentHash) {
-    if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
-      localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
-    }
+    clearAppointmentLocalStorage();
+    clearAppointmentAuthHashSession();
     focusActiveStepperItem();
     return;
   }
 
-  if (props.appointmentHash) {
-    runAppointmentFromHash(props.appointmentHash);
-    if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
-      localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
-    }
+  const authHash = resolveAppointmentAuthHash();
+  const uiData = getFreshLocalStorageUiData();
+
+  if (authHash && uiData) {
+    runLoginResumeFromHashAndLocalStorage(authHash, uiData);
     focusActiveStepperItem();
     return;
   }
 
-  const localStorageAppointment = localStorage.getItem(
-    LOCALSTORAGE_PARAM_APPOINTMENT_DATA
-  );
-  if (localStorageAppointment) {
-    const localStorageData = parseLocalStorageAppointmentData(
-      localStorageAppointment
-    );
-    if (
-      localStorageData &&
-      Date.now() - localStorageData.timestamp < 30 * 60 * 1000
-    ) {
-      clearContextErrors(errorStateMap.value);
-
-      fetchServicesAndProviders(
-        props.serviceId ?? undefined,
-        props.locationId ?? undefined,
-        props.globalState?.baseUrl ?? undefined
-      ).then((data) => {
-        handleErrorApiResponse(
-          data,
-          errorStates.errorStateMap,
-          currentErrorData.value
-        );
-
-        if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
-          return;
-        }
-
-        services.value = (data as any).services;
-        relations.value = (data as any).relations;
-        offices.value = (data as any).offices;
-
-        selectedService.value = localStorageData.selectedService;
-        selectedServiceMap.value = new Map(
-          Object.entries(localStorageData.selectedServiceMap)
-        );
-        selectedProvider.value = localStorageData.selectedProvider;
-        selectedTimeslot.value = localStorageData.selectedTimeslot;
-        appointment.value = localStorageData.appointment;
-        captchaToken.value = localStorageData.captchaToken;
-
-        currentView.value = isAppointmentInPast.value
-          ? 3
-          : localStorageData.currentView;
-      });
-    }
+  if (authHash) {
+    runAppointmentFromHash(authHash);
+    clearAppointmentLocalStorage();
+    clearAppointmentAuthHashSession();
+    focusActiveStepperItem();
+    return;
   }
 
-  if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
-    localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
+  if (uiData) {
+    clearContextErrors(errorStateMap.value);
+
+    fetchServicesAndProviders(
+      props.serviceId ?? undefined,
+      props.locationId ?? undefined,
+      props.globalState?.baseUrl ?? undefined
+    ).then((data) => {
+      handleErrorApiResponse(
+        data,
+        errorStates.errorStateMap,
+        currentErrorData.value
+      );
+
+      if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
+        return;
+      }
+
+      services.value = (data as any).services;
+      relations.value = (data as any).relations;
+      offices.value = (data as any).offices;
+
+      // UI-only restore — never apply authKey from localStorage (legacy or new).
+      applyLocalStorageUiData(uiData);
+    });
   }
+
+  clearAppointmentLocalStorage();
+  clearAppointmentAuthHashSession();
   focusActiveStepperItem();
 });
 </script>

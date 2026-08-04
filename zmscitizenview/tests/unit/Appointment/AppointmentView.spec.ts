@@ -1796,4 +1796,150 @@ describe("AppointmentView", () => {
       expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(false);
     });
   });
+
+  describe("ZMSKVR-1002 authKey out of localStorage", () => {
+    const uiStoragePayload = {
+      timestamp: Date.now(),
+      currentView: 2,
+      selectedService: { id: "123", name: "Test Service", count: 1 },
+      selectedServiceMap: { "123": 1 },
+      selectedProvider: {
+        id: "789",
+        name: "Test Provider",
+        address: {
+          street: "Test Street",
+          house_number: "123",
+          postal_code: "12345",
+          city: "Test City",
+        },
+      },
+      selectedTimeslot: 1640995200,
+      customerData: {
+        firstName: "Max",
+        lastName: "Mustermann",
+        mailAddress: "max@example.com",
+        telephoneNumber: "",
+        customTextfield: "",
+        customTextfield2: "",
+      },
+      captchaToken: undefined as string | undefined,
+    };
+
+    beforeEach(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockReset();
+    });
+
+    it("requestLogin stores UI data without authKey and writes auth hash to sessionStorage", () => {
+      const replaceStateSpy = vi
+        .spyOn(history, "replaceState")
+        .mockImplementation(() => {});
+      const wrapper = createWrapper({ showLoginOption: true });
+
+      wrapper.vm.selectedService = uiStoragePayload.selectedService as any;
+      wrapper.vm.selectedProvider = uiStoragePayload.selectedProvider as any;
+      wrapper.vm.selectedTimeslot = uiStoragePayload.selectedTimeslot;
+      wrapper.vm.customerData = uiStoragePayload.customerData as any;
+      wrapper.vm.currentView = 2;
+      wrapper.vm.appointment = {
+        processId: "proc-1",
+        authKey: "secret-key",
+        timestamp: 1640995200,
+        familyName: "Mustermann",
+        email: "max@example.com",
+        officeId: "789",
+        scope: {},
+        subRequestCounts: [],
+        serviceId: "123",
+        serviceName: "Test Service",
+        serviceCount: 1,
+      } as any;
+
+      wrapper.vm.requestLogin();
+
+      const stored = localStorage.getItem("lhm-appointment-data");
+      expect(stored).toBeTruthy();
+      expect(stored).not.toContain("secret-key");
+      expect(stored).not.toContain("authKey");
+      expect(JSON.parse(stored as string).appointment).toBeUndefined();
+
+      expect(sessionStorage.getItem("lhm-appointment-auth-hash")).toBe(
+        btoa(JSON.stringify({ id: "proc-1", authKey: "secret-key" }))
+      );
+      expect(replaceStateSpy).toHaveBeenCalled();
+      replaceStateSpy.mockRestore();
+    });
+
+    it("login resume merges hash credentials with UI localStorage and ignores legacy LS authKey", async () => {
+      localStorage.setItem(
+        "lhm-appointment-data",
+        JSON.stringify({
+          ...uiStoragePayload,
+          appointment: {
+            processId: "legacy-id",
+            authKey: "legacy-secret-should-be-ignored",
+          },
+        })
+      );
+
+      const hash = buildAppointmentHash({
+        id: "hash-proc",
+        authKey: "hash-auth-key",
+      });
+
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "hash-proc",
+        authKey: "hash-auth-key",
+        timestamp: Math.floor(Date.now() / 1000) + 3600,
+        familyName: "Mustermann",
+        email: "max@example.com",
+        officeId: "789",
+        scope: {},
+        subRequestCounts: [],
+        serviceId: "123",
+        serviceName: "Test Service",
+        serviceCount: 1,
+      } as any);
+
+      const wrapper = createWrapper({
+        showLoginOption: true,
+        appointmentHash: hash,
+      });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointment?.processId).toBe("hash-proc");
+      });
+
+      expect(wrapper.vm.appointment?.authKey).toBe("hash-auth-key");
+      expect(wrapper.vm.appointment?.authKey).not.toBe(
+        "legacy-secret-should-be-ignored"
+      );
+      expect(wrapper.vm.currentView).toBe(2);
+      expect(wrapper.vm.rebookOrCancelDialog).toBe(false);
+      expect(localStorage.getItem("lhm-appointment-data")).toBeNull();
+    });
+
+    it("does not restore authKey from legacy localStorage when hash is missing", async () => {
+      localStorage.setItem(
+        "lhm-appointment-data",
+        JSON.stringify({
+          ...uiStoragePayload,
+          appointment: {
+            processId: "legacy-id",
+            authKey: "legacy-secret",
+          },
+        })
+      );
+
+      const wrapper = createWrapper({ showLoginOption: true });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.selectedService?.id).toBe("123");
+      });
+
+      expect(wrapper.vm.appointment?.authKey).toBeUndefined();
+      expect(localStorage.getItem("lhm-appointment-data")).toBeNull();
+    });
+  });
 });
