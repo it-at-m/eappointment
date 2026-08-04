@@ -1,0 +1,47 @@
+{
+  "type": "object",
+  "description": "Grouped request lists for statistic collection after process finish: calendar/scope requests plus additional department-wide requests (ZMSKVR-1431).",
+  "example": {
+    "scope": [
+      {
+        "id": "120335",
+        "link": "http://service.berlin.de/dienstleistung/120335/",
+        "name": "Abmeldung einer Wohnung",
+        "source": "dldb",
+        "group": "Meldewesen und Ordnung"
+      }
+    ],
+    "additional": [
+      {
+        "id": "120703",
+        "link": "http://service.berlin.de/dienstleistung/120703/",
+        "name": "Meldebescheinigung",
+        "source": "dldb",
+        "group": "Meldewesen und Ordnung"
+      }
+    ]
+  },
+  "required": [
+    "scope",
+    "additional"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "scope": {
+      "type": "array",
+      "description": "Requests assigned to the current scope/calendar",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "additional": {
+      "type": "array",
+      "description": "Department-wide requests not assigned to the current scope",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    }
+  }
+}

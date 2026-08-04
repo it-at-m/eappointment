@@ -22,8 +22,8 @@ class WorkstationProcessFinishedTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/request/',
-                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
+                    'url' => '/scope/141/request/department/',
+                    'response' => $this->readFixture("GET_scope_141_requestlist_department.json")
                 ]
             ]
         );
@@ -61,8 +61,8 @@ class WorkstationProcessFinishedTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/request/',
-                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
+                    'url' => '/scope/141/request/department/',
+                    'response' => $this->readFixture("GET_scope_141_requestlist_department.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -102,8 +102,8 @@ class WorkstationProcessFinishedTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/request/',
-                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
+                    'url' => '/scope/141/request/department/',
+                    'response' => $this->readFixture("GET_scope_141_requestlist_department.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -143,8 +143,8 @@ class WorkstationProcessFinishedTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/request/',
-                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
+                    'url' => '/scope/141/request/department/',
+                    'response' => $this->readFixture("GET_scope_141_requestlist_department.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -206,8 +206,8 @@ class WorkstationProcessFinishedTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/request/',
-                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
+                    'url' => '/scope/141/request/department/',
+                    'response' => $this->readFixture("GET_scope_141_requestlist_department.json")
                 ],
             ]
         );

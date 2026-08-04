@@ -30,7 +30,10 @@ class RequestListByScopeAndDepartment extends \BO\Zmsbackend\Api\BaseController
             ->readListByScopeAndDepartment((int) $args['id'], (int) $resolveReferences);
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
-        $message->data = $grouped;
+        $message->data = new \BO\Zmsentities\Requeststatistic([
+            'scope' => $grouped['scope'],
+            'additional' => $grouped['additional'],
+        ]);
 
         $response = Render::withLastModified($response, time(), '0');
         return Render::withJson($response, $message, 200);
