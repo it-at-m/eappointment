@@ -107,6 +107,9 @@ export const VARIANT_ID_FAMILY = 5;
 export const VARIANT_ID_SMALL_CLIENT = 6;
 export const VARIANT_ID_LARGE_CLIENT = 7;
 
+export const VIDEO_CONSULTATION_INFO_URL =
+  "https://stadt.muenchen.de/infos/videoberatung.html";
+
 export const VARIANTS_WITH_HINTS = [
   VARIANT_ID_PRESENCE,
   VARIANT_ID_TELEPHONE,

@@ -19,10 +19,12 @@
     "prettier": "^3.5.3",
     "vitepress": "^1.6.3"
   },
+  "// overrides.postcss": "Force ^8.5.23 for CVE-2026-69153.",
   "overrides": {
     "uuid": "^11.1.1",
     "vite": "^8.0.0",
     "esbuild": "^0.28.1",
-    "dompurify": "^3.4.12"
+    "dompurify": "^3.4.12",
+    "postcss": "^8.5.23"
   }
 }
