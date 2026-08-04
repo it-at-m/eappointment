@@ -141,6 +141,42 @@
                         ) }}
                     </fieldset>
                 {% endfor %}
+
+                {% set additionalRequestList = additionalRequestList|default({}) %}
+                {% if additionalRequestList|length > 0 %}
+                    {% set additionalHasValues = false %}
+                    {% for name, group in additionalRequestList %}
+                        {% for request in group %}
+                            {% for processRequest in workstation.process.requests %}
+                                {% if processRequest.id == request.id %}
+                                    {% set additionalHasValues = true %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    {% endfor %}
+                    <details class="statistic-additional-requests" {% if additionalHasValues %}open{% endif %}>
+                        <summary>Weitere Dienstleistungen</summary>
+                        {% for name, group in additionalRequestList %}
+                            {% set groupOptions = [] %}
+                            {% for request in group %}
+                                {% set value = 0 %}
+                                {% for processRequest in workstation.process.requests %}
+                                    {% if processRequest.id == request.id %}
+                                        {% set value = value + 1  %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% set groupOptions = groupOptions|merge([{ "type": "counter", "parameter": {"label": request.name, "name": "requestCountList["~ request.id ~"]", "value": value} }]) %}
+                            {% endfor %}
+                            <fieldset>
+                                <legend>{{name}}</legend>
+                                {{ formgroup(
+                                    {"label": null, "class": "form-group--nomaxwidth"},
+                                    groupOptions
+                                ) }}
+                            </fieldset>
+                        {% endfor %}
+                    </details>
+                {% endif %}
             </div>
         </fieldset>
 
