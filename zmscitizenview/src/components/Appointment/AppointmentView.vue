@@ -374,7 +374,7 @@ import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
 import { CustomerData } from "@/types/CustomerData";
 import { GlobalState } from "@/types/GlobalState";
-import { LocalStorageWizardUiData } from "@/types/LocalStorageAppointmentData";
+import { LocalStorageUiData } from "@/types/LocalStorageAppointmentData";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import {
   CustomerDataProvider,
@@ -981,7 +981,7 @@ const setAppointmentAuthHashForLogin = () => {
 };
 
 const requestLogin = () => {
-  saveWizardUiToLocalStorage();
+  saveUiToLocalStorage();
   setAppointmentAuthHashForLogin();
   document.dispatchEvent(
     new CustomEvent("authorization-request", {
@@ -993,12 +993,12 @@ const requestLogin = () => {
   );
 };
 
-const saveWizardUiToLocalStorage = () => {
+const saveUiToLocalStorage = () => {
   if (!selectedService.value || !selectedProvider.value) {
     return;
   }
 
-  const saveData: LocalStorageWizardUiData = {
+  const saveData: LocalStorageUiData = {
     timestamp: Date.now(),
     currentView: currentView.value,
     selectedServiceId: String(selectedService.value.id),
@@ -1111,9 +1111,7 @@ const parseAppointmentHash = (hash: string): AppointmentHash | null => {
   }
 };
 
-const parseWizardUiLocalStorage = (
-  data: string
-): LocalStorageWizardUiData | null => {
+const parseUiLocalStorage = (data: string): LocalStorageUiData | null => {
   try {
     const raw = JSON.parse(data) as {
       timestamp?: number;
@@ -1152,19 +1150,19 @@ const parseWizardUiLocalStorage = (
 
 const LOCALSTORAGE_UI_TTL_MS = 30 * 60 * 1000;
 
-const getFreshLocalStorageUiData = (): LocalStorageWizardUiData | null => {
+const getFreshLocalStorageUiData = (): LocalStorageUiData | null => {
   const raw = localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
   if (!raw) {
     return null;
   }
-  const parsed = parseWizardUiLocalStorage(raw);
+  const parsed = parseUiLocalStorage(raw);
   if (!parsed || Date.now() - parsed.timestamp >= LOCALSTORAGE_UI_TTL_MS) {
     return null;
   }
   return parsed;
 };
 
-const applyLocalStorageUiData = (uiData: LocalStorageWizardUiData) => {
+const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
   selectedServiceMap.value = new Map(
     Object.entries(uiData.selectedServiceMap ?? {})
   );
@@ -1212,7 +1210,7 @@ const applyLocalStorageUiData = (uiData: LocalStorageWizardUiData) => {
 
 const runLoginResumeFromHashAndLocalStorage = (
   hash: string,
-  uiData: LocalStorageWizardUiData
+  uiData: LocalStorageUiData
 ): void => {
   const appointmentData = parseAppointmentHash(hash);
   if (!appointmentData) {
@@ -1264,7 +1262,7 @@ const runLoginResumeFromHashAndLocalStorage = (
                 captchaToken.value ||
                 ((response as any).captchaToken as string);
             }
-            // Keep wizard step from UI localStorage (do not open reschedule/cancel dialog).
+            // Keep stepper step from UI localStorage (do not open reschedule/cancel dialog).
             currentView.value = isAppointmentInPast.value
               ? 3
               : uiData.currentView;
