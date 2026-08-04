@@ -208,7 +208,7 @@ class Search extends BaseController
             return null;
         }
 
-        §isLogSearchRequested = $this->hasLogSearchFilters($parameters);
+        $isLogSearchRequested= $this->hasLogSearchFilters($parameters);
 
         if (!$parameters['isSearchRequested'] && !$workstation->getUseraccount()->isSuperUser()) {
             return null;
