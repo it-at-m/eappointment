@@ -4,6 +4,7 @@ on:
   schedule:
     # Scheduled workflows run on the default branch only; scan main and next explicitly.
     - cron: "0 5 * * *"
+  workflow_dispatch:
 
 jobs:
   scheduled:
@@ -58,3 +59,31 @@ jobs:
         with:
           sarif_file: trivy-results.sarif
           category: trivy-${{ matrix.branch }}
+
+  notify-webex:
+    name: 📣 Notify Webex on scheduled failure
+    needs: scheduled
+    if: failure() && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Webex
+        env:
+          WEBEX_BOT_TOKEN: ${{ secrets.WEBEX_BOT_TOKEN }}
+          WEBEX_ROOM_ID: ${{ secrets.WEBEX_ROOM_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          jq -n \
+            --arg roomId "$WEBEX_ROOM_ID" \
+            --arg repo "${{ github.repository }}" \
+            --arg runId "$RUN_ID" \
+            --arg url "$RUN_URL" \
+            '{roomId: $roomId, markdown: ("**Trivy scheduled security check failed in " + $repo + "**\n\n**Run:** `" + $runId + "`\n\n[View failed workflow](" + $url + ")")}' \
+            | curl -fsS -o /dev/null -X POST \
+              -H "Authorization: Bearer $WEBEX_BOT_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d @- \
+              "https://webexapis.com/v1/messages"
+          echo "Webex notification sent:"
+          echo "  Run: ${RUN_ID}"
+          echo "  ${RUN_URL}"
