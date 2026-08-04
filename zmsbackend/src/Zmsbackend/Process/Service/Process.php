@@ -526,7 +526,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         if (isset($parameter['customTextfield']) && $parameter['customTextfield']) {
             $query->addConditionCustomTextfield($parameter['customTextfield']);
         }
-        if(isset($parameter['customTextfield2']) && $parameter['customTextfield2']) {
+        if (isset($parameter['customTextfield2']) && $parameter['customTextfield2']) {
             $query->addConditionCustomTextfield2($parameter['customTextfield2']);
         }
         if (isset($parameter['scopeId']) && $parameter['scopeId']) {
