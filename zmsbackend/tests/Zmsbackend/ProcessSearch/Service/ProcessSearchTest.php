@@ -178,4 +178,58 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertContains($processIds[0], $resultIds);
         $this->assertNotContains($processIds[1], $resultIds);
     }
+
+    public function testSearchByCustomTextfieldZero()
+    {
+        $query = new Query();
+
+        $process = $query->readSearch(['query' => '10029'])->getFirst();
+
+        $query->perform(
+            'UPDATE `' . ProcessQuery::TABLE . '`
+            SET custom_text_field = :value
+            WHERE BuergerID = :id',
+            [
+                'value' => '0',
+                'id' => $process->id,
+            ]
+        );
+
+        $results = $query->readSearch([
+            'customTextfield' => '0',
+        ]);
+
+        $this->assertGreaterThanOrEqual(1, $results->count());
+        $this->assertEquals(
+            1,
+            $query->readSearchCount(['customTextfield' => '0'])
+        );
+    }
+
+    public function testSearchByCustomTextfield2Zero()
+    {
+        $query = new Query();
+
+        $process = $query->readSearch(['query' => '10029'])->getFirst();
+
+        $query->perform(
+            'UPDATE `' . ProcessQuery::TABLE . '`
+            SET custom_text_field2 = :value
+            WHERE BuergerID = :id',
+            [
+                'value' => '0',
+                'id' => $process->id,
+            ]
+        );
+
+        $results = $query->readSearch([
+            'customTextfield2' => '0',
+        ]);
+
+        $this->assertGreaterThanOrEqual(1, $results->count());
+        $this->assertEquals(
+            1,
+            $query->readSearchCount(['customTextfield2' => '0'])
+        );
+    }
 }
