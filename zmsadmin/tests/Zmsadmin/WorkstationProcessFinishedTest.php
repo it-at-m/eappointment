@@ -172,6 +172,47 @@ class WorkstationProcessFinishedTest extends Base
         $this->assertEquals(302, $response->getStatusCode());
     }
 
+    public function testRenderingSaveWithAdditionalDepartmentRequest()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_with_process.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/request/department/',
+                    'response' => $this->readFixture("GET_scope_141_requestlist_department.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/finished/',
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'process' => [
+                'id' => 157017,
+                'clients' => [
+                    [
+                        'familyName' => 'M252',
+                        'email' => 'test@example.com'
+                    ]
+                ]
+            ],
+            'statistic' => [
+                'clientsCount' => 1
+            ],
+            'requestCountList' => ['120665' => 1]
+        ], [], 'POST');
+        $this->assertRedirect($response, '/workstation/');
+        $this->assertEquals(302, $response->getStatusCode());
+    }
+
     public function testRenderingStatisticDisabledWithoutPickup()
     {
         $this->setApiCalls(
