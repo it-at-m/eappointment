@@ -1504,7 +1504,6 @@ onMounted(() => {
 @use "@/styles/breakpoints.scss" as *;
 
 .already-activated-banner {
-  display: block;
   margin-bottom: 2.5rem;
 }
 
