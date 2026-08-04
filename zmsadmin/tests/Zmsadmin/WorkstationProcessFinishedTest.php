@@ -32,6 +32,31 @@ class WorkstationProcessFinishedTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testRenderingShowsFurtherServicesExpand()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_with_process.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/request/department/',
+                    'response' => $this->readFixture("GET_scope_141_requestlist_department.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $body = (string) $response->getBody();
+        $this->assertStringContainsString('Weitere Dienstleistungen', $body);
+        $this->assertStringContainsString('statistic-additional-requests', $body);
+        $this->assertStringContainsString('Wohngeld - Bewilligung - Antragsannahme Lastenzuschuss', $body);
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testMissingAssignedProcess()
     {
         $this->expectException('BO\Zmsentities\Exception\WorkstationMissingAssignedProcess');
