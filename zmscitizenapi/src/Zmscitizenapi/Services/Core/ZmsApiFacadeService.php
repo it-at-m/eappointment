@@ -44,6 +44,49 @@ class ZmsApiFacadeService
         return ErrorMessages::get($key);
     }
 
+    /**
+     * Drop source + processed offices/services cache entries without clearing rate-limit keys.
+     *
+     * @return list<string>
+     */
+    public static function invalidateSourceRelatedCaches(): array
+    {
+        if (!\App::$cache) {
+            return [];
+        }
+
+        $keys = [
+            self::CACHE_KEY_OFFICES,
+            self::CACHE_KEY_OFFICES . '_unpublished',
+            self::CACHE_KEY_SCOPES,
+            self::CACHE_KEY_SERVICES,
+            self::CACHE_KEY_SERVICES . '_unpublished',
+            self::CACHE_KEY_OFFICES_AND_SERVICES,
+            self::CACHE_KEY_OFFICES_AND_SERVICES . '_unpublished',
+        ];
+
+        $sourceName = \App::$source_name ?? 'dldb';
+        foreach (explode(',', (string) $sourceName) as $source) {
+            $source = trim($source);
+            if ($source !== '') {
+                $keys[] = 'source_' . $source;
+            }
+        }
+
+        $deleted = [];
+        foreach (array_values(array_unique($keys)) as $key) {
+            if (\App::$cache->delete($key)) {
+                $deleted[] = $key;
+            }
+        }
+
+        LoggerService::logInfo('Source-related cache invalidated', [
+            'deletedKeys' => $deleted,
+        ]);
+
+        return $deleted;
+    }
+
     private static function setMappedCache(string $cacheKey, mixed $data): void
     {
         if (\App::$cache) {
