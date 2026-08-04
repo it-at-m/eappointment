@@ -10,7 +10,7 @@ namespace BO\Zmsentities;
  * @property Collection\RequestList $scope
  * @property Collection\RequestList $additional
  */
-class Requeststatistic extends Schema\Entity
+class Requeststatistic extends Schema\Entity implements Helper\NoSanitize
 {
     public static $schema = 'requeststatistic.json';
 
@@ -34,5 +34,27 @@ class Requeststatistic extends Schema\Entity
         }
 
         return parent::addData($mergeData);
+    }
+
+    #[\Override]
+    public function jsonSerialize(): mixed
+    {
+        $serialized = parent::jsonSerialize();
+        $scope = $this->scope instanceof Collection\RequestList
+            ? array_values($this->scope->getArrayCopy())
+            : [];
+        $additional = $this->additional instanceof Collection\RequestList
+            ? array_values($this->additional->getArrayCopy())
+            : [];
+
+        if (is_array($serialized)) {
+            $serialized['scope'] = $scope;
+            $serialized['additional'] = $additional;
+            return $serialized;
+        }
+
+        $serialized->scope = $scope;
+        $serialized->additional = $additional;
+        return $serialized;
     }
 }
