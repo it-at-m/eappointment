@@ -9,9 +9,9 @@ class RequestGroupedByProcessIdsTest extends \BO\Zmsbackend\Tests\Service\Base
 {
     private const FIXTURE_PROCESS_ID = 99120401;
 
-    private const FIXTURE_REQUEST_ID = '10112606';
+    private const FIXTURE_REQUEST_ID = '99120401';
 
-    private const FIXTURE_REQUEST_SOURCE = 'dldb';
+    private const FIXTURE_REQUEST_SOURCE = 'unittest';
 
     public function testEmptyProcessIdsReturnsEmptyArray()
     {
@@ -39,6 +39,18 @@ class RequestGroupedByProcessIdsTest extends \BO\Zmsbackend\Tests\Service\Base
     private function insertFixtureProcessWithRequest(): void
     {
         $db = \BO\Zmsbackend\Connection\Select::getWriteConnection();
+        $db->perform(
+            'INSERT INTO `request` (`source`, `id`, `name`, `link`, `group`, `data`)
+             VALUES (:source, :id, :name, :link, :groupName, :data)',
+            [
+                'source' => self::FIXTURE_REQUEST_SOURCE,
+                'id' => self::FIXTURE_REQUEST_ID,
+                'name' => 'ZMSKVR-1204 Fixture Request',
+                'link' => 'https://example.invalid/request/99120401',
+                'groupName' => 'Unittests',
+                'data' => '{}',
+            ]
+        );
         $db->perform(
             'INSERT INTO `buerger` (`BuergerID`, `StandortID`, `Name`, `status`, `external_user_id`)
              VALUES (:id, 141, :name, :status, :externalUserId)',

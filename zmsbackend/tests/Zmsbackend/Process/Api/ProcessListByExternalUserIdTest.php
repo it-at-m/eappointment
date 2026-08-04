@@ -8,9 +8,9 @@ class ProcessListByExternalUserIdTest extends \BO\Zmsbackend\Tests\Api\Base
 
     private const FIXTURE_PROCESS_ID = 99120402;
 
-    private const FIXTURE_REQUEST_ID = '10112606';
+    private const FIXTURE_REQUEST_ID = '99120402';
 
-    private const FIXTURE_REQUEST_SOURCE = 'dldb';
+    private const FIXTURE_REQUEST_SOURCE = 'unittest';
 
     private const EXTERNAL_USER_ID = 'zmskvr-1204-list-user';
 
@@ -25,6 +25,18 @@ class ProcessListByExternalUserIdTest extends \BO\Zmsbackend\Tests\Api\Base
     protected function insertFixtureProcessWithRequest(): void
     {
         $db = \BO\Zmsbackend\Connection\Select::getWriteConnection();
+        $db->perform(
+            'INSERT INTO `request` (`source`, `id`, `name`, `link`, `group`, `data`)
+             VALUES (:source, :id, :name, :link, :groupName, :data)',
+            [
+                'source' => self::FIXTURE_REQUEST_SOURCE,
+                'id' => self::FIXTURE_REQUEST_ID,
+                'name' => 'ZMSKVR-1204 List Fixture Request',
+                'link' => 'https://example.invalid/request/99120402',
+                'groupName' => 'Unittests',
+                'data' => '{}',
+            ]
+        );
         $db->perform(
             'INSERT INTO `buerger` (`BuergerID`, `StandortID`, `Name`, `status`, `external_user_id`, `absagecode`)
              VALUES (:id, 141, :name, :status, :externalUserId, :authKey)',
