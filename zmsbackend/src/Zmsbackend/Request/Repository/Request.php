@@ -82,10 +82,10 @@ class Request extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addEntityMappingWithProcessId($type = null): self
+    public function addEntityMappingWithProcessId(): self
     {
         $entityMapping = $this->getPrefixedList(array_merge(
-            $this->getEntityMapping($type),
+            $this->getEntityMapping(),
             ['processId' => 'buergeranliegen.BuergerID']
         ));
         $this->query->select($entityMapping);

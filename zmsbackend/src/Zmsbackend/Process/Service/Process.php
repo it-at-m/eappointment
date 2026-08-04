@@ -1091,7 +1091,8 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
             ->addLimit($limit);
 
         $statement = $this->fetchStatement($query);
-        // ZMSKVR-1204: one process query + one batched requests query (no N+1).
+        // ZMSKVR-1204: one process query + one batched requests query (no per-process request N+1).
+        // Root-parent resolution still uses the shared attachRootParentIds() path.
         $processList = $this->readListWithoutResolvedReferences($statement);
         return $this->attachRequestsBatched($processList, (int) $resolveReferences);
     }
