@@ -1505,7 +1505,7 @@ onMounted(() => {
 
 .already-activated-banner {
   display: block;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
 .m-button-group {
