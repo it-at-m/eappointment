@@ -374,7 +374,7 @@ import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
 import { CustomerData } from "@/types/CustomerData";
 import { GlobalState } from "@/types/GlobalState";
-import { LocalStorageAppointmentData } from "@/types/LocalStorageAppointmentData";
+import { LocalStorageWizardUiData } from "@/types/LocalStorageAppointmentData";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import {
   CustomerDataProvider,
@@ -981,7 +981,7 @@ const setAppointmentAuthHashForLogin = () => {
 };
 
 const requestLogin = () => {
-  saveAppointmentToLocalstorage();
+  saveWizardUiToLocalStorage();
   setAppointmentAuthHashForLogin();
   document.dispatchEvent(
     new CustomEvent("authorization-request", {
@@ -993,19 +993,17 @@ const requestLogin = () => {
   );
 };
 
-const saveAppointmentToLocalstorage = () => {
+const saveWizardUiToLocalStorage = () => {
   if (!selectedService.value || !selectedProvider.value) {
     return;
   }
 
-  const selectedServiceMapObject = Object.fromEntries(selectedServiceMap.value);
-
-  const saveData: LocalStorageAppointmentData = {
+  const saveData: LocalStorageWizardUiData = {
     timestamp: Date.now(),
     currentView: currentView.value,
-    selectedService: selectedService.value,
-    selectedServiceMap: selectedServiceMapObject,
-    selectedProvider: selectedProvider.value,
+    selectedServiceId: String(selectedService.value.id),
+    selectedServiceMap: Object.fromEntries(selectedServiceMap.value),
+    selectedProviderId: String(selectedProvider.value.id),
     selectedTimeslot: selectedTimeslot.value,
   };
   localStorage.setItem(
@@ -1113,31 +1111,40 @@ const parseAppointmentHash = (hash: string): AppointmentHash | null => {
   }
 };
 
-const parseLocalStorageAppointmentData = (
+const parseWizardUiLocalStorage = (
   data: string
-): LocalStorageAppointmentData | null => {
+): LocalStorageWizardUiData | null => {
   try {
-    const localstorageData = JSON.parse(data) as LocalStorageAppointmentData & {
-      appointment?: unknown;
-      customerData?: unknown;
-      captchaToken?: unknown;
+    const raw = JSON.parse(data) as {
+      timestamp?: number;
+      currentView?: number;
+      selectedServiceId?: string;
+      selectedProviderId?: string;
+      selectedServiceMap?: Record<string, number>;
+      selectedTimeslot?: number;
+      selectedService?: { id?: string };
+      selectedProvider?: { id?: string };
     };
+    const selectedServiceId = raw.selectedServiceId ?? raw.selectedService?.id;
+    const selectedProviderId =
+      raw.selectedProviderId ?? raw.selectedProvider?.id;
     if (
-      localstorageData.timestamp == undefined ||
-      localstorageData.currentView == undefined ||
-      localstorageData.selectedService == undefined ||
-      localstorageData.selectedProvider == undefined
+      raw.timestamp == undefined ||
+      raw.currentView == undefined ||
+      selectedServiceId == undefined ||
+      selectedProviderId == undefined
     ) {
       return null;
     }
-    // Drop legacy sensitive fields if present — never restore them from LS.
-    const {
-      appointment: _ignoredAppointment,
-      customerData: _ignoredCustomerData,
-      captchaToken: _ignoredCaptchaToken,
-      ...uiData
-    } = localstorageData;
-    return uiData;
+    // Persist IDs only — never restore legacy full objects / credentials / PII.
+    return {
+      timestamp: raw.timestamp,
+      currentView: raw.currentView,
+      selectedServiceId: String(selectedServiceId),
+      selectedServiceMap: raw.selectedServiceMap ?? {},
+      selectedProviderId: String(selectedProviderId),
+      selectedTimeslot: raw.selectedTimeslot ?? 0,
+    };
   } catch {
     return null;
   }
@@ -1145,31 +1152,67 @@ const parseLocalStorageAppointmentData = (
 
 const LOCALSTORAGE_UI_TTL_MS = 30 * 60 * 1000;
 
-const getFreshLocalStorageUiData = (): LocalStorageAppointmentData | null => {
+const getFreshLocalStorageUiData = (): LocalStorageWizardUiData | null => {
   const raw = localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
   if (!raw) {
     return null;
   }
-  const parsed = parseLocalStorageAppointmentData(raw);
+  const parsed = parseWizardUiLocalStorage(raw);
   if (!parsed || Date.now() - parsed.timestamp >= LOCALSTORAGE_UI_TTL_MS) {
     return null;
   }
   return parsed;
 };
 
-const applyLocalStorageUiData = (uiData: LocalStorageAppointmentData) => {
-  selectedService.value = uiData.selectedService;
+const applyLocalStorageUiData = (uiData: LocalStorageWizardUiData) => {
   selectedServiceMap.value = new Map(
     Object.entries(uiData.selectedServiceMap ?? {})
   );
-  selectedProvider.value = uiData.selectedProvider;
+
+  const foundService = services.value.find(
+    (service) => String(service.id) === String(uiData.selectedServiceId)
+  );
+  if (foundService) {
+    selectedService.value = foundService as ServiceImpl;
+    const count = selectedServiceMap.value.get(String(foundService.id));
+    if (count != undefined) {
+      selectedService.value.count = count;
+    }
+    selectedService.value.providers = getProviders(
+      selectedService.value.id,
+      null
+    );
+  }
+
+  const foundOffice = offices.value.find(
+    (office) => String(office.id) === String(uiData.selectedProviderId)
+  );
+  if (foundOffice) {
+    selectedProvider.value = new OfficeImpl(
+      foundOffice.id,
+      foundOffice.name,
+      foundOffice.address,
+      foundOffice.showAlternativeLocations,
+      foundOffice.displayNameAlternatives,
+      foundOffice.organization,
+      foundOffice.organizationUnit,
+      foundOffice.slotTimeInMinutes,
+      foundOffice.disabledByServices,
+      foundOffice.allowDisabledServicesMix,
+      foundOffice.scope,
+      foundOffice.slotsPerAppointment,
+      foundOffice.slots,
+      foundOffice.priority || 1
+    );
+  }
+
   selectedTimeslot.value = uiData.selectedTimeslot;
   currentView.value = isAppointmentInPast.value ? 3 : uiData.currentView;
 };
 
 const runLoginResumeFromHashAndLocalStorage = (
   hash: string,
-  uiData: LocalStorageAppointmentData
+  uiData: LocalStorageWizardUiData
 ): void => {
   const appointmentData = parseAppointmentHash(hash);
   if (!appointmentData) {
