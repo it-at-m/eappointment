@@ -158,3 +158,17 @@
     margin: 0;
     padding: 0;
 }
+
+.statistic-additional-requests {
+    margin-top: 1rem;
+}
+
+.statistic-additional-requests > summary {
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 0.75rem;
+}
+
+.statistic-additional-requests[open] > summary {
+    margin-bottom: 1rem;
+}
