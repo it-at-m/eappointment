@@ -255,6 +255,77 @@ class Request extends \BO\Zmsbackend\Base
         return $requestList;
     }
 
+    /**
+     * Requests for statistic collection after process finish (ZMSKVR-1431).
+     * Returns scope-assigned requests plus department-wide extras (deduped).
+     *
+     * @return array{scope: Collection, additional: Collection}
+     */
+    public function readListByScopeAndDepartment(int $scopeId, int $resolveReferences = 0): array
+    {
+        $scopeService = new \BO\Zmsbackend\Scope\Service\Scope();
+        $scope = $scopeService->readEntity($scopeId, $resolveReferences ? $resolveReferences : 1);
+        if (!$scope || !$scope->hasId()) {
+            throw new \BO\Zmsbackend\Scope\Exception\ScopeNotFound();
+        }
+
+        $scopeRequestList = $this->readListByProvider(
+            $scope->provider['source'],
+            $scope->getProviderId(),
+            $resolveReferences
+        );
+
+        $departmentId = (int) $scopeService->readDepartmentIdByScopeId($scopeId);
+        if ($departmentId < 1) {
+            return [
+                'scope' => $scopeRequestList,
+                'additional' => new Collection(),
+            ];
+        }
+
+        $departmentScopes = $scopeService->readByDepartmentId($departmentId, 1);
+        $providers = [];
+        foreach ($departmentScopes as $departmentScope) {
+            try {
+                $provider = $departmentScope->getProvider();
+                $key = $provider->source . ':' . $provider->id;
+                $providers[$key] = [
+                    'source' => (string) $provider->source,
+                    'id' => $provider->id,
+                ];
+            } catch (\Throwable $exception) {
+                continue;
+            }
+        }
+
+        $departmentRequestList = new Collection();
+        foreach ($providers as $provider) {
+            $providerRequests = $this->readListByProvider(
+                $provider['source'],
+                $provider['id'],
+                $resolveReferences
+            );
+            foreach ($providerRequests as $request) {
+                if (!$departmentRequestList->hasEntity($request->id)) {
+                    $departmentRequestList->addEntity(clone $request);
+                }
+            }
+        }
+
+        $additionalRequestList = new Collection();
+        $scopeRequestIds = $scopeRequestList->getIds();
+        foreach ($departmentRequestList as $request) {
+            if (!in_array($request->id, $scopeRequestIds, false)) {
+                $additionalRequestList->addEntity(clone $request);
+            }
+        }
+
+        return [
+            'scope' => $scopeRequestList,
+            'additional' => $additionalRequestList->sortByName(),
+        ];
+    }
+
     public function readListBySource($source, $resolveReferences = 0, $disableCache = false)
     {
         $cacheKey = "requestReadListBySource-$source-$resolveReferences";
