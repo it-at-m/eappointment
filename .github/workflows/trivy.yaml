@@ -3,6 +3,7 @@ name: 🛡️ Trivy Security Check
 on:
   pull_request:
   workflow_call:
+  workflow_dispatch:
   push:
     branches:
       - main
