@@ -85,7 +85,13 @@ class WorkstationProcessFinished extends BaseController
             return $entity;
         }
 
-        return new Requeststatistic();
+        \App::$log->error('Expected Requeststatistic from department request list API', [
+            'scopeId' => $scopeId,
+            'receivedType' => is_object($entity) ? get_class($entity) : gettype($entity),
+        ]);
+        throw new \RuntimeException(
+            'Invalid API response for /scope/' . $scopeId . '/request/department/'
+        );
     }
 
     protected function getFinishedResponse(
