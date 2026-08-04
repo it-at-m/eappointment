@@ -4373,16 +4373,7 @@
  *                          meta:
  *                              $ref: "schema/metaresult.json"
  *                          data:
- *                              type: object
- *                              properties:
- *                                  scope:
- *                                      type: array
- *                                      items:
- *                                          $ref: "schema/request.json"
- *                                  additional:
- *                                      type: array
- *                                      items:
- *                                          $ref: "schema/request.json"
+ *                              $ref: "schema/requeststatistic.json"
  *              404:
  *                  description: "scope id does not exists"
  */

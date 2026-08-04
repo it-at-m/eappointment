@@ -17,6 +17,7 @@ class RequestListByScopeAndDepartmentTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertIsArray($body['data']['scope']);
         $this->assertIsArray($body['data']['additional']);
         $this->assertNotEmpty($body['data']['scope']);
+        $this->assertStringContainsString('requeststatistic.json', (string) $response->getBody());
         $this->assertStringContainsString('request.json', (string) $response->getBody());
     }
 
