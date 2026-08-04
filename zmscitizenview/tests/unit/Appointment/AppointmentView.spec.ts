@@ -1,10 +1,19 @@
 import { mount } from "@vue/test-utils";
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { nextTick, ref } from "vue";
+
 import * as ZMSAppointmentAPI from "@/api/ZMSAppointmentAPI";
-import de from '@/utils/de-DE.json';
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
 import { useLogin } from "@/utils/auth";
+import de from "@/utils/de-DE.json";
 // beforeEach is already imported from vitest on line 2
 import { nowUnixSeconds } from "@/utils/timestampInPast";
 
@@ -22,26 +31,28 @@ vi.mock("@/api/ZMSAppointmentAPI", async () => {
 });
 
 // Mock the auth utility
-vi.mock('@/utils/auth', () => ({
+vi.mock("@/utils/auth", () => ({
   getTokenData: vi.fn(),
   useLogin: vi.fn(() => ({
     isLoggedIn: ref(false),
     isLoadingAuthentication: ref(false),
-    accessToken: ref(null)
-  }))
+    accessToken: ref(null),
+  })),
 }));
 
 describe("AppointmentView", () => {
-
   beforeAll(() => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      status: 200,
-      json: async () => ({
-        offices: [],
-        services: [],
-        relations: [],
-      }),
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        status: 200,
+        json: async () => ({
+          offices: [],
+          services: [],
+          relations: [],
+        }),
+      })
+    );
   });
 
   afterAll(() => {
@@ -123,7 +134,7 @@ describe("AppointmentView", () => {
           // replace placeholder
           if (!params) return s;
           for (const [k, v] of Object.entries(params)) {
-              s = s.split(`{${k}}`).join(String(v ?? ""));
+            s = s.split(`{${k}}`).join(String(v ?? ""));
           }
           return s;
         },
@@ -155,48 +166,71 @@ describe("AppointmentView", () => {
           },
         },
         stubs: {
-          'service-finder': {
+          "service-finder": {
             template: "<div data-test='service-finder'></div>",
-            props: ["globalState", "preselectedServiceId", "preselectedOfficeId", "exclusiveLocation", "t"],
+            props: [
+              "globalState",
+              "preselectedServiceId",
+              "preselectedOfficeId",
+              "exclusiveLocation",
+              "t",
+            ],
             emits: ["next", "captchaTokenChanged", "invalidJumpinLink"],
           },
-          'AppointmentSelection': {
+          AppointmentSelection: {
             name: "AppointmentSelection",
             template: "<div data-test='AppointmentSelection'></div>",
-            props: ["globalState", "isRebooking", "exclusiveLocation", "preselectedOfficeId", "selectedServiceMap", "captchaToken", "t", "bookingError", "bookingErrorKey"],
+            props: [
+              "globalState",
+              "isRebooking",
+              "exclusiveLocation",
+              "preselectedOfficeId",
+              "selectedServiceMap",
+              "captchaToken",
+              "t",
+              "bookingError",
+              "bookingErrorKey",
+            ],
             emits: ["back", "next", "clearBookingError"],
           },
-          'customer-info': {
+          "customer-info": {
             template: "<div data-test='customer-info'></div>",
             props: ["t"],
             emits: ["back", "next"],
           },
-          'appointment-summary': {
+          "appointment-summary": {
             template: "<div data-test='appointment-summary'></div>",
             props: ["isRebooking", "rebookOrCancelDialog", "t"],
-            emits: ["back", "bookAppointment", "cancelAppointment", "cancelReschedule", "rescheduleAppointment"],
+            emits: [
+              "back",
+              "bookAppointment",
+              "cancelAppointment",
+              "cancelReschedule",
+              "rescheduleAppointment",
+            ],
           },
-          'muc-stepper': {
-            template: "<div data-test='muc-stepper' :data-disable-previous-steps='disablePreviousSteps'></div>",
+          "muc-stepper": {
+            template:
+              "<div data-test='muc-stepper' :data-disable-previous-steps='disablePreviousSteps'></div>",
             props: ["stepItems", "activeItem", "disablePreviousSteps"],
             emits: ["changeStep"],
           },
-          'muc-callout': {
+          "muc-callout": {
             props: ["type", "variant"],
             template: `
             <div data-test='muc-callout' :data-type="variant || type">
               <slot name="header"></slot>
               <slot name="content"></slot>
             </div>
-          `
+          `,
           },
-          'muc-button': {
+          "muc-button": {
             props: ["icon", "variant", "disabled"],
             template: `
             <button data-test='muc-button' :icon="icon" :variant="variant" :disabled="disabled">
               <slot></slot>
             </button>
-          `
+          `,
           },
         },
       },
@@ -215,7 +249,9 @@ describe("AppointmentView", () => {
       const wrapper = createWrapper({ appointmentHash: undefined });
       wrapper.vm.currentView = 1;
       await nextTick();
-      expect(wrapper.find('[data-test="AppointmentSelection"]').exists()).toBe(true);
+      expect(wrapper.find('[data-test="AppointmentSelection"]').exists()).toBe(
+        true
+      );
     });
 
     it("shows customer info after calendar selection", async () => {
@@ -229,7 +265,9 @@ describe("AppointmentView", () => {
       const wrapper = createWrapper({ appointmentHash: undefined });
       wrapper.vm.currentView = 3;
       await nextTick();
-      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(true);
+      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
+        true
+      );
     });
   });
 
@@ -239,7 +277,9 @@ describe("AppointmentView", () => {
       wrapper.vm.errorStates.apiErrorAppointmentNotFound.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
-      expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
+      expect(
+        wrapper.find('[data-test="muc-callout"]').attributes("data-type")
+      ).toBe("error");
     });
 
     it("shows booking error", async () => {
@@ -247,15 +287,16 @@ describe("AppointmentView", () => {
       wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
-      expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
+      expect(
+        wrapper.find('[data-test="muc-callout"]').attributes("data-type")
+      ).toBe("error");
     });
 
     it("clears appointment selection booking error when AppointmentSelection emits clearBookingError", async () => {
       const wrapper = createWrapper({ appointmentHash: undefined });
 
       wrapper.vm.currentView = 1;
-      wrapper.vm.errorStates.errorStateMap.apiErrorAppointmentNotAvailable.value =
-        true;
+      wrapper.vm.errorStates.errorStateMap.apiErrorAppointmentNotAvailable.value = true;
 
       await nextTick();
 
@@ -273,7 +314,8 @@ describe("AppointmentView", () => {
       await nextTick();
 
       expect(
-        wrapper.vm.errorStates.errorStateMap.apiErrorAppointmentNotAvailable.value
+        wrapper.vm.errorStates.errorStateMap.apiErrorAppointmentNotAvailable
+          .value
       ).toBe(false);
 
       const appointmentSelectionAfter = wrapper.findComponent({
@@ -312,7 +354,9 @@ describe("AppointmentView", () => {
       wrapper.vm.confirmAppointmentSuccess = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
-      expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("success");
+      expect(
+        wrapper.find('[data-test="muc-callout"]').attributes("data-type")
+      ).toBe("success");
     });
 
     it("shows success message after cancellation", async () => {
@@ -321,7 +365,9 @@ describe("AppointmentView", () => {
       wrapper.vm.currentView = 4;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
-      expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("success");
+      expect(
+        wrapper.find('[data-test="muc-callout"]').attributes("data-type")
+      ).toBe("success");
     });
   });
 
@@ -332,13 +378,19 @@ describe("AppointmentView", () => {
       await nextTick();
       wrapper.vm.currentView = 1; // Simulate going back
       await nextTick();
-      expect(wrapper.find('[data-test="AppointmentSelection"]').exists()).toBe(true);
+      expect(wrapper.find('[data-test="AppointmentSelection"]').exists()).toBe(
+        true
+      );
     });
 
     it("disables previous steps in stepper when appointment hash is present", async () => {
       const wrapper = createWrapperWithAppointmentHash();
       await nextTick();
-      expect(wrapper.find('[data-test="muc-stepper"]').attributes('data-disable-previous-steps')).toBe("true");
+      expect(
+        wrapper
+          .find('[data-test="muc-stepper"]')
+          .attributes("data-disable-previous-steps")
+      ).toBe("true");
     });
   });
 
@@ -375,7 +427,9 @@ describe("AppointmentView", () => {
       wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
-      expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
+      expect(
+        wrapper.find('[data-test="muc-callout"]').attributes("data-type")
+      ).toBe("error");
     });
   });
 
@@ -384,8 +438,14 @@ describe("AppointmentView", () => {
       const wrapper = createWrapperWithAppointmentHash();
       wrapper.vm.currentView = 3;
       await nextTick();
-      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(true);
-      expect(wrapper.find('[data-test="muc-stepper"]').attributes('data-disable-previous-steps')).toBe("true");
+      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
+        true
+      );
+      expect(
+        wrapper
+          .find('[data-test="muc-stepper"]')
+          .attributes("data-disable-previous-steps")
+      ).toBe("true");
     });
 
     it("shows cancellation success callout after cancelling in rebooking", async () => {
@@ -394,7 +454,9 @@ describe("AppointmentView", () => {
       wrapper.vm.cancelAppointmentSuccess = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
-      expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("success");
+      expect(
+        wrapper.find('[data-test="muc-callout"]').attributes("data-type")
+      ).toBe("success");
     });
   });
 
@@ -406,9 +468,13 @@ describe("AppointmentView", () => {
 
       const callout = wrapper.find('[data-test="muc-callout"]');
       expect(callout.exists()).toBe(true);
-      expect(callout.attributes('data-type')).toBe("error");
-      expect(callout.text()).toContain("Diese Ansicht kann nicht geladen werden");
-      expect(callout.text()).toContain("Der Link zu dieser Seite ist leider fehlerhaft");
+      expect(callout.attributes("data-type")).toBe("error");
+      expect(callout.text()).toContain(
+        "Diese Ansicht kann nicht geladen werden"
+      );
+      expect(callout.text()).toContain(
+        "Der Link zu dieser Seite ist leider fehlerhaft"
+      );
     });
 
     it("shows button with correct text and icon in 404 callout", async () => {
@@ -416,10 +482,10 @@ describe("AppointmentView", () => {
       wrapper.vm.errorStates.apiErrorInvalidJumpinLink.value = true;
       await nextTick();
 
-      const button = wrapper.find('.m-button-group button');
+      const button = wrapper.find(".m-button-group button");
       expect(button.exists()).toBe(true);
       expect(button.text()).toContain("Termin vereinbaren");
-      expect(button.attributes('icon')).toBe("arrow-right");
+      expect(button.attributes("icon")).toBe("arrow-right");
     });
 
     it("hides stepper and main content when 404 error is active", async () => {
@@ -438,15 +504,15 @@ describe("AppointmentView", () => {
         ...originalLocation,
         href: "http://localhost:8082/#/services/000000000000/locations/000000000000",
         origin: "http://localhost:8082",
-        pathname: "/"
+        pathname: "/",
       };
 
       const wrapper = createWrapper();
       wrapper.vm.errorStates.apiErrorInvalidJumpinLink.value = true;
       await nextTick();
 
-      const button = wrapper.find('.m-button-group button');
-      await button.trigger('click');
+      const button = wrapper.find(".m-button-group button");
+      await button.trigger("click");
 
       expect(window.location.href).toBe("http://localhost:8082/");
 
@@ -467,9 +533,9 @@ describe("AppointmentView", () => {
       wrapper.vm.errorStates.apiErrorInvalidJumpinLink.value = true;
       await nextTick();
 
-      const button = wrapper.find('.m-button-group button');
-      expect(button.attributes('style')).toContain('margin-bottom: 0');
-      expect(button.attributes('style')).toContain('margin-right: 0');
+      const button = wrapper.find(".m-button-group button");
+      expect(button.attributes("style")).toContain("margin-bottom: 0");
+      expect(button.attributes("style")).toContain("margin-right: 0");
     });
   });
 
@@ -482,19 +548,21 @@ describe("AppointmentView", () => {
 
       await nextTick();
 
-      expect(wrapper.vm.errorStates.errorStateMap.apiErrorAppointmentNotFound.value).toBe(
-        true
-      );
+      expect(
+        wrapper.vm.errorStates.errorStateMap.apiErrorAppointmentNotFound.value
+      ).toBe(true);
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
-      expect(wrapper.find('[data-test="muc-callout"]').attributes("data-type")).toBe(
-        "error"
-      );
+      expect(
+        wrapper.find('[data-test="muc-callout"]').attributes("data-type")
+      ).toBe("error");
     });
   });
 
   describe("Confirmation View", () => {
     it("shows only confirmation message when confirmAppointmentHash is present", async () => {
-      const mockConfirmAppointment = vi.mocked(ZMSAppointmentAPI.confirmAppointment);
+      const mockConfirmAppointment = vi.mocked(
+        ZMSAppointmentAPI.confirmAppointment
+      );
       mockConfirmAppointment.mockReturnValue(new Promise(() => {}));
 
       const validHash = btoa(
@@ -515,7 +583,9 @@ describe("AppointmentView", () => {
       expect(wrapper.find('[data-test="service-finder"]').exists()).toBe(false);
       expect(wrapper.find('[data-test="calendar-view"]').exists()).toBe(false);
       expect(wrapper.find('[data-test="customer-info"]').exists()).toBe(false);
-      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(false);
+      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
+        false
+      );
       expect(wrapper.vm.currentView).toBe(5);
     });
 
@@ -527,11 +597,15 @@ describe("AppointmentView", () => {
       wrapper.vm.confirmAppointmentSuccess = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
-      expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("success");
+      expect(
+        wrapper.find('[data-test="muc-callout"]').attributes("data-type")
+      ).toBe("success");
     });
 
     it("shows error message if confirmation fails", async () => {
-      const mockConfirmAppointment = vi.mocked(ZMSAppointmentAPI.confirmAppointment);
+      const mockConfirmAppointment = vi.mocked(
+        ZMSAppointmentAPI.confirmAppointment
+      );
       mockConfirmAppointment.mockResolvedValueOnce({
         errors: [{ errorCode: "processNotPreconfirmedAnymore" }],
       });
@@ -553,9 +627,13 @@ describe("AppointmentView", () => {
         expect(mockConfirmAppointment).toHaveBeenCalled();
       });
 
-      expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(true);
+      expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(
+        true
+      );
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
-      expect(wrapper.find('[data-test="muc-callout"]').attributes("data-type")).toBe("error");
+      expect(
+        wrapper.find('[data-test="muc-callout"]').attributes("data-type")
+      ).toBe("error");
     });
   });
 
@@ -584,8 +662,10 @@ describe("AppointmentView", () => {
 
       // Build expected text about the translation message with placeholder
       // createWrapper() has mocked t() so that {activationMinutes} is replaced
-      const expected = (de as any).confirmAppointmentText
-        .replace("{activationMinutes}", "60");
+      const expected = (de as any).confirmAppointmentText.replace(
+        "{activationMinutes}",
+        "60"
+      );
 
       // Callout renders header + content; we check that the resolved content part is included
       expect(callout.text()).toContain(expected);
@@ -607,12 +687,12 @@ describe("AppointmentView", () => {
         mailAddress: "jane.doe@example.com",
         telephoneNumber: "1234567890",
         customTextfield: "Some info",
-        customTextfield2: "More info"
+        customTextfield2: "More info",
       };
       await nextTick();
 
       // Simulate form validation method if present
-      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+      if (typeof wrapper.vm.isCustomerInfoValid === "function") {
         expect(wrapper.vm.isCustomerInfoValid()).toBe(true);
       }
 
@@ -620,7 +700,6 @@ describe("AppointmentView", () => {
       // This assumes the customer-info stub emits 'next' when valid
       const customerInfo = wrapper.find('[data-test="customer-info"]');
       expect(customerInfo.exists()).toBe(true);
-
     });
 
     it("prevents proceeding when required fields are missing", async () => {
@@ -635,12 +714,12 @@ describe("AppointmentView", () => {
         mailAddress: "",
         telephoneNumber: "",
         customTextfield: "",
-        customTextfield2: ""
+        customTextfield2: "",
       };
       await nextTick();
 
       // Simulate form validation method if present
-      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+      if (typeof wrapper.vm.isCustomerInfoValid === "function") {
         expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
       }
 
@@ -648,7 +727,6 @@ describe("AppointmentView", () => {
       // This assumes the customer-info stub does not emit 'next' when invalid
       const customerInfo = wrapper.find('[data-test="customer-info"]');
       expect(customerInfo.exists()).toBe(true);
-
     });
 
     it("prevents proceeding when email is invalid", async () => {
@@ -663,12 +741,12 @@ describe("AppointmentView", () => {
         mailAddress: "invalid-email",
         telephoneNumber: "1234567890",
         customTextfield: "Some info",
-        customTextfield2: "More info"
+        customTextfield2: "More info",
       };
       await nextTick();
 
       // Simulate form validation method if present
-      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+      if (typeof wrapper.vm.isCustomerInfoValid === "function") {
         expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
       }
 
@@ -676,7 +754,6 @@ describe("AppointmentView", () => {
       // This assumes the customer-info stub does not emit 'next' when invalid
       const customerInfo = wrapper.find('[data-test="customer-info"]');
       expect(customerInfo.exists()).toBe(true);
-
     });
 
     it("prevents proceeding when phone number is invalid", async () => {
@@ -691,12 +768,12 @@ describe("AppointmentView", () => {
         mailAddress: "jane.doe@example.com",
         telephoneNumber: "invalid-phone",
         customTextfield: "Some info",
-        customTextfield2: "More info"
+        customTextfield2: "More info",
       };
       await nextTick();
 
       // Simulate form validation method if present
-      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+      if (typeof wrapper.vm.isCustomerInfoValid === "function") {
         expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
       }
 
@@ -704,7 +781,6 @@ describe("AppointmentView", () => {
       // This assumes the customer-info stub does not emit 'next' when invalid
       const customerInfo = wrapper.find('[data-test="customer-info"]');
       expect(customerInfo.exists()).toBe(true);
-
     });
 
     it("prevents proceeding when firstName exceeds maximum length", async () => {
@@ -719,12 +795,12 @@ describe("AppointmentView", () => {
         mailAddress: "jane.doe@example.com",
         telephoneNumber: "1234567890",
         customTextfield: "Some info",
-        customTextfield2: "More info"
+        customTextfield2: "More info",
       };
       await nextTick();
 
       // Simulate form validation method if present
-      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+      if (typeof wrapper.vm.isCustomerInfoValid === "function") {
         expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
       }
 
@@ -732,7 +808,6 @@ describe("AppointmentView", () => {
       // This assumes the customer-info stub does not emit 'next' when invalid
       const customerInfo = wrapper.find('[data-test="customer-info"]');
       expect(customerInfo.exists()).toBe(true);
-
     });
 
     it("prevents proceeding when lastName exceeds maximum length", async () => {
@@ -747,12 +822,12 @@ describe("AppointmentView", () => {
         mailAddress: "jane.doe@example.com",
         telephoneNumber: "1234567890",
         customTextfield: "Some info",
-        customTextfield2: "More info"
+        customTextfield2: "More info",
       };
       await nextTick();
 
       // Simulate form validation method if present
-      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+      if (typeof wrapper.vm.isCustomerInfoValid === "function") {
         expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
       }
 
@@ -760,7 +835,6 @@ describe("AppointmentView", () => {
       // This assumes the customer-info stub does not emit 'next' when invalid
       const customerInfo = wrapper.find('[data-test="customer-info"]');
       expect(customerInfo.exists()).toBe(true);
-
     });
 
     it("prevents proceeding when mailAddress exceeds maximum length", async () => {
@@ -775,12 +849,12 @@ describe("AppointmentView", () => {
         mailAddress: "a".repeat(101), // Assuming max length is 100
         telephoneNumber: "1234567890",
         customTextfield: "Some info",
-        customTextfield2: "More info"
+        customTextfield2: "More info",
       };
       await nextTick();
 
       // Simulate form validation method if present
-      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+      if (typeof wrapper.vm.isCustomerInfoValid === "function") {
         expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
       }
 
@@ -788,7 +862,6 @@ describe("AppointmentView", () => {
       // This assumes the customer-info stub does not emit 'next' when invalid
       const customerInfo = wrapper.find('[data-test="customer-info"]');
       expect(customerInfo.exists()).toBe(true);
-
     });
 
     it("prevents proceeding when telephoneNumber exceeds maximum length", async () => {
@@ -803,12 +876,12 @@ describe("AppointmentView", () => {
         mailAddress: "jane.doe@example.com",
         telephoneNumber: "a".repeat(21), // Assuming max length is 20
         customTextfield: "Some info",
-        customTextfield2: "More info"
+        customTextfield2: "More info",
       };
       await nextTick();
 
       // Simulate form validation method if present
-      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+      if (typeof wrapper.vm.isCustomerInfoValid === "function") {
         expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
       }
 
@@ -816,7 +889,6 @@ describe("AppointmentView", () => {
       // This assumes the customer-info stub does not emit 'next' when invalid
       const customerInfo = wrapper.find('[data-test="customer-info"]');
       expect(customerInfo.exists()).toBe(true);
-
     });
 
     it("prevents proceeding when customTextfield exceeds maximum length", async () => {
@@ -831,12 +903,12 @@ describe("AppointmentView", () => {
         mailAddress: "jane.doe@example.com",
         telephoneNumber: "1234567890",
         customTextfield: "a".repeat(251),
-        customTextfield2: "More info"
+        customTextfield2: "More info",
       };
       await nextTick();
 
       // Simulate form validation method if present
-      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+      if (typeof wrapper.vm.isCustomerInfoValid === "function") {
         expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
       }
 
@@ -844,7 +916,6 @@ describe("AppointmentView", () => {
       // This assumes the customer-info stub does not emit 'next' when invalid
       const customerInfo = wrapper.find('[data-test="customer-info"]');
       expect(customerInfo.exists()).toBe(true);
-
     });
 
     it("prevents proceeding when customTextfield2 exceeds maximum length", async () => {
@@ -859,12 +930,12 @@ describe("AppointmentView", () => {
         mailAddress: "jane.doe@example.com",
         telephoneNumber: "1234567890",
         customTextfield: "Some info",
-        customTextfield2: "a".repeat(251)
+        customTextfield2: "a".repeat(251),
       };
       await nextTick();
 
       // Simulate form validation method if present
-      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+      if (typeof wrapper.vm.isCustomerInfoValid === "function") {
         expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
       }
 
@@ -872,7 +943,6 @@ describe("AppointmentView", () => {
       // This assumes the customer-info stub does not emit 'next' when invalid
       const customerInfo = wrapper.find('[data-test="customer-info"]');
       expect(customerInfo.exists()).toBe(true);
-
     });
 
     it("prevents proceeding when phone number is too short", async () => {
@@ -887,12 +957,12 @@ describe("AppointmentView", () => {
         mailAddress: "jane.doe@example.com",
         telephoneNumber: "123", // Assuming minimum length is 10
         customTextfield: "Some info",
-        customTextfield2: "More info"
+        customTextfield2: "More info",
       };
       await nextTick();
 
       // Simulate form validation method if present
-      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+      if (typeof wrapper.vm.isCustomerInfoValid === "function") {
         expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
       }
 
@@ -900,7 +970,6 @@ describe("AppointmentView", () => {
       // This assumes the customer-info stub does not emit 'next' when invalid
       const customerInfo = wrapper.find('[data-test="customer-info"]');
       expect(customerInfo.exists()).toBe(true);
-
     });
 
     it("handles multiple spaces between words in firstName", async () => {
@@ -915,12 +984,15 @@ describe("AppointmentView", () => {
         mailAddress: "jane.doe@example.com",
         telephoneNumber: "1234567890",
         customTextfield: "Some info",
-        customTextfield2: "More info"
+        customTextfield2: "More info",
       };
       await nextTick();
 
       // Verify that multiple spaces are preserved
-      expect(wrapper.vm.$.appContext.provides.customerData.customerData.value.firstName).toBe("Jane  Marie");
+      expect(
+        wrapper.vm.$.appContext.provides.customerData.customerData.value
+          .firstName
+      ).toBe("Jane  Marie");
     });
 
     it("handles multiple spaces between words in lastName", async () => {
@@ -935,12 +1007,15 @@ describe("AppointmentView", () => {
         mailAddress: "jane.doe@example.com",
         telephoneNumber: "1234567890",
         customTextfield: "Some info",
-        customTextfield2: "More info"
+        customTextfield2: "More info",
       };
       await nextTick();
 
       // Verify that multiple spaces are preserved
-      expect(wrapper.vm.$.appContext.provides.customerData.customerData.value.lastName).toBe("Van  Der  Beek");
+      expect(
+        wrapper.vm.$.appContext.provides.customerData.customerData.value
+          .lastName
+      ).toBe("Van  Der  Beek");
     });
 
     it("treats firstName with only spaces as empty", async () => {
@@ -955,12 +1030,12 @@ describe("AppointmentView", () => {
         mailAddress: "jane.doe@example.com",
         telephoneNumber: "1234567890",
         customTextfield: "Some info",
-        customTextfield2: "More info"
+        customTextfield2: "More info",
       };
       await nextTick();
 
       // Verify that the form is invalid
-      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+      if (typeof wrapper.vm.isCustomerInfoValid === "function") {
         expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
       }
     });
@@ -977,12 +1052,12 @@ describe("AppointmentView", () => {
         mailAddress: "jane.doe@example.com",
         telephoneNumber: "1234567890",
         customTextfield: "Some info",
-        customTextfield2: "More info"
+        customTextfield2: "More info",
       };
       await nextTick();
 
       // Verify that the form is invalid
-      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+      if (typeof wrapper.vm.isCustomerInfoValid === "function") {
         expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
       }
     });
@@ -999,12 +1074,12 @@ describe("AppointmentView", () => {
         mailAddress: "   ",
         telephoneNumber: "1234567890",
         customTextfield: "Some info",
-        customTextfield2: "More info"
+        customTextfield2: "More info",
       };
       await nextTick();
 
       // Verify that the form is invalid
-      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+      if (typeof wrapper.vm.isCustomerInfoValid === "function") {
         expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
       }
     });
@@ -1021,12 +1096,12 @@ describe("AppointmentView", () => {
         mailAddress: "jane.doe@example.com",
         telephoneNumber: "   ",
         customTextfield: "Some info",
-        customTextfield2: "More info"
+        customTextfield2: "More info",
       };
       await nextTick();
 
       // Verify that the form is invalid
-      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+      if (typeof wrapper.vm.isCustomerInfoValid === "function") {
         expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
       }
     });
@@ -1043,12 +1118,12 @@ describe("AppointmentView", () => {
         mailAddress: "\t\t\t",
         telephoneNumber: "\t\t\t",
         customTextfield: "Some info",
-        customTextfield2: "More info"
+        customTextfield2: "More info",
       };
       await nextTick();
 
       // Verify that the form is invalid
-      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+      if (typeof wrapper.vm.isCustomerInfoValid === "function") {
         expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
       }
     });
@@ -1065,12 +1140,12 @@ describe("AppointmentView", () => {
         mailAddress: " \t\n ",
         telephoneNumber: " \t\n ",
         customTextfield: "Some info",
-        customTextfield2: "More info"
+        customTextfield2: "More info",
       };
       await nextTick();
 
       // Verify that the form is invalid
-      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+      if (typeof wrapper.vm.isCustomerInfoValid === "function") {
         expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
       }
     });
@@ -1087,17 +1162,20 @@ describe("AppointmentView", () => {
         mailAddress: "jane.doe@example.com",
         telephoneNumber: "1234567890",
         customTextfield: "Some info",
-        customTextfield2: "More info"
+        customTextfield2: "More info",
       };
       await nextTick();
 
       // Verify that the form is invalid
-      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+      if (typeof wrapper.vm.isCustomerInfoValid === "function") {
         expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
       }
 
       // Verify that firstName is still valid
-      expect(wrapper.vm.$.appContext.provides.customerData.customerData.value.firstName).toBe("Jane");
+      expect(
+        wrapper.vm.$.appContext.provides.customerData.customerData.value
+          .firstName
+      ).toBe("Jane");
     });
 
     describe("Error Messages", () => {
@@ -1113,12 +1191,12 @@ describe("AppointmentView", () => {
           mailAddress: "test@example.com",
           telephoneNumber: "1234567890",
           customTextfield: "",
-          customTextfield2: ""
+          customTextfield2: "",
         };
         await nextTick();
 
         // Verify form is invalid
-        if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        if (typeof wrapper.vm.isCustomerInfoValid === "function") {
           expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
         }
       });
@@ -1135,12 +1213,12 @@ describe("AppointmentView", () => {
           mailAddress: "test@example.com",
           telephoneNumber: "1234567890",
           customTextfield: "",
-          customTextfield2: ""
+          customTextfield2: "",
         };
         await nextTick();
 
         // Verify form is invalid
-        if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        if (typeof wrapper.vm.isCustomerInfoValid === "function") {
           expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
         }
       });
@@ -1157,12 +1235,12 @@ describe("AppointmentView", () => {
           mailAddress: "",
           telephoneNumber: "1234567890",
           customTextfield: "",
-          customTextfield2: ""
+          customTextfield2: "",
         };
         await nextTick();
 
         // Verify form is invalid
-        if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        if (typeof wrapper.vm.isCustomerInfoValid === "function") {
           expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
         }
       });
@@ -1179,12 +1257,12 @@ describe("AppointmentView", () => {
           mailAddress: "test@example.com",
           telephoneNumber: "",
           customTextfield: "",
-          customTextfield2: ""
+          customTextfield2: "",
         };
         await nextTick();
 
         // Verify form is invalid
-        if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        if (typeof wrapper.vm.isCustomerInfoValid === "function") {
           expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
         }
       });
@@ -1201,12 +1279,12 @@ describe("AppointmentView", () => {
           mailAddress: "invalid-email",
           telephoneNumber: "1234567890",
           customTextfield: "",
-          customTextfield2: ""
+          customTextfield2: "",
         };
         await nextTick();
 
         // Verify form is invalid
-        if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        if (typeof wrapper.vm.isCustomerInfoValid === "function") {
           expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
         }
       });
@@ -1223,19 +1301,21 @@ describe("AppointmentView", () => {
           mailAddress: "test@example.com",
           telephoneNumber: "invalid-phone",
           customTextfield: "",
-          customTextfield2: ""
+          customTextfield2: "",
         };
         await nextTick();
 
         // Verify form is invalid
-        if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        if (typeof wrapper.vm.isCustomerInfoValid === "function") {
           expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
         }
       });
     });
   });
   describe("API Error Handling - Confirmation", () => {
-    const mockConfirmAppointment = vi.mocked(ZMSAppointmentAPI.confirmAppointment);
+    const mockConfirmAppointment = vi.mocked(
+      ZMSAppointmentAPI.confirmAppointment
+    );
 
     beforeEach(() => {
       mockConfirmAppointment.mockClear();
@@ -1245,22 +1325,22 @@ describe("AppointmentView", () => {
         errors: [
           {
             errorCode: "processNotPreconfirmedAnymore",
-            message: "Process not preconfirmed anymore"
-          }
-        ]
+            message: "Process not preconfirmed anymore",
+          },
+        ],
       };
       mockConfirmAppointment.mockResolvedValueOnce(mockErrorResponse);
 
       const appointmentData = {
         id: "test-id",
         authKey: "test-auth-key",
-        scope: {}
+        scope: {},
       };
 
       const validHash = btoa(JSON.stringify(appointmentData));
 
       const wrapper = createWrapper({
-        confirmAppointmentHash: validHash
+        confirmAppointmentHash: validHash,
       });
 
       await nextTick();
@@ -1275,249 +1355,264 @@ describe("AppointmentView", () => {
         {
           id: "test-id",
           authKey: "test-auth-key",
-          scope: {}
-        },
+          scope: {},
+        }
       );
 
-      expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(true);
+      expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(
+        true
+      );
       expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
 
       const errorCallout = wrapper.find('[data-test="muc-callout"]');
       expect(errorCallout.exists()).toBe(true);
-      expect(errorCallout.attributes('data-type')).toBe('error');
+      expect(errorCallout.attributes("data-type")).toBe("error");
 
-      expect(errorCallout.text()).toContain(de.apiErrorPreconfirmationExpiredHeader);
-      expect(errorCallout.text()).toContain(de.apiErrorPreconfirmationExpiredText);
-  });
-
-  it("should display activation expired error when API returns appointmentNotFound", async () => {
-    const mockErrorResponse = {
-      errors: [
-        {
-          errorCode: "appointmentNotFound",
-          message: "Appointment not found"
-        }
-      ]
-    };
-    mockConfirmAppointment.mockResolvedValueOnce(mockErrorResponse);
-
-    const appointmentData = {
-      id: "not-found-id",
-      authKey: "test-auth-key",
-      scope: {}
-    };
-    const validHash = btoa(JSON.stringify(appointmentData));
-
-    const wrapper = createWrapper({
-      confirmAppointmentHash: validHash
+      expect(errorCallout.text()).toContain(
+        de.apiErrorPreconfirmationExpiredHeader
+      );
+      expect(errorCallout.text()).toContain(
+        de.apiErrorPreconfirmationExpiredText
+      );
     });
 
-    await nextTick();
-    await vi.waitFor(() => {
-      expect(mockConfirmAppointment).toHaveBeenCalled();
-    });
-
-    expect(mockConfirmAppointment).toHaveBeenLastCalledWith(
-      {
-        baseUrl: "https://www.muenchen.de",
-      },
-      {
-        id: "not-found-id",
-        authKey: "test-auth-key",
-        scope: {}
-      },
-    );
-
-    expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(true);
-    expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
-
-
-    const errorCallout = wrapper.find('[data-test="muc-callout"]');
-    expect(errorCallout.exists()).toBe(true);
-    expect(errorCallout.attributes('data-type')).toBe('error');
-    expect(errorCallout.text()).toContain(de.apiErrorPreconfirmationExpiredHeader);
-    expect(errorCallout.text()).toContain(de.apiErrorPreconfirmationExpiredText);
-  });
-
-  it("should display generic error for other API error codes", async () => {
-    const mockErrorResponse = {
-      errors: [
-        {
-          errorCode: "someOtherError",
-          message: "Some other error occurred"
-        }
-      ]
-    };
-    mockConfirmAppointment.mockResolvedValueOnce(mockErrorResponse);
-
-    const appointmentData = {
-      id: "other-error-id",
-      authKey: "test-auth-key",
-      scope: {}
-    };
-    const validHash = btoa(JSON.stringify(appointmentData));
-
-    const wrapper = createWrapper({
-      confirmAppointmentHash: validHash
-    });
-
-    await nextTick();
-    await vi.waitFor(() => {
-      expect(mockConfirmAppointment).toHaveBeenCalled();
-    });
-
-    expect(mockConfirmAppointment).toHaveBeenCalledWith(
-      {
-        baseUrl: "https://www.muenchen.de",
-      },
-      {
-        id: "other-error-id",
-        authKey: "test-auth-key",
-        scope: {}
-      },
-    );
-
-    expect(wrapper.vm.errorStates.apiErrorGenericFallback.value).toBe(true);
-    expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
-
-    const errorCallout = wrapper.find('[data-test="muc-callout"]');
-    expect(errorCallout.exists()).toBe(true);
-    expect(errorCallout.attributes('data-type')).toBe('error');
-    expect(errorCallout.text()).toContain(de.apiErrorGenericFallbackHeader);
-  });
-
-  it("confirms when confirmAppointmentHash arrives after mount", async () => {
-    const mockSuccessResponse = {
-      processId: "12345",
-      authKey: "test-auth-key",
-      serviceId: "1",
-      officeId: "2",
-      timestamp: nowUnixSeconds() + 3600,
-    };
-    mockConfirmAppointment.mockResolvedValueOnce(mockSuccessResponse);
-
-    const appointmentData = {
-      id: "12345",
-      authKey: "test-auth-key",
-      scope: {},
-    };
-    const validHash = btoa(JSON.stringify(appointmentData));
-
-    const wrapper = createWrapper({
-      appointmentHash: undefined,
-      confirmAppointmentHash: undefined,
-    });
-
-    await nextTick();
-    expect(mockConfirmAppointment).not.toHaveBeenCalled();
-
-    await wrapper.setProps({ confirmAppointmentHash: validHash });
-    await nextTick();
-
-    await vi.waitFor(() => {
-      expect(mockConfirmAppointment).toHaveBeenCalledTimes(1);
-    });
-
-    expect(wrapper.vm.confirmAppointmentSuccess).toBe(true);
-    expect(wrapper.vm.currentView).toBe(5);
-  });
-
-  it("does not confirm twice when the same confirmAppointmentHash is set again", async () => {
-    const mockSuccessResponse = {
-      processId: "12345",
-      authKey: "test-auth-key",
-      serviceId: "1",
-      officeId: "2",
-      timestamp: nowUnixSeconds() + 3600,
-    };
-    mockConfirmAppointment.mockResolvedValue(mockSuccessResponse);
-
-    const appointmentData = {
-      id: "12345",
-      authKey: "test-auth-key",
-      scope: {},
-    };
-    const validHash = btoa(JSON.stringify(appointmentData));
-
-    const wrapper = createWrapper({
-      appointmentHash: undefined,
-      confirmAppointmentHash: undefined,
-    });
-
-    await wrapper.setProps({ confirmAppointmentHash: validHash });
-    await nextTick();
-    await vi.waitFor(() => {
-      expect(mockConfirmAppointment).toHaveBeenCalledTimes(1);
-    });
-
-    await wrapper.setProps({ confirmAppointmentHash: validHash });
-    await nextTick();
-
-    expect(mockConfirmAppointment).toHaveBeenCalledTimes(1);
-  });
-
-  it("loads appointment view when appointmentHash arrives after confirm success", async () => {
-    const mockFetchAppointment = vi.mocked(ZMSAppointmentAPI.fetchAppointment);
-    mockFetchAppointment.mockResolvedValueOnce({
-      processId: "12345",
-      authKey: "test-auth-key",
-      serviceId: "123",
-      officeId: "789",
-      serviceCount: 1,
-      subRequestCounts: [],
-      timestamp: nowUnixSeconds() + 3600,
-    } as any);
-
-    vi.mocked(globalThis.fetch).mockResolvedValueOnce({
-      status: 200,
-      json: async () => ({
-        offices: [
+    it("should display activation expired error when API returns appointmentNotFound", async () => {
+      const mockErrorResponse = {
+        errors: [
           {
-            id: "789",
-            name: "Test Provider",
-            address: { street: "Test Street", house_number: "1" },
+            errorCode: "appointmentNotFound",
+            message: "Appointment not found",
           },
         ],
-        services: [{ id: "123", name: "Test Service" }],
-        relations: [],
-      }),
-    } as any);
+      };
+      mockConfirmAppointment.mockResolvedValueOnce(mockErrorResponse);
 
-    const appointmentData = {
-      id: "12345",
-      authKey: "test-auth-key",
-      scope: {},
-    };
-    const validHash = btoa(JSON.stringify(appointmentData));
+      const appointmentData = {
+        id: "not-found-id",
+        authKey: "test-auth-key",
+        scope: {},
+      };
+      const validHash = btoa(JSON.stringify(appointmentData));
 
-    const wrapper = createWrapper({
-      appointmentHash: undefined,
-      confirmAppointmentHash: undefined,
-    });
+      const wrapper = createWrapper({
+        confirmAppointmentHash: validHash,
+      });
 
-    wrapper.vm.confirmAppointmentSuccess = true;
-    wrapper.vm.currentView = 5;
-    await nextTick();
+      await nextTick();
+      await vi.waitFor(() => {
+        expect(mockConfirmAppointment).toHaveBeenCalled();
+      });
 
-    expect(wrapper.find('[data-test="muc-callout"]').attributes("data-type")).toBe(
-      "success"
-    );
+      expect(mockConfirmAppointment).toHaveBeenLastCalledWith(
+        {
+          baseUrl: "https://www.muenchen.de",
+        },
+        {
+          id: "not-found-id",
+          authKey: "test-auth-key",
+          scope: {},
+        }
+      );
 
-    await wrapper.setProps({ appointmentHash: validHash });
-    await nextTick();
-
-    await vi.waitFor(() => {
-      expect(mockFetchAppointment).toHaveBeenCalledTimes(1);
-    });
-
-    await vi.waitFor(() => {
+      expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(
+        true
+      );
       expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
-      expect(wrapper.vm.currentView).toBe(3);
+
+      const errorCallout = wrapper.find('[data-test="muc-callout"]');
+      expect(errorCallout.exists()).toBe(true);
+      expect(errorCallout.attributes("data-type")).toBe("error");
+      expect(errorCallout.text()).toContain(
+        de.apiErrorPreconfirmationExpiredHeader
+      );
+      expect(errorCallout.text()).toContain(
+        de.apiErrorPreconfirmationExpiredText
+      );
     });
 
-    expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(true);
-    expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(false);
-  });
+    it("should display generic error for other API error codes", async () => {
+      const mockErrorResponse = {
+        errors: [
+          {
+            errorCode: "someOtherError",
+            message: "Some other error occurred",
+          },
+        ],
+      };
+      mockConfirmAppointment.mockResolvedValueOnce(mockErrorResponse);
+
+      const appointmentData = {
+        id: "other-error-id",
+        authKey: "test-auth-key",
+        scope: {},
+      };
+      const validHash = btoa(JSON.stringify(appointmentData));
+
+      const wrapper = createWrapper({
+        confirmAppointmentHash: validHash,
+      });
+
+      await nextTick();
+      await vi.waitFor(() => {
+        expect(mockConfirmAppointment).toHaveBeenCalled();
+      });
+
+      expect(mockConfirmAppointment).toHaveBeenCalledWith(
+        {
+          baseUrl: "https://www.muenchen.de",
+        },
+        {
+          id: "other-error-id",
+          authKey: "test-auth-key",
+          scope: {},
+        }
+      );
+
+      expect(wrapper.vm.errorStates.apiErrorGenericFallback.value).toBe(true);
+      expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
+
+      const errorCallout = wrapper.find('[data-test="muc-callout"]');
+      expect(errorCallout.exists()).toBe(true);
+      expect(errorCallout.attributes("data-type")).toBe("error");
+      expect(errorCallout.text()).toContain(de.apiErrorGenericFallbackHeader);
+    });
+
+    it("confirms when confirmAppointmentHash arrives after mount", async () => {
+      const mockSuccessResponse = {
+        processId: "12345",
+        authKey: "test-auth-key",
+        serviceId: "1",
+        officeId: "2",
+        timestamp: nowUnixSeconds() + 3600,
+      };
+      mockConfirmAppointment.mockResolvedValueOnce(mockSuccessResponse);
+
+      const appointmentData = {
+        id: "12345",
+        authKey: "test-auth-key",
+        scope: {},
+      };
+      const validHash = btoa(JSON.stringify(appointmentData));
+
+      const wrapper = createWrapper({
+        appointmentHash: undefined,
+        confirmAppointmentHash: undefined,
+      });
+
+      await nextTick();
+      expect(mockConfirmAppointment).not.toHaveBeenCalled();
+
+      await wrapper.setProps({ confirmAppointmentHash: validHash });
+      await nextTick();
+
+      await vi.waitFor(() => {
+        expect(mockConfirmAppointment).toHaveBeenCalledTimes(1);
+      });
+
+      expect(wrapper.vm.confirmAppointmentSuccess).toBe(true);
+      expect(wrapper.vm.currentView).toBe(5);
+    });
+
+    it("does not confirm twice when the same confirmAppointmentHash is set again", async () => {
+      const mockSuccessResponse = {
+        processId: "12345",
+        authKey: "test-auth-key",
+        serviceId: "1",
+        officeId: "2",
+        timestamp: nowUnixSeconds() + 3600,
+      };
+      mockConfirmAppointment.mockResolvedValue(mockSuccessResponse);
+
+      const appointmentData = {
+        id: "12345",
+        authKey: "test-auth-key",
+        scope: {},
+      };
+      const validHash = btoa(JSON.stringify(appointmentData));
+
+      const wrapper = createWrapper({
+        appointmentHash: undefined,
+        confirmAppointmentHash: undefined,
+      });
+
+      await wrapper.setProps({ confirmAppointmentHash: validHash });
+      await nextTick();
+      await vi.waitFor(() => {
+        expect(mockConfirmAppointment).toHaveBeenCalledTimes(1);
+      });
+
+      await wrapper.setProps({ confirmAppointmentHash: validHash });
+      await nextTick();
+
+      expect(mockConfirmAppointment).toHaveBeenCalledTimes(1);
+    });
+
+    it("loads appointment view when appointmentHash arrives after confirm success", async () => {
+      const mockFetchAppointment = vi.mocked(
+        ZMSAppointmentAPI.fetchAppointment
+      );
+      mockFetchAppointment.mockResolvedValueOnce({
+        processId: "12345",
+        authKey: "test-auth-key",
+        serviceId: "123",
+        officeId: "789",
+        serviceCount: 1,
+        subRequestCounts: [],
+        timestamp: nowUnixSeconds() + 3600,
+      } as any);
+
+      vi.mocked(globalThis.fetch).mockResolvedValueOnce({
+        status: 200,
+        json: async () => ({
+          offices: [
+            {
+              id: "789",
+              name: "Test Provider",
+              address: { street: "Test Street", house_number: "1" },
+            },
+          ],
+          services: [{ id: "123", name: "Test Service" }],
+          relations: [],
+        }),
+      } as any);
+
+      const appointmentData = {
+        id: "12345",
+        authKey: "test-auth-key",
+        scope: {},
+      };
+      const validHash = btoa(JSON.stringify(appointmentData));
+
+      const wrapper = createWrapper({
+        appointmentHash: undefined,
+        confirmAppointmentHash: undefined,
+      });
+
+      wrapper.vm.confirmAppointmentSuccess = true;
+      wrapper.vm.currentView = 5;
+      await nextTick();
+
+      expect(
+        wrapper.find('[data-test="muc-callout"]').attributes("data-type")
+      ).toBe("success");
+
+      await wrapper.setProps({ appointmentHash: validHash });
+      await nextTick();
+
+      await vi.waitFor(() => {
+        expect(mockFetchAppointment).toHaveBeenCalledTimes(1);
+      });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
+        expect(wrapper.vm.currentView).toBe(3);
+      });
+
+      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
+        true
+      );
+      expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(false);
+    });
   });
   describe("Book another appointment button", () => {
     it("renders with correct label and redirects to start when clicked", async () => {
@@ -1550,7 +1645,9 @@ describe("AppointmentView", () => {
   });
 
   describe("ICS Download Feature", () => {
-    const mockConfirmAppointment = vi.mocked(ZMSAppointmentAPI.confirmAppointment);
+    const mockConfirmAppointment = vi.mocked(
+      ZMSAppointmentAPI.confirmAppointment
+    );
 
     beforeEach(() => {
       mockConfirmAppointment.mockClear();
@@ -1564,8 +1661,10 @@ describe("AppointmentView", () => {
         await nextTick();
 
         // The button should not be visible without appointment data
-        const buttons = wrapper.findAll('button');
-        const downloadButton = buttons.find(button => button.text().includes(de.downloadAppointment));
+        const buttons = wrapper.findAll("button");
+        const downloadButton = buttons.find((button) =>
+          button.text().includes(de.downloadAppointment)
+        );
         expect(downloadButton).toBeUndefined();
       });
 
@@ -1596,15 +1695,17 @@ describe("AppointmentView", () => {
         mockUseLogin.mockReturnValue({
           isLoggedIn: ref(false),
           isLoadingAuthentication: ref(false),
-          accessToken: ref(null)
+          accessToken: ref(null),
         });
 
         const wrapper = createWrapper();
         wrapper.vm.confirmAppointmentSuccess = true;
         await nextTick();
 
-        const buttons = wrapper.findAll('button');
-        const viewButton = buttons.find(button => button.text().includes(de.viewAppointment));
+        const buttons = wrapper.findAll("button");
+        const viewButton = buttons.find((button) =>
+          button.text().includes(de.viewAppointment)
+        );
         expect(viewButton).toBeUndefined();
       });
     });
@@ -1615,7 +1716,7 @@ describe("AppointmentView", () => {
         const component = wrapper.vm as any;
 
         // Check that the function exists
-        expect(typeof component.downloadIcsAppointment).toBe('function');
+        expect(typeof component.downloadIcsAppointment).toBe("function");
       });
     });
 
@@ -1625,7 +1726,7 @@ describe("AppointmentView", () => {
         const component = wrapper.vm as any;
 
         // Check that the function exists
-        expect(typeof component.viewAppointment).toBe('function');
+        expect(typeof component.viewAppointment).toBe("function");
       });
     });
 
@@ -1637,26 +1738,31 @@ describe("AppointmentView", () => {
           authKey: "abc123",
           familyName: "Test User",
           email: "test@example.com",
-          icsContent: "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:ZMS-München\r\nEND:VCALENDAR",
+          icsContent:
+            "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:ZMS-München\r\nEND:VCALENDAR",
           officeId: "456",
           scope: {},
           subRequestCounts: [],
           serviceId: "789",
           serviceName: "Test Service",
           serviceCount: 1,
-          status: "confirmed"
+          status: "confirmed",
         };
 
         const wrapper = createWrapper();
 
         // Simulate the appointment confirmation success state
         wrapper.vm.confirmAppointmentSuccess = true;
-        wrapper.vm.$.appContext.provides.appointment.appointment.value = mockConfirmResponse;
+        wrapper.vm.$.appContext.provides.appointment.appointment.value =
+          mockConfirmResponse;
 
         await nextTick();
 
         // Verify ICS content is stored in component state
-        expect(wrapper.vm.$.appContext.provides.appointment.appointment.value?.icsContent).toBe(mockConfirmResponse.icsContent);
+        expect(
+          wrapper.vm.$.appContext.provides.appointment.appointment.value
+            ?.icsContent
+        ).toBe(mockConfirmResponse.icsContent);
         expect(wrapper.vm.confirmAppointmentSuccess).toBe(true);
       });
     });
@@ -1702,9 +1808,9 @@ describe("AppointmentView", () => {
       expect(wrapper.vm.isBookingAppointment).toBe(false);
 
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
-      expect(wrapper.find('[data-test="muc-callout"]').attributes("data-type")).toBe(
-        "success"
-      );
+      expect(
+        wrapper.find('[data-test="muc-callout"]').attributes("data-type")
+      ).toBe("success");
     });
 
     it("cancels old appointment after successful rebooking confirm", async () => {
@@ -1778,9 +1884,12 @@ describe("AppointmentView", () => {
 
       await nextTick();
 
-      const expectedHeader = (de as any).rescheduleErrorHeader ?? "rescheduleErrorHeader";
-      const expectedText = (de as any).rescheduleErrorText ?? "rescheduleErrorText";
-      const expectedButtonLabel = (de as any).newAppointmentButton ?? "newAppointmentButton";
+      const expectedHeader =
+        (de as any).rescheduleErrorHeader ?? "rescheduleErrorHeader";
+      const expectedText =
+        (de as any).rescheduleErrorText ?? "rescheduleErrorText";
+      const expectedButtonLabel =
+        (de as any).newAppointmentButton ?? "newAppointmentButton";
 
       const errorCallout = wrapper.find('[data-test="muc-callout"]');
       expect(errorCallout.exists()).toBe(true);
@@ -1789,11 +1898,15 @@ describe("AppointmentView", () => {
       expect(errorCallout.text()).toContain(expectedText);
 
       const buttons = wrapper.findAll('[data-test="muc-button"]');
-      const newAppointmentButton = buttons.find((b) => b.text().includes(expectedButtonLabel));
+      const newAppointmentButton = buttons.find((b) =>
+        b.text().includes(expectedButtonLabel)
+      );
       expect(newAppointmentButton).toBeDefined();
 
       expect(wrapper.find('[data-test="muc-stepper"]').exists()).toBe(false);
-      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(false);
+      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
+        false
+      );
     });
   });
 
@@ -1801,25 +1914,45 @@ describe("AppointmentView", () => {
     const uiStoragePayload = {
       timestamp: Date.now(),
       currentView: 2,
-      selectedService: { id: "123", name: "Test Service", count: 1 },
+      selectedServiceId: "123",
       selectedServiceMap: { "123": 1 },
-      selectedProvider: {
-        id: "789",
-        name: "Test Provider",
-        address: {
-          street: "Test Street",
-          house_number: "123",
-          postal_code: "12345",
-          city: "Test City",
-        },
-      },
+      selectedProviderId: "789",
       selectedTimeslot: 1640995200,
+    };
+
+    const catalogResponse = {
+      offices: [
+        {
+          id: "789",
+          name: "Test Provider",
+          address: {
+            street: "Test Street",
+            house_number: "123",
+            postal_code: "12345",
+            city: "Test City",
+          },
+          showAlternativeLocations: false,
+          displayNameAlternatives: [],
+          organization: "Org",
+          slotTimeInMinutes: 15,
+          priority: 1,
+        },
+      ],
+      services: [{ id: "123", name: "Test Service", maxQuantity: 1 }],
+      relations: [{ serviceId: "123", officeId: "789", slots: 1 }],
     };
 
     beforeEach(() => {
       localStorage.clear();
       sessionStorage.clear();
       vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockReset();
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => catalogResponse,
+        })
+      );
     });
 
     it("requestLogin stores UI data without authKey, PII, or captchaToken", () => {
@@ -1828,8 +1961,22 @@ describe("AppointmentView", () => {
         .mockImplementation(() => {});
       const wrapper = createWrapper({ showLoginOption: true });
 
-      wrapper.vm.selectedService = uiStoragePayload.selectedService as any;
-      wrapper.vm.selectedProvider = uiStoragePayload.selectedProvider as any;
+      wrapper.vm.selectedService = {
+        id: "123",
+        name: "Test Service",
+        count: 1,
+      } as any;
+      wrapper.vm.selectedProvider = {
+        id: "789",
+        name: "Test Provider",
+        address: {
+          street: "Test Street",
+          house_number: "123",
+          postal_code: "12345",
+          city: "Test City",
+        },
+        slotsPerAppointment: "2",
+      } as any;
       wrapper.vm.selectedTimeslot = uiStoragePayload.selectedTimeslot;
       wrapper.vm.customerData = {
         firstName: "Max",
@@ -1865,10 +2012,16 @@ describe("AppointmentView", () => {
       expect(stored).not.toContain("captcha-secret");
       expect(stored).not.toContain("customerData");
       expect(stored).not.toContain("captchaToken");
+      expect(stored).not.toContain("slotsPerAppointment");
+      expect(stored).not.toContain("Test Provider");
       const parsed = JSON.parse(stored as string);
       expect(parsed.appointment).toBeUndefined();
       expect(parsed.customerData).toBeUndefined();
       expect(parsed.captchaToken).toBeUndefined();
+      expect(parsed.selectedService).toBeUndefined();
+      expect(parsed.selectedProvider).toBeUndefined();
+      expect(parsed.selectedServiceId).toBe("123");
+      expect(parsed.selectedProviderId).toBe("789");
 
       expect(sessionStorage.getItem("lhm-appointment-auth-hash")).toBe(
         btoa(JSON.stringify({ id: "proc-1", authKey: "secret-key" }))
@@ -1882,6 +2035,15 @@ describe("AppointmentView", () => {
         "lhm-appointment-data",
         JSON.stringify({
           ...uiStoragePayload,
+          selectedService: {
+            id: "123",
+            name: "Legacy Service Object",
+          },
+          selectedProvider: {
+            id: "789",
+            name: "Legacy Provider Object",
+            slotsPerAppointment: "9",
+          },
           appointment: {
             processId: "legacy-id",
             authKey: "legacy-secret-should-be-ignored",
@@ -1927,7 +2089,9 @@ describe("AppointmentView", () => {
       expect(wrapper.vm.appointment?.authKey).not.toBe(
         "legacy-secret-should-be-ignored"
       );
-      expect(wrapper.vm.customerData?.mailAddress).not.toBe("legacy@example.com");
+      expect(wrapper.vm.customerData?.mailAddress).not.toBe(
+        "legacy@example.com"
+      );
       expect(wrapper.vm.captchaToken).not.toBe("legacy-captcha");
       expect(wrapper.vm.currentView).toBe(2);
       expect(wrapper.vm.rebookOrCancelDialog).toBe(false);
@@ -1958,8 +2122,11 @@ describe("AppointmentView", () => {
       });
 
       expect(wrapper.vm.appointment?.authKey).toBeUndefined();
-      expect(wrapper.vm.customerData?.mailAddress).not.toBe("legacy@example.com");
+      expect(wrapper.vm.customerData?.mailAddress).not.toBe(
+        "legacy@example.com"
+      );
       expect(wrapper.vm.captchaToken).not.toBe("legacy-captcha");
+      expect(wrapper.vm.selectedProvider?.id).toBe("789");
       expect(localStorage.getItem("lhm-appointment-data")).toBeNull();
     });
   });
