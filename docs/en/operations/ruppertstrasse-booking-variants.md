@@ -8,7 +8,7 @@ Citizen booking at Bürgerbüro Ruppertstraße uses three different models. They
 | Shared booking (Ausbildung) | `10489` + `10503` | One Ort | **Both** peer OfficeIDs   | Backend RR across scopes of **all peers** when timestamps overlap (`sharedBookingOfficeIds`)             |
 | Pass exclusive/mixed        | `10489` + `10502` | One Ort | **One** survivor OfficeID | FE picks exclusive (`10502`) vs mixed (`10489`) via `allowDisabledServicesMix` — **not** pooled capacity |
 
-Configuration lives in [`zmsdldb/.../Munich.php`](../../../zmsdldb/src/Zmsdldb/Transformers/Munich.php):
+Configuration lives in [`zmsdldb/.../Munich.php`](https://github.com/it-at-m/eappointment/blob/main/zmsdldb/src/Zmsdldb/Transformers/Munich.php):
 
 - `DONT_SHOW_LOCATION_BY_SERVICES` → `disabledByServices` (Pass services hidden on Haupt `10489`)
 - `LOCATIONS_ALLOW_DISABLED_MIX` → `allowDisabledServicesMix` (`[10489, 10502]`)
