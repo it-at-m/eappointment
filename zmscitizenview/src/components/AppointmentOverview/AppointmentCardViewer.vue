@@ -23,6 +23,7 @@
           :appointment="appointment"
           :appointment-detail-url="appointmentDetailUrl"
           :offices="offices"
+          :services="services"
           :class="{ 'card-color': displayedOnDetailScreen }"
           class="mobile-card-height"
           :t="t"
@@ -53,6 +54,7 @@
           :appointment="appointment"
           :appointment-detail-url="appointmentDetailUrl"
           :offices="offices"
+          :services="services"
           :class="{ 'card-color': displayedOnDetailScreen }"
           class="mobile-card-height"
           :t="t"
@@ -68,6 +70,7 @@
         :appointment="appointment"
         :appointment-detail-url="appointmentDetailUrl"
         :offices="offices"
+        :services="services"
         :class="{ 'card-color': displayedOnDetailScreen }"
         :t="t"
       />
@@ -89,6 +92,7 @@
         :appointment="appointment"
         :appointment-detail-url="appointmentDetailUrl"
         :offices="offices"
+        :services="services"
         :class="{ 'card-color': displayedOnDetailScreen }"
         :t="t"
       />
@@ -105,6 +109,7 @@ import {
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
+import { Service } from "@/api/models/Service";
 import AddAppointmentCard from "@/components/AppointmentOverview/AddAppointmentCard.vue";
 import AddAppointmentSvg from "@/components/AppointmentOverview/AddAppointmentSvg.vue";
 import AppointmentCard from "@/components/AppointmentOverview/AppointmentCard.vue";
@@ -117,6 +122,7 @@ defineProps<{
   appointmentDetailUrl: string;
   displayedOnDetailScreen: boolean;
   offices: Office[];
+  services: Service[];
   t: (key: string) => string;
 }>();
 </script>

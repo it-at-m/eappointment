@@ -61,6 +61,15 @@ class Munich
         [10489, 10502],
     ];
 
+    /**
+     * Offices that share one Ort in the Bürgeransicht but keep pooled calendar
+     * capacity across all peer OfficeIDs (ZMSKVR-1046 Ausbildung). Distinct from
+     * LOCATIONS_ALLOW_DISABLED_MIX (exclusive vs mixed survivor = one OfficeID).
+     */
+    const LOCATIONS_SHARED_BOOKING = [
+        [10489, 10503], // Bürgerbüro Ruppertstraße + Ausbildung
+    ];
+
     /** Aligned with dldb-mapper/app/map.php DONT_SHOW_SERVICE_ON_START_PAGE */
     const DONT_SHOW_SERVICE_ON_START_PAGE = [
         10396802,
@@ -211,7 +220,10 @@ class Munich
     }
 
     /**
-     * Path to bundled SADB overwrite (ex-dldb-mapper prod.json). Passkalender 10502 + Pass services.
+     * Path to bundled SADB overwrite (ex-dldb-mapper prod.json).
+     * Local extras: Passkalender 10502 (Pass services) + Ausbildungskalender 10503
+     * (Haushaltsbescheinigung 1080843, Wohnsitzanmeldung 1063475, Wohnsitzanmeldung Familie 10224132).
+     * TODO ZMSKVR-1046: Remove 10503 from the overwrite once a real Ausbildung office exists in SADB.
      */
     public static function defaultSadbOverwritePath(): string
     {
@@ -538,6 +550,14 @@ class Munich
                 break;
             }
         }
+
+        // Peer offices that collapse to one Ort but share calendar / booking capacity.
+        foreach (self::LOCATIONS_SHARED_BOOKING as $group) {
+            if (in_array((int) $mappedLocation['id'], $group, true)) {
+                $mappedLocation['sharedBookingOfficeIds'] = $group;
+                break;
+            }
+        }
     }
 
     private function processServiceReferences(array $location, array &$mappedLocation, array &$mappedServices): ?int
@@ -667,17 +687,32 @@ class Munich
     /**
      * Calculate greatest common divisor for slot times
      */
-    protected function getSlotTime(int $a, int $b): int
+    protected function getSlotTime($a, $b): int
     {
-        $slotTimes = [1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 25, 30, 60];
-        $slotTime = 1;
+        $a = (int) $a;
+        $b = (int) $b;
 
-        foreach ($slotTimes as $time) {
-            if ($a % $time === 0 && $b % $time === 0) {
-                $slotTime = $time;
-            }
+        if ($a <= 0 || $b <= 0) {
+            return 5;
         }
 
-        return $slotTime;
+        $slotTime = $this->getGreatestCommonDivisor($a, $b);
+
+        if ($slotTime >= 5 && $slotTime % 5 === 0) {
+            return $slotTime;
+        }
+
+        return 5;
+    }
+
+    protected function getGreatestCommonDivisor(int $a, int $b): int
+    {
+        while ($b !== 0) {
+            $tmp = $b;
+            $b = $a % $b;
+            $a = $tmp;
+        }
+
+        return abs($a);
     }
 }

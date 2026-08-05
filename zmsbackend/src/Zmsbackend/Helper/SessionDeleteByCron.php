@@ -7,9 +7,13 @@ namespace BO\Zmsbackend\Helper;
  */
 class SessionDeleteByCron
 {
-    public static function init($sessionName, $timeInterval)
+    /**
+     * Delete sessiondata older than SESSION_DURATION.
+     * When $sessionName is null/empty, all session names are cleaned.
+     */
+    public static function init(?string $sessionName = null, ?int $deleteInSeconds = null): void
     {
-        $deleteInSeconds = $timeInterval * 60;
+        $deleteInSeconds = $deleteInSeconds ?? (int) \App::SESSION_DURATION;
         $query = new \BO\Zmsbackend\Session\Service\Session();
         $query->deleteByTimeInterval($sessionName, $deleteInSeconds);
     }
