@@ -9,6 +9,7 @@ namespace BO\Zmsbackend\Calldisplay\Api;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
+use BO\Zmsbackend\Calldisplay\Helper\CalldisplayCollections;
 use BO\Zmsbackend\Calldisplay\Service\Calldisplay as Query;
 use BO\Zmsentities\Calldisplay as Entity;
 
@@ -42,22 +43,16 @@ class CalldisplayGet extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
+    /**
+     * @SuppressWarnings(NPathComplexity)
+     */
     protected function testScopeAndCluster($calldisplay)
     {
-        if (! $calldisplay->hasScopeList() && ! $calldisplay->hasClusterList()) {
-            throw new \BO\Zmsbackend\Calldisplay\Exception\ScopeAndClusterNotFound();
-        }
-        foreach ($calldisplay->getClusterList() as $cluster) {
-            $cluster = (new \BO\Zmsbackend\Cluster\Service\Cluster())->readEntity($cluster->id);
-            if (! $cluster) {
-                throw new \BO\Zmsbackend\Cluster\Exception\ClusterNotFound();
+        CalldisplayCollections::retainExisting(
+            $calldisplay,
+            static function ($scopeRef) {
+                return (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($scopeRef->getId());
             }
-        }
-        foreach ($calldisplay->getScopeList() as $scope) {
-            $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($scope->id);
-            if (! $scope) {
-                throw new \BO\Zmsbackend\Scope\Exception\ScopeNotFound();
-            }
-        }
+        );
     }
 }

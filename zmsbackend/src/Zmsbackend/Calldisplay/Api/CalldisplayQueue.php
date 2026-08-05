@@ -9,6 +9,7 @@ namespace BO\Zmsbackend\Calldisplay\Api;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
+use BO\Zmsbackend\Calldisplay\Helper\CalldisplayCollections;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -50,24 +51,22 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
 
     protected $scopeCache = [];
 
+    /**
+     * @SuppressWarnings(NPathComplexity)
+     */
     protected function testScopeAndCluster($calldisplay, $resolveReferences)
     {
-        if (! $calldisplay->hasScopeList() && ! $calldisplay->hasClusterList()) {
-            throw new \BO\Zmsbackend\Calldisplay\Exception\ScopeAndClusterNotFound();
-        }
-        foreach ($calldisplay->getClusterList() as $cluster) {
-            $cluster = (new \BO\Zmsbackend\Cluster\Service\Cluster())->readEntity($cluster->getId());
-            if (! $cluster) {
-                throw new \BO\Zmsbackend\Cluster\Exception\ClusterNotFound();
-            }
-        }
-        foreach ($calldisplay->getScopeList() as $scope) {
-            $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readWithWorkstationCount($scope->getId(), \App::$now, $resolveReferences);
-            if (! $scope) {
-                throw new \BO\Zmsbackend\Scope\Exception\ScopeNotFound();
-            }
-            $this->scopeCache[$scope->getId()] = $scope;
-        }
+        $this->scopeCache = CalldisplayCollections::retainExisting(
+            $calldisplay,
+            static function ($scopeRef) use ($resolveReferences) {
+                return (new \BO\Zmsbackend\Scope\Service\Scope())->readWithWorkstationCount(
+                    $scopeRef->getId(),
+                    \App::$now,
+                    $resolveReferences
+                );
+            },
+            'Calldisplay queue'
+        );
     }
 
     protected function readCalculatedQueueListFromScope($scope, $resolveReferences)
