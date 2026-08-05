@@ -32,14 +32,12 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
 
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $calldisplay = (new \BO\Zmsentities\Calldisplay($input))->withOutClusterDuplicates();
-        $this->testScopeAndCluster($calldisplay, $resolveReferences);
+        $this->scopeCache = CalldisplayCollections::prepareForQueue($calldisplay, $resolveReferences);
 
         //read full list if no statusList exists
         $queueList = (count($statusList)) ?
             $this->readQueueListByStatus($calldisplay, $statusList, $resolveReferences) :
             $this->readFullQueueList($calldisplay, $resolveReferences);
-
-
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
         $message->data = $queueList->withoutDublicates();
@@ -50,24 +48,6 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
     }
 
     protected $scopeCache = [];
-
-    /**
-     * @SuppressWarnings(NPathComplexity)
-     */
-    protected function testScopeAndCluster($calldisplay, $resolveReferences)
-    {
-        $this->scopeCache = CalldisplayCollections::retainExisting(
-            $calldisplay,
-            static function ($scopeRef) use ($resolveReferences) {
-                return (new \BO\Zmsbackend\Scope\Service\Scope())->readWithWorkstationCount(
-                    $scopeRef->getId(),
-                    \App::$now,
-                    $resolveReferences
-                );
-            },
-            'Calldisplay queue'
-        );
-    }
 
     protected function readCalculatedQueueListFromScope($scope, $resolveReferences)
     {
