@@ -36,6 +36,10 @@ public class CitizenViewPage extends BasePage {
 
     private static final String DE_WEITER = "Weiter";
     private static final String DE_RESERVE = "Termin reservieren";
+    private static final String ALREADY_ACTIVATED_BANNER_MARKER =
+            "Sie haben Ihren Termin bereits aktiviert.";
+    private static final String RESCHEDULE_APPOINTMENT_BUTTON = "Termin verschieben";
+    private static final String CANCEL_RESCHEDULE_BUTTON = "Verschieben abbrechen";
 
     /** German invalid jump-in callout ({@code de-DE.json}). */
     public static final String DE_INVALID_JUMPIN_HEADER = "Diese Ansicht kann nicht geladen werden.";
@@ -1748,6 +1752,65 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: confirmation success callout found");
     }
 
+    /** ZMSKVR-1500: MucBanner success after reopening an already-used confirm deep link. */
+    public void assertAlreadyActivatedAppointmentBannerVisible() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: waiting for already-activated MucBanner success ({})",
+                        ALREADY_ACTIVATED_BANNER_MARKER);
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(ALREADY_ACTIVATED_BANNER_MARKER),
+                "Already-activated appointment banner");
+        Assert.assertTrue(
+                shadowDomContainsText(ALREADY_ACTIVATED_BANNER_MARKER),
+                "Already-activated MucBanner success not found after reopening confirm link.");
+        ScenarioLogManager.getLogger().info("zmscitizenview: already-activated appointment banner found");
+    }
+
+    /**
+     * ZMSKVR-1500: banner must stay hidden on the rebooking confirm summary (confirm URL still active).
+     * Call after {@link #assertCancelRescheduleButtonVisible()} so view 3 rebooking UI is ready.
+     */
+    public void assertAlreadyActivatedAppointmentBannerNotVisible() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: asserting already-activated MucBanner is hidden ({})",
+                        ALREADY_ACTIVATED_BANNER_MARKER);
+        Assert.assertFalse(
+                shadowDomContainsText(ALREADY_ACTIVATED_BANNER_MARKER),
+                "Already-activated MucBanner must not remain visible while rescheduling from a confirm link.");
+    }
+
+    /** ZMSKVR-1500: start reschedule from already-activated / appointment overview. */
+    public void clickRescheduleAppointment() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: clicking reschedule appointment button ({})", RESCHEDULE_APPOINTMENT_BUTTON);
+        waitForAndClickButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON, DEFAULT_EXPLICIT_WAIT_TIME);
+    }
+
+    /** ZMSKVR-1500: rebooking confirm summary shows Verschieben abbrechen. */
+    public void assertCancelRescheduleButtonVisible() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: waiting for cancel-reschedule button ({})", CANCEL_RESCHEDULE_BUTTON);
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(CANCEL_RESCHEDULE_BUTTON), "Cancel reschedule button");
+        Assert.assertTrue(
+                shadowDomContainsText(CANCEL_RESCHEDULE_BUTTON),
+                "Cancel reschedule button (Verschieben abbrechen) not found after rebooking slot selection.");
+    }
+
+    /** ZMSKVR-1500: abort reschedule and return to appointment overview. */
+    public void clickCancelReschedule() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: clicking cancel reschedule button ({})", CANCEL_RESCHEDULE_BUTTON);
+        waitForAndClickButtonContaining(CANCEL_RESCHEDULE_BUTTON, DEFAULT_EXPLICIT_WAIT_TIME);
+    }
+
     public void assertSelectedAppointmentCalloutVisible() {
         assertShadowContains(
                 "Ausgewählter Termin",
@@ -1888,6 +1951,54 @@ public class CitizenViewPage extends BasePage {
     /** Navigate to zmscitizenview confirm page. Prefer URL extracted from mail body (GET /mails/); else build from confirm credentials or booking process. */
     public void openConfirmationDeepLinkInBrowser() {
         CONTEXT.set();
+        String url = resolveConfirmationDeepLinkUrl();
+        ScenarioLogManager.getLogger().info("zmscitizenview: navigating to confirmation URL: {}", url);
+        try {
+            DriverUtil.getDriver().navigate().to(url);
+            // Do not refresh. Same-tab hash routing now handles confirm links (ZMSKVR-1121).
+            // navigate()+refresh() can confirm twice and leave activation-expired UI instead of success.
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Navigate to confirm URL", e);
+        }
+        try {
+            Thread.sleep(10000L);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * ZMSKVR-1500: reopen the same confirm deep link after a successful activation.
+     * Leaving the confirm hash first is required so the SPA hash watch re-fires; navigating to the
+     * identical URL does not remount and would leave the first success callout on screen.
+     */
+    public void reopenConfirmationDeepLinkInBrowser() {
+        CONTEXT.set();
+        String confirmUrl = resolveConfirmationDeepLinkUrl();
+        String base = confirmUrl;
+        int hashIdx = base.indexOf('#');
+        if (hashIdx >= 0) {
+            base = base.substring(0, hashIdx);
+        }
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: reopening confirmation deep link (leave hash, then confirm again)");
+        try {
+            DriverUtil.getDriver().navigate().to(base + "#/");
+            Thread.sleep(1000L);
+            DriverUtil.getDriver().navigate().to(confirmUrl);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Reopen confirm URL", e);
+        }
+        try {
+            Thread.sleep(10000L);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private String resolveConfirmationDeepLinkUrl() {
         String url = zms.ataf.rest.steps.CitizenApiSteps.getBookingConfirmUrl();
         if (url != null && !url.isBlank()) {
             ScenarioLogManager.getLogger().info("zmscitizenview: opening confirmation deep link (URL from mail body)");
@@ -1916,20 +2027,7 @@ public class CitizenViewPage extends BasePage {
             }
             url = base + "#/appointment/confirm/" + b64;
         }
-        url = ensureAbsoluteCitizenViewUrl(url);
-        ScenarioLogManager.getLogger().info("zmscitizenview: navigating to confirmation URL: {}", url);
-        try {
-            DriverUtil.getDriver().navigate().to(url);
-            // Do not refresh. Same-tab hash routing now handles confirm links (ZMSKVR-1121).
-            // navigate()+refresh() can confirm twice and leave activation-expired UI instead of success.
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger().warn("Navigate to confirm URL", e);
-        }
-        try {
-            Thread.sleep(10000L);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-        }
+        return ensureAbsoluteCitizenViewUrl(url);
     }
 
     /** Navigate to the appointment view URL extracted from the confirmation mail (link without /confirm/). */
