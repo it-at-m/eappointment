@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# $3 = 1 for branch checkout, 0 for file checkout
+if [ "$3" != "1" ]; then
+  exit 0
+fi
+
+# Drop Vite optimizeDeps cache so the next (or restarted) zmscitizenview
+# dev server does not keep stale "file missing" resolutions after a branch switch.
+rm -rf zmscitizenview/node_modules/.vite
