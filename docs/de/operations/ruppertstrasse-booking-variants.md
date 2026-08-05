@@ -8,7 +8,7 @@ Die Bürgerterminbuchung am Bürgerbüro Ruppertstraße kennt drei Modelle. In d
 | Shared Booking (Ausbildung) | `10489` + `10503` | Ein Ort | **Beide** Peer-OfficeIDs   | Backend-RR über Scopes **aller Peers** bei gleicher Uhrzeit (`sharedBookingOfficeIds`)                              |
 | Pass exklusiv/gemischt      | `10489` + `10502` | Ein Ort | **Eine** Survivor-OfficeID | FE wählt exklusiv (`10502`) vs. gemischt (`10489`) über `allowDisabledServicesMix` — **keine** gemeinsame Kapazität |
 
-Konfiguration in [`zmsdldb/.../Munich.php`](../../../zmsdldb/src/Zmsdldb/Transformers/Munich.php):
+Konfiguration in [`zmsdldb/.../Munich.php`](https://github.com/it-at-m/eappointment/blob/main/zmsdldb/src/Zmsdldb/Transformers/Munich.php):
 
 - `DONT_SHOW_LOCATION_BY_SERVICES` → `disabledByServices` (Pass-Leistungen am Haupt `10489` ausgeblendet)
 - `LOCATIONS_ALLOW_DISABLED_MIX` → `allowDisabledServicesMix` (`[10489, 10502]`)
