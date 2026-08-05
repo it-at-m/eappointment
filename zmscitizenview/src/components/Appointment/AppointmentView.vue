@@ -135,21 +135,13 @@
               />
             </div>
             <div v-if="currentView === 3">
-              <muc-banner
-                v-if="appointmentAlreadyActivated && !isRebooking"
-                class="already-activated-banner"
-                variant="content"
-                type="success"
-                data-test="appointment-already-activated-banner"
-              >
-                {{ t("appointmentAlreadyActivatedHeader") }}
-              </muc-banner>
               <appointment-summary
                 v-if="
                   !hasUpdateAppointmentError &&
                   !hasPreconfirmAppointmentError &&
                   !isAppointmentInPast
                 "
+                :appointment-already-activated="appointmentAlreadyActivated"
                 :is-rebooking="isRebooking"
                 :rebook-or-cancel-dialog="rebookOrCancelDialog"
                 :t="t"
@@ -360,7 +352,6 @@
 import type { ApiErrorTranslation, ErrorStateMap } from "@/utils/errorHandler";
 
 import {
-  MucBanner,
   MucButton,
   MucCallout,
   MucStepper,
@@ -1502,10 +1493,6 @@ onMounted(() => {
 </script>
 <style lang="scss" scoped>
 @use "@/styles/breakpoints.scss" as *;
-
-.already-activated-banner {
-  margin-bottom: 2.5rem;
-}
 
 .m-button-group {
   display: flex;
