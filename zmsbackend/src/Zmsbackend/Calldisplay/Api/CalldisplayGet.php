@@ -34,25 +34,12 @@ class CalldisplayGet extends \BO\Zmsbackend\Api\BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new Entity($input);
 
-        $this->testScopeAndCluster($entity);
+        CalldisplayCollections::prepareForGet($entity);
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
         $message->data = $query->readResolvedEntity($entity, \App::getNow(), $resolveReferences);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
-    }
-
-    /**
-     * @SuppressWarnings(NPathComplexity)
-     */
-    protected function testScopeAndCluster($calldisplay)
-    {
-        CalldisplayCollections::retainExisting(
-            $calldisplay,
-            static function ($scopeRef) {
-                return (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($scopeRef->getId());
-            }
-        );
     }
 }

@@ -5,69 +5,102 @@ namespace BO\Zmsbackend\Calldisplay\Helper;
 use BO\Zmsentities\Calldisplay as Entity;
 use BO\Zmsentities\Collection\ClusterList;
 use BO\Zmsentities\Collection\ScopeList;
+use BO\Zmsentities\Scope;
 
 /**
- * Keep calldisplay requests stable when some configured scope/cluster ids no longer exist.
+ * Drop missing scope/cluster ids from a calldisplay request so one bad id
+ * cannot take down the whole display.
  */
 class CalldisplayCollections
 {
-    /**
-     * Drop missing clusters/scopes (log each), or throw if nothing valid remains.
-     *
-     * @return array<int|string, mixed> resolved scopes keyed by id (for queue cache)
-     * @SuppressWarnings(NPathComplexity)
-     */
-    public static function retainExisting(Entity $calldisplay, callable $readScope, string $logPrefix = 'Calldisplay'): array
+    public static function prepareForGet(Entity $calldisplay): void
     {
+        self::prepare($calldisplay, 'Calldisplay', 0, false);
+    }
+
+    /**
+     * @return array<int|string, Scope>
+     */
+    public static function prepareForQueue(Entity $calldisplay, int $resolveReferences): array
+    {
+        return self::prepare($calldisplay, 'Calldisplay queue', $resolveReferences, true);
+    }
+
+    /**
+     * @return array<int|string, Scope>
+     */
+    private static function prepare(
+        Entity $calldisplay,
+        string $logPrefix,
+        int $resolveReferences,
+        bool $withWorkstationCount
+    ): array {
         $hadScopes = $calldisplay->hasScopeList();
         $hadClusters = $calldisplay->hasClusterList();
         if (! $hadScopes && ! $hadClusters) {
             throw new \BO\Zmsbackend\Calldisplay\Exception\ScopeAndClusterNotFound();
         }
 
-        self::keepExistingClusters($calldisplay, $logPrefix);
-        $resolved = self::keepExistingScopes($calldisplay, $readScope, $logPrefix);
-        self::assertHasScopeOrCluster($calldisplay, $hadScopes, $hadClusters);
+        self::filterClusters($calldisplay, $logPrefix);
+        $scopeCache = self::filterScopes($calldisplay, $logPrefix, $resolveReferences, $withWorkstationCount);
+        self::assertAnythingLeft($calldisplay, $hadScopes, $hadClusters);
 
-        return $resolved;
+        return $scopeCache;
     }
 
-    private static function keepExistingClusters(Entity $calldisplay, string $logPrefix): void
+    private static function filterClusters(Entity $calldisplay, string $logPrefix): void
     {
         $clusterList = new ClusterList();
+        $clusterService = new \BO\Zmsbackend\Cluster\Service\Cluster();
+
         foreach ($calldisplay->getClusterList() as $clusterRef) {
-            $cluster = (new \BO\Zmsbackend\Cluster\Service\Cluster())->readEntity($clusterRef->getId());
-            if (! $cluster) {
-                \App::$log->warning($logPrefix . ': skip missing cluster id', [
-                    'clusterId' => $clusterRef->getId(),
-                ]);
+            $cluster = $clusterService->readEntity($clusterRef->getId());
+            if ($cluster) {
+                $clusterList->addEntity($cluster);
                 continue;
             }
-            $clusterList->addEntity($cluster);
+            \App::$log->warning($logPrefix . ': skip missing cluster id', [
+                'clusterId' => $clusterRef->getId(),
+            ]);
         }
+
         $calldisplay->clusters = $clusterList;
     }
 
-    private static function keepExistingScopes(Entity $calldisplay, callable $readScope, string $logPrefix): array
-    {
+    /**
+     * @return array<int|string, Scope>
+     */
+    private static function filterScopes(
+        Entity $calldisplay,
+        string $logPrefix,
+        int $resolveReferences,
+        bool $withWorkstationCount
+    ): array {
         $scopeList = new ScopeList();
-        $resolved = [];
+        $scopeCache = [];
+        $scopeService = new \BO\Zmsbackend\Scope\Service\Scope();
+
         foreach ($calldisplay->getScopeList() as $scopeRef) {
-            $scope = $readScope($scopeRef);
-            if (! $scope) {
-                \App::$log->warning($logPrefix . ': skip missing scope id', [
-                    'scopeId' => $scopeRef->getId(),
-                ]);
+            $scopeId = $scopeRef->getId();
+            $scope = $withWorkstationCount
+                ? $scopeService->readWithWorkstationCount($scopeId, \App::$now, $resolveReferences)
+                : $scopeService->readEntity($scopeId);
+
+            if ($scope) {
+                $scopeList->addEntity($scope);
+                $scopeCache[$scope->getId()] = $scope;
                 continue;
             }
-            $scopeList->addEntity($scope);
-            $resolved[$scope->getId()] = $scope;
+            \App::$log->warning($logPrefix . ': skip missing scope id', [
+                'scopeId' => $scopeId,
+            ]);
         }
+
         $calldisplay->scopes = $scopeList;
-        return $resolved;
+        return $scopeCache;
     }
 
-    private static function assertHasScopeOrCluster(Entity $calldisplay, bool $hadScopes, bool $hadClusters): void
+    private static function assertAnythingLeft(Entity $calldisplay, bool $hadScopes, bool $hadClusters): void
     {
         if ($calldisplay->hasScopeList() || $calldisplay->hasClusterList()) {
             return;
