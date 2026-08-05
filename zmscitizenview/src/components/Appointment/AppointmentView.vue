@@ -136,7 +136,7 @@
             </div>
             <div v-if="currentView === 3">
               <muc-banner
-                v-if="appointmentAlreadyActivated"
+                v-if="appointmentAlreadyActivated && !isRebooking"
                 class="already-activated-banner"
                 variant="content"
                 type="success"

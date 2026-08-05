@@ -1434,6 +1434,73 @@ describe("AppointmentView", () => {
       expect(wrapper.html()).toContain(de.appointmentAlreadyActivatedHeader);
     });
 
+    it("should hide already-activated banner while rescheduling from a reused confirm link", async () => {
+      mockConfirmAppointment.mockResolvedValueOnce({
+        errors: [
+          {
+            errorCode: "processNotPreconfirmedAnymore",
+            message: "Process not preconfirmed anymore",
+          },
+        ],
+      });
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "test-id",
+        authKey: "test-auth-key",
+        serviceId: "123",
+        officeId: "789",
+        serviceCount: 1,
+        subRequestCounts: [],
+        timestamp: nowUnixSeconds() + 3600,
+      } as any);
+      vi.mocked(globalThis.fetch).mockResolvedValue({
+        status: 200,
+        json: async () => ({
+          offices: [
+            {
+              id: "789",
+              name: "Test Provider",
+              address: { street: "Test Street", house_number: "1" },
+            },
+          ],
+          services: [{ id: "123", name: "Test Service" }],
+          relations: [],
+        }),
+      } as any);
+
+      const appointmentData = {
+        id: "test-id",
+        authKey: "test-auth-key",
+        scope: {},
+      };
+      const validHash = btoa(JSON.stringify(appointmentData));
+
+      const wrapper = createWrapper({
+        confirmAppointmentHash: validHash,
+      });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointmentAlreadyActivated).toBe(true);
+        expect(wrapper.vm.currentView).toBe(3);
+      });
+      expect(wrapper.html()).toContain(de.appointmentAlreadyActivatedHeader);
+
+      wrapper.vm.nextRescheduleAppointment();
+      await nextTick();
+      expect(wrapper.vm.isRebooking).toBe(true);
+      expect(wrapper.vm.currentView).toBe(1);
+
+      // Return to summary to confirm the new slot — banner must stay hidden.
+      wrapper.vm.currentView = 3;
+      await nextTick();
+      expect(wrapper.vm.appointmentAlreadyActivated).toBe(true);
+      expect(wrapper.html()).not.toContain(de.appointmentAlreadyActivatedHeader);
+
+      wrapper.vm.nextCancelReschedule();
+      await nextTick();
+      expect(wrapper.vm.isRebooking).toBe(false);
+      expect(wrapper.html()).toContain(de.appointmentAlreadyActivatedHeader);
+    });
+
   it("should display activation expired error when API returns appointmentNotFound", async () => {
     const mockErrorResponse = {
       errors: [
