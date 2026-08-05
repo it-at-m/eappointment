@@ -97,7 +97,7 @@ Contract can use the same job pattern after Provision, or run migrate inside the
 
 ## Migration file convention
 
-Keep one folder: `zmsdb/migrations/`. Differentiate by **filename prefix** (or `--phase` filter in `bin/migrate`).
+Keep one folder: `zmsbackend/migrations/`. Differentiate by **filename prefix** (or `--phase` filter in `bin/migrate`).
 
 ### Which pipeline job runs which migration?
 
@@ -133,7 +133,7 @@ Track applied files in the existing `migrations` table (unchanged).
 
 ### Example: additive only — `custom_text_field3` (no contract)
 
-Adding a third custom text field on `standort` / `buerger` is a **normal additive** change. Same pattern as `zmsdb/migrations/91744880189-add-standort-custom-text-field2.sql`.
+Adding a third custom text field on `standort` / `buerger` is a **normal additive** change. Same pattern as `zmsbackend/migrations/91744880189-add-standort-custom-text-field2.sql`.
 
 |               | Rename (`StandortID` → `scope_id`) | Add `custom_text_field3`   |
 | ------------- | ---------------------------------- | -------------------------- |
@@ -143,7 +143,7 @@ Adding a third custom text field on `standort` / `buerger` is a **normal additiv
 | Old instances | Old column until contract          | Ignore new columns         |
 | New instances | New column after expand            | Read/write new columns     |
 
-`zmsdb/migrations/20260702-add-standort-custom-text-field3.sql` (unprefixed):
+`zmsbackend/migrations/20260702-add-standort-custom-text-field3.sql` (unprefixed):
 
 ```sql
 ALTER TABLE buerger
@@ -169,7 +169,7 @@ Provision         →  new code uses custom_text_field3_*
 
 **Drops are never unprefixed.**
 
-`zmsdb/migrations/20260702-contract-drop-standort-custom-text-field2.sql`:
+`zmsbackend/migrations/20260702-contract-drop-standort-custom-text-field2.sql`:
 
 ```sql
 ALTER TABLE buerger DROP COLUMN custom_text_field2;
@@ -289,4 +289,4 @@ ALTER TABLE standort DROP PRIMARY KEY, DROP COLUMN StandortID, ADD PRIMARY KEY (
 
 ## Post-mortem: failed rename migration
 
-`zmsdb/migrations/91775568666-rename-waiting-way-processing-columns.sql` + `zmsdb/migrations/91775568667-convert-way-time-to-seconds-double.sql` should have been expand → code → contract, not bare `RENAME COLUMN`.
+`zmsbackend/migrations/91775568666-rename-waiting-way-processing-columns.sql` + `zmsbackend/migrations/91775568667-convert-way-time-to-seconds-double.sql` should have been expand → code → contract, not bare `RENAME COLUMN`.

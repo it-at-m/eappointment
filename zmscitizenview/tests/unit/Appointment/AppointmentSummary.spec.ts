@@ -54,9 +54,14 @@ describe("AppointmentSummary", () => {
     mockReservationStartMs = ref<number | null>(Date.now());
   });
 
-  const createWrapper = (props: Partial<{ isRebooking: boolean; rebookOrCancelDialog: boolean }> = {}) => {
+  const createWrapper = (props: Partial<{
+    appointmentAlreadyActivated?: boolean;
+    isRebooking: boolean;
+    rebookOrCancelDialog: boolean;
+  }> = {}) => {
     return mount(AppointmentSummary, {
       props: {
+        appointmentAlreadyActivated: false,
         isRebooking: false,
         rebookOrCancelDialog: false,
         t: (key: string) => key,
@@ -84,6 +89,11 @@ describe("AppointmentSummary", () => {
             template:
               '<button class="muc-button" :data-icon="icon" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
             props: ["icon", "iconShownLeft", "variant", "disabled"],
+          },
+          "muc-banner": {
+            props: ["type", "variant"],
+            template:
+              '<div data-test="appointment-already-activated-banner" class="muc-banner"><slot /></div>',
           },
           "muc-callout": {
             template:
@@ -392,6 +402,42 @@ describe("AppointmentSummary", () => {
       // only back-button visible
       const anyButtons = wrapper.findAll(".muc-button");
       expect(anyButtons.length).toBe(1);
+    });
+
+    it("hides already-activated banner when the reservation session expired", async () => {
+      mockAppointment.value.scope = { reservationDuration: 1 };
+      mockReservationStartMs.value = Date.now() - 2 * 60 * 1000;
+
+      const wrapper = createWrapper({ appointmentAlreadyActivated: true });
+      await nextTick();
+
+      expect(wrapper.text()).toContain("apiErrorSessionTimeoutHeader");
+      expect(
+        wrapper.find('[data-test="appointment-already-activated-banner"]').exists()
+      ).toBe(false);
+      expect(wrapper.text()).not.toContain("appointmentAlreadyActivatedHeader");
+    });
+  });
+
+  describe("Already activated banner", () => {
+    it("shows already-activated banner on the appointment overview", () => {
+      const wrapper = createWrapper({ appointmentAlreadyActivated: true });
+
+      expect(
+        wrapper.find('[data-test="appointment-already-activated-banner"]').exists()
+      ).toBe(true);
+      expect(wrapper.text()).toContain("appointmentAlreadyActivatedHeader");
+    });
+
+    it("hides already-activated banner while rescheduling", () => {
+      const wrapper = createWrapper({
+        appointmentAlreadyActivated: true,
+        isRebooking: true,
+      });
+
+      expect(
+        wrapper.find('[data-test="appointment-already-activated-banner"]').exists()
+      ).toBe(false);
     });
   });
 
