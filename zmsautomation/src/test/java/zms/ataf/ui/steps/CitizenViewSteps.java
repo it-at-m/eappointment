@@ -1,6 +1,8 @@
 package zms.ataf.ui.steps;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import ataf.core.helpers.TestDataHelper;
@@ -13,8 +15,9 @@ import zms.ataf.ui.pages.citizenview.CitizenViewPage;
 
 /**
  * All zmscitizenview UI steps (English). Service Finder smoke + full booking flow; see
- * {@code features/ui/zmscitizenview/ServiceFinder.feature} and
- * {@code zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature}.
+ * {@code features/ui/zmscitizenview/ServiceFinder.feature},
+ * {@code zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature}, and
+ * {@code zmskvr-1046_booking_ruppertstrasse_shared_booking_ausbildung.feature}.
  */
 public class CitizenViewSteps {
 
@@ -298,6 +301,40 @@ public class CitizenViewSteps {
         }
         ScenarioLogManager.getLogger().info("zmscitizenview: assert provider checkbox {} NOT visible", officeId);
         page.assertProviderCheckboxAbsent(officeId);
+    }
+
+    @Then("timeslots for providers {string} should be visible in the citizen view")
+    public void timeslotsForProvidersShouldBeVisible(String officeIdsCsv) {
+        String raw = TestDataHelper.transformTestData(officeIdsCsv);
+        List<Integer> ids = new ArrayList<>();
+        for (String token : raw.split(",")) {
+            String trimmed = token.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            ids.add(parseIntOrFail(trimmed, "officeId"));
+        }
+        int[] officeIds = ids.stream().mapToInt(Integer::intValue).toArray();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert timeslots present for providers {}", ids);
+        page.assertTimeslotsPresentForProviders(officeIds);
+    }
+
+    @Then("timeslots for providers {string} should not appear in the citizen view")
+    public void timeslotsForProvidersShouldNotAppear(String officeIdsCsv) {
+        String raw = TestDataHelper.transformTestData(officeIdsCsv);
+        List<Integer> ids = new ArrayList<>();
+        for (String token : raw.split(",")) {
+            String trimmed = token.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            ids.add(parseIntOrFail(trimmed, "officeId"));
+        }
+        int[] officeIds = ids.stream().mapToInt(Integer::intValue).toArray();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert timeslots absent for providers {}", ids);
+        page.assertTimeslotsAbsentForProviders(officeIds);
     }
 
     @When("I keep only providers {string} checked in the citizen view")

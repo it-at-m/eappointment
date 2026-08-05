@@ -122,6 +122,7 @@
                         "
                         :officeNameById="officeNameById"
                         :isSlotSelected="isSlotSelected"
+                        :officeIdForTime="officeIdForTime"
                         :t="t"
                         @selectTimeSlot="$emit('selectTimeSlot', $event)"
                       />
@@ -194,6 +195,7 @@
                         "
                         :officeNameById="officeNameById"
                         :isSlotSelected="isSlotSelected"
+                        :officeIdForTime="officeIdForTime"
                         :t="t"
                         @selectTimeSlot="$emit('selectTimeSlot', $event)"
                       />
@@ -281,6 +283,10 @@ const props = defineProps<{
   providersWithAppointments: OfficeImpl[];
   officeNameById: (id: number | string) => string | null;
   isSlotSelected: (officeId: number | string, time: number) => boolean;
+  officeIdForTime?: (
+    time: number,
+    displayOfficeId: number | string
+  ) => number | string;
   // New raw data to compute firstFiveAvailableDays inside this component
   availableDays:
     Array<{ date: string | number; providerIDs: string }> | undefined;
