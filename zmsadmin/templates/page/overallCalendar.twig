@@ -57,6 +57,24 @@
                 <label for="calendar-date-until" class="form-label">Bis</label>
                 <input type="date" id="calendar-date-until" name="calendarDateUntil" class="form-control">
             </div>
+            <fieldset class="overall-calendar-filter"
+                      title="Darstellung der Tage ohne Öffnungszeiten">
+                <legend class="overall-calendar-filter-legend">Tage ohne Öffnungszeiten</legend>
+                <label>
+                    <input type="radio"
+                           name="emptyDaysVisibility"
+                           value="show"
+                           checked>
+                    Einblenden
+                </label>
+                <label>
+                    <input type="radio"
+                           name="emptyDaysVisibility"
+                           value="hide"
+                           id="hide-days-without-opening-hours">
+                    Ausblenden
+                </label>
+            </fieldset>
         </div>
 
         <div class="overall-calendar-actions">

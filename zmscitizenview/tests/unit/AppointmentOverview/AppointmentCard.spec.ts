@@ -5,6 +5,18 @@ import de from '@/utils/de-DE.json';
 import AppointmentCard from "@/components/AppointmentOverview/AppointmentCard.vue";
 
 describe("AppointmentCard", () => {
+  const translate = (key: string): string => {
+    const value = key.split(".").reduce<unknown>((current, part) => {
+      if (typeof current !== "object" || current === null) {
+        return undefined;
+      }
+
+      return (current as Record<string, unknown>)[part];
+    }, de);
+
+    return typeof value === "string" ? value : key;
+  };
+
   const mockAppointmentDetailUrl = "https://www.muenchen.de/appointment-detail";
 
   const mockAppointment =
@@ -41,7 +53,8 @@ describe("AppointmentCard", () => {
         ],
       };
 
-  const mockProvider = {
+  const mockProvider =
+    {
       id: "1",
       name: "Rathaus Marienplatz",
       address: {
@@ -50,23 +63,32 @@ describe("AppointmentCard", () => {
       },
     };
 
+  const createMockService = (
+    id: string,
+    variantId: number | null
+  ) => ({
+    id,
+    name: "Personalausweis",
+    maxQuantity: 1,
+    parentId: null,
+    variantId,
+  });
+
   const createWrapper = (props = {}, appointment: any) => {
     return mount(AppointmentCard, {
       props: {
         appointment: appointment,
         appointmentDetailUrl: mockAppointmentDetailUrl,
         offices: [],
-        t: (key: string) => {
-          const translations = de as any;
-          return translations[key] || key;
-        },
-
+        services: [],
+        t: translate,
         ...props,
       },
       global: {
         stubs: {
           'muc-icon': {
-            template: "<div data-test='muc-icon'></div>",
+            template:
+              "<span data-test='muc-icon' :data-icon='icon'></span>",
             props: ["icon"],
           },
           'muc-card': {
@@ -87,7 +109,7 @@ describe("AppointmentCard", () => {
     await nextTick();
 
     expect(wrapper.find('[data-test="muc-card"]').exists()).toBe(true);
-    expect(wrapper.find('[data-test="muc-card"]').attributes('tagline')).toBe(de.appointment);
+    expect(wrapper.find('[data-test="muc-card"]').attributes('tagline')).toBe(de.appointmentTypes["1"]);
     expect(wrapper.find('[data-test="muc-card"]').attributes('title')).toBe(wrapper.vm.formatMultilineTitle(mockAppointment));
     expect(wrapper.find('.multiline-text').exists()).toBe(true);
     expect(wrapper.text()).toContain(mockProvider.address.street);
@@ -99,10 +121,116 @@ describe("AppointmentCard", () => {
     await nextTick();
 
     expect(wrapper.find('[data-test="muc-card"]').exists()).toBe(true);
-    expect(wrapper.find('[data-test="muc-card"]').attributes('tagline')).toBe('Termin');
+    expect(wrapper.find('[data-test="muc-card"]').attributes('tagline')).toBe(de.appointmentTypes["1"]);
     expect(wrapper.find('[data-test="muc-card"]').attributes('title')).toBe(wrapper.vm.formatMultilineTitle(mockAppointmentSubServices));
     expect(wrapper.find('.multiline-text').exists()).toBe(true);
     expect(wrapper.text()).toContain(mockProvider.address.street);
     expect(wrapper.text()).toContain(mockProvider.address.house_number);
   });
+
+  it("renders telephone appointment card", async () => {
+    const appointment = {
+      ...mockAppointment,
+      serviceId: "telephone-service",
+    };
+
+    const wrapper = createWrapper(
+      {
+        offices: [mockProvider],
+        services: [createMockService("telephone-service", 2)],
+      },
+      appointment
+    );
+
+    await nextTick();
+
+    expect(
+      wrapper.find('[data-test="muc-card"]').attributes("tagline")
+    ).toBe(de.appointmentTypes["2"]);
+
+    const location = wrapper.find(
+      '[data-test="appointment-location"]'
+    );
+
+    expect(
+      location.find('[data-test="muc-icon"]').attributes("data-icon")
+    ).toBe("telephone");
+
+    expect(location.text()).toContain(mockAppointment.telephone);
+    expect(location.text()).not.toContain(mockProvider.address.street);
+  });
+
+  it("renders video appointment card", async () => {
+    const appointment = {
+      ...mockAppointment,
+      serviceId: "video-service",
+    };
+
+    const wrapper = createWrapper(
+      {
+        offices: [mockProvider],
+        services: [createMockService("video-service", 3)],
+      },
+      appointment
+    );
+
+    await nextTick();
+
+    expect(
+      wrapper.find('[data-test="muc-card"]').attributes("tagline")
+    ).toBe(de.appointmentTypes["3"]);
+
+    const location = wrapper.find(
+      '[data-test="appointment-location"]'
+    );
+
+    expect(
+      location.find('[data-test="muc-icon"]').attributes("data-icon")
+    ).toBe("video-camera");
+
+    expect(location.text()).toContain(
+      de.appointmentDetailVideoIntroLocation
+    );
+
+    expect(location.text()).not.toContain(mockProvider.address.street);
+  });
+
+  it.each([null, 1, 4, 5, 6, 7])(
+    "renders variant %s as presence appointment",
+    async (variantId) => {
+      const serviceId = `service-${variantId}`;
+
+      const appointment = {
+        ...mockAppointment,
+        serviceId,
+      };
+
+      const wrapper = createWrapper(
+        {
+          offices: [mockProvider],
+          services: [createMockService(serviceId, variantId)],
+        },
+        appointment
+      );
+
+      await nextTick();
+
+      expect(
+        wrapper.find('[data-test="muc-card"]').attributes("tagline")
+      ).toBe(de.appointmentTypes["1"]);
+
+      const location = wrapper.find(
+        '[data-test="appointment-location"]'
+      );
+
+      expect(
+        location.find('[data-test="muc-icon"]').attributes("data-icon")
+      ).toBe("map-pin");
+
+      expect(location.text()).toContain(mockProvider.address.street);
+      expect(location.text()).toContain(
+        mockProvider.address.house_number
+      );
+    }
+  );
 });

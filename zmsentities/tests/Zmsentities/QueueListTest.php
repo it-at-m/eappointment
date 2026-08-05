@@ -168,4 +168,49 @@ class QueueListTest extends EntityCommonTests
         $withShortName = $collection->withShortNameDestinationHint($cluster, $scope);
         $this->assertEquals("Zentrale", $withShortName->getFirst()->destinationHint);
     }
+
+    public function testGetCountWithWaitingTimeCountsAppointmentAtArrivalTime()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+
+        $withAppointment = (new $this->entityclass())->getExample();
+        $withAppointment->withAppointment = true;
+        $withAppointment->arrivalTime = $now->getTimestamp();
+        $withAppointment->waitingTime = 0;
+
+        $collection = new $this->collectionclass();
+        $collection->addEntity($withAppointment);
+
+        $this->assertEquals(1, $collection->getCountWithWaitingTime($now)->count());
+    }
+
+    public function testGetCountWithWaitingTimeDoesNotCountAppointmentBeforeArrivalTime()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+
+        $withAppointment = (new $this->entityclass())->getExample();
+        $withAppointment->withAppointment = true;
+        $withAppointment->arrivalTime = $now->modify('+1 minute')->getTimestamp();
+        $withAppointment->waitingTime = 0;
+
+        $collection = new $this->collectionclass();
+        $collection->addEntity($withAppointment);
+
+        $this->assertEquals(0, $collection->getCountWithWaitingTime($now)->count());
+    }
+
+    public function testGetCountWithWaitingTimeUsesGivenDateTimeOverExistingWaitingTime()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+
+        $withAppointment = (new $this->entityclass())->getExample();
+        $withAppointment->withAppointment = true;
+        $withAppointment->arrivalTime = $now->modify('+10 minutes')->getTimestamp();
+        $withAppointment->waitingTime = 5;
+
+        $collection = new $this->collectionclass();
+        $collection->addEntity($withAppointment);
+
+        $this->assertEquals(0, $collection->getCountWithWaitingTime($now)->count());
+    }
 }

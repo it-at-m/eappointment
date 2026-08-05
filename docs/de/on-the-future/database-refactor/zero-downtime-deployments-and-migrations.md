@@ -84,7 +84,7 @@ Contract analog nach Provision oder im aktualisierten Deployment.
 
 ## Migrations-Dateikonvention
 
-Ein Ordner: `zmsdb/migrations/`. Unterscheidung per **Dateinamen-Präfix** (oder `--phase` in `bin/migrate`).
+Ein Ordner: `zmsbackend/migrations/`. Unterscheidung per **Dateinamen-Präfix** (oder `--phase` in `bin/migrate`).
 
 ### Welcher Pipeline-Job für welche Migration?
 
@@ -112,7 +112,7 @@ Unprefixed-Dateien: CI-Lint **nur additiv** (kein `DROP`, `RENAME`, …). Breaki
 
 ### Beispiel: nur additiv — `custom_text_field3` (kein Contract)
 
-Wie `zmsdb/migrations/91744880189-add-standort-custom-text-field2.sql`. Unprefixed, nur **Migrate Expand**, kein Contract.
+Wie `zmsbackend/migrations/91744880189-add-standort-custom-text-field2.sql`. Unprefixed, nur **Migrate Expand**, kein Contract.
 
 ### Beispiel: Code und Spalten löschen (nur Contract)
 
@@ -170,4 +170,4 @@ Tabellenumbenennung ist **nie unprefixed**.
 
 ## Post-Mortem: fehlgeschlagene Rename-Migration
 
-`zmsdb/migrations/91775568666-rename-waiting-way-processing-columns.sql` hätte Expand → Code → Contract sein müssen, nicht bloßes `RENAME COLUMN`.
+`zmsbackend/migrations/91775568666-rename-waiting-way-processing-columns.sql` hätte Expand → Code → Contract sein müssen, nicht bloßes `RENAME COLUMN`.

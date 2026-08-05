@@ -173,6 +173,7 @@
       <appointment-detail-header
         :appointment="appointment"
         :selected-provider="selectedProvider"
+        :variant-id="variantId"
         :t="t"
         @cancel-appointment="openCancelModal"
         @focus-location="focusLocationTitle"
@@ -208,7 +209,7 @@
                     {{ t("minutes") }}
                   </p>
                 </div>
-                <p>
+                <p v-if="!isRemoteVariant">
                   {{ t("detailTimeHint") }}
                 </p>
               </div>
@@ -218,23 +219,79 @@
                 </h2>
               </div>
               <div
-                v-if="selectedProvider"
+                v-if="selectedProvider || isRemoteVariant"
                 class="m-content location-text-margin-top"
-                :id="`provider-${selectedProvider.id}`"
+                :id="
+                  selectedProvider
+                    ? `provider-${selectedProvider.id}`
+                    : undefined
+                "
               >
-                <p>
-                  {{ selectedProvider.organization }}<br />
-                  <strong> {{ selectedProvider.name }} </strong><br />
-                </p>
-                <p>
-                  {{ selectedProvider.address.street }}
-                  {{ selectedProvider.address.house_number }}<br />
-                  {{ selectedProvider.address.postal_code }}
-                  {{ selectedProvider.address.city }}
-                </p>
-                <p v-if="appointment?.scope?.hint">
-                  <strong> {{ appointment.scope.hint }} </strong>
-                </p>
+                <template v-if="isVideoVariant">
+                  <p>
+                    <strong>{{ t("appointmentTypes.3") }}</strong
+                    ><br />
+                    {{ t("appointmentDetailVideoLocationText") }}
+                  </p>
+
+                  <p>
+                    {{ t("appointmentDetailVideoPreparationHint") }}
+                    <a
+                      :href="VIDEO_CONSULTATION_INFO_URL"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {{ t("appointmentDetailVideoInfoLink") }}</a
+                    >.
+                  </p>
+
+                  <p>
+                    {{ t("appointmentDetailVideoDelayHint") }}
+                  </p>
+                </template>
+
+                <template v-else-if="isTelephoneVariant">
+                  <p>
+                    <strong>{{ t("appointmentTypes.2") }}</strong
+                    ><br />
+                    {{ t("appointmentDetailTelephoneLocationText") }}<br />
+                    <br />
+
+                    <span v-if="appointment?.telephone">
+                      <svg
+                        data-test="telephone-icon"
+                        aria-hidden="true"
+                        class="icon icon--before"
+                      >
+                        <use xlink:href="#icon-telephone"></use>
+                      </svg>
+                      {{ appointment.telephone }}
+                    </span>
+                  </p>
+
+                  <p>
+                    {{ t("appointmentDetailTelephonePreparationHint") }}
+                  </p>
+                </template>
+
+                <template v-else-if="selectedProvider">
+                  <p>
+                    {{ selectedProvider.organization }}<br />
+                    <strong>{{ selectedProvider.name }}</strong
+                    ><br />
+                  </p>
+
+                  <p>
+                    {{ selectedProvider.address.street }}
+                    {{ selectedProvider.address.house_number }}<br />
+                    {{ selectedProvider.address.postal_code }}
+                    {{ selectedProvider.address.city }}
+                  </p>
+
+                  <p v-if="appointment?.scope?.hint">
+                    <strong>{{ appointment.scope.hint }}</strong>
+                  </p>
+                </template>
               </div>
               <muc-callout
                 v-if="appointment?.scope?.infoForAppointment"
@@ -242,8 +299,13 @@
                 class="callout-margin"
               >
                 <template #content>
-                  {{ appointment.scope.infoForAppointment }}
+                  <component
+                    :is="infoForAppointmentContainsPTag ? 'div' : 'p'"
+                    tabindex="0"
+                    v-html="sanitizedInfoForAppointment"
+                  />
                 </template>
+
                 <template #header>{{ t("appointmentHintHeader") }}</template>
               </muc-callout>
             </div>
@@ -265,7 +327,7 @@
                   <li class="m-linklist__list__item">
                     <a
                       class="m-linklist-element m-linklist-element--external"
-                      :href="getServiceBaseURL() + appointment.serviceId"
+                      :href="getServiceBaseURL() + resolvedServiceLinkId"
                       target="_blank"
                       :id="`service-${appointment.serviceId}`"
                     >
@@ -350,7 +412,11 @@ import {
   getServiceBaseURL,
   QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
+  VARIANT_ID_TELEPHONE,
+  VARIANT_ID_VIDEO,
+  VIDEO_CONSULTATION_INFO_URL,
 } from "@/utils/Constants";
+import containsParagraphTag from "@/utils/containsParagraphTag";
 import {
   createErrorStates,
   getApiErrorTranslation,
@@ -358,6 +424,7 @@ import {
 } from "@/utils/errorHandler";
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { getProviders } from "@/utils/getProviders";
+import sanitizeHtml from "@/utils/sanitizeHtml";
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -378,6 +445,20 @@ const selectedProvider = ref<OfficeImpl>();
 const loading = ref(true);
 const loadingError = ref(false);
 const isMobile = ref(false);
+
+const variantId = computed<number | null>(
+  () => selectedService.value?.variantId ?? null
+);
+
+const isTelephoneVariant = computed(
+  () => variantId.value === VARIANT_ID_TELEPHONE
+);
+
+const isVideoVariant = computed(() => variantId.value === VARIANT_ID_VIDEO);
+
+const isRemoteVariant = computed(
+  () => isTelephoneVariant.value || isVideoVariant.value
+);
 
 const timeTitleElement = ref<HTMLElement | null>(null);
 const locationTitleElement = ref<HTMLElement | null>(null);
@@ -408,6 +489,14 @@ const estimatedDuration = () => {
     selectedProvider.value
   );
 };
+
+const resolvedServiceLinkId = computed<string>(() => {
+  const service = selectedService.value;
+
+  return String(
+    service?.rootParentId ?? service?.id ?? appointment.value?.serviceId ?? ""
+  );
+});
 
 const openRescheduleModal = () => (rescheduleModalOpen.value = true);
 
@@ -615,6 +704,13 @@ const loadAppointment = () => {
     }
   });
 };
+const sanitizedInfoForAppointment = computed(() =>
+  sanitizeHtml(appointment.value?.scope?.infoForAppointment)
+);
+
+const infoForAppointmentContainsPTag = computed(() =>
+  containsParagraphTag(sanitizedInfoForAppointment.value)
+);
 
 watch(
   () => props.globalState.accessToken,
