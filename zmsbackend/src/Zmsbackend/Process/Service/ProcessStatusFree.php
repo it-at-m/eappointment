@@ -84,20 +84,17 @@ class ProcessStatusFree extends Process
             true
         );
 
-        $unique = [];
+        $processInfos = [];
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
             $processInfo = $this->extractProcessInfo($item, $calendar);
             if ($processInfo) {
-                $key = $this->generateUniqueKey($processInfo['providerId'], $processInfo['date']);
-                if (!isset($unique[$key])) {
-                    $unique[$key] = $this->createMinimalProcess($processInfo);
-                }
+                $processInfos[] = $processInfo;
             }
         }
 
         $processData->closeCursor();
 
-        return array_values($unique);
+        return $this->deduplicateWithRoundRobin($processInfos);
     }
 
     private function getProcessDataHandle(
@@ -168,21 +165,119 @@ class ProcessStatusFree extends Process
         list($calendar, $dayquery, $days) = $this->prepareCalendarAndDays($calendar, $now, $slotsRequired);
         $processData = $this->getProcessDataHandle($days, $slotType, $slotsRequired, $groupData);
 
-        $unique = [];
+        $processInfos = [];
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
             $processInfo = $this->extractProcessInfo($item, $calendar);
             if ($processInfo) {
-                $key = $this->generateUniqueKey($processInfo['providerId'], $processInfo['date']);
-                if (!isset($unique[$key])) {
-                    $unique[$key] = $this->createMinimalProcess($processInfo);
-                }
+                $processInfos[] = $processInfo;
             }
         }
 
         $processData->closeCursor();
         unset($dayquery);
 
-        return array_values($unique);
+        return $this->deduplicateWithRoundRobin($processInfos);
+    }
+
+    /**
+     * Keep one free process per round-robin group + timestamp.
+     *
+     * Default group is the provider id. When provider.data.sharedBookingOfficeIds
+     * is set, all peer providers share one group so the same wall-clock slot is
+     * offered once and successive timeslots round-robin across eligible scopes
+     * of every peer (ZMSKVR-1046). Scopes that cannot fit the slot never appear
+     * here, so fall-through is preserved.
+     *
+     * @param array<int, array<string, mixed>> $processInfos
+     * @return array<int, array<string, mixed>>
+     */
+    private function deduplicateWithRoundRobin(array $processInfos): array
+    {
+        // Composite key: round-robin group (provider or shared-office set) + slot timestamp.
+        $candidatesByGroupTimestampKey = [];
+        $groupTimestampKeyOrder = [];
+        foreach ($processInfos as $processInfo) {
+            $roundRobinGroupKey = self::resolveRoundRobinGroupKey(
+                (string) $processInfo['providerId'],
+                $processInfo['sharedBookingOfficeIds'] ?? null
+            );
+            $groupTimestampKey = $roundRobinGroupKey . '_' . $processInfo['date'];
+            if (!isset($candidatesByGroupTimestampKey[$groupTimestampKey])) {
+                $groupTimestampKeyOrder[] = $groupTimestampKey;
+                $candidatesByGroupTimestampKey[$groupTimestampKey] = [];
+            }
+            $candidatesByGroupTimestampKey[$groupTimestampKey][] = $processInfo;
+        }
+
+        $roundRobinIndexByGroup = [];
+        $deduplicatedProcesses = [];
+        foreach ($groupTimestampKeyOrder as $groupTimestampKey) {
+            $candidates = self::uniqueCandidatesSortedByScopeId(
+                $candidatesByGroupTimestampKey[$groupTimestampKey]
+            );
+            $roundRobinGroupKey = self::resolveRoundRobinGroupKey(
+                (string) $candidates[0]['providerId'],
+                $candidates[0]['sharedBookingOfficeIds'] ?? null
+            );
+            $roundRobinTimeslotIndex = $roundRobinIndexByGroup[$roundRobinGroupKey] ?? 0;
+            $chosenCandidate = $candidates[
+                self::pickRoundRobinIndex($roundRobinTimeslotIndex, count($candidates))
+            ];
+            $roundRobinIndexByGroup[$roundRobinGroupKey] = $roundRobinTimeslotIndex + 1;
+            $deduplicatedProcesses[] = $this->createMinimalProcess($chosenCandidate);
+        }
+
+        return $deduplicatedProcesses;
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $candidates
+     * @return array<int, array<string, mixed>>
+     */
+    private static function uniqueCandidatesSortedByScopeId(array $candidates): array
+    {
+        $candidatesByScopeId = [];
+        foreach ($candidates as $candidate) {
+            $candidatesByScopeId[(string) $candidate['scopeId']] = $candidate;
+        }
+        $uniqueCandidates = array_values($candidatesByScopeId);
+        usort(
+            $uniqueCandidates,
+            static fn (array $left, array $right): int =>
+                ((int) $left['scopeId']) <=> ((int) $right['scopeId'])
+        );
+
+        return $uniqueCandidates;
+    }
+
+    /**
+     * @internal Exposed for unit tests.
+     * @param array<int, int|string>|null $sharedBookingOfficeIds
+     */
+    public static function resolveRoundRobinGroupKey(
+        string $providerId,
+        ?array $sharedBookingOfficeIds
+    ): string {
+        if (!is_array($sharedBookingOfficeIds) || $sharedBookingOfficeIds === []) {
+            return $providerId;
+        }
+
+        $sortedSharedOfficeIds = array_map('intval', $sharedBookingOfficeIds);
+        sort($sortedSharedOfficeIds, SORT_NUMERIC);
+
+        return implode(',', $sortedSharedOfficeIds);
+    }
+
+    /**
+     * @internal Exposed for unit tests.
+     */
+    public static function pickRoundRobinIndex(int $timeslotIndex, int $candidateCount): int
+    {
+        if ($candidateCount < 1) {
+            throw new \InvalidArgumentException('candidateCount must be >= 1');
+        }
+
+        return $timeslotIndex % $candidateCount;
     }
 
     private function extractProcessInfo(array $item, \BO\Zmsentities\Calendar $calendar): ?array
@@ -209,17 +304,24 @@ class ProcessStatusFree extends Process
             return null;
         }
 
+        $sharedBookingOfficeIds = null;
+        $provider = $scope->getProvider();
+        if (
+            $provider
+            && isset($provider->data['sharedBookingOfficeIds'])
+            && is_array($provider->data['sharedBookingOfficeIds'])
+            && $provider->data['sharedBookingOfficeIds'] !== []
+        ) {
+            $sharedBookingOfficeIds = array_map('intval', $provider->data['sharedBookingOfficeIds']);
+        }
+
         return [
             'scopeId' => $scopeId,
             'source' => $scope->getSource(),
             'providerId' => $providerId,
+            'sharedBookingOfficeIds' => $sharedBookingOfficeIds,
             'date' => $date
         ];
-    }
-
-    private function generateUniqueKey(string $providerId, int $date): string
-    {
-        return $providerId . '_' . $date;
     }
 
     private function createMinimalProcess(array $processInfo): array

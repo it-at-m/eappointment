@@ -61,6 +61,15 @@ class Munich
         [10489, 10502],
     ];
 
+    /**
+     * Offices that share one Ort in the Bürgeransicht but keep pooled calendar
+     * capacity across all peer OfficeIDs (ZMSKVR-1046 Ausbildung). Distinct from
+     * LOCATIONS_ALLOW_DISABLED_MIX (exclusive vs mixed survivor = one OfficeID).
+     */
+    const LOCATIONS_SHARED_BOOKING = [
+        [10489, 10503], // Bürgerbüro Ruppertstraße + Ausbildung
+    ];
+
     /** Aligned with dldb-mapper/app/map.php DONT_SHOW_SERVICE_ON_START_PAGE */
     const DONT_SHOW_SERVICE_ON_START_PAGE = [
         10396802,
@@ -211,7 +220,10 @@ class Munich
     }
 
     /**
-     * Path to bundled SADB overwrite (ex-dldb-mapper prod.json). Passkalender 10502 + Pass services.
+     * Path to bundled SADB overwrite (ex-dldb-mapper prod.json).
+     * Local extras: Passkalender 10502 (Pass services) + Ausbildungskalender 10503
+     * (Haushaltsbescheinigung 1080843, Wohnsitzanmeldung 1063475, Wohnsitzanmeldung Familie 10224132).
+     * TODO ZMSKVR-1046: Remove 10503 from the overwrite once a real Ausbildung office exists in SADB.
      */
     public static function defaultSadbOverwritePath(): string
     {
@@ -535,6 +547,14 @@ class Munich
         foreach (self::LOCATIONS_ALLOW_DISABLED_MIX as $group) {
             if (in_array((int) $mappedLocation['id'], $group, true)) {
                 $mappedLocation['allowDisabledServicesMix'] = $group;
+                break;
+            }
+        }
+
+        // Peer offices that collapse to one Ort but share calendar / booking capacity.
+        foreach (self::LOCATIONS_SHARED_BOOKING as $group) {
+            if (in_array((int) $mappedLocation['id'], $group, true)) {
+                $mappedLocation['sharedBookingOfficeIds'] = $group;
                 break;
             }
         }

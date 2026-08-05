@@ -1047,7 +1047,9 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
           office.scope,
           office.slotsPerAppointment,
           office.slots,
-          office.priority || 1
+          office.priority || 1,
+          office.parentId,
+          office.sharedBookingOfficeIds
         );
 
         if (!providers || providers.includes(foundOffice.id.toString())) {
@@ -1243,7 +1245,9 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
                 foundOffice.scope,
                 foundOffice.slotsPerAppointment,
                 undefined,
-                foundOffice.priority || 1
+                foundOffice.priority || 1,
+                foundOffice.parentId,
+                foundOffice.sharedBookingOfficeIds
               );
             }
 
