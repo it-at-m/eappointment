@@ -1,6 +1,6 @@
 # eAppointment-Dokumentation
 
-Dieses Handbuch ist die Hauptanlaufstelle auf [GitHub Pages](https://it-at-m.github.io/eappointment/). Es ist mit dem Repository (`main`) versioniert.
+Dieses Handbuch ist die Hauptanlaufstelle auf [GitHub Pages](https://it-at-m.github.io/eappointment/). Es ist mit dem Repository (`next`) versioniert.
 
 - **GitHub-Repository** (Handbuch): [https://github.com/it-at-m/eappointment/](https://github.com/it-at-m/eappointment/)
 
