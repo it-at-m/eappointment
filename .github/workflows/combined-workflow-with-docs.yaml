@@ -2,7 +2,7 @@ name: 🐘 Combined PHP Build with Documentation
 
 on:
   push:
-    branches: [main]
+    branches: [next]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
