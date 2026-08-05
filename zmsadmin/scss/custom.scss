@@ -158,3 +158,21 @@
     margin: 0;
     padding: 0;
 }
+
+.statistic-additional-requests {
+    margin-top: 1rem;
+}
+
+.statistic-additional-requests__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.statistic-additional-requests__panel {
+    display: none;
+}
+
+.statistic-additional-requests.is-expanded .statistic-additional-requests__panel {
+    display: block;
+}

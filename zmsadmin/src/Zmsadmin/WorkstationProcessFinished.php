@@ -13,6 +13,7 @@ use BO\Zmsadmin\Helper\ProcessFinishedHelper;
 use BO\Zmsentities\Exception\WorkstationMissingAssignedProcess;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Collection\RequestList;
+use BO\Zmsentities\Requeststatistic;
 use BO\Zmsentities\Workstation;
 
 class WorkstationProcessFinished extends BaseController
@@ -42,14 +43,21 @@ class WorkstationProcessFinished extends BaseController
             $scopeId = $workstation->process->scope->id;
         }
 
-        $requestList = \App::$http
-            ->readGetResult('/scope/' . $scopeId . '/request/')
-            ->getCollection();
-        $requestList = $requestList ? $requestList : new RequestList();
+        $requestStatistic = $this->readRequeststatistic((int) $scopeId);
+        $scopeRequestList = $requestStatistic->scope instanceof RequestList
+            ? $requestStatistic->scope
+            : new RequestList();
+        $additionalRequestList = $requestStatistic->additional instanceof RequestList
+            ? $requestStatistic->additional
+            : new RequestList();
+
+        $selectableRequestList = (new RequestList())
+            ->addList($scopeRequestList)
+            ->addList($additionalRequestList);
 
         if (is_array($input) && isset($input['process']) && array_key_exists('id', $input['process'])) {
             $source = $workstation->getScope()->getSource();
-            $process = new ProcessFinishedHelper(clone $workstation->process, $input, $requestList, $source);
+            $process = new ProcessFinishedHelper(clone $workstation->process, $input, $selectableRequestList, $source);
             return $this->getFinishedResponse($workstation, $process);
         }
 
@@ -59,10 +67,30 @@ class WorkstationProcessFinished extends BaseController
             array(
                 'title' => 'Kundendaten',
                 'workstation' => $workstation,
-                'requestList' => $requestList->toSortedByGroup(),
+                'requestList' => $scopeRequestList->toSortedByGroup(),
+                'additionalRequestList' => $additionalRequestList->toSortedByGroup(),
                 'menuActive' => 'workstation',
                 'statisticEnabled' => $statisticEnabled
             )
+        );
+    }
+
+    protected function readRequeststatistic(int $scopeId): Requeststatistic
+    {
+        $entity = \App::$http
+            ->readGetResult('/scope/' . $scopeId . '/request/department/')
+            ->getEntity();
+
+        if ($entity instanceof Requeststatistic) {
+            return $entity;
+        }
+
+        \App::$log->error('Expected Requeststatistic from department request list API', [
+            'scopeId' => $scopeId,
+            'receivedType' => is_object($entity) ? get_class($entity) : gettype($entity),
+        ]);
+        throw new \RuntimeException(
+            'Invalid API response for /scope/' . $scopeId . '/request/department/'
         );
     }
 

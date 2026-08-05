@@ -276,6 +276,116 @@ class Request extends \BO\Zmsbackend\Base
         return $requestList;
     }
 
+    /**
+     * Requests for statistic collection after process finish (ZMSKVR-1431).
+     * Returns scope-assigned requests plus department-wide extras (deduped).
+     *
+     * @return array{scope: Collection, additional: Collection}
+     */
+    public function readListByScopeAndDepartment(int $scopeId, int $resolveReferences = 0): array
+    {
+        $scopeService = new \BO\Zmsbackend\Scope\Service\Scope();
+        $scope = $scopeService->readEntity($scopeId, $resolveReferences ? $resolveReferences : 1);
+        if (!$scope || !$scope->hasId()) {
+            throw new \BO\Zmsbackend\Scope\Exception\ScopeNotFound();
+        }
+
+        $scopeRequestList = $this->readListByProvider(
+            $scope->provider['source'],
+            $scope->getProviderId(),
+            $resolveReferences
+        );
+
+        $departmentId = (int) $scopeService->readDepartmentIdByScopeId($scopeId);
+        if ($departmentId < 1) {
+            return [
+                'scope' => $scopeRequestList,
+                'additional' => new Collection(),
+            ];
+        }
+
+        $providers = $this->readDepartmentProviders(
+            $scopeService->readByDepartmentId($departmentId, 1),
+            $departmentId
+        );
+        $departmentRequestList = $this->readRequestListByProviders($providers, $resolveReferences);
+        $additionalRequestList = $this->readAdditionalRequests($scopeRequestList, $departmentRequestList);
+
+        return [
+            'scope' => $scopeRequestList,
+            'additional' => $additionalRequestList->sortByName(),
+        ];
+    }
+
+    /**
+     * @param \BO\Zmsentities\Collection\ScopeList|\Traversable $departmentScopes
+     * @return array<string, array{source: string, id: mixed}>
+     */
+    protected function readDepartmentProviders($departmentScopes, int $departmentId): array
+    {
+        $providers = [];
+        foreach ($departmentScopes as $departmentScope) {
+            try {
+                $provider = $departmentScope->getProvider();
+                $key = $provider->source . ':' . $provider->id;
+                $providers[$key] = [
+                    'source' => (string) $provider->source,
+                    'id' => $provider->id,
+                ];
+            } catch (\BO\Zmsentities\Exception\ScopeMissingProvider $exception) {
+                App::$log->warning('Skipping department scope without provider for request list', [
+                    'scopeId' => $departmentScope->id ?? null,
+                    'departmentId' => $departmentId,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        }
+
+        return $providers;
+    }
+
+    /**
+     * @param array<string, array{source: string, id: mixed}> $providers
+     */
+    protected function readRequestListByProviders(array $providers, int $resolveReferences): Collection
+    {
+        $requestList = new Collection();
+        $requestKeys = [];
+        foreach ($providers as $provider) {
+            $providerRequests = $this->readListByProvider(
+                $provider['source'],
+                $provider['id'],
+                $resolveReferences
+            );
+            foreach ($providerRequests as $request) {
+                $requestKey = $this->getRequestLookupKey($request);
+                if (!isset($requestKeys[$requestKey])) {
+                    $requestKeys[$requestKey] = true;
+                    $requestList->addEntity(clone $request);
+                }
+            }
+        }
+
+        return $requestList;
+    }
+
+    protected function readAdditionalRequests(Collection $scopeRequestList, Collection $departmentRequestList): Collection
+    {
+        $additionalRequestList = new Collection();
+        $scopeRequestKeys = [];
+        foreach ($scopeRequestList as $request) {
+            $scopeRequestKeys[$this->getRequestLookupKey($request)] = true;
+        }
+        foreach ($departmentRequestList as $request) {
+            $requestKey = $this->getRequestLookupKey($request);
+            if (!isset($scopeRequestKeys[$requestKey])) {
+                $additionalRequestList->addEntity(clone $request);
+            }
+        }
+
+        return $additionalRequestList;
+    }
+
     public function readListBySource($source, $resolveReferences = 0, $disableCache = false)
     {
         $cacheKey = "requestReadListBySource-$source-$resolveReferences";
