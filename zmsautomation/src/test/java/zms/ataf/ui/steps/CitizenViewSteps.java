@@ -202,6 +202,13 @@ public class CitizenViewSteps {
         page.openConfirmationDeepLinkInBrowser();
     }
 
+    /** ZMSKVR-1500: reopen after success; leaves confirm hash first so the SPA remounts the route. */
+    @When("I reopen the confirmation deep link in the browser")
+    public void iReopenTheConfirmationDeepLinkInTheBrowser() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: reopen confirmation deep link in browser");
+        page.reopenConfirmationDeepLinkInBrowser();
+    }
+
     @When("I open the appointment view deep link in the browser")
     public void iOpenTheAppointmentViewDeepLinkInTheBrowser() {
         ScenarioLogManager.getLogger().info("zmscitizenview: open appointment view deep link in browser");
@@ -212,6 +219,44 @@ public class CitizenViewSteps {
     public void theConfirmationSuccessCalloutShouldBeVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert confirmation success callout visible");
         page.assertConfirmationSuccessCalloutVisible();
+    }
+
+    /** ZMSKVR-1500 */
+    @Then("the already activated appointment banner should be visible in the citizen view")
+    public void theAlreadyActivatedAppointmentBannerShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert already-activated appointment MucBanner success visible");
+        page.assertAlreadyActivatedAppointmentBannerVisible();
+    }
+
+    /** ZMSKVR-1500: banner must not remain on the rebooking confirm summary. */
+    @Then("the already activated appointment banner should not be visible in the citizen view")
+    public void theAlreadyActivatedAppointmentBannerShouldNotBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert already-activated appointment MucBanner is hidden");
+        page.assertAlreadyActivatedAppointmentBannerNotVisible();
+    }
+
+    /** ZMSKVR-1500: Termin verschieben from already-activated / appointment overview. */
+    @When("I reschedule the appointment in the citizen view")
+    public void iRescheduleTheAppointmentInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: reschedule appointment via Termin verschieben");
+        page.clickRescheduleAppointment();
+    }
+
+    /** ZMSKVR-1500: rebooking confirm summary reached (Verschieben abbrechen shown). */
+    @Then("the cancel reschedule button should be visible in the citizen view")
+    public void theCancelRescheduleButtonShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert cancel reschedule button (Verschieben abbrechen) visible");
+        page.assertCancelRescheduleButtonVisible();
+    }
+
+    /** ZMSKVR-1500: Verschieben abbrechen → back to overview with already-activated banner. */
+    @When("I cancel the reschedule in the citizen view")
+    public void iCancelTheRescheduleInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: cancel reschedule via Verschieben abbrechen");
+        page.clickCancelReschedule();
     }
 
     @When("I cancel the appointment in the citizen view")
