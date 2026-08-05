@@ -4,6 +4,7 @@ Feature: ZMSKVR-1500 Already-activated confirm link — MucBanner success
   As a citizen
   I want to reopen an already used confirmation deep link
   So that I see a MucBanner success that my appointment is already activated
+  And so that the banner is hidden while I reschedule and returns if I cancel
 
   Background:
     Given the Citizen API is available
@@ -11,7 +12,7 @@ Feature: ZMSKVR-1500 Already-activated confirm link — MucBanner success
     Then the response status code should be 200
     And the response should contain offices and services
 
-  Scenario: Reopening confirm link after activation shows already-activated MucBanner
+  Scenario: Reopening confirm link shows already-activated MucBanner; hidden while rescheduling
     Given I open zmscitizenview with jump-in service "10295182" and location "10492"
     Then the service combination step should be visible
     And the estimated duration on the service combination step should be 10 minutes
@@ -33,4 +34,16 @@ Feature: ZMSKVR-1500 Already-activated confirm link — MucBanner success
     And I open the confirmation deep link in the browser
     Then the confirmation success callout should be visible in the citizen view
     When I reopen the confirmation deep link in the browser
+    Then the already activated appointment banner should be visible in the citizen view
+    When I reschedule the appointment in the citizen view
+    Then provider checkbox 10492 should be visible in the citizen view
+    When I select office 10492 in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    And I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10492 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    And I continue after slot selection with Weiter for office 10492 in the citizen view
+    Then the cancel reschedule button should be visible in the citizen view
+    And the already activated appointment banner should not be visible in the citizen view
+    When I cancel the reschedule in the citizen view
     Then the already activated appointment banner should be visible in the citizen view
