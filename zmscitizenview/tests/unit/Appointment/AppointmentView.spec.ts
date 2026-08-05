@@ -172,8 +172,22 @@ describe("AppointmentView", () => {
             emits: ["back", "next"],
           },
           'appointment-summary': {
-            template: "<div data-test='appointment-summary'></div>",
-            props: ["isRebooking", "rebookOrCancelDialog", "t"],
+            props: [
+              "isRebooking",
+              "rebookOrCancelDialog",
+              "appointmentAlreadyActivated",
+              "t",
+            ],
+            template: `
+              <div data-test='appointment-summary'>
+                <div
+                  v-if="appointmentAlreadyActivated && !isRebooking"
+                  data-test="appointment-already-activated-banner"
+                >
+                  {{ t('appointmentAlreadyActivatedHeader') }}
+                </div>
+              </div>
+            `,
             emits: ["back", "bookAppointment", "cancelAppointment", "cancelReschedule", "rescheduleAppointment"],
           },
           'muc-stepper': {
@@ -2004,6 +2018,27 @@ describe("AppointmentView", () => {
       expect(newAppointmentButton).toBeDefined();
 
       expect(wrapper.find('[data-test="muc-stepper"]').exists()).toBe(false);
+      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(false);
+    });
+
+    it("hides already-activated banner when the appointment is in the past", async () => {
+      localStorage.clear();
+
+      const wrapper = createWrapper({
+        appointmentHash: undefined,
+        confirmAppointmentHash: undefined,
+      });
+
+      wrapper.vm.appointmentAlreadyActivated = true;
+      wrapper.vm.appointment = {
+        ...(wrapper.vm.appointment ?? {}),
+        timestamp: nowUnixSeconds() - 3600,
+      } as any;
+      wrapper.vm.currentView = 3;
+      await nextTick();
+
+      expect(wrapper.html()).toContain(de.rescheduleErrorHeader);
+      expect(wrapper.html()).not.toContain(de.appointmentAlreadyActivatedHeader);
       expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(false);
     });
   });
