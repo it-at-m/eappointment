@@ -1,6 +1,6 @@
 # eAppointment Documentation
 
-This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.io/eappointment/). It is versioned with the repository (`main`).
+This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.io/eappointment/). It is versioned with the repository (`next`).
 
 - **GitHub Repository** (manual): [https://github.com/it-at-m/eappointment/](https://github.com/it-at-m/eappointment/)
 
