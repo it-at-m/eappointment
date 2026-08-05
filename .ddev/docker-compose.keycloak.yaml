@@ -19,11 +19,28 @@ services:
       - default
     restart: unless-stopped
 
-  init-keycloak:
-    image: klg71/keycloakmigration:0.2.129@sha256:356bb15df86d6476f1469789718f597ac70583f83c2ae9c90408a3e00e3a1796
+  init-keycloak-token:
+    image: curlimages/curl:8.12.1
     depends_on:
       keycloak:
         condition: service_started
+    environment:
+      - ADMIN_USER=admin
+      - ADMIN_PASSWORD=admin
+      - BASEURL=http://keycloak:8080/auth
+      - KEYCLOAK_ADMIN_TOKEN_LIFESPAN=1800
+    volumes:
+      - ../.resources/keycloak/extend-admin-token-lifespan.sh:/extend-admin-token-lifespan.sh:ro
+    entrypoint: ["/bin/sh", "/extend-admin-token-lifespan.sh"]
+    networks:
+      - default
+    restart: "no"
+
+  init-keycloak:
+    image: klg71/keycloakmigration:0.2.130@sha256:fbec0fbbec2f90e9e912576cfb2ff108fb5703a59383b5e51c8633c130173af8
+    depends_on:
+      init-keycloak-token:
+        condition: service_completed_successfully
     environment:
       - ADMIN_USER=admin
       - ADMIN_PASSWORD=admin

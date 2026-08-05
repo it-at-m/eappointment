@@ -62,6 +62,40 @@ public class AvailableCalendarResponse {
         return response;
     }
 
+    /** First day that already has free-slot appointments for the given office bucket. */
+    public String getFirstAvailableDayForOffice(int officeId) {
+        if (availableDays == null) {
+            return null;
+        }
+        for (CalendarDay day : availableDays) {
+            if (day == null || day.getDate() == null || day.getOffices() == null) {
+                continue;
+            }
+            for (OfficeSlot office : day.getOffices()) {
+                if (office != null
+                        && office.matchesOfficeId(officeId)
+                        && office.getAppointments() != null
+                        && !office.getAppointments().isEmpty()) {
+                    return day.getDate();
+                }
+            }
+        }
+        return null;
+    }
+
+    /** True when any day has at least one appointment timestamp for each given office id. */
+    public boolean hasAppointmentsForAllOffices(int... officeIds) {
+        if (officeIds == null || officeIds.length == 0) {
+            return false;
+        }
+        for (int officeId : officeIds) {
+            if (getFirstAvailableDayForOffice(officeId) == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class CalendarDay {
