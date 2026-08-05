@@ -2,8 +2,51 @@
 import vue from '@vitejs/plugin-vue'
 
 // Utilities
-import {defineConfig} from 'vite'
+import fs from 'node:fs'
+import path from 'node:path'
 import {fileURLToPath, URL} from 'node:url'
+import {defineConfig, type Plugin} from 'vite'
+
+const zmscitizenviewRoot = fileURLToPath(new URL('.', import.meta.url))
+const repoRoot = path.resolve(zmscitizenviewRoot, '..')
+
+/**
+ * Branch switches leave Vite's module graph / optimizeDeps cache pointing at
+ * paths that no longer exist (or miss new files). Polling alone is not enough;
+ * restart when Git HEAD changes so imports resolve again without a manual clear.
+ */
+function restartOnGitCheckout(): Plugin {
+  return {
+    name: 'restart-on-git-checkout',
+    configureServer(server) {
+      const gitHead = path.join(repoRoot, '.git', 'HEAD')
+      if (!fs.existsSync(gitHead)) {
+        return
+      }
+
+      const cacheDir = path.join(zmscitizenviewRoot, 'node_modules', '.vite')
+      let restarting = false
+
+      const onHeadChange = async (file: string) => {
+        if (path.resolve(file) !== path.resolve(gitHead) || restarting) {
+          return
+        }
+        restarting = true
+        try {
+          fs.rmSync(cacheDir, {recursive: true, force: true})
+          await server.restart()
+        } finally {
+          restarting = false
+        }
+      }
+
+      server.watcher.add(gitHead)
+      server.watcher.on('change', (file) => {
+        void onHeadChange(file)
+      })
+    },
+  }
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,7 +60,8 @@ export default defineConfig({
           isCustomElement: (tag) => tag.startsWith('altcha-')
         }
       }
-    })
+    }),
+    restartOnGitCheckout(),
   ],
   // Expose SHOW_CITIZEN_LOGIN from .env / compose (same name as zms-deployment).
   envPrefix: ['VITE_', 'SHOW_'],
