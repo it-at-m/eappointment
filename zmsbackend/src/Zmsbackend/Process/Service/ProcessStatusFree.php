@@ -290,6 +290,37 @@ class ProcessStatusFree extends Process
         $resolveReferences = 0,
         $userAccount = null
     ) {
+        $maxAttempts = 3;
+        $attempt = 0;
+        while (true) {
+            try {
+                return $this->writeEntityReservedAttempt(
+                    $process,
+                    $now,
+                    $slotType,
+                    $slotsRequired,
+                    $resolveReferences,
+                    $userAccount
+                );
+            } catch (\BO\Zmsbackend\Exception\Pdo\DeadLockFound $exception) {
+                $attempt++;
+                if ($attempt >= $maxAttempts) {
+                    throw $exception;
+                }
+                $this->resetWriteTransactionAfterDeadlock();
+                usleep(50000 * $attempt);
+            }
+        }
+    }
+
+    protected function writeEntityReservedAttempt(
+        \BO\Zmsentities\Process $process,
+        \DateTimeInterface $now,
+        $slotType = "public",
+        $slotsRequired = 0,
+        $resolveReferences = 0,
+        $userAccount = null
+    ) {
         $process = clone $process;
         $process->status = 'reserved';
         $appointment = $process->getAppointments()->getFirst();
@@ -318,5 +349,25 @@ class ProcessStatusFree extends Process
         }
         $this->writeRequestsToDb($process);
         return $this->readEntity($process->getId(), new \BO\Zmsbackend\Helper\NoAuth(), $resolveReferences);
+    }
+
+    /**
+     * After InnoDB aborts a transaction on deadlock, clear PDO state and start a fresh transaction.
+     */
+    protected function resetWriteTransactionAfterDeadlock(): void
+    {
+        $connection = \BO\Zmsbackend\Connection\Select::getWriteConnection();
+        if ($connection->inTransaction()) {
+            try {
+                $connection->rollBack();
+            } catch (\PDOException $exception) {
+                \App::$log->warning('Rollback after deadlock failed', [
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        }
+        if (!$connection->inTransaction()) {
+            $connection->beginTransaction();
+        }
     }
 }
