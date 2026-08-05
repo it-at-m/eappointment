@@ -36,6 +36,10 @@ public class CitizenViewPage extends BasePage {
 
     private static final String DE_WEITER = "Weiter";
     private static final String DE_RESERVE = "Termin reservieren";
+    private static final String ALREADY_ACTIVATED_BANNER_MARKER =
+            "Sie haben Ihren Termin bereits aktiviert.";
+    private static final String RESCHEDULE_APPOINTMENT_BUTTON = "Termin verschieben";
+    private static final String CANCEL_RESCHEDULE_BUTTON = "Verschieben abbrechen";
 
     /** German invalid jump-in callout ({@code de-DE.json}). */
     public static final String DE_INVALID_JUMPIN_HEADER = "Diese Ansicht kann nicht geladen werden.";
@@ -1624,14 +1628,60 @@ public class CitizenViewPage extends BasePage {
     /** ZMSKVR-1500: MucBanner success after reopening an already-used confirm deep link. */
     public void assertAlreadyActivatedAppointmentBannerVisible() {
         CONTEXT.set();
-        String marker = "Sie haben Ihren Termin bereits aktiviert.";
         ScenarioLogManager.getLogger()
-                .info("zmscitizenview: waiting for already-activated MucBanner success ({})", marker);
-        waitWithThreeWindows(() -> shadowDomContainsText(marker), "Already-activated appointment banner");
+                .info(
+                        "zmscitizenview: waiting for already-activated MucBanner success ({})",
+                        ALREADY_ACTIVATED_BANNER_MARKER);
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(ALREADY_ACTIVATED_BANNER_MARKER),
+                "Already-activated appointment banner");
         Assert.assertTrue(
-                shadowDomContainsText(marker),
+                shadowDomContainsText(ALREADY_ACTIVATED_BANNER_MARKER),
                 "Already-activated MucBanner success not found after reopening confirm link.");
         ScenarioLogManager.getLogger().info("zmscitizenview: already-activated appointment banner found");
+    }
+
+    /**
+     * ZMSKVR-1500: banner must stay hidden on the rebooking confirm summary (confirm URL still active).
+     * Call after {@link #assertCancelRescheduleButtonVisible()} so view 3 rebooking UI is ready.
+     */
+    public void assertAlreadyActivatedAppointmentBannerNotVisible() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: asserting already-activated MucBanner is hidden ({})",
+                        ALREADY_ACTIVATED_BANNER_MARKER);
+        Assert.assertFalse(
+                shadowDomContainsText(ALREADY_ACTIVATED_BANNER_MARKER),
+                "Already-activated MucBanner must not remain visible while rescheduling from a confirm link.");
+    }
+
+    /** ZMSKVR-1500: start reschedule from already-activated / appointment overview. */
+    public void clickRescheduleAppointment() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: clicking reschedule appointment button ({})", RESCHEDULE_APPOINTMENT_BUTTON);
+        waitForAndClickButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON, DEFAULT_EXPLICIT_WAIT_TIME);
+    }
+
+    /** ZMSKVR-1500: rebooking confirm summary shows Verschieben abbrechen. */
+    public void assertCancelRescheduleButtonVisible() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: waiting for cancel-reschedule button ({})", CANCEL_RESCHEDULE_BUTTON);
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(CANCEL_RESCHEDULE_BUTTON), "Cancel reschedule button");
+        Assert.assertTrue(
+                shadowDomContainsText(CANCEL_RESCHEDULE_BUTTON),
+                "Cancel reschedule button (Verschieben abbrechen) not found after rebooking slot selection.");
+    }
+
+    /** ZMSKVR-1500: abort reschedule and return to appointment overview. */
+    public void clickCancelReschedule() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: clicking cancel reschedule button ({})", CANCEL_RESCHEDULE_BUTTON);
+        waitForAndClickButtonContaining(CANCEL_RESCHEDULE_BUTTON, DEFAULT_EXPLICIT_WAIT_TIME);
     }
 
     public void assertSelectedAppointmentCalloutVisible() {
