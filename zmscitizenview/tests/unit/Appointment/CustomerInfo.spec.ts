@@ -342,7 +342,7 @@ describe("CustomerInfo", () => {
   });
 
   describe("Login failure", () => {
-    it("shows emergency banner when loginFailed is true", async () => {
+    it("shows danger banner when loginFailed is true", async () => {
       const wrapper = createWrapper({
         showLoginOption: true,
         loginFailed: true,
@@ -351,7 +351,7 @@ describe("CustomerInfo", () => {
 
       const banner = wrapper.find(".muc-banner");
       expect(banner.exists()).toBe(true);
-      expect(banner.attributes("data-type")).toBe("emergency");
+      expect(banner.attributes("data-type")).toBe("danger");
       expect(banner.text()).toContain("loginFailedHeader");
       expect(banner.text()).toContain("loginFailedText");
     });
