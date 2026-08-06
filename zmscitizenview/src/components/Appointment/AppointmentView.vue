@@ -392,15 +392,22 @@ import {
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
+import {
+  clearAppointmentAuthHashSession,
+  clearAppointmentLocalStorage,
+  getFreshLocalStorageUiData,
+  parseAppointmentHash,
+  setAppointmentAuthHashForLogin as persistAppointmentAuthHashForLogin,
+  saveUiToLocalStorage as persistUiToLocalStorage,
+  resolveAppointmentAuthHash,
+} from "@/utils/appointmentLoginStorage";
 import { getTokenData } from "@/utils/auth";
 import { toCalloutType } from "@/utils/callout";
 import {
   APPOINTMENT_ACTION_TYPE,
-  LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
   QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
   resolveAgainstCurrentPage,
-  SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH,
 } from "@/utils/Constants";
 import { downloadIcsFile } from "@/utils/downloadIcsFile";
 import {
@@ -958,26 +965,11 @@ const goToTop = async () => {
   window.scrollTo({ top: 0, behavior: "instant" });
 };
 
-const encodeAppointmentAuthHash = (
-  processId: string,
-  authKey: string
-): string => {
-  return btoa(JSON.stringify({ id: processId, authKey }));
-};
-
 const setAppointmentAuthHashForLogin = () => {
-  if (!appointment.value?.processId || !appointment.value?.authKey) {
-    return;
-  }
-
-  const encoded = encodeAppointmentAuthHash(
-    appointment.value.processId,
-    appointment.value.authKey
+  persistAppointmentAuthHashForLogin(
+    appointment.value?.processId,
+    appointment.value?.authKey
   );
-  // Survive OAuth redirect (URL fragment is dropped by the IdP round-trip).
-  sessionStorage.setItem(SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH, encoded);
-  // Prefer replaceState so hashchange does not fire before leaving for IdP.
-  history.replaceState(null, "", `#/appointment/${encoded}`);
 };
 
 const requestLogin = () => {
@@ -998,46 +990,14 @@ const saveUiToLocalStorage = () => {
     return;
   }
 
-  const saveData: LocalStorageUiData = {
+  persistUiToLocalStorage({
     timestamp: Date.now(),
     currentView: currentView.value,
     selectedServiceId: String(selectedService.value.id),
     selectedServiceMap: Object.fromEntries(selectedServiceMap.value),
     selectedProviderId: String(selectedProvider.value.id),
     selectedTimeslot: selectedTimeslot.value,
-  };
-  localStorage.setItem(
-    LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
-    JSON.stringify(saveData)
-  );
-};
-
-const clearAppointmentLocalStorage = () => {
-  if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
-    localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
-  }
-};
-
-const clearAppointmentAuthHashSession = () => {
-  if (sessionStorage.getItem(SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH)) {
-    sessionStorage.removeItem(SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH);
-  }
-};
-
-const resolveAppointmentAuthHash = (): string | undefined => {
-  if (props.appointmentHash) {
-    return props.appointmentHash;
-  }
-
-  const pendingHash = sessionStorage.getItem(
-    SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH
-  );
-  if (!pendingHash) {
-    return undefined;
-  }
-
-  history.replaceState(null, "", `#/appointment/${pendingHash}`);
-  return pendingHash;
+  });
 };
 
 const viewAppointment = () => {
@@ -1091,75 +1051,6 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
   });
 
   return officesAtService;
-};
-
-const parseAppointmentHash = (hash: string): AppointmentHash | null => {
-  try {
-    // Add missing base64 padding if needed (padding may be stripped from URL)
-    const padding = (4 - (hash.length % 4)) % 4;
-    const paddedHash = padding > 0 ? hash + "=".repeat(padding) : hash;
-    const appointmentData = JSON.parse(window.atob(paddedHash));
-    if (
-      appointmentData.id == undefined ||
-      appointmentData.authKey == undefined
-    ) {
-      return null;
-    }
-    return appointmentData;
-  } catch {
-    return null;
-  }
-};
-
-const parseUiLocalStorage = (data: string): LocalStorageUiData | null => {
-  try {
-    const raw = JSON.parse(data) as {
-      timestamp?: number;
-      currentView?: number;
-      selectedServiceId?: string;
-      selectedProviderId?: string;
-      selectedServiceMap?: Record<string, number>;
-      selectedTimeslot?: number;
-      selectedService?: { id?: string };
-      selectedProvider?: { id?: string };
-    };
-    const selectedServiceId = raw.selectedServiceId ?? raw.selectedService?.id;
-    const selectedProviderId =
-      raw.selectedProviderId ?? raw.selectedProvider?.id;
-    if (
-      raw.timestamp == undefined ||
-      raw.currentView == undefined ||
-      selectedServiceId == undefined ||
-      selectedProviderId == undefined
-    ) {
-      return null;
-    }
-    // Persist IDs only — never restore legacy full objects / credentials / PII.
-    return {
-      timestamp: raw.timestamp,
-      currentView: raw.currentView,
-      selectedServiceId: String(selectedServiceId),
-      selectedServiceMap: raw.selectedServiceMap ?? {},
-      selectedProviderId: String(selectedProviderId),
-      selectedTimeslot: raw.selectedTimeslot ?? 0,
-    };
-  } catch {
-    return null;
-  }
-};
-
-const LOCALSTORAGE_UI_TTL_MS = 30 * 60 * 1000;
-
-const getFreshLocalStorageUiData = (): LocalStorageUiData | null => {
-  const raw = localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
-  if (!raw) {
-    return null;
-  }
-  const parsed = parseUiLocalStorage(raw);
-  if (!parsed || Date.now() - parsed.timestamp >= LOCALSTORAGE_UI_TTL_MS) {
-    return null;
-  }
-  return parsed;
 };
 
 const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
@@ -1579,7 +1470,7 @@ onMounted(() => {
     return;
   }
 
-  const authHash = resolveAppointmentAuthHash();
+  const authHash = resolveAppointmentAuthHash(props.appointmentHash);
   const uiData = getFreshLocalStorageUiData();
 
   if (authHash && uiData) {
