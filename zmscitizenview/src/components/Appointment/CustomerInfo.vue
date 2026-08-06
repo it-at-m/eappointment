@@ -60,8 +60,9 @@
       variant="content"
       class="login-failed-banner"
     >
-      <strong>{{ t("loginFailedHeader") }}</strong>
-      <br />
+      {{ t("loginFailedBefore") }}
+      <strong>{{ t("loginFailedHeader") }}</strong
+      >.
       {{ t("loginFailedText") }}
     </muc-banner>
   </div>
