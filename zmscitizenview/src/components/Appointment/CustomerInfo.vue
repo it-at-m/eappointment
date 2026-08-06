@@ -56,7 +56,7 @@
     </muc-callout>
     <muc-banner
       v-if="showLoginErrorBanner"
-      :type="loginFailedBannerType"
+      type="danger"
       variant="content"
       class="login-failed-banner"
     >
@@ -248,11 +248,6 @@ const showLoginErrorBanner = computed(
   () => Boolean(props.loginFailed) && !isExpired.value
 );
 
-// MucBanner `danger` lands in @muenchen/muc-patternlab-vue (it-at-m/muc-patternlab-vue#824).
-// Cast keeps vue-tsc happy until that release; local CSS applies danger styling.
-const loginFailedBannerType = "danger" as
-  "info" | "success" | "warning" | "emergency";
-
 const showErrorMessage = ref<boolean>(false);
 
 const emailPattern =
@@ -442,9 +437,6 @@ const previousStep = () => emit("back");
   .login-failed-banner,
   :deep(.login-failed-banner) {
     margin: 0;
-    background-color: var(--mde-color-status-error-x-light, #f8f2f2);
-    border-bottom: 1px solid var(--mde-color-status-error-light, #c79a9b);
-    color: var(--mde-color-neutral-grey, #3a5368);
   }
 }
 
