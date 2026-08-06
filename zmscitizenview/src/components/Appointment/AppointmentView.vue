@@ -410,9 +410,9 @@ import {
   clearAppointmentLocalStorage,
   getFreshLocalStorageUiData,
   parseAppointmentHash,
-  setAppointmentAuthHashForLogin as persistAppointmentAuthHashForLogin,
-  saveUiToLocalStorage as persistUiToLocalStorage,
   resolveAppointmentAuthHash,
+  saveUiToLocalStorage,
+  setAppointmentAuthHashForLogin,
 } from "@/utils/appointmentLoginStorage";
 import { getTokenData } from "@/utils/auth";
 import { toCalloutType } from "@/utils/callout";
@@ -979,16 +979,21 @@ const goToTop = async () => {
   window.scrollTo({ top: 0, behavior: "instant" });
 };
 
-const setAppointmentAuthHashForLogin = () => {
-  persistAppointmentAuthHashForLogin(
+const requestLogin = () => {
+  if (selectedService.value && selectedProvider.value) {
+    saveUiToLocalStorage({
+      timestamp: Date.now(),
+      currentView: currentView.value,
+      selectedServiceId: String(selectedService.value.id),
+      selectedServiceMap: Object.fromEntries(selectedServiceMap.value),
+      selectedProviderId: String(selectedProvider.value.id),
+      selectedTimeslot: selectedTimeslot.value,
+    });
+  }
+  setAppointmentAuthHashForLogin(
     appointment.value?.processId,
     appointment.value?.authKey
   );
-};
-
-const requestLogin = () => {
-  saveUiToLocalStorage();
-  setAppointmentAuthHashForLogin();
   document.dispatchEvent(
     new CustomEvent("authorization-request", {
       detail: {
@@ -997,21 +1002,6 @@ const requestLogin = () => {
       },
     })
   );
-};
-
-const saveUiToLocalStorage = () => {
-  if (!selectedService.value || !selectedProvider.value) {
-    return;
-  }
-
-  persistUiToLocalStorage({
-    timestamp: Date.now(),
-    currentView: currentView.value,
-    selectedServiceId: String(selectedService.value.id),
-    selectedServiceMap: Object.fromEntries(selectedServiceMap.value),
-    selectedProviderId: String(selectedProvider.value.id),
-    selectedTimeslot: selectedTimeslot.value,
-  });
 };
 
 const viewAppointment = () => {
