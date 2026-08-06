@@ -153,6 +153,7 @@
   "appointmentDetailVideoInfoLink": "video consultation information page",
   "appointmentDetailVideoDelayHint": "In rare cases, you may have to wait a few minutes for us. Thank you for your understanding.",
   "appointmentSuccessfullyBookedHeader": " Your appointment has been booked.",
+  "appointmentAlreadyActivatedHeader": "You have already activated your appointment.",
   "appointmentSuccessfullyBookedText": "You will receive confirmation and further information about your appointment by e-mail. We look forward to your visit.",
   "appointmentSuccessfullyCanceledHeader": "You have successfully cancelled your appointment.",
   "appointmentSuccessfullyCanceledText": "Thank you for cancelling your appointment in favor of others.",

@@ -2,7 +2,7 @@ name: 🐘 Combined PHP Build
 
 on:
   push:
-    branches-ignore: [main]
+    branches-ignore: [next]
     tags: ['*']
   workflow_call:
 

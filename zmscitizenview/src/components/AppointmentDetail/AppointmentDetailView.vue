@@ -299,8 +299,13 @@
                 class="callout-margin"
               >
                 <template #content>
-                  {{ appointment.scope.infoForAppointment }}
+                  <component
+                    :is="infoForAppointmentContainsPTag ? 'div' : 'p'"
+                    tabindex="0"
+                    v-html="sanitizedInfoForAppointment"
+                  />
                 </template>
+
                 <template #header>{{ t("appointmentHintHeader") }}</template>
               </muc-callout>
             </div>
@@ -411,6 +416,7 @@ import {
   VARIANT_ID_VIDEO,
   VIDEO_CONSULTATION_INFO_URL,
 } from "@/utils/Constants";
+import containsParagraphTag from "@/utils/containsParagraphTag";
 import {
   createErrorStates,
   getApiErrorTranslation,
@@ -418,6 +424,7 @@ import {
 } from "@/utils/errorHandler";
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { getProviders } from "@/utils/getProviders";
+import sanitizeHtml from "@/utils/sanitizeHtml";
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -697,6 +704,13 @@ const loadAppointment = () => {
     }
   });
 };
+const sanitizedInfoForAppointment = computed(() =>
+  sanitizeHtml(appointment.value?.scope?.infoForAppointment)
+);
+
+const infoForAppointmentContainsPTag = computed(() =>
+  containsParagraphTag(sanitizedInfoForAppointment.value)
+);
 
 watch(
   () => props.globalState.accessToken,
