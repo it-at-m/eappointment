@@ -199,8 +199,22 @@ describe("AppointmentView", () => {
             emits: ["back", "next"],
           },
           "appointment-summary": {
-            template: "<div data-test='appointment-summary'></div>",
-            props: ["isRebooking", "rebookOrCancelDialog", "t"],
+            props: [
+              "isRebooking",
+              "rebookOrCancelDialog",
+              "appointmentAlreadyActivated",
+              "t",
+            ],
+            template: `
+              <div data-test='appointment-summary'>
+                <div
+                  v-if="appointmentAlreadyActivated && !isRebooking"
+                  data-test="appointment-already-activated-banner"
+                >
+                  {{ t('appointmentAlreadyActivatedHeader') }}
+                </div>
+              </div>
+            `,
             emits: [
               "back",
               "bookAppointment",
@@ -214,6 +228,14 @@ describe("AppointmentView", () => {
               "<div data-test='muc-stepper' :data-disable-previous-steps='disablePreviousSteps'></div>",
             props: ["stepItems", "activeItem", "disablePreviousSteps"],
             emits: ["changeStep"],
+          },
+          "muc-banner": {
+            props: ["type", "variant"],
+            template: `
+            <div data-test='muc-banner' :data-type="type" :data-variant="variant">
+              <slot></slot>
+            </div>
+          `,
           },
           "muc-callout": {
             props: ["type", "variant"],
@@ -609,6 +631,9 @@ describe("AppointmentView", () => {
       mockConfirmAppointment.mockResolvedValueOnce({
         errors: [{ errorCode: "processNotPreconfirmedAnymore" }],
       });
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValueOnce({
+        errors: [{ errorCode: "appointmentNotFound" }],
+      } as any);
 
       const appointmentData = {
         id: "test-id",
@@ -627,9 +652,11 @@ describe("AppointmentView", () => {
         expect(mockConfirmAppointment).toHaveBeenCalled();
       });
 
-      expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(
-        true
-      );
+      await vi.waitFor(() => {
+        expect(
+          wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value
+        ).toBe(true);
+      });
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
       expect(
         wrapper.find('[data-test="muc-callout"]').attributes("data-type")
@@ -1330,6 +1357,9 @@ describe("AppointmentView", () => {
         ],
       };
       mockConfirmAppointment.mockResolvedValueOnce(mockErrorResponse);
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValueOnce({
+        errors: [{ errorCode: "appointmentNotFound" }],
+      } as any);
 
       const appointmentData = {
         id: "test-id",
@@ -1359,10 +1389,13 @@ describe("AppointmentView", () => {
         }
       );
 
-      expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(
-        true
-      );
+      await vi.waitFor(() => {
+        expect(
+          wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value
+        ).toBe(true);
+      });
       expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
+      expect(wrapper.vm.appointmentAlreadyActivated).toBe(false);
 
       const errorCallout = wrapper.find('[data-test="muc-callout"]');
       expect(errorCallout.exists()).toBe(true);
@@ -1374,6 +1407,200 @@ describe("AppointmentView", () => {
       expect(errorCallout.text()).toContain(
         de.apiErrorPreconfirmationExpiredText
       );
+    });
+
+    it("should show already-activated info banner and appointment details when confirm link is reused", async () => {
+      mockConfirmAppointment.mockResolvedValueOnce({
+        errors: [
+          {
+            errorCode: "processNotPreconfirmedAnymore",
+            message: "Process not preconfirmed anymore",
+          },
+        ],
+      });
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "test-id",
+        authKey: "test-auth-key",
+        serviceId: "123",
+        officeId: "789",
+        serviceCount: 1,
+        subRequestCounts: [],
+        timestamp: nowUnixSeconds() + 3600,
+      } as any);
+      vi.mocked(globalThis.fetch).mockResolvedValue({
+        status: 200,
+        json: async () => ({
+          offices: [
+            {
+              id: "789",
+              name: "Test Provider",
+              address: { street: "Test Street", house_number: "1" },
+            },
+          ],
+          services: [{ id: "123", name: "Test Service" }],
+          relations: [],
+        }),
+      } as any);
+
+      const appointmentData = {
+        id: "test-id",
+        authKey: "test-auth-key",
+        scope: {},
+      };
+      const validHash = btoa(JSON.stringify(appointmentData));
+
+      const wrapper = createWrapper({
+        confirmAppointmentHash: validHash,
+      });
+
+      await vi.waitFor(() => {
+        expect(mockConfirmAppointment).toHaveBeenCalled();
+      });
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointmentAlreadyActivated).toBe(true);
+        expect(wrapper.vm.currentView).toBe(3);
+      });
+
+      expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(
+        false
+      );
+      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
+        true
+      );
+      expect(wrapper.html()).toContain(de.appointmentAlreadyActivatedHeader);
+    });
+
+    it("should show already-activated banner when the same confirm hash is reopened after success", async () => {
+      mockConfirmAppointment.mockResolvedValueOnce({
+        processId: "test-id",
+        authKey: "test-auth-key",
+        serviceId: "123",
+        officeId: "789",
+        serviceCount: 1,
+        subRequestCounts: [],
+        timestamp: nowUnixSeconds() + 3600,
+      } as any);
+
+      const appointmentData = {
+        id: "test-id",
+        authKey: "test-auth-key",
+        scope: {},
+      };
+      const validHash = btoa(JSON.stringify(appointmentData));
+
+      const wrapper = createWrapper({
+        confirmAppointmentHash: validHash,
+      });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.confirmAppointmentSuccess).toBe(true);
+      });
+      expect(mockConfirmAppointment).toHaveBeenCalledTimes(1);
+
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "test-id",
+        authKey: "test-auth-key",
+        serviceId: "123",
+        officeId: "789",
+        serviceCount: 1,
+        subRequestCounts: [],
+        timestamp: nowUnixSeconds() + 3600,
+      } as any);
+      vi.mocked(globalThis.fetch).mockResolvedValue({
+        status: 200,
+        json: async () => ({
+          offices: [
+            {
+              id: "789",
+              name: "Test Provider",
+              address: { street: "Test Street", house_number: "1" },
+            },
+          ],
+          services: [{ id: "123", name: "Test Service" }],
+          relations: [],
+        }),
+      } as any);
+
+      // Leave confirm route then reopen the same link (SPA hash watch re-fires).
+      await wrapper.setProps({ confirmAppointmentHash: undefined });
+      await nextTick();
+      await wrapper.setProps({ confirmAppointmentHash: validHash });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointmentAlreadyActivated).toBe(true);
+        expect(wrapper.vm.currentView).toBe(3);
+      });
+      expect(mockConfirmAppointment).toHaveBeenCalledTimes(1);
+      expect(wrapper.html()).toContain(de.appointmentAlreadyActivatedHeader);
+    });
+
+    it("should hide already-activated banner while rescheduling from a reused confirm link", async () => {
+      mockConfirmAppointment.mockResolvedValueOnce({
+        errors: [
+          {
+            errorCode: "processNotPreconfirmedAnymore",
+            message: "Process not preconfirmed anymore",
+          },
+        ],
+      });
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "test-id",
+        authKey: "test-auth-key",
+        serviceId: "123",
+        officeId: "789",
+        serviceCount: 1,
+        subRequestCounts: [],
+        timestamp: nowUnixSeconds() + 3600,
+      } as any);
+      vi.mocked(globalThis.fetch).mockResolvedValue({
+        status: 200,
+        json: async () => ({
+          offices: [
+            {
+              id: "789",
+              name: "Test Provider",
+              address: { street: "Test Street", house_number: "1" },
+            },
+          ],
+          services: [{ id: "123", name: "Test Service" }],
+          relations: [],
+        }),
+      } as any);
+
+      const appointmentData = {
+        id: "test-id",
+        authKey: "test-auth-key",
+        scope: {},
+      };
+      const validHash = btoa(JSON.stringify(appointmentData));
+
+      const wrapper = createWrapper({
+        confirmAppointmentHash: validHash,
+      });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointmentAlreadyActivated).toBe(true);
+        expect(wrapper.vm.currentView).toBe(3);
+      });
+      expect(wrapper.html()).toContain(de.appointmentAlreadyActivatedHeader);
+
+      wrapper.vm.nextRescheduleAppointment();
+      await nextTick();
+      expect(wrapper.vm.isRebooking).toBe(true);
+      expect(wrapper.vm.currentView).toBe(1);
+
+      // Return to summary to confirm the new slot — banner must stay hidden.
+      wrapper.vm.currentView = 3;
+      await nextTick();
+      expect(wrapper.vm.appointmentAlreadyActivated).toBe(true);
+      expect(wrapper.html()).not.toContain(
+        de.appointmentAlreadyActivatedHeader
+      );
+
+      wrapper.vm.nextCancelReschedule();
+      await nextTick();
+      expect(wrapper.vm.isRebooking).toBe(false);
+      expect(wrapper.html()).toContain(de.appointmentAlreadyActivatedHeader);
     });
 
     it("should display activation expired error when API returns appointmentNotFound", async () => {
@@ -1904,6 +2131,31 @@ describe("AppointmentView", () => {
       expect(newAppointmentButton).toBeDefined();
 
       expect(wrapper.find('[data-test="muc-stepper"]').exists()).toBe(false);
+      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
+        false
+      );
+    });
+
+    it("hides already-activated banner when the appointment is in the past", async () => {
+      localStorage.clear();
+
+      const wrapper = createWrapper({
+        appointmentHash: undefined,
+        confirmAppointmentHash: undefined,
+      });
+
+      wrapper.vm.appointmentAlreadyActivated = true;
+      wrapper.vm.appointment = {
+        ...(wrapper.vm.appointment ?? {}),
+        timestamp: nowUnixSeconds() - 3600,
+      } as any;
+      wrapper.vm.currentView = 3;
+      await nextTick();
+
+      expect(wrapper.html()).toContain(de.rescheduleErrorHeader);
+      expect(wrapper.html()).not.toContain(
+        de.appointmentAlreadyActivatedHeader
+      );
       expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
         false
       );
