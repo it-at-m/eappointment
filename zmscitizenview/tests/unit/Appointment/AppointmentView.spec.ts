@@ -13,6 +13,10 @@ import { nextTick, ref } from "vue";
 import * as ZMSAppointmentAPI from "@/api/ZMSAppointmentAPI";
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
 import { useLogin } from "@/utils/auth";
+import {
+  LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
+  SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH,
+} from "@/utils/Constants";
 import de from "@/utils/de-DE.json";
 // beforeEach is already imported from vitest on line 2
 import { nowUnixSeconds } from "@/utils/timestampInPast";
@@ -2256,7 +2260,7 @@ describe("AppointmentView", () => {
 
       wrapper.vm.requestLogin();
 
-      const stored = localStorage.getItem("lhm-appointment-data");
+      const stored = localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
       expect(stored).toBeTruthy();
       expect(stored).not.toContain("secret-key");
       expect(stored).not.toContain("authKey");
@@ -2275,16 +2279,16 @@ describe("AppointmentView", () => {
       expect(parsed.selectedServiceId).toBe("123");
       expect(parsed.selectedProviderId).toBe("789");
 
-      expect(sessionStorage.getItem("lhm-appointment-auth-hash")).toBe(
-        btoa(JSON.stringify({ id: "proc-1", authKey: "secret-key" }))
-      );
+      expect(
+        sessionStorage.getItem(SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH)
+      ).toBe(btoa(JSON.stringify({ id: "proc-1", authKey: "secret-key" })));
       expect(replaceStateSpy).toHaveBeenCalled();
       replaceStateSpy.mockRestore();
     });
 
     it("login resume merges hash credentials with UI localStorage and ignores legacy LS authKey", async () => {
       localStorage.setItem(
-        "lhm-appointment-data",
+        LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
         JSON.stringify({
           ...uiStoragePayload,
           selectedService: {
@@ -2347,12 +2351,14 @@ describe("AppointmentView", () => {
       expect(wrapper.vm.captchaToken).not.toBe("legacy-captcha");
       expect(wrapper.vm.currentView).toBe(2);
       expect(wrapper.vm.rebookOrCancelDialog).toBe(false);
-      expect(localStorage.getItem("lhm-appointment-data")).toBeNull();
+      expect(
+        localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)
+      ).toBeNull();
     });
 
     it("does not restore authKey or PII from legacy localStorage when hash is missing", async () => {
       localStorage.setItem(
-        "lhm-appointment-data",
+        LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
         JSON.stringify({
           ...uiStoragePayload,
           appointment: {
@@ -2379,7 +2385,9 @@ describe("AppointmentView", () => {
       );
       expect(wrapper.vm.captchaToken).not.toBe("legacy-captcha");
       expect(wrapper.vm.selectedProvider?.id).toBe("789");
-      expect(localStorage.getItem("lhm-appointment-data")).toBeNull();
+      expect(
+        localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)
+      ).toBeNull();
     });
   });
 });
