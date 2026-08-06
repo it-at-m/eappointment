@@ -352,8 +352,10 @@ describe("CustomerInfo", () => {
       const banner = wrapper.find(".muc-banner");
       expect(banner.exists()).toBe(true);
       expect(banner.attributes("data-type")).toBe("danger");
+      expect(banner.text()).toContain("loginFailedBefore");
       expect(banner.text()).toContain("loginFailedHeader");
       expect(banner.text()).toContain("loginFailedText");
+      expect(banner.html()).not.toContain("<br");
     });
 
     it("hides login failure banner when loginFailed is false", async () => {
