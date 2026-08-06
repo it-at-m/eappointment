@@ -2,8 +2,67 @@
 import vue from '@vitejs/plugin-vue'
 
 // Utilities
-import {defineConfig} from 'vite'
+import fs from 'node:fs'
+import path from 'node:path'
 import {fileURLToPath, URL} from 'node:url'
+import {defineConfig, type Plugin} from 'vite'
+
+/**
+ * Branch switches leave Vite's module graph / optimizeDeps cache pointing at
+ * paths that no longer exist (or miss new files). Polling alone is not enough;
+ * restart when Git HEAD changes so imports resolve again without a manual clear.
+ *
+ * Do not use server.watcher for this: Vite ignores the .git directory, so HEAD
+ * changes never arrive. fs.watchFile polls outside that ignore list.
+ *
+ * Resolve paths from server.config.root (not import.meta.url): Vite loads the
+ * config from a temp file under node_modules/.vite-temp/, so import.meta.url
+ * would point at the wrong directory.
+ */
+function restartOnGitCheckout(): Plugin {
+  return {
+    name: 'restart-on-git-checkout',
+    configureServer(server) {
+      const projectRoot = server.config.root
+      const gitHead = path.join(projectRoot, '..', '.git', 'HEAD')
+      if (!fs.existsSync(gitHead)) {
+        return
+      }
+
+      const cacheDir = path.join(projectRoot, 'node_modules', '.vite')
+      let restarting = false
+      let lastHead = fs.readFileSync(gitHead, 'utf8')
+
+      const onHeadChange = async () => {
+        let nextHead: string
+        try {
+          nextHead = fs.readFileSync(gitHead, 'utf8')
+        } catch {
+          return
+        }
+        if (nextHead === lastHead || restarting) {
+          return
+        }
+        lastHead = nextHead
+        restarting = true
+        try {
+          fs.rmSync(cacheDir, {recursive: true, force: true})
+          await server.restart()
+        } finally {
+          restarting = false
+        }
+      }
+
+      fs.watchFile(gitHead, {interval: 1000}, () => {
+        void onHeadChange()
+      })
+
+      server.httpServer?.once('close', () => {
+        fs.unwatchFile(gitHead)
+      })
+    },
+  }
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,7 +76,8 @@ export default defineConfig({
           isCustomElement: (tag) => tag.startsWith('altcha-')
         }
       }
-    })
+    }),
+    restartOnGitCheckout(),
   ],
   // Expose SHOW_CITIZEN_LOGIN from .env / compose (same name as zms-deployment).
   envPrefix: ['VITE_', 'SHOW_'],
