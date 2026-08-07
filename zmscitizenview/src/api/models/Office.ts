@@ -70,6 +70,13 @@ export interface Office {
    */
   allowDisabledServicesMix?: boolean | number[];
   /**
+   * Peer office IDs that share one Ort but pool calendar capacity.
+   *
+   * @type {number[]}
+   * @memberof Office
+   */
+  sharedBookingOfficeIds?: number[];
+  /**
    *
    * @type {Scope}
    * @memberof Office

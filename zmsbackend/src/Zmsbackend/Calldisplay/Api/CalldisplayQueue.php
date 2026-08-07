@@ -9,6 +9,7 @@ namespace BO\Zmsbackend\Calldisplay\Api;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
+use BO\Zmsbackend\Calldisplay\Helper\CalldisplayCollections;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -31,14 +32,12 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
 
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $calldisplay = (new \BO\Zmsentities\Calldisplay($input))->withOutClusterDuplicates();
-        $this->testScopeAndCluster($calldisplay, $resolveReferences);
+        $this->scopeCache = CalldisplayCollections::prepareForQueue($calldisplay, $resolveReferences);
 
         //read full list if no statusList exists
         $queueList = (count($statusList)) ?
             $this->readQueueListByStatus($calldisplay, $statusList, $resolveReferences) :
             $this->readFullQueueList($calldisplay, $resolveReferences);
-
-
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
         $message->data = $queueList->withoutDublicates();
@@ -49,26 +48,6 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
     }
 
     protected $scopeCache = [];
-
-    protected function testScopeAndCluster($calldisplay, $resolveReferences)
-    {
-        if (! $calldisplay->hasScopeList() && ! $calldisplay->hasClusterList()) {
-            throw new \BO\Zmsbackend\Calldisplay\Exception\ScopeAndClusterNotFound();
-        }
-        foreach ($calldisplay->getClusterList() as $cluster) {
-            $cluster = (new \BO\Zmsbackend\Cluster\Service\Cluster())->readEntity($cluster->getId());
-            if (! $cluster) {
-                throw new \BO\Zmsbackend\Cluster\Exception\ClusterNotFound();
-            }
-        }
-        foreach ($calldisplay->getScopeList() as $scope) {
-            $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readWithWorkstationCount($scope->getId(), \App::$now, $resolveReferences);
-            if (! $scope) {
-                throw new \BO\Zmsbackend\Scope\Exception\ScopeNotFound();
-            }
-            $this->scopeCache[$scope->getId()] = $scope;
-        }
-    }
 
     protected function readCalculatedQueueListFromScope($scope, $resolveReferences)
     {
