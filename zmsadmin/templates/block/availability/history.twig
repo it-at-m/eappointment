@@ -1,0 +1,164 @@
+{# Öffnungszeiten change history (tech admin only), loaded on page view. #}
+{% if canViewAvailabilityHistory|default(false) %}
+<section class="availability-history board board--spaceless" style="margin-top: 1.5rem;">
+    <div class="board__header">
+        <h2 class="board__heading heading"
+            id="availability-history-heading"
+            data-url="{{ urlGet('scopeAvailabilityHistory', {'id': scope.id}, {}) }}">
+            Änderungsverlauf
+        </h2>
+    </div>
+    <div id="availability-history-panel" class="board__body body" aria-labelledby="availability-history-heading">
+        <p class="availability-history-status" id="availability-history-status">Wird geladen…</p>
+        <div class="table-responsive-wrapper" id="availability-history-table-wrap" hidden>
+            <table class="table--base availability-history-table" id="availability-history-table">
+                <thead>
+                    <tr>
+                        <th>Aktion</th>
+                        <th>Wochentage</th>
+                        <th>Serie</th>
+                        <th>Von</th>
+                        <th>Bis</th>
+                        <th>Uhrzeit</th>
+                        <th>Typ</th>
+                        <th>Zeitschlitz</th>
+                        <th>Arbeitsplätze</th>
+                        <th>Buchung</th>
+                        <th>Anmerkung</th>
+                    </tr>
+                </thead>
+                <tbody id="availability-history-tbody"></tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<style>
+    .availability-history-table .cell--meta {
+        white-space: nowrap;
+        color: #555;
+        font-size: 0.9em;
+        line-height: 1.35;
+    }
+</style>
+<script>
+(function () {
+    var heading = document.getElementById('availability-history-heading');
+    var statusEl = document.getElementById('availability-history-status');
+    var wrapEl = document.getElementById('availability-history-table-wrap');
+    var tbodyEl = document.getElementById('availability-history-tbody');
+    if (!heading || !statusEl || !wrapEl || !tbodyEl) {
+        return;
+    }
+
+    var actionLabels = {
+        created: 'Erstellt',
+        updated: 'Geändert',
+        deleted: 'Gelöscht',
+        dldb_slot_update: 'DLDB Slotlänge'
+    };
+
+    function formatChangedAt(value) {
+        if (!value) {
+            return '';
+        }
+        var normalized = String(value).replace(' ', 'T');
+        var date = new Date(normalized);
+        if (isNaN(date.getTime())) {
+            return value;
+        }
+        var pad = function (n) { return n < 10 ? '0' + n : String(n); };
+        return pad(date.getDate()) + '.' + pad(date.getMonth() + 1) + '.' + date.getFullYear()
+            + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes());
+    }
+
+    var weekdayLabels = {
+        monday: 'Montag',
+        tuesday: 'Dienstag',
+        wednesday: 'Mittwoch',
+        thursday: 'Donnerstag',
+        friday: 'Freitag',
+        saturday: 'Samstag',
+        sunday: 'Sonntag'
+    };
+    var weekdayOrder = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+    function formatWeekdays(weekday) {
+        if (!weekday || typeof weekday !== 'object') {
+            return '';
+        }
+        return weekdayOrder.filter(function (key) {
+            return parseInt(weekday[key], 10) > 0;
+        }).map(function (key) {
+            return weekdayLabels[key];
+        }).join(', ');
+    }
+
+    function cell(text) {
+        var td = document.createElement('td');
+        td.textContent = text || '–';
+        return td;
+    }
+
+    function renderRows(rows) {
+        tbodyEl.innerHTML = '';
+        if (!rows || !rows.length) {
+            statusEl.textContent = 'Kein Änderungsverlauf im gewählten Zeitraum.';
+            statusEl.hidden = false;
+            wrapEl.hidden = true;
+            return;
+        }
+        rows.forEach(function (row) {
+            var tr = document.createElement('tr');
+            var meta = document.createElement('td');
+            meta.className = 'cell--meta';
+            var actionEl = document.createElement('div');
+            actionEl.textContent = actionLabels[row.action] || row.action;
+            meta.appendChild(actionEl);
+            var changedAtEl = document.createElement('div');
+            changedAtEl.textContent = formatChangedAt(row.changedAt);
+            meta.appendChild(changedAtEl);
+            if (row.changedBy) {
+                var changedByEl = document.createElement('div');
+                changedByEl.textContent = row.changedBy;
+                meta.appendChild(changedByEl);
+            }
+            tr.appendChild(meta);
+            tr.appendChild(cell(formatWeekdays(row.weekday)));
+            tr.appendChild(cell(row.series));
+            tr.appendChild(cell(row.validFrom));
+            tr.appendChild(cell(row.validTo));
+            tr.appendChild(cell(row.timeRange));
+            tr.appendChild(cell(row.type));
+            tr.appendChild(cell(row.slotTime));
+            tr.appendChild(cell(row.workstations));
+            tr.appendChild(cell(row.bookable));
+            tr.appendChild(cell(row.description));
+            tbodyEl.appendChild(tr);
+        });
+        statusEl.hidden = true;
+        wrapEl.hidden = false;
+    }
+
+    statusEl.hidden = false;
+    statusEl.textContent = 'Wird geladen…';
+    wrapEl.hidden = true;
+
+    fetch(heading.getAttribute('data-url'), {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: { 'Accept': 'application/json' }
+    }).then(function (response) {
+        if (!response.ok) {
+            throw new Error('HTTP ' + response.status);
+        }
+        return response.json();
+    }).then(function (payload) {
+        renderRows(payload.data || []);
+    }).catch(function () {
+        statusEl.textContent = 'Änderungsverlauf konnte nicht geladen werden.';
+        statusEl.hidden = false;
+        wrapEl.hidden = true;
+    });
+})();
+</script>
+{% endif %}

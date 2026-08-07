@@ -135,45 +135,45 @@ class ExchangeAvailabilityreview extends ExchangeSimpleQuery
                             " ",
                             standort.standortkuerzel) Standortname,
                     standort.StandortID,
-                    oeffnungszeit.Startdatum,
-                    oeffnungszeit.Endedatum,
-                    oeffnungszeit.Terminanfangszeit Anfang,
-                    oeffnungszeit.Terminendzeit Ende,
-                    oeffnungszeit.jedexteWoche,
-                    oeffnungszeit.allexWochen,
-                    Wochentag & 2 montag,
-                    Wochentag & 4 dienstag,
-                    Wochentag & 8 mittwoch,
-                    Wochentag & 16 donnerstag,
-                    Wochentag & 32 freitag,
-                    Wochentag & 64 samstag,
-                    Wochentag & 1 sonntag,
-                    oeffnungszeit.Timeslot,
-                    oeffnungszeit.Anzahlterminarbeitsplaetze Arbpltz,
-                    oeffnungszeit.reduktionTermineImInternet minusOnline,
-                    oeffnungszeit.erlaubemehrfachslots mehrfach,
-                    IF(oeffnungszeit.`Offen_ab`,
-                        oeffnungszeit.`Offen_ab`,
+                    oeffnungszeit.start_date AS Startdatum,
+                    oeffnungszeit.end_date AS Endedatum,
+                    oeffnungszeit.appointment_start_time AS Anfang,
+                    oeffnungszeit.appointment_end_time AS Ende,
+                    oeffnungszeit.every_other_week AS jedexteWoche,
+                    oeffnungszeit.every_x_weeks AS allexWochen,
+                    weekday & 2 montag,
+                    weekday & 4 dienstag,
+                    weekday & 8 mittwoch,
+                    weekday & 16 donnerstag,
+                    weekday & 32 freitag,
+                    weekday & 64 samstag,
+                    weekday & 1 sonntag,
+                    oeffnungszeit.time_slot AS Timeslot,
+                    oeffnungszeit.appointment_workstation_count AS Arbpltz,
+                    oeffnungszeit.internet_reduction AS minusOnline,
+                    oeffnungszeit.multiple_slots_allowed AS mehrfach,
+                    IF(oeffnungszeit.`open_from_days`,
+                        oeffnungszeit.`open_from_days`,
                         standort.`Termine_ab`) buchVon,
-                    IF(oeffnungszeit.`Offen_bis`,
-                        oeffnungszeit.`Offen_bis`,
+                    IF(oeffnungszeit.`open_until_days`,
+                        oeffnungszeit.`open_until_days`,
                         standort.`Termine_bis`) buchBis
                 FROM
                     oeffnungszeit
                         LEFT JOIN
-                    standort ON oeffnungszeit.StandortID = standort.StandortID
+                    standort ON oeffnungszeit.scope_id = standort.StandortID
                         LEFT JOIN
                     behoerde ON standort.BehoerdenID = behoerde.BehoerdenID
                         LEFT JOIN
                     organisation ON behoerde.OrganisationsID = organisation.OrganisationsID
                 WHERE
-                    oeffnungszeit.Endedatum >= NOW()
+                    oeffnungszeit.end_date >= NOW()
                         AND behoerde.Name = "Bürgeramt"
                 ORDER BY organisation.Organisationsname ASC,
                     Standortname ASC,
-                    oeffnungszeit.Wochentag ASC,
-                    oeffnungszeit.Startdatum ASC,
-                    oeffnungszeit.Terminanfangszeit ASC;
+                    oeffnungszeit.weekday ASC,
+                    oeffnungszeit.start_date ASC,
+                    oeffnungszeit.appointment_start_time ASC;
         ';
         return $this->fetchDataSet($entity, $sql);
     }

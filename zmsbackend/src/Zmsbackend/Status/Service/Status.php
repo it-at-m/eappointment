@@ -146,10 +146,10 @@ class Status extends \BO\Zmsbackend\Base
     protected function readOutdatedSlots()
     {
         $stats = $this->getReader()->fetchOne(
-            'SELECT COUNT(*) cnt, MIN(a.updateTimestamp) oldest
-             FROM slot s 
+            'SELECT COUNT(*) cnt, MIN(a.updated_at) oldest
+             FROM slot s
              LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
-             WHERE s.updateTimestamp < a.updateTimestamp AND s.status = "free"'
+             WHERE s.updateTimestamp < a.updated_at AND s.status = "free"'
         );
         return $stats;
     }
