@@ -273,7 +273,7 @@
   "termsOfUse": "Rechtliche Hinweise",
   "termsOfUseForVideoConsultationLabel": "Nutzungsbedingungen Videoberatung",
   "termsOfUseForVideoConsultationText": "Für die Teilnahme an der Videoberatung stimme ich den <a href=\"https://stadt.muenchen.de/dam/DSGVO/Nutzungsbedingungen-Videoberatung.pdf\" target='_blank' rel='noopener noreferrer' aria-label='Nutzungsbedingungen Videoberatung pdf download'>Nutzungsbedingungen</a> zu.",
-  "time": "Zeit",
+  "time": "Datum und Uhrzeit",
   "timeStampSuffix": "Uhr",
   "upcomingAppointments": "Kommende Termine",
   "updateAppointmentErrorHeader": "Terminupdate fehlgeschlagen",
