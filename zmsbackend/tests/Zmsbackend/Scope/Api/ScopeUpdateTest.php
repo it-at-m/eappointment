@@ -80,7 +80,7 @@ class ScopeUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
             ], []);
         } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
             $this->assertSame(
-                ['oneOf' => 'Bitte leer lassen oder eine Zahl größer als 1 eingeben.'],
+                ['oneOf' => 'Die Zahl "1" für die maximale Anzahl an Terminen pro E-Mail-Adresse ist nicht erlaubt. Bitte geben Sie eine größere Zahl ein.'],
                 $exception->data['/preferences/client/appointmentsPerMail']['messages']
             );
             throw $exception;
