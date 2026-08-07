@@ -459,6 +459,31 @@
  */
 \App::$slim->get('/my-appointments/', '\BO\Zmscitizenapi\Controllers\Appointment\MyAppointmentsController')->setName("MyAppointmentsController");
 
+/**
+ * @swagger
+ * /source-cache/warmup/:
+ *   post:
+ *     summary: Invalidate and rebuild the offices-and-services source cache
+ *     tags:
+ *       - cache
+ *     parameters:
+ *       - name: X-Source-Cache-Warmup-Token
+ *         in: header
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Cache invalidated and offices-and-services rebuilt
+ *       403:
+ *         description: Missing or invalid warmup token
+ *       404:
+ *         description: Warmup disabled (SOURCE_CACHE_WARMUP_TOKEN unset)
+ */
+\App::$slim->post(
+    '/source-cache/warmup/',
+    '\BO\Zmscitizenapi\Controllers\System\SourceCacheWarmupController'
+)->setName("SourceCacheWarmupController");
+
 // Catch-all route for 404 errors
 \App::$slim->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], '/{routes:.+}', function ($request, $response) {
     $error = \BO\Zmscitizenapi\Utils\ErrorMessages::get('notFound');
