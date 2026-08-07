@@ -190,4 +190,30 @@ class ScopeTest extends EntityCommonTests
         $requestList = $entity->getRequestList();
         $this->assertTrue($requestList->hasRequests(1234), "Missing request in provider from scope");
     }
+
+    public function testAppointmentsPerMailRejectsOne()
+    {
+        $entity = $this->getExample();
+        $entity->preferences['client']['appointmentsPerMail'] = '1';
+        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
+        $this->expectExceptionCode(400);
+        try {
+            $entity->testValid('de_DE', 1);
+        } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
+            $this->assertSame(
+                'Die Zahl "1" für die maximale Anzahl an Terminen pro E-Mail-Adresse ist nicht erlaubt. Bitte geben Sie eine größere Zahl ein.',
+                $exception->data['/preferences/client/appointmentsPerMail']['messages']['not']
+            );
+            throw $exception;
+        }
+    }
+
+    public function testAppointmentsPerMailAllowsTwoOrEmpty()
+    {
+        foreach (['', null, '0', 0, '2', 2] as $value) {
+            $entity = $this->getExample();
+            $entity->preferences['client']['appointmentsPerMail'] = $value;
+            $this->assertTrue($entity->testValid('de_DE', 1));
+        }
+    }
 }

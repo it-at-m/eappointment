@@ -238,7 +238,9 @@
 
                     {{ formgroup(
                         {
-                            "label": "Maximale Anzahl an Terminen pro E-Mail-Adresse:", "description": "Wird 1 eingestellt, können Bürger*innen ihre Termine nicht selbständig umbuchen."
+                            "label": "Maximale Anzahl an Terminen pro E-Mail-Adresse:",
+                            "description": "Bitte geben Sie eine Zahl größer oder gleich \"zwei\" ein, damit ein Verschieben des Termins für Bürger*innen möglich bleibt",
+                            "errors": (exception and exception.data['preferences/client/appointmentsPerMail'].messages is defined) ? exception.data['preferences/client/appointmentsPerMail'].messages : []
                         },
                         [{
                             "type":"input",
