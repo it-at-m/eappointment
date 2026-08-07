@@ -193,8 +193,8 @@ class ScopeTest extends EntityCommonTests
 
     public function testAppointmentsPerMailRejectsInvalidValues()
     {
-        $expectedMessage = 'Die maximale Anzahl an Terminen pro E-Mail-Adresse muss leer, 0 oder mindestens 2 sein. Die Zahl "1" ist nicht erlaubt.';
-        foreach ([1, '1', -1, 'abc'] as $value) {
+        $expectedMessage = 'Bitte leer lassen oder eine Zahl größer als 1 eingeben.';
+        foreach ([0, '0', 1, '1', -1, 'abc'] as $value) {
             $entity = $this->getExample();
             $entity->preferences['client']['appointmentsPerMail'] = $value;
             try {
@@ -202,17 +202,15 @@ class ScopeTest extends EntityCommonTests
                 $this->fail('Expected SchemaValidation for value ' . var_export($value, true));
             } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
                 $this->assertSame(400, $exception->getCode());
-                $this->assertSame(
-                    $expectedMessage,
-                    $exception->data['/preferences/client/appointmentsPerMail']['messages']['oneOf']
-                );
+                $messages = $exception->data['/preferences/client/appointmentsPerMail']['messages'];
+                $this->assertSame(['oneOf' => $expectedMessage], $messages);
             }
         }
     }
 
     public function testAppointmentsPerMailAllowsTwoOrEmpty()
     {
-        foreach (['', null, '0', 0, '2', 2, '10', 10] as $value) {
+        foreach (['', null, '2', 2, '10', 10] as $value) {
             $entity = $this->getExample();
             $entity->preferences['client']['appointmentsPerMail'] = $value;
             $this->assertTrue($entity->testValid('de_DE', 1));

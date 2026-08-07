@@ -425,24 +425,20 @@
                                 },
                                 {
                                     "type": "integer",
-                                    "const": 0
-                                },
-                                {
-                                    "type": "integer",
                                     "minimum": 2
                                 },
                                 {
                                     "type": "string",
-                                    "pattern": "^(|0|[2-9]|[1-9][0-9]+)$"
+                                    "pattern": "^(|[2-9]|[1-9][0-9]+)$"
                                 }
                             ],
-                            "description": "allowed appointments per e-mail address; must be empty/null/0 or >= 2 so citizens can reschedule",
+                            "description": "allowed appointments per e-mail address; empty/null = unlimited, otherwise must be >= 2 so citizens can reschedule",
                             "default": "",
                             "x-locale": {
                                 "de_DE": {
                                     "pointer": "Maximale Anzahl an Terminen pro E-Mail-Adresse",
                                     "messages": {
-                                        "oneOf": "Die maximale Anzahl an Terminen pro E-Mail-Adresse muss leer, 0 oder mindestens 2 sein. Die Zahl \"1\" ist nicht erlaubt."
+                                        "oneOf": "Bitte leer lassen oder eine Zahl größer als 1 eingeben."
                                     }
                                 }
                             }
