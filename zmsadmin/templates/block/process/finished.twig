@@ -1,7 +1,10 @@
 {% from 'element/helper/form.twig' import formgroup, formbutton, inputsubmit, inputfield %}
 
 <div class="client-processed">
-    <form class="form--base" method="post" action="{{ urlGet('workstationProcessFinished') }}">
+    <form class="form--base" method="post" action="{{ urlGet('workstationProcessFinished', {}, nextProcessId ? {'nextprocess': nextProcessId} : {}) }}">
+        {% if nextProcessId %}
+            <input type="hidden" name="nextprocess" value="{{ nextProcessId }}">
+        {% endif %}
         
         <fieldset>
             <legend>Kundendaten für Statistik</legend>

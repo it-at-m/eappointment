@@ -34,6 +34,7 @@ class View extends BaseView {
         this.onChangeScope = options.onChangeScope;
         this.onConfirm = options.onConfirm;
         this.onReloadQueueTable = options.onReloadQueueTable;
+        this.onCallOtherProcess = options.onCallOtherProcess;
     }
 
 
@@ -132,6 +133,10 @@ class View extends BaseView {
             }
         }).on('click', 'a.process-delete', (ev) => {
             this.onConfirm(ev, "confirm_delete", () => { this.onDeleteProcess(ev) });
+        }).on('click', 'a[data-process][href*="calledprocess"]', (ev) => {
+            if (typeof this.onCallOtherProcess === 'function' && this.onCallOtherProcess(ev)) {
+                return;
+            }
         }).on('click', '.queue-table .calendar-navigation .pagedaylink', (ev) => {
             this.onDatePick($(ev.currentTarget).attr('data-date'));
         }).on('click', '.queue-table .calendar-navigation .today', (ev) => {
