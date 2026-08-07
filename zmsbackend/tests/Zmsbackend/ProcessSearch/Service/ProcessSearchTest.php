@@ -179,57 +179,97 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertNotContains($processIds[1], $resultIds);
     }
 
-    public function testSearchByCustomTextfieldZero()
+    public function testGeneralSearchFindsCustomTextfiled()
     {
         $query = new Query();
+        $process = $query->readSearch(['query' => '10029']) ->getFirst();
 
-        $process = $query->readSearch(['query' => '10029'])->getFirst();
+        $this->assertNotNull($process);
 
         $query->perform(
-            'UPDATE `' . ProcessQuery::TABLE . '`
-            SET custom_text_field = :value
-            WHERE BuergerID = :id',
+            'UPDATE `' . ProcessQuery::TABLE . '` SET custom_text_field = :value WHERE BuergerID = :id',
             [
-                'value' => '0',
+                'value' => 'SpezialmerkmalAlpha',
                 'id' => $process->id,
             ]
         );
-
-        $results = $query->readSearch([
-            'customTextfield' => '0',
-        ]);
-
-        $this->assertGreaterThanOrEqual(1, $results->count());
-        $this->assertEquals(
-            1,
-            $query->readSearchCount(['customTextfield' => '0'])
-        );
+        $results = $query->readSearch(['query' => 'SpezialmerkmalAlpha']);
+        $resultIds = [];
+        foreach ($results as $result) {
+            $resultIds[] = $result->id;
+        }
+        $this->assertContains($process->id, $resultIds);
+        $totalCount = $query->readSearchCount(['query' => 'SpezialmerkmalAlpha']);
+        $this->assertGreaterThanOrEqual($results->count(), $totalCount);
     }
 
-    public function testSearchByCustomTextfield2Zero()
+    public function testGeneralSearchFindsCustomTextfield2()
     {
         $query = new Query();
+        $process = $query->readSearch(['query' => '10029']) ->getFirst();
 
-        $process = $query->readSearch(['query' => '10029'])->getFirst();
+        $this->assertNotNull($process);
 
         $query->perform(
-            'UPDATE `' . ProcessQuery::TABLE . '`
-            SET custom_text_field2 = :value
-            WHERE BuergerID = :id',
+            'UPDATE `' . ProcessQuery::TABLE . '` SET custom_text_field2 = :value WHERE BuergerID = :id',
             [
-                'value' => '0',
+                'value' => 'SpezialmerkmalBeta',
                 'id' => $process->id,
             ]
         );
+        $results = $query->readSearch(['query' => 'SpezialmerkmalBeta']);
+        $resultIds = [];
+        foreach ($results as $result) {
+            $resultIds[] = $result->id;
+        }
+        $this->assertContains($process->id, $resultIds);
+        $totalCount = $query->readSearchCount(['query' => 'SpezialmerkmalBeta']);
+        $this->assertGreaterThanOrEqual($results->count(), $totalCount);
+    }
 
-        $results = $query->readSearch([
-            'customTextfield2' => '0',
-        ]);
+    public function testGeneralSearchFindsMultipleWordsInCustomTextfield()
+    {
+        $query = new Query();
+        $process = $query->readSearch(['query' => '10029']) ->getFirst();
+        $this->assertNotNull($process);
 
-        $this->assertGreaterThanOrEqual(1, $results->count());
-        $this->assertEquals(
-            1,
-            $query->readSearchCount(['customTextfield2' => '0'])
+        $query->perform(
+            'UPDATE `' . ProcessQuery::TABLE . '` SET custom_text_field = :value WHERE BuergerID = :id',
+            [
+                'value' => 'Rollstuhl elektrisch',
+                'id' => $process->id,
+            ]
         );
+        $results = $query->readSearch(['query' => 'Rollstuhl elektrisch']);
+        $resultIds = [];
+        foreach ($results as $result) {
+            $resultIds[] = $result->id;
+        }
+        $this->assertContains($process->id, $resultIds);
+        $totalCount = $query->readSearchCount(['query' => '"Rollstuhl elektrisch"']);
+        $this->assertGreaterThanOrEqual($results->count(), $totalCount);
+
+
+    }
+
+    public function testGeneralSearchFindsCustomTextWordsInAnyOrder()
+    {
+        $query = new Query();
+        $process = $query->readSearch(['query' => '10029']) ->getFirst();
+        $this->assertNotNull($process);
+
+        $query->perform(
+            'UPDATE `' . ProcessQuery::TABLE . '` SET custom_text_field = :value WHERE BuergerID = :id',
+            [
+                'value' => 'Rollstuhl elektrisch',
+                'id' => $process->id,
+            ]
+        );
+        $results = $query->readSearch(['query' => 'elektrisch Rollstuhl']);
+        $resultIds = [];
+        foreach ($results as $result) {
+            $resultIds[] = $result->id;
+        }
+        $this->assertContains($process->id, $resultIds);
     }
 }
