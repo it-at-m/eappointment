@@ -125,7 +125,7 @@
                   "emailRequired":"1",
                   "telephoneActivated":"1",
                   "telephoneRequired":"1",
-                  "appointmentsPerMail":"1",
+                  "appointmentsPerMail":"2",
                   "customTextfieldActivated":"1",
                   "customTextfieldRequired":"1",
                   "customTextfieldLabel":"Nachname des Kindes",
