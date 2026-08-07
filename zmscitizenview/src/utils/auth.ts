@@ -25,7 +25,10 @@ function getJwtPayloadSegment(token: string): string {
     );
   }
 
-  const payloadSegment = parts[1];
+  const [headerSegment, payloadSegment] = parts;
+  if (!headerSegment) {
+    throw new JwtParseError("Invalid JWT: header segment is missing");
+  }
   if (!payloadSegment) {
     throw new JwtParseError("Invalid JWT: payload segment is missing");
   }
@@ -96,10 +99,20 @@ export function getTokenData(accessToken: string): {
   given_name?: string;
   family_name?: string;
 } {
-  return parseJwt(accessToken) as {
-    email?: string;
-    given_name?: string;
-    family_name?: string;
+  const payload = parseJwt(accessToken);
+
+  const getOptionalString = (key: string): string | undefined => {
+    const value = payload[key];
+    if (value !== undefined && typeof value !== "string") {
+      throw new JwtParseError(`Invalid JWT: ${key} must be a string`);
+    }
+    return value as string | undefined;
+  };
+
+  return {
+    email: getOptionalString("email"),
+    given_name: getOptionalString("given_name"),
+    family_name: getOptionalString("family_name"),
   };
 }
 

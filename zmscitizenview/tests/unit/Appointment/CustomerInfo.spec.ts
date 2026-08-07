@@ -359,7 +359,10 @@ describe("CustomerInfo", () => {
     });
 
     it("hides login failure banner when loginFailed is false", async () => {
-      const wrapper = createWrapper({ loginFailed: false });
+      const wrapper = createWrapper({
+        showLoginOption: true,
+        loginFailed: false,
+      });
       await nextTick();
 
       expect(wrapper.find(".muc-banner").exists()).toBe(false);
