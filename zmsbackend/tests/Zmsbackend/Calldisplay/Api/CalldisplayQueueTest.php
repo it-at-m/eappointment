@@ -78,6 +78,24 @@ class CalldisplayQueueTest extends \BO\Zmsbackend\Tests\Api\Base
         ], []);
     }
 
+    public function testSkipsMissingScopeWhenOthersExist()
+    {
+        $response = $this->render([], [
+            '__body' => '{
+                "scopes": [
+                    {
+                      "id": 999
+                    },
+                    {
+                      "id": 142
+                    }
+                ]
+            }'
+        ], []);
+        $this->assertStringContainsString('queue.json', (string)$response->getBody());
+        $this->assertSame(200, $response->getStatusCode());
+    }
+
     public function testNotFoundClusterOrScopeLists()
     {
         $this->expectException('\BO\Zmsbackend\Calldisplay\Exception\ScopeAndClusterNotFound');
