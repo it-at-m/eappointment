@@ -290,9 +290,12 @@ const { selectedService } = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
 ) as SelectedServiceProvider;
 
-const { selectedProvider, selectedTimeslot } = inject<SelectedTimeslotProvider>(
+const selectedTimeslotInject = inject<SelectedTimeslotProvider>(
   "selectedTimeslot"
 ) as SelectedTimeslotProvider;
+const { selectedProvider, selectedTimeslot } = selectedTimeslotInject;
+// Tests may omit this; production AppointmentView always provides it.
+const resumeProviderId = selectedTimeslotInject.resumeProviderId ?? ref("");
 
 const loadingStates = inject("loadingStates", {
   isReservingAppointment: ref(false),
@@ -943,6 +946,8 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   clearVisibleErrors();
   selectedTimeslot.value = timeSlot;
   const realOfficeId = resolveRealOfficeIdForSlot(officeId, timeSlot);
+  // Capture opaque id for resume (not from the Office graph).
+  resumeProviderId.value = String(realOfficeId);
   selectedProvider.value = getOfficeById(realOfficeId);
   if (summary.value) {
     await nextTick();
