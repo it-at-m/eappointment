@@ -44,7 +44,7 @@ Damit unsere Branch-Namen geordnet und gut verständlich bleiben, gilt für alle
 Der Branch-Name muss diesem regulären Ausdruck entsprechen:
 `^(feature|hotfix|bugfix|cleanup|maintenance|chore|docs)-(zms|zmskvr|mpdzbs|muxdbs)-[0-9]+-[a-z0-9-]+$`
 
-Bitte zweige Features und Bugfixes ausschließlich vom Integrations-Branch `next` ab. Hotfixes und Dokumentationen dürfen von `main` abgezweigt werden.
+Bitte zweige Features und Bugfixes ausschließlich vom Integrations-Branch `next` ab. Hotfixes dürfen von `main` abgezweigt werden. Dokumentation (einschließlich Handbuch-Updates für GitHub Pages) soll auf `next` landen.
 
 ```mermaid
 ---

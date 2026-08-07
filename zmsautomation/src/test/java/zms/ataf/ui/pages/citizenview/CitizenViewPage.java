@@ -36,6 +36,10 @@ public class CitizenViewPage extends BasePage {
 
     private static final String DE_WEITER = "Weiter";
     private static final String DE_RESERVE = "Termin reservieren";
+    private static final String ALREADY_ACTIVATED_BANNER_MARKER =
+            "Sie haben Ihren Termin bereits aktiviert.";
+    private static final String RESCHEDULE_APPOINTMENT_BUTTON = "Termin verschieben";
+    private static final String CANCEL_RESCHEDULE_BUTTON = "Verschieben abbrechen";
 
     /** German invalid jump-in callout ({@code de-DE.json}). */
     public static final String DE_INVALID_JUMPIN_HEADER = "Diese Ansicht kann nicht geladen werden.";
@@ -461,6 +465,95 @@ public class CitizenViewPage extends BasePage {
         Assert.assertFalse(
                 deepOrtSingleProviderTeaserPresent(officeId),
                 "Single-provider Ort teaser for office " + officeId + " must not appear.");
+    }
+
+    /**
+     * True when at least one timeslot button for the real booking OfficeID is in the DOM
+     * ({@code #provider-{officeId}-timeslot-*} or {@code [data-provider-id="{officeId}"]}).
+     */
+    public boolean deepTimeslotPresentForProvider(int officeId) {
+        CONTEXT.set();
+        String script =
+                "var oid=String(arguments[0]);"
+                        + "var prefix='provider-'+oid+'-timeslot-';"
+                        + "function walk(root){"
+                        + " if(!root)return false;"
+                        + " if(root.nodeType===1){"
+                        + "  var id=root.id||'';"
+                        + "  if(id.indexOf(prefix)===0)return true;"
+                        + "  if(root.getAttribute&&root.getAttribute('data-provider-id')===oid"
+                        + "    &&((root.classList&&root.classList.contains('timeslot'))"
+                        + "      ||(root.classList&&root.classList.contains('grid-item'))))return true;"
+                        + "  if(root.shadowRoot&&walk(root.shadowRoot))return true;"
+                        + " }"
+                        + " var c=root.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;"
+                        + " return false;"
+                        + "}"
+                        + "return walk(document.body);";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, officeId));
+    }
+
+    /**
+     * Assert no timeslot buttons exist for the given real provider ids (e.g. Ausbildung peer
+     * when the selected service is not offered there). Checks the current hour/day-part only.
+     */
+    public void assertTimeslotsAbsentForProviders(int... officeIds) {
+        CONTEXT.set();
+        Assert.assertTrue(officeIds != null && officeIds.length > 0, "officeIds required");
+        for (int officeId : officeIds) {
+            Assert.assertFalse(
+                    deepTimeslotPresentForProvider(officeId),
+                    "Expected no timeslot with data-provider-id / id for provider " + officeId);
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: no timeslot for provider {} (as expected)", officeId);
+        }
+    }
+
+    /**
+     * Assert timeslot buttons exist for each real provider id (shared booking peers under one Ort grid).
+     * Clicks Später across hour/day-parts until every provider has been seen at least once.
+     */
+    public void assertTimeslotsPresentForProviders(int... officeIds) {
+        CONTEXT.set();
+        Assert.assertTrue(officeIds != null && officeIds.length > 0, "officeIds required");
+        Set<Integer> remaining = new HashSet<>();
+        for (int officeId : officeIds) {
+            remaining.add(officeId);
+        }
+        for (int attempt = 1; attempt <= 10 && !remaining.isEmpty(); attempt++) {
+            Set<Integer> foundThisPass = new HashSet<>();
+            for (int officeId : remaining) {
+                if (deepTimeslotPresentForProvider(officeId)) {
+                    foundThisPass.add(officeId);
+                    ScenarioLogManager.getLogger()
+                            .info("zmscitizenview: timeslot present for provider {}", officeId);
+                }
+            }
+            remaining.removeAll(foundThisPass);
+            if (remaining.isEmpty()) {
+                break;
+            }
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: still missing timeslots for providers {} (attempt {}); try Später",
+                            remaining,
+                            attempt);
+            if (!clickCitizenViewLaterOnceIfAvailable()) {
+                break;
+            }
+            sleepQuiet(1200L);
+            try {
+                waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
+            } catch (Exception e) {
+                ScenarioLogManager.getLogger()
+                        .warn("zmscitizenview slot wait after Später (assert providers): {}", e.toString());
+            }
+        }
+        Assert.assertTrue(
+                remaining.isEmpty(),
+                "Expected timeslots with data-provider-id / id for providers; still missing " + remaining);
+        scrollTimeSlotGridIntoViewForScreenshots();
     }
 
     /**
@@ -1110,26 +1203,40 @@ public class CitizenViewPage extends BasePage {
         scrollTimeSlotGridIntoViewForScreenshots();
     }
 
-    /** JS fragment: pick target slot + highlight + store in {@code window.__zmsCitizenViewSlotTarget} (no click). */
+    /**
+     * JS fragment: pick target slot + highlight + store in {@code window.__zmsCitizenViewSlotTarget} (no click).
+     * <p>
+     * Matches the <strong>real booking OfficeID</strong> via {@code provider-{oid}-timeslot-*} id or
+     * {@code data-provider-id} (shared booking: slots for peer 10503 live under display grid 10489).
+     */
     private static String buildScrollSlotHighlightScript() {
-        return "var oid=arguments[0];"
-                + "function findGrid(root,id){if(!root)return null;var g=root.querySelector('#timeslot-grid-provider-'+id);"
-                + "if(g)return g;var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++)"
-                + "if(all[i].shadowRoot){var f=findGrid(all[i].shadowRoot,id);if(f)return f;}return null;}"
-                + "var grid=findGrid(document.body,oid);if(!grid)return false;"
-                + "grid.scrollIntoView({block:'start'});"
-                + "window.scrollBy(0,200);"
-                + "function collectSlots(root,arr){if(!root)return;var n=root;"
-                + "if(n.nodeType===1){"
-                + " if(n.id&&n.id.indexOf('provider-'+oid+'-timeslot-')===0){arr.push(n);}"
-                + " else if((n.id&&n.id.indexOf('-timeslot-')>=0)||(n.classList&&n.classList.contains('timeslot'))){"
-                + "   arr.push(n);"
+        return "var oid=String(arguments[0]);"
+                + "var prefix='provider-'+oid+'-timeslot-';"
+                + "function collectSlots(root,arr,seen){"
+                + " if(!root)return;"
+                + " if(root.nodeType===1){"
+                + "  var id=root.id||'';"
+                + "  var dpi=root.getAttribute?root.getAttribute('data-provider-id'):null;"
+                + "  var match=id.indexOf(prefix)===0||String(dpi)===oid;"
+                + "  if(match){"
+                + "   var node=root;"
+                + "   if(!(id.indexOf(prefix)===0)&&root.classList&&root.classList.contains('grid-item')){"
+                + "    node=root.querySelector('[id^=\"'+prefix+'\"]')||root.querySelector('.timeslot')||root;"
+                + "   }"
+                + "   if(node&&!seen.has(node)){seen.add(node);arr.push(node);}"
+                + "  }"
+                + "  if(root.shadowRoot)collectSlots(root.shadowRoot,arr,seen);"
                 + " }"
-                + " if(n.shadowRoot)collectSlots(n.shadowRoot,arr);"
+                + " var c=root.children;if(c)for(var i=0;i<c.length;i++)collectSlots(c[i],arr,seen);"
                 + "}"
-                + "var c=n.children; if(c)for(var i=0;i<c.length;i++)collectSlots(c[i],arr);}"
-                + "var slots=[];collectSlots(grid,slots);"
+                + "var slots=[];collectSlots(document.body,slots,new Set());"
                 + "if(!slots.length)return false;"
+                + "function closestGrid(n){"
+                + " while(n){if(n.id&&String(n.id).indexOf('timeslot-grid-provider-')===0)return n;n=n.parentElement;}"
+                + " return null;}"
+                + "var grid=closestGrid(slots[0]);"
+                + "if(grid){grid.scrollIntoView({block:'start'});window.scrollBy(0,200);}"
+                + "else{slots[0].scrollIntoView({block:'start'});window.scrollBy(0,200);}"
                 + "var minTs=Math.floor(Date.now()/1000)+3600;"
                 + "function slotTs(node){"
                 + " if(!node||!node.id)return null;"
@@ -1174,7 +1281,7 @@ public class CitizenViewPage extends BasePage {
                 + "highlightSlot(target);"
                 + "window.__zmsCitizenViewSlotTarget=target;"
                 + "window.__zmsCitizenViewSlotId=(target&&target.id)?target.id:'';"
-                + "window.__zmsCitizenViewSlotOfficeId=oid;"
+                + "window.__zmsCitizenViewSlotOfficeId=parseInt(oid,10);"
                 + "return true;";
     }
 
@@ -1207,6 +1314,9 @@ public class CitizenViewPage extends BasePage {
     /**
      * Step 3a: scroll to grid and highlight the preferred timeslot (no click). The next Cucumber step’s
      * {@code @AfterStep} screenshot then shows the orange outline before Vue updates.
+     * <p>
+     * For shared booking, {@code officeId} is the real slot owner ({@code data-provider-id}), which may differ
+     * from the Ort display id. Retries with Später when no matching slot is in the current hour/day-part.
      */
     public void highlightPreferredTimeslotForOffice(int officeId) {
         CONTEXT.set();
@@ -1214,22 +1324,43 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info(
                 "zmscitizenview: highlight preferred slot (≥60min ahead; else ≥5min; else 3rd/2nd/1st) office {}",
                 officeId);
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(30))
-                .until(
-                        d ->
-                                Boolean.TRUE.equals(
-                                        ((JavascriptExecutor) d).executeScript(scrollSlotHighlight, officeId)));
-        try {
-            Thread.sleep(200L);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        boolean highlighted = false;
+        for (int attempt = 1; attempt <= 8 && !highlighted; attempt++) {
+            try {
+                highlighted =
+                        Boolean.TRUE.equals(
+                                ((JavascriptExecutor) DriverUtil.getDriver())
+                                        .executeScript(scrollSlotHighlight, officeId));
+            } catch (Exception e) {
+                ScenarioLogManager.getLogger()
+                        .warn("zmscitizenview: highlight script attempt {} failed: {}", attempt, e.toString());
+            }
+            if (highlighted) {
+                break;
+            }
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: no timeslot for provider {} in current view (attempt {}); try Später",
+                            officeId,
+                            attempt);
+            if (!clickCitizenViewLaterOnceIfAvailable()) {
+                break;
+            }
+            sleepQuiet(1200L);
+            try {
+                waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
+            } catch (Exception e) {
+                ScenarioLogManager.getLogger()
+                        .warn("zmscitizenview slot wait after Später (highlight): {}", e.toString());
+            }
         }
+        Assert.assertTrue(
+                highlighted,
+                "zmscitizenview: could not find/highlight timeslot for provider " + officeId
+                        + " (shared booking uses data-provider-id / provider-{id}-timeslot-*)");
+        sleepQuiet(200L);
         scrollTimeSlotGridIntoViewForScreenshots();
-        try {
-            Thread.sleep(250L);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        sleepQuiet(250L);
     }
 
     /** Step 3b: click the slot stored by {@link #highlightPreferredTimeslotForOffice(int)}. */
@@ -1621,6 +1752,65 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: confirmation success callout found");
     }
 
+    /** ZMSKVR-1500: MucBanner success after reopening an already-used confirm deep link. */
+    public void assertAlreadyActivatedAppointmentBannerVisible() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: waiting for already-activated MucBanner success ({})",
+                        ALREADY_ACTIVATED_BANNER_MARKER);
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(ALREADY_ACTIVATED_BANNER_MARKER),
+                "Already-activated appointment banner");
+        Assert.assertTrue(
+                shadowDomContainsText(ALREADY_ACTIVATED_BANNER_MARKER),
+                "Already-activated MucBanner success not found after reopening confirm link.");
+        ScenarioLogManager.getLogger().info("zmscitizenview: already-activated appointment banner found");
+    }
+
+    /**
+     * ZMSKVR-1500: banner must stay hidden on the rebooking confirm summary (confirm URL still active).
+     * Call after {@link #assertCancelRescheduleButtonVisible()} so view 3 rebooking UI is ready.
+     */
+    public void assertAlreadyActivatedAppointmentBannerNotVisible() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: asserting already-activated MucBanner is hidden ({})",
+                        ALREADY_ACTIVATED_BANNER_MARKER);
+        Assert.assertFalse(
+                shadowDomContainsText(ALREADY_ACTIVATED_BANNER_MARKER),
+                "Already-activated MucBanner must not remain visible while rescheduling from a confirm link.");
+    }
+
+    /** ZMSKVR-1500: start reschedule from already-activated / appointment overview. */
+    public void clickRescheduleAppointment() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: clicking reschedule appointment button ({})", RESCHEDULE_APPOINTMENT_BUTTON);
+        waitForAndClickButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON, DEFAULT_EXPLICIT_WAIT_TIME);
+    }
+
+    /** ZMSKVR-1500: rebooking confirm summary shows Verschieben abbrechen. */
+    public void assertCancelRescheduleButtonVisible() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: waiting for cancel-reschedule button ({})", CANCEL_RESCHEDULE_BUTTON);
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(CANCEL_RESCHEDULE_BUTTON), "Cancel reschedule button");
+        Assert.assertTrue(
+                shadowDomContainsText(CANCEL_RESCHEDULE_BUTTON),
+                "Cancel reschedule button (Verschieben abbrechen) not found after rebooking slot selection.");
+    }
+
+    /** ZMSKVR-1500: abort reschedule and return to appointment overview. */
+    public void clickCancelReschedule() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: clicking cancel reschedule button ({})", CANCEL_RESCHEDULE_BUTTON);
+        waitForAndClickButtonContaining(CANCEL_RESCHEDULE_BUTTON, DEFAULT_EXPLICIT_WAIT_TIME);
+    }
+
     public void assertSelectedAppointmentCalloutVisible() {
         assertShadowContains(
                 "Ausgewählter Termin",
@@ -1761,6 +1951,54 @@ public class CitizenViewPage extends BasePage {
     /** Navigate to zmscitizenview confirm page. Prefer URL extracted from mail body (GET /mails/); else build from confirm credentials or booking process. */
     public void openConfirmationDeepLinkInBrowser() {
         CONTEXT.set();
+        String url = resolveConfirmationDeepLinkUrl();
+        ScenarioLogManager.getLogger().info("zmscitizenview: navigating to confirmation URL: {}", url);
+        try {
+            DriverUtil.getDriver().navigate().to(url);
+            // Do not refresh. Same-tab hash routing now handles confirm links (ZMSKVR-1121).
+            // navigate()+refresh() can confirm twice and leave activation-expired UI instead of success.
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Navigate to confirm URL", e);
+        }
+        try {
+            Thread.sleep(10000L);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * ZMSKVR-1500: reopen the same confirm deep link after a successful activation.
+     * Leaving the confirm hash first is required so the SPA hash watch re-fires; navigating to the
+     * identical URL does not remount and would leave the first success callout on screen.
+     */
+    public void reopenConfirmationDeepLinkInBrowser() {
+        CONTEXT.set();
+        String confirmUrl = resolveConfirmationDeepLinkUrl();
+        String base = confirmUrl;
+        int hashIdx = base.indexOf('#');
+        if (hashIdx >= 0) {
+            base = base.substring(0, hashIdx);
+        }
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: reopening confirmation deep link (leave hash, then confirm again)");
+        try {
+            DriverUtil.getDriver().navigate().to(base + "#/");
+            Thread.sleep(1000L);
+            DriverUtil.getDriver().navigate().to(confirmUrl);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Reopen confirm URL", e);
+        }
+        try {
+            Thread.sleep(10000L);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private String resolveConfirmationDeepLinkUrl() {
         String url = zms.ataf.rest.steps.CitizenApiSteps.getBookingConfirmUrl();
         if (url != null && !url.isBlank()) {
             ScenarioLogManager.getLogger().info("zmscitizenview: opening confirmation deep link (URL from mail body)");
@@ -1789,20 +2027,7 @@ public class CitizenViewPage extends BasePage {
             }
             url = base + "#/appointment/confirm/" + b64;
         }
-        url = ensureAbsoluteCitizenViewUrl(url);
-        ScenarioLogManager.getLogger().info("zmscitizenview: navigating to confirmation URL: {}", url);
-        try {
-            DriverUtil.getDriver().navigate().to(url);
-            // Do not refresh. Same-tab hash routing now handles confirm links (ZMSKVR-1121).
-            // navigate()+refresh() can confirm twice and leave activation-expired UI instead of success.
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger().warn("Navigate to confirm URL", e);
-        }
-        try {
-            Thread.sleep(10000L);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-        }
+        return ensureAbsoluteCitizenViewUrl(url);
     }
 
     /** Navigate to the appointment view URL extracted from the confirmation mail (link without /confirm/). */

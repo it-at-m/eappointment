@@ -71,6 +71,81 @@
       ],
       "extendedLocationType": true,
       "public": true
+    },
+    {
+      "_comment": "TODO ZMSKVR-1046: Remove this local Ausbildung office (10503) once a real office exists in SADB.",
+      "names": [
+        "Hauptabteilung II Bürgerangelegenheiten",
+        "Bürgerbüro Ruppertstraße (Ausbildung)"
+      ],
+      "displayName": "Bürgerbüro Ruppertstraße (Ausbildung)",
+      "altname1": "KVR-II/22 Ausbildung",
+      "altname2": "Bürgerbüro Ruppertstraße (Ausbildung)",
+      "coordinate": {
+        "lat": "48.124681688670854",
+        "lon": "11.549865797138638",
+        "system": "wgs84"
+      },
+      "id": "10503",
+      "organisation": "Landeshauptstadt München",
+      "orgUnit": "Kreisverwaltungsreferat",
+      "address": {
+        "street": "Ruppertstraße",
+        "streetNumber": "19",
+        "zip": "80337",
+        "city": "München"
+      },
+      "postalAddress": {
+        "street": "Ruppertstraße",
+        "streetNumber": "19",
+        "zip": "80466",
+        "city": "München"
+      },
+      "phone": "089 233-96000",
+      "fax": "089 233-45371",
+      "email": "buergerbuero.kvr@muenchen.de",
+      "communication": {
+        "phone": {"record": [{"number": "089 233-96000"}]},
+        "fax": {"record": [{"number": "089 233-45371"}]},
+        "label": "buergerbuero.kvr@muenchen.de"
+      },
+      "extendedServiceReferences": [
+        {
+          "fields": [{
+            "label": "ZMS intern",
+            "id": "sf33",
+            "name": "ZMS_INTERN",
+            "type": "BOOLEAN",
+            "value": false
+          }],
+          "refId": "1080843",
+          "public": true
+        },
+        {
+          "fields": [{
+            "label": "ZMS intern",
+            "id": "sf33",
+            "name": "ZMS_INTERN",
+            "type": "BOOLEAN",
+            "value": false
+          }],
+          "refId": "1063475",
+          "public": true
+        },
+        {
+          "fields": [{
+            "label": "ZMS intern",
+            "id": "sf33",
+            "name": "ZMS_INTERN",
+            "type": "BOOLEAN",
+            "value": false
+          }],
+          "refId": "10224132",
+          "public": true
+        }
+      ],
+      "extendedLocationType": true,
+      "public": true
     }
   ]
 }
