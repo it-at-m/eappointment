@@ -4,17 +4,16 @@ Die Dokumentations-Site dieses Repositories liegt im Ordner `docs` und wird mit 
 
 ## Branching und GitHub Pages
 
-**Reine Doc-Änderungen** (Handbuch-Updates ohne Produktcode in derselben Änderung) sollen demselben Branch-Flow wie ein **Hotfix** folgen, nicht dem Feature-Flow auf `next`:
+Das Handbuch auf **[GitHub Pages](https://it-at-m.github.io/eappointment/)** wird aus dem Branch **`next`** veröffentlicht (über `combined-workflow-with-docs` bei Push auf `next`).
 
-- **Vom `main`-Branch abzweigen**, nicht von `next`. Reine Doc-Arbeit nicht auf `next` aufsetzen.
-- Pull Request öffnen und nach Fertigstellung in **`main` mergen**.
-- Anschließend **`main` in `next` mergen**, damit `next` die Doc-Updates erhält (Merge-back-Schritt nach Hotfixes).
+**Reine Doc-Änderungen** (Handbuch-Updates ohne Produktcode in derselben Änderung) sollen nach **`next`**, damit die Site aktualisiert wird:
 
-Wenn deine Arbeit ein **Feature oder Bugfix** ist, das auch `docs/` betrifft, folge dem **normalen Prozess** dafür (z. B. von `next` abzweigen und dort den üblichen PR öffnen). Die Doc-Änderungen kommen in denselben Feature-/Bugfix-Branch; ein separater Doc-Only-Branch von `main` ist dafür nicht nötig.
+- **Von `next` abzweigen**, Pull Request öffnen und in **`next` mergen**.
+- Wenn die Änderung auch auf `main` braucht (z. B. vor einem Release), `next` über den üblichen Weg in `main` mergen oder entsprechend spiegeln.
 
-Details und Diagramme zu beiden Flows stehen in [Branching-Strategie und -Konvention](/de/setup-and-development/development-rules/branching-strategy-and-convention).
+Wenn deine Arbeit ein **Feature oder Bugfix** ist, das auch `docs/` betrifft, folge dem **normalen Prozess** dafür (von `next` abzweigen, PR nach `next`). Die Doc-Änderungen gehören in denselben Feature-/Bugfix-Branch.
 
-Das Handbuch auf **[GitHub Pages](https://it-at-m.github.io/eappointment/)** wird aus dem Branch **`main`** veröffentlicht. Reine Doc-Fixes sollten zuerst nach `main`, damit die Site schnell aktualisiert wird; Dokumentation, die zu einem Feature oder Bugfix gehört, erreicht `main` mit dem üblichen Release-Pfad dieser Änderung.
+Details und Diagramme stehen in [Branching-Strategie und -Konvention](/de/setup-and-development/development-rules/branching-strategy-and-convention).
 
 ## Voraussetzungen
 
