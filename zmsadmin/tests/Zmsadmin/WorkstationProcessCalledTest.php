@@ -60,11 +60,6 @@ class WorkstationProcessCalledTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_workstation_with_process_called.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/process/161275/',
-                    'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ]
             ]
         );
@@ -72,11 +67,7 @@ class WorkstationProcessCalledTest extends Base
             'exclude' => 82252
         ], []);
         $this->assertStringContainsString(
-            'Es befindet sich bereits ein Kunde in Bearbeitung',
-            (string)$response->getBody()
-        );
-        $this->assertStringContainsString(
-            'Zurück zum aktuellen Vorgang',
+            'Dieser Arbeitsplatz hat schon einen Vorgang aufgerufen. Dieser wird weiterhin verwendet.',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -111,7 +102,7 @@ class WorkstationProcessCalledTest extends Base
         $this->assertEquals(302, $response->getStatusCode());
     }
 
-    public function testConflictWhileProcessingShowsConfirmWithoutRedirect()
+    public function testConflictWhileProcessingRedirectsWithoutConfirmPanel()
     {
         $this->setApiCalls(
             [
@@ -120,42 +111,11 @@ class WorkstationProcessCalledTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_workstation_with_process_processing.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/process/100044/',
-                    'response' => $this->readFixture("GET_process_100044_57c2.json")
                 ]
             ]
         );
         $response = $this->render(['id' => 100044], [], []);
-        $this->assertStringContainsString('client-confirm-call-other', (string)$response->getBody());
-        $this->assertStringContainsString('nextprocess=100044', (string)$response->getBody());
-        $this->assertEquals(200, $response->getStatusCode());
-    }
-
-    public function testConflictRejectsOutOfScopeProcessWhenClusterWideCallDisabled()
-    {
-        \App::$allowClusterWideCall = false;
-        $selectedProcess = json_decode($this->readFixture("GET_process_100044_57c2.json"), true);
-        $selectedProcess['data']['scope']['id'] = 999;
-
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_workstation_with_process_processing.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/process/100044/',
-                    'response' => json_encode($selectedProcess)
-                ]
-            ]
-        );
-        $this->expectException('BO\Zmsentities\Exception\WorkstationProcessMatchScopeFailed');
-        $this->render(['id' => 100044], [], []);
+        $this->assertRedirect($response, '/workstation/process/processing/?error=has_called_process');
+        $this->assertEquals(302, $response->getStatusCode());
     }
 }

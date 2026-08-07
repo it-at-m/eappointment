@@ -416,44 +416,58 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         ScenarioLogManager.getLogger().info("Checking confirm dialog for switching queue customer...");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.withMessage("Confirm dialog for switching queue customer is not visible!");
-        wait.until(ExpectedConditions.or(
-                ExpectedConditions.visibilityOfElementLocated(
-                        By.cssSelector("section.board.dialog a.button-abort")),
-                ExpectedConditions.visibilityOfElementLocated(
-                        By.cssSelector("section.client-confirm-call-other, section.board.client-confirm-call-other"))
-        ));
-        boolean lightboxVisible = !findElementsByLocatorType(
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector("section.board.dialog a.button-abort")));
+        Assert.assertFalse(findElementsByLocatorType(
                 TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME),
                 "//section[contains(@class,'dialog')]//*[contains(text(),'Es befindet sich bereits ein Kunde in Bearbeitung')]",
-                LocatorType.XPATH).isEmpty();
-        boolean panelVisible = !findElementsByLocatorType(
-                TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME),
-                "//section[contains(@class,'client-confirm-call-other')]//*[contains(text(),'Es befindet sich bereits ein Kunde in Bearbeitung')]",
-                LocatorType.XPATH).isEmpty();
-        Assert.assertTrue(lightboxVisible || panelVisible,
+                LocatorType.XPATH).isEmpty(),
                 "Expected confirm dialog text about a customer already in progress.");
+    }
+
+    public void assertCallOtherProcessConfirmDialogNotVisible() {
+        ScenarioLogManager.getLogger().info("Checking confirm dialog for switching queue customer is not visible...");
+        Assert.assertTrue(findElementsByLocatorType(
+                TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME),
+                "section.board.dialog a.button-abort",
+                LocatorType.CSSSELECTOR).isEmpty(),
+                "Confirm dialog for switching queue customer should not be visible.");
+        Assert.assertTrue(findElementsByLocatorType(
+                TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME),
+                "//section[contains(@class,'board') and contains(@class,'dialog')]//*[contains(text(),'Es befindet sich bereits ein Kunde in Bearbeitung')]",
+                LocatorType.XPATH).isEmpty(),
+                "Confirm dialog text for switching queue customer should not be visible.");
+    }
+
+    public void assertAlreadyCalledProcessErrorVisible() {
+        ScenarioLogManager.getLogger().info("Checking error that a process is already called...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("Already-called process error message is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//section[contains(@class,'message--error')]//*[contains(text(),"
+                        + "'Dieser Arbeitsplatz hat schon einen Vorgang aufgerufen. Dieser wird weiterhin verwendet.')]"
+        )));
+    }
+
+    public void assertCustomerAppearedButtonVisible() {
+        ScenarioLogManager.getLogger().info("Checking that \"Ja, Kunde erschienen\" is visible...");
+        Assert.assertTrue(isWebElementVisible(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//button[contains(normalize-space(.),'Ja, Kunde erschienen')]",
+                LocatorType.XPATH,
+                false,
+                CONTEXT),
+                "Expected button \"Ja, Kunde erschienen\" to be visible (called status).");
     }
 
     public void clickStayOnCurrentProcessInConfirmDialog() {
         ScenarioLogManager.getLogger().info("Clicking \"Zurück zum aktuellen Vorgang\"...");
-        if (isWebElementVisible(
-                DEFAULT_EXPLICIT_WAIT_TIME,
-                "section.board.dialog a.button-abort", LocatorType.CSSSELECTOR, true, CONTEXT)) {
-            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "section.board.dialog a.button-abort", LocatorType.CSSSELECTOR, false, CONTEXT);
-            return;
-        }
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, ".client-confirm-call-other_stay", LocatorType.CSSSELECTOR, false, CONTEXT);
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "section.board.dialog a.button-abort", LocatorType.CSSSELECTOR, false, CONTEXT);
     }
 
     public void clickFinishAndCallSelectedInConfirmDialog() {
         ScenarioLogManager.getLogger().info("Clicking \"Aktuellen Termin abschließen und Kunden aufrufen\"...");
-        if (isWebElementVisible(
-                DEFAULT_EXPLICIT_WAIT_TIME,
-                "section.board.dialog a.button-ok", LocatorType.CSSSELECTOR, true, CONTEXT)) {
-            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "section.board.dialog a.button-ok", LocatorType.CSSSELECTOR, false, CONTEXT);
-            return;
-        }
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, ".client-confirm-call-other_switch", LocatorType.CSSSELECTOR, false, CONTEXT);
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "section.board.dialog a.button-ok", LocatorType.CSSSELECTOR, false, CONTEXT);
     }
 
     public void completeStatisticsFinishIfPresent() {

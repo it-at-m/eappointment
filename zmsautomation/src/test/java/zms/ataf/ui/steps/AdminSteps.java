@@ -960,6 +960,25 @@ public class AdminSteps {
         PROCESSING_STATION_SECTION.assertCallOtherProcessConfirmDialogVisible();
     }
 
+    @Dann("erscheint kein Bestätigungsfenster zum Wechsel des Warteschlangen-Kunden.")
+    public void erscheint_kein_bestaetigungsfenster_zum_wechsel_des_warteschlangen_kunden() {
+        PROCESSING_STATION_SECTION.assertCallOtherProcessConfirmDialogNotVisible();
+    }
+
+    @Dann("erscheint die Fehlermeldung, dass bereits ein Vorgang aufgerufen ist.")
+    public void erscheint_die_fehlermeldung_dass_bereits_ein_vorgang_aufgerufen_ist() {
+        PROCESSING_STATION_SECTION.assertAlreadyCalledProcessErrorVisible();
+    }
+
+    @Und("ist die Schaltfläche {string} sichtbar.")
+    public void ist_die_schaltflaeche_sichtbar(String button) {
+        if ("Ja, Kunde erschienen".equals(button)) {
+            PROCESSING_STATION_SECTION.assertCustomerAppearedButtonVisible();
+            return;
+        }
+        throw new IllegalArgumentException("For button \"" + button + "\" no visibility check is implemented yet!");
+    }
+
     @Und("Sie ggf. die Statistikbearbeitung abschließen.")
     public void sie_ggf_die_statistikbearbeitung_abschliessen() {
         PROCESSING_STATION_SECTION.completeStatisticsFinishIfPresent();
