@@ -13,6 +13,8 @@ describe("AppointmentOverviewView", () => {
       status: 200,
       json: async () => ({
         offices: [],
+        services: [],
+        relations: [],
       }),
     }));
     vi.stubGlobal("matchMedia", vi.fn(() => {
@@ -112,6 +114,7 @@ describe("AppointmentOverviewView", () => {
               "appointmentDetailUrl",
               "displayedOnDetailScreen",
               "offices",
+              "services",
               "t"
             ],
           },
