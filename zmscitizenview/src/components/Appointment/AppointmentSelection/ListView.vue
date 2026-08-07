@@ -283,7 +283,8 @@ const props = defineProps<{
   isSlotSelected: (officeId: number | string, time: number) => boolean;
   // New raw data to compute firstFiveAvailableDays inside this component
   availableDays:
-    Array<{ date: string | number; providerIDs: string }> | undefined;
+    | Array<{ date: string | number; providerIDs: string }>
+    | undefined;
   appointmentsByDay: Map<
     string,
     Array<{ officeId: number | string; appointments: number[] }>
