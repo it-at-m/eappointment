@@ -322,9 +322,6 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $processList;
     }
 
-    /**
-     * Build a process list without per-row request queries (for batch attach).
-     */
     protected function readListWithoutResolvedReferences($statement): Collection
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
@@ -335,9 +332,6 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $processList;
     }
 
-    /**
-     * Attach requests for all processes in one query (avoids N+1 in list endpoints).
-     */
     protected function attachRequestsBatched(Collection $processList, int $resolveReferences): Collection
     {
         if ($processList->count() === 0 || $resolveReferences < 0) {
@@ -1091,8 +1085,6 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
             ->addLimit($limit);
 
         $statement = $this->fetchStatement($query);
-        // ZMSKVR-1204: one process query + one batched requests query (no per-process request N+1).
-        // Root-parent resolution still uses the shared attachRootParentIds() path.
         $processList = $this->readListWithoutResolvedReferences($statement);
         return $this->attachRequestsBatched($processList, (int) $resolveReferences);
     }
