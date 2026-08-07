@@ -26,16 +26,16 @@
                     <br>(Wartenr. {{ selectedProcess.displayNumber }})
                 </dd>
             </dl>
-            <button
-                type="button"
-                class="button button--default button--fullwidth client-confirm-call-other_stay"
-                style="margin: 0.5em 0;"
-            >{% trans %}Zurück zum aktuellen Vorgang{% endtrans %}</button>
             <a
                 class="button button--positive button--fullwidth client-confirm-call-other_switch"
                 href="{{ urlGet('workstationProcessFinished', {}, {'nextprocess': selectedProcess.id}) }}"
                 style="margin: 0.5em 0;"
             >{% trans %}Aktuellen Termin abschließen und Kunden aufrufen{% endtrans %}</a>
+            <button
+                type="button"
+                class="button button--default button--fullwidth client-confirm-call-other_stay"
+                style="margin: 0.5em 0;"
+            >{% trans %}Zurück zum aktuellen Vorgang{% endtrans %}</button>
         {% endblock %}
 
         {% block board_footer %}
