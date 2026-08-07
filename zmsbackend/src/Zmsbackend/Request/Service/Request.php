@@ -215,6 +215,44 @@ class Request extends \BO\Zmsbackend\Base
         return $collection;
     }
 
+    public function readRequestsGroupedByProcessIds(array $processIds, $resolveReferences = 0): array
+    {
+        $processIds = array_values(array_unique(array_filter(
+            array_map('intval', $processIds),
+            static fn (int $id): bool => $id > 0
+        )));
+        if ($processIds === []) {
+            return [];
+        }
+
+        $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
+        $query->setResolveLevel($resolveReferences);
+        $query->addConditionProcessIds($processIds);
+        $query->addEntityMappingWithProcessId();
+
+        $grouped = [];
+        foreach ($processIds as $processId) {
+            $grouped[$processId] = new Collection();
+        }
+
+        $statement = $this->fetchStatement($query);
+        while ($requestData = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $processed = $query->postProcessJoins($requestData);
+            $processId = (int) ($processed['processId'] ?? 0);
+            unset($processed['processId']);
+            if ($processId <= 0 || !isset($grouped[$processId])) {
+                continue;
+            }
+            $grouped[$processId]->addEntity(new Entity($processed));
+        }
+
+        foreach ($grouped as $processId => $requestList) {
+            $grouped[$processId] = $this->attachRootParentIds($requestList);
+        }
+
+        return $grouped;
+    }
+
     public function readRequestsByIds($ids, $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
