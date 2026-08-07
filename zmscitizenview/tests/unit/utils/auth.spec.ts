@@ -28,9 +28,13 @@ describe("getTokenData / parseJwt", () => {
   });
 
   it("handles base64url payloads that require padding", () => {
-    const token = createJwt({ sub: "123" });
+    const token = createJwt({ email: "a@b.co" });
 
-    expect(getTokenData(token)).toEqual({ sub: "123" });
+    expect(getTokenData(token)).toEqual({
+      email: "a@b.co",
+      given_name: undefined,
+      family_name: undefined,
+    });
   });
 
   it("rejects tokens without three segments", () => {
@@ -42,9 +46,31 @@ describe("getTokenData / parseJwt", () => {
     );
   });
 
+  it("rejects tokens with an empty header segment", () => {
+    const payload = btoa("{}")
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
+    expect(() => getTokenData(`.${payload}.signature`)).toThrow(
+      "Invalid JWT: header segment is missing"
+    );
+  });
+
   it("rejects tokens with an empty payload segment", () => {
     expect(() => getTokenData("header..signature")).toThrow(
       "Invalid JWT: payload segment is missing"
+    );
+  });
+
+  it("rejects incorrectly typed supported claims", () => {
+    expect(() => getTokenData(createJwt({ email: { nested: true } }))).toThrow(
+      "Invalid JWT: email must be a string"
+    );
+    expect(() => getTokenData(createJwt({ given_name: 42 }))).toThrow(
+      "Invalid JWT: given_name must be a string"
+    );
+    expect(() => getTokenData(createJwt({ family_name: ["a"] }))).toThrow(
+      "Invalid JWT: family_name must be a string"
     );
   });
 
