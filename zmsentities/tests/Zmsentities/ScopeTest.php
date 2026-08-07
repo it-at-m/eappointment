@@ -191,26 +191,28 @@ class ScopeTest extends EntityCommonTests
         $this->assertTrue($requestList->hasRequests(1234), "Missing request in provider from scope");
     }
 
-    public function testAppointmentsPerMailRejectsOne()
+    public function testAppointmentsPerMailRejectsInvalidValues()
     {
-        $entity = $this->getExample();
-        $entity->preferences['client']['appointmentsPerMail'] = '1';
-        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
-        $this->expectExceptionCode(400);
-        try {
-            $entity->testValid('de_DE', 1);
-        } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
-            $this->assertSame(
-                'Die Zahl "1" für die maximale Anzahl an Terminen pro E-Mail-Adresse ist nicht erlaubt. Bitte geben Sie eine größere Zahl ein.',
-                $exception->data['/preferences/client/appointmentsPerMail']['messages']['not']
-            );
-            throw $exception;
+        $expectedMessage = 'Die maximale Anzahl an Terminen pro E-Mail-Adresse muss leer, 0 oder mindestens 2 sein. Die Zahl "1" ist nicht erlaubt.';
+        foreach ([1, '1', -1, 'abc'] as $value) {
+            $entity = $this->getExample();
+            $entity->preferences['client']['appointmentsPerMail'] = $value;
+            try {
+                $entity->testValid('de_DE', 1);
+                $this->fail('Expected SchemaValidation for value ' . var_export($value, true));
+            } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
+                $this->assertSame(400, $exception->getCode());
+                $this->assertSame(
+                    $expectedMessage,
+                    $exception->data['/preferences/client/appointmentsPerMail']['messages']['oneOf']
+                );
+            }
         }
     }
 
     public function testAppointmentsPerMailAllowsTwoOrEmpty()
     {
-        foreach (['', null, '0', 0, '2', 2] as $value) {
+        foreach (['', null, '0', 0, '2', 2, '10', 10] as $value) {
             $entity = $this->getExample();
             $entity->preferences['client']['appointmentsPerMail'] = $value;
             $this->assertTrue($entity->testValid('de_DE', 1));
