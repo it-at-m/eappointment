@@ -72,6 +72,27 @@ class CalldisplayGetTest extends \BO\Zmsbackend\Tests\Api\Base
         ], []);
     }
 
+    public function testSkipsMissingScopeWhenOthersExist()
+    {
+        $this->setWorkstation();
+        $response = $this->render([], [
+            '__body' => '{
+                "scopes": [
+                    {
+                      "id": 999
+                    },
+                    {
+                      "id": 142
+                    }
+                ]
+            }'
+        ], []);
+        $this->assertStringContainsString('calldisplay.json', (string)$response->getBody());
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString('"id":142', (string)$response->getBody());
+        $this->assertStringNotContainsString('"id":999', (string)$response->getBody());
+    }
+
     public function testNotFoundClusterOrScopeLists()
     {
         $this->setWorkstation();
