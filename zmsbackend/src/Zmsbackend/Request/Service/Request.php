@@ -215,12 +215,6 @@ class Request extends \BO\Zmsbackend\Base
         return $collection;
     }
 
-    /**
-     * Load requests for many processes in one query, grouped by process id.
-     *
-     * @param list<int|string> $processIds
-     * @return array<int, Collection>
-     */
     public function readRequestsGroupedByProcessIds(array $processIds, $resolveReferences = 0): array
     {
         $processIds = array_values(array_unique(array_filter(

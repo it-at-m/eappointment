@@ -67,7 +67,6 @@ class ProcessListByExternalUserIdTest extends \BO\Zmsbackend\Tests\Api\Base
 
         $response = $this->render($this->arguments, $this->parameters);
         $this->assertEquals(200, $response->getStatusCode());
-        // withAccess may filter by department; status code is enough for auth path
         return $response;
     }
 

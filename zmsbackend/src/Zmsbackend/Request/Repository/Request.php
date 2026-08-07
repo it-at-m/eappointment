@@ -59,11 +59,6 @@ class Request extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    /**
-     * Join buergeranliegen for multiple processes and expose processId for grouping.
-     *
-     * @param list<int|string> $processIds
-     */
     public function addConditionProcessIds(array $processIds): self
     {
         $this->leftJoin(
