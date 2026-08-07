@@ -350,7 +350,7 @@ class View extends BaseView {
         });
     }
 
-    onConfirm(event, template, callback, abortCallback) {
+    onConfirm(event, template, callback, abortCallback, returnTarget) {
         stopEvent(event);
         this.selectedProcess = null;
         const processId = $(event.currentTarget).data('id') || $(event.currentTarget).data('process');
@@ -360,7 +360,9 @@ class View extends BaseView {
             url = url + `&parameter[id]=${processId}&parameter[name]=${encodeURIComponent(name || '')}`;
         }
         this.loadCall(url).then((response) => {
-            this.loadDialog(response, callback, abortCallback, event.currentTarget);
+            // Prefer explicit returnTarget; defaulting to the click source can scroll the page
+            // (e.g. queue row far below) when the dialog is aborted.
+            this.loadDialog(response, callback, abortCallback, returnTarget || event.currentTarget);
 
             const dialog = document.getElementsByClassName('dialog')[0]
             dialog.focus();
@@ -370,10 +372,8 @@ class View extends BaseView {
     onCallOtherProcess(event) {
         const selectedId = $(event.currentTarget).data('process');
         // Only while actively processing (client-info). During "called", allow normal call flow.
-        const activeId = $('.client-info[data-process-id]')
-            .filter(':visible')
-            .first()
-            .attr('data-process-id');
+        const $activeClient = $('.client-info[data-process-id]').filter(':visible').first();
+        const activeId = $activeClient.attr('data-process-id');
         if (!selectedId || !activeId || String(selectedId) === String(activeId)) {
             return false;
         }
@@ -381,9 +381,10 @@ class View extends BaseView {
         stopEvent(event);
         const name = $(event.currentTarget).data('name') || $(event.currentTarget).text().trim();
         $(event.currentTarget).data('name', name);
+        // Return focus to the current process panel, not the queue link that opened the dialog.
         this.onConfirm(event, 'confirm_call_other_process', () => {
             window.location.href = `${this.includeUrl}/workstation/process/finished/?nextprocess=${selectedId}`;
-        });
+        }, null, $activeClient.get(0));
         return true;
     }
 
