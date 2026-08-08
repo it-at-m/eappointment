@@ -313,7 +313,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "26214210fb82d8da9f118b3cf978b19aa40986c3"
+                "reference": "efb5265d7858815635ec063b48db83b195c72380"
             },
             "require": {
                 "ext-json": ">=0",
@@ -423,7 +423,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "26214210fb82d8da9f118b3cf978b19aa40986c3"
+                "reference": "efb5265d7858815635ec063b48db83b195c72380"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -481,7 +481,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "26214210fb82d8da9f118b3cf978b19aa40986c3"
+                "reference": "efb5265d7858815635ec063b48db83b195c72380"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -10221,10 +10221,6 @@
             "require-dev": {
                 "phpunit/phpunit": "^8.4.0 || ^9.3.4 || ^10.5.32 || 11.3.3 - 11.5.28 || ^11.5.31"
             },
-            "suggest": {
-                "ext-iconv": "For accurate character length calculation when the checked files contain multi-byte characters.",
-                "ext-pcntl": "For parallel processing support via the --parallel CLI option."
-            },
             "bin": [
                 "bin/phpcbf",
                 "bin/phpcs"
@@ -10279,7 +10275,11 @@
                     "type": "thanks_dev"
                 }
             ],
-            "time": "2026-08-06T01:00:52+00:00"
+            "time": "2026-08-06T01:00:52+00:00",
+            "suggest": {
+                "ext-iconv": "For accurate character length calculation when the checked files contain multi-byte characters.",
+                "ext-pcntl": "For parallel processing support via the --parallel CLI option."
+            }
         },
         {
             "name": "staabm/side-effects-detector",

@@ -2406,7 +2406,7 @@
             ],
             "authors": [
                 {
-                    "name": "Théo FIDRY",
+                    "name": "Th\u00e9o FIDRY",
                     "email": "theo.fidry@gmail.com"
                 }
             ],
@@ -3240,7 +3240,7 @@
                     "role": "Project Founder"
                 },
                 {
-                    "name": "Marc Würth",
+                    "name": "Marc W\u00fcrth",
                     "email": "ravage@bluewin.ch",
                     "homepage": "https://github.com/ravage84",
                     "role": "Project Maintainer"
@@ -4021,7 +4021,7 @@
                     "email": "ceesjank@gmail.com"
                 },
                 {
-                    "name": "Christian Lück",
+                    "name": "Christian L\u00fcck",
                     "email": "christian@clue.engineering"
                 },
                 {

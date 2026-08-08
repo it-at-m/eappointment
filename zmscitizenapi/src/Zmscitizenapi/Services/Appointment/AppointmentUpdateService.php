@@ -17,17 +17,18 @@ class AppointmentUpdateService
     {
         $clientData = $this->extractClientData($body);
 
-        $errors = $this->validateClientData($clientData, $authenticatedUser);
-        if (!empty($errors['errors'])) {
-            return $errors;
+        $validation = $this->validateClientData($clientData, $authenticatedUser);
+        if (!empty($validation['errors'])) {
+            return $validation;
         }
 
-        $reservedProcess = $this->getReservedProcess($clientData->processId, $clientData->authKey, $authenticatedUser);
-
-        $updatedProcess = $this->updateProcessWithClientData($reservedProcess, $clientData);
+        $updatedProcess = $this->updateProcessWithClientData($validation['process'], $clientData);
         return $this->saveProcessUpdate($updatedProcess, $authenticatedUser);
     }
 
+    /**
+     * @return array{errors: array, process?: ThinnedProcess}
+     */
     private function validateClientData(object $data, ?AuthenticatedUser $authenticatedUser): array
     {
         $authErrors = ValidationService::validateGetProcessById($data->processId, $data->authKey);
@@ -52,7 +53,10 @@ class AppointmentUpdateService
             return $fieldErrors;
         }
 
-        return ['errors' => []];
+        return [
+            'errors' => [],
+            'process' => $reservedProcess,
+        ];
     }
 
     private function extractClientData(array $body): object
