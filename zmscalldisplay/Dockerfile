@@ -1,7 +1,7 @@
 ARG PHP_VERSION=8.3
 # Digests pinned for supply-chain integrity; override via build-args when retargeting.
 ARG ZMSBASE_DEV_DIGEST=sha256:1988e5a9ebb0fb8a3fe1d8551c71b79321d9cf2dd055cc25d66ebb91ca528791
-ARG ZMSBASE_BASE_DIGEST=sha256:c743242ccf89669618a2f132904bd87fabd9258ede769522fe376859391cb598
+ARG ZMSBASE_BASE_DIGEST=sha256:fbb700b98b68e04ebcc221fc9bb6113ac373a64ca3b58c99e89e3b2b8b26f7b9
 FROM ghcr.io/it-at-m/eappointment/zmsbase:${PHP_VERSION}-dev@${ZMSBASE_DEV_DIGEST} AS build
 COPY --chown=1000:1000 . /var/www/html
 WORKDIR /var/www/html
