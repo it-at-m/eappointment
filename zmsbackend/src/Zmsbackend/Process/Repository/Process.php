@@ -588,49 +588,66 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionSearch($queryString, $orWhere = false)
+   public function addConditionSearch($queryString, $orWhere = false)
     {
-        $queryString = trim($queryString);
+        $queryString = trim((string) $queryString);
         $terms = $this->parseSearchTerms($queryString);
+
         if ($terms === []) {
             return $this;
         }
 
-        $condition = function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($terms) {
-            if (count($terms) > 1) {
-                foreach ($terms as $term) {
-                    $query->andWith(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $inner) use ($term) {
-                        $this->appendNamePartLikeGroup($inner, $term['value'], true);
-                    });
-                }
-                return;
+        $condition = function (
+            \BO\Zmsbackend\Query\Builder\ConditionBuilder $query
+        ) use ($terms) {
+            foreach ($terms as $term) {
+                $query->andWith(
+                    function (
+                        \BO\Zmsbackend\Query\Builder\ConditionBuilder $inner
+                    ) use ($term) {
+                        $this->appendGeneralSearchTermGroup(
+                            $inner,
+                            $term['value'],
+                            $term['quoted']
+                        );
+                    }
+                );
             }
-
-            $term = $terms[0]['value'];
-            if ($terms[0]['quoted']) {
-                $this->appendNamePartLikeGroup($query, $term, true);
-                return;
-            }
-
-            $likeContains = '%' . $this->escapeLikeValue($term) . '%';
-            $useNameWordBoundary = !$this->isNumericSearchQuery($term) && mb_strlen($term) <= 3;
-
-            if ($useNameWordBoundary) {
-                $this->appendNamePartLikeGroup($query, $term, true, true);
-            } else {
-                $query->orWith('process.Name', 'LIKE', $likeContains);
-            }
-            $query->orWith('process.EMail', 'LIKE', $likeContains);
-            $query->orWith('process.Telefonnummer', 'LIKE', $likeContains);
-            $query->orWith('process.telefonnummer_fuer_rueckfragen', 'LIKE', $likeContains);
-            $query->orWith('process.displayNumber', 'LIKE', $likeContains);
         };
+
         if ($orWhere) {
             $this->query->orWhere($condition);
         } else {
             $this->query->where($condition);
         }
+
         return $this;
+    }
+
+    private function appendGeneralSearchTermGroup(\BO\Zmsbackend\Query\Builder\ConditionBuilder $query, string $term, bool $quoted = false): void {
+        $likeContains = '%' . $this->escapeLikeValue($term) . '%';
+
+        $useNameWordBoundary = !$quoted
+            && !$this->isNumericSearchQuery($term) && mb_strlen($term) <= 3;
+
+        if ($quoted) {
+            $this->appendNamePartLikeGroup(
+                $query,
+                $term,
+                true
+            );
+        } elseif ($useNameWordBoundary) {
+            $this->appendNamePartLikeGroup($query, $term, true, true);
+        } else {
+            $query->orWith('process.Name','LIKE', $likeContains);
+        }
+
+        $query->orWith('process.EMail','LIKE', $likeContains);
+        $query->orWith('process.Telefonnummer', 'LIKE', $likeContains);
+        $query->orWith('process.telefonnummer_fuer_rueckfragen', 'LIKE', $likeContains);
+        $query->orWith('process.displayNumber','LIKE', $likeContains);
+        $query->orWith('process.custom_text_field','LIKE', $likeContains);
+        $query->orWith('process.custom_text_field2','LIKE',$likeContains);
     }
 
     public function addConditionUpcomingOnly(\DateTimeInterface $now)
@@ -665,16 +682,34 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         }
 
         $terms = $this->parseSearchTerms($queryString);
-        $primaryTerm = $terms[0]['value'] ?? $queryString;
-        $escapedLike = $this->escapeLikePatternForSqlLiteral($primaryTerm);
+        if ($terms === []) {
+            return $this;
+        }
+        $fullQuery = $this->escapeLikePatternForSqlLiteral($queryString);
+        $fullQueryExact = $this->escapeSqlStringLiteral($queryString);
+
+        $allTermsInNameConditions = [];
+        $anyTermInNameConditions = [];
+
+        foreach ($terms as $term) {
+            $escapedTerm = $this->escapeLikePatternForSqlLiteral($term['value']);
+            $allTermsInNameConditions[] = "process.Name LIKE '%{$escapedTerm}%'";
+            $anyTermInNameConditions[] = "process.Name LIKE '{$escapedTerm}'";
+        }
+        $allTermsInName = implode(' OR ', $allTermsInNameConditions);
+        $anyTermInName = implode(' OR ', $anyTermInNameConditions);
+
         $this->query->orderBy(self::expression(
-            "CASE
-                WHEN process.Name LIKE '{$escapedLike} %' OR process.Name = '{$escapedLike}' THEN 0
-                WHEN process.Name LIKE '% {$escapedLike}' OR process.Name LIKE '% {$escapedLike} %' THEN 1
-                WHEN process.Name LIKE '%{$escapedLike}%' THEN 2
-                ELSE 3
-            END"
-        ));
+                "CASE
+                   WHEN process.Name LIKE '{$fullQueryExact}' THEN 0
+                   WHEN process.Name LIKE '{$fullQuery} %' THEN 1
+                   WHEN {$allTermsInName} THEN 2
+                   WHEN {$anyTermInName} THEN 3
+                   ELSE 4
+                END"
+            )
+        );
+        
         $this->query->orderBy('process.Datum', 'ASC');
         $this->query->orderBy('process.Uhrzeit', 'ASC');
         $this->query->orderBy('process.BuergerID', 'ASC');

@@ -523,6 +523,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         if (isset($parameter['amendment']) && $parameter['amendment']) {
             $query->addConditionAmendment($parameter['amendment']);
         }
+
         if (isset($parameter['scopeId']) && $parameter['scopeId']) {
             $query->addConditionScopeId($parameter['scopeId']);
         }
