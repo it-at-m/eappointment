@@ -71,7 +71,7 @@ class Munich
     ];
 
     /** Aligned with dldb-mapper/app/map.php DONT_SHOW_SERVICE_ON_START_PAGE */
-    const DONT_SHOW_SERVICE_ON_START_PAGE = [
+    public const array DONT_SHOW_SERVICE_ON_START_PAGE = [
         10396802,
         1063648,
         1063731,
