@@ -47,7 +47,7 @@ class Session extends \BO\Zmsbackend\Base
         return ($result) ? true : false;
     }
 
-    public function deleteByTimeInterval(?string $sessionName, int $deleteInSeconds)
+    public function deleteByTimeInterval(?string $sessionName, int $deleteInSeconds): void
     {
         $selectQuery = new \BO\Zmsbackend\Session\Repository\Session(\BO\Zmsbackend\Query\Base::SELECT);
         $selectQuery

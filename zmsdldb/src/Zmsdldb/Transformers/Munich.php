@@ -66,7 +66,7 @@ class Munich
      * capacity across all peer OfficeIDs (ZMSKVR-1046 Ausbildung). Distinct from
      * LOCATIONS_ALLOW_DISABLED_MIX (exclusive vs mixed survivor = one OfficeID).
      */
-    const LOCATIONS_SHARED_BOOKING = [
+    public const array LOCATIONS_SHARED_BOOKING = [
         [10489, 10503], // Bürgerbüro Ruppertstraße + Ausbildung
     ];
 
