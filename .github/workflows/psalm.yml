@@ -27,7 +27,7 @@ concurrency:
 jobs:
   psalm:
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
 
     strategy:
       fail-fast: false
