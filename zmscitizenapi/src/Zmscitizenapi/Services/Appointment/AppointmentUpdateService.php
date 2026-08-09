@@ -27,7 +27,7 @@ class AppointmentUpdateService
     }
 
     /**
-     * @return ThinnedProcess|array{errors: list<mixed>}
+     * @return ThinnedProcess|array{errors: array}
      */
     private function validateClientData(object $data, ?AuthenticatedUser $authenticatedUser): ThinnedProcess|array
     {
@@ -38,9 +38,7 @@ class AppointmentUpdateService
 
         $reservedProcess = $this->getReservedProcess($data->processId, $data->authKey, $authenticatedUser);
         if (!$reservedProcess instanceof ThinnedProcess) {
-            $errors = is_array($reservedProcess)
-                && array_key_exists('errors', $reservedProcess)
-                && is_array($reservedProcess['errors'])
+            $errors = array_key_exists('errors', $reservedProcess) && is_array($reservedProcess['errors'])
                 ? $reservedProcess['errors']
                 : [];
             return ['errors' => $errors];
