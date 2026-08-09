@@ -17,28 +17,33 @@ class AppointmentUpdateService
     {
         $clientData = $this->extractClientData($body);
 
-        $validation = $this->validateClientData($clientData, $authenticatedUser);
-        if (!empty($validation['errors'])) {
-            return $validation;
+        $validated = $this->validateClientData($clientData, $authenticatedUser);
+        if (!$validated instanceof ThinnedProcess) {
+            return $validated;
         }
 
-        $updatedProcess = $this->updateProcessWithClientData($validation['process'], $clientData);
+        $updatedProcess = $this->updateProcessWithClientData($validated, $clientData);
         return $this->saveProcessUpdate($updatedProcess, $authenticatedUser);
     }
 
     /**
-     * @return array{errors: array, process?: ThinnedProcess}
+     * @return ThinnedProcess|array{errors: list<mixed>}
      */
-    private function validateClientData(object $data, ?AuthenticatedUser $authenticatedUser): array
+    private function validateClientData(object $data, ?AuthenticatedUser $authenticatedUser): ThinnedProcess|array
     {
         $authErrors = ValidationService::validateGetProcessById($data->processId, $data->authKey);
-        if (is_array($authErrors) && !empty($authErrors['errors'])) {
-            return $authErrors;
+        if ($authErrors['errors'] !== []) {
+            return ['errors' => $authErrors['errors']];
         }
 
         $reservedProcess = $this->getReservedProcess($data->processId, $data->authKey, $authenticatedUser);
-        if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
-            return $reservedProcess;
+        if (!$reservedProcess instanceof ThinnedProcess) {
+            $errors = is_array($reservedProcess)
+                && array_key_exists('errors', $reservedProcess)
+                && is_array($reservedProcess['errors'])
+                ? $reservedProcess['errors']
+                : [];
+            return ['errors' => $errors];
         }
 
         $fieldErrors = ValidationService::validateAppointmentUpdateFields(
@@ -49,14 +54,11 @@ class AppointmentUpdateService
             $data->customTextfield2,
             $reservedProcess->scope ?? null
         );
-        if (is_array($fieldErrors) && !empty($fieldErrors['errors'])) {
-            return $fieldErrors;
+        if ($fieldErrors['errors'] !== []) {
+            return ['errors' => $fieldErrors['errors']];
         }
 
-        return [
-            'errors' => [],
-            'process' => $reservedProcess,
-        ];
+        return $reservedProcess;
     }
 
     private function extractClientData(array $body): object
