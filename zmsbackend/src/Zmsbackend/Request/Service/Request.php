@@ -240,7 +240,7 @@ class Request extends \BO\Zmsbackend\Base
 
     public function readRequestIdsByArchiveId(int|string|null $archiveId): array
     {
-        if (!$archiveId) {
+        if ($archiveId === null || $archiveId === '' || $archiveId === 0 || $archiveId === '0') {
             return [];
         }
 

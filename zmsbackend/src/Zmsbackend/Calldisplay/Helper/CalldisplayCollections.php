@@ -86,7 +86,7 @@ class CalldisplayCollections
                 ? $scopeService->readWithWorkstationCount($scopeId, \App::$now, $resolveReferences)
                 : $scopeService->readEntity($scopeId);
 
-            if ($scope) {
+            if ($scope instanceof Scope) {
                 $scopeList->addEntity($scope);
                 $scopeCache[$scope->getId()] = $scope;
                 continue;
