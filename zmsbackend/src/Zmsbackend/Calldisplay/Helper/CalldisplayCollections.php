@@ -64,7 +64,7 @@ class CalldisplayCollections
             ]);
         }
 
-        $calldisplay->clusters = $clusterList;
+        $calldisplay['clusters'] = $clusterList;
     }
 
     /**
@@ -96,7 +96,7 @@ class CalldisplayCollections
             ]);
         }
 
-        $calldisplay->scopes = $scopeList;
+        $calldisplay['scopes'] = $scopeList;
         return $scopeCache;
     }
 
