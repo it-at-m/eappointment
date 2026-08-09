@@ -10,7 +10,8 @@ on:
         type: boolean
   # Scheduled on main only until ~18k Psalm findings are cleared (PR/push would fail every CI).
   # Re-enable pull_request / push when errorLevel is stricter or debt is baselined.
-  # GitHub Actions cron is UTC; runs on the default branch (main) only.
+  # GitHub Actions cron is UTC; schedule runs on the default branch (main) only.
+  # workflow_dispatch works from any branch (including next) for manual verification.
   schedule:
     - cron: '0 4 * * *' # 06:00 Europe/Berlin (CEST) / 05:00 (CET)
 
@@ -26,7 +27,7 @@ concurrency:
 jobs:
   psalm:
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || github.ref == 'refs/heads/main'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
 
     strategy:
       fail-fast: false
@@ -158,7 +159,7 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       github.event_name == 'schedule' ||
-      (github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.run_dead_code == true)
+      (github.event_name == 'workflow_dispatch' && inputs.run_dead_code == true)
 
     steps:
       - name: Checkout repository (with submodules)
