@@ -5,7 +5,7 @@ namespace BO\Zmsbackend\Tests\Request\Service;
 use BO\Zmsbackend\Request\Service\Request;
 use BO\Zmsentities\Collection\RequestList;
 
-class RequestGroupedByProcessIdsTest extends \BO\Zmsbackend\Tests\Service\Base
+class RequestAllForProcessIdsTest extends \BO\Zmsbackend\Tests\Service\Base
 {
     private const FIXTURE_PROCESS_ID = 99120401;
 
@@ -15,24 +15,24 @@ class RequestGroupedByProcessIdsTest extends \BO\Zmsbackend\Tests\Service\Base
 
     public function testEmptyProcessIdsReturnsEmptyArray()
     {
-        $grouped = (new Request())->readRequestsGroupedByProcessIds([], 0);
-        $this->assertSame([], $grouped);
+        $requestsByProcessId = (new Request())->readAllRequestsForProcessIds([], 0);
+        $this->assertSame([], $requestsByProcessId);
     }
 
-    public function testGroupsRequestsByProcessId()
+    public function testLoadsAllRequestsForProcessIds()
     {
         $this->insertFixtureProcessWithRequest();
 
         $single = (new Request())->readRequestByProcessId(self::FIXTURE_PROCESS_ID, 1);
-        $grouped = (new Request())->readRequestsGroupedByProcessIds([self::FIXTURE_PROCESS_ID], 1);
+        $requestsByProcessId = (new Request())->readAllRequestsForProcessIds([self::FIXTURE_PROCESS_ID], 1);
 
-        $this->assertArrayHasKey(self::FIXTURE_PROCESS_ID, $grouped);
-        $this->assertInstanceOf(RequestList::class, $grouped[self::FIXTURE_PROCESS_ID]);
+        $this->assertArrayHasKey(self::FIXTURE_PROCESS_ID, $requestsByProcessId);
+        $this->assertInstanceOf(RequestList::class, $requestsByProcessId[self::FIXTURE_PROCESS_ID]);
         $this->assertSame(1, $single->count());
-        $this->assertSame(1, $grouped[self::FIXTURE_PROCESS_ID]->count());
+        $this->assertSame(1, $requestsByProcessId[self::FIXTURE_PROCESS_ID]->count());
         $this->assertSame(
             (string) $single->getFirst()->getId(),
-            (string) $grouped[self::FIXTURE_PROCESS_ID]->getFirst()->getId()
+            (string) $requestsByProcessId[self::FIXTURE_PROCESS_ID]->getFirst()->getId()
         );
     }
 

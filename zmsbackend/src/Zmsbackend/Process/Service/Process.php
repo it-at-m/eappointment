@@ -322,7 +322,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $processList;
     }
 
-    protected function readListWithoutResolvedReferences($statement): Collection
+    protected function readProcessesWithoutRequests($statement): Collection
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $processList = new Collection();
@@ -332,7 +332,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $processList;
     }
 
-    protected function attachRequestsBatched(Collection $processList, int $resolveReferences): Collection
+    protected function attachAllRequestsInOneQuery(Collection $processList, int $resolveReferences): Collection
     {
         if ($processList->count() === 0 || $resolveReferences < 0) {
             return $processList;
@@ -345,14 +345,14 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
             }
         }
 
-        $grouped = (new \BO\Zmsbackend\Request\Service\Request())
-            ->readRequestsGroupedByProcessIds($processIds, $resolveReferences - 1);
+        $requestsByProcessId = (new \BO\Zmsbackend\Request\Service\Request())
+            ->readAllRequestsForProcessIds($processIds, $resolveReferences - 1);
 
         foreach ($processList as $process) {
             if (!$process->hasId()) {
                 continue;
             }
-            $process->requests = $grouped[(int) $process->getId()]
+            $process->requests = $requestsByProcessId[(int) $process->getId()]
                 ?? new \BO\Zmsentities\Collection\RequestList();
         }
 
@@ -1080,8 +1080,8 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
             ->addLimit($limit);
 
         $statement = $this->fetchStatement($query);
-        $processList = $this->readListWithoutResolvedReferences($statement);
-        return $this->attachRequestsBatched($processList, (int) $resolveReferences);
+        $processList = $this->readProcessesWithoutRequests($statement);
+        return $this->attachAllRequestsInOneQuery($processList, (int) $resolveReferences);
     }
 
     public function readAssignedWorkstationIdForUpdate(int $processId): ?int
