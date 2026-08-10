@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@parcel/transformer-sass": "^2.16.4",
-    "core-js": "^3.49.0",
+    "core-js": "^3.50.0",
     "cssnano": "^8.0.2",
     "eslint": "^9.0.0",
     "flatted": "^3.4.2",
