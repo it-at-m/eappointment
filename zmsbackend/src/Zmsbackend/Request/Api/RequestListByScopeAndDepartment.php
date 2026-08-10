@@ -12,9 +12,6 @@ use BO\Mellon\Validator;
 use BO\Zmsbackend\Request\Service\Request as Query;
 use BO\Zmsentities\Requeststatistic;
 
-/**
- * Scope requests plus department-wide additional requests for statistic collection (ZMSKVR-1431).
- */
 class RequestListByScopeAndDepartment extends \BO\Zmsbackend\Api\BaseController
 {
     /**
