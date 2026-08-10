@@ -159,6 +159,7 @@
   "appointmentHintHeader": "Hinweis zu Ihrem Termin",
   "appointmentNumber": "Terminnummer",
   "appointmentSuccessfullyBookedHeader": "Ihr Termin wurde gebucht.",
+  "appointmentAlreadyActivatedHeader": "Sie haben Ihren Termin bereits aktiviert.",
   "appointmentSuccessfullyBookedText": "Eine Bestätigung und weitere Informationen zu Ihrem Termin erhalten Sie per E-Mail. Wir freuen uns auf Ihren Besuch.",
   "appointmentSuccessfullyCanceledHeader": "Sie haben Ihren Termin erfolgreich abgesagt.",
   "appointmentSuccessfullyCanceledText": "Danke, dass Sie Ihren Termin für andere freigegeben haben.",

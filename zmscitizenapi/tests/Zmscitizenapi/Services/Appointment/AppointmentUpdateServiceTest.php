@@ -181,7 +181,7 @@ class AppointmentUpdateServiceTest extends TestCase
             ];
     
             $result = $this->invokePrivateMethod('validateClientData', [$data, null]);
-            $this->assertEquals(['errors' => []], $result);
+            $this->assertInstanceOf(ThinnedProcess::class, $result);
         } finally {
             \App::$http = $originalHttp;
         }

@@ -276,6 +276,27 @@ class Request extends \BO\Zmsbackend\Base
         return $collection;
     }
 
+    public function readRequestIdsByArchiveId(int|string|null $archiveId): array
+    {
+        if ($archiveId === null || $archiveId === '' || $archiveId === 0 || $archiveId === '0') {
+            return [];
+        }
+
+        $ids = [];
+        foreach (
+            $this->fetchAll(
+                \BO\Zmsbackend\Request\Repository\Request::QUERY_BY_ARCHIVEID,
+                ['archive_id' => $archiveId]
+            ) as $row
+        ) {
+            if (array_key_exists('id', $row) && $row['id'] !== null && $row['id'] !== '') {
+                $ids[] = (int) $row['id'];
+            }
+        }
+
+        return $ids;
+    }
+
     public function readListByProvider($source, $providerId, $resolveReferences = 0)
     {
         $this->testSource($source);

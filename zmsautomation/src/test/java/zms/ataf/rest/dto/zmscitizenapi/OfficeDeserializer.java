@@ -92,6 +92,8 @@ public class OfficeDeserializer extends StdDeserializer<Office> {
 
         office.setDisabledByServices(intArrayOrNull(objNode.get("disabledByServices")));
         office.setSlotsPerAppointment(textOrNull(objNode.get("slotsPerAppointment")));
+        office.setSharedBookingOfficeIds(intArrayOrNull(objNode.get("sharedBookingOfficeIds")));
+        office.setAllowDisabledServicesMix(intArrayOrNull(objNode.get("allowDisabledServicesMix")));
     }
 
     private void populateFromArrayNode(Office office, JsonNode arrayNode, ObjectMapper mapper) throws IOException {
