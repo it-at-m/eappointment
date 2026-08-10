@@ -588,7 +588,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-   public function addConditionSearch($queryString, $orWhere = false)
+    public function addConditionSearch($queryString, $orWhere = false)
     {
         $queryString = trim((string) $queryString);
         $terms = $this->parseSearchTerms($queryString);
@@ -624,7 +624,8 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    private function appendGeneralSearchTermGroup(\BO\Zmsbackend\Query\Builder\ConditionBuilder $query, string $term, bool $quoted = false): void {
+    private function appendGeneralSearchTermGroup(\BO\Zmsbackend\Query\Builder\ConditionBuilder $query, string $term, bool $quoted = false): void
+    {
         $likeContains = '%' . $this->escapeLikeValue($term) . '%';
 
         $useNameWordBoundary = !$quoted
@@ -639,15 +640,15 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         } elseif ($useNameWordBoundary) {
             $this->appendNamePartLikeGroup($query, $term, true, true);
         } else {
-            $query->orWith('process.Name','LIKE', $likeContains);
+            $query->orWith('process.Name', 'LIKE', $likeContains);
         }
 
-        $query->orWith('process.EMail','LIKE', $likeContains);
+        $query->orWith('process.EMail', 'LIKE', $likeContains);
         $query->orWith('process.Telefonnummer', 'LIKE', $likeContains);
         $query->orWith('process.telefonnummer_fuer_rueckfragen', 'LIKE', $likeContains);
-        $query->orWith('process.displayNumber','LIKE', $likeContains);
-        $query->orWith('process.custom_text_field','LIKE', $likeContains);
-        $query->orWith('process.custom_text_field2','LIKE',$likeContains);
+        $query->orWith('process.displayNumber', 'LIKE', $likeContains);
+        $query->orWith('process.custom_text_field', 'LIKE', $likeContains);
+        $query->orWith('process.custom_text_field2', 'LIKE', $likeContains);
     }
 
     public function addConditionUpcomingOnly(\DateTimeInterface $now)
@@ -700,16 +701,15 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $anyTermInName = implode(' OR ', $anyTermInNameConditions);
 
         $this->query->orderBy(self::expression(
-                "CASE
+            "CASE
                    WHEN process.Name LIKE '{$fullQueryExact}' THEN 0
                    WHEN process.Name LIKE '{$fullQuery} %' THEN 1
                    WHEN {$allTermsInName} THEN 2
                    WHEN {$anyTermInName} THEN 3
                    ELSE 4
                 END"
-            )
-        );
-        
+        ));
+
         $this->query->orderBy('process.Datum', 'ASC');
         $this->query->orderBy('process.Uhrzeit', 'ASC');
         $this->query->orderBy('process.BuergerID', 'ASC');
