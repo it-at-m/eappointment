@@ -1,6 +1,6 @@
 {
   "type": "object",
-  "description": "Grouped request lists for statistic collection after process finish: calendar/scope requests plus additional department-wide requests (ZMSKVR-1431).",
+  "description": "Grouped request lists for statistic collection after process finish: scope calendar requests plus department requests not on that scope.",
   "example": {
     "scope": [
       {
@@ -11,7 +11,7 @@
         "group": "Meldewesen und Ordnung"
       }
     ],
-    "additional": [
+    "outsideScope": [
       {
         "id": "120703",
         "link": "http://service.berlin.de/dienstleistung/120703/",
@@ -23,7 +23,7 @@
   },
   "required": [
     "scope",
-    "additional"
+    "outsideScope"
   ],
   "additionalProperties": false,
   "properties": {
@@ -35,7 +35,7 @@
         "additionalProperties": true
       }
     },
-    "additional": {
+    "outsideScope": {
       "type": "array",
       "description": "Department-wide requests not assigned to the current scope",
       "items": {

@@ -142,37 +142,37 @@
                     </fieldset>
                 {% endfor %}
 
-                {% set additionalRequestList = additionalRequestList|default({}) %}
-                {% if additionalRequestList|length > 0 %}
-                    {% set additionalHasValues = false %}
-                    {% for name, group in additionalRequestList %}
+                {% set outsideScopeRequestList = outsideScopeRequestList|default({}) %}
+                {% if outsideScopeRequestList|length > 0 %}
+                    {% set outsideScopeHasValues = false %}
+                    {% for name, group in outsideScopeRequestList %}
                         {% for request in group %}
                             {% for processRequest in workstation.process.requests %}
                                 {% if processRequest.id == request.id %}
-                                    {% set additionalHasValues = true %}
+                                    {% set outsideScopeHasValues = true %}
                                 {% endif %}
                             {% endfor %}
                         {% endfor %}
                     {% endfor %}
-                    <div class="statistic-additional-requests{% if additionalHasValues %} is-expanded{% endif %}">
+                    <div class="statistic-outside-scope-requests{% if outsideScopeHasValues %} is-expanded{% endif %}">
                         <button
                             type="button"
-                            class="button statistic-additional-requests__toggle"
-                            aria-expanded="{{ additionalHasValues ? 'true' : 'false' }}"
-                            aria-controls="statistic-additional-requests-panel"
+                            class="button statistic-outside-scope-requests__toggle"
+                            aria-expanded="{{ outsideScopeHasValues ? 'true' : 'false' }}"
+                            aria-controls="statistic-outside-scope-requests-panel"
                             data-label-more="Weitere Dienstleistungen anzeigen"
                             data-label-less="Weniger Dienstleistungen anzeigen"
                         >
-                            <span class="statistic-additional-requests__label">
-                                {{ additionalHasValues ? 'Weniger Dienstleistungen anzeigen' : 'Weitere Dienstleistungen anzeigen' }}
+                            <span class="statistic-outside-scope-requests__label">
+                                {{ outsideScopeHasValues ? 'Weniger Dienstleistungen anzeigen' : 'Weitere Dienstleistungen anzeigen' }}
                             </span>
-                            <i class="fas {{ additionalHasValues ? 'fa-chevron-up' : 'fa-chevron-down' }}" aria-hidden="true"></i>
+                            <i class="fas {{ outsideScopeHasValues ? 'fa-chevron-up' : 'fa-chevron-down' }}" aria-hidden="true"></i>
                         </button>
                         <div
-                            id="statistic-additional-requests-panel"
-                            class="statistic-additional-requests__panel"
+                            id="statistic-outside-scope-requests-panel"
+                            class="statistic-outside-scope-requests__panel"
                         >
-                            {% for name, group in additionalRequestList %}
+                            {% for name, group in outsideScopeRequestList %}
                                 {% set groupOptions = [] %}
                                 {% for request in group %}
                                     {% set value = 0 %}

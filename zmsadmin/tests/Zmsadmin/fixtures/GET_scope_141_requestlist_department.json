@@ -37,7 +37,7 @@
         "timeSlotCount": "0"
       }
     ],
-    "additional": [
+    "outsideScope": [
       {
         "$schema": "https://schema.berlin.de/queuemanagement/request.json",
         "id": "120665",
