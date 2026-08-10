@@ -281,8 +281,11 @@ class Request extends \BO\Zmsbackend\Base
             $scopeService->readByDepartmentId($departmentId, 1),
             $departmentId
         );
-        $departmentRequestList = $this->readRequestListByProviders($providers, $resolveReferences);
-        $additionalRequestList = $this->readAdditionalRequests($scopeRequestList, $departmentRequestList);
+        $departmentRequestList = $this->readAllRequestsForProviders($providers, $resolveReferences);
+        $additionalRequestList = $this->keepRequestsNotAlreadyOnScope(
+            $scopeRequestList,
+            $departmentRequestList
+        );
 
         return [
             'scope' => $scopeRequestList,
@@ -313,7 +316,7 @@ class Request extends \BO\Zmsbackend\Base
         return $providers;
     }
 
-    protected function readRequestListByProviders(array $providers, int $resolveReferences): Collection
+    protected function readAllRequestsForProviders(array $providers, int $resolveReferences): Collection
     {
         $requestList = new Collection();
         $requestKeys = [];
@@ -335,8 +338,10 @@ class Request extends \BO\Zmsbackend\Base
         return $requestList;
     }
 
-    protected function readAdditionalRequests(Collection $scopeRequestList, Collection $departmentRequestList): Collection
-    {
+    protected function keepRequestsNotAlreadyOnScope(
+        Collection $scopeRequestList,
+        Collection $departmentRequestList
+    ): Collection {
         $additionalRequestList = new Collection();
         $scopeRequestKeys = [];
         foreach ($scopeRequestList as $request) {
