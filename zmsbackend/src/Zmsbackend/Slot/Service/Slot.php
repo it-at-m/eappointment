@@ -39,8 +39,13 @@ class Slot extends \BO\Zmsbackend\Base
             $appointment->slotCount = ($overwriteSlotsCount >= 1) ? $overwriteSlotsCount : 1;
         }
         $slotList = $availability->getSlotList()->withSlotsForAppointment($appointment, $extendSlotList);
-        foreach ($slotList as $slot) {
-            $this->readByAvailability($slot, $availability, $appointment->toDateTime(), $lockSlots);
+        if ($lockSlots && count($slotList) > 0) {
+            // One FOR UPDATE for all slots avoids row-by-row lock interleaving (deadlocks with calculateSlots).
+            $this->lockSlotsForAppointment($slotList, $availability, $appointment->toDateTime());
+        } else {
+            foreach ($slotList as $slot) {
+                $this->readByAvailability($slot, $availability, $appointment->toDateTime(), false);
+            }
         }
         return $slotList;
     }
@@ -52,8 +57,8 @@ class Slot extends \BO\Zmsbackend\Base
         $getLock = false
     ) {
         $data = array();
-        $data['scopeID'] = $availability->scope->id;
-        $data['availabilityID'] = $availability->id;
+        $data['scopeID'] = $availability['scope']['id'];
+        $data['availabilityID'] = $availability['id'];
         $data['year'] = $date->format('Y');
         $data['month'] = $date->format('m');
         $data['day'] = $date->format('d');
@@ -67,6 +72,42 @@ class Slot extends \BO\Zmsbackend\Base
             $data
         );
         return $slotID ? $slotID['slotID'] : false ;
+    }
+
+    /**
+     * Lock all slots required for an appointment in a single SELECT ... FOR UPDATE.
+     * Uses ORDER BY slotID ASC so lock acquisition prefers primary-key order.
+     */
+    protected function lockSlotsForAppointment(
+        Collection $slotList,
+        AvailabilityEntity $availability,
+        \DateTimeInterface $date
+    ): void {
+        $times = [];
+        foreach ($slotList as $slot) {
+            $times[] = $slot->getTimeString();
+        }
+        $times = array_values(array_unique($times));
+        if ($times === []) {
+            return;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($times), '?'));
+        $sql = sprintf(
+            \BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_SLOTS_FOR_UPDATE,
+            $placeholders
+        );
+        $params = array_merge(
+            [
+                $availability['scope']['id'],
+                $availability['id'],
+                $date->format('Y'),
+                $date->format('m'),
+                $date->format('d'),
+            ],
+            $times
+        );
+        $this->fetchAll($sql, $params);
     }
 
     public function hasScopeRelevantChanges(
