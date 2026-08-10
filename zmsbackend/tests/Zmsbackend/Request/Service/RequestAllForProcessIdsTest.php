@@ -7,7 +7,7 @@ use BO\Zmsentities\Collection\RequestList;
 
 class RequestAllForProcessIdsTest extends \BO\Zmsbackend\Tests\Service\Base
 {
-    const PROCESS_ID = 10030;
+    const PROCESS_ID = 10029;
 
     public function testEmptyProcessIdsReturnsEmptyArray()
     {
@@ -22,8 +22,8 @@ class RequestAllForProcessIdsTest extends \BO\Zmsbackend\Tests\Service\Base
 
         $this->assertArrayHasKey(self::PROCESS_ID, $requestsByProcessId);
         $this->assertInstanceOf(RequestList::class, $requestsByProcessId[self::PROCESS_ID]);
-        $this->assertGreaterThan(0, $single->count());
-        $this->assertSame($single->count(), $requestsByProcessId[self::PROCESS_ID]->count());
+        $this->assertSame(1, $single->count());
+        $this->assertSame(1, $requestsByProcessId[self::PROCESS_ID]->count());
         $this->assertSame(
             (string) $single->getFirst()->getId(),
             (string) $requestsByProcessId[self::PROCESS_ID]->getFirst()->getId()

@@ -12,17 +12,27 @@ class ProcessListByExternalUserIdTest extends \BO\Zmsbackend\Tests\Api\Base
 
     const EXTERNAL_USER_ID = 'gh1582-citizen-user';
 
-    protected function assignExternalUserIdToTestProcess(): void
+    const REQUEST_ID = '120335';
+
+    protected function prepareTestProcess(): void
     {
-        $process = (new \BO\Zmsbackend\Process\Service\Process())->readEntity(self::PROCESS_ID, self::AUTHKEY, 0);
+        $process = (new \BO\Zmsbackend\Process\Service\Process())->readEntity(self::PROCESS_ID, self::AUTHKEY, 1);
         $process->setExternalUserId(self::EXTERNAL_USER_ID);
-        (new \BO\Zmsbackend\Process\Service\Process())->updateEntity($process, \App::$now, 0);
+        $process->requests = new \BO\Zmsentities\Collection\RequestList([
+            new \BO\Zmsentities\Request([
+                'id' => self::REQUEST_ID,
+                'source' => 'dldb',
+                'name' => 'Abmeldung einer Wohnung',
+                'link' => 'https://service.berlin.de/dienstleistung/120335/',
+            ]),
+        ]);
+        (new \BO\Zmsbackend\Process\Service\Process())->updateEntity($process, \App::$now, 1);
     }
 
     public function testRendering()
     {
         $this->setWorkstation();
-        $this->assignExternalUserIdToTestProcess();
+        $this->prepareTestProcess();
 
         $response = $this->render(
             ['externalUserId' => self::EXTERNAL_USER_ID],
@@ -35,7 +45,7 @@ class ProcessListByExternalUserIdTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testRequestsAttachedInOneQuery()
     {
-        $this->assignExternalUserIdToTestProcess();
+        $this->prepareTestProcess();
 
         $expectedRequests = (new \BO\Zmsbackend\Request\Service\Request())
             ->readRequestByProcessId(self::PROCESS_ID, 1);
@@ -51,11 +61,9 @@ class ProcessListByExternalUserIdTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertSame(1, $list->count());
         $process = $list->getFirst();
         $this->assertSame(self::PROCESS_ID, (int) $process->getId());
-        $this->assertSame($expectedRequests->count(), $process->requests->count());
-        $this->assertSame(
-            (string) $expectedRequests->getFirst()->getId(),
-            (string) $process->requests->getFirst()->getId()
-        );
+        $this->assertSame(1, $expectedRequests->count());
+        $this->assertSame(1, $process->requests->count());
+        $this->assertSame(self::REQUEST_ID, (string) $process->requests->getFirst()->getId());
     }
 
     public function testNoLogin()
