@@ -17,7 +17,7 @@ define(
 
 define(
     'ZMS_ADMIN_SESSION_DURATION',
-    getenv('ZMS_ADMIN_SESSION_DURATION') ? getenv('ZMS_ADMIN_SESSION_DURATION') : 28800
+    (($value = getenv('ZMS_ADMIN_SESSION_DURATION')) !== false && $value !== '') ? $value : 36000
 );
 
 if (($token = getenv('ZMS_CONFIG_SECURE_TOKEN')) === false || $token === '') {

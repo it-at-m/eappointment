@@ -5,6 +5,12 @@ namespace BO\Zmsentities;
 /**
  * Extension for Twig and Slim
  *
+ * Schema-backed entity (ArrayObject::ARRAY_AS_PROPS); document dynamic keys for Psalm.
+ *
+ * @property string $id
+ * @property string $name
+ * @property array $content
+ *
  * @SuppressWarnings(PublicMethod)
  * @SuppressWarnings(TooManyMethods)
  * @SuppressWarnings(Complexity)
