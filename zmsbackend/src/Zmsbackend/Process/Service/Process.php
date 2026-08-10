@@ -340,7 +340,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
 
         $processIds = [];
         foreach ($processList as $process) {
-            if (!$process->archiveId && $process->hasId()) {
+            if ($process->hasId()) {
                 $processIds[] = $process->getId();
             }
         }
@@ -349,11 +349,6 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
             ->readRequestsGroupedByProcessIds($processIds, $resolveReferences - 1);
 
         foreach ($processList as $process) {
-            if ($process->archiveId) {
-                $process->requests = (new \BO\Zmsbackend\Request\Service\Request())
-                    ->readRequestByArchiveId($process->archiveId, $resolveReferences - 1);
-                continue;
-            }
             if (!$process->hasId()) {
                 continue;
             }
