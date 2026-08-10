@@ -255,12 +255,6 @@ class Request extends \BO\Zmsbackend\Base
         return $requestList;
     }
 
-    /**
-     * Requests for statistic collection after process finish (ZMSKVR-1431).
-     * Returns scope-assigned requests plus department-wide extras (deduped).
-     *
-     * @return array{scope: Collection, additional: Collection}
-     */
     public function readListByScopeAndDepartment(int $scopeId, int $resolveReferences = 0): array
     {
         $scopeService = new \BO\Zmsbackend\Scope\Service\Scope();
@@ -296,10 +290,6 @@ class Request extends \BO\Zmsbackend\Base
         ];
     }
 
-    /**
-     * @param \BO\Zmsentities\Collection\ScopeList|\Traversable $departmentScopes
-     * @return array<string, array{source: string, id: mixed}>
-     */
     protected function readDepartmentProviders($departmentScopes, int $departmentId): array
     {
         $providers = [];
@@ -323,9 +313,6 @@ class Request extends \BO\Zmsbackend\Base
         return $providers;
     }
 
-    /**
-     * @param array<string, array{source: string, id: mixed}> $providers
-     */
     protected function readRequestListByProviders(array $providers, int $resolveReferences): Collection
     {
         $requestList = new Collection();
