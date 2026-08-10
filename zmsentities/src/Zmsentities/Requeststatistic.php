@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace BO\Zmsentities;
 
 /**
- * Grouped requests for statistic collection after process finish (ZMSKVR-1431).
- *
  * @property Collection\RequestList $scope
- * @property Collection\RequestList $additional
+ * @property Collection\RequestList $outsideScope
  */
 class Requeststatistic extends Schema\Entity implements Helper\NoSanitize
 {
@@ -19,7 +17,7 @@ class Requeststatistic extends Schema\Entity implements Helper\NoSanitize
     {
         return [
             'scope' => new Collection\RequestList(),
-            'additional' => new Collection\RequestList(),
+            'outsideScope' => new Collection\RequestList(),
         ];
     }
 
@@ -29,8 +27,8 @@ class Requeststatistic extends Schema\Entity implements Helper\NoSanitize
         if (isset($mergeData['scope']) && !$mergeData['scope'] instanceof Collection\RequestList) {
             $mergeData['scope'] = (new Collection\RequestList())->addData($mergeData['scope']);
         }
-        if (isset($mergeData['additional']) && !$mergeData['additional'] instanceof Collection\RequestList) {
-            $mergeData['additional'] = (new Collection\RequestList())->addData($mergeData['additional']);
+        if (isset($mergeData['outsideScope']) && !$mergeData['outsideScope'] instanceof Collection\RequestList) {
+            $mergeData['outsideScope'] = (new Collection\RequestList())->addData($mergeData['outsideScope']);
         }
 
         return parent::addData($mergeData);
@@ -43,18 +41,18 @@ class Requeststatistic extends Schema\Entity implements Helper\NoSanitize
         $scope = $this->scope instanceof Collection\RequestList
             ? array_values($this->scope->getArrayCopy())
             : [];
-        $additional = $this->additional instanceof Collection\RequestList
-            ? array_values($this->additional->getArrayCopy())
+        $outsideScope = $this->outsideScope instanceof Collection\RequestList
+            ? array_values($this->outsideScope->getArrayCopy())
             : [];
 
         if (is_array($serialized)) {
             $serialized['scope'] = $scope;
-            $serialized['additional'] = $additional;
+            $serialized['outsideScope'] = $outsideScope;
             return $serialized;
         }
 
         $serialized->scope = $scope;
-        $serialized->additional = $additional;
+        $serialized->outsideScope = $outsideScope;
         return $serialized;
     }
 }

@@ -13,15 +13,15 @@ class RequestListByScopeAndDepartmentTest extends \BO\Zmsbackend\Tests\Api\Base
         $body = json_decode((string) $response->getBody(), true);
         $this->assertIsArray($body['data']);
         $this->assertArrayHasKey('scope', $body['data']);
-        $this->assertArrayHasKey('additional', $body['data']);
+        $this->assertArrayHasKey('outsideScope', $body['data']);
         $this->assertIsArray($body['data']['scope']);
-        $this->assertIsArray($body['data']['additional']);
+        $this->assertIsArray($body['data']['outsideScope']);
         $this->assertNotEmpty($body['data']['scope']);
         $this->assertStringContainsString('requeststatistic.json', (string) $response->getBody());
         $this->assertStringContainsString('request.json', (string) $response->getBody());
     }
 
-    public function testAdditionalDoesNotDuplicateScopeRequests()
+    public function testOutsideScopeDoesNotDuplicateScopeRequests()
     {
         $response = $this->render(['id' => 141], [], []);
         $body = json_decode((string) $response->getBody(), true);
@@ -29,11 +29,11 @@ class RequestListByScopeAndDepartmentTest extends \BO\Zmsbackend\Tests\Api\Base
         $scopeKeys = array_map(static function ($request) {
             return ($request['source'] ?? '') . ':' . $request['id'];
         }, $body['data']['scope']);
-        $additionalKeys = array_map(static function ($request) {
+        $outsideScopeKeys = array_map(static function ($request) {
             return ($request['source'] ?? '') . ':' . $request['id'];
-        }, $body['data']['additional']);
+        }, $body['data']['outsideScope']);
 
-        $this->assertSame([], array_values(array_intersect($scopeKeys, $additionalKeys)));
+        $this->assertSame([], array_values(array_intersect($scopeKeys, $outsideScopeKeys)));
     }
 
     public function testEmpty()

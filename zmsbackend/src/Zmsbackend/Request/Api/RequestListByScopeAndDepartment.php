@@ -31,7 +31,7 @@ class RequestListByScopeAndDepartment extends \BO\Zmsbackend\Api\BaseController
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
         $message->data = new Requeststatistic([
             'scope' => $grouped['scope'],
-            'additional' => $grouped['additional'],
+            'outsideScope' => $grouped['outsideScope'],
         ]);
 
         $response = Render::withLastModified($response, time(), '0');
