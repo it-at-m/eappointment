@@ -246,7 +246,7 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Service\Base
             $resultIds[] = $result->id;
         }
         $this->assertContains($process->id, $resultIds);
-        $totalCount = $query->readSearchCount(['query' => '"Rollstuhl elektrisch"']);
+        $totalCount = $query->readSearchCount(['query' => 'Rollstuhl elektrisch']);
         $this->assertGreaterThanOrEqual($results->count(), $totalCount);
 
 
@@ -272,4 +272,120 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Service\Base
         }
         $this->assertContains($process->id, $resultIds);
     }
+
+    public function testGeneralSearchFindsTermsAcrossCustomTextfields()
+    {
+        $query = new Query();
+        $process = $query->readSearch(['query' => '10029'])->getFirst();
+        $this->assertNotNull($process);
+
+        $query->perform(
+            'UPDATE `' . ProcessQuery::TABLE . '`SET custom_text_field = :firstValue, custom_text_field2 = :secondValue WHERE BuergerID = :id',
+            [
+                'firstValue' => 'Rollstuhl',
+                'secondValue' => 'elektrisch',
+                'id' => $process->id,
+            ]
+        );
+        $results = $query->readSearch(['query' => 'Rollstuhl elektrisch']);
+        $resultIds = [];
+        foreach ($results as $result) {
+            $resultIds[] = $result->id;
+        }
+        $this->assertContains($process->id, $resultIds);
+        $totalCount = $query->readSearchCount(['query' => 'Rollstuhl elektrisch']);
+        $this->assertGreaterThanOrEqual($results->count(), $totalCount);
+    }
+
+    public function testGeneralSearchFindsTermsAcrossNameAndCustomTextfield()
+    {
+        $query = new Query();
+        $process = $query->readSearch(['query' => '10029'])->getFirst();
+        $this->assertNotNull($process);
+
+        $query->perform(
+            'UPDATE `' . ProcessQuery::TABLE . '`SET Name = :name, custom_text_field = :customText WHERE BuergerID = :id',
+            [
+                'name' => 'Max Mustermann',
+                'customText'=> 'Rollstuhl',
+                'id'=> $process->id,
+            ]
+        );
+        $results = $query->readSearch(['query'=> 'Mustermann Rollstuhl']);
+        $resultIds = [];
+        foreach ($results as $result) {
+            $resultIds[] = $result->id;
+        }
+        $this->assertContains($process->id, $resultIds);
+    }
+
+    public function testQuotedGeneralSearchFindsPhraseInCustomTextfield()
+    {
+        $query = new Query();
+        $process = $query->readSearch(['query'=> '10029'])->getFirst();
+        $this->assertNotNull($process);
+
+        $query->perform(
+            'UPDATE`'. ProcessQuery::TABLE . '`SET custom_text_field = :value WHERE BuergerID = :id',
+            [
+                'value' => 'Rollstuhl elektrisch verfügbar',
+                'id'=> $process->id,
+            ]
+        );
+        $results = $query->readSearch(['query'=> '"Rollstuhl elektrisch"',]);
+        $resultIds = [];
+        foreach ($results as $result) {
+            $resultIds[] = $result->id;
+        }
+        $this->assertContains($process->id, $resultIds);
+    }
+
+    public function testNameMatchHasPriorityOverCustomTextfieldMatch()
+    {
+        $query = new Query();
+        $candidates = $query->readSearch(['query'=> 'J51362']);
+        $this->assertGreaterThanOrEqual(2, $candidates->count());
+       
+
+        $candidateIds = [];
+        foreach ($candidates as $candidate) {
+            $candidateIds[] = $candidate->id;
+        }
+
+        $nameMatchId = $candidateIds[0];
+        $customMatchId = $candidateIds[1];
+
+        $query->perform(
+            'UPDATE `' . ProcessQuery::TABLE . '`SET Name = :name, custom_text_field = :customText WHERE BuergerID = :id',
+            [
+                'name' => 'Prioritaetsbegriff',
+                'customText' => '',
+                'id' => $nameMatchId,
+            ]
+        );
+        
+        $query->perform(
+            'UPDATE `'. ProcessQuery::TABLE . '`SET Name = :name, custom_text_field = :customText WHERE BuergerID = :id',
+            [
+                'name'=> 'Erika Musterfrau',
+                'customText'=> 'Prioritaetsbegriff',
+                'id'=> $customMatchId,
+            ]
+        );
+        $results = $query->readSearch(['query'=> 'Prioritaetsbegriff']);
+        $resultIds = [];
+        foreach ($results as $result) {
+            $resultIds[] = $result->id;
+        }
+
+        $namePostion = array_search($nameMatchId, $resultIds, true);
+        $customPostion = array_search($customMatchId, $resultIds, true);
+
+        $this->assertNotFalse($namePostion);
+        $this->assertNotFalse($customPostion);
+
+        $this->assertLessThan($customPostion, $namePostion);
+        
+    }
+    
 }
