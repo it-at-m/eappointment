@@ -122,7 +122,7 @@
                     }]
                 ) }}
 
-                {% for name, group in requestList %}
+                {% for name, group in scopeRequestList %}
                     {% set groupOptions = [] %}
                     {% for request in group %}
                         {% set value = 0 %}
@@ -142,37 +142,37 @@
                     </fieldset>
                 {% endfor %}
 
-                {% set outsideScopeRequestList = outsideScopeRequestList|default({}) %}
-                {% if outsideScopeRequestList|length > 0 %}
-                    {% set outsideScopeHasValues = false %}
-                    {% for name, group in outsideScopeRequestList %}
+                {% set additionalDepartmentRequestList = additionalDepartmentRequestList|default({}) %}
+                {% if additionalDepartmentRequestList|length > 0 %}
+                    {% set additionalDepartmentHasValues = false %}
+                    {% for name, group in additionalDepartmentRequestList %}
                         {% for request in group %}
                             {% for processRequest in workstation.process.requests %}
                                 {% if processRequest.id == request.id %}
-                                    {% set outsideScopeHasValues = true %}
+                                    {% set additionalDepartmentHasValues = true %}
                                 {% endif %}
                             {% endfor %}
                         {% endfor %}
                     {% endfor %}
-                    <div class="statistic-outside-scope-requests{% if outsideScopeHasValues %} is-expanded{% endif %}">
+                    <div class="statistic-additional-department-requests{% if additionalDepartmentHasValues %} is-expanded{% endif %}">
                         <button
                             type="button"
-                            class="button statistic-outside-scope-requests__toggle"
-                            aria-expanded="{{ outsideScopeHasValues ? 'true' : 'false' }}"
-                            aria-controls="statistic-outside-scope-requests-panel"
+                            class="button statistic-additional-department-requests__toggle"
+                            aria-expanded="{{ additionalDepartmentHasValues ? 'true' : 'false' }}"
+                            aria-controls="statistic-additional-department-requests-panel"
                             data-label-more="Weitere Dienstleistungen anzeigen"
                             data-label-less="Weniger Dienstleistungen anzeigen"
                         >
-                            <span class="statistic-outside-scope-requests__label">
-                                {{ outsideScopeHasValues ? 'Weniger Dienstleistungen anzeigen' : 'Weitere Dienstleistungen anzeigen' }}
+                            <span class="statistic-additional-department-requests__label">
+                                {{ additionalDepartmentHasValues ? 'Weniger Dienstleistungen anzeigen' : 'Weitere Dienstleistungen anzeigen' }}
                             </span>
-                            <i class="fas {{ outsideScopeHasValues ? 'fa-chevron-up' : 'fa-chevron-down' }}" aria-hidden="true"></i>
+                            <i class="fas {{ additionalDepartmentHasValues ? 'fa-chevron-up' : 'fa-chevron-down' }}" aria-hidden="true"></i>
                         </button>
                         <div
-                            id="statistic-outside-scope-requests-panel"
-                            class="statistic-outside-scope-requests__panel"
+                            id="statistic-additional-department-requests-panel"
+                            class="statistic-additional-department-requests__panel"
                         >
-                            {% for name, group in outsideScopeRequestList %}
+                            {% for name, group in additionalDepartmentRequestList %}
                                 {% set groupOptions = [] %}
                                 {% for request in group %}
                                     {% set value = 0 %}

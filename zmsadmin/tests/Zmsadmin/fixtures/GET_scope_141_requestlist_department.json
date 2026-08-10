@@ -8,7 +8,7 @@
   },
   "data": {
     "$schema": "https://schema.berlin.de/queuemanagement/requeststatistic.json",
-    "scope": [
+    "scopeRequests": [
       {
         "$schema": "https://schema.berlin.de/queuemanagement/request.json",
         "id": "120335",
@@ -37,7 +37,7 @@
         "timeSlotCount": "0"
       }
     ],
-    "outsideScope": [
+    "additionalDepartmentRequests": [
       {
         "$schema": "https://schema.berlin.de/queuemanagement/request.json",
         "id": "120665",

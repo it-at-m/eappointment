@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace BO\Zmsentities;
 
 /**
- * @property Collection\RequestList $scope
- * @property Collection\RequestList $outsideScope
+ * @property Collection\RequestList $scopeRequests
+ * @property Collection\RequestList $additionalDepartmentRequests
  */
 class Requeststatistic extends Schema\Entity implements Helper\NoSanitize
 {
@@ -16,19 +16,23 @@ class Requeststatistic extends Schema\Entity implements Helper\NoSanitize
     public function getDefaults(): array
     {
         return [
-            'scope' => new Collection\RequestList(),
-            'outsideScope' => new Collection\RequestList(),
+            'scopeRequests' => new Collection\RequestList(),
+            'additionalDepartmentRequests' => new Collection\RequestList(),
         ];
     }
 
     #[\Override]
     public function addData($mergeData): Schema\Entity
     {
-        if (isset($mergeData['scope']) && !$mergeData['scope'] instanceof Collection\RequestList) {
-            $mergeData['scope'] = (new Collection\RequestList())->addData($mergeData['scope']);
+        if (isset($mergeData['scopeRequests']) && !$mergeData['scopeRequests'] instanceof Collection\RequestList) {
+            $mergeData['scopeRequests'] = (new Collection\RequestList())->addData($mergeData['scopeRequests']);
         }
-        if (isset($mergeData['outsideScope']) && !$mergeData['outsideScope'] instanceof Collection\RequestList) {
-            $mergeData['outsideScope'] = (new Collection\RequestList())->addData($mergeData['outsideScope']);
+        if (
+            isset($mergeData['additionalDepartmentRequests'])
+            && !$mergeData['additionalDepartmentRequests'] instanceof Collection\RequestList
+        ) {
+            $mergeData['additionalDepartmentRequests'] = (new Collection\RequestList())
+                ->addData($mergeData['additionalDepartmentRequests']);
         }
 
         return parent::addData($mergeData);
@@ -38,21 +42,21 @@ class Requeststatistic extends Schema\Entity implements Helper\NoSanitize
     public function jsonSerialize(): mixed
     {
         $serialized = parent::jsonSerialize();
-        $scope = $this->scope instanceof Collection\RequestList
-            ? array_values($this->scope->getArrayCopy())
+        $scopeRequests = $this->scopeRequests instanceof Collection\RequestList
+            ? array_values($this->scopeRequests->getArrayCopy())
             : [];
-        $outsideScope = $this->outsideScope instanceof Collection\RequestList
-            ? array_values($this->outsideScope->getArrayCopy())
+        $additionalDepartmentRequests = $this->additionalDepartmentRequests instanceof Collection\RequestList
+            ? array_values($this->additionalDepartmentRequests->getArrayCopy())
             : [];
 
         if (is_array($serialized)) {
-            $serialized['scope'] = $scope;
-            $serialized['outsideScope'] = $outsideScope;
+            $serialized['scopeRequests'] = $scopeRequests;
+            $serialized['additionalDepartmentRequests'] = $additionalDepartmentRequests;
             return $serialized;
         }
 
-        $serialized->scope = $scope;
-        $serialized->outsideScope = $outsideScope;
+        $serialized->scopeRequests = $scopeRequests;
+        $serialized->additionalDepartmentRequests = $additionalDepartmentRequests;
         return $serialized;
     }
 }

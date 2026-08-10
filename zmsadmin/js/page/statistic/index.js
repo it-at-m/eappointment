@@ -27,17 +27,17 @@ class View extends BaseView {
             this.changeInputCounterFromInput(ev);
             this.checkboxDeselect()
             this.toggleButtons();
-        }).on('click', '.statistic-outside-scope-requests__toggle', (ev) => {
+        }).on('click', '.statistic-additional-department-requests__toggle', (ev) => {
             ev.preventDefault();
-            this.toggleOutsideScopeRequests(ev.currentTarget);
+            this.toggleAdditionalDepartmentRequests(ev.currentTarget);
         })
     }
 
-    toggleOutsideScopeRequests(button) {
+    toggleAdditionalDepartmentRequests(button) {
         const $button = $(button);
-        const $wrapper = $button.closest('.statistic-outside-scope-requests');
+        const $wrapper = $button.closest('.statistic-additional-department-requests');
         const $icon = $button.find('i');
-        const $label = $button.find('.statistic-outside-scope-requests__label');
+        const $label = $button.find('.statistic-additional-department-requests__label');
         const expanded = !$wrapper.hasClass('is-expanded');
 
         $wrapper.toggleClass('is-expanded', expanded);

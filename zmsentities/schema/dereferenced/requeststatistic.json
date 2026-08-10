@@ -2,7 +2,7 @@
   "type": "object",
   "description": "Grouped request lists for statistic collection after process finish: scope calendar requests plus department requests not on that scope.",
   "example": {
-    "scope": [
+    "scopeRequests": [
       {
         "id": "120335",
         "link": "http://service.berlin.de/dienstleistung/120335/",
@@ -11,7 +11,7 @@
         "group": "Meldewesen und Ordnung"
       }
     ],
-    "outsideScope": [
+    "additionalDepartmentRequests": [
       {
         "id": "120703",
         "link": "http://service.berlin.de/dienstleistung/120703/",
@@ -22,12 +22,12 @@
     ]
   },
   "required": [
-    "scope",
-    "outsideScope"
+    "scopeRequests",
+    "additionalDepartmentRequests"
   ],
   "additionalProperties": false,
   "properties": {
-    "scope": {
+    "scopeRequests": {
       "type": "array",
       "description": "Requests assigned to the current scope/calendar",
       "items": {
@@ -35,7 +35,7 @@
         "additionalProperties": true
       }
     },
-    "outsideScope": {
+    "additionalDepartmentRequests": {
       "type": "array",
       "description": "Department-wide requests not assigned to the current scope",
       "items": {
