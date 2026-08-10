@@ -91,10 +91,12 @@
               />
             </div>
 
-            <!-- Keep mounted across customer-info (view 2) so back does not remount/refetch. -->
+            <!-- Keep mounted across customer-info and summary so back/login do not remount/refetch. -->
             <div v-show="currentView === 1">
               <AppointmentSelection
-                v-if="currentView === 1 || currentView === 2"
+                v-if="
+                  currentView === 1 || currentView === 2 || currentView === 3
+                "
                 :key="appointmentSelectionKey"
                 :global-state="globalState"
                 :is-rebooking="isRebooking"
@@ -1433,6 +1435,9 @@ onMounted(() => {
         selectedTimeslot.value = localStorageData.selectedTimeslot;
         appointment.value = localStorageData.appointment;
         captchaToken.value = localStorageData.captchaToken;
+        if (localStorageData.customerData) {
+          customerData.value = localStorageData.customerData;
+        }
 
         currentView.value = isAppointmentInPast.value
           ? 3

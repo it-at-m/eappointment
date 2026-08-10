@@ -50,6 +50,7 @@ interface WrapperOverrides {
   selectedService?: any;
   selectedProvider?: any;
   selectedTimeslot?: number;
+  appointment?: any;
   props?: Record<string, any>;
 }
 
@@ -63,6 +64,9 @@ const createWrapper = (overrides: WrapperOverrides = {}) => {
         selectedTimeslot: {
           selectedProvider: ref(overrides.selectedProvider ?? null),
           selectedTimeslot: ref(overrides.selectedTimeslot ?? 0),
+        },
+        appointment: {
+          appointment: ref(overrides.appointment ?? undefined),
         },
         selectableProviders: ref([]),
         loadingStates: {
@@ -3378,6 +3382,93 @@ describe("AppointmentSelection", () => {
 
       expect(wrapper.vm.isSwitchingProvider).toBe(false);
       expect(wrapper.find(".m-spinner-container").exists()).toBe(false);
+    });
+  });
+
+  describe("ZMSKVR-1571 multi-office selectedProvider retention", () => {
+    it("keeps the reserved office when multiple alternative locations stay checked", async () => {
+      const wrapper = createWrapper({
+        appointment: {
+          processId: "12345",
+          officeId: "1",
+          scope: { id: "1", telephoneActivated: true },
+        },
+        selectedProvider: {
+          id: 1,
+          name: "Bürgerbüro Scheidplatz",
+          address: {
+            street: "Belgradstraße",
+            house_number: "1",
+            postal_code: "80804",
+            city: "München",
+          },
+          scope: { id: "1", telephoneActivated: true },
+          showAlternativeLocations: true,
+        },
+        selectedService: {
+          id: "service1",
+          providers: [
+            {
+              id: 1,
+              name: "Bürgerbüro Scheidplatz",
+              address: {
+                street: "Belgradstraße",
+                house_number: "1",
+                postal_code: "80804",
+                city: "München",
+              },
+              scope: { id: "1", telephoneActivated: true },
+              showAlternativeLocations: true,
+            },
+            {
+              id: 2,
+              name: "Bürgerbüro Alternative",
+              address: {
+                street: "Other",
+                house_number: "2",
+                postal_code: "80331",
+                city: "München",
+              },
+              scope: { id: "2" },
+              showAlternativeLocations: true,
+            },
+          ],
+        },
+      });
+
+      wrapper.vm.selectableProviders = [
+        {
+          id: 1,
+          name: "Bürgerbüro Scheidplatz",
+          address: {
+            street: "Belgradstraße",
+            house_number: "1",
+            postal_code: "80804",
+            city: "München",
+          },
+          scope: { id: "1", telephoneActivated: true },
+          showAlternativeLocations: true,
+        },
+        {
+          id: 2,
+          name: "Bürgerbüro Alternative",
+          address: {
+            street: "Other",
+            house_number: "2",
+            postal_code: "80331",
+            city: "München",
+          },
+          scope: { id: "2" },
+          showAlternativeLocations: true,
+        },
+      ];
+
+      wrapper.vm.selectedProviders = { "1": true, "2": true };
+      await nextTick();
+      await flushPromises();
+
+      expect(wrapper.vm.selectedProvider?.id).toBe(1);
+      expect(wrapper.vm.selectedProvider?.name).toBe("Bürgerbüro Scheidplatz");
     });
   });
 });

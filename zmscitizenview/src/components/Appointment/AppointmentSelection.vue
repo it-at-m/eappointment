@@ -246,6 +246,7 @@ import { fetchAvailableCalendar } from "@/api/ZMSAppointmentAPI";
 import { GlobalState } from "@/types/GlobalState";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import {
+  SelectedAppointmentProvider,
   SelectedServiceProvider,
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
@@ -291,6 +292,10 @@ const { selectedService } = inject<SelectedServiceProvider>(
 const { selectedProvider, selectedTimeslot } = inject<SelectedTimeslotProvider>(
   "selectedTimeslot"
 ) as SelectedTimeslotProvider;
+
+const { appointment } = inject<SelectedAppointmentProvider>("appointment", {
+  appointment: ref(undefined),
+}) as SelectedAppointmentProvider;
 
 const loadingStates = inject("loadingStates", {
   isReservingAppointment: ref(false),
@@ -1875,11 +1880,28 @@ onMounted(() => {
       ])
     );
 
-    void showSelectionForProvider(firstOfficeToShow ?? offices[0]).finally(
-      () => {
+    const reservedOfficeId = appointment.value?.officeId;
+    const reservedProvider =
+      (reservedOfficeId &&
+        selectableProviders.value.find(
+          (provider) => String(provider.id) === String(reservedOfficeId)
+        )) ||
+      selectedProvider.value;
+
+    // Remount after reservation (back from summary / login restore): keep the
+    // chosen office and timeslot; only refresh calendar availability.
+    if (appointment.value?.processId && reservedProvider) {
+      selectedProvider.value = reservedProvider;
+      void fetchAvailableDaysForSelection().finally(() => {
         initialCalendarLoadPending = false;
-      }
-    );
+      });
+    } else {
+      void showSelectionForProvider(firstOfficeToShow ?? offices[0]).finally(
+        () => {
+          initialCalendarLoadPending = false;
+        }
+      );
+    }
   }
 });
 
@@ -1959,8 +1981,22 @@ watch(
         (p) => p.id.toString() === selectedIds[0]
       );
       selectedProvider.value = provider ?? undefined;
-    } else if (selectedIds.length !== 1) {
+    } else if (selectedIds.length === 0) {
       selectedProvider.value = undefined;
+    } else if (selectableProviders.value) {
+      // Multi-office calendars (e.g. Scheidplatz alternatives) check many offices.
+      // Do not wipe the reserved/selected office — overview Ort and contact fields
+      // depend on selectedProvider remaining set.
+      const reservedOfficeId =
+        appointment.value?.officeId ?? selectedProvider.value?.id;
+      if (reservedOfficeId) {
+        const reserved = selectableProviders.value.find(
+          (provider) => String(provider.id) === String(reservedOfficeId)
+        );
+        if (reserved) {
+          selectedProvider.value = reserved;
+        }
+      }
     }
 
     const hasAvailableDays =

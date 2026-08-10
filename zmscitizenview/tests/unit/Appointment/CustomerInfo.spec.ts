@@ -350,4 +350,28 @@ describe("CustomerInfo", () => {
       expect(buttons.length).toBe(1); // only back-button
     });
   });
+
+  describe("ZMSKVR-1571 scope fallback from appointment", () => {
+    it("shows telephone and custom fields from appointment.scope when selectedProvider is missing", async () => {
+      mockSelectedProvider.value = null;
+      mockAppointmentProvider.appointment.value = {
+        scope: {
+          reservationDuration: 15,
+          telephoneActivated: true,
+          telephoneRequired: false,
+          customTextfieldActivated: true,
+          customTextfieldLabel: "Zusatzfeld",
+          customTextfield2Activated: true,
+          customTextfield2Label: "Zusatzfeld 2",
+        },
+      };
+
+      const wrapper = createWrapper();
+      await nextTick();
+
+      expect(wrapper.find("#telephonenumber").exists()).toBe(true);
+      expect(wrapper.find("#remarks").exists()).toBe(true);
+      expect(wrapper.find("#remarks2").exists()).toBe(true);
+    });
+  });
 });
