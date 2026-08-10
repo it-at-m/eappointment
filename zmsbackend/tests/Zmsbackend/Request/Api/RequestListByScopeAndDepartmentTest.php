@@ -12,28 +12,28 @@ class RequestListByScopeAndDepartmentTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertTrue(200 == $response->getStatusCode());
         $body = json_decode((string) $response->getBody(), true);
         $this->assertIsArray($body['data']);
-        $this->assertArrayHasKey('scope', $body['data']);
-        $this->assertArrayHasKey('outsideScope', $body['data']);
-        $this->assertIsArray($body['data']['scope']);
-        $this->assertIsArray($body['data']['outsideScope']);
-        $this->assertNotEmpty($body['data']['scope']);
+        $this->assertArrayHasKey('scopeRequests', $body['data']);
+        $this->assertArrayHasKey('additionalDepartmentRequests', $body['data']);
+        $this->assertIsArray($body['data']['scopeRequests']);
+        $this->assertIsArray($body['data']['additionalDepartmentRequests']);
+        $this->assertNotEmpty($body['data']['scopeRequests']);
         $this->assertStringContainsString('requeststatistic.json', (string) $response->getBody());
         $this->assertStringContainsString('request.json', (string) $response->getBody());
     }
 
-    public function testOutsideScopeDoesNotDuplicateScopeRequests()
+    public function testAdditionalDepartmentRequestsDoNotDuplicateScopeRequests()
     {
         $response = $this->render(['id' => 141], [], []);
         $body = json_decode((string) $response->getBody(), true);
 
         $scopeKeys = array_map(static function ($request) {
             return ($request['source'] ?? '') . ':' . $request['id'];
-        }, $body['data']['scope']);
-        $outsideScopeKeys = array_map(static function ($request) {
+        }, $body['data']['scopeRequests']);
+        $additionalDepartmentKeys = array_map(static function ($request) {
             return ($request['source'] ?? '') . ':' . $request['id'];
-        }, $body['data']['outsideScope']);
+        }, $body['data']['additionalDepartmentRequests']);
 
-        $this->assertSame([], array_values(array_intersect($scopeKeys, $outsideScopeKeys)));
+        $this->assertSame([], array_values(array_intersect($scopeKeys, $additionalDepartmentKeys)));
     }
 
     public function testEmpty()

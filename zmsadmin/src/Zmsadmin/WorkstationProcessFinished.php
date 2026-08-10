@@ -44,16 +44,16 @@ class WorkstationProcessFinished extends BaseController
         }
 
         $requestStatistic = $this->readRequeststatistic((int) $scopeId);
-        $scopeRequestList = $requestStatistic->scope instanceof RequestList
-            ? $requestStatistic->scope
+        $scopeRequestList = $requestStatistic->scopeRequests instanceof RequestList
+            ? $requestStatistic->scopeRequests
             : new RequestList();
-        $outsideScopeRequestList = $requestStatistic->outsideScope instanceof RequestList
-            ? $requestStatistic->outsideScope
+        $additionalDepartmentRequestList = $requestStatistic->additionalDepartmentRequests instanceof RequestList
+            ? $requestStatistic->additionalDepartmentRequests
             : new RequestList();
 
         $selectableRequestList = (new RequestList())
             ->addList($scopeRequestList)
-            ->addList($outsideScopeRequestList);
+            ->addList($additionalDepartmentRequestList);
 
         if (is_array($input) && isset($input['process']) && array_key_exists('id', $input['process'])) {
             $source = $workstation->getScope()->getSource();
@@ -67,8 +67,8 @@ class WorkstationProcessFinished extends BaseController
             array(
                 'title' => 'Kundendaten',
                 'workstation' => $workstation,
-                'requestList' => $scopeRequestList->toSortedByGroup(),
-                'outsideScopeRequestList' => $outsideScopeRequestList->toSortedByGroup(),
+                'scopeRequestList' => $scopeRequestList->toSortedByGroup(),
+                'additionalDepartmentRequestList' => $additionalDepartmentRequestList->toSortedByGroup(),
                 'menuActive' => 'workstation',
                 'statisticEnabled' => $statisticEnabled
             )

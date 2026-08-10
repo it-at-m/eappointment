@@ -272,8 +272,8 @@ class Request extends \BO\Zmsbackend\Base
         $departmentId = (int) $scopeService->readDepartmentIdByScopeId($scopeId);
         if ($departmentId < 1) {
             return [
-                'scope' => $scopeRequestList,
-                'outsideScope' => new Collection(),
+                'scopeRequests' => $scopeRequestList,
+                'additionalDepartmentRequests' => new Collection(),
             ];
         }
 
@@ -282,14 +282,14 @@ class Request extends \BO\Zmsbackend\Base
             $departmentId
         );
         $departmentRequestList = $this->readAllRequestsForProviders($providers, $resolveReferences);
-        $outsideScopeRequestList = $this->keepRequestsNotAlreadyOnScope(
+        $additionalDepartmentRequestList = $this->keepRequestsNotAlreadyOnScope(
             $scopeRequestList,
             $departmentRequestList
         );
 
         return [
-            'scope' => $scopeRequestList,
-            'outsideScope' => $outsideScopeRequestList->sortByName(),
+            'scopeRequests' => $scopeRequestList,
+            'additionalDepartmentRequests' => $additionalDepartmentRequestList->sortByName(),
         ];
     }
 
@@ -342,7 +342,7 @@ class Request extends \BO\Zmsbackend\Base
         Collection $scopeRequestList,
         Collection $departmentRequestList
     ): Collection {
-        $outsideScopeRequestList = new Collection();
+        $additionalDepartmentRequestList = new Collection();
         $scopeRequestKeys = [];
         foreach ($scopeRequestList as $request) {
             $scopeRequestKeys[$this->getRequestLookupKey($request)] = true;
@@ -350,11 +350,11 @@ class Request extends \BO\Zmsbackend\Base
         foreach ($departmentRequestList as $request) {
             $requestKey = $this->getRequestLookupKey($request);
             if (!isset($scopeRequestKeys[$requestKey])) {
-                $outsideScopeRequestList->addEntity(clone $request);
+                $additionalDepartmentRequestList->addEntity(clone $request);
             }
         }
 
-        return $outsideScopeRequestList;
+        return $additionalDepartmentRequestList;
     }
 
     public function readListBySource($source, $resolveReferences = 0, $disableCache = false)
