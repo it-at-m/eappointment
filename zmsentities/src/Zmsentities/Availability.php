@@ -7,6 +7,10 @@ namespace BO\Zmsentities;
  * @SuppressWarnings(Coupling)
  * @SuppressWarnings(PublicMethod)
  *
+ * Schema-backed entity (ArrayObject::ARRAY_AS_PROPS); document dynamic keys for Psalm.
+ *
+ * @property int|string $id
+ * @property Scope|array $scope
  */
 class Availability extends Schema\Entity
 {
