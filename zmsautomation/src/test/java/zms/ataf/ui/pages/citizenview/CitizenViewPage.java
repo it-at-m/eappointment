@@ -1,5 +1,6 @@
 package zms.ataf.ui.pages.citizenview;
 
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
@@ -8,9 +9,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
@@ -18,7 +21,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ataf.core.helpers.TestDataHelper;
+import ataf.core.helpers.TestPropertiesHelper;
 import ataf.core.logging.ScenarioLogManager;
+import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
 import ataf.web.pages.BasePage;
 import ataf.web.utils.DriverUtil;
@@ -468,6 +473,14 @@ public class CitizenViewPage extends BasePage {
      * Asserts that block is present so the appointment is tied to the correct calendar/office.
      */
     public void assertProviderSummaryVisible(int officeId) {
+        assertProviderSummaryVisible(officeId, "Bürgerbüro Ruppertstraße");
+    }
+
+    /**
+     * Reserve / preconfirm / confirm screens expose {@code <p id="provider-{officeId}">…</p>} (summary).
+     * Asserts that block is present and the standort label appears in the shadow DOM.
+     */
+    public void assertProviderSummaryVisible(int officeId, String expectedStandortLabel) {
         CONTEXT.set();
         String sel = "#provider-" + officeId;
         waitWithThreeWindows(() -> deepElementExists(sel), "Provider summary " + sel);
@@ -482,8 +495,8 @@ public class CitizenViewPage extends BasePage {
         }
         Assert.assertTrue(deepElementExists(sel), "Expected booking summary provider block: " + sel);
         Assert.assertTrue(
-                shadowDomContainsText("Bürgerbüro Ruppertstraße"),
-                "Expected standort label near provider-" + officeId);
+                shadowDomContainsText(expectedStandortLabel),
+                "Expected standort label near provider-" + officeId + ": " + expectedStandortLabel);
     }
 
     /** On Passkalender jump-in, only Pass services should be combinable (names from API). */
@@ -1875,5 +1888,156 @@ public class CitizenViewPage extends BasePage {
             return origin + u;
         }
         return "http://" + u;
+    }
+
+    /** Last Kontakt values filled by {@link #fillContactDetailsRandomWithoutContinue()} for later asserts. */
+    private String lastContactPhone = CONTACT_PHONE_E2E;
+    private String lastContactCustomText = CONTACT_LOREM_REQUIRED;
+
+    /**
+     * Kontakt step only — fills name/email/phone/Zusatzfelder but does <em>not</em> click Weiter
+     * (needed before Bürger-Login or Zurück assertions).
+     */
+    public void fillContactDetailsRandomWithoutContinue() {
+        fillContactDetailsRandom();
+        lastContactPhone = CONTACT_PHONE_E2E;
+        lastContactCustomText = CONTACT_LOREM_REQUIRED;
+    }
+
+    public void continueFromContactFormToSummary() {
+        CONTEXT.set();
+        clickWeiter(30);
+        waitForPreconfirmPageAfterUpdate();
+    }
+
+    public boolean deepContactCustomTextFieldExists() {
+        return deepElementExists("#remarks")
+                || deepElementExists("muc-text-area#remarks")
+                || deepElementExists("#input-remarks");
+    }
+
+    /** Read value of input/textarea resolved from host id (shadow-safe). */
+    public String deepGetById(String id) {
+        CONTEXT.set();
+        String script =
+                "var want=arguments[0];"
+                        + "var ids=[];ids.push(want);if(want.indexOf('input-')===0)ids.push(want.slice(6));else ids.push('input-'+want);"
+                        + "function byId(root,id){try{if(root.getElementById)return root.getElementById(id);}catch(e0){}"
+                        + "try{return root.querySelector('#'+id.replace(/([^a-zA-Z0-9_-])/g,'\\\\$1'));}catch(e1){return root.querySelector('[id=\"'+id.replace(/\"/g,'')+'\"]');}}"
+                        + "function resolve(el){if(!el)return null;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')return el;"
+                        + "if(el.shadowRoot){var q=el.shadowRoot.querySelector('input:not([type=hidden]):not([type=checkbox]):not([type=radio]),textarea');if(q)return q;}return null;}"
+                        + "function scanRoot(root){if(!root)return null;for(var i=0;i<ids.length;i++){var el=byId(root,ids[i]);var r=resolve(el);if(r)return r;}"
+                        + "var nodes=root.querySelectorAll('*');for(var j=0;j<nodes.length;j++){if(nodes[j].shadowRoot){var r2=scanRoot(nodes[j].shadowRoot);if(r2)return r2;}}return null;}"
+                        + "var e=scanRoot(document);if(!e)e=scanRoot(document.body);"
+                        + "return e?String(e.value||''):null;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, id);
+        return o == null ? null : String.valueOf(o);
+    }
+
+    public void assertContactPhoneAndCustomFieldsVisibleWithValues() {
+        CONTEXT.set();
+        waitUntilShadowContains("Kontaktdaten", Math.max(30, DEFAULT_EXPLICIT_WAIT_TIME));
+        Assert.assertTrue(
+                deepContactPhoneFieldExists(),
+                "Telephone field (#telephonenumber) must remain visible on the Kontakt form.");
+        Assert.assertTrue(
+                deepContactCustomTextFieldExists(),
+                "Custom text field (#remarks) must remain visible on the Kontakt form.");
+        String phone = deepGetById("telephonenumber");
+        Assert.assertNotNull(phone, "Telephone field value could not be read.");
+        Assert.assertTrue(
+                phone.contains(lastContactPhone) || phone.equals(lastContactPhone),
+                "Telephone field should keep entered value. expectedContains="
+                        + lastContactPhone
+                        + " actual="
+                        + phone);
+        String remarks = deepGetById("remarks");
+        Assert.assertNotNull(remarks, "Custom text field value could not be read.");
+        Assert.assertTrue(
+                remarks.contains("Lorem ipsum") || remarks.contains(lastContactCustomText.substring(0, 20)),
+                "Custom text field should keep entered value. actual=" + remarks);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Kontakt phone + Zusatzfeld still visible with values");
+    }
+
+    /**
+     * Booking summary Ort block for Scheidplatz (provider id + name + street from scope address).
+     */
+    public void assertScheidplatzLocationOnSummary(int officeId) {
+        assertProviderSummaryVisible(officeId, "Bürgerbüro Scheidplatz");
+        Assert.assertTrue(
+                shadowDomContainsText("Belgradstraße") || shadowDomContainsText("Riesenfeldstraße"),
+                "Ort address for Scheidplatz should show Belgradstraße or Riesenfeldstraße.");
+        Assert.assertTrue(
+                shadowDomContainsText("80804") || shadowDomContainsText("München"),
+                "Ort address for Scheidplatz should show postal code/city.");
+    }
+
+    /** Zurück from Übersicht (preconfirm) back to Kontakt form. */
+    public void goBackFromBookingSummaryToContact() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: Zurück from booking summary to Kontakt");
+        waitForAndClickButtonContaining("Zurück", DEFAULT_EXPLICIT_WAIT_TIME);
+        waitUntilShadowContains("Kontaktdaten", Math.max(30, DEFAULT_EXPLICIT_WAIT_TIME));
+    }
+
+    /**
+     * Bürger-Login on Kontakt: click Anmelden (saves localStorage), complete Keycloak as {@code citizen}/{@code
+     * vorschau} (dbs-fragments client), wait until logged-in callout returns.
+     */
+    public void loginViaBuergerLoginWithKeycloak() throws Exception {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: click Anmelden (Bürger-Login)");
+        waitForAndClickButtonContaining("Anmelden", DEFAULT_EXPLICIT_WAIT_TIME);
+
+        String username =
+                TestPropertiesHelper.getPropertyAsString("citizenUserName", true, "citizen");
+        String password =
+                TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
+        completeKeycloakLoginForm(username, password);
+
+        waitWithThreeWindows(
+                () -> shadowDomContainsText("Sie sind angemeldet")
+                        || shadowDomContainsText("Kontaktdaten"),
+                "Citizen view after Keycloak Bürger-Login");
+        Assert.assertTrue(
+                shadowDomContainsText("Sie sind angemeldet.") || shadowDomContainsText("Kontaktdaten"),
+                "Expected return to Kontakt form after Bürger-Login (logged-in callout or Kontaktdaten).");
+        ScenarioLogManager.getLogger().info("zmscitizenview: Bürger-Login completed");
+    }
+
+    public void assertCitizenLoggedInOnContactForm() {
+        CONTEXT.set();
+        waitWithThreeWindows(
+                () -> shadowDomContainsText("Sie sind angemeldet"),
+                "Logged-in callout on Kontakt");
+        Assert.assertTrue(
+                shadowDomContainsText("Sie sind angemeldet."),
+                "Expected 'Sie sind angemeldet.' after Bürger-Login on Kontakt form.");
+    }
+
+    /**
+     * Same Keycloak username/password + kc-login pattern as {@code AdminPage}/{@code StatisticsPage}, for the
+     * citizen {@code dbs-fragments} client redirect.
+     */
+    private void completeKeycloakLoginForm(String username, String password) throws Exception {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
+        ScenarioLogManager.getLogger().info("zmscitizenview: Keycloak login form detected");
+
+        if ("chrome".equals(TestPropertiesHelper.getPropertyAsString("browser", true, DefaultValues.BROWSER))) {
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kc-login")));
+            String credentials = URLEncoder.encode(username, StandardCharsets.UTF_8)
+                    + ":"
+                    + URLEncoder.encode(password, StandardCharsets.UTF_8)
+                    + "@";
+            DRIVER.navigate().to(DRIVER.getCurrentUrl().replaceFirst("^(https?://)", "$1" + credentials));
+        }
+
+        ScenarioLogManager.getLogger().info("zmscitizenview: entering Keycloak citizen credentials");
+        enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, username, "username", LocatorType.ID);
+        enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, password, "password", LocatorType.ID);
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "kc-login", LocatorType.ID, false);
+        ScenarioLogManager.getLogger().info("zmscitizenview: Keycloak login submitted");
     }
 }
