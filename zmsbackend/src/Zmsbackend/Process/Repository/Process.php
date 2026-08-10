@@ -695,9 +695,9 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         foreach ($terms as $term) {
             $escapedTerm = $this->escapeLikePatternForSqlLiteral($term['value']);
             $allTermsInNameConditions[] = "process.Name LIKE '%{$escapedTerm}%'";
-            $anyTermInNameConditions[] = "process.Name LIKE '{$escapedTerm}'";
+            $anyTermInNameConditions[] = "process.Name LIKE '%{$escapedTerm}%'";
         }
-        $allTermsInName = implode(' OR ', $allTermsInNameConditions);
+        $allTermsInName = implode(' AND ', $allTermsInNameConditions);
         $anyTermInName = implode(' OR ', $anyTermInNameConditions);
 
         $this->query->orderBy(self::expression(
