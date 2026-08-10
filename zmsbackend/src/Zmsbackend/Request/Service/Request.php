@@ -215,7 +215,7 @@ class Request extends \BO\Zmsbackend\Base
         return $collection;
     }
 
-    public function readRequestsGroupedByProcessIds(array $processIds, $resolveReferences = 0): array
+    public function readAllRequestsForProcessIds(array $processIds, $resolveReferences = 0): array
     {
         $processIds = array_values(array_unique(array_filter(
             array_map('intval', $processIds),
@@ -230,9 +230,9 @@ class Request extends \BO\Zmsbackend\Base
         $query->addConditionProcessIds($processIds);
         $query->addEntityMappingWithProcessId();
 
-        $grouped = [];
+        $requestsByProcessId = [];
         foreach ($processIds as $processId) {
-            $grouped[$processId] = new Collection();
+            $requestsByProcessId[$processId] = new Collection();
         }
 
         $statement = $this->fetchStatement($query);
@@ -240,17 +240,17 @@ class Request extends \BO\Zmsbackend\Base
             $processed = $query->postProcessJoins($requestData);
             $processId = (int) ($processed['processId'] ?? 0);
             unset($processed['processId']);
-            if ($processId <= 0 || !isset($grouped[$processId])) {
+            if ($processId <= 0 || !isset($requestsByProcessId[$processId])) {
                 continue;
             }
-            $grouped[$processId]->addEntity(new Entity($processed));
+            $requestsByProcessId[$processId]->addEntity(new Entity($processed));
         }
 
-        foreach ($grouped as $processId => $requestList) {
-            $grouped[$processId] = $this->attachRootParentIds($requestList);
+        foreach ($requestsByProcessId as $processId => $requestList) {
+            $requestsByProcessId[$processId] = $this->attachRootParentIds($requestList);
         }
 
-        return $grouped;
+        return $requestsByProcessId;
     }
 
     public function readRequestsByIds($ids, $resolveReferences = 0)
