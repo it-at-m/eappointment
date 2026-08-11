@@ -111,22 +111,22 @@ class Workstation extends Schema\Entity
 
     public function getScope(): Scope
     {
-        if (!$this->offsetExists('scope')) {
-            $this->scope = new Scope();
-        } elseif (!$this->scope instanceof Scope) {
-            $this->scope = new Scope($this->scope);
+        $scope = $this->offsetExists('scope') ? $this['scope'] : null;
+        if (!$scope instanceof Scope) {
+            $scope = new Scope($scope);
+            $this['scope'] = $scope;
         }
-        return $this->scope;
+        return $scope;
     }
 
     public function getProcess(): Process
     {
-        if (!$this->offsetExists('process')) {
-            $this->process = new Process();
-        } elseif (!$this->process instanceof Process) {
-            $this->process = new Process($this->process);
+        $process = $this->offsetExists('process') ? $this['process'] : null;
+        if (!$process instanceof Process) {
+            $process = new Process($process);
+            $this['process'] = $process;
         }
-        return $this->process;
+        return $process;
     }
 
     public function getScopeList($cluster = null)

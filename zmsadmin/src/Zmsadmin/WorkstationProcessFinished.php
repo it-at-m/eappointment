@@ -37,16 +37,12 @@ class WorkstationProcessFinished extends BaseController
         $statisticEnabled = $workstation->getScope()->getPreference('queue', 'statisticsEnabled');
 
         if (! $statisticEnabled) {
-            $process = $workstation->getProcess();
-            $process['status'] = 'finished';
+            $workstation->getProcess()['status'] = 'finished';
             return $this->getFinishedResponse($workstation);
         }
 
-        $scopeId = $workstation->scope['id'];
-        $currentProcess = $workstation->getProcess();
-        if (! empty($currentProcess)) {
-            $scopeId = $currentProcess->scope->id;
-        }
+        $scopeId = $workstation->getProcess()->getCurrentScope()['id']
+            ?? $workstation->getScope()['id'];
 
         $requestStatistic = $this->readRequeststatistic((int) $scopeId);
         $scopeRequestList = $requestStatistic->getScopeRequests();
@@ -101,7 +97,7 @@ class WorkstationProcessFinished extends BaseController
         ?Process $process = null
     ) {
         $process ??= clone $workstation->getProcess();
-        $process->status = ('pending' != $process->status) ? 'finished' : $process->status;
+        $process['status'] = ('pending' != $process['status']) ? 'finished' : $process['status'];
         \App::$http->readPostResult('/process/status/finished/', new Process($process))->getEntity();
         return Render::redirect(
             $workstation->getVariantName(),
