@@ -353,9 +353,9 @@ abstract class Base
     /**
      * Add a select part to the query containing a mapping from the db schema to the entity schema
      *
-     * @return self
+     * @return static
      */
-    public function addEntityMapping($type = null)
+    public function addEntityMapping($type = null): static
     {
         $entityMapping = $this->getPrefixedList($this->getEntityMapping($type));
         $this->query->select($entityMapping);
