@@ -244,16 +244,7 @@
                     <fieldset class="form-group{% if exception and exception.data['preferences/client/appointmentsPerMail'].messages is defined %} has-error is-invalid{% endif %}">
                         <legend class="label">Maximale Anzahl an Terminen pro E-Mail-Adresse:</legend>
                         <div class="controls">
-                            <div class="formelements">
-                                <div class="form-check">
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        id="appointmentsPerMailUnlimited"
-                                        {% if appointmentsPerMailUnlimited %}checked="checked"{% endif %}
-                                    >
-                                    <label class="form-check-label" for="appointmentsPerMailUnlimited">Unbegrenzt</label>
-                                </div>
+                            <div class="formelements" style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
                                 <input
                                     type="hidden"
                                     id="appointmentsPerMailHidden"
@@ -264,13 +255,24 @@
                                 {{ inputfield({
                                     "id": "appointmentsPerMailInput",
                                     "name": "preferences[client][appointmentsPerMail]",
-                                    "value": appointmentsPerMailUnlimited ? 2 : appointmentsPerMailValue,
+                                    "value": appointmentsPerMailUnlimited ? '' : appointmentsPerMailValue,
                                     "maxlength": 2,
                                     "min": 2,
                                     "max": 99,
+                                    "width": 1,
                                     "integer": true,
-                                    "disabled": appointmentsPerMailUnlimited
+                                    "disabled": appointmentsPerMailUnlimited ? 1 : 0
                                 }, "appointmentsPerMailInput", {}) }}
+                                <div class="form-check" style="margin: 0;">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="appointmentsPerMailUnlimited"
+                                        {% if appointmentsPerMailUnlimited %}checked="checked"{% endif %}
+                                        onchange="(function(checkbox){var input=document.getElementById('appointmentsPerMailInput');var hidden=document.getElementById('appointmentsPerMailHidden');if(!input||!hidden){return;}if(checkbox.checked){input.value='';input.disabled=true;hidden.disabled=false;hidden.value='';}else{input.disabled=false;hidden.disabled=true;if(input.value===''||Number(input.value)&lt;2){input.value='2';}}})(this)"
+                                    >
+                                    <label class="form-check-label" for="appointmentsPerMailUnlimited">Unbegrenzt</label>
+                                </div>
                             </div>
                             {% if exception and exception.data['preferences/client/appointmentsPerMail'].messages is defined %}
                                 {{ errormessage(exception.data['preferences/client/appointmentsPerMail'].messages, 'appointmentsPerMailInput') }}
