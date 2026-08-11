@@ -47,7 +47,7 @@ class Session extends \BO\Zmsbackend\Base
         return ($result) ? true : false;
     }
 
-    public function deleteByTimeInterval(?string $sessionName, int $deleteInSeconds)
+    public function deleteByTimeInterval(?string $sessionName, int $deleteInSeconds): void
     {
         $selectQuery = new \BO\Zmsbackend\Session\Repository\Session(\BO\Zmsbackend\Query\Base::SELECT);
         $selectQuery
@@ -62,8 +62,8 @@ class Session extends \BO\Zmsbackend\Base
             $entity = new Entity($sessionData);
             $deleteQuery = new \BO\Zmsbackend\Session\Repository\Session(\BO\Zmsbackend\Query\Base::DELETE);
             $deleteQuery
-                ->addConditionSessionName($entity->name)
-                ->addConditionSessionId($entity->id);
+                ->addConditionSessionName($entity['name'])
+                ->addConditionSessionId($entity['id']);
             $this->deleteItem($deleteQuery);
         }
     }

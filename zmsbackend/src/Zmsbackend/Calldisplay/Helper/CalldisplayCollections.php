@@ -64,7 +64,7 @@ class CalldisplayCollections
             ]);
         }
 
-        $calldisplay->clusters = $clusterList;
+        $calldisplay['clusters'] = $clusterList;
     }
 
     /**
@@ -86,7 +86,7 @@ class CalldisplayCollections
                 ? $scopeService->readWithWorkstationCount($scopeId, \App::$now, $resolveReferences)
                 : $scopeService->readEntity($scopeId);
 
-            if ($scope) {
+            if ($scope instanceof Scope) {
                 $scopeList->addEntity($scope);
                 $scopeCache[$scope->getId()] = $scope;
                 continue;
@@ -96,7 +96,7 @@ class CalldisplayCollections
             ]);
         }
 
-        $calldisplay->scopes = $scopeList;
+        $calldisplay['scopes'] = $scopeList;
         return $scopeCache;
     }
 

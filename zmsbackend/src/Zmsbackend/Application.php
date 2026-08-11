@@ -28,8 +28,8 @@ if (!defined('ZMS_BACKEND_TWIG_CACHE')) {
 
 define(
     'ZMSBACKEND_SESSION_DURATION',
-    getenv('ZMSBACKEND_SESSION_DURATION') ? getenv('ZMSBACKEND_SESSION_DURATION') : (
-        getenv('ZMSDB_SESSION_DURATION') ? getenv('ZMSDB_SESSION_DURATION') : 36000
+    (($value = getenv('ZMSBACKEND_SESSION_DURATION')) !== false && $value !== '') ? $value : (
+        (($value = getenv('ZMSDB_SESSION_DURATION')) !== false && $value !== '') ? $value : 36000
     )
 );
 
