@@ -127,11 +127,11 @@ class Availability extends Schema\Entity
      * ATTENTION: Time critical function, keep highly optimized
      *
      * @param \DateTimeInterface $dateTime
-     * @param String $type of "openinghours", "appointment" or false to ignore type
+     * @param string|false $type of "openinghours", "appointment" or false to ignore type
      *
      * @return Bool
      */
-    public function isOpenedOnDate(\DateTimeInterface $dateTime, $type = false)
+    public function isOpenedOnDate(\DateTimeInterface $dateTime, string|false $type = false)
     {
         $dateTime = Helper\DateTime::create($dateTime);
         if (
@@ -175,10 +175,10 @@ class Availability extends Schema\Entity
      * Compared to hasDate() the time of the day is checked, but not booking time
      *
      * @param \DateTimeInterface $dateTime
-     * @param String $type of "openinghours", "appointment" or false to ignore type
+     * @param string|false $type of "openinghours", "appointment" or false to ignore type
      *
      */
-    public function isOpened(\DateTimeInterface $dateTime, $type = false)
+    public function isOpened(\DateTimeInterface $dateTime, string|false $type = false)
     {
         return (!$this->isOpenedOnDate($dateTime, $type) || !$this->hasTime($dateTime)) ? false : true;
     }
