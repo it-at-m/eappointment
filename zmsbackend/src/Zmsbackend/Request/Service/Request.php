@@ -368,13 +368,13 @@ class Request extends \BO\Zmsbackend\Base
         $additionalDepartmentRequestList = new Collection();
         $scopeRequestKeys = [];
         foreach ($scopeRequestList as $request) {
-            if (!$request instanceof \BO\Zmsentities\Request) {
+            if (!$request instanceof Entity) {
                 continue;
             }
             $scopeRequestKeys[$this->getRequestLookupKey($request)] = true;
         }
         foreach ($departmentRequestList as $request) {
-            if (!$request instanceof \BO\Zmsentities\Request) {
+            if (!$request instanceof Entity) {
                 continue;
             }
             $requestKey = $this->getRequestLookupKey($request);
