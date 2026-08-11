@@ -4346,6 +4346,45 @@
 
 /**
  *  @swagger
+ *  "/scope/{id}/request/department/":
+ *      get:
+ *          summary: Get scope requests plus additional department-wide requests for statistic collection
+ *          x-since: 2.29
+ *          tags:
+ *              - request
+ *              - scope
+ *              - department
+ *          parameters:
+ *              -   name: id
+ *                  description: number of scope
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success; data.scope = calendar requests, data.additional = other department requests"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/requeststatistic.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/request/department/',
+    '\BO\Zmsbackend\Request\Api\RequestListByScopeAndDepartment'
+)
+    ->setName("RequestListByScopeAndDepartment");
+
+/**
+ *  @swagger
  *  "/scope/{id}/availability/{date}/closure/toggle/":
  *      get:
  *          summary: Toogle availability closure for specific day
