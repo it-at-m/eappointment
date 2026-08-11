@@ -29,6 +29,17 @@ class SessionTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertFalse(isset($entity->id), "Failed to delete Session from Database.");
     }
 
+    public function testDeleteByTimeAllSessionNames()
+    {
+        $query = new Query();
+        $entity = $this->getTestEntity();
+        $entity = $query->updateEntity($entity);
+        sleep(3);
+        $query->deleteByTimeInterval(null, 2);
+        $entity = $query->readEntity($entity->name, $entity->id);
+        $this->assertFalse(isset($entity->id), "Failed to delete Session without sessionname filter.");
+    }
+
     protected function getTestEntity()
     {
         $entity = Entity::createExample();

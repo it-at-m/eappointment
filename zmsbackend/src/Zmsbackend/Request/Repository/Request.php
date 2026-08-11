@@ -15,6 +15,14 @@ class Request extends \BO\Zmsbackend\Query\Base
             ba.`BuergerID` = :process_id
     ';
 
+    public const string QUERY_BY_ARCHIVEID = 'SELECT
+            ba.`AnliegenID` AS id
+        FROM `buergeranliegen` ba
+        WHERE
+            ba.`BuergerarchivID` = :archive_id
+        ORDER BY ba.`BuergeranliegenID` ASC
+    ';
+
     public function getEntityMapping()
     {
         $mapping = [

@@ -9,10 +9,10 @@ import TimeSlotGrid from "@/components/Appointment/AppointmentSelection/TimeSlot
 describe("TimeSlotGrid", () => {
   const MucButtonStub = {
     name: "MucButton",
-    props: ["variant"],
+    props: ["variant", "id"],
     emits: ["click"],
     template:
-      '<button class="m-button" :data-variant="variant" @click="$emit(\'click\')"><slot/></button>',
+      '<button class="m-button timeslot" :id="id" :data-variant="variant" v-bind="$attrs" @click="$emit(\'click\')"><slot/></button>',
   };
 
   const tMock = (key: string) => {
@@ -63,6 +63,41 @@ describe("TimeSlotGrid", () => {
     const emitted = wrapper.emitted('selectTimeSlot');
     expect(emitted && emitted[0]).toBeTruthy();
     expect(emitted![0][0]).toEqual({ officeId: 1, time: baseProps.times[1] });
+  });
+
+  it("puts real provider id on each timeslot when officeIdForTime is set", () => {
+    const officeIdForTime = (time: number) =>
+      time === baseProps.times[1] ? 10503 : 10489;
+    const wrapper = mount(TimeSlotGrid, {
+      global: { stubs: { MucButton: MucButtonStub } },
+      props: {
+        ...baseProps,
+        officeId: 10489,
+        officeIdForTime,
+        officeNameById: (id: number | string) =>
+          String(id) === "10489" || String(id) === "10503" ? "Ort" : null,
+      },
+    });
+    const items = wrapper.findAll(".grid-item");
+    expect(items[0].attributes("data-provider-id")).toBe("10489");
+    expect(items[1].attributes("data-provider-id")).toBe("10503");
+    expect(items[2].attributes("data-provider-id")).toBe("10489");
+    expect(wrapper.find(`#provider-10503-timeslot-${baseProps.times[1]}`).exists()).toBe(
+      true
+    );
+  });
+
+  it("emits real officeId from officeIdForTime on click", async () => {
+    const officeIdForTime = () => 10503;
+    const wrapper = mount(TimeSlotGrid, {
+      global: { stubs: { MucButton: MucButtonStub } },
+      props: { ...baseProps, officeId: 10489, officeIdForTime },
+    });
+    await wrapper.findAll(".m-button")[0].trigger("click");
+    expect(wrapper.emitted("selectTimeSlot")![0][0]).toEqual({
+      officeId: 10503,
+      time: baseProps.times[0],
+    });
   });
 
   it("applies primary variant when isSlotSelected is true, otherwise secondary", () => {
