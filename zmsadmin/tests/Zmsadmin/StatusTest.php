@@ -33,7 +33,7 @@ class StatusTest extends Base
     {
         $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingLogin');
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\Zmsaoi\Exception\Workstation\WorkstationNotFound';
+        $exception->template = 'BO\Zmsentities\Exception\UserAccountMissingLogin';
         $this->setApiCalls(
             [
                 [

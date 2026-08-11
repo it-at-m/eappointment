@@ -8,7 +8,10 @@
 namespace BO\Zmsbackend\Status\Api;
 
 use BO\Slim\Render;
+use BO\Zmsbackend\Status\Exception\StatusAuthenticationFailed;
 use BO\Zmsbackend\Status\Service\Status;
+use BO\Zmsentities\Exception\UserAccountMissingLogin;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 
 class StatusGet extends \BO\Zmsbackend\Api\BaseController
 {
@@ -45,17 +48,21 @@ class StatusGet extends \BO\Zmsbackend\Api\BaseController
 
     /**
      * Allow access with a logged-in workstation (admin UI) or X-Token matching
-     * ZMS_CONFIG_SECURE_TOKEN (Grafana / status-logger). Same pattern as ConfigGet.
+     * ZMS_CONFIG_SECURE_TOKEN (Grafana / status-logger). Same idea as ConfigGet,
+     * with strict token comparison and a narrow auth-exception catch.
      */
     private function assertStatusAccess(\Psr\Http\Message\RequestInterface $request): void
     {
         try {
             (new \BO\Zmsbackend\Helper\User($request))->checkPermissions();
-        } catch (\Exception $exception) {
-            $token = $request->getHeader('X-Token');
-            if (\App::SECURE_TOKEN != current($token)) {
-                throw new \BO\Zmsbackend\Status\Exception\StatusAuthentificationFailed();
-            }
+            return;
+        } catch (UserAccountMissingLogin | UserAccountMissingRights $exception) {
+            // Fall through to X-Token for scrapers / unauthenticated callers.
+        }
+
+        $token = $request->getHeaderLine('X-Token');
+        if ($token === '' || !hash_equals((string) \App::SECURE_TOKEN, $token)) {
+            throw new StatusAuthenticationFailed();
         }
     }
 }

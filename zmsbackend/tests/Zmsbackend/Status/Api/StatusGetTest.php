@@ -25,10 +25,32 @@ class StatusGetTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testAuthentificationFailed()
+    public function testAuthenticationFailed()
     {
-        $this->expectException('\BO\Zmsbackend\Status\Exception\StatusAuthentificationFailed');
+        $this->expectException('\BO\Zmsbackend\Status\Exception\StatusAuthenticationFailed');
         $this->expectExceptionCode(401);
         $this->render([], [], []);
+    }
+
+    public function testAuthenticationFailedWithEmptyToken()
+    {
+        $this->expectException('\BO\Zmsbackend\Status\Exception\StatusAuthenticationFailed');
+        $this->expectExceptionCode(401);
+        $this->render([], [
+            '__header' => [
+                'X-Token' => '',
+            ],
+        ], []);
+    }
+
+    public function testAuthenticationFailedWithWrongToken()
+    {
+        $this->expectException('\BO\Zmsbackend\Status\Exception\StatusAuthenticationFailed');
+        $this->expectExceptionCode(401);
+        $this->render([], [
+            '__header' => [
+                'X-Token' => 'wrong-token',
+            ],
+        ], []);
     }
 }
