@@ -238,9 +238,9 @@ class Request extends \BO\Zmsbackend\Base
         return $collection;
     }
 
-    public function readRequestIdsByArchiveId($archiveId): array
+    public function readRequestIdsByArchiveId(int|string|null $archiveId): array
     {
-        if (!$archiveId) {
+        if ($archiveId === null || $archiveId === '' || $archiveId === 0 || $archiveId === '0') {
             return [];
         }
 
