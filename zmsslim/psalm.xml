@@ -2,6 +2,7 @@
 <psalm
     errorLevel="7"
     resolveFromConfigFile="true"
+    autoloader="psalm-autoload.php"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
@@ -15,19 +16,4 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
-    <!--
-      Soft deps used by OAuth middleware; not Composer-required to avoid
-      circular zmsclient <-> zmsslim. Sibling sources for package Psalm only.
-    -->
-    <extraFiles>
-        <file name="../zmsclient/src/Zmsclient/Auth.php" />
-        <file name="../zmsclient/src/Zmsclient/Exception.php" />
-        <file name="../zmsclient/src/Zmsclient/Http.php" />
-        <file name="../zmsclient/src/Zmsclient/OAuthService.php" />
-        <file name="../zmsclient/src/Zmsclient/SessionHandler.php" />
-        <file name="../zmsclient/src/Zmsclient/Psr7/Client.php" />
-        <file name="../zmsentities/src/Zmsentities/Useraccount.php" />
-        <file name="../zmsentities/src/Zmsentities/Config.php" />
-        <file name="../zmsentities/src/Zmsentities/Session.php" />
-    </extraFiles>
 </psalm>

@@ -45,6 +45,12 @@
             "BO\\Slim\\Tests\\": "tests/Slim/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "BO\\Zmsclient\\": "../zmsclient/src/Zmsclient/",
+            "BO\\Zmsentities\\": "../zmsentities/src/Zmsentities/"
+        }
+    },
     "provide": {
         "psr/container-implementation": "2.0"
     },
