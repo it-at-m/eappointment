@@ -44,12 +44,8 @@ class WorkstationProcessFinished extends BaseController
         }
 
         $requestStatistic = $this->readRequeststatistic((int) $scopeId);
-        $scopeRequestList = $requestStatistic->scopeRequests instanceof RequestList
-            ? $requestStatistic->scopeRequests
-            : new RequestList();
-        $additionalDepartmentRequestList = $requestStatistic->additionalDepartmentRequests instanceof RequestList
-            ? $requestStatistic->additionalDepartmentRequests
-            : new RequestList();
+        $scopeRequestList = $requestStatistic->getScopeRequests();
+        $additionalDepartmentRequestList = $requestStatistic->getAdditionalDepartmentRequests();
 
         $selectableRequestList = (new RequestList())
             ->addList($scopeRequestList)
@@ -57,7 +53,11 @@ class WorkstationProcessFinished extends BaseController
 
         if (is_array($input) && isset($input['process']) && array_key_exists('id', $input['process'])) {
             $source = $workstation->getScope()->getSource();
-            $process = new ProcessFinishedHelper(clone $workstation->process, $input, $selectableRequestList, $source);
+            $currentProcess = $workstation->process;
+            if (!$currentProcess instanceof Process) {
+                throw new WorkstationMissingAssignedProcess();
+            }
+            $process = new ProcessFinishedHelper(clone $currentProcess, $input, $selectableRequestList, $source);
             return $this->getFinishedResponse($workstation, $process);
         }
 
@@ -94,7 +94,13 @@ class WorkstationProcessFinished extends BaseController
         Workstation $workstation,
         Process $process = null
     ) {
-        $process = ($process) ? $process : clone $workstation->process;
+        if ($process === null) {
+            $current = $workstation->process;
+            if (!$current instanceof Process) {
+                throw new WorkstationMissingAssignedProcess();
+            }
+            $process = clone $current;
+        }
         $process->status = ('pending' != $process->status) ? 'finished' : $process->status;
         \App::$http->readPostResult('/process/status/finished/', new Process($process))->getEntity();
         return Render::redirect(

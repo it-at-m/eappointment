@@ -50,7 +50,7 @@ define('ZMS_DLDB_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '/cache/
 
 class App extends \BO\Zmsbackend\Application
 {
-    public const string APP_PATH = __DIR__;
+    const APP_PATH = __DIR__;
     const IDENTIFIER = 'Zmsbackend-ENV';
     const DEBUG = false;
     const DB_ENABLE_WSREPSYNCWAIT = true;

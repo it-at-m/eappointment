@@ -362,6 +362,7 @@ abstract class Base
     /**
      * Add a select part to the query containing a mapping from the db schema to the entity schema
      *
+     * @param mixed $type
      * @return static
      */
     public function addEntityMapping($type = null): static

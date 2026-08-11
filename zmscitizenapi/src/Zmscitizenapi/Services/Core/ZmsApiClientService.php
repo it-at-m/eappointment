@@ -534,8 +534,8 @@ class ZmsApiClientService
      */
     private static function getSourceNames(): array
     {
-        $raw = \App::$source_name ?? 'dldb';
-        if (!is_string($raw) || $raw === '') {
+        $raw = \App::$source_name;
+        if ($raw === '') {
             $raw = 'dldb';
         }
         $names = preg_split('/[,\;\|\s]+/', $raw, -1, PREG_SPLIT_NO_EMPTY);
