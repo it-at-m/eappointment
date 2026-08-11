@@ -105,17 +105,6 @@ class Search extends BaseController
         ];
     }
 
-    private function hasLogSearchFilters(array $parameters): bool
-    {
-        return trim((string) $parameters['queryString']) !== ''
-            || $parameters['service'] !== null
-            || $parameters['provider'] !== null
-            || $parameters['date'] !== null
-            || $parameters['userAction'] !== 0;
-    }
-
-
-
     private function readProcessSearchResults($workstation, array $parameters, array $scopeIds): array
     {
         if (!$this->shouldRunProcessSearch($workstation, $parameters)) {
@@ -192,13 +181,7 @@ class Search extends BaseController
             return null;
         }
 
-        $isLogSearchRequested = $this->hasLogSearchFilters($parameters);
-
         if (!$parameters['isSearchRequested'] && !$workstation->getUseraccount()->isSuperUser()) {
-            return null;
-        }
-
-        if ($parameters['isSearchRequested'] && !$isLogSearchRequested) {
             return null;
         }
 
