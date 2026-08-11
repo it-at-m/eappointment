@@ -36,7 +36,7 @@ use BO\Zmsentities\Collection\RequestRelationList;
  */
 class MapperService
 {
-    private static function resolveAllowDisabledServicesMix(Provider $provider): ?array
+    private static function resolveAllowDisabledServicesMix(\BO\Zmsentities\Schema\Entity $provider): ?array
     {
         if (!isset($provider->data['allowDisabledServicesMix']) || !is_array($provider->data['allowDisabledServicesMix'])) {
             return null;
@@ -44,7 +44,7 @@ class MapperService
         return array_map('intval', $provider->data['allowDisabledServicesMix']);
     }
 
-    private static function resolveSharedBookingOfficeIds(Provider $provider): ?array
+    private static function resolveSharedBookingOfficeIds(\BO\Zmsentities\Schema\Entity $provider): ?array
     {
         if (!isset($provider->data['sharedBookingOfficeIds']) || !is_array($provider->data['sharedBookingOfficeIds'])) {
             return null;

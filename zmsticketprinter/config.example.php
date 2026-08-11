@@ -10,8 +10,8 @@ define('ZMS_TICKETPRINTER_TWIG_CACHE', ($value === 'false') ? false : ($value ?:
 
 class App extends \BO\Zmsticketprinter\Application
 {
+    public const string APP_PATH = __DIR__;
     const IDENTIFIER = ZMS_IDENTIFIER;
-    const APP_PATH = __DIR__;
     const DEBUG = false;
     const TWIG_CACHE = ZMS_TICKETPRINTER_TWIG_CACHE;
     const HTTP_BASE_URL = ZMS_API_URL;

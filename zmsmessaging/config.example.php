@@ -24,7 +24,7 @@ define('ZMS_MESSAGING_SMTP_DEBUG', getenv('ZMS_MESSAGING_SMTP_DEBUG') !== false)
 
 class App extends \BO\Zmsmessaging\Application
 {
-    const APP_PATH = __DIR__;
+    public const string APP_PATH = __DIR__;
 
     // Uncomment the following lines on debugging
     const DEBUG = false;

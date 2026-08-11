@@ -17,7 +17,7 @@ class Application
     /**
      * Root directory for the project
      */
-    const APP_PATH = '.';
+    public const string APP_PATH = '.';
 /**
      * Name of the application
      */

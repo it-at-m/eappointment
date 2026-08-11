@@ -50,7 +50,7 @@ if ($value === false || $value === '' || $value === 'false') {
 
 class App extends \BO\Zmsbackend\Application
 {
-    const APP_PATH = __DIR__;
+    public const string APP_PATH = __DIR__;
     const IDENTIFIER = ZMS_IDENTIFIER;
     const DEBUG = false;
     const DB_ENABLE_WSREPSYNCWAIT = true;
