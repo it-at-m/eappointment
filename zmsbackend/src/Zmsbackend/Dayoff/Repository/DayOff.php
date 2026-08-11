@@ -67,12 +67,6 @@ class DayOff extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\M
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId)
-    {
-        $this->query->where('dayOff.BehoerdenID', '=', $departmentId);
-        return $this;
-    }
-
     public function addConditionDayoffDeleteInterval($deleteInSeconds)
     {
         $this->query->where(

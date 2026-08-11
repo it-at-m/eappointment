@@ -14,50 +14,6 @@ class DayOff extends \BO\Zmsbackend\Base
      */
     public static $commonList = null;
 
-    public function readByDepartmentId($departmentId = 0)
-    {
-        $dayOffList = $this->readCommon();
-        $departmentDayoffList = $this->readOnlyByDepartmentId($departmentId);
-        if (count($departmentDayoffList)) {
-            foreach ($departmentDayoffList as $entity) {
-                if ($entity instanceof Entity) {
-                    $dayOffList->addEntity($entity);
-                }
-            }
-        }
-        return $dayOffList;
-    }
-
-    public function readOnlyByDepartmentId($departmentId = 0, $disableCache = false)
-    {
-        $cacheKey = "dayOffsReadOnlyByDepartmentId-$departmentId";
-
-        if (!$disableCache && App::$cache) {
-            $data = App::$cache->get($cacheKey);
-            if (!empty($data)) {
-                return $data;
-            }
-        }
-
-        $dayOffList = new Collection();
-        $query = new \BO\Zmsbackend\Dayoff\Repository\DayOff(\BO\Zmsbackend\Query\Base::SELECT);
-        $query->addEntityMapping()
-            ->addConditionDepartmentId($departmentId);
-        $result = $this->fetchList($query, new Entity());
-        if (count($result)) {
-            foreach ($result as $entity) {
-                if ($entity instanceof Entity) {
-                    $dayOffList->addEntity($entity);
-                }
-            }
-        }
-
-        if (App::$cache) {
-            App::$cache->set($cacheKey, $dayOffList);
-        }
-
-        return $dayOffList;
-    }
 
     public function readCommon($disableCache = false)
     {
