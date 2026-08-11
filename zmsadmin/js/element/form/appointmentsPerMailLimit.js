@@ -9,21 +9,28 @@ export default function appointmentsPerMailLimit(root = document) {
         return
     }
 
+    let lastLimitedValue = input.value !== '' && Number(input.value) >= DEFAULT_MIN
+        ? input.value
+        : String(DEFAULT_MIN)
+
     const sync = () => {
         const unlimited = checkbox.checked
-        input.disabled = unlimited
-        hidden.disabled = !unlimited
 
         if (unlimited) {
-            hidden.value = ''
-            if (input.value === '' || Number(input.value) < DEFAULT_MIN) {
-                input.value = String(DEFAULT_MIN)
+            if (input.value !== '' && Number(input.value) >= DEFAULT_MIN) {
+                lastLimitedValue = input.value
             }
+            input.value = ''
+            input.disabled = true
+            hidden.disabled = false
+            hidden.value = ''
             return
         }
 
+        input.disabled = false
+        hidden.disabled = true
         if (input.value === '' || Number(input.value) < DEFAULT_MIN) {
-            input.value = String(DEFAULT_MIN)
+            input.value = lastLimitedValue
         }
     }
 
