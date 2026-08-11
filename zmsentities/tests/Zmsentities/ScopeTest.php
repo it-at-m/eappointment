@@ -193,7 +193,7 @@ class ScopeTest extends EntityCommonTests
 
     public function testAppointmentsPerMailRejectsInvalidValues()
     {
-        $expectedMessage = 'Die Zahl "1" für die maximale Anzahl an Terminen pro E-Mail-Adresse ist nicht erlaubt. Bitte geben Sie eine größere Zahl ein.';
+        $expectedMessage = 'Bitte geben Sie für die maximale Anzahl an Terminen pro E-Mail-Adresse eine Zahl größer oder gleich zwei ein.';
         foreach ([0, '0', 1, '1', -1, 'abc'] as $value) {
             $entity = $this->getExample();
             $entity->preferences['client']['appointmentsPerMail'] = $value;
