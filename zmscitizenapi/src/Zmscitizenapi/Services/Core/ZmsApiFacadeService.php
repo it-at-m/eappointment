@@ -7,7 +7,6 @@ namespace BO\Zmscitizenapi\Services\Core;
 use BO\Slim\LoggerService;
 use BO\Zmscitizenapi\Exceptions\UnauthorizedException;
 use BO\Zmscitizenapi\Models\AuthenticatedUser;
-use BO\Zmscitizenapi\Utils\DateTimeFormatHelper;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Models\AvailableCalendar;
 use BO\Zmscitizenapi\Models\Office;
