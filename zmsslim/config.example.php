@@ -9,18 +9,18 @@
 class App extends \BO\Slim\Application
 {
     public const IDENTIFIER = 'zmsslim';
-    public const string APP_PATH = '.';
+    public const APP_PATH = '.';
     public const DEBUG = false;
     public const MODULE_NAME = 'zmsslim';
 
     // Provided by consuming modules; declared here for Psalm analysis of zmsslim.
-    public const DB_HOST = '';
-    public const DB_NAME = '';
-    public const DB_USER = '';
-    public const DB_PASSWORD = '';
-    public const DB_PORT = '';
-    public const CONFIG_SECURE_TOKEN = '';
-    public const httpBasicAuth = '';
+    public const string DB_HOST = '';
+    public const string DB_NAME = '';
+    public const string DB_USER = '';
+    public const string DB_PASSWORD = '';
+    public const string DB_PORT = '';
+    public const string CONFIG_SECURE_TOKEN = '';
+    public const string httpBasicAuth = '';
 
     /** @var mixed */
     public static $http = null;

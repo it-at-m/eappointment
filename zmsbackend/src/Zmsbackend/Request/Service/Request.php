@@ -314,8 +314,10 @@ class Request extends \BO\Zmsbackend\Base
         ];
     }
 
-    protected function readDepartmentProviders($departmentScopes, int $departmentId): array
-    {
+    protected function readDepartmentProviders(
+        \BO\Zmsentities\Collection\ScopeList $departmentScopes,
+        int $departmentId
+    ): array {
         $providers = [];
         foreach ($departmentScopes as $departmentScope) {
             try {
@@ -366,9 +368,15 @@ class Request extends \BO\Zmsbackend\Base
         $additionalDepartmentRequestList = new Collection();
         $scopeRequestKeys = [];
         foreach ($scopeRequestList as $request) {
+            if (!$request instanceof \BO\Zmsentities\Request) {
+                continue;
+            }
             $scopeRequestKeys[$this->getRequestLookupKey($request)] = true;
         }
         foreach ($departmentRequestList as $request) {
+            if (!$request instanceof \BO\Zmsentities\Request) {
+                continue;
+            }
             $requestKey = $this->getRequestLookupKey($request);
             if (!isset($scopeRequestKeys[$requestKey])) {
                 $additionalDepartmentRequestList->addEntity(clone $request);
