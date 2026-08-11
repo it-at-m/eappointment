@@ -85,6 +85,9 @@ class Slot extends \BO\Zmsbackend\Base
     ): void {
         $times = [];
         foreach ($slotList as $slot) {
+            if (!$slot instanceof Entity) {
+                continue;
+            }
             $times[] = $slot->getTimeString();
         }
         $times = array_values(array_unique($times));

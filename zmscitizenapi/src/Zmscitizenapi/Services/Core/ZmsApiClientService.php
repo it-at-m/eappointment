@@ -535,7 +535,13 @@ class ZmsApiClientService
     private static function getSourceNames(): array
     {
         $raw = \App::$source_name ?? 'dldb';
-        $names = preg_split('/[,\;\|\s]+/', (string) $raw, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        if (!is_string($raw) || $raw === '') {
+            $raw = 'dldb';
+        }
+        $names = preg_split('/[,\;\|\s]+/', $raw, -1, PREG_SPLIT_NO_EMPTY);
+        if ($names === false) {
+            $names = [];
+        }
 
         $out = [];
         foreach ($names as $n) {
@@ -545,7 +551,7 @@ class ZmsApiClientService
             }
         }
 
-        return $out ?: ['dldb'];
+        return $out !== [] ? $out : ['dldb'];
     }
 
     public static function getProcessesByExternalUserId(string $externalUserId, ?int $filterId = null, ?string $status = null): ProcessList

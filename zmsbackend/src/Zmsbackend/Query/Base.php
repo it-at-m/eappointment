@@ -86,9 +86,16 @@ abstract class Base
      * @param Mixed $queryType one of the constants for a query type or of instance \BO\Zmsbackend\Query\Builder\Query
      * @param String $prefix If used in a subquery, prefix results with this string
      * @param string|false $name A named query has a cached SQL as soon as called first
+     * @param int|null $resolveLevel
+     * @param array $withEntities
      */
-    public function __construct($queryType, $prefix = '', string|false $name = false, $resolveLevel = null, $withEntities = [])
-    {
+    public function __construct(
+        $queryType,
+        $prefix = '',
+        string|false $name = false,
+        mixed $resolveLevel = null,
+        array $withEntities = []
+    ) {
         $this->prefix = $prefix;
         $this->name = $name;
         $this->withEntities = $withEntities;

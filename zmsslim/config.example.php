@@ -9,7 +9,7 @@
 class App extends \BO\Slim\Application
 {
     public const IDENTIFIER = 'zmsslim';
-    public const APP_PATH = '.';
+    public const string APP_PATH = '.';
     public const DEBUG = false;
     public const MODULE_NAME = 'zmsslim';
 

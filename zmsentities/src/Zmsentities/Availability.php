@@ -178,7 +178,7 @@ class Availability extends Schema\Entity
      * @param string|false $type of "openinghours", "appointment" or false to ignore type
      *
      */
-    public function isOpened(\DateTimeInterface $dateTime, string|false $type = false)
+    public function isOpened(\DateTimeInterface $dateTime, string|false $type = false): bool
     {
         return (!$this->isOpenedOnDate($dateTime, $type) || !$this->hasTime($dateTime)) ? false : true;
     }
