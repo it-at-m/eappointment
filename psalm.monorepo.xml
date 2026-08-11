@@ -724,6 +724,16 @@
         </InvalidPropertyFetch>
         <DuplicateClass>
             <errorLevel type="suppress">
+                <!-- Each module ships a runtime class App in config.example.php; monorepo scan sees many. -->
+                <file name="zmsadmin/config.example.php" />
+                <file name="zmsbackend/config.example.php" />
+                <file name="zmscalldisplay/config.example.php" />
+                <file name="zmscitizenapi/config.example.php" />
+                <file name="zmsdldb/config.example.php" />
+                <file name="zmsmessaging/config.example.php" />
+                <file name="zmsslim/config.example.php" />
+                <file name="zmsstatistic/config.example.php" />
+                <file name="zmsticketprinter/config.example.php" />
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsbackend/tests" />
