@@ -2579,7 +2579,7 @@
 
 /**
  *  @swagger
- *  "/owner/":
+ *  "/owner/add/":
  *      post:
  *          summary: Add a new owner
  *          tags:
@@ -2605,12 +2605,12 @@
  *                          meta:
  *                              $ref: "schema/metaresult.json"
  *                          data:
- *                              $ref: "schema/department.json"
+ *                              $ref: "schema/owner.json"
  *              404:
  *                  description: "Missing required properties in the owner"
  */
 \App::$slim->post(
-    '/owner/',
+    '/owner/add/',
     \BO\Zmsbackend\Owner\Api\OwnerAdd::class
 )
     ->setName("OwnerAdd");
