@@ -8,6 +8,9 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Exception\UserAccountMissingLogin;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
+
 /**
  * Handle requests concerning services
  */
@@ -26,8 +29,13 @@ class Status extends BaseController
         try {
             $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         } catch (\Exception $workstationexception) {
-            $workstation = null;
+            throw new UserAccountMissingLogin();
         }
+
+        if (!$workstation->getUseraccount()->hasPermissions(['superuser'])) {
+            throw new UserAccountMissingRights();
+        }
+
         $result = \App::$http->readGetResult('/status/');
         return \BO\Slim\Render::withHtml(
             $response,

@@ -22,6 +22,8 @@ class StatusGet extends \BO\Zmsbackend\Api\BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $this->assertStatusAccess($request);
+
         $validator = $request->getAttribute('validator');
         $includeProcessStats = $validator->getParameter('includeProcessStats')->isNumber()->setDefault(1)->getValue();
         $status = (new \BO\Zmsbackend\Status\Service\Status())->readEntity(\App::$now, $includeProcessStats);
@@ -39,5 +41,21 @@ class StatusGet extends \BO\Zmsbackend\Api\BaseController
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
+    }
+
+    /**
+     * Allow access with a logged-in workstation (admin UI) or X-Token matching
+     * ZMS_CONFIG_SECURE_TOKEN (Grafana / status-logger). Same pattern as ConfigGet.
+     */
+    private function assertStatusAccess(\Psr\Http\Message\RequestInterface $request): void
+    {
+        try {
+            (new \BO\Zmsbackend\Helper\User($request))->checkPermissions();
+        } catch (\Exception $exception) {
+            $token = $request->getHeader('X-Token');
+            if (\App::SECURE_TOKEN != current($token)) {
+                throw new \BO\Zmsbackend\Status\Exception\StatusAuthentificationFailed();
+            }
+        }
     }
 }

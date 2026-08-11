@@ -14,6 +14,24 @@ GET /terminvereinbarung/api/2/status/
 
 (Host und API-Basispfad je nach Umgebung anpassen.)
 
+### Authentifizierung
+
+Anonymer Zugriff wird abgelehnt (`401`). Aufrufer brauchen **eine** der folgenden Varianten:
+
+| Aufrufer                                             | Auth                                                         |
+| ---------------------------------------------------- | ------------------------------------------------------------ |
+| Admin-UI (Seite „Status“)                            | Eingeloggte Workstation (Seite selbst erfordert `superuser`) |
+| Grafana / Prometheus json_exporter / `status-logger` | Header `X-Token: <ZMS_CONFIG_SECURE_TOKEN>`                  |
+
+Gleicher Token wie bei der Config-API (`ZMS_CONFIG_SECURE_TOKEN` / `App::SECURE_TOKEN`). Beispiel:
+
+```http
+GET /terminvereinbarung/api/2/status/
+X-Token: <Wert von ZMS_CONFIG_SECURE_TOKEN>
+```
+
+`GET /healthcheck/` bleibt ohne Auth für einfache Liveness-Probes.
+
 Die Antwort folgt [`status.json`](https://github.com/it-at-m/eappointment/blob/main/zmsentities/schema/status.json). ReDoc: [zmsbackend API-Referenz](./api-reference.md).
 
 ### Query-Parameter: `includeProcessStats`
@@ -56,7 +74,7 @@ Die OIDC-Zähler unterstützen die Beobachtung von Bürgerlogin und „Meine Ter
 
 Typisches Setup:
 
-1. **`GET /status/`** in Intervallen abfragen (Prometheus `json_exporter`, Skript oder Agent mit JSON-Parsing).
+1. **`GET /status/`** in Intervallen abfragen (Prometheus `json_exporter`, Skript oder Agent mit JSON-Parsing) und Header `X-Token` mit `ZMS_CONFIG_SECURE_TOKEN` mitschicken.
 2. Numerische Felder als Zeitreihen exportieren (z. B. `zms_processes_confirmed`, `zms_mail_queue_oldest_seconds`).
 3. In [Grafana](https://opensource.muenchen.de/software/grafana.html) visualisieren und Schwellwerte alarmieren (Mail-Backlog, `nodeConnections`, `clusterStatus`, …).
 
