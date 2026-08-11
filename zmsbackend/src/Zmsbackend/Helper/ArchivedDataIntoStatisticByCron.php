@@ -29,7 +29,7 @@ class ArchivedDataIntoStatisticByCron
         $this->query = new \BO\Zmsbackend\Process\Service\ProcessStatusArchived();
     }
 
-    public function startProcessing(\DateTimeImmutable $dateTime, $commit = false)
+    public function startProcessing(\DateTimeImmutable $dateTime, bool $commit = false)
     {
         $scopeList = (new \BO\Zmsbackend\Scope\Service\Scope())->readList(0);
         $dateTime = $dateTime->modify($this->timespan);
@@ -85,7 +85,7 @@ class ArchivedDataIntoStatisticByCron
         $organisation,
         $owner,
         $dateTime,
-        $commit = false
+        bool $commit = false
     ) {
         $requestIds = (new \BO\Zmsbackend\Request\Service\Request())
             ->readRequestIdsByArchiveId($process->archiveId);
