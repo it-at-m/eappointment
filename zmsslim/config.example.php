@@ -8,10 +8,10 @@
  */
 class App extends \BO\Slim\Application
 {
-    public const IDENTIFIER = 'zmsslim';
-    public const APP_PATH = '.';
-    public const DEBUG = false;
-    public const MODULE_NAME = 'zmsslim';
+    public const string IDENTIFIER = 'zmsslim';
+    public const string APP_PATH = '.';
+    public const bool DEBUG = false;
+    public const string MODULE_NAME = 'zmsslim';
 
     // Provided by consuming modules; declared here for Psalm analysis of zmsslim.
     public const string DB_HOST = '';

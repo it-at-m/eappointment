@@ -7,6 +7,12 @@ use BO\Zmsentities\Helper\Property;
 /**
  * @SuppressWarnings(Complexity)
  *
+ * @property int|string $id
+ * @property Useraccount $useraccount
+ * @property Process $process
+ * @property string $name
+ * @property Scope $scope
+ * @property array $queue
  */
 class Workstation extends Schema\Entity
 {
