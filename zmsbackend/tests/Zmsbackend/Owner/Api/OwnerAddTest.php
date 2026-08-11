@@ -12,6 +12,7 @@ class OwnerAddTest extends \BO\Zmsbackend\Tests\Api\Base
         $response = $this->render([], [
             '__body' => '{
                   "name": "Test Owner",
+                  "url": "",
                   "contact": {
                       "street": "Test Street"
                   }
