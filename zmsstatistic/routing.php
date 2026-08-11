@@ -113,9 +113,6 @@ use \Psr\Http\Message\ResponseInterface;
  * maintenance
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/testpage/', \BO\Zmsstatistic\Testpage::class)
-    ->setName("testpage");
-
 \App::$slim->get('/changelog/', \BO\Zmsstatistic\Changelog::class)
     ->setName("changelog");
 
