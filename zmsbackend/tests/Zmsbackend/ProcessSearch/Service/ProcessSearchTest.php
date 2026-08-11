@@ -179,7 +179,7 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertNotContains($processIds[1], $resultIds);
     }
 
-    public function testGeneralSearchFindsCustomTextfiled()
+    public function testGeneralSearchFindsCustomTextfield()
     {
         $query = new Query();
         $process = $query->readSearch(['query' => '10029']) ->getFirst();
@@ -378,13 +378,13 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Service\Base
             $resultIds[] = $result->id;
         }
 
-        $namePostion = array_search($nameMatchId, $resultIds, true);
-        $customPostion = array_search($customMatchId, $resultIds, true);
+        $namePosition = array_search($nameMatchId, $resultIds, true);
+        $customPosition = array_search($customMatchId, $resultIds, true);
 
-        $this->assertNotFalse($namePostion);
-        $this->assertNotFalse($customPostion);
+        $this->assertNotFalse($namePosition);
+        $this->assertNotFalse($customPosition);
 
-        $this->assertLessThan($customPostion, $namePostion);
+        $this->assertLessThan($customPosition, $namePosition);
         
     }
     
