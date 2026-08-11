@@ -57,8 +57,8 @@ class Slot extends \BO\Zmsbackend\Base
         $getLock = false
     ) {
         $data = array();
-        $data['scopeID'] = $availability->scope->id;
-        $data['availabilityID'] = $availability->id;
+        $data['scopeID'] = $availability['scope']['id'];
+        $data['availabilityID'] = $availability['id'];
         $data['year'] = $date->format('Y');
         $data['month'] = $date->format('m');
         $data['day'] = $date->format('d');
@@ -99,8 +99,8 @@ class Slot extends \BO\Zmsbackend\Base
         );
         $params = array_merge(
             [
-                $availability->scope->id,
-                $availability->id,
+                $availability['scope']['id'],
+                $availability['id'],
                 $date->format('Y'),
                 $date->format('m'),
                 $date->format('d'),

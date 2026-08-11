@@ -387,11 +387,11 @@ class ProcessStatusFree extends Process
     public function writeEntityReserved(
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now,
-        $slotType = "public",
-        $slotsRequired = 0,
-        $resolveReferences = 0,
-        $userAccount = null
-    ) {
+        string $slotType = "public",
+        int $slotsRequired = 0,
+        int $resolveReferences = 0,
+        ?\BO\Zmsentities\Useraccount $userAccount = null
+    ): ?\BO\Zmsentities\Process {
         $maxAttempts = 3;
         $attempt = 0;
         while (true) {
@@ -418,11 +418,11 @@ class ProcessStatusFree extends Process
     protected function writeEntityReservedAttempt(
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now,
-        $slotType = "public",
-        $slotsRequired = 0,
-        $resolveReferences = 0,
-        $userAccount = null
-    ) {
+        string $slotType = "public",
+        int $slotsRequired = 0,
+        int $resolveReferences = 0,
+        ?\BO\Zmsentities\Useraccount $userAccount = null
+    ): ?\BO\Zmsentities\Process {
         $process = clone $process;
         $process->status = 'reserved';
         $appointment = $process->getAppointments()->getFirst();

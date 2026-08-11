@@ -25,11 +25,12 @@ class Calldisplay extends \BO\Zmsbackend\Base
             foreach ($calldisplay->scopes as $entity) {
                 $query = new \BO\Zmsbackend\Scope\Service\Scope();
                 $scope = $query->readEntity($entity['id'], $resolveReferences - 1);
-                /* test in zmsbackend CalldisplayGet
                 if (! $scope) {
-                    throw new \BO\Zmsbackend\Calldisplay\Exception\ScopeNotFound();
+                    \App::$log->warning('Calldisplay: skip missing scope id while resolving', [
+                        'scopeId' => $entity['id'],
+                    ]);
+                    continue;
                 }
-                */
                 $scopeList->addEntity($scope);
             }
             $calldisplay->scopes = $scopeList;
@@ -39,11 +40,12 @@ class Calldisplay extends \BO\Zmsbackend\Base
             foreach ($calldisplay->clusters as $entity) {
                 $query = new \BO\Zmsbackend\Cluster\Service\Cluster();
                 $cluster = $query->readEntity($entity['id'], $resolveReferences);
-                /* test in zmsbackend CalldisplayGet
                 if (! $cluster) {
-                    throw new \BO\Zmsbackend\Calldisplay\Exception\ClusterNotFound();
+                    \App::$log->warning('Calldisplay: skip missing cluster id while resolving', [
+                        'clusterId' => $entity['id'],
+                    ]);
+                    continue;
                 }
-                */
                 $clusterList->addEntity($cluster);
             }
             $calldisplay->clusters = $clusterList;
