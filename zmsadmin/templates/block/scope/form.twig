@@ -20,7 +20,7 @@
 
 {% set permissions = workstation.useraccount.permissions %}
 
-{% from 'element/helper/form.twig' import formgroup, formbutton, inputfield, custombutton, checkboxfield, inputsubmit %}
+{% from 'element/helper/form.twig' import formgroup, formbutton, inputfield, custombutton, checkboxfield, inputsubmit, errormessage %}
 
 <section class="block scope-form">
 
@@ -236,24 +236,47 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
-                        {
-                            "label": "Maximale Anzahl an Terminen pro E-Mail-Adresse:",
-                            "description": "Leer lassen für unbegrenzt. Sonst eine Zahl größer oder gleich \"zwei\" eingeben, damit ein Verschieben des Termins für Bürger*innen möglich bleibt",
-                            "errors": (exception and exception.data['preferences/client/appointmentsPerMail'].messages is defined) ? exception.data['preferences/client/appointmentsPerMail'].messages : []
-                        },
-                        [{
-                            "type":"input",
-                            "parameter": {
-                                "name": "preferences[client][appointmentsPerMail]",
-                                "value": scope.preferences.client.appointmentsPerMail,
-                                "maxlength": 2,
-                                "max": 99,
-                                "integer": true,
-                                "integerNullable": true
-                            }
-                        }]
-                    ) }}
+                    {% set appointmentsPerMailValue = scope.preferences.client.appointmentsPerMail|default('') %}
+                    {% set appointmentsPerMailUnlimited = appointmentsPerMailValue is empty %}
+                    <p class="form-hint">
+                        Bei aktiver Begrenzung muss der Wert mindestens zwei betragen, damit Bürger*innen Termine verschieben können.
+                    </p>
+                    <fieldset class="form-group{% if exception and exception.data['preferences/client/appointmentsPerMail'].messages is defined %} has-error is-invalid{% endif %}">
+                        <legend class="label">Maximale Anzahl an Terminen pro E-Mail-Adresse:</legend>
+                        <div class="controls">
+                            <div class="formelements">
+                                <div class="form-check">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="appointmentsPerMailUnlimited"
+                                        {% if appointmentsPerMailUnlimited %}checked="checked"{% endif %}
+                                    >
+                                    <label class="form-check-label" for="appointmentsPerMailUnlimited">Unbegrenzt</label>
+                                </div>
+                                <input
+                                    type="hidden"
+                                    id="appointmentsPerMailHidden"
+                                    name="preferences[client][appointmentsPerMail]"
+                                    value=""
+                                    {% if not appointmentsPerMailUnlimited %}disabled="disabled"{% endif %}
+                                >
+                                {{ inputfield({
+                                    "id": "appointmentsPerMailInput",
+                                    "name": "preferences[client][appointmentsPerMail]",
+                                    "value": appointmentsPerMailUnlimited ? 2 : appointmentsPerMailValue,
+                                    "maxlength": 2,
+                                    "min": 2,
+                                    "max": 99,
+                                    "integer": true,
+                                    "disabled": appointmentsPerMailUnlimited
+                                }, "appointmentsPerMailInput", {}) }}
+                            </div>
+                            {% if exception and exception.data['preferences/client/appointmentsPerMail'].messages is defined %}
+                                {{ errormessage(exception.data['preferences/client/appointmentsPerMail'].messages, 'appointmentsPerMailInput') }}
+                            {% endif %}
+                        </div>
+                    </fieldset>
 
 					{{ formgroup(
                         {
