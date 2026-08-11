@@ -113,6 +113,8 @@ abstract class Base
             $this->addTableAlias();
         } elseif ($queryType instanceof self) {
             $this->query = $queryType->query;
+            // Share join-alias state with the parent query (intentional by-ref).
+            /** @psalm-suppress UnsupportedPropertyReferenceUsage */
             $this->joinedAliasList =& $queryType->joinedAliasList;
             $this->resolveLevel = $queryType->resolveLevel - 1;
         } elseif ($queryType instanceof \BO\Zmsbackend\Query\Builder\Query) {
