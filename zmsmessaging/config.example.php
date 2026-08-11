@@ -1,11 +1,6 @@
 <?php
 // @codingStandardsIgnoreFile
 
-if (!defined('APP_PATH')) {
-    define('APP_PATH', __DIR__);
-}
-
-
 define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'https://localhost/terminvereinbarung/api/2');
 
 define('ZMS_API_PASSWORD_MESSAGING', getenv('ZMS_API_PASSWORD_MESSAGING')
@@ -29,7 +24,7 @@ define('ZMS_MESSAGING_SMTP_DEBUG', getenv('ZMS_MESSAGING_SMTP_DEBUG') !== false)
 
 class App extends \BO\Zmsmessaging\Application
 {
-    const APP_PATH = APP_PATH;
+    const APP_PATH = __DIR__;
 
     // Uncomment the following lines on debugging
     const DEBUG = false;

@@ -1,11 +1,6 @@
 <?php
 // @codingStandardsIgnoreFile
 
-if (!defined('APP_PATH')) {
-    define('APP_PATH', __DIR__);
-}
-
-
 // MYSQL_USER with access to DB
 if (!defined('MYSQL_USER')) {
     define('MYSQL_USER', getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root');
@@ -55,7 +50,7 @@ define('ZMS_DLDB_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '/cache/
 
 class App extends \BO\Zmsbackend\Application
 {
-    const APP_PATH = APP_PATH;
+    const APP_PATH = __DIR__;
     const IDENTIFIER = 'Zmsbackend-ENV';
     const DEBUG = false;
     const DB_ENABLE_WSREPSYNCWAIT = true;
