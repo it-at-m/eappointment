@@ -14,6 +14,15 @@ class DayOff extends \BO\Zmsbackend\Base
      */
     public static $commonList = null;
 
+    public function readByDepartmentId($departmentId = 0)
+    {
+        return $$this->readCommon();
+    }
+
+    public function readOnlyByDepartmentId($departmentId = 0, $disableCache = false)
+    {
+       return new Collection();
+    }
 
     public function readCommon($disableCache = false)
     {
