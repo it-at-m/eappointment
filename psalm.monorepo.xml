@@ -95,6 +95,7 @@
         <directory name="zmsslim/src" />
         <directory name="zmsslim/bin" />
         <directory name="zmsslim/tests" />
+        <file name="zmsslim/config.example.php" />
         <file name="zmsslim/tests/bootstrap.php" />
         <directory name="zmsstatistic/src" />
         <directory name="zmsstatistic/bin" />
