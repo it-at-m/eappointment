@@ -1,6 +1,11 @@
 <?php
 // @codingStandardsIgnoreFile
 
+if (!defined('APP_PATH')) {
+    define('APP_PATH', __DIR__);
+}
+
+
 define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'https://localhost/terminvereinbarung/api/2');
 
 define('ZMS_API_PASSWORD_MESSAGING', getenv('ZMS_API_PASSWORD_MESSAGING')

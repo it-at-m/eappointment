@@ -1,6 +1,11 @@
 <?php
 // @codingStandardsIgnoreFile
 
+if (!defined('APP_PATH')) {
+    define('APP_PATH', __DIR__);
+}
+
+
 // MYSQL_USER with access to DB
 if (!defined('MYSQL_USER')) {
     define('MYSQL_USER', getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root');
