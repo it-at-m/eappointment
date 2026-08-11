@@ -80,6 +80,18 @@ class App extends \BO\Zmsbackend\Application
      */
     const TWIG_CACHE = ZMS_DLDB_TWIG_CACHE;
     const MODULE_NAME = 'zmsdldb';
+
+    /** Fallback when settings key d115.openingTime is unset */
+    const D115_DEFAULT_OPENINGTIME = '';
+
+    /** Fallback when settings key d115.messageHtml is unset */
+    const D115_DEFAULT_TEXT = '';
+
+    /** Mapbox/OSM access token for frontend maps */
+    const OSM_ACCESS_TOKEN = '';
+
+    /** Leaflet gestureHandling option value */
+    const OSM_GESTURE_HANDLING = 'true';
 }
 
 // Uncomment the following line for testing data with vendor/bin/importTestData
