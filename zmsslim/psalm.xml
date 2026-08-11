@@ -17,11 +17,17 @@
     </projectFiles>
     <!--
       Soft deps used by OAuth middleware; not Composer-required to avoid
-      circular zmsclient <-> zmsslim. Stubs only for package Psalm.
+      circular zmsclient <-> zmsslim. Sibling sources for package Psalm only.
     -->
-    <stubs>
-        <file name="stubs/zmsclient.php" />
-        <file name="stubs/zmsclient-psr7.php" />
-        <file name="stubs/zmsentities.php" />
-    </stubs>
+    <extraFiles>
+        <file name="../zmsclient/src/Zmsclient/Auth.php" />
+        <file name="../zmsclient/src/Zmsclient/Exception.php" />
+        <file name="../zmsclient/src/Zmsclient/Http.php" />
+        <file name="../zmsclient/src/Zmsclient/OAuthService.php" />
+        <file name="../zmsclient/src/Zmsclient/SessionHandler.php" />
+        <file name="../zmsclient/src/Zmsclient/Psr7/Client.php" />
+        <file name="../zmsentities/src/Zmsentities/Useraccount.php" />
+        <file name="../zmsentities/src/Zmsentities/Config.php" />
+        <file name="../zmsentities/src/Zmsentities/Session.php" />
+    </extraFiles>
 </psalm>
