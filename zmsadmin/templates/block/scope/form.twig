@@ -244,7 +244,7 @@
                     <fieldset class="form-group{% if exception and exception.data['preferences/client/appointmentsPerMail'].messages is defined %} has-error is-invalid{% endif %}">
                         <legend class="label">Maximale Anzahl an Terminen pro E-Mail-Adresse:</legend>
                         <div class="controls">
-                            <div class="formelements" style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                            <div class="formelements appointments-per-mail-limit" style="display:flex;align-items:center;gap:1rem;flex-wrap:nowrap;">
                                 <input
                                     type="hidden"
                                     id="appointmentsPerMailHidden"
@@ -252,24 +252,26 @@
                                     value=""
                                     {% if not appointmentsPerMailUnlimited %}disabled="disabled"{% endif %}
                                 >
-                                {{ inputfield({
-                                    "id": "appointmentsPerMailInput",
-                                    "name": "preferences[client][appointmentsPerMail]",
-                                    "value": appointmentsPerMailUnlimited ? '' : appointmentsPerMailValue,
-                                    "maxlength": 2,
-                                    "min": 2,
-                                    "max": 99,
-                                    "width": 1,
-                                    "integer": true,
-                                    "disabled": appointmentsPerMailUnlimited ? 1 : 0
-                                }, "appointmentsPerMailInput", {}) }}
-                                <div class="form-check" style="margin: 0;">
+                                <input
+                                    type="number"
+                                    inputmode="numeric"
+                                    step="1"
+                                    min="2"
+                                    max="99"
+                                    maxlength="2"
+                                    id="appointmentsPerMailInput"
+                                    name="preferences[client][appointmentsPerMail]"
+                                    value="{{ appointmentsPerMailUnlimited ? '' : appointmentsPerMailValue|e }}"
+                                    class="form-control form-input"
+                                    style="width:4.5em !important;max-width:4.5em !important;min-width:4.5em;flex:0 0 4.5em;display:inline-block;"
+                                    {% if appointmentsPerMailUnlimited %}disabled="disabled"{% endif %}
+                                >
+                                <div class="form-check" style="margin:0;flex:0 0 auto;white-space:nowrap;">
                                     <input
                                         class="form-check-input"
                                         type="checkbox"
                                         id="appointmentsPerMailUnlimited"
                                         {% if appointmentsPerMailUnlimited %}checked="checked"{% endif %}
-                                        onchange="(function(checkbox){var input=document.getElementById('appointmentsPerMailInput');var hidden=document.getElementById('appointmentsPerMailHidden');if(!input||!hidden){return;}if(checkbox.checked){input.value='';input.disabled=true;hidden.disabled=false;hidden.value='';}else{input.disabled=false;hidden.disabled=true;if(input.value===''||Number(input.value)&lt;2){input.value='2';}}})(this)"
                                     >
                                     <label class="form-check-label" for="appointmentsPerMailUnlimited">Unbegrenzt</label>
                                 </div>
@@ -279,6 +281,56 @@
                             {% endif %}
                         </div>
                     </fieldset>
+                    <script>
+                        (function () {
+                            var checkbox = document.getElementById('appointmentsPerMailUnlimited');
+                            var input = document.getElementById('appointmentsPerMailInput');
+                            var hidden = document.getElementById('appointmentsPerMailHidden');
+                            if (!checkbox || !input || !hidden) {
+                                return;
+                            }
+                            var lastValue = (input.value !== '' && Number(input.value) >= 2) ? input.value : '2';
+                            function clamp() {
+                                if (input.disabled || input.value === '') {
+                                    return;
+                                }
+                                var value = Number(input.value);
+                                var min = Number(input.min || 2);
+                                var max = Number(input.max || 99);
+                                if (value > max) {
+                                    input.value = String(max);
+                                } else if (!(value >= min)) {
+                                    input.value = String(min);
+                                }
+                            }
+                            function sync() {
+                                if (checkbox.checked) {
+                                    if (input.value !== '' && Number(input.value) >= 2) {
+                                        lastValue = input.value;
+                                    }
+                                    input.value = '';
+                                    input.setAttribute('disabled', 'disabled');
+                                    hidden.removeAttribute('disabled');
+                                    hidden.value = '';
+                                    return;
+                                }
+                                input.removeAttribute('disabled');
+                                hidden.setAttribute('disabled', 'disabled');
+                                if (input.value === '' || !(Number(input.value) >= 2)) {
+                                    input.value = lastValue;
+                                }
+                            }
+                            checkbox.addEventListener('change', sync);
+                            input.addEventListener('input', clamp);
+                            input.addEventListener('blur', function () {
+                                if (!input.disabled && (input.value === '' || !(Number(input.value) >= 2))) {
+                                    input.value = lastValue;
+                                }
+                                clamp();
+                            });
+                            sync();
+                        })();
+                    </script>
 
 					{{ formgroup(
                         {
