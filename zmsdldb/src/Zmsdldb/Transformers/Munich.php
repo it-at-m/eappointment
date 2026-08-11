@@ -52,22 +52,15 @@ class Munich
         ]
     ];
 
-    /**
-     * Offices where disabledByServices/DONT_SHOW_LOCATION_BY_SERVICES are interpreted with special
-     * "exclusive vs mixed" semantics. Grouped so JumpIn with one office auto-selects the
-     * equivalent in the same group (e.g. 10489 ⟷ 10502). Mirrors dldb-mapper/app/map.php.
-     */
+    // Offices where disabledByServices/DONT_SHOW_LOCATION_BY_SERVICES are interpreted with special
+    // "exclusive vs mixed" semantics in the frontend (allowDisabledServicesMix=true).
     const LOCATIONS_ALLOW_DISABLED_MIX = [
-        [10489, 10502],
+        [10489, 10491, 10500, 10502] // Bürgerbüro Ruppertstraße (KVR-II/22) // Bürgerbüro Ruppertstraße (KVR-II/221)
     ];
 
-    /**
-     * Offices that share one Ort in the Bürgeransicht but keep pooled calendar
-     * capacity across all peer OfficeIDs (ZMSKVR-1046 Ausbildung). Distinct from
-     * LOCATIONS_ALLOW_DISABLED_MIX (exclusive vs mixed survivor = one OfficeID).
-     */
-    public const array LOCATIONS_SHARED_BOOKING = [
-        [10489, 10503], // Bürgerbüro Ruppertstraße + Ausbildung
+    // Offices that share one Ort but keep pooled calendar capacity (ZMSKVR-1046 Ausbildung).
+    const LOCATIONS_SHARED_BOOKING = [
+        [10489, 10503, 10500, 10491] // 10491 now has some of the same services as 10489 10502 10503 which means if it exposes external appointments it must mix them otherwise shows up double.
     ];
 
     /** Aligned with dldb-mapper/app/map.php DONT_SHOW_SERVICE_ON_START_PAGE */
