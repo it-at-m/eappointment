@@ -109,7 +109,7 @@ class Workstation extends Schema\Entity
         return ($this->name) ? $this->name : "Tresen";
     }
 
-    public function getScope()
+    public function getScope(): Scope
     {
         if (!$this->offsetExists('scope')) {
             $this->scope = new Scope();
@@ -117,6 +117,16 @@ class Workstation extends Schema\Entity
             $this->scope = new Scope($this->scope);
         }
         return $this->scope;
+    }
+
+    public function getProcess(): Process
+    {
+        if (!$this->offsetExists('process')) {
+            $this->process = new Process();
+        } elseif (!$this->process instanceof Process) {
+            $this->process = new Process($this->process);
+        }
+        return $this->process;
     }
 
     public function getScopeList($cluster = null)

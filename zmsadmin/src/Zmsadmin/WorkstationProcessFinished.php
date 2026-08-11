@@ -37,13 +37,15 @@ class WorkstationProcessFinished extends BaseController
         $statisticEnabled = $workstation->getScope()->getPreference('queue', 'statisticsEnabled');
 
         if (! $statisticEnabled) {
-            $workstation->process['status'] = 'finished';
+            $process = $workstation->getProcess();
+            $process['status'] = 'finished';
             return $this->getFinishedResponse($workstation);
         }
 
         $scopeId = $workstation->scope['id'];
-        if (! empty($workstation->process)) {
-            $scopeId = $workstation->process->scope->id;
+        $currentProcess = $workstation->getProcess();
+        if (! empty($currentProcess)) {
+            $scopeId = $currentProcess->scope->id;
         }
 
         $requestStatistic = $this->readRequeststatistic((int) $scopeId);
@@ -57,7 +59,7 @@ class WorkstationProcessFinished extends BaseController
         if (is_array($input) && isset($input['process']) && array_key_exists('id', $input['process'])) {
             $source = $workstation->getScope()->getSource();
             $process = new ProcessFinishedHelper(
-                clone $workstation->process,
+                clone $workstation->getProcess(),
                 $input,
                 $selectableRequestList,
                 $source
@@ -98,7 +100,7 @@ class WorkstationProcessFinished extends BaseController
         Workstation $workstation,
         ?Process $process = null
     ) {
-        $process ??= clone $workstation->process;
+        $process ??= clone $workstation->getProcess();
         $process->status = ('pending' != $process->status) ? 'finished' : $process->status;
         \App::$http->readPostResult('/process/status/finished/', new Process($process))->getEntity();
         return Render::redirect(
@@ -111,7 +113,7 @@ class WorkstationProcessFinished extends BaseController
 
     protected function testProcess(Workstation $workstation)
     {
-        if (! $workstation->process->hasId()) {
+        if (! $workstation->getProcess()->hasId()) {
             throw new WorkstationMissingAssignedProcess();
         }
     }
