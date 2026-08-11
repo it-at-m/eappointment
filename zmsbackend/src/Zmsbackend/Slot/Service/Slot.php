@@ -54,7 +54,7 @@ class Slot extends \BO\Zmsbackend\Base
         \BO\Zmsentities\Slot $slot,
         AvailabilityEntity $availability,
         \DateTimeInterface $date,
-        $getLock = false
+        bool $getLock = false
     ) {
         $data = array();
         $data['scopeID'] = $availability['scope']['id'];
