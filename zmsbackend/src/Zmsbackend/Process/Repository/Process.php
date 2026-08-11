@@ -689,14 +689,23 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $fullQuery = $this->escapeLikePatternForSqlLiteral($queryString);
         $fullQueryExact = $this->escapeSqlStringLiteral($queryString);
 
+        $allTermsAsWordsConditions = [];
         $allTermsInNameConditions = [];
         $anyTermInNameConditions = [];
 
         foreach ($terms as $term) {
             $escapedTerm = $this->escapeLikePatternForSqlLiteral($term['value']);
+            $exactTerm = $this->escapeSqlStringLiteral($term['value']);
+            $allTermsAsWordsConditions[] = "("
+                . "process.Name = '{$exactTerm}'"
+                . " OR process.Name LIKE '{$escapedTerm} %'"
+                . " OR process.Name LIKE '% {$escapedTerm}'"
+                . " OR process.Name LIKE '% {$escapedTerm} %'"
+                . ")";
             $allTermsInNameConditions[] = "process.Name LIKE '%{$escapedTerm}%'";
             $anyTermInNameConditions[] = "process.Name LIKE '%{$escapedTerm}%'";
         }
+        $allTermsAsWords = implode(' AND ', $allTermsAsWordsConditions);
         $allTermsInName = implode(' AND ', $allTermsInNameConditions);
         $anyTermInName = implode(' OR ', $anyTermInNameConditions);
 
@@ -704,9 +713,10 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
             "CASE
                    WHEN process.Name LIKE '{$fullQueryExact}' THEN 0
                    WHEN process.Name LIKE '{$fullQuery} %' THEN 1
-                   WHEN {$allTermsInName} THEN 2
-                   WHEN {$anyTermInName} THEN 3
-                   ELSE 4
+                   WHEN {$allTermsAsWords} THEN 2
+                   WHEN {$allTermsInName} THEN 3
+                   WHEN {$anyTermInName} THEN 4
+                   ELSE 5
                 END"
         ));
 
