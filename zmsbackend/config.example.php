@@ -1,11 +1,6 @@
 <?php
 // @codingStandardsIgnoreFile
 
-if (!defined('APP_PATH')) {
-    define('APP_PATH', __DIR__);
-}
-
-
 if (!defined('MYSQL_USER')) {
     define('MYSQL_USER', getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root');
 }
@@ -55,7 +50,7 @@ if ($value === false || $value === '' || $value === 'false') {
 
 class App extends \BO\Zmsbackend\Application
 {
-    const APP_PATH = APP_PATH;
+    const APP_PATH = __DIR__;
     const IDENTIFIER = ZMS_IDENTIFIER;
     const DEBUG = false;
     const DB_ENABLE_WSREPSYNCWAIT = true;

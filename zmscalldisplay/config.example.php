@@ -1,11 +1,6 @@
 <?php
 // @codingStandardsIgnoreFile
 
-if (!defined('APP_PATH')) {
-    define('APP_PATH', __DIR__);
-}
-
-
 define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'https://example.com/api/');
 define('ZMS_API_PROXY', getenv('ZMS_API_PROXY') ? getenv('ZMS_API_PROXY') : NULL);
 define('ZMS_IDENTIFIER', getenv('ZMS_IDENTIFIER') ? getenv('ZMS_IDENTIFIER') : 'zms');
@@ -16,7 +11,7 @@ define('ZMS_CALLDISPLAY_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '
 class App extends \BO\Zmscalldisplay\Application
 {
     const IDENTIFIER = ZMS_IDENTIFIER;
-    const APP_PATH = APP_PATH;
+    const APP_PATH = __DIR__;
     const DEBUG = false;
     const TWIG_CACHE = ZMS_CALLDISPLAY_TWIG_CACHE;
     const HTTP_BASE_URL = ZMS_API_URL;
