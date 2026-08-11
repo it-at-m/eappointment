@@ -164,7 +164,7 @@ class Request extends \BO\Zmsbackend\Base
 
         $request = $this->fetchOne($query, new Entity());
         if (!$request->hasId()) {
-            throw new Exception\Request\RequestNotFound("Could not find request with ID $source/$requestId");
+            throw new \BO\Zmsbackend\Request\Exception\RequestNotFound("Could not find request with ID $source/$requestId");
         }
 
         return $request;

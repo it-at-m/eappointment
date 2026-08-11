@@ -85,7 +85,7 @@
  */
 \App::$slim->post(
     '/apikey/',
-    \BO\Zmsbackend\ApikeyUpdate::class
+    \BO\Zmsbackend\Apikey\Api\ApikeyUpdate::class
 )
     ->setName("ApikeyUpdate");
 
