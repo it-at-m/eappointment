@@ -365,7 +365,7 @@ abstract class Base
      * @param mixed $type
      * @return static
      */
-    public function addEntityMapping($type = null): static
+    public function addEntityMapping(mixed $type = null): static
     {
         $entityMapping = $this->getPrefixedList($this->getEntityMapping($type));
         $this->query->select($entityMapping);

@@ -4,6 +4,7 @@ namespace BO\Zmsbackend\Request\Service;
 
 use BO\Zmsbackend\Application as App;
 use BO\Zmsentities\Request as Entity;
+use BO\Zmsentities\Scope;
 use BO\Zmsentities\Collection\RequestList as Collection;
 
 /**
@@ -320,6 +321,9 @@ class Request extends \BO\Zmsbackend\Base
     ): array {
         $providers = [];
         foreach ($departmentScopes as $departmentScope) {
+            if (!$departmentScope instanceof Scope) {
+                continue;
+            }
             try {
                 $provider = $departmentScope->getProvider();
                 $key = $provider->source . ':' . $provider->id;

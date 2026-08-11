@@ -29,6 +29,9 @@ class WorkstationProcessFinished extends BaseController
         array $args
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        if (!$workstation instanceof Workstation) {
+            throw new WorkstationMissingAssignedProcess();
+        }
         $this->testProcess($workstation);
         $input = $request->getParsedBody();
         $statisticEnabled = $workstation->getScope()->getPreference('queue', 'statisticsEnabled');
@@ -53,11 +56,12 @@ class WorkstationProcessFinished extends BaseController
 
         if (is_array($input) && isset($input['process']) && array_key_exists('id', $input['process'])) {
             $source = $workstation->getScope()->getSource();
-            $currentProcess = $workstation->process;
-            if (!$currentProcess instanceof Process) {
-                throw new WorkstationMissingAssignedProcess();
-            }
-            $process = new ProcessFinishedHelper(clone $currentProcess, $input, $selectableRequestList, $source);
+            $process = new ProcessFinishedHelper(
+                clone $workstation->process,
+                $input,
+                $selectableRequestList,
+                $source
+            );
             return $this->getFinishedResponse($workstation, $process);
         }
 
@@ -92,15 +96,9 @@ class WorkstationProcessFinished extends BaseController
 
     protected function getFinishedResponse(
         Workstation $workstation,
-        Process $process = null
+        ?Process $process = null
     ) {
-        if ($process === null) {
-            $current = $workstation->process;
-            if (!$current instanceof Process) {
-                throw new WorkstationMissingAssignedProcess();
-            }
-            $process = clone $current;
-        }
+        $process ??= clone $workstation->process;
         $process->status = ('pending' != $process->status) ? 'finished' : $process->status;
         \App::$http->readPostResult('/process/status/finished/', new Process($process))->getEntity();
         return Render::redirect(

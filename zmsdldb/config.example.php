@@ -50,9 +50,9 @@ define('ZMS_DLDB_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '/cache/
 
 class App extends \BO\Zmsbackend\Application
 {
-    const APP_PATH = __DIR__;
-    const IDENTIFIER = 'Zmsbackend-ENV';
-    const DEBUG = false;
+    const string APP_PATH = __DIR__;
+    const string IDENTIFIER = 'Zmsbackend-ENV';
+    const bool DEBUG = false;
     const DB_ENABLE_WSREPSYNCWAIT = true;
     /**
      * @var String DB_DSN_READONLY
@@ -79,7 +79,7 @@ class App extends \BO\Zmsbackend\Application
      *
      */
     const TWIG_CACHE = ZMS_DLDB_TWIG_CACHE;
-    const MODULE_NAME = 'zmsdldb';
+    const string MODULE_NAME = 'zmsdldb';
 
     /** Fallback when settings key d115.openingTime is unset */
     const D115_DEFAULT_OPENINGTIME = '';
