@@ -15,4 +15,13 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
+    <!--
+      Soft deps used by OAuth middleware; not Composer-required to avoid
+      circular zmsclient <-> zmsslim. Stubs only for package Psalm.
+    -->
+    <stubs>
+        <file name="stubs/zmsclient.php" />
+        <file name="stubs/zmsclient-psr7.php" />
+        <file name="stubs/zmsentities.php" />
+    </stubs>
 </psalm>
