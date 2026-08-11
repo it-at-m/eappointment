@@ -55,9 +55,10 @@ class Owner extends BaseController
             $response,
             'page/owner.twig',
             array(
-                'title' => 'Kunde','workstation' => $workstation->getArrayCopy(),'menuActive' => 'owner',
-                'owner' => $entity->getArrayCopy(),
+                'title' => 'Kunde',
                 'workstation' => $workstation->getArrayCopy(),
+                'menuActive' => 'owner',
+                'owner' => $entity->getArrayCopy(),
                 'success' => $success
             )
         );
