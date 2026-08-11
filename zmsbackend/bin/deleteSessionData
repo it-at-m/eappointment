@@ -2,10 +2,13 @@
 <?php
 require_once(__DIR__."/script_bootstrap.php");
 
-if (isset($argv[3]) && $argv[3] == '--commit') {
-    \BO\Zmsbackend\Helper\SessionDeleteByCron::init($argv[1], $argv[2]);
+$commit = in_array('--commit', $argv, true);
+if ($commit) {
+    // Delete all session names older than App::SESSION_DURATION (seconds).
+    \BO\Zmsbackend\Helper\SessionDeleteByCron::init();
 } else {
     \App::$log->notice('deleteSessionData usage', [
-        'usage' => "Usage: {$argv[0]} sessionName timeInterval --commit",
+        'usage' => "Usage: {$argv[0]} --commit",
+        'note' => 'Deletes all sessiondata older than App::SESSION_DURATION, regardless of sessionname.',
     ]);
 }

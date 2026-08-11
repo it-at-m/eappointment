@@ -4,6 +4,14 @@ namespace BO\Zmsentities;
 
 use BO\Zmsentities\Helper\Property;
 
+/**
+ * Schema-backed entity (ArrayObject::ARRAY_AS_PROPS); document dynamic keys for Psalm.
+ *
+ * @property Collection\ClusterList|array $clusters
+ * @property Collection\ScopeList|array $scopes
+ * @property Organisation $organisation
+ * @property int|float $serverTime
+ */
 class Calldisplay extends Schema\Entity
 {
     public const PRIMARY = 'serverTime';
