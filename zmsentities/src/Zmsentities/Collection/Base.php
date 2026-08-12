@@ -129,7 +129,8 @@ class Base extends \ArrayObject implements \JsonSerializable
         } elseif (is_array($value)) {
             parent::offsetSet($index, new $className($value));
         } else {
-            throw new \Exception('Invalid entity ' . get_class($value) . ' for collection ' . __CLASS__);
+            $given = is_object($value) ? $value::class : gettype($value);
+            throw new \Exception('Invalid entity ' . $given . ' for collection ' . __CLASS__);
         }
     }
 
