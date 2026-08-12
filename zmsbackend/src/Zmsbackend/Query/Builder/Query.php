@@ -12,6 +12,27 @@ use BO\Zmsbackend\Query\Builder\Dialect\ANSI;
  * @package     BO\Zmsbackend\Query\Builder
  * @author      Alex Gisby<alex@solution10.com>
  * @license     MIT
+ *
+ * Fluent APIs live on Select/Insert/Update/Delete (and their traits). Documented
+ * here so Psalm accepts $this->query->where()/select()/… on Query\Base.
+ *
+ * @method $this|array where(string|\Closure|null $field = null, string|null $operator = null, mixed $value = null)
+ * @method $this|array orWhere(string|\Closure|null $field = null, string|null $operator = null, mixed $value = null)
+ * @method $this whereIn(string $field, array $values)
+ * @method $this|array having(string|\Closure|null $field = null, string|null $operator = null, mixed $value = null)
+ * @method $this|array orHaving(string|\Closure|null $field = null, string|null $operator = null, mixed $value = null)
+ * @method $this|array select(mixed $columns = null, string|null $alias = null)
+ * @method $this|array from(mixed $table = null, string|null $alias = null)
+ * @method $this|string|null table(mixed $table = null)
+ * @method $this|array join(mixed $right = null, mixed $leftField = null, string|null $operator = null, mixed $rightField = null)
+ * @method $this|array leftJoin(mixed $right = null, mixed $leftField = null, string|null $operator = null, mixed $rightField = null)
+ * @method $this|array rightJoin(mixed $right = null, mixed $leftField = null, string|null $operator = null, mixed $rightField = null)
+ * @method $this|array groupBy(mixed $clause = null)
+ * @method $this|array orderBy(mixed $field = null, string $direction = 'ASC')
+ * @method $this|array values(array|null $values = null)
+ * @method $this|mixed value(string $field, mixed $value = null)
+ * @method $this|int limit(int|null $limit = null)
+ * @method $this|int offset(int|null $offset = null)
  */
 abstract class Query
 {
