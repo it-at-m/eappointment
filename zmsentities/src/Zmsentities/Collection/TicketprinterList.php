@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Ticketprinter>
+ * @extends Base<\BO\Zmsentities\Ticketprinter>
  */
 class TicketprinterList extends Base
 {

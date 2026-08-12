@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Useraccount>
+ * @extends Base<\BO\Zmsentities\Useraccount>
  */
 class UseraccountList extends Base
 {

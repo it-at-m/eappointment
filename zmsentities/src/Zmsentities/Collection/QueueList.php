@@ -6,7 +6,7 @@ namespace BO\Zmsentities\Collection;
  * @SuppressWarnings(Complexity)
  * @SuppressWarnings(PublicMethod)
  *
- * @extends Base<Queue>
+ * @extends Base<\BO\Zmsentities\Queue>
  */
 class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 {

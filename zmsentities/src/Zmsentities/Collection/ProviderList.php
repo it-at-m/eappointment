@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Provider>
+ * @extends Base<\BO\Zmsentities\Provider>
  */
 class ProviderList extends Base
 {

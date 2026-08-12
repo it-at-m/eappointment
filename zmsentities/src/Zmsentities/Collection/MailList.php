@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Mail>
+ * @extends Base<\BO\Zmsentities\Mail>
  */
 class MailList extends Base
 {

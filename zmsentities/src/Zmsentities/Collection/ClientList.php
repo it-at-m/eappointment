@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Client>
+ * @extends Base<\BO\Zmsentities\Client>
  */
 class ClientList extends Base
 {

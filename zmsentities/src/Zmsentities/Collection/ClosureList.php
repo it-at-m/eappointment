@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Closure>
+ * @extends Base<\BO\Zmsentities\Closure>
  */
 class ClosureList extends Base
 {

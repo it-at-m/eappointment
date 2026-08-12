@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Source>
+ * @extends Base<\BO\Zmsentities\Source>
  */
 class SourceList extends Base
 {

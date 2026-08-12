@@ -5,7 +5,7 @@ namespace BO\Zmsentities\Collection;
 use BO\Zmsentities\Day;
 
 /**
- * @extends Base<Day>
+ * @extends Base<\BO\Zmsentities\Day>
  */
 class DayList extends Base implements JsonUnindexed
 {

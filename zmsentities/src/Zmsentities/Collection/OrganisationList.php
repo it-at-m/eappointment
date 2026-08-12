@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Organisation>
+ * @extends Base<\BO\Zmsentities\Organisation>
  */
 class OrganisationList extends Base
 {

@@ -5,7 +5,7 @@ namespace BO\Zmsentities\Collection;
 use BO\Zmsentities\Helper\Property;
 
 /**
- * @extends Base<Department>
+ * @extends Base<\BO\Zmsentities\Department>
  */
 class DepartmentList extends Base implements JsonUnindexed
 {

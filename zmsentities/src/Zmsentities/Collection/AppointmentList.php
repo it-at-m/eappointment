@@ -5,7 +5,7 @@ namespace BO\Zmsentities\Collection;
 use BO\Zmsentities\Appointment;
 
 /**
- * @extends Base<Appointment>
+ * @extends Base<\BO\Zmsentities\Appointment>
  */
 class AppointmentList extends Base
 {

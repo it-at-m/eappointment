@@ -6,7 +6,7 @@ use BO\Zmsentities\Helper\Sorter;
 use BO\Zmsentities\Scope;
 
 /**
- * @extends Base<Scope>
+ * @extends Base<\BO\Zmsentities\Scope>
  */
 class ScopeList extends Base
 {

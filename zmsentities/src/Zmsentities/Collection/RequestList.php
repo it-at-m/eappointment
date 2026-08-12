@@ -5,7 +5,7 @@ namespace BO\Zmsentities\Collection;
 use BO\Zmsentities\Helper\Property;
 
 /**
- * @extends Base<Request>
+ * @extends Base<\BO\Zmsentities\Request>
  */
 class RequestList extends Base
 {

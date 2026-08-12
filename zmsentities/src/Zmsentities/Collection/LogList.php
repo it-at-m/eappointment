@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Log>
+ * @extends Base<\BO\Zmsentities\Log>
  */
 class LogList extends Base
 {
