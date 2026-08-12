@@ -47,8 +47,8 @@ class ProcessPreconfirmationMail extends \BO\Zmsbackend\Api\BaseController
 
     protected static function writeMail(Process $process)
     {
-        $config = (new \BO\Zmsbackend\Config\Service\Config())->readEntity();
-        $department = (new \BO\Zmsbackend\Department\Service\Department())->readByScopeId($process->scope['id']);
+        $config = (new Config())->readEntity();
+        $department = (new Department())->readByScopeId($process->scope['id']);
         $status = ($process->isWithAppointment()) ? 'preconfirmed' : 'queued';
         $collection = static::getProcessListOverview($process, $config);
 
