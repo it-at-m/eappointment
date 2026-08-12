@@ -1,5 +1,5 @@
 @rest @zmscitizenapi @ZMSKVR-1046
-Feature: ZMSKVR-1046 Ruppertstraße shared booking — Citizen API (10489 + 10503)
+Feature: ZMSKVR-1046 Ruppertstraße shared booking — Citizen API (10489 + 10503 + 10500 + 10491)
   As a citizen API client
   I want available-calendar with both shared-booking peers to return office buckets for Haupt and Ausbildung
   So that reserve/book uses the real officeId while capacity is pooled (no duplicate timestamps)
@@ -11,9 +11,11 @@ Feature: ZMSKVR-1046 Ruppertstraße shared booking — Citizen API (10489 + 1050
     And the response should contain offices and services
 
   @sharedBooking
-  Scenario: Offices 10489 and 10503 expose sharedBookingOfficeIds peers
-    Then office 10489 should have sharedBookingOfficeIds "10489,10503"
-    And office 10503 should have sharedBookingOfficeIds "10489,10503"
+  Scenario: Ruppertstraße shared-booking peers expose sharedBookingOfficeIds
+    Then office 10489 should have sharedBookingOfficeIds "10489,10503,10500,10491"
+    And office 10503 should have sharedBookingOfficeIds "10489,10503,10500,10491"
+    And office 10500 should have sharedBookingOfficeIds "10489,10503,10500,10491"
+    And office 10491 should have sharedBookingOfficeIds "10489,10503,10500,10491"
 
   @sharedBooking
   Scenario: Available calendar for both peers returns buckets for 10489 and 10503 without duplicate timestamps
