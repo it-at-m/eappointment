@@ -81,7 +81,7 @@ class ProcessConfirmationMail extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
-    public static function getProcessListOverview($process, $config)
+    public static function getProcessListOverview(Process $process, \BO\Zmsentities\Config $config)
     {
         $collection  = (new Collection())->addEntity($process);
         if (

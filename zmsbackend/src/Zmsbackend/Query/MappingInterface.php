@@ -4,6 +4,14 @@ namespace BO\Zmsbackend\Query;
 
 interface MappingInterface
 {
-    public function getEntityMapping();
+    /**
+     * @param mixed $type
+     * @return array<string, mixed>
+     */
+    public function getEntityMapping($type = null);
+
+    /**
+     * @return array<string, mixed>
+     */
     public function getReferenceMapping();
 }

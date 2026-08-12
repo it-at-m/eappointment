@@ -33,7 +33,7 @@ class ReservedDataDeleteByCron
     /** @var int[] */
     protected $countByScopeId = [];
 
-    /** @var Scope */
+    /** @var ScopeRepository */
     protected $scopeRepository;
 
     protected $processRepository;

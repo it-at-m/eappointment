@@ -10,6 +10,7 @@ use BO\Zmsentities\Availability;
 
 /**
  * @SuppressWarnings(Complexity)
+ * @extends Base<Availability>
  */
 class AvailabilityList extends Base
 {

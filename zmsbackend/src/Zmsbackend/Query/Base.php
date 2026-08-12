@@ -366,6 +366,9 @@ abstract class Base
      */
     public function addEntityMapping(mixed $type = null): static
     {
+        if (!$this instanceof MappingInterface) {
+            throw new \LogicException(static::class . ' must implement MappingInterface');
+        }
         $entityMapping = $this->getPrefixedList($this->getEntityMapping($type));
         $this->query->select($entityMapping);
         return $this;

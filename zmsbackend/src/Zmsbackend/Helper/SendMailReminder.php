@@ -142,7 +142,7 @@ class SendMailReminder
         }
     }
 
-    protected function getProcessListOverview($process, $config)
+    protected function getProcessListOverview(Process $process, \BO\Zmsentities\Config $config)
     {
         $collection  = (new Collection())->addEntity($process);
         if (in_array(getenv('ZMS_ENV'), explode(',', $config->getPreference('appointments', 'enableSummaryByMail')))) {
