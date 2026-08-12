@@ -35,7 +35,9 @@ export function getProviders(
           office.scope,
           office.slotsPerAppointment,
           office.slots,
-          office.priority || 1
+          office.priority || 1,
+          office.parentId,
+          office.sharedBookingOfficeIds
         );
 
         if (!providers || providers.includes(foundOffice.id.toString())) {

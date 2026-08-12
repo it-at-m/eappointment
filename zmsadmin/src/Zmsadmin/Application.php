@@ -17,7 +17,7 @@ define(
 
 define(
     'ZMS_ADMIN_SESSION_DURATION',
-    getenv('ZMS_ADMIN_SESSION_DURATION') ? getenv('ZMS_ADMIN_SESSION_DURATION') : 28800
+    (($value = getenv('ZMS_ADMIN_SESSION_DURATION')) !== false && $value !== '') ? $value : 36000
 );
 
 if (($token = getenv('ZMS_CONFIG_SECURE_TOKEN')) === false || $token === '') {
@@ -37,13 +37,13 @@ class Application extends \BO\Slim\Application
      * Name of the application
      *
      */
-    const IDENTIFIER = 'zms';
+    const string IDENTIFIER = 'zms';
 
-    const MODULE_NAME = 'zmsadmin';
+    const string MODULE_NAME = 'zmsadmin';
 
     public static ?CacheInterface $cache = null;
 
-    const DEBUG = false;
+    const bool DEBUG = false;
 
     const TWIG_CACHE = ZMS_ADMIN_TWIG_CACHE;
 

@@ -46,7 +46,7 @@ class SourceEdit extends BaseController
             $payload = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
             $requestVariants = $payload['data'] ?? [];
         } catch (\JsonException $e) {
-            \BO\Log::error('requestvariants JSON decode failed', ['error' => $e->getMessage()]);
+            \App::$log->error('requestvariants JSON decode failed', ['error' => $e->getMessage()]);
             $requestVariants = [];
         }
 

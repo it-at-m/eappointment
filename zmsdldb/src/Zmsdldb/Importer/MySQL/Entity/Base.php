@@ -15,6 +15,7 @@ use BO\Zmsdldb\Importer\MySQL\Entity\Collection as EntityCollection
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  * @SuppressWarnings(PHPMD.NPathComplexity)
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @implements \ArrayAccess<string, mixed>
  */
 abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
 {
@@ -298,7 +299,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
     }
 
     #[\Override]
-    final public function offsetGet($offset)
+    final public function offsetGet($offset): mixed
     {
         return $this->__get($offset);
     }
@@ -354,15 +355,14 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
 
             $value = $default;
 
-            $pointer = &$this->dataRaw;
+            $current = $this->dataRaw;
             $levelsCount = count($levels);
             for ($i = 0; $i < $levelsCount; ++$i) {
-                if (array_key_exists($levels[$i], $pointer)) {
-                    $pointer = &$pointer[$levels[$i]];
-                    $value = $pointer;
-
+                if (!is_array($current) || !array_key_exists($levels[$i], $current)) {
                     continue;
                 }
+                $current = $current[$levels[$i]];
+                $value = $current;
             }
             $values[$key] = ($value);
         }

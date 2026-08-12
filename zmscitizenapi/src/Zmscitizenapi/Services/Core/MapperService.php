@@ -36,12 +36,20 @@ use BO\Zmsentities\Collection\RequestRelationList;
  */
 class MapperService
 {
-    private static function resolveAllowDisabledServicesMix(Provider $provider): ?array
+    private static function resolveAllowDisabledServicesMix(\BO\Zmsentities\Schema\Entity $provider): ?array
     {
         if (!isset($provider->data['allowDisabledServicesMix']) || !is_array($provider->data['allowDisabledServicesMix'])) {
             return null;
         }
         return array_map('intval', $provider->data['allowDisabledServicesMix']);
+    }
+
+    private static function resolveSharedBookingOfficeIds(\BO\Zmsentities\Schema\Entity $provider): ?array
+    {
+        if (!isset($provider->data['sharedBookingOfficeIds']) || !is_array($provider->data['sharedBookingOfficeIds'])) {
+            return null;
+        }
+        return array_map('intval', $provider->data['sharedBookingOfficeIds']);
     }
 
     public static function mapScopeForProvider(
@@ -184,7 +192,8 @@ class MapperService
                 ) : null,
                 slotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
                 parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null,
-                allowDisabledServicesMix: self::resolveAllowDisabledServicesMix($provider)
+                allowDisabledServicesMix: self::resolveAllowDisabledServicesMix($provider),
+                sharedBookingOfficeIds: self::resolveSharedBookingOfficeIds($provider)
             );
         }
 

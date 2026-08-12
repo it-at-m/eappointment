@@ -107,6 +107,9 @@ class Mail extends \BO\Zmsbackend\Base
     #[\Override]
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
+        if (!$entity instanceof Entity) {
+            throw new \InvalidArgumentException('Expected ' . Entity::class);
+        }
         $multiPart = $this->readMultiPartByQueueId($entity->id);
         $entity->addMultiPart($multiPart);
         if (1 <= $resolveReferences) {

@@ -1,4 +1,4 @@
-name: Generate Database Schema Diagrams
+name: 🛢️ Generate Database Schema Diagrams
 
 on:
   workflow_call:
@@ -15,10 +15,10 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev@sha256:2bdb1a63ccd59c1ce9422133892800b64972f96bfc4e23e9347beac7a09499b9"
     services:
       mariadb:
-        image: mariadb:10.11
+        image: mariadb:10.11@sha256:de61fed4a40d3842f3ee09944ba52792156cfd9adf489b2cc670fc6ded28df8d
         env:
           MYSQL_ROOT_PASSWORD: zmsbackend
           MYSQL_DATABASE: zmsbo
@@ -35,7 +35,7 @@ jobs:
           --cpus=1
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Configure Git Safe Directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
@@ -551,7 +551,7 @@ jobs:
         run: .venv/bin/python generate_schema.py
 
       - name: Upload database schema diagrams artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: database-schema-diagrams
           path: public/diagrams/database-er-model.html

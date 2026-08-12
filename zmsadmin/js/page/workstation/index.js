@@ -5,7 +5,6 @@ import settings from '../../settings'
 import AppointmentView from '../../block/appointment'
 import QueueView from '../../block/queue'
 import CalendarView from '../../block/calendar'
-import HeaderScopeView from '../../block/scope/header'
 import ClientNextView from '../../block/process/next'
 import QueueInfoView from '../../block/queue/info'
 import AppointmentTimesView from '../../block/appointment/times'
@@ -496,8 +495,7 @@ class View extends BaseView {
             this.loadClientNext(true, callProcess),
             this.loadAppointmentForm(),
             this.loadCalendar(),
-            this.loadQueueTable(),
-            this.loadHeaderScope()
+            this.loadQueueTable()
         ]);
     }
 
@@ -507,12 +505,6 @@ class View extends BaseView {
                 this.loadQueueInfo(false);
             this.loadQueueTable(false);
         }
-    }
-
-    loadHeaderScope() {
-        return new HeaderScopeView($.find('[data-header-scope]'), {
-            includeUrl: this.includeUrl
-        })
     }
 
     loadCalendar(showLoader = true) {
