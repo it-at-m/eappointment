@@ -2161,6 +2161,18 @@ onMounted(() => {
     // Claim the initial fetch before checkbox init so the selectedProviders watch
     // cannot schedule a parallel refresh while onMounted loads the calendar.
     initialCalendarLoadPending = true;
+
+    // Resolve reserved office before checkbox init — shared-booking peers (e.g. Ausbildung
+    // 10503 under Ort 10489) are often absent from selectableProviders, and the
+    // selectedProviders watch would otherwise overwrite them with the display Ort.
+    const reservedOfficeId = appointment.value?.officeId;
+    const reservedProvider =
+      (reservedOfficeId ? getOfficeById(reservedOfficeId) : undefined) ||
+      selectedProvider.value;
+    if (appointment.value?.processId && reservedProvider) {
+      selectedProvider.value = reservedProvider;
+    }
+
     selectedProviders.value = selectableProviders.value.reduce(
       (acc, item) => {
         acc[item.id] = props.preselectedOfficeId
@@ -2178,14 +2190,6 @@ onMounted(() => {
         index,
       ])
     );
-
-    const reservedOfficeId = appointment.value?.officeId;
-    const reservedProvider =
-      (reservedOfficeId &&
-        selectableProviders.value.find(
-          (provider) => String(provider.id) === String(reservedOfficeId)
-        )) ||
-      selectedProvider.value;
 
     // Remount after reservation (back from summary / login restore): keep the
     // chosen office and timeslot; only refresh calendar availability.
@@ -2271,34 +2275,27 @@ watch(
     if (captchaSessionExpired.value) {
       return;
     }
-    // Sync single-selection provider immediately
+    // Sync selectedProvider with checkbox state. Shared-booking peers (real slot
+    // owner under a display Ort) must stay selected while their Ort is checked —
+    // otherwise overview Ort flips to the checkbox id (ZMSKVR-1046 / 1571).
     const selectedIds = Object.keys(selectedProviders.value).filter(
       (id) => selectedProviders.value[id]
     );
-    if (selectedIds.length === 1 && selectableProviders.value) {
-      const provider = selectableProviders.value.find(
-        (p) => p.id.toString() === selectedIds[0]
-      );
-      selectedProvider.value = provider ?? undefined;
-    } else if (selectedIds.length === 0) {
+    if (selectedIds.length === 0) {
       selectedProvider.value = undefined;
     } else if (selectableProviders.value) {
-      // Multi-office calendars (e.g. Scheidplatz alternatives) check many offices.
-      // Keep the reserved/selected office only while it remains checked — overview Ort
-      // and contact fields depend on selectedProvider, but it must stay inside the
-      // checked office set used for calendar requests.
       const reservedOfficeId =
         appointment.value?.officeId ?? selectedProvider.value?.id;
-      if (
-        reservedOfficeId &&
-        selectedProviders.value[String(reservedOfficeId)]
-      ) {
-        const reserved = selectableProviders.value.find(
-          (provider) => String(provider.id) === String(reservedOfficeId)
-        );
+      if (reservedOfficeId && isOfficeIdSelectedForCalendar(reservedOfficeId)) {
+        const reserved = getOfficeById(reservedOfficeId);
         if (reserved) {
           selectedProvider.value = reserved;
         }
+      } else if (selectedIds.length === 1) {
+        const provider = selectableProviders.value.find(
+          (p) => p.id.toString() === selectedIds[0]
+        );
+        selectedProvider.value = provider ?? undefined;
       }
     }
 

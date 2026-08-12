@@ -3470,5 +3470,52 @@ describe("AppointmentSelection", () => {
       expect(wrapper.vm.selectedProvider?.id).toBe(1);
       expect(wrapper.vm.selectedProvider?.name).toBe("Bürgerbüro Scheidplatz");
     });
+
+    it("keeps a shared-booking peer when only the display Ort checkbox is checked", async () => {
+      const peer = {
+        id: 10503,
+        name: "Bürgerbüro Ruppertstraße Ausbildung",
+        address: {
+          street: "Ruppertstraße",
+          house_number: "19",
+          postal_code: "80337",
+          city: "München",
+        },
+        scope: { id: "10503" },
+      };
+      const displayOrt = {
+        id: 10489,
+        name: "Bürgerbüro Ruppertstraße",
+        address: {
+          street: "Ruppertstraße",
+          house_number: "19",
+          postal_code: "80337",
+          city: "München",
+        },
+        scope: { id: "10489" },
+        sharedBookingOfficeIds: [10503],
+        showAlternativeLocations: true,
+      };
+
+      const wrapper = createWrapper({
+        appointment: {
+          processId: "100547",
+          officeId: "10503",
+          scope: { id: "10503" },
+        },
+        selectedProvider: peer,
+        selectedService: {
+          id: "1063475",
+          providers: [displayOrt, peer],
+        },
+      });
+
+      wrapper.vm.selectableProviders = [displayOrt];
+      wrapper.vm.selectedProviders = { "10489": true };
+      await nextTick();
+      await flushPromises();
+
+      expect(wrapper.vm.selectedProvider?.id).toBe(10503);
+    });
   });
 });
