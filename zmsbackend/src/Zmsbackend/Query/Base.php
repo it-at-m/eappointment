@@ -167,10 +167,8 @@ abstract class Base
      * Add the from part to the queryBaseStatement
      * This implementation tries to guess the syntax using the constant TABLE in the class
      * Override the method for a special implementation or required joins
-     *
-     * @return self
      */
-    protected function addSelect()
+    protected function addSelect(): static
     {
         $table = $this::getTablename();
         $alias = $this::getAlias();
@@ -183,7 +181,7 @@ abstract class Base
         $this->query->queryBaseStatement('SELECT DISTINCT');
     }
 
-    public function setResolveLevel($resolveLevel)
+    public function setResolveLevel($resolveLevel): static
     {
         if ($resolveLevel !== null) {
             $this->resolveLevel = $resolveLevel;
@@ -232,10 +230,8 @@ abstract class Base
      * Add the from part to the queryBaseStatement
      * This implementation tries to guess the syntax using the constant TABLE in the class
      * Override the method for a special implementation or required joins
-     *
-     * @return self
      */
-    protected function addTable()
+    protected function addTable(): static
     {
         $table = $this::getTablename();
         $alias = $this::getAlias();
@@ -247,10 +243,8 @@ abstract class Base
      * Add the from part to the queryBaseStatement
      * This implementation tries to guess the syntax using the constant TABLE in the class
      * Override the method for a special implementation or required joins
-     *
-     * @return self
      */
-    protected function addTableAlias()
+    protected function addTableAlias(): static
     {
         $table = $this::getTablename();
         $alias = $this::getAlias();
@@ -270,9 +264,8 @@ abstract class Base
      * resolves references by joining tables defined in the method addJoin()
      *
      * @param  Int $depth Number of levels of sub references to resolve
-     * @return self
      */
-    public function addResolvedReferences($depth)
+    public function addResolvedReferences($depth): static
     {
         $this->setResolveLevel($depth);
         if ($depth > 0) {
@@ -394,17 +387,15 @@ abstract class Base
 
     /**
      * Add a select part to the query containing references if no resolveReferences is given
-     *
-     * @return self
      */
-    protected function addReferenceMapping()
+    protected function addReferenceMapping(): static
     {
         $referenceMapping = $this->getPrefixedList($this->getReferenceMapping());
         $this->query->select($referenceMapping);
         return $this;
     }
 
-    public function addLimit($count, $offset = null)
+    public function addLimit($count, $offset = null): static
     {
         $this->query->limit($count);
         if ($offset) {
@@ -415,10 +406,8 @@ abstract class Base
 
     /**
      * Add values to a insert or update query
-     *
-     * @return self
      */
-    public function addValues($values)
+    public function addValues($values): static
     {
         $this->query->values($values);
         return $this;
