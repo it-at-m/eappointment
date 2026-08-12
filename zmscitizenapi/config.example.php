@@ -21,12 +21,12 @@ class App extends \BO\Zmscitizenapi\Application
     /**
      * Name of the application
      */
-    const IDENTIFIER = ZMS_IDENTIFIER;
+    const string IDENTIFIER = ZMS_IDENTIFIER;
 
     /**
      * Name of the module
      */
-    const MODULE_NAME = ZMS_MODULE_NAME;
+    const string MODULE_NAME = ZMS_MODULE_NAME;
 
     /**
      * User for the upstream API

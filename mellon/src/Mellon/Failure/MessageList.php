@@ -10,9 +10,8 @@ namespace BO\Mellon\Failure;
 use BO\Mellon\Valid;
 
 /**
-  *
-  *
-  */
+ * @extends \ArrayObject<int, Message>
+ */
 class MessageList extends \ArrayObject
 {
     public function __toString()

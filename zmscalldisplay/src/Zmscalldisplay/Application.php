@@ -28,12 +28,12 @@ class Application extends \BO\Slim\Application
     /**
      * Name of the application
      */
-    const IDENTIFIER = 'zms';
-    const MODULE_NAME = 'zmscalldisplay';
+    const string IDENTIFIER = 'zms';
+    const string MODULE_NAME = 'zmscalldisplay';
 
     public static ?CacheInterface $cache = null;
 
-    const DEBUG = false;
+    const bool DEBUG = false;
     const TWIG_CACHE = ZMS_CALLDISPLAY_TWIG_CACHE;
 
     /**

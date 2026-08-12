@@ -25,7 +25,8 @@ class LanguageTranslator
 
         $this->defaultLang = $defaultLang;
 
-        $translatorClass = \APP::TRANSLATOR_CLASS;
+        /** @var class-string<Translator> $translatorClass */
+        $translatorClass = \App::TRANSLATOR_CLASS;
         // First param is the "default language" to use.
         $this->translator = new $translatorClass($defaultLocale);
         // Set a fallback language incase you don't have a translation in the default language

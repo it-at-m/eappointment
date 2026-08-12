@@ -105,3 +105,18 @@ Feature: ZMSKVR-1046 Ruppertstraße shared booking — zmscitizenview (Haupt 104
     And I wait for appointment slots to be ready in the citizen view
     Then timeslots for providers "10489" should be visible in the citizen view
     And timeslots for providers "10503" should not appear in the citizen view
+
+  # --- Haushaltsbescheinigung 1080843 is also at Ausbildung 10503; combined Personendaten 10224136 is not.
+  #     FE must not expand peer 10503 (would trigger invalidLocationAndServiceCombination). ---
+  @jumpin @sharedBooking @mainCalendar
+  Scenario: Haushaltsbescheinigung combined with Personendaten shows timeslots for 10489 only, not Ausbildung 10503
+    Given I open zmscitizenview with jump-in service "1080843" and location "10489"
+    Then the service combination step should be visible
+    When I add subservice "Änderung der Personendaten im Melderegister" with quantity 1 on the service combination step
+    And I continue from the service combination step
+    Then provider checkbox 10489 should be visible in the citizen view
+    And provider checkbox 10503 should not appear in the citizen view
+    When I select office 10489 in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    Then timeslots for providers "10489" should be visible in the citizen view
+    And timeslots for providers "10503" should not appear in the citizen view
