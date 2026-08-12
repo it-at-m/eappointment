@@ -8,6 +8,7 @@ use BO\Zmsbackend\Query\Builder\Update;
 use BO\Zmsbackend\Query\Builder\Delete;
 use BO\Zmsbackend\Query\Builder\Dialect\MySQL;
 use BO\Zmsbackend\Query\Builder\Expression;
+use BO\Zmsbackend\Query\Builder\Query as QueryBuilder;
 
 /**
  * Base class to construct entity specific queries
@@ -41,11 +42,9 @@ abstract class Base
     const ALIAS = null;
 
     /**
-     * Concrete builder instance (Select|Insert|Update|Delete).
-     *
-     * @var \BO\Zmsbackend\Query\Builder\Query|null
+     * Concrete builder instance (Select|Insert|Update|Delete), always set in the constructor.
      */
-    protected $query = null;
+    protected QueryBuilder $query;
 
     /**
      * @var String $query
@@ -126,8 +125,13 @@ abstract class Base
             /** @psalm-suppress UnsupportedPropertyReferenceUsage */
             $this->joinedAliasList =& $queryType->joinedAliasList;
             $this->resolveLevel = $queryType->resolveLevel - 1;
-        } elseif ($queryType instanceof \BO\Zmsbackend\Query\Builder\Query) {
+        } elseif ($queryType instanceof QueryBuilder) {
             $this->query = $queryType;
+        } else {
+            throw new \InvalidArgumentException(
+                'Unsupported query type for ' . static::class . ': '
+                . (is_object($queryType) ? $queryType::class : gettype($queryType))
+            );
         }
         if ($this->query instanceof Select) {
             $this->addRequiredJoins();
