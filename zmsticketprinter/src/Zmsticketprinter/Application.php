@@ -28,13 +28,13 @@ class Application extends \BO\Slim\Application
     /**
      * Name of the application
      */
-    const IDENTIFIER = 'zms';
+    const string IDENTIFIER = 'zms';
 
-    const MODULE_NAME = 'zmsticketprinter';
+    const string MODULE_NAME = 'zmsticketprinter';
 
     public static ?CacheInterface $cache = null;
 
-    public const DEBUG = false;
+    public const bool DEBUG = false;
     const TWIG_CACHE = ZMS_TICKETPRINTER_TWIG_CACHE;
 
     /**
