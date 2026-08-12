@@ -1,6 +1,5 @@
 package zms.ataf.ui.pages.citizenview;
 
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
@@ -23,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ataf.core.helpers.TestDataHelper;
 import ataf.core.helpers.TestPropertiesHelper;
 import ataf.core.logging.ScenarioLogManager;
-import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
 import ataf.web.pages.BasePage;
 import ataf.web.utils.DriverUtil;
@@ -2248,14 +2246,19 @@ public class CitizenViewPage extends BasePage {
         String remarks = deepGetById("remarks");
         Assert.assertNotNull(remarks, "Custom text field value could not be read.");
         Assert.assertTrue(
-                remarks.contains("Lorem ipsum") || remarks.contains(lastContactCustomText.substring(0, 20)),
-                "Custom text field should keep entered value. actual=" + remarks);
+                remarks.equals(lastContactCustomText) || remarks.contains(lastContactCustomText),
+                "Custom text field should keep entered value. expected="
+                        + lastContactCustomText
+                        + " actual="
+                        + remarks);
         String remarks2 = deepGetById("remarks2");
         Assert.assertNotNull(remarks2, "Second custom text field value could not be read.");
         Assert.assertTrue(
-                remarks2.contains("Lorem ipsum")
-                        || remarks2.contains(lastContactCustomText.substring(0, 20)),
-                "Second custom text field should keep entered value. actual=" + remarks2);
+                remarks2.equals(lastContactCustomText) || remarks2.contains(lastContactCustomText),
+                "Second custom text field should keep entered value. expected="
+                        + lastContactCustomText
+                        + " actual="
+                        + remarks2);
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: Kontakt phone + Zusatzfelder still visible with values");
     }
@@ -2272,7 +2275,7 @@ public class CitizenViewPage extends BasePage {
                 "Ort address for Scheidplatz should show Belgradstraße or Riesenfeldstraße in visible summary. actual="
                         + summaryText);
         Assert.assertTrue(
-                summaryText.contains("80804") || summaryText.contains("München"),
+                summaryText.contains("80804") && summaryText.contains("München"),
                 "Ort address for Scheidplatz should show postal code/city in visible summary. actual="
                         + summaryText);
     }
@@ -2321,22 +2324,14 @@ public class CitizenViewPage extends BasePage {
     }
 
     /**
-     * Same Keycloak username/password + kc-login pattern as {@code AdminPage}/{@code StatisticsPage}, for the
-     * citizen {@code dbs-fragments} client redirect.
+     * Keycloak username/password + kc-login form submit for the citizen {@code dbs-fragments} client redirect.
+     * Does not embed credentials in the browser URL (unlike some admin/statistic Chrome helpers).
      */
     private void completeKeycloakLoginForm(String username, String password) throws Exception {
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kc-login")));
         ScenarioLogManager.getLogger().info("zmscitizenview: Keycloak login form detected");
-
-        if ("chrome".equals(TestPropertiesHelper.getPropertyAsString("browser", true, DefaultValues.BROWSER))) {
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kc-login")));
-            String credentials = URLEncoder.encode(username, StandardCharsets.UTF_8)
-                    + ":"
-                    + URLEncoder.encode(password, StandardCharsets.UTF_8)
-                    + "@";
-            DRIVER.navigate().to(DRIVER.getCurrentUrl().replaceFirst("^(https?://)", "$1" + credentials));
-        }
 
         ScenarioLogManager.getLogger().info("zmscitizenview: entering Keycloak citizen credentials");
         enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, username, "username", LocatorType.ID);
