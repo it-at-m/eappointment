@@ -2297,13 +2297,22 @@ public class CitizenViewPage extends BasePage {
     }
 
     /**
-     * Bürger-Login on Kontakt: click Anmelden (saves localStorage), complete Keycloak as {@code citizen}/{@code
-     * vorschau} (dbs-fragments client), wait until logged-in callout returns.
+     * Bürger-Login on Kontakt: click in-app Anmelden (saves localStorage via requestLogin),
+     * complete Keycloak as {@code citizen}/{@code vorschau} (dbs-fragments client), wait until
+     * logged-in callout returns. Avoids the host {@code dbs-login} chrome button, which does not
+     * persist booking UI state before redirect.
      */
     public void loginViaBuergerLoginWithKeycloak() throws Exception {
         CONTEXT.set();
-        ScenarioLogManager.getLogger().info("zmscitizenview: click Anmelden (Bürger-Login)");
-        waitForAndClickButtonContaining("Anmelden", DEFAULT_EXPLICIT_WAIT_TIME);
+        ScenarioLogManager.getLogger().info("zmscitizenview: click in-app Anmelden (Bürger-Login)");
+        try {
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(d -> clickInAppBuergerLoginAnmelden());
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: in-app Anmelden not found; falling back to any Anmelden button");
+            waitForAndClickButtonContaining("Anmelden", DEFAULT_EXPLICIT_WAIT_TIME);
+        }
 
         String username =
                 TestPropertiesHelper.getPropertyAsString("citizenUserName", true, "citizen");
@@ -2319,6 +2328,32 @@ public class CitizenViewPage extends BasePage {
                 shadowDomContainsText("Sie sind angemeldet.") || shadowDomContainsText("Kontaktdaten"),
                 "Expected return to Kontakt form after Bürger-Login (logged-in callout or Kontaktdaten).");
         ScenarioLogManager.getLogger().info("zmscitizenview: Bürger-Login completed");
+    }
+
+    /**
+     * Clicks the Kontakt callout {@code muc-button} labeled Anmelden (not host {@code dbs-login}).
+     * Uses pointer+click so Vue {@code @click} → {@code requestLogin} runs (localStorage + OIDC).
+     */
+    private boolean clickInAppBuergerLoginAnmelden() {
+        CONTEXT.set();
+        String script =
+                "function inDbsLogin(n){while(n){if(n.tagName&&n.tagName.toLowerCase()==='dbs-login')return true;n=n.parentNode;"
+                        + "if(n&&n.host)n=n.host;}return false;}"
+                        + "function fire(el){el.scrollIntoView({block:'center'});"
+                        + "try{el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));}catch(e0){}"
+                        + "try{el.dispatchEvent(new MouseEvent('mousedown',{bubbles:true}));}catch(e1){}"
+                        + "try{el.dispatchEvent(new PointerEvent('pointerup',{bubbles:true}));}catch(e2){}"
+                        + "try{el.dispatchEvent(new MouseEvent('mouseup',{bubbles:true}));}catch(e3){}"
+                        + "el.click();return true;}"
+                        + "function walk(n){if(!n)return false;if(n.shadowRoot&&walk(n.shadowRoot))return true;"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if((tag==='MUC-BUTTON'||tag==='BUTTON')&&!inDbsLogin(n)){"
+                        + "var t=(n.textContent||'').replace(/\\s+/g,' ').trim();"
+                        + "if(t.indexOf('Anmelden')>=0&&!n.disabled)return fire(n);}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;return false;}"
+                        + "return walk(document.body);";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
     }
 
     public void assertCitizenLoggedInOnContactForm() {
@@ -2337,9 +2372,16 @@ public class CitizenViewPage extends BasePage {
      */
     private void completeKeycloakLoginForm(String username, String password) throws Exception {
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
+        try {
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
+        } catch (TimeoutException e) {
+            throw new TimeoutException(
+                    "Keycloak login form (#username) not shown after Anmelden. currentUrl="
+                            + DRIVER.getCurrentUrl(),
+                    e);
+        }
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kc-login")));
-        ScenarioLogManager.getLogger().info("zmscitizenview: Keycloak login form detected");
+        ScenarioLogManager.getLogger().info("zmscitizenview: Keycloak login form detected url={}", DRIVER.getCurrentUrl());
 
         ScenarioLogManager.getLogger().info("zmscitizenview: entering Keycloak citizen credentials");
         enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, username, "username", LocatorType.ID);
