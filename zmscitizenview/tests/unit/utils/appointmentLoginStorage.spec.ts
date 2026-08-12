@@ -109,6 +109,8 @@ describe("appointmentLoginStorage", () => {
           appointment: { authKey: "must-not-leak" },
           customerData: { email: "x@y.z" },
           captchaToken: "tok",
+          telephoneNumber: "+491234567890",
+          customTextfield: "Bemerkung",
         })
       );
       expect(parsed).toEqual({
@@ -118,6 +120,8 @@ describe("appointmentLoginStorage", () => {
         selectedServiceMap: { "legacy-svc": 2 },
         selectedProviderId: "legacy-off",
         selectedTimeslot: 0,
+        telephoneNumber: "+491234567890",
+        customTextfield: "Bemerkung",
       });
       expect(parsed).not.toHaveProperty("appointment");
       expect(parsed).not.toHaveProperty("customerData");

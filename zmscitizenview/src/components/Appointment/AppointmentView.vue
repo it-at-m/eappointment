@@ -990,6 +990,9 @@ const requestLogin = () => {
       selectedServiceMap: Object.fromEntries(selectedServiceMap.value),
       selectedProviderId: String(selectedProvider.value.id),
       selectedTimeslot: selectedTimeslot.value,
+      telephoneNumber: customerData.value.telephoneNumber || undefined,
+      customTextfield: customerData.value.customTextfield || undefined,
+      customTextfield2: customerData.value.customTextfield2 || undefined,
     });
   }
   setAppointmentAuthHashForLogin(
@@ -1107,6 +1110,17 @@ const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
 
   selectedTimeslot.value = uiData.selectedTimeslot;
   currentView.value = isAppointmentInPast.value ? 3 : uiData.currentView;
+
+  // Restore Kontakt scratch fields after OAuth remount (name/email come from token).
+  if (uiData.telephoneNumber) {
+    customerData.value.telephoneNumber = uiData.telephoneNumber;
+  }
+  if (uiData.customTextfield) {
+    customerData.value.customTextfield = uiData.customTextfield;
+  }
+  if (uiData.customTextfield2) {
+    customerData.value.customTextfield2 = uiData.customTextfield2;
+  }
 };
 
 const runLoginResumeFromHashAndLocalStorage = (

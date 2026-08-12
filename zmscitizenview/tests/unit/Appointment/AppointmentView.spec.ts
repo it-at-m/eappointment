@@ -2278,6 +2278,10 @@ describe("AppointmentView", () => {
       expect(parsed.selectedProvider).toBeUndefined();
       expect(parsed.selectedServiceId).toBe("123");
       expect(parsed.selectedProviderId).toBe("789");
+      // ZMSKVR-1571: phone / Zusatzfelder survive Bürger-Login remount
+      expect(parsed.telephoneNumber).toBe("089123456");
+      expect(parsed.customTextfield).toBe("secret-note");
+      expect(parsed.customTextfield2).toBeUndefined();
 
       expect(
         sessionStorage.getItem(SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH)
