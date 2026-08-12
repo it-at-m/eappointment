@@ -145,7 +145,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * return a new object as example
      *
-     * @return self
+     * @return static
      */
     public static function getExample()
     {
@@ -216,7 +216,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
      * Performs a merge with an iterable
      * Sub-entities are preserved
      */
-    public function addData($mergeData)
+    public function addData($mergeData): static
     {
         foreach ($mergeData as $key => $item) {
             if (isset($this[$key])) {

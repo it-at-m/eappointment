@@ -4,6 +4,9 @@ namespace BO\Zmsentities\Collection;
 
 use BO\Zmsentities\Appointment;
 
+/**
+ * @extends Base<Appointment>
+ */
 class AppointmentList extends Base
 {
     public const ENTITY_CLASS = '\BO\Zmsentities\Appointment';

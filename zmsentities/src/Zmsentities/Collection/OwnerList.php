@@ -2,6 +2,9 @@
 
 namespace BO\Zmsentities\Collection;
 
+/**
+ * @extends Base<Owner>
+ */
 class OwnerList extends Base
 {
     public const ENTITY_CLASS = '\BO\Zmsentities\Owner';

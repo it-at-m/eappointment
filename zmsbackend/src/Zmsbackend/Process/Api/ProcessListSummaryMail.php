@@ -91,12 +91,12 @@ class ProcessListSummaryMail extends \BO\Zmsbackend\Api\BaseController
 
     protected function setWithProcessClient(Mail $entity, $mailAddress): Mail
     {
-        $process = new \BO\Zmsbackend\Process\Service\Process();
+        $process = new Process();
         $client = $entity->getClient();
         if ($client === null || !$client->hasEmail()) {
             $process->getFirstClient()->email = $mailAddress;
         }
-        $entity->process = $process ;
+        $entity->process = $process;
 
         return $entity;
     }
@@ -104,7 +104,7 @@ class ProcessListSummaryMail extends \BO\Zmsbackend\Api\BaseController
     protected function writeLogEntry($mailAddress, ProcessList $collection)
     {
         $logRepository = new EventLogRepository();
-        $newLogEntry = new \BO\Zmsbackend\EventLog\Service\EventLog();
+        $newLogEntry = new EventLog();
         $newLogEntry->addData([
             'name' => EventLog::CLIENT_PROCESSLIST_REQUEST,
             'origin' => 'zmsbackend ' . Version::getString(),

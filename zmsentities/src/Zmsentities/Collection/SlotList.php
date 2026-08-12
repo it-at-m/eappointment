@@ -6,6 +6,7 @@ use BO\Zmsentities\Slot;
 
 /**
  * @SuppressWarnings(Complexity)
+ * @extends Base<Slot>
  */
 class SlotList extends Base
 {

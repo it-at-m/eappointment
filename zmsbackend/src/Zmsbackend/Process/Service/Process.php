@@ -17,7 +17,7 @@ use BO\Zmsbackend\Helper\ProcessStatus;
  */
 class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\ResolveReferences
 {
-    public function readEntity($processId = null, $authKey = null, $resolveReferences = 2)
+    public function readEntity($processId = null, $authKey = null, $resolveReferences = 2): ?Entity
     {
         if (null === $processId || null === $authKey) {
             return null;

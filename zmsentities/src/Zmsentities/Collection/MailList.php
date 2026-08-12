@@ -2,6 +2,9 @@
 
 namespace BO\Zmsentities\Collection;
 
+/**
+ * @extends Base<Mail>
+ */
 class MailList extends Base
 {
     public const ENTITY_CLASS = '\BO\Zmsentities\Mail';

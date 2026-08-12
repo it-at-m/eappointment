@@ -125,6 +125,11 @@ abstract class Base
         return $statement;
     }
 
+    /**
+     * @template T of \BO\Zmsentities\Schema\Entity
+     * @param T $entity
+     * @return T
+     */
     public function fetchOne(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity)
     {
         $statement = $this->fetchStatement($query);

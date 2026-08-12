@@ -12,6 +12,7 @@ use BO\Zmsentities\Process;
  * @SuppressWarnings(Public)
  * @SuppressWarnings(Coupling)
  *
+ * @extends Base<Process>
  */
 class ProcessList extends Base
 {
