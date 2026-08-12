@@ -12,6 +12,18 @@ class Requeststatistic extends Schema\Entity implements Helper\NoSanitize
 {
     public static $schema = 'requeststatistic.json';
 
+    public function getScopeRequests(): Collection\RequestList
+    {
+        $value = $this['scopeRequests'] ?? null;
+        return $value instanceof Collection\RequestList ? $value : new Collection\RequestList();
+    }
+
+    public function getAdditionalDepartmentRequests(): Collection\RequestList
+    {
+        $value = $this['additionalDepartmentRequests'] ?? null;
+        return $value instanceof Collection\RequestList ? $value : new Collection\RequestList();
+    }
+
     #[\Override]
     public function getDefaults(): array
     {
@@ -21,6 +33,9 @@ class Requeststatistic extends Schema\Entity implements Helper\NoSanitize
         ];
     }
 
+    /**
+     * @param array|object $mergeData
+     */
     #[\Override]
     public function addData($mergeData): Schema\Entity
     {
@@ -42,12 +57,8 @@ class Requeststatistic extends Schema\Entity implements Helper\NoSanitize
     public function jsonSerialize(): mixed
     {
         $serialized = parent::jsonSerialize();
-        $scopeRequests = $this->scopeRequests instanceof Collection\RequestList
-            ? array_values($this->scopeRequests->getArrayCopy())
-            : [];
-        $additionalDepartmentRequests = $this->additionalDepartmentRequests instanceof Collection\RequestList
-            ? array_values($this->additionalDepartmentRequests->getArrayCopy())
-            : [];
+        $scopeRequests = array_values($this->getScopeRequests()->getArrayCopy());
+        $additionalDepartmentRequests = array_values($this->getAdditionalDepartmentRequests()->getArrayCopy());
 
         if (is_array($serialized)) {
             $serialized['scopeRequests'] = $scopeRequests;

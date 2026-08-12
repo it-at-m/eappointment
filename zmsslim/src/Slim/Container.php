@@ -14,6 +14,8 @@ use BO\Slim\Exception\UnknownIdentifierException;
 
 /**
  * PSR compatible container implementation, compatible with the ArrayAccess usage in zms
+ *
+ * @extends \ArrayObject<array-key, mixed>
  */
 class Container extends \ArrayObject implements ContainerInterface
 {
