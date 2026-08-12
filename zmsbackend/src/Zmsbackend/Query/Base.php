@@ -41,7 +41,9 @@ abstract class Base
     const ALIAS = null;
 
     /**
-     * @var \BO\Zmsbackend\Query\Builder\Query $query
+     * Concrete builder instance (Select|Insert|Update|Delete).
+     *
+     * @var \BO\Zmsbackend\Query\Builder\Query|null
      */
     protected $query = null;
 
