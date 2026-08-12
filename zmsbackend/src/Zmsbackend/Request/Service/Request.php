@@ -4,6 +4,7 @@ namespace BO\Zmsbackend\Request\Service;
 
 use BO\Zmsbackend\Application as App;
 use BO\Zmsentities\Request as Entity;
+use BO\Zmsentities\Scope;
 use BO\Zmsentities\Collection\RequestList as Collection;
 
 /**
@@ -164,7 +165,7 @@ class Request extends \BO\Zmsbackend\Base
 
         $request = $this->fetchOne($query, new Entity());
         if (!$request->hasId()) {
-            throw new Exception\Request\RequestNotFound("Could not find request with ID $source/$requestId");
+            throw new \BO\Zmsbackend\Request\Exception\RequestNotFound("Could not find request with ID $source/$requestId");
         }
 
         return $request;
@@ -314,10 +315,15 @@ class Request extends \BO\Zmsbackend\Base
         ];
     }
 
-    protected function readDepartmentProviders($departmentScopes, int $departmentId): array
-    {
+    protected function readDepartmentProviders(
+        \BO\Zmsentities\Collection\ScopeList $departmentScopes,
+        int $departmentId
+    ): array {
         $providers = [];
         foreach ($departmentScopes as $departmentScope) {
+            if (!$departmentScope instanceof Scope) {
+                continue;
+            }
             try {
                 $provider = $departmentScope->getProvider();
                 $key = $provider->source . ':' . $provider->id;
@@ -366,9 +372,15 @@ class Request extends \BO\Zmsbackend\Base
         $additionalDepartmentRequestList = new Collection();
         $scopeRequestKeys = [];
         foreach ($scopeRequestList as $request) {
+            if (!$request instanceof Entity) {
+                continue;
+            }
             $scopeRequestKeys[$this->getRequestLookupKey($request)] = true;
         }
         foreach ($departmentRequestList as $request) {
+            if (!$request instanceof Entity) {
+                continue;
+            }
             $requestKey = $this->getRequestLookupKey($request);
             if (!isset($scopeRequestKeys[$requestKey])) {
                 $additionalDepartmentRequestList->addEntity(clone $request);

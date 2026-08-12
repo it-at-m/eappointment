@@ -1897,64 +1897,6 @@
         }
       }
     },
-    "/useraccount/{loginname}/roles/": {
-      "get": {
-        "summary": "Get roles assigned to a useraccount",
-        "x-since": 2.26,
-        "tags": [
-          "useraccount",
-          "role"
-        ],
-        "parameters": [
-          {
-            "name": "loginname",
-            "description": "useraccount login name",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "X-Authkey",
-            "required": true,
-            "description": "authentication key to identify user for testing access rights",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "resolveReferences",
-            "description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
-            "in": "query",
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "success",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "meta": {
-                  "$ref": "#/definitions/metaresult"
-                },
-                "data": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/paths/~1roles~1/post/parameters/0/schema"
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "x-since": 2.12,
-            "description": "missing or wrong access rights"
-          },
-          "404": {
-            "description": "useraccount does not exist"
-          }
-        }
-      }
-    },
     "/permissions/": {
       "get": {
         "summary": "List all permission definitions",

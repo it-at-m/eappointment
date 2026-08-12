@@ -8,6 +8,8 @@ use BO\Zmsentities\Helper\Property;
  * @SuppressWarnings(NumberOfChildren)
  * @SuppressWarnings(PublicMethod)
  * @SuppressWarnings(Complexity)
+ *
+ * @extends \ArrayObject<array-key, mixed>
  */
 class Entity extends \ArrayObject implements \JsonSerializable
 {
