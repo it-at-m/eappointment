@@ -57,9 +57,9 @@ class Owner extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Ma
     public function reverseEntityMapping(\BO\Zmsentities\Owner $entity)
     {
         $data = array();
-        $data['Anschrift'] = $entity->contact['street'];
+        $data['Anschrift'] = $entity->contact['street'] ?? null;
         $data['Kundenname'] = $entity->name;
-        $data['TerminUrl'] = $entity->url;
+        $data['TerminUrl'] = $entity['url'] ?? null;
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);
         });

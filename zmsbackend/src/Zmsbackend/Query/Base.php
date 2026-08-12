@@ -85,10 +85,17 @@ abstract class Base
      *
      * @param Mixed $queryType one of the constants for a query type or of instance \BO\Zmsbackend\Query\Builder\Query
      * @param String $prefix If used in a subquery, prefix results with this string
-     * @param String $name A named query has a cached SQL as soon as called first
+     * @param string|false $name A named query has a cached SQL as soon as called first
+     * @param int|null $resolveLevel
+     * @param array $withEntities
      */
-    public function __construct($queryType, $prefix = '', $name = false, $resolveLevel = null, $withEntities = [])
-    {
+    public function __construct(
+        $queryType,
+        $prefix = '',
+        string|false $name = false,
+        mixed $resolveLevel = null,
+        array $withEntities = []
+    ) {
         $this->prefix = $prefix;
         $this->name = $name;
         $this->withEntities = $withEntities;
@@ -113,6 +120,8 @@ abstract class Base
             $this->addTableAlias();
         } elseif ($queryType instanceof self) {
             $this->query = $queryType->query;
+            // Share join-alias state with the parent query (intentional by-ref).
+            /** @psalm-suppress UnsupportedPropertyReferenceUsage */
             $this->joinedAliasList =& $queryType->joinedAliasList;
             $this->resolveLevel = $queryType->resolveLevel - 1;
         } elseif ($queryType instanceof \BO\Zmsbackend\Query\Builder\Query) {
@@ -353,9 +362,10 @@ abstract class Base
     /**
      * Add a select part to the query containing a mapping from the db schema to the entity schema
      *
-     * @return self
+     * @param mixed $type
+     * @return static
      */
-    public function addEntityMapping($type = null)
+    public function addEntityMapping(mixed $type = null): static
     {
         $entityMapping = $this->getPrefixedList($this->getEntityMapping($type));
         $this->query->select($entityMapping);

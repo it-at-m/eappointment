@@ -3,9 +3,9 @@
 
 class App extends \BO\Slim\Application
 {
-    const IDENTIFIER = 'Slim-ENV';
-    const APP_PATH = APP_PATH;
-    const DEBUG = true;
+    public const string IDENTIFIER = 'Slim-ENV';
+    public const string APP_PATH = APP_PATH;
+    public const bool DEBUG = true;
     const LOG_ERRORS = false;
 
     const TEMPLATE_PATH = '/Slim/templates/';

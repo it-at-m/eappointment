@@ -2,6 +2,9 @@
 
 namespace BO\Zmsentities\Schema;
 
+/**
+ * @extends \ArrayObject<array-key, mixed>
+ */
 class Schema extends \ArrayObject
 {
     protected $input = null;
