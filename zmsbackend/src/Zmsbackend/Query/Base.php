@@ -369,6 +369,8 @@ abstract class Base
         if (!$this instanceof MappingInterface) {
             throw new \LogicException(static::class . ' must implement MappingInterface');
         }
+        // Extra $type is ignored by most implementors (PHP 8); Availability uses it.
+        /** @psalm-suppress TooManyArguments */
         $entityMapping = $this->getPrefixedList($this->getEntityMapping($type));
         $this->query->select($entityMapping);
         return $this;
