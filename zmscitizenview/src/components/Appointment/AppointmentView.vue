@@ -1172,6 +1172,9 @@ const runLoginResumeFromHashAndLocalStorage = (
         (response) => {
           if ((response as AppointmentDTO).processId != undefined) {
             appointment.value = response as AppointmentDTO;
+            if (reservationStartMs.value == null) {
+              reservationStartMs.value = Date.now();
+            }
             if ("captchaToken" in response && (response as any).captchaToken) {
               captchaToken.value =
                 captchaToken.value ||

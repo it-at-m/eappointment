@@ -133,7 +133,9 @@
     </muc-button>
     <muc-button
       v-if="!isExpired"
-      :disabled="loadingStates.isUpdatingAppointment.value"
+      :disabled="
+        loadingStates.isUpdatingAppointment.value || !hasReservedAppointment
+      "
       :icon="'arrow-right'"
       @click="nextStep"
     >
@@ -205,6 +207,14 @@ const { selectedProvider } = inject<SelectedTimeslotProvider>(
 const { appointment } = inject<SelectedAppointmentProvider>("appointment", {
   appointment: ref(undefined),
 }) as SelectedAppointmentProvider;
+
+/**
+ * After Bürger-Login remount, appointment is re-fetched async. Weiter must stay
+ * disabled until processId is back — nextUpdateAppointment no-ops without it.
+ */
+const hasReservedAppointment = computed(
+  () => !!appointment.value?.processId && !!appointment.value?.authKey
+);
 
 /** Prefer selected office scope; fall back to reserved appointment scope (login/back). */
 const providerScope = computed(

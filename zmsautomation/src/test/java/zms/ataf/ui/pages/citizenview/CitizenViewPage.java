@@ -694,10 +694,17 @@ public class CitizenViewPage extends BasePage {
     public boolean clickButtonContaining(String text) {
         CONTEXT.set();
         String esc = text.replace("\\", "\\\\").replace("'", "\\'");
+        // Prefer visible buttons only: AppointmentSelection stays mounted (v-show) on Kontakt/Übersicht
+        // and its Weiter must not steal the click from CustomerInfo/AppointmentSummary.
         String script =
-                "var label='" + esc + "';function walkClick(n){if(!n)return false;if(n.shadowRoot&&walkClick(n.shadowRoot))return true;"
+                "var label='" + esc + "';"
+                        + "function visible(el){if(!el||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
+                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function walkClick(n){if(!n)return false;if(n.shadowRoot&&walkClick(n.shadowRoot))return true;"
                         + "var tag=(n.tagName||'').toUpperCase();var isBtn=(tag==='BUTTON'||tag==='A'||tag==='MUC-BUTTON');"
-                        + "if(isBtn){var t=(n.textContent||'').trim();if(t.indexOf(label)>=0&&!n.disabled){n.scrollIntoView({block:'center'});n.click();return true;}}"
+                        + "if(isBtn){var t=(n.textContent||'').trim();"
+                        + "if(t.indexOf(label)>=0&&!n.disabled&&visible(n)){n.scrollIntoView({block:'center'});n.click();return true;}}"
                         + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walkClick(c[i]))return true;return false;}"
                         + "return walkClick(document.body);";
         Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
@@ -2182,7 +2189,7 @@ public class CitizenViewPage extends BasePage {
 
     /**
      * Kontakt step only — fills name/email/phone/Zusatzfelder but does <em>not</em> click Weiter
-     * (needed before Bürger-Login or Zurück assertions).
+     * (e.g. after Bürger-Login, before Übersicht).
      */
     public void fillContactDetailsRandomWithoutContinue() {
         fillContactDetailsRandom();

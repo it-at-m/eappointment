@@ -31,7 +31,13 @@ describe("CustomerInfo", () => {
     });
 
     mockAppointmentProvider = {
-      appointment: ref<{ scope?: { reservationDuration?: number } } | null>({
+      appointment: ref<{
+        processId?: string;
+        authKey?: string;
+        scope?: { reservationDuration?: number };
+      } | null>({
+        processId: "100001",
+        authKey: "test-auth-key",
         scope: { reservationDuration: 15 },
       }),
     };
@@ -252,7 +258,7 @@ describe("CustomerInfo", () => {
       await nextTick();
 
       let nextButton = findNextButton(wrapper);
-      // enabled
+      // enabled (reservation processId/authKey present)
       expect(nextButton.attributes("disabled")).toBeUndefined();
 
       wrapper.vm.loadingStates.isUpdatingAppointment.value = true;
@@ -265,6 +271,20 @@ describe("CustomerInfo", () => {
       await nextTick();
       nextButton = findNextButton(wrapper);
       expect(nextButton.attributes("disabled")).toBeUndefined();
+    });
+
+    it("disables the next button while reserved appointment is not restored yet", async () => {
+      mockAppointmentProvider.appointment.value = {
+        scope: { reservationDuration: 15 },
+      };
+      mockCustomerData.value.firstName = "Max";
+      mockCustomerData.value.lastName = "Mustermann";
+      mockCustomerData.value.mailAddress = "max@test.de";
+      const wrapper = createWrapper();
+      await nextTick();
+
+      const nextButton = findNextButton(wrapper);
+      expect(nextButton.attributes("disabled")).toBeDefined();
     });
   });
 

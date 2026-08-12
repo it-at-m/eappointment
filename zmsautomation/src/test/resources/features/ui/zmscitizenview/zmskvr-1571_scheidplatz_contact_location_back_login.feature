@@ -1,12 +1,13 @@
 #language: en
 @web @zmscitizenview @ZMSKVR-1571 @executeLocally
-Feature: ZMSKVR-1571 Scheidplatz — Ort on overview; Kontakt fields after back and Bürger-Login
+Feature: ZMSKVR-1571 Scheidplatz — Ort on overview; Kontakt fields after Bürger-Login and Zurück
   As a citizen booking at Bürgerbüro Scheidplatz (showAlternativeLocations)
-  I want Ort on the Übersicht and phone/Zusatzfelder on Kontakt to survive contact changes, Zurück, and Bürger-Login
+  I want Ort on the Übersicht and phone/Zusatzfelder on Kontakt after Bürger-Login and Zurück
   So that the booking UI stays consistent with confirmation mails
 
   # Scheidplatz provider 102524 has showAlternativeLocations=true. Jump-in uses Personalausweis 1063453.
-  # Bürger-Login uses local Keycloak client dbs-fragments (user citizen / vorschau), same form pattern as admin/statistic SSO.
+  # Bürger-Login uses local Keycloak client dbs-fragments (user citizen / vorschau).
+  # Flow: login first (name/email from account), then fill phone/Zusatzfelder only — matches real UX.
 
   Background:
     Given the Citizen API is available
@@ -15,7 +16,7 @@ Feature: ZMSKVR-1571 Scheidplatz — Ort on overview; Kontakt fields after back 
     And the response should contain offices and services
 
   @jumpin @scheidplatz
-  Scenario: Scheidplatz overview keeps Ort; back and Bürger-Login keep phone and Zusatzfelder
+  Scenario: Scheidplatz overview keeps Ort; Bürger-Login then Kontakt fields survive Zurück
     Given I open zmscitizenview with jump-in service "1063453" and location "102524"
     Then the service combination step should be visible
     When I continue from the service combination step
@@ -26,11 +27,10 @@ Feature: ZMSKVR-1571 Scheidplatz — Ort on overview; Kontakt fields after back 
     And I scroll to and highlight the preferred timeslot for office 102524 in the citizen view
     And I click the highlighted timeslot in the citizen view
     And I continue after slot selection with Weiter for office 102524 in the citizen view
-    When I fill contact details without continuing in the citizen view
-    Then the telephone and custom text fields should remain visible with entered values in the citizen view
     When I log in via Bürger-Login with Keycloak in the citizen view
     Then I should be logged in on the contact form in the citizen view
-    And the telephone and custom text fields should remain visible with entered values in the citizen view
+    When I fill contact details without continuing in the citizen view
+    Then the telephone and custom text fields should remain visible with entered values in the citizen view
     When I continue from the contact form in the citizen view
     Then the booking summary should show Scheidplatz location for provider 102524 in the citizen view
     When I go back from the booking summary to the contact form in the citizen view

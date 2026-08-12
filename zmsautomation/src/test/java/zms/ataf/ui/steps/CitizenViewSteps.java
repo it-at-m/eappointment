@@ -391,7 +391,7 @@ public class CitizenViewSteps {
     @When("I fill contact details without continuing in the citizen view")
     public void iFillContactDetailsWithoutContinuing() {
         ScenarioLogManager.getLogger()
-                .info("zmscitizenview: fill Kontakt form without Weiter (before login/back asserts)");
+                .info("zmscitizenview: fill Kontakt form without Weiter (phone/Zusatzfelder)");
         page.fillContactDetailsRandomWithoutContinue();
     }
 
