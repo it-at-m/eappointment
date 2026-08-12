@@ -81,6 +81,14 @@ class View extends BaseView {
             return $(this).val();
         }).toArray();
         this.serviceListSelected = [];
+
+        this.$main.find('.checkboxdeselect li').each(function () {
+            const $request = $(this);
+
+            $request.find('.request-count').text(1);
+            $request.find('.hidden-inputs input:checkbox').slice(1).remove();
+        });
+
         this.updateLists(true);
     }
 
