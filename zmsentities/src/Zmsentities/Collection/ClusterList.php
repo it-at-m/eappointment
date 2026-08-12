@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Cluster>
+ * @extends Base<\BO\Zmsentities\Cluster>
  */
 class ClusterList extends Base
 {

@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Month>
+ * @extends Base<\BO\Zmsentities\Month>
  */
 class MonthList extends Base
 {

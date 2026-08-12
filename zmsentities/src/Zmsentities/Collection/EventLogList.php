@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<EventLog>
+ * @extends Base<\BO\Zmsentities\EventLog>
  */
 class EventLogList extends Base
 {

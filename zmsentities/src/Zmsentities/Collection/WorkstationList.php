@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Workstation>
+ * @extends Base<\BO\Zmsentities\Workstation>
  */
 class WorkstationList extends Base
 {

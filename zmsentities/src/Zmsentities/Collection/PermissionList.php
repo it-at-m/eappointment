@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Permission>
+ * @extends Base<\BO\Zmsentities\Permission>
  */
 class PermissionList extends Base
 {

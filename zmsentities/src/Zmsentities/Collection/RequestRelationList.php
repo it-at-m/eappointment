@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<RequestRelation>
+ * @extends Base<\BO\Zmsentities\RequestRelation>
  */
 class RequestRelationList extends Base
 {

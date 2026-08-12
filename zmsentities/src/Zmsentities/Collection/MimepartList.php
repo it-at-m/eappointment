@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Mimepart>
+ * @extends Base<\BO\Zmsentities\Mimepart>
  */
 class MimepartList extends Base
 {

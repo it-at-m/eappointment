@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Owner>
+ * @extends Base<\BO\Zmsentities\Owner>
  */
 class OwnerList extends Base
 {

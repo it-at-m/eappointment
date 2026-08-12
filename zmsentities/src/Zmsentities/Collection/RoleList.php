@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Role>
+ * @extends Base<\BO\Zmsentities\Role>
  */
 class RoleList extends Base
 {

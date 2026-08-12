@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Mailtemplate>
+ * @extends Base<\BO\Zmsentities\Mailtemplate>
  */
 class MailtemplateList extends Base
 {

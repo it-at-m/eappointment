@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Link>
+ * @extends Base<\BO\Zmsentities\Link>
  */
 class LinkList extends Base
 {

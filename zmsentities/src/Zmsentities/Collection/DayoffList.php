@@ -3,7 +3,7 @@
 namespace BO\Zmsentities\Collection;
 
 /**
- * @extends Base<Dayoff>
+ * @extends Base<\BO\Zmsentities\Dayoff>
  */
 class DayoffList extends Base
 {
