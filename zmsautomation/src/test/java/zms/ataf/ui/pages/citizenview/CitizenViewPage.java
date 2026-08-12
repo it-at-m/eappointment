@@ -672,7 +672,10 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         String script =
                 "var want=arguments[0],v=arguments[1]==null?'':String(arguments[1]);"
-                        + "var ids=[];ids.push(want);if(want.indexOf('input-')===0)ids.push(want.slice(6));else ids.push('input-'+want);"
+                        // MucInput → input-{id}; MucTextArea → textarea-{id} (id prop is not on the host).
+                        + "var ids=[];ids.push(want);"
+                        + "if(want.indexOf('input-')===0)ids.push(want.slice(6));else ids.push('input-'+want);"
+                        + "if(want.indexOf('textarea-')===0)ids.push(want.slice(9));else ids.push('textarea-'+want);"
                         + "function byId(root,id){try{if(root.getElementById)return root.getElementById(id);}catch(e0){}"
                         + "try{return root.querySelector('#'+id.replace(/([^a-zA-Z0-9_-])/g,'\\\\$1'));}catch(e1){return root.querySelector('[id=\"'+id.replace(/\"/g,'')+'\"]');}}"
                         + "function resolve(el){if(!el)return null;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')return el;"
@@ -2194,13 +2197,16 @@ public class CitizenViewPage extends BasePage {
     }
 
     public boolean deepContactCustomTextFieldExists() {
-        return deepElementExists("#remarks")
+        // MucTextArea binds the control as id="textarea-{prop}" (prop "remarks" is not on the host).
+        return deepElementExists("#textarea-remarks")
+                || deepElementExists("#remarks")
                 || deepElementExists("muc-text-area#remarks")
                 || deepElementExists("#input-remarks");
     }
 
     public boolean deepContactCustomTextField2Exists() {
-        return deepElementExists("#remarks2")
+        return deepElementExists("#textarea-remarks2")
+                || deepElementExists("#remarks2")
                 || deepElementExists("muc-text-area#remarks2")
                 || deepElementExists("#input-remarks2");
     }
@@ -2210,7 +2216,9 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         String script =
                 "var want=arguments[0];"
-                        + "var ids=[];ids.push(want);if(want.indexOf('input-')===0)ids.push(want.slice(6));else ids.push('input-'+want);"
+                        + "var ids=[];ids.push(want);"
+                        + "if(want.indexOf('input-')===0)ids.push(want.slice(6));else ids.push('input-'+want);"
+                        + "if(want.indexOf('textarea-')===0)ids.push(want.slice(9));else ids.push('textarea-'+want);"
                         + "function byId(root,id){try{if(root.getElementById)return root.getElementById(id);}catch(e0){}"
                         + "try{return root.querySelector('#'+id.replace(/([^a-zA-Z0-9_-])/g,'\\\\$1'));}catch(e1){return root.querySelector('[id=\"'+id.replace(/\"/g,'')+'\"]');}}"
                         + "function resolve(el){if(!el)return null;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')return el;"
