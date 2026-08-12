@@ -76,17 +76,29 @@ class View extends BaseView {
             }
     }
 
+    updateRequestCount(element, count) {
+        element.find('.request-count').text(count);
+        element.find('.minus').attr(
+            'aria-label',
+            `Anzahl der Dienstleistung verringern auf ${count - 1}`
+        );
+        element.find('.plus').attr(
+            'aria-label',
+            `Anzahl der Dienstleistung erhöhen auf ${count + 1}`
+        );
+    }
+
     cleanLists() {
         this.serviceList = this.$main.find('.checkboxselect input:checkbox').map(function () {
             return $(this).val();
         }).toArray();
         this.serviceListSelected = [];
 
-        this.$main.find('.checkboxdeselect li').each(function () {
-            const $request = $(this);
+        this.$main.find('.checkboxdeselect li').each((index, element) => {
+            const request = $(element);
 
-            $request.find('.request-count').text(1);
-            $request.find('.hidden-inputs input:checkbox').slice(1).remove();
+            this.updateRequestCount(request, 1);
+            request.find('.hidden-inputs input:checkbox').slice(1).remove();
         });
 
         this.updateLists(true);
