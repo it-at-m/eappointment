@@ -12,9 +12,12 @@
 -- cannot highlight a timeslot for provider 102524.
 
 -- Widen booking window on legacy scope 157 (was Termine_ab=1, Termine_bis=1)
+-- and give a real reservation hold (was reservierungsdauer/reservationDuration=0),
+-- otherwise Kontakt shows "Ihre Sitzung ist abgelaufen" immediately after reserve.
 UPDATE `standort`
 SET `Termine_ab` = 0,
-    `Termine_bis` = 42
+    `Termine_bis` = 42,
+    `reservierungsdauer` = 15
 WHERE `StandortID` = 157;
 
 UPDATE `preferences`
@@ -24,6 +27,14 @@ WHERE `entity` = 'scope'
   AND `id` = 157
   AND `groupName` = 'appointment'
   AND `name` = 'endInDaysDefault';
+
+UPDATE `preferences`
+SET `value` = '15',
+    `updateTimestamp` = NOW()
+WHERE `entity` = 'scope'
+  AND `id` = 157
+  AND `groupName` = 'appointment'
+  AND `name` = 'reservationDuration';
 
 -- round current time to next 5 minute slot
 SET @rounded_start :=
