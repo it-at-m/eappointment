@@ -2284,11 +2284,15 @@ watch(
       selectedProvider.value = undefined;
     } else if (selectableProviders.value) {
       // Multi-office calendars (e.g. Scheidplatz alternatives) check many offices.
-      // Do not wipe the reserved/selected office — overview Ort and contact fields
-      // depend on selectedProvider remaining set.
+      // Keep the reserved/selected office only while it remains checked — overview Ort
+      // and contact fields depend on selectedProvider, but it must stay inside the
+      // checked office set used for calendar requests.
       const reservedOfficeId =
         appointment.value?.officeId ?? selectedProvider.value?.id;
-      if (reservedOfficeId) {
+      if (
+        reservedOfficeId &&
+        selectedProviders.value[String(reservedOfficeId)]
+      ) {
         const reserved = selectableProviders.value.find(
           (provider) => String(provider.id) === String(reservedOfficeId)
         );

@@ -570,26 +570,86 @@ public class CitizenViewPage extends BasePage {
     }
 
     /**
+     * Text of the <em>visible</em> booking-summary Ort block {@code #provider-{officeId}}.
+     * Ignores hidden Ort-step checkboxes that reuse the same id while AppointmentSelection stays
+     * mounted under {@code v-show}.
+     */
+    public String deepVisibleProviderSummaryText(int officeId) {
+        CONTEXT.set();
+        String script =
+                "var want='provider-'+String(arguments[0]);"
+                        + "function visible(el){"
+                        + " if(!el||el.nodeType!==1)return false;"
+                        + " var n=el;"
+                        + " while(n){"
+                        + "  if(n.nodeType===1){"
+                        + "   try{var st=getComputedStyle(n);if(st.display==='none'||st.visibility==='hidden')return false;}catch(e0){}"
+                        + "  }"
+                        + "  if(n.parentElement){n=n.parentElement;continue;}"
+                        + "  var root=n.getRootNode&&n.getRootNode();"
+                        + "  if(root&&root.host){n=root.host;continue;}"
+                        + "  break;"
+                        + " }"
+                        + " try{return el.getClientRects().length>0;}catch(e1){return true;}"
+                        + "}"
+                        + "function collect(root,out){"
+                        + " if(!root)return;"
+                        + " if(root.nodeType===1&&root.id===want)out.push(root);"
+                        + " if(root.shadowRoot)collect(root.shadowRoot,out);"
+                        + " var c=root.children;if(c)for(var i=0;i<c.length;i++)collect(c[i],out);"
+                        + "}"
+                        + "var found=[];collect(document.body,found);"
+                        + "for(var i=0;i<found.length;i++){"
+                        + " var el=found[i];"
+                        + " if(!visible(el))continue;"
+                        + " var tag=(el.tagName||'').toLowerCase();"
+                        + " if(tag.indexOf('checkbox')>=0)continue;"
+                        + " if(tag==='input')continue;"
+                        + " var txt=(el.innerText||el.textContent||'').replace(/\\s+/g,' ').trim();"
+                        + " if(txt)return txt;"
+                        + "}"
+                        + "return null;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, officeId);
+        return o == null ? null : String.valueOf(o);
+    }
+
+    public boolean deepVisibleProviderSummaryExists(int officeId) {
+        String text = deepVisibleProviderSummaryText(officeId);
+        return text != null && !text.isBlank();
+    }
+
+    /**
      * Reserve / preconfirm / confirm screens expose {@code <p id="provider-{officeId}">…</p>} (summary).
-     * Asserts that block is present and the standort label appears in the shadow DOM.
+     * Asserts that the <em>visible</em> summary block contains the standort label (not hidden Ort checkboxes).
      */
     public void assertProviderSummaryVisible(int officeId, String expectedStandortLabel) {
         CONTEXT.set();
         String sel = "#provider-" + officeId;
-        waitWithThreeWindows(() -> deepElementExists(sel), "Provider summary " + sel);
-        if (!deepElementExists(sel)) {
+        waitWithThreeWindows(
+                () -> deepVisibleProviderSummaryExists(officeId), "Provider summary " + sel);
+        if (!deepVisibleProviderSummaryExists(officeId)) {
             ScenarioLogManager.getLogger()
-                    .warn("Provider summary {} not visible after 60s; waiting up to 30s more after deep-link navigation", sel);
+                    .warn(
+                            "Visible provider summary {} not found after 60s; waiting up to 30s more after deep-link navigation",
+                            sel);
             try {
-                waitUntilDeepElementExists(sel, 30);
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(30))
+                        .until(d -> deepVisibleProviderSummaryExists(officeId));
             } catch (TimeoutException e) {
-                ScenarioLogManager.getLogger().warn("Provider summary {} still not visible after extended wait", sel);
+                ScenarioLogManager.getLogger()
+                        .warn("Visible provider summary {} still not found after extended wait", sel);
             }
         }
-        Assert.assertTrue(deepElementExists(sel), "Expected booking summary provider block: " + sel);
+        String summaryText = deepVisibleProviderSummaryText(officeId);
+        Assert.assertNotNull(summaryText, "Expected visible booking summary provider block: " + sel);
         Assert.assertTrue(
-                shadowDomContainsText(expectedStandortLabel),
-                "Expected standort label near provider-" + officeId + ": " + expectedStandortLabel);
+                summaryText.contains(expectedStandortLabel),
+                "Expected standort label in visible summary "
+                        + sel
+                        + ": "
+                        + expectedStandortLabel
+                        + " actual="
+                        + summaryText);
     }
 
     /** On Passkalender jump-in, only Pass services should be combinable (names from API). */
@@ -2141,6 +2201,12 @@ public class CitizenViewPage extends BasePage {
                 || deepElementExists("#input-remarks");
     }
 
+    public boolean deepContactCustomTextField2Exists() {
+        return deepElementExists("#remarks2")
+                || deepElementExists("muc-text-area#remarks2")
+                || deepElementExists("#input-remarks2");
+    }
+
     /** Read value of input/textarea resolved from host id (shadow-safe). */
     public String deepGetById(String id) {
         CONTEXT.set();
@@ -2168,6 +2234,9 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(
                 deepContactCustomTextFieldExists(),
                 "Custom text field (#remarks) must remain visible on the Kontakt form.");
+        Assert.assertTrue(
+                deepContactCustomTextField2Exists(),
+                "Second custom text field (#remarks2) must remain visible on the Kontakt form.");
         String phone = deepGetById("telephonenumber");
         Assert.assertNotNull(phone, "Telephone field value could not be read.");
         Assert.assertTrue(
@@ -2181,8 +2250,14 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(
                 remarks.contains("Lorem ipsum") || remarks.contains(lastContactCustomText.substring(0, 20)),
                 "Custom text field should keep entered value. actual=" + remarks);
+        String remarks2 = deepGetById("remarks2");
+        Assert.assertNotNull(remarks2, "Second custom text field value could not be read.");
+        Assert.assertTrue(
+                remarks2.contains("Lorem ipsum")
+                        || remarks2.contains(lastContactCustomText.substring(0, 20)),
+                "Second custom text field should keep entered value. actual=" + remarks2);
         ScenarioLogManager.getLogger()
-                .info("zmscitizenview: Kontakt phone + Zusatzfeld still visible with values");
+                .info("zmscitizenview: Kontakt phone + Zusatzfelder still visible with values");
     }
 
     /**
@@ -2190,12 +2265,16 @@ public class CitizenViewPage extends BasePage {
      */
     public void assertScheidplatzLocationOnSummary(int officeId) {
         assertProviderSummaryVisible(officeId, "Bürgerbüro Scheidplatz");
+        String summaryText = deepVisibleProviderSummaryText(officeId);
+        Assert.assertNotNull(summaryText, "Expected visible Scheidplatz summary for provider-" + officeId);
         Assert.assertTrue(
-                shadowDomContainsText("Belgradstraße") || shadowDomContainsText("Riesenfeldstraße"),
-                "Ort address for Scheidplatz should show Belgradstraße or Riesenfeldstraße.");
+                summaryText.contains("Belgradstraße") || summaryText.contains("Riesenfeldstraße"),
+                "Ort address for Scheidplatz should show Belgradstraße or Riesenfeldstraße in visible summary. actual="
+                        + summaryText);
         Assert.assertTrue(
-                shadowDomContainsText("80804") || shadowDomContainsText("München"),
-                "Ort address for Scheidplatz should show postal code/city.");
+                summaryText.contains("80804") || summaryText.contains("München"),
+                "Ort address for Scheidplatz should show postal code/city in visible summary. actual="
+                        + summaryText);
     }
 
     /** Zurück from Übersicht (preconfirm) back to Kontakt form. */
