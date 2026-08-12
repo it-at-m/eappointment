@@ -2,6 +2,6 @@
 // @codingStandardsIgnoreFile
 class App extends \BO\Slim\Application
 {
-    const IDENTIFIER = "ZMS";
+    const string IDENTIFIER = "ZMS";
     public static $http = null;
 }

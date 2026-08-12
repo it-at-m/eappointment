@@ -33,13 +33,13 @@ class Application extends \BO\Slim\Application
      * Name of the application
      *
      */
-    const IDENTIFIER = 'zms';
+    const string IDENTIFIER = 'zms';
 
-    const MODULE_NAME = 'zmsstatistic';
+    const string MODULE_NAME = 'zmsstatistic';
 
     public static ?CacheInterface $cache = null;
 
-    const DEBUG = false;
+    const bool DEBUG = false;
 
     const TWIG_CACHE = ZMS_STATISTIC_TWIG_CACHE;
 
