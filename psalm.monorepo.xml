@@ -560,6 +560,24 @@
                 <directory name="zmsslim/tests" />
                 <directory name="zmsstatistic/tests" />
                 <directory name="zmsticketprinter/tests" />
+                <!-- Fluent builder methods exist on Select/Insert/Update/Delete; Query\Base types $query as abstract Query. -->
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::select" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::from" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::where" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::orWhere" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::whereIn" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::having" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::orHaving" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::join" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::leftJoin" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::rightJoin" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::groupBy" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::orderBy" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::table" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::values" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::value" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::limit" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::offset" />
             </errorLevel>
         </UndefinedMethod>
         <UndefinedClass>
