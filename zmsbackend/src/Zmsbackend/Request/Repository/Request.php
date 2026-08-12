@@ -15,7 +15,7 @@ class Request extends \BO\Zmsbackend\Query\Base
             ba.`BuergerID` = :process_id
     ';
 
-    const QUERY_BY_ARCHIVEID = 'SELECT
+    public const string QUERY_BY_ARCHIVEID = 'SELECT
             ba.`AnliegenID` AS id
         FROM `buergeranliegen` ba
         WHERE

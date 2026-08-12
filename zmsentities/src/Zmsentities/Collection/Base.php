@@ -15,6 +15,7 @@ use BO\Zmsentities\Schema\Entity;
  * @SuppressWarnings(Public)
  * @SuppressWarnings(Complexity)
  *
+ * @extends \ArrayObject<int|string, Entity>
  */
 class Base extends \ArrayObject implements \JsonSerializable
 {

@@ -28,8 +28,8 @@ if (!defined('ZMS_BACKEND_TWIG_CACHE')) {
 
 define(
     'ZMSBACKEND_SESSION_DURATION',
-    getenv('ZMSBACKEND_SESSION_DURATION') ? getenv('ZMSBACKEND_SESSION_DURATION') : (
-        getenv('ZMSDB_SESSION_DURATION') ? getenv('ZMSDB_SESSION_DURATION') : 36000
+    (($value = getenv('ZMSBACKEND_SESSION_DURATION')) !== false && $value !== '') ? $value : (
+        (($value = getenv('ZMSDB_SESSION_DURATION')) !== false && $value !== '') ? $value : 36000
     )
 );
 
@@ -37,9 +37,9 @@ class Application extends \BO\Slim\Application
 {
     use CacheInitializationTrait;
 
-    const IDENTIFIER = 'zms';
+    const string IDENTIFIER = 'zms';
 
-    const MODULE_NAME = 'zmsbackend';
+    const string MODULE_NAME = 'zmsbackend';
 
     public static ?CacheInterface $cache = null;
     public static string $CACHE_DIR;
@@ -59,7 +59,7 @@ class Application extends \BO\Slim\Application
     public static int $MAX_STRING_LENGTH;
     public static int $MAX_RECURSION_DEPTH;
 
-    const DEBUG = false;
+    const bool DEBUG = false;
     const TWIG_CACHE = ZMS_BACKEND_TWIG_CACHE;
     const SESSION_DURATION = ZMSBACKEND_SESSION_DURATION;
 

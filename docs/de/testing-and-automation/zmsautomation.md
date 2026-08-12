@@ -51,7 +51,12 @@ Das Skript `zmsautomation-test` kümmert sich um Datenbank-Setup, Migrationen un
 
 # nur UI-Tests (Selenium/[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) web)
 ./zmsautomation/zmsautomation-test -Pataf-ui
+
+# optional: andere ATAF-Maven-Version festlegen (Standard: ataf.version in pom.xml)
+./zmsautomation/zmsautomation-test -Pataf-api -Pataf-ui -Dataf.version=0.3.3
 ```
+
+Die ATAF-Bibliotheksversion kommt standardmäßig aus `<ataf.version>` in `zmsautomation/pom.xml`. Mit `-Dataf.version=…` kannst du eine andere veröffentlichte `de.muenchen.ataf`-Version verwenden.
 
 Das Skript:
 
@@ -269,9 +274,15 @@ cd zmsautomation && mvn test
 
 ## zmsautomation in GitHub-Workflows
 
-GitHub-Actions-Workflow: `.github/workflows/zmsautomation-workflow.yaml`.
+GitHub-Actions-Workflow: [`.github/workflows/zmsautomation-workflow.yaml`](https://github.com/it-at-m/eappointment/blob/next/.github/workflows/zmsautomation-workflow.yaml).
 
-Dokumentation folgt.
+Manuelle Läufe (`workflow_dispatch`) bieten die üblichen Modul-/Browser-/Tag-Eingaben sowie:
+
+| Eingabe        | Zweck                                                                                                                                                                                                                                          |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ataf_version` | Optionale ATAF-Maven-Version (`de.muenchen.ataf:core\|rest\|web`). Leer lassen, um `ataf.version` aus `zmsautomation/pom.xml` des ausgecheckten Branches zu nutzen. Wenn gesetzt, übergibt der Job `-Dataf.version=…` an `zmsautomation-test`. |
+
+Geplante Nightly-Läufe nutzen immer die POM-Version (kein Override). Die Version muss auf Maven Central existieren.
 
 ## zmsautomation in Safari unter macOS außerhalb des Containers
 

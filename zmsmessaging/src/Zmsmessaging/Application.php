@@ -23,10 +23,10 @@ class Application extends \BO\Slim\Application
     /**
      * Name of the application
      */
-    const IDENTIFIER = 'zms';
-    const MODULE_NAME = 'zmsmessaging';
+    const string IDENTIFIER = 'zms';
+    const string MODULE_NAME = 'zmsmessaging';
 
-    const DEBUG = false;
+    const bool DEBUG = false;
 
     /*
      * -----------------------------------------------------------------------

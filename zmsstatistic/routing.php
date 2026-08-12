@@ -23,7 +23,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->map(['GET','POST'], '/oidc/', \BO\Zmsstatistic\Oidc::class)
     ->setName("oidc")->add(new \BO\Slim\Middleware\OAuthMiddleware('login'));
 
-\App::$slim->get('/overview/', '\BO\Zmsstatistic\Overview')
+\App::$slim->get('/overview/', \BO\Zmsstatistic\Overview::class)
     ->setName("Overview");
 
 
@@ -34,35 +34,35 @@ use \Psr\Http\Message\ResponseInterface;
  * -------------------------------------------------------------------------
  */
 
- \App::$slim->get('/report/client/scope/[{period}/]', '\BO\Zmsstatistic\ReportClientIndex')
+ \App::$slim->get('/report/client/scope/[{period}/]', \BO\Zmsstatistic\ReportClientIndex::class)
      ->setName("ReportClientIndex");
 
- \App::$slim->get('/report/client/department/[{period}/]', '\BO\Zmsstatistic\ReportClientDepartment')
+ \App::$slim->get('/report/client/department/[{period}/]', \BO\Zmsstatistic\ReportClientDepartment::class)
      ->setName("ReportClientDepartment");
 
- \App::$slim->get('/report/client/organisation/[{period}/]', '\BO\Zmsstatistic\ReportClientOrganisation')
+ \App::$slim->get('/report/client/organisation/[{period}/]', \BO\Zmsstatistic\ReportClientOrganisation::class)
      ->setName("ReportClientOrganisation");
 
 
- \App::$slim->get('/report/request/scope/[{period}/]', '\BO\Zmsstatistic\ReportRequestIndex')
+ \App::$slim->get('/report/request/scope/[{period}/]', \BO\Zmsstatistic\ReportRequestIndex::class)
      ->setName("ReportRequestIndex");
 
- \App::$slim->get('/report/request/department/[{period}/]', '\BO\Zmsstatistic\ReportRequestDepartment')
+ \App::$slim->get('/report/request/department/[{period}/]', \BO\Zmsstatistic\ReportRequestDepartment::class)
      ->setName("ReportRequestDepartment");
 
- \App::$slim->get('/report/request/organisation/[{period}/]', '\BO\Zmsstatistic\ReportRequestOrganisation')
+ \App::$slim->get('/report/request/organisation/[{period}/]', \BO\Zmsstatistic\ReportRequestOrganisation::class)
      ->setName("ReportRequestOrganisation");
 
- \App::$slim->get('/report/waiting/scope/[{period}/]', '\BO\Zmsstatistic\ReportWaitingIndex')
+ \App::$slim->get('/report/waiting/scope/[{period}/]', \BO\Zmsstatistic\ReportWaitingIndex::class)
      ->setName("ReportWaitingIndex");
 
-\App::$slim->get('/report/waiting/department/[{period}/]', '\BO\Zmsstatistic\ReportWaitingDepartment')
+\App::$slim->get('/report/waiting/department/[{period}/]', \BO\Zmsstatistic\ReportWaitingDepartment::class)
     ->setName("ReportWaitingDepartment");
 
-\App::$slim->get('/report/waiting/organisation/[{period}/]', '\BO\Zmsstatistic\ReportWaitingOrganisation')
+\App::$slim->get('/report/waiting/organisation/[{period}/]', \BO\Zmsstatistic\ReportWaitingOrganisation::class)
     ->setName("ReportWaitingOrganisation");
 
-\App::$slim->get('/report/capacity/scope/[{period}/]', '\BO\Zmsstatistic\ReportCapacityIndex')
+\App::$slim->get('/report/capacity/scope/[{period}/]', \BO\Zmsstatistic\ReportCapacityIndex::class)
     ->setName("ReportCapacityIndex");
 
 /*
@@ -71,16 +71,16 @@ use \Psr\Http\Message\ResponseInterface;
  * -------------------------------------------------------------------------
  */
 
-\App::$slim->get('/warehouse/', '\BO\Zmsstatistic\WarehouseIndex')
+\App::$slim->get('/warehouse/', \BO\Zmsstatistic\WarehouseIndex::class)
     ->setName("WarehouseIndex");
 
-\App::$slim->get('/warehouse/{subject}/', '\BO\Zmsstatistic\WarehouseSubject')
+\App::$slim->get('/warehouse/{subject}/', \BO\Zmsstatistic\WarehouseSubject::class)
     ->setName("WarehouseSubject");
 
-\App::$slim->get('/warehouse/{subject}/{subjectid}/', '\BO\Zmsstatistic\WarehousePeriod')
+\App::$slim->get('/warehouse/{subject}/{subjectid}/', \BO\Zmsstatistic\WarehousePeriod::class)
     ->setName("WarehousePeriod");
 
-\App::$slim->get('/warehouse/{subject}/{subjectid}/{period}/', '\BO\Zmsstatistic\WarehouseReport')
+\App::$slim->get('/warehouse/{subject}/{subjectid}/{period}/', \BO\Zmsstatistic\WarehouseReport::class)
     ->setName("WarehouseReport");
 
 /*
@@ -88,7 +88,7 @@ use \Psr\Http\Message\ResponseInterface;
  * Logout
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/logout/', '\BO\Zmsstatistic\Logout')
+\App::$slim->get('/logout/', \BO\Zmsstatistic\Logout::class)
     ->setName("logout");
 
 /*
@@ -96,7 +96,7 @@ use \Psr\Http\Message\ResponseInterface;
  * Workstation
  * -------------------------------------------------------------------------
  */
-\App::$slim->map(['GET','POST'], '/workstation/select/', '\BO\Zmsstatistic\WorkstationSelect')
+\App::$slim->map(['GET','POST'], '/workstation/select/', \BO\Zmsstatistic\WorkstationSelect::class)
     ->setName("workstationSelect");
 
 /*
@@ -104,7 +104,7 @@ use \Psr\Http\Message\ResponseInterface;
  * Other Ajax Components
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/dialog/', '\BO\Zmsstatistic\Helper\DialogHandler')
+\App::$slim->get('/dialog/', \BO\Zmsstatistic\Helper\DialogHandler::class)
     ->setName("dialogHandler");
 
 
@@ -113,14 +113,11 @@ use \Psr\Http\Message\ResponseInterface;
  * maintenance
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/testpage/', '\BO\Zmsstatistic\Testpage')
-    ->setName("testpage");
-
-\App::$slim->get('/changelog/', '\BO\Zmsstatistic\Changelog')
+\App::$slim->get('/changelog/', \BO\Zmsstatistic\Changelog::class)
     ->setName("changelog");
 
-\App::$slim->get('/status/', '\BO\Zmsstatistic\Status')
+\App::$slim->get('/status/', \BO\Zmsstatistic\Status::class)
     ->setName("status");
 
-\App::$slim->get('/healthcheck/', '\BO\Zmsstatistic\Healthcheck')
+\App::$slim->get('/healthcheck/', \BO\Zmsstatistic\Healthcheck::class)
     ->setName("healthcheck");

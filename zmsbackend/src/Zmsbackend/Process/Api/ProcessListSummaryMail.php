@@ -106,12 +106,12 @@ class ProcessListSummaryMail extends \BO\Zmsbackend\Api\BaseController
         $logRepository = new EventLogRepository();
         $newLogEntry = new \BO\Zmsbackend\EventLog\Service\EventLog();
         $newLogEntry->addData([
-            'name' => \BO\Zmsbackend\EventLog\Service\EventLog::CLIENT_PROCESSLIST_REQUEST,
+            'name' => EventLog::CLIENT_PROCESSLIST_REQUEST,
             'origin' => 'zmsbackend ' . Version::getString(),
             'referenceType' => 'mail.recipient.hash',
             'reference' => $logRepository->hashStringValue($mailAddress),
             'context' => ['found' => $collection->getIds()],
-        ])->setSecondsToLive(\BO\Zmsbackend\EventLog\Service\EventLog::LIVETIME_DAY);
+        ])->setSecondsToLive(EventLog::LIVETIME_DAY);
 
         $logRepository->writeEntity($newLogEntry);
     }
@@ -120,7 +120,7 @@ class ProcessListSummaryMail extends \BO\Zmsbackend\Api\BaseController
     {
         $logRepository = new EventLogRepository();
         $eventLogEntries = $logRepository->readByNameAndRef(
-            \BO\Zmsbackend\EventLog\Service\EventLog::CLIENT_PROCESSLIST_REQUEST,
+            EventLog::CLIENT_PROCESSLIST_REQUEST,
             $logRepository->hashStringValue($mailAddress)
         );
         $youngestTime = new DateTime('-' . self::PROCESSLIST_SUMMARY_REQUEST_REPETITION_SEC . ' seconds');

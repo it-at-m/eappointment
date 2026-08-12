@@ -13,7 +13,7 @@ use Psr\SimpleCache\CacheInterface;
 
 define(
     'ZMS_STATISTIC_SESSION_DURATION',
-    getenv('ZMS_STATISTIC_SESSION_DURATION') ? getenv('ZMS_STATISTIC_SESSION_DURATION') : 36000
+    (($value = getenv('ZMS_STATISTIC_SESSION_DURATION')) !== false && $value !== '') ? $value : 36000
 );
 
 if (($token = getenv('ZMS_CONFIG_SECURE_TOKEN')) === false || $token === '') {
@@ -33,13 +33,13 @@ class Application extends \BO\Slim\Application
      * Name of the application
      *
      */
-    const IDENTIFIER = 'zms';
+    const string IDENTIFIER = 'zms';
 
-    const MODULE_NAME = 'zmsstatistic';
+    const string MODULE_NAME = 'zmsstatistic';
 
     public static ?CacheInterface $cache = null;
 
-    const DEBUG = false;
+    const bool DEBUG = false;
 
     const TWIG_CACHE = ZMS_STATISTIC_TWIG_CACHE;
 
