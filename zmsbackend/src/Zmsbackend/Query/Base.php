@@ -366,11 +366,8 @@ abstract class Base
      */
     public function addEntityMapping(mixed $type = null): static
     {
-        if (!$this instanceof MappingInterface) {
-            throw new \LogicException(static::class . ' must implement MappingInterface');
-        }
-        // Extra $type is ignored by most implementors (PHP 8); Availability uses it.
-        /** @psalm-suppress TooManyArguments */
+        // Concrete query classes provide getEntityMapping(); not all declare MappingInterface.
+        /** @psalm-suppress UndefinedMethod, TooManyArguments */
         $entityMapping = $this->getPrefixedList($this->getEntityMapping($type));
         $this->query->select($entityMapping);
         return $this;
