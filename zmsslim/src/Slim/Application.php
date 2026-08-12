@@ -17,18 +17,20 @@ class Application
     /**
      * Root directory for the project
      */
-    const APP_PATH = '.';
-/**
+    public const string APP_PATH = '.';
+
+    /**
      * Name of the application
      */
-    const IDENTIFIER = 'unnamed slim project';
+    public const string IDENTIFIER = 'unnamed slim project';
 
-    public const MODULE_NAME = 'unnamed slim module';
-/**
+    public const string MODULE_NAME = 'unnamed slim module';
+
+    /**
      * Flag to enable debugging mode for application,
      * if debug is enabled, an exception is shown with a backtrace
      */
-    const DEBUG = false;
+    public const bool DEBUG = false;
     const DEBUGLEVEL = ZMS_DEBUGLEVEL;
     const SESSION_DURATION = ZMS_SESSION_DURATION;
     const LOG_ERRORS = true;

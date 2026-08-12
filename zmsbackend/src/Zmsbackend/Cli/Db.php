@@ -81,7 +81,7 @@ class Db
 
     public static function startTestDataImport($fixturesDirectory, $filename = 'mysql_zmsbo.sql')
     {
-        $defaultDatabaseName =& \BO\Zmsbackend\Connection\Select::$dbname_zms;
+        $defaultDatabaseName = \BO\Zmsbackend\Connection\Select::$dbname_zms;
 
         $databaseConnection = self::startUsingDatabase('information_schema');
         $databaseConnection->exec("DROP DATABASE IF EXISTS `$defaultDatabaseName`;");
@@ -265,7 +265,7 @@ class Db
             return;
         }
 
-        $defaultDatabaseName =& \BO\Zmsbackend\Connection\Select::$dbname_zms;
+        $defaultDatabaseName = \BO\Zmsbackend\Connection\Select::$dbname_zms;
         \BO\Zmsbackend\Connection\Select::$writeSourceName = preg_replace(
             "#dbname=$defaultDatabaseName.*?;#",
             "dbname=$databaseName;",
