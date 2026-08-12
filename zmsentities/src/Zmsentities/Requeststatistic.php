@@ -37,7 +37,7 @@ class Requeststatistic extends Schema\Entity implements Helper\NoSanitize
      * @param array|object $mergeData
      */
     #[\Override]
-    public function addData($mergeData): Schema\Entity
+    public function addData($mergeData): static
     {
         if (isset($mergeData['scopeRequests']) && !$mergeData['scopeRequests'] instanceof Collection\RequestList) {
             $mergeData['scopeRequests'] = (new Collection\RequestList())->addData($mergeData['scopeRequests']);
