@@ -419,7 +419,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
             } elseif ($order === 'descending') {
                 return $b->callTime <=> $a->callTime;
             }
-            throw new InvalidArgumentException("Invalid sort order: $order. Use 'ascending' or 'descending'.");
+            throw new \InvalidArgumentException("Invalid sort order: $order. Use 'ascending' or 'descending'.");
         });
         return new self($queueListArray);
     }

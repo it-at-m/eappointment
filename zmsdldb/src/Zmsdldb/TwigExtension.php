@@ -104,7 +104,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
     public function getD115OpeningTimes()
     {
         $settingsRepository = \App::$repository->fromSetting();
-        $openinTimes = $settingsRepository->fetchName('d115.openingTime') ?? \APP::D115_DEFAULT_OPENINGTIME;
+        $openinTimes = $settingsRepository->fetchName('d115.openingTime') ?? \App::D115_DEFAULT_OPENINGTIME;
 
         return $openinTimes;
     }
@@ -112,7 +112,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
     public function getD115Text()
     {
         $settingsRepository = \App::$repository->fromSetting();
-        $text = $settingsRepository->fetchName('d115.messageHtml') ?? \APP::D115_DEFAULT_TEXT;
+        $text = $settingsRepository->fetchName('d115.messageHtml') ?? \App::D115_DEFAULT_TEXT;
 
         return $text;
     }
@@ -127,12 +127,12 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
 
     public function getOSMAccessToken()
     {
-        return \APP::OSM_ACCESS_TOKEN;
+        return \App::OSM_ACCESS_TOKEN;
     }
 
     public function getOSMOptions()
     {
-        return 'gestureHandling: ' . \APP::OSM_GESTURE_HANDLING;
+        return 'gestureHandling: ' . \App::OSM_GESTURE_HANDLING;
     }
 
     public function formatPhoneNumber($phoneNumber)

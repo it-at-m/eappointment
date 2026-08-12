@@ -2,9 +2,13 @@
 
 namespace BO\Slim;
 
+use Psr\Container\ContainerInterface;
 use Slim\Interfaces\RouteCollectorInterface;
 use Slim\Routing\RouteParser;
 
+/**
+ * @extends \Slim\App<ContainerInterface|null>
+ */
 class SlimApp extends \Slim\App
 {
     public function urlFor(string $name, array $params = []): string

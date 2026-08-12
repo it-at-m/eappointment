@@ -16,7 +16,7 @@ class Collection implements \Countable, \ArrayAccess
     }
 
     #[\Override]
-    final public function offsetGet($offset)
+    final public function offsetGet($offset): Base
     {
         if ($this->offsetExists($offset)) {
             return $this->entities[$offset];
