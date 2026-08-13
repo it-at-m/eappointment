@@ -9,6 +9,10 @@ use BO\Zmsbackend\Query\Builder\Dialect\ANSI;
  *
  * Base Query class that all other query types should inherit from.
  *
+ * Fluent APIs live on Select/Insert/Update/Delete (and their traits).
+ * Psalm sees Query\Base::$query as this abstract type; referencedMethod
+ * suppresses in psalm.xml cover those subclass methods (no circular @mixin).
+ *
  * @package     BO\Zmsbackend\Query\Builder
  * @author      Alex Gisby<alex@solution10.com>
  * @license     MIT

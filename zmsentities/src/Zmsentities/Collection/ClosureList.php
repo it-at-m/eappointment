@@ -2,6 +2,9 @@
 
 namespace BO\Zmsentities\Collection;
 
+/**
+ * @extends Base<\BO\Zmsentities\Closure>
+ */
 class ClosureList extends Base
 {
     const ENTITY_CLASS = '\BO\Zmsentities\Closure';

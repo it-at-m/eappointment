@@ -8,6 +8,9 @@ declare(strict_types=1);
 
 namespace BO\Zmsentities\Collection;
 
+/**
+ * @extends Base<\BO\Zmsentities\EventLog>
+ */
 class EventLogList extends Base
 {
     public const ENTITY_CLASS = '\BO\Zmsentities\EventLog';

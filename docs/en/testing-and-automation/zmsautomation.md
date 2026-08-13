@@ -51,7 +51,12 @@ The `zmsautomation-test` script handles database setup, migrations, and test exe
 
 # Run only UI tests (Selenium/[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) web)
 ./zmsautomation/zmsautomation-test -Pataf-ui
+
+# Optional: pin a different ATAF Maven version (default: ataf.version in pom.xml)
+./zmsautomation/zmsautomation-test -Pataf-api -Pataf-ui -Dataf.version=0.3.3
 ```
+
+The ATAF library version defaults to `<ataf.version>` in `zmsautomation/pom.xml`. Override it with `-Dataf.version=…` when you need another published `de.muenchen.ataf` release.
 
 The script will:
 
@@ -269,9 +274,15 @@ cd zmsautomation && mvn test
 
 ## zmsautomation in GitHub Workflows
 
-GitHub Actions workflow: `.github/workflows/zmsautomation-workflow.yaml`.
+GitHub Actions workflow: [`.github/workflows/zmsautomation-workflow.yaml`](https://github.com/it-at-m/eappointment/blob/next/.github/workflows/zmsautomation-workflow.yaml).
 
-Documentation to come.
+Manual runs (`workflow_dispatch`) expose the usual module/browser/tag inputs plus:
+
+| Input          | Purpose                                                                                                                                                                                                                            |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ataf_version` | Optional ATAF Maven version (`de.muenchen.ataf:core\|rest\|web`). Leave empty to use `ataf.version` from `zmsautomation/pom.xml` on the checked-out branch. When set, the job passes `-Dataf.version=…` into `zmsautomation-test`. |
+
+Scheduled nightly runs always use the POM version (no override). The version must exist on Maven Central.
 
 ## zmsautomation in Safari on macOS outside the container
 

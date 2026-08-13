@@ -10,8 +10,14 @@
 >
     <projectFiles>
         <directory name="src" />
+        <file name="tests/config.php" />
         <ignoreFiles>
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
+    <issueHandlers>
+        <!-- Psalm narrows typed string/bool consts to their literal values; module App overrides are valid PHP. -->
+        <InvalidClassConstantType errorLevel="suppress" />
+        <LessSpecificClassConstantType errorLevel="suppress" />
+    </issueHandlers>
 </psalm>
