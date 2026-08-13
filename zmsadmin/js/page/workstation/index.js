@@ -369,11 +369,15 @@ class View extends BaseView {
     }
 
     onCallOtherProcess(event) {
-        const selectedId = $(event.currentTarget).data('process');
+        const selectedProcessId = $(event.currentTarget).data('process');
         // Only while actively processing (client-info). During "called", allow normal call flow.
-        const $activeClient = $('.client-info[data-process-id]').filter(':visible').first();
-        const activeId = $activeClient.attr('data-process-id');
-        if (!selectedId || !activeId || String(selectedId) === String(activeId)) {
+        const $activeProcess = $('.client-info[data-process-id]').filter(':visible').first();
+        const activeProcessId = $activeProcess.attr('data-process-id');
+        if (
+            !selectedProcessId ||
+            !activeProcessId ||
+            String(selectedProcessId) === String(activeProcessId)
+        ) {
             return false;
         }
 
@@ -382,8 +386,8 @@ class View extends BaseView {
         $(event.currentTarget).data('name', name);
         // Return focus to the current process panel, not the queue link that opened the dialog.
         this.onConfirm(event, 'confirm_call_other_process', () => {
-            window.location.href = `${this.includeUrl}/workstation/process/finished/?nextprocess=${selectedId}`;
-        }, null, $activeClient.get(0));
+            window.location.href = `${this.includeUrl}/workstation/process/finished/?nextprocess=${selectedProcessId}`;
+        }, null, $activeProcess.get(0));
         return true;
     }
 
