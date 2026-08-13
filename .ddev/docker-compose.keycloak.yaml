@@ -20,7 +20,7 @@ services:
     restart: unless-stopped
 
   init-keycloak-token:
-    image: curlimages/curl:8.12.1
+    image: curlimages/curl:8.21.0
     depends_on:
       keycloak:
         condition: service_started
