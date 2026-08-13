@@ -34,7 +34,7 @@ class Home extends BaseController
         return Render::withLastModified($response, time(), '0')->withRedirect($homeUrl, 301);
     }
 
-    public function getHomeUrl(RequestInterface $request): string
+    public static function getHomeUrl(RequestInterface $request): string
     {
         $cookies = $request->getCookieParams();
         $homeUrl = TicketprinterClient::getHomeUrl();

@@ -158,3 +158,21 @@
     margin: 0;
     padding: 0;
 }
+
+.statistic-additional-department-requests {
+    margin-top: 1rem;
+}
+
+.statistic-additional-department-requests__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.statistic-additional-department-requests__panel {
+    display: none;
+}
+
+.statistic-additional-department-requests.is-expanded .statistic-additional-department-requests__panel {
+    display: block;
+}

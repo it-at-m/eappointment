@@ -290,12 +290,9 @@ const { selectedService } = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
 ) as SelectedServiceProvider;
 
-const selectedTimeslotInject = inject<SelectedTimeslotProvider>(
+const { selectedProvider, selectedTimeslot } = inject<SelectedTimeslotProvider>(
   "selectedTimeslot"
 ) as SelectedTimeslotProvider;
-const { selectedProvider, selectedTimeslot } = selectedTimeslotInject;
-// Tests may omit this; production AppointmentView always provides it.
-const resumeProviderId = selectedTimeslotInject.resumeProviderId ?? ref("");
 
 const loadingStates = inject("loadingStates", {
   isReservingAppointment: ref(false),
@@ -946,8 +943,6 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   clearVisibleErrors();
   selectedTimeslot.value = timeSlot;
   const realOfficeId = resolveRealOfficeIdForSlot(officeId, timeSlot);
-  // Capture opaque id for resume (not from the Office graph).
-  resumeProviderId.value = String(realOfficeId);
   selectedProvider.value = getOfficeById(realOfficeId);
   if (summary.value) {
     await nextTick();
@@ -1488,16 +1483,19 @@ const getOfficeIdsForCalendarRequest = (): number[] => {
         .filter((id) => selectableIds.has(id))
     : selectable.map((p) => Number(p.id));
 
-  const offeringIds = new Set<number>();
+  // Peers must be offered by every selected service — available-calendar
+  // validates each officeId against all serviceIds. A union (any service)
+  // wrongly expands Ausbildung 10503 when only the main service exists there.
   const services = [
     selectedService.value,
     ...(selectedService.value?.subServices || []).filter((s) => s.count > 0),
   ].filter(Boolean) as Array<{ providers?: Array<{ id: string | number }> }>;
-  for (const service of services) {
-    for (const p of service.providers || []) {
-      offeringIds.add(Number(p.id));
-    }
-  }
+  const peerOfferedByAllSelectedServices = (peer: number): boolean => {
+    if (services.length === 0) return true;
+    return services.every((service) =>
+      (service.providers || []).some((p) => Number(p.id) === peer)
+    );
+  };
 
   const expanded = new Set<number>();
   for (const id of baseIds) {
@@ -1507,7 +1505,7 @@ const getOfficeIdsForCalendarRequest = (): number[] => {
     if (!Array.isArray(office?.sharedBookingOfficeIds)) continue;
     for (const peerId of office.sharedBookingOfficeIds) {
       const peer = Number(peerId);
-      if (offeringIds.size === 0 || offeringIds.has(peer)) {
+      if (peerOfferedByAllSelectedServices(peer)) {
         expanded.add(peer);
       }
     }

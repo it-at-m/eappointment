@@ -47,7 +47,12 @@ The `zmsautomation-test` script handles database setup, migrations, and test exe
 
 # Run specific API feature file
 ./zmsautomation/zmsautomation-test -Pataf-api -Dcucumber.features="src/test/resources/features/rest/zmsapi/status.feature"
+
+# Optional: pin a different ATAF Maven version (default: ataf.version in pom.xml)
+./zmsautomation/zmsautomation-test -Pataf-api -Pataf-ui -Dataf.version=0.3.3
 ```
+
+The ATAF library version defaults to `<ataf.version>` in `pom.xml`. Override with `-Dataf.version=…` for another published `de.muenchen.ataf` release.
 
 Use `-Pataf-api` and/or `-Pataf-ui` to select the test layer. Each profile runs its own Cucumber runner (`ApiTestRunner` / `UiTestRunner`). When a Jira tag exists on both API and UI features, pass the profile for the layer you want — the script adds `not @web` / `not @rest` to the tag filter automatically.
 
@@ -226,6 +231,8 @@ Additional REST features (availability, offices-and-services, etc.) may be added
 ## CI/CD
 
 GitHub Actions: `.github/workflows/zmsautomation-workflow.yaml` checks out the repo, copies `.devcontainer/.env.template` → `.env`, pulls **prebuilt PHP module images** from GHCR (`zmsadmin`, `zmsbackend`, …), starts a subset of `.devcontainer/docker-compose.yaml` (`web`, `db`, `citizenview`, `refarch-gateway`, `keycloak`, `init-keycloak`; no phpMyAdmin), installs Java/Maven/browsers into `zms-web`, injects `zmslayout` plus module trees from those images (layout symlinks in `zmsadmin`/`zmsstatistic` need `/var/www/html/zmslayout`), then runs `zmsautomation/zmsautomation-test` inside `zms-web` via `docker exec`. **CitizenView** is the same Node + Vite dev service as in the devcontainer (`npm install` + dev server on port **8082**), not a separate prebuilt CitizenView image.
+
+Manual `workflow_dispatch` runs accept an optional **`ataf_version`** input. Leave it empty to use `ataf.version` from this module’s `pom.xml` on the checked-out branch; set it (e.g. `0.3.3`) to pass `-Dataf.version=…` into `zmsautomation-test`. Scheduled nightly runs always use the POM version. The version must exist on Maven Central as `de.muenchen.ataf:{core,rest,web}`.
 
 ## Migration Notes
 

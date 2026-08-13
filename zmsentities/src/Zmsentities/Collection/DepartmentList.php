@@ -4,6 +4,9 @@ namespace BO\Zmsentities\Collection;
 
 use BO\Zmsentities\Helper\Property;
 
+/**
+ * @extends Base<\BO\Zmsentities\Department>
+ */
 class DepartmentList extends Base implements JsonUnindexed
 {
     public const ENTITY_CLASS = '\BO\Zmsentities\Department';

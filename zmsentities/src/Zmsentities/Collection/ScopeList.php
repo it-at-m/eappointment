@@ -5,6 +5,9 @@ namespace BO\Zmsentities\Collection;
 use BO\Zmsentities\Helper\Sorter;
 use BO\Zmsentities\Scope;
 
+/**
+ * @extends Base<\BO\Zmsentities\Scope>
+ */
 class ScopeList extends Base
 {
     public const ENTITY_CLASS = '\BO\Zmsentities\Scope';

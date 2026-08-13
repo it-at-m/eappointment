@@ -132,29 +132,6 @@ class Location extends Base
                 'selfAsArray' => true,
                 'clearFields' => ['locale' => $this->get('meta.locale')],
             ],
-            'name' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
-                'neededFields' => [
-                    'id' => 'object_id',
-                    'meta.locale' => 'locale',
-                    'name' => 'search_value'
-                ],
-                'addFields' => [
-                    'entity_type' => static::getTableName(),
-                    'search_type' => 'name'
-                ],
-                'deleteFields' => [
-                    'object_id' => $this->get('id'),
-                    'locale' => $this->get('meta.locale'),
-                    'entity_type' => static::getTableName()
-                ],
-                'multiple' => false,
-                'clearFields' => [
-                    'entity_type' => static::getTableName(),
-                    'locale' => $this->get('meta.locale')
-                ],
-                'selfAsArray' => true
-            ],
         ];
     }
 

@@ -13,8 +13,6 @@ export interface SelectedServiceProvider {
 export interface SelectedTimeslotProvider {
   selectedProvider: Ref<OfficeImpl | undefined>;
   selectedTimeslot: Ref<number>;
-  /** Opaque office id captured at timeslot selection (not from Office graph). */
-  resumeProviderId: Ref<string>;
 }
 
 export interface CustomerDataProvider {

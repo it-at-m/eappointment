@@ -7,6 +7,9 @@
 
 namespace BO\Zmsdldb\Entity;
 
+/**
+ * @extends \ArrayObject<string, mixed>
+ */
 class Base extends \ArrayObject
 {
     /**
