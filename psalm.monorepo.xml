@@ -21,6 +21,36 @@
         <file name="zmsadmin/tests/Zmsadmin/bootstrap.php" />
         <directory name="zmsbackend/src" />
         <directory name="zmsbackend/bin" />
+        <!-- Extensionless PHP CLIs are not picked up by <directory> (*.php only). -->
+        <file name="zmsbackend/bin/anonymizeStatisticData" />
+        <file name="zmsbackend/bin/api" />
+        <file name="zmsbackend/bin/archiveStatisticData" />
+        <file name="zmsbackend/bin/calculateDailyWaitingStatistic" />
+        <file name="zmsbackend/bin/calculateDayOffList" />
+        <file name="zmsbackend/bin/calculateSlots" />
+        <file name="zmsbackend/bin/cleanupOverviewCalendar" />
+        <file name="zmsbackend/bin/cronLog" />
+        <file name="zmsbackend/bin/deallocateAppointmentData" />
+        <file name="zmsbackend/bin/deleteAppointmentData" />
+        <file name="zmsbackend/bin/deleteArchivedProcessForToday" />
+        <file name="zmsbackend/bin/deleteBlacklistedMail" />
+        <file name="zmsbackend/bin/deleteDayoffData" />
+        <file name="zmsbackend/bin/deleteOldAvailabilityData" />
+        <file name="zmsbackend/bin/deleteOldEventLogEntries" />
+        <file name="zmsbackend/bin/deleteOldLogs" />
+        <file name="zmsbackend/bin/deleteReservedData" />
+        <file name="zmsbackend/bin/deleteSessionData" />
+        <file name="zmsbackend/bin/deleteTicketprinterData" />
+        <file name="zmsbackend/bin/deleteUnconfirmedAppointmentData" />
+        <file name="zmsbackend/bin/deleteUnmatchedRequestsFromProviderExport" />
+        <file name="zmsbackend/bin/importTestData" />
+        <file name="zmsbackend/bin/migrate" />
+        <file name="zmsbackend/bin/resetApiQuota" />
+        <file name="zmsbackend/bin/resetGhostWorkstationCount" />
+        <file name="zmsbackend/bin/resetWorkstations" />
+        <file name="zmsbackend/bin/sendMailReminder" />
+        <file name="zmsbackend/bin/sendProcessListToScopeAdmin" />
+        <file name="zmsbackend/bin/updateDldbData" />
         <directory name="zmsbackend/cron" />
         <directory name="zmsbackend/tests" />
         <file name="zmsbackend/config.example.php" />
@@ -65,6 +95,7 @@
         <directory name="zmsslim/src" />
         <directory name="zmsslim/bin" />
         <directory name="zmsslim/tests" />
+        <file name="zmsslim/config.example.php" />
         <file name="zmsslim/tests/bootstrap.php" />
         <directory name="zmsstatistic/src" />
         <directory name="zmsstatistic/bin" />
@@ -529,6 +560,24 @@
                 <directory name="zmsslim/tests" />
                 <directory name="zmsstatistic/tests" />
                 <directory name="zmsticketprinter/tests" />
+                <!-- Fluent builder methods exist on Select/Insert/Update/Delete; Query\Base types $query as abstract Query. -->
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::select" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::from" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::where" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::orWhere" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::whereIn" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::having" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::orHaving" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::join" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::leftJoin" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::rightJoin" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::groupBy" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::orderBy" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::table" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::values" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::value" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::limit" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::offset" />
             </errorLevel>
         </UndefinedMethod>
         <UndefinedClass>
@@ -693,6 +742,16 @@
         </InvalidPropertyFetch>
         <DuplicateClass>
             <errorLevel type="suppress">
+                <!-- Each module ships a runtime class App in config.example.php; monorepo scan sees many. -->
+                <file name="zmsadmin/config.example.php" />
+                <file name="zmsbackend/config.example.php" />
+                <file name="zmscalldisplay/config.example.php" />
+                <file name="zmscitizenapi/config.example.php" />
+                <file name="zmsdldb/config.example.php" />
+                <file name="zmsmessaging/config.example.php" />
+                <file name="zmsslim/config.example.php" />
+                <file name="zmsstatistic/config.example.php" />
+                <file name="zmsticketprinter/config.example.php" />
                 <directory name="mellon/tests" />
                 <directory name="zmsadmin/tests" />
                 <directory name="zmsbackend/tests" />

@@ -253,7 +253,7 @@
   "termsOfUse": "Terms of Use",
   "termsOfUseForVideoConsultationLabel": "Terms of Use video consultation",
   "termsOfUseForVideoConsultationText": "To participate in the video consultation, I agree to the <a href=\"https://stadt.muenchen.de/dam/DSGVO/Nutzungsbedingungen-Videoberatung.pdf\" target='_blank' rel='noopener noreferrer' aria-label='Terms of Use video consultation pdf download'>Terms of Use</a>.",
-  "time": "Time",
+  "time": "Date and time",
   "timeStampSuffix": "o´clock",
   "updateAppointmentErrorHeader": "Appointment update failed.",
   "updateAppointmentErrorText": "Appointment update failed.",

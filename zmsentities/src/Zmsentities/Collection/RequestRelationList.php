@@ -2,6 +2,9 @@
 
 namespace BO\Zmsentities\Collection;
 
+/**
+ * @extends Base<\BO\Zmsentities\RequestRelation>
+ */
 class RequestRelationList extends Base
 {
     public const ENTITY_CLASS = '\BO\Zmsentities\RequestRelation';

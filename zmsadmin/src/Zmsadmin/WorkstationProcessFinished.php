@@ -14,6 +14,7 @@ use BO\Zmsadmin\Helper\ProcessFinishedHelper;
 use BO\Zmsentities\Exception\WorkstationMissingAssignedProcess;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Collection\RequestList;
+use BO\Zmsentities\Requeststatistic;
 use BO\Zmsentities\Workstation;
 
 class WorkstationProcessFinished extends BaseController
@@ -29,6 +30,9 @@ class WorkstationProcessFinished extends BaseController
         array $args
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        if (!$workstation instanceof Workstation) {
+            throw new WorkstationMissingAssignedProcess();
+        }
         $this->testProcess($workstation);
         $input = $request->getParsedBody();
         $validator = $request->getAttribute('validator');
@@ -43,23 +47,29 @@ class WorkstationProcessFinished extends BaseController
         $statisticEnabled = $workstation->getScope()->getPreference('queue', 'statisticsEnabled');
 
         if (! $statisticEnabled) {
-            $workstation->process['status'] = 'finished';
+            $workstation->getProcess()['status'] = 'finished';
             return $this->getFinishedResponse($workstation, null, $nextProcessId);
         }
 
-        $scopeId = $workstation->scope['id'];
-        if (! empty($workstation->process)) {
-            $scopeId = $workstation->process->scope->id;
-        }
+        $scopeId = $workstation->getProcess()->getCurrentScope()['id']
+            ?? $workstation->getScope()['id'];
 
-        $requestList = \App::$http
-            ->readGetResult('/scope/' . $scopeId . '/request/')
-            ->getCollection();
-        $requestList = $requestList ? $requestList : new RequestList();
+        $requestStatistic = $this->readRequeststatistic((int) $scopeId);
+        $scopeRequestList = $requestStatistic->getScopeRequests();
+        $additionalDepartmentRequestList = $requestStatistic->getAdditionalDepartmentRequests();
+
+        $selectableRequestList = (new RequestList())
+            ->addList($scopeRequestList)
+            ->addList($additionalDepartmentRequestList);
 
         if (is_array($input) && isset($input['process']) && array_key_exists('id', $input['process'])) {
             $source = $workstation->getScope()->getSource();
-            $process = new ProcessFinishedHelper(clone $workstation->process, $input, $requestList, $source);
+            $process = new ProcessFinishedHelper(
+                clone $workstation->getProcess(),
+                $input,
+                $selectableRequestList,
+                $source
+            );
             return $this->getFinishedResponse($workstation, $process, $nextProcessId);
         }
 
@@ -69,7 +79,8 @@ class WorkstationProcessFinished extends BaseController
             array(
                 'title' => 'Kundendaten',
                 'workstation' => $workstation,
-                'requestList' => $requestList->toSortedByGroup(),
+                'scopeRequestList' => $scopeRequestList->toSortedByGroup(),
+                'additionalDepartmentRequestList' => $additionalDepartmentRequestList->toSortedByGroup(),
                 'menuActive' => 'workstation',
                 'statisticEnabled' => $statisticEnabled,
                 'nextProcessId' => $nextProcessId
@@ -77,13 +88,28 @@ class WorkstationProcessFinished extends BaseController
         );
     }
 
+    protected function readRequeststatistic(int $scopeId): Requeststatistic
+    {
+        $entity = \App::$http
+            ->readGetResult('/scope/' . $scopeId . '/request/department/')
+            ->getEntity();
+
+        if ($entity instanceof Requeststatistic) {
+            return $entity;
+        }
+
+        throw new \RuntimeException(
+            'Invalid API response for /scope/' . $scopeId . '/request/department/'
+        );
+    }
+
     protected function getFinishedResponse(
         Workstation $workstation,
-        Process $process = null,
-        $nextProcessId = null
+        ?Process $process = null,
+        ?int $nextProcessId = null
     ) {
-        $process = ($process) ? $process : clone $workstation->process;
-        $process->status = ('pending' != $process->status) ? 'finished' : $process->status;
+        $process ??= clone $workstation->getProcess();
+        $process['status'] = ('pending' != $process['status']) ? 'finished' : $process['status'];
         \App::$http->readPostResult('/process/status/finished/', new Process($process))->getEntity();
         $redirectParams = [];
         if ($nextProcessId) {
@@ -99,7 +125,7 @@ class WorkstationProcessFinished extends BaseController
 
     protected function testProcess(Workstation $workstation)
     {
-        if (! $workstation->process->hasId()) {
+        if (! $workstation->getProcess()->hasId()) {
             throw new WorkstationMissingAssignedProcess();
         }
     }
