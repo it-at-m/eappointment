@@ -7,6 +7,12 @@ use BO\Zmsentities\Helper\Property;
 /**
  * @SuppressWarnings(Complexity)
  *
+ * @property int|string $id
+ * @property Useraccount $useraccount
+ * @property Process $process
+ * @property string $name
+ * @property Scope $scope
+ * @property array $queue
  */
 class Workstation extends Schema\Entity
 {
@@ -103,14 +109,24 @@ class Workstation extends Schema\Entity
         return ($this->name) ? $this->name : "Tresen";
     }
 
-    public function getScope()
+    public function getScope(): Scope
     {
-        if (!$this->offsetExists('scope')) {
-            $this->scope = new Scope();
-        } elseif (!$this->scope instanceof Scope) {
-            $this->scope = new Scope($this->scope);
+        $scope = $this->offsetExists('scope') ? $this['scope'] : null;
+        if (!$scope instanceof Scope) {
+            $scope = new Scope($scope);
+            $this['scope'] = $scope;
         }
-        return $this->scope;
+        return $scope;
+    }
+
+    public function getProcess(): Process
+    {
+        $process = $this->offsetExists('process') ? $this['process'] : null;
+        if (!$process instanceof Process) {
+            $process = new Process($process);
+            $this['process'] = $process;
+        }
+        return $process;
     }
 
     public function getScopeList($cluster = null)

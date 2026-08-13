@@ -58,7 +58,6 @@ const createWrapper = (overrides: any = {}) => {
         selectedTimeslot: {
           selectedProvider: ref(overrides.selectedProvider ?? null),
           selectedTimeslot: ref(overrides.selectedTimeslot ?? 0),
-          resumeProviderId: ref(""),
         },
         selectableProviders: ref([]),
         loadingStates: {
@@ -323,6 +322,52 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
     const officeIdsArg = (fetchAvailableCalendar as ReturnType<typeof vi.fn>)
       .mock.calls[0][1] as number[];
     expect([...officeIdsArg].sort((a, b) => a - b)).toEqual([10489, 10503]);
+  });
+
+  it("does not expand sharedBooking peer when a combined service is not offered there", async () => {
+    const { fetchAvailableCalendar } = await import("@/api/ZMSAppointmentAPI");
+    const mainAndPeer = [
+      {
+        id: 10489,
+        name: "Bürgerbüro Ruppertstraße",
+        disabledByServices: [],
+        sharedBookingOfficeIds: [10489, 10503],
+        address: { street: "Ruppertstraße", house_number: "19" },
+        scope: { id: "160" },
+      },
+      {
+        id: 10503,
+        name: "Bürgerbüro Ruppertstraße (Ausbildung)",
+        disabledByServices: [],
+        sharedBookingOfficeIds: [10489, 10503],
+        address: { street: "Ruppertstraße", house_number: "19" },
+        scope: { id: "372" },
+      },
+    ];
+    const mainOnly = [mainAndPeer[0]];
+
+    createWrapper({
+      selectedService: {
+        id: 1080843,
+        providers: mainAndPeer,
+        subServices: [
+          {
+            id: 10224136,
+            count: 1,
+            // Subservice not offered at Ausbildung 10503
+            providers: mainOnly,
+          },
+        ],
+      },
+    });
+
+    await nextTick();
+    await flushPromises();
+
+    expect(fetchAvailableCalendar).toHaveBeenCalled();
+    const officeIdsArg = (fetchAvailableCalendar as ReturnType<typeof vi.fn>)
+      .mock.calls[0][1] as number[];
+    expect([...officeIdsArg].sort((a, b) => a - b)).toEqual([10489]);
   });
 
   it("auto-selects equivalent office in mix group when JumpIn has different ID (10489 vs 10502)", async () => {

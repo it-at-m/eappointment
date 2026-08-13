@@ -2,6 +2,9 @@
 
 namespace BO\Zmsentities\Collection;
 
+/**
+ * @extends Base<\BO\Zmsentities\Cluster>
+ */
 class ClusterList extends Base
 {
     public const ENTITY_CLASS = '\BO\Zmsentities\Cluster';

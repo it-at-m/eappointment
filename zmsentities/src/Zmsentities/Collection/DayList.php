@@ -4,6 +4,9 @@ namespace BO\Zmsentities\Collection;
 
 use BO\Zmsentities\Day;
 
+/**
+ * @extends Base<\BO\Zmsentities\Day>
+ */
 class DayList extends Base implements JsonUnindexed
 {
     public const ENTITY_CLASS = '\BO\Zmsentities\Day';

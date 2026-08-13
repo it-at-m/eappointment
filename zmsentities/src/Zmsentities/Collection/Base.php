@@ -15,6 +15,8 @@ use BO\Zmsentities\Schema\Entity;
  * @SuppressWarnings(Public)
  * @SuppressWarnings(Complexity)
  *
+ * @template T of Entity
+ * @extends \ArrayObject<int|string, T>
  */
 class Base extends \ArrayObject implements \JsonSerializable
 {
@@ -25,6 +27,9 @@ class Base extends \ArrayObject implements \JsonSerializable
      */
     protected $resolveLevel = null;
 
+    /**
+     * @return T|null
+     */
     public function getFirst()
     {
         $item = $this->getIterator()->current();
@@ -106,6 +111,9 @@ class Base extends \ArrayObject implements \JsonSerializable
         return null;
     }
 
+    /**
+     * @param T $entity
+     */
     public function addEntity(\BO\Zmsentities\Schema\Entity $entity)
     {
         $this->offsetSet(null, $entity);
@@ -121,7 +129,8 @@ class Base extends \ArrayObject implements \JsonSerializable
         } elseif (is_array($value)) {
             parent::offsetSet($index, new $className($value));
         } else {
-            throw new \Exception('Invalid entity ' . get_class($value) . ' for collection ' . __CLASS__);
+            $given = is_object($value) ? $value::class : gettype($value);
+            throw new \Exception('Invalid entity ' . $given . ' for collection ' . __CLASS__);
         }
     }
 
