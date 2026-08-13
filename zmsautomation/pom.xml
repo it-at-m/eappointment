@@ -23,7 +23,7 @@
     <log4j.version>2.26.1</log4j.version>
     <lombok.version>1.18.46</lombok.version>
     <!-- Local ATAF: cd ../agile-test-automation-framework && mvn clean install -DskipTests -->
-    <ataf.version>0.3.3</ataf.version>
+    <ataf.version>0.3.4</ataf.version>
   </properties>
 
   <dependencies>
