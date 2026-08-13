@@ -37,7 +37,7 @@ services:
     restart: "no"
 
   init-keycloak:
-    image: klg71/keycloakmigration:0.2.130@sha256:fbec0fbbec2f90e9e912576cfb2ff108fb5703a59383b5e51c8633c130173af8
+    image: klg71/keycloakmigration:0.2.131@sha256:a311cce3b961062000e6e9ef08ecb5712f3ea81859beeee8cd0c836fe8e4f2cf
     depends_on:
       init-keycloak-token:
         condition: service_completed_successfully
