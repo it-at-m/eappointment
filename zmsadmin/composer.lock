@@ -481,12 +481,14 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "c9601a848ea30ea12806a22a8d94be0cd6ea2c52"
+                "reference": "f66bbe7d3b52216df2e5e28a42c859fd1f06995c"
             },
             "require": {
                 "eappointment/mellon": "@dev",
                 "ext-json": "*",
                 "ext-posix": "*",
+                "ezyang/htmlpurifier": "^4.18",
+                "league/commonmark": "^2.7",
                 "monolog/monolog": "^2.0",
                 "php": ">=8.3",
                 "psr/simple-cache": "^3.0",
@@ -517,6 +519,12 @@
                 "psr-4": {
                     "BO\\Slim\\": "src/Slim/",
                     "BO\\Slim\\Tests\\": "tests/Slim/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "BO\\Zmsclient\\": "../zmsclient/src/Zmsclient/",
+                    "BO\\Zmsentities\\": "../zmsentities/src/Zmsentities/"
                 }
             },
             "scripts": {
@@ -1188,16 +1196,16 @@
         },
         {
             "name": "league/commonmark",
-            "version": "2.9.0",
+            "version": "2.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/commonmark.git",
-                "reference": "5703d83ba3da3b2e356a5fedc848ed6d8ffb6529"
+                "reference": "d2d1aa8b35e072966c89bc0c66cf926e56767dc4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/5703d83ba3da3b2e356a5fedc848ed6d8ffb6529",
-                "reference": "5703d83ba3da3b2e356a5fedc848ed6d8ffb6529",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/d2d1aa8b35e072966c89bc0c66cf926e56767dc4",
+                "reference": "d2d1aa8b35e072966c89bc0c66cf926e56767dc4",
                 "shasum": ""
             },
             "require": {
@@ -1234,7 +1242,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "2.10-dev"
+                    "dev-main": "2.11-dev"
                 }
             },
             "autoload": {
@@ -1291,7 +1299,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-03T13:42:31+00:00"
+            "time": "2026-08-11T16:06:25+00:00"
         },
         {
             "name": "league/config",
