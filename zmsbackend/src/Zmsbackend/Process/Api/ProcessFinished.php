@@ -12,6 +12,7 @@ use BO\Mellon\Validator;
 use BO\Zmsbackend\Process\Service\ProcessStatusArchived as Query;
 use BO\Zmsbackend\Process\Service\Process;
 use BO\Zmsbackend\Workstation\Service\Workstation;
+use BO\Zmsbackend\ProcessSearchHistory\Service\ProcessSearchHistory as HistoryService;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -48,7 +49,7 @@ class ProcessFinished extends \BO\Zmsbackend\Api\BaseController
             );
             (new \BO\Zmsbackend\Workstation\Service\Workstation())->writeRemovedProcess($workstation);
         } else {
-            $query->writeEntityFinished($process, \App::$now, false, $workstation->getUseraccount());
+            $query->writeEntityFinished($process, \App::$now, false, $workstation->getUseraccount(), HistoryService::STATUS_COMPLETED);
         }
 
         if ($survey) {
