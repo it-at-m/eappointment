@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class TopicCluster extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'id' => 'topic_id',
         'parent_id' => 'parent_id',
         'rank' => 'rank'

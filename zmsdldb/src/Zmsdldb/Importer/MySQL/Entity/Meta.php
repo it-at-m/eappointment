@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class Meta extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'object_id' => 'object_id',
         'hash' => 'hash',
         'locale' => 'locale',
@@ -16,7 +16,7 @@ class Meta extends Base
     ];
 
     #[\Override]
-    protected function setupMapping()
+    protected function setupMapping(): void
     {
         $this->referanceMapping = [
             /*
@@ -70,7 +70,7 @@ class Meta extends Base
     }
 
     #[\Override]
-    public function postSetupFields()
+    public function postSetupFields(): void
     {
         if (array_key_exists('lastupdate', $this->fields) && !empty($this->fields['lastupdate'])) {
             $this->fields['lastupdate'] = date_format(date_create($this->fields['lastupdate']), 'Y-m-d H:i:s');

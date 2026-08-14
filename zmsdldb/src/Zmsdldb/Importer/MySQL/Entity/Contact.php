@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class Contact extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'object_id' => 'object_id',
         'locale' => 'locale',
         'name' => 'name',

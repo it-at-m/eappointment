@@ -6,7 +6,7 @@ use Error;
 
 class Service extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'id' => 'id',
         'name' => 'name',
         'hint' => 'hint',
@@ -31,7 +31,7 @@ class Service extends Base
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     #[\Override]
-    protected function setupMapping()
+    protected function setupMapping(): void
     {
         $this->referanceMapping = [
             'name' => [
@@ -266,7 +266,7 @@ class Service extends Base
     }
 
     #[\Override]
-    public function preSetup()
+    public function preSetup(): void
     {
         try {
             $fields = $this->get(['id', 'meta.locale', 'meta.hash']);

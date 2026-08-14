@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class Setting extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'name' => 'name',
         'value' => 'value',
     ];

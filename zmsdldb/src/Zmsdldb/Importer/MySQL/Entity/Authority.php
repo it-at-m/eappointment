@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class Authority extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'id' => 'id',
         'name' => 'name',
         'parent_id' => 'parent_id',
@@ -16,7 +16,7 @@ class Authority extends Base
     ];
 
     #[\Override]
-    protected function setupMapping()
+    protected function setupMapping(): void
     {
         $this->referanceMapping = [
             'meta' => [
@@ -54,13 +54,13 @@ class Authority extends Base
     }
 
     #[\Override]
-    public function preSetupFields()
+    public function preSetupFields(): void
     {
         $this->dataRaw['parent_id'] = ($this->dataRaw['parent_id'] ?? 0);
     }
 
     #[\Override]
-    public function preSetup()
+    public function preSetup(): void
     {
         try {
             $fields = $this->get(['id', 'meta.locale', 'meta.hash']);
