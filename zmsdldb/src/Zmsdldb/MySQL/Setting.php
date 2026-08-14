@@ -22,7 +22,7 @@ class Setting extends Base
             $sql = 'SELECT value FROM setting WHERE name = ?';
 
             $stm = $this->access()->prepare($sql);
-            $stm->execute([(string)$name]);
+            $stm->execute([$name]);
 
             $settingValue = $stm->fetchColumn();
 
