@@ -16,7 +16,9 @@ class DayOff extends \BO\Zmsbackend\Base
 
     public function readByDepartmentId($departmentId = 0)
     {
-        return $this->readCommon();
+        $dayOffList = $this->readCommon();
+        
+        return $dayOffList;
     }
 
     public function readOnlyByDepartmentId($departmentId = 0, $disableCache = false)
