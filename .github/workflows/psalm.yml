@@ -61,7 +61,7 @@ jobs:
 
       - name: Get Composer cache directory
         id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
         working-directory: ${{ matrix.project }}
 
       - name: Cache Composer dependencies
@@ -176,7 +176,7 @@ jobs:
 
       - name: Get Composer cache directory
         id: composer-cache-monorepo
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
         working-directory: zmsbackend
 
       - name: Cache Composer dependencies
