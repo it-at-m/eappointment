@@ -40,7 +40,6 @@ services:
     build:
       context: ../.resources/keycloak
       dockerfile: Dockerfile.keycloakmigration
-    image: eappointment-keycloakmigration:0.2.131-jre25
     depends_on:
       init-keycloak-token:
         condition: service_completed_successfully
