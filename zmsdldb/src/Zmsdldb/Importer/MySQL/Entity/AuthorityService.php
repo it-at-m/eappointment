@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class AuthorityService extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'service_id' => 'service_id',
         'id' => 'authority_id',
         'locale' => 'locale'

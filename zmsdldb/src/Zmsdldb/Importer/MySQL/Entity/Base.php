@@ -22,25 +22,25 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
     use ItemNeedsUpdateTrait;
     use PDOTrait;
 
-    protected $fieldMapping = [];
+    protected array $fieldMapping = [];
 
-    protected $fields = [];
+    protected array $fields = [];
 
-    protected $referanceMapping = [];
+    protected array $referanceMapping = [];
 
-    protected $preFormatFields = [];
+    protected array $preFormatFields = [];
 
-    protected $references = [];
+    protected array $references = [];
 
-    protected $dataRaw = [];
+    protected array $dataRaw = [];
 
-    protected $setupFields = true;
-    protected $setupReferences = true;
+    protected bool $setupFields = true;
+    protected bool $setupReferences = true;
 
-    protected $status = 1;
+    protected int $status = 1;
 
-    const STATUS_NEW = 1;
-    const STATUS_OLD = 0;
+    public const int STATUS_NEW = 1;
+    public const int STATUS_OLD = 0;
 
     public function __construct(PDOAccess $mySqlAccess, array $dataRaw = [], bool $setup = true)
     {
@@ -69,20 +69,24 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         PDOAccess $mySqlAccess,
         array $dataRaw = [],
         bool $setup = true
-    ) {
+    ): Base {
         try {
             $className = preg_replace_callback('/[_-]([a-z0-9]*)/i', function ($matches) {
                 return ucfirst($matches[1] ?? '');
             }, $entityName);
             $className = '\\BO\\Zmsdldb\\Importer\\MySQL\\Entity' . $className;
 
-            return new $className($mySqlAccess, $dataRaw, $setup);
+            $entity = new $className($mySqlAccess, $dataRaw, $setup);
+            if (!$entity instanceof Base) {
+                throw new \InvalidArgumentException($className . ' must extend ' . Base::class);
+            }
+            return $entity;
         } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function factory(string $entityName, array $dataRaw = [], bool $setup = true)
+    public function factory(string $entityName, array $dataRaw = [], bool $setup = true): Base
     {
         try {
             return static::entityFactory($entityName, $this->getPDOAccess(), $dataRaw, $setup);
@@ -91,7 +95,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
-    public function setRawData(array $rawData = [])
+    public function setRawData(array $rawData = []): static
     {
         $this->dataRaw = $rawData;
         return $this;
@@ -102,7 +106,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return $this->dataRaw;
     }
 
-    public function setStatus(int $status = Base::STATUS_NEW)
+    public function setStatus(int $status = Base::STATUS_NEW): void
     {
         $this->status = $status;
     }
@@ -112,7 +116,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return $this->status;
     }
 
-    public function getReferenceMapping($setup = false): array
+    public function getReferenceMapping(bool $setup = false): array
     {
         try {
             if (true === $setup) {
@@ -125,27 +129,27 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
-    protected function setupPreFormatFields()
+    protected function setupPreFormatFields(): void
     {
     }
 
-    protected function setupMapping()
+    protected function setupMapping(): void
     {
     }
 
-    public function preSetup()
+    public function preSetup(): void
     {
     }
 
-    public function postSetup()
+    public function postSetup(): void
     {
     }
 
-    public function preSetupFields()
+    public function preSetupFields(): void
     {
     }
 
-    public function postSetupFields()
+    public function postSetupFields(): void
     {
     }
 
@@ -169,7 +173,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
-    protected function getReferenceFields()
+    protected function getReferenceFields(): array
     {
         $referenceFields = array_flip(array_keys(array_filter($this->referanceMapping)));
 
@@ -179,7 +183,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return $referenceFields;
     }
 
-    final public function setupReferences()
+    final public function setupReferences(): bool
     {
         try {
             if (false === $this->setupReferences) {
@@ -221,6 +225,9 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
                             $addFields
                         )
                     );
+                    if (!$referencesInstance instanceof Base) {
+                        throw new \InvalidArgumentException($referenceEntityClass . ' must extend ' . Base::class);
+                    }
 
                     $this->addReference($name, $referencesInstance);
                     $position++;
@@ -248,7 +255,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
-    public function addReference(string $name, Base $reference)
+    public function addReference(string $name, Base $reference): void
     {
         if (array_key_exists($name, $this->referanceMapping)) {
             if (!isset($this->references[$name])) {
@@ -258,7 +265,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
-    public function getReference(string $name)
+    public function getReference(string $name): EntityCollection
     {
         if (array_key_exists($name, $this->references)) {
             return $this->references[$name];
@@ -335,7 +342,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return $this->fields;
     }
 
-    public function get($key = null, $default = null)
+    public function get(null|array|string $key = null, mixed $default = null): mixed
     {
         if (null === $key) {
             return $this->dataRaw;
@@ -369,7 +376,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return 1 == count($keys) ? $values[$keys[0]] : $values;
     }
 
-    protected static function arrayAccessByDotPerpareKeys(string $key = null): array
+    protected static function arrayAccessByDotPerpareKeys(?string $key = null): array
     {
         if (null === $key) {
             return [];
@@ -386,7 +393,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return $keys;
     }
 
-    public function save()
+    public function save(): bool
     {
         try {
             if (static::STATUS_NEW !== $this->getStatus()) {
@@ -418,8 +425,6 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
 
                 $stm->execute(array_values($this->fields));
 
-                #$this->postSave($stm, $this);
-
                 if ($stm && 0 < $stm->rowCount()) {
                     return true;
                 }
@@ -437,7 +442,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
      * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function postSave(\PDOStatement $stm, Base $entity)
+    public function postSave(\PDOStatement $stm, Base $entity): void
     {
     }
 

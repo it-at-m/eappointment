@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class Topic extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'id' => 'id',
         'name' => 'name',
         'meta.locale' => 'locale',
@@ -19,7 +19,7 @@ class Topic extends Base
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     #[\Override]
-    protected function setupMapping()
+    protected function setupMapping(): void
     {
         $this->referanceMapping = [
             'meta' => [
@@ -175,7 +175,7 @@ class Topic extends Base
     }
 
     #[\Override]
-    public function preSetup()
+    public function preSetup(): void
     {
         try {
             $fields = $this->get(['id', 'meta.locale', 'meta.hash']);

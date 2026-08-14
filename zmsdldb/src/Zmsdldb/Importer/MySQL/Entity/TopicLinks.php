@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class TopicLinks extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'topic_id' => 'topic_id',
         'name' => 'name',
         'locale' => 'locale',
@@ -19,7 +19,7 @@ class TopicLinks extends Base
     ];
 
     #[\Override]
-    public function postSetupFields()
+    public function postSetupFields(): void
     {
         $searchValues = [$this->get('name')];
         /*
@@ -64,32 +64,6 @@ class TopicLinks extends Base
             return $this->deleteWith(
                 array_combine(['topic_id', 'locale'], array_values($this->get('topic_id', 'locale')))
             );
-        } catch (\Exception $e) {
-            throw $e;
-        }
-    }
-
-    #[\Override]
-    public function postSave(\PDOStatement $stm, Base $entity)
-    {
-        return true;
-        try {
-            if ($stm && 0 < $stm->rowCount()) {
-                #$lastInsertId = $pdoConnection->lastInsertId();
-
-                $sql = 'REPLACE INTO ' . static::getTableName() . ' ';
-                $sql .= '(`' . implode('`, `', array_keys($this->fields)) . '`) ';
-
-                $questionMarks = array_fill(0, count($this->fields), '?');
-                $sql .= 'VALUES (' . implode(', ', $questionMarks) . ') ';
-
-                #print_r($sql . \PHP_EOL) ;
-                $stm = $this->getPDOAccess()->prepare($sql);
-
-                $stm->execute(array_values($this->fields));
-
-                return true;
-            }
         } catch (\Exception $e) {
             throw $e;
         }
