@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class TopicService extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'id' => 'service_id',
         'topic_id' => 'topic_id',
     ];
