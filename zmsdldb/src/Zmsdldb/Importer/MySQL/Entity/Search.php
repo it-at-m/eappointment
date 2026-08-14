@@ -33,10 +33,10 @@ class Search extends Base
     }
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(
                     ['object_id', 'locale', 'entity_type'],
                     array_values($this->get(['object_id', 'locale', 'entity_type']))
@@ -48,11 +48,11 @@ class Search extends Base
     }
 
     #[\Override]
-    public function clearEntity(array $addWhere = []): bool
+    public function clearEntity(array $addWhere = []): void
     {
         try {
             #print_r(static::class);
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(['entity_type', 'locale'], array_values($this->get(['entity_type', 'locale'])))
             );
         } catch (\Exception $e) {

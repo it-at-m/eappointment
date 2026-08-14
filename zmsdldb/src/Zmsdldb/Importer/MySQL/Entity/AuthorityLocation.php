@@ -11,10 +11,10 @@ class AuthorityLocation extends Base
     ];
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(
                     ['authority_id', 'location_id', 'locale'],
                     array_values($this->get(['authority_id', 'id', 'locale']))

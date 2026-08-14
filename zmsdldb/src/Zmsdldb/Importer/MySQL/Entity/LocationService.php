@@ -18,10 +18,10 @@ class LocationService extends Base
     ];
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(
                     ['location_id', 'service_id', 'locale'],
                     array_values($this->get(['location', 'service_id', 'locale']))
