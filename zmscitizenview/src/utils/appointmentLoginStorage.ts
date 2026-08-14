@@ -101,9 +101,6 @@ export function parseUiLocalStorage(data: string): LocalStorageUiData | null {
       selectedTimeslot?: number;
       selectedService?: { id?: string };
       selectedProvider?: { id?: string };
-      telephoneNumber?: string;
-      customTextfield?: string;
-      customTextfield2?: string;
     };
     const selectedServiceId = raw.selectedServiceId ?? raw.selectedService?.id;
     const selectedProviderId =
@@ -116,9 +113,8 @@ export function parseUiLocalStorage(data: string): LocalStorageUiData | null {
     ) {
       return null;
     }
-    // Persist IDs + Kontakt scratch fields for login resume — never authKey /
-    // captcha / nested customerData / full office objects.
-    const parsed: LocalStorageUiData = {
+    // Persist IDs only — never restore credentials / PII / full office objects.
+    return {
       timestamp: raw.timestamp,
       currentView: raw.currentView,
       selectedServiceId: String(selectedServiceId),
@@ -126,16 +122,6 @@ export function parseUiLocalStorage(data: string): LocalStorageUiData | null {
       selectedProviderId: String(selectedProviderId),
       selectedTimeslot: raw.selectedTimeslot ?? 0,
     };
-    if (typeof raw.telephoneNumber === "string" && raw.telephoneNumber) {
-      parsed.telephoneNumber = raw.telephoneNumber;
-    }
-    if (typeof raw.customTextfield === "string" && raw.customTextfield) {
-      parsed.customTextfield = raw.customTextfield;
-    }
-    if (typeof raw.customTextfield2 === "string" && raw.customTextfield2) {
-      parsed.customTextfield2 = raw.customTextfield2;
-    }
-    return parsed;
   } catch {
     return null;
   }
@@ -150,6 +136,7 @@ export function getFreshLocalStorageUiData(
   }
   const parsed = parseUiLocalStorage(raw);
   if (!parsed || nowMs - parsed.timestamp >= LOCALSTORAGE_UI_TTL_MS) {
+    clearAppointmentLocalStorage();
     return null;
   }
   return parsed;

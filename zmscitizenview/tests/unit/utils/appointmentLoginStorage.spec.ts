@@ -45,7 +45,9 @@ describe("appointmentLoginStorage", () => {
 
     it("returns null for invalid hash", () => {
       expect(parseAppointmentHash("not-valid-base64!!!")).toBeNull();
-      expect(parseAppointmentHash(btoa(JSON.stringify({ id: "1" })))).toBeNull();
+      expect(
+        parseAppointmentHash(btoa(JSON.stringify({ id: "1" })))
+      ).toBeNull();
     });
   });
 
@@ -56,9 +58,9 @@ describe("appointmentLoginStorage", () => {
       setAppointmentAuthHashForLogin("99", "key");
 
       const encoded = encodeAppointmentAuthHash("99", "key");
-      expect(sessionStorage.getItem(SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH)).toBe(
-        encoded
-      );
+      expect(
+        sessionStorage.getItem(SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH)
+      ).toBe(encoded);
       expect(replaceStateSpy).toHaveBeenCalledWith(
         null,
         "",
@@ -96,6 +98,9 @@ describe("appointmentLoginStorage", () => {
         timestamp: Date.now() - LOCALSTORAGE_UI_TTL_MS - 1,
       });
       expect(getFreshLocalStorageUiData()).toBeNull();
+      expect(
+        localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)
+      ).toBeNull();
     });
 
     it("parses legacy selectedService/selectedProvider objects as IDs only", () => {
@@ -120,18 +125,20 @@ describe("appointmentLoginStorage", () => {
         selectedServiceMap: { "legacy-svc": 2 },
         selectedProviderId: "legacy-off",
         selectedTimeslot: 0,
-        telephoneNumber: "+491234567890",
-        customTextfield: "Bemerkung",
       });
       expect(parsed).not.toHaveProperty("appointment");
       expect(parsed).not.toHaveProperty("customerData");
       expect(parsed).not.toHaveProperty("captchaToken");
+      expect(parsed).not.toHaveProperty("telephoneNumber");
+      expect(parsed).not.toHaveProperty("customTextfield");
     });
 
     it("clears localStorage", () => {
       saveUiToLocalStorage(uiData);
       clearAppointmentLocalStorage();
-      expect(localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)).toBeNull();
+      expect(
+        localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)
+      ).toBeNull();
     });
   });
 
@@ -146,7 +153,10 @@ describe("appointmentLoginStorage", () => {
 
     it("restores hash from sessionStorage into the URL", () => {
       const encoded = encodeAppointmentAuthHash("1", "k");
-      sessionStorage.setItem(SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH, encoded);
+      sessionStorage.setItem(
+        SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH,
+        encoded
+      );
       const replaceStateSpy = vi.spyOn(history, "replaceState");
 
       expect(resolveAppointmentAuthHash()).toBe(encoded);

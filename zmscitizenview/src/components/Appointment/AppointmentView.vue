@@ -837,18 +837,7 @@ const nextUpdateAppointment = () => {
   if (appointment.value) {
     isUpdatingAppointment.value = true;
     clearContextErrors(errorStateMap.value);
-    appointment.value.familyName =
-      customerData.value.firstName + " " + customerData.value.lastName;
-    appointment.value.email = customerData.value.mailAddress;
-    appointment.value.telephone = customerData.value.telephoneNumber
-      ? customerData.value.telephoneNumber
-      : undefined;
-    appointment.value.customTextfield = customerData.value.customTextfield
-      ? customerData.value.customTextfield
-      : undefined;
-    appointment.value.customTextfield2 = customerData.value.customTextfield2
-      ? customerData.value.customTextfield2
-      : undefined;
+    copyCustomerDataOntoAppointment();
 
     currentContext.value = "update";
     updateAppointment(props.globalState, appointment.value)
@@ -993,7 +982,40 @@ const goToTop = async () => {
   window.scrollTo({ top: 0, behavior: "instant" });
 };
 
-const requestLogin = () => {
+const copyCustomerDataOntoAppointment = () => {
+  if (!appointment.value) {
+    return;
+  }
+  appointment.value.familyName =
+    customerData.value.firstName + " " + customerData.value.lastName;
+  appointment.value.email = customerData.value.mailAddress;
+  appointment.value.telephone = customerData.value.telephoneNumber
+    ? customerData.value.telephoneNumber
+    : undefined;
+  appointment.value.customTextfield = customerData.value.customTextfield
+    ? customerData.value.customTextfield
+    : undefined;
+  appointment.value.customTextfield2 = customerData.value.customTextfield2
+    ? customerData.value.customTextfield2
+    : undefined;
+};
+
+const applyContactFromAppointment = (booked: AppointmentDTO) => {
+  if (booked.telephone) {
+    customerData.value.telephoneNumber =
+      customerData.value.telephoneNumber || booked.telephone;
+  }
+  if (booked.customTextfield) {
+    customerData.value.customTextfield =
+      customerData.value.customTextfield || booked.customTextfield;
+  }
+  if (booked.customTextfield2) {
+    customerData.value.customTextfield2 =
+      customerData.value.customTextfield2 || booked.customTextfield2;
+  }
+};
+
+const persistUiIdsForLogin = () => {
   if (selectedService.value && selectedProvider.value) {
     saveUiToLocalStorage({
       timestamp: Date.now(),
@@ -1002,11 +1024,12 @@ const requestLogin = () => {
       selectedServiceMap: Object.fromEntries(selectedServiceMap.value),
       selectedProviderId: String(selectedProvider.value.id),
       selectedTimeslot: selectedTimeslot.value,
-      telephoneNumber: customerData.value.telephoneNumber || undefined,
-      customTextfield: customerData.value.customTextfield || undefined,
-      customTextfield2: customerData.value.customTextfield2 || undefined,
     });
   }
+};
+
+const startOidcLogin = () => {
+  persistUiIdsForLogin();
   setAppointmentAuthHashForLogin(
     appointment.value?.processId,
     appointment.value?.authKey
@@ -1019,6 +1042,18 @@ const requestLogin = () => {
       },
     })
   );
+};
+
+const requestLogin = () => {
+  // Persist phone / Zusatzfelder on the reserved appointment so they survive
+  // OAuth remount without writing PII to localStorage (ZMSKVR-1002 / CodeQL).
+  if (appointment.value?.processId && appointment.value?.authKey) {
+    copyCustomerDataOntoAppointment();
+    return updateAppointment(props.globalState, appointment.value)
+      .catch(() => undefined)
+      .finally(startOidcLogin);
+  }
+  startOidcLogin();
 };
 
 const viewAppointment = () => {
@@ -1122,17 +1157,6 @@ const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
 
   selectedTimeslot.value = uiData.selectedTimeslot;
   currentView.value = isAppointmentInPast.value ? 3 : uiData.currentView;
-
-  // Restore Kontakt scratch fields after OAuth remount (name/email come from token).
-  if (uiData.telephoneNumber) {
-    customerData.value.telephoneNumber = uiData.telephoneNumber;
-  }
-  if (uiData.customTextfield) {
-    customerData.value.customTextfield = uiData.customTextfield;
-  }
-  if (uiData.customTextfield2) {
-    customerData.value.customTextfield2 = uiData.customTextfield2;
-  }
 };
 
 const runLoginResumeFromHashAndLocalStorage = (
@@ -1184,6 +1208,7 @@ const runLoginResumeFromHashAndLocalStorage = (
         (response) => {
           if ((response as AppointmentDTO).processId != undefined) {
             appointment.value = response as AppointmentDTO;
+            applyContactFromAppointment(appointment.value);
             if (reservationStartMs.value == null) {
               reservationStartMs.value = Date.now();
             }
