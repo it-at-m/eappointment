@@ -82,10 +82,10 @@ class Meta extends Base
     }
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(
                     ['object_id', 'locale', 'type'],
                     array_values($this->get(['object_id', 'locale', 'type']))
@@ -97,10 +97,10 @@ class Meta extends Base
     }
 
     #[\Override]
-    public function clearEntity(array $addWhere = []): bool
+    public function clearEntity(array $addWhere = []): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(['type', 'locale'], array_values($this->get(['type', 'locale'])))
             );
         } catch (\Exception $e) {
@@ -108,16 +108,8 @@ class Meta extends Base
         }
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function itemNeedsUpdateAlt(
-        int $objectId = 0,
-        string $locale = '',
-        string $objectHash = '',
-        string $type = ''
-    ): bool {
+    public function itemNeedsUpdateAlt(): bool
+    {
         try {
             $statment = $this->getPDOAccess()->prepare(
                 "SELECT count(1) AS count FROM meta WHERE object_id = ? AND locale = ? AND hash = ? AND type = ?"
