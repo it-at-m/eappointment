@@ -17,7 +17,7 @@ class Scope extends \BO\Zmsbackend\Base
 {
     public static $cache = [ ];
 
-    public function readEntity($scopeId, $resolveReferences = 0, $disableCache = false)
+    public function readEntity($scopeId, $resolveReferences = 0, $disableCache = false): ?Entity
     {
         $cacheKey = "scope-$scopeId-$resolveReferences";
 

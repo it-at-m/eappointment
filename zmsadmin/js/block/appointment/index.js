@@ -214,13 +214,19 @@ class View extends RequestView {
     }
 
     onAddRequestCount(event) {
-        $(event.currentTarget).parent().find('.hidden-inputs input:first-child').clone().insertAfter($(event.currentTarget).parent().find('.hidden-inputs input:first-child'));
-        $(event.currentTarget).parent().find('.request-count').text(parseInt($(event.currentTarget).parent().find('.request-count').text()) + 1);
+        const request = $(event.currentTarget).parent();
+        const hiddenInputs = request.find('.hidden-inputs');
+        const count = parseInt(request.find('.request-count').text()) + 1;
 
-        this.addServiceToList($(event.currentTarget), 'serviceListSelected');
-        this.removeServiceFromList($(event.currentTarget), 'serviceList');
+        hiddenInputs
+            .find('input:first-child')
+            .clone()
+            .appendTo(hiddenInputs);
+
+        this.updateRequestCount(request, count);
+
         this.updateLists(true);
-        this.auralMessage(this.auralMessages.add + ': ' + $(event.currentTarget).parent().find('span').text());
+        this.auralMessage(this.auralMessages.add + ': ' + request.find('span').last().text());
     }
 
     onRemoveRequestCount(event) {
@@ -233,8 +239,8 @@ class View extends RequestView {
         }
 
         if (count > 1) {
-            $(event.currentTarget).parent().find('.request-count').text(count - 1);
             input.remove();
+            this.updateRequestCount($(event.currentTarget).parent(), count - 1);
         }
 
         this.auralMessage(this.auralMessages.remove + ': ' + input.parent().find('span').text());

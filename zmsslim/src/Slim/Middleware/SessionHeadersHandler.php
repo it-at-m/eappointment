@@ -71,12 +71,12 @@ class SessionHeadersHandler
      *
      * @param string $cacheLimiter The cache limiter type.
      *
-     * @param string $cacheExpire The cache expiration time in minutes.
+     * @param int $cacheExpire The cache expiration time in minutes.
      *
      * @throws RuntimeException when the ini settings are incorrect.
      *
      */
-    public function __construct($cacheLimiter = 'nocache', $cacheExpire = 180)
+    public function __construct($cacheLimiter = 'nocache', int $cacheExpire = 180)
     {
         ini_set('session.use_trans_sid', false);
         ini_set('session.use_cookies', false);

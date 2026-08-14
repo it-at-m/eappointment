@@ -4,6 +4,8 @@ namespace BO\Zmsentities\Helper;
 
 /**
  * Get a property from an Array or ArrayAccess
+ *
+ * @implements \ArrayAccess<array-key, mixed>
  */
 class Property implements \ArrayAccess
 {
