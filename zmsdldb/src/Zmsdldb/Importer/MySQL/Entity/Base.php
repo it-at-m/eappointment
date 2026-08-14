@@ -15,7 +15,7 @@ use BO\Zmsdldb\Importer\MySQL\Entity\Collection as EntityCollection
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  * @SuppressWarnings(PHPMD.NPathComplexity)
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
- * @implements \ArrayAccess<string, mixed>
+ * @implements \ArrayAccess<string|null, mixed>
  */
 abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
 {
@@ -270,18 +270,24 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
     #[\Override]
     final public function offsetExists($offset): bool
     {
-        return $this->__isset($offset);
+        return is_string($offset) && $this->__isset($offset);
     }
 
     #[\Override]
     final public function offsetGet($offset): mixed
     {
+        if (!is_string($offset)) {
+            throw new \InvalidArgumentException(__METHOD__ . ' offset must be a string');
+        }
         return $this->__get($offset);
     }
 
     #[\Override]
     final public function offsetSet($offset, $value): Base
     {
+        if (!is_string($offset)) {
+            throw new \InvalidArgumentException(__METHOD__ . ' offset must be a string');
+        }
         $this->__set($offset, $value);
         return $this;
     }
@@ -289,6 +295,9 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
     #[\Override]
     final public function offsetUnset($offset): Base
     {
+        if (!is_string($offset)) {
+            throw new \InvalidArgumentException(__METHOD__ . ' offset must be a string');
+        }
         $this->__unset($offset);
         return $this;
     }
