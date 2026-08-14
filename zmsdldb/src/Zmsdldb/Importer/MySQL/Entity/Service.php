@@ -35,7 +35,7 @@ class Service extends Base
     {
         $this->referanceMapping = [
             'name' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale',
@@ -59,7 +59,7 @@ class Service extends Base
             ],
             /*
             'description' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale',
@@ -83,7 +83,7 @@ class Service extends Base
             ],
             */
             'meta.keywords' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale',
@@ -106,7 +106,7 @@ class Service extends Base
                 'selfAsArray' => true
             ],
             'meta' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Meta',
+                'class' => Meta::class,
                 'neededFields' => ['id' => 'object_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => static::getTableName()
@@ -123,7 +123,7 @@ class Service extends Base
                 ],
             ],
             'authorities' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\AuthorityService',
+                'class' => AuthorityService::class,
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
 
@@ -137,7 +137,7 @@ class Service extends Base
                 ]
             ],
             'locations' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\LocationService',
+                'class' => LocationService::class,
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [],
                 'deleteFields' => [
@@ -149,7 +149,7 @@ class Service extends Base
                 ]
             ],
             'requirements' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\ServiceInformation',
+                'class' => ServiceInformation::class,
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'requirements',
@@ -168,7 +168,7 @@ class Service extends Base
                 ],
             ],
             'forms' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\ServiceInformation',
+                'class' => ServiceInformation::class,
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'forms',
@@ -187,7 +187,7 @@ class Service extends Base
                 ],
             ],
             'prerequisites' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\ServiceInformation',
+                'class' => ServiceInformation::class,
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'prerequisites',
@@ -206,7 +206,7 @@ class Service extends Base
                 ],
             ],
             'links' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\ServiceInformation',
+                'class' => ServiceInformation::class,
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'links',
@@ -225,7 +225,7 @@ class Service extends Base
                 ],
             ],
             'publications' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\ServiceInformation',
+                'class' => ServiceInformation::class,
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'publications',
@@ -244,7 +244,7 @@ class Service extends Base
                 ],
             ],
             'legal' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\ServiceInformation',
+                'class' => ServiceInformation::class,
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'legal',
@@ -269,17 +269,8 @@ class Service extends Base
     public function preSetup(): void
     {
         try {
-            $fields = $this->get(['id', 'meta.locale', 'meta.hash']);
-            $fields[] = static::getTableName();
-
-            if (is_array($fields[2]) && class_exists('\App', false) && isset(\App::$log)) {
-                \App::$log->warning('Unexpected array in service meta hash during import', [
-                    'fields' => $fields,
-                ]);
-            }
-
             $this->setStatus(static::STATUS_OLD);
-            if ($this->itemNeedsUpdate(...array_values($fields))) {
+            if ($this->entityNeedsUpdate()) {
                 $this->setStatus(static::STATUS_NEW);
                 $this->setupFields();
                 $this->deleteEntity();

@@ -4,8 +4,8 @@ namespace BO\Zmsdldb\Importer\MySQL;
 
 class Settings extends Base
 {
-    protected $getCurrentEntitys = false;
-    protected $entityClass = '\\BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Setting';
+    protected bool $getCurrentEntitys = false;
+    protected ?string $entityClass = \BO\Zmsdldb\Importer\MySQL\Entity\Setting::class;
 
     #[\Override]
     public function runImport(): bool

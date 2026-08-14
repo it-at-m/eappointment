@@ -21,7 +21,7 @@ class Meta extends Base
         $this->referanceMapping = [
             /*
             'keywords' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'object_id' => 'object_id',
                     'locale' => 'locale',
@@ -44,7 +44,7 @@ class Meta extends Base
                 'selfAsArray' => true
             ],
             'titles' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'object_id' => 'object_id',
                     'locale' => 'locale',
@@ -72,9 +72,11 @@ class Meta extends Base
     #[\Override]
     public function postSetupFields(): void
     {
-        if (array_key_exists('lastupdate', $this->fields) && !empty($this->fields['lastupdate'])) {
-            $this->fields['lastupdate'] = date_format(date_create($this->fields['lastupdate']), 'Y-m-d H:i:s');
-        } elseif (!array_key_exists('lastupdate', $this->fields) || empty($this->fields['lastupdate'])) {
+        $lastupdate = $this->fields['lastupdate'] ?? null;
+        $created = is_string($lastupdate) && $lastupdate !== '' ? date_create($lastupdate) : false;
+        if ($created instanceof \DateTimeInterface) {
+            $this->fields['lastupdate'] = $created->format('Y-m-d H:i:s');
+        } else {
             $this->fields['lastupdate'] = '1970-01-01 01:00:00';
         }
     }
@@ -131,11 +133,9 @@ class Meta extends Base
                     $needsUpdate = true;
                 }
             }
-            #print_r([$needsUpdate ? 'T' : 'F', $fields]);
             return $needsUpdate;
         } catch (\Exception $e) {
             throw $e;
         }
-        return false;
     }
 }

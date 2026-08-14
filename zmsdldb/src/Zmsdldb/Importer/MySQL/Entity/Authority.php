@@ -20,7 +20,7 @@ class Authority extends Base
     {
         $this->referanceMapping = [
             'meta' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Meta',
+                'class' => Meta::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale'
@@ -37,7 +37,7 @@ class Authority extends Base
                 'multiple' => false
             ],
             'locations' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\AuthorityLocation',
+                'class' => AuthorityLocation::class,
                 'neededFields' => ['id' => 'authority_id', 'meta.locale' => 'locale'],
                 'addFields' => [
 
@@ -63,10 +63,8 @@ class Authority extends Base
     public function preSetup(): void
     {
         try {
-            $fields = $this->get(['id', 'meta.locale', 'meta.hash']);
-            $fields[] = static::getTableName();
             $this->setStatus(static::STATUS_OLD);
-            if ($this->itemNeedsUpdate(...array_values($fields))) {
+            if ($this->entityNeedsUpdate()) {
                 $this->setStatus(static::STATUS_NEW);
                 $this->setupFields();
                 $this->deleteEntity();
