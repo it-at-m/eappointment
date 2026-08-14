@@ -1,56 +1,23 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'useraccount-info', 'messages':'hide'} %}
+    {% block board_title %}
+        Nutzerinformation
+    {% endblock %} 
+
+    {% block board_body %}
     
-        
-        {% block board_title %}
-            Nutzerinformation
-        {% endblock %} 
-        
-        
-        {% block board_body %}
-       
-                <h3>Nutzername</h3>
-                <p>
-                    {{useraccount.id}}
-                </p>
-                <h3>Zugeordnete Einheiten</h3>
-                <ul>
-                    {%- if useraccount.permissions.superuser|default(false) -%}
-                        <li>Alle (Superuser)</li>
-                    {%- else -%}
-                    {% for department in useraccount.departments %}
-                        <li>{{department.name}}</li>
-                    {% endfor %}
-                    {%- endif -%}
-                </ul>
-                <h3>Sie haben die folgenden Berechtigungen</h3>
-                <ul>
-                    {%- if useraccount.permissions.superuser|default(false) -%}
-                        <li>Superuser</li>
-                    {%- endif -%}
-                    {%- if useraccount.permissions.organisation|default(false) -%}
-                        <li>Administration von Bezirken</li>
-                    {%- endif -%}
-                    {%- if useraccount.permissions.department|default(false) -%}
-                        <li>Administration von Behörden</li>
-                    {%- endif -%}
-                    {%- if useraccount.permissions.cluster|default(false) -%}
-                        <li>Administration von Standortclustern</li>
-                    {%- endif -%}
-                    {%- if useraccount.permissions.useraccount|default(false) -%}
-                        <li>Administration von Nutzern</li>
-                    {%- endif -%}
-                    {%- if useraccount.permissions.scope|default(false) -%}
-                        <li>Administration von Standorten</li>
-                    {%- endif -%}
-                    {%- if useraccount.permissions.availability|default(false) -%}
-                        <li>Administration von Öffnungszeiten</li>
-                    {%- endif -%}
-                    {%- if useraccount.permissions.ticketprinter|default(false) -%}
-                        <li>Ein- und Ausschalten des Kiosks</li>
-                    {%- endif -%}
-                </ul>
-            
-        {% endblock %} 
-        
-        
+        <h3>Benutzername</h3>
+        <p>{{ profile.username }}</p>
+
+        <h3>Rolle</h3>
+        <p>{{ profile.role }}</p>
+
+        <h3>Berechtigungen</h3>
+        <ul>
+            {% for permission in profile.permissions %}
+                <li>{{ permission }}</li>
+            {% else %}
+                <li>Keine Berechtigungen zugeordnet</li>
+            {% endfor %}
+        </ul>
+    {% endblock %}
 {% endembed %}
