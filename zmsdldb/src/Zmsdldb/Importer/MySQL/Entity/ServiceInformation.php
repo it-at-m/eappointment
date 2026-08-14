@@ -15,10 +15,10 @@ class ServiceInformation extends Base
     ];
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(
                     ['service_id', 'locale', 'type'],
                     array_values($this->get(['service_id', 'locale', 'type']))

@@ -10,10 +10,10 @@ class TopicService extends Base
     ];
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(
                     ['topic_id', 'service_id'],
                     array_values($this->get('topic_id', 'id'))

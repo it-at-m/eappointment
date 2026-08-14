@@ -116,7 +116,7 @@ class Topic extends Base
                 'neededFields' => ['id' => 'topic_id', 'meta.locale' => 'locale'],
                 'addFields' => ['locale' => $this->get('meta.locale')],
                 'delete' => false,
-                'deleteFunction' => function (\BO\Zmsdldb\Importer\MySQL\Entity\Topic $topic) {
+                'deleteFunction' => function (\BO\Zmsdldb\Importer\MySQL\Entity\Topic $topic): bool {
                     return static::deleteReferencesFn(
                         $topic,
                         \BO\Zmsdldb\Importer\MySQL\Entity\TopicLinks::getTableName(),
@@ -131,7 +131,7 @@ class Topic extends Base
                 'class' => TopicService::class,
                 'neededFields' => ['id' => 'topic_id'],
                 'addFields' => [],
-                'deleteFunction' => function (\BO\Zmsdldb\Importer\MySQL\Entity\Topic $topic) {
+                'deleteFunction' => function (\BO\Zmsdldb\Importer\MySQL\Entity\Topic $topic): bool {
                     return static::deleteReferencesFn(
                         $topic,
                         \BO\Zmsdldb\Importer\MySQL\Entity\TopicService::getTableName(),
@@ -143,7 +143,7 @@ class Topic extends Base
                 'class' => TopicCluster::class,
                 'neededFields' => ['id' => 'parent_id'],
                 'addFields' => [],
-                'deleteFunction' => function (\BO\Zmsdldb\Importer\MySQL\Entity\Topic $topic) {
+                'deleteFunction' => function (\BO\Zmsdldb\Importer\MySQL\Entity\Topic $topic): bool {
                     return static::deleteReferencesFn(
                         $topic,
                         \BO\Zmsdldb\Importer\MySQL\Entity\TopicCluster::getTableName(),
@@ -191,10 +191,10 @@ class Topic extends Base
     }
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(['id', 'locale'], array_values($this->get(['id', 'meta.locale'])))
             );
         } catch (\Exception $e) {
@@ -203,10 +203,10 @@ class Topic extends Base
     }
 
     #[\Override]
-    public function clearEntity(array $addWhere = []): bool
+    public function clearEntity(array $addWhere = []): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 ['locale' => $this->get('meta.locale')]
             );
         } catch (\Exception $e) {

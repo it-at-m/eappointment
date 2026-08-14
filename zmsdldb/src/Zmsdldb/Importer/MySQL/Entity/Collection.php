@@ -7,6 +7,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
  */
 class Collection implements \Countable, \ArrayAccess
 {
+    /** @var array<int|string, Base> */
     protected array $entities = [];
 
     #[\Override]
@@ -53,6 +54,7 @@ class Collection implements \Countable, \ArrayAccess
         return count($this->entities);
     }
 
+    /** @psalm-api */
     public function saveEntities(): void
     {
         try {
