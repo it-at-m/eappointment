@@ -34,8 +34,8 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
 
     protected $dataRaw = [];
 
-    protected $setupFields = true;
-    protected $setupReferences = true;
+    protected bool $setupFields = true;
+    protected bool $setupReferences = true;
 
     protected $status = 1;
 
