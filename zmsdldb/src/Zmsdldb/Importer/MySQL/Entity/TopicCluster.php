@@ -11,10 +11,10 @@ class TopicCluster extends Base
     ];
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(['topic_id', 'parent_id'], array_values($this->get('id', 'parent_id')))
             );
         } catch (\Exception $e) {

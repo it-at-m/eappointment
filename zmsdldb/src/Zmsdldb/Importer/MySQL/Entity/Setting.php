@@ -10,10 +10,10 @@ class Setting extends Base
     ];
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(['name'], array_values((array)$this->get('name')))
             );
         } catch (\Exception $e) {

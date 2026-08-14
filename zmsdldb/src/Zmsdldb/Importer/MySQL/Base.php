@@ -5,7 +5,6 @@ namespace BO\Zmsdldb\Importer\MySQL;
 use BO\Zmsdldb\PDOAccess;
 use BO\Zmsdldb\Importer\OptionsTrait;
 use BO\Zmsdldb\Importer\PDOTrait;
-use BO\Zmsdldb\Importer\ItemNeedsUpdateTrait;
 use BO\Zmsdldb\Importer\Options;
 use BO\Zmsdldb\Importer\MySQL\Entity\Meta as MetaEntity;
 use BO\Zmsdldb\Importer\MySQL\Entity\Base as EntityBase;
@@ -15,11 +14,13 @@ abstract class Base implements Options
     use PDOTrait;
     use OptionsTrait;
 
+    /** @var class-string<EntityBase>|null */
     protected ?string $entityClass = null;
     protected array $importData = [];
     protected string $hash = '';
     protected string $locale = 'de';
     protected ?MetaEntity $metaObject = null;
+    /** @var array<int, EntityBase> */
     protected array $entitysToDelete = [];
     protected bool $getCurrentEntitys = true;
 
@@ -27,8 +28,16 @@ abstract class Base implements Options
     {
         try {
             $this->setPDOAccess($mySqlAccess);
-            $this->setImportData($importData['data']);
-            $this->setImportHash($importData['hash']);
+            $data = $importData['data'] ?? [];
+            $hash = $importData['hash'] ?? '';
+            if (!is_array($data)) {
+                throw new \InvalidArgumentException('Import data must be an array');
+            }
+            if (!is_string($hash)) {
+                throw new \InvalidArgumentException('Import hash must be a string');
+            }
+            $this->setImportData($data);
+            $this->setImportHash($hash);
             $this->setLocale($locale);
 
             $this->setOptions($options);
@@ -43,9 +52,12 @@ abstract class Base implements Options
         return $this->pdoAccess;
     }
 
-    public function getImportData(): array
+    /**
+     * @return array<int, EntityBase>
+     */
+    public function getCurrentEntitys(): array
     {
-        return $this->importData;
+        return $this->entitysToDelete;
     }
 
     public function getIterator(): iterable
@@ -53,11 +65,6 @@ abstract class Base implements Options
         foreach ($this->importData as $item) {
             yield $item;
         }
-    }
-
-    public function getCurrentEntitys(): array
-    {
-        return $this->entitysToDelete;
     }
 
     public function removeEntityFromCurrentList(int $entityId): void
@@ -86,8 +93,12 @@ abstract class Base implements Options
             $stm->execute([$this->getLocale(),$this->getLocale()]);
             $entitys = $stm->fetchAll();
             foreach ($entitys as $entity) {
-                $entityObject = $this->createEntity(json_decode($entity->data_json, true));
-                $this->entitysToDelete[$entity->id] = $entityObject;
+                $decoded = json_decode($entity->data_json, true);
+                if (!is_array($decoded)) {
+                    continue;
+                }
+                $entityObject = $this->createEntity($decoded);
+                $this->entitysToDelete[(int) $entity->id] = $entityObject;
             }
         } catch (\Exception $e) {
             throw $e;
@@ -118,6 +129,9 @@ abstract class Base implements Options
     public function getMetaObject(): MetaEntity
     {
         $this->createMetaObject();
+        if (null === $this->metaObject) {
+            throw new \RuntimeException('Failed to create meta object');
+        }
         return $this->metaObject;
     }
 
@@ -173,12 +187,15 @@ abstract class Base implements Options
         if (null === $this->entityClass) {
             throw new \InvalidArgumentException(__METHOD__ . " invalid entity class");
         }
-        return $this->entityClass;
+        /** @var class-string<EntityBase> $entityClass */
+        $entityClass = $this->entityClass;
+        return $entityClass;
     }
 
     public function createEntity(array $data = array(), bool $setup = true): EntityBase
     {
         $entityClass = $this->getEntityClass();
+        /** @psalm-suppress UnsafeInstantiation */
         $entity = new $entityClass($this->getPDOAccess(), $data, $setup);
         if (!$entity instanceof EntityBase) {
             throw new \InvalidArgumentException($entityClass . ' must extend ' . EntityBase::class);
@@ -189,13 +206,17 @@ abstract class Base implements Options
     final public function clearEntity(): void
     {
         try {
-            $entity = null;
+            if (
+                !$this->checkOptionFlag(static::OPTION_CLEAR_ENTITIY_TABLE) &&
+                !$this->checkOptionFlag(static::OPTION_CLEAR_ENTITIY_REFERENCES_TABLES)
+            ) {
+                return;
+            }
+            $entity = $this->createEntity(['meta' => ['locale' => $this->getLocale()]], false);
             if ($this->checkOptionFlag(static::OPTION_CLEAR_ENTITIY_TABLE)) {
-                $entity = ($entity ?? $this->createEntity(['meta' => ['locale' => $this->getLocale()]], false));
                 $entity->clearEntity();
             }
             if ($this->checkOptionFlag(static::OPTION_CLEAR_ENTITIY_REFERENCES_TABLES)) {
-                $entity =  ($entity ?? $this->createEntity(['meta' => ['locale' => $this->getLocale()]], false));
                 $entity->clearEntityReferences();
             }
         } catch (\Exception $e) {
@@ -203,13 +224,16 @@ abstract class Base implements Options
         }
     }
 
+    /** @psalm-api */
     public function preImport(): void
     {
     }
 
+    /** @psalm-api */
     public function postImport(): void
     {
     }
 
+    /** @psalm-api */
     abstract public function runImport(): bool;
 }

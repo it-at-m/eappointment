@@ -46,10 +46,10 @@ class TopicLinks extends Base
     }
 
     #[\Override]
-    public function clearEntity(array $addWhere = []): bool
+    public function clearEntity(array $addWhere = []): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 ['locale' => $this->get('meta.locale')]
             );
         } catch (\Exception $e) {
@@ -58,10 +58,10 @@ class TopicLinks extends Base
     }
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(['topic_id', 'locale'], array_values($this->get('topic_id', 'locale')))
             );
         } catch (\Exception $e) {

@@ -153,7 +153,7 @@ class Service extends Base
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'requirements',
-                    'sort' => function ($position, $key, $value) {
+                    'sort' => static function (int $position): int {
                         return $position;
                     }
                 ],
@@ -172,7 +172,7 @@ class Service extends Base
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'forms',
-                    'sort' => function ($position, $key, $value) {
+                    'sort' => static function (int $position): int {
                         return $position;
                     }
                 ],
@@ -191,7 +191,7 @@ class Service extends Base
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'prerequisites',
-                    'sort' => function ($position, $key, $value) {
+                    'sort' => static function (int $position): int {
                         return $position;
                     }
                 ],
@@ -210,7 +210,7 @@ class Service extends Base
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'links',
-                    'sort' => function ($position, $key, $value) {
+                    'sort' => static function (int $position): int {
                         return $position;
                     }
                 ],
@@ -229,7 +229,7 @@ class Service extends Base
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'publications',
-                    'sort' => function ($position, $key, $value) {
+                    'sort' => static function (int $position): int {
                         return $position;
                     }
                 ],
@@ -248,7 +248,7 @@ class Service extends Base
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'legal',
-                    'sort' => function ($position, $key, $value) {
+                    'sort' => static function (int $position): int {
                         return $position;
                     }
                 ],
@@ -282,10 +282,10 @@ class Service extends Base
     }
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(['id', 'locale'], array_values($this->get(['id', 'meta.locale'])))
             );
         } catch (\Exception $e) {
@@ -294,11 +294,11 @@ class Service extends Base
     }
 
     #[\Override]
-    public function clearEntity(array $addWhere = []): bool
+    public function clearEntity(array $addWhere = []): void
     {
         try {
             #print_r((array)$this->get(['meta.locale']));exit;
-            return $this->deleteWith(
+            $this->deleteWith(
                 ['locale' => $this->get('meta.locale')]
             );
         } catch (\Exception $e) {
