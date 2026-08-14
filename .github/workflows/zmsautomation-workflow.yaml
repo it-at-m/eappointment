@@ -315,7 +315,7 @@ jobs:
           cd .devcontainer
 
           docker compose -f docker-compose.yaml down -v --remove-orphans || true
-          docker compose -f docker-compose.yaml up -d --build \
+          docker compose -f docker-compose.yaml up -d \
             web db citizenview refarch-gateway keycloak init-keycloak
 
           exit_code=""
