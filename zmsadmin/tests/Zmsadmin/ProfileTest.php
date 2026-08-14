@@ -8,176 +8,106 @@ class ProfileTest extends Base
 
     protected $parameters = [];
 
-    protected $classname = "Profile";
+    protected $classname = 'Profile';
 
-    public function testRendering()
+    public function testRendering(): void
     {
         $this->setApiCalls(
             [
                 [
                     'function' => 'readGetResult',
-                    'url' => '/config/',
-                    'parameters' => [],
-                    'xtoken' => 'secure-token',
-                    'response' => $this->readFixture("GET_config.json"),
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture(
+                        'GET_Workstation_Resolved1.json'
+                    ),
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/useraccount/testadmin/',
-                    'response' => $this->readFixture("GET_useraccount_testadmin.json")
-                ]
+                    'url' => '/workstation/profile/',
+                    'parameters' => [],
+                    'response' => $this->readFixture(
+                        'GET_workstation_profile.json'
+                    ),
+                ],
             ]
         );
-        $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString('Nutzerinformation', (string)$response->getBody());
-        $this->assertStringContainsString('testadmin', (string)$response->getBody());
-        $this->assertStringContainsString('Superuser', (string)$response->getBody());
-        $this->assertStringContainsString('value="0"', (string)$response->getBody());
+
+        $response = $this->render(
+            $this->arguments,
+            $this->parameters,
+            []
+        );
+
+        $body = (string) $response->getBody();
+
+        $this->assertSame(200, $response->getStatusCode());
+
+        $this->assertStringContainsString('Mein Profil', $body);
+        $this->assertStringContainsString('testadmin', $body);
+        $this->assertStringContainsString(
+            'Technische Administration',
+            $body
+        );
+        $this->assertStringContainsString(
+            'Alle Funktionen',
+            $body
+        );
+        $this->assertStringContainsString(
+            'Termine direkt aus der Warteschlange aufrufen',
+            $body
+        );
+        $this->assertStringContainsString(
+            'Warteschlange sehen',
+            $body
+        );
+
+        $this->assertStringNotContainsString('@keycloak', $body);
+        $this->assertStringNotContainsString('E-Mail-Adresse', $body);
         $this->assertStringNotContainsString(
-            'Dieser Nutzer wurde über einen OpenID Connect Anbieter angelegt.',
-            (string)$response->getBody()
+            'Anmeldedaten ändern',
+            $body
         );
-        $this->assertStringContainsString(
+        $this->assertStringNotContainsString(
+            'Zugeordnete Einheiten',
+            $body
+        );
+        $this->assertStringNotContainsString(
             'Passwortwiederholung',
-            (string)$response->getBody()
-        );
-        $this->assertEquals(200, $response->getStatusCode());
-    }
-    public function testUpdateFailed()
-    {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\Zmsentities\Exception\SchemaValidation';
-        $exception->data['password']['messages'] = [
-            'Nutzername oder das Passwort wurden falsch eingegeben'
-        ];
-
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/config/',
-                    'parameters' => [],
-                    'xtoken' => 'secure-token',
-                    'response' => $this->readFixture("GET_config.json"),
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/password/',
-                    'exception' => $exception
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/useraccount/testadmin/',
-                    'response' => $this->readFixture("GET_useraccount_testadmin.json")
-                ]
-            ]
-        );
-        $response = $this->render($this->arguments, [
-            'id' => 'testadmin',
-            'password' => 'vorschau',
-            'changePassword' => ['myPassword', 'myPassword'],
-            'save' => 'save'
-        ], [], 'POST');
-        $this->assertStringContainsString(
-            'Nutzername oder das Passwort wurden falsch eingegeben',
-            (string)$response->getBody()
+            $body
         );
     }
 
-    public function testUnknownException()
+    public function testProfileApiExceptionIsForwarded(): void
     {
-        $this->expectException('BO\Zmsclient\Exception');
         $exception = new \BO\Zmsclient\Exception();
         $exception->template = '';
 
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/password/',
-                    'exception' => $exception
-                ]
-            ]
-        );
-        $this->render($this->arguments, [
-            'id' => 'testadmin',
-            'password' => 'vorschau',
-            'changePassword' => ['myPassword', 'myPassword'],
-            'save' => 'save'
-        ], [], 'POST');
-    }
-
-    public function testRenderingUpdate()
-    {
-        \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/password/',
-                    'response' => $this->readFixture("GET_useraccount_testuser.json")
-                ]
-            ]
-        );
-        $response = $this->render($this->arguments, [
-            'id' => 'testadmin',
-            'password' => 'vorschau',
-            'changePassword' => ['myPassword', 'myPassword'],
-            'save' => 'save'
-        ], [], 'POST');
-        $this->assertRedirect($response, '/profile/?success=useraccount_saved');
-        $this->assertEquals(302, $response->getStatusCode());
-    }
-
-    public function testRenderingUpdateValidationFailed()
-    {
-        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
-        $exception = new \BO\Zmsentities\Exception\SchemaValidation();
+        $this->expectException(\BO\Zmsclient\Exception::class);
 
         $this->setApiCalls(
             [
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture(
+                        'GET_Workstation_Resolved1.json'
+                    ),
                 ],
                 [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/password/',
-                    'exception' => $exception
-                ]
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/profile/',
+                    'parameters' => [],
+                    'exception' => $exception,
+                ],
             ]
         );
-        $this->render($this->arguments, [
-            'id' => 'testadmin',
-            'password' => 'vorschau',
-            'changePassword' => ['myPassword', 'myPassword2'],
-            'save' => 'save'
-        ], [], 'POST');
+
+        $this->render(
+            $this->arguments,
+            $this->parameters,
+            []
+        );
     }
 }
