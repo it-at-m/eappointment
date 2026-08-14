@@ -12,6 +12,7 @@ use BO\Zmsdldb\Elastic\Link as Base;
 
 /**
  */
+/** @psalm-api */
 class Link extends Base
 {
     #[\Override]

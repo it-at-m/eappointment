@@ -15,6 +15,7 @@ use BO\Zmsdldb\Entity\Location as LocationEntity;
 
 /**
  */
+/** @psalm-api */
 class Authority extends Base
 {
     /**

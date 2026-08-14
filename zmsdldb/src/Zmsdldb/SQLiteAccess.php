@@ -16,7 +16,7 @@ class SQLiteAccess extends PDOAccess
     const DEFAULT_DATABASE_PATH = __DIR__;
 
     #[\Override]
-    protected function connect(array $options)
+    protected function connect(array $options): void
     {
         try {
             $databasePath = rtrim(($options['databasePath'] ?? static::DEFAULT_DATABASE_PATH), \DIRECTORY_SEPARATOR);

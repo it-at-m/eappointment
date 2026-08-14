@@ -22,7 +22,7 @@ abstract class PDOAccess extends AbstractAccess
 
     protected $pdo;
 
-    protected $engine = 'SQLite';
+    protected string $engine = 'SQLite';
 
 
     public function __construct(array $options)
@@ -89,7 +89,7 @@ abstract class PDOAccess extends AbstractAccess
         throw new \Exception('Invalid accessor');
     }
 
-    abstract protected function connect(array $options);
+    abstract protected function connect(array $options): void;
 
     public function getConnection()
     {
