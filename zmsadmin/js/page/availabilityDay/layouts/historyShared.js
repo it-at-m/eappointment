@@ -22,7 +22,6 @@ export const formatChangedAt = (value) => {
         + ` ${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
-/** Same weekday formatting as the day table (availability.weekday bit flags). */
 export const formatWeekdays = (weekday) => {
     if (!weekday || typeof weekday !== 'object') {
         return ''
@@ -80,9 +79,6 @@ HistoryRowsTable.propTypes = {
     rows: PropTypes.array.isRequired
 }
 
-/**
- * Full history for one availability (all actions), newest first.
- */
 export const AvailabilityHistoryPanel = ({ historyUrl, availabilityId, refreshKey }) => {
     const [status, setStatus] = useState('loading')
     const [rows, setRows] = useState([])
