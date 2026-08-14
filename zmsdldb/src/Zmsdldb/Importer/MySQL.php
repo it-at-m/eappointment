@@ -23,7 +23,7 @@ class MySQL extends Base
     }
 
     #[\Override]
-    public function runImport()
+    public function runImport(): void
     {
         try {
             parent::runImport();
@@ -33,13 +33,13 @@ class MySQL extends Base
         }
     }
     #[\Override]
-    public function preImport()
+    public function preImport(): void
     {
         $this->beginTransaction();
     }
 
     #[\Override]
-    public function postImport()
+    public function postImport(): void
     {
         $this->commit();
     }
