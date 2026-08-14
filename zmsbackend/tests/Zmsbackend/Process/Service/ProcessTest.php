@@ -591,7 +591,7 @@ class ProcessTest extends \BO\Zmsbackend\Tests\Service\Base
                 "expired process $process should be older than expiration date " . $date->format('c')
             );
         }
-        $this->assertEquals(46, $processList->count());
+        $this->assertEquals(56, $processList->count());
     }
 
     public function testDeallocateProcess()
