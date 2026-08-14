@@ -16,24 +16,57 @@ jobs:
     if: github.event_name != 'schedule'
     name: 🛡️ Trivy Security Check
     runs-on: ubuntu-latest
-    env:
-      TRIVY_SKIP_VERSION_CHECK: "true"
     permissions:
       contents: read
       security-events: write
       actions: read
     steps:
-      - name: Run Trivy Security check on Repository
-        uses: it-at-m/lhm_actions/action-templates/actions/action-trivy@4ed8f906bab8111fbd9a7af8e3f4129f9b721757 # v1.2.3
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Run Trivy vulnerability scanner in repository mode
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         env:
           TRIVY_SKIP_VERSION_CHECK: "true"
+          TRIVY_INCLUDE_DEV_DEPS: "true"
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: json
+          exit-code: "1"
+          timeout: 15m0s
+          trivyignores: .trivyignore
+          output: trivy-report.json
+          version: v0.73.0
+
+      - name: Convert Trivy report
+        if: always() && hashFiles('trivy-report.json') != ''
+        shell: bash
+        run: |
+          trivy convert --format table --output trivy-results.txt trivy-report.json
+          cat trivy-results.txt
+          trivy convert --format sarif --output trivy-results.sarif trivy-report.json
+
+      - name: Upload vulnerability scan results
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          path: trivy-report.json
+          retention-days: 7
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        if: always() && hashFiles('trivy-results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4.37.3
+        with:
+          sarif_file: trivy-results.sarif
 
   scheduled:
     if: github.event_name == 'schedule'
     name: 🛡️ Trivy Security Check (${{ matrix.branch }})
     runs-on: ubuntu-latest
-    env:
-      TRIVY_SKIP_VERSION_CHECK: "true"
     strategy:
       fail-fast: false
       matrix:
@@ -62,13 +95,11 @@ jobs:
           timeout: 15m0s
           trivyignores: .trivyignore
           output: trivy-report.json
+          version: v0.73.0
 
       - name: Convert Trivy report
         if: always() && hashFiles('trivy-report.json') != ''
         shell: bash
-        env:
-          # convert in 0.70.0 has no --skip-version-check; a set env maps to that flag and fails
-          TRIVY_SKIP_VERSION_CHECK: ""
         run: |
           trivy convert --format table --output trivy-results.txt trivy-report.json
           cat trivy-results.txt
