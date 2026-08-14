@@ -48,6 +48,7 @@ public class ZmsApiSteps {
         
         given()
             .baseUri(baseUri)
+            .header("X-Token", TestConfig.getSecureToken())
         .when()
             .get("/status/")
         .then()
@@ -56,8 +57,22 @@ public class ZmsApiSteps {
     
     @When("I make a GET request to {string}")
     public void iMakeAGetRequestTo(String endpoint) {
+        var request = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri());
+        if ("/status/".equals(endpoint) || endpoint.startsWith("/status/?")) {
+            request.header("X-Token", TestConfig.getSecureToken());
+        }
+        response = request
+        .when()
+            .get(endpoint);
+        CommonApiSteps.setResponse(response);
+    }
+
+    @When("I make a GET request to {string} with the X-Token")
+    public void iMakeAGetRequestToWithTheXToken(String endpoint) {
         response = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-Token", TestConfig.getSecureToken())
         .when()
             .get(endpoint);
         CommonApiSteps.setResponse(response);
