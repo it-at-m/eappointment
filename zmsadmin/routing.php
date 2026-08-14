@@ -201,7 +201,7 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->map(['GET','POST'], '/owner/{id:\d+}/organisation/', \BO\Zmsadmin\OwnerAddOrganisation::class)
     ->setName("ownerAddOrganisation");
 
-\App::$slim->get('/owner/', '\BO\Zmsadmin\OwnerOverview')
+\App::$slim->get('/owner/', \BO\Zmsadmin\OwnerOverview::class)
     ->setName("owner_overview");
 
 \App::$slim->map(['GET','POST'], '/owner/{id:\d+}/', \BO\Zmsadmin\Owner::class)

@@ -1,0 +1,4 @@
+# Loaded automatically by Trivy (scan and convert).
+# Suppress "new version available" notices so CI exit codes reflect findings only.
+scan:
+  skip-version-check: true

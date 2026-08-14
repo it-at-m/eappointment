@@ -29,7 +29,7 @@ class ArchivedDataIntoStatisticByCron
         $this->query = new \BO\Zmsbackend\Process\Service\ProcessStatusArchived();
     }
 
-    public function startProcessing(\DateTimeImmutable $dateTime, $commit = false)
+    public function startProcessing(\DateTimeImmutable $dateTime, bool $commit = false): void
     {
         $scopeList = (new \BO\Zmsbackend\Scope\Service\Scope())->readList(0);
         $dateTime = $dateTime->modify($this->timespan);
@@ -85,22 +85,23 @@ class ArchivedDataIntoStatisticByCron
         $organisation,
         $owner,
         $dateTime,
-        $commit = false
+        bool $commit = false
     ) {
-        $requestList = (new \BO\Zmsbackend\Request\Service\Request())->readRequestByArchiveId($process->archiveId);
+        $requestIds = (new \BO\Zmsbackend\Request\Service\Request())
+            ->readRequestIdsByArchiveId($process->archiveId);
         $processingTime = null;
-        if ($requestList->count()) {
-            $processingTime = $requestList->count() === 1 ? $process->processingTime : null;
+        if (count($requestIds)) {
+            $processingTime = count($requestIds) === 1 ? $process->processingTime : null;
         } else {
-            $requestList = [new \BO\Zmsentities\Request(['id' => '-1'])];
+            $requestIds = [-1];
         }
 
-        foreach ($requestList as $request) {
+        foreach ($requestIds as $requestId) {
             $archived = true; // for verbose
             if ($commit) {
                 $archived = $this->query->writeArchivedProcessToStatistic(
                     $process,
-                    $request->getId(),
+                    $requestId,
                     $cluster ? $cluster->getId() : 0,
                     $scope->toProperty()->provider->id->get(0),
                     $department->getId(),
@@ -114,12 +115,12 @@ class ArchivedDataIntoStatisticByCron
                 $this->archivedList['scope_' . $scope->getId()][] = $process->archiveId;
                 $processDate = $process->getFirstAppointment()->toDateTime()->format('Y-m-d');
                 $this->logMessage(
-                    "INFO: Process {$process->archiveId} with request {$request->getId()}"
+                    "INFO: Process {$process->archiveId} with request {$requestId}"
                     . " for scope {$scope->getId()} archived on $processDate"
                 );
             } else {
                 $this->logMessage(
-                    "WARN: Could not archive process {$process->archiveId} with request {$request->getId()}!"
+                    "WARN: Could not archive process {$process->archiveId} with request {$requestId}!"
                 );
             }
         }

@@ -3,12 +3,15 @@ name: 🛡️ Trivy Security Check (scheduled)
 on:
   schedule:
     # Scheduled workflows run on the default branch only; scan main and next explicitly.
-    - cron: "0 5 * * *"
+    - cron: "0 1 * * *"
+  workflow_dispatch:
 
 jobs:
   scheduled:
     name: 🛡️ Trivy Security Check (${{ matrix.branch }})
     runs-on: ubuntu-latest
+    env:
+      TRIVY_SKIP_VERSION_CHECK: "true"
     strategy:
       fail-fast: false
       matrix:
@@ -27,6 +30,8 @@ jobs:
 
       - name: Run Trivy vulnerability scanner in repository mode
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        env:
+          TRIVY_SKIP_VERSION_CHECK: "true"
         with:
           scan-type: fs
           scan-ref: .
@@ -39,6 +44,9 @@ jobs:
       - name: Convert Trivy report
         if: always() && hashFiles('trivy-report.json') != ''
         shell: bash
+        env:
+          # convert in 0.70.0 has no --skip-version-check; a set env maps to that flag and fails
+          TRIVY_SKIP_VERSION_CHECK: ""
         run: |
           trivy convert --format table --output trivy-results.txt trivy-report.json
           cat trivy-results.txt
@@ -54,7 +62,35 @@ jobs:
 
       - name: Upload Trivy scan results to GitHub Security tab
         if: always() && hashFiles('trivy-results.sarif') != ''
-        uses: github/codeql-action/upload-sarif@f205ea1c3313d32999d8d6a48b4f6530d4437b38 # v4.37.4
+        uses: github/codeql-action/upload-sarif@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
         with:
           sarif_file: trivy-results.sarif
           category: trivy-${{ matrix.branch }}
+
+  notify-webex:
+    name: 📣 Notify Webex on scheduled failure
+    needs: scheduled
+    if: failure() && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Webex
+        env:
+          WEBEX_BOT_TOKEN: ${{ secrets.WEBEX_BOT_TOKEN }}
+          WEBEX_ROOM_ID: ${{ secrets.WEBEX_ROOM_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          jq -n \
+            --arg roomId "$WEBEX_ROOM_ID" \
+            --arg repo "${{ github.repository }}" \
+            --arg runId "$RUN_ID" \
+            --arg url "$RUN_URL" \
+            '{roomId: $roomId, markdown: ("**Trivy scheduled security check failed in " + $repo + "**\n\n**Run:** `" + $runId + "`\n\n[View failed workflow](" + $url + ")")}' \
+            | curl -fsS -o /dev/null -X POST \
+              -H "Authorization: Bearer $WEBEX_BOT_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d @- \
+              "https://webexapis.com/v1/messages"
+          echo "Webex notification sent:"
+          echo "  Run: ${RUN_ID}"
+          echo "  ${RUN_URL}"

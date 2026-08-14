@@ -4,10 +4,25 @@ import de from '@/utils/de-DE.json';
 import { nextTick } from "vue";
 
 import AppointmentDetailView from "@/components/AppointmentDetail/AppointmentDetailView.vue";
+import {
+  getServiceBaseURL,
+  VIDEO_CONSULTATION_INFO_URL,
+} from "@/utils/Constants";
 
 globalThis.scrollTo = vi.fn();
 
 describe("AppointmentDetailView", () => {
+  const translate = (key: string): string => {
+    const value = key.split(".").reduce<unknown>((current, part) => {
+      if (typeof current !== "object" || current === null) {
+        return undefined;
+      }
+
+      return (current as Record<string, unknown>)[part];
+    }, de);
+
+    return typeof value === "string" ? value : key;
+  };
 
   beforeAll(() => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
@@ -90,10 +105,7 @@ describe("AppointmentDetailView", () => {
         },
         appointmentOverviewUrl: mockAppointmentOverviewUrl,
         rescheduleAppointmentUrl: mockRescheduleAppointmentUrl,
-        t: (key: string) => {
-          const translations = de as any;
-          return translations[key] || key;
-        },
+        t: translate,
         ...props,
       },
       global: {
@@ -113,8 +125,9 @@ describe("AppointmentDetailView", () => {
             props: ["icon"],
           },
           'appointment-detail-header': {
-            template: "<div data-test='appointment-detail-header'></div>",
-            props: ["appointment", "selectedProvider"],
+            template:
+              "<div data-test='appointment-detail-header' :data-variant-id='variantId'></div>",
+            props: ["appointment", "selectedProvider", "variantId"],
             emits: ["cancelAppointment", "rescheduleAppointment"],
           },
           'calendar-icon': {
@@ -172,6 +185,107 @@ describe("AppointmentDetailView", () => {
     });
   });
 
+  describe("Appointment Variants", () => {
+    it("shows telephone-specific appointment information", async () => {
+      const wrapper = createWrapper();
+
+      wrapper.vm.appointment = mockAppointment;
+      wrapper.vm.selectedProvider = mockProvider;
+      wrapper.vm.selectedService = {
+        id: mockAppointment.serviceId,
+        name: mockAppointment.serviceName,
+        maxQuantity: 1,
+        parentId: null,
+        variantId: 2,
+      };
+      wrapper.vm.loading = false;
+
+      await nextTick();
+
+      const locationSection = wrapper.find(".location-text-margin-top");
+      const timeSection = wrapper.find(".time-container-margin-bottom");
+
+      expect(locationSection.exists()).toBe(true);
+      expect(timeSection.exists()).toBe(true);
+
+      expect(locationSection.text()).toContain(de.appointmentTypes["2"]);
+      expect(locationSection.text()).toContain(
+        de.appointmentDetailTelephoneLocationText
+      );
+      expect(locationSection.text()).toContain(mockAppointment.telephone);
+      expect(locationSection.text()).toContain(
+        de.appointmentDetailTelephonePreparationHint
+      );
+
+      expect(locationSection.text()).not.toContain(
+        mockProvider.address.street
+      );
+
+      expect(timeSection.text()).not.toContain(de.detailTimeHint);
+
+      expect(
+        wrapper
+          .find('[data-test="appointment-detail-header"]')
+          .attributes("data-variant-id")
+      ).toBe("2");
+    });
+
+    it("shows video-specific appointment information", async () => {
+      const wrapper = createWrapper();
+
+      wrapper.vm.appointment = mockAppointment;
+      wrapper.vm.selectedProvider = mockProvider;
+      wrapper.vm.selectedService = {
+        id: mockAppointment.serviceId,
+        name: mockAppointment.serviceName,
+        maxQuantity: 1,
+        parentId: null,
+        variantId: 3,
+      };
+      wrapper.vm.loading = false;
+
+      await nextTick();
+
+      const locationSection = wrapper.find(".location-text-margin-top");
+      const timeSection = wrapper.find(".time-container-margin-bottom");
+
+      expect(locationSection.exists()).toBe(true);
+      expect(timeSection.exists()).toBe(true);
+
+      expect(locationSection.text()).toContain(de.appointmentTypes["3"]);
+      expect(locationSection.text()).toContain(
+        de.appointmentDetailVideoLocationText
+      );
+      expect(locationSection.text()).toContain(
+        de.appointmentDetailVideoPreparationHint
+      );
+      expect(locationSection.text()).toContain(
+        de.appointmentDetailVideoDelayHint
+      );
+
+      expect(locationSection.text()).not.toContain(
+        mockProvider.address.street
+      );
+
+      expect(timeSection.text()).not.toContain(de.detailTimeHint);
+
+      expect(
+        wrapper
+          .find('[data-test="appointment-detail-header"]')
+          .attributes("data-variant-id")
+      ).toBe("3");
+
+      const infoLink = locationSection.find(
+        `a[href="${VIDEO_CONSULTATION_INFO_URL}"]`
+      );
+
+      expect(infoLink.exists()).toBe(true);
+      expect(infoLink.text()).toBe(
+        de.appointmentDetailVideoInfoLink
+      );
+    });
+  });
+
   describe("Linklist States", () => {
     it("shows one linklist items", async () => {
       const wrapper = createWrapper();
@@ -183,6 +297,34 @@ describe("AppointmentDetailView", () => {
       expect(wrapper.find('.m-linklist__list__item').exists()).toBe(true);
       expect(wrapper.findAll('.m-linklist__list__item')).toHaveLength(1);
 
+    });
+
+    it("uses rootParentId for the main service link", async () => {
+      const wrapper = createWrapper();
+      const rootParentId = "underlying-service-id";
+
+      wrapper.vm.appointment = mockAppointment;
+      wrapper.vm.selectedProvider = mockProvider;
+      wrapper.vm.selectedService = {
+        id: mockAppointment.serviceId,
+        name: mockAppointment.serviceName,
+        maxQuantity: 1,
+        parentId: null,
+        rootParentId,
+        variantId: 2,
+      };
+      wrapper.vm.loading = false;
+
+      await nextTick();
+
+      const serviceLink = wrapper.find(
+        `#service-${mockAppointment.serviceId}`
+      );
+
+      expect(serviceLink.exists()).toBe(true);
+      expect(serviceLink.attributes("href")).toBe(
+        getServiceBaseURL() + rootParentId
+      );
     });
 
     it("shows three linklist items", async () => {

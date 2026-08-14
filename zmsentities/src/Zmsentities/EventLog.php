@@ -67,7 +67,7 @@ class EventLog extends Schema\Entity
      * {@inheritDoc}
      */
     #[\Override]
-    public function addData($mergeData): Schema\Entity
+    public function addData($mergeData): static
     {
         if (isset($mergeData['creationDateTime']) && is_string($mergeData['creationDateTime'])) {
             $mergeData['creationDateTime'] = new DateTime($mergeData['creationDateTime']);

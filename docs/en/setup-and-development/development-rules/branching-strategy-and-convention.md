@@ -44,7 +44,7 @@ To keep our branch names organized and easily understandable, we follow a specif
 The branch name must match the following regular expression:
 `^(feature|hotfix|bugfix|cleanup|maintenance|chore|docs)-(zms|zmskvr|mpdzbs|muxdbs)-[0-9]+-[a-z0-9-]+$`
 
-Please only branch features and bugfixes from the integration branch `next`. Hotfixes and Documentations may be branched from `main`.
+Please only branch features and bugfixes from the integration branch `next`. Hotfixes may be branched from `main`. Documentation (including handbook updates that should appear on GitHub Pages) should land on `next`.
 
 ```mermaid
 ---

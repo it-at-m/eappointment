@@ -10,7 +10,8 @@ on:
         type: boolean
   # Scheduled on main only until ~18k Psalm findings are cleared (PR/push would fail every CI).
   # Re-enable pull_request / push when errorLevel is stricter or debt is baselined.
-  # GitHub Actions cron is UTC; runs on the default branch (main) only.
+  # GitHub Actions cron is UTC; schedule runs on the default branch (main) only.
+  # workflow_dispatch works from any branch (including next) for manual verification.
   schedule:
     - cron: '0 4 * * *' # 06:00 Europe/Berlin (CEST) / 05:00 (CET)
 
@@ -26,7 +27,7 @@ concurrency:
 jobs:
   psalm:
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || github.ref == 'refs/heads/main'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
 
     strategy:
       fail-fast: false
@@ -47,12 +48,12 @@ jobs:
 
     steps:
       - name: Checkout repository (with submodules)
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
           php-version: 8.3
           tools: composer
@@ -64,7 +65,7 @@ jobs:
         working-directory: ${{ matrix.project }}
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ matrix.project }}-${{ hashFiles(format('{0}/composer.lock', matrix.project)) }}
@@ -136,7 +137,7 @@ jobs:
 
       - name: Upload SARIF results
         if: always() && steps.sarif.outputs.exists == 'true'
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
         with:
           sarif_file: results-${{ matrix.project }}.sarif
           checkout_path: ${{ matrix.project }}
@@ -158,16 +159,16 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       github.event_name == 'schedule' ||
-      (github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.run_dead_code == true)
+      (github.event_name == 'workflow_dispatch' && inputs.run_dead_code == true)
 
     steps:
       - name: Checkout repository (with submodules)
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
           php-version: 8.3
           tools: composer
@@ -179,7 +180,7 @@ jobs:
         working-directory: zmsbackend
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ${{ steps.composer-cache-monorepo.outputs.dir }}
           key: ${{ runner.os }}-composer-psalm-monorepo-${{ hashFiles('mellon/composer.lock', 'zmsadmin/composer.lock', 'zmsbackend/composer.lock', 'zmscalldisplay/composer.lock', 'zmscitizenapi/composer.lock', 'zmsclient/composer.lock', 'zmsdldb/composer.lock', 'zmsentities/composer.lock', 'zmsmessaging/composer.lock', 'zmsslim/composer.lock', 'zmsstatistic/composer.lock', 'zmsticketprinter/composer.lock') }}
@@ -256,7 +257,7 @@ jobs:
 
       - name: Upload monorepo SARIF results
         if: always() && steps.sarif_monorepo.outputs.exists == 'true'
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
         with:
           sarif_file: results-monorepo.sarif
           category: .github/workflows/psalm.yml:psalm-dead-code

@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   mockup:
-    image: jordimartin/mmock:v4.3.12
+    image: jordimartin/mmock:v4.3.12@sha256:37df3c926fa8f19e786b28c96086bf4916e370e7f31cc8067a11c218340f6483
     ports:
       - 8082:8082
       - 8083:8083
@@ -14,7 +14,7 @@ services:
   test:
     depends_on:
       - mockup
-    image: ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev
+    image: ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev@sha256:2bdb1a63ccd59c1ce9422133892800b64972f96bfc4e23e9347beac7a09499b9
     volumes:
       - type: bind
         source: "."

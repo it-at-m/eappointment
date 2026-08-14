@@ -17,7 +17,7 @@ use BO\Zmsbackend\Helper\ProcessStatus;
  */
 class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\ResolveReferences
 {
-    public function readEntity($processId = null, $authKey = null, $resolveReferences = 2)
+    public function readEntity($processId = null, $authKey = null, $resolveReferences = 2): ?Entity
     {
         if (null === $processId || null === $authKey) {
             return null;
@@ -322,6 +322,43 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $processList;
     }
 
+    protected function readProcessesWithoutRequests($statement): Collection
+    {
+        $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
+        $processList = new Collection();
+        while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $processList->addEntity(new Entity($query->postProcessJoins($processData)));
+        }
+        return $processList;
+    }
+
+    protected function attachAllRequestsInOneQuery(Collection $processList, int $resolveReferences): Collection
+    {
+        if ($processList->count() === 0 || $resolveReferences < 0) {
+            return $processList;
+        }
+
+        $processIds = [];
+        foreach ($processList as $process) {
+            if ($process->hasId()) {
+                $processIds[] = $process->getId();
+            }
+        }
+
+        $requestsByProcessId = (new \BO\Zmsbackend\Request\Service\Request())
+            ->readAllRequestsForProcessIds($processIds, $resolveReferences - 1);
+
+        foreach ($processList as $process) {
+            if (!$process->hasId()) {
+                continue;
+            }
+            $process->requests = $requestsByProcessId[(int) $process->getId()]
+                ?? new \BO\Zmsentities\Collection\RequestList();
+        }
+
+        return $processList;
+    }
+
     /**
      * Read list with following processes in DB
      */
@@ -523,6 +560,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         if (isset($parameter['amendment']) && $parameter['amendment']) {
             $query->addConditionAmendment($parameter['amendment']);
         }
+
         if (isset($parameter['scopeId']) && $parameter['scopeId']) {
             $query->addConditionScopeId($parameter['scopeId']);
         }
@@ -1043,7 +1081,8 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
             ->addLimit($limit);
 
         $statement = $this->fetchStatement($query);
-        return $this->readList($statement, $resolveReferences);
+        $processList = $this->readProcessesWithoutRequests($statement);
+        return $this->attachAllRequestsInOneQuery($processList, (int) $resolveReferences);
     }
 
     public function readAssignedWorkstationIdForUpdate(int $processId): ?int
