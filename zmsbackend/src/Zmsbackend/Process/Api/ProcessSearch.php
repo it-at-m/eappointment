@@ -10,7 +10,7 @@ namespace BO\Zmsbackend\Process\Api;
 use BO\Slim\Render;
 use BO\Mellon\Validator;
 use BO\Zmsbackend\Helper\SearchPagination;
-use BO\Zmsbackend\Process\Service\Process;
+use BO\Zmsbackend\ProcessSearch\Service\ProcessSearch as ProcessSearchService;
 
 class ProcessSearch extends \BO\Zmsbackend\Api\BaseController
 {
@@ -42,7 +42,6 @@ class ProcessSearch extends \BO\Zmsbackend\Api\BaseController
         unset($parameters['lessResolvedData']);
         unset($parameters['limit']);
         unset($parameters['page']);
-        $parameters['upcomingOnly'] = 1;
 
         foreach (['service', 'provider', 'date'] as $filterKey) {
             if (!isset($parameters[$filterKey]) || trim((string) $parameters[$filterKey]) === '') {
@@ -58,11 +57,13 @@ class ProcessSearch extends \BO\Zmsbackend\Api\BaseController
             $parameters['scopeIds'] = implode(',', $scopeIds);
         }
 
-        $processQuery = new Process();
+        $processQuery = new ProcessSearchService();
         $totalCount = $processQuery->readSearchCount($parameters);
         $processList = $processQuery->readSearch($parameters, $resolveReferences, $resultsPerPage, $offset);
         if ($lessResolvedData) {
-            $processList = $processList->withLessData();
+            $processList = $processList->withLessData([
+                'createTimestamp',
+            ]);
         }
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
