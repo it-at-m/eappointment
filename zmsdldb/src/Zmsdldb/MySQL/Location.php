@@ -14,6 +14,7 @@ use BO\Zmsdldb\Elastic\Location as Base;
 /**
  * @SuppressWarnings(Coupling)
  */
+/** @psalm-api */
 class Location extends Base
 {
     #[\Override]
@@ -250,6 +251,9 @@ class Location extends Base
         //    $geoJson['category'] = $category;
         //}
         foreach ($locationList as $location) {
+            if (!$location instanceof Entity) {
+                continue;
+            }
             if (empty($location['category']['identifier'])) {
                 continue;
             }
