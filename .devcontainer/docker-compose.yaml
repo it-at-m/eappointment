@@ -148,7 +148,6 @@ services:
     build:
       context: ../.resources/keycloak
       dockerfile: Dockerfile.keycloakmigration
-    image: eappointment-keycloakmigration:0.2.131-jre25
     container_name: zms-init-keycloak
     depends_on:
       init-keycloak-token:
