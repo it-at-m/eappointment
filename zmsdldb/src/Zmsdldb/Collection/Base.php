@@ -9,6 +9,9 @@ namespace BO\Zmsdldb\Collection;
 
 use BO\Zmsdldb\Helper\Sorter;
 
+/**
+ * @extends \ArrayObject<int|string, \BO\Zmsdldb\Entity\Base>
+ */
 class Base extends \ArrayObject
 {
     public function sortByName()

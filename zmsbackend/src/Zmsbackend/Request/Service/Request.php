@@ -4,6 +4,7 @@ namespace BO\Zmsbackend\Request\Service;
 
 use BO\Zmsbackend\Application as App;
 use BO\Zmsentities\Request as Entity;
+use BO\Zmsentities\Scope;
 use BO\Zmsentities\Collection\RequestList as Collection;
 
 /**
@@ -164,7 +165,7 @@ class Request extends \BO\Zmsbackend\Base
 
         $request = $this->fetchOne($query, new Entity());
         if (!$request->hasId()) {
-            throw new Exception\Request\RequestNotFound("Could not find request with ID $source/$requestId");
+            throw new \BO\Zmsbackend\Request\Exception\RequestNotFound("Could not find request with ID $source/$requestId");
         }
 
         return $request;
@@ -213,6 +214,44 @@ class Request extends \BO\Zmsbackend\Base
             $collection = $this->readCollection($query);
         }
         return $collection;
+    }
+
+    public function readAllRequestsForProcessIds(array $processIds, $resolveReferences = 0): array
+    {
+        $processIds = array_values(array_unique(array_filter(
+            array_map('intval', $processIds),
+            static fn (int $id): bool => $id > 0
+        )));
+        if ($processIds === []) {
+            return [];
+        }
+
+        $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
+        $query->setResolveLevel($resolveReferences);
+        $query->addConditionProcessIds($processIds);
+        $query->addEntityMappingWithProcessId();
+
+        $requestsByProcessId = [];
+        foreach ($processIds as $processId) {
+            $requestsByProcessId[$processId] = new Collection();
+        }
+
+        $statement = $this->fetchStatement($query);
+        while ($requestData = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $processed = $query->postProcessJoins($requestData);
+            $processId = (int) ($processed['processId'] ?? 0);
+            unset($processed['processId']);
+            if ($processId <= 0 || !isset($requestsByProcessId[$processId])) {
+                continue;
+            }
+            $requestsByProcessId[$processId]->addEntity(new Entity($processed));
+        }
+
+        foreach ($requestsByProcessId as $processId => $requestList) {
+            $requestsByProcessId[$processId] = $this->attachRootParentIds($requestList);
+        }
+
+        return $requestsByProcessId;
     }
 
     public function readRequestsByIds($ids, $resolveReferences = 0)
@@ -274,6 +313,119 @@ class Request extends \BO\Zmsbackend\Base
             $request['timeSlotCount'] = $requestRelation->getSlotCount();
         }
         return $requestList;
+    }
+
+    public function readListByScopeAndDepartment(int $scopeId, int $resolveReferences = 0): array
+    {
+        $scopeService = new \BO\Zmsbackend\Scope\Service\Scope();
+        $scope = $scopeService->readEntity($scopeId, $resolveReferences ? $resolveReferences : 1);
+        if (!$scope || !$scope->hasId()) {
+            throw new \BO\Zmsbackend\Scope\Exception\ScopeNotFound();
+        }
+
+        $scopeRequestList = $this->readListByProvider(
+            $scope->provider['source'],
+            $scope->getProviderId(),
+            $resolveReferences
+        );
+
+        $departmentId = (int) $scopeService->readDepartmentIdByScopeId($scopeId);
+        if ($departmentId < 1) {
+            return [
+                'scopeRequests' => $scopeRequestList,
+                'additionalDepartmentRequests' => new Collection(),
+            ];
+        }
+
+        $providers = $this->readDepartmentProviders(
+            $scopeService->readByDepartmentId($departmentId, 1),
+            $departmentId
+        );
+        $departmentRequestList = $this->readAllRequestsForProviders($providers, $resolveReferences);
+        $additionalDepartmentRequestList = $this->keepRequestsNotAlreadyOnScope(
+            $scopeRequestList,
+            $departmentRequestList
+        );
+
+        return [
+            'scopeRequests' => $scopeRequestList,
+            'additionalDepartmentRequests' => $additionalDepartmentRequestList->sortByName(),
+        ];
+    }
+
+    protected function readDepartmentProviders(
+        \BO\Zmsentities\Collection\ScopeList $departmentScopes,
+        int $departmentId
+    ): array {
+        $providers = [];
+        foreach ($departmentScopes as $departmentScope) {
+            if (!$departmentScope instanceof Scope) {
+                continue;
+            }
+            try {
+                $provider = $departmentScope->getProvider();
+                $key = $provider->source . ':' . $provider->id;
+                $providers[$key] = [
+                    'source' => (string) $provider->source,
+                    'id' => $provider->id,
+                ];
+            } catch (\BO\Zmsentities\Exception\ScopeMissingProvider $exception) {
+                App::$log->warning('Skipping department scope without provider for request list', [
+                    'scopeId' => $departmentScope->id ?? null,
+                    'departmentId' => $departmentId,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        }
+
+        return $providers;
+    }
+
+    protected function readAllRequestsForProviders(array $providers, int $resolveReferences): Collection
+    {
+        $requestList = new Collection();
+        $requestKeys = [];
+        foreach ($providers as $provider) {
+            $providerRequests = $this->readListByProvider(
+                $provider['source'],
+                $provider['id'],
+                $resolveReferences
+            );
+            foreach ($providerRequests as $request) {
+                $requestKey = $this->getRequestLookupKey($request);
+                if (!isset($requestKeys[$requestKey])) {
+                    $requestKeys[$requestKey] = true;
+                    $requestList->addEntity(clone $request);
+                }
+            }
+        }
+
+        return $requestList;
+    }
+
+    protected function keepRequestsNotAlreadyOnScope(
+        Collection $scopeRequestList,
+        Collection $departmentRequestList
+    ): Collection {
+        $additionalDepartmentRequestList = new Collection();
+        $scopeRequestKeys = [];
+        foreach ($scopeRequestList as $request) {
+            if (!$request instanceof Entity) {
+                continue;
+            }
+            $scopeRequestKeys[$this->getRequestLookupKey($request)] = true;
+        }
+        foreach ($departmentRequestList as $request) {
+            if (!$request instanceof Entity) {
+                continue;
+            }
+            $requestKey = $this->getRequestLookupKey($request);
+            if (!isset($scopeRequestKeys[$requestKey])) {
+                $additionalDepartmentRequestList->addEntity(clone $request);
+            }
+        }
+
+        return $additionalDepartmentRequestList;
     }
 
     public function readListBySource($source, $resolveReferences = 0, $disableCache = false)

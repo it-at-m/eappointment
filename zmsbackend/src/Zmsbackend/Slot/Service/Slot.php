@@ -54,7 +54,7 @@ class Slot extends \BO\Zmsbackend\Base
         \BO\Zmsentities\Slot $slot,
         AvailabilityEntity $availability,
         \DateTimeInterface $date,
-        $getLock = false
+        bool $getLock = false
     ) {
         $data = array();
         $data['scopeID'] = $availability['scope']['id'];
@@ -85,6 +85,9 @@ class Slot extends \BO\Zmsbackend\Base
     ): void {
         $times = [];
         foreach ($slotList as $slot) {
+            if (!$slot instanceof Entity) {
+                continue;
+            }
             $times[] = $slot->getTimeString();
         }
         $times = array_values(array_unique($times));

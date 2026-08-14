@@ -8,31 +8,31 @@
         <form method="get" action="">
             <div class="grid m-5">
                 <div class="grid__item one-whole" style="margin-bottom: 12px;">
-                    <label for="calendar-date-from" class="form-label">Gesamtsuche</label><br>
-                    <input type="text" name="query" value="{{ searchProcessQuery }}" style="width: 100%;height: 30px;">
+                    <label for="search-query" class="form-label">Gesamtsuche</label><br>
+                    <input type="text" id="search-query" name="query" value="{{ searchProcessQuery }}" style="width: 100%;height: 30px;">
                 </div>
 
                 <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
-                    <label for="calendar-date-from" class="form-label">Dienstleistung</label><br>
-                    <input type="text" name="service" value="{{ service }}" style="width: 100%;height: 30px;">
+                    <label for="search-service" class="form-label">Dienstleistung</label><br>
+                    <input type="text" id="search-service" name="service" value="{{ service }}" style="width: 100%;height: 30px;">
                 </div>
 
                 <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
-                    <label for="calendar-date-from" class="form-label">Standort</label><br>
-                    <input type="text" name="provider" value="{{ provider }}" style="width: 100%;height: 30px;">
+                    <label for="search-provider" class="form-label">Standort</label><br>
+                    <input type="text" id="search-provider" name="provider" value="{{ provider }}" style="width: 100%;height: 30px;">
                 </div>
 
                 <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
-                    <label for="calendar-date-from" class="form-label">Datum</label>
-                    <input type="date" id="adsa" name="date" value="{{ date }}" class="form-control">
+                    <label for="search-date" class="form-label">Datum</label>
+                    <input type="date" id="search-date" name="date" value="{{ date }}" class="form-control">
                 </div>
 
                 <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
-                    <label for="calendar-date-from" class="form-label">Sachbearbeiter</label><br>
+                    <label class="form-label">Sachbearbeiter</label><br>
 
-                    <input type="radio" name="user" value="1" {% if userAction == 1 %}checked="checked"{% endif %}> <label for="1">Ja</label>
-                    <input type="radio" name="user" value="2" {% if userAction == 2 %}checked="checked"{% endif %}> <label for="2">Nein</label>
-                    <input type="radio" name="user" value="0" {% if userAction == 0 %}checked="checked"{% endif %}> <label for="3">Ohne Filter</label>
+                    <input type="radio" id="search-user-yes" name="user" value="1" {% if userAction == 1 %}checked="checked"{% endif %}> <label for="search-user-yes">Ja</label>
+                    <input type="radio" id="search-user-no" name="user" value="2" {% if userAction == 2 %}checked="checked"{% endif %}> <label for="search-user-no">Nein</label>
+                    <input type="radio" id="search-user-none" name="user" value="0" {% if userAction == 0 %}checked="checked"{% endif %}> <label for="search-user-none">Ohne Filter</label>
                 </div>
 
                 <input type="hidden" name="perPage" value="{{ perPage }}">

@@ -88,7 +88,9 @@
             <div class="page-footer__right">
             <div class="page-version">
                 <a href="{{ urlGet('changelog', {}, {}) }}" class="version" title="Änderungshistorie anzeigen">Änderungshistorie</a> | <span>Version {{ currentVersion() }}</span>
+                {% if workstation.useraccount.permissions.superuser|default(false) %}
                 <a href="{{ urlGet('status', {}, {}) }}" class="version" title="Betriebsstatus des Systems">Status</a>
+                {% endif %}
                 {% if getSystemStatus('ZMS_ENV') %}<p>{{ getSystemStatus('ZMS_ENV') }}</p>{% endif %}
             </div>
             </div>

@@ -13,13 +13,13 @@ use \Psr\Http\Message\ResponseInterface;
  * html, basic routes
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/', '\BO\Zmscalldisplay\Index')
+\App::$slim->get('/', \BO\Zmscalldisplay\Index::class)
     ->setName("index");
 
-\App::$slim->post('/queue/', '\BO\Zmscalldisplay\Queue')
+\App::$slim->post('/queue/', \BO\Zmscalldisplay\Queue::class)
     ->setName("queue");
 
-\App::$slim->post('/waitinginfo/', '\BO\Zmscalldisplay\Info')
+\App::$slim->post('/waitinginfo/', \BO\Zmscalldisplay\Info::class)
     ->setName("info");
 
 /*
@@ -27,7 +27,7 @@ use \Psr\Http\Message\ResponseInterface;
  * redirects from old to new
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/mehrfachaufruf.php', '\BO\Zmscalldisplay\RedirectOld')
+\App::$slim->get('/mehrfachaufruf.php', \BO\Zmscalldisplay\RedirectOld::class)
     ->setName("RedirectOld");
 
 /*
@@ -35,5 +35,5 @@ use \Psr\Http\Message\ResponseInterface;
  * maintenance
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/healthcheck/', '\BO\Zmscalldisplay\Healthcheck')
+\App::$slim->get('/healthcheck/', \BO\Zmscalldisplay\Healthcheck::class)
     ->setName("healthcheck");
