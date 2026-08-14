@@ -37,7 +37,10 @@ services:
     restart: "no"
 
   init-keycloak:
-    image: klg71/keycloakmigration:0.2.131@sha256:a311cce3b961062000e6e9ef08ecb5712f3ea81859beeee8cd0c836fe8e4f2cf
+    build:
+      context: ../.resources/keycloak
+      dockerfile: Dockerfile.keycloakmigration
+    image: eappointment-keycloakmigration:0.2.131-jre25
     depends_on:
       init-keycloak-token:
         condition: service_completed_successfully
