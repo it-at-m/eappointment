@@ -45,11 +45,12 @@ jobs:
         if: always() && hashFiles('trivy-report.json') != ''
         shell: bash
         env:
-          TRIVY_SKIP_VERSION_CHECK: "true"
+          # convert in 0.70.0 has no --skip-version-check; a set env maps to that flag and fails
+          TRIVY_SKIP_VERSION_CHECK: ""
         run: |
-          trivy convert --skip-version-check --format table --output trivy-results.txt trivy-report.json
+          trivy convert --format table --output trivy-results.txt trivy-report.json
           cat trivy-results.txt
-          trivy convert --skip-version-check --format sarif --output trivy-results.sarif trivy-report.json
+          trivy convert --format sarif --output trivy-results.sarif trivy-report.json
 
       - name: Upload vulnerability scan results
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
