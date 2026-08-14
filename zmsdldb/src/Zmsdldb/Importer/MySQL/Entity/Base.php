@@ -28,8 +28,6 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
 
     protected array $referanceMapping = [];
 
-    protected array $preFormatFields = [];
-
     protected array $references = [];
 
     protected array $dataRaw = [];
@@ -64,48 +62,6 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
-    public static function entityFactory(
-        string $entityName,
-        PDOAccess $mySqlAccess,
-        array $dataRaw = [],
-        bool $setup = true
-    ): Base {
-        try {
-            $className = preg_replace_callback('/[_-]([a-z0-9]*)/i', function ($matches) {
-                return ucfirst($matches[1] ?? '');
-            }, $entityName);
-            $className = '\\BO\\Zmsdldb\\Importer\\MySQL\\Entity' . $className;
-
-            $entity = new $className($mySqlAccess, $dataRaw, $setup);
-            if (!$entity instanceof Base) {
-                throw new \InvalidArgumentException($className . ' must extend ' . Base::class);
-            }
-            return $entity;
-        } catch (\Exception $e) {
-            throw $e;
-        }
-    }
-
-    public function factory(string $entityName, array $dataRaw = [], bool $setup = true): Base
-    {
-        try {
-            return static::entityFactory($entityName, $this->getPDOAccess(), $dataRaw, $setup);
-        } catch (\Exception $e) {
-            throw $e;
-        }
-    }
-
-    public function setRawData(array $rawData = []): static
-    {
-        $this->dataRaw = $rawData;
-        return $this;
-    }
-
-    public function getRawData(): array
-    {
-        return $this->dataRaw;
-    }
-
     public function setStatus(int $status = Base::STATUS_NEW): void
     {
         $this->status = $status;
@@ -127,10 +83,6 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         } catch (\Exception $e) {
             throw $e;
         }
-    }
-
-    protected function setupPreFormatFields(): void
-    {
     }
 
     protected function setupMapping(): void
@@ -263,14 +215,6 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
             }
             $this->references[$name][] = $reference;
         }
-    }
-
-    public function getReference(string $name): EntityCollection
-    {
-        if (array_key_exists($name, $this->references)) {
-            return $this->references[$name];
-        }
-        throw new \InvalidArgumentException(__METHOD__ . " reference {$name} has not been set!");
     }
 
     final public function __get($name)
@@ -438,14 +382,6 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return false;
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function postSave(\PDOStatement $stm, Base $entity): void
-    {
-    }
-
     final public function saveReferences(): bool
     {
         try {
@@ -503,9 +439,6 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
                     false
                 );
                 $referencesInstance->setupFields();
-
-                #print_r(array_intersect_key($referencesInstance->getFields(), $addFields));
-                #exit;
 
                 $referencesInstance->deleteWith(
                     array_intersect_key($referencesInstance->getFields(), $addFields)
