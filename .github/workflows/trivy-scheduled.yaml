@@ -10,6 +10,8 @@ jobs:
   scheduled:
     name: 🛡️ Trivy Security Check (${{ matrix.branch }})
     runs-on: ubuntu-latest
+    env:
+      TRIVY_SKIP_VERSION_CHECK: "true"
     strategy:
       fail-fast: false
       matrix:
@@ -28,6 +30,8 @@ jobs:
 
       - name: Run Trivy vulnerability scanner in repository mode
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        env:
+          TRIVY_SKIP_VERSION_CHECK: "true"
         with:
           scan-type: fs
           scan-ref: .
@@ -40,6 +44,9 @@ jobs:
       - name: Convert Trivy report
         if: always() && hashFiles('trivy-report.json') != ''
         shell: bash
+        env:
+          # convert in 0.70.0 has no --skip-version-check; a set env maps to that flag and fails
+          TRIVY_SKIP_VERSION_CHECK: ""
         run: |
           trivy convert --format table --output trivy-results.txt trivy-report.json
           cat trivy-results.txt
