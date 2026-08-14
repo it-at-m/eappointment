@@ -225,8 +225,6 @@ class View extends RequestView {
 
         this.updateRequestCount(request, count);
 
-        this.addServiceToList($(event.currentTarget), 'serviceListSelected');
-        this.removeServiceFromList($(event.currentTarget), 'serviceList');
         this.updateLists(true);
         this.auralMessage(this.auralMessages.add + ': ' + request.find('span').last().text());
     }
