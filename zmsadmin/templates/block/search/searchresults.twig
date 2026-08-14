@@ -140,7 +140,7 @@
                         <tr>
                             <td>{{ log.reference }}</td>
                             <td>{{log.ts|date('d.m.Y, H:i:s')}}&nbsp;Uhr</td>
-                            <td colspan="4">
+                            <td colspan="5">
                                 {{ log.message }}<br>
                                 {% if data is defined %}
                                     {% for key, value in data %}

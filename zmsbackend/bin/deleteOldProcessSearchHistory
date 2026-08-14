@@ -5,11 +5,7 @@ require_once(__DIR__ . "/script_bootstrap.php");
 
 $commit = in_array('--commit', $argv, true);
 
-if (class_exists('\App') && isset(\App::$now)) {
-    $now = \App::$now;
-} else {
-    $now = new \DateTimeImmutable('now');
-}
+$now = \App::$now ?? new \DateTimeImmutable('now');
 
 $job = new \BO\Zmsbackend\Helper\ProcessSearchHistoryCleanUp();
 $job->startProcessing($now, $commit);

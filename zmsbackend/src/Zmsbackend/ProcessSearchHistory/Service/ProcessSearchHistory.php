@@ -90,7 +90,7 @@ class ProcessSearchHistory extends \BO\Zmsbackend\Base
             self::RESOLVE_REFERENCES
         );
 
-        if (!$resolvedProcess->hasId()) {
+        if ($resolvedProcess === null || !$resolvedProcess->hasId()) {
             throw new \RuntimeException(
                 sprintf(
                     'Process %d could not be loaded for the history snapshot.',

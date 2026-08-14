@@ -15,16 +15,24 @@ class ProcessSearchHistoryCleanUp
     ): void {
         $config = (new ConfigService())->readEntity();
 
-        $retentionDays = (int) (
+        $retentionDays = filter_var(
             $config->getPreference(
                 'processSearchHistory',
                 'deleteOlderThanDays'
-            )
-            ?? self::DEFAULT_RETENTION_DAYS
+            ),
+            FILTER_VALIDATE_INT,
+            [
+                'options' => [
+                    'min_range' => 1,
+                ],
+            ]
         );
 
-        $cutoff = (new \DateTimeImmutable())
-            ->setTimestamp($now->getTimestamp())
+        if ($retentionDays === false) {
+            $retentionDays = self::DEFAULT_RETENTION_DAYS;
+        }
+
+        $cutoff = \DateTimeImmutable::createFromInterface($now)
             ->modify('-' . $retentionDays . ' days');
 
         \App::$log->info(
