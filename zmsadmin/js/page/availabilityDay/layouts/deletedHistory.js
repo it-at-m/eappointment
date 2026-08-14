@@ -7,10 +7,6 @@ import {
     AvailabilityHistoryPanel
 } from './historyShared'
 
-/**
- * Scope-wide list of deleted Öffnungszeiten for tech admins (ZMSKVR-1249 option 3).
- * Expand icon loads full history for that availability_id.
- */
 const DeletedAvailabilityHistory = ({ historyUrl, refreshKey }) => {
     const [status, setStatus] = useState('loading')
     const [rows, setRows] = useState([])

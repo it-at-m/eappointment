@@ -17,9 +17,6 @@ use BO\Zmsentities\Exception\UserAccountMissingRights;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-/**
- * Tech-admin read API for opening-hours change history (ZMSKVR-1249).
- */
 class AvailabilityHistoryByScope extends \BO\Zmsbackend\Api\BaseController
 {
     /**
@@ -82,9 +79,6 @@ class AvailabilityHistoryByScope extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
-    /**
-     * @return array{0:\DateTimeImmutable,1:\DateTimeImmutable}
-     */
     protected function resolveDateRange(): array
     {
         $fromParam = Validator::param('from')->isString()->getValue();

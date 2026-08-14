@@ -10,12 +10,10 @@ namespace BO\Zmsadmin;
 use BO\Mellon\Validator;
 use BO\Slim\Render;
 use BO\Zmsentities\Exception\UserAccountMissingRights;
+use BO\Zmsentities\Useraccount;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-/**
- * Lazy-load proxy for opening-hours change history (ZMSKVR-1249).
- */
 class ScopeAvailabilityHistory extends BaseController
 {
     /**
@@ -52,17 +50,12 @@ class ScopeAvailabilityHistory extends BaseController
             $params
         );
 
-        // History rows are plain JSON (no $schema); read raw body instead of Result::getData().
-        $apiResponse = $result->getResponse();
-        $apiResponse->getBody()->rewind();
-        $payload = json_decode((string) $apiResponse->getBody(), true);
-
         return Render::withJson($response, [
-            'data' => is_array($payload['data'] ?? null) ? $payload['data'] : [],
+            'data' => $result->getData() ?? [],
         ]);
     }
 
-    public static function canViewAvailabilityHistory($useraccount): bool
+    public static function canViewAvailabilityHistory(Useraccount $useraccount): bool
     {
         return $useraccount->isSuperUser() || $useraccount->hasRole('system_admin');
     }

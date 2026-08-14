@@ -4,26 +4,6 @@ declare(strict_types=1);
 
 namespace BO\Zmsentities;
 
-/**
- * Opening-hours change history row for tech-admin audit (ZMSKVR-1249).
- *
- * @property int|null $id
- * @property int $scopeId
- * @property int|null $availabilityId
- * @property string $action
- * @property array $weekday
- * @property string $series
- * @property string $validFrom
- * @property string $validTo
- * @property string $timeRange
- * @property string $type
- * @property string $slotTime
- * @property string $workstations
- * @property string $bookable
- * @property string $description
- * @property string $changedAt
- * @property string $changedBy
- */
 class AvailabilityHistory extends Schema\Entity
 {
     public const PRIMARY = 'id';
@@ -43,11 +23,7 @@ class AvailabilityHistory extends Schema\Entity
         self::ACTION_DLDB_SLOT_UPDATE,
     ];
 
-    /**
-     * Same bit codes as availability.weekday / Availability repository mapping.
-     *
-     * @var array<string, int>
-     */
+    /** @var array<string, int> */
     public const WEEKDAY_BITS = [
         'sunday' => 1,
         'monday' => 2,
@@ -86,9 +62,6 @@ class AvailabilityHistory extends Schema\Entity
         ];
     }
 
-    /**
-     * Encode availability.weekday flags to the INT bit matrix stored in availability_history.weekday.
-     */
     public static function encodeWeekdayMask(Availability $availability): int
     {
         $mask = 0;
@@ -101,11 +74,7 @@ class AvailabilityHistory extends Schema\Entity
         return $mask;
     }
 
-    /**
-     * Decode INT bit matrix to availability-style weekday map.
-     *
-     * @return array<string, int>
-     */
+    /** @return array<string, int> */
     public static function decodeWeekdayMask(int $mask): array
     {
         $weekday = [];

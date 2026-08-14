@@ -11,9 +11,6 @@ namespace BO\Zmsbackend\Helper;
 use BO\Zmsbackend\Availability\Service\AvailabilityHistory as AvailabilityHistoryService;
 use BO\Zmsbackend\Config\Service\Config as ConfigRepository;
 
-/**
- * Purge availability_history rows older than the configured retention window (ZMSKVR-1249).
- */
 class AvailabilityHistoryCleanUpByCron
 {
     protected $verbose = false;
@@ -33,9 +30,6 @@ class AvailabilityHistoryCleanUpByCron
         }
     }
 
-    /**
-     * @return int number of deleted rows (0 on dry-run)
-     */
     public function startProcessing($commit = false): int
     {
         $config = (new ConfigRepository())->readEntity();

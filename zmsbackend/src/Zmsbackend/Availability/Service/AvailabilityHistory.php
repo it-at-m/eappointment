@@ -11,9 +11,6 @@ use BO\Zmsentities\AvailabilityHistory as Entity;
 use BO\Zmsentities\Collection\AvailabilityHistoryList as Collection;
 use App;
 
-/**
- * Write opening-hours change history for tech-admin audit (ZMSKVR-1249).
- */
 class AvailabilityHistory extends \BO\Zmsbackend\Base
 {
     public const ACTION_CREATED = Entity::ACTION_CREATED;
@@ -21,8 +18,8 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
     public const ACTION_DELETED = Entity::ACTION_DELETED;
     public const ACTION_DLDB_SLOT_UPDATE = Entity::ACTION_DLDB_SLOT_UPDATE;
 
-    /** Default retention window for history rows (ZMSKVR-1249). */
     public const DEFAULT_RETENTION_DAYS = 180;
+    public const MAX_ROWS = 500;
 
     private const DESCRIPTION_MAX_LENGTH = 512;
 
@@ -32,14 +29,14 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         'appointment' => 'Terminkunden',
     ];
 
-    /** @var array<int, string> afterWeeks series labels (admin availabilitySeries) */
+    /** @var array<int, string> */
     private const SERIES_AFTER_WEEKS = [
         1 => 'jede Woche',
         2 => 'alle 2 Wochen',
         3 => 'alle 3 Wochen',
     ];
 
-    /** @var array<int, string> weekOfMonth series labels */
+    /** @var array<int, string> */
     private const SERIES_WEEK_OF_MONTH = [
         1 => 'jede 1. Woche im Monat',
         2 => 'jede 2. Woche im Monat',
@@ -68,9 +65,6 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         return $this->write(self::ACTION_DLDB_SLOT_UPDATE, $availability, 'dldb');
     }
 
-    /**
-     * Newest-first history for a scope within [from, to] (inclusive timestamps).
-     */
     public function readListByScopeId(
         int $scopeId,
         \DateTimeInterface $from,
@@ -78,59 +72,29 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         ?int $availabilityId = null,
         ?string $action = null
     ): Collection {
-        $parameters = [
-            'scopeId' => $scopeId,
-            'from' => $from->format('Y-m-d H:i:s'),
-            'to' => $to->format('Y-m-d H:i:s'),
-        ];
-
-        $query = AvailabilityHistoryQuery::QUERY_SELECT_COLUMNS
-            . ' WHERE scope_id = :scopeId'
-            . ' AND changed_at >= :from'
-            . ' AND changed_at <= :to';
+        $query = new AvailabilityHistoryQuery(\BO\Zmsbackend\Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addConditionScopeId($scopeId)
+            ->addConditionChangedAtRange($from, $to)
+            ->addLimit(self::MAX_ROWS);
 
         if ($availabilityId !== null) {
-            $query .= ' AND availability_id = :availabilityId';
-            $parameters['availabilityId'] = $availabilityId;
+            $query->addConditionAvailabilityId($availabilityId);
         }
         if ($action !== null) {
-            $query .= ' AND action = :action';
-            $parameters['action'] = $action;
+            $query->addConditionAction($action);
         }
 
-        $query .= ' ORDER BY changed_at DESC, id DESC';
-
-        $rows = $this->fetchAll($query, $parameters);
         $collection = new Collection();
-        foreach ($rows as $row) {
-            $collection->addEntity(new Entity([
-                'id' => (int) $row['id'],
-                'scopeId' => (int) $row['scopeId'],
-                'availabilityId' => $row['availabilityId'] !== null ? (int) $row['availabilityId'] : null,
-                'action' => (string) $row['action'],
-                'weekday' => Entity::decodeWeekdayMask((int) $row['weekday']),
-                'series' => (string) $row['series'],
-                'validFrom' => (string) $row['validFrom'],
-                'validTo' => (string) $row['validTo'],
-                'timeRange' => (string) $row['timeRange'],
-                'type' => (string) $row['type'],
-                'slotTime' => (string) $row['slotTime'],
-                'workstations' => (string) $row['workstations'],
-                'bookable' => (string) $row['bookable'],
-                'description' => (string) $row['description'],
-                'changedAt' => (string) $row['changedAt'],
-                'changedBy' => (string) $row['changedBy'],
-            ]));
+        foreach ($this->fetchList($query, new Entity()) as $entity) {
+            if ($entity instanceof Entity) {
+                $collection->addEntity($entity);
+            }
         }
 
         return $collection;
     }
 
-    /**
-     * Delete history rows older than the given number of days.
-     *
-     * @return int number of deleted rows
-     */
     public function deleteOlderThanDays(int $days): int
     {
         $days = max(1, $days);
@@ -142,28 +106,12 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         ]);
     }
 
-    /**
-     * Day-table snapshot values for history persistence.
-     *
-     * @return array{
-     *     weekday:int,
-     *     series:string,
-     *     valid_from:string,
-     *     valid_to:string,
-     *     time_range:string,
-     *     type:string,
-     *     slot_time:string,
-     *     workstations:string,
-     *     bookable:string,
-     *     description:string
-     * }
-     */
     public function buildSnapshot(Availability $availability): array
     {
         $startDate = $availability->getStartDateTime()->format('d.m.Y');
         $endDate = $availability->getEndDateTime()->format('d.m.Y');
-        $startTime = $this->formatTime((string) $availability->startTime);
-        $endTime = $this->formatTime((string) $availability->endTime);
+        $startTime = $availability->getStartDateTime()->format('H:i');
+        $endTime = $availability->getEndDateTime()->format('H:i');
         $slotMinutes = (int) ($availability->slotTimeInMinutes ?? $availability->getSlotTimeInMinutes());
         $bookableFrom = $availability->bookable['startInDays'] ?? null;
         $bookableTo = $availability->bookable['endInDays'] ?? null;
@@ -262,21 +210,5 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         }
 
         return 'system';
-    }
-
-    protected function formatTime(string $value): string
-    {
-        if ($value === '') {
-            return '';
-        }
-        $formats = ['H:i:s', 'H:i', 'G:i:s', 'G:i'];
-        foreach ($formats as $format) {
-            $parsed = \DateTimeImmutable::createFromFormat($format, $value);
-            if ($parsed instanceof \DateTimeImmutable) {
-                return $parsed->format('H:i');
-            }
-        }
-
-        return $value;
     }
 }
