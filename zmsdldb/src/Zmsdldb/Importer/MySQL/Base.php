@@ -187,9 +187,7 @@ abstract class Base implements Options
         if (null === $this->entityClass) {
             throw new \InvalidArgumentException(__METHOD__ . " invalid entity class");
         }
-        /** @var class-string<EntityBase> $entityClass */
-        $entityClass = $this->entityClass;
-        return $entityClass;
+        return $this->entityClass;
     }
 
     public function createEntity(array $data = array(), bool $setup = true): EntityBase
