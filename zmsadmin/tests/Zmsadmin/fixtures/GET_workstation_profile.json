@@ -1,0 +1,19 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2026-08-14T12:00:00+02:00",
+        "server": "Zmsbackend-ENV"
+    },
+    "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/useraccountprofile.json",
+        "username": "testadmin",
+        "role": "Technische Administration",
+        "permissions": [
+            "Alle Funktionen",
+            "Termine direkt aus der Warteschlange aufrufen (hierfür wird queue benötigt)",
+            "Warteschlange sehen"
+        ]
+    }
+}
