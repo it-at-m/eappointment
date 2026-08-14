@@ -113,11 +113,11 @@ VALUES
     (65202, 972202, 'confirmed', '2025-05-14 10:15:00', '2025-05-14 10:30:00', '2025-05-05 00:00:00'),
     (65202, 972203, 'cancelled', '2025-05-14 10:45:00', '2025-05-14 11:00:00', '2025-05-05 00:00:00');
 
-INSERT IGNORE INTO `buerger` (`BuergerID`,`StandortID`,`Datum`,`Uhrzeit`,`status`)
+INSERT IGNORE INTO `buerger` (`BuergerID`,`StandortID`,`Datum`,`Uhrzeit`,`status`,`absagecode`,`IPTimeStamp`)
 VALUES
-    (972201, 65202, '2025-05-14', '09:30:00', 'confirmed'),
-    (972202, 65202, '2025-05-14', '10:15:00', 'confirmed'),
-    (972203, 65202, '2025-05-14', '10:45:00', 'cancelled');
+    (972201, 65202, '2025-05-14', '09:30:00', 'confirmed', 'test-auth-972201', UNIX_TIMESTAMP('2025-05-05 09:00:00')),
+    (972202, 65202, '2025-05-14', '10:15:00', 'confirmed', 'test-auth-972202', UNIX_TIMESTAMP('2025-05-05 10:00:00')),
+    (972203, 65202, '2025-05-14', '10:45:00', 'cancelled', 'test-auth-972203', UNIX_TIMESTAMP('2025-05-05 11:00:00'));
 
 UPDATE `buerger` SET `displayNumber` = 'TT1201' WHERE `BuergerID` = 972201;
 
@@ -139,5 +139,158 @@ SELECT `nutzer`.`NutzerID`, `role`.`id`
 FROM `nutzer`
 JOIN `role` ON `role`.`name` = 'agent_queue'
 WHERE `nutzer`.`Name` = 'testuser';
+
+UNLOCK TABLES;
+
+/* ------------------------------------------------------------------
+   Test-Daten ProcessSearchHistoryTest
+-------------------------------------------------------------------*/
+
+LOCK TABLES `provider` WRITE, `request` WRITE, `request_provider` WRITE,
+            `standort` WRITE, `buerger` WRITE, `buergeranliegen` WRITE,
+            `process_search_history` WRITE;
+
+DELETE FROM `buergeranliegen` WHERE `BuergerID` = 990029;
+DELETE FROM `buerger` WHERE `BuergerID` = 990029;
+
+DELETE FROM `request_provider`
+WHERE `source` = 'unittest'
+  AND `request__id` = 9999997
+  AND `provider__id` = 9999997;
+
+DELETE FROM `standort` WHERE `StandortID` = 65991;
+DELETE FROM `request` WHERE `source` = 'unittest' AND `id` = 9999997;
+DELETE FROM `provider` WHERE `source` = 'unittest' AND `id` = 9999997;
+
+DELETE FROM `process_search_history`
+WHERE `history_key` IN (
+    SHA2('retention-old', 256),
+    SHA2('retention-boundary', 256),
+    SHA2('retention-new', 256)
+);
+
+INSERT INTO `provider`
+(`source`,`id`,`name`,`contact__city`,`contact__country`,`contact__lat`,`contact__lon`,
+ `contact__postalCode`,`contact__region`,`contact__street`,`contact__streetNumber`,`link`,`data`)
+VALUES
+    ('unittest',9999997,'History Test Provider','Berlin','Germany',52.5200,13.4050,
+     '10178','Berlin','History-Straße','1','https://www.berlinonline.de','{"test":"process-search-history"}');
+
+INSERT INTO `request`
+(`source`,`id`,`name`,`link`,`group`,`data`)
+VALUES
+    ('unittest',9999997,'History Test Service','https://www.berlinonline.de',
+     'ProcessSearchHistoryTest','{"test":"process-search-history"}');
+
+INSERT INTO `request_provider`
+(`source`,`request__id`,`provider__id`,`slots`)
+VALUES
+    ('unittest',9999997,9999997,1);
+
+INSERT INTO `standort`
+(`StandortID`,`Bezeichnung`,`standortkuerzel`,`InfoDienstleisterID`,`source`,`wartenrhinweis`,`aufrufanzeigetext`)
+VALUES
+    (65991,'History Test Standort','HST',9999997,'unittest','','');
+
+INSERT INTO `buerger`
+(`BuergerID`,`StandortID`,`Datum`,`Uhrzeit`,`Name`,`Anmerkung`,`Telefonnummer`,`EMail`,
+ `AnzahlAufrufe`,`Timestamp`,`IPAdresse`,`IPTimeStamp`,`aufrufzeit`,`telefonnummer_fuer_rueckfragen`,
+ `absagecode`,`AnzahlPersonen`,`vorlaeufigeBuchung`,`bestaetigt`,`status`,`displayNumber`)
+VALUES
+    (990029,65991,'2016-04-18','11:30:00','History Testperson','History Test amendment',
+     '030 11111111','history@example.test',1,'11:35:00','127.0.0.1',1456312139,'11:35:00',
+     '030 22222222','history-test-auth',1,0,1,'confirmed','H90029');
+
+INSERT INTO `buergeranliegen`
+(`BuergerID`,`BuergerarchivID`,`AnliegenID`,`source`)
+VALUES
+    (990029,0,9999997,'unittest');
+
+INSERT INTO `process_search_history`
+(`history_key`,`process_id`,`scope_id`,`display_number`,`appointment_at`,`booked_at`,
+ `called_at`,`finalized_at`,`status`,`citizen_name`,`telephone`,`citizen_email`,
+ `amendment`,`location_name`,`provider_name`,`services`)
+VALUES
+    (SHA2('retention-old',256),990201,65991,'R90201','2010-03-31 12:00:00','2010-03-01 10:00:00',
+     NULL,'2010-03-31 13:00:00','completed','Retention Old','','',NULL,'HST','History Test Provider',NULL),
+
+    (SHA2('retention-boundary',256),990202,65991,'R90202','2010-04-01 12:00:00','2010-03-01 10:00:00',
+     NULL,'2010-04-01 13:00:00','completed','Retention Boundary','','',NULL,'HST','History Test Provider',NULL),
+
+    (SHA2('retention-new',256),990203,65991,'R90203','2010-04-02 12:00:00','2010-03-01 10:00:00',
+     NULL,'2010-04-02 13:00:00','completed','Retention New','','',NULL,'HST','History Test Provider',NULL);
+
+UNLOCK TABLES;
+
+/* ------------------------------------------------------------------
+   Test-Daten AppointmentDeleteByCron History
+-------------------------------------------------------------------*/
+
+LOCK TABLES `buerger` WRITE, `buergeranliegen` WRITE;
+
+DELETE FROM `buergeranliegen`
+WHERE `BuergerID` IN (990101,990102,990103,990104,990105,990106,990107,990108,990109,990110);
+
+DELETE FROM `buerger`
+WHERE `BuergerID` IN (990101,990102,990103,990104,990105,990106,990107,990108,990109,990110);
+
+INSERT INTO `buerger`
+(`BuergerID`,`StandortID`,`Datum`,`Uhrzeit`,`Name`,`EMail`,`IPTimeStamp`,`Telefonnummer`,
+ `telefonnummer_fuer_rueckfragen`,`absagecode`,`bestaetigt`,`vorlaeufigeBuchung`,`status`,
+ `aufrufzeit`,`NutzerID`,`AbholortID`,`Abholer`,`nicht_erschienen`,`parked`,`aufruferfolgreich`,`Anmerkung`)
+VALUES
+    -- → missed
+    (990101,65991,'2015-01-01','09:00:00','Cleanup Confirmed','cleanup-confirmed@example.test',
+     1419984000,'030 100001','','cleanup-confirmed-auth',1,0,'confirmed','00:00:00',0,0,0,0,0,0,'Cleanup confirmed'),
+
+    -- → missed
+    (990102,65991,'2015-01-01','00:00:00','Cleanup Queued','cleanup-queued@example.test',
+     1419984000,'030 100002','','cleanup-queued-auth',1,0,'queued','00:00:00',0,0,0,0,0,0,'Cleanup queued'),
+
+    -- → missed
+    (990103,65991,'2015-01-01','09:00:00','Cleanup Called','cleanup-called@example.test',
+     1419984000,'030 100003','','cleanup-called-auth',1,0,'called','09:05:00',1,0,0,0,0,0,'Cleanup called'),
+
+    -- → missed
+    (990104,65991,'2015-01-01','09:00:00','Cleanup Missed','cleanup-missed@example.test',
+     1419984000,'030 100004','','cleanup-missed-auth',1,0,'missed','00:00:00',0,0,0,1,0,0,'Cleanup missed'),
+
+    -- → completed
+    (990105,65991,'2015-01-01','09:00:00','Cleanup Processing','cleanup-processing@example.test',
+     1419984000,'030 100005','','cleanup-processing-auth',1,0,'processing','00:00:00',1,0,0,0,0,1,'Cleanup processing'),
+
+    -- → completed
+    (990106,65991,'2015-01-01','09:00:00','Cleanup Parked','cleanup-parked@example.test',
+     1419984000,'030 100006','','cleanup-parked-auth',1,0,'parked','00:00:00',0,0,0,0,1,0,'Cleanup parked'),
+
+    -- → completed, aber nur bei --pending
+    (990107,65991,'2015-01-01','09:00:00','Cleanup Pending','cleanup-pending@example.test',
+     1419984000,'030 100007','','cleanup-pending-auth',1,0,'pending','00:00:00',0,65991,1,0,0,0,'Cleanup pending'),
+
+    -- keine History
+    (990108,65991,'2015-01-01','09:00:00','Cleanup Reserved','cleanup-reserved@example.test',
+     1419984000,'030 100008','','cleanup-reserved-auth',0,1,'reserved','00:00:00',0,0,0,0,0,0,'Cleanup reserved'),
+
+    -- keine History
+    (990109,65991,'2015-01-01','09:00:00','Cleanup Deleted','cleanup-deleted@example.test',
+     1419984000,'030 100009','','cleanup-deleted-auth',1,0,'deleted','00:00:00',0,0,0,0,0,0,'Cleanup deleted'),
+
+    -- keine History
+    (990110,65991,'2015-01-01','09:00:00','Cleanup Blocked','cleanup-blocked@example.test',
+     1419984000,'030 100010','','cleanup-blocked-auth',1,0,'blocked','00:00:00',0,0,0,0,0,0,'Cleanup blocked');
+
+INSERT INTO `buergeranliegen`
+(`AnliegenID`,`source`,`BuergerID`)
+VALUES
+    (9999997,'unittest',990101),
+    (9999997,'unittest',990102),
+    (9999997,'unittest',990103),
+    (9999997,'unittest',990104),
+    (9999997,'unittest',990105),
+    (9999997,'unittest',990106),
+    (9999997,'unittest',990107),
+    (9999997,'unittest',990108),
+    (9999997,'unittest',990109),
+    (9999997,'unittest',990110);
 
 UNLOCK TABLES;
