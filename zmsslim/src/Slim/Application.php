@@ -33,6 +33,11 @@ class Application
     public const bool DEBUG = false;
     const DEBUGLEVEL = ZMS_DEBUGLEVEL;
     const SESSION_DURATION = ZMS_SESSION_DURATION;
+    /**
+     * Token for X-Token / config API. Modules override from ZMS_CONFIG_SECURE_TOKEN.
+     * Declared here so the monorepo Psalm scan resolves \App::SECURE_TOKEN.
+     */
+    const SECURE_TOKEN = '';
     const LOG_ERRORS = true;
     const LOG_DETAILS = true;
 /**
