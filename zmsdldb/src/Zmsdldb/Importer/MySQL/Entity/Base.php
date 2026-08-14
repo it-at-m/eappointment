@@ -22,7 +22,6 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
     use ItemNeedsUpdateTrait;
     use PDOTrait;
 
-    /** @var array<string, string> */
     protected array $fieldMapping = [];
 
     /** @var array<string, mixed> */
@@ -166,6 +165,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
                 if (!is_string($referenceEntityClass)) {
                     throw new \InvalidArgumentException('Invalid reference entity class');
                 }
+                /** @var class-string<Base> $referenceEntityClass */
                 $addFields = [];
 
                 foreach (($this->referanceMapping[$name]['neededFields'] ?? []) as $sourceKey => $destinationKey) {
@@ -270,24 +270,18 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
     #[\Override]
     final public function offsetExists($offset): bool
     {
-        return is_string($offset) && $this->__isset($offset);
+        return $this->__isset($offset);
     }
 
     #[\Override]
     final public function offsetGet($offset): mixed
     {
-        if (!is_string($offset)) {
-            throw new \InvalidArgumentException(__METHOD__ . ' offset must be a string');
-        }
         return $this->__get($offset);
     }
 
     #[\Override]
     final public function offsetSet($offset, $value): Base
     {
-        if (!is_string($offset)) {
-            throw new \InvalidArgumentException(__METHOD__ . ' offset must be a string');
-        }
         $this->__set($offset, $value);
         return $this;
     }
@@ -295,9 +289,6 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
     #[\Override]
     final public function offsetUnset($offset): Base
     {
-        if (!is_string($offset)) {
-            throw new \InvalidArgumentException(__METHOD__ . ' offset must be a string');
-        }
         $this->__unset($offset);
         return $this;
     }
@@ -457,6 +448,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
                 if (!is_string($referenceEntityClass)) {
                     throw new \InvalidArgumentException('Invalid reference entity class');
                 }
+                /** @var class-string<Base> $referenceEntityClass */
                 foreach ($mappingData['deleteFields'] as $sourceKey => $val) {
                     $addFields[$sourceKey] = $val;
                 }
@@ -516,6 +508,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
                 if (!is_string($referenceEntityClass)) {
                     throw new \InvalidArgumentException('Invalid reference entity class');
                 }
+                /** @var class-string<Base> $referenceEntityClass */
                 $clearFields = [];
                 $position = 0;
                 foreach (($mappingData['clearFields'] ?? []) as $key => $value) {
