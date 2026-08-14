@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class LocationService extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'location' => 'location_id',
         'service_id' => 'service_id',
         'locale' => 'locale',

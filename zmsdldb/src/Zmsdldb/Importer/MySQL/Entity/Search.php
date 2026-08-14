@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class Search extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'object_id' => 'object_id',
         'locale' => 'locale',
         'entity_type' => 'entity_type',
@@ -13,7 +13,7 @@ class Search extends Base
     ];
 
     #[\Override]
-    public function postSetupFields()
+    public function postSetupFields(): void
     {
         if (isset($this->fields['search_value']) && !empty($this->fields['search_value'])) {
             if (is_array($this->fields['search_value'])) {
@@ -24,7 +24,7 @@ class Search extends Base
     }
 
     #[\Override]
-    public function postSetup()
+    public function postSetup(): void
     {
         $val = trim($this->fields['search_value']);
         if (empty($val)) {

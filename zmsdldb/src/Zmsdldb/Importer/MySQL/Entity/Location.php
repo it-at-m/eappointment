@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class Location extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'id' => 'id',
         'name' => 'name',
         'category.name' => 'category_name',
@@ -26,7 +26,7 @@ class Location extends Base
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     #[\Override]
-    protected function setupMapping()
+    protected function setupMapping(): void
     {
         $this->referanceMapping = [
             'name' => [
@@ -136,7 +136,7 @@ class Location extends Base
     }
 
     #[\Override]
-    public function preSetupFields()
+    public function preSetupFields(): void
     {
         #$this->dataRaw['payment'] = [
         #    'payment_info' => $this->dataRaw['payment'],
@@ -150,7 +150,7 @@ class Location extends Base
     }
 
     #[\Override]
-    public function preSetup()
+    public function preSetup(): void
     {
         try {
             $fields = $this->get(['id', 'meta.locale', 'meta.hash']);
