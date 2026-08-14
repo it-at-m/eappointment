@@ -7,7 +7,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
  */
 class Collection implements \Countable, \ArrayAccess
 {
-    protected $entities = [];
+    protected array $entities = [];
 
     #[\Override]
     final public function offsetExists($offset): bool
@@ -53,7 +53,7 @@ class Collection implements \Countable, \ArrayAccess
         return count($this->entities);
     }
 
-    public function saveEntities()
+    public function saveEntities(): void
     {
         try {
             foreach ($this->entities as $entity) {
