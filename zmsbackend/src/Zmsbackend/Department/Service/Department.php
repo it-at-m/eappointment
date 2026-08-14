@@ -224,31 +224,6 @@ class Department extends \BO\Zmsbackend\Base
         return $this->readEntity($departmentId, 0, true);
     }
 
-    protected function writeDepartmentDayoffs($departmentId, $dayoffList)
-    {
-        if (!$departmentId) {
-            throw new \BO\Zmsbackend\Department\Exception\InvalidId();
-        }
-        $existingDayoffs = (new \BO\Zmsbackend\Dayoff\Service\DayOff())->readOnlyByDepartmentId($departmentId);
-        if ($existingDayoffs->count()) {
-            foreach ($existingDayoffs as $item) {
-                $query = new \BO\Zmsbackend\Dayoff\Service\DayOff();
-                $query->deleteEntity($item->getId());
-            }
-        }
-
-        foreach ($dayoffList as $dayoff) {
-            $query = new \BO\Zmsbackend\Dayoff\Repository\DayOff(\BO\Zmsbackend\Query\Base::INSERT);
-            $query->addValues(
-                [
-                    'behoerdenid' => $departmentId,
-                    'Feiertag' => $dayoff['name'],
-                    'Datum' => (new \DateTimeImmutable('@' . $dayoff['date']))->format('Y-m-d')
-                ]
-            );
-            $this->writeItem($query);
-        }
-    }
 
     protected function writeDepartmentLinks($departmentId, $links)
     {
