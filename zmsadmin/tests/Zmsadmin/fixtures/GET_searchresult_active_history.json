@@ -1,0 +1,138 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "totalCount": 4
+    },
+    "data": {
+        "0": {
+            "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+            "id": 100504,
+            "displayNumber": "100504",
+            "source": "active",
+            "status": "confirmed",
+            "appointmentStatus": "planned",
+            "amendment": "Active planned test",
+            "createTimestamp": 1786604788,
+            "appointments": [
+                {
+                    "date": 1787071500
+                }
+            ],
+            "clients": [
+                {
+                    "familyName": "Active Planned",
+                    "telephone": "11111",
+                    "email": "active-planned@example.test"
+                }
+            ],
+            "scope": {
+                "id": 141,
+                "contact": {
+                    "name": "Teststandort"
+                },
+                "shortName": "TST"
+            },
+            "queue": {
+                "callTime": 0
+            }
+        },
+        "1": {
+            "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+            "id": 101002,
+            "displayNumber": "101002",
+            "source": "active",
+            "status": "missed",
+            "appointmentStatus": "missed",
+            "amendment": "Active missed test",
+            "createTimestamp": 1786605660,
+            "appointments": [
+                {
+                    "date": 1787044800
+                }
+            ],
+            "clients": [
+                {
+                    "familyName": "Active Missed",
+                    "telephone": "22222",
+                    "email": "active-missed@example.test"
+                }
+            ],
+            "scope": {
+                "id": 141,
+                "contact": {
+                    "name": "Teststandort"
+                },
+                "shortName": "TST"
+            },
+            "queue": {
+                "callTime": 0
+            }
+        },
+        "2": {
+            "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+            "id": 201001,
+            "displayNumber": "H201001",
+            "source": "history",
+            "status": "finished",
+            "appointmentStatus": "completed",
+            "amendment": "History completed test",
+            "createTimestamp": 1785564900,
+            "appointments": [
+                {
+                    "date": 1786345200
+                }
+            ],
+            "clients": [
+                {
+                    "familyName": "History Completed",
+                    "telephone": "33333",
+                    "email": "history-completed@example.test"
+                }
+            ],
+            "scope": {
+                "id": 141,
+                "contact": {
+                    "name": "Teststandort"
+                },
+                "shortName": "TST"
+            },
+            "queue": {
+                "callTime": 1786345620
+            }
+        },
+        "3": {
+            "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+            "id": 201002,
+            "displayNumber": "H201002",
+            "source": "history",
+            "status": "missed",
+            "appointmentStatus": "missed",
+            "amendment": "History missed test",
+            "createTimestamp": 1785662400,
+            "appointments": [
+                {
+                    "date": 1786264200
+                }
+            ],
+            "clients": [
+                {
+                    "familyName": "History Missed",
+                    "telephone": "44444",
+                    "email": "history-missed@example.test"
+                }
+            ],
+            "scope": {
+                "id": 141,
+                "contact": {
+                    "name": "Teststandort"
+                },
+                "shortName": "TST"
+            },
+            "queue": {
+                "callTime": 0
+            }
+        }
+    }
+}
