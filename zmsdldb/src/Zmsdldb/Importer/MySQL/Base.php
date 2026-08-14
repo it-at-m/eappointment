@@ -72,11 +72,12 @@ abstract class Base implements Options
                 return;
             }
             $this->entitysToDelete = [];
+            $entityClass = $this->getEntityClass();
             $sql = "SELECT 
             m.object_id AS id, 
             e.data_json AS data_json 
             FROM meta AS m
-            JOIN " . $this->entityClass::getTableName() . " AS e ON e.id = m.object_id AND e.locale = ?
+            JOIN " . $entityClass::getTableName() . " AS e ON e.id = m.object_id AND e.locale = ?
             WHERE m.locale = ?";
 
 
@@ -97,13 +98,14 @@ abstract class Base implements Options
     {
         try {
             if (empty($this->metaObject)) {
+                $entityClass = $this->getEntityClass();
                 $metaObject = new MetaEntity(
                     $this->getPDOAccess(),
                     [
                         'object_id' => 0,
                         'locale' => $this->getLocale(),
                         'hash' => $this->getImportHash(),
-                        'type' => call_user_func($this->entityClass . '::getTableName')
+                        'type' => $entityClass::getTableName()
                     ]
                 );
                 $this->metaObject = $metaObject;
@@ -163,14 +165,23 @@ abstract class Base implements Options
         return $this->hash;
     }
 
-    public function createEntity(array $data = array(), bool $setup = true): EntityBase
+    /**
+     * @return class-string<EntityBase>
+     */
+    protected function getEntityClass(): string
     {
         if (null === $this->entityClass) {
             throw new \InvalidArgumentException(__METHOD__ . " invalid entity class");
         }
-        $entity = new $this->entityClass($this->getPDOAccess(), $data, $setup);
+        return $this->entityClass;
+    }
+
+    public function createEntity(array $data = array(), bool $setup = true): EntityBase
+    {
+        $entityClass = $this->getEntityClass();
+        $entity = new $entityClass($this->getPDOAccess(), $data, $setup);
         if (!$entity instanceof EntityBase) {
-            throw new \InvalidArgumentException($this->entityClass . ' must extend ' . EntityBase::class);
+            throw new \InvalidArgumentException($entityClass . ' must extend ' . EntityBase::class);
         }
         return $entity;
     }
