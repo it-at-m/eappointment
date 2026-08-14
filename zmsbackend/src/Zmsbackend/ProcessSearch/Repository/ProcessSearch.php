@@ -48,7 +48,61 @@ class ProcessSearch extends \BO\Zmsbackend\Process\Repository\Process
         ?string $service = null,
         array $filters = []
     ): string {
-        $sql = '
+        $conditions = [];
+
+        $this->addHistoryScopeCondition(
+            $conditions,
+            $scopeIds
+        );
+
+        $this->addHistoryAppointmentFromCondition(
+            $conditions,
+            $parameters,
+            $appointmentFrom
+        );
+
+        $this->addHistorySearchQueryCondition(
+            $conditions,
+            $parameters,
+            $searchQuery
+        );
+
+        $this->addHistoryDateCondition(
+            $conditions,
+            $parameters,
+            $date
+        );
+
+        $this->addHistoryProviderCondition(
+            $conditions,
+            $parameters,
+            $provider
+        );
+
+        $this->addHistoryServiceCondition(
+            $conditions,
+            $parameters,
+            $service
+        );
+
+        $this->addHistoryFilterConditions(
+            $conditions,
+            $parameters,
+            $filters
+        );
+
+        $sql = $this->getHistoryBaseSelectSql();
+
+        if ($conditions) {
+            $sql .= ' WHERE ' . implode(' AND ', $conditions);
+        }
+
+        return $sql;
+    }
+
+    private function getHistoryBaseSelectSql(): string
+    {
+        return '
             SELECT
                 history.process_id AS process_id,
                 history.display_number AS display_number,
@@ -76,144 +130,252 @@ class ProcessSearch extends \BO\Zmsbackend\Process\Repository\Process
                 history.id AS source_record_id
             FROM process_search_history history
         ';
+    }
 
-        $conditions = [];
-
-        if ($scopeIds !== null) {
-            $scopeIds = array_values(
-                array_unique(
-                    array_map('intval', $scopeIds)
-                )
-            );
-
-            if (!$scopeIds) {
-                $conditions[] = '1 = 0';
-            } else {
-                $conditions[] = 'history.scope_id IN ('
-                    . implode(',', $scopeIds)
-                    . ')';
-            }
+    private function addHistoryScopeCondition(
+        array &$conditions,
+        ?array $scopeIds
+    ): void {
+        if ($scopeIds === null) {
+            return;
         }
 
-        if ($appointmentFrom !== null) {
-            $conditions[] = 'history.appointment_at >= ?';
+        $scopeIds = array_values(
+            array_unique(
+                array_map('intval', $scopeIds)
+            )
+        );
 
-            $parameters[] = $appointmentFrom
-                ->format('Y-m-d H:i:s');
+        if (!$scopeIds) {
+            $conditions[] = '1 = 0';
+            return;
         }
 
-        if ($searchQuery !== null && trim($searchQuery) !== '') {
-            $searchCondition = $this->buildHistorySearchCondition(
-                $searchQuery,
-                $parameters
-            );
+        $conditions[] = 'history.scope_id IN ('
+            . implode(',', $scopeIds)
+            . ')';
+    }
 
-            if ($searchCondition !== '') {
-                $conditions[] = $searchCondition;
-            }
+    private function addHistoryAppointmentFromCondition(
+        array &$conditions,
+        array &$parameters,
+        ?\DateTimeInterface $appointmentFrom
+    ): void {
+        if ($appointmentFrom === null) {
+            return;
         }
 
-        if ($date !== null && trim($date) !== '') {
-            $date = trim($date);
+        $conditions[] = 'history.appointment_at >= ?';
 
-            $dateFrom = new \DateTimeImmutable($date);
+        $parameters[] = $appointmentFrom
+            ->format('Y-m-d H:i:s');
+    }
 
-            $conditions[] = '
-                history.appointment_at >= ?
-                AND history.appointment_at < ?
-            ';
-
-            $parameters[] = $dateFrom
-                ->setTime(0, 0, 0)
-                ->format('Y-m-d H:i:s');
-
-            $parameters[] = $dateFrom
-                ->modify('+1 day')
-                ->setTime(0, 0, 0)
-                ->format('Y-m-d H:i:s');
+    private function addHistorySearchQueryCondition(
+        array &$conditions,
+        array &$parameters,
+        ?string $searchQuery
+    ): void {
+        if ($searchQuery === null || trim($searchQuery) === '') {
+            return;
         }
 
-        if ($provider !== null && trim($provider) !== '') {
-            $provider = '%' . $this->escapeHistoryLikeValue(
+        $searchCondition = $this->buildHistorySearchCondition(
+            $searchQuery,
+            $parameters
+        );
+
+        if ($searchCondition !== '') {
+            $conditions[] = $searchCondition;
+        }
+    }
+
+    private function addHistoryDateCondition(
+        array &$conditions,
+        array &$parameters,
+        ?string $date
+    ): void {
+        if ($date === null || trim($date) === '') {
+            return;
+        }
+
+        $dateFrom = new \DateTimeImmutable(
+            trim($date)
+        );
+
+        $conditions[] = '
+            history.appointment_at >= ?
+            AND history.appointment_at < ?
+        ';
+
+        $parameters[] = $dateFrom
+            ->setTime(0, 0, 0)
+            ->format('Y-m-d H:i:s');
+
+        $parameters[] = $dateFrom
+            ->modify('+1 day')
+            ->setTime(0, 0, 0)
+            ->format('Y-m-d H:i:s');
+    }
+
+    private function addHistoryProviderCondition(
+        array &$conditions,
+        array &$parameters,
+        ?string $provider
+    ): void {
+        if ($provider === null || trim($provider) === '') {
+            return;
+        }
+
+        $provider = '%'
+            . $this->escapeHistoryLikeValue(
                 trim($provider)
-            ) . '%';
+            )
+            . '%';
 
-            $conditions[] = '(
-                history.location_name LIKE ?
-                OR history.provider_name LIKE ?
-            )';
+        $conditions[] = '(
+            history.location_name LIKE ?
+            OR history.provider_name LIKE ?
+        )';
 
-            $parameters[] = $provider;
-            $parameters[] = $provider;
+        $parameters[] = $provider;
+        $parameters[] = $provider;
+    }
+
+    private function addHistoryServiceCondition(
+        array &$conditions,
+        array &$parameters,
+        ?string $service
+    ): void {
+        if ($service === null || trim($service) === '') {
+            return;
         }
 
-        if ($service !== null && trim($service) !== '') {
-            $conditions[] = '
-                history.services LIKE ?
-            ';
+        $conditions[] = '
+            history.services LIKE ?
+        ';
 
-            $parameters[] = '%'
-                . $this->escapeHistoryLikeValue(
-                    trim($service)
-                )
-                . '%';
-        }
+        $parameters[] = '%'
+            . $this->escapeHistoryLikeValue(
+                trim($service)
+            )
+            . '%';
+    }
 
+    private function addHistoryFilterConditions(
+        array &$conditions,
+        array &$parameters,
+        array $filters
+    ): void {
         if (!empty($filters['denyHistory'])) {
             $conditions[] = '1 = 0';
         }
 
+        $this->addHistoryNameFilter(
+            $conditions,
+            $parameters,
+            $filters
+        );
+
+        $this->addHistoryAmendmentFilter(
+            $conditions,
+            $parameters,
+            $filters
+        );
+
+        $this->addHistoryProcessIdFilter(
+            $conditions,
+            $parameters,
+            $filters
+        );
+
+        $this->addHistoryScopeIdFilter(
+            $conditions,
+            $parameters,
+            $filters
+        );
+    }
+
+    private function addHistoryNameFilter(
+        array &$conditions,
+        array &$parameters,
+        array $filters
+    ): void {
         if (
-            isset($filters['name'])
-            && trim((string) $filters['name']) !== ''
+            !isset($filters['name'])
+            || trim((string) $filters['name']) === ''
         ) {
-            $name = trim((string) $filters['name']);
-
-            if (!empty($filters['exact'])) {
-                $conditions[] = 'history.citizen_name = ?';
-                $parameters[] = $name;
-            } else {
-                $conditions[] = 'history.citizen_name LIKE ?';
-                $parameters[] = '%'
-                    . $this->escapeHistoryLikeValue($name)
-                    . '%';
-            }
+            return;
         }
 
+        $name = trim(
+            (string) $filters['name']
+        );
+
+        if (!empty($filters['exact'])) {
+            $conditions[] = 'history.citizen_name = ?';
+            $parameters[] = $name;
+            return;
+        }
+
+        $conditions[] = 'history.citizen_name LIKE ?';
+
+        $parameters[] = '%'
+            . $this->escapeHistoryLikeValue($name)
+            . '%';
+    }
+
+    private function addHistoryAmendmentFilter(
+        array &$conditions,
+        array &$parameters,
+        array $filters
+    ): void {
         if (
-            isset($filters['amendment'])
-            && trim((string) $filters['amendment']) !== ''
+            !isset($filters['amendment'])
+            || trim((string) $filters['amendment']) === ''
         ) {
-            $conditions[] = 'history.amendment LIKE ?';
-
-            $parameters[] = '%'
-                . $this->escapeHistoryLikeValue(
-                    trim((string) $filters['amendment'])
-                )
-                . '%';
+            return;
         }
 
+        $conditions[] = 'history.amendment LIKE ?';
+
+        $parameters[] = '%'
+            . $this->escapeHistoryLikeValue(
+                trim((string) $filters['amendment'])
+            )
+            . '%';
+    }
+
+    private function addHistoryProcessIdFilter(
+        array &$conditions,
+        array &$parameters,
+        array $filters
+    ): void {
         if (
-            isset($filters['processId'])
-            && $filters['processId']
+            !isset($filters['processId'])
+            || !$filters['processId']
         ) {
-            $conditions[] = 'history.process_id = ?';
-            $parameters[] = (int) $filters['processId'];
+            return;
         }
 
+        $conditions[] = 'history.process_id = ?';
+        $parameters[] = (int) $filters['processId'];
+    }
+
+    private function addHistoryScopeIdFilter(
+        array &$conditions,
+        array &$parameters,
+        array $filters
+    ): void {
         if (
-            isset($filters['scopeId'])
-            && $filters['scopeId']
+            !isset($filters['scopeId'])
+            || !$filters['scopeId']
         ) {
-            $conditions[] = 'history.scope_id = ?';
-            $parameters[] = (int) $filters['scopeId'];
+            return;
         }
 
-        if ($conditions) {
-            $sql .= ' WHERE ' . implode(' AND ', $conditions);
-        }
-
-        return $sql;
+        $conditions[] = 'history.scope_id = ?';
+        $parameters[] = (int) $filters['scopeId'];
     }
 
     private function buildHistorySearchCondition(

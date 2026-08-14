@@ -187,44 +187,86 @@ class ProcessSearch extends \BO\Zmsbackend\Base
         ProcessSearchRepository $query,
         array $parameter
     ): ProcessSearchRepository {
+        $this->addBasicSearchConditions(
+            $query,
+            $parameter
+        );
+
+        $this->addAdditionalSearchConditions(
+            $query,
+            $parameter
+        );
+
+        return $query;
+    }
+
+    private function addBasicSearchConditions(
+        ProcessSearchRepository $query,
+        array $parameter
+    ): void {
         if (isset($parameter['processId']) && $parameter['processId']) {
-            $query->addConditionProcessId($parameter['processId']);
+            $query->addConditionProcessId(
+                $parameter['processId']
+            );
         }
 
         if (isset($parameter['name']) && $parameter['name']) {
-            $exact = isset($parameter['exact']) ? $parameter['exact'] : false;
-            $query->addConditionName($parameter['name'], $exact);
+            $exact = isset($parameter['exact'])
+                ? $parameter['exact']
+                : false;
+
+            $query->addConditionName(
+                $parameter['name'],
+                $exact
+            );
         }
 
         if (isset($parameter['amendment']) && $parameter['amendment']) {
-            $query->addConditionAmendment($parameter['amendment']);
+            $query->addConditionAmendment(
+                $parameter['amendment']
+            );
         }
 
         if (isset($parameter['scopeId']) && $parameter['scopeId']) {
-            $query->addConditionScopeId($parameter['scopeId']);
+            $query->addConditionScopeId(
+                $parameter['scopeId']
+            );
         }
+    }
 
+    private function addAdditionalSearchConditions(
+        ProcessSearchRepository $query,
+        array $parameter
+    ): void {
         if (isset($parameter['authKey']) && $parameter['authKey']) {
-            $query->addConditionAuthKey($parameter['authKey']);
+            $query->addConditionAuthKey(
+                $parameter['authKey']
+            );
         }
 
         if (isset($parameter['requestId']) && $parameter['requestId']) {
-            $query->addConditionRequestId($parameter['requestId']);
+            $query->addConditionRequestId(
+                $parameter['requestId']
+            );
         }
 
         if (isset($parameter['provider']) && $parameter['provider']) {
-            $query->addConditionScopeNameSearch($parameter['provider']);
+            $query->addConditionScopeNameSearch(
+                $parameter['provider']
+            );
         }
 
         if (isset($parameter['service']) && $parameter['service']) {
-            $query->addConditionServiceNameSearch($parameter['service']);
+            $query->addConditionServiceNameSearch(
+                $parameter['service']
+            );
         }
 
         if (isset($parameter['date']) && $parameter['date']) {
-            $query->addConditionDate($parameter['date']);
+            $query->addConditionDate(
+                $parameter['date']
+            );
         }
-
-        return $query;
     }
 
     protected function resolveSearchReferences(
