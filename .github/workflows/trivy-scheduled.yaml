@@ -10,6 +10,8 @@ jobs:
   scheduled:
     name: 🛡️ Trivy Security Check (${{ matrix.branch }})
     runs-on: ubuntu-latest
+    env:
+      TRIVY_SKIP_VERSION_CHECK: "true"
     strategy:
       fail-fast: false
       matrix:
@@ -28,6 +30,8 @@ jobs:
 
       - name: Run Trivy vulnerability scanner in repository mode
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        env:
+          TRIVY_SKIP_VERSION_CHECK: "true"
         with:
           scan-type: fs
           scan-ref: .
@@ -40,10 +44,12 @@ jobs:
       - name: Convert Trivy report
         if: always() && hashFiles('trivy-report.json') != ''
         shell: bash
+        env:
+          TRIVY_SKIP_VERSION_CHECK: "true"
         run: |
-          trivy convert --format table --output trivy-results.txt trivy-report.json
+          trivy convert --skip-version-check --format table --output trivy-results.txt trivy-report.json
           cat trivy-results.txt
-          trivy convert --format sarif --output trivy-results.sarif trivy-report.json
+          trivy convert --skip-version-check --format sarif --output trivy-results.sarif trivy-report.json
 
       - name: Upload vulnerability scan results
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
