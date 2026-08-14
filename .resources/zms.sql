@@ -1529,7 +1529,8 @@ ALTER TABLE `buerger`
   ADD KEY `updateTimestamp` (`updateTimestamp`),
   ADD KEY `EMail` (`EMail`),
   ADD KEY `idx_status` (`status`),
-  ADD KEY `idx_status_standort_abholort` (`status`,`StandortID`,`AbholortID`);
+  ADD KEY `idx_status_standort_abholort` (`status`,`StandortID`,`AbholortID`),
+  ADD KEY `idx_buerger_external_user_id` (`external_user_id`);
 
 --
 -- Indexes for table `buergeranliegen`

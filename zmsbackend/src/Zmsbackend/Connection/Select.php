@@ -65,12 +65,12 @@ class Select
     public static $galeraConnection = false;
 
     /**
-     * @var PdoInterface|null $readConnection for read only requests
+     * @var Pdo|null $readConnection for read only requests
      */
     protected static $readConnection = null;
 
     /**
-     * @var PdoInterface|null $writeConnection for write only requests
+     * @var Pdo|null $writeConnection for write only requests
      */
     protected static $writeConnection = null;
 
@@ -111,9 +111,8 @@ class Select
      * Create a PDO compatible object
      *
      * @param  String $dataSourceName compatible with PDO
-     * @return PdoInterface
      */
-    protected static function createPdoConnection($dataSourceName)
+    protected static function createPdoConnection($dataSourceName): Pdo
     {
         try {
             $pdoOptions = array_merge([
@@ -142,15 +141,16 @@ class Select
      */
     public static function setReadConnection(PdoInterface $connection)
     {
+        if (!$connection instanceof Pdo) {
+            throw new \InvalidArgumentException('Expected ' . Pdo::class);
+        }
         self::$readConnection = $connection;
     }
 
     /**
      * Create or return a connection for reading data
-     *
-     * @return PdoInterface
      */
-    public static function getReadConnection()
+    public static function getReadConnection(): Pdo
     {
         if (null === self::$readConnection) {
             self::$readConnection = self::createPdoConnection(self::$readSourceName);
@@ -199,15 +199,16 @@ class Select
      */
     public static function setWriteConnection(PdoInterface $connection)
     {
+        if (!$connection instanceof Pdo) {
+            throw new \InvalidArgumentException('Expected ' . Pdo::class);
+        }
         self::$writeConnection = $connection;
     }
 
     /**
      * Create or return a connection for writing data
-     *
-     * @return PdoInterface
      */
-    public static function getWriteConnection()
+    public static function getWriteConnection(): Pdo
     {
         if (null === self::$writeConnection) {
             self::$writeConnection = self::createPdoConnection(self::$writeSourceName);

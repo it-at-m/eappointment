@@ -2,6 +2,9 @@
 
 namespace BO\Zmsentities\Collection;
 
+/**
+ * @extends Base<\BO\Zmsentities\Useraccount>
+ */
 class UseraccountList extends Base
 {
     public const ENTITY_CLASS = '\BO\Zmsentities\UserAccount';

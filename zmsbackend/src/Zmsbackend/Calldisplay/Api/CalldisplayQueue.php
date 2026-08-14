@@ -17,6 +17,9 @@ use BO\Zmsbackend\Calldisplay\Helper\CalldisplayCollections;
  */
 class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
 {
+    /** @var array<int|string, \BO\Zmsentities\Scope> */
+    protected array $scopeCache = [];
+
     /**
      * @SuppressWarnings(Param)
      * @return \Psr\Http\Message\ResponseInterface
@@ -46,8 +49,6 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
         $response = Render::withJson($response, $message, 200);
         return $response;
     }
-
-    protected $scopeCache = [];
 
     protected function readCalculatedQueueListFromScope($scope, $resolveReferences)
     {

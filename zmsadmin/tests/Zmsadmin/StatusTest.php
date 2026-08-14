@@ -7,7 +7,6 @@ class StatusTest extends Base
     protected $arguments = [];
     protected $parameters = [];
 
-
     public function testRendering()
     {
         $this->setApiCalls(
@@ -15,7 +14,7 @@ class StatusTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_workstation_basic.json")
+                    'response' => $this->readFixture("GET_Workstation_Superuser_Resolved1.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -32,23 +31,33 @@ class StatusTest extends Base
 
     public function testWithoutWorkstation()
     {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingLogin');
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\Zmsaoi\Exception\Workstation\WorkstationNotFound';
+        $exception->template = 'BO\Zmsentities\Exception\UserAccountMissingLogin';
         $this->setApiCalls(
             [
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'exception' => $exception
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/status/',
-                    'response' => $this->readFixture("GET_status.json")
                 ]
             ]
         );
-        $response = parent::testRendering();
-        $this->assertStringNotContainsString('(Nur für technische Administration sichtbar)', (string)$response->getBody());
+        parent::testRendering();
+    }
+
+    public function testWithoutSuperuserPermission()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ]
+            ]
+        );
+        parent::testRendering();
     }
 }

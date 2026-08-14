@@ -67,6 +67,34 @@ class Request extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
+    public function addConditionProcessIds(array $processIds): self
+    {
+        $this->leftJoin(
+            new \BO\Zmsbackend\Query\Alias("buergeranliegen", 'buergeranliegen'),
+            self::expression('
+                buergeranliegen.AnliegenID = request.id
+                AND buergeranliegen.source = request.source
+            ')
+        );
+        $this->query->whereIn(
+            'buergeranliegen.BuergerID',
+            array_values(array_map('intval', $processIds))
+        );
+        $this->query->orderBy('buergeranliegen.BuergerID', 'ASC');
+        $this->query->orderBy('buergeranliegen.BuergeranliegenID', 'ASC');
+        return $this;
+    }
+
+    public function addEntityMappingWithProcessId(): self
+    {
+        $entityMapping = $this->getPrefixedList(array_merge(
+            $this->getEntityMapping(),
+            ['processId' => 'buergeranliegen.BuergerID']
+        ));
+        $this->query->select($entityMapping);
+        return $this;
+    }
+
     public function addConditionArchiveId($archiveId)
     {
         $this->leftJoin(

@@ -14,6 +14,24 @@ GET /terminvereinbarung/api/2/status/
 
 (Adjust host and API base path to your environment.)
 
+### Authentication
+
+Anonymous access is denied (`401`). Callers must provide **one** of:
+
+| Caller                                                    | Auth                                                             |
+| --------------------------------------------------------- | ---------------------------------------------------------------- |
+| Admin UI (`/status/` page)                                | Logged-in workstation session (page itself requires `superuser`) |
+| Grafana / Prometheus json_exporter / `status-logger` Cron | Header `X-Token: <ZMS_CONFIG_SECURE_TOKEN>`                      |
+
+Same token as config API (`ZMS_CONFIG_SECURE_TOKEN` / `App::SECURE_TOKEN`). Example:
+
+```http
+GET /terminvereinbarung/api/2/status/
+X-Token: <value of ZMS_CONFIG_SECURE_TOKEN>
+```
+
+`GET /healthcheck/` stays unauthenticated for simple liveness probes.
+
 The response follows [`status.json`](https://github.com/it-at-m/eappointment/blob/main/zmsentities/schema/status.json). ReDoc: [zmsbackend API reference](./api-reference.md).
 
 ### Query parameter: `includeProcessStats`
@@ -56,7 +74,7 @@ OIDC-linked counts help track adoption of citizen login and â€œmy appointmentsâ€
 
 A typical setup:
 
-1. **Scrape** `GET /status/` on an interval (Prometheus `json_exporter`, custom script, or agent that parses JSON).
+1. **Scrape** `GET /status/` on an interval (Prometheus `json_exporter`, custom script, or agent that parses JSON), sending header `X-Token` with `ZMS_CONFIG_SECURE_TOKEN`.
 2. **Expose** numeric fields as time series (for example `zms_processes_confirmed`, `zms_mail_queue_oldest_seconds`).
 3. **Visualize** in [Grafana](https://opensource.muenchen.de/software/grafana.html) with alerts on thresholds (mail backlog, `nodeConnections`, zero `clusterStatus`, etc.).
 

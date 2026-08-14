@@ -3,7 +3,7 @@
 namespace BO\Slim\Middleware\OAuth\Keycloak;
 
 use Stevenmaguire\OAuth2\Client\Provider\Keycloak;
-use BO\Zmsclient\PSR7\Client;
+use BO\Zmsclient\Psr7\Client;
 use League\OAuth2\Client\Token\AccessToken;
 use BO\Zmsentities\Useraccount;
 
