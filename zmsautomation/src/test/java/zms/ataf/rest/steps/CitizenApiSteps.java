@@ -5,8 +5,13 @@ import static io.restassured.RestAssured.given;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 
@@ -22,6 +27,7 @@ import io.restassured.response.Response;
 import zms.ataf.rest.dto.common.ApiResponse;
 import zms.ataf.rest.dto.zmscitizenapi.AvailableAppointmentsResponse;
 import zms.ataf.rest.dto.zmscitizenapi.AvailableCalendarResponse;
+import zms.ataf.rest.dto.zmscitizenapi.Office;
 import zms.ataf.rest.dto.zmscitizenapi.ReserveAppointmentRequest;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.rest.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
@@ -33,7 +39,7 @@ public class CitizenApiSteps {
     private Response response;
     private String baseUri;
     private AvailableCalendarResponse lastAvailableCalendarResponse;
-    private Integer cachedCalendarOfficeId;
+    private String cachedCalendarOfficeIds;
     private Integer cachedCalendarServiceId;
     private Integer cachedCalendarServiceCount;
     private AvailableAppointmentsResponse lastAvailableAppointmentsResponse;
@@ -44,6 +50,7 @@ public class CitizenApiSteps {
     private int lastServiceId;
     private int lastServiceCount = 1;
     private String lastDisplayNumberBeforeCancel;
+    private OfficesAndServicesResponse lastOfficesAndServicesResponse;
 
     private int parseIntOrFail(String value, String label) {
         try {
@@ -59,10 +66,11 @@ public class CitizenApiSteps {
         clearBookingState();
         lastReserveProcess = null;
         lastAvailableCalendarResponse = null;
-        cachedCalendarOfficeId = null;
+        cachedCalendarOfficeIds = null;
         cachedCalendarServiceId = null;
         cachedCalendarServiceCount = null;
         lastAvailableAppointmentsResponse = null;
+        lastOfficesAndServicesResponse = null;
     }
 
     /** Clear shared booking/confirm state (process, credentials, URLs). Call before each scenario to avoid cross-scenario leakage. */
@@ -124,6 +132,22 @@ public class CitizenApiSteps {
         Assertions.assertThat(officesAndServices.getOffices()).isNotNull();
         Assertions.assertThat(officesAndServices.getServices()).isNotNull();
         Assertions.assertThat(officesAndServices.getRelations()).isNotNull();
+        lastOfficesAndServicesResponse = officesAndServices;
+    }
+
+    @Then("office {int} should have sharedBookingOfficeIds {string}")
+    public void officeShouldHaveSharedBookingOfficeIds(int officeId, String expectedIdsCsv) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        Office office = findOfficeById(lastOfficesAndServicesResponse, officeId);
+        Assertions.assertThat(office)
+            .as("Expected office %d in offices-and-services", officeId)
+            .isNotNull();
+        List<Integer> expected = parseOfficeIdsCsv(expectedIdsCsv);
+        Assertions.assertThat(office.getSharedBookingOfficeIds())
+            .as("office %d sharedBookingOfficeIds", officeId)
+            .containsExactlyInAnyOrderElementsOf(expected);
     }
 
     @When("I request available days for office {int} and service {int}")
@@ -136,7 +160,101 @@ public class CitizenApiSteps {
         lastOfficeId = officeId;
         lastServiceId = serviceId;
         lastServiceCount = serviceCount;
-        lastAvailableCalendarResponse = fetchAvailableCalendar(officeId, serviceId, serviceCount);
+        lastAvailableCalendarResponse =
+            fetchAvailableCalendar(List.of(officeId), serviceId, serviceCount);
+    }
+
+    @When("I request available days for offices {string} and service {int}")
+    public void iRequestAvailableDaysForOfficesAndService(String officeIdsCsv, int serviceId) {
+        iRequestAvailableDaysForOfficesAndService(officeIdsCsv, serviceId, 1);
+    }
+
+    @When("I request available days for offices {string} and service {int} with service count {int}")
+    public void iRequestAvailableDaysForOfficesAndService(
+            String officeIdsCsv, int serviceId, int serviceCount) {
+        List<Integer> officeIds = parseOfficeIdsCsv(officeIdsCsv);
+        Assertions.assertThat(officeIds).as("officeIds csv").isNotEmpty();
+        lastOfficeId = officeIds.get(0);
+        lastServiceId = serviceId;
+        lastServiceCount = serviceCount;
+        lastAvailableCalendarResponse = fetchAvailableCalendar(officeIds, serviceId, serviceCount);
+    }
+
+    @When("I request available days for office {int} and services {string}")
+    public void iRequestAvailableDaysForOfficeAndServices(int officeId, String serviceIdsCsv) {
+        iRequestAvailableDaysForOfficesAndServices(String.valueOf(officeId), serviceIdsCsv);
+    }
+
+    @When("I request available days for offices {string} and services {string}")
+    public void iRequestAvailableDaysForOfficesAndServices(String officeIdsCsv, String serviceIdsCsv) {
+        List<Integer> officeIds = parseOfficeIdsCsv(officeIdsCsv);
+        List<Integer> serviceIds = parseOfficeIdsCsv(serviceIdsCsv);
+        Assertions.assertThat(officeIds).as("officeIds csv").isNotEmpty();
+        Assertions.assertThat(serviceIds).as("serviceIds csv").isNotEmpty();
+        List<Integer> serviceCounts = serviceIds.stream().map(id -> 1).collect(Collectors.toList());
+        lastOfficeId = officeIds.get(0);
+        lastServiceId = serviceIds.get(0);
+        lastServiceCount = serviceCounts.get(0);
+        lastAvailableCalendarResponse = fetchAvailableCalendar(officeIds, serviceIds, serviceCounts);
+    }
+
+    @Then("the available calendar should include appointments for offices {string}")
+    public void theAvailableCalendarShouldIncludeAppointmentsForOffices(String officeIdsCsv) {
+        Assertions.assertThat(lastAvailableCalendarResponse)
+            .as("Request available days first")
+            .isNotNull();
+        int[] officeIds = parseOfficeIdsCsv(officeIdsCsv).stream().mapToInt(Integer::intValue).toArray();
+        Assertions.assertThat(lastAvailableCalendarResponse.hasAppointmentsForAllOffices(officeIds))
+            .as(
+                "Expected available-calendar to include appointment buckets for offices %s (shared booking)",
+                officeIdsCsv)
+            .isTrue();
+    }
+
+    @Then("the available calendar should not include appointments for offices {string}")
+    public void theAvailableCalendarShouldNotIncludeAppointmentsForOffices(String officeIdsCsv) {
+        Assertions.assertThat(lastAvailableCalendarResponse)
+            .as("Request available days first")
+            .isNotNull();
+        for (int officeId : parseOfficeIdsCsv(officeIdsCsv)) {
+            Assertions.assertThat(lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId))
+                .as(
+                    "Expected available-calendar to have no appointment bucket for office %d",
+                    officeId)
+                .isNull();
+        }
+    }
+
+    @Then("timestamps on each available calendar day should not be duplicated across offices")
+    public void timestampsOnEachAvailableCalendarDayShouldNotBeDuplicatedAcrossOffices() {
+        Assertions.assertThat(lastAvailableCalendarResponse)
+            .as("Request available days first")
+            .isNotNull();
+        if (lastAvailableCalendarResponse.getAvailableDays() == null) {
+            return;
+        }
+        for (AvailableCalendarResponse.CalendarDay day : lastAvailableCalendarResponse.getAvailableDays()) {
+            if (day == null || day.getOffices() == null || day.getOffices().size() < 2) {
+                continue;
+            }
+            Set<Long> seen = new HashSet<>();
+            for (AvailableCalendarResponse.OfficeSlot office : day.getOffices()) {
+                if (office == null || office.getAppointments() == null) {
+                    continue;
+                }
+                for (Long ts : office.getAppointments()) {
+                    if (ts == null) {
+                        continue;
+                    }
+                    Assertions.assertThat(seen.add(ts))
+                        .as(
+                            "Duplicate timestamp %d on day %s across office buckets (round-robin should keep one winner)",
+                            ts,
+                            day.getDate())
+                        .isTrue();
+                }
+            }
+        }
     }
 
     @When("I request available appointments for the first available day")
@@ -151,26 +269,43 @@ public class CitizenApiSteps {
         iRequestAvailableAppointmentsForDateOfficeAndService(date, lastOfficeId, lastServiceId, lastServiceCount);
     }
 
+    @When("I request available appointments for the first available day for office {int}")
+    public void iRequestAvailableAppointmentsForTheFirstAvailableDayForOffice(int officeId) {
+        if (lastAvailableCalendarResponse == null) {
+            throw new IllegalStateException("Request available days first.");
+        }
+        String date = lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId);
+        if (date == null) {
+            throw new IllegalStateException(
+                "No available day with appointments for office " + officeId + " in last calendar response.");
+        }
+        iRequestAvailableAppointmentsForDateOfficeAndService(date, officeId, lastServiceId, lastServiceCount);
+    }
+
     @When("I request available appointments for date {string}, office {int} and service {int}")
     public void iRequestAvailableAppointmentsForDateOfficeAndService(String date, int officeId, int serviceId) {
         iRequestAvailableAppointmentsForDateOfficeAndService(date, officeId, serviceId, 1);
     }
 
     @When("I request available appointments for date {string}, office {int} and service {int} with service count {int}")
-    public void iRequestAvailableAppointmentsForDateOfficeAndService(String date, int officeId, int serviceId, int serviceCount) {
+    public void iRequestAvailableAppointmentsForDateOfficeAndService(
+            String date, int officeId, int serviceId, int serviceCount) {
         lastOfficeId = officeId;
         lastServiceId = serviceId;
         lastServiceCount = serviceCount;
 
+        String requestedKey = String.valueOf(officeId);
         boolean cacheMatchesRequest = lastAvailableCalendarResponse != null
-            && cachedCalendarOfficeId != null
-            && cachedCalendarOfficeId == officeId
+            && cachedCalendarOfficeIds != null
+            && (cachedCalendarOfficeIds.equals(requestedKey)
+                || Arrays.asList(cachedCalendarOfficeIds.split(",")).contains(requestedKey))
             && cachedCalendarServiceId != null
             && cachedCalendarServiceId == serviceId
             && cachedCalendarServiceCount != null
             && cachedCalendarServiceCount == serviceCount;
         if (!cacheMatchesRequest) {
-            lastAvailableCalendarResponse = fetchAvailableCalendar(officeId, serviceId, serviceCount);
+            lastAvailableCalendarResponse =
+                fetchAvailableCalendar(List.of(officeId), serviceId, serviceCount);
         }
 
         AvailableAppointmentsResponse appointments =
@@ -822,39 +957,93 @@ public class CitizenApiSteps {
     /* End Section: Non-sequential steps assertions for thinned booking process */
 
     /* Section: Response Parsing */
-    private AvailableCalendarResponse fetchAvailableCalendar(int officeId, int serviceId, int serviceCount) {
+    private AvailableCalendarResponse fetchAvailableCalendar(
+            List<Integer> officeIds, int serviceId, int serviceCount) {
+        return fetchAvailableCalendar(officeIds, List.of(serviceId), List.of(serviceCount));
+    }
+
+    private AvailableCalendarResponse fetchAvailableCalendar(
+            List<Integer> officeIds, List<Integer> serviceIds, List<Integer> serviceCounts) {
+        Assertions.assertThat(officeIds).as("officeIds").isNotEmpty();
+        Assertions.assertThat(serviceIds).as("serviceIds").isNotEmpty();
+        Assertions.assertThat(serviceCounts)
+            .as("serviceCounts")
+            .hasSameSizeAs(serviceIds);
+        String officeIdsParam =
+            officeIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+        String serviceIdsParam =
+            serviceIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+        String serviceCountsParam =
+            serviceCounts.stream().map(String::valueOf).collect(Collectors.joining(","));
         String startDate = LocalDate.now().format(DATE_FORMAT);
         String endDate = LocalDate.now().plusMonths(6).format(DATE_FORMAT);
         response = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
-            .queryParam("officeIds", String.valueOf(officeId))
-            .queryParam("serviceIds", String.valueOf(serviceId))
+            .queryParam("officeIds", officeIdsParam)
+            .queryParam("serviceIds", serviceIdsParam)
             .queryParam("startDate", startDate)
             .queryParam("endDate", endDate)
-            .queryParam("serviceCounts", String.valueOf(serviceCount))
+            .queryParam("serviceCounts", serviceCountsParam)
         .when()
             .get("/available-calendar/");
         CommonApiSteps.setResponse(response);
 
         String calendarBody = response.asString();
         ScenarioLogManager.getLogger().info(String.format(
-            "Citizen API /available-calendar/ (officeId=%d, serviceId=%d) status=%d body=%s",
-            officeId,
-            serviceId,
+            "Citizen API /available-calendar/ (officeIds=%s, serviceIds=%s) status=%d body=%s",
+            officeIdsParam,
+            serviceIdsParam,
             response.getStatusCode(),
             calendarBody.length() > 1250 ? calendarBody.substring(0, 1250) + "..." : calendarBody
         ));
 
-        AvailableCalendarResponse calendar;
-        try {
-            calendar = response.as(AvailableCalendarResponse.class);
-        } catch (Exception e) {
-            calendar = parseDataResponse(response, AvailableCalendarResponse.class);
+        AvailableCalendarResponse calendar = null;
+        if (response.getStatusCode() == 200) {
+            try {
+                calendar = response.as(AvailableCalendarResponse.class);
+            } catch (Exception e) {
+                calendar = parseDataResponse(response, AvailableCalendarResponse.class);
+            }
+            cachedCalendarOfficeIds = officeIdsParam;
+            cachedCalendarServiceId = serviceIds.get(0);
+            cachedCalendarServiceCount = serviceCounts.get(0);
+        } else {
+            cachedCalendarOfficeIds = null;
+            cachedCalendarServiceId = null;
+            cachedCalendarServiceCount = null;
         }
-        cachedCalendarOfficeId = officeId;
-        cachedCalendarServiceId = serviceId;
-        cachedCalendarServiceCount = serviceCount;
         return calendar;
+    }
+
+    private List<Integer> parseOfficeIdsCsv(String officeIdsCsv) {
+        List<Integer> ids = new ArrayList<>();
+        if (officeIdsCsv == null || officeIdsCsv.isBlank()) {
+            return ids;
+        }
+        for (String token : officeIdsCsv.split(",")) {
+            String trimmed = token.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            ids.add(parseIntOrFail(trimmed, "officeId"));
+        }
+        return ids;
+    }
+
+    private Office findOfficeById(OfficesAndServicesResponse response, int officeId) {
+        if (response == null || response.getOffices() == null) {
+            return null;
+        }
+        for (Office office : response.getOffices()) {
+            if (office != null && office.getId() != null && office.getId() == officeId) {
+                return office;
+            }
+        }
+        return null;
+    }
+
+    private AvailableCalendarResponse fetchAvailableCalendar(int officeId, int serviceId, int serviceCount) {
+        return fetchAvailableCalendar(List.of(officeId), serviceId, serviceCount);
     }
 
     private <T> T parseDataResponse(Response response, Class<T> dataClass) {

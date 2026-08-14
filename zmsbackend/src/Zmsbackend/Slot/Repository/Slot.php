@@ -178,6 +178,23 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     LIMIT 1
 ';
 
+    /**
+     * Lock multiple appointment slots in one statement.
+     * Placeholders for time IN (...) are injected by Slot::lockSlotsForAppointment.
+     * ORDER BY slotID prefers a deterministic primary-key lock order.
+     */
+    public const string QUERY_SELECT_SLOTS_FOR_UPDATE = '
+    SELECT slotID FROM slot WHERE
+      scopeID = ?
+      AND availabilityID = ?
+      AND year = ?
+      AND month = ?
+      AND day = ?
+      AND time IN (%s)
+    ORDER BY slotID ASC
+    FOR UPDATE
+';
+
     const QUERY_INSERT_ANCESTOR = '
     INSERT INTO slot_hiera SET slotID = :slotID, ancestorID = :ancestorID, ancestorLevel = :ancestorLevel
 ';

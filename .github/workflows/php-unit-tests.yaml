@@ -21,14 +21,16 @@ jobs:
   module-test:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment/zmsbase:${{ matrix.php_version }}-dev"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:${{ matrix.php_version }}-dev@sha256:cdf964fa2e02d11b1309f1006d0d71d0afef6a550d5722c7634860e5c594d4cb"
     env:
       XDEBUG_MODE: coverage
       PHP_INI_SCAN_DIR: "/usr/local/etc/php/conf.d:/tmp/php/conf.d"
     outputs:
       result: ${{ steps.set-result.outputs.result }}
     steps:
-      - uses: actions/checkout@main
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Configure Git Safe Directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Configure PHP
@@ -72,7 +74,7 @@ jobs:
             --display-deprecations --display-warnings --fail-on-deprecation
 
       - name: Upload Coverage
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: coverage-${{ matrix.module }}
           path: ${{ matrix.module }}/coverage/
@@ -111,10 +113,10 @@ jobs:
   zmsbackend-test:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev@sha256:2bdb1a63ccd59c1ce9422133892800b64972f96bfc4e23e9347beac7a09499b9"
     services:
       mariadb:
-        image: mariadb:10.11
+        image: mariadb:10.11@sha256:de61fed4a40d3842f3ee09944ba52792156cfd9adf489b2cc670fc6ded28df8d
         env:
           MYSQL_ROOT_PASSWORD: zmsbackend
           MYSQL_DATABASE: zmsbo
@@ -133,7 +135,9 @@ jobs:
       result: ${{ steps.set-result.outputs.result }}
     steps:
       - name: Checkout GitHub Action
-        uses: actions/checkout@main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Configure Git Safe Directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Install Composer Dependencies
@@ -169,7 +173,7 @@ jobs:
             --log-junit coverage/junit.xml \
             --display-deprecations --display-warnings
       - name: Upload Coverage
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: coverage-zmsbackend
           path: zmsbackend/coverage/
@@ -185,9 +189,11 @@ jobs:
       result: ${{ steps.set-result.outputs.result }}
     steps:
       - name: Checkout GitHub Action
-        uses: actions/checkout@main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
           php-version: "8.3"
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
@@ -219,7 +225,7 @@ jobs:
             --log-junit coverage/junit.xml \
             --display-deprecations --display-warnings --fail-on-deprecation
       - name: Upload Coverage
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: coverage-zmsclient
           path: zmsclient/coverage/

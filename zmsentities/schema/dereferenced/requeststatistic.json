@@ -1,0 +1,47 @@
+{
+  "type": "object",
+  "description": "Grouped request lists for statistic collection after process finish: scope calendar requests plus department requests not on that scope.",
+  "example": {
+    "scopeRequests": [
+      {
+        "id": "120335",
+        "link": "http://service.berlin.de/dienstleistung/120335/",
+        "name": "Abmeldung einer Wohnung",
+        "source": "dldb",
+        "group": "Meldewesen und Ordnung"
+      }
+    ],
+    "additionalDepartmentRequests": [
+      {
+        "id": "120703",
+        "link": "http://service.berlin.de/dienstleistung/120703/",
+        "name": "Meldebescheinigung",
+        "source": "dldb",
+        "group": "Meldewesen und Ordnung"
+      }
+    ]
+  },
+  "required": [
+    "scopeRequests",
+    "additionalDepartmentRequests"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "scopeRequests": {
+      "type": "array",
+      "description": "Requests assigned to the current scope/calendar",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "additionalDepartmentRequests": {
+      "type": "array",
+      "description": "Department-wide requests not assigned to the current scope",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    }
+  }
+}

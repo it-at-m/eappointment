@@ -25,7 +25,9 @@
         "tracy/tracy": "^2.9",
         "roave/security-advisories": "dev-latest",
         "psr/simple-cache": "^3.0",
-        "symfony/cache": "^6.0"
+        "symfony/cache": "^6.0",
+        "ezyang/htmlpurifier": "^4.18",
+        "league/commonmark": "^2.7"
     },
     "require-dev": {
         "vimeo/psalm": "6.5.0",
@@ -41,6 +43,12 @@
         "psr-4": {
             "BO\\Slim\\": "src/Slim/",
             "BO\\Slim\\Tests\\": "tests/Slim/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BO\\Zmsclient\\": "../zmsclient/src/Zmsclient/",
+            "BO\\Zmsentities\\": "../zmsentities/src/Zmsentities/"
         }
     },
     "provide": {

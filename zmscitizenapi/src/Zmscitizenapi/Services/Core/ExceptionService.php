@@ -140,10 +140,6 @@ class ExceptionService
                     $error = self::getError('requestNotFound');
 
                     break;
-                case 'BO\\Zmsbackend\\Request\\Exception\\RequestNotFound':
-                    $error = self::getError('requestNotFound');
-
-                    break;
                 case 'BO\\Zmsbackend\\Scope\\Exception\\ScopeNotFound':
                     $error = self::getError('scopeNotFound');
 

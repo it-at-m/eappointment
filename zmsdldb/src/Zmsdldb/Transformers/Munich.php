@@ -52,17 +52,19 @@ class Munich
         ]
     ];
 
-    /**
-     * Offices where disabledByServices/DONT_SHOW_LOCATION_BY_SERVICES are interpreted with special
-     * "exclusive vs mixed" semantics. Grouped so JumpIn with one office auto-selects the
-     * equivalent in the same group (e.g. 10489 ⟷ 10502). Mirrors dldb-mapper/app/map.php.
-     */
+    // Offices where disabledByServices/DONT_SHOW_LOCATION_BY_SERVICES are interpreted with special
+    // "exclusive vs mixed" semantics in the frontend (allowDisabledServicesMix=true).
     const LOCATIONS_ALLOW_DISABLED_MIX = [
-        [10489, 10502],
+        [10489, 10491, 10500, 10502] // Bürgerbüro Ruppertstraße (KVR-II/22) // Bürgerbüro Ruppertstraße (KVR-II/221)
+    ];
+
+    // Offices that share one Ort but keep pooled calendar capacity (ZMSKVR-1046 Ausbildung).
+    const LOCATIONS_SHARED_BOOKING = [
+        [10489, 10503, 10500, 10491] // 10491 now has some of the same services as 10489 10502 10503 which means if it exposes external appointments it must mix them otherwise shows up double.
     ];
 
     /** Aligned with dldb-mapper/app/map.php DONT_SHOW_SERVICE_ON_START_PAGE */
-    const DONT_SHOW_SERVICE_ON_START_PAGE = [
+    public const array DONT_SHOW_SERVICE_ON_START_PAGE = [
         10396802,
         1063648,
         1063731,
@@ -211,7 +213,10 @@ class Munich
     }
 
     /**
-     * Path to bundled SADB overwrite (ex-dldb-mapper prod.json). Passkalender 10502 + Pass services.
+     * Path to bundled SADB overwrite (ex-dldb-mapper prod.json).
+     * Local extras: Passkalender 10502 (Pass services) + Ausbildungskalender 10503
+     * (Haushaltsbescheinigung 1080843, Wohnsitzanmeldung 1063475, Wohnsitzanmeldung Familie 10224132).
+     * TODO ZMSKVR-1046: Remove 10503 from the overwrite once a real Ausbildung office exists in SADB.
      */
     public static function defaultSadbOverwritePath(): string
     {
@@ -535,6 +540,14 @@ class Munich
         foreach (self::LOCATIONS_ALLOW_DISABLED_MIX as $group) {
             if (in_array((int) $mappedLocation['id'], $group, true)) {
                 $mappedLocation['allowDisabledServicesMix'] = $group;
+                break;
+            }
+        }
+
+        // Peer offices that collapse to one Ort but share calendar / booking capacity.
+        foreach (self::LOCATIONS_SHARED_BOOKING as $group) {
+            if (in_array((int) $mappedLocation['id'], $group, true)) {
+                $mappedLocation['sharedBookingOfficeIds'] = $group;
                 break;
             }
         }
