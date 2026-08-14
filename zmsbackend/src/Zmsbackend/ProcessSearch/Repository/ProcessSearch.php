@@ -444,7 +444,7 @@ class ProcessSearch extends \BO\Zmsbackend\Process\Repository\Process
                 AND search_scope.source = search_scope_provider.source'
             )
         );
-    
+
         $mapping = $this->getEntityMapping();
 
         $this->query->resetSelect();
