@@ -10,12 +10,12 @@ namespace BO\Zmsbackend;
 abstract class Base
 {
     /**
-     * @var \PDO|null $writeDb Database connection
+     * @var Connection\Pdo|null $writeDb Database connection
      */
     protected $writeDb = null;
 
     /**
-     * @var \PDO|null $readDb Database connection
+     * @var Connection\Pdo|null $readDb Database connection
      */
     protected $readDb = null;
 
@@ -32,25 +32,22 @@ abstract class Base
     protected static $preparedConnectionId = null;
 
     /**
-     * @param \PDO $writeConnection
-     * @param \PDO $readConnection
+     * @param Connection\Pdo|null $writeConnection
+     * @param Connection\Pdo|null $readConnection
      */
-    public function __construct(\PDO $writeConnection = null, \PDO $readConnection = null)
+    public function __construct(Connection\Pdo $writeConnection = null, Connection\Pdo $readConnection = null)
     {
         $this->writeDb = $writeConnection;
         $this->readDb = $readConnection;
     }
 
-    public static function init(\PDO $writeConnection = null, \PDO $readConnection = null)
+    public static function init(Connection\Pdo $writeConnection = null, Connection\Pdo $readConnection = null)
     {
         $instance = new static($writeConnection, $readConnection);
         return $instance;
     }
 
-    /**
-     * @return \PDO
-     */
-    public function getWriter()
+    public function getWriter(): Connection\Pdo
     {
         if (null === $this->writeDb) {
             $this->writeDb = Connection\Select::getWriteConnection();
@@ -59,10 +56,7 @@ abstract class Base
         return $this->writeDb;
     }
 
-    /**
-     * @return \PDO
-     */
-    public function getReader()
+    public function getReader(): Connection\Pdo
     {
         if (null !== $this->writeDb) {
             // if readDB gets a reset, still use writeDB
@@ -131,6 +125,11 @@ abstract class Base
         return $statement;
     }
 
+    /**
+     * @template T of \BO\Zmsentities\Schema\Entity
+     * @param T $entity
+     * @return T
+     */
     public function fetchOne(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity)
     {
         $statement = $this->fetchStatement($query);

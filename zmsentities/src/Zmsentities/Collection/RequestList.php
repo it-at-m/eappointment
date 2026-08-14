@@ -4,6 +4,9 @@ namespace BO\Zmsentities\Collection;
 
 use BO\Zmsentities\Helper\Property;
 
+/**
+ * @extends Base<\BO\Zmsentities\Request>
+ */
 class RequestList extends Base
 {
     public const ENTITY_CLASS = '\BO\Zmsentities\Request';

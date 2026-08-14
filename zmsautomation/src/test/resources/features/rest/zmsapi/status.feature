@@ -8,6 +8,6 @@ Feature: ZMS API Status Endpoint
     Given the ZMS API is available
 
   Scenario: GET /status/ returns 200 and JSON body
-    When I make a GET request to "/status/"
+    When I make a GET request to "/status/" with the X-Token
     Then the response status code should be 200
     And the response should contain status information
