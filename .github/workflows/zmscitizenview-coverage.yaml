@@ -115,4 +115,4 @@ jobs:
       - name: Set job result
         id: set-result
         if: always()
-        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
+        run: echo "result=${{ job.status }}" >> "$GITHUB_OUTPUT"

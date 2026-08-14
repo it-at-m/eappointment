@@ -7,12 +7,10 @@ on:
         description: 'Name of the coverage reports artifact'
         required: true
         type: string
-        default: 'coverage-reports'
       api_docs_artifact:
         description: 'Name of the API documentation artifact'
         required: true
         type: string
-        default: 'api-docs'
       git_commit:
         description: 'Git commit hash'
         required: true
