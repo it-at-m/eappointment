@@ -79,8 +79,9 @@ function randomString(length = 64): string {
 }
 
 /**
- * PKCE S256 challenge. Falls back to plain when WebCrypto SubtleCrypto is
- * unavailable (non-secure contexts such as http://citizenview in ATAF CI).
+ * PKCE S256 challenge. http://citizenview (ATAF) is not a secure context, so
+ * SubtleCrypto is missing; that host may use plain PKCE against local Keycloak.
+ * Everywhere else fail closed — this file is not shipped in production embeds.
  */
 async function pkceChallenge(
   verifier: string
@@ -92,10 +93,15 @@ async function pkceChallenge(
     );
     return { challenge: base64UrlEncode(digest), method: "S256" };
   }
-  console.warn(
-    "[local-dbs-login] crypto.subtle unavailable (insecure origin); using plain PKCE."
+  if (
+    typeof window !== "undefined" &&
+    window.location.hostname === "citizenview"
+  ) {
+    return { challenge: verifier, method: "plain" };
+  }
+  throw new Error(
+    "PKCE S256 requires WebCrypto SubtleCrypto (secure context)."
   );
-  return { challenge: verifier, method: "plain" };
 }
 
 function parseJwt(token: string): Record<string, unknown> {

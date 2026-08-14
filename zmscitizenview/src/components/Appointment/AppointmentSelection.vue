@@ -2284,12 +2284,19 @@ watch(
     if (selectedIds.length === 0) {
       selectedProvider.value = undefined;
     } else if (selectableProviders.value) {
-      const reservedOfficeId =
-        appointment.value?.officeId ?? selectedProvider.value?.id;
-      if (reservedOfficeId && isOfficeIdSelectedForCalendar(reservedOfficeId)) {
-        const reserved = getOfficeById(reservedOfficeId);
-        if (reserved) {
-          selectedProvider.value = reserved;
+      const currentOfficeId = selectedProvider.value?.id;
+      const retainedOfficeId =
+        currentOfficeId != null &&
+        isOfficeIdSelectedForCalendar(currentOfficeId)
+          ? currentOfficeId
+          : appointment.value?.officeId;
+      if (
+        retainedOfficeId != null &&
+        isOfficeIdSelectedForCalendar(retainedOfficeId)
+      ) {
+        const retainedProvider = getOfficeById(retainedOfficeId);
+        if (retainedProvider) {
+          selectedProvider.value = retainedProvider;
         }
       } else if (selectedIds.length === 1) {
         const provider = selectableProviders.value.find(

@@ -3471,6 +3471,59 @@ describe("AppointmentSelection", () => {
       expect(wrapper.vm.selectedProvider?.name).toBe("Bürgerbüro Scheidplatz");
     });
 
+    it("keeps the current office when it differs from the reserved officeId and both stay checked", async () => {
+      const scheidplatz = {
+        id: 1,
+        name: "Bürgerbüro Scheidplatz",
+        address: {
+          street: "Belgradstraße",
+          house_number: "1",
+          postal_code: "80804",
+          city: "München",
+        },
+        scope: { id: "1", telephoneActivated: true },
+        showAlternativeLocations: true,
+      };
+      const alternative = {
+        id: 2,
+        name: "Bürgerbüro Alternative",
+        address: {
+          street: "Other",
+          house_number: "2",
+          postal_code: "80331",
+          city: "München",
+        },
+        scope: { id: "2" },
+        showAlternativeLocations: true,
+      };
+
+      const wrapper = createWrapper({
+        appointment: {
+          processId: "12345",
+          officeId: "1",
+          scope: { id: "1", telephoneActivated: true },
+        },
+        selectedProvider: alternative,
+        selectedService: {
+          id: "service1",
+          providers: [scheidplatz, alternative],
+        },
+      });
+
+      wrapper.vm.selectableProviders = [scheidplatz, alternative];
+      wrapper.vm.selectedProviders = { "1": true, "2": true };
+      await nextTick();
+      await flushPromises();
+
+      // User later selects the alternative office while both Orte stay checked.
+      wrapper.vm.selectedProvider = alternative;
+      wrapper.vm.selectedProviders = { "1": true, "2": true };
+      await nextTick();
+      await flushPromises();
+
+      expect(wrapper.vm.selectedProvider?.id).toBe(2);
+    });
+
     it("keeps a shared-booking peer when only the display Ort checkbox is checked", async () => {
       const peer = {
         id: 10503,
