@@ -23,7 +23,7 @@ class Topic extends Base
     {
         $this->referanceMapping = [
             'meta' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Meta',
+                'class' => Meta::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale'
@@ -43,7 +43,7 @@ class Topic extends Base
                 ],
             ],
             'name' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale',
@@ -66,7 +66,7 @@ class Topic extends Base
                 'selfAsArray' => true
             ],
             'meta.keywords' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale',
@@ -89,7 +89,7 @@ class Topic extends Base
                 'selfAsArray' => true
             ],
             'meta.titles' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale',
@@ -112,7 +112,7 @@ class Topic extends Base
                 'selfAsArray' => true
             ],
             'links' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\TopicLinks',
+                'class' => TopicLinks::class,
                 'neededFields' => ['id' => 'topic_id', 'meta.locale' => 'locale'],
                 'addFields' => ['locale' => $this->get('meta.locale')],
                 'delete' => false,
@@ -128,7 +128,7 @@ class Topic extends Base
                 ]
             ],
             'relation.services' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\TopicService',
+                'class' => TopicService::class,
                 'neededFields' => ['id' => 'topic_id'],
                 'addFields' => [],
                 'deleteFunction' => function (\BO\Zmsdldb\Importer\MySQL\Entity\Topic $topic) {
@@ -140,7 +140,7 @@ class Topic extends Base
                 }
             ],
             'relation.childs' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\TopicCluster',
+                'class' => TopicCluster::class,
                 'neededFields' => ['id' => 'parent_id'],
                 'addFields' => [],
                 'deleteFunction' => function (\BO\Zmsdldb\Importer\MySQL\Entity\Topic $topic) {
@@ -158,7 +158,7 @@ class Topic extends Base
         \BO\Zmsdldb\Importer\MySQL\Entity\Topic $topic,
         string $tableName,
         string $whereField
-    ) {
+    ): bool {
         $topicId = $topic->get('id');
         try {
             $sql = "DELETE FROM " . $tableName . " WHERE " . $whereField . " = ?";
@@ -178,10 +178,8 @@ class Topic extends Base
     public function preSetup(): void
     {
         try {
-            $fields = $this->get(['id', 'meta.locale', 'meta.hash']);
-            $fields[] = static::getTableName();
             $this->setStatus(static::STATUS_OLD);
-            if ($this->itemNeedsUpdate(...array_values($fields))) {
+            if ($this->entityNeedsUpdate()) {
                 $this->setStatus(static::STATUS_NEW);
                 $this->setupFields();
                 $this->deleteEntity();

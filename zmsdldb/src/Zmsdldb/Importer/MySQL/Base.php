@@ -7,23 +7,23 @@ use BO\Zmsdldb\Importer\OptionsTrait;
 use BO\Zmsdldb\Importer\PDOTrait;
 use BO\Zmsdldb\Importer\ItemNeedsUpdateTrait;
 use BO\Zmsdldb\Importer\Options;
-use BO\Zmsdldb\Importer\MySQL\Entity\Meta as MetaEntity
-;
+use BO\Zmsdldb\Importer\MySQL\Entity\Meta as MetaEntity;
+use BO\Zmsdldb\Importer\MySQL\Entity\Base as EntityBase;
 
 abstract class Base implements Options
 {
     use PDOTrait;
     use OptionsTrait;
 
-    protected $entityClass = null;
-    protected $importData = [];
-    protected $hash = null;
-    protected $locale = 'de';
-    protected $metaObject = null;
-    protected $entitysToDelete = [];
-    protected $getCurrentEntitys = true;
+    protected ?string $entityClass = null;
+    protected array $importData = [];
+    protected string $hash = '';
+    protected string $locale = 'de';
+    protected ?MetaEntity $metaObject = null;
+    protected array $entitysToDelete = [];
+    protected bool $getCurrentEntitys = true;
 
-    public function __construct(PDOAccess $mySqlAccess, array $importData = [], string $locale = 'de', $options = 0)
+    public function __construct(PDOAccess $mySqlAccess, array $importData = [], string $locale = 'de', int $options = 0)
     {
         try {
             $this->setPDOAccess($mySqlAccess);
@@ -60,16 +60,16 @@ abstract class Base implements Options
         return $this->entitysToDelete;
     }
 
-    public function removeEntityFromCurrentList(int $entityId)
+    public function removeEntityFromCurrentList(int $entityId): void
     {
         unset($this->entitysToDelete[$entityId]);
     }
 
-    public function setCurrentEntitys()
+    public function setCurrentEntitys(): void
     {
         try {
             if (false === $this->getCurrentEntitys) {
-                return true;
+                return;
             }
             $this->entitysToDelete = [];
             $sql = "SELECT 
@@ -93,7 +93,7 @@ abstract class Base implements Options
         }
     }
 
-    public function createMetaObject()
+    public function createMetaObject(): void
     {
         try {
             if (empty($this->metaObject)) {
@@ -125,7 +125,7 @@ abstract class Base implements Options
         return $this;
     }
 
-    public function needsUpdate()
+    public function needsUpdate(): bool
     {
         $metaObject = $this->getMetaObject();
         $needsUpdate = $metaObject->itemNeedsUpdateAlt();
@@ -163,15 +163,19 @@ abstract class Base implements Options
         return $this->hash;
     }
 
-    public function createEntity(array $data = array(), bool $setup = true)
+    public function createEntity(array $data = array(), bool $setup = true): EntityBase
     {
         if (null === $this->entityClass) {
             throw new \InvalidArgumentException(__METHOD__ . " invalid entity class");
         }
-        return new $this->entityClass($this->getPDOAccess(), $data, $setup);
+        $entity = new $this->entityClass($this->getPDOAccess(), $data, $setup);
+        if (!$entity instanceof EntityBase) {
+            throw new \InvalidArgumentException($this->entityClass . ' must extend ' . EntityBase::class);
+        }
+        return $entity;
     }
 
-    final public function clearEntity()
+    final public function clearEntity(): void
     {
         try {
             $entity = null;
@@ -188,13 +192,13 @@ abstract class Base implements Options
         }
     }
 
-    public function preImport()
+    public function preImport(): void
     {
     }
 
-    public function postImport()
+    public function postImport(): void
     {
     }
 
-    abstract public function runImport();
+    abstract public function runImport(): bool;
 }

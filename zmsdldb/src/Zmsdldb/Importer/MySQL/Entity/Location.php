@@ -30,7 +30,7 @@ class Location extends Base
     {
         $this->referanceMapping = [
             'name' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale',
@@ -53,7 +53,7 @@ class Location extends Base
                 'selfAsArray' => true
             ],
             'address' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale',
@@ -76,7 +76,7 @@ class Location extends Base
                 'selfAsArray' => true
             ],
             'meta.keywords' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale',
@@ -99,7 +99,7 @@ class Location extends Base
                 'selfAsArray' => true
             ],
             'meta' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Meta',
+                'class' => Meta::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale'
@@ -116,7 +116,7 @@ class Location extends Base
                 'clearFields' => ['type' => static::getTableName(), 'locale' => $this->get('meta.locale')],
             ],
             'contact' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Contact',
+                'class' => Contact::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale',
@@ -153,10 +153,8 @@ class Location extends Base
     public function preSetup(): void
     {
         try {
-            $fields = $this->get(['id', 'meta.locale', 'meta.hash']);
-            $fields[] = static::getTableName();
             $this->setStatus(static::STATUS_OLD);
-            if ($this->itemNeedsUpdate(...array_values($fields))) {
+            if ($this->entityNeedsUpdate()) {
                 $this->setStatus(static::STATUS_NEW);
                 $this->setupFields();
                 $this->deleteEntity();
