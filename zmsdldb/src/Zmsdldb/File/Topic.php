@@ -40,7 +40,7 @@ class Topic extends Base
 
     /**
      *
-     * @return Entity
+     * @return Entity|false
      */
     public function fetchPath($topic_path)
     {

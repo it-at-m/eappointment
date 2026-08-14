@@ -29,7 +29,7 @@ class Office extends Base
     public function getItemList(): Collection
     {
         try {
-            if (empty(static::$officeList)) {
+            if (!static::$officeList instanceof Collection) {
                 $officeListJson = $this->access()->fromSetting()->fetchName('office');
                 $officeList = is_string($officeListJson) ? json_decode($officeListJson, true) : [];
                 if (!is_array($officeList)) {
@@ -50,9 +50,6 @@ class Office extends Base
                     }
                 }
                 #echo '<pre>' . htmlspecialchars(print_r((static::$officeList),1)) . '</pre>';exit;
-            }
-            if (!static::$officeList instanceof Collection) {
-                static::$officeList = new Collection();
             }
             return static::$officeList;
         } catch (\Exception $e) {

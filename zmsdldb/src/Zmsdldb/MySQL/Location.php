@@ -62,7 +62,7 @@ class Location extends Base
                 ";
             }
 
-            if (!empty($service_csv)) {
+            if (is_string($service_csv) && $service_csv !== '') {
                 #$sqlArgs[] = $this->locale;
                 $ids = explode(',', $service_csv);
                 $questionMarks = array_fill(0, count($ids), '?');
@@ -199,7 +199,7 @@ class Location extends Base
                 meta AS m ON m.object_id = l.id AND m.locale = ?
             WHERE l.locale = ?';
 
-            if (!empty($category) && false === $getAll) {
+            if (is_string($category) && $category !== '' && false === $getAll) {
                 $sqlArgs[] = $category;
                 $sql .= ' AND category_identifier = ?';
             }
@@ -258,15 +258,12 @@ class Location extends Base
                 continue;
             }
             if (!isset($geoJson[$location['category']['identifier']])) {
-                $geoJson[$location['category']['identifier']] = [
+                $identifier = $location['category']['identifier'];
+                $hasCategoryFilter = is_string($category) && $category !== '';
+                $geoJson[$identifier] = [
                     'name' => $location['category']['name'],
                     'type' => 'cluster',
-                    'active' => (
-                        !empty($category)
-                        && $category == $location['category']['identifier'] ? true : (
-                            !empty($category) && $category != $location['category']['identifier'] ? false : true
-                        )
-                    ),
+                    'active' => !$hasCategoryFilter || $category === $identifier,
                     'data' => ['type' => 'FeatureCollection', 'features' => []]
                 ];
             }

@@ -18,7 +18,7 @@ class Location extends Base
 {
     /**
      *
-     * @return Entity
+     * @return Entity|false
      */
     #[\Override]
     public function fetchId($itemId)
