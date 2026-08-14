@@ -425,8 +425,6 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
 
                 $stm->execute(array_values($this->fields));
 
-                #$this->postSave($stm, $this);
-
                 if ($stm && 0 < $stm->rowCount()) {
                     return true;
                 }
