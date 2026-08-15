@@ -109,7 +109,7 @@ class Validator
      *
      * @return \BO\Mellon\Unvalidated
      */
-    public function getParameter($name)
+    public function getParameter(string $name)
     {
         if ($this->hasParameter($name)) {
             return new \BO\Mellon\Unvalidated($this->parameters[$name], $name);

@@ -261,6 +261,10 @@ class LoggerService
         return $path . ($queryParts ? '?' . implode('&', $queryParts) : '');
     }
 
+    /**
+     * @param (int|string) $key
+     *
+     */
     private static function formatQueryParamForLog(mixed $key, mixed $value): string
     {
         $encodedKey = urlencode((string) $key);

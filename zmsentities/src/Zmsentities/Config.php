@@ -6,6 +6,10 @@ class Config extends Schema\Entity
 {
     public static $schema = "config.json";
 
+    /**
+     * @return (int|string)[][]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -33,12 +37,12 @@ class Config extends Schema\Entity
         ];
     }
 
-    public function hasType($type)
+    public function hasType($type): bool
     {
         return (isset($this[$type])) ? true : false;
     }
 
-    public function hasPreference($type, $key)
+    public function hasPreference($type, $key): bool
     {
         return ($this->hasType($type) && isset($this[$type][$key])) ? true : false;
     }
@@ -48,7 +52,7 @@ class Config extends Schema\Entity
         return $this->toProperty()->$type->$key->get();
     }
 
-    public function setPreference($type, $key, $value)
+    public function setPreference($type, $key, $value): static
     {
         $preference = $this->toProperty()->$type->$key->get();
         if (null !== $preference) {

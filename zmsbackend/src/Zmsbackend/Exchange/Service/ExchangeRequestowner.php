@@ -17,7 +17,7 @@ class ExchangeRequestowner extends \BO\Zmsbackend\Base
         \DateTimeInterface $datestart,
         \DateTimeInterface $dateend,
         $period = 'day'
-    ) {
+    ): Exchange {
         $owner = (new \BO\Zmsbackend\Owner\Service\Owner())->readEntity($subjectid);
         $entity = new Exchange();
         $entity['title'] = "Dienstleistungsstatistik $owner->name";
@@ -48,7 +48,7 @@ class ExchangeRequestowner extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readSubjectList()
+    public function readSubjectList(): Exchange
     {
         $raw = $this->getReader()->fetchAll(\BO\Zmsbackend\Exchange\Repository\ExchangeRequestowner::QUERY_SUBJECTS, []);
         $entity = new Exchange();
@@ -64,7 +64,7 @@ class ExchangeRequestowner extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readPeriodList($subjectid, $period = 'day')
+    public function readPeriodList($subjectid, $period = 'day'): Exchange
     {
         $owner = (new \BO\Zmsbackend\Owner\Service\Owner())->readEntity($subjectid);
         $entity = new Exchange();

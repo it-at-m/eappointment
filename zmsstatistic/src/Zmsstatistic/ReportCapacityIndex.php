@@ -142,14 +142,14 @@ class ReportCapacityIndex extends BaseController
     }
 
     private function renderHtmlResponse(
-        $response,
-        $args,
+        ResponseInterface $response,
+        array $args,
         $capacityPeriod,
-        $dateRange,
+        array|null $dateRange,
         $exchangeCapacity,
-        $exchangeCapacityChart,
-        $exchangeCapacityChartSparse,
-        $selectedScopes = [],
+        Exchange|null $exchangeCapacityChart,
+        Exchange|null $exchangeCapacityChartSparse,
+        array $selectedScopes = [],
         array $scopeDateBounds = [],
         ?string $scopeSlotTimeHint = null
     ): ResponseInterface {

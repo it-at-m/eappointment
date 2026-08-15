@@ -10,13 +10,11 @@ namespace BO\Zmsdldb\MySQL;
 use BO\Zmsdldb\MySQL\Collection\Links as Collection;
 use BO\Zmsdldb\Elastic\Link as Base;
 
-/**
- */
 /** @psalm-api */
 class Link extends Base
 {
     #[\Override]
-    public function readSearchResultList(string $query): Collection
+    public function readSearchResultList($query): Collection
     {
         try {
             #$query = '+' . implode(' +', explode(' ', $query));

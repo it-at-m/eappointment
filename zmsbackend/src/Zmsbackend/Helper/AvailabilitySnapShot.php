@@ -21,7 +21,7 @@ class AvailabilitySnapShot
         $this->dateTime = $dateTime;
     }
 
-    public function hasOutdatedAvailability()
+    public function hasOutdatedAvailability(): bool
     {
         // Lower compared date by one second to make a "<=" comparision
         return $this->availability->isNewerThan($this->dateTime->modify("-1 second"));
@@ -40,29 +40,29 @@ class AvailabilitySnapShot
         return $this->availability->scope->dayoff->isNewerThan($this->dateTime, $this->availability, $this->dateTime);
     }
 
-    public function hasBookableDateTime(\DateTimeInterface $proposedDateTime)
+    public function hasBookableDateTime(\DateTimeInterface $proposedDateTime): bool
     {
         return $this->availability->hasDate($proposedDateTime, $this->dateTime);
     }
 
-    public function getLastBookableDateTime()
+    public function getLastBookableDateTime(): \DateTimeInterface
     {
         return $this->availability->getBookableEnd($this->dateTime);
     }
 
-    public function isOpenedOnLastBookableDay()
+    public function isOpenedOnLastBookableDay(): bool
     {
         return $this->availability->isOpenedOnDate($this->availability->getBookableEnd($this->dateTime));
     }
 
-    public function isTimeOpenedOnLastBookableDay()
+    public function isTimeOpenedOnLastBookableDay(): bool
     {
         return $this->availability->isOpened(
             $this->availability->getBookableEnd($this->dateTime)->modify($this->dateTime->format('H:i:s'))
         );
     }
 
-    public function hasBookableDateTimeAfter(\DateTimeInterface $proposedDateTime)
+    public function hasBookableDateTimeAfter(\DateTimeInterface $proposedDateTime): bool
     {
         return $this->availability->hasDateBetween(
             $proposedDateTime,

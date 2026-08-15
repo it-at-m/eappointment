@@ -12,9 +12,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\ErrorHandlerInterface;
 
-/**
-  *
-  */
 class TwigExceptionHandler implements ErrorHandlerInterface
 {
     const string DEFAULT_TEMPLATE = "exception/default.twig";
@@ -133,7 +130,10 @@ class TwigExceptionHandler implements ErrorHandlerInterface
         return $template;
     }
 
-    protected static function getRequestData(RequestInterface $request)
+    /**
+     * @return false|string
+     */
+    protected static function getRequestData(RequestInterface $request): string|false
     {
         $requestdata = array_merge((array)$request->getQueryParams(), (array)$request->getParsedBody());
         $json_opt = JSON_HEX_TAG | JSON_PRETTY_PRINT | JSON_HEX_AMP;
@@ -145,7 +145,7 @@ class TwigExceptionHandler implements ErrorHandlerInterface
         return $requestdata;
     }
 
-    public static function getExtendedExceptionInfo(\Throwable $exception, RequestInterface $request)
+    public static function getExtendedExceptionInfo(\Throwable $exception, RequestInterface $request): array
     {
         $servertime = Helper::getFormatedDates((new \DateTimeImmutable())->getTimestamp(), 'yyyy-MM-dd HH:mm:ss');
         $exceptionclass = get_class($exception);

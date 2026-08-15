@@ -5,16 +5,13 @@ namespace BO\Zmsbackend\Process\Service;
 use BO\Zmsentities\Process as Entity;
 use BO\Zmsentities\Collection\ProcessList as Collection;
 
-/**
- *
- */
 class ProcessStatusQueued extends Process
 {
     public function writeNewFromTicketprinter(
         \BO\Zmsentities\Scope $scope,
         \DateTimeInterface $dateTime,
         array $requestIds = []
-    ) {
+    ): Entity {
         $process = Entity::createFromScope($scope, $dateTime);
         $process->setStatus('queued');
         $process->isTicketprinter = true;
@@ -28,7 +25,7 @@ class ProcessStatusQueued extends Process
         return $process;
     }
 
-    public function writeNewFromAdmin(Entity $process, \DateTimeInterface $dateTime)
+    public function writeNewFromAdmin(Entity $process, \DateTimeInterface $dateTime): Entity|null
     {
         $process->setStatus('queued');
         $process->getFirstAppointment()->date = $dateTime->modify('00:00:00')->getTimestamp();

@@ -39,7 +39,10 @@ class SourceUpdate extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    protected function testEntity($entity, $input)
+    /**
+     * @return void
+     */
+    protected function testEntity(Entity $entity, $input)
     {
         try {
             $entity->testValid('de_DE', 1);

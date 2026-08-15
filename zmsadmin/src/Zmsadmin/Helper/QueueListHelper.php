@@ -78,7 +78,7 @@ class QueueListHelper
         return (self::getList()->getQueuePositionByNumber($entity->number));
     }
 
-    protected static function createFullList($clusterHelper, $dateTime)
+    protected static function createFullList(ClusterHelper $clusterHelper, \DateTimeImmutable|false $dateTime)
     {
         $fullList = $clusterHelper->getProcessList($dateTime->format('Y-m-d'));
         return ($fullList->count()) ? $fullList->toQueueList($dateTime) : new QueueList();

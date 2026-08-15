@@ -73,9 +73,9 @@ class Log extends \BO\Zmsbackend\Base
     public static $operator = 'lib';
 
     public static function writeLogEntry(
-        $message,
-        $referenceId,
-        $type = self::PROCESS,
+        string $message,
+        int $referenceId,
+        string $type = self::PROCESS,
         ?int $scopeId = null,
         ?string $userId = null,
         ?array $indexedFields = null
@@ -112,6 +112,9 @@ class Log extends \BO\Zmsbackend\Base
         return $log->perform($sql, $parameters);
     }
 
+    /**
+     * @return void
+     */
     public static function writeProcessLog(
         string $method,
         string $action,
@@ -187,7 +190,7 @@ class Log extends \BO\Zmsbackend\Base
         return Entity::formatDisplayFields($log);
     }
 
-    public function readByProcessId($processId)
+    public function readByProcessId($processId): LogList
     {
         $query = new \BO\Zmsbackend\Log\Repository\Log(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping();
@@ -197,13 +200,13 @@ class Log extends \BO\Zmsbackend\Base
     }
 
     public function readByProcessData(
-        $generalSearch,
+        string $generalSearch,
         $service,
         $provider,
-        $date,
+        DateTime|null $date,
         $userAction,
-        $page = 1,
-        $perPage = 100,
+        int $page = 1,
+        int $perPage = 100,
         ?array $scopeIds = null
     ) {
         $fieldValues = [];
@@ -234,7 +237,7 @@ class Log extends \BO\Zmsbackend\Base
         int $perPage,
         int $offset,
         ?array $scopeIds = null
-    ) {
+    ): LogList {
         $params = ['logType' => self::PROCESS];
         $conditions = array_merge(
             ['type = :logType'],
@@ -351,8 +354,10 @@ class Log extends \BO\Zmsbackend\Base
         return $row;
     }
 
-    /** @psalm-api */
-    public function delete($processId)
+    /**
+     * @psalm-api
+     */
+    public function delete($processId): LogList
     {
         $query = new \BO\Zmsbackend\Log\Repository\Log(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping();
@@ -361,7 +366,7 @@ class Log extends \BO\Zmsbackend\Base
         return $logList;
     }
 
-    protected static function backtraceLogEntry()
+    protected static function backtraceLogEntry(): string
     {
         $trace = debug_backtrace();
         $short = '';

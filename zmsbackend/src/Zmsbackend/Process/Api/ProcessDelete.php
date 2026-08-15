@@ -62,7 +62,7 @@ class ProcessDelete extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    protected function writeMails($request, $process)
+    protected function writeMails(\Psr\Http\Message\RequestInterface $request, \BO\Zmsentities\Process|null $process): void
     {
         if ($process->hasScopeAdmin() && $process->sendAdminMailOnDeleted() && $process->getStatus() !== 'blocked') {
             $authority = $request->getUri()->getAuthority();
@@ -79,7 +79,10 @@ class ProcessDelete extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
-    protected function testProcessData($process, $authKey)
+    /**
+     * @return void
+     */
+    protected function testProcessData(\BO\Zmsentities\Process|null $process, $authKey)
     {
         if (!$process) {
             throw new \BO\Zmsbackend\Process\Exception\ProcessNotFound();

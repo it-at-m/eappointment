@@ -63,14 +63,17 @@ class ProcessFinished extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    protected function testProcessInWorkstation($process, $workstation)
+    protected function testProcessInWorkstation(\BO\Zmsentities\Process $process, $workstation): void
     {
         $department = (new \BO\Zmsbackend\Department\Service\Department())->readByScopeId($workstation->scope['id'], 1);
         $workstation->process = $process;
         $workstation->validateProcessScopeAccess($department->getScopeList());
     }
 
-    protected function testProcessData($process)
+    /**
+     * @return void
+     */
+    protected function testProcessData(\BO\Zmsentities\Process $process)
     {
         $hasValidId = (
             $process->hasId() &&
@@ -88,7 +91,7 @@ class ProcessFinished extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
-    protected function writeSurveyMail($process)
+    protected function writeSurveyMail($process): void
     {
         $process = clone $process;
         foreach ($process->getClients() as $client) {

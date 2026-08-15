@@ -105,7 +105,7 @@ class Index extends BaseController
         return $lang ?: ($languageConfig['defaultLanguage'] ?? 'de');
     }
 
-    private function getQueryStringWithLang()
+    private function getQueryStringWithLang(): string
     {
         $queryString = $_SERVER['QUERY_STRING'] ?? '';
         if (!strpos($queryString, 'lang=')) {
@@ -114,7 +114,11 @@ class Index extends BaseController
         return str_replace('/&', '', $queryString);
     }
 
-    private function getTranslations($languageConfig, $currentLang)
+    /**
+     * @return ((mixed|null|string)[]|mixed|string)[]
+     *
+     */
+    private function getTranslations($languageConfig, $currentLang): array
     {
         $translations = ['printText' => ''];
 
@@ -145,7 +149,7 @@ class Index extends BaseController
         return $translations;
     }
 
-    private function getAvailableLanguages($languageConfig)
+    private function getAvailableLanguages($languageConfig): array
     {
         return array_values(array_unique(
             array_column($languageConfig['languages'] ?? [], 'language')
@@ -157,12 +161,12 @@ class Index extends BaseController
         return \App::$http->readGetResult('/scope/' . $scope->id . '/department/')->getEntity();
     }
 
-    private function shouldRedirectToScope($ticketprinter)
+    private function shouldRedirectToScope(\BO\Zmsentities\Ticketprinter $ticketprinter): bool
     {
         return count($ticketprinter->buttons) === 1 && $ticketprinter->buttons[0]['type'] === 'scope';
     }
 
-    private function hasDisabledButton($ticketprinter)
+    private function hasDisabledButton(\BO\Zmsentities\Ticketprinter $ticketprinter): bool
     {
         foreach ($ticketprinter->buttons as $button) {
             if (!isset($button['enabled']) || $button['enabled'] != 1) {
@@ -172,7 +176,7 @@ class Index extends BaseController
         return false;
     }
 
-    protected function getQueryString($validator, $ticketprinter, $defaultTemplate)
+    protected function getQueryString($validator, \BO\Zmsentities\Ticketprinter $ticketprinter, $defaultTemplate): array
     {
         $query = ($defaultTemplate->getValue() === 'default') ? [] : ['template' => $defaultTemplate->getValue()];
         if (isset($ticketprinter['home'])) {

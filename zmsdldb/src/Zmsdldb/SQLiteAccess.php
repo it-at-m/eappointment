@@ -7,9 +7,6 @@
 
 namespace BO\Zmsdldb;
 
-/**
- *
- */
 class SQLiteAccess extends PDOAccess
 {
     const string DEFAULT_DATABASE_NAME = 'dldb_frontend_dev';
@@ -33,6 +30,9 @@ class SQLiteAccess extends PDOAccess
         }
     }
 
+    /**
+     * @return void
+     */
     #[\Override]
     protected function postConnect()
     {

@@ -69,13 +69,13 @@ class ReportClientIndex extends BaseController
      * Handle download request and return Excel file
      */
     private function handleDownloadRequest(
-        $request,
-        $response,
-        $args,
+        RequestInterface $request,
+        ResponseInterface $response,
+        array $args,
         $exchangeClient,
-        $dateRange,
-        $selectedScopes = [],
-        $reportClientService = null
+        array|null $dateRange,
+        array $selectedScopes = [],
+        ReportClientService|null $reportClientService = null
     ): ResponseInterface {
         if ($reportClientService === null) {
             $reportClientService = new ReportClientService();
@@ -94,12 +94,12 @@ class ReportClientIndex extends BaseController
      * Render HTML response for the report page
      */
     private function renderHtmlResponse(
-        $response,
-        $args,
+        ResponseInterface $response,
+        array $args,
         $clientPeriod,
-        $dateRange,
+        array|null $dateRange,
         $exchangeClient,
-        $selectedScopes = []
+        array $selectedScopes = []
     ): ResponseInterface {
         return Render::withHtml(
             $response,

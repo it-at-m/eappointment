@@ -9,6 +9,10 @@ class Role extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
      */
     const string TABLE = 'role';
 
+    /**
+     * @return (\BO\Zmsbackend\Query\Builder\Expression|string)[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {

@@ -14,7 +14,7 @@ use BO\Zmsdldb\Helper\Sorter;
  */
 class Base extends \ArrayObject
 {
-    public function sortByName()
+    public function sortByName(): static
     {
         $itemList = clone $this;
         $itemList->uasort(function ($a, $b) {
@@ -23,8 +23,10 @@ class Base extends \ArrayObject
         return $itemList;
     }
 
-    /** @psalm-api */
-    public function sortWithCollator($field = 'name', $locale = 'de')
+    /**
+     * @psalm-api
+     */
+    public function sortWithCollator($field = 'name', $locale = 'de'): static
     {
         $collator = collator_create($locale);
         $collator->setStrength(\Collator::QUATERNARY);

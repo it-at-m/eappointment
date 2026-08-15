@@ -53,6 +53,9 @@ class ProcessRedirect extends \BO\Zmsbackend\Api\BaseController
         return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
     }
 
+    /**
+     * @return void
+     */
     protected function testProcessData($entity)
     {
         $entity->testValid();
@@ -64,6 +67,9 @@ class ProcessRedirect extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
+    /**
+     * @return void
+     */
     protected function testProcessAccess($workstation, $process)
     {
         $cluster = (new \BO\Zmsbackend\Cluster\Service\Cluster())->readByScopeId($workstation->scope['id'], 1);
@@ -77,7 +83,7 @@ class ProcessRedirect extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
-    protected function readValidProcess($workstation, $entity, $input)
+    protected function readValidProcess($workstation, \BO\Zmsentities\Process $entity, $input)
     {
         if ($entity->hasProcessCredentials()) {
             $this->testProcessData($entity);

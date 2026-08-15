@@ -40,6 +40,9 @@ class ProcessIcs extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
+    /**
+     * @return void
+     */
     protected function testProcessData($processId, $authKey)
     {
         $authCheck = (new \BO\Zmsbackend\Process\Service\Process())->readAuthKeyByProcessId($processId);

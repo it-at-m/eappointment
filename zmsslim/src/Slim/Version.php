@@ -15,7 +15,11 @@ class Version
         return static::UNKNOWN;
     }
 
-    public static function getArray()
+    /**
+     * @return string[]
+     *
+     */
+    public static function getArray(): array
     {
         $version = static::getString();
         $array = [];

@@ -15,6 +15,9 @@ use BO\Zmsdldb\Collection\Locations as Collection;
  */
 class Location extends Base
 {
+    /**
+     * @return Collection
+     */
     #[\Override]
     protected function parseData($data)
     {

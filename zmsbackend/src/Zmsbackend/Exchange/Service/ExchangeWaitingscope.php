@@ -6,6 +6,9 @@ use BO\Zmsentities\Exchange;
 
 class ExchangeWaitingscope extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\ExchangeSubject
 {
+    /**
+     * @return Exchange
+     */
     #[\Override]
     public function readEntity(
         $subjectid,
@@ -62,6 +65,9 @@ class ExchangeWaitingscope extends \BO\Zmsbackend\Base implements \BO\Zmsbackend
         return $entity;
     }
 
+    /**
+     * @return Exchange
+     */
     #[\Override]
     public function readSubjectList()
     {
@@ -79,6 +85,9 @@ class ExchangeWaitingscope extends \BO\Zmsbackend\Base implements \BO\Zmsbackend
         return $entity;
     }
 
+    /**
+     * @return Exchange
+     */
     #[\Override]
     public function readPeriodList($subjectid, $period = 'day')
     {
@@ -149,7 +158,7 @@ class ExchangeWaitingscope extends \BO\Zmsbackend\Base implements \BO\Zmsbackend
         \BO\Zmsentities\Scope $scope,
         \DateTimeInterface $now,
         bool $isWithAppointment = false
-    ) {
+    ): static {
         if ($now > (new \DateTime())) {
             return $this;
         }
@@ -183,7 +192,7 @@ class ExchangeWaitingscope extends \BO\Zmsbackend\Base implements \BO\Zmsbackend
     public function writeWaitingTime(
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now
-    ) {
+    ): static {
         if ($now > (new \DateTime())) {
             return $this;
         }
@@ -218,7 +227,7 @@ class ExchangeWaitingscope extends \BO\Zmsbackend\Base implements \BO\Zmsbackend
     public function updateWaitingStatistics(
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now
-    ) {
+    ): static {
         if ($now > (new \DateTime())) {
             return $this;
         }

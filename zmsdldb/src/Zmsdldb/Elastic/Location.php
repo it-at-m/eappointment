@@ -245,7 +245,11 @@ class Location extends Base
 
     /**
      * @todo Refactoring required, functions in this class should return entities, not JSON data
+     *
      * @psalm-api
+     *
+     * @return ((string|string[])[]|bool|mixed|string)[][]
+     *
      */
     public function fetchGeoJson($category = null, $getAll = false)
     {
@@ -279,7 +283,11 @@ class Location extends Base
         return $geoJson;
     }
 
-    /** @psalm-api */
+    /**
+     * @psalm-api
+     *
+     * @return Collection
+     */
     public function fetchLocationsForCompilation($authoritys = [], $locations = [])
     {
         $limit = 1000;
