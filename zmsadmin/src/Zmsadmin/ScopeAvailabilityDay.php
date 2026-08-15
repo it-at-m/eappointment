@@ -139,7 +139,7 @@ class ScopeAvailabilityDay extends BaseController
         ];
     }
 
-    public static function readConflictList($scopeId, DateTime $dateTime)
+    public static function readConflictList($scopeId, \DateTimeInterface $dateTime)
     {
         $processConflictList = \App::$http
             ->readGetResult('/scope/' . $scopeId . '/conflict/', [
@@ -155,7 +155,7 @@ class ScopeAvailabilityDay extends BaseController
             ->toProcessList() : null;
     }
 
-    public static function readAvailabilityList($scopeId, DateTime $dateTime)
+    public static function readAvailabilityList($scopeId, \DateTimeInterface $dateTime)
     {
         try {
             $availabilityList = \App::$http

@@ -144,7 +144,7 @@ class Http
         return $request;
     }
 
-    public function setApiKey($apikeyString): static
+    public function setApiKey($apikeyString)
     {
         $this->apikeyString = $apikeyString;
         return $this;
@@ -183,9 +183,9 @@ class Http
     /**
      * Creates a POST-Http-Request and fetches the response
      *
-     * @param \BO\Zmsentities\Schema\Entity $entity
+     * @param mixed $entity JSON-encodable payload (entity or collection)
      */
-    public function readPostResult(string $relativeUrl, \BO\Zmsentities\Schema\Entity $entity, array $getParameters = null)
+    public function readPostResult(string $relativeUrl, $entity, array $getParameters = null)
     {
         $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
         if (null !== $getParameters) {

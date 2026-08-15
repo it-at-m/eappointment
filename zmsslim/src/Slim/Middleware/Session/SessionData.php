@@ -123,7 +123,7 @@ class SessionData implements SessionInterface
         return $sessionContent;
     }
 
-    public function setEntityClass(object $entityClass): static
+    public function setEntityClass($entityClass): static
     {
         $this->entityClass = $entityClass;
         return $this;
