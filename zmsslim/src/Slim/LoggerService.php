@@ -12,7 +12,7 @@ use Psr\SimpleCache\CacheInterface;
 
 class LoggerService
 {
-    private const SENSITIVE_HEADERS = [
+    private const array SENSITIVE_HEADERS = [
         'authorization',
         'cookie',
         'x-api-key',
@@ -21,7 +21,7 @@ class LoggerService
         'captchatoken',
     ];
 
-    private const SENSITIVE_PARAMS = [
+    private const array SENSITIVE_PARAMS = [
         'authkey',
         'auth_key',
         'auth-key',
@@ -30,13 +30,13 @@ class LoggerService
         'captcha-token',
     ];
 
-    private const IMPORTANT_HEADERS = [
+    private const array IMPORTANT_HEADERS = [
         'user-agent',
     ];
 
-    private const CACHE_KEY_PREFIX = 'logger.';
-    private const CACHE_REQUEST_COUNTER_KEY = self::CACHE_KEY_PREFIX . 'request';
-    private const CACHE_ERROR_REQUEST_COUNTER_KEY = self::CACHE_KEY_PREFIX . 'request_error';
+    private const string CACHE_KEY_PREFIX = 'logger.';
+    private const string CACHE_REQUEST_COUNTER_KEY = self::CACHE_KEY_PREFIX . 'request';
+    private const string CACHE_ERROR_REQUEST_COUNTER_KEY = self::CACHE_KEY_PREFIX . 'request_error';
 
     public static ?CacheInterface $cache = null;
 

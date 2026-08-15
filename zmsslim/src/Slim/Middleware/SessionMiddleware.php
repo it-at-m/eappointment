@@ -9,7 +9,7 @@ use BO\Slim\Factory\ResponseFactory;
 
 class SessionMiddleware
 {
-    const SESSION_ATTRIBUTE = 'session';
+    const string SESSION_ATTRIBUTE = 'session';
 
     protected $sessionClass = null;
 

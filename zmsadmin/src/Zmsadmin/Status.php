@@ -16,7 +16,7 @@ use BO\Zmsentities\Exception\UserAccountMissingRights;
  */
 class Status extends BaseController
 {
-    private const MISSING_LOGIN_TEMPLATES = [
+    private const array MISSING_LOGIN_TEMPLATES = [
         'BO\\Zmsentities\\Exception\\UserAccountMissingLogin',
         'BO\\Zmsbackend\\Workstation\\Exception\\WorkstationNotFound',
     ];

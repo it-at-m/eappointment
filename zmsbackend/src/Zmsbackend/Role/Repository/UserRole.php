@@ -7,7 +7,7 @@ class UserRole extends \BO\Zmsbackend\Query\Base
     /**
      * @var string TABLE mysql table reference
      */
-    const TABLE = 'user_role';
+    const string TABLE = 'user_role';
 
     /** @psalm-api */
     public function addConditionUserId(int $userId): self

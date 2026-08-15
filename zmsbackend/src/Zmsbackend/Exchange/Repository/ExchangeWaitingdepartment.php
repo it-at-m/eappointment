@@ -7,7 +7,7 @@ class ExchangeWaitingdepartment extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'wartenrstatistik';
+    const string TABLE = 'wartenrstatistik';
 
     const QUERY_READ_DAY = '
         SELECT

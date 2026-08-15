@@ -11,7 +11,7 @@ class Workstation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'nutzer';
+    const string TABLE = 'nutzer';
 
     const QUERY_LOGIN = '
         UPDATE

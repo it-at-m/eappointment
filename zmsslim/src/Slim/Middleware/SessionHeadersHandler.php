@@ -32,7 +32,7 @@ class SessionHeadersHandler
     /**
      * The timestamp for "already expired."
      */
-    const EXPIRED = 'Thu, 19 Nov 1981 08:52:00 GMT';
+    const string EXPIRED = 'Thu, 19 Nov 1981 08:52:00 GMT';
 
     /**
      *

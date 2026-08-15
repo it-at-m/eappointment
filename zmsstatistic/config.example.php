@@ -12,12 +12,12 @@ class App extends \BO\Zmsstatistic\Application
 {
     const string IDENTIFIER = ZMS_IDENTIFIER;
     const bool DEBUG = false;
-    const TWIG_CACHE = ZMS_STATISTIC_TWIG_CACHE;
+    const bool|string TWIG_CACHE = ZMS_STATISTIC_TWIG_CACHE;
 
     /**
      * HTTP url for api
      */
-    const HTTP_BASE_URL = ZMS_API_URL;
+    const string HTTP_BASE_URL = ZMS_API_URL;
 
     /**
      * Name of the module

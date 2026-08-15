@@ -4,7 +4,7 @@ namespace BO\Zmsbackend\Provider\Repository;
 
 class Provider extends \BO\Zmsbackend\Query\Base
 {
-    const TABLE = 'provider';
+    const string TABLE = 'provider';
 
     /** @psalm-api */
     public function getEntityMapping()

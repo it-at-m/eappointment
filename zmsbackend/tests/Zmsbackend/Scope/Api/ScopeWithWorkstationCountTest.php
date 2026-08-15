@@ -11,7 +11,7 @@ class ScopeWithWorkstationCountTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ScopeWithWorkstationCount";
 
-    const SCOPE_ID = 141;
+    const int SCOPE_ID = 141;
 
     public function testRendering()
     {

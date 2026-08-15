@@ -4,9 +4,9 @@ namespace BO\Zmsbackend\RequestRelation\Repository;
 
 class RequestRelation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\MappingInterface
 {
-    const TABLE = 'request_provider';
+    const string TABLE = 'request_provider';
 
-    const ALIAS = 'request_provider';
+    const string ALIAS = 'request_provider';
 
     #[\Override]
     public function getEntityMapping()

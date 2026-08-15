@@ -10,11 +10,11 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'oeffnungszeit';
+    const string TABLE = 'oeffnungszeit';
 
-    const TEMPORARY_DELETE = 'DELETE FROM oeffnungszeit WHERE kommentar = "--temporary--"';
+    const string TEMPORARY_DELETE = 'DELETE FROM oeffnungszeit WHERE kommentar = "--temporary--"';
 
-    const QUERY_GET_LOCK = '
+    const string QUERY_GET_LOCK = '
         SELECT OeffnungszeitID FROM oeffnungszeit WHERE OeffnungszeitID = :availabilityId FOR UPDATE
     ';
 

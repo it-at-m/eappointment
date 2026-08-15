@@ -27,17 +27,17 @@ class ValidationService
     {
         self::$officeServicesCache = [];
     }
-    private const DATE_FORMAT = 'Y-m-d';
-    private const MIN_PROCESS_ID = 1;
-    private const PHONE_PATTERN = '/^\+?[0-9]\d{6,14}$/';
-    private const SERVICE_COUNT_PATTERN = '/^\d+$/';
-    private const EMAIL_PATTERN = '/^(?!.*\.\.)(?!\.)(?!.*\.$)[^\s@+]+(?<!\.)@(?!\.)[^\s@+]+\.[^\s@]{2,}$/';
-    private const MAX_FUTURE_DAYS = 365;
+    private const string DATE_FORMAT = 'Y-m-d';
+    private const int MIN_PROCESS_ID = 1;
+    private const string PHONE_PATTERN = '/^\+?[0-9]\d{6,14}$/';
+    private const string SERVICE_COUNT_PATTERN = '/^\d+$/';
+    private const string EMAIL_PATTERN = '/^(?!.*\.\.)(?!\.)(?!.*\.$)[^\s@+]+(?<!\.)@(?!\.)[^\s@+]+\.[^\s@]{2,}$/';
+    private const int MAX_FUTURE_DAYS = 365;
     // Maximum days in the future for appointments
     /** Must match {@see \BO\Zmsdb\Slot::MAX_SLOTS} */
-    private const MAX_SERVICE_COUNT = 25;
-    private const AUTH_KEY_LEGACY_HEX_LENGTH = 4;
-    private const AUTH_KEY_NEW_HEX_LENGTH = 64;
+    private const int MAX_SERVICE_COUNT = 25;
+    private const int AUTH_KEY_LEGACY_HEX_LENGTH = 4;
+    private const int AUTH_KEY_NEW_HEX_LENGTH = 64;
 
     private static function getError(string $key): array
     {

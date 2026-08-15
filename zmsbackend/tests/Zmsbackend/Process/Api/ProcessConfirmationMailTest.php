@@ -6,9 +6,9 @@ class ProcessConfirmationMailTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ProcessConfirmationMail";
 
-    const PROCESS_ID = 10029;
+    const int PROCESS_ID = 10029;
 
-    const AUTHKEY = '1c56';
+    const string AUTHKEY = '1c56';
 
     public function testRendering()
     {

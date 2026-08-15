@@ -12,9 +12,9 @@ class DayoffUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "DayoffUpdate";
 
-    const SCOPE_ID = 143;
+    const int SCOPE_ID = 143;
 
-    const YEAR = 2016;
+    const int YEAR = 2016;
 
     public function testNoLogin()
     {

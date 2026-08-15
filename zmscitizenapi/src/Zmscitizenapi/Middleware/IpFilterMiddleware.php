@@ -14,9 +14,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class IpFilterMiddleware implements MiddlewareInterface
 {
-    private const ERROR_BLACKLISTED = 'ipBlacklisted';
-    private const IPV4_BITS = 32;
-    private const IPV6_BITS = 128;
+    private const string ERROR_BLACKLISTED = 'ipBlacklisted';
+    private const int IPV4_BITS = 32;
+    private const int IPV6_BITS = 128;
     private string $blacklist;
     private LoggerService $logger;
     public function __construct(LoggerService $logger)

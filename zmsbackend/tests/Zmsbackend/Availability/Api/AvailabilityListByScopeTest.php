@@ -6,7 +6,7 @@ class AvailabilityListByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "AvailabilityListByScope";
 
-    const SCOPE_ID = 141;
+    const int SCOPE_ID = 141;
     
     public function testRendering()
     {

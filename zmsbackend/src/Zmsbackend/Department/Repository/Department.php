@@ -4,9 +4,9 @@ namespace BO\Zmsbackend\Department\Repository;
 
 class Department extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\MappingInterface
 {
-    const TABLE = 'behoerde';
+    const string TABLE = 'behoerde';
 
-    const QUERY_MAIL_UPDATE = '
+    const string QUERY_MAIL_UPDATE = '
         SET @tempEmailID = (SELECT emailID from email WHERE BehoerdenID=:departmentId);
         REPLACE INTO
             email
@@ -19,7 +19,7 @@ class Department extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Que
             send_reminder_minutes_before=:sendEmailReminderMinutesBefore
     ';
 
-    const QUERY_MAIL_DELETE = '
+    const string QUERY_MAIL_DELETE = '
         DELETE FROM email WHERE BehoerdenID=?
     ';
 

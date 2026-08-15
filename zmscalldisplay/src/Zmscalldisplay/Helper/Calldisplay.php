@@ -17,8 +17,8 @@ class Calldisplay
     protected $entity;
     protected $isEntityResolved = false;
 
-    const DEFAULT_STATUS = ['called'];
-    const WAITING_STATUS = ['confirmed', 'queued', 'called', 'pending'];
+    const array DEFAULT_STATUS = ['called'];
+    const array WAITING_STATUS = ['confirmed', 'queued', 'called', 'pending'];
 
 
     public function __construct($request)

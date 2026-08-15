@@ -8,7 +8,7 @@ class SourceListTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "SourceList";
 
-    const SOURCE = 'dldb';
+    const string SOURCE = 'dldb';
 
     public function testRendering()
     {

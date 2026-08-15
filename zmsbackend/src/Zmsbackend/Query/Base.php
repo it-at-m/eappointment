@@ -26,11 +26,11 @@ abstract class Base
     /**
      * Identifier for the type of query
      */
-    const SELECT = 'SELECT';
-    const INSERT = 'INSERT';
-    const UPDATE = 'UPDATE';
-    const REPLACE = 'REPLACE';
-    const DELETE = 'DELETE';
+    const string SELECT = 'SELECT';
+    const string INSERT = 'INSERT';
+    const string UPDATE = 'UPDATE';
+    const string REPLACE = 'REPLACE';
+    const string DELETE = 'DELETE';
 
     /**
      * Name of table in DB

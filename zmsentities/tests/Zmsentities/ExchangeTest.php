@@ -4,9 +4,9 @@ namespace BO\Zmsentities\Tests;
 
 class ExchangeTest extends EntityCommonTests
 {
-    const FIRST_DAY = '2015-11-19';
+    const string FIRST_DAY = '2015-11-19';
 
-    const LAST_DAY = '2015-12-31';
+    const string LAST_DAY = '2015-12-31';
 
     public $entityclass = '\BO\Zmsentities\Exchange';
 

@@ -4,7 +4,7 @@ namespace BO\Zmsentities\Tests;
 
 class SlotTest extends EntityCommonTests
 {
-    const DEFAULT_TIME = '2016-05-27 12:50:00';
+    const string DEFAULT_TIME = '2016-05-27 12:50:00';
 
     public $entityclass = '\BO\Zmsentities\Slot';
 

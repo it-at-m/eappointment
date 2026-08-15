@@ -8,7 +8,7 @@ class MailTest extends EntityCommonTests
 
     public $collectionclass = '\BO\Zmsentities\Collection\MailList';
 
-    const DEFAULT_TIME = '2016-04-01 11:55:00';
+    const string DEFAULT_TIME = '2016-04-01 11:55:00';
 
     public function testBasic()
     {

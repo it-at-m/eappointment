@@ -7,9 +7,9 @@ class Ticketprinter extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'kiosk';
+    const string TABLE = 'kiosk';
 
-    const PRIMARY = 'hash';
+    const string PRIMARY = 'hash';
 
     /**
      * No resolving required here

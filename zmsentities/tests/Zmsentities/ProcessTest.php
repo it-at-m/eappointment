@@ -17,7 +17,7 @@ use \BO\Zmsentities\Collection\ProcessList;
  */
 class ProcessTest extends EntityCommonTests
 {
-    const DEFAULT_TIME = '2016-01-01 12:50:00';
+    const string DEFAULT_TIME = '2016-01-01 12:50:00';
 
     public $entityclass = '\BO\Zmsentities\Process';
 

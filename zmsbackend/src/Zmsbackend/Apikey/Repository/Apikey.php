@@ -10,9 +10,9 @@ class Apikey extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\M
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'apikey';
+    const string TABLE = 'apikey';
 
-    const QUOTATABLE = 'apiquota';
+    const string QUOTATABLE = 'apiquota';
 
     #[\Override]
     protected function addRequiredJoins()

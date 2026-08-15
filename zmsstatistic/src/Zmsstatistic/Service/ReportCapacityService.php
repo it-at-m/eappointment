@@ -17,10 +17,10 @@ use DateTimeImmutable;
 class ReportCapacityService
 {
     /** Fetch hour-level warehouse data up to this range length (chart buckets are derived in PHP). */
-    private const MAX_HOURLY_FETCH_HOURS = 336;
+    private const int MAX_HOURLY_FETCH_HOURS = 336;
 
     /** Above this count, slot-time hints group by duration instead of listing scope names. */
-    private const SLOT_TIME_HINT_MAX_NAMED_SCOPES = 4;
+    private const int SLOT_TIME_HINT_MAX_NAMED_SCOPES = 4;
 
     public function getExchangeCapacityData(string $scopeId, ?array $dateRange, array $args): mixed
     {

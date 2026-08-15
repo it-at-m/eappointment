@@ -7,7 +7,7 @@ class Link extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'kundenlinks';
+    const string TABLE = 'kundenlinks';
 
     /**
      * No resolving required here

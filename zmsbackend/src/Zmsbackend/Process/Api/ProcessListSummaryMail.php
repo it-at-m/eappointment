@@ -30,7 +30,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 class ProcessListSummaryMail extends \BO\Zmsbackend\Api\BaseController
 {
-    public const PROCESSLIST_SUMMARY_REQUEST_REPETITION_SEC = 600;
+    public const int PROCESSLIST_SUMMARY_REQUEST_REPETITION_SEC = 600;
 
     /**
      * @SuppressWarnings(Param)

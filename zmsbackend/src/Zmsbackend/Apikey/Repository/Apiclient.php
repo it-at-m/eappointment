@@ -10,7 +10,7 @@ class Apiclient extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Quer
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'apiclient';
+    const string TABLE = 'apiclient';
 
     #[\Override]
     public function getEntityMapping()
