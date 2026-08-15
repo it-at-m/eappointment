@@ -41,9 +41,9 @@ class Application extends \BO\Slim\Application
 
     const bool DEBUG = false;
 
-    const bool|string TWIG_CACHE = ZMS_STATISTIC_TWIG_CACHE;
+    const TWIG_CACHE = ZMS_STATISTIC_TWIG_CACHE;
 
-    const string|int SESSION_DURATION = ZMS_STATISTIC_SESSION_DURATION;
+    const SESSION_DURATION = ZMS_STATISTIC_SESSION_DURATION;
 
     public static $includeUrl = '/terminvereinbarung/statistic';
     /**

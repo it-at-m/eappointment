@@ -58,7 +58,7 @@ class App extends \BO\Zmsbackend\Application
     const string DB_DSN_READWRITE = DSN_RW;
     const string DB_USERNAME = MYSQL_USER;
     const string DB_PASSWORD = MYSQL_PASSWORD;
-    const bool|string TWIG_CACHE = ZMS_BACKEND_TWIG_CACHE;
+    const TWIG_CACHE = ZMS_BACKEND_TWIG_CACHE;
     const string MODULE_NAME = ZMS_MODULE_NAME;
 }
 

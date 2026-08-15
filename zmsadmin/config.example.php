@@ -12,7 +12,7 @@ class App extends \BO\Zmsadmin\Application
 {
     const string IDENTIFIER = ZMS_IDENTIFIER;
     const bool DEBUG = false;
-    const bool|string TWIG_CACHE = ZMS_ADMIN_TWIG_CACHE;
+    const TWIG_CACHE = ZMS_ADMIN_TWIG_CACHE;
 
     /**
      * HTTP url for api

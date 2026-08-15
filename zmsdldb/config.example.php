@@ -78,7 +78,7 @@ class App extends \BO\Zmsbackend\Application
      * Use caching
      *
      */
-    const bool|string TWIG_CACHE = ZMS_DLDB_TWIG_CACHE;
+    const TWIG_CACHE = ZMS_DLDB_TWIG_CACHE;
     const string MODULE_NAME = 'zmsdldb';
 
     /** Fallback when settings key d115.openingTime is unset */
