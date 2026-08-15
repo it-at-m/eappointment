@@ -566,7 +566,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $departmentList;
     }
 
-    public function readEntityByAuthKey(array $xAuthKey, $resolveReferences = 0)
+    public function readEntityByAuthKey(string $xAuthKey, $resolveReferences = 0)
     {
         $hashedAuthKey = hash('sha256', $xAuthKey);
         $query = new \BO\Zmsbackend\Useraccount\Repository\Useraccount(\BO\Zmsbackend\Query\Base::SELECT);

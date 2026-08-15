@@ -100,7 +100,7 @@ class Schema extends \ArrayObject
      * Sanitize value for valid export as JSON
      *
      */
-    protected function toSanitizedValue(array $value, $keepEmpty = false, $defaults = [])
+    protected function toSanitizedValue(mixed $value, $keepEmpty = false, $defaults = [])
     {
         if ($value instanceof \BO\Zmsentities\Helper\NoSanitize) {
             return $value;

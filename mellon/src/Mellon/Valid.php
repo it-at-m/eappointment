@@ -317,7 +317,7 @@ class Valid extends \BO\Mellon\Parameter
         return $status;
     }
 
-    public function getUnvalidated(): string|null
+    public function getUnvalidated(): mixed
     {
         return $this->value;
     }

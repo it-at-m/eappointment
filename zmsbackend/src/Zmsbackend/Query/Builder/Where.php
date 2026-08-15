@@ -79,10 +79,8 @@ trait Where
 
     /**
      * @psalm-api
-     *
-     * @return Update|array
      */
-    public function whereIn(string $field, array $values): array|Update
+    public function whereIn(string $field, array $values): static|array
     {
         if (empty($values)) {
             throw new \InvalidArgumentException('whereIn() requires a non-empty $values array.');

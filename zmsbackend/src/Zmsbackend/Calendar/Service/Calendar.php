@@ -14,7 +14,7 @@ class Calendar extends \BO\Zmsbackend\Base
     public function readResolvedEntity(
         Entity $calendar,
         \DateTimeInterface $now,
-        bool|null $resolveOnlyScopes = false,
+        $resolveOnlyScopes = false,
         string $slotType = 'public',
         $slotsRequired = 0,
         bool $resolveScopeReferences = true

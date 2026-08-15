@@ -18,7 +18,7 @@ class Cluster extends \BO\Zmsbackend\Base
      * @param false|int|string $itemId
      *
      */
-    public function readEntity(string|int|false $itemId, int $resolveReferences = 0, bool $disableCache = false)
+    public function readEntity(string|int|false $itemId, int $resolveReferences = 0, $disableCache = false)
     {
         $cacheKey = "cluster-$itemId-$resolveReferences";
 

@@ -13,7 +13,7 @@ use BO\Zmsentities\Collection\RequestList as Collection;
  */
 class Request extends \BO\Zmsbackend\Base
 {
-    public function readEntity(string $source, string $requestId, int $resolveReferences = 0, bool $disableCache = false)
+    public function readEntity(string $source, string $requestId, int|null $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "request-$source-$requestId-$resolveReferences";
 

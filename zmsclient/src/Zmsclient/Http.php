@@ -183,10 +183,9 @@ class Http
     /**
      * Creates a POST-Http-Request and fetches the response
      *
-     * @param \BO\Zmsentities\Session|\BO\Zmsentities\Useraccount $entity
-     *
+     * @param \BO\Zmsentities\Schema\Entity $entity
      */
-    public function readPostResult(string $relativeUrl, \BO\Zmsentities\Useraccount|\BO\Zmsentities\Session $entity, array $getParameters = null)
+    public function readPostResult(string $relativeUrl, \BO\Zmsentities\Schema\Entity $entity, array $getParameters = null)
     {
         $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
         if (null !== $getParameters) {

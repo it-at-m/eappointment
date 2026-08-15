@@ -114,7 +114,7 @@ class Base extends \ArrayObject implements \JsonSerializable
      * @return Entity|null
      *
      */
-    public function getEntity(string $primary)
+    public function getEntity(string|int $primary)
     {
         foreach ($this as $entity) {
             if (isset($entity->{$entity::PRIMARY}) && $primary == $entity->{$entity::PRIMARY}) {
