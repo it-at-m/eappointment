@@ -31,7 +31,7 @@ class CleanProcessArchivedToday
         if ($commit) {
             \App::$log->info('Executing archived process cleanup with commit');
             $result = $logRepo->deleteAllToday();
-            \App::$log->info('Archived process cleanup completed', ['success' => (bool) $result]);
+            \App::$log->info('Archived process cleanup completed', ['success' => $result]);
         }
     }
 }

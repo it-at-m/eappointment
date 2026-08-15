@@ -96,7 +96,7 @@ class Search extends BaseController
             'perPage' => $resultsPerPage,
             'hideNavigation' => $hideNavigation,
             'isSearchRequested' => (
-                trim((string) $queryString) !== ''
+                trim($queryString) !== ''
                 || trim($service) !== ''
                 || trim($provider) !== ''
                 || ($date !== null && trim($date) !== '')

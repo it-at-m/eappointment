@@ -19,7 +19,7 @@ class ProcessPlainText
         if ($input === null || $input === '') {
             return '';
         }
-        $s = (string) $input;
+        $s = $input;
         $s = html_entity_decode($s, ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $s = str_replace(["\r\n", "\r"], "\n", $s);
         $s = preg_replace('/<\s*br\s*\/?>/iu', "\n", $s) ?? $s;

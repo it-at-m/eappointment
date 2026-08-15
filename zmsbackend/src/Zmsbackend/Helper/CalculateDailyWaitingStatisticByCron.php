@@ -97,7 +97,7 @@ class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
             );
 
             if ($parsedScope) {
-                $scopeId = (int)$parsedScope;
+                $scopeId = $parsedScope;
             }
         }
 
