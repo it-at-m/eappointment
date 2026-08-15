@@ -7,8 +7,8 @@ namespace BO\Zmsclient;
  */
 class Ticketprinter
 {
-    const HASH_COOKIE_NAME = 'Ticketprinter';
-    const HOME_URL_COOKIE_NAME = 'Ticketprinter_Homeurl';
+    const string HASH_COOKIE_NAME = 'Ticketprinter';
+    const string HOME_URL_COOKIE_NAME = 'Ticketprinter_Homeurl';
 
     /**
      * @SuppressWarnings(Superglobals)

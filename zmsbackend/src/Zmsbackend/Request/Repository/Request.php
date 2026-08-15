@@ -4,11 +4,11 @@ namespace BO\Zmsbackend\Request\Repository;
 
 class Request extends \BO\Zmsbackend\Query\Base
 {
-    const TABLE = 'request';
+    const string TABLE = 'request';
 
-    const BATABLE = 'buergeranliegen';
+    const string BATABLE = 'buergeranliegen';
 
-    const QUERY_BY_PROCESSID = 'SELECT
+    const string QUERY_BY_PROCESSID = 'SELECT
             ba.`AnliegenID` AS id
         FROM `buergeranliegen` ba
         WHERE

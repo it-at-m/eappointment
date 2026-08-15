@@ -6,7 +6,7 @@ use BO\Slim\Application as App;
 
 class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\MappingInterface
 {
-    private const VALID_PERMISSION_NAMES = [
+    private const array VALID_PERMISSION_NAMES = [
         'appointment',
         'availability',
         'calldisplay',
@@ -42,8 +42,8 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'nutzer';
-    const TABLE_ASSIGNMENT = 'nutzerzuordnung';
+    const string TABLE = 'nutzer';
+    const string TABLE_ASSIGNMENT = 'nutzerzuordnung';
 
     const QUERY_READ_ID_BY_USERNAME = '
         SELECT user.`NutzerID` AS id
@@ -68,11 +68,11 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         ORDER BY behoerdenid
     ';
 
-    const QUERY_DELETE_USER_ROLES = '
+    const string QUERY_DELETE_USER_ROLES = '
         DELETE FROM user_role WHERE user_id = ?
     ';
 
-    const QUERY_INSERT_USER_ROLES_BY_NAME = '
+    const string QUERY_INSERT_USER_ROLES_BY_NAME = '
         INSERT INTO user_role (user_id, role_id)
         SELECT ?, r.id FROM role r WHERE r.name IN (:roleNames)
     ';

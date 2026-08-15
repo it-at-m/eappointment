@@ -10,9 +10,9 @@ namespace BO\Slim;
 
 class Headers extends \Slim\Psr7\Headers
 {
-    public const MEDIA_TYPE_APPLICATION_XML = 'application/xml';
-    public const MEDIA_TYPE_APPLICATION_JSON = 'application/json';
-    public const MEDIA_TYPE_TEXT_XML = 'text/xml';
-    public const MEDIA_TYPE_TEXT_HTML = 'text/html';
-    public const MEDIA_TYPE_TEXT_PLAIN = 'text/plain';
+    public const string MEDIA_TYPE_APPLICATION_XML = 'application/xml';
+    public const string MEDIA_TYPE_APPLICATION_JSON = 'application/json';
+    public const string MEDIA_TYPE_TEXT_XML = 'text/xml';
+    public const string MEDIA_TYPE_TEXT_HTML = 'text/html';
+    public const string MEDIA_TYPE_TEXT_PLAIN = 'text/plain';
 }

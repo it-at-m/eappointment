@@ -18,9 +18,9 @@ class Slot extends \BO\Zmsbackend\Base
     /**
      * maximum number of slots per appointment
      */
-    const MAX_SLOTS = 25;
+    const int MAX_SLOTS = 25;
 
-    const MAX_DAYS_OF_SLOT_CALCULATION = 180;
+    const int MAX_DAYS_OF_SLOT_CALCULATION = 180;
 
     /**
      * @return \BO\Zmsentities\Collection\SlotList

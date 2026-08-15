@@ -12,19 +12,19 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\Queue';
 
-    public const FAKE_WAITINGNUMBER = -1;
+    public const int FAKE_WAITINGNUMBER = -1;
 
-    public const STATUS_IGNORE = ['called', 'processing', 'missed', 'parked'];
+    public const array STATUS_IGNORE = ['called', 'processing', 'missed', 'parked'];
 
-    public const STATUS_APPEND = ['missed', 'parked'];
+    public const array STATUS_APPEND = ['missed', 'parked'];
 
-    public const STATUS_CALLED = ['called', 'processing'];
+    public const array STATUS_CALLED = ['called', 'processing'];
 
-    public const STATUS_FAKE = ['fake'];
+    public const array STATUS_FAKE = ['fake'];
 
-    public const DEFAULT_PRIORITY_WITHOUT_APPOINTMENT = 3;
+    public const int DEFAULT_PRIORITY_WITHOUT_APPOINTMENT = 3;
 
-    public const DEFAULT_PRIORITY_WITH_APPOINTMENT = 2;
+    public const int DEFAULT_PRIORITY_WITH_APPOINTMENT = 2;
 
     protected $processTimeAverage;
 

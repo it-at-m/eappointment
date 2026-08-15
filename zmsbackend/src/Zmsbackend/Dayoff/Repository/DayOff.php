@@ -7,7 +7,7 @@ class DayOff extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\M
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'feiertage';
+    const string TABLE = 'feiertage';
 
     /**
      * No resolving required here

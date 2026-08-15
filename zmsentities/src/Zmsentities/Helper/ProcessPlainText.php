@@ -7,9 +7,9 @@ namespace BO\Zmsentities\Helper;
  */
 class ProcessPlainText
 {
-    public const MAX_CUSTOM_TEXTFIELD_CHARS = 250;
+    public const int MAX_CUSTOM_TEXTFIELD_CHARS = 250;
 
-    public const MAX_AMENDMENT_CHARS = 500;
+    public const int MAX_AMENDMENT_CHARS = 500;
 
     /**
      * Strip HTML, decode entities, normalize line breaks to "\n" for storage/display.

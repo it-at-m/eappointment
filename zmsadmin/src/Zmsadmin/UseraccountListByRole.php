@@ -17,7 +17,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class UseraccountListByRole extends BaseController
 {
-    private const SUPERUSER_ONLY_ROLES = [
+    private const array SUPERUSER_ONLY_ROLES = [
         'system_admin',
         'audit_viewer',
     ];

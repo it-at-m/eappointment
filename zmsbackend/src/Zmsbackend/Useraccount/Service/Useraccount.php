@@ -14,9 +14,9 @@ use BO\Zmsentities\Collection\UseraccountList as Collection;
  */
 class Useraccount extends \BO\Zmsbackend\Base
 {
-    private const CACHE_VERSION_KEY = 'useraccountCacheVersion';
-    private const CACHE_INDEX_PREFIX = 'useraccountCacheIndex-';
-    private const CACHE_INDEX_GLOBAL = 'all';
+    private const string CACHE_VERSION_KEY = 'useraccountCacheVersion';
+    private const string CACHE_INDEX_PREFIX = 'useraccountCacheIndex-';
+    private const string CACHE_INDEX_GLOBAL = 'all';
 
     /**
      * Read or initialize the cache version for all useraccount-related cache entries.

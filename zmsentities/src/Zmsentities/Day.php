@@ -6,15 +6,15 @@ class Day extends Schema\Entity
 {
     public const string PRIMARY = 'day';
 
-    public const FULL = 'full';
+    public const string FULL = 'full';
 
-    public const BOOKABLE = 'bookable';
+    public const string BOOKABLE = 'bookable';
 
-    public const NOTBOOKABLE = 'notBookable';
+    public const string NOTBOOKABLE = 'notBookable';
 
-    public const RESTRICTED = 'restricted';
+    public const string RESTRICTED = 'restricted';
 
-    public const DETAIL = 'detail';
+    public const string DETAIL = 'detail';
 
     public static $schema = "day.json";
 

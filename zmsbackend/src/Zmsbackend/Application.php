@@ -63,16 +63,16 @@ class Application extends \BO\Slim\Application
     const TWIG_CACHE = ZMS_BACKEND_TWIG_CACHE;
     const SESSION_DURATION = ZMSBACKEND_SESSION_DURATION;
 
-    const DB_ENABLE_WSREPSYNCWAIT = false;
-    const RIGHTSCHECK_ENABLED = true;
+    const bool DB_ENABLE_WSREPSYNCWAIT = false;
+    const bool RIGHTSCHECK_ENABLED = true;
 
-    const DB_DSN_READONLY = 'mysql:dbname=zmsbo;host=127.0.0.1';
-    const DB_DSN_READWRITE = 'mysql:dbname=zmsbo;host=127.0.0.1';
-    const DB_STARTINFO = 'startinfo';
-    const DB_USERNAME = 'server';
-    const DB_PASSWORD = 'internet';
-    const DB_IS_GALERA = true;
-    const SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
+    const string DB_DSN_READONLY = 'mysql:dbname=zmsbo;host=127.0.0.1';
+    const string DB_DSN_READWRITE = 'mysql:dbname=zmsbo;host=127.0.0.1';
+    const string DB_STARTINFO = 'startinfo';
+    const string DB_USERNAME = 'server';
+    const string DB_PASSWORD = 'internet';
+    const bool DB_IS_GALERA = true;
+    const string SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
 
     public static $locale = 'de';
     public static $supportedLanguages = [

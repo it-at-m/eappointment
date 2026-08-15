@@ -7,20 +7,20 @@ class Mailtemplate extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'mailtemplate';
+    const string TABLE = 'mailtemplate';
 
-    const QUERY_SELECT = '
+    const string QUERY_SELECT = '
         SELECT * FROM mailtemplate
     ';
 
-    const QUERY_SELECT_PROPERTY =
+    const string QUERY_SELECT_PROPERTY =
             'SELECT
                 value
             FROM mailtemplate
             WHERE name = ?
             ';
 
-    const QUERY_REPLACE_PROPERTY =
+    const string QUERY_REPLACE_PROPERTY =
         'REPLACE INTO mailtemplate
             SET name  = :property, 
                 value = :value

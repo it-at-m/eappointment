@@ -9,7 +9,7 @@ namespace BO\Zmsbackend\Queue\Repository;
  */
 class Queue extends \BO\Zmsbackend\Process\Repository\Process implements \BO\Zmsbackend\Query\MappingInterface
 {
-    const ALIAS = 'process';
+    const string ALIAS = 'process';
 
     #[\Override]
     public function getEntityMapping()

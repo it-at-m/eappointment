@@ -78,17 +78,17 @@ class Application extends \BO\Slim\Application
 
     public static $http_curl_config = array();
 
-    const JSON_COMPRESS_LEVEL = 1;
+    const int JSON_COMPRESS_LEVEL = 1;
 
     /**
     * config preferences
     */
-    const CONFIG_SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
+    const string CONFIG_SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
 
     /**
      * HTTP url for api
      */
-    const HTTP_BASE_URL = 'http://user:pass@host.tdl';
+    const string HTTP_BASE_URL = 'http://user:pass@host.tdl';
 
     public static function initialize(): void
     {

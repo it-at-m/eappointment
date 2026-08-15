@@ -13,9 +13,9 @@ class ProcessStatusArchived extends \BO\Zmsbackend\Query\Base implements \BO\Zms
      *
      * @var String TABLE mysql table reference
      */
-    public const TABLE = 'buergerarchiv';
-    public const STATISTIC_TABLE = 'statistik';
-    public const ALIAS = 'process';
+    public const string TABLE = 'buergerarchiv';
+    public const string STATISTIC_TABLE = 'statistik';
+    public const string ALIAS = 'process';
 
     const QUERY_INSERT_IN_STATISTIC = '
         INSERT INTO ' . self::STATISTIC_TABLE . ' SET

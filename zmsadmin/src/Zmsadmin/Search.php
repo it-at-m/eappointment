@@ -14,9 +14,9 @@ use BO\Zmsentities\Collection\ProcessList;
 
 class Search extends BaseController
 {
-    private const DEFAULT_RESULTS_PER_PAGE = 100;
+    private const int DEFAULT_RESULTS_PER_PAGE = 100;
 
-    private const MAX_RESULTS_PER_PAGE = 1000;
+    private const int MAX_RESULTS_PER_PAGE = 1000;
 
     /**
      * @SuppressWarnings(Param)

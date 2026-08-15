@@ -4,7 +4,7 @@ namespace BO\Zmsbackend\Preferences\Service;
 
 class Preferences extends \BO\Zmsbackend\Base
 {
-    const REPLACE_SKIPPED = 'skipped';
+    const string REPLACE_SKIPPED = 'skipped';
 
     public function readProperty($entityName, $entityId, $groupName, $name, $forUpdate = false)
     {
