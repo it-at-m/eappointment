@@ -24,6 +24,7 @@ class ValidJson extends Valid
      * @param String $message error message in case of failure, use null for detailled messages
      *
      * @return self
+     * @psalm-api
      */
     public function isJson($message = null)
     {
@@ -66,6 +67,7 @@ class ValidJson extends Valid
      * @param String $value
      *
      * @return self
+     * @psalm-api
      */
     public function setDefaultJson($defaultJsonString)
     {

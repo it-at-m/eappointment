@@ -25,6 +25,7 @@ class ValidMail extends \BO\Mellon\ValidString
      * @param String $message error message in case of failure
      *
      * @return self
+     * @psalm-api
      */
     public function isMail($message = 'no valid email')
     {
@@ -48,6 +49,7 @@ class ValidMail extends \BO\Mellon\ValidString
         return checkdnsrr($domain, 'ANY');
     }
 
+    /** @psalm-api */
     public function hasDNS($message = 'no valid DNS entry found')
     {
         $this->validated = true;
@@ -61,6 +63,7 @@ class ValidMail extends \BO\Mellon\ValidString
         return $this;
     }
 
+    /** @psalm-api */
     public function hasMX($message = 'no valid DNS entry of type MX found')
     {
         $this->validated = true;

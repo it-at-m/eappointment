@@ -138,6 +138,7 @@ class Select
      * Usually this function is only required to set mockups for testing
      *
      * @param PdoInterface $connection
+     * @psalm-api
      */
     public static function setReadConnection(PdoInterface $connection)
     {
@@ -196,6 +197,7 @@ class Select
      *
      * @param  PdoInterface $connection
      * @return self
+     * @psalm-api
      */
     public static function setWriteConnection(PdoInterface $connection)
     {

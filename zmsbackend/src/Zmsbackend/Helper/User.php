@@ -56,6 +56,7 @@ class User
     /**
      * @throws \BO\Zmsbackend\Workstation\Exception\WorkstationAlreadyAssigned
      *
+     * @psalm-api
      */
     public static function testWorkstationAssigend(\BO\Zmsentities\Workstation $entity, $resolveReferences = 0)
     {

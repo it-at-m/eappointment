@@ -100,6 +100,7 @@ class Location extends Base
     /**
      *
      * @return \BO\Zmsdldb\Collection\Authorities
+     * @psalm-api
      */
     public function searchAll($querystring, $service_csv = '')
     {
@@ -244,6 +245,7 @@ class Location extends Base
 
     /**
      * @todo Refactoring required, functions in this class should return entities, not JSON data
+     * @psalm-api
      */
     public function fetchGeoJson($category = null, $getAll = false)
     {
@@ -277,6 +279,7 @@ class Location extends Base
         return $geoJson;
     }
 
+    /** @psalm-api */
     public function fetchLocationsForCompilation($authoritys = [], $locations = [])
     {
         $limit = 1000;

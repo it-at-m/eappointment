@@ -15,6 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 class AppointmentPreconfirmController extends BaseController
 {
     private AppointmentPreconfirmService $service;
+    /** @psalm-api */
     public function __construct()
     {
         $this->service = new AppointmentPreconfirmService();

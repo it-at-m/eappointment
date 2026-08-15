@@ -20,6 +20,7 @@ class OfficesServicesRelationsController extends BaseController
     private OfficesServicesRelationsService $service;
     private bool $showUnpublished;
 
+    /** @psalm-api */
     public function __construct()
     {
         $this->service = new OfficesServicesRelationsService();

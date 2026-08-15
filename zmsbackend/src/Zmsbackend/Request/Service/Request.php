@@ -43,6 +43,7 @@ class Request extends \BO\Zmsbackend\Base
         return $request;
     }
 
+    /** @psalm-api */
     public function readEntityById($requestId, $resolveReferences = 0, $disableCache = false)
     {
         $cacheKey = "request-byid-$requestId-$resolveReferences";

@@ -23,6 +23,7 @@ class Index extends BaseController
      * @param RequestInterface|SlimRequest $request
      * @param ResponseInterface $response
      * @return ResponseInterface
+     * @psalm-api
      */
     public function readResponse(
         RequestInterface $request,

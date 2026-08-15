@@ -10,11 +10,13 @@ class MailTemplateArrayProvider
     {
     }
 
+    /** @psalm-api */
     public function getTemplate($templateName)
     {
         return $this->templates[$templateName];
     }
 
+    /** @psalm-api */
     public function getTemplates()
     {
         return $this->templates;

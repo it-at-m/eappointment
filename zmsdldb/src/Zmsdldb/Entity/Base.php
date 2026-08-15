@@ -36,6 +36,7 @@ class Base extends \ArrayObject
     /**
      * return a path for this entity
      *
+     * @psalm-api
      */
     public function getPath()
     {
@@ -53,6 +54,7 @@ class Base extends \ArrayObject
         );
     }
 
+    /** @psalm-api */
     public function getLocale()
     {
         $meta = $this['meta'];
@@ -62,6 +64,7 @@ class Base extends \ArrayObject
         return $this['meta']['locale'];
     }
 
+    /** @psalm-api */
     public function getLink()
     {
         if (!$this->offsetExists('link')) {

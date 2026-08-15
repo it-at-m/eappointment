@@ -22,6 +22,7 @@ class Setting extends Base
         return new Settings($data['data']['settings']);
     }
 
+    /** @psalm-api */
     public function fetchName($name)
     {
         return $this->fetchId($name);

@@ -285,6 +285,7 @@ class Scope extends \BO\Zmsbackend\Base
 
         return $scopeList;
     }
+    /** @psalm-api */
     public function readListBySource($source, $resolveReferences = 0)
     {
         $this->testSource($source);
@@ -733,6 +734,7 @@ class Scope extends \BO\Zmsbackend\Base
         }
     }
 
+    /** @psalm-api */
     public function removeCache($scope)
     {
         $departmentId = isset($scope->id) ? $this->readDepartmentIdByScopeId($scope->id) : null;

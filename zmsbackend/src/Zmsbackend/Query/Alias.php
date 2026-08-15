@@ -20,6 +20,7 @@ class Alias implements \BO\Zmsbackend\Query\Builder\ExpressionInterface
         return $this->name . ' AS ' . $this->alias;
     }
 
+    /** @psalm-api */
     public function getAliasIdentifier()
     {
         return $this->alias;

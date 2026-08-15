@@ -23,6 +23,7 @@ class MailQueue extends \BO\Zmsbackend\Query\Base
         WHERE mq.id IN (?)
     ';
 
+    /** @psalm-api */
     public function getEntityMapping()
     {
         return [

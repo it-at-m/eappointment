@@ -48,6 +48,7 @@ class AbstractAccess
         'Topic' => null
     ];
 
+    /** @psalm-api */
     public function addAccessInstanceLocale($locale = 'de')
     {
         if (!isset($this->accessInstance[$locale])) {
@@ -161,6 +162,7 @@ class AbstractAccess
         return $this->from('Borough');
     }
 
+    /** @psalm-api */
     public function fromLink($locale = 'de')
     {
         return $this->from('Link', $locale);

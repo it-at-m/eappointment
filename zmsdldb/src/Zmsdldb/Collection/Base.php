@@ -23,6 +23,7 @@ class Base extends \ArrayObject
         return $itemList;
     }
 
+    /** @psalm-api */
     public function sortWithCollator($field = 'name', $locale = 'de')
     {
         $collator = collator_create($locale);

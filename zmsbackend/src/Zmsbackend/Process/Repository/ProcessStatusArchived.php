@@ -96,6 +96,7 @@ class ProcessStatusArchived extends \BO\Zmsbackend\Query\Base implements \BO\Zms
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionTimes(array $dateTimes)
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $condition) use ($dateTimes) {

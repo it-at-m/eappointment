@@ -165,6 +165,7 @@ class RateLimitingMiddleware implements MiddlewareInterface
 
     /**
      * For testing purposes - allows checking if a lock exists
+     * @psalm-api
      */
     public function isLocked(string $ip): bool
     {

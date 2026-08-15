@@ -6,6 +6,7 @@ class Provider extends \BO\Zmsbackend\Query\Base
 {
     const TABLE = 'provider';
 
+    /** @psalm-api */
     public function getEntityMapping()
     {
         $mapping = [

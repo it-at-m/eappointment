@@ -176,6 +176,7 @@ class Log extends \BO\Zmsbackend\Base
         return self::ACTION_LABEL_TO_CODE[$label] ?? null;
     }
 
+    /** @psalm-api */
     public static function actionLabelFromCode(?string $code): ?string
     {
         return Entity::actionLabelFromCode($code);
@@ -350,6 +351,7 @@ class Log extends \BO\Zmsbackend\Base
         return $row;
     }
 
+    /** @psalm-api */
     public function delete($processId)
     {
         $query = new \BO\Zmsbackend\Log\Repository\Log(\BO\Zmsbackend\Query\Base::SELECT);

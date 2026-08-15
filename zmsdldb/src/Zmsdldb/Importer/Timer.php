@@ -24,17 +24,20 @@ class Timer
         $this->start = Timer::getMicroTime();
     }
 
+    /** @psalm-api */
     public function stop()
     {
         $this->stop = Timer::getMicroTime();
     }
 
+    /** @psalm-api */
     public function pause()
     {
         $this->pause = Timer::getMicroTime();
         $this->elapsed += ($this->pause - $this->start);
     }
 
+    /** @psalm-api */
     public function resume()
     {
         $this->start = Timer::getMicroTime();
@@ -48,6 +51,7 @@ class Timer
         return $this->timeToString();
     }
 
+    /** @psalm-api */
     protected function getLapTime()
     {
         return $this->timeToString();

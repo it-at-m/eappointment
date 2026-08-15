@@ -190,11 +190,13 @@ class SlotList extends \BO\Zmsbackend\Query\Base
         }
     }
 
+    /** @psalm-api */
     public static function getQuery()
     {
         return self::QUERY;
     }
 
+    /** @psalm-api */
     public static function getParametersMonth($scopeId, \DateTimeInterface $monthDateTime, \DateTimeInterface $now)
     {
         $now = DateTime::create($now);
@@ -213,6 +215,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
         return $parameters;
     }
 
+    /** @psalm-api */
     public static function getParametersDay($scopeId, \DateTimeInterface $dateTime, \DateTimeInterface $now)
     {
         $now = DateTime::create($now);
@@ -303,6 +306,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
         return $slot;
     }
 
+    /** @psalm-api */
     public function addToCalendar(
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeInterface $now,
@@ -381,6 +385,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
         } while ($time->getTimestamp() <= $stopDate->getTimestamp());
     }
 
+    /** @psalm-api */
     public function isSameAvailability(array $slotData)
     {
         return $this->slotData['availability__id'] == $slotData['availability__id'];
@@ -392,6 +397,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
      *
      * @param Int $slotsRequired
      * @return self
+     * @psalm-api
      */
     public function toReducedBySlots($slotsRequired)
     {

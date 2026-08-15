@@ -14,6 +14,7 @@ class Link extends \BO\Zmsbackend\Query\Base
      */
     protected $resolveLevel = 0;
 
+    /** @psalm-api */
     public function getEntityMapping()
     {
         return [

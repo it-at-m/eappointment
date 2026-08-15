@@ -31,6 +31,7 @@ class Session extends \BO\Zmsbackend\Query\Base
             sessionname=?
     ';
 
+    /** @psalm-api */
     public function getEntityMapping()
     {
         return [

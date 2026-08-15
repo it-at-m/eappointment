@@ -32,6 +32,7 @@ class Service extends Base
      *
      * @SuppressWarnings(Param)
      * @return Collection
+     * @psalm-api
      */
     public function searchAll($querystring, $service_csv = false, $location_csv = false)
     {
@@ -68,6 +69,7 @@ class Service extends Base
     /**
      *
      * @return Collection
+     * @psalm-api
      */
     public function fetchListRelated($service_id)
     {
@@ -134,6 +136,7 @@ class Service extends Base
      * root_topic in realations not usable because of multiple roots for one service
      *
      * @return Collection
+     * @psalm-api
      */
     public function fetchListFromTopic(\BO\Zmsdldb\Entity\Topic $topic)
     {
@@ -163,6 +166,7 @@ class Service extends Base
     /**
      *
      * @return Collection
+     * @psalm-api
      */
     public function readSearchResultList($query, $service_csv = '')
     {

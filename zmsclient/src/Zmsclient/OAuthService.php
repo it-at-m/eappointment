@@ -32,6 +32,7 @@ class OAuthService
      * @param Useraccount $ownerInputData
      * @param string|null $state
      * @return mixed
+     * @psalm-api
      */
     public function authenticateWorkstation(Useraccount $ownerInputData, ?string $state = null)
     {

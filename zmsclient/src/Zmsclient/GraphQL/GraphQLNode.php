@@ -75,6 +75,7 @@ class GraphQLNode extends GraphQLElement
         return $this;
     }
 
+    /** @psalm-api */
     public function getNodesFromIterable($data): array
     {
         $reduced = [];

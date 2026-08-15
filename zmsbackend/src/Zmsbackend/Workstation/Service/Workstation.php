@@ -295,6 +295,7 @@ class Workstation extends \BO\Zmsbackend\Base
      * @param int|string $useraccountId
      *
      * @return Entity
+     * @psalm-api
      */
     public function updateEntityAuthkey($loginName, $password, $authKey, \DateTimeInterface $sessionExpiry, $resolveReferences)
     {

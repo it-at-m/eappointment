@@ -18,6 +18,7 @@ class AppointmentReserveController extends BaseController
 
     private AppointmentReserveService $service;
 
+    /** @psalm-api */
     public function __construct()
     {
         $this->initializeUnpublishedAccess();

@@ -8,6 +8,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class ProcessContextExtractor
 {
+    /** @psalm-api */
     public static function extractProcessContext(ServerRequestInterface $request, ?string $responseBody): array
     {
         $process = [];

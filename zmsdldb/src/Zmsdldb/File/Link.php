@@ -48,6 +48,7 @@ class Link extends Base
     /**
      *
      * @return Entity
+     * @psalm-api
      */
     public function fetchPath($topic_path)
     {
@@ -60,6 +61,7 @@ class Link extends Base
         return false;
     }
 
+    /** @psalm-api */
     public function readSearchResultList($query)
     {
         $list = $this->getItemList();

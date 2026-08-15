@@ -21,6 +21,7 @@ class Log extends \BO\Zmsbackend\Query\Base
         WHERE mq.processID=?
     ';
 
+    /** @psalm-api */
     public function getEntityMapping()
     {
         return [

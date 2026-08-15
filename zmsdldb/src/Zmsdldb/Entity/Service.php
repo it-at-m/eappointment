@@ -35,6 +35,7 @@ class Service extends Base
         return count($locationcompare) == count($locationsfound);
     }
 
+    /** @psalm-api */
     public function hasLocation($location_csv)
     {
         $service = $this->getArrayCopy();
@@ -47,6 +48,7 @@ class Service extends Base
         return false;
     }
 
+    /** @psalm-api */
     public function hasAppointments($external = false)
     {
         foreach ($this['locations'] as $location) {
@@ -64,6 +66,7 @@ class Service extends Base
     }
 
 
+    /** @psalm-api */
     public function isResponsibleForAll()
     {
         return $this['responsibility_all'];
@@ -78,6 +81,7 @@ class Service extends Base
         return $service['meta']['locale'] == $locale;
     }
 
+    /** @psalm-api */
     public function getLocations()
     {
         $locations = [];

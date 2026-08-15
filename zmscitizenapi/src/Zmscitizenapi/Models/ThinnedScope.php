@@ -69,11 +69,13 @@ class ThinnedScope extends Entity implements JsonSerializable
         }
     }
 
+    /** @psalm-api */
     public function getProvider(): ?ThinnedProvider
     {
         return $this->provider;
     }
 
+    /** @psalm-api */
     public function getShortName(): ?string
     {
         return $this->shortName;
@@ -129,16 +131,19 @@ class ThinnedScope extends Entity implements JsonSerializable
         return $this->customTextfield2Label;
     }
 
+    /** @psalm-api */
     public function getCaptchaActivatedRequired(): ?bool
     {
         return $this->captchaActivatedRequired;
     }
 
+    /** @psalm-api */
     public function getInfoForAppointment(): ?string
     {
         return $this->infoForAppointment;
     }
 
+    /** @psalm-api */
     public function getInfoForAllAppointments(): ?string
     {
         return $this->infoForAllAppointments;
@@ -169,6 +174,7 @@ class ThinnedScope extends Entity implements JsonSerializable
         return $this->activationDuration;
     }
 
+    /** @psalm-api */
     public function getHint(): ?string
     {
         return $this->hint;

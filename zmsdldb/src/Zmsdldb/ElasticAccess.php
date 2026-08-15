@@ -53,6 +53,7 @@ class ElasticAccess extends FileAccess
     /**
      *
      * @return \Elastica\Index
+     * @psalm-api
      */
     public function getIndex()
     {

@@ -25,6 +25,7 @@ class Permission extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Que
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionName(string $name): self
     {
         $this->query->where('permission.name', '=', $name);

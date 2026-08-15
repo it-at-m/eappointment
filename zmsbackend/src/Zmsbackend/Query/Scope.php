@@ -272,6 +272,7 @@ class Scope extends Base implements MappingInterface
         return $this;
     }
 
+    /** @psalm-api */
     public function addSelectWorkstationCount($dateTime)
     {
         $this->query->select(

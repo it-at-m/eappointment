@@ -55,6 +55,7 @@ class Db
         }
     }
 
+    /** @psalm-api */
     public static function executeSql($query, $databaseName = null)
     {
         $databaseConnection = self::startUsingDatabase($databaseName, false);

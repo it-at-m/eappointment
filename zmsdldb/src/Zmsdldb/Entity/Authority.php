@@ -37,6 +37,7 @@ class Authority extends Base
      *            allow external links, default false
      *
      * @return Bool
+     * @psalm-api
      */
     public function hasAppointments($serviceCsv = null, $external = false)
     {
@@ -52,6 +53,7 @@ class Authority extends Base
      * Check if locations are available
      *
      * @return Bool
+     * @psalm-api
      */
     public function hasLocations()
     {
@@ -64,6 +66,7 @@ class Authority extends Base
      *            only check for this office
      * @return Authority
      *
+     * @psalm-api
      */
     public function getLocationListByOfficePath($officepath)
     {
@@ -80,6 +83,7 @@ class Authority extends Base
      * @param Int $locationId
      *
      * @return Bool
+     * @psalm-api
      */
     public function hasLocationId($locationId)
     {
@@ -92,6 +96,7 @@ class Authority extends Base
      * @param Int $locationId
      *
      * @return self
+     * @psalm-api
      */
     public function removeLocation($locationId)
     {

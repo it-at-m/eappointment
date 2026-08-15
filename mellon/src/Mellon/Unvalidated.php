@@ -64,6 +64,7 @@ class Unvalidated extends \BO\Mellon\Parameter
      * The first parameter of this callback receives the validated object
      *
      * @return \BO\Mellon\Unvalidated
+     * @psalm-api
      */
     public function setCallback(callable $setValid)
     {

@@ -283,6 +283,7 @@ abstract class Base
         return $this;
     }
 
+    /** @psalm-api */
     public function setWithEntities($withEntities = [])
     {
         $this->withEntities = $withEntities;

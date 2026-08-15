@@ -14,6 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 class CaptchaVerifyController extends BaseController
 {
     private CaptchaService $service;
+    /** @psalm-api */
     public function __construct()
     {
         $this->service = new CaptchaService();

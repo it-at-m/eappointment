@@ -42,6 +42,7 @@ class ProcessStatusArchived extends Process
         return $this->readResolvedList($query, $resolveReferences);
     }
 
+    /** @psalm-api */
     public function readListByScopeAndDate($scopeId, $dateTime, $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
@@ -68,6 +69,7 @@ class ProcessStatusArchived extends Process
         return (bool)$this->perform(\BO\Zmsbackend\Process\Repository\ProcessStatusArchivedToday::DELETE_ALL);
     }
 
+    /** @psalm-api */
     public function readListForStatistic($dateTime, \BO\Zmsentities\Scope $scope, $limit = 500, $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
@@ -146,6 +148,7 @@ class ProcessStatusArchived extends Process
     /**
      * write an archived process to statistic table
      *
+     * @psalm-api
      */
     public function writeArchivedProcessToStatistic(
         Entity $process,

@@ -65,6 +65,7 @@ abstract class Query
      *
      * @param   null|DialectInterface   $dialect    Null to get, DialectInterface to set
      * @return  DialectInterface|$this  DialectInterface on get, $this on set.
+     * @psalm-api
      */
     public function dialect(DialectInterface $dialect = null)
     {
@@ -86,6 +87,7 @@ abstract class Query
      * @param   string      $flag   Name of the flag
      * @param   null|mixed  $value  Null to get the flag, mixed to set it
      * @return  mixed|$this Flag value on read (null for not set), or $this on set.
+     * @psalm-api
      */
     public function flag($flag, $value = null)
     {
@@ -103,6 +105,7 @@ abstract class Query
      * @param   null|array      $flags  Null for get, array for set
      * @return  array|$this     array on get, $this on set
      * @see     Query::flag() for more info on flags.
+     * @psalm-api
      */
     public function flags(array $flags = null)
     {
@@ -120,6 +123,7 @@ abstract class Query
      *
      * @param   string  $flag   Name of the flag
      * @return  $this
+     * @psalm-api
      */
     public function deleteFlag($flag)
     {

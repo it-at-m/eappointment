@@ -172,12 +172,14 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionDisplayNumber($displayNumber)
     {
         $this->query->where('process.displayNumber', '=', $displayNumber);
         return $this;
     }
 
+    /** @psalm-api */
     protected function calculateStatus()
     {
         if ($this->query->value('Name') === '(abgesagt)') {
@@ -360,6 +362,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionHasTelephone()
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $condition) {
@@ -385,6 +388,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionProcessExpiredIPTimeStamp(\DateTimeInterface $expirationDate)
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($expirationDate) {
@@ -394,6 +398,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionProcessReminderInterval(\DateTimeInterface $dateTime)
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($dateTime) {
@@ -477,6 +482,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionIgnoreSlots()
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $condition) {
@@ -517,6 +523,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionQueueNumber($queueNumber, $queueLimit = 10000)
     {
         ($queueLimit > $queueNumber)
@@ -542,6 +549,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
 
     /**
      * Identify processes between two dates
+     * @psalm-api
      */
     public function addConditionTimeframe(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
     {
@@ -572,6 +580,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionIsReserved()
     {
         $this->query->where('process.name', 'NOT IN', array(
@@ -824,6 +833,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionCustomTextfield($customText, $exactMatching = false)
     {
         if ($exactMatching) {
@@ -838,6 +848,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionCustomTextfield2($customText2, $exactMatching = false)
     {
         if ($exactMatching) {
@@ -1386,6 +1397,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $data;
     }
 
+    /** @psalm-api */
     public function removeDuplicates()
     {
         $this->query->groupBy('process.BuergerID');

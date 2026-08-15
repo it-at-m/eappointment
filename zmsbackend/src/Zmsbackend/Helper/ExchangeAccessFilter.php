@@ -52,6 +52,7 @@ class ExchangeAccessFilter
         return static::$filteredEntity;
     }
 
+    /** @psalm-api */
     protected static function getFilteredEntityByUseraccountPermissions($permission, $filteredKey)
     {
         if (! static::$workstation->getUseraccount()->hasPermissions([$permission])) {
@@ -61,6 +62,7 @@ class ExchangeAccessFilter
 
     /**
      * @SuppressWarnings(UnusedFormalParameter)
+     * @psalm-api
      */
     protected static function getFilteredEntityByUseraccountSuperuser($unused, $filteredKey)
     {
@@ -69,6 +71,7 @@ class ExchangeAccessFilter
         }
     }
 
+    /** @psalm-api */
     protected static function getFilteredEntityByScope($entityId, $filteredKey)
     {
         if (static::$workstation->getUseraccount()->hasPermissions(['scope'])) {
@@ -78,6 +81,7 @@ class ExchangeAccessFilter
         }
     }
 
+    /** @psalm-api */
     protected static function getFilteredEntityByDepartment($entityId, $filteredKey)
     {
         if (static::$workstation->getUseraccount()->hasPermissions(['department'])) {
@@ -87,6 +91,7 @@ class ExchangeAccessFilter
         }
     }
 
+    /** @psalm-api */
     protected static function getFilteredEntityByOrganisation($entityId, $filteredKey)
     {
         if (static::$workstation->getUseraccount()->hasPermissions(['organisation'])) {
