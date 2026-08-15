@@ -10,13 +10,14 @@
 namespace BO\Zmsstatistic\Helper;
 
 use BO\Mellon\Validator;
+use BO\Mellon\Collection;
 
 class LoginForm
 {
     /**
      * form data for reuse in multiple controllers
      */
-    public static function fromLoginParameters(): Validator
+    public static function fromLoginParameters(): Collection
     {
         $collection = array();
         // loginName
@@ -37,7 +38,7 @@ class LoginForm
     /**
      * form data for reuse in multiple controllers
      */
-    public static function fromAdditionalParameters(): Validator
+    public static function fromAdditionalParameters(): Collection
     {
         $collection = array();
 
@@ -72,7 +73,7 @@ class LoginForm
         return $collection;
     }
 
-    public static function fromQuickLogin(): Validator
+    public static function fromQuickLogin(): Collection
     {
         $loginData = static::fromLoginParameters();
         $additionalData = static::fromAdditionalParameters();
