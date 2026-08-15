@@ -32,7 +32,7 @@ class Application
      */
     public const bool DEBUG = false;
     const string DEBUGLEVEL = ZMS_DEBUGLEVEL;
-    const string|int SESSION_DURATION = ZMS_SESSION_DURATION;
+    const SESSION_DURATION = ZMS_SESSION_DURATION;
     const string SECURE_TOKEN = '';
     const string CONFIG_SECURE_TOKEN = '';
     const bool RIGHTSCHECK_ENABLED = true;
@@ -73,7 +73,7 @@ class Application
 /**
      * Define path for Twig template cache
      */
-    const bool|string TWIG_CACHE = false;
+    const TWIG_CACHE = false;
 /**
      * Set this option, if ESI should be used
      */

@@ -60,8 +60,8 @@ class Application extends \BO\Slim\Application
     public static int $MAX_RECURSION_DEPTH;
 
     const bool DEBUG = false;
-    const bool|string TWIG_CACHE = ZMS_BACKEND_TWIG_CACHE;
-    const string|int SESSION_DURATION = ZMSBACKEND_SESSION_DURATION;
+    const TWIG_CACHE = ZMS_BACKEND_TWIG_CACHE;
+    const SESSION_DURATION = ZMSBACKEND_SESSION_DURATION;
 
     const bool DB_ENABLE_WSREPSYNCWAIT = false;
     const bool RIGHTSCHECK_ENABLED = true;

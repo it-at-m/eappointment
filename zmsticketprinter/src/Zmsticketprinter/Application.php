@@ -35,7 +35,7 @@ class Application extends \BO\Slim\Application
     public static ?CacheInterface $cache = null;
 
     public const bool DEBUG = false;
-    const bool|string TWIG_CACHE = ZMS_TICKETPRINTER_TWIG_CACHE;
+    const TWIG_CACHE = ZMS_TICKETPRINTER_TWIG_CACHE;
 
     /**
      * language preferences

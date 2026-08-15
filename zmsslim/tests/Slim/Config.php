@@ -13,7 +13,7 @@ class App extends \BO\Slim\Application
     const string SESSION_NAME = "Unittest";
     const string SESSION_ATTRIBUTE = 'session';
     const bool MULTILANGUAGE = true;
-    const bool|string TWIG_CACHE = '/cache';
+    const TWIG_CACHE = '/cache';
 }
 
 App::$now = new DateTimeImmutable('2016-04-01 08:00', new DateTimeZone('Europe/Berlin'));
