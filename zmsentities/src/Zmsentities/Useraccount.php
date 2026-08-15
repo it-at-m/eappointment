@@ -84,7 +84,7 @@ class Useraccount extends Schema\Entity
         return $this->departments;
     }
 
-    public function addDepartment(Department $department): static
+    public function addDepartment(Department|array $department): static
     {
         $this->departments[] = $department;
         return $this;

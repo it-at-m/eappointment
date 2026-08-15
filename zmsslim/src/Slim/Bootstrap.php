@@ -287,7 +287,7 @@ class Bootstrap
         return $path;
     }
 
-    public static function addTwigExtension(TwigExtensionsAndFilter|DebugExtension|\Symfony\Bridge\Twig\Extension\TranslationExtension $extension): void
+    public static function addTwigExtension(\Twig\Extension\ExtensionInterface $extension): void
     {
         /** @var Twig $twig */
         $twig = App::$slim->getContainer()->get('view');

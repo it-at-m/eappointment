@@ -63,7 +63,7 @@ class Exchange extends Schema\Entity
      *
      * @return void
      */
-    public function addDataSet(array $values)
+    public function addDataSet($values)
     {
         if (!is_array($values) && !$values instanceof \Traversable) {
             throw new \Exception("Values have to be of type array");

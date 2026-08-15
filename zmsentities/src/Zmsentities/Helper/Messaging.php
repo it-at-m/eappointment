@@ -162,7 +162,7 @@ class Messaging
      * @return ((int|mixed)[][]|Client|Process|\DateTimeImmutable|mixed|null|string)[]
      *
      */
-    public static function generateMailParameters(ProcessList $processList, Config $config, $initiator, string $status): array
+    public static function generateMailParameters(Process|ProcessList $processList, Config $config, $initiator, string $status): array
     {
         $collection = (new ProcessList())
             ->testProcessListLength($processList, self::isEmptyProcessListAllowed($status));
@@ -263,7 +263,7 @@ class Messaging
         Config $config,
         $status = 'appointment',
         $initiator = null,
-        bool $now = false,
+        $now = false,
         $templateProvider = false
     ): \BO\Zmsentities\Ics {
         $ics = new \BO\Zmsentities\Ics();
