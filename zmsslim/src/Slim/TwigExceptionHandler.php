@@ -196,7 +196,7 @@ class TwigExceptionHandler implements ErrorHandlerInterface
         // Due to shortened error logs in some reportings, important informations first!
         return array_merge(array(
             "exceptionclass" => $exceptionclass,
-            "requesturi" => (string)$request->getUri()->getPath(),
+            "requesturi" => $request->getUri()->getPath(),
             "apirequesturi" => (string)$apirequesturi,
             "route" => $routename,
             "_file" => $exception->getFile(),

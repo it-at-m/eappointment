@@ -104,7 +104,7 @@ class SessionHeadersHandler
         }
 
         $this->cacheLimiter = $cacheLimiter;
-        $this->cacheExpire = (int) $cacheExpire;
+        $this->cacheExpire = $cacheExpire;
     }
 
     /**

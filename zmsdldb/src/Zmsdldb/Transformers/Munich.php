@@ -161,7 +161,7 @@ class Munich
         if ($proxy !== false && $proxy !== '') {
             $parts = parse_url($proxy);
             if (!empty($parts['host'])) {
-                $port = isset($parts['port']) ? (int) $parts['port'] : 80;
+                $port = isset($parts['port']) ? $parts['port'] : 80;
                 $req->useProxy($parts['host'], $port);
             }
         }
@@ -667,14 +667,14 @@ class Munich
                 continue;
             }
 
-            if ((int) $combo[0] === $serviceId) {
+            if ($combo[0] === $serviceId) {
                 $list = array_merge([$serviceId], array_slice($combo, 1));
                 $list = array_map('intval', $list);
                 return array_values(array_unique($list, SORT_NUMERIC));
             }
         }
 
-        return [(int) $serviceId];
+        return [$serviceId];
     }
 
     /**

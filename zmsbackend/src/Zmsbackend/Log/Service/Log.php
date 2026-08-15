@@ -249,7 +249,7 @@ class Log extends \BO\Zmsbackend\Base
             $sql .= ' WHERE ' . implode(' AND ', $conditions);
         }
 
-        $sql .= ' ORDER BY ts DESC LIMIT ' . (int) $perPage . ' OFFSET ' . (int) $offset;
+        $sql .= ' ORDER BY ts DESC LIMIT ' . $perPage . ' OFFSET ' . $offset;
 
         $logs = new LogList();
         foreach ($this->fetchAll($sql, $params) as $row) {

@@ -68,11 +68,11 @@ class AppointmentUpdateService
             'authKey' => isset($body['authKey']) && is_string($body['authKey']) && trim($body['authKey']) !== ''
                 ? htmlspecialchars(trim($body['authKey']), ENT_QUOTES, 'UTF-8')
                 : null,
-            'familyName' => isset($body['familyName']) && is_string($body['familyName']) ? (string) $body['familyName'] : null,
-            'email' => isset($body['email']) && is_string($body['email']) ? (string) $body['email'] : null,
-            'telephone' => isset($body['telephone']) && is_string($body['telephone']) ? (string) $body['telephone'] : null,
-            'customTextfield' => isset($body['customTextfield']) && is_string($body['customTextfield']) ? (string) $body['customTextfield'] : null,
-            'customTextfield2' => isset($body['customTextfield2']) && is_string($body['customTextfield2']) ? (string) $body['customTextfield2'] : null,
+            'familyName' => isset($body['familyName']) && is_string($body['familyName']) ? $body['familyName'] : null,
+            'email' => isset($body['email']) && is_string($body['email']) ? $body['email'] : null,
+            'telephone' => isset($body['telephone']) && is_string($body['telephone']) ? $body['telephone'] : null,
+            'customTextfield' => isset($body['customTextfield']) && is_string($body['customTextfield']) ? $body['customTextfield'] : null,
+            'customTextfield2' => isset($body['customTextfield2']) && is_string($body['customTextfield2']) ? $body['customTextfield2'] : null,
         ];
     }
 

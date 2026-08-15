@@ -26,7 +26,7 @@ class TemplateUrls
             return '/';
         }
 
-        $uri = (string) $request->getBasePath();
+        $uri = $request->getBasePath();
         if ($withUri) {
             $uri = $request->getBaseUrl();
             $uri = preg_replace('#^https?://[^/]+#', '', $uri);

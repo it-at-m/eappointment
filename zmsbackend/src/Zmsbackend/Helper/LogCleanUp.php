@@ -46,7 +46,7 @@ class LogCleanUp
         if ($commit) {
             \App::$log->info('Executing log cleanup with commit');
             $result = $logRepo->clearLogsOlderThan((int) $olderThan);
-            \App::$log->info('Log cleanup completed', ['success' => (bool) $result]);
+            \App::$log->info('Log cleanup completed', ['success' => $result]);
         }
     }
 }
