@@ -4,7 +4,7 @@ namespace BO\Zmsbackend\Exchange\Repository;
 
 class ExchangeUnassignedscope extends \BO\Zmsbackend\Query\Base
 {
-    const QUERY_READ_REPORT = "SELECT 
+    const string QUERY_READ_REPORT = "SELECT 
             standort.StandortID, 
             standort.Bezeichnung, 
             IFNULL(COUNT(buerger.BuergerID), '') AS TerminAnzahl, 

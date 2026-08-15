@@ -7,7 +7,7 @@ class Permission extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Que
     /**
      * @var string TABLE mysql table reference
      */
-    const TABLE = 'permission';
+    const string TABLE = 'permission';
 
     #[\Override]
     public function getEntityMapping()

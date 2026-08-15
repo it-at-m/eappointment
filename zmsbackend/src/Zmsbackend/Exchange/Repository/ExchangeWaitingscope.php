@@ -7,9 +7,9 @@ class ExchangeWaitingscope extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'wartenrstatistik';
+    const string TABLE = 'wartenrstatistik';
 
-    const WAITING_VALUES = "
+    const string WAITING_VALUES = "
         AVG(hour_00_waiting_time_spontaneous) as hour_00_waiting_time_spontaneous,
         AVG(hour_01_waiting_time_spontaneous) as hour_01_waiting_time_spontaneous,
         AVG(hour_02_waiting_time_spontaneous) as hour_02_waiting_time_spontaneous,

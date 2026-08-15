@@ -6,13 +6,13 @@ class App extends \BO\Slim\Application
     public const string IDENTIFIER = 'Slim-ENV';
     public const string APP_PATH = APP_PATH;
     public const bool DEBUG = true;
-    const LOG_ERRORS = false;
+    const bool LOG_ERRORS = false;
 
-    const TEMPLATE_PATH = '/Slim/templates/';
+    const string TEMPLATE_PATH = '/Slim/templates/';
 
-    const SESSION_NAME = "Unittest";
-    const SESSION_ATTRIBUTE = 'session';
-    const MULTILANGUAGE = true;
+    const string SESSION_NAME = "Unittest";
+    const string SESSION_ATTRIBUTE = 'session';
+    const bool MULTILANGUAGE = true;
     const TWIG_CACHE = '/cache';
 }
 

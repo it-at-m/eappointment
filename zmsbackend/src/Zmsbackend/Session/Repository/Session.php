@@ -7,14 +7,14 @@ class Session extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'sessiondata';
+    const string TABLE = 'sessiondata';
 
     /**
      * No resolving required here
      */
     protected $resolveLevel = 0;
 
-    const QUERY_WRITE = '
+    const string QUERY_WRITE = '
         REPLACE INTO
             sessiondata
         SET
@@ -23,7 +23,7 @@ class Session extends \BO\Zmsbackend\Query\Base
             sessioncontent=?
     ';
 
-    const QUERY_DELETE = '
+    const string QUERY_DELETE = '
         DELETE FROM
             sessiondata
         WHERE

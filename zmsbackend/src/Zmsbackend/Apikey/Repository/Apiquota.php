@@ -10,7 +10,7 @@ class Apiquota extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'apiquota';
+    const string TABLE = 'apiquota';
 
     public static function getQueryReadApiQuotaListByKey()
     {

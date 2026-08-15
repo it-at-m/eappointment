@@ -7,7 +7,7 @@ class Calldisplay extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'imagedata';
+    const string TABLE = 'imagedata';
 
     public function getQueryImage()
     {

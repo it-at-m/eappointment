@@ -4,9 +4,9 @@ namespace BO\Zmsentities\Tests;
 
 class QueueListTest extends EntityCommonTests
 {
-    const DEFAULT_TIME = '2016-11-19 08:50:00';
+    const string DEFAULT_TIME = '2016-11-19 08:50:00';
 
-    const FAKE_WAITINGNUMBER = 1002;
+    const int FAKE_WAITINGNUMBER = 1002;
 
     public $entityclass = '\BO\Zmsentities\Queue';
 

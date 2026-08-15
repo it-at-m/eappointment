@@ -7,8 +7,8 @@ use DateTimeImmutable;
 
 class OverviewCalendarTest extends \BO\Zmsbackend\Tests\Service\Base
 {
-    private const SCOPE1 = 65001;
-    private const SCOPE2 = 65002;
+    private const int SCOPE1 = 65001;
+    private const int SCOPE2 = 65002;
 
     private function fetchByPid(int $pid): ?array
     {

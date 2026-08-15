@@ -12,7 +12,7 @@ use BO\Zmsentities\Slot;
  */
 class SlotList extends \BO\Zmsbackend\Query\Base
 {
-    const QUERY = 'SELECT
+    const string QUERY = 'SELECT
 
             -- collect some important settings, especially from the scope, use the appointment key
             CONCAT(b.Datum, " ", b.Uhrzeit) AS appointment__date,

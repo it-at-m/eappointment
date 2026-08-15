@@ -13,7 +13,7 @@ use BO\Zmsentities\Useraccount;
 
 class Provider extends Keycloak
 {
-    const PROVIDERNAME = 'keycloak';
+    const string PROVIDERNAME = 'keycloak';
 
     protected $oauthService;
 

@@ -17,7 +17,7 @@ use Slim\Interfaces\ErrorHandlerInterface;
   */
 class TwigExceptionHandler implements ErrorHandlerInterface
 {
-    const DEFAULT_TEMPLATE = "exception/default.twig";
+    const string DEFAULT_TEMPLATE = "exception/default.twig";
 
     /**
      * @SuppressWarnings("PMD.UnusedFormalParameter")

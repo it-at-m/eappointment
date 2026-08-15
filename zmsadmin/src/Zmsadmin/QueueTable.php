@@ -16,7 +16,7 @@ class QueueTable extends BaseController
 {
     protected $processStatusList = ['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted'];
 
-    private const QUEUE_VIEW_PERMISSIONS = [
+    private const array QUEUE_VIEW_PERMISSIONS = [
         'waitingqueue',
         'parkedqueue',
         'missedqueue',

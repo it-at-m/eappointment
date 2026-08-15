@@ -7,11 +7,11 @@ namespace BO\Slim\Middleware\Session;
  */
 class SessionHuman extends SessionContainer
 {
-    const MAX_RELOAD = 10;
+    const int MAX_RELOAD = 10;
 
-    const MAX_TIME = 1800;
+    const int MAX_TIME = 1800;
 
-    const MIN_TIME = 3;
+    const int MIN_TIME = 3;
 
     public function writeVerifySession($request, $origin = '')
     {

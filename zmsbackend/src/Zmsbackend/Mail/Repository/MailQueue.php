@@ -7,7 +7,7 @@ class MailQueue extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'mailqueue';
+    const string TABLE = 'mailqueue';
 
     const QUERY_DELETE = '
         DELETE mq,  mp

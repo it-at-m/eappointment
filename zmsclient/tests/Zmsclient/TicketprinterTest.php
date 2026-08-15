@@ -4,13 +4,13 @@ namespace BO\Zmsclient\Tests;
 
 class TicketprinterTest extends Base
 {
-    const HASH_COOKIE_NAME = 'Ticketprinter';
+    const string HASH_COOKIE_NAME = 'Ticketprinter';
 
-    const HOME_URL_COOKIE_NAME = 'Ticketprinter_Homeurl';
+    const string HOME_URL_COOKIE_NAME = 'Ticketprinter_Homeurl';
 
-    const HASH_TEST = '0058pfv918e8ipmbadj05sm1e7';
+    const string HASH_TEST = '0058pfv918e8ipmbadj05sm1e7';
 
-    const HOMEURL_TEST = 'https://service.berlin.de/terminvereinbarung/ticketprinter';
+    const string HOMEURL_TEST = 'https://service.berlin.de/terminvereinbarung/ticketprinter';
 
     /**
      * @runInSeparateProcess

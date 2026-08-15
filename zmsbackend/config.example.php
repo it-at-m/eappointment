@@ -53,11 +53,11 @@ class App extends \BO\Zmsbackend\Application
     const string APP_PATH = __DIR__;
     const string IDENTIFIER = ZMS_IDENTIFIER;
     const bool DEBUG = false;
-    const DB_ENABLE_WSREPSYNCWAIT = true;
-    const DB_DSN_READONLY = DSN_RO;
-    const DB_DSN_READWRITE = DSN_RW;
-    const DB_USERNAME = MYSQL_USER;
-    const DB_PASSWORD = MYSQL_PASSWORD;
+    const bool DB_ENABLE_WSREPSYNCWAIT = true;
+    const string DB_DSN_READONLY = DSN_RO;
+    const string DB_DSN_READWRITE = DSN_RW;
+    const string DB_USERNAME = MYSQL_USER;
+    const string DB_PASSWORD = MYSQL_PASSWORD;
     const TWIG_CACHE = ZMS_BACKEND_TWIG_CACHE;
     const string MODULE_NAME = ZMS_MODULE_NAME;
 }

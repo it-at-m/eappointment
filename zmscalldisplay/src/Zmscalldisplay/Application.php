@@ -71,13 +71,13 @@ class Application extends \BO\Slim\Application
 
     public static $http_curl_config = array();
 
-    const JSON_COMPRESS_LEVEL = 1;
+    const int JSON_COMPRESS_LEVEL = 1;
 
     /**
      * HTTP url for api
      */
-    const HTTP_BASE_URL = 'http://user:pass@host.tdl';
-    const SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
+    const string HTTP_BASE_URL = 'http://user:pass@host.tdl';
+    const string SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
 
      /**
      * signature key for url signature to save query paramter with hash

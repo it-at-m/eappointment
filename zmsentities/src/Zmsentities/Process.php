@@ -14,22 +14,22 @@ use BO\Zmsentities\Helper\Property;
 class Process extends Schema\Entity
 {
     public const string PRIMARY = 'id';
-    public const STATUS_FREE = 'free';
-    public const STATUS_RESERVED = 'reserved';
-    public const STATUS_CONFIRMED = 'confirmed';
-    public const STATUS_PRECONFIRMED = 'preconfirmed';
-    public const STATUS_QUEUED = 'queued';
-    public const STATUS_CALLED = 'called';
-    public const STATUS_PROCESSING = 'processing';
-    public const STATUS_PENDING = 'pending';
-    public const STATUS_FINISHED = 'finished';
-    public const STATUS_MISSED = 'missed';
-    public const STATUS_PARKED = 'parked';
-    public const STATUS_ARCHIVED = 'archived';
-    public const STATUS_DELETED = 'deleted';
-    public const STATUS_ANONYMIZED = 'anonymized';
-    public const STATUS_BLOCKED = 'blocked';
-    public const STATUS_CONFLICT = 'conflict';
+    public const string STATUS_FREE = 'free';
+    public const string STATUS_RESERVED = 'reserved';
+    public const string STATUS_CONFIRMED = 'confirmed';
+    public const string STATUS_PRECONFIRMED = 'preconfirmed';
+    public const string STATUS_QUEUED = 'queued';
+    public const string STATUS_CALLED = 'called';
+    public const string STATUS_PROCESSING = 'processing';
+    public const string STATUS_PENDING = 'pending';
+    public const string STATUS_FINISHED = 'finished';
+    public const string STATUS_MISSED = 'missed';
+    public const string STATUS_PARKED = 'parked';
+    public const string STATUS_ARCHIVED = 'archived';
+    public const string STATUS_DELETED = 'deleted';
+    public const string STATUS_ANONYMIZED = 'anonymized';
+    public const string STATUS_BLOCKED = 'blocked';
+    public const string STATUS_CONFLICT = 'conflict';
     public static $schema = "process.json";
     #[\Override]
     public function getDefaults()

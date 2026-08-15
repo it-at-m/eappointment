@@ -4,7 +4,7 @@ namespace BO\Zmsentities\Tests;
 
 class LinkTest extends EntityCommonTests
 {
-    const DEFAULT_TIME = '2015-11-18 11:55:00';
+    const string DEFAULT_TIME = '2015-11-18 11:55:00';
 
     public $entityclass = '\BO\Zmsentities\Link';
 

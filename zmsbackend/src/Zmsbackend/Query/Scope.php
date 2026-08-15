@@ -7,9 +7,9 @@ class Scope extends Base implements MappingInterface
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'standort';
+    const string TABLE = 'standort';
 
-    const QUERY_BY_DEPARTMENTID = 'SELECT
+    const string QUERY_BY_DEPARTMENTID = 'SELECT
             scope.`StandortID` AS id
         FROM `standort` scope
         WHERE

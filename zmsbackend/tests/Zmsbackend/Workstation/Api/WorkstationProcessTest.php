@@ -10,11 +10,11 @@ class WorkstationProcessTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "WorkstationProcess";
 
-    const PROCESS_ID = 11468;
+    const int PROCESS_ID = 11468;
 
-    const AUTHKEY = '7b41';
+    const string AUTHKEY = '7b41';
 
-    const SCOPE_ID = 143;
+    const int SCOPE_ID = 143;
 
     public function tearDown(): void
     {
