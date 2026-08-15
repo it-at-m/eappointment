@@ -9,13 +9,13 @@ class WorkstationProcessRemoveTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "WorkstationProcessRemove";
 
-    const PROCESS_ID = 10030;
+    const int PROCESS_ID = 10030;
 
-    const AUTHKEY = '1c56';
+    const string AUTHKEY = '1c56';
 
-    const CALLED_PROCESS_ID = 11468;
+    const int CALLED_PROCESS_ID = 11468;
 
-    const CALLED_AUTHKEY = '7b41';
+    const string CALLED_AUTHKEY = '7b41';
 
     public function testRequeueAndSkipToNextKeepsProcessOnWaitingListWithinCallCountMax()
     {

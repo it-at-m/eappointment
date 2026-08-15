@@ -10,7 +10,7 @@ class Closure extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'closures';
+    const string TABLE = 'closures';
 
     /**
      * No resolving required here

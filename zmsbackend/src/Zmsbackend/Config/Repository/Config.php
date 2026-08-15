@@ -7,20 +7,20 @@ class Config extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'config';
+    const string TABLE = 'config';
 
-    const QUERY_SELECT = '
+    const string QUERY_SELECT = '
         SELECT * FROM config
     ';
 
-    const QUERY_SELECT_PROPERTY =
+    const string QUERY_SELECT_PROPERTY =
             'SELECT
                 value
             FROM config
             WHERE name = ?
             ';
 
-    const QUERY_REPLACE_PROPERTY =
+    const string QUERY_REPLACE_PROPERTY =
         'REPLACE INTO config
             SET name  = :property, 
                 value = :value

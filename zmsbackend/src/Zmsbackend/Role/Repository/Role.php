@@ -7,7 +7,7 @@ class Role extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     /**
      * @var string TABLE mysql table reference
      */
-    const TABLE = 'role';
+    const string TABLE = 'role';
 
     #[\Override]
     public function getEntityMapping()

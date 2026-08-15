@@ -13,33 +13,33 @@ use DateTime;
  */
 class Log extends \BO\Zmsbackend\Base
 {
-    const PROCESS = 'buerger';
-    const MIGRATION = 'migration';
-    const ERROR = 'error';
+    const string PROCESS = 'buerger';
+    const string MIGRATION = 'migration';
+    const string ERROR = 'error';
 
-    const ACTION_MAIL_SUCCESS = 'E-Mail-Versand erfolgreich';
-    const ACTION_MAIL_FAIL = 'E-Mail-Versand ist fehlgeschlagen';
-    const ACTION_STATUS_CHANGE = 'Terminstatus wurde geändert';
-    const ACTION_SEND_REMINDER = 'Erinnerungsmail wurde gesendet';
-    const ACTION_REMOVED = 'Termin aus der Warteschlange entfernt';
-    const ACTION_CALLED = 'Termin wurde aufgerufen';
-    const ACTION_ARCHIVED = 'Termin wurde archiviert';
-    const ACTION_EDITED = 'Termin wurde geändert';
-    const ACTION_REDIRECTED = 'Termin wurde weitergeleitet';
-    const ACTION_NEW = 'Neuer Termin wurde erstellt';
-    const ACTION_DELETED = 'Termin wurde gelöscht';
-    const ACTION_CANCELED = 'Termin wurde abgesagt';
+    const string ACTION_MAIL_SUCCESS = 'E-Mail-Versand erfolgreich';
+    const string ACTION_MAIL_FAIL = 'E-Mail-Versand ist fehlgeschlagen';
+    const string ACTION_STATUS_CHANGE = 'Terminstatus wurde geändert';
+    const string ACTION_SEND_REMINDER = 'Erinnerungsmail wurde gesendet';
+    const string ACTION_REMOVED = 'Termin aus der Warteschlange entfernt';
+    const string ACTION_CALLED = 'Termin wurde aufgerufen';
+    const string ACTION_ARCHIVED = 'Termin wurde archiviert';
+    const string ACTION_EDITED = 'Termin wurde geändert';
+    const string ACTION_REDIRECTED = 'Termin wurde weitergeleitet';
+    const string ACTION_NEW = 'Neuer Termin wurde erstellt';
+    const string ACTION_DELETED = 'Termin wurde gelöscht';
+    const string ACTION_CANCELED = 'Termin wurde abgesagt';
 
-    private const FULLTEXT_SEARCH_COLUMNS = 'citizen_name, services, scope_name, citizen_email';
+    private const string FULLTEXT_SEARCH_COLUMNS = 'citizen_name, services, scope_name, citizen_email';
 
-    private const TEXT_SEARCH_COLUMNS = [
+    private const array TEXT_SEARCH_COLUMNS = [
         'citizen_name',
         'services',
         'scope_name',
         'citizen_email',
     ];
 
-    private const INDEXED_COLUMNS = [
+    private const array INDEXED_COLUMNS = [
         'action',
         'display_number',
         'queue_number',
@@ -55,7 +55,7 @@ class Log extends \BO\Zmsbackend\Base
         'process_amendment',
     ];
 
-    private const ACTION_LABEL_TO_CODE = [
+    private const array ACTION_LABEL_TO_CODE = [
         self::ACTION_MAIL_SUCCESS => 'mail_success',
         self::ACTION_MAIL_FAIL => 'mail_fail',
         self::ACTION_STATUS_CHANGE => 'status_changed',

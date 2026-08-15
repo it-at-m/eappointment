@@ -32,7 +32,7 @@ class App extends \BO\Zmsmessaging\Application
     /**
      * HTTP access for api
      */
-    const HTTP_BASE_URL = ZMS_API_URL;
+    const string HTTP_BASE_URL = ZMS_API_URL;
 
     const string IDENTIFIER = ZMS_IDENTIFIER;
     /**

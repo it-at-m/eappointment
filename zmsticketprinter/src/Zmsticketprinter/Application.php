@@ -35,7 +35,7 @@ class Application extends \BO\Slim\Application
     public static ?CacheInterface $cache = null;
 
     public const bool DEBUG = false;
-    const TWIG_CACHE = ZMS_TICKETPRINTER_TWIG_CACHE;
+    const bool|string TWIG_CACHE = ZMS_TICKETPRINTER_TWIG_CACHE;
 
     /**
      * language preferences
@@ -72,15 +72,15 @@ class Application extends \BO\Slim\Application
 
     public static $http_curl_config = array();
 
-    public const JSON_COMPRESS_LEVEL = 1;
+    public const int JSON_COMPRESS_LEVEL = 1;
 
     /**
      * HTTP url for api
      */
-    public const HTTP_BASE_URL = 'http://user:pass@host.tdl';
-    public const SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
+    public const string HTTP_BASE_URL = 'http://user:pass@host.tdl';
+    public const string SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
 
-    public const CLIENTKEY = '';
+    public const string CLIENTKEY = '';
 
     public static function initialize(): void
     {

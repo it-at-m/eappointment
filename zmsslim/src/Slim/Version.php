@@ -4,7 +4,7 @@ namespace BO\Slim;
 
 class Version
 {
-    const UNKNOWN = 'version.unknown';
+    const string UNKNOWN = 'version.unknown';
 
     public static function getString()
     {

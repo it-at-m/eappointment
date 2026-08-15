@@ -7,7 +7,7 @@ class Mimepart extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'mailpart';
+    const string TABLE = 'mailpart';
 
     /**
      * No resolving required here

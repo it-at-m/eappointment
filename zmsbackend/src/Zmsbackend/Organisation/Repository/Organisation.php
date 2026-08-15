@@ -7,7 +7,7 @@ class Organisation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'organisation';
+    const string TABLE = 'organisation';
 
     #[\Override]
     public function getEntityMapping()

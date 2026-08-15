@@ -7,7 +7,7 @@ class Cluster extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'standortcluster';
+    const string TABLE = 'standortcluster';
 
     public function getQueryWriteAssignedScopes()
     {

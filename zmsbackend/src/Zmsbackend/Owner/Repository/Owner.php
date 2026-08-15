@@ -7,7 +7,7 @@ class Owner extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Ma
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'kunde';
+    const string TABLE = 'kunde';
 
     #[\Override]
     public function getEntityMapping()

@@ -7,9 +7,9 @@ class Preferences extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'preferences';
+    const string TABLE = 'preferences';
 
-    const QUERY_SELECT_PROPERTY =
+    const string QUERY_SELECT_PROPERTY =
         'SELECT
                 value
             FROM preferences
@@ -20,7 +20,7 @@ class Preferences extends \BO\Zmsbackend\Query\Base
                 AND name = :name
             ';
 
-    const QUERY_SELECT_TIMESTAMP =
+    const string QUERY_SELECT_TIMESTAMP =
         'SELECT
                 updateTimestamp
             FROM preferences
@@ -31,7 +31,7 @@ class Preferences extends \BO\Zmsbackend\Query\Base
                 AND name = :name
             ';
 
-    const QUERY_REPLACE_PROPERTY =
+    const string QUERY_REPLACE_PROPERTY =
         'REPLACE INTO preferences
             SET 
                 entity = :entityName,
@@ -41,7 +41,7 @@ class Preferences extends \BO\Zmsbackend\Query\Base
                 value = :value
             ';
 
-    const QUERY_DELETE_PROPERTY =
+    const string QUERY_DELETE_PROPERTY =
         'DELETE FROM preferences
             WHERE
                 entity = :entityName

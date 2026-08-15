@@ -16,9 +16,9 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      *     * @var String TABLE mysql table reference
      */
-    const TABLE = 'buerger';
+    const string TABLE = 'buerger';
 
-    const QUERY_DEREFERENCED = "UPDATE `buerger` process LEFT JOIN `standort` s USING(StandortID)
+    const string QUERY_DEREFERENCED = "UPDATE `buerger` process LEFT JOIN `standort` s USING(StandortID)
         SET
             process.Anmerkung = ?,
             process.custom_text_field = ?,
@@ -42,7 +42,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
             OR process.istFolgeterminvon = ?
         ";
 
-    const QUERY_CANCELED = "
+    const string QUERY_CANCELED = "
         UPDATE `buerger` process LEFT JOIN `standort` s USING(StandortID)
             SET
                 process.Anmerkung = CONCAT(
@@ -62,31 +62,31 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
                 OR process.istFolgeterminvon = :processId
         ";
 
-    const QUERY_DELETE = "DELETE FROM `buerger`
+    const string QUERY_DELETE = "DELETE FROM `buerger`
         WHERE
             BuergerID = ?
             OR istFolgeterminvon = ?
         ";
 
-    const QUERY_REASSIGN_PROCESS_CREDENTIALS = "UPDATE `buerger` process
+    const string QUERY_REASSIGN_PROCESS_CREDENTIALS = "UPDATE `buerger` process
        SET 
             process.BuergerID = :newProcessId, 
             process.absagecode = :newAuthKey
         WHERE BuergerID = :processId
     ";
 
-    const QUERY_REASSIGN_PROCESS_REQUESTS = "UPDATE `buergeranliegen` requests
+    const string QUERY_REASSIGN_PROCESS_REQUESTS = "UPDATE `buergeranliegen` requests
         SET 
             requests.BuergerID = :newProcessId
         WHERE BuergerID = :processId
     ";
 
-    const QUERY_REASSIGN_FOLLWING_PROCESS = "UPDATE `buerger` process
+    const string QUERY_REASSIGN_FOLLWING_PROCESS = "UPDATE `buerger` process
         SET process.istFolgeterminvon = :newProcessId
         WHERE istFolgeterminvon = :processId
     ";
 
-    const QUERY_UPDATE_FOLLOWING_PROCESS = "UPDATE buerger 
+    const string QUERY_UPDATE_FOLLOWING_PROCESS = "UPDATE buerger 
         SET vorlaeufigeBuchung = :reserved 
         WHERE istFolgeterminvon = :processID
         ";

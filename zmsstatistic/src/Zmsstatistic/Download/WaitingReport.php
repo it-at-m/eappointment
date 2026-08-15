@@ -17,9 +17,9 @@ use Psr\Http\Message\ResponseInterface;
 
 class WaitingReport extends Base
 {
-    private const CUSTOMER_TYPE_GESAMT = 'gesamt';
-    private const CUSTOMER_TYPE_TERMIN = 'termin';
-    private const CUSTOMER_TYPE_SPONTAN = 'spontan';
+    private const string CUSTOMER_TYPE_GESAMT = 'gesamt';
+    private const string CUSTOMER_TYPE_TERMIN = 'termin';
+    private const string CUSTOMER_TYPE_SPONTAN = 'spontan';
 
     protected $reportPartsGesamt = [
         'waitingtime_total' => 'Durchschnittliche Wartezeit in Min. (Gesamt)',

@@ -11,7 +11,7 @@ class ScopeCalldisplayImageDataUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ScopeCalldisplayImageDataUpdate";
 
-    const SCOPE_ID = 141;
+    const int SCOPE_ID = 141;
 
     public function testRendering()
     {
