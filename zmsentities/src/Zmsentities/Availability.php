@@ -14,7 +14,7 @@ namespace BO\Zmsentities;
  */
 class Availability extends Schema\Entity
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "availability.json";
 

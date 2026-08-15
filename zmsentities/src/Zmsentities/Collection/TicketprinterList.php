@@ -7,7 +7,7 @@ namespace BO\Zmsentities\Collection;
  */
 class TicketprinterList extends Base
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Ticketprinter';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Ticketprinter';
 
     public function getEntityByHash($hash)
     {

@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Day extends Schema\Entity
 {
-    public const PRIMARY = 'day';
+    public const string PRIMARY = 'day';
 
     public const FULL = 'full';
 

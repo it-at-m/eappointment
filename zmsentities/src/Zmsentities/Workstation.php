@@ -16,7 +16,7 @@ use BO\Zmsentities\Helper\Property;
  */
 class Workstation extends Schema\Entity
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "workstation.json";
 

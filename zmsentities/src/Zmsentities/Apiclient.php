@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Apiclient extends Schema\Entity
 {
-    public const PRIMARY = 'clientKey';
+    public const string PRIMARY = 'clientKey';
 
     public static $schema = "apiclient.json";
 

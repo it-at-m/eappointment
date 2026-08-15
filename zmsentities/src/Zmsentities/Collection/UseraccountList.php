@@ -7,7 +7,7 @@ namespace BO\Zmsentities\Collection;
  */
 class UseraccountList extends Base
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\UserAccount';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\UserAccount';
 
     public function withoutDublicates()
     {

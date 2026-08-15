@@ -13,7 +13,7 @@ use BO\Zmsentities\Helper\Property;
  */
 class Process extends Schema\Entity
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
     public const STATUS_FREE = 'free';
     public const STATUS_RESERVED = 'reserved';
     public const STATUS_CONFIRMED = 'confirmed';

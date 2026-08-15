@@ -9,7 +9,7 @@ use BO\Zmsentities\Day;
  */
 class DayList extends Base implements JsonUnindexed
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Day';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Day';
 
     /**
      * ATTENTION: Performance critical, keep highly optimized

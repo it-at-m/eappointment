@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Cluster extends Schema\Entity implements Useraccount\AccessInterface
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "cluster.json";
 

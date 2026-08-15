@@ -7,7 +7,7 @@ namespace BO\Zmsentities\Collection;
  */
 class OwnerList extends Base
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Owner';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Owner';
 
     public function getOrganisationsByOwnerId($entityId)
     {

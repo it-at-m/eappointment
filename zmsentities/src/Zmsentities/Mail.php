@@ -13,7 +13,7 @@ use BO\Zmsentities\Helper\Property;
  */
 class Mail extends Schema\Entity
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "mail.json";
 

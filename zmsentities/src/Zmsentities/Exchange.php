@@ -9,7 +9,7 @@ namespace BO\Zmsentities;
  */
 class Exchange extends Schema\Entity
 {
-    public const PRIMARY = 'firstDay';
+    public const string PRIMARY = 'firstDay';
 
     /**
      * Statistik CASE labels (must match warehouse SQL in ExchangeRequest* queries).

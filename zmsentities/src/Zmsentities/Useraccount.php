@@ -11,7 +11,7 @@ use BO\Zmsentities\Helper\Property;
  */
 class Useraccount extends Schema\Entity
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "useraccount.json";
 

@@ -10,7 +10,7 @@ use BO\Zmsentities\Scope;
  */
 class ScopeList extends Base
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Scope';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Scope';
 
     protected $slotsByID = [];
 

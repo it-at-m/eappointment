@@ -7,7 +7,7 @@ namespace BO\Zmsentities\Collection;
  */
 class ClosureList extends Base
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\Closure';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Closure';
 
     public function hasEntityByDate($date)
     {

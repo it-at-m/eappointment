@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Month extends Schema\Entity
 {
-    public const PRIMARY = 'month';
+    public const string PRIMARY = 'month';
 
     public $calendarDayList;
 
