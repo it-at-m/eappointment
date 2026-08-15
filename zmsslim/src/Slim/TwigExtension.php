@@ -29,7 +29,7 @@ class TwigExtension extends AbstractExtension
         $this->container = $container;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return 'boslimExtension';
     }
@@ -75,12 +75,12 @@ class TwigExtension extends AbstractExtension
         return $language['name'] ?? null;
     }
 
-    public static function isNumeric($var)
+    public static function isNumeric($var): bool
     {
         return is_numeric($var);
     }
 
-    public static function getNow()
+    public static function getNow(): \DateTimeInterface
     {
         if (\App::$now instanceof \DateTimeInterface) {
             return \App::$now;
@@ -88,12 +88,15 @@ class TwigExtension extends AbstractExtension
         return new \DateTimeImmutable();
     }
 
-    public static function getSystemStatus($env)
+    /**
+     * @return false|string
+     */
+    public static function getSystemStatus($env): string|false
     {
         return getenv($env);
     }
 
-    public function toTextFormat($string)
+    public function toTextFormat($string): string
     {
         $string = \strip_tags($string, '<br />');
         $temp = str_replace(array("<br />"), "\n", $string);
@@ -108,7 +111,11 @@ class TwigExtension extends AbstractExtension
         return addSlashes($result);
     }
 
-    public function formatDateTime($dateString)
+    /**
+     * @return (false|float|int|mixed|string)[]
+     *
+     */
+    public function formatDateTime($dateString): array
     {
         $dateTime = new \DateTimeImmutable(
             $dateString->year . '-' . $dateString->month . '-' . $dateString->day,
@@ -128,7 +135,11 @@ class TwigExtension extends AbstractExtension
         return $formatDate;
     }
 
-    public function currentRoute($lang = null)
+    /**
+     * @return (array|mixed|string)[]
+     *
+     */
+    public function currentRoute($lang = null): array
     {
         $route = array(
             'name' => 'noroute',
@@ -156,7 +167,7 @@ class TwigExtension extends AbstractExtension
         return (\App::MULTILANGUAGE) ? \App::$language->getCurrentLanguage() : 'de';
     }
 
-    public function currentLocale()
+    public function currentLocale(): string
     {
         $locale = 'de_DE';
         if (\App::MULTILANGUAGE) {
@@ -182,7 +193,7 @@ class TwigExtension extends AbstractExtension
         return Helper::proxySanitizeUri($url);
     }
 
-    public function csvProperty($list, $property)
+    public function csvProperty($list, $property): string
     {
         $propertylist = array();
         foreach ($list as $item) {
@@ -193,7 +204,11 @@ class TwigExtension extends AbstractExtension
         return implode(',', array_unique($propertylist));
     }
 
-    public function azPrefixList($list, $property)
+    /**
+     * @return (array|mixed)[][]
+     *
+     */
+    public function azPrefixList($list, $property): array
     {
         $azList = array();
         foreach ($list as $item) {
@@ -213,7 +228,11 @@ class TwigExtension extends AbstractExtension
         return $azList;
     }
 
-    public function azPrefixListCollator($list, $property, $locale)
+    /**
+     * @return (array|mixed)[][]
+     *
+     */
+    public function azPrefixListCollator($list, $property, $locale): array
     {
         $collator = collator_create($locale);
         $collator->setAttribute(\Collator::QUATERNARY, \Collator::ON);
@@ -243,7 +262,7 @@ class TwigExtension extends AbstractExtension
         return $azList;
     }
 
-    public function isValueInArray($value, $params)
+    public function isValueInArray($value, $params): bool
     {
         $paramsArr = explode(',', $params);
         if (in_array($value, $paramsArr)) {
@@ -252,7 +271,7 @@ class TwigExtension extends AbstractExtension
         return false;
     }
 
-    public static function remoteInclude($uri)
+    public static function remoteInclude($uri): string
     {
         $prepend = '';
         $append = '';
@@ -282,7 +301,7 @@ class TwigExtension extends AbstractExtension
         }
     }
 
-    public function getEsiFromPath($path, $locale = false)
+    public function getEsiFromPath($path, $locale = false): string
     {
         $localePath = ($locale && 'de' != $locale) ? '/' . $locale : '';
         return \App::$esiBaseUrl . $localePath . \App::$$path;
@@ -300,7 +319,7 @@ class TwigExtension extends AbstractExtension
         return $hostname;
     }
 
-    protected static function toSortableString($string)
+    protected static function toSortableString(string $string): string
     {
         $string = strtr($string, array(
             'Ä' => 'Ae',
@@ -315,7 +334,7 @@ class TwigExtension extends AbstractExtension
         return $string;
     }
 
-    protected static function sortByName($left, $right)
+    protected static function sortByName($left, $right): int
     {
         return strcmp(
             self::toSortableString(strtolower($left['name'])),
@@ -323,7 +342,7 @@ class TwigExtension extends AbstractExtension
         );
     }
 
-    protected static function sortFirstChar($string)
+    protected static function sortFirstChar($string): string
     {
         $firstChar = mb_substr($string, 0, 1);
         $firstChar = mb_strtoupper($firstChar);
@@ -331,7 +350,7 @@ class TwigExtension extends AbstractExtension
         return $firstChar;
     }
 
-    public function dumpAppProfiler()
+    public function dumpAppProfiler(): string
     {
         $output = '<h2>App Profiles</h2>'
             . ' <p>For debugging: This log contains runtime information.
@@ -346,7 +365,7 @@ class TwigExtension extends AbstractExtension
         return $output . '</ul>';
     }
 
-    public function kindOfPayment($code)
+    public function kindOfPayment($code): string
     {
         $result = '';
         if ($code == 0) {

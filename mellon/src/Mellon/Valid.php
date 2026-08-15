@@ -65,7 +65,7 @@ class Valid extends \BO\Mellon\Parameter
         return $this;
     }
 
-    protected function setFailureMessage($message)
+    protected function setFailureMessage(string $message): static
     {
         if (null === $this->messages) {
             $this->messages = new Failure\MessageList();
@@ -317,7 +317,7 @@ class Valid extends \BO\Mellon\Parameter
         return $status;
     }
 
-    public function getUnvalidated()
+    public function getUnvalidated(): string|null
     {
         return $this->value;
     }

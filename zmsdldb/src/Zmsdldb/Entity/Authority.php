@@ -19,7 +19,7 @@ class Authority extends Base
         }
     }
 
-    public static function create($name)
+    public static function create($name): self
     {
         $data = array(
             'name' => $name,
@@ -127,12 +127,12 @@ class Authority extends Base
         return false;
     }
 
-    public function clearLocations()
+    public function clearLocations(): void
     {
         $this['locations'] = new \BO\Zmsdldb\Collection\Locations();
     }
 
-    public function addLocation(\BO\Zmsdldb\Entity\Location $location)
+    public function addLocation(\BO\Zmsdldb\Entity\Location $location): void
     {
         $this['locations'][$location['id']] = $location;
     }

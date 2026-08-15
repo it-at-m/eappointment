@@ -8,6 +8,10 @@ class Link extends Schema\Entity
 
     public static $schema = "link.json";
 
+    /**
+     * @return (bool|int|string)[]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {

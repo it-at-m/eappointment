@@ -23,8 +23,13 @@ class MailQueue extends \BO\Zmsbackend\Query\Base
         WHERE mq.id IN (?)
     ';
 
-    /** @psalm-api */
-    public function getEntityMapping()
+    /**
+     * @psalm-api
+     *
+     * @return string[]
+     *
+     */
+    public function getEntityMapping(): array
     {
         return [
             'id' => 'mailQueue.id',
@@ -38,19 +43,19 @@ class MailQueue extends \BO\Zmsbackend\Query\Base
         ];
     }
 
-    public function addConditionItemId($itemId)
+    public function addConditionItemId($itemId): static
     {
         $this->query->where('mailQueue.id', '=', $itemId);
         return $this;
     }
 
-    public function addOrderBy($parameter, $order = 'ASC')
+    public function addOrderBy(string $parameter, $order = 'ASC'): static
     {
         $this->query->orderBy('mailQueue.' . $parameter, $order);
         return $this;
     }
 
-    public function addWhereIn($column, array $itemIds)
+    public function addWhereIn(string $column, array $itemIds): static
     {
         if (!empty($itemIds)) {
             $this->query->where($column, 'IN', $itemIds);
@@ -58,7 +63,7 @@ class MailQueue extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function selectFields(array $fields)
+    public function selectFields(array $fields): static
     {
         $this->query->select($fields);
         return $this;

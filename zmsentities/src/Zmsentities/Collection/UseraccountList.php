@@ -9,7 +9,7 @@ class UseraccountList extends Base
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\UserAccount';
 
-    public function withoutDublicates()
+    public function withoutDublicates(): self
     {
         $collection = new self();
         foreach ($this as $useraccount) {
@@ -20,7 +20,7 @@ class UseraccountList extends Base
         return $collection;
     }
 
-    public function withAccessByWorkstation($workstation)
+    public function withAccessByWorkstation($workstation): self
     {
         $collection = new self();
         $departmentList = $workstation->getDepartmentList();

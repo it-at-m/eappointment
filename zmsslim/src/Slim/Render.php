@@ -38,7 +38,7 @@ class Render
     /**
      * @return ResponseInterface
      */
-    public static function withHtml(ResponseInterface $response, $template, $parameters = array(), $status = 200)
+    public static function withHtml(ResponseInterface $response, $template, array $parameters = array(), $status = 200)
     {
         Profiler::add("Controller");
         $response  = $response->withStatus($status);
@@ -65,7 +65,7 @@ class Render
         return self::$response;
     }
 
-    public static function withXml(ResponseInterface $response, $data, $status = 200)
+    public static function withXml(ResponseInterface $response, $data, $status = 200): ResponseInterface
     {
         Profiler::add("Controller");
         $response = $response->withStatus($status);
@@ -75,7 +75,7 @@ class Render
         return $response;
     }
 
-    public static function withJson(ResponseInterface $response, $data, $status = 200)
+    public static function withJson(ResponseInterface $response, $data, $status = 200): ResponseInterface
     {
         Profiler::add("Controller");
         $response = $response->withStatus($status);
@@ -106,13 +106,16 @@ class Render
     /**
      * Add `Last-Modified` header to PSR7 response object
      *
-     * @param  ResponseInterface $response A PSR7 response object
-     * @param  int|string        $time     A UNIX timestamp or a valid `strtotime()` string
+     * @param ResponseInterface $response A PSR7 response object
+     * @param int|string        $time     A UNIX timestamp or a valid `strtotime()` string
+     * @param int|string $date
      *
      * @return ResponseInterface           A new PSR7 response object with `Last-Modified` header
+     *
      * @throws InvalidArgumentException if the last modified date cannot be parsed
+     *
      */
-    public static function withLastModified(ResponseInterface $response, $date, $expires = '+5 minutes')
+    public static function withLastModified(ResponseInterface $response, string|int $date, string $expires = '+5 minutes')
     {
         return self::getCachableResponse($response, $date, $expires);
     }
@@ -164,10 +167,10 @@ class Render
      * @param array $arguments parameters in the route path
      * @param array $parameter parameters to append with "?"
      * @param Int $statuscode see an HTTP reference
-     *
+
      * \Psr\Http\Message\ResponseInterface
      */
-    public static function redirect($route_name, $arguments, $parameter = null, $statuscode = 302)
+    public static function redirect($route_name, $arguments, $parameter = null, $statuscode = 302): Response
     {
         Profiler::add("Controller");
 

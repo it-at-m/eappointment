@@ -18,6 +18,9 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
         SELECT OeffnungszeitID FROM oeffnungszeit WHERE OeffnungszeitID = :availabilityId FOR UPDATE
     ';
 
+    /**
+     * @return void
+     */
     #[\Override]
     public function addRequiredJoins()
     {
@@ -29,6 +32,10 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
          );
     }
 
+    /**
+     * @return (\BO\Zmsbackend\Query\Builder\Expression|string)[]
+     *
+     */
     #[\Override]
     public function getEntityMapping($type = null)
     {
@@ -83,6 +90,10 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
         return $mapping;
     }
 
+    /**
+     * @return \BO\Zmsbackend\Query\Builder\Expression[]
+     *
+     */
     #[\Override]
     public function getReferenceMapping()
     {
@@ -91,19 +102,19 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
         ];
     }
 
-    public function addConditionAvailabilityId($availabilityId)
+    public function addConditionAvailabilityId(int|string $availabilityId): static
     {
         $this->query->where('availability.OeffnungszeitID', '=', $availabilityId);
         return $this;
     }
 
-    public function addConditionScopeId($scopeId)
+    public function addConditionScopeId($scopeId): static
     {
         $this->query->where('availabilityscope.StandortID', '=', $scopeId);
         return $this;
     }
 
-    public function addConditionAppointmentHours()
+    public function addConditionAppointmentHours(): static
     {
         $this->query
             ->where('availability.Terminanfangszeit', '!=', '00:00:00')
@@ -111,7 +122,7 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
         return $this;
     }
 
-    public function addConditionOpeningHours()
+    public function addConditionOpeningHours(): static
     {
         $this->query
             ->where('availability.Anfangszeit', '!=', '00:00:00')
@@ -124,7 +135,7 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
      *
      * @psalm-api
      */
-    public function addConditionDoubleTypes()
+    public function addConditionDoubleTypes(): static
     {
         $this->query
             ->where('availability.Terminanfangszeit', '!=', '00:00:00')
@@ -134,7 +145,7 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
         return $this;
     }
 
-    public function addConditionSkipOld(\DateTimeInterface $dateTime)
+    public function addConditionSkipOld(\DateTimeInterface $dateTime): static
     {
         $date = $dateTime->format('Y-m-d');
         $this->query
@@ -147,7 +158,7 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
      *
      * @psalm-api
      */
-    public function addConditionOnlyOld(\DateTimeInterface $dateTime)
+    public function addConditionOnlyOld(\DateTimeInterface $dateTime): static
     {
         $date = $dateTime->format('Y-m-d');
         $this->query
@@ -157,9 +168,8 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
 
    /**
      * Identify availabilities between two dates
-     *
      */
-    public function addConditionTimeframe(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
+    public function addConditionTimeframe(\DateTimeInterface $startDate, \DateTimeInterface $endDate): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $condition) use ($startDate, $endDate) {
             $condition
@@ -169,7 +179,7 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
         return $this;
     }
 
-    public function addConditionDate(\DateTimeInterface $dateTime)
+    public function addConditionDate(\DateTimeInterface $dateTime): static
     {
         $date = $dateTime->format('Y-m-d');
         $this->query
@@ -207,7 +217,7 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
         return $this;
     }
 
-    public function addConditionAppointmentTime(\DateTimeInterface $dateTime)
+    public function addConditionAppointmentTime(\DateTimeInterface $dateTime): static
     {
         $time = $dateTime->format('H:i:s');
         $this->query->where("availability.Terminanfangszeit", '<=', $time);
@@ -216,7 +226,11 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Availability $entity)
+    /**
+     * @return (int|mixed|string)[]
+     *
+     */
+    public function reverseEntityMapping(\BO\Zmsentities\Availability $entity): array
     {
         $data = array();
         $data['StandortID'] = $entity->scope['id'];
@@ -267,7 +281,7 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
             return $data;
     }
 
-    public static function getJoinExpression($process, $availability)
+    public static function getJoinExpression(string $process, string $availability): \BO\Zmsbackend\Query\Builder\Expression
     {
         // UNIX_TIMESTAMP is relative here, no dependency to TIMEZONE
         return self::expression("

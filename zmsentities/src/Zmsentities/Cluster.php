@@ -8,6 +8,10 @@ class Cluster extends Schema\Entity implements Useraccount\AccessInterface
 
     public static $schema = "cluster.json";
 
+    /**
+     * @return Collection\ScopeList[]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -34,6 +38,9 @@ class Cluster extends Schema\Entity implements Useraccount\AccessInterface
         return $workstationCount;
     }
 
+    /**
+     * @return bool
+     */
     public function hasAccess(Useraccount $useraccount)
     {
         if ($useraccount->hasPermissions(['superuser'])) {

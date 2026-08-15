@@ -17,6 +17,10 @@ class Closure extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
      */
     protected $resolveLevel = 0;
 
+    /**
+     * @return string[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -30,8 +34,10 @@ class Closure extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         ];
     }
 
-    /** @psalm-api */
-    public function addConditionDate(DateTime $date)
+    /**
+     * @psalm-api
+     */
+    public function addConditionDate(DateTime $date): static
     {
         $this->query->where('closure.year', '=', $date->format('Y'));
         $this->query->where('closure.month', '=', $date->format('m'));
@@ -39,7 +45,7 @@ class Closure extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionScopeId($scopeId)
+    public function addConditionScopeId(int $scopeId): static
     {
         $this->query->where('closure.StandortID', '=', $scopeId);
         return $this;
@@ -74,8 +80,10 @@ class Closure extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    /** @psalm-api */
-    public function addConditionDateRange(\DateTimeInterface $from, \DateTimeInterface $until)
+    /**
+     * @psalm-api
+     */
+    public function addConditionDateRange(\DateTimeInterface $from, \DateTimeInterface $until): static
     {
         $dateExpr = self::expression(
             "DATE(CONCAT(closure.year,'-',LPAD(closure.month,2,'0'),'-',LPAD(closure.day,2,'0')))"
@@ -85,7 +93,7 @@ class Closure extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addSelectVirtualDate()
+    public function addSelectVirtualDate(): static
     {
         $this->query->select([
             $this->getPrefixed('date') => self::expression(
@@ -95,7 +103,7 @@ class Closure extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionId($id)
+    public function addConditionId($id): static
     {
         $this->query->where('closure.id', '=', $id);
         return $this;

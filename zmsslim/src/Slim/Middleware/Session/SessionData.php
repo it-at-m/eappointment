@@ -53,12 +53,15 @@ class SessionData implements SessionInterface
         return $instance;
     }
 
-    public function writeData()
+    public function writeData(): void
     {
         session_write_close();
         $this->isLocked = true;
     }
 
+    /**
+     * @return void
+     */
     #[\Override]
     public function setGroup(array $group, $clear)
     {
@@ -75,10 +78,13 @@ class SessionData implements SessionInterface
     }
 
     /**
-     *
      * @SuppressWarnings(Superglobals)
      *
      * @return array
+     *
+     * @param (int|string) $key
+     * @param (int|string)|null $groupIndex
+     *
      */
     #[\Override]
     public function set($key, $value, $groupIndex = null)
@@ -117,12 +123,15 @@ class SessionData implements SessionInterface
         return $sessionContent;
     }
 
-    public function setEntityClass($entityClass)
+    public function setEntityClass(object $entityClass): static
     {
         $this->entityClass = $entityClass;
         return $this;
     }
 
+    /**
+     * @return void
+     */
     #[\Override]
     public function remove($key, $groupIndex = null)
     {
@@ -134,10 +143,12 @@ class SessionData implements SessionInterface
     }
 
     /**
-     *
      * @SuppressWarnings(Superglobals)
      *
      * @return self
+     *
+     * @param (int|string)|null $groupIndex
+     *
      */
     #[\Override]
     public function clearGroup($groupIndex = null)
@@ -179,6 +190,9 @@ class SessionData implements SessionInterface
         }
     }
 
+    /**
+     * @return bool|null
+     */
     #[\Override]
     public function has($key, $groupIndex = null)
     {
@@ -191,6 +205,9 @@ class SessionData implements SessionInterface
         }
     }
 
+    /**
+     * @return bool
+     */
     #[\Override]
     public function isEmpty()
     {

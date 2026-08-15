@@ -46,7 +46,7 @@ class WorkstationLogin extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    public static function getLoggedInWorkstation($request, $entity, $resolveReferences)
+    public static function getLoggedInWorkstation(\Psr\Http\Message\RequestInterface $request, \BO\Zmsentities\Useraccount $entity, $resolveReferences)
     {
         \BO\Zmsbackend\Helper\UserAuth::testUseraccountExists($entity->getId());
         $useraccount = \BO\Zmsbackend\Helper\UserAuth::getVerifiedUseraccount($entity);
@@ -75,6 +75,9 @@ class WorkstationLogin extends \BO\Zmsbackend\Api\BaseController
         return $workstation;
     }
 
+    /**
+     * @return void
+     */
     public static function testLoginHash($workstation)
     {
         $useraccount = $workstation->getUseraccount();

@@ -88,7 +88,7 @@ class ScopeAvailabilityMonth extends BaseController
         );
     }
 
-    protected function getAvailabilityList($scope, $startDate, $endDate)
+    protected function getAvailabilityList(\BO\Zmsentities\Schema\Entity $scope, $startDate, $endDate)
     {
         try {
             $availabilityList = \App::$http

@@ -35,7 +35,7 @@ class MailTemplateProvider
         return $this->templates;
     }
 
-    protected function loadTemplates()
+    protected function loadTemplates(): void
     {
 
         $this->templates = array(

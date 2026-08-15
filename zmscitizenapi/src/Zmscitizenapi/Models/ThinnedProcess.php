@@ -107,6 +107,9 @@ class ThinnedProcess extends Entity implements JsonSerializable
         return $this->icsContent;
     }
 
+    /**
+     * @return void
+     */
     private function ensureValid()
     {
         if (!$this->testValid()) {
