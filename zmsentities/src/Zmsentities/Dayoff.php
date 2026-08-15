@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Dayoff extends Schema\Entity
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "dayoff.json";
 

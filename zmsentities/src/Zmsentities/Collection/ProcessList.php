@@ -16,7 +16,7 @@ use BO\Zmsentities\Process;
  */
 class ProcessList extends Base
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Process';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Process';
 
     public function toProcessListByTime($format = null)
     {

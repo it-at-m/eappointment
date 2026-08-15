@@ -7,7 +7,7 @@ namespace BO\Zmsentities\Collection;
  */
 class ProviderList extends Base
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Provider';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Provider';
 
     public function hasProvider($providerIdCsv)
     {

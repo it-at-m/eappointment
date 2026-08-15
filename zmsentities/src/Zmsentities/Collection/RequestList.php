@@ -9,7 +9,7 @@ use BO\Zmsentities\Helper\Property;
  */
 class RequestList extends Base
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Request';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Request';
 
     public function hasRequests($requestIdCsv)
     {

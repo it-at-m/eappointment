@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Log extends Schema\Entity
 {
-    public const PRIMARY = 'reference';
+    public const string PRIMARY = 'reference';
 
     public const ACTION_MAIL_SUCCESS = 'E-Mail-Versand erfolgreich';
     public const ACTION_MAIL_FAIL = 'E-Mail-Versand ist fehlgeschlagen';

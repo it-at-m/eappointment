@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Source extends Schema\Entity
 {
-    public const PRIMARY = 'source';
+    public const string PRIMARY = 'source';
 
     public static $schema = 'source.json';
 

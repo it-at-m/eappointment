@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Provider extends Schema\Entity
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "provider.json";
 

@@ -10,7 +10,7 @@ namespace BO\Zmsentities\Collection;
  */
 class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Queue';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Queue';
 
     public const FAKE_WAITINGNUMBER = -1;
 

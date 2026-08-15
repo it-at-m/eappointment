@@ -17,7 +17,7 @@ namespace BO\Zmsentities;
  */
 class Session extends Schema\Entity
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "session.json";
 

@@ -7,5 +7,5 @@ namespace BO\Zmsentities\Collection;
  */
 class MonthList extends Base
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Month';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Month';
 }

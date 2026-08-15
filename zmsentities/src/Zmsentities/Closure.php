@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Closure extends Schema\Entity
 {
-    const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "closure.json";
 

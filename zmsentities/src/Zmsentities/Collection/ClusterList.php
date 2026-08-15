@@ -7,7 +7,7 @@ namespace BO\Zmsentities\Collection;
  */
 class ClusterList extends Base
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Cluster';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Cluster';
 
     public function hasScope($scopeId)
     {

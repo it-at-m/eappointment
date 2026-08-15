@@ -24,7 +24,7 @@ use DateTimeInterface;
  */
 class EventLog extends Schema\Entity
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "eventlog.json";
 
