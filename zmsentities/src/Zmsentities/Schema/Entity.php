@@ -16,6 +16,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * primary id for entity
      *
+     * @var string
      */
     public const string PRIMARY = 'id';
 

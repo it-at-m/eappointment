@@ -20,6 +20,7 @@ use BO\Zmsentities\Schema\Entity;
  */
 class Base extends \ArrayObject implements \JsonSerializable
 {
+    /** @var string */
     public const string ENTITY_CLASS = '';
 
     /**
