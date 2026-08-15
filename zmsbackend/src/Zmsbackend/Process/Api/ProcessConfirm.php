@@ -111,6 +111,7 @@ class ProcessConfirm extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
+    /** @psalm-api */
     protected function validateProcessLimits(\BO\Zmsentities\Process $process)
     {
         if (! (new \BO\Zmsbackend\Process\Service\Process())->isAppointmentSlotCountAllowed($process)) {

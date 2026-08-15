@@ -121,6 +121,7 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
         return $value;
     }
 
+    /** @psalm-api */
     protected function convertspecialchars($string)
     {
 

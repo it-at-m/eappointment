@@ -30,6 +30,7 @@ class Closure extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         ];
     }
 
+    /** @psalm-api */
     public function addConditionDate(DateTime $date)
     {
         $this->query->where('closure.year', '=', $date->format('Y'));
@@ -44,6 +45,7 @@ class Closure extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionScopeIds(array $scopeIds)
     {
         $ids = array_values(array_unique(array_map('intval', $scopeIds)));
@@ -72,6 +74,7 @@ class Closure extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionDateRange(\DateTimeInterface $from, \DateTimeInterface $until)
     {
         $dateExpr = self::expression(

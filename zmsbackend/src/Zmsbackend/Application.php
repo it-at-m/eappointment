@@ -86,6 +86,7 @@ class Application extends \BO\Slim\Application
     public static $data = '/data';
     public static $now = null;
 
+    /** @psalm-api */
     public static function getNow()
     {
         if (self::$now instanceof \DateTimeInterface) {
@@ -134,6 +135,7 @@ class Application extends \BO\Slim\Application
         ];
     }
 
+    /** @psalm-api */
     public static function getRequestLimits(): array
     {
         return [

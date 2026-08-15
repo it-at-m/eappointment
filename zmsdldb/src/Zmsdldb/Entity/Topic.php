@@ -21,11 +21,13 @@ class Topic extends Base
         return $serviceIds;
     }
 
+    /** @psalm-api */
     public function isLinked()
     {
         return ($this['relation']['navi'] || static::subcount($this['relation']['navi']));
     }
 
+    /** @psalm-api */
     public function getServiceLocationLinkList()
     {
         $list = new \BO\Zmsdldb\Collection\Base();
@@ -42,6 +44,7 @@ class Topic extends Base
         return $list;
     }
 
+    /** @psalm-api */
     public function getParentId()
     {
         if (count($this['relation']['parents']) > 1) {

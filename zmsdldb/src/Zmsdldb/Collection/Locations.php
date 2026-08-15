@@ -32,6 +32,7 @@ class Locations extends Base
      * @param Int $locationId
      *
      * @return self
+     * @psalm-api
      */
     public function removeLocation($locationId)
     {
@@ -68,6 +69,7 @@ class Locations extends Base
         return $idList;
     }
 
+    /** @psalm-api */
     public function getNames()
     {
         $nameList = array();

@@ -99,6 +99,7 @@ class Message implements \JsonSerializable
         return $this;
     }
 
+    /** @psalm-api */
     public function getStatuscode()
     {
         return $this->statuscode;

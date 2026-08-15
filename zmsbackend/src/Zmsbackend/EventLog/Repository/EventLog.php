@@ -23,6 +23,7 @@ class EventLog extends \BO\Zmsbackend\Query\Base
             $this->query->orderBy(self::ALIAS . '.creationDateTime', 'ASC');
         }
     }
+    /** @psalm-api */
     public function getEntityMapping(): array
     {
         return [

@@ -18,6 +18,7 @@ class AvailableCalendarController extends BaseController
 
     private AvailableCalendarService $service;
 
+    /** @psalm-api */
     public function __construct()
     {
         $this->initializeUnpublishedAccess();

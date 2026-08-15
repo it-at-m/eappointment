@@ -33,6 +33,7 @@ class TemplateFinder
         }
     }
 
+    /** @psalm-api */
     public function getTemplate()
     {
         return $this->template;

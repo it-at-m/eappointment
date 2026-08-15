@@ -37,16 +37,19 @@ class UnconfirmedAppointmentDeleteByCron
         $this->writeVerboseCronLog($message, $level);
     }
 
+    /** @psalm-api */
     public function getCount()
     {
         return $this->count;
     }
 
+    /** @psalm-api */
     public function setLimit($limit)
     {
         $this->limit = $limit;
     }
 
+    /** @psalm-api */
     public function setLoopCount($loopCount)
     {
         $this->loopCount = $loopCount;

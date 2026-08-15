@@ -18,6 +18,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
     }
 
 
+    /** @psalm-api */
     public function readList()
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::SELECT);
@@ -75,6 +76,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return $this->deleteItem($query);
     }
 
+    /** @psalm-api */
     public function updateTemplateContent($templateName, $templateContent)
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::UPDATE);
@@ -109,6 +111,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return $this->readTemplate($templateName);
     }
 
+    /** @psalm-api */
     public function updateEntity(MailTemplate $config)
     {
         $compareEntity = $this->readEntity();
@@ -138,6 +141,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return ($result) ? $this->readEntity() : null;
     }
 
+    /** @psalm-api */
     public function readProperty($property, $forUpdate = false)
     {
         $sql = \BO\Zmsbackend\Mail\Repository\Mailtemplate::QUERY_SELECT_PROPERTY;
@@ -147,6 +151,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return $this->fetchValue($sql, [$property]);
     }
 
+    /** @psalm-api */
     public function replaceProperty($property, $value)
     {
         return $this->perform(\BO\Zmsbackend\Mail\Repository\Mailtemplate::QUERY_REPLACE_PROPERTY, [
@@ -160,6 +165,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
      *
      *
      * @return bool
+     * @psalm-api
      */
     public function deleteProperty($property)
     {

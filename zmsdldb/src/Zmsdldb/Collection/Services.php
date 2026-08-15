@@ -29,6 +29,7 @@ class Services extends Base
         return $idList;
     }
 
+    /** @psalm-api */
     public function getNames()
     {
         $nameList = array();
@@ -38,11 +39,13 @@ class Services extends Base
         return $nameList;
     }
 
+    /** @psalm-api */
     public function getCSV()
     {
         return implode(',', $this->getIds());
     }
 
+    /** @psalm-api */
     public function isLocale($locale)
     {
         $list = new self();

@@ -47,6 +47,7 @@ class Location extends Base
     /**
      *
      * @return Collection
+     * @psalm-api
      */
     public function fetchFromCsv($location_csv)
     {
@@ -63,6 +64,7 @@ class Location extends Base
     /**
      *
      * @return Collection
+     * @psalm-api
      */
     public function readSearchResultList($query, $service_csv = '')
     {
@@ -75,6 +77,7 @@ class Location extends Base
             ->fromLocationResults($locationlist);
     }
 
+    /** @psalm-api */
     public function fetchListByOffice($office)
     {
         return $this->access()->fromAuthority()

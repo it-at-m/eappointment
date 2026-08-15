@@ -19,6 +19,7 @@ class ValidationException extends \Exception
      */
     protected $validator = null;
 
+    /** @psalm-api */
     public function setValidator(Valid $validator)
     {
         $this->validator = $validator;

@@ -49,6 +49,7 @@ class Role extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionNames(array $names): self
     {
         if ($names === []) {

@@ -28,6 +28,7 @@ class Cluster extends \BO\Zmsbackend\Query\Base
         ';
     }
 
+    /** @psalm-api */
     public function getEntityMapping()
     {
         return [

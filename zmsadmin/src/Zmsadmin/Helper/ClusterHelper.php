@@ -34,6 +34,7 @@ class ClusterHelper
         return static::$workstation->getScopeList(static::$cluster);
     }
 
+    /** @psalm-api */
     public static function getProcessList($selectedDate)
     {
         if (static::isClusterEnabled()) {

@@ -11,6 +11,7 @@ use BO\Zmsdldb\Entity\SearchResult as Entity;
 
 class SearchResults extends Base
 {
+    /** @psalm-api */
     public function getNames()
     {
         $nameList = array();
@@ -20,6 +21,7 @@ class SearchResults extends Base
         return $nameList;
     }
 
+    /** @psalm-api */
     public function toSearchResultData()
     {
         $list = new self();
@@ -35,6 +37,7 @@ class SearchResults extends Base
         return $list;
     }
 
+    /** @psalm-api */
     public function addSearchResultsData($data)
     {
         if ($data) {
@@ -44,6 +47,7 @@ class SearchResults extends Base
         return null;
     }
 
+    /** @psalm-api */
     public function sortByType(array $order)
     {
         $list = new self();

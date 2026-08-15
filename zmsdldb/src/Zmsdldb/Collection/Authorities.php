@@ -55,6 +55,7 @@ class Authorities extends Base
         return $this->offsetExists($authority_id);
     }
 
+    /** @psalm-api */
     public function readByExtendedService($service)
     {
         foreach ($service['authorities'] as $authority) {
@@ -70,6 +71,7 @@ class Authorities extends Base
      * Check if appointments are available
      *
      * @return bool
+     * @psalm-api
      */
     public function hasLocations()
     {
@@ -90,6 +92,7 @@ class Authorities extends Base
      *            allow external links, default false
      *
      * @return Bool
+     * @psalm-api
      */
     public function hasAppointments($serviceCsv = null, $external = false)
     {
@@ -107,6 +110,7 @@ class Authorities extends Base
      * @param Int $locationId
      *
      * @return Bool
+     * @psalm-api
      */
     public function hasLocationId($locationId)
     {
@@ -124,6 +128,7 @@ class Authorities extends Base
      * @param Int $locationId
      *
      * @return self
+     * @psalm-api
      */
     public function removeLocation($locationId)
     {
@@ -143,6 +148,7 @@ class Authorities extends Base
      *            allow external links, default false
      *
      * @return self
+     * @psalm-api
      */
     public function removeLocationsWithoutAppointments($serviceCsv = null, $external = false)
     {
@@ -195,6 +201,7 @@ class Authorities extends Base
      * transform list to authorities with accociated locations
      *
      * @return self
+     * @psalm-api
      */
 
     public function toListWithAssociatedLocations($locationlist)
@@ -206,6 +213,7 @@ class Authorities extends Base
         return $authoritylist;
     }
 
+    /** @psalm-api */
     public function getAuthorityIds()
     {
         $ids = [];

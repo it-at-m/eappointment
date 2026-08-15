@@ -159,12 +159,14 @@ class Workstation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionWorkstationName($workstationName)
     {
         $this->query->where('workstation.Arbeitsplatznr', '=', $workstationName);
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionWorkstationIsNotCounter()
     {
         $this->query->where('workstation.Arbeitsplatznr', '>', 0);
@@ -183,6 +185,7 @@ class Workstation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionTime($now)
     {
         $this->query->where('workstation.Datum', '=', $now->format('Y-m-d'));

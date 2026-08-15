@@ -63,26 +63,31 @@ class FileAccess extends AbstractAccess
         return $this;
     }
 
+    /** @psalm-api */
     public function loadLocationsFromPathByLocale($path, $locale)
     {
         $this->loadLocations($path . DIRECTORY_SEPARATOR . 'locations_' . $locale . '.json', $locale);
     }
 
+    /** @psalm-api */
     public function loadServicesFromPathByLocale($path, $locale)
     {
         $this->loadServices($path . DIRECTORY_SEPARATOR . 'services_' . $locale . '.json', $locale);
     }
 
+    /** @psalm-api */
     public function loadTopicsFromPathByLocale($path, $locale)
     {
         $this->loadTopics($path . DIRECTORY_SEPARATOR . 'topic_' . $locale . '.json', $locale);
     }
 
+    /** @psalm-api */
     public function loadAuthoritiesFromPathByLocale($path, $locale)
     {
         $this->loadAuthorities($path . DIRECTORY_SEPARATOR . 'authority_' . $locale . '.json', $locale);
     }
 
+    /** @psalm-api */
     public function loadSettingsFromPath($path)
     {
         $this->loadSettings($path . DIRECTORY_SEPARATOR . 'settings.json');
@@ -152,6 +157,7 @@ class FileAccess extends AbstractAccess
     /**
      *
      * @todo refactor: returns services, not topics.
+     * @psalm-api
      */
     public function fetchTopicServicesList($topic_path)
     {
@@ -164,6 +170,7 @@ class FileAccess extends AbstractAccess
      * @todo will not work in every edge case, cause authority export does not contain officeinformations
      * @todo returns Collection\Authorities and not locations
      * @return \BO\Zmsdldb\Collection\Authorities
+     * @psalm-api
      */
     public function fetchLocationListByOffice($officepath = false)
     {

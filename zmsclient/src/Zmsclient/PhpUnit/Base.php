@@ -46,6 +46,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
     /**
      * @SuppressWarnings(Cyclomatic)
      * @return string
+     * @psalm-api
      */
     protected function getApiMockup()
     {
@@ -109,12 +110,14 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
 
     /**
      * Overwrite this function if api calls definition needs function calls
+     * @psalm-api
      */
     protected function getApiCalls()
     {
         return $this->apiCalls;
     }
 
+    /** @psalm-api */
     protected function getGraphQL($parameters)
     {
         if (isset($parameters['gql'])) {

@@ -91,6 +91,7 @@ abstract class PDOAccess extends AbstractAccess
 
     abstract protected function connect(array $options): void;
 
+    /** @psalm-api */
     public function getConnection()
     {
         return $this->pdo;

@@ -45,6 +45,7 @@ class TicketprinterAccess
         }
     }
 
+    /** @psalm-api */
     public static function testTicketprinterIsProtectedEnabled($entity, $isProtectionEnabled)
     {
         if ($isProtectionEnabled && ! $entity->isEnabled()) {

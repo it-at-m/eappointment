@@ -63,6 +63,7 @@ abstract class Base
         return $this->data;
     }
 
+    /** @psalm-api */
     public function getDataAsArray()
     {
         try {
@@ -74,6 +75,7 @@ abstract class Base
         }
     }
 
+    /** @psalm-api */
     public function getHash()
     {
         try {
@@ -85,6 +87,7 @@ abstract class Base
         }
     }
 
+    /** @psalm-api */
     public function getData()
     {
         try {

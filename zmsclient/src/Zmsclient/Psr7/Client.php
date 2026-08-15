@@ -64,6 +64,7 @@ class Client
         return $client;
     }
 
+    /** @psalm-api */
     public function send(RequestInterface $request)
     {
         return static::readResponse($request);

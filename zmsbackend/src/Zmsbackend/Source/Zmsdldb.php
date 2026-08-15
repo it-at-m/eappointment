@@ -11,6 +11,7 @@ class Zmsdldb extends \BO\Zmsbackend\Base
     public static $repository = null;
     public static $verbose = false;
 
+    /** @psalm-api */
     public static function getFixturesImportPath()
     {
         $dir = dirname(__FILE__);
@@ -18,6 +19,7 @@ class Zmsdldb extends \BO\Zmsbackend\Base
         return $importPath;
     }
 
+    /** @psalm-api */
     public static function setImportPath($path)
     {
         self::$importPath = $path;

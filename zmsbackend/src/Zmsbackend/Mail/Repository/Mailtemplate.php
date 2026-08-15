@@ -61,6 +61,7 @@ class Mailtemplate extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
+    /** @psalm-api */
     public function getEntityMapping()
     {
         return [

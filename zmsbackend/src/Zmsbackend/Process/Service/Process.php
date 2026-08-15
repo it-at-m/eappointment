@@ -109,6 +109,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      * @param Int $slotsRequired we cannot use process.appointments.0.slotCount, because setting slotsRequired is
      *        a priviliged operation. Just using the input would be a security flaw to get a wider selection of times
      *        If slotsRequired = 0, readFreeProcesses() uses the slotsRequired based on request-provider relation
+     * @psalm-api
      */
     public function updateEntityWithSlots(\BO\Zmsentities\Process $process, \DateTimeInterface $now, $slotType = "intern", $slotsRequired = 0, $resolveReferences = 0, $userAccount = null)
     {

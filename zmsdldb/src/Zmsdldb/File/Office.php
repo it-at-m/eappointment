@@ -32,6 +32,7 @@ class Office extends Base
         return $this->getItemList();
     }
 
+    /** @psalm-api */
     public function fetchPath($itemId)
     {
         return $this->fetchId($itemId);
