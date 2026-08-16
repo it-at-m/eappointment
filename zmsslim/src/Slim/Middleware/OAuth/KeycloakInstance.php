@@ -16,6 +16,7 @@ class KeycloakInstance
     protected Provider $provider;
     protected OAuthService $oauthService;
 
+    /** @psalm-api Instantiated via class-string in OAuthMiddleware. */
     public function __construct(?OAuthService $oauthService = null)
     {
         $this->oauthService = $oauthService ?: new OAuthService(\App::$http, \App::CONFIG_SECURE_TOKEN);
@@ -27,7 +28,7 @@ class KeycloakInstance
         return $this->provider;
     }
 
-    public function doLogin(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function doLogin(ServerRequestInterface $request): void
     {
         \App::$log->info('OIDC login attempt', [
             'event' => 'oauth_login_start',
@@ -67,7 +68,6 @@ class KeycloakInstance
             \BO\Zmsclient\Auth::removeOidcProvider();
             throw $exception;
         }
-        return $response;
     }
 
     public function doLogout(ResponseInterface $response): ResponseInterface
@@ -87,6 +87,9 @@ class KeycloakInstance
                 $newAccessToken = $this->provider->getAccessToken('refresh_token', [
                     'refresh_token' => $existingAccessToken->getRefreshToken()
                 ]);
+                if (!$newAccessToken instanceof AccessToken) {
+                    return false;
+                }
                 $this->writeDeleteSession();
                 $this->writeTokenToSession($newAccessToken);
             }
@@ -229,6 +232,9 @@ class KeycloakInstance
 
         try {
             $accessToken = $this->provider->getAccessToken('authorization_code', ['code' => $code]);
+            if (!$accessToken instanceof AccessToken) {
+                throw new \BO\Slim\Exception\OAuthFailed();
+            }
             \App::$log->info('Access token obtained', [
                 'event' => 'oauth_get_token_success',
                 'timestamp' => date('c')
@@ -248,7 +254,7 @@ class KeycloakInstance
         }
     }
 
-    private function writeTokenToSession(AccessToken $token): bool
+    private function writeTokenToSession(AccessToken $token): void
     {
         \App::$log->info('Writing token to session', [
             'event' => 'oauth_write_token',
@@ -263,7 +269,7 @@ class KeycloakInstance
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
         $sessionHandler->open('/' . $realmData['realm'] . '/', $realmData['clientId']);
         $sessionHandler->write($sessionKey, serialize($token), ['oidc' => true]);
-        return $sessionHandler->close();
+        $sessionHandler->close();
     }
 
     private function writeDeleteSession(): void
