@@ -50,14 +50,17 @@ class Department extends \BO\Zmsbackend\Base
     }
 
     /**
-     * @return \BO\Zmsentities\Schema\Entity
+     * @return Entity
      */
     #[\Override]
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $entity,
         $resolveReferences,
         $disableCache = false
-    ) {
+    ): Entity {
+        if (!$entity instanceof Entity) {
+            throw new \InvalidArgumentException('Expected ' . Entity::class);
+        }
         $entity['links'] = (new \BO\Zmsbackend\Link\Service\Link())->readByDepartmentId($entity->id, $disableCache);
         $entity['scopes'] = (new \BO\Zmsbackend\Scope\Service\Scope())
             ->readByDepartmentId($entity->id, $resolveReferences - 1, $disableCache)
