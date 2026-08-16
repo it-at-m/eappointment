@@ -63,7 +63,7 @@ class SessionData implements SessionInterface
      * @return void
      */
     #[\Override]
-    public function setGroup(array $group, $clear)
+    public function setGroup(array $group, bool $clear = false): void
     {
         foreach ($group as $index => $items) {
             if ($clear) {
@@ -87,7 +87,7 @@ class SessionData implements SessionInterface
      *
      */
     #[\Override]
-    public function set($key, $value, $groupIndex = null)
+    public function set(int|string $key, mixed $value, int|string|null $groupIndex = null): void
     {
         if (null === $groupIndex) {
             $this->data[$key] = self::convertValueToScalar($value);
@@ -101,7 +101,7 @@ class SessionData implements SessionInterface
     }
 
     #[\Override]
-    public function get($key, $groupIndex = null, $default = null)
+    public function get(int|string $key, int|string|null $groupIndex = null, mixed $default = null): mixed
     {
         if (! $this->has($key, $groupIndex)) {
             return self::convertValueToScalar($default);
@@ -113,7 +113,7 @@ class SessionData implements SessionInterface
     }
 
     #[\Override]
-    public function getEntity()
+    public function getEntity(): mixed
     {
         if (null === $this->entityClass) {
             throw new \Exception("Entity-Class not set");
@@ -133,7 +133,7 @@ class SessionData implements SessionInterface
      * @return void
      */
     #[\Override]
-    public function remove($key, $groupIndex = null)
+    public function remove(int|string $key, int|string|null $groupIndex = null): void
     {
         if (null === $groupIndex) {
             unset($this->data[$key]);
@@ -151,7 +151,7 @@ class SessionData implements SessionInterface
      *
      */
     #[\Override]
-    public function clearGroup($groupIndex = null)
+    public function clearGroup(int|string|null $groupIndex = null): void
     {
         if (null !== $groupIndex) {
             $this->data[$groupIndex] = [];
@@ -166,7 +166,7 @@ class SessionData implements SessionInterface
      * @return self
      */
     #[\Override]
-    public function clear()
+    public function clear(): void
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
             setcookie(session_name(), '', time() - 3600, '/');
@@ -194,7 +194,7 @@ class SessionData implements SessionInterface
      * @return bool|null
      */
     #[\Override]
-    public function has($key, $groupIndex = null)
+    public function has(int|string $key, int|string|null $groupIndex = null): ?bool
     {
         if (null === $groupIndex) {
             return array_key_exists($key, $this->data);
@@ -209,7 +209,7 @@ class SessionData implements SessionInterface
      * @return bool
      */
     #[\Override]
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return empty($this->data);
     }
