@@ -137,7 +137,8 @@ class IpAddress
     {
         $checkProxyHeaders = $this->checkProxyHeaders;
         if ($checkProxyHeaders && ($this->trustedProxies === true || $this->trustedProxies !== [])) {
-            if ($this->trustedProxies !== true
+            if (
+                $this->trustedProxies !== true
                 && is_array($this->trustedProxies)
                 && !in_array($ipAddress, $this->trustedProxies, true)
             ) {
