@@ -45,36 +45,40 @@ final class Sanitizer
     protected static function applySpecificPatterns(string $trace): string
     {
         if (defined('\App::DB_PASSWORD')) {
-            $password = (string) \App::DB_PASSWORD;
-            $trace = self::replaceQuoted($password, $trace);
+            $trace = self::replaceQuoted(\App::DB_PASSWORD, $trace);
         }
         if (defined('\App::DB_USER')) {
-            $user = (string) \App::DB_USER;
-            $trace = self::replaceQuoted($user, $trace);
+            $trace = self::replaceQuoted(\App::DB_USER, $trace);
         }
         if (defined('\App::DB_HOST')) {
-            $host = (string) \App::DB_HOST;
-            $trace = self::replaceQuoted($host, $trace);
+            $trace = self::replaceQuoted(\App::DB_HOST, $trace);
         }
         if (defined('\App::DB_NAME')) {
-            $dbname = (string) \App::DB_NAME;
-            $trace = self::replaceQuoted($dbname, $trace);
+            $trace = self::replaceQuoted(\App::DB_NAME, $trace);
         }
         if (defined('\App::DB_PORT')) {
-            $port = (string) \App::DB_PORT;
-            $encodedPort = preg_quote($port, '/');
-            $trace = self::replace('/' . $encodedPort . '/', '***', $trace);
-            $trace = self::replace('/' . preg_quote(urlencode($port), '/') . '/', '***', $trace);
-            $trace = self::replace('/\'' . $encodedPort . '\'/', '\'***\'', $trace);
-            $trace = self::replace('/port=' . $encodedPort . '/', 'port=***', $trace);
-            $trace = self::replace('/port=' . preg_quote(urlencode($port), '/') . '/', 'port=***', $trace);
+            $port = \App::DB_PORT;
+            if (is_int($port)) {
+                $port = (string) $port;
+            }
+            if (is_string($port) && $port !== '') {
+                $encodedPort = preg_quote($port, '/');
+                $trace = self::replace('/' . $encodedPort . '/', '***', $trace);
+                $trace = self::replace('/' . preg_quote(urlencode($port), '/') . '/', '***', $trace);
+                $trace = self::replace('/\'' . $encodedPort . '\'/', '\'***\'', $trace);
+                $trace = self::replace('/port=' . $encodedPort . '/', 'port=***', $trace);
+                $trace = self::replace('/port=' . preg_quote(urlencode($port), '/') . '/', 'port=***', $trace);
+            }
         }
 
         return $trace;
     }
 
-    protected static function replaceQuoted(string $value, string $trace): string
+    protected static function replaceQuoted(mixed $value, string $trace): string
     {
+        if (!is_string($value) || $value === '') {
+            return $trace;
+        }
         $encoded = preg_quote($value, '/');
         $trace = self::replace('/' . $encoded . '/', '***', $trace);
         $trace = self::replace('/' . preg_quote(urlencode($value), '/') . '/', '***', $trace);
@@ -85,6 +89,9 @@ final class Sanitizer
 
     protected static function replace(string $pattern, string $replacement, string $subject): string
     {
+        if ($pattern === '') {
+            return $subject;
+        }
         return preg_replace($pattern, $replacement, $subject) ?? $subject;
     }
 }
