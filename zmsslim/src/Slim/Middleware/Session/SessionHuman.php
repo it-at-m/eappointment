@@ -38,6 +38,7 @@ class SessionHuman extends SessionContainer
     /**
      * @SuppressWarnings(Complexity)
      * @param string[] $requiredSteps
+     * @psalm-api
      */
     public function redirectOnSuspicion(
         ServerRequestInterface $request,
@@ -45,7 +46,8 @@ class SessionHuman extends SessionContainer
         string|false $referer = false
     ): bool {
         $path = $request->getUri()->getPath();
-        $sessionId = session_id() ?: '';
+        $sessionId = session_id();
+        $sessionId = $sessionId === false ? '' : $sessionId;
         $refererLabel = is_string($referer) ? $referer : '';
         if (! $this->isOrigin('captcha')) {
             foreach ($requiredSteps as $stepName) {
@@ -82,6 +84,7 @@ class SessionHuman extends SessionContainer
         return false;
     }
 
+    /** @psalm-api */
     public function isOverAged(): bool
     {
         if (!$this->has('ts', 'human') || time() > ($this->get('ts', 'human') + self::MAX_TIME)) {
@@ -90,6 +93,7 @@ class SessionHuman extends SessionContainer
         return false;
     }
 
+    /** @psalm-api */
     public function isUnderAged(): bool
     {
         if (!$this->has('ts', 'human') || time() < ($this->get('ts', 'human') + self::MIN_TIME)) {
@@ -98,6 +102,7 @@ class SessionHuman extends SessionContainer
         return false;
     }
 
+    /** @psalm-api */
     public function addStep(string $stepName): void
     {
         if (!$this->has('step', 'human')) {
