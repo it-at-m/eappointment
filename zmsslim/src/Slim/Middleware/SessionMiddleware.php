@@ -5,15 +5,17 @@ namespace BO\Slim\Middleware;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use BO\Slim\Factory\ResponseFactory;
 
 class SessionMiddleware
 {
     const string SESSION_ATTRIBUTE = 'session';
 
-    protected $sessionClass = null;
+    protected string $sessionName;
 
-    public function __construct($name = 'default', $sessionClass = null)
+    protected ?object $sessionClass = null;
+
+    /** @psalm-api Instantiated by Slim middleware registration. */
+    public function __construct(string $name = 'default', ?object $sessionClass = null)
     {
         session_name($name);
         $this->sessionName = $name;
@@ -23,19 +25,13 @@ class SessionMiddleware
     public function __invoke(
         ServerRequestInterface $requestInterface,
         RequestHandlerInterface $next
-    ) {
+    ): ResponseInterface {
         $sessionContainer = Session\SessionHuman::fromContainer(function () use ($requestInterface) {
             return $this->getSessionContainer($requestInterface);
         });
 
-        if (null !== $next) {
-            $requestInterface = $requestInterface->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer);
-            $response = $next->handle($requestInterface);
-        } else {
-            $response = (new ResponseFactory())->createResponse();
-        }
-
-        return $response;
+        $requestInterface = $requestInterface->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer);
+        return $next->handle($requestInterface);
     }
 
     public function getSessionContainer(ServerRequestInterface $request): Session\SessionData
