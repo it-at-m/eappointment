@@ -47,12 +47,13 @@ class TwigExceptionHandler implements ErrorHandlerInterface
     ): ResponseInterface {
         try {
             $request = Controller::prepareRequest($request);
-            if ($exception->getCode() >= 200) {
-                $status = $exception->getCode();
+            $code = (int) $exception->getCode();
+            if ($code >= 200) {
+                $status = $code;
             }
             $template = self::getExceptionTemplate($exception);
             $extendedInfo = self::getExtendedExceptionInfo($exception, $request);
-            if ($status >= 500 || $status < 200 || $status === 0 || $template == static::DEFAULT_TEMPLATE) {
+            if ($status >= 500 || $status < 200 || $template == static::DEFAULT_TEMPLATE) {
                 $logInfo = $extendedInfo;
                 unset($logInfo['responsedata']);
                 unset($logInfo['exception']);
@@ -144,7 +145,15 @@ class TwigExceptionHandler implements ErrorHandlerInterface
      */
     protected static function getRequestData(RequestInterface $request): string|false
     {
-        $requestdata = array_merge((array)$request->getQueryParams(), (array)$request->getParsedBody());
+        $queryParams = [];
+        $parsedBody = [];
+        if ($request instanceof ServerRequestInterface) {
+            $queryParams = (array) $request->getQueryParams();
+            $parsedBody = (array) $request->getParsedBody();
+        } else {
+            parse_str($request->getUri()->getQuery(), $queryParams);
+        }
+        $requestdata = array_merge($queryParams, $parsedBody);
         $json_opt = JSON_HEX_TAG | JSON_PRETTY_PRINT | JSON_HEX_AMP;
         if (json_decode((string)$request->getBody())) {
             $requestdata = json_encode(json_decode((string)$request->getBody()), $json_opt);
@@ -237,6 +246,9 @@ class TwigExceptionHandler implements ErrorHandlerInterface
 
     private static function replaceLogText(string $pattern, string $replacement, string $subject): string
     {
+        if ($pattern === '') {
+            return $subject;
+        }
         return preg_replace($pattern, $replacement, $subject) ?? $subject;
     }
 
