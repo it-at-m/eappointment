@@ -56,18 +56,7 @@ class LoggerService
     public static int $lockTimeout = 30;
 
     /**
-     * @param array{
-     *   maxRequests?: int,
-     *   maxErrorRequests?: int,
-     *   responseLength?: int,
-     *   stackLines?: int,
-     *   messageSize?: int,
-     *   cacheTtl?: int,
-     *   maxRetries?: int,
-     *   backoffMin?: int,
-     *   backoffMax?: int,
-     *   lockTimeout?: int
-     * } $config
+     * @param array<string, mixed> $config
      */
     public static function configure(array $config): void
     {
@@ -215,7 +204,7 @@ class LoggerService
         }
 
         $uri = $request->getUri();
-        $path = preg_replace('#/+#', '/', $uri->getPath());
+        $path = preg_replace('#/+#', '/', $uri->getPath()) ?? $uri->getPath();
         $logPath = self::buildLogPath($path, $request->getQueryParams());
 
         $data = [
@@ -227,8 +216,8 @@ class LoggerService
         ];
 
         $bodyStream = $response->getBody();
-        $rawBody = $bodyStream !== null ? (string) $bodyStream : null;
-        if ($bodyStream !== null && $bodyStream->isSeekable()) {
+        $rawBody = (string) $bodyStream;
+        if ($bodyStream->isSeekable()) {
             $bodyStream->rewind();
         }
 
@@ -258,7 +247,7 @@ class LoggerService
             $queryParts[] = self::formatQueryParamForLog($key, $value);
         }
 
-        return $path . ($queryParts ? '?' . implode('&', $queryParts) : '');
+        return $path . ($queryParts !== [] ? '?' . implode('&', $queryParts) : '');
     }
 
     /**
@@ -272,7 +261,8 @@ class LoggerService
             return "$encodedKey=****";
         }
         if (is_array($value)) {
-            return $encodedKey . '=' . urlencode(json_encode($value, JSON_UNESCAPED_UNICODE) ?: '[]');
+            $encoded = json_encode($value, JSON_UNESCAPED_UNICODE);
+            return $encodedKey . '=' . urlencode($encoded !== false ? $encoded : '[]');
         }
 
         return $encodedKey . '=' . urlencode((string) $value);
@@ -284,7 +274,7 @@ class LoggerService
      */
     private static function appendResponseErrors(array $data, int $statusCode, ?string $rawBody): array
     {
-        if ($statusCode < 400 || empty($rawBody)) {
+        if ($statusCode < 400 || $rawBody === null || $rawBody === '') {
             return $data;
         }
 
