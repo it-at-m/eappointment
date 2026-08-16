@@ -679,10 +679,8 @@ class Munich
 
     /**
      * Calculate greatest common divisor for slot times
-     *
-     * @param never $a
      */
-    protected function getSlotTime($a, $b): int
+    protected function getSlotTime(int|string $a, int|string $b): int
     {
         $a = (int) $a;
         $b = (int) $b;
