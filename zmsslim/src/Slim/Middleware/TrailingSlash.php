@@ -34,7 +34,7 @@ class TrailingSlash
             $uri = $uri->withScheme('https');
             $uriString = (string)$uri;
         } else {
-            $uriString = preg_replace('#^https?:#', '', (string)$uri); //Do not force protocol
+            $uriString = preg_replace('#^https?:#', '', (string)$uri) ?? (string)$uri; //Do not force protocol
         }
 
         $redirects = \App::$slim->redirect(
