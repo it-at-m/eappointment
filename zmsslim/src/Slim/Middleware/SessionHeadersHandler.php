@@ -26,6 +26,7 @@ use BO\Slim\Factory\ResponseFactory;
  * saved, but instead the current `time()`.
  *
  *
+ * @psalm-api
  */
 class SessionHeadersHandler
 {
@@ -38,32 +39,26 @@ class SessionHeadersHandler
      *
      * The cache limiter type, if any.
      *
-     * @var string
-     *
      * @see session_cache_limiter()
      *
      */
-    protected $cacheLimiter;
+    protected string $cacheLimiter;
 
     /**
      *
      * The cache expiration time in minutes.
      *
-     * @var int
-     *
      * @see session_cache_expire()
      *
      */
-    protected $cacheExpire;
+    protected int $cacheExpire;
 
     /**
      *
      * The current Unix timestamp.
      *
-     * @var int
-     *
      */
-    protected $time;
+    protected int $time;
 
     /**
      *
@@ -76,7 +71,7 @@ class SessionHeadersHandler
      * @throws RuntimeException when the ini settings are incorrect.
      *
      */
-    public function __construct($cacheLimiter = 'nocache', int $cacheExpire = 180)
+    public function __construct(string $cacheLimiter = 'nocache', int $cacheExpire = 180)
     {
         ini_set('session.use_trans_sid', false);
         ini_set('session.use_cookies', false);
@@ -105,6 +100,7 @@ class SessionHeadersHandler
 
         $this->cacheLimiter = $cacheLimiter;
         $this->cacheExpire = $cacheExpire;
+        $this->time = time();
     }
 
     /**
@@ -117,15 +113,18 @@ class SessionHeadersHandler
      * @return Response
      *
      */
-    public function __invoke(Request $request, ?RequestHandlerInterface $next)
+    public function __invoke(Request $request, ?RequestHandlerInterface $next): Response
     {
         // retain the incoming session id
         $oldId = '';
         $oldName = session_name();
         $cookies = $request->getCookieParams();
-        if (! empty($cookies[$oldName])) {
-            $oldId = $cookies[$oldName];
-            session_id($oldId);
+        if (is_string($oldName) && $oldName !== '') {
+            $cookieId = $cookies[$oldName] ?? null;
+            if (is_string($cookieId) && $cookieId !== '') {
+                $oldId = $cookieId;
+                session_id($oldId);
+            }
         }
 
         // invoke the next middleware
@@ -140,14 +139,14 @@ class SessionHeadersHandler
 
         // is the session id still the same?
         $newId = session_id();
-        if ($newId !== $oldId) {
+        if (is_string($newId) && $newId !== $oldId) {
             // one of the middlewares changed it; send the new one.
             // capture any session name changes as well.
             $response = $this->withNewSessionCookie($response, $newId);
         }
 
         // if there is a session id, also send the cache limiters
-        if ($newId) {
+        if (is_string($newId) && $newId !== '') {
             $response = $this->withCacheLimiter($response);
         }
 
@@ -168,30 +167,37 @@ class SessionHeadersHandler
      * @see https://github.com/php/php-src/blob/PHP-5.6.20/ext/session/session.c#L1337-L1408
      *
      */
-    protected function withNewSessionCookie(Response $response, $sessionId)
+    protected function withNewSessionCookie(Response $response, string $sessionId): Response
     {
-        $cookie = urlencode(session_name()) . '=' . urlencode($sessionId);
+        $sessionName = session_name();
+        if (!is_string($sessionName)) {
+            return $response;
+        }
+        $cookie = urlencode($sessionName) . '=' . urlencode($sessionId);
 
         $params = session_get_cookie_params();
 
-        if ($params['lifetime']) {
-            $expires = $this->timestamp($params['lifetime']);
-            $cookie .= "; expires={$expires}; max-age={$params['lifetime']}";
+        $lifetime = $params['lifetime'] ?? 0;
+        if ($lifetime !== 0) {
+            $expires = $this->timestamp($lifetime);
+            $cookie .= "; expires={$expires}; max-age={$lifetime}";
         }
 
-        if ($params['domain']) {
-            $cookie .= "; domain={$params['domain']}";
+        $domain = $params['domain'] ?? '';
+        if ($domain !== '') {
+            $cookie .= "; domain={$domain}";
         }
 
-        if ($params['path']) {
-            $cookie .= "; path={$params['path']}";
+        $path = $params['path'] ?? '';
+        if ($path !== '') {
+            $cookie .= "; path={$path}";
         }
 
-        if ($params['secure']) {
+        if (($params['secure'] ?? false) === true) {
             $cookie .= '; secure';
         }
 
-        if ($params['httponly']) {
+        if (($params['httponly'] ?? false) === true) {
             $cookie .= '; httponly';
         }
 
@@ -207,7 +213,7 @@ class SessionHeadersHandler
      * @return string
      *
      */
-    protected function timestamp($adj = 0)
+    protected function timestamp(int $adj = 0): string
     {
         return gmdate('D, d M Y H:i:s T', $this->time + $adj);
     }
@@ -221,7 +227,7 @@ class SessionHeadersHandler
      * @return Response
      *
      */
-    protected function withCacheLimiter(Response $response)
+    protected function withCacheLimiter(Response $response): Response
     {
         switch ($this->cacheLimiter) {
             case 'public':
@@ -248,7 +254,7 @@ class SessionHeadersHandler
      * @see https://github.com/php/php-src/blob/PHP-5.6.20/ext/session/session.c#L1196-L1213
      *
      */
-    protected function cacheLimiterPublic(Response $response)
+    protected function cacheLimiterPublic(Response $response): Response
     {
         $maxAge = $this->cacheExpire * 60;
         $expires = $this->timestamp($maxAge);
@@ -272,7 +278,7 @@ class SessionHeadersHandler
      * @see https://github.com/php/php-src/blob/PHP-5.6.20/ext/session/session.c#L1215-L1224
      *
      */
-    protected function cacheLimiterPrivateNoExpire(Response $response)
+    protected function cacheLimiterPrivateNoExpire(Response $response): Response
     {
         $maxAge = $this->cacheExpire * 60;
         $cacheControl = "private, max-age={$maxAge}, pre-check={$maxAge}";
@@ -294,7 +300,7 @@ class SessionHeadersHandler
      * @see https://github.com/php/php-src/blob/PHP-5.6.20/ext/session/session.c#L1226-L1231
      *
      */
-    protected function cacheLimiterPrivate(Response $response)
+    protected function cacheLimiterPrivate(Response $response): Response
     {
         if (0 == count($response->getHeader('Expires'))) {
             $response = $response->withAddedHeader('Expires', self::EXPIRED);
@@ -313,7 +319,7 @@ class SessionHeadersHandler
      * @see https://github.com/php/php-src/blob/PHP-5.6.20/ext/session/session.c#L1233-L1243
      *
      */
-    protected function cacheLimiterNocache(Response $response)
+    protected function cacheLimiterNocache(Response $response): Response
     {
         if (0 == count($response->getHeader('Expires'))) {
             $response = $response->withAddedHeader('Expires', self::EXPIRED);
