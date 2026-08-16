@@ -50,7 +50,7 @@ abstract class Base extends TestCase
     /**
      * Use this object instance for session getEntity()
      *
-     * @var Object $sessionClass
+     * @var object|null
      */
     protected $sessionClass = null;
 
@@ -166,9 +166,6 @@ abstract class Base extends TestCase
         return $response;
     }
 
-    /**
-     * @return class-string
-     */
     protected function getControllerIdentifier(): string
     {
         if ($this->classname !== null && $this->classname !== '') {
@@ -188,9 +185,16 @@ abstract class Base extends TestCase
         string $method = 'GET'
     ): ResponseInterface {
         $renderClass = $this->getControllerIdentifier();
+        if (!class_exists($renderClass)) {
+            throw new \RuntimeException('Controller class ' . $renderClass . ' does not exist');
+        }
+        $container = App::$slim->getContainer();
+        if (!$container instanceof \Psr\Container\ContainerInterface) {
+            throw new \RuntimeException('Slim container is not initialized');
+        }
         /** @var \BO\Slim\Controller $controller */
         /** @psalm-suppress UnsafeInstantiation */
-        $controller = new $renderClass(App::$slim->getContainer());
+        $controller = new $renderClass($container);
 
         //add uri to test multi languages
         $uri = (isset($parameters['__uri']) && is_string($parameters['__uri'])) ? $parameters['__uri'] : '';
@@ -254,7 +258,7 @@ abstract class Base extends TestCase
         $validator->makeInstance();
     }
 
-    public function assertRedirect($response, $uri, $status = 302): void
+    public function assertRedirect(ResponseInterface $response, string $uri, int $status = 302): void
     {
         $this->assertEquals($status, $response->getStatusCode());
         $this->assertEquals($uri, $response->getHeaderLine('Location'));
