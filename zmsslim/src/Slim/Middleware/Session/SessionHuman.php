@@ -2,6 +2,8 @@
 
 namespace BO\Slim\Middleware\Session;
 
+use Psr\Http\Message\ServerRequestInterface;
+
 /**
  * Check if human
  */
@@ -13,7 +15,8 @@ class SessionHuman extends SessionContainer
 
     const int MIN_TIME = 3;
 
-    public function writeVerifySession($request, $origin = ''): void
+    /** @psalm-api */
+    public function writeVerifySession(ServerRequestInterface $request, string $origin = ''): void
     {
         $clientIp = $request->getAttribute('ip_address');
         $this->set('client', 1, 'human');
@@ -24,7 +27,8 @@ class SessionHuman extends SessionContainer
         $this->set('remoteAddress', $clientIp, 'human');
     }
 
-    public function writeBotSession($origin = ''): void
+    /** @psalm-api */
+    public function writeBotSession(string $origin = ''): void
     {
         $this->set('client', 0, 'human');
         $this->set('ts', 0, 'human');
@@ -33,43 +37,48 @@ class SessionHuman extends SessionContainer
 
     /**
      * @SuppressWarnings(Complexity)
-     * @return bool
+     * @param string[] $requiredSteps
      */
-    public function redirectOnSuspicion($request, $requiredSteps = array(), $referer = false)
-    {
+    public function redirectOnSuspicion(
+        ServerRequestInterface $request,
+        array $requiredSteps = [],
+        string|false $referer = false
+    ): bool {
         $path = $request->getUri()->getPath();
+        $sessionId = session_id() ?: '';
+        $refererLabel = is_string($referer) ? $referer : '';
         if (! $this->isOrigin('captcha')) {
             foreach ($requiredSteps as $stepName) {
                 if (!$this->hasStep($stepName)) {
                     \App::$log->notice(
-                        "[Human " . session_id() . "] Missing step $stepName on " . $path . " (referer: " . $referer . ")"
+                        "[Human " . $sessionId . "] Missing step $stepName on " . $path . " (referer: " . $refererLabel . ")"
                     );
                     $this->writeRedirectCaptcha($path, $stepName);
                     return true;
                 }
                 if ($this->hasStepMaxReload($stepName)) {
                     \App::$log->notice(
-                        "[Human " . session_id() . "] Exceeded max reload for step $stepName on " . $path
+                        "[Human " . $sessionId . "] Exceeded max reload for step $stepName on " . $path
                     );
-                    $this->writeRedirectCaptcha($path, ($referer) ? $referer : end($requiredSteps));
+                    $this->writeRedirectCaptcha($path, ($referer !== false) ? $referer : end($requiredSteps));
                     return true;
                 }
             }
             $clientIpAddress = $request->getAttribute('ip_address');
             if (!$this->has('remoteAddress', 'human') || $clientIpAddress != $this->get('remoteAddress', 'human')) {
-                \App::$log->error("[Human " . session_id() . "] Missing remote address " . $clientIpAddress);
+                \App::$log->error("[Human " . $sessionId . "] Missing remote address " . $clientIpAddress);
                 $this->writeRedirectCaptcha($path, $referer);
                 return true;
             }
         }
         if (!$this->isVerified()) {
             \App::$log->error(
-                "[Human " . session_id() . "] Missing session on " . $path . " (referer: " . $referer . ")"
+                "[Human " . $sessionId . "] Missing session on " . $path . " (referer: " . $refererLabel . ")"
             );
             $this->writeRedirectCaptcha($path, $referer);
             return true;
         }
-        $this->writeRedirectCaptcha($path, ($referer) ? $referer : end($requiredSteps));
+        $this->writeRedirectCaptcha($path, ($referer !== false) ? $referer : end($requiredSteps));
         return false;
     }
 
@@ -89,12 +98,7 @@ class SessionHuman extends SessionContainer
         return false;
     }
 
-    /**
-     *
-     *
-     * @return array
-     */
-    public function addStep($stepName)
+    public function addStep(string $stepName): void
     {
         if (!$this->has('step', 'human')) {
             $this->set('step', array(), 'human');
@@ -109,12 +113,7 @@ class SessionHuman extends SessionContainer
         $this->setGroup(array('human' => array('step' => $step)));
     }
 
-    /**
-     * check if has steps
-     *
-     * @return boolean
-     */
-    public function hasStep($stepName)
+    public function hasStep(string $stepName): bool
     {
         if ($this->has('step', 'human') && array_key_exists($stepName, $this->get('step', 'human'))) {
             return true;
@@ -122,12 +121,7 @@ class SessionHuman extends SessionContainer
         return false;
     }
 
-    /**
-     * check if has steps
-     *
-     * @return boolean
-     */
-    public function hasStepMaxReload($stepName)
+    public function hasStepMaxReload(string $stepName): bool
     {
         if (
             $this->has('step', 'human') &&
@@ -147,13 +141,7 @@ class SessionHuman extends SessionContainer
         return false;
     }
 
-    /**
-     * check if is origin
-     *
-     * @return boolean
-     *
-     */
-    protected function isOrigin(string $originName)
+    protected function isOrigin(string $originName): bool
     {
         if ($this->has('origin', 'human') && $originName == $this->get('origin', 'human')) {
             return true;
@@ -161,12 +149,7 @@ class SessionHuman extends SessionContainer
         return false;
     }
 
-    /**
-     *
-     *
-     * @return self
-     */
-    protected function writeRedirectCaptcha($path, $referer = false)
+    protected function writeRedirectCaptcha(string $path, string|false $referer = false): void
     {
         if (false === $referer) {
             $referer = basename($path);
