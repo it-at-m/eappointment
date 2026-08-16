@@ -302,11 +302,14 @@ class Useraccount extends \BO\Zmsbackend\Base
     }
 
     /**
-     * @return \BO\Zmsentities\Schema\Entity
+     * @return Entity
      */
     #[\Override]
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences): Entity
     {
+        if (!$entity instanceof Entity) {
+            throw new \InvalidArgumentException('Expected ' . Entity::class);
+        }
         if (0 < $resolveReferences && $entity->toProperty()->id->get()) {
             $entity->departments = $this->readAssignedDepartmentList($entity, $resolveReferences);
         }
@@ -401,7 +404,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $collection;
     }
 
-    public function readAssignedDepartmentList(\BO\Zmsentities\Schema\Entity $useraccount, $resolveReferences = 0)
+    public function readAssignedDepartmentList(Entity $useraccount, $resolveReferences = 0)
     {
         if ($useraccount->isSuperUser()) {
             $query = \BO\Zmsbackend\Useraccount\Repository\Useraccount::QUERY_READ_SUPERUSER_DEPARTMENTS;
