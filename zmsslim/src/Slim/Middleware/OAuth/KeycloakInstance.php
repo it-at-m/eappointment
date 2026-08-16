@@ -25,7 +25,7 @@ class KeycloakInstance
         return $this->provider;
     }
 
-    public function doLogin(ServerRequestInterface $request, ResponseInterface $response)
+    public function doLogin(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         \App::$log->info('OIDC login attempt', [
             'event' => 'oauth_login_start',
@@ -67,14 +67,14 @@ class KeycloakInstance
         return $response;
     }
 
-    public function doLogout(ResponseInterface $response)
+    public function doLogout(ResponseInterface $response): ResponseInterface
     {
         $this->writeDeleteSession();
         $realmData = $this->provider->getBasicOptionsFromJsonFile();
         return $response->withStatus(301)->withHeader('Location', $realmData['logoutUri']);
     }
 
-    public function writeNewAccessTokenIfExpired()
+    public function writeNewAccessTokenIfExpired(): bool
     {
         try {
             $accessTokenData = $this->readTokenDataFromSession();
@@ -93,6 +93,9 @@ class KeycloakInstance
         return true;
     }
 
+    /**
+     * @return void
+     */
     private function validateAccess(AccessToken $token)
     {
         \App::$log->info('Validating OIDC token', [
@@ -203,6 +206,9 @@ class KeycloakInstance
         ]);
     }
 
+    /**
+     * @return void
+     */
     private function validateOwnerData(array $ownerInputData)
     {
         $config = $this->oauthService->readConfig();
@@ -239,7 +245,7 @@ class KeycloakInstance
         }
     }
 
-    private function writeTokenToSession($token)
+    private function writeTokenToSession(AccessToken $token): bool
     {
         \App::$log->info('Writing token to session', [
             'event' => 'oauth_write_token',
@@ -253,7 +259,7 @@ class KeycloakInstance
         return $sessionHandler->close();
     }
 
-    private function writeDeleteSession()
+    private function writeDeleteSession(): void
     {
         \App::$log->info('Deleting session', [
             'event' => 'oauth_delete_session',

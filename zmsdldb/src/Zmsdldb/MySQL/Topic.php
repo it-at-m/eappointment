@@ -11,9 +11,6 @@ use BO\Zmsdldb\MySQL\Entity\Topic as Entity;
 use BO\Zmsdldb\MySQL\Collection\Topics as Collection;
 use BO\Zmsdldb\Elastic\Topic as Base;
 
-/**
-  *
-  */
 /** @psalm-api */
 class Topic extends Base
 {
@@ -46,7 +43,7 @@ class Topic extends Base
      * @return Entity|false
      */
     #[\Override]
-    public function fetchPath(string $topic_path): Entity|false
+    public function fetchPath($topic_path): Entity|false
     {
         try {
             $sqlArgs = [$this->locale, $topic_path];
@@ -92,7 +89,7 @@ class Topic extends Base
     }
 
     #[\Override]
-    public function readSearchResultList(string $querystring): Collection
+    public function readSearchResultList($querystring): Collection
     {
         try {
             #$querystring = '+' . implode(' +', explode(' ', $querystring));

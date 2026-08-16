@@ -15,6 +15,9 @@ use BO\Zmsdldb\Collection\Authorities as Collection;
  */
 class Authority extends Base
 {
+    /**
+     * @return Collection
+     */
     #[\Override]
     protected function parseData($data)
     {

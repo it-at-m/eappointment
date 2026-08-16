@@ -35,8 +35,10 @@ class Service extends Base
         return count($locationcompare) == count($locationsfound);
     }
 
-    /** @psalm-api */
-    public function hasLocation($location_csv)
+    /**
+     * @psalm-api
+     */
+    public function hasLocation($location_csv): bool
     {
         $service = $this->getArrayCopy();
         $locationcompare = explode(',', $location_csv);
@@ -48,8 +50,10 @@ class Service extends Base
         return false;
     }
 
-    /** @psalm-api */
-    public function hasAppointments($external = false)
+    /**
+     * @psalm-api
+     */
+    public function hasAppointments($external = false): bool
     {
         foreach ($this['locations'] as $location) {
             if (isset($location['appointment']['allowed'])) {
@@ -75,14 +79,16 @@ class Service extends Base
     /**
      * @return Bool
      */
-    public function isLocale($locale)
+    public function isLocale(string $locale)
     {
         $service = $this->getArrayCopy();
         return $service['meta']['locale'] == $locale;
     }
 
-    /** @psalm-api */
-    public function getLocations()
+    /**
+     * @psalm-api
+     */
+    public function getLocations(): array
     {
         $locations = [];
         foreach ($this['locations'] as $location) {

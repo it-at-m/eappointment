@@ -174,7 +174,7 @@ abstract class Base extends TestCase
 
     protected function render(
         array $arguments = [],
-        $parameters = [],
+        array $parameters = [],
         $sessionData = null,
         $method = 'GET'
     ) {
@@ -231,7 +231,7 @@ abstract class Base extends TestCase
         return $request;
     }
 
-    protected function setValidatorInstance($parameters)
+    protected function setValidatorInstance(array $parameters): void
     {
         $validator = new \BO\Mellon\Validator($parameters);
         if (array_key_exists('__body', $parameters)) {
@@ -240,7 +240,7 @@ abstract class Base extends TestCase
         $validator->makeInstance();
     }
 
-    public function assertRedirect($response, $uri, $status = 302)
+    public function assertRedirect($response, $uri, $status = 302): void
     {
         $this->assertEquals($status, $response->getStatusCode());
         $this->assertEquals($uri, $response->getHeaderLine('Location'));

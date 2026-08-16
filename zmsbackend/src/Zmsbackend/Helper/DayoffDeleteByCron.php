@@ -7,7 +7,7 @@ namespace BO\Zmsbackend\Helper;
  */
 class DayoffDeleteByCron
 {
-    public static function init($timeInterval)
+    public static function init($timeInterval): void
     {
         $deleteInSeconds = (365 * 24 * 60 * 60 / 12) * $timeInterval;
         $query = new \BO\Zmsbackend\Dayoff\Service\DayOff();

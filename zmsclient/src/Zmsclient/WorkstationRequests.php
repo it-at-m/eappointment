@@ -84,8 +84,10 @@ class WorkstationRequests
     }
 
 
-    /** @psalm-api */
-    public function readNextProcess($excludedIds)
+    /**
+     * @psalm-api
+     */
+    public function readNextProcess($excludedIds): \BO\Zmsentities\Schema\Entity|false|null
     {
         $exclude = is_array($excludedIds) ? implode(',', $excludedIds) : $excludedIds;
         if ($this->workstation->isClusterEnabled()) {

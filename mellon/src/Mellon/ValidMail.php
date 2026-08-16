@@ -41,7 +41,7 @@ class ValidMail extends \BO\Mellon\ValidString
      * Not every DNS server refreshes an outdated entry on an ANY requests
      * So we have to check common types before checking an ANY type
      */
-    protected function checkDnsAny($domain)
+    protected function checkDnsAny(string $domain): bool
     {
         checkdnsrr($domain, 'A'); // refresh on outdated TTL
         checkdnsrr($domain, 'AAAA');
@@ -49,8 +49,10 @@ class ValidMail extends \BO\Mellon\ValidString
         return checkdnsrr($domain, 'ANY');
     }
 
-    /** @psalm-api */
-    public function hasDNS($message = 'no valid DNS entry found')
+    /**
+     * @psalm-api
+     */
+    public function hasDNS($message = 'no valid DNS entry found'): static
     {
         $this->validated = true;
         if ($this->value && !$this::$disableDnsChecks) {
@@ -63,8 +65,10 @@ class ValidMail extends \BO\Mellon\ValidString
         return $this;
     }
 
-    /** @psalm-api */
-    public function hasMX($message = 'no valid DNS entry of type MX found')
+    /**
+     * @psalm-api
+     */
+    public function hasMX($message = 'no valid DNS entry of type MX found'): static
     {
         $this->validated = true;
         if ($this->value) {

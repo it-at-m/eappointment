@@ -15,6 +15,9 @@ use BO\Zmsdldb\Collection\Links as Collection;
  */
 class Link extends Base
 {
+    /**
+     * @return void
+     */
     #[\Override]
     public function loadData()
     {
@@ -24,6 +27,9 @@ class Link extends Base
         $this->setItemList($this->parseData($data));
     }
 
+    /**
+     * @return Collection
+     */
     #[\Override]
     protected function parseData($data)
     {
@@ -61,7 +67,11 @@ class Link extends Base
         return false;
     }
 
-    /** @psalm-api */
+    /**
+     * @psalm-api
+     *
+     * @return Collection
+     */
     public function readSearchResultList($query)
     {
         $list = $this->getItemList();

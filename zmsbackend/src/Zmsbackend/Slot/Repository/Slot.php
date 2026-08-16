@@ -247,6 +247,10 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     ';
 
 
+    /**
+     * @return array
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -254,11 +258,15 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
         ];
     }
 
+    /**
+     * @return (mixed|string)[]
+     *
+     */
     public function reverseEntityMapping(
         \BO\Zmsentities\Slot $slot,
         \BO\Zmsentities\Availability $availability,
         \DateTimeInterface $date
-    ) {
+    ): array {
         $data = array();
         $data['scopeID'] = $availability->scope->id;
         $data['availabilityID'] = $availability->id;
@@ -274,7 +282,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
         return $data;
     }
 
-    public function addConditionSlotId($slotID)
+    public function addConditionSlotId($slotID): static
     {
         $this->query->where('slot.slotID', '=', $slotID);
         return $this;

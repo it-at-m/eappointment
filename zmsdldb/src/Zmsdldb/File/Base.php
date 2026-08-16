@@ -99,6 +99,9 @@ abstract class Base
         }
     }
 
+    /**
+     * @return void
+     */
     public function loadData()
     {
         try {
@@ -109,6 +112,9 @@ abstract class Base
         }
     }
 
+    /**
+     * @return \BO\Zmsdldb\Collection\Base
+     */
     public function getItemList()
     {
         if (null === $this->itemList) {
@@ -117,13 +123,16 @@ abstract class Base
         return $this->itemList;
     }
 
-    protected function setItemList($list)
+    protected function setItemList($list): static
     {
         $this->itemList = $list;
         return $this;
     }
 
-    public function fetchId($itemId)
+    /**
+     * @return \BO\Zmsdldb\Entity\Base|false
+     */
+    public function fetchId(string $itemId)
     {
         $itemList = $this->getItemList();
 
@@ -134,12 +143,12 @@ abstract class Base
         return $itemList[$itemId];
     }
 
-    public function setAccessInstance(\BO\Zmsdldb\AbstractAccess $accessInstance)
+    public function setAccessInstance(\BO\Zmsdldb\AbstractAccess $accessInstance): void
     {
         $this->accessInstance = $accessInstance;
     }
 
-    public function access()
+    public function access(): \BO\Zmsdldb\AbstractAccess
     {
         return $this->accessInstance;
     }

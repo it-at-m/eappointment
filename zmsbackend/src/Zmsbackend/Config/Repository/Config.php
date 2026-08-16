@@ -27,7 +27,7 @@ class Config extends \BO\Zmsbackend\Query\Base
             ';
 
 
-    public function addConditionName($itemName)
+    public function addConditionName($itemName): static
     {
         $this->query->where(self::TABLE . '.name', '=', $itemName);
         return $this;

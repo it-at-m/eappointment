@@ -13,8 +13,6 @@ use BO\Zmsdldb\Elastic\Authority as Base;
 use BO\Zmsdldb\Entity\Authority as AuthorityEntity;
 use BO\Zmsdldb\Entity\Location as LocationEntity;
 
-/**
- */
 /** @psalm-api */
 class Authority extends Base
 {
@@ -24,7 +22,7 @@ class Authority extends Base
      * @return Collection
      */
     #[\Override]
-    public function fetchList(array $servicelist = []): Collection
+    public function fetchList($servicelist = []): Collection
     {
         try {
             $authorityList = new Collection();
@@ -147,7 +145,7 @@ class Authority extends Base
      * @return Collection
      */
     #[\Override]
-    public function readListByOfficePath(string $officepath): Collection
+    public function readListByOfficePath($officepath): Collection
     {
         $authorityList = new Collection();
 

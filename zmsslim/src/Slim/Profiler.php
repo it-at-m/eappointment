@@ -9,9 +9,8 @@ class Profiler
 
     /**
      * @SuppressWarnings(Superglobal)
-     *
      */
-    public static function init()
+    public static function init(): void
     {
         static::$startupMicrotime = microtime(true);
         if (isset($_SERVER["REQUEST_TIME_FLOAT"])) {
@@ -19,20 +18,20 @@ class Profiler
         }
     }
 
-    public static function add($message)
+    public static function add(string $message): static
     {
         $profile = new static($message);
         static::$profileList[] = $profile;
         return $profile;
     }
 
-    public static function addMemoryPeak($message = 'Mem')
+    public static function addMemoryPeak($message = 'Mem'): void
     {
         $memoryKb = round(memory_get_peak_usage() / 1024, 0);
         static::add("$message " . $memoryKb . "kb");
     }
 
-    public static function getList()
+    public static function getList(): string
     {
         return implode(";", static::$profileList);
     }
@@ -48,7 +47,7 @@ class Profiler
         $this->includedFiles = count(get_included_files());
     }
 
-    public function getSeconds()
+    public function getSeconds(): float
     {
         return round(($this->instanceMicrotime - static::$startupMicrotime), 3);
     }

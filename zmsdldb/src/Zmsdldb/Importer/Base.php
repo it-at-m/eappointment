@@ -45,8 +45,10 @@ abstract class Base implements Options
         $this->options = $options;
     }
 
-    /** @psalm-api */
-    public function setLocaleList(array $localeList = ['de', 'en'])
+    /**
+     * @psalm-api
+     */
+    public function setLocaleList(array $localeList = ['de', 'en']): void
     {
         $this->localeList = $localeList;
     }
@@ -111,7 +113,11 @@ abstract class Base implements Options
         }
     }
 
-    /** @psalm-api */
+    /**
+     * @psalm-api
+     *
+     * @return void
+     */
     public function clearDatabase()
     {
         try {
@@ -221,10 +227,16 @@ abstract class Base implements Options
         }
     }
 
+    /**
+     * @return void
+     */
     public function preImport()
     {
     }
 
+    /**
+     * @return void
+     */
     public function postImport()
     {
     }

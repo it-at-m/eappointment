@@ -41,7 +41,7 @@ class Location extends Base
     }
 
     #[\Override]
-    public function fetchList(string|false $service_csv = false, bool $mixLanguages = false): Collection
+    public function fetchList($service_csv = false, $mixLanguages = false): Collection
     {
         # COALESCE(l2.data_json, l.data_json) AS data_json
         # IF(l2.id, l2.data_json, l.data_json) AS data_json
@@ -94,7 +94,7 @@ class Location extends Base
     }
 
     #[\Override]
-    public function fetchListByOffice(string $office, bool $mixLanguages = false): Collection
+    public function fetchListByOffice($office, $mixLanguages = false): Collection
     {
         try {
             $sqlArgs = [$this->locale];
@@ -141,7 +141,7 @@ class Location extends Base
      * @return Collection
      */
     #[\Override]
-    public function fetchFromCsv(string $location_csv, bool $mixLanguages = false): Collection
+    public function fetchFromCsv($location_csv, $mixLanguages = false): Collection
     {
         try {
             $sqlArgs = [$this->locale];
@@ -183,7 +183,7 @@ class Location extends Base
     }
 
     #[\Override]
-    protected function fetchGeoJsonLocations(?string $category, bool $getAll): Collection
+    protected function fetchGeoJsonLocations($category, $getAll): Collection
     {
         try {
             $sqlArgs = [$this->locale, $this->locale, $this->locale];
@@ -242,7 +242,7 @@ class Location extends Base
      * @todo Refactoring required, functions in this class should return entities, not JSON data
      */
     #[\Override]
-    public function fetchGeoJson(?string $category = null, bool $getAll = false): array
+    public function fetchGeoJson($category = null, $getAll = false): array
     {
         $locationList = $this->fetchGeoJsonLocations($category, $getAll);
         $geoJson = [];
@@ -273,7 +273,7 @@ class Location extends Base
     }
 
     #[\Override]
-    public function readSearchResultList(string $query, ?string $service_csv = null): Collection
+    public function readSearchResultList($query, $service_csv = null): Collection
     {
         try {
             #$query = '+' . implode(' +', explode(' ', $query));
@@ -313,7 +313,7 @@ class Location extends Base
     }
 
     #[\Override]
-    public function fetchLocationsForCompilation(array $authoritys = [], array $locations = []): Collection
+    public function fetchLocationsForCompilation($authoritys = [], $locations = []): Collection
     {
         try {
             $sqlArgs = [$this->locale];

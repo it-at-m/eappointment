@@ -2,9 +2,6 @@
 
 namespace BO\Zmsbackend\Process\Repository;
 
-/**
- *
- */
 class ProcessStatusFree extends \BO\Zmsbackend\Query\Base
 {
     /**
@@ -112,7 +109,7 @@ class ProcessStatusFree extends \BO\Zmsbackend\Query\Base
 
     const string GROUPBY_SELECT_PROCESSLIST_DAY = 'GROUP BY scope__id, appointments__0__date';
 
-    public static function buildDaysCondition($days)
+    public static function buildDaysCondition(array $days): string
     {
         $sql = 'AND (';
         $sqlPats = [];

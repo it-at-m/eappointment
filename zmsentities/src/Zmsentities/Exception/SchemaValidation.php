@@ -15,20 +15,20 @@ class SchemaValidation extends \Exception
 
     public $template;
 
-    public function setValidationError(array $validationErrorList)
+    public function setValidationError(array $validationErrorList): static
     {
         $this->setMessages($validationErrorList);
         return $this;
     }
 
-    public function setSchemaName($schemaName)
+    public function setSchemaName($schemaName): static
     {
         $this->schemaName = $schemaName . '.json';
         $this->template = $schemaName;
         return $this;
     }
 
-    protected function setMessages($validationErrorList)
+    protected function setMessages(array $validationErrorList): static
     {
         foreach ($validationErrorList as $error) {
             $pointer = is_array($error->data()->path())

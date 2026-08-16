@@ -15,6 +15,9 @@ use BO\Zmsdldb\Collection\Topics as Collection;
  */
 class Topic extends Base
 {
+    /**
+     * @return Collection
+     */
     #[\Override]
     protected function parseData($data)
     {

@@ -29,7 +29,7 @@ class Delegate
         };
     }
 
-    private static function setValueAtPath(&$container, array $propertyPath, mixed $newValue): void
+    private static function setValueAtPath(mixed &$container, array $propertyPath, mixed $newValue): void
     {
         $property = array_shift($propertyPath);
         if ($propertyPath === []) {
