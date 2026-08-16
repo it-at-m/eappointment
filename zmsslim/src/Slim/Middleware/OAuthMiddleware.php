@@ -113,7 +113,7 @@ class OAuthMiddleware
             return $this->withRedirect($response, $this->getAuthUrl($request, $instance), 301);
         }
         if ('login' == $request->getAttribute('authentificationHandler')) {
-            $instance->doLogin($request, $response);
+            $instance->doLogin($request);
             $response = $next->handle($request);
             return $response;
         }
