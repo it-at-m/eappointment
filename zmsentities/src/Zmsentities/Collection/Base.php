@@ -259,7 +259,7 @@ class Base extends \ArrayObject implements \JsonSerializable
     }
 
     /**
-     * @return Entity[]
+     * @return T[]
      *
      */
     public function getAsArray(): array
