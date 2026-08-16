@@ -46,6 +46,7 @@ class Language
         }
     }
 
+    /** @psalm-api */
     public function getDefaultLanguageName(): ?string
     {
         $default = \App::$supportedLanguages[$this->getDefault()]['name'] ?? null;
@@ -125,7 +126,9 @@ class Language
             $route = $request->getAttribute('route');
             if ($route instanceof \Slim\Routing\Route) {
                 $lang = $route->getArgument('lang');
-                $language = (!empty($lang)) ? (string) $lang : $language;
+                if ($lang !== null && $lang !== '') {
+                    $language = $lang;
+                }
             }
         }
 
