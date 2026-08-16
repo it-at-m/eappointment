@@ -47,7 +47,7 @@ class Application extends \BO\Slim\Application
 
     const bool DEBUG = false;
 
-    const string|false TWIG_CACHE = ZMS_STATISTIC_TWIG_CACHE;
+    const mixed TWIG_CACHE = ZMS_STATISTIC_TWIG_CACHE;
 
     const int SESSION_DURATION = ZMS_STATISTIC_SESSION_DURATION;
 
