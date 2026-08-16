@@ -7,6 +7,8 @@
 
 namespace BO\Slim;
 
+use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Twig\Extension\AbstractExtension;
 
 /**
@@ -19,23 +21,21 @@ use Twig\Extension\AbstractExtension;
   */
 class TwigExtension extends AbstractExtension
 {
-    /**
-     * @var \BO\Slim\Container
-     */
-    private $container;
+    private ContainerInterface $container;
 
-    public function __construct($container)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
 
+    /** @psalm-api Called by Twig when the extension is registered. */
     public function getName(): string
     {
         return 'boslimExtension';
     }
 
     #[\Override]
-    public function getFunctions()
+    public function getFunctions(): array
     {
         $safe = array('is_safe' => array('html'));
         return array(
@@ -64,18 +64,18 @@ class TwigExtension extends AbstractExtension
     }
 
 
-    public static function isImageAllowed()
+    public static function isImageAllowed(): bool
     {
         return (isset(\App::$isImageAllowed)) ? \App::$isImageAllowed : true;
     }
 
-    public function getLanguageDescriptor($locale = 'de')
+    public function getLanguageDescriptor(string $locale = 'de'): ?string
     {
         $language = \App::$supportedLanguages[$locale] ?? [];
         return $language['name'] ?? null;
     }
 
-    public static function isNumeric($var): bool
+    public static function isNumeric(mixed $var): bool
     {
         return is_numeric($var);
     }
@@ -91,12 +91,12 @@ class TwigExtension extends AbstractExtension
     /**
      * @return false|string
      */
-    public static function getSystemStatus($env): string|false
+    public static function getSystemStatus(string $env): string|false
     {
         return getenv($env);
     }
 
-    public function toTextFormat($string): string
+    public function toTextFormat(string $string): string
     {
         $string = \strip_tags($string, '<br />');
         $temp = str_replace(array("<br />"), "\n", $string);
@@ -112,15 +112,15 @@ class TwigExtension extends AbstractExtension
     }
 
     /**
-     * @return (false|float|int|mixed|string)[]
-     *
+     * @return array<string, mixed>
      */
-    public function formatDateTime($dateString): array
+    public function formatDateTime(object $dateString): array
     {
         $dateTime = new \DateTimeImmutable(
             $dateString->year . '-' . $dateString->month . '-' . $dateString->day,
-            new \DateTimezone('Europe/Berlin')
+            new \DateTimeZone('Europe/Berlin')
         );
+        $formatDate = [];
         $formatDate['date']     = Helper::getFormatedDates($dateTime, "EE, dd. MMMM yyyy");
         $formatDate['fulldate'] = Helper::getFormatedDates($dateTime, "EEEE, 'den' dd. MMMM yyyy");
         $formatDate['weekday']  = (date('w', $dateTime->getTimestamp()) == 0) ?
@@ -136,10 +136,9 @@ class TwigExtension extends AbstractExtension
     }
 
     /**
-     * @return (array|mixed|string)[]
-     *
+     * @return array{name: mixed, params: array<array-key, mixed>}
      */
-    public function currentRoute($lang = null): array
+    public function currentRoute(?string $lang = null): array
     {
         $route = array(
             'name' => 'noroute',
@@ -147,10 +146,15 @@ class TwigExtension extends AbstractExtension
         );
         if ($this->container->has('currentRoute')) {
             $routeParams = $this->container->get('currentRouteParams');
+            if (!is_array($routeParams)) {
+                $routeParams = [];
+            }
             if (null !== $lang && 'de' == $lang) {
                 unset($routeParams['lang']);
-            } elseif (\App::MULTILANGUAGE) {
-                $routeParams['lang'] = ($lang !== null) ? $lang : \App::$language->getCurrentLanguage();
+            } elseif (self::isMultiLanguage()) {
+                $routeParams['lang'] = ($lang !== null) ? $lang : (
+                    \App::$language instanceof Language ? \App::$language->getCurrentLanguage() : 'de'
+                );
             }
 
             $routeName = $this->container->get('currentRoute');
@@ -162,42 +166,46 @@ class TwigExtension extends AbstractExtension
         return $route;
     }
 
-    public function currentLang()
+    public function currentLang(): string
     {
-        return (\App::MULTILANGUAGE) ? \App::$language->getCurrentLanguage() : 'de';
+        if (self::isMultiLanguage() && \App::$language instanceof Language) {
+            return \App::$language->getCurrentLanguage();
+        }
+        return 'de';
     }
 
     public function currentLocale(): string
     {
         $locale = 'de_DE';
-        if (\App::MULTILANGUAGE) {
-            $locale = explode('.', \App::$language->getCurrentLocale());
-            $locale = reset($locale);
+        if (self::isMultiLanguage() && \App::$language instanceof Language) {
+            $parts = explode('.', \App::$language->getCurrentLocale());
+            $locale = $parts[0] !== '' ? $parts[0] : 'de_DE';
         }
         return $locale;
     }
 
-    public function currentVersion()
+    public function currentVersion(): array|string|null
     {
         $version = Version::getString();
         return ($version != Version::UNKNOWN) ? $version : Git::readCurrentVersion();
     }
 
-    public function urlGet($routeName, $params = array(), $getparams = array())
+    public function urlGet(string $routeName, array $params = [], array $getparams = []): string
     {
         $url = \App::$slim->urlFor($routeName, $params);
-        $url = preg_replace('#^.*?(https?://)#', '\1', $url); // allow http:// routes
-        if ($getparams) {
+        $url = preg_replace('#^.*?(https?://)#', '\1', $url) ?? $url; // allow http:// routes
+        if ($getparams !== []) {
             $url .= '?' . http_build_query($getparams);
         }
-        return Helper::proxySanitizeUri($url);
+        $sanitized = Helper::proxySanitizeUri($url);
+        return is_string($sanitized) ? $sanitized : $url;
     }
 
-    public function csvProperty($list, $property): string
+    public function csvProperty(iterable $list, string $property): string
     {
         $propertylist = array();
         foreach ($list as $item) {
-            if (!is_scalar($item) && array_key_exists($property, $item)) {
+            if (is_array($item) && array_key_exists($property, $item)) {
                 $propertylist[] = $item[$property];
             }
         }
@@ -205,15 +213,14 @@ class TwigExtension extends AbstractExtension
     }
 
     /**
-     * @return (array|mixed)[][]
-     *
+     * @return array<string, array{prefix: string, sublist: list<mixed>}>
      */
-    public function azPrefixList($list, $property): array
+    public function azPrefixList(iterable $list, string $property): array
     {
         $azList = array();
         foreach ($list as $item) {
-            if (!is_scalar($item) && array_key_exists($property, $item)) {
-                $currentPrefix = self::sortFirstChar($item[$property]);
+            if (is_array($item) && array_key_exists($property, $item)) {
+                $currentPrefix = self::sortFirstChar((string) $item[$property]);
                 if (!array_key_exists($currentPrefix, $azList)) {
                     $azList[$currentPrefix] = array(
                         'prefix' => $currentPrefix,
@@ -229,28 +236,34 @@ class TwigExtension extends AbstractExtension
     }
 
     /**
-     * @return (array|mixed)[][]
-     *
+     * @return array<string, array{prefix: string, sublist: list<mixed>}>
      */
-    public function azPrefixListCollator($list, $property, $locale): array
+    public function azPrefixListCollator(mixed $list, string $property, string $locale): array
     {
         $collator = collator_create($locale);
+        if ($collator === null) {
+            return [];
+        }
         $collator->setAttribute(\Collator::QUATERNARY, \Collator::ON);
         $collator->setAttribute(\Collator::CASE_FIRST, \Collator::ON);
         $collator->setAttribute(\Collator::NUMERIC_COLLATION, \Collator::ON);
 
         if (is_array($list)) {
             uasort($list, function ($itemA, $itemB) use ($collator, $property) {
-                return collator_compare($collator, $itemA[$property], $itemB[$property]);
+                $compared = collator_compare($collator, $itemA[$property], $itemB[$property]);
+                return $compared !== false ? $compared : 0;
             });
-        } else {
+        } elseif (is_object($list) && method_exists($list, 'sortWithCollator')) {
             $list = $list->sortWithCollator($property, $locale);
         }
 
         $azList = array();
 
         foreach ($list as $item) {
-            $currentPrefix = self::sortFirstChar($item[$property]);
+            if (!is_array($item) || !array_key_exists($property, $item)) {
+                continue;
+            }
+            $currentPrefix = self::sortFirstChar((string) $item[$property]);
             if (!array_key_exists($currentPrefix, $azList)) {
                 $azList[$currentPrefix] = array(
                     'prefix' => $currentPrefix,
@@ -262,7 +275,7 @@ class TwigExtension extends AbstractExtension
         return $azList;
     }
 
-    public function isValueInArray($value, $params): bool
+    public function isValueInArray(mixed $value, string $params): bool
     {
         $paramsArr = explode(',', $params);
         if (in_array($value, $paramsArr)) {
@@ -271,45 +284,55 @@ class TwigExtension extends AbstractExtension
         return false;
     }
 
-    public static function remoteInclude($uri): string
+    public static function remoteInclude(string $uri): string
     {
         $prepend = '';
         $append = '';
-        if (\App::DEBUG) {
+        if (self::isDebug()) {
             $prepend = "<!-- include($uri) -->\n";
             $append = "\n<!-- /include($uri) -->";
         }
-        if (\App::ESI_ENABLED) {
+        if (self::isEsiEnabled()) {
             // Varnish does not support https
-            $uri = preg_replace('#^(https?:)?//#', 'http://', $uri);
-            if (\App::DEBUG) {
+            $httpUri = preg_replace('#^(https?:)?//#', 'http://', $uri);
+            $uri = is_string($httpUri) ? $httpUri : $uri;
+            if (self::isDebug()) {
                 $prepend = "<!-- replaced uri=$uri --> " . $prepend;
             }
             return $prepend . '<esi:include src="' . $uri . '" />' . $append;
-        } else {
-            $useragent = 'Client-' . (defined("\App::IDENTIFIER") ? constant("\App::IDENTIFIER") : 'ZMS');
-            $options = array(
-                'http' => array(
-                  'method' => "GET",
-                  'header' => "Accept-language: de\r\n" .
-                            "Cookie: zms=development\r\n" .
-                            "user-agent: $useragent \r\n"
-                )
-              );
-            $context = stream_context_create($options);
-            return $prepend . file_get_contents($uri, false, $context) . $append;
         }
+        $useragent = 'Client-' . (defined("\App::IDENTIFIER") ? constant("\App::IDENTIFIER") : 'ZMS');
+        $options = array(
+            'http' => array(
+              'method' => "GET",
+              'header' => "Accept-language: de\r\n" .
+                        "Cookie: zms=development\r\n" .
+                        "user-agent: $useragent \r\n"
+            )
+          );
+        $context = stream_context_create($options);
+        $contents = file_get_contents($uri, false, $context);
+        return $prepend . ($contents !== false ? $contents : '') . $append;
     }
 
-    public function getEsiFromPath($path, $locale = false): string
+    public function getEsiFromPath(string $path, string|false $locale = false): string
     {
-        $localePath = ($locale && 'de' != $locale) ? '/' . $locale : '';
-        return \App::$esiBaseUrl . $localePath . \App::$$path;
+        $localePath = ($locale !== false && 'de' != $locale) ? '/' . $locale : '';
+        $base = \App::$esiBaseUrl ?? '';
+        $pathValue = \App::$$path ?? '';
+        return $base . $localePath . (is_string($pathValue) ? $pathValue : '');
     }
 
-    public function getClientHost()
+    public function getClientHost(): string
     {
-        $request = $this->container['request'];
+        if (!$this->container->has('request')) {
+            return '';
+        }
+        $request = $this->container->get('request');
+        if (!$request instanceof ServerRequestInterface) {
+            return '';
+        }
+        $hostname = '';
         $headerList = ['host', 'x-forwarded-host'];
         foreach ($headerList as $headername) {
             if ($request->hasHeader($headername)) {
@@ -334,15 +357,17 @@ class TwigExtension extends AbstractExtension
         return $string;
     }
 
-    protected static function sortByName($left, $right): int
+    protected static function sortByName(mixed $left, mixed $right): int
     {
+        $leftName = is_array($left) && isset($left['name']) ? (string) $left['name'] : '';
+        $rightName = is_array($right) && isset($right['name']) ? (string) $right['name'] : '';
         return strcmp(
-            self::toSortableString(strtolower($left['name'])),
-            strtolower(self::toSortableString($right['name']))
+            self::toSortableString(strtolower($leftName)),
+            strtolower(self::toSortableString($rightName))
         );
     }
 
-    protected static function sortFirstChar($string): string
+    protected static function sortFirstChar(string $string): string
     {
         $firstChar = mb_substr($string, 0, 1);
         $firstChar = mb_strtoupper($firstChar);
@@ -356,16 +381,12 @@ class TwigExtension extends AbstractExtension
             . ' <p>For debugging: This log contains runtime information.
             <strong>DISABLE FOR PRODUCTION!</strong></p><ul>';
         foreach (Profiler::$profileList as $entry) {
-            if ($entry instanceof Profiler) {
-                $output .= "<li>$entry</li>";
-            } else {
-                $output .= \Tracy\Debugger::dump($entry, true);
-            }
+            $output .= "<li>$entry</li>";
         }
         return $output . '</ul>';
     }
 
-    public function kindOfPayment($code): string
+    public function kindOfPayment(mixed $code): string
     {
         $result = '';
         if ($code == 0) {
@@ -380,5 +401,24 @@ class TwigExtension extends AbstractExtension
             $result = 'subscribecash';
         }
         return $result;
+    }
+
+    private static function isMultiLanguage(): bool
+    {
+        /** @psalm-suppress RedundantCondition Module App subclasses may set MULTILANGUAGE to false. */
+        return \App::MULTILANGUAGE;
+    }
+
+    private static function isDebug(): bool
+    {
+        /** @psalm-suppress RedundantCondition */
+        /** @psalm-suppress TypeDoesNotContainType Module App subclasses may set DEBUG to true. */
+        return \App::DEBUG;
+    }
+
+    private static function isEsiEnabled(): bool
+    {
+        /** @psalm-suppress RedundantCondition Module App subclasses may set ESI_ENABLED to false. */
+        return \App::ESI_ENABLED;
     }
 }
