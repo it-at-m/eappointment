@@ -21,6 +21,7 @@ class Route
         $this->container = $container;
     }
 
+    /** @psalm-api Called by Slim as middleware. */
     public function getInfo(ServerRequestInterface $request, RequestHandlerInterface $next): ResponseInterface
     {
         $routeInstance = $request->getAttribute(RouteContext::ROUTE);
