@@ -228,7 +228,10 @@ class TwigExtension extends AbstractExtension
                     );
                 }
                 $azList[$currentPrefix]['sublist'][] = $item;
-                uasort($azList[$currentPrefix]['sublist'], array($this,'sortByName'));
+                uasort(
+                    $azList[$currentPrefix]['sublist'],
+                    static fn ($left, $right) => self::sortByName($left, $right)
+                );
                 ksort($azList);
             }
         }
@@ -251,7 +254,7 @@ class TwigExtension extends AbstractExtension
         if (is_array($list)) {
             uasort($list, function ($itemA, $itemB) use ($collator, $property) {
                 $compared = collator_compare($collator, $itemA[$property], $itemB[$property]);
-                return $compared !== false ? $compared : 0;
+                return (int) $compared;
             });
         } elseif (is_object($list) && method_exists($list, 'sortWithCollator')) {
             $list = $list->sortWithCollator($property, $locale);
