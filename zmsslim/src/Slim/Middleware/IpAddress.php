@@ -22,7 +22,7 @@ class IpAddress
      *
      * @var bool
      */
-    protected $checkProxyHeaders;
+    protected bool $checkProxyHeaders;
 
     /**
      * List of trusted proxy IP addresses
@@ -33,21 +33,21 @@ class IpAddress
      *
      * @var array|true
      */
-    protected $trustedProxies;
+    protected mixed $trustedProxies;
 
     /**
      * Name of the attribute added to the ServerRequest object
      *
      * @var string
      */
-    protected $attributeName = 'ip_address';
+    protected string $attributeName = 'ip_address';
 
     /**
      * List of proxy headers inspected for the client IP address
      *
      * @var array
      */
-    protected $headersToInspect = [
+    protected array $headersToInspect = [
         'X-Remote-Ip',
         'X-Forwarded-For',
         'X-Forwarded',
@@ -59,23 +59,23 @@ class IpAddress
      * Constructor
      *
      * @param bool $checkProxyHeaders Whether to use proxy headers to determine client IP
-     * @param $trustedProxies   List of IP addresses of trusted proxies or TRUE if all proxies should be trusted
-     * @param string $attributeName   Name of attribute added to ServerRequest object
+     * @param mixed $trustedProxies   List of IP addresses of trusted proxies or TRUE if all proxies should be trusted
+     * @param string|null $attributeName   Name of attribute added to ServerRequest object
      * @param array $headersToInspect List of headers to inspect
      */
     public function __construct(
-        $checkProxyHeaders = false,
-        $trustedProxies = [],
-        $attributeName = null,
+        bool $checkProxyHeaders = false,
+        mixed $trustedProxies = [],
+        ?string $attributeName = null,
         array $headersToInspect = []
     ) {
         $this->checkProxyHeaders = $checkProxyHeaders;
         $this->trustedProxies = $trustedProxies;
 
-        if ($attributeName) {
+        if ($attributeName !== null && $attributeName !== '') {
             $this->attributeName = $attributeName;
         }
-        if (!empty($headersToInspect)) {
+        if ($headersToInspect !== []) {
             $this->headersToInspect = $headersToInspect;
         }
     }
@@ -88,8 +88,9 @@ class IpAddress
      * @param RequestHandlerInterface|null $next Next middleware
      *
      * @return ResponseInterface
+     * @psalm-api Called by Slim as middleware.
      */
-    public function __invoke(ServerRequestInterface $request, ?RequestHandlerInterface $next)
+    public function __invoke(ServerRequestInterface $request, ?RequestHandlerInterface $next): ResponseInterface
     {
         if (!$next) {
             return (new ResponseFactory())->createResponse();
@@ -105,21 +106,22 @@ class IpAddress
      * Find out the client's IP address from the headers available to us
      *
      * @param  ServerRequestInterface $request PSR-7 Request
-     * @return string
+     * @return string|null
      */
-    protected function determineClientIpAddress($request)
+    protected function determineClientIpAddress(ServerRequestInterface $request): ?string
     {
         $ipAddress = null;
 
         $serverParams = $request->getServerParams();
-        if (isset($serverParams['REMOTE_ADDR']) && $this->isValidIpAddress($serverParams['REMOTE_ADDR'])) {
+        if (isset($serverParams['REMOTE_ADDR']) && $this->isValidIpAddress((string) $serverParams['REMOTE_ADDR'])) {
             $ipAddress = $serverParams['REMOTE_ADDR'];
         }
 
         if ($this->isCheckProxyHeaders($ipAddress)) {
             foreach ($this->headersToInspect as $header) {
                 if ($request->hasHeader($header)) {
-                    $ipString = trim(current(explode(',', $request->getHeaderLine($header))));
+                    $headerIp = current(explode(',', $request->getHeaderLine($header)));
+                    $ipString = is_string($headerIp) ? trim($headerIp) : '';
                     if ($this->isValidIpAddress($ipString)) {
                         $ipAddress = $ipString;
                         break;
@@ -131,11 +133,14 @@ class IpAddress
         return $ipAddress;
     }
 
-    protected function isCheckProxyHeaders($ipAddress): bool
+    protected function isCheckProxyHeaders(?string $ipAddress): bool
     {
         $checkProxyHeaders = $this->checkProxyHeaders;
-        if ($checkProxyHeaders && ($this->trustedProxies === true || !empty($this->trustedProxies))) {
-            if ($this->trustedProxies !== true && !in_array($ipAddress, $this->trustedProxies)) {
+        if ($checkProxyHeaders && ($this->trustedProxies === true || $this->trustedProxies !== [])) {
+            if ($this->trustedProxies !== true
+                && is_array($this->trustedProxies)
+                && !in_array($ipAddress, $this->trustedProxies, true)
+            ) {
                 $checkProxyHeaders = false;
             }
         }
@@ -148,7 +153,7 @@ class IpAddress
      * @param  string  $ipString
      * @return boolean
      */
-    protected function isValidIpAddress($ipString)
+    protected function isValidIpAddress(string $ipString): bool
     {
         $flags = FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6;
         if (filter_var($ipString, FILTER_VALIDATE_IP, $flags) === false) {
