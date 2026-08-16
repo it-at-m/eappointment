@@ -51,6 +51,7 @@ class SessionHandler implements \SessionHandlerInterface
         return true;
     }
 
+    /** @psalm-api Required by SessionHandlerInterface and used by PHP session shutdown. */
     #[\Override]
     public function close(): bool
     {
