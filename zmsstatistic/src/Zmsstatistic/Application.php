@@ -51,12 +51,14 @@ class Application extends \BO\Slim\Application
 
     const int SESSION_DURATION = ZMS_STATISTIC_SESSION_DURATION;
 
-    public static string $includeUrl = '/terminvereinbarung/statistic';
+    /** @var string */
+    public static $includeUrl = '/terminvereinbarung/statistic';
     /**
      * language preferences
      */
     public static string $locale = 'de';
-    public static array $supportedLanguages = array(
+    /** @var array */
+    public static $supportedLanguages = array(
         // Default language
         'de' => array(
             'name'    => 'Deutsch',
@@ -74,7 +76,8 @@ class Application extends \BO\Slim\Application
      * image preferences
      */
 
-    public static bool $isImageAllowed = false;
+    /** @var bool */
+    public static $isImageAllowed = false;
 
     /*
      * -----------------------------------------------------------------------
