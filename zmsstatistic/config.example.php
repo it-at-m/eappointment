@@ -12,7 +12,7 @@ class App extends \BO\Zmsstatistic\Application
 {
     const string IDENTIFIER = ZMS_IDENTIFIER;
     const bool DEBUG = false;
-    const string|false TWIG_CACHE = ZMS_STATISTIC_TWIG_CACHE;
+    const mixed TWIG_CACHE = ZMS_STATISTIC_TWIG_CACHE;
 
     /**
      * HTTP url for api
