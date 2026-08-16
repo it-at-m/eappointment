@@ -5,22 +5,24 @@ namespace BO\Slim\Middleware\OAuth;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use League\OAuth2\Client\Token\AccessToken;
+use BO\Slim\Middleware\OAuth\Keycloak\Provider;
+use BO\Zmsclient\OAuthService;
 
 /**
  * @SuppressWarnings(PHPMD)
  */
 class KeycloakInstance
 {
-    protected $provider = null;
-    protected $oauthService = null;
+    protected Provider $provider;
+    protected OAuthService $oauthService;
 
-    public function __construct(?\BO\Zmsclient\OAuthService $oauthService = null)
+    public function __construct(?OAuthService $oauthService = null)
     {
-        $this->oauthService = $oauthService ?: new \BO\Zmsclient\OAuthService(\App::$http, \App::CONFIG_SECURE_TOKEN);
-        $this->provider = new Keycloak\Provider(null, $this->oauthService);
+        $this->oauthService = $oauthService ?: new OAuthService(\App::$http, \App::CONFIG_SECURE_TOKEN);
+        $this->provider = new Provider(null, $this->oauthService);
     }
 
-    public function getProvider()
+    public function getProvider(): Provider
     {
         return $this->provider;
     }
@@ -38,7 +40,8 @@ class KeycloakInstance
             $ownerInputData =  $this->provider->getResourceOwnerData($accessToken);
             $this->validateOwnerData((array) $ownerInputData);
 
-            if (\BO\Zmsclient\Auth::getKey()) {
+            $existingKey = \BO\Zmsclient\Auth::getKey();
+            if ($existingKey !== null && $existingKey !== '') {
                 \App::$log->info('Clearing existing session', [
                     'event' => 'oauth_session_clear',
                     'timestamp' => date('c')
@@ -80,7 +83,7 @@ class KeycloakInstance
             $accessTokenData = $this->readTokenDataFromSession();
             $accessTokenData = (is_array($accessTokenData)) ? $accessTokenData : [];
             $existingAccessToken = new AccessToken($accessTokenData);
-            if ($existingAccessToken && $existingAccessToken->hasExpired()) {
+            if ($existingAccessToken->hasExpired()) {
                 $newAccessToken = $this->provider->getAccessToken('refresh_token', [
                     'refresh_token' => $existingAccessToken->getRefreshToken()
                 ]);
@@ -96,7 +99,7 @@ class KeycloakInstance
     /**
      * @return void
      */
-    private function validateAccess(AccessToken $token)
+    private function validateAccess(AccessToken $token): void
     {
         \App::$log->info('Validating OIDC token', [
             'event' => 'oauth_token_validation',
@@ -174,7 +177,7 @@ class KeycloakInstance
         $resourceAccess = $accessTokenPayload['resource_access'];
         $appIdentifierRoles = $resourceAccess[\App::IDENTIFIER]['roles'] ?? null;
 
-        if (!$appIdentifierRoles || !is_array($appIdentifierRoles)) {
+        if (!is_array($appIdentifierRoles)) {
             \App::$log->error('Token validation failed', [
                 'event' => 'oauth_token_validation_failed',
                 'timestamp' => date('c'),
@@ -209,7 +212,7 @@ class KeycloakInstance
     /**
      * @return void
      */
-    private function validateOwnerData(array $ownerInputData)
+    private function validateOwnerData(array $ownerInputData): void
     {
         $config = $this->oauthService->readConfig();
         if (! \array_key_exists('email', $ownerInputData) && 1 == $config->getPreference('oidc', 'onlyVerifiedMail')) {
@@ -217,7 +220,7 @@ class KeycloakInstance
         }
     }
 
-    private function getAccessToken($code)
+    private function getAccessToken(string $code): AccessToken
     {
         \App::$log->info('Getting access token', [
             'event' => 'oauth_get_token',
@@ -252,10 +255,14 @@ class KeycloakInstance
             'timestamp' => date('c')
         ]);
 
+        $sessionKey = $this->getSessionKey();
+        if ($sessionKey === null) {
+            throw new \BO\Slim\Exception\OAuthFailed();
+        }
         $realmData = $this->provider->getBasicOptionsFromJsonFile();
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
         $sessionHandler->open('/' . $realmData['realm'] . '/', $realmData['clientId']);
-        $sessionHandler->write(\BO\Zmsclient\Auth::getKey(), serialize($token), ['oidc' => true]);
+        $sessionHandler->write($sessionKey, serialize($token), ['oidc' => true]);
         return $sessionHandler->close();
     }
 
@@ -266,23 +273,36 @@ class KeycloakInstance
             'timestamp' => date('c')
         ]);
 
+        $sessionKey = $this->getSessionKey();
+        if ($sessionKey === null) {
+            return;
+        }
         $realmData = $this->provider->getBasicOptionsFromJsonFile();
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
         $sessionHandler->open('/' . $realmData['realm'] . '/', $realmData['clientId']);
-        $sessionHandler->destroy(\BO\Zmsclient\Auth::getKey());
+        $sessionHandler->destroy($sessionKey);
     }
 
-    private function readTokenDataFromSession()
+    private function readTokenDataFromSession(): mixed
     {
         \App::$log->info('Reading token from session', [
             'event' => 'oauth_read_token',
             'timestamp' => date('c')
         ]);
 
+        $sessionKey = $this->getSessionKey();
+        if ($sessionKey === null) {
+            return [];
+        }
         $realmData = $this->provider->getBasicOptionsFromJsonFile();
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
         $sessionHandler->open('/' . $realmData['realm'] . '/', $realmData['clientId']);
-        $tokenData = unserialize($sessionHandler->read(\BO\Zmsclient\Auth::getKey(), ['oidc' => true]));
-        return $tokenData;
+        return unserialize($sessionHandler->read($sessionKey, ['oidc' => true]));
+    }
+
+    private function getSessionKey(): ?string
+    {
+        $key = \BO\Zmsclient\Auth::getKey();
+        return ($key !== null && $key !== '') ? $key : null;
     }
 }
