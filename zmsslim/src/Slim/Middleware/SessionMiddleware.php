@@ -38,7 +38,7 @@ class SessionMiddleware
         return $response;
     }
 
-    public function getSessionContainer($request)
+    public function getSessionContainer(ServerRequestInterface $request): Session\SessionData
     {
         $session = Session\SessionData::getSession($request);
         $session->setEntityClass($this->sessionClass);

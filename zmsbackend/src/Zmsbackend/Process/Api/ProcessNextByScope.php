@@ -44,7 +44,7 @@ class ProcessNextByScope extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    public static function getProcess($queueList, $dateTime, $exclude = null)
+    public static function getProcess($queueList, \DateTimeInterface $dateTime, $exclude = null)
     {
         $process = $queueList->getNextProcess($dateTime, $exclude);
         return ($process) ? $process : new \BO\Zmsentities\Process();

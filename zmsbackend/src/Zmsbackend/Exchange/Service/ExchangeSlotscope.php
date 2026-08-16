@@ -8,7 +8,7 @@ class ExchangeSlotscope extends \BO\Zmsbackend\Base
 {
     public function readEntity(
         $subjectid
-    ) {
+    ): Exchange {
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($subjectid);
         $entity = new Exchange();
         $entity['title'] = "Slotbelegung " . $scope->contact->name . " " . $scope->shortName;
@@ -37,7 +37,7 @@ class ExchangeSlotscope extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readSubjectList()
+    public function readSubjectList(): Exchange
     {
         $raw = $this->getReader()->fetchAll(\BO\Zmsbackend\Exchange\Repository\ExchangeSlotscope::QUERY_SUBJECTS, []);
         $entity = new Exchange();
@@ -55,7 +55,7 @@ class ExchangeSlotscope extends \BO\Zmsbackend\Base
     /**
      * @SuppressWarnings(Unused)
      */
-    public function readPeriodList($subjectid, $period = 'day')
+    public function readPeriodList($subjectid, $period = 'day'): Exchange
     {
         $entity = new Exchange();
         $entity['title'] = "Slotbelegung ";

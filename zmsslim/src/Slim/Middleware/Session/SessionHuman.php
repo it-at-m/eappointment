@@ -13,7 +13,7 @@ class SessionHuman extends SessionContainer
 
     const int MIN_TIME = 3;
 
-    public function writeVerifySession($request, $origin = '')
+    public function writeVerifySession($request, $origin = ''): void
     {
         $clientIp = $request->getAttribute('ip_address');
         $this->set('client', 1, 'human');
@@ -24,7 +24,7 @@ class SessionHuman extends SessionContainer
         $this->set('remoteAddress', $clientIp, 'human');
     }
 
-    public function writeBotSession($origin = '')
+    public function writeBotSession($origin = ''): void
     {
         $this->set('client', 0, 'human');
         $this->set('ts', 0, 'human');
@@ -73,7 +73,7 @@ class SessionHuman extends SessionContainer
         return false;
     }
 
-    public function isOverAged()
+    public function isOverAged(): bool
     {
         if (!$this->has('ts', 'human') || time() > ($this->get('ts', 'human') + self::MAX_TIME)) {
             return true;
@@ -81,7 +81,7 @@ class SessionHuman extends SessionContainer
         return false;
     }
 
-    public function isUnderAged()
+    public function isUnderAged(): bool
     {
         if (!$this->has('ts', 'human') || time() < ($this->get('ts', 'human') + self::MIN_TIME)) {
             return true;
@@ -139,7 +139,7 @@ class SessionHuman extends SessionContainer
         return false;
     }
 
-    public function isVerified()
+    public function isVerified(): bool
     {
         if ($this->has('client', 'human') && $this->get('client', 'human')) {
             return true;
@@ -151,8 +151,9 @@ class SessionHuman extends SessionContainer
      * check if is origin
      *
      * @return boolean
+     *
      */
-    protected function isOrigin($originName)
+    protected function isOrigin(string $originName)
     {
         if ($this->has('origin', 'human') && $originName == $this->get('origin', 'human')) {
             return true;

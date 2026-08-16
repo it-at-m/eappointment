@@ -86,8 +86,10 @@ class Application extends \BO\Slim\Application
     public static $data = '/data';
     public static $now = null;
 
-    /** @psalm-api */
-    public static function getNow()
+    /**
+     * @psalm-api
+     */
+    public static function getNow(): \DateTimeInterface
     {
         if (self::$now instanceof \DateTimeInterface) {
             return self::$now;

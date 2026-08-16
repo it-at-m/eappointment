@@ -16,6 +16,9 @@ use BO\Zmsdldb\Collection\Offices as Collection;
   */
 class Office extends Base
 {
+    /**
+     * @return Collection
+     */
     #[\Override]
     protected function parseData($data)
     {

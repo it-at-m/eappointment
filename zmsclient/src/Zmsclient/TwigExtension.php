@@ -28,7 +28,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         $this->container = $container;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return 'bozmsclientExtension';
     }
@@ -42,7 +42,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         );
     }
 
-    public function dumpHttpLog()
+    public function dumpHttpLog(): string
     {
         $output = '<h2>HTTP API-Log</h2>'
             . ' <p>For debugging: This log contains HTTP calls. <strong>DISABLE FOR PRODUCTION!</strong></p>';
@@ -58,7 +58,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $output;
     }
 
-    protected function parseBody($body, $allowEmpty = false)
+    protected function parseBody(\Psr\Http\Message\StreamInterface $body, bool $allowEmpty = false)
     {
         $content = Validator::value((string)$body)->isJson();
         if ($content->hasFailed() && !$allowEmpty) {
@@ -72,7 +72,11 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $output;
     }
 
-    protected function parseHeaders(\Psr\Http\Message\MessageInterface $message)
+    /**
+     * @return string[]
+     *
+     */
+    protected function parseHeaders(\Psr\Http\Message\MessageInterface $message): array
     {
         $headers = [];
         foreach ($message->getHeaders() as $name => $header) {
@@ -81,7 +85,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $headers;
     }
 
-    protected function formatRequest(\Psr\Http\Message\RequestInterface $request)
+    protected function formatRequest(\Psr\Http\Message\RequestInterface $request): array
     {
         $output = [];
         $output['header'] = $this->parseHeaders($request);
@@ -89,7 +93,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $output;
     }
 
-    protected function formatResponse(\Psr\Http\Message\ResponseInterface $response)
+    protected function formatResponse(\Psr\Http\Message\ResponseInterface $response): array
     {
         $output = [];
         $output['header'] = $this->parseHeaders($response);

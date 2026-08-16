@@ -16,7 +16,7 @@ use BO\Zmsdldb\File\Setting as Base;
 class Setting extends Base
 {
     #[\Override]
-    public function fetchName(string $name): ?string
+    public function fetchName($name): ?string
     {
         try {
             $sql = 'SELECT value FROM setting WHERE name = ?';

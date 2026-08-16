@@ -29,7 +29,7 @@ class Access extends \BO\Slim\Controller
 
     protected $owner = null;
 
-    protected function initAccessRights($request)
+    protected function initAccessRights($request): void
     {
         $this->workstation = $this->readWorkstation();
         if ($this->workstation && isset($this->workstation->scope['id']) && $this->workstation->scope['id'] > 0) {
@@ -73,13 +73,16 @@ class Access extends \BO\Slim\Controller
         }
     }
 
-    protected function validateAccessRights($request)
+    protected function validateAccessRights($request): void
     {
         $path = $request->getUri()->getPath();
         $this->validateAccess($path);
         $this->validateScope($path);
     }
 
+    /**
+     * @return void
+     */
     protected function validateAccess($path)
     {
         if (
@@ -91,6 +94,9 @@ class Access extends \BO\Slim\Controller
         }
     }
 
+    /**
+     * @return void
+     */
     protected function validateScope($path)
     {
         if (
@@ -101,7 +107,7 @@ class Access extends \BO\Slim\Controller
         }
     }
 
-    protected function isPathWithoutScope($path)
+    protected function isPathWithoutScope($path): bool
     {
         // TODO: refactor to integrate these access rules in the controller to make them visible
         return (false === strpos($path, 'select')
@@ -111,6 +117,10 @@ class Access extends \BO\Slim\Controller
         );
     }
 
+    /**
+     * @return (mixed|string|string[][][])[]|Workstation
+     *
+     */
     protected function testLogin($input)
     {
         $userAccount = new Useraccount(array(

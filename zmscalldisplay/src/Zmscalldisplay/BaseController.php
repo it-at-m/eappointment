@@ -28,7 +28,7 @@ abstract class BaseController extends \BO\Slim\Controller
         return $this->readResponse($request, $noCacheResponse, $args);
     }
 
-    protected function buildQuery(string $target, RequestInterface $request)
+    protected function buildQuery(string $target, RequestInterface $request): string
     {
         $queryArr  = [];
         $allParams = array_merge(static::$hashParameter[$target], ['template']);

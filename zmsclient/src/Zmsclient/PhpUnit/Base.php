@@ -117,8 +117,10 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         return $this->apiCalls;
     }
 
-    /** @psalm-api */
-    protected function getGraphQL($parameters)
+    /**
+     * @psalm-api
+     */
+    protected function getGraphQL($parameters): GraphQLInterpreter|null
     {
         if (isset($parameters['gql'])) {
             $gqlString = $parameters['gql'];
@@ -130,7 +132,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         return null;
     }
 
-    public function setApiCalls($apiCalls)
+    public function setApiCalls($apiCalls): void
     {
         $this->apiCalls = $apiCalls;
         \App::$http = $this->getApiMockup();

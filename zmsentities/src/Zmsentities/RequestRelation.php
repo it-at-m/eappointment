@@ -6,6 +6,10 @@ class RequestRelation extends Schema\Entity
 {
     public static $schema = "requestrelation.json";
 
+    /**
+     * @return (Provider|Request|null|string|true)[]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -39,7 +43,7 @@ class RequestRelation extends Schema\Entity
         return $this->toProperty()->maxQuantity->get();
     }
 
-    public function isPublic()
+    public function isPublic(): bool
     {
         return (bool) $this->toProperty()->public->get();
     }

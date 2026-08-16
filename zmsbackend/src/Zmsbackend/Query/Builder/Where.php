@@ -77,8 +77,10 @@ trait Where
         return $this;
     }
 
-    /** @psalm-api */
-    public function whereIn(string $field, array $values)
+    /**
+     * @psalm-api
+     */
+    public function whereIn(string $field, array $values): static|array
     {
         if (empty($values)) {
             throw new \InvalidArgumentException('whereIn() requires a non-empty $values array.');

@@ -6,7 +6,7 @@ use BO\Zmsentities\Exchange;
 
 abstract class ExchangeSimpleQuery extends \BO\Zmsbackend\Base
 {
-    protected function fetchDataSet(Exchange $entity, $sql)
+    protected function fetchDataSet(Exchange $entity, string $sql): Exchange
     {
         $raw = $this
             ->getReader()

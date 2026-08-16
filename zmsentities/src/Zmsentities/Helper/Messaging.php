@@ -37,7 +37,7 @@ class Messaging
         \BO\Zmsentities\Config $config,
         \BO\Zmsentities\Process $process,
         $status
-    ) {
+    ): bool {
         $client = $process->getFirstClient();
         $noAttachmentDomains = $config->toProperty()->notifications->noAttachmentDomains->get();
         $noAttachmentDomains = explode(',', (string)$noAttachmentDomains);
@@ -49,7 +49,7 @@ class Messaging
         return (in_array($status, self::$icsRequiredForStatus));
     }
 
-    public static function isEmptyProcessListAllowed($status)
+    public static function isEmptyProcessListAllowed($status): bool
     {
         return (in_array($status, self::$allowEmptyProcesses));
     }
@@ -107,7 +107,7 @@ class Messaging
         return $twig;
     }
 
-    protected static function dbTwigView($templateProvider)
+    protected static function dbTwigView($templateProvider): Environment
     {
         $loader = new \Twig\Loader\ArrayLoader($templateProvider->getTemplates());
         $twig = new \Twig\Environment($loader);
@@ -116,7 +116,7 @@ class Messaging
         return $twig;
     }
 
-    public static function getMailContentPreview($templateContent, $process)
+    public static function getMailContentPreview($templateContent, $process): string
     {
         $parameters = self::generateMailParameters(
             $process,
@@ -129,7 +129,7 @@ class Messaging
     }
 
     public static function getMailContent(
-        $processList,
+        Process|ProcessList $processList,
         Config $config,
         $initiator = null,
         $status = 'appointment',
@@ -157,7 +157,12 @@ class Messaging
         return $message;
     }
 
-    public static function generateMailParameters($processList, $config, $initiator, $status)
+    /**
+     *
+     * @return ((int|mixed)[][]|Client|Process|\DateTimeImmutable|mixed|null|string)[]
+     *
+     */
+    public static function generateMailParameters(Process|ProcessList $processList, Config $config, $initiator, string $status): array
     {
         $collection = (new ProcessList())
             ->testProcessListLength($processList, self::isEmptyProcessListAllowed($status));
@@ -202,7 +207,7 @@ class Messaging
         \BO\Zmsentities\Collection\ProcessList $processList,
         \BO\Zmsentities\Scope $scope,
         \DateTimeInterface $dateTime
-    ) {
+    ): string {
         $message = self::twigView()->render(
             'messaging/mail_scopeadmin_processlist.twig',
             array(
@@ -214,7 +219,7 @@ class Messaging
         return $message;
     }
 
-    protected static function getTemplate($type, $status)
+    protected static function getTemplate(string $type, $status)
     {
         $template = null;
         if (Property::__keyExists($type, self::$templates)) {
@@ -231,7 +236,7 @@ class Messaging
         $initiator = null,
         $status = 'appointment',
         $templateProvider = null
-    ) {
+    ): string {
         $appointment = $process->getFirstAppointment();
         $parameters = [
             'date' => $appointment ? $appointment->toDateTime()->format('U') : null,
@@ -260,7 +265,7 @@ class Messaging
         $initiator = null,
         $now = false,
         $templateProvider = false
-    ) {
+    ): \BO\Zmsentities\Ics {
         $ics = new \BO\Zmsentities\Ics();
         $message = self::getMailContent($process, $config, $initiator, $status, $templateProvider);
         $ics->content = self::generateIcsContent($process, $config, $status, $now, $templateProvider, $message);
@@ -324,7 +329,7 @@ class Messaging
         return self::getTextWithFoldedLines($icsString);
     }
 
-    public static function getPlainText($content, $lineBreak = "\n")
+    public static function getPlainText($content, $lineBreak = "\n"): string
     {
         $converter = new \League\HTMLToMarkdown\HtmlConverter();
         $converter->getConfig()->setOption('remove_nodes', 'script');
@@ -338,7 +343,7 @@ class Messaging
         return trim($text);
     }
 
-    public static function getTextWithFoldedLines($content)
+    public static function getTextWithFoldedLines(string $content): string
     {
         $newLines = [];
         $lines = explode("\n", $content);

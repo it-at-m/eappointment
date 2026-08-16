@@ -8,6 +8,10 @@ class Dayoff extends Schema\Entity
 
     public static $schema = "dayoff.json";
 
+    /**
+     * @return (int|string)[]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -17,7 +21,7 @@ class Dayoff extends Schema\Entity
         ];
     }
 
-    public function setTimestampFromDateformat($fromFormat = 'd.m.Y')
+    public function setTimestampFromDateformat($fromFormat = 'd.m.Y'): static
     {
         $dateTime = \DateTimeImmutable::createFromFormat($fromFormat, $this->date, new \DateTimeZone('UTC'));
         if ($dateTime) {
@@ -26,7 +30,7 @@ class Dayoff extends Schema\Entity
         return $this;
     }
 
-    public function getDateTime()
+    public function getDateTime(): Helper\DateTime
     {
         return (new \BO\Zmsentities\Helper\DateTime())->setTimestamp($this->date);
     }
@@ -44,7 +48,7 @@ class Dayoff extends Schema\Entity
         return ($dateTime->getTimestamp() < $this->lastChange);
     }
 
-    public function isAffectingAvailability(Availability $availabiliy, \DateTimeInterface $now)
+    public function isAffectingAvailability(Availability $availabiliy, \DateTimeInterface $now): bool
     {
         return $availabiliy->isBookable($this->getDateTime(), $now);
     }

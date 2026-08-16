@@ -11,6 +11,10 @@ class Queue extends \BO\Zmsbackend\Process\Repository\Process implements \BO\Zms
 {
     const string ALIAS = 'process';
 
+    /**
+     * @return (\BO\Zmsbackend\Query\Builder\Expression|string)[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -84,6 +88,9 @@ class Queue extends \BO\Zmsbackend\Process\Repository\Process implements \BO\Zms
         ];
     }
 
+    /**
+     * @return static
+     */
     #[\Override]
     public function addConditionAssigned()
     {
@@ -120,6 +127,9 @@ class Queue extends \BO\Zmsbackend\Process\Repository\Process implements \BO\Zms
         return $data;
     }
 
+    /**
+     * @return void
+     */
     #[\Override]
     protected function addRequiredJoins()
     {

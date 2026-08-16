@@ -67,7 +67,10 @@ class ProcessDeleteMail extends \BO\Zmsbackend\Api\BaseController
         return $mail;
     }
 
-    protected function testProcessData($process)
+    /**
+     * @return void
+     */
+    protected function testProcessData(Process $process)
     {
         $authCheck = (new ProcessRepository())->readAuthKeyByProcessId($process->getId());
         if (! $authCheck) {

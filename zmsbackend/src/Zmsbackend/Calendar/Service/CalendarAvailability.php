@@ -549,7 +549,7 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         return null;
     }
 
-    private function formatDayIso(mixed $day): string
+    private function formatDayIso(\BO\Zmsentities\Day $day): string
     {
         $dayData = $this->dayToArray($day);
 

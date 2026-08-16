@@ -12,7 +12,11 @@ use BO\Zmsentities\Collection\OrganisationList as Collection;
  */
 class Organisation extends \BO\Zmsbackend\Base
 {
-    public function readEntity($itemId, $resolveReferences = 0)
+    /**
+     * @param false|int|string $itemId
+     *
+     */
+    public function readEntity(string|int|false $itemId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Organisation\Repository\Organisation(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -25,6 +29,9 @@ class Organisation extends \BO\Zmsbackend\Base
         return array();
     }
 
+    /**
+     * @return \BO\Zmsentities\Schema\Entity
+     */
     #[\Override]
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
@@ -47,7 +54,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $this->readResolvedReferences($organisation, $resolveReferences);
     }
 
-    public function readByDepartmentId($departmentId, $resolveReferences = 0)
+    public function readByDepartmentId($departmentId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Organisation\Repository\Organisation(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -66,7 +73,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $this->readByScopeId($scope->id, $resolveReferences);
     }
 
-    public function readByOwnerId($ownerId, $resolveReferences = 0)
+    public function readByOwnerId($ownerId, $resolveReferences = 0): Collection
     {
         $organisationList = new Collection();
         $query = new \BO\Zmsbackend\Organisation\Repository\Organisation(\BO\Zmsbackend\Query\Base::SELECT);
@@ -94,7 +101,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $this->readEntity($organisationId);
     }
 
-    public function readList($resolveReferences = 0)
+    public function readList($resolveReferences = 0): Collection
     {
         $organisationList = new Collection();
         $query = new \BO\Zmsbackend\Organisation\Repository\Organisation(\BO\Zmsbackend\Query\Base::SELECT);
@@ -149,7 +156,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $this->readEntity($organisationId, 1, true);
     }
 
-    protected function writeOrganisationTicketprinters($organisationId, $ticketprinterList)
+    protected function writeOrganisationTicketprinters(string|false $organisationId, $ticketprinterList): void
     {
         $deleteQuery = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::DELETE);
         $deleteQuery->addConditionOrganisationId($organisationId);
@@ -162,7 +169,7 @@ class Organisation extends \BO\Zmsbackend\Base
         }
     }
 
-    protected function updateOrganisationTicketprinters($ticketprinterList, $organisationId)
+    protected function updateOrganisationTicketprinters($ticketprinterList, $organisationId): void
     {
         foreach ($ticketprinterList as $item) {
             $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::UPDATE);

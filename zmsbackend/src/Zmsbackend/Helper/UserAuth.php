@@ -26,7 +26,10 @@ class UserAuth
         return $useraccount;
     }
 
-    public static function testPasswordMatching($useraccount, $password)
+    /**
+     * @return true
+     */
+    public static function testPasswordMatching($useraccount, $password): bool
     {
         // Do you have old, turbo-legacy, non-crypt hashes?
         // TODO: Remove the password fields when password authentication is removed in the future

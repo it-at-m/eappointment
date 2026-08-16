@@ -62,7 +62,7 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
     }
 
     // full queueList for calculation optimistic and estimated waiting Time and number of waiting clients
-    protected function readFullQueueList($calldisplay, $resolveReferences)
+    protected function readFullQueueList(\BO\Zmsentities\Calldisplay $calldisplay, int $resolveReferences): \BO\Zmsentities\Collection\QueueList
     {
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         foreach ($calldisplay->getFullScopeList() as $scope) {
@@ -71,7 +71,7 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
         return $queueList;
     }
 
-    protected function readQueueListFromScopeAndStatus($scope, $status, $resolveReferences)
+    protected function readQueueListFromScopeAndStatus($scope, $status, $resolveReferences): \BO\Zmsentities\Collection\QueueList
     {
         $query = new \BO\Zmsbackend\Process\Service\Process();
         return $query
@@ -81,7 +81,7 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
     }
 
     // short queueList only with status called and processing
-    protected function readQueueListByStatus($calldisplay, $statusList, $resolveReferences)
+    protected function readQueueListByStatus(\BO\Zmsentities\Calldisplay $calldisplay, $statusList, int $resolveReferences): \BO\Zmsentities\Collection\QueueList
     {
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         foreach ($calldisplay->getFullScopeList() as $scope) {

@@ -14,7 +14,11 @@ use BO\Zmsentities\Collection\ClusterList as Collection;
  */
 class Cluster extends \BO\Zmsbackend\Base
 {
-    public function readEntity($itemId, $resolveReferences = 0, $disableCache = false)
+    /**
+     * @param false|int|string $itemId
+     *
+     */
+    public function readEntity(string|int|false $itemId, int $resolveReferences = 0, $disableCache = false)
     {
         $cacheKey = "cluster-$itemId-$resolveReferences";
 
@@ -45,6 +49,9 @@ class Cluster extends \BO\Zmsbackend\Base
         return $this->readResolvedReferences($cluster, $resolveReferences, $disableCache);
     }
 
+    /**
+     * @return \BO\Zmsentities\Schema\Entity
+     */
     #[\Override]
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $entity,
@@ -65,7 +72,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readList($resolveReferences = 0)
+    public function readList($resolveReferences = 0): Collection
     {
         $clusterList = new Collection();
         $query = new \BO\Zmsbackend\Cluster\Repository\Cluster(\BO\Zmsbackend\Query\Base::SELECT);
@@ -84,7 +91,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $clusterList;
     }
 
-    public function readByScopeId($scopeId, $resolveReferences = 0)
+    public function readByScopeId($scopeId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Cluster\Repository\Cluster(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -99,7 +106,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readByDepartmentId($departmentId, $resolveReferences = 0, $disableCache = false)
+    public function readByDepartmentId($departmentId, $resolveReferences = 0, $disableCache = false): Collection
     {
         $clusterList = new Collection();
         $query = new \BO\Zmsbackend\Cluster\Repository\Cluster(\BO\Zmsbackend\Query\Base::SELECT);
@@ -119,11 +126,15 @@ class Cluster extends \BO\Zmsbackend\Base
         return $clusterList;
     }
 
+    /**
+     * @param string[] $withEntities
+     *
+     */
     public function readQueueList(
         $clusterId,
         \DateTimeInterface $dateTime,
-        $resolveReferences = 0,
-        $withEntities = []
+        int $resolveReferences = 0,
+        array $withEntities = []
     ) {
         $cluster = $this->readEntity($clusterId, 1);
 
@@ -132,7 +143,7 @@ class Cluster extends \BO\Zmsbackend\Base
             ->withSortedWaitingTime();
     }
 
-    public function readOpenedScopeList($clusterId, \DateTimeInterface $dateTime)
+    public function readOpenedScopeList($clusterId, \DateTimeInterface $dateTime): \BO\Zmsentities\Collection\ScopeList
     {
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
         $cluster = $this->readEntity($clusterId, 1);
@@ -148,7 +159,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $scopeList;
     }
 
-    public function readEnabledScopeList($clusterId, \DateTimeInterface $dateTime)
+    public function readEnabledScopeList($clusterId, \DateTimeInterface $dateTime): \BO\Zmsentities\Collection\ScopeList
     {
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
         foreach ($this->readOpenedScopeList($clusterId, $dateTime) as $scope) {
@@ -202,7 +213,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $cluster;
     }
 
-    public function writeImageData($clusterId, \BO\Zmsentities\Mimepart $entity)
+    public function writeImageData($clusterId, \BO\Zmsentities\Mimepart $entity): \BO\Zmsentities\Mimepart
     {
         if ($entity->mime && $entity->content) {
             $this->deleteImage($clusterId);
@@ -223,7 +234,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readImageData($clusterId)
+    public function readImageData($clusterId): \BO\Zmsentities\Mimepart
     {
         $imageName = 'c_' . $clusterId . '_bild';
         $imageData = new \BO\Zmsentities\Mimepart();
@@ -300,7 +311,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $this->readEntity($clusterId, 1, true);
     }
 
-    protected function writeAssignedScopes($clusterId, $scopeList)
+    protected function writeAssignedScopes(string|false $clusterId, $scopeList): void
     {
         $cluster = $this->readEntity($clusterId);
         $this->perform(
@@ -322,7 +333,10 @@ class Cluster extends \BO\Zmsbackend\Base
         $this->removeCache($cluster);
     }
 
-    public function removeCache($cluster)
+    /**
+     * @return void
+     */
+    public function removeCache(Entity $cluster)
     {
         if (!\App::$cache || !isset($cluster->id)) {
             return;

@@ -15,6 +15,8 @@ class Healthcheck extends \BO\Zmsbackend\Api\BaseController
 {
     /**
      * @SuppressWarnings(UnusedFormalParameter)
+     *
+     * @return \Psr\Http\Message\ResponseInterface
      */
     #[\Override]
     public function readResponse(

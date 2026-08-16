@@ -7,6 +7,10 @@ class RequestVariant extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend
     const string TABLE = 'request_variant';
     const string ALIAS = 'request_variant';
 
+    /**
+     * @return string[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -16,7 +20,7 @@ class RequestVariant extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend
         ];
     }
 
-    public function orderByName()
+    public function orderByName(): static
     {
         $this->query->orderBy(self::TABLE . '.name', 'ASC');
         return $this;

@@ -7,7 +7,7 @@ use BO\Zmsentities\Collection\RequestRelationList as Collection;
 
 class RequestRelation extends \BO\Zmsbackend\Base
 {
-    public function readEntity($requestId, $providerId, $resolveReferences = 0)
+    public function readEntity($requestId, $providerId, int $resolveReferences = 0): Entity
     {
         $query = new \BO\Zmsbackend\RequestRelation\Repository\RequestRelation(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -124,7 +124,7 @@ class RequestRelation extends \BO\Zmsbackend\Base
         return $this->readListBySource($source);
     }
 
-    protected function readList($statement)
+    protected function readList($statement): Collection
     {
         $collection = new Collection();
         while ($requestRelationData = $statement->fetch(\PDO::FETCH_ASSOC)) {
@@ -134,7 +134,7 @@ class RequestRelation extends \BO\Zmsbackend\Base
         return $collection;
     }
 
-    public function writeDeleteListBySource($source)
+    public function writeDeleteListBySource(string $source): bool
     {
         $query = new \BO\Zmsbackend\RequestRelation\Repository\RequestRelation(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionSource($source);

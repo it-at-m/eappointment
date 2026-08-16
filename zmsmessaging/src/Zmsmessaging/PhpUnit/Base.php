@@ -1,9 +1,5 @@
 <?php
 
-/**
- *
- */
-
 namespace BO\Zmsmessaging\PhpUnit;
 
 use BO\Zmsentities\Schema\Entity;
@@ -40,7 +36,7 @@ abstract class Base extends TestCase
     {
     }
 
-    protected function getApiMockup()
+    protected function getApiMockup(): object
     {
         $mock = $this->prophesize('BO\Zmsclient\Http');
         foreach ($this->getApiCalls() as $options) {
@@ -99,7 +95,7 @@ abstract class Base extends TestCase
         return $this->apiCalls;
     }
 
-    public function setApiCalls($apiCalls)
+    public function setApiCalls($apiCalls): void
     {
         $this->apiCalls = $apiCalls;
         \App::$http = $this->getApiMockup();

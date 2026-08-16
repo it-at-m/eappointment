@@ -26,7 +26,7 @@ class Calldisplay
         $this->entity = static::createInstance($request);
     }
 
-    public static function getRequestedQueueStatus($request)
+    public static function getRequestedQueueStatus(\Psr\Http\Message\RequestInterface $request)
     {
         /** @var Validator $validator */
         $validator = $request->getAttribute('validator');
@@ -35,7 +35,7 @@ class Calldisplay
         return is_string($status) ? explode(',', $status) : static::DEFAULT_STATUS;
     }
 
-    public function getEntity($resolveEntity = true)
+    public function getEntity(bool $resolveEntity = true)
     {
         if (!$this->isEntityResolved && $resolveEntity) {
             $callDisplay = \App::$http->readPostResult('/calldisplay/', $this->entity);

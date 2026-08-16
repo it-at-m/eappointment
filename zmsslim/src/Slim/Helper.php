@@ -8,18 +8,30 @@ namespace BO\Slim;
 
 class Helper
 {
-    public static function proxySanitizeUri($uri)
+    /**
+     * @param null|string|string[] $uri
+     *
+     *
+     * @return string|string[]
+     *
+     */
+    public static function proxySanitizeUri(array|string|null $uri): array|string
     {
         $uri = str_replace(':80/', '/', $uri);
         return $uri;
     }
 
+    /**
+     * @param \DateTimeImmutable|int $timestamp
+     *
+     * @return false|string
+     */
     public static function getFormatedDates(
-        $timestamp,
-        $pattern = 'MMMM',
+        int|\DateTimeImmutable $timestamp,
+        string $pattern = 'MMMM',
         $locale = 'de_DE',
         $timezone = 'Europe/Berlin'
-    ) {
+    ): string|false {
         $dateFormatter = new \IntlDateFormatter(
             $locale,
             \IntlDateFormatter::MEDIUM,
@@ -37,7 +49,7 @@ class Helper
         array $queryVariables,
         array $parameters,
         string $hashFunction = 'md5'
-    ) {
+    ): string {
         $content = $section . self::getContentForHash($queryVariables, $parameters);
         $hashString = $hashFunction($content . \App::$urlSignatureSecret);
         $firstHalf  = substr($hashString, 0, floor(strlen($hashString) / 2));
@@ -52,7 +64,7 @@ class Helper
         return $firstHalf;
     }
 
-    protected static function getContentForHash(array $queryVariables, array $parameters)
+    protected static function getContentForHash(array $queryVariables, array $parameters): string
     {
         $content = '';
         foreach ($parameters as $parameter) {

@@ -31,7 +31,7 @@ class ZmsSlimRequest
         return $next->handle($decoratedRequest);
     }
 
-    public static function getDecoratedRequest(Request $request)
+    public static function getDecoratedRequest(Request $request): \BO\Slim\Request
     {
         $zmsSlimRequest = new \BO\Slim\Request(
             $request->getMethod(),
