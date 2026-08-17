@@ -61,37 +61,12 @@ class DayOff extends \BO\Zmsbackend\Base
         return $dayOffList;
     }
 
+   /**
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
     public function readByScopeId($scopeId = 0, $disableCache = false)
     {
-        $cacheKey = "dayOffsByScope-$scopeId";
-
-        $dayOffListCommon = $this->readCommon();
-
-        if (!$disableCache && App::$cache) {
-            $data = App::$cache->get($cacheKey);
-            if (!empty($data)) {
-                return $dayOffListCommon->addList($data);
-            }
-        }
-
-        $dayOffList = new Collection();
-        $query = new \BO\Zmsbackend\Dayoff\Repository\DayOff(\BO\Zmsbackend\Query\Base::SELECT);
-        $query->addEntityMapping()
-            ->addConditionScopeId($scopeId);
-        $result = $this->fetchList($query, new Entity());
-        if (count($result)) {
-            foreach ($result as $entity) {
-                if ($entity instanceof Entity) {
-                    $dayOffList->addEntity($entity);
-                }
-            }
-        }
-
-        if (App::$cache) {
-            App::$cache->set($cacheKey, $dayOffList);
-        }
-
-        return $dayOffListCommon->addList($dayOffList);
+        return $this->readCommon();
     }
 
     public function readByYear($year): Collection

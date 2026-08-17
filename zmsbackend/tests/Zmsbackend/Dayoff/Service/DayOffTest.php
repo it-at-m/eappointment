@@ -42,10 +42,18 @@ class DayOffTest extends \BO\Zmsbackend\Tests\Service\Base
           "name" => "Test Feiertag"
         ));
     }
+
     public function testReadByDepartmentIdReturnsCommonDayoffsOnly()
     {
         $dayOffList = (new Dayoff())->readByDepartmentId('77');
         $this->assertTrue($dayOffList->hasEntityByDate('2016-12-25'), "Common dayoff date 2016-12-25 not recognized.");
+        $this->assertNull($dayOffList->getEntityByName('Personalversammlung'));
+    }
+
+    public function testReadByScopeIdReturnsCommonDayoffsOnly()
+    {
+        $dayOffList = (new Dayoff())->readByScopeId(141);
+        $this->assertTrue($dayOffList->hasEntityByDate('2016-12-25'));
         $this->assertNull($dayOffList->getEntityByName('Personalversammlung'));
     }
 }
