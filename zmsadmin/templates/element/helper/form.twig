@@ -133,7 +133,6 @@
         tabindex="{{ args.tabindex|default(0)}}"
         {% if args.name %}name="{{ args.name }}"{% endif %}
         value="{{ args.value|e }}"
-        {% if args.id or fieldId %}id="{{ args.id|default(fieldId) }}"{% endif %}
         {% if args.size %} size="{{ args.size }}"{% endif %}
         {% if args.readonly %}readonly="readonly"{% endif %}
         {% if args.disabled %}disabled="disabled"{% endif %}

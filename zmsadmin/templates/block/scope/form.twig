@@ -255,7 +255,7 @@
                                 >
                                 <div class="form-input-counter" id="appointmentsPerMailCounter" style="margin:0;">
                                     <div class="input-counter">
-                                        <button type="button" class="button decrement" id="appointmentsPerMailDecrement" tabindex="-1"{% if appointmentsPerMailUnlimited or appointmentsPerMailDisplay <= 2 %} disabled{% endif %}>−</button>
+                                        <button type="button" class="button decrement" id="appointmentsPerMailDecrement" aria-label="Wert verringern"{% if appointmentsPerMailUnlimited or appointmentsPerMailDisplay <= 2 %} disabled{% endif %}>−</button>
                                         <input
                                             type="text"
                                             inputmode="numeric"
@@ -264,9 +264,10 @@
                                             value="{{ appointmentsPerMailUnlimited ? '' : appointmentsPerMailDisplay|e }}"
                                             class="form-control form-input"
                                             readonly="readonly"
+                                            {% if exception and exception.data['preferences/client/appointmentsPerMail'].messages is defined %}aria-describedby="error_appointmentsPerMailInput"{% endif %}
                                             {% if appointmentsPerMailUnlimited %}disabled="disabled"{% endif %}
                                         >
-                                        <button type="button" class="button increment" id="appointmentsPerMailIncrement" tabindex="-1"{% if appointmentsPerMailUnlimited or appointmentsPerMailDisplay >= 99 %} disabled{% endif %}>+</button>
+                                        <button type="button" class="button increment" id="appointmentsPerMailIncrement" aria-label="Wert erhöhen"{% if appointmentsPerMailUnlimited or appointmentsPerMailDisplay >= 99 %} disabled{% endif %}>+</button>
                                     </div>
                                 </div>
                                 <div class="form-check" style="margin:0;flex:0 0 auto;white-space:nowrap;">
@@ -350,7 +351,19 @@
                                 setLimitedValue(Number(input.value || min) + 1);
                             });
                             input.addEventListener('keydown', function (event) {
-                                event.preventDefault();
+                                if (event.key === 'ArrowUp') {
+                                    event.preventDefault();
+                                    setLimitedValue(Number(input.value || min) + 1);
+                                    return;
+                                }
+                                if (event.key === 'ArrowDown') {
+                                    event.preventDefault();
+                                    setLimitedValue(Number(input.value || min) - 1);
+                                    return;
+                                }
+                                if (event.key.length === 1 || event.key === 'Backspace' || event.key === 'Delete') {
+                                    event.preventDefault();
+                                }
                             });
                             sync();
                         })();
