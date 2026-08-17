@@ -21,7 +21,7 @@ class DayOff extends \BO\Zmsbackend\Base
 
     public function readOnlyByDepartmentId($departmentId = 0, $disableCache = false)
     {
-       return new Collection();
+        return new Collection();
     }
 
     public function readCommon($disableCache = false)
