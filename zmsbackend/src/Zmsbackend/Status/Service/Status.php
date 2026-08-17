@@ -11,7 +11,7 @@ class Status extends \BO\Zmsbackend\Base
      *
      * @return \BO\Zmsentities\Status
      */
-    public function readEntity(\DateTimeImmutable $now, $includeProcessStats = true)
+    public function readEntity(\DateTimeImmutable $now, bool $includeProcessStats = true)
     {
         $entity = new Entity();
         $configVariables = $this->readConfigVariables();
@@ -113,7 +113,7 @@ class Status extends \BO\Zmsbackend\Base
      *
      * @return string
      */
-    public function getConfigProblems($configVariables)
+    public function getConfigProblems(array $configVariables)
     {
         $problems = [];
         if ($configVariables['tmp_table_size'] < 32000000) {

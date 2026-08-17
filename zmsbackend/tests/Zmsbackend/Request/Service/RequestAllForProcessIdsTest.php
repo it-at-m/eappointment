@@ -7,7 +7,7 @@ use BO\Zmsentities\Collection\RequestList;
 
 class RequestAllForProcessIdsTest extends \BO\Zmsbackend\Tests\Service\Base
 {
-    const PROCESS_ID = 10029;
+    const int PROCESS_ID = 10029;
 
     public function testEmptyProcessIdsReturnsEmptyArray()
     {

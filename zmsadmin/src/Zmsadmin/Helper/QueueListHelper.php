@@ -41,11 +41,13 @@ class QueueListHelper
         return static::$fullList;
     }
 
+    /** @psalm-api */
     public static function getEstimatedWaitingTime()
     {
         return self::getList()->getFakeOrLastWaitingnumber()->waitingTimeEstimate;
     }
 
+    /** @psalm-api */
     public static function getOptimisticWaitingTime()
     {
         return self::getList()->getFakeOrLastWaitingnumber()->waitingTimeOptimistic;
@@ -57,6 +59,7 @@ class QueueListHelper
         return (self::getList()->count()) ? (self::getList()->withoutStatus(['fake'])->count()) : 0;
     }
 
+    /** @psalm-api */
     public static function getWaitingClientsEffective()
     {
         $effectiveStatus = self::$status;
@@ -68,13 +71,14 @@ class QueueListHelper
             ->count();
     }
 
+    /** @psalm-api */
     public static function getWaitingClientsBeforeNext()
     {
         $entity = self::getList()->getFakeOrLastWaitingnumber();
         return (self::getList()->getQueuePositionByNumber($entity->number));
     }
 
-    protected static function createFullList($clusterHelper, $dateTime)
+    protected static function createFullList(ClusterHelper $clusterHelper, \DateTimeImmutable|false $dateTime)
     {
         $fullList = $clusterHelper->getProcessList($dateTime->format('Y-m-d'));
         return ($fullList->count()) ? $fullList->toQueueList($dateTime) : new QueueList();

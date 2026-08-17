@@ -45,8 +45,9 @@ class FileAccess extends AbstractAccess
      * Parameters for json files are deprecated, try using loadFromPath() instead
      *
      * @return self
+     *
      */
-    public function loadFromPath($path)
+    public function loadFromPath(string $path)
     {
         if (!is_dir($path)) {
             throw new Exception("Could not read directory $path");
@@ -63,36 +64,51 @@ class FileAccess extends AbstractAccess
         return $this;
     }
 
-    public function loadLocationsFromPathByLocale($path, $locale)
+    /**
+     * @psalm-api
+     */
+    public function loadLocationsFromPathByLocale($path, $locale): void
     {
         $this->loadLocations($path . DIRECTORY_SEPARATOR . 'locations_' . $locale . '.json', $locale);
     }
 
-    public function loadServicesFromPathByLocale($path, $locale)
+    /**
+     * @psalm-api
+     */
+    public function loadServicesFromPathByLocale($path, $locale): void
     {
         $this->loadServices($path . DIRECTORY_SEPARATOR . 'services_' . $locale . '.json', $locale);
     }
 
-    public function loadTopicsFromPathByLocale($path, $locale)
+    /**
+     * @psalm-api
+     */
+    public function loadTopicsFromPathByLocale($path, $locale): void
     {
         $this->loadTopics($path . DIRECTORY_SEPARATOR . 'topic_' . $locale . '.json', $locale);
     }
 
-    public function loadAuthoritiesFromPathByLocale($path, $locale)
+    /**
+     * @psalm-api
+     */
+    public function loadAuthoritiesFromPathByLocale($path, $locale): void
     {
         $this->loadAuthorities($path . DIRECTORY_SEPARATOR . 'authority_' . $locale . '.json', $locale);
     }
 
-    public function loadSettingsFromPath($path)
+    /**
+     * @psalm-api
+     */
+    public function loadSettingsFromPath($path): void
     {
         $this->loadSettings($path . DIRECTORY_SEPARATOR . 'settings.json');
     }
 
     /**
-     *
      * @return self
+     *
      */
-    public function loadLocations($locationJson, $locale = 'de')
+    public function loadLocations(string $locationJson, string $locale = 'de')
     {
         $this->accessInstance[$locale]['Location'] = new File\Location($locationJson, $locale);
         $this->accessInstance[$locale]['Location']->setAccessInstance($this);
@@ -100,10 +116,10 @@ class FileAccess extends AbstractAccess
     }
 
     /**
-     *
      * @return self
+     *
      */
-    public function loadServices($serviceJson, $locale = 'de')
+    public function loadServices(string $serviceJson, string $locale = 'de')
     {
         $this->accessInstance[$locale]['Service'] = new File\Service($serviceJson, $locale);
         $this->accessInstance[$locale]['Service']->setAccessInstance($this);
@@ -111,10 +127,10 @@ class FileAccess extends AbstractAccess
     }
 
     /**
-     *
      * @return self
+     *
      */
-    public function loadTopics($topicJson, $locale = 'de')
+    public function loadTopics(string $topicJson, string $locale = 'de')
     {
         $this->accessInstance[$locale]['Topic'] = new File\Topic($topicJson, $locale);
         $this->accessInstance[$locale]['Topic']->setAccessInstance($this);
@@ -127,7 +143,7 @@ class FileAccess extends AbstractAccess
      *
      * @return self
      */
-    public function loadSettings($settingsJson)
+    public function loadSettings(string $settingsJson)
     {
         $this->accessInstance['de']['Setting'] = new File\Setting($settingsJson);
         $this->accessInstance['de']['Setting']->setAccessInstance($this);
@@ -139,10 +155,10 @@ class FileAccess extends AbstractAccess
     }
 
     /**
-     *
      * @return self
+     *
      */
-    public function loadAuthorities($authorityJson, $locale = 'de')
+    public function loadAuthorities(string $authorityJson, string $locale = 'de')
     {
         $this->accessInstance[$locale]['Authority'] = new File\Authority($authorityJson, $locale);
         $this->accessInstance[$locale]['Authority']->setAccessInstance($this);
@@ -152,6 +168,7 @@ class FileAccess extends AbstractAccess
     /**
      *
      * @todo refactor: returns services, not topics.
+     * @psalm-api
      */
     public function fetchTopicServicesList($topic_path)
     {
@@ -164,6 +181,7 @@ class FileAccess extends AbstractAccess
      * @todo will not work in every edge case, cause authority export does not contain officeinformations
      * @todo returns Collection\Authorities and not locations
      * @return \BO\Zmsdldb\Collection\Authorities
+     * @psalm-api
      */
     public function fetchLocationListByOffice($officepath = false)
     {

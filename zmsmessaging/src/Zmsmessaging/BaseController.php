@@ -33,12 +33,12 @@ class BaseController
         return static::$logList;
     }
 
-    public static function clearLogList()
+    public static function clearLogList(): void
     {
         static::$logList = [];
     }
 
-    protected function getSpendTime()
+    protected function getSpendTime(): float
     {
         $time = round(microtime(true) - $this->startTime, 3);
         return $time;
@@ -59,7 +59,10 @@ class BaseController
         return $mailer;
     }
 
-    protected function removeEntityOlderThanOneHour($entity)
+    /**
+     * @return false|null
+     */
+    protected function removeEntityOlderThanOneHour(Mail $entity)
     {
         if (3600 < \App::$now->getTimestamp() - $entity->createTimestamp) {
             $this->deleteEntityFromQueue($entity);
@@ -71,7 +74,7 @@ class BaseController
         }
     }
 
-    public function deleteEntityFromQueue($entity)
+    public function deleteEntityFromQueue(Mail $entity): bool
     {
         if (!($entity instanceof Mail)) {
             return false;
@@ -87,7 +90,10 @@ class BaseController
         return (bool) $entity;
     }
 
-    public function testEntity($entity)
+    /**
+     * @return void
+     */
+    public function testEntity(Mail $entity)
     {
         if (!isset($entity['department'])) {
             throw new \Exception("Could not resolve department for message " . $entity['id']);
@@ -121,7 +127,7 @@ class BaseController
         }
     }
 
-    protected function monitorProcesses($processHandles)
+    protected function monitorProcesses(array $processHandles): void
     {
         $running = true;
         while ($running) {
@@ -155,7 +161,7 @@ class BaseController
 
 
 
-    public function log($message)
+    public function log(string $message): void
     {
         if (is_array($message)) {
             $message = print_r($message, true);
@@ -177,7 +183,7 @@ class BaseController
         }
     }
 
-    protected function convertCollectionToArray($collection)
+    protected function convertCollectionToArray($collection): array
     {
         $this->log("Converting collection to array");
         $array = [];

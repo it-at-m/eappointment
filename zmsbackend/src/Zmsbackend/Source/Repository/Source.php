@@ -7,8 +7,12 @@ class Source extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\M
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'source';
+    const string TABLE = 'source';
 
+    /**
+     * @return string[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -22,7 +26,7 @@ class Source extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\M
         ];
     }
 
-    public function addConditionSource($source)
+    public function addConditionSource($source): static
     {
         $this->query->where('source.source', '=', $source);
         return $this;

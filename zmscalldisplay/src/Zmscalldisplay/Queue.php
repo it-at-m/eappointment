@@ -19,6 +19,7 @@ class Queue extends BaseController
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return ResponseInterface
+     * @psalm-api
      */
     public function readResponse(
         RequestInterface $request,

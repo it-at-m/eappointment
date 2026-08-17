@@ -26,11 +26,13 @@ class WorkstationRequests
         $this->scope = $workstation->getScope();
     }
 
+    /** @psalm-api */
     public function getScope(): Scope
     {
         return $this->scope;
     }
 
+    /** @psalm-api */
     public function setDifferentScope(Scope $scope): self
     {
         $this->scope = $scope;
@@ -82,7 +84,10 @@ class WorkstationRequests
     }
 
 
-    public function readNextProcess($excludedIds)
+    /**
+     * @psalm-api
+     */
+    public function readNextProcess($excludedIds): \BO\Zmsentities\Schema\Entity|false|null
     {
         $exclude = is_array($excludedIds) ? implode(',', $excludedIds) : $excludedIds;
         if ($this->workstation->isClusterEnabled()) {

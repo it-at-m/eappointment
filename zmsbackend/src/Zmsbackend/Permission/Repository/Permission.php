@@ -7,8 +7,12 @@ class Permission extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Que
     /**
      * @var string TABLE mysql table reference
      */
-    const TABLE = 'permission';
+    const string TABLE = 'permission';
 
+    /**
+     * @return string[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -25,6 +29,7 @@ class Permission extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Que
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionName(string $name): self
     {
         $this->query->where('permission.name', '=', $name);

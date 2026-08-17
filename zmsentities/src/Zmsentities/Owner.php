@@ -4,10 +4,14 @@ namespace BO\Zmsentities;
 
 class Owner extends Schema\Entity implements Useraccount\AccessInterface
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "owner.json";
 
+    /**
+     * @return (Collection\OrganisationList|string)[]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -22,7 +26,7 @@ class Owner extends Schema\Entity implements Useraccount\AccessInterface
         return $this->getOrganisationList()->hasEntity($organisationId);
     }
 
-    public function getOrganisationList()
+    public function getOrganisationList(): Collection\OrganisationList
     {
         if (!$this->organisations instanceof Collection\OrganisationList) {
             $this->organisations = new Collection\OrganisationList($this->organisations);
@@ -34,6 +38,9 @@ class Owner extends Schema\Entity implements Useraccount\AccessInterface
     }
 
 
+    /**
+     * @return bool
+     */
     #[\Override]
     public function hasAccess(Useraccount $useraccount)
     {
@@ -44,6 +51,7 @@ class Owner extends Schema\Entity implements Useraccount\AccessInterface
     /**
      * Reduce data of dereferenced entities to a required minimum
      *
+     * @return static
      */
     #[\Override]
     public function withLessData()

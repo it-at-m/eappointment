@@ -7,7 +7,7 @@ use \BO\Zmsentities\Collection\SlotList as Collection;
 
 class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
 {
-    const TEST_AVAILABILITY_ID = 68985;
+    const int TEST_AVAILABILITY_ID = 68985;
 
     public function testWriteOptimizedSlotTables()
     {

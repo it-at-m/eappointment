@@ -4,17 +4,17 @@ namespace BO\Zmsentities\Tests;
 
 class CalendarTest extends EntityCommonTests
 {
-    const FIRST_DAY = '2015-11-19';
+    const string FIRST_DAY = '2015-11-19';
 
-    const LAST_DAY = '2015-12-31';
+    const string LAST_DAY = '2015-12-31';
 
-    const PROVIDER = 122217;
+    const int PROVIDER = 122217;
 
-    const SCOPE = 141;
+    const int SCOPE = 141;
 
-    const CLUSTER = 109;
+    const int CLUSTER = 109;
 
-    const REQUESTS = 120703;
+    const int REQUESTS = 120703;
 
     public $entityclass = '\BO\Zmsentities\Calendar';
 

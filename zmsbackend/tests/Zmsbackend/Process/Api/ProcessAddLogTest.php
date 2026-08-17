@@ -8,7 +8,7 @@ class ProcessAddLogTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ProcessAddLog";
 
-    const PROCESS_ID = 10030;
+    const int PROCESS_ID = 10030;
 
     public function testRendering()
     {

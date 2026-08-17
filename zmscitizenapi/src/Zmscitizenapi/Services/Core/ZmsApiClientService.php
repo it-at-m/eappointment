@@ -20,6 +20,7 @@ use BO\Zmsentities\Collection\ScopeList;
  */
 class ZmsApiClientService
 {
+    /** @psalm-api */
     public static function getMergedMailTemplates(int $providerId): array
     {
         try {

@@ -7,8 +7,12 @@ class Organisation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'organisation';
+    const string TABLE = 'organisation';
 
+    /**
+     * @return (\BO\Zmsbackend\Query\Builder\Expression|string)[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -36,19 +40,19 @@ class Organisation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
         ];
     }
 
-    public function addConditionOrganisationId($organisationId)
+    public function addConditionOrganisationId($organisationId): static
     {
         $this->query->where('organisation.OrganisationsID', '=', $organisationId);
         return $this;
     }
 
-    public function addConditionOwnerId($ownerId)
+    public function addConditionOwnerId($ownerId): static
     {
         $this->query->where('organisation.KundenID', '=', $ownerId);
         return $this;
     }
 
-    public function addConditionScopeId($scopeId)
+    public function addConditionScopeId($scopeId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias('behoerde', 'department'),
@@ -66,7 +70,7 @@ class Organisation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId)
+    public function addConditionDepartmentId($departmentId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias('behoerde', 'department'),
@@ -78,7 +82,11 @@ class Organisation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Organisation $entity, $parentId = null)
+    /**
+     * @return (int|mixed|string)[]
+     *
+     */
+    public function reverseEntityMapping(\BO\Zmsentities\Organisation $entity, $parentId = null): array
     {
         $data = array();
         if (null !== $parentId) {

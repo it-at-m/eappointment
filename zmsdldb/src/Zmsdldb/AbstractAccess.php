@@ -48,7 +48,10 @@ class AbstractAccess
         'Topic' => null
     ];
 
-    public function addAccessInstanceLocale($locale = 'de')
+    /**
+     * @psalm-api
+     */
+    public function addAccessInstanceLocale($locale = 'de'): void
     {
         if (!isset($this->accessInstance[$locale])) {
             $this->accessInstance[$locale] = static::$accessInstanceTypes;
@@ -117,10 +120,10 @@ class AbstractAccess
     }
 
     /**
-     *
      * @return string InstanceName
+     *
      */
-    protected function getInstanceOnName($name, $position = 0)
+    protected function getInstanceOnName($name, int $position = 0)
     {
         foreach (array_keys($this->getInstanceCompatibilities()) as $instanceName) {
             if ($position === strpos($name, $instanceName)) {
@@ -130,7 +133,7 @@ class AbstractAccess
         return null;
     }
 
-    protected function from($instanceName, $locale = 'de')
+    protected function from(string $instanceName, $locale = 'de'): File\Base
     {
         if (array_key_exists($instanceName, $this->accessInstance[$locale])) {
             $instance = $this->accessInstance[$locale][$instanceName];
@@ -161,6 +164,7 @@ class AbstractAccess
         return $this->from('Borough');
     }
 
+    /** @psalm-api */
     public function fromLink($locale = 'de')
     {
         return $this->from('Link', $locale);
