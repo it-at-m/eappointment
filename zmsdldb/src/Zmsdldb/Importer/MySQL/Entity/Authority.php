@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class Authority extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'id' => 'id',
         'name' => 'name',
         'parent_id' => 'parent_id',
@@ -16,11 +16,11 @@ class Authority extends Base
     ];
 
     #[\Override]
-    protected function setupMapping()
+    protected function setupMapping(): void
     {
         $this->referanceMapping = [
             'meta' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Meta',
+                'class' => Meta::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale'
@@ -37,7 +37,7 @@ class Authority extends Base
                 'multiple' => false
             ],
             'locations' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\AuthorityLocation',
+                'class' => AuthorityLocation::class,
                 'neededFields' => ['id' => 'authority_id', 'meta.locale' => 'locale'],
                 'addFields' => [
 
@@ -54,19 +54,17 @@ class Authority extends Base
     }
 
     #[\Override]
-    public function preSetupFields()
+    public function preSetupFields(): void
     {
         $this->dataRaw['parent_id'] = ($this->dataRaw['parent_id'] ?? 0);
     }
 
     #[\Override]
-    public function preSetup()
+    public function preSetup(): void
     {
         try {
-            $fields = $this->get(['id', 'meta.locale', 'meta.hash']);
-            $fields[] = static::getTableName();
             $this->setStatus(static::STATUS_OLD);
-            if ($this->itemNeedsUpdate(...array_values($fields))) {
+            if ($this->entityNeedsUpdate()) {
                 $this->setStatus(static::STATUS_NEW);
                 $this->setupFields();
                 $this->deleteEntity();
@@ -78,10 +76,10 @@ class Authority extends Base
     }
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(['id', 'locale'], array_values($this->get(['id', 'meta.locale'])))
             );
         } catch (\Exception $e) {
@@ -90,10 +88,10 @@ class Authority extends Base
     }
 
     #[\Override]
-    public function clearEntity(array $addWhere = []): bool
+    public function clearEntity(array $addWhere = []): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 ['locale' => $this->get('meta.locale')]
             );
         } catch (\Exception $e) {

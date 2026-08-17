@@ -26,7 +26,7 @@ class ProcessFinishedHelper extends Process
         array $input,
         RequestList $requestList,
         $source
-    ) {
+    ): static {
         if (array_key_exists('ignoreRequests', $input) && $input['ignoreRequests']) {
             $this->requests = new RequestList();
             $request = new Request([

@@ -5,12 +5,12 @@ namespace BO\Zmsbackend\Process\Service;
 use BO\Zmsentities\Processarchived as Entity;
 use BO\Zmsentities\Collection\ProcessList as Collection;
 
-/**
- *
- */
 class ProcessStatusArchived extends Process
 {
-    public function readArchivedEntity($archiveId, $resolveReferences = 0)
+    /**
+     * @param false|string $archiveId
+     */
+    public function readArchivedEntity(string|false $archiveId, $resolveReferences = 0)
     {
         if (!$archiveId) {
             return null;
@@ -42,6 +42,7 @@ class ProcessStatusArchived extends Process
         return $this->readResolvedList($query, $resolveReferences);
     }
 
+    /** @psalm-api */
     public function readListByScopeAndDate($scopeId, $dateTime, $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
@@ -52,7 +53,11 @@ class ProcessStatusArchived extends Process
         return $this->readResolvedList($query, $resolveReferences);
     }
 
-    public function readListByScopesAndDates($scopeIds, $dateTimes, $resolveReferences = 0)
+    /**
+     * @param (\BO\Zmsentities\Helper\DateTime|false)[] $dateTimes
+     *
+     */
+    public function readListByScopesAndDates(array $scopeIds, array $dateTimes, $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchivedToday(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -68,6 +73,7 @@ class ProcessStatusArchived extends Process
         return (bool)$this->perform(\BO\Zmsbackend\Process\Repository\ProcessStatusArchivedToday::DELETE_ALL);
     }
 
+    /** @psalm-api */
     public function readListForStatistic($dateTime, \BO\Zmsentities\Scope $scope, $limit = 500, $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
@@ -96,7 +102,7 @@ class ProcessStatusArchived extends Process
         return $this->readResolvedList($query, $resolveReferences);
     }
 
-    protected function readResolvedList($query, $resolveReferences)
+    protected function readResolvedList(\BO\Zmsbackend\Process\Repository\ProcessStatusArchived $query, $resolveReferences): Collection
     {
         $processList = new Collection();
         $resultList = $this->fetchList($query, new Entity());
@@ -146,6 +152,7 @@ class ProcessStatusArchived extends Process
     /**
      * write an archived process to statistic table
      *
+     * @psalm-api
      */
     public function writeArchivedProcessToStatistic(
         Entity $process,
@@ -183,7 +190,7 @@ class ProcessStatusArchived extends Process
     public function writeNewArchivedProcess(
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now,
-        $resolveReferences = 0,
+        int $resolveReferences = 0,
         bool $calculateStatistic = false
     ) {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchivedToday(\BO\Zmsbackend\Query\Base::INSERT);
@@ -208,7 +215,7 @@ class ProcessStatusArchived extends Process
         return $this->readArchivedEntity($archiveId, $resolveReferences);
     }
 
-    protected function writeXRequestsArchived($processId, $archiveId)
+    protected function writeXRequestsArchived($processId, $archiveId): void
     {
         $query = new \BO\Zmsbackend\Request\Repository\XRequest(\BO\Zmsbackend\Query\Base::UPDATE);
         $query->addConditionProcessId($processId);

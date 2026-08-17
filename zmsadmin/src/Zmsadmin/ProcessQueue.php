@@ -30,6 +30,8 @@ class ProcessQueue extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
+     *
+     * @return ResponseInterface
      */
     #[\Override]
     public function readResponse(
@@ -77,7 +79,11 @@ class ProcessQueue extends BaseController
         );
     }
 
-    public static function getValidatedForm($validator, $process)
+    /**
+     * @return (bool|mixed)[]
+     *
+     */
+    public static function getValidatedForm($validator, Process $process): array
     {
         $processValidator = new ProcessValidator($process);
         $delegatedProcess = $processValidator->getDelegatedProcess();
@@ -155,7 +161,7 @@ class ProcessQueue extends BaseController
         return $process->withUpdatedData($input, \App::$now, $scope, $notice);
     }
 
-    protected function writeQueuedProcess($input, $process)
+    protected function writeQueuedProcess($input, $process): Process
     {
         $process = \App::$http->readPostResult('/workstation/process/waitingnumber/', $process)->getEntity();
         AppointmentFormHelper::updateMail($input, $process);

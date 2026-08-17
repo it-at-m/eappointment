@@ -17,6 +17,7 @@ class MailTemplateProvider
         return $this->process->scope->provider['id'];
     }
 
+    /** @psalm-api */
     public function getTemplate($templateName)
     {
         if (!$this->templates) {
@@ -25,6 +26,7 @@ class MailTemplateProvider
         return $this->templates[$templateName];
     }
 
+    /** @psalm-api */
     public function getTemplates()
     {
         if (!$this->templates) {
@@ -33,7 +35,7 @@ class MailTemplateProvider
         return $this->templates;
     }
 
-    protected function loadTemplates()
+    protected function loadTemplates(): void
     {
 
         $this->templates = array(

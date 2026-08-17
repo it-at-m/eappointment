@@ -8,10 +8,12 @@
 namespace BO\Zmsdldb\MySQL;
 
 use BO\Zmsdldb\MySQL\Collection\Authorities as Collection;
+use BO\Zmsdldb\MySQL\Entity\Authority as Entity;
 use BO\Zmsdldb\Elastic\Authority as Base;
+use BO\Zmsdldb\Entity\Authority as AuthorityEntity;
+use BO\Zmsdldb\Entity\Location as LocationEntity;
 
-/**
- */
+/** @psalm-api */
 class Authority extends Base
 {
     /**
@@ -20,7 +22,7 @@ class Authority extends Base
      * @return Collection
      */
     #[\Override]
-    public function fetchList($servicelist = [])
+    public function fetchList($servicelist = []): Collection
     {
         try {
             $authorityList = new Collection();
@@ -40,8 +42,8 @@ class Authority extends Base
 
                 $stm = $this->access()->prepare($sql);
                 $stm->execute($sqlArgs);
-                $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($authorityList) {
-                    $authority = new \BO\Zmsdldb\MySQL\Entity\Authority();
+                $stm->fetchAll(\PDO::FETCH_FUNC, function (?string $data_json) use ($authorityList): void {
+                    $authority = new Entity();
                     $authority->offsetSet('data_json', $data_json);
                     $authorityList[$authority['id']] = $authority;
                     $authority->clearLocations();
@@ -73,16 +75,14 @@ class Authority extends Base
                 $locations = $this->access()->fromLocation($this->locale)
                     ->fetchFromCsv(implode(',', $locationsIds), true);
 
-                foreach ($locations as $location) {
-                    $authorityList[$location['authority']['id']]->addLocation($location);
-                }
+                $this->addLocationsToAuthorities($authorityList, $locations);
             } else {
                 $sqlArgs = ['de'];
                 $sql = 'SELECT data_json FROM authority WHERE locale = ?';
                 $stm = $this->access()->prepare($sql);
                 $stm->execute($sqlArgs);
-                $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($authorityList) {
-                    $authority = new \BO\Zmsdldb\MySQL\Entity\Authority();
+                $stm->fetchAll(\PDO::FETCH_FUNC, function (?string $data_json) use ($authorityList): void {
+                    $authority = new Entity();
                     $authority->offsetSet('data_json', $data_json);
                     $authorityList[$authority['id']] = $authority;
                     $authority->clearLocations();
@@ -90,9 +90,7 @@ class Authority extends Base
 
                 $locations = $this->access()->fromLocation($this->locale)->fetchList(false, true);
 
-                foreach ($locations as $location) {
-                    $authorityList[$location['authority']['id']]->addLocation($location);
-                }
+                $this->addLocationsToAuthorities($authorityList, $locations);
             }
             return $authorityList;
         } catch (\Exception $e) {
@@ -101,25 +99,42 @@ class Authority extends Base
     }
 
     /**
-     * fetch locations for a list of service and group by authority
+     * @param Collection $authorityList
+     * @param iterable<mixed> $locations
+     */
+    private function addLocationsToAuthorities(Collection $authorityList, iterable $locations): void
+    {
+        foreach ($locations as $location) {
+            if (!$location instanceof LocationEntity) {
+                continue;
+            }
+            $authority = $authorityList[$location['authority']['id']] ?? null;
+            if ($authority instanceof AuthorityEntity) {
+                $authority->addLocation($location);
+            }
+        }
+    }
+
+    /**
+     * fetch a single authority by id
      *
-     * @return Collection
+     * @return Entity|false
      */
     #[\Override]
-    public function fetchId($itemId)
+    public function fetchId(mixed $itemId): Entity|false
     {
         try {
             $sqlArgs = [$this->locale, $itemId];
 
             $sql = 'SELECT data_json FROM authority WHERE locale = ? AND id = ?';
             $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\\BO\\Zmsdldb\\MySQL\\Entity\\Authority');
+            $stm->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, Entity::class);
             $stm->execute($sqlArgs);
-            if (!$stm || ($stm && $stm->rowCount() == 0)) {
+            if ($stm->rowCount() === 0) {
                 return false;
             }
             $authority = $stm->fetch();
-            return $authority;
+            return $authority instanceof Entity ? $authority : false;
         } catch (\Exception $e) {
             throw $e;
         }
@@ -130,14 +145,16 @@ class Authority extends Base
      * @return Collection
      */
     #[\Override]
-    public function readListByOfficePath($officepath)
+    public function readListByOfficePath($officepath): Collection
     {
         $authorityList = new Collection();
 
         $locations = $this->access()->fromLocation($this->locale)->fetchListByOffice($officepath);
 
         foreach ($locations as $location) {
-            $authorityList->addLocation($location);
+            if ($location instanceof LocationEntity) {
+                $authorityList->addLocation($location);
+            }
         }
 
         return $authorityList;

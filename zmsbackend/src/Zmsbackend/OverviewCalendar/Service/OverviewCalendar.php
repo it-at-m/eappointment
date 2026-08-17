@@ -13,7 +13,7 @@ class OverviewCalendar extends \BO\Zmsbackend\Base
     {
         return ($dt instanceof \DateTimeInterface)
             ? $dt->format('Y-m-d H:i:s')
-            : (string)$dt;
+            : $dt;
     }
 
     public function insert(

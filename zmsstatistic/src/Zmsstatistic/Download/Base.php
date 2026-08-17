@@ -135,7 +135,7 @@ class Base extends BaseController
         return $spreadsheet;
     }
 
-    protected function writeInfoHeader(array $args, Spreadsheet $spreadsheet)
+    protected function writeInfoHeader(array $args, Spreadsheet $spreadsheet): Spreadsheet|null
     {
         $sheet = $spreadsheet->getActiveSheet();
         $infoData[] = static::$subjectTranslations[$args['category']];
@@ -179,7 +179,7 @@ class Base extends BaseController
         return $spreadsheet;
     }
 
-    protected function setDateTime($dateString)
+    protected function setDateTime($dateString): \DateTime
     {
         $dateArr = explode('-', $dateString);
         if (2 == count($dateArr)) {
@@ -194,7 +194,10 @@ class Base extends BaseController
         return new \DateTime($dateString);
     }
 
-    protected function getFormatedDates($date, $pattern = 'MMMM')
+    /**
+     * @return false|string
+     */
+    protected function getFormatedDates($date, $pattern = 'MMMM'): string|false
     {
         $dateFormatter = new \IntlDateFormatter(
             'de-DE',

@@ -100,7 +100,7 @@ class AvailabilityListUpdate extends \BO\Zmsbackend\Api\BaseController
         return $updatedAvailabilities;
     }
 
-    protected function updateAvailability($availability, $resolveReferences): ?Availability
+    protected function updateAvailability(Availability $availability, int $resolveReferences): ?Availability
     {
         $repository = new AvailabilityRepository();
         $history = new AvailabilityHistoryService();

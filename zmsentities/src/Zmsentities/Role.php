@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Role extends Schema\Entity
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "role.json";
 

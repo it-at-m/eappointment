@@ -7,9 +7,9 @@ namespace BO\Zmsentities\Collection;
  */
 class MailtemplateList extends Base
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Mailtemplate';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Mailtemplate';
 
-    public function prioritizeByName(array $priorityNames)
+    public function prioritizeByName(array $priorityNames): static
     {
         $prioritized = [];
         $others = [];

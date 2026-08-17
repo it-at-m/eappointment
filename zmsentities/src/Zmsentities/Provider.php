@@ -4,10 +4,14 @@ namespace BO\Zmsentities;
 
 class Provider extends Schema\Entity
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "provider.json";
 
+    /**
+     * @return (int|null|string)[]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -42,12 +46,12 @@ class Provider extends Schema\Entity
         return parent::addData($mergeData);
     }
 
-    public function hasRequest($requestId)
+    public function hasRequest(string $requestId)
     {
         return $this->getRequestList()->hasRequests($requestId);
     }
 
-    public function getRequestList()
+    public function getRequestList(): Collection\RequestList
     {
         $requestList = new \BO\Zmsentities\Collection\RequestList();
         if (isset($this['data']['services'])) {
@@ -78,7 +82,7 @@ class Provider extends Schema\Entity
         return $this->toProperty()->display_name->get();
     }
 
-    public function getContact()
+    public function getContact(): Contact
     {
         $contact = $this->toProperty()->contact->get();
         return new Contact($contact);

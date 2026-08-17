@@ -61,7 +61,7 @@ class ProcessConfirm extends \BO\Zmsbackend\Api\BaseController
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
     }
-    protected function writeMails($request, $process)
+    protected function writeMails(\Psr\Http\Message\RequestInterface $request, \BO\Zmsentities\Process|null $process): void
     {
         if ($process->hasScopeAdmin() && $process->sendAdminMailOnConfirmation()) {
             $authority = $request->getUri()->getAuthority();
@@ -101,7 +101,10 @@ class ProcessConfirm extends \BO\Zmsbackend\Api\BaseController
         );
     }
 
-    protected function testProcessData($entity)
+    /**
+     * @return void
+     */
+    protected function testProcessData(\BO\Zmsentities\Process $entity)
     {
         $authCheck = (new \BO\Zmsbackend\Process\Service\Process())->readAuthKeyByProcessId($entity->id);
         if (! $authCheck) {
@@ -111,6 +114,11 @@ class ProcessConfirm extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
+    /**
+     * @psalm-api
+     *
+     * @return void
+     */
     protected function validateProcessLimits(\BO\Zmsentities\Process $process)
     {
         if (! (new \BO\Zmsbackend\Process\Service\Process())->isAppointmentSlotCountAllowed($process)) {

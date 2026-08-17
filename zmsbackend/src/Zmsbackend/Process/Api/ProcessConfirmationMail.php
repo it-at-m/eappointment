@@ -66,7 +66,10 @@ class ProcessConfirmationMail extends \BO\Zmsbackend\Api\BaseController
         return $mail;
     }
 
-    protected function testProcessData($process)
+    /**
+     * @return void
+     */
+    protected function testProcessData(Process $process)
     {
         $authCheck = (new ProcessRepository())->readAuthKeyByProcessId($process->id);
         if (! $authCheck) {
@@ -81,7 +84,7 @@ class ProcessConfirmationMail extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
-    public static function getProcessListOverview(Process $process, \BO\Zmsentities\Config $config)
+    public static function getProcessListOverview(Process $process, \BO\Zmsentities\Config $config): Collection
     {
         $collection  = (new Collection())->addEntity($process);
         if (

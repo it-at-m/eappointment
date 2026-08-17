@@ -10,8 +10,8 @@ use BO\Zmsentities\EventLog as EventLogEntity;
 
 class EventLog extends \BO\Zmsbackend\Query\Base
 {
-    public const TABLE = 'eventlog';
-    public const ALIAS = 'eventLog';
+    public const string TABLE = 'eventlog';
+    public const string ALIAS = 'eventLog';
 
     protected $resolveLevel = 0;
 
@@ -23,6 +23,7 @@ class EventLog extends \BO\Zmsbackend\Query\Base
             $this->query->orderBy(self::ALIAS . '.creationDateTime', 'ASC');
         }
     }
+    /** @psalm-api */
     public function getEntityMapping(): array
     {
         return [

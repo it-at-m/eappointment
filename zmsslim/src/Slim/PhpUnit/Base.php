@@ -50,18 +50,21 @@ abstract class Base extends TestCase
     /**
      * Use this object instance for session getEntity()
      *
-     * @var Object $sessionClass
+     * @var object|null
      */
     protected $sessionClass = null;
 
     /**
      * Namespace for tested classes
+     *
+     * @var string
      */
     protected $namespace = '';
 
     /**
      * A class name if not detected automatically
      *
+     * @var string|null
      */
     protected $classname = null;
 
@@ -122,6 +125,7 @@ abstract class Base extends TestCase
             'REMOTE_ADDR'          => '127.0.0.1'
         ]);
 
+        /** @psalm-suppress InternalMethod Slim's URI factory from mocked env is the supported test setup. */
         $uri = (new UriFactory())->createFromGlobals($env);
         $headers = Headers::createFromGlobals();
         foreach ($addHeaders as $key => $value) {
@@ -143,11 +147,7 @@ abstract class Base extends TestCase
         return $request->withAttribute('ip_address', '127.0.0.1');
     }
 
-    /**
-     *
-     * @return ResponseInterface
-     */
-    protected function getResponse($content = '', $status = 200, array $headers = [])
+    protected function getResponse(string $content = '', int $status = 200, array $headers = []): ResponseInterface
     {
         $body = (new StreamFactory())->createStream();
         $headers = new Headers($headers);
@@ -156,6 +156,9 @@ abstract class Base extends TestCase
         return $response;
     }
 
+    /**
+     * @return ResponseInterface
+     */
     public function testRendering()
     {
         $response = $this->render($this->arguments, $this->parameters);
@@ -165,31 +168,46 @@ abstract class Base extends TestCase
 
     protected function getControllerIdentifier(): string
     {
-        $classname = (null === $this->classname) ?
-            preg_replace('#^.*?(\w+)Test$#', '$1', get_class($this)) :
-            $this->classname;
+        if ($this->classname !== null && $this->classname !== '') {
+            $classname = $this->classname;
+        } else {
+            $classname = preg_replace('#^.*?(\w+)Test$#', '$1', get_class($this));
+            $classname = is_string($classname) ? $classname : '';
+        }
 
-        return (false !== strpos($classname, '\\')) ? $classname : $this->namespace . $classname;
+        return str_contains($classname, '\\') ? $classname : $this->namespace . $classname;
     }
 
     protected function render(
         array $arguments = [],
-        $parameters = [],
-        $sessionData = null,
-        $method = 'GET'
-    ) {
+        array $parameters = [],
+        ?array $sessionData = null,
+        string $method = 'GET'
+    ): ResponseInterface {
         $renderClass = $this->getControllerIdentifier();
+        if (!class_exists($renderClass)) {
+            throw new \RuntimeException('Controller class ' . $renderClass . ' does not exist');
+        }
+        $container = App::$slim->getContainer();
+        if (!$container instanceof \Psr\Container\ContainerInterface) {
+            throw new \RuntimeException('Slim container is not initialized');
+        }
         /** @var \BO\Slim\Controller $controller */
-        $controller = new $renderClass(App::$slim->getContainer());
+        /** @psalm-suppress UnsafeInstantiation */
+        $controller = new $renderClass($container);
 
         //add uri to test multi languages
-        $uri = (array_key_exists('__uri', $parameters)) ? $parameters['__uri'] : '';
+        $uri = (isset($parameters['__uri']) && is_string($parameters['__uri'])) ? $parameters['__uri'] : '';
         $request = $this->getRequest($method, $uri, $sessionData);
         $request = $this->setRequestParameters($request, $parameters, $method);
         $this->setValidatorInstance($parameters);
         $request = Validator::withValidator($request);
 
-        return $controller->__invoke($request, $this->getResponse(), $arguments);
+        $response = $controller->__invoke($request, $this->getResponse(), $arguments);
+        if (!$response instanceof ResponseInterface) {
+            throw new \RuntimeException('Controller did not return a PSR-7 response');
+        }
+        return $response;
     }
 
     protected function setRequestParameters(
@@ -231,7 +249,7 @@ abstract class Base extends TestCase
         return $request;
     }
 
-    protected function setValidatorInstance($parameters)
+    protected function setValidatorInstance(array $parameters): void
     {
         $validator = new \BO\Mellon\Validator($parameters);
         if (array_key_exists('__body', $parameters)) {
@@ -240,7 +258,7 @@ abstract class Base extends TestCase
         $validator->makeInstance();
     }
 
-    public function assertRedirect($response, $uri, $status = 302)
+    public function assertRedirect(ResponseInterface $response, string $uri, int $status = 302): void
     {
         $this->assertEquals($status, $response->getStatusCode());
         $this->assertEquals($uri, $response->getHeaderLine('Location'));

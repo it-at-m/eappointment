@@ -14,7 +14,7 @@ use DateTimeImmutable;
  */
 class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
 {
-    public function run(DateTimeImmutable $day, bool $commit = false)
+    public function run(DateTimeImmutable $day, bool $commit = false): void
     {
                     \App::$log->info('CalculateDailyWaitingStatisticByCron started', ['date' => $day->format('Y-m-d')]);
 
@@ -97,7 +97,7 @@ class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
             );
 
             if ($parsedScope) {
-                $scopeId = (int)$parsedScope;
+                $scopeId = $parsedScope;
             }
         }
 

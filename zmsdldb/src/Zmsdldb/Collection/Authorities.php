@@ -20,7 +20,7 @@ class Authorities extends Base
         }
     }
 
-    public function addLocation(\BO\Zmsdldb\Entity\Location $location)
+    public function addLocation(\BO\Zmsdldb\Entity\Location $location): static
     {
         if (
             $location->offsetExists('authority')
@@ -41,7 +41,7 @@ class Authorities extends Base
         return $this;
     }
 
-    public function addAuthority($authority_id, $name)
+    public function addAuthority($authority_id, $name): static
     {
         if (! $this->hasAuthority($authority_id)) {
             $authority = \BO\Zmsdldb\Entity\Authority::create($name);
@@ -55,7 +55,10 @@ class Authorities extends Base
         return $this->offsetExists($authority_id);
     }
 
-    public function readByExtendedService($service)
+    /**
+     * @psalm-api
+     */
+    public function readByExtendedService($service): static
     {
         foreach ($service['authorities'] as $authority) {
             if (! $this->hasAuthority($authority['id'])) {
@@ -70,6 +73,7 @@ class Authorities extends Base
      * Check if appointments are available
      *
      * @return bool
+     * @psalm-api
      */
     public function hasLocations()
     {
@@ -90,6 +94,7 @@ class Authorities extends Base
      *            allow external links, default false
      *
      * @return Bool
+     * @psalm-api
      */
     public function hasAppointments($serviceCsv = null, $external = false)
     {
@@ -107,6 +112,7 @@ class Authorities extends Base
      * @param Int $locationId
      *
      * @return Bool
+     * @psalm-api
      */
     public function hasLocationId($locationId)
     {
@@ -124,6 +130,7 @@ class Authorities extends Base
      * @param Int $locationId
      *
      * @return self
+     * @psalm-api
      */
     public function removeLocation($locationId)
     {
@@ -143,6 +150,7 @@ class Authorities extends Base
      *            allow external links, default false
      *
      * @return self
+     * @psalm-api
      */
     public function removeLocationsWithoutAppointments($serviceCsv = null, $external = false)
     {
@@ -162,7 +170,7 @@ class Authorities extends Base
         return $this;
     }
 
-    public function removeEmptyAuthorities()
+    public function removeEmptyAuthorities(): self
     {
         $authoritylist = new self();
         foreach ($this as $key => $authority) {
@@ -173,7 +181,7 @@ class Authorities extends Base
         return $authoritylist;
     }
 
-    public function removeLocations()
+    public function removeLocations(): static
     {
         $authoritylist = clone $this;
         foreach ($authoritylist as $authority) {
@@ -195,6 +203,7 @@ class Authorities extends Base
      * transform list to authorities with accociated locations
      *
      * @return self
+     * @psalm-api
      */
 
     public function toListWithAssociatedLocations($locationlist)
@@ -206,7 +215,13 @@ class Authorities extends Base
         return $authoritylist;
     }
 
-    public function getAuthorityIds()
+    /**
+     * @psalm-api
+     *
+     * @return (int|mixed|string)[]
+     *
+     */
+    public function getAuthorityIds(): array
     {
         $ids = [];
 

@@ -53,6 +53,7 @@ class ValidString extends Valid
      * @param String $message error message in case of failure
      *
      * @return self
+     * @psalm-api
      */
     public function isMatchOf($regex, $message = 'not a valid matching value')
     {
@@ -71,6 +72,7 @@ class ValidString extends Valid
      * @param String $message error message in case of failure
      *
      * @return self
+     * @psalm-api
      */
     public function isBiggerThan($size, $message = 'too small')
     {

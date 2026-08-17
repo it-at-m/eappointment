@@ -12,7 +12,7 @@ use BO\Zmsentities\Slot;
  */
 class SlotList extends \BO\Zmsbackend\Query\Base
 {
-    const QUERY = 'SELECT
+    const string QUERY = 'SELECT
 
             -- collect some important settings, especially from the scope, use the appointment key
             CONCAT(b.Datum, " ", b.Uhrzeit) AS appointment__date,
@@ -190,12 +190,21 @@ class SlotList extends \BO\Zmsbackend\Query\Base
         }
     }
 
-    public static function getQuery()
+    /**
+     * @psalm-api
+     */
+    public static function getQuery(): string
     {
         return self::QUERY;
     }
 
-    public static function getParametersMonth($scopeId, \DateTimeInterface $monthDateTime, \DateTimeInterface $now)
+    /**
+     * @psalm-api
+     *
+     * @return (mixed|string)[]
+     *
+     */
+    public static function getParametersMonth($scopeId, \DateTimeInterface $monthDateTime, \DateTimeInterface $now): array
     {
         $now = DateTime::create($now);
         $monthDateTime = DateTime::create($monthDateTime);
@@ -213,7 +222,13 @@ class SlotList extends \BO\Zmsbackend\Query\Base
         return $parameters;
     }
 
-    public static function getParametersDay($scopeId, \DateTimeInterface $dateTime, \DateTimeInterface $now)
+    /**
+     * @psalm-api
+     *
+     * @return (mixed|string)[]
+     *
+     */
+    public static function getParametersDay($scopeId, \DateTimeInterface $dateTime, \DateTimeInterface $now): array
     {
         $now = DateTime::create($now);
         $dateTime = DateTime::create($dateTime);
@@ -237,7 +252,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
      * we use the scope data to add missing values
      * and try to use availability data in query result
      */
-    public function setSlotData(array $slotData)
+    public function setSlotData(array $slotData): static
     {
         $this->slotData = $slotData;
         if (null === $this->availability) {
@@ -258,10 +273,10 @@ class SlotList extends \BO\Zmsbackend\Query\Base
 
     /**
      * add data from a mysql result set
-     * @see self::QUERY
      *
+     * @see self::QUERY
      */
-    public function addQueryData(array $slotData)
+    public function addQueryData(array $slotData): static
     {
         if (isset($slotData['slotnr'])) {
             $slotnumber = $slotData['slotnr'];
@@ -292,7 +307,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    protected function getCalculatedSlot(Slot $slot, $slotData)
+    protected function getCalculatedSlot(Slot $slot, array $slotData): Slot
     {
         $slot->public += $slotData['freeAppointments__public'] -
             $slotData['availability__workstationCount__public'];
@@ -303,13 +318,16 @@ class SlotList extends \BO\Zmsbackend\Query\Base
         return $slot;
     }
 
+    /**
+     * @psalm-api
+     */
     public function addToCalendar(
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeInterface $now,
         $freeProcessesDate,
         $slotType = 'public',
         $slotsRequired = 1
-    ) {
+    ): \BO\Zmsentities\Calendar {
         $nowDate = $now->format('Y-m-d');
         foreach ($this->slots as $date => $slotList) {
             if ($nowDate == $date) {
@@ -331,7 +349,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
         $date,
         $slotType = 'public',
         $slotsRequired = 1
-    ) {
+    ): void {
         if (null !== $freeProcessesDate && $date == $freeProcessesDate->format('Y-m-d')) {
             $freeProcesses = $this->getFreeProcesses($calendar, $freeProcessesDate, $slotType, $slotsRequired);
             foreach ($freeProcesses as $process) {
@@ -366,7 +384,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
     /**
      * Create slots based on availability
      */
-    public function createSlots(\DateTimeInterface $startDate, \DateTimeInterface $stopDate, \DateTimeInterface $now)
+    public function createSlots(\DateTimeInterface $startDate, \DateTimeInterface $stopDate, \DateTimeInterface $now): void
     {
         $startDate = ($startDate < $now) ? $now->modify('00:00:00') : $startDate;
         $stopDate = $stopDate->modify('00:00:00');
@@ -381,7 +399,10 @@ class SlotList extends \BO\Zmsbackend\Query\Base
         } while ($time->getTimestamp() <= $stopDate->getTimestamp());
     }
 
-    public function isSameAvailability(array $slotData)
+    /**
+     * @psalm-api
+     */
+    public function isSameAvailability(array $slotData): bool
     {
         return $this->slotData['availability__id'] == $slotData['availability__id'];
     }
@@ -392,6 +413,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
      *
      * @param Int $slotsRequired
      * @return self
+     * @psalm-api
      */
     public function toReducedBySlots($slotsRequired)
     {
