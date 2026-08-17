@@ -1,2 +1,2 @@
 DELETE FROM feiertage
-WHERE BehoerdenID <> 0;
+WHERE BehoerdenID != 0;
