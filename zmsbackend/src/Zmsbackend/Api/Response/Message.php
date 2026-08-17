@@ -38,12 +38,12 @@ class Message implements \JsonSerializable
         $this->setUpdatedMetaData();
     }
 
-    public static function create(RequestInterface $request)
+    public static function create(RequestInterface $request): self
     {
         return new self($request);
     }
 
-    public function hasData()
+    public function hasData(): bool
     {
         return (
             ($this->data instanceof \BO\Zmsentities\Schema\Entity && $this->data->hasId())
@@ -66,7 +66,7 @@ class Message implements \JsonSerializable
         return ($header) ? $header : $jsonCompressLevel;
     }
 
-    protected function getGraphQL()
+    protected function getGraphQL(): GraphQLInterpreter|null
     {
         $validator = $this->request->getAttribute('validator');
         if ($validator) {
@@ -84,9 +84,8 @@ class Message implements \JsonSerializable
     /**
      * Update meta-data
      * check for data in response
-     *
      */
-    public function setUpdatedMetaData()
+    public function setUpdatedMetaData(): static
     {
         $this->meta->generated = date('c');
         $version = \BO\Zmsbackend\Helper\Version::getString();
@@ -99,6 +98,7 @@ class Message implements \JsonSerializable
         return $this;
     }
 
+    /** @psalm-api */
     public function getStatuscode()
     {
         return $this->statuscode;

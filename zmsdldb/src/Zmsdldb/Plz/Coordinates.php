@@ -30,7 +30,12 @@ class Coordinates
         return $coordinates->getLatLon($plz);
     }
 
-    public function loadData($file = null)
+    /**
+     * @param null|string $file
+     *
+     * @return void
+     */
+    public function loadData(string|null $file = null)
     {
         if (null === $file) {
             $file = __DIR__ . DIRECTORY_SEPARATOR . 'plz_geodb.json';

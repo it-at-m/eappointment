@@ -16,12 +16,16 @@ use BO\Zmsdldb\Entity\Setting as Entity;
   */
 class Setting extends Base
 {
+    /**
+     * @return Settings
+     */
     #[\Override]
     protected function parseData($data)
     {
         return new Settings($data['data']['settings']);
     }
 
+    /** @psalm-api */
     public function fetchName($name)
     {
         return $this->fetchId($name);

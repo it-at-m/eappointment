@@ -20,7 +20,8 @@ use BO\Zmsentities\Schema\Entity;
  */
 class Base extends \ArrayObject implements \JsonSerializable
 {
-    public const ENTITY_CLASS = '';
+    /** @var string */
+    public const string ENTITY_CLASS = '';
 
     /**
      * @var Int $resolveLevel indicator on data integrity
@@ -36,6 +37,10 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $item;
     }
 
+    /**
+     * @return Entity|false
+     *
+     */
     public function getLast()
     {
         $copy = $this->getArrayCopy();
@@ -43,6 +48,10 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $item;
     }
 
+    /**
+     * @return static
+     *
+     */
     public function sortByName()
     {
         $this->uasort(function ($a, $b) {
@@ -54,7 +63,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
-    public function sortByContactName()
+    public function sortByContactName(): static
     {
         $this->uasort(function ($a, $b) {
             return strcmp(
@@ -65,7 +74,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
-    public function sortByCustomKey($key)
+    public function sortByCustomKey(string $key): static
     {
         $this->uasort(function ($a, $b) use ($key) {
             return ($a[$key] - $b[$key]);
@@ -73,7 +82,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
-    public function sortByCustomStringKey($key)
+    public function sortByCustomStringKey($key): static
     {
         $this->uasort(function ($a, $b) use ($key) {
             return strcmp(
@@ -91,7 +100,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         }
     }
 
-    public function hasEntity($primary)
+    public function hasEntity($primary): bool
     {
         foreach ($this as $entity) {
             if (isset($entity->{$entity::PRIMARY}) && $primary == $entity->{$entity::PRIMARY}) {
@@ -101,7 +110,11 @@ class Base extends \ArrayObject implements \JsonSerializable
         return false;
     }
 
-    public function getEntity($primary)
+    /**
+     * @return Entity|null
+     *
+     */
+    public function getEntity(string|int $primary)
     {
         foreach ($this as $entity) {
             if (isset($entity->{$entity::PRIMARY}) && $primary == $entity->{$entity::PRIMARY}) {
@@ -113,8 +126,9 @@ class Base extends \ArrayObject implements \JsonSerializable
 
     /**
      * @param T $entity
+     *
      */
-    public function addEntity(\BO\Zmsentities\Schema\Entity $entity)
+    public function addEntity(\BO\Zmsentities\Schema\Entity $entity): static
     {
         $this->offsetSet(null, $entity);
         return $this;
@@ -134,7 +148,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         }
     }
 
-    public function addData($mergeData)
+    public function addData($mergeData): static
     {
         foreach ($mergeData as $item) {
             if ($item instanceof Entity) {
@@ -152,7 +166,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
-    public function addList(Base $list)
+    public function addList(Base $list): static
     {
         foreach ($list as $item) {
             $this->addEntity($item);
@@ -160,6 +174,10 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @return array
+     *
+     */
     public function getIds()
     {
         $list = [];
@@ -169,12 +187,12 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $list;
     }
 
-    public function getIdsCsv()
+    public function getIdsCsv(): string
     {
         return implode(',', $this->getIds());
     }
 
-    public function getCsvForProperty($propertyName, $csvSeperator = ',')
+    public function getCsvForProperty($propertyName, $csvSeperator = ','): string
     {
         $list = [];
         foreach ($this as $entry) {
@@ -185,7 +203,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         return implode($csvSeperator, $list);
     }
 
-    public function getCsvForPropertyList(array $propertyList, $propertySeperator = '', $csvSeperator = ',')
+    public function getCsvForPropertyList(array $propertyList, $propertySeperator = '', $csvSeperator = ','): string
     {
         $list = [];
         foreach ($this as $entry) {
@@ -207,8 +225,9 @@ class Base extends \ArrayObject implements \JsonSerializable
 
     /**
      * Change a parameter on all entries
+     *
      */
-    public function withValueFor($param, $newValue)
+    public function withValueFor($param, $newValue): static
     {
         $list = new static();
         foreach ($this as $entry) {
@@ -220,6 +239,8 @@ class Base extends \ArrayObject implements \JsonSerializable
     /**
      * Reduce items data of dereferenced entities to a required minimum
      *
+     * @return static
+     *
      */
     public function withLessData(array $keepArray = [])
     {
@@ -230,14 +251,18 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $list;
     }
 
-    public function setJsonCompressLevel($jsonCompressLevel)
+    public function setJsonCompressLevel($jsonCompressLevel): void
     {
         foreach ($this as $item) {
             $item->setJsonCompressLevel($jsonCompressLevel);
         }
     }
 
-    public function getAsArray()
+    /**
+     * @return T[]
+     *
+     */
+    public function getAsArray(): array
     {
         $array = [];
         foreach ($this as $item) {
@@ -296,7 +321,11 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $collection;
     }
 
-    public function chunk($length)
+    /**
+     * @return static[]
+     *
+     */
+    public function chunk($length): array
     {
         $chunks = [new static()];
         $id = 0;

@@ -19,6 +19,7 @@ class RedirectOld extends BaseController
      * add params to session if valid and redirect to calendar
      *
      * @return ResponseInterface
+     * @psalm-api
      */
     public function readResponse(
         RequestInterface $request,

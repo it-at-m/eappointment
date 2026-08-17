@@ -6,10 +6,14 @@ use BO\Zmsentities\Helper\Property;
 
 class Department extends Schema\Entity implements Useraccount\AccessInterface
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "department.json";
 
+    /**
+     * @return (Collection\ClusterList|Collection\DayoffList|Collection\LinkList|Collection\ScopeList|int|string)[]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -23,7 +27,7 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
         ];
     }
 
-    public function hasMail()
+    public function hasMail(): bool
     {
         return ($this->toProperty()->email->isAvailable() && $this->toProperty()->email->get());
     }
@@ -33,12 +37,12 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
         return $this->toProperty()->contact->name->get();
     }
 
-    public function getContact()
+    public function getContact(): Contact
     {
         return new Contact($this->toProperty()->contact->get());
     }
 
-    public function getDayoffList()
+    public function getDayoffList(): Collection\DayoffList
     {
         if (!$this->dayoff instanceof Collection\DayoffList) {
             $this->dayoff = new Collection\DayoffList((array)$this->dayoff);
@@ -72,7 +76,7 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
      * Remove duplicate scopes from clusters
      * Move scopes to clusters to keep the same resolveReference Level
      */
-    public function withOutClusterDuplicates()
+    public function withOutClusterDuplicates(): static
     {
         $department = clone $this;
         if ($this->offsetExists('scopes') && $this->scopes) {
@@ -102,14 +106,14 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
         return $department;
     }
 
-    public function withCompleteScopeList()
+    public function withCompleteScopeList(): static
     {
         $department = clone $this;
         $department->scopes = $this->getScopeList()->withUniqueScopes();
         return $department;
     }
 
-    public function getScopeList()
+    public function getScopeList(): Collection\ScopeList
     {
         $scopeList = new Collection\ScopeList();
         if ($this->toProperty()->clusters->isAvailable()) {
@@ -133,6 +137,9 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
         return $scopeList;
     }
 
+    /**
+     * @return bool
+     */
     #[\Override]
     public function hasAccess(Useraccount $useraccount)
     {
@@ -142,6 +149,7 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
     /**
      * Reduce data of dereferenced entities to a required minimum
      *
+     * @return static
      */
     #[\Override]
     public function withLessData()

@@ -26,8 +26,11 @@ class Owner extends \BO\Zmsbackend\Base
         return $this->readResolvedReferences($owner, $resolveReferences);
     }
 
+    /**
+     * @return \BO\Zmsentities\Schema\Entity
+     */
     #[\Override]
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, int $resolveReferences)
     {
         if (0 < $resolveReferences && isset($entity['id'])) {
             $entity['organisations'] = (new \BO\Zmsbackend\Organisation\Service\Organisation())->readByOwnerId($entity['id'], $resolveReferences - 1);
@@ -59,7 +62,7 @@ class Owner extends \BO\Zmsbackend\Base
         return $ownerList;
     }
 
-    public function readByOrganisationId($organisationId, $resolveReferences = 0)
+    public function readByOrganisationId(int $organisationId, $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Owner\Repository\Owner(\BO\Zmsbackend\Query\Base::SELECT);
         $query

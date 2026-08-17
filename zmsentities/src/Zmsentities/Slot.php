@@ -11,32 +11,36 @@ class Slot extends Schema\Entity
      *  appointments
      *
      */
-    public const FREE = 'free';
+    public const string FREE = 'free';
 
     /**
      *  the values represent free appointments for a given day. Confirmed and
      *  reserved appointments on processes are substracted.
      */
-    public const TIMESLICE = 'timeslice';
+    public const string TIMESLICE = 'timeslice';
 
     /**
      * like timeslice, but for more than one scope
      */
-    public const SUM = 'sum';
+    public const string SUM = 'sum';
 
     /**
      * like timeslice, but numbers were reduced due to required slots on a
      * given request
      *
      */
-    public const REDUCED = 'reduced';
+    public const string REDUCED = 'reduced';
 
     /**
      * the values represent a unix timestamp to when there are free processes
      *
      */
-    public const TIMESTAMP = 'timestamp';
+    public const string TIMESTAMP = 'timestamp';
 
+    /**
+     * @return (int|string)[]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -47,12 +51,12 @@ class Slot extends Schema\Entity
         ];
     }
 
-    public function setTime(Helper\DateTime $slotTime)
+    public function setTime(Helper\DateTime $slotTime): void
     {
         $this->time = $slotTime->format('H:i');
     }
 
-    public function hasTime()
+    public function hasTime(): bool
     {
         return ($this->toProperty()->time->get()) ? true : false;
     }
@@ -68,7 +72,7 @@ class Slot extends Schema\Entity
         return $this->toProperty()->time->get();
     }
 
-    public function removeAppointment()
+    public function removeAppointment(): static
     {
         if ($this->intern <= 0) {
             throw new Exception\SlotFull("Could not remove another appointment from $this");
@@ -80,7 +84,7 @@ class Slot extends Schema\Entity
         return $this;
     }
 
-    public function withAddedSlot(Slot $slot)
+    public function withAddedSlot(Slot $slot): self
     {
         $slot = clone $slot;
         $slot->type = 'sum';

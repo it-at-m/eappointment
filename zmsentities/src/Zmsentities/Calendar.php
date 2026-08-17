@@ -10,10 +10,14 @@ namespace BO\Zmsentities;
  */
 class Calendar extends Schema\Entity
 {
-    public const PRIMARY = 'days';
+    public const string PRIMARY = 'days';
 
     public static $schema = "calendar.json";
 
+    /**
+     * @return (Collection\DayList|Day|array|null)[]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -28,7 +32,7 @@ class Calendar extends Schema\Entity
         ];
     }
 
-    public function addDates($date, \DateTimeInterface $now, $timeZone)
+    public function addDates($date, \DateTimeInterface $now, $timeZone): static
     {
         $validDate = \BO\Mellon\Validator::value($date)->isDate();
         $date = (! $validDate->hasFailed()) ? $validDate->getValue() : $now->format('U');
@@ -210,7 +214,7 @@ class Calendar extends Schema\Entity
         return $this->getDayList()->getDayByDateTime($datetime);
     }
 
-    public function getDateTimeFromDate($date)
+    public function getDateTimeFromDate(array $date)
     {
         $day = (isset($date['day'])) ? $date['day'] : 1;
         $date = Helper\DateTime::createFromFormat('Y-m-d', $date['year'] . '-' . $date['month'] . '-' . $day);
@@ -219,9 +223,8 @@ class Calendar extends Schema\Entity
 
     /**
      * Simple quick check, if first and last day are defined
-     *
      */
-    public function hasFirstAndLastDay()
+    public function hasFirstAndLastDay(): bool
     {
         if (!$this->toProperty()->firstDay->day->get()) {
             return false;
@@ -268,7 +271,7 @@ class Calendar extends Schema\Entity
         return $dateTime->modify('23:59:59');
     }
 
-    public function setLastDayTime($date)
+    public function setLastDayTime($date): static
     {
         $day = new Day();
         $day->setDateTime($date);
@@ -276,7 +279,7 @@ class Calendar extends Schema\Entity
         return $this;
     }
 
-    public function setFirstDayTime($date)
+    public function setFirstDayTime($date): static
     {
         $day = new Day();
         $day->setDateTime($date);
@@ -287,10 +290,8 @@ class Calendar extends Schema\Entity
     /**
      * Returns a list of contained month given by firstDay and lastDay
      * The return value is a month entity object for the first day of the month
-     *
-     * @return [\DateTime]
      */
-    public function getMonthList()
+    public function getMonthList(): Collection\MonthList
     {
         $firstDay = $this->getFirstDay()->modify('first day of this month')->modify('00:00:00');
         $lastDay = $this->getLastDay()->modify('last day of this month')->modify('23:59:59');
@@ -311,6 +312,7 @@ class Calendar extends Schema\Entity
     /**
      * Reduce data of dereferenced entities to a required minimum
      *
+     * @return static
      */
     #[\Override]
     public function withLessData()
@@ -338,7 +340,7 @@ class Calendar extends Schema\Entity
         return $entity;
     }
 
-    public function withFilledEmptyDays()
+    public function withFilledEmptyDays(): static
     {
         $entity = clone $this;
 

@@ -32,6 +32,7 @@ class Locations extends Base
      * @param Int $locationId
      *
      * @return self
+     * @psalm-api
      */
     public function removeLocation($locationId)
     {
@@ -48,7 +49,7 @@ class Locations extends Base
      * @param String $serviceCsv only check for this serviceCsv
      * @param Bool $external allow external links, default false
      */
-    public function getLocationsWithAppointmentsFor($serviceCsv = null, $external = false)
+    public function getLocationsWithAppointmentsFor($serviceCsv = null, $external = false): self
     {
         $list = new self();
         foreach ($this as $location) {
@@ -59,7 +60,7 @@ class Locations extends Base
         return $list;
     }
 
-    public function getIds()
+    public function getIds(): array
     {
         $idList = array();
         foreach ($this as $location) {
@@ -68,7 +69,10 @@ class Locations extends Base
         return $idList;
     }
 
-    public function getNames()
+    /**
+     * @psalm-api
+     */
+    public function getNames(): array
     {
         $nameList = array();
         foreach ($this as $location) {
@@ -77,12 +81,12 @@ class Locations extends Base
         return $nameList;
     }
 
-    public function getCSV()
+    public function getCSV(): string
     {
         return implode(',', $this->getIds());
     }
 
-    public function getLocationListByOfficePath($officepath)
+    public function getLocationListByOfficePath(string $officepath): self
     {
         $locationList = new self();
         foreach ($this as $location_id => $location) {

@@ -60,7 +60,7 @@ abstract class Controller
     }
 
     // init the request with language translation
-    public static function prepareRequest(RequestInterface $request)
+    public static function prepareRequest(RequestInterface $request): RequestInterface
     {
         \App::$language = (\App::MULTILANGUAGE) ?
             new \BO\Slim\Language($request, \App::$supportedLanguages) :

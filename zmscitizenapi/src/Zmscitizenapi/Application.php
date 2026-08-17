@@ -144,6 +144,7 @@ class Application extends \BO\Slim\Application
         self::$ACCESS_UNPUBLISHED_ON_DOMAIN = getenv('ACCESS_UNPUBLISHED_ON_DOMAIN') ?: '';
     }
 
+    /** @psalm-api */
     public static function reinitializeMiddlewareConfig(): void
     {
         self::initializeMiddleware();
@@ -191,6 +192,7 @@ class Application extends \BO\Slim\Application
         return self::$IP_BLACKLIST ?: '';
     }
 
+    /** @psalm-api */
     public static function getAccessUnpublishedOnDomain(): ?string
     {
         return self::$ACCESS_UNPUBLISHED_ON_DOMAIN ?: null;

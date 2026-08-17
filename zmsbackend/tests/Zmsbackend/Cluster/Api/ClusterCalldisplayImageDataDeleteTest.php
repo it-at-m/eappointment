@@ -11,7 +11,7 @@ class ClusterCalldisplayImageDataDeleteTest extends \BO\Zmsbackend\Tests\Api\Bas
 {
     protected $classname = "ClusterCalldisplayImageDataDelete";
 
-    const CLUSTER_ID = 109;
+    const int CLUSTER_ID = 109;
 
     public function testRendering()
     {

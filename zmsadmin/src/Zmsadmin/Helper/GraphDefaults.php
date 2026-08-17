@@ -4,7 +4,7 @@ namespace BO\Zmsadmin\Helper;
 
 class GraphDefaults
 {
-    protected static function defaultFormat($string)
+    protected static function defaultFormat(string $string): string|null
     {
         return preg_replace('#\s+#m', ' ', trim($string));
     }
@@ -92,6 +92,7 @@ EOS;
 
     /**
      * availability reduced response data
+     * @psalm-api
      */
     public static function getAvailability()
     {
@@ -128,6 +129,7 @@ EOS;
 
     /**
      * availability reduced response data
+     * @psalm-api
      */
     public static function getAvailabilityTimes()
     {
@@ -253,6 +255,7 @@ EOS;
 
     /**
      * calendar output for day select page
+     * @psalm-api
      */
     public static function getCalendar()
     {
@@ -367,6 +370,7 @@ EOS;
 
 /**
  *  reduced process response data
+     * @psalm-api
  */
     public static function getFreeProcess()
     {

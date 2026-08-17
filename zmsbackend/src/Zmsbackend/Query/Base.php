@@ -26,11 +26,11 @@ abstract class Base
     /**
      * Identifier for the type of query
      */
-    const SELECT = 'SELECT';
-    const INSERT = 'INSERT';
-    const UPDATE = 'UPDATE';
-    const REPLACE = 'REPLACE';
-    const DELETE = 'DELETE';
+    const string SELECT = 'SELECT';
+    const string INSERT = 'INSERT';
+    const string UPDATE = 'UPDATE';
+    const string REPLACE = 'REPLACE';
+    const string DELETE = 'DELETE';
 
     /**
      * Name of table in DB
@@ -176,12 +176,12 @@ abstract class Base
         return $this;
     }
 
-    public function setDistinctSelect()
+    public function setDistinctSelect(): void
     {
         $this->query->queryBaseStatement('SELECT DISTINCT');
     }
 
-    public function setResolveLevel($resolveLevel): static
+    public function setResolveLevel(int|null $resolveLevel): static
     {
         if ($resolveLevel !== null) {
             $this->resolveLevel = $resolveLevel;
@@ -255,6 +255,8 @@ abstract class Base
     /**
      * Add joins to table if required
      * Override this method if join are required for a select
+     *
+     * @return void
      */
     protected function addRequiredJoins()
     {
@@ -283,7 +285,10 @@ abstract class Base
         return $this;
     }
 
-    public function setWithEntities($withEntities = [])
+    /**
+     * @psalm-api
+     */
+    public function setWithEntities($withEntities = []): void
     {
         $this->withEntities = $withEntities;
     }
@@ -298,7 +303,7 @@ abstract class Base
         return [];
     }
 
-    protected function leftJoin($alias, $left = null, $operator = null, $right = null)
+    protected function leftJoin(Alias $alias, string|Expression|null $left = null, string|null $operator = null, string|null $right = null): QueryBuilder
     {
         $aliasId = $alias->getAliasIdentifier();
         if (!in_array($aliasId, $this->joinedAliasList)) {
@@ -310,7 +315,7 @@ abstract class Base
         return $this->query;
     }
 
-    protected function innerJoin($alias, $left = null, $operator = null, $right = null)
+    protected function innerJoin(Alias $alias, string|null $left = null, string|null $operator = null, string|null $right = null): QueryBuilder
     {
         $aliasId = $alias->getAliasIdentifier();
         if (!in_array($aliasId, $this->joinedAliasList)) {
@@ -342,6 +347,10 @@ abstract class Base
         return $this->query->params();
     }
 
+    /**
+     * @return array
+     *
+     */
     public function getReferenceMapping()
     {
         return [
@@ -353,7 +362,7 @@ abstract class Base
      *
      * @return \BO\Zmsbackend\Query\Builder\Expression
      */
-    protected static function expression($string)
+    protected static function expression(string $string)
     {
         return new Expression($string);
     }
@@ -373,12 +382,12 @@ abstract class Base
         return $this;
     }
 
-    protected function getPrefixed($prefix)
+    protected function getPrefixed($prefix): string
     {
         return $this->prefix . $prefix;
     }
 
-    protected function getPrefixedList($unprefixedList)
+    protected function getPrefixedList(array $unprefixedList): array
     {
         $prefixed = [];
         foreach ($unprefixedList as $key => $value) {
@@ -409,7 +418,7 @@ abstract class Base
     /**
      * Add values to a insert or update query
      */
-    public function addValues($values): static
+    public function addValues(array $values): static
     {
         $this->query->values($values);
         return $this;
@@ -427,8 +436,10 @@ abstract class Base
     /**
      * postProcess data including joined queries if necessary
      *
+     * @param (null|scalar)[] $data
+     *
      */
-    public function postProcessJoins($data)
+    public function postProcessJoins(array $data)
     {
         $data = $this->postProcess($data);
         foreach ($this->joinedQueryList as $query) {
@@ -437,7 +448,7 @@ abstract class Base
         return $data;
     }
 
-    public function shouldLoadEntity($name)
+    public function shouldLoadEntity(string $name): bool
     {
         if (empty($this->withEntities)) {
             return true;

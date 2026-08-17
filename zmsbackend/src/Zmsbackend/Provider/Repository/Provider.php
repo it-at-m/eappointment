@@ -4,9 +4,15 @@ namespace BO\Zmsbackend\Provider\Repository;
 
 class Provider extends \BO\Zmsbackend\Query\Base
 {
-    const TABLE = 'provider';
+    const string TABLE = 'provider';
 
-    public function getEntityMapping()
+    /**
+     * @psalm-api
+     *
+     * @return (\BO\Zmsbackend\Query\Builder\Expression|string)[]
+     *
+     */
+    public function getEntityMapping(): array
     {
         $mapping = [
             'contact__city' => 'provider.contact__city',
@@ -29,7 +35,7 @@ class Provider extends \BO\Zmsbackend\Query\Base
         return $mapping;
     }
 
-    public function addConditionIsAssigned($isAssigned)
+    public function addConditionIsAssigned($isAssigned): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias(\BO\Zmsbackend\Query\Scope::TABLE, 'assignedscope'),
@@ -45,7 +51,7 @@ class Provider extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionProviderId($providerId)
+    public function addConditionProviderId($providerId): static
     {
         $this->query->where('provider.id', '=', $providerId);
         return $this;
@@ -58,7 +64,7 @@ class Provider extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionProviderSource($source)
+    public function addConditionProviderSource($source): static
     {
         $this->query->where('provider.source', '=', $source);
         return $this;
@@ -67,7 +73,7 @@ class Provider extends \BO\Zmsbackend\Query\Base
     /**
      * @todo find calls and implement "sourceName"-parameter to remove default value
      */
-    public function addConditionRequestCsv($requestIdCsv, $sourceName = 'dldb')
+    public function addConditionRequestCsv($requestIdCsv, $sourceName = 'dldb'): void
     {
         $requestIdList = explode(',', $requestIdCsv);
         $this->leftJoin(

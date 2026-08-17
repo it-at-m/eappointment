@@ -7,9 +7,9 @@ use \BO\Zmsentities\Log as Entity;
 
 class LogTest extends \BO\Zmsbackend\Tests\Service\Base
 {
-    private const CITIZEN_MAX_MUSTERMANN = 'Max Mustermann';
+    private const string CITIZEN_MAX_MUSTERMANN = 'Max Mustermann';
 
-    private const CITIZEN_ERIKA_MUSTERMANN = 'Erika Mustermann';
+    private const string CITIZEN_ERIKA_MUSTERMANN = 'Erika Mustermann';
 
     private static function logSearchLabel(string $label): string
     {
