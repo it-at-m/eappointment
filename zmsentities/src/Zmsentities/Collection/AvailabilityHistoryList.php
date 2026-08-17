@@ -4,5 +4,5 @@ namespace BO\Zmsentities\Collection;
 
 class AvailabilityHistoryList extends Base
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\AvailabilityHistory';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\AvailabilityHistory';
 }
