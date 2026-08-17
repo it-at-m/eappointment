@@ -196,9 +196,6 @@ class Department extends \BO\Zmsbackend\Base
         if ($entity->toProperty()->links->isAvailable()) {
             $this->writeDepartmentLinks($lastInsertId, $entity->links);
         }
-        if ($entity->toProperty()->dayoff->isAvailable()) {
-            $this->writeDepartmentDayoffs($lastInsertId, $entity->dayoff);
-        }
         if ($entity->toProperty()->email->isAvailable()) {
             $this->updateDepartmentMail(
                 $lastInsertId,
@@ -223,9 +220,6 @@ class Department extends \BO\Zmsbackend\Base
         $this->writeItem($query);
         if ($entity->toProperty()->links->isAvailable()) {
             $this->writeDepartmentLinks($departmentId, $entity->links);
-        }
-        if ($entity->toProperty()->dayoff->isAvailable()) {
-            $this->writeDepartmentDayoffs($departmentId, $entity->dayoff);
         }
         if ($entity->toProperty()->email->isAvailable()) {
             $this->updateDepartmentMail(
