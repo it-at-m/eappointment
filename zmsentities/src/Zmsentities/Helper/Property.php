@@ -4,6 +4,8 @@ namespace BO\Zmsentities\Helper;
 
 /**
  * Get a property from an Array or ArrayAccess
+ *
+ * @implements \ArrayAccess<array-key, mixed>
  */
 class Property implements \ArrayAccess
 {
@@ -23,18 +25,18 @@ class Property implements \ArrayAccess
         $this->access = $access;
     }
 
-    public static function create($access)
+    public static function create(mixed $access): self
     {
         return new self($access);
     }
 
-    public function isAvailable()
+    public function isAvailable(): bool
     {
         //shorter to avoid extra unit testing
         return (null !== $this->access) ? true : false;
     }
 
-    public function get($default = null)
+    public function get(mixed $default = null): mixed
     {
         if (null !== $this->access) {
             return $this->access;

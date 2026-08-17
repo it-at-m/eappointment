@@ -15,19 +15,6 @@ class DateTimeFormatHelper
         ];
     }
 
-    public static function getInternalDateFromISO(string $dateString): array
-    {
-        try {
-            if (!is_string($dateString)) {
-                throw new \InvalidArgumentException('Date string must be a string');
-            }
-            $date = new \DateTime($dateString);
-            return self::formatDateArray($date);
-        } catch (\Exception $e) {
-            throw new \InvalidArgumentException('Invalid ISO date format: ' . $e->getMessage());
-        }
-    }
-
     public static function getInternalDateFromTimestamp(int $timestamp): array
     {
         try {

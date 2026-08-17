@@ -2,11 +2,14 @@
 
 namespace BO\Zmsentities\Collection;
 
+/**
+ * @extends Base<\BO\Zmsentities\Mail>
+ */
 class MailList extends Base
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Mail';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Mail';
 
-    public function withProcess($processId)
+    public function withProcess($processId): self
     {
         $list = new self();
         foreach ($this as $mail) {

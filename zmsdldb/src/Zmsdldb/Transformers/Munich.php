@@ -10,7 +10,7 @@ use Psr\Log\LoggerInterface;
  */
 class Munich
 {
-    const EXCLUSIVE_LOCATIONS = [
+    const array EXCLUSIVE_LOCATIONS = [
         //SZE
         54285,
         // Standesamt München - registry office locations (exclusive, don't show alternatives)
@@ -22,7 +22,7 @@ class Munich
         103666, 103633, 101905,
     ];
 
-    const LOCATION_PRIO_BY_DISPLAY_NAME = [
+    const array LOCATION_PRIO_BY_DISPLAY_NAME = [
         'Bürgerbüro Ruppertstraße' => 100,
         'Bürgerbüro Orleansplatz' => 90,
         'Bürgerbüro Pasing' => 80,
@@ -41,7 +41,7 @@ class Munich
         'Feuerwache 10 - Riem / Neue Messe' => 1
     ];
 
-    const DONT_SHOW_LOCATION_BY_SERVICES = [
+    const array DONT_SHOW_LOCATION_BY_SERVICES = [
         [
             "locations" => [10489], // Bürgerbüro Ruppertstraße
             "services" => [1063453, 1063441, 1080582] // Reisepass, Personalausweis, Vorläufiger Reisepass
@@ -52,22 +52,15 @@ class Munich
         ]
     ];
 
-    /**
-     * Offices where disabledByServices/DONT_SHOW_LOCATION_BY_SERVICES are interpreted with special
-     * "exclusive vs mixed" semantics. Grouped so JumpIn with one office auto-selects the
-     * equivalent in the same group (e.g. 10489 ⟷ 10502). Mirrors dldb-mapper/app/map.php.
-     */
-    const LOCATIONS_ALLOW_DISABLED_MIX = [
-        [10489, 10502],
+    // Offices where disabledByServices/DONT_SHOW_LOCATION_BY_SERVICES are interpreted with special
+    // "exclusive vs mixed" semantics in the frontend (allowDisabledServicesMix=true).
+    const array LOCATIONS_ALLOW_DISABLED_MIX = [
+        [10489, 10491, 10500, 10502] // Bürgerbüro Ruppertstraße (KVR-II/22) // Bürgerbüro Ruppertstraße (KVR-II/221)
     ];
 
-    /**
-     * Offices that share one Ort in the Bürgeransicht but keep pooled calendar
-     * capacity across all peer OfficeIDs (ZMSKVR-1046 Ausbildung). Distinct from
-     * LOCATIONS_ALLOW_DISABLED_MIX (exclusive vs mixed survivor = one OfficeID).
-     */
-    public const array LOCATIONS_SHARED_BOOKING = [
-        [10489, 10503], // Bürgerbüro Ruppertstraße + Ausbildung
+    // Offices that share one Ort but keep pooled calendar capacity (ZMSKVR-1046 Ausbildung).
+    const array LOCATIONS_SHARED_BOOKING = [
+        [10489, 10503, 10500, 10491] // 10491 now has some of the same services as 10489 10502 10503 which means if it exposes external appointments it must mix them otherwise shows up double.
     ];
 
     /** Aligned with dldb-mapper/app/map.php DONT_SHOW_SERVICE_ON_START_PAGE */
@@ -83,7 +76,7 @@ class Munich
         1080716
     ];
 
-    const SERVICE_COMBINATIONS = [
+    const array SERVICE_COMBINATIONS = [
         //BB
         [10295182],
         [10242339, 1063475, 1063441, 1063453, 10308996, 10224136, 10225205, 10225181, 1063426, 1063428, 10306925, 10225119, 1080843, 1076889, 1078273, 1080582, 10225197, 10224132],
@@ -168,7 +161,7 @@ class Munich
         if ($proxy !== false && $proxy !== '') {
             $parts = parse_url($proxy);
             if (!empty($parts['host'])) {
-                $port = isset($parts['port']) ? (int) $parts['port'] : 80;
+                $port = isset($parts['port']) ? $parts['port'] : 80;
                 $req->useProxy($parts['host'], $port);
             }
         }
@@ -674,20 +667,20 @@ class Munich
                 continue;
             }
 
-            if ((int) $combo[0] === $serviceId) {
+            if ($combo[0] === $serviceId) {
                 $list = array_merge([$serviceId], array_slice($combo, 1));
                 $list = array_map('intval', $list);
                 return array_values(array_unique($list, SORT_NUMERIC));
             }
         }
 
-        return [(int) $serviceId];
+        return [$serviceId];
     }
 
     /**
      * Calculate greatest common divisor for slot times
      */
-    protected function getSlotTime($a, $b): int
+    protected function getSlotTime(int|string $a, int|string $b): int
     {
         $a = (int) $a;
         $b = (int) $b;

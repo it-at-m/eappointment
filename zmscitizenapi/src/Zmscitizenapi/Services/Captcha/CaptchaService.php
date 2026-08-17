@@ -35,6 +35,9 @@ class CaptchaService extends Entity implements CaptchaInterface
         $this->ensureValid();
     }
 
+    /**
+     * @return void
+     */
     private function ensureValid()
     {
         if (!$this->testValid()) {

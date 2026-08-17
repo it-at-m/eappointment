@@ -17,6 +17,9 @@ use BO\Zmsbackend\Calldisplay\Helper\CalldisplayCollections;
  */
 class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
 {
+    /** @var array<int|string, \BO\Zmsentities\Scope> */
+    protected array $scopeCache = [];
+
     /**
      * @SuppressWarnings(Param)
      * @return \Psr\Http\Message\ResponseInterface
@@ -47,8 +50,6 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    protected $scopeCache = [];
-
     protected function readCalculatedQueueListFromScope($scope, $resolveReferences)
     {
         $query = new \BO\Zmsbackend\Scope\Service\Scope();
@@ -61,7 +62,7 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
     }
 
     // full queueList for calculation optimistic and estimated waiting Time and number of waiting clients
-    protected function readFullQueueList($calldisplay, $resolveReferences)
+    protected function readFullQueueList(\BO\Zmsentities\Calldisplay $calldisplay, int $resolveReferences): \BO\Zmsentities\Collection\QueueList
     {
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         foreach ($calldisplay->getFullScopeList() as $scope) {
@@ -70,7 +71,7 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
         return $queueList;
     }
 
-    protected function readQueueListFromScopeAndStatus($scope, $status, $resolveReferences)
+    protected function readQueueListFromScopeAndStatus($scope, $status, $resolveReferences): \BO\Zmsentities\Collection\QueueList
     {
         $query = new \BO\Zmsbackend\Process\Service\Process();
         return $query
@@ -80,7 +81,7 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
     }
 
     // short queueList only with status called and processing
-    protected function readQueueListByStatus($calldisplay, $statusList, $resolveReferences)
+    protected function readQueueListByStatus(\BO\Zmsentities\Calldisplay $calldisplay, $statusList, int $resolveReferences): \BO\Zmsentities\Collection\QueueList
     {
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         foreach ($calldisplay->getFullScopeList() as $scope) {

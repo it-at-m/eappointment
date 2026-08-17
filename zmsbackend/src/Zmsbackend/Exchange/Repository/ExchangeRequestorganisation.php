@@ -9,9 +9,9 @@ class ExchangeRequestorganisation extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'statistik';
+    const string TABLE = 'statistik';
 
-    const REQUESTTABLE = 'request';
+    const string REQUESTTABLE = 'request';
 
     const QUERY_READ_REPORT = '
     SELECT

@@ -12,16 +12,16 @@ namespace BO\Zmsdldb;
  */
 class MySQLAccess extends PDOAccess
 {
-    protected $engine = 'MySQL';
+    protected string $engine = 'MySQL';
 
-    const DEFAULT_DATABASE_NAME = 'dldb_frontend_dev';
-    const DEFAULT_DATABASE_HOST = 'mariadb';
-    const DEFAULT_DATABASE_PORT = 3306;
-    const DEFAULT_DATABASE_USER = 'root';
-    const DEFAULT_DATABASE_PASSWORD = 'password';
+    public const string DEFAULT_DATABASE_NAME = 'dldb_frontend_dev';
+    public const string DEFAULT_DATABASE_HOST = 'mariadb';
+    public const int DEFAULT_DATABASE_PORT = 3306;
+    public const string DEFAULT_DATABASE_USER = 'root';
+    public const string DEFAULT_DATABASE_PASSWORD = 'password';
 
     #[\Override]
-    protected function connect(array $options)
+    protected function connect(array $options): void
     {
         $host = $options['host'] ?? static::DEFAULT_DATABASE_HOST;
         $dbname = $options['database'] ?? static::DEFAULT_DATABASE_NAME;

@@ -11,22 +11,22 @@ class App extends \BO\Zmscitizenapi\Application
     /**
      * HTTP url for api
      */
-    const ZMS_API_URL = ZMS_API_URL;
+    const string ZMS_API_URL = ZMS_API_URL;
 
     /**
      * Flag for enabling maintenance mode
      */
-    const MAINTENANCE_MODE_ENABLED = MAINTENANCE_MODE_ENABLED;
+    const bool MAINTENANCE_MODE_ENABLED = MAINTENANCE_MODE_ENABLED;
 
     /**
      * Name of the application
      */
-    const IDENTIFIER = ZMS_IDENTIFIER;
+    const string IDENTIFIER = ZMS_IDENTIFIER;
 
     /**
      * Name of the module
      */
-    const MODULE_NAME = ZMS_MODULE_NAME;
+    const string MODULE_NAME = ZMS_MODULE_NAME;
 
     /**
      * User for the upstream API
@@ -41,6 +41,6 @@ class App extends \BO\Zmscitizenapi\Application
     /**
      * Name of the OIDC claim that uniquely identifies a citizen user.
      */
-    const ZMS_CITIZENLOGIN_EXTERNALUSERID_CLAIM_NAME = ZMS_CITIZENLOGIN_EXTERNALUSERID_CLAIM_NAME;
+    const string ZMS_CITIZENLOGIN_EXTERNALUSERID_CLAIM_NAME = ZMS_CITIZENLOGIN_EXTERNALUSERID_CLAIM_NAME;
 
 }

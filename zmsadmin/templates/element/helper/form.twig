@@ -481,7 +481,9 @@ aria-describedby="{%
             <div class="input-counter">
                 <button type="button" tabindex="-1" class="button decrement"{{ (args.value|default(0) == 0)? " disabled"}} >−</button>
                 <input
-                    type="number"
+                    type="text"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
                     tabindex="{{ args.tabindex|default(0)}}"
                     {% if args.name %}name="{{ args.name }}"{% endif %}
                     value="{{ args.value|default(0) }}"{% if args.size %}
@@ -490,8 +492,8 @@ aria-describedby="{%
                     id="counter_{{ fieldId }}"
                     role="spinbutton"
                     aria-valuemin="0"
-                    min="0"
                     title="Menge"
+                    autocomplete="off"
                 />
                 <button type="button" tabindex="-1" class="button increment">+</button>
             </div>

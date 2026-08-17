@@ -22,7 +22,7 @@ abstract class PDOAccess extends AbstractAccess
 
     protected $pdo;
 
-    protected $engine = 'SQLite';
+    protected string $engine = 'SQLite';
 
 
     public function __construct(array $options)
@@ -70,6 +70,9 @@ abstract class PDOAccess extends AbstractAccess
         }
     }
 
+    /**
+     * @return void
+     */
     protected function postConnect()
     {
     }
@@ -89,8 +92,9 @@ abstract class PDOAccess extends AbstractAccess
         throw new \Exception('Invalid accessor');
     }
 
-    abstract protected function connect(array $options);
+    abstract protected function connect(array $options): void;
 
+    /** @psalm-api */
     public function getConnection()
     {
         return $this->pdo;
@@ -112,8 +116,7 @@ abstract class PDOAccess extends AbstractAccess
     /**
      * parameters see https://www.php.net/manual/de/pdo.exec.php
      */
-
-    public function exec(...$args)
+    public function exec(string ...$args)
     {
         try {
             return $this->pdo->exec(...$args);
@@ -125,8 +128,7 @@ abstract class PDOAccess extends AbstractAccess
     /**
      * parameters see https://www.php.net/manual/de/pdo.prepare.php
      */
-
-    public function prepare(...$args)
+    public function prepare(string ...$args)
     {
         try {
             return $this->pdo->prepare(...$args);

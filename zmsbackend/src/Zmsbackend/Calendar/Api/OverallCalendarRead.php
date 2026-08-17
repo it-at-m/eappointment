@@ -11,6 +11,9 @@ use DateTimeImmutable;
 
 class OverallCalendarRead extends \BO\Zmsbackend\Api\BaseController
 {
+    /**
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,

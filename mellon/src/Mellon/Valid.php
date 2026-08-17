@@ -65,7 +65,7 @@ class Valid extends \BO\Mellon\Parameter
         return $this;
     }
 
-    protected function setFailureMessage($message)
+    protected function setFailureMessage(string $message): static
     {
         if (null === $this->messages) {
             $this->messages = new Failure\MessageList();
@@ -88,6 +88,7 @@ class Valid extends \BO\Mellon\Parameter
      * @param String $message error message in case of failure
      *
      * @return self
+     * @psalm-api
      */
     protected function failure($message)
     {
@@ -145,6 +146,7 @@ class Valid extends \BO\Mellon\Parameter
      * @param String $message error message in case of failure
      *
      * @return self
+     * @psalm-api
      */
     public function isEqualTo($value, $message = 'not matching')
     {
@@ -179,6 +181,7 @@ class Valid extends \BO\Mellon\Parameter
      * @param String $message error message in case of failure
      *
      * @return self
+     * @psalm-api
      */
     public function isOneOf(array $list, $message = 'not matching')
     {
@@ -199,6 +202,7 @@ class Valid extends \BO\Mellon\Parameter
      * @param String $message error message in case of failure
      *
      * @return self
+     * @psalm-api
      */
     public function isDevoidOf(array $list, $message = 'not matching')
     {
@@ -313,7 +317,7 @@ class Valid extends \BO\Mellon\Parameter
         return $status;
     }
 
-    public function getUnvalidated()
+    public function getUnvalidated(): mixed
     {
         return $this->value;
     }

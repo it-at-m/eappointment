@@ -40,7 +40,7 @@ class SearchTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString('<input type="text" name="query" value="Test%20BO"', (string)$response->getBody());
+        $this->assertStringContainsString('<input type="text" id="search-query" name="query" value="Test%20BO"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -342,4 +342,5 @@ class SearchTest extends Base
         $this->assertStringContainsString('name="query" value="0"', (string) $response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
+
 }

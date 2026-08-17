@@ -71,7 +71,11 @@ class Calldisplay extends \BO\Zmsbackend\Base
         return $organisation;
     }
 
-    public function readImage(Entity $entity)
+    /**
+     * @return (mixed|string)[]
+     *
+     */
+    public function readImage(Entity $entity): array
     {
         $name = $entity->getImageName();
         $image = null;
@@ -99,7 +103,7 @@ class Calldisplay extends \BO\Zmsbackend\Base
         return $image;
     }
 
-    public function readContactData(Entity $entity)
+    public function readContactData(Entity $entity): \BO\Zmsentities\Contact
     {
         $contact = new \BO\Zmsentities\Contact();
         $contactNames = [];

@@ -10,16 +10,16 @@ define('ZMS_TICKETPRINTER_TWIG_CACHE', ($value === 'false') ? false : ($value ?:
 
 class App extends \BO\Zmsticketprinter\Application
 {
-    const IDENTIFIER = ZMS_IDENTIFIER;
-    const APP_PATH = APP_PATH;
-    const DEBUG = false;
+    const string IDENTIFIER = ZMS_IDENTIFIER;
+    const string APP_PATH = __DIR__;
+    const bool DEBUG = false;
     const TWIG_CACHE = ZMS_TICKETPRINTER_TWIG_CACHE;
-    const HTTP_BASE_URL = ZMS_API_URL;
+    const string HTTP_BASE_URL = ZMS_API_URL;
 
     /**
      * Name of the module
      */
-    const MODULE_NAME = ZMS_MODULE_NAME;
+    const string MODULE_NAME = ZMS_MODULE_NAME;
 
     public static $http_curl_config = [
         CURLOPT_SSL_VERIFYPEER => false,

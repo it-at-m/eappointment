@@ -6,22 +6,22 @@ namespace BO\Zmscitizenapi\Utils;
 
 class ErrorMessages
 {
-    private const HTTP_OK = 200;
-    private const HTTP_BAD_REQUEST = 400;
-    private const HTTP_FORBIDDEN = 403;
-    private const HTTP_NOT_FOUND = 404;
-    private const HTTP_INVALID_REQUEST_METHOD = 405;
-    private const HTTP_NOT_ACCEPTABLE = 406;
-    private const HTTP_CONFLICT = 409;
-    private const HTTP_REQUEST_ENTITY_TOO_LARGE = 413;
-    private const HTTP_TOO_MANY_REQUESTS = 429;
-    private const HTTP_INTERNAL_SERVER_ERROR = 500;
-    private const HTTP_NOT_IMPLEMENTED = 501;
-    private const HTTP_UNAVAILABLE = 503;
-    private const HTTP_UNKNOWN = 520;
+    private const int HTTP_OK = 200;
+    private const int HTTP_BAD_REQUEST = 400;
+    private const int HTTP_FORBIDDEN = 403;
+    private const int HTTP_NOT_FOUND = 404;
+    private const int HTTP_INVALID_REQUEST_METHOD = 405;
+    private const int HTTP_NOT_ACCEPTABLE = 406;
+    private const int HTTP_CONFLICT = 409;
+    private const int HTTP_REQUEST_ENTITY_TOO_LARGE = 413;
+    private const int HTTP_TOO_MANY_REQUESTS = 429;
+    private const int HTTP_INTERNAL_SERVER_ERROR = 500;
+    private const int HTTP_NOT_IMPLEMENTED = 501;
+    private const int HTTP_UNAVAILABLE = 503;
+    private const int HTTP_UNKNOWN = 520;
 
     // English messages only
-    private const MESSAGES = [
+    private const array MESSAGES = [
         'zmsClientCommunicationError' => [
             'errorCode' => 'zmsClientCommunicationError',
             'errorMessage' => 'The service is temporarily unavailable. Please try again later.',

@@ -1,16 +1,13 @@
-import { AppointmentImpl } from "@/types/AppointmentImpl";
-import { CustomerData } from "@/types/CustomerData";
-import { OfficeImpl } from "@/types/OfficeImpl";
-import { ServiceImpl } from "@/types/ServiceImpl";
-
-export interface LocalStorageAppointmentData {
+/**
+ * Non-sensitive UI state persisted across Münchner Login.
+ * Store only IDs/counts — never authKey, PII, captchaToken, or full
+ * service/provider objects (avoids clear-text storage of appointment-named fields).
+ */
+export interface LocalStorageUiData {
   timestamp: number;
   currentView: number;
-  selectedService: ServiceImpl;
+  selectedServiceId: string;
   selectedServiceMap: Record<string, number>;
-  selectedProvider: OfficeImpl;
+  selectedProviderId: string;
   selectedTimeslot: number;
-  customerData: CustomerData;
-  appointment: AppointmentImpl;
-  captchaToken: string | undefined;
 }

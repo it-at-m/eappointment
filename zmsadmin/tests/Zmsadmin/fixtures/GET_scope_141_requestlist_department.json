@@ -1,0 +1,52 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2018-04-16T11:31:01+02:00",
+    "server": "Zmsbackend-ENV (v2.15.03)"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/requeststatistic.json",
+    "scopeRequests": [
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/request.json",
+        "id": "120335",
+        "link": "https://service.berlin.de/dienstleistung/120335/",
+        "name": "Abmeldung einer Wohnung",
+        "group": "Meldewesen und Ordnung",
+        "source": "dldb",
+        "timeSlotCount": "0"
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/request.json",
+        "id": "120656",
+        "link": "https://service.berlin.de/dienstleistung/120656/",
+        "name": "Wohngeld - Bewilligung Antragsannahme Mietzuschuss",
+        "group": "Wohnen und Bauen",
+        "source": "dldb",
+        "timeSlotCount": "0"
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/request.json",
+        "id": "120658",
+        "link": "https://service.berlin.de/dienstleistung/120658/",
+        "name": "Anschriftenänderung in dem Fahrzeugschein bzw. der Zulassungsbescheinigung Teil I (ZBI)",
+        "group": "Auto und Verkehr",
+        "source": "dldb",
+        "timeSlotCount": "0"
+      }
+    ],
+    "additionalDepartmentRequests": [
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/request.json",
+        "id": "120665",
+        "link": "https://service.berlin.de/dienstleistung/120665/",
+        "name": "Wohngeld - Bewilligung - Antragsannahme Lastenzuschuss",
+        "group": "Wohnen und Bauen",
+        "source": "dldb",
+        "timeSlotCount": "0"
+      }
+    ]
+  }
+}

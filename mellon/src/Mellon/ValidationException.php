@@ -7,10 +7,6 @@
 
 namespace BO\Mellon;
 
-/**
-  *
-  *
-  */
 class ValidationException extends \Exception
 {
     /**
@@ -19,7 +15,10 @@ class ValidationException extends \Exception
      */
     protected $validator = null;
 
-    public function setValidator(Valid $validator)
+    /**
+     * @psalm-api
+     */
+    public function setValidator(Valid $validator): static
     {
         $this->validator = $validator;
         return $this;

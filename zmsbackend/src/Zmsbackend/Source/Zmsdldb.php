@@ -11,18 +11,29 @@ class Zmsdldb extends \BO\Zmsbackend\Base
     public static $repository = null;
     public static $verbose = false;
 
-    public static function getFixturesImportPath()
+    /**
+     * @psalm-api
+     *
+     * @return false|string
+     */
+    public static function getFixturesImportPath(): string|false
     {
         $dir = dirname(__FILE__);
         $importPath = realpath($dir . '/../../../tests/Zmsbackend/Service/fixtures/');
         return $importPath;
     }
 
-    public static function setImportPath($path)
+    /**
+     * @psalm-api
+     */
+    public static function setImportPath($path): void
     {
         self::$importPath = $path;
     }
 
+    /**
+     * @return void
+     */
     public function startImport($verbose = true, $updateAvailability = true)
     {
         if (!static::$importPath) {
@@ -47,7 +58,7 @@ class Zmsdldb extends \BO\Zmsbackend\Base
         }
     }
 
-    protected function writeRequestList()
+    protected function writeRequestList(): void
     {
         $startTime = microtime(true);
         $requestQuery = (new \BO\Zmsbackend\Request\Service\Request());
@@ -81,7 +92,7 @@ class Zmsdldb extends \BO\Zmsbackend\Base
         return $providers;
     }
 
-    protected function updateAvailability($providers)
+    protected function updateAvailability($providers): void
     {
         foreach ($providers as $provider) {
             $providerData = $provider->data;
@@ -104,7 +115,7 @@ class Zmsdldb extends \BO\Zmsbackend\Base
         }
     }
 
-    protected function writeRequestRelationList()
+    protected function writeRequestRelationList(): void
     {
         $startTime = microtime(true);
         (new \BO\Zmsbackend\RequestRelation\Service\RequestRelation())->writeDeleteListBySource('dldb');
@@ -115,7 +126,7 @@ class Zmsdldb extends \BO\Zmsbackend\Base
         }
     }
 
-    protected function writeLastUpdate()
+    protected function writeLastUpdate(): void
     {
         $startTime = microtime(true);
         (new \BO\Zmsbackend\Config\Service\Config())->replaceProperty('sources_dldb_last', date('c'));

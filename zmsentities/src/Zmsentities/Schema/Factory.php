@@ -19,7 +19,7 @@ class Factory
         $this->data = $data;
     }
 
-    public static function create($data)
+    public static function create($data): self
     {
         return new self($data);
     }

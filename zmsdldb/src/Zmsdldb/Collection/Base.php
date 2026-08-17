@@ -9,9 +9,12 @@ namespace BO\Zmsdldb\Collection;
 
 use BO\Zmsdldb\Helper\Sorter;
 
+/**
+ * @extends \ArrayObject<int|string, \BO\Zmsdldb\Entity\Base>
+ */
 class Base extends \ArrayObject
 {
-    public function sortByName()
+    public function sortByName(): static
     {
         $itemList = clone $this;
         $itemList->uasort(function ($a, $b) {
@@ -20,7 +23,10 @@ class Base extends \ArrayObject
         return $itemList;
     }
 
-    public function sortWithCollator($field = 'name', $locale = 'de')
+    /**
+     * @psalm-api
+     */
+    public function sortWithCollator($field = 'name', $locale = 'de'): static
     {
         $collator = collator_create($locale);
         $collator->setStrength(\Collator::QUATERNARY);

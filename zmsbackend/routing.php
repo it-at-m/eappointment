@@ -11,7 +11,7 @@
 
 \App::$slim->get(
     '/',
-    '\BO\Zmsbackend\Api\Index'
+    \BO\Zmsbackend\Api\Index::class
 )
     ->setName("index");
 
@@ -48,7 +48,7 @@
  */
 \App::$slim->get(
     '/apikey/{key}/',
-    '\BO\Zmsbackend\Apikey\Api\ApikeyGet'
+    \BO\Zmsbackend\Apikey\Api\ApikeyGet::class
 )
     ->setName("ApikeyGet");
 
@@ -85,7 +85,7 @@
  */
 \App::$slim->post(
     '/apikey/',
-    \BO\Zmsbackend\ApikeyUpdate::class
+    \BO\Zmsbackend\Apikey\Api\ApikeyUpdate::class
 )
     ->setName("ApikeyUpdate");
 
@@ -115,7 +115,7 @@
  */
 \App::$slim->delete(
     '/apikey/{key}/',
-    '\BO\Zmsbackend\Apikey\Api\ApikeyDelete'
+    \BO\Zmsbackend\Apikey\Api\ApikeyDelete::class
 )
     ->setName("ApikeyDelete");
 
@@ -156,7 +156,7 @@
  */
 \App::$slim->get(
     '/availability/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Availability\Api\AvailabilityGet'
+    \BO\Zmsbackend\Availability\Api\AvailabilityGet::class
 )
     ->setName("AvailabilityGet");
 
@@ -195,7 +195,7 @@
  */
 \App::$slim->post(
     '/availability/',
-    '\BO\Zmsbackend\Availability\Api\AvailabilityListUpdate'
+    \BO\Zmsbackend\Availability\Api\AvailabilityListUpdate::class
 )
     ->setName("AvailabilityListUpdate");
 
@@ -237,7 +237,7 @@
  */
 \App::$slim->post(
     '/availability/slots/update/',
-    '\BO\Zmsbackend\Availability\Api\AvailabilitySlotsUpdate'
+    \BO\Zmsbackend\Availability\Api\AvailabilitySlotsUpdate::class
 )
     ->setName("AvailabilitySlotsUpdate");
 
@@ -273,7 +273,7 @@
  */
 \App::$slim->delete(
     '/availability/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Availability\Api\AvailabilityDelete'
+    \BO\Zmsbackend\Availability\Api\AvailabilityDelete::class
 )
     ->setName("AvailabilityDelete");
 
@@ -321,7 +321,7 @@
  */
 \App::$slim->post(
     '/calendar/',
-    '\BO\Zmsbackend\Calendar\Api\CalendarGet'
+    \BO\Zmsbackend\Calendar\Api\CalendarGet::class
 )
     ->setName("CalendarGet");
 
@@ -410,7 +410,7 @@
  */
 \App::$slim->get(
     '/calendar/availability/',
-    '\BO\Zmsbackend\Calendar\Api\CalendarAvailabilityGet'
+    \BO\Zmsbackend\Calendar\Api\CalendarAvailabilityGet::class
 )
     ->setName("CalendarAvailabilityGet");
 
@@ -452,7 +452,7 @@
  */
 \App::$slim->post(
     '/calldisplay/',
-    '\BO\Zmsbackend\Calldisplay\Api\CalldisplayGet'
+    \BO\Zmsbackend\Calldisplay\Api\CalldisplayGet::class
 )
     ->setName("CalldisplayGet");
 
@@ -503,7 +503,7 @@
  */
 \App::$slim->post(
     '/calldisplay/queue/',
-    '\BO\Zmsbackend\Calldisplay\Api\CalldisplayQueue'
+    \BO\Zmsbackend\Calldisplay\Api\CalldisplayQueue::class
 )
     ->setName("CalldisplayQueue");
 
@@ -544,7 +544,7 @@
  */
 \App::$slim->get(
     '/cluster/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Cluster\Api\ClusterGet'
+    \BO\Zmsbackend\Cluster\Api\ClusterGet::class
 )
     ->setName("ClusterGet");
 
@@ -587,7 +587,7 @@
  */
 \App::$slim->post(
     '/cluster/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Cluster\Api\ClusterUpdate'
+    \BO\Zmsbackend\Cluster\Api\ClusterUpdate::class
 )
     ->setName("ClusterUpdate");
 
@@ -617,7 +617,7 @@
  */
 \App::$slim->delete(
     '/cluster/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Cluster\Api\ClusterDelete'
+    \BO\Zmsbackend\Cluster\Api\ClusterDelete::class
 )
     ->setName("ClusterDelete");
 
@@ -659,7 +659,7 @@
  */
 \App::$slim->get(
     '/cluster/{id:\d{1,4}}/queue/next/',
-    '\BO\Zmsbackend\Process\Api\ProcessNextByCluster'
+    \BO\Zmsbackend\Process\Api\ProcessNextByCluster::class
 )
     ->setName("ProcessNextByCluster");
 
@@ -704,7 +704,7 @@
  */
 \App::$slim->get(
     '/cluster/{id:\d{1,11}}/queue/',
-    '\BO\Zmsbackend\Cluster\Api\ClusterQueue'
+    \BO\Zmsbackend\Cluster\Api\ClusterQueue::class
 )
     ->setName("ClusterQueue");
 
@@ -746,7 +746,7 @@
  */
 \App::$slim->get(
     '/useraccount/queue/',
-    '\BO\Zmsbackend\Useraccount\Api\UserQueue'
+    \BO\Zmsbackend\Useraccount\Api\UserQueue::class
 )
     ->setName("UserQueue");
 
@@ -789,7 +789,7 @@
  */
 \App::$slim->get(
     '/cluster/{id:\d{1,11}}/request/',
-    '\BO\Zmsbackend\Request\Api\RequestListByCluster'
+    \BO\Zmsbackend\Request\Api\RequestListByCluster::class
 )
     ->setName("RequestListByCluster");
 
@@ -833,7 +833,7 @@
  */
 \App::$slim->get(
     '/cluster/{id:\d{1,11}}/workstation/',
-    '\BO\Zmsbackend\Workstation\Api\WorkstationListByCluster'
+    \BO\Zmsbackend\Workstation\Api\WorkstationListByCluster::class
 )
     ->setName("WorkstationListByCluster");
 
@@ -878,7 +878,7 @@
  */
 \App::$slim->get(
     '/cluster/{id:\d{1,11}}/waitingnumber/{hash}/',
-    '\BO\Zmsbackend\Ticketprinter\Api\TicketprinterWaitingnumberByCluster'
+    \BO\Zmsbackend\Ticketprinter\Api\TicketprinterWaitingnumberByCluster::class
 )
     ->setName("TicketprinterWaitingnumberByCluster");
 
@@ -918,7 +918,7 @@
  */
 \App::$slim->get(
     '/cluster/{id:\d{1,4}}/workstationcount/',
-    '\BO\Zmsbackend\Cluster\Api\ClusterWithWorkstationCount'
+    \BO\Zmsbackend\Cluster\Api\ClusterWithWorkstationCount::class
 )
     ->setName("ClusterWithWorkstationCount");
 
@@ -952,7 +952,7 @@
  */
 \App::$slim->get(
     '/cluster/{id:\d{1,4}}/imagedata/calldisplay/',
-    '\BO\Zmsbackend\Cluster\Api\ClusterCalldisplayImageDataGet'
+    \BO\Zmsbackend\Cluster\Api\ClusterCalldisplayImageDataGet::class
 )
     ->setName("ClusterCalldisplayImageDataGet");
 
@@ -992,7 +992,7 @@
  */
 \App::$slim->post(
     '/cluster/{id:\d{1,4}}/imagedata/calldisplay/',
-    '\BO\Zmsbackend\Cluster\Api\ClusterCalldisplayImageDataUpdate'
+    \BO\Zmsbackend\Cluster\Api\ClusterCalldisplayImageDataUpdate::class
 )
     ->setName("ClusterCalldisplayImageDataUpdate");
 
@@ -1024,7 +1024,7 @@
  */
 \App::$slim->delete(
     '/cluster/{id:\d{1,4}}/imagedata/calldisplay/',
-    '\BO\Zmsbackend\Cluster\Api\ClusterCalldisplayImageDataDelete'
+    \BO\Zmsbackend\Cluster\Api\ClusterCalldisplayImageDataDelete::class
 )
     ->setName("ClusterCalldisplayImageDataDelete");
 
@@ -1063,7 +1063,7 @@
  */
 \App::$slim->get(
     '/cluster/{id:\d{1,4}}/organisation/',
-    '\BO\Zmsbackend\Organisation\Api\OrganisationByCluster'
+    \BO\Zmsbackend\Organisation\Api\OrganisationByCluster::class
 )
     ->setName("OrganisationByCluster");
 
@@ -1113,7 +1113,7 @@
  */
 \App::$slim->get(
     '/cluster/{id:\d{1,11}}/process/{date:\d\d\d\d-\d\d-\d\d}/',
-    '\BO\Zmsbackend\Process\Api\ProcessListByClusterAndDate'
+    \BO\Zmsbackend\Process\Api\ProcessListByClusterAndDate::class
 )
     ->setName("ProcessListByClusterAndDate");
 
@@ -1147,7 +1147,7 @@
  */
 \App::$slim->get(
     '/config/',
-    '\BO\Zmsbackend\Config\Api\ConfigGet'
+    \BO\Zmsbackend\Config\Api\ConfigGet::class
 )
     ->setName("ConfigGet");
 
@@ -1187,7 +1187,7 @@
  */
 \App::$slim->post(
     '/config/',
-    '\BO\Zmsbackend\Config\Api\ConfigUpdate'
+    \BO\Zmsbackend\Config\Api\ConfigUpdate::class
 )
     ->setName("ConfigUpdate");
 
@@ -1198,46 +1198,46 @@
 
 \App::$slim->get(
     '/mailtemplates/',
-    '\BO\Zmsbackend\Mail\Api\MailTemplatesGet'
+    \BO\Zmsbackend\Mail\Api\MailTemplatesGet::class
 )
     ->setName("MailTemplatesGet");
 
 
 \App::$slim->post(
     '/mailtemplates/',
-    '\BO\Zmsbackend\Mail\Api\MailTemplatesUpdate'
+    \BO\Zmsbackend\Mail\Api\MailTemplatesUpdate::class
 )
     ->setName("MailTemplatesUpdate");
 
 \App::$slim->post(
     '/mailtemplates-create-customization/',
-    '\BO\Zmsbackend\Mail\Api\MailTemplatesCreateCustomization'
+    \BO\Zmsbackend\Mail\Api\MailTemplatesCreateCustomization::class
 )
         ->setName("MailTemplatesCreateCustomization");
 
 \App::$slim->get(
     '/custom-mailtemplates/{providerId}/',
-    '\BO\Zmsbackend\Mail\Api\MailCustomTemplatesGet'
+    \BO\Zmsbackend\Mail\Api\MailCustomTemplatesGet::class
 )
         ->setName("MailCustomTemplatesGet");
 
 \App::$slim->get(
     '/merged-mailtemplates/{providerId}/',
-    '\BO\Zmsbackend\Mail\Api\MailMergedTemplatesGet'
+    \BO\Zmsbackend\Mail\Api\MailMergedTemplatesGet::class
 )
         ->setName("MailMergedTemplatesGet");
 
 
 \App::$slim->delete(
     '/mailtemplates/{templateId}/',
-    '\BO\Zmsbackend\Mail\Api\MailTemplatesDelete'
+    \BO\Zmsbackend\Mail\Api\MailTemplatesDelete::class
 )
         ->setName("MailTemplatesDelete");
 
 
 \App::$slim->get(
     '/preview-mailtemplates/{mailStatus}/{providerId}/',
-    '\BO\Zmsbackend\Mail\Api\MailTemplatesPreview'
+    \BO\Zmsbackend\Mail\Api\MailTemplatesPreview::class
 )
         ->setName("MailTemplatesPreview");
 
@@ -1282,7 +1282,7 @@
  */
 \App::$slim->get(
     '/dayoff/{year:2\d{3,3}}/',
-    '\BO\Zmsbackend\Dayoff\Api\DayoffList'
+    \BO\Zmsbackend\Dayoff\Api\DayoffList::class
 )
     ->setName("DayoffList");
 
@@ -1328,7 +1328,7 @@
  */
 \App::$slim->post(
     '/dayoff/{year:2\d{3,3}}/',
-    '\BO\Zmsbackend\Dayoff\Api\DayoffUpdate'
+    \BO\Zmsbackend\Dayoff\Api\DayoffUpdate::class
 )
     ->setName("DayoffUpdate");
 
@@ -1367,7 +1367,7 @@
  */
 \App::$slim->get(
     '/department/',
-    '\BO\Zmsbackend\Department\Api\DepartmentList'
+    \BO\Zmsbackend\Department\Api\DepartmentList::class
 )
     ->setName("DepartmentList");
 
@@ -1408,7 +1408,7 @@
  */
 \App::$slim->get(
     '/department/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Department\Api\DepartmentGet'
+    \BO\Zmsbackend\Department\Api\DepartmentGet::class
 )
     ->setName("DepartmentGet");
 
@@ -1451,7 +1451,7 @@
  */
 \App::$slim->post(
     '/department/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Department\Api\DepartmentUpdate'
+    \BO\Zmsbackend\Department\Api\DepartmentUpdate::class
 )
     ->setName("DepartmentUpdate");
 
@@ -1484,7 +1484,7 @@
  */
 \App::$slim->delete(
     '/department/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Department\Api\DepartmentDelete'
+    \BO\Zmsbackend\Department\Api\DepartmentDelete::class
 )
     ->setName("DepartmentDelete");
 
@@ -1528,7 +1528,7 @@
  */
 \App::$slim->post(
     '/department/{id:\d{1,11}}/scope/',
-    '\BO\Zmsbackend\Department\Api\DepartmentAddScope'
+    \BO\Zmsbackend\Department\Api\DepartmentAddScope::class
 )
     ->setName("DepartmentAddScope");
 
@@ -1573,7 +1573,7 @@
  */
 \App::$slim->post(
     '/department/{id:\d{1,11}}/cluster/',
-    '\BO\Zmsbackend\Department\Api\DepartmentAddCluster'
+    \BO\Zmsbackend\Department\Api\DepartmentAddCluster::class
 )
     ->setName("DepartmentAddCluster");
 
@@ -1621,7 +1621,7 @@
  */
 \App::$slim->get(
     '/department/{id:\d{1,11}}/organisation/',
-    '\BO\Zmsbackend\Organisation\Api\OrganisationByDepartment'
+    \BO\Zmsbackend\Organisation\Api\OrganisationByDepartment::class
 )
     ->setName("OrganisationByDepartment");
 
@@ -1670,7 +1670,7 @@
  */
 \App::$slim->get(
     '/role/{roleName:[a-z][a-z0-9_]{0,99}}/useraccount/',
-    '\BO\Zmsbackend\Useraccount\Api\UseraccountListByRole'
+    \BO\Zmsbackend\Useraccount\Api\UseraccountListByRole::class
 )
     ->setName("UseraccountListByRole");
 
@@ -1726,57 +1726,9 @@
  */
 \App::$slim->get(
     '/role/{roleName:[a-z][a-z0-9_]{0,99}}/department/{ids:\d{1,11}(?:,\d{1,11})*}/useraccount/',
-    '\BO\Zmsbackend\Useraccount\Api\UseraccountListByRoleAndDepartments'
+    \BO\Zmsbackend\Useraccount\Api\UseraccountListByRoleAndDepartments::class
 )
     ->setName("UseraccountListByRoleAndDepartments");
-
-/**
- *  @swagger
- *  "/useraccount/{loginname}/roles/":
- *      get:
- *          summary: Get roles assigned to a useraccount
- *          x-since: 2.26
- *          tags:
- *              - useraccount
- *              - role
- *          parameters:
- *              -   name: loginname
- *                  description: useraccount login name
- *                  in: path
- *                  required: true
- *                  type: string
- *              -   name: X-Authkey
- *                  required: true
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *              -   name: resolveReferences
- *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
- *                  in: query
- *                  type: integer
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              type: array
- *                              items:
- *                                  $ref: "schema/role.json"
- *              403:
- *                  x-since: 2.12
- *                  description: "missing or wrong access rights"
- *              404:
- *                  description: "useraccount does not exist"
- */
-\App::$slim->get(
-    '/useraccount/{loginname}/roles/',
-    '\BO\Zmsbackend\Useraccount\Api\UseraccountRolesGet'
-)
-    ->setName("UseraccountRolesGet");
 
 /**
  *  @swagger
@@ -1810,7 +1762,7 @@
  */
 \App::$slim->get(
     '/permissions/',
-    '\BO\Zmsbackend\Permission\Api\PermissionListGet'
+    \BO\Zmsbackend\Permission\Api\PermissionListGet::class
 )
     ->setName("PermissionListGet");
 
@@ -1852,7 +1804,7 @@
  */
 \App::$slim->post(
     '/roles/',
-    '\BO\Zmsbackend\Role\Api\RoleAdd'
+    \BO\Zmsbackend\Role\Api\RoleAdd::class
 )
     ->setName("RoleAdd");
 
@@ -1892,7 +1844,7 @@
  */
 \App::$slim->get(
     '/roles/',
-    '\BO\Zmsbackend\Role\Api\RoleListGet'
+    \BO\Zmsbackend\Role\Api\RoleListGet::class
 )
     ->setName("RoleListGet");
 
@@ -1937,7 +1889,7 @@
  */
 \App::$slim->get(
     '/roles/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Role\Api\RoleGet'
+    \BO\Zmsbackend\Role\Api\RoleGet::class
 )
     ->setName("RoleGet");
 
@@ -1978,7 +1930,7 @@
  */
 \App::$slim->delete(
     '/roles/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Role\Api\RoleDelete'
+    \BO\Zmsbackend\Role\Api\RoleDelete::class
 )
     ->setName("RoleDelete");
 
@@ -2027,7 +1979,7 @@
  */
 \App::$slim->post(
     '/roles/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Role\Api\RoleUpdate'
+    \BO\Zmsbackend\Role\Api\RoleUpdate::class
 )
     ->setName("RoleUpdate");
 
@@ -2074,7 +2026,7 @@
  */
 \App::$slim->get(
     '/useraccount/',
-    '\BO\Zmsbackend\Useraccount\Api\UseraccountList'
+    \BO\Zmsbackend\Useraccount\Api\UseraccountList::class
 )
     ->setName("UseraccountList");
 
@@ -2128,7 +2080,7 @@
  */
 \App::$slim->get(
     '/department/{ids:\d{1,11}(?:,\d{1,11})*}/useraccount/',
-    '\BO\Zmsbackend\Useraccount\Api\UseraccountListByDepartments'
+    \BO\Zmsbackend\Useraccount\Api\UseraccountListByDepartments::class
 )
     ->setName("UseraccountByDepartmentList");
 
@@ -2177,7 +2129,7 @@
  */
 \App::$slim->get(
     '/department/{id:\d{1,11}}/workstation/',
-    '\BO\Zmsbackend\Department\Api\DepartmentWorkstationList'
+    \BO\Zmsbackend\Department\Api\DepartmentWorkstationList::class
 )
     ->setName("DepartmentWorkstationList");
 
@@ -2211,7 +2163,7 @@
  */
 \App::$slim->get(
     '/log/process/',
-    '\BO\Zmsbackend\Process\Api\ProcessLog'
+    \BO\Zmsbackend\Process\Api\ProcessLog::class
 )
     ->setName("ProcessLog");
 
@@ -2259,7 +2211,7 @@
  */
 \App::$slim->post(
     '/log/process/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Process\Api\ProcessAddLog'
+    \BO\Zmsbackend\Process\Api\ProcessAddLog::class
 )
     ->setName("ProcessAddLog");
 
@@ -2309,7 +2261,7 @@
  */
 \App::$slim->get(
     '/mails/',
-    '\BO\Zmsbackend\Mail\Api\MailList'
+    \BO\Zmsbackend\Mail\Api\MailList::class
 )
     ->setName("MailList");
 
@@ -2350,7 +2302,7 @@
  */
 \App::$slim->post(
     '/mails/',
-    '\BO\Zmsbackend\Mail\Api\MailAdd'
+    \BO\Zmsbackend\Mail\Api\MailAdd::class
 )
     ->setName("MailAdd");
 
@@ -2382,7 +2334,7 @@
  */
 \App::$slim->delete(
     '/mails/',
-    '\BO\Zmsbackend\Mail\Api\MailDelete'
+    \BO\Zmsbackend\Mail\Api\MailDelete::class
 )
     ->setName("MailDeleteMultiple");
 
@@ -2420,7 +2372,7 @@
  */
 \App::$slim->delete(
     '/mails/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Mail\Api\MailDelete'
+    \BO\Zmsbackend\Mail\Api\MailDelete::class
 )
     ->setName("MailDelete");
 
@@ -2450,7 +2402,7 @@
  */
 \App::$slim->get(
     '/mails/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Mail\Api\MailGet'
+    \BO\Zmsbackend\Mail\Api\MailGet::class
 )
     ->setName("MailGet");
 
@@ -2486,7 +2438,7 @@
  */
 \App::$slim->get(
     '/owner/',
-    '\BO\Zmsbackend\Owner\Api\OwnerList'
+    \BO\Zmsbackend\Owner\Api\OwnerList::class
 )
     ->setName("OwnerList");
 
@@ -2527,7 +2479,7 @@
  */
 \App::$slim->get(
     '/owner/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Owner\Api\OwnerGet'
+    \BO\Zmsbackend\Owner\Api\OwnerGet::class
 )
     ->setName("OwnerGet");
 
@@ -2573,13 +2525,13 @@
  */
 \App::$slim->post(
     '/owner/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Owner\Api\OwnerUpdate'
+    \BO\Zmsbackend\Owner\Api\OwnerUpdate::class
 )
     ->setName("OwnerUpdate");
 
 /**
  *  @swagger
- *  "/owner/":
+ *  "/owner/add/":
  *      post:
  *          summary: Add a new owner
  *          tags:
@@ -2605,13 +2557,13 @@
  *                          meta:
  *                              $ref: "schema/metaresult.json"
  *                          data:
- *                              $ref: "schema/department.json"
+ *                              $ref: "schema/owner.json"
  *              404:
  *                  description: "Missing required properties in the owner"
  */
 \App::$slim->post(
-    '/owner/',
-    '\BO\Zmsbackend\Owner\Api\OwnerAdd'
+    '/owner/add/',
+    \BO\Zmsbackend\Owner\Api\OwnerAdd::class
 )
     ->setName("OwnerAdd");
 
@@ -2642,7 +2594,7 @@
  */
 \App::$slim->delete(
     '/owner/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Owner\Api\OwnerDelete'
+    \BO\Zmsbackend\Owner\Api\OwnerDelete::class
 )
     ->setName("OwnerDelete");
 
@@ -2688,7 +2640,7 @@
  */
 \App::$slim->post(
     '/owner/{id:\d{1,11}}/organisation/',
-    '\BO\Zmsbackend\Owner\Api\OwnerAddOrganisation'
+    \BO\Zmsbackend\Owner\Api\OwnerAddOrganisation::class
 )
     ->setName("OwnerAddOrganisation");
 
@@ -2725,7 +2677,7 @@
  */
 \App::$slim->get(
     '/organisation/',
-    '\BO\Zmsbackend\Organisation\Api\OrganisationList'
+    \BO\Zmsbackend\Organisation\Api\OrganisationList::class
 )
     ->setName("OrganisationList");
 
@@ -2766,7 +2718,7 @@
  */
 \App::$slim->get(
     '/organisation/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Organisation\Api\OrganisationGet'
+    \BO\Zmsbackend\Organisation\Api\OrganisationGet::class
 )
     ->setName("OrganisationGet");
 
@@ -2814,7 +2766,7 @@
  */
 \App::$slim->get(
     '/organisation/{id:\d{1,11}}/owner/',
-    '\BO\Zmsbackend\Owner\Api\OwnerByOrganisation'
+    \BO\Zmsbackend\Owner\Api\OwnerByOrganisation::class
 )
     ->setName("OwnerByOrganisation");
 
@@ -2857,7 +2809,7 @@
  */
 \App::$slim->post(
     '/organisation/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Organisation\Api\OrganisationUpdate'
+    \BO\Zmsbackend\Organisation\Api\OrganisationUpdate::class
 )
     ->setName("OrganisationUpdate");
 
@@ -2887,7 +2839,7 @@
  */
 \App::$slim->delete(
     '/organisation/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Organisation\Api\OrganisationDelete'
+    \BO\Zmsbackend\Organisation\Api\OrganisationDelete::class
 )
     ->setName("OrganisationDelete");
 
@@ -2920,7 +2872,7 @@
  */
 \App::$slim->get(
     '/organisation/{id:\d{1,11}}/hash/',
-    '\BO\Zmsbackend\Organisation\Api\OrganisationHash'
+    \BO\Zmsbackend\Organisation\Api\OrganisationHash::class
 )
     ->setName("OrganisationHash");
 
@@ -2964,7 +2916,7 @@
  */
 \App::$slim->post(
     '/organisation/{id:\d{1,11}}/department/',
-    '\BO\Zmsbackend\Organisation\Api\OrganisationAddDepartment'
+    \BO\Zmsbackend\Organisation\Api\OrganisationAddDepartment::class
 )
     ->setName("OrganisationAddDepartment");
 
@@ -3007,7 +2959,7 @@
  */
 \App::$slim->get(
     '/process/{id:\d{1,11}}/{authKey}/',
-    '\BO\Zmsbackend\Process\Api\ProcessGet'
+    \BO\Zmsbackend\Process\Api\ProcessGet::class
 )
     ->setName("ProcessGet");
 
@@ -3056,7 +3008,7 @@
  */
 \App::$slim->get(
     '/process/{id:\d{1,11}}/externaluserid/{externalUserId}/',
-    '\BO\Zmsbackend\Process\Api\ProcessGetByExternalUserId'
+    \BO\Zmsbackend\Process\Api\ProcessGetByExternalUserId::class
 )
     ->setName("ProcessGetByExternalUserId");
 
@@ -3114,7 +3066,7 @@
  */
 \App::$slim->post(
     '/process/{id:\d{1,11}}/{authKey}/appointment/',
-    '\BO\Zmsbackend\Process\Api\AppointmentUpdate'
+    \BO\Zmsbackend\Process\Api\AppointmentUpdate::class
 )
     ->setName("AppointmentUpdate");
 
@@ -3157,7 +3109,7 @@
  */
 \App::$slim->get(
     '/process/{id:\d{1,11}}/{authKey}/ics/',
-    '\BO\Zmsbackend\Process\Api\ProcessIcs'
+    \BO\Zmsbackend\Process\Api\ProcessIcs::class
 )
     ->setName("ProcessIcs");
 
@@ -3211,7 +3163,7 @@
  */
 \App::$slim->post(
     '/process/{id:\d{1,11}}/{authKey}/',
-    '\BO\Zmsbackend\Process\Api\ProcessUpdate'
+    \BO\Zmsbackend\Process\Api\ProcessUpdate::class
 )
     ->setName("ProcessUpdate");
 
@@ -3259,7 +3211,7 @@
  */
 \App::$slim->post(
     '/process/{id:\d{1,11}}/{authKey}/preconfirmation/mail/',
-    '\BO\Zmsbackend\Process\Api\ProcessPreconfirmationMail'
+    \BO\Zmsbackend\Process\Api\ProcessPreconfirmationMail::class
 )
     ->setName("ProcessPreconfirmationMail");
 
@@ -3307,7 +3259,7 @@
  */
 \App::$slim->post(
     '/process/{id:\d{1,11}}/{authKey}/confirmation/mail/',
-    '\BO\Zmsbackend\Process\Api\ProcessConfirmationMail'
+    \BO\Zmsbackend\Process\Api\ProcessConfirmationMail::class
 )
     ->setName("ProcessConfirmationMail");
 
@@ -3356,7 +3308,7 @@
  */
 \App::$slim->post(
     '/process/{id:\d{1,11}}/{authKey}/delete/mail/',
-    '\BO\Zmsbackend\Process\Api\ProcessDeleteMail'
+    \BO\Zmsbackend\Process\Api\ProcessDeleteMail::class
 )
     ->setName("ProcessDeleteMail");
 
@@ -3400,7 +3352,7 @@
  */
 \App::$slim->delete(
     '/process/{id:\d{1,11}}/{authKey}/',
-    '\BO\Zmsbackend\Process\Api\ProcessDelete'
+    \BO\Zmsbackend\Process\Api\ProcessDelete::class
 )
     ->setName("ProcessDelete");
 
@@ -3445,7 +3397,7 @@
  */
 \App::$slim->delete(
     '/process/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Process\Api\ProcessDeleteQuick'
+    \BO\Zmsbackend\Process\Api\ProcessDeleteQuick::class
 )
     ->setName("ProcessDeleteQuick");
 
@@ -3486,7 +3438,7 @@
  */
 \App::$slim->get(
     '/process/search/',
-    '\BO\Zmsbackend\Process\Api\ProcessSearch'
+    \BO\Zmsbackend\Process\Api\ProcessSearch::class
 )
     ->setName("ProcessSearch");
 
@@ -3546,7 +3498,7 @@
  */
 \App::$slim->post(
     '/process/status/free/',
-    '\BO\Zmsbackend\Process\Api\ProcessFree'
+    \BO\Zmsbackend\Process\Api\ProcessFree::class
 )
     ->setName("ProcessFree");
 
@@ -3605,7 +3557,7 @@
  */
 \App::$slim->post(
     '/process/status/free/unique/',
-    '\BO\Zmsbackend\Process\Api\ProcessFreeUnique'
+    \BO\Zmsbackend\Process\Api\ProcessFreeUnique::class
 )
     ->setName("ProcessFreeUnique");
 
@@ -3641,7 +3593,7 @@
  */
 \App::$slim->get(
     '/process/status/reserved/',
-    '\BO\Zmsbackend\Process\Api\ProcessReservedList'
+    \BO\Zmsbackend\Process\Api\ProcessReservedList::class
 )
     ->setName("ProcessReservedList");
 
@@ -3700,7 +3652,7 @@
  */
 \App::$slim->post(
     '/process/status/reserved/',
-    '\BO\Zmsbackend\Process\Api\ProcessReserve'
+    \BO\Zmsbackend\Process\Api\ProcessReserve::class
 )
     ->setName("ProcessReserve");
 
@@ -3740,7 +3692,7 @@
  */
 \App::$slim->post(
     '/process/status/preconfirmed/',
-    '\BO\Zmsbackend\Process\Api\ProcessPreconfirm'
+    \BO\Zmsbackend\Process\Api\ProcessPreconfirm::class
 )
     ->setName("ProcessPreconfirm");
 
@@ -3781,7 +3733,7 @@
  */
 \App::$slim->post(
     '/process/status/confirmed/',
-    '\BO\Zmsbackend\Process\Api\ProcessConfirm'
+    \BO\Zmsbackend\Process\Api\ProcessConfirm::class
 )
     ->setName("ProcessConfirm");
 
@@ -3824,7 +3776,7 @@
  */
 \App::$slim->post(
     '/process/status/finished/',
-    '\BO\Zmsbackend\Process\Api\ProcessFinished'
+    \BO\Zmsbackend\Process\Api\ProcessFinished::class
 )
     ->setName("ProcessFinished");
 
@@ -3868,7 +3820,7 @@
  */
 \App::$slim->post(
     '/process/status/redirect/',
-    '\BO\Zmsbackend\Process\Api\ProcessRedirect'
+    \BO\Zmsbackend\Process\Api\ProcessRedirect::class
 )
     ->setName("ProcessRedirect");
 
@@ -3912,7 +3864,7 @@
  */
 \App::$slim->post(
     '/process/status/queued/',
-    '\BO\Zmsbackend\Process\Api\ProcessQueued'
+    \BO\Zmsbackend\Process\Api\ProcessQueued::class
 )
     ->setName("ProcessQueued");
 
@@ -3957,7 +3909,7 @@
  */
 \App::$slim->get(
     '/process/{id}/',
-    '\BO\Zmsbackend\Workstation\Api\WorkstationProcessGet'
+    \BO\Zmsbackend\Workstation\Api\WorkstationProcessGet::class
 )
     ->setName("WorkstationProcessGet");
 
@@ -3998,7 +3950,7 @@
  */
 \App::$slim->get(
     '/provider/{source}/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Provider\Api\ProviderGet'
+    \BO\Zmsbackend\Provider\Api\ProviderGet::class
 )
     ->setName("ProviderGet");
 
@@ -4048,7 +4000,7 @@
  */
 \App::$slim->get(
     '/provider/{source}/{id:\d{1,11}}/scopes/',
-    '\BO\Zmsbackend\Scope\Api\ScopeListByProvider'
+    \BO\Zmsbackend\Scope\Api\ScopeListByProvider::class
 )
     ->setName("ScopeListByProvider");
 
@@ -4098,7 +4050,7 @@
  */
 \App::$slim->get(
     '/request/{source}/{id:\d{1,11}}/scopes/',
-    '\BO\Zmsbackend\Scope\Api\ScopeListByRequest'
+    \BO\Zmsbackend\Scope\Api\ScopeListByRequest::class
 )
     ->setName("ScopeListByRequest");
 
@@ -4147,7 +4099,7 @@
  */
 \App::$slim->get(
     '/provider/{source}/',
-    '\BO\Zmsbackend\Provider\Api\ProviderList'
+    \BO\Zmsbackend\Provider\Api\ProviderList::class
 )
     ->setName("ProviderList");
 
@@ -4194,7 +4146,7 @@
  */
 \App::$slim->get(
     '/provider/{source}/request/{csv:[0-9,]{3,}}/',
-    '\BO\Zmsbackend\Provider\Api\ProviderByRequestList'
+    \BO\Zmsbackend\Provider\Api\ProviderByRequestList::class
 )
     ->setName("ProviderByRequestList");
 
@@ -4235,7 +4187,7 @@
  */
 \App::$slim->get(
     '/request/{source}/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Request\Api\RequestGet'
+    \BO\Zmsbackend\Request\Api\RequestGet::class
 )
     ->setName("RequestGet");
 
@@ -4263,7 +4215,7 @@
  */
 \App::$slim->get(
     '/requestvariants/',
-    '\BO\Zmsbackend\Request\Api\RequestVariantList'
+    \BO\Zmsbackend\Request\Api\RequestVariantList::class
 )->setName("RequestVariantList");
 
 /**
@@ -4303,7 +4255,7 @@
  */
 \App::$slim->get(
     '/provider/{source}/{id:\d{1,11}}/request/',
-    '\BO\Zmsbackend\Request\Api\RequestListByProvider'
+    \BO\Zmsbackend\Request\Api\RequestListByProvider::class
 )
     ->setName("RequestListByProvider");
 
@@ -4340,9 +4292,48 @@
  */
 \App::$slim->get(
     '/scope/{id:\d{1,11}}/request/',
-    '\BO\Zmsbackend\Request\Api\RequestListByScope'
+    \BO\Zmsbackend\Request\Api\RequestListByScope::class
 )
     ->setName("RequestListByScope");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/request/department/":
+ *      get:
+ *          summary: Get scope requests plus additional department-wide requests for statistic collection
+ *          x-since: 2.29
+ *          tags:
+ *              - request
+ *              - scope
+ *              - department
+ *          parameters:
+ *              -   name: id
+ *                  description: number of scope
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success; data.scope = calendar requests, data.additional = other department requests"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/requeststatistic.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/request/department/',
+    \BO\Zmsbackend\Request\Api\RequestListByScopeAndDepartment::class
+)
+    ->setName("RequestListByScopeAndDepartment");
 
 /**
  *  @swagger
@@ -4384,7 +4375,7 @@
  */
 \App::$slim->post(
     '/scope/{id:\d{1,11}}/availability/{date:\d\d\d\d-\d\d-\d\d}/closure/toggle/',
-    '\BO\Zmsbackend\Availability\Api\AvailabilityClosureToggle'
+    \BO\Zmsbackend\Availability\Api\AvailabilityClosureToggle::class
 )
     ->setName("AvailabilityClosureToggle");
 
@@ -4430,7 +4421,7 @@
  */
 \App::$slim->get(
     '/closure/',
-    '\BO\Zmsbackend\Availability\Api\AvailabilityClosureRead'
+    \BO\Zmsbackend\Availability\Api\AvailabilityClosureRead::class
 )->setName('AvailabilityClosureRead');
 
 /**
@@ -4467,7 +4458,7 @@
  */
 \App::$slim->get(
     '/scope/{id:\d{1,11}}/workstation/',
-    '\BO\Zmsbackend\Workstation\Api\WorkstationListByScope'
+    \BO\Zmsbackend\Workstation\Api\WorkstationListByScope::class
 )
     ->setName("WorkstationListByScope");
 
@@ -4505,7 +4496,7 @@
  */
 \App::$slim->get(
     '/scope/',
-    '\BO\Zmsbackend\Scope\Api\ScopeList'
+    \BO\Zmsbackend\Scope\Api\ScopeList::class
 )
     ->setName("ScopeList");
 
@@ -4546,7 +4537,7 @@
  */
 \App::$slim->get(
     '/scope/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Scope\Api\ScopeGet'
+    \BO\Zmsbackend\Scope\Api\ScopeGet::class
 )
     ->setName("ScopeGet");
 
@@ -4589,7 +4580,7 @@
  */
 \App::$slim->get(
     '/scope/{id:\d{1,11}}/department/',
-    '\BO\Zmsbackend\Department\Api\DepartmentByScopeId'
+    \BO\Zmsbackend\Department\Api\DepartmentByScopeId::class
 )
     ->setName("DepartmentByScopeId");
 
@@ -4630,7 +4621,7 @@
  */
 \App::$slim->get(
     '/scope/{id:\d{1,11}}/cluster/',
-    '\BO\Zmsbackend\Cluster\Api\ClusterByScopeId'
+    \BO\Zmsbackend\Cluster\Api\ClusterByScopeId::class
 )
     ->setName("ClusterByScopeId");
 
@@ -4674,7 +4665,7 @@
  */
 \App::$slim->get(
     '/scope/cluster/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Scope\Api\ScopeListByCluster'
+    \BO\Zmsbackend\Scope\Api\ScopeListByCluster::class
 )
     ->setName("ScopeListByCluster");
 
@@ -4731,7 +4722,7 @@
  */
 \App::$slim->get(
     '/scope/{id:\d{1,11}}/availability/',
-    '\BO\Zmsbackend\Availability\Api\AvailabilityListByScope'
+    \BO\Zmsbackend\Availability\Api\AvailabilityListByScope::class
 )
     ->setName("AvailabilityListByScope");
 
@@ -4784,7 +4775,7 @@
  */
 \App::$slim->get(
     '/scope/{id:\d{1,11}}/conflict/',
-    '\BO\Zmsbackend\Process\Api\ConflictListByScope'
+    \BO\Zmsbackend\Process\Api\ConflictListByScope::class
 )
     ->setName("ConflictListByScope");
 
@@ -4835,7 +4826,7 @@
  */
 \App::$slim->get(
     '/scope/{id:\d{1,11}}/process/{date:\d\d\d\d-\d\d-\d\d}/',
-    '\BO\Zmsbackend\Process\Api\ProcessListByScopeAndDate'
+    \BO\Zmsbackend\Process\Api\ProcessListByScopeAndDate::class
 )
     ->setName("ProcessListByScopeAndDate");
 
@@ -4885,7 +4876,7 @@
  */
 \App::$slim->get(
     '/scope/{id:\d{1,11}}/process/status/{status}/',
-    '\BO\Zmsbackend\Process\Api\ProcessListByScopeAndStatus'
+    \BO\Zmsbackend\Process\Api\ProcessListByScopeAndStatus::class
 )
     ->setName("ProcessListByScopeAndStatus");
 
@@ -4919,7 +4910,7 @@
  */
 \App::$slim->get(
     '/client/processlist/summarymail/',
-    '\BO\Zmsbackend\Process\Api\ProcessListSummaryMail'
+    \BO\Zmsbackend\Process\Api\ProcessListSummaryMail::class
 )
     ->setName("ProcessListSummaryMail");
 
@@ -4957,7 +4948,7 @@
  */
 \App::$slim->post(
     '/scope/{id}/emergency/',
-    '\BO\Zmsbackend\Scope\Api\ScopeEmergency'
+    \BO\Zmsbackend\Scope\Api\ScopeEmergency::class
 )
     ->setName("ScopeEmergency");
 
@@ -4995,7 +4986,7 @@
  */
 \App::$slim->delete(
     '/scope/{id}/emergency/',
-    '\BO\Zmsbackend\Scope\Api\ScopeEmergencyStop'
+    \BO\Zmsbackend\Scope\Api\ScopeEmergencyStop::class
 )
     ->setName("ScopeEmergencyStop");
 
@@ -5033,7 +5024,7 @@
  */
 \App::$slim->post(
     '/scope/{id}/emergency/respond/',
-    '\BO\Zmsbackend\Scope\Api\ScopeEmergencyRespond'
+    \BO\Zmsbackend\Scope\Api\ScopeEmergencyRespond::class
 )
     ->setName("ScopeEmergencyRespond");
 
@@ -5085,7 +5076,7 @@
  */
 \App::$slim->get(
     '/scope/{id:\d{1,4}}/queue/next/',
-    '\BO\Zmsbackend\Process\Api\ProcessNextByScope'
+    \BO\Zmsbackend\Process\Api\ProcessNextByScope::class
 )
     ->setName("ProcessNextByScope");
 
@@ -5132,7 +5123,7 @@
  */
 \App::$slim->get(
     '/scope/{id:\d{1,4}}/queue/{number:\d{1,10}}/',
-    '\BO\Zmsbackend\Process\Api\ProcessByQueueNumber'
+    \BO\Zmsbackend\Process\Api\ProcessByQueueNumber::class
 )
     ->setName("ProcessByQueueNumber");
 
@@ -5166,7 +5157,7 @@
  */
 \App::$slim->get(
     '/scope/{id:\d{1,4}}/imagedata/calldisplay/',
-    '\BO\Zmsbackend\Scope\Api\ScopeCalldisplayImageDataGet'
+    \BO\Zmsbackend\Scope\Api\ScopeCalldisplayImageDataGet::class
 )
     ->setName("ScopeCalldisplayImageDataGet");
 
@@ -5206,7 +5197,7 @@
  */
 \App::$slim->post(
     '/scope/{id:\d{1,4}}/imagedata/calldisplay/',
-    '\BO\Zmsbackend\Scope\Api\ScopeCalldisplayImageDataUpdate'
+    \BO\Zmsbackend\Scope\Api\ScopeCalldisplayImageDataUpdate::class
 )
     ->setName("ScopeCalldisplayImageDataUpdate");
 
@@ -5236,7 +5227,7 @@
  */
 \App::$slim->delete(
     '/scope/{id:\d{1,4}}/imagedata/calldisplay/',
-    '\BO\Zmsbackend\Scope\Api\ScopeCalldisplayImageDataDelete'
+    \BO\Zmsbackend\Scope\Api\ScopeCalldisplayImageDataDelete::class
 )
     ->setName("ScopeCalldisplayImageDataDelete");
 
@@ -5278,7 +5269,7 @@
  */
 \App::$slim->get(
     '/scope/{id:\d{1,4}}/organisation/',
-    '\BO\Zmsbackend\Organisation\Api\OrganisationByScope'
+    \BO\Zmsbackend\Organisation\Api\OrganisationByScope::class
 )
     ->setName("OrganisationByScope");
 
@@ -5324,7 +5315,7 @@
  */
 \App::$slim->get(
     '/scope/{id:\d{1,11}}/queue/',
-    '\BO\Zmsbackend\Scope\Api\ScopeQueue'
+    \BO\Zmsbackend\Scope\Api\ScopeQueue::class
 )
     ->setName("ScopeQueue");
 
@@ -5363,7 +5354,7 @@
  */
 \App::$slim->post(
     '/scope/{id:\d{1,4}}/ghostworkstation/',
-    '\BO\Zmsbackend\Workstation\Api\CounterGhostWorkstation'
+    \BO\Zmsbackend\Workstation\Api\CounterGhostWorkstation::class
 )
     ->setName("CounterGhostWorkstation");
 
@@ -5397,7 +5388,7 @@
  */
 \App::$slim->get(
     '/scope/{id:\d{1,4}}/workstationcount/',
-    '\BO\Zmsbackend\Scope\Api\ScopeWithWorkstationCount'
+    \BO\Zmsbackend\Scope\Api\ScopeWithWorkstationCount::class
 )
     ->setName("ScopeWithWorkstationCount");
 
@@ -5442,7 +5433,7 @@
  */
 \App::$slim->post(
     '/scope/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Scope\Api\ScopeUpdate'
+    \BO\Zmsbackend\Scope\Api\ScopeUpdate::class
 )
     ->setName("ScopeUpdate");
 
@@ -5472,7 +5463,7 @@
  */
 \App::$slim->delete(
     '/scope/{id:\d{1,11}}/',
-    '\BO\Zmsbackend\Scope\Api\ScopeDelete'
+    \BO\Zmsbackend\Scope\Api\ScopeDelete::class
 )
     ->setName("ScopeDelete");
 
@@ -5517,7 +5508,7 @@
  */
 \App::$slim->get(
     '/scope/{id:\d{1,11}}/waitingnumber/{hash}/',
-    '\BO\Zmsbackend\Ticketprinter\Api\TicketprinterWaitingnumberByScope'
+    \BO\Zmsbackend\Ticketprinter\Api\TicketprinterWaitingnumberByScope::class
 )
     ->setName("TicketprinterWaitingnumberByScope");
 
@@ -5559,7 +5550,7 @@
  */
 \App::$slim->get(
     '/scope/{ids}/ticketprinter/',
-    '\BO\Zmsbackend\Ticketprinter\Api\TicketprinterListByScopeList'
+    \BO\Zmsbackend\Ticketprinter\Api\TicketprinterListByScopeList::class
 )
     ->setName("TicketprinterListByScopeList");
 
@@ -5607,7 +5598,7 @@
  */
 \App::$slim->get(
     '/session/{name:[a-zA-Z]{3,20}}/{id:[a-z0-9]{8,40}}/',
-    '\BO\Zmsbackend\Session\Api\SessionGet'
+    \BO\Zmsbackend\Session\Api\SessionGet::class
 )
     ->setName("SessionGet");
 
@@ -5638,7 +5629,7 @@
  */
 \App::$slim->post(
     '/session/',
-    '\BO\Zmsbackend\Session\Api\SessionUpdate'
+    \BO\Zmsbackend\Session\Api\SessionUpdate::class
 )
     ->setName("SessionUpdate");
 
@@ -5682,7 +5673,7 @@
  */
 \App::$slim->delete(
     '/session/{name:[a-zA-Z]{3,20}}/{id:[a-z0-9]{20,40}}/',
-    '\BO\Zmsbackend\Session\Api\SessionDelete'
+    \BO\Zmsbackend\Session\Api\SessionDelete::class
 )
     ->setName("SessionDelete");
 
@@ -5715,7 +5706,7 @@
  */
 \App::$slim->get(
     '/source/',
-    '\BO\Zmsbackend\Source\Api\SourceList'
+    \BO\Zmsbackend\Source\Api\SourceList::class
 )
     ->setName("SourceList");
 
@@ -5751,7 +5742,7 @@
  */
 \App::$slim->get(
     '/source/{source:[a-zA-Z0-9]{3,20}}/',
-    '\BO\Zmsbackend\Source\Api\SourceGet'
+    \BO\Zmsbackend\Source\Api\SourceGet::class
 )
     ->setName("SourceGet");
 
@@ -5786,7 +5777,7 @@
  */
 \App::$slim->post(
     '/source/',
-    '\BO\Zmsbackend\Source\Api\SourceUpdate'
+    \BO\Zmsbackend\Source\Api\SourceUpdate::class
 )
     ->setName("SourceUpdate");
 
@@ -5798,6 +5789,11 @@
  *          tags:
  *              - status
  *          parameters:
+ *              -   name: X-Token
+ *                  description: "Required when not logged in (e.g. Grafana / status-logger). Must match ZMS_CONFIG_SECURE_TOKEN."
+ *                  in: header
+ *                  type: string
+ *                  required: false
  *              -   name: includeProcessStats
  *                  description: "Collecting stats about processes slows the request down. For healthcheck, this data might not be necessary. Default is to include the stats, a value of 0 skip the stats."
  *                  in: query
@@ -5807,10 +5803,12 @@
  *                  description: "success"
  *                  schema:
  *                      $ref: "schema/status.json"
+ *              401:
+ *                  description: "missing workstation login and invalid or missing X-Token"
  */
 \App::$slim->get(
     '/status/',
-    '\BO\Zmsbackend\Status\Api\StatusGet'
+    \BO\Zmsbackend\Status\Api\StatusGet::class
 )
     ->setName("StatusGet");
 
@@ -5830,7 +5828,7 @@
  */
 \App::$slim->get(
     '/status/deadlock/',
-    '\BO\Zmsbackend\Status\Api\StatusDeadlock'
+    \BO\Zmsbackend\Status\Api\StatusDeadlock::class
 )
     ->setName("StatusDeadlock");
 
@@ -5850,7 +5848,7 @@
  */
 \App::$slim->get(
     '/status/locktimeout/',
-    '\BO\Zmsbackend\Status\Api\StatusLocktimeout'
+    \BO\Zmsbackend\Status\Api\StatusLocktimeout::class
 )
     ->setName("StatusLocktimeout");
 
@@ -5889,7 +5887,7 @@
  */
 \App::$slim->get(
     '/ticketprinter/{hash:[a-z0-9]{20,40}}/',
-    '\BO\Zmsbackend\Ticketprinter\Api\TicketprinterGet'
+    \BO\Zmsbackend\Ticketprinter\Api\TicketprinterGet::class
 )
     ->setName("TicketprinterGet");
 
@@ -5933,7 +5931,7 @@
  */
 \App::$slim->post(
     '/ticketprinter/',
-    '\BO\Zmsbackend\Ticketprinter\Api\Ticketprinter'
+    \BO\Zmsbackend\Ticketprinter\Api\Ticketprinter::class
 )
     ->setName("Ticketprinter");
 
@@ -5974,7 +5972,7 @@
  */
 \App::$slim->get(
     '/useraccount/{loginname}/',
-    '\BO\Zmsbackend\Useraccount\Api\UseraccountGet'
+    \BO\Zmsbackend\Useraccount\Api\UseraccountGet::class
 )
     ->setName("UseraccountGet");
 
@@ -6012,7 +6010,7 @@
  */
 \App::$slim->post(
     '/useraccount/',
-    '\BO\Zmsbackend\Useraccount\Api\UseraccountAdd'
+    \BO\Zmsbackend\Useraccount\Api\UseraccountAdd::class
 )
     ->setName("UseraccounAdd");
 
@@ -6055,7 +6053,7 @@
  */
 \App::$slim->post(
     '/useraccount/{loginname}/',
-    '\BO\Zmsbackend\Useraccount\Api\UseraccountUpdate'
+    \BO\Zmsbackend\Useraccount\Api\UseraccountUpdate::class
 )
     ->setName("UseraccountUpdate");
 
@@ -6085,7 +6083,7 @@
  */
 \App::$slim->delete(
     '/useraccount/{loginname}/',
-    '\BO\Zmsbackend\Useraccount\Api\UseraccountDelete'
+    \BO\Zmsbackend\Useraccount\Api\UseraccountDelete::class
 )
     ->setName("UseraccountDelete");
 
@@ -6118,7 +6116,7 @@
  */
 \App::$slim->get(
     '/warehouse/',
-    '\BO\Zmsbackend\Warehouse\Api\WarehouseSubjectListGet'
+    \BO\Zmsbackend\Warehouse\Api\WarehouseSubjectListGet::class
 )
     ->setName("WarehouseSubjectListGet");
 
@@ -6156,7 +6154,7 @@
  */
 \App::$slim->get(
     '/warehouse/{subject}/',
-    '\BO\Zmsbackend\Warehouse\Api\WarehouseSubjectGet'
+    \BO\Zmsbackend\Warehouse\Api\WarehouseSubjectGet::class
 )
     ->setName("WarehouseSubjectGet");
 
@@ -6199,7 +6197,7 @@
  */
 \App::$slim->get(
     '/warehouse/{subject}/{subjectId}/',
-    '\BO\Zmsbackend\Warehouse\Api\WarehousePeriodListGet'
+    \BO\Zmsbackend\Warehouse\Api\WarehousePeriodListGet::class
 )
     ->setName("WarehousePeriodListGet");
 
@@ -6247,7 +6245,7 @@
  */
 \App::$slim->get(
     '/warehouse/{subject}/{subjectId}/{period}/',
-    '\BO\Zmsbackend\Warehouse\Api\WarehousePeriodGet'
+    \BO\Zmsbackend\Warehouse\Api\WarehousePeriodGet::class
 )
     ->setName("WarehousePeriodGet");
 
@@ -6283,7 +6281,7 @@
  */
 \App::$slim->get(
     '/workstation/',
-    '\BO\Zmsbackend\Workstation\Api\WorkstationGet'
+    \BO\Zmsbackend\Workstation\Api\WorkstationGet::class
 )
     ->setName("WorkstationGet");
 
@@ -6324,7 +6322,7 @@
  */
 \App::$slim->post(
     '/workstation/',
-    '\BO\Zmsbackend\Workstation\Api\WorkstationUpdate'
+    \BO\Zmsbackend\Workstation\Api\WorkstationUpdate::class
 )
     ->setName("WorkstationUpdate");
 
@@ -6362,7 +6360,7 @@
  */
 \App::$slim->post(
     '/workstation/password/',
-    '\BO\Zmsbackend\Workstation\Api\WorkstationPassword'
+    \BO\Zmsbackend\Workstation\Api\WorkstationPassword::class
 )
     ->setName('WorkstationPassword');
 
@@ -6398,7 +6396,7 @@
  */
 \App::$slim->post(
     '/workstation/oauth/',
-    '\BO\Zmsbackend\Workstation\Api\WorkstationOAuth'
+    \BO\Zmsbackend\Workstation\Api\WorkstationOAuth::class
 )
     ->setName("WorkstationOAuth");
 
@@ -6432,7 +6430,7 @@
  */
 \App::$slim->post(
     '/workstation/login/',
-    '\BO\Zmsbackend\Workstation\Api\WorkstationLogin'
+    \BO\Zmsbackend\Workstation\Api\WorkstationLogin::class
 )
     ->setName("WorkstationLogin");
 
@@ -6470,7 +6468,7 @@
  */
 \App::$slim->delete(
     '/workstation/login/{loginname}/',
-    '\BO\Zmsbackend\Workstation\Api\WorkstationDelete'
+    \BO\Zmsbackend\Workstation\Api\WorkstationDelete::class
 )
     ->setName("WorkstationDelete");
 
@@ -6506,7 +6504,7 @@
  */
 \App::$slim->post(
     '/workstation/process/called/',
-    '\BO\Zmsbackend\Workstation\Api\WorkstationProcess'
+    \BO\Zmsbackend\Workstation\Api\WorkstationProcess::class
 )
     ->setName("WorkstationProcess");
 
@@ -6544,7 +6542,7 @@
  */
 \App::$slim->post(
     '/workstation/process/waitingnumber/',
-    '\BO\Zmsbackend\Workstation\Api\WorkstationProcessWaitingnumber'
+    \BO\Zmsbackend\Workstation\Api\WorkstationProcessWaitingnumber::class
 )
     ->setName("WorkstationProcessWaitingnumber");
 
@@ -6571,7 +6569,7 @@
  */
 \App::$slim->delete(
     '/workstation/process/',
-    '\BO\Zmsbackend\Workstation\Api\WorkstationProcessRemove'
+    \BO\Zmsbackend\Workstation\Api\WorkstationProcessRemove::class
 )
     ->setName("WorkstationProcessRemove");
 
@@ -6598,7 +6596,7 @@
  */
 \App::$slim->delete(
     '/workstation/process/parked/',
-    '\BO\Zmsbackend\Workstation\Api\WorkstationProcessParked'
+    \BO\Zmsbackend\Workstation\Api\WorkstationProcessParked::class
 )
     ->setName("WorkstationProcessParked");
 
@@ -6647,7 +6645,7 @@
  */
 \App::$slim->get(
     '/overallcalendar/',
-    '\BO\Zmsbackend\Calendar\Api\OverallCalendarRead'
+    \BO\Zmsbackend\Calendar\Api\OverallCalendarRead::class
 )->setName('OverallCalendarRead');
 
 /**
@@ -6682,7 +6680,7 @@
  */
 \App::$slim->get(
     '/process/externaluserid/{externalUserId}/',
-    '\BO\Zmsbackend\Process\Api\ProcessListByExternalUserId'
+    \BO\Zmsbackend\Process\Api\ProcessListByExternalUserId::class
 )->setName("ProcessListByExternalUserId");
 
 
@@ -6692,6 +6690,6 @@
 
 \App::$slim->get(
     '/healthcheck/',
-    '\BO\Zmsbackend\Status\Api\Healthcheck'
+    \BO\Zmsbackend\Status\Api\Healthcheck::class
 )
     ->setName("healthcheck");

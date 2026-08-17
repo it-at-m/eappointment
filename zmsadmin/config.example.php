@@ -10,19 +10,19 @@ define('ZMS_ADMIN_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '/cache
 
 class App extends \BO\Zmsadmin\Application
 {
-    const IDENTIFIER = ZMS_IDENTIFIER;
-    const DEBUG = false;
+    const string IDENTIFIER = ZMS_IDENTIFIER;
+    const bool DEBUG = false;
     const TWIG_CACHE = ZMS_ADMIN_TWIG_CACHE;
 
     /**
      * HTTP url for api
      */
-    const HTTP_BASE_URL = ZMS_API_URL;
+    const string HTTP_BASE_URL = ZMS_API_URL;
 
     /**
      * Name of the module
      */
-    const MODULE_NAME = ZMS_MODULE_NAME;
+    const string MODULE_NAME = ZMS_MODULE_NAME;
 
     public static $http_curl_config = [
         CURLOPT_SSL_VERIFYPEER => false,

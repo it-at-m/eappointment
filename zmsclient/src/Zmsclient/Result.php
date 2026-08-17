@@ -69,7 +69,10 @@ class Result
      *
      * @param Valid $body
      * @param ResponseInterface $response
+     *
      * @throws Exception
+     *
+     * @return void
      */
     protected function testMeta($body, ResponseInterface $response)
     {

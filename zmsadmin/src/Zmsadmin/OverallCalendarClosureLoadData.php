@@ -7,6 +7,9 @@ use Psr\Http\Message\ResponseInterface;
 
 class OverallCalendarClosureLoadData extends BaseController
 {
+    /**
+     * @return ResponseInterface
+     */
     #[\Override]
     public function readResponse(
         RequestInterface $request,
