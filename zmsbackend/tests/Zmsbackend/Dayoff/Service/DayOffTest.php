@@ -12,9 +12,6 @@ class DayOffTest extends \BO\Zmsbackend\Tests\Service\Base
     {
         $dayOffList = (new Dayoff())->readByYear('2016'); //all dayoff dates in 2016
         $this->assertTrue($dayOffList->hasEntityByDate('2016-12-25'), "XMas Dayoff date 2016-12-25 not recognized.");
-        //all dayoff dates of Department 77 Teichstr. 65 (Haus 1), 13407 Berlin.
-        $dayOffList = (new Dayoff())->readByDepartmentId('77');
-        $this->assertEquals('1479250800', $dayOffList->getEntityByName('Personalversammlung')['date']);
     }
 
     public function testWriteCommonByYear()
@@ -44,5 +41,11 @@ class DayOffTest extends \BO\Zmsbackend\Tests\Service\Base
           "date" => 1459461600,
           "name" => "Test Feiertag"
         ));
+    }
+    public function testReadByDepartmentIdReturnsCommonDayoffsOnly()
+    {
+        $dayOffList = (new Dayoff())->readByDepartmentId('77');
+        $this->assertTrue($dayOffList->hasEntityByDay('2016-12-25'), "Common dayoff date 2016-12-25 not recognized.");
+        $this->assertNull($dayOffList->getEntityByName('Personalversammlung'));
     }
 }
