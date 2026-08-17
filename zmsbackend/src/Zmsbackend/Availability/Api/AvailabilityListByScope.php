@@ -47,20 +47,26 @@ class AvailabilityListByScope extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    protected function getAvailabilityList($scope, $startDate, $endDate)
+    protected function getAvailabilityList(\BO\Zmsentities\Scope|null $scope, \BO\Zmsentities\Helper\DateTime|null $startDate, \BO\Zmsentities\Helper\DateTime|null $endDate)
     {
         $availabilityList = (new Query())->readList($scope->getId(), 0, $startDate, $endDate);
         $this->validateAvailabilityList($availabilityList);
         return $availabilityList->withScope($scope);
     }
 
-    protected function validateScope($scope)
+    /**
+     * @return void
+     */
+    protected function validateScope(\BO\Zmsentities\Scope|null $scope)
     {
         if (! $scope) {
             throw new \BO\Zmsbackend\Scope\Exception\ScopeNotFound();
         }
     }
 
+    /**
+     * @return void
+     */
     protected function validateAvailabilityList($availabilityList)
     {
         if (! $availabilityList->count()) {
@@ -68,7 +74,10 @@ class AvailabilityListByScope extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
-    protected function validateAccessRights($request, $scope)
+    /**
+     * @return void
+     */
+    protected function validateAccessRights(\Psr\Http\Message\RequestInterface $request, \BO\Zmsentities\Scope|null $scope)
     {
         try {
             (new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions(

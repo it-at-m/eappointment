@@ -7,8 +7,12 @@ class Owner extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Ma
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'kunde';
+    const string TABLE = 'kunde';
 
+    /**
+     * @return (\BO\Zmsbackend\Query\Builder\Expression|string)[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -36,7 +40,7 @@ class Owner extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Ma
         ];
     }
 
-    public function addConditionOrganisationId($organisationId)
+    public function addConditionOrganisationId($organisationId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias(\BO\Zmsbackend\Organisation\Repository\Organisation::TABLE, 'ownerorganisation'),
@@ -48,18 +52,18 @@ class Owner extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Ma
         return $this;
     }
 
-    public function addConditionOwnerId($ownerId)
+    public function addConditionOwnerId(int|string $ownerId): static
     {
         $this->query->where('owner.KundenID', '=', $ownerId);
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Owner $entity)
+    public function reverseEntityMapping(\BO\Zmsentities\Owner $entity): array
     {
         $data = array();
-        $data['Anschrift'] = $entity->contact['street'];
+        $data['Anschrift'] = $entity->contact['street'] ?? null;
         $data['Kundenname'] = $entity->name;
-        $data['TerminUrl'] = $entity->url;
+        $data['TerminUrl'] = $entity['url'] ?? null;
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);
         });

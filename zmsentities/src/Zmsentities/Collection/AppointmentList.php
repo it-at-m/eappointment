@@ -4,11 +4,14 @@ namespace BO\Zmsentities\Collection;
 
 use BO\Zmsentities\Appointment;
 
+/**
+ * @extends Base<\BO\Zmsentities\Appointment>
+ */
 class AppointmentList extends Base
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Appointment';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Appointment';
 
-    public function getByDate($date)
+    public function getByDate($date): Appointment|false
     {
         foreach ($this as $item) {
             if ($item['date'] == $date) {
@@ -18,7 +21,7 @@ class AppointmentList extends Base
         return false;
     }
 
-    public function hasDateScope($date, $scopeId)
+    public function hasDateScope($date, $scopeId): bool
     {
         $item = $this->getByDate($date);
         if ($item && $item->toProperty()->scope->id->get() == $scopeId) {
@@ -27,7 +30,7 @@ class AppointmentList extends Base
         return false;
     }
 
-    public function hasAppointment(\BO\Zmsentities\Appointment $appointment)
+    public function hasAppointment(\BO\Zmsentities\Appointment $appointment): bool
     {
         foreach ($this as $appointmentItem) {
             if ($appointmentItem->isMatching($appointment)) {

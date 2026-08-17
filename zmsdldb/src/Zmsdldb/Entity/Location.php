@@ -33,7 +33,7 @@ class Location extends Base
     /**
      * @return Bool
      */
-    public function isLocale($locale)
+    public function isLocale(string $locale)
     {
         $location = $this->getArrayCopy();
         return $location['meta']['locale'] == $locale;
@@ -43,6 +43,7 @@ class Location extends Base
      * @var Int $service_id
      *
      * @return FALSE or Array
+     * @psalm-api
      */
     public function getServiceInfo($service_id)
     {
@@ -84,6 +85,7 @@ class Location extends Base
      * @param Bool $external allow external links, default false
      *
      * @return Bool
+     * @psalm-api
      */
     public function hasAppointments($serviceCsv = null, $external = false)
     {
@@ -108,6 +110,7 @@ class Location extends Base
     /**
      * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @psalm-api
      */
     public function getAppointmentForService($service_id, $external = false)
     {

@@ -11,7 +11,7 @@ class OverallCalendarReadTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "OverallCalendarRead";
 
-    private const VALID_PARAMS = [
+    private const array VALID_PARAMS = [
         'scopeIds'  => '65202',
         'dateFrom'  => '2025-05-14',
         'dateUntil' => '2025-05-14',

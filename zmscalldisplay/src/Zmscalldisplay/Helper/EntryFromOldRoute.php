@@ -21,8 +21,10 @@ class EntryFromOldRoute
 
     /**
      * @param Request $request
+     *
+     * @return null|string
      */
-    protected static function getScopes($request)
+    protected static function getScopes($request): string|null
     {
         $scopes = [ ];
         $validator = $request->getAttribute('validator');

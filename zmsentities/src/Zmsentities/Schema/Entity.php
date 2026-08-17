@@ -8,14 +8,17 @@ use BO\Zmsentities\Helper\Property;
  * @SuppressWarnings(NumberOfChildren)
  * @SuppressWarnings(PublicMethod)
  * @SuppressWarnings(Complexity)
+ *
+ * @extends \ArrayObject<array-key, mixed>
  */
 class Entity extends \ArrayObject implements \JsonSerializable
 {
     /**
      * primary id for entity
      *
+     * @var string
      */
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     /**
      * @var String $schema Filename of JSON-Schema file
@@ -80,6 +83,9 @@ class Entity extends \ArrayObject implements \JsonSerializable
     }
     /**
      * Set Default values
+     *
+     * @return array
+     *
      */
     public function getDefaults()
     {
@@ -88,8 +94,9 @@ class Entity extends \ArrayObject implements \JsonSerializable
 
     /**
      * This method is private, because the used library should not be used outside of this class!
+     *
      */
-    public function getValidator($locale = 'de_DE', $resolveLevel = 0)
+    public function getValidator(string $locale = 'de_DE', int $resolveLevel = 0): Validator
     {
         $jsonSchema = self::readJsonSchema()->withResolvedReferences($resolveLevel);
         $data = (new Schema($this))->withoutRefs();
@@ -143,7 +150,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * return a new object as example
      *
-     * @return self
+     * @return static
      */
     public static function getExample()
     {
@@ -164,7 +171,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return self::$schemaCache[$class];
     }
 
-    public function getEntityName()
+    public function getEntityName(): string
     {
         $entity = get_class($this);
         $entity = preg_replace('#.*[\\\]#', '', $entity);
@@ -172,7 +179,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $entity;
     }
 
-    public function setJsonCompressLevel($jsonCompressLevel)
+    public function setJsonCompressLevel($jsonCompressLevel): static
     {
         $this->jsonCompressLevel = $jsonCompressLevel;
         return $this;
@@ -214,7 +221,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
      * Performs a merge with an iterable
      * Sub-entities are preserved
      */
-    public function addData($mergeData)
+    public function addData(array|object $mergeData): static
     {
         foreach ($mergeData as $key => $item) {
             if (isset($this[$key])) {
@@ -240,14 +247,14 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Performs addData on a cloned entity
      */
-    public function withData($mergeData)
+    public function withData($mergeData): static
     {
         $entity = clone $this;
         $entity->addData($mergeData);
         return $entity;
     }
 
-    public function hasId()
+    public function hasId(): bool
     {
         return (false !== $this->getId()) ? true : false;
     }
@@ -273,7 +280,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $this->toProperty()->{$propertyName}->isAvailable();
     }
 
-    public function getProperty($propertyName, $default = '')
+    public function getProperty(string $propertyName, $default = '')
     {
         return $this->toProperty()->{$propertyName}->get($default);
     }
@@ -281,7 +288,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Change property without changing original
      */
-    public function withProperty($propertyName, $newValue)
+    public function withProperty($propertyName, $newValue): static
     {
         $entity = clone $this;
         $entity[$propertyName] = $newValue;
@@ -291,6 +298,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Reduce data of dereferenced entities to a required minimum
      *
+     * @return static
      */
     public function withLessData()
     {
@@ -300,6 +308,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Reduce data of dereferenced entities to a required minimum
      *
+     * @return static
      */
     public function withCleanedUpFormData()
     {

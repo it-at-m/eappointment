@@ -7,16 +7,16 @@ class Scope extends Base implements MappingInterface
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'standort';
+    const string TABLE = 'standort';
 
-    const QUERY_BY_DEPARTMENTID = 'SELECT
+    const string QUERY_BY_DEPARTMENTID = 'SELECT
             scope.`StandortID` AS id
         FROM `standort` scope
         WHERE
             scope.`BehoerdenID` = :department_id
     ';
 
-    public function getQueryLastWaitingNumber()
+    public function getQueryLastWaitingNumber(): string
     {
         return '
             SELECT letztewartenr
@@ -24,7 +24,7 @@ class Scope extends Base implements MappingInterface
             WHERE scope.`StandortID` = :scope_id LIMIT 1 FOR UPDATE';
     }
 
-    public function getQueryLastDisplayNumber()
+    public function getQueryLastDisplayNumber(): string
     {
         return '
             SELECT last_display_number
@@ -32,7 +32,7 @@ class Scope extends Base implements MappingInterface
             WHERE scope.`StandortID` = :scope_id LIMIT 1 FOR UPDATE';
     }
 
-    public function getQueryGivenNumbersInContingent()
+    public function getQueryGivenNumbersInContingent(): string
     {
         return '
             SELECT *
@@ -51,7 +51,7 @@ class Scope extends Base implements MappingInterface
         ';
     }
 
-    public function getQuerySimpleClusterMatch()
+    public function getQuerySimpleClusterMatch(): string
     {
         return '
             SELECT s.StandortID AS id, p.name AS contact__name, s.standortkuerzel AS shortName
@@ -64,7 +64,7 @@ class Scope extends Base implements MappingInterface
         ';
     }
 
-    public function getQuerySimpleDepartmentMatch()
+    public function getQuerySimpleDepartmentMatch(): string
     {
         return '
             SELECT s.StandortID AS id, p.name AS contact__name, s.standortkuerzel AS shortName
@@ -76,17 +76,17 @@ class Scope extends Base implements MappingInterface
         ';
     }
 
-    public function getQueryDepartmentIdByScopeId()
+    public function getQueryDepartmentIdByScopeId(): string
     {
         return 'SELECT BehoerdenID FROM standort WHERE StandortID = ?';
     }
 
-    public function getQueryClusterIdsByScopeId()
+    public function getQueryClusterIdsByScopeId(): string
     {
         return 'SELECT clusterID FROM clusterzuordnung WHERE standortID = ?';
     }
 
-    public function getQueryReadImageData()
+    public function getQueryReadImageData(): string
     {
         return '
             SELECT `imagecontent`, `imagename`
@@ -96,7 +96,7 @@ class Scope extends Base implements MappingInterface
         ';
     }
 
-    public function getQueryWriteImageData()
+    public function getQueryWriteImageData(): string
     {
         return '
             REPLACE INTO `imagedata`
@@ -106,7 +106,7 @@ class Scope extends Base implements MappingInterface
         ';
     }
 
-    public function getQueryDeleteImage()
+    public function getQueryDeleteImage(): string
     {
         return '
             DELETE FROM `imagedata`
@@ -130,6 +130,9 @@ class Scope extends Base implements MappingInterface
         return [];
     }
 
+    /**
+     * @return void
+     */
     #[\Override]
     protected function addRequiredJoins()
     {
@@ -161,6 +164,10 @@ class Scope extends Base implements MappingInterface
     }
 
     //Todo: now() Parameter to enable query cache
+    /**
+     * @return (Builder\Expression|string)[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -248,13 +255,13 @@ class Scope extends Base implements MappingInterface
         ], 'strlen');
     }
 
-    public function addConditionScopeId($scopeId)
+    public function addConditionScopeId($scopeId): static
     {
         $this->query->where('scope.StandortID', '=', $scopeId);
         return $this;
     }
 
-    public function addConditionScopeIds(array $scopeIds)
+    public function addConditionScopeIds(array $scopeIds): static
     {
         $scopeIds = array_values(array_unique(array_map('intval', $scopeIds)));
         if (!$scopeIds) {
@@ -266,13 +273,16 @@ class Scope extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionWithAdminEmail()
+    public function addConditionWithAdminEmail(): static
     {
         $this->query->where('scope.emailstandortadmin', '!=', '');
         return $this;
     }
 
-    public function addSelectWorkstationCount($dateTime)
+    /**
+     * @psalm-api
+     */
+    public function addSelectWorkstationCount($dateTime): void
     {
         $this->query->select(
             ['status__queue__workstationCount' => self::expression('
@@ -292,19 +302,19 @@ class Scope extends Base implements MappingInterface
         );
     }
 
-    public function addConditionProviderId($providerId)
+    public function addConditionProviderId($providerId): static
     {
         $this->query->where('scope.InfoDienstleisterID', '=', $providerId);
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId)
+    public function addConditionDepartmentId($departmentId): static
     {
         $this->query->where('scope.BehoerdenID', '=', $departmentId);
         return $this;
     }
 
-    public function addConditionClusterId($clusterId)
+    public function addConditionClusterId($clusterId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias('clusterzuordnung', 'cluster_scope'),
@@ -316,7 +326,11 @@ class Scope extends Base implements MappingInterface
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Scope $entity, $parentId = null)
+    /**
+     * @return (int|mixed|string)[]
+     *
+     */
+    public function reverseEntityMapping(\BO\Zmsentities\Scope $entity, $parentId = null): array
     {
         $data = array();
         if ($parentId) {
@@ -392,7 +406,11 @@ class Scope extends Base implements MappingInterface
         return $data;
     }
 
-    public function setEmergencyEntityMapping(\BO\Zmsentities\Scope $entity)
+    /**
+     * @return (int|mixed)[]
+     *
+     */
+    public function setEmergencyEntityMapping(\BO\Zmsentities\Scope $entity): array
     {
         $data['notrufantwort'] = ($entity->toProperty()->status->emergency->acceptedByWorkstation->get(-1));
         $data['notrufausgeloest'] = intval($entity->toProperty()->status->emergency->activated->get(0));
@@ -400,7 +418,11 @@ class Scope extends Base implements MappingInterface
         return $data;
     }
 
-    public function setGhostWorkstationCountEntityMapping(\BO\Zmsentities\Scope $entity, \DateTimeInterface $dateTime)
+    /**
+     * @return (mixed|string)[]
+     *
+     */
+    public function setGhostWorkstationCountEntityMapping(\BO\Zmsentities\Scope $entity, \DateTimeInterface $dateTime): array
     {
         $data['virtuellesachbearbeiterzahl'] = $entity->getStatus('queue', 'ghostWorkstationCount');
         $data['datumvirtuellesachbearbeiterzahl'] = $dateTime->format('Y-m-d');
@@ -480,7 +502,7 @@ class Scope extends Base implements MappingInterface
         return $data;
     }
 
-    private function setIfEmpty(&$data, $checkKey, array $setKeys)
+    private function setIfEmpty(&$data, string $checkKey, array $setKeys): void
     {
         if (!$data[$this->getPrefixed($checkKey)]) {
             foreach ($setKeys as $key => $value) {

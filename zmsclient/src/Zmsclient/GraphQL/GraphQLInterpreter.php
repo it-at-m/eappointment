@@ -12,7 +12,7 @@ class GraphQLInterpreter implements \JsonSerializable
         $this->gqlString = $gqlString;
     }
 
-    protected function getGraphInterpretation()
+    protected function getGraphInterpretation(): GraphQLNode
     {
         if (!preg_match_all('#\w+|[{}]#', $this->gqlString, $parts)) {
             throw new GraphQLException("No content for graph");

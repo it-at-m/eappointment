@@ -25,7 +25,7 @@ class Session extends \BO\Zmsbackend\Base
         return $session;
     }
 
-    public function updateEntity($session)
+    public function updateEntity(Entity $session): Entity
     {
         $query = \BO\Zmsbackend\Session\Repository\Session::QUERY_WRITE;
         $this->perform($query, array(
@@ -37,7 +37,7 @@ class Session extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function deleteEntity($sessionName, $sessionId)
+    public function deleteEntity($sessionName, $sessionId): bool
     {
         $query = \BO\Zmsbackend\Session\Repository\Session::QUERY_DELETE;
         $result = $this->perform($query, array(

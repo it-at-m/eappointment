@@ -61,7 +61,7 @@ jobs:
 
       - name: Get Composer cache directory
         id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
         working-directory: ${{ matrix.project }}
 
       - name: Cache Composer dependencies
@@ -137,7 +137,7 @@ jobs:
 
       - name: Upload SARIF results
         if: always() && steps.sarif.outputs.exists == 'true'
-        uses: github/codeql-action/upload-sarif@d1ba80a13dd99fba24a470575428917156a28b43 # v4.37.5
+        uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4.37.7
         with:
           sarif_file: results-${{ matrix.project }}.sarif
           checkout_path: ${{ matrix.project }}
@@ -176,7 +176,7 @@ jobs:
 
       - name: Get Composer cache directory
         id: composer-cache-monorepo
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
         working-directory: zmsbackend
 
       - name: Cache Composer dependencies
@@ -257,7 +257,7 @@ jobs:
 
       - name: Upload monorepo SARIF results
         if: always() && steps.sarif_monorepo.outputs.exists == 'true'
-        uses: github/codeql-action/upload-sarif@d1ba80a13dd99fba24a470575428917156a28b43 # v4.37.5
+        uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4.37.7
         with:
           sarif_file: results-monorepo.sarif
           category: .github/workflows/psalm.yml:psalm-dead-code

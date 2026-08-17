@@ -17,8 +17,10 @@ class Mail extends \BO\Zmsbackend\Base
      * Fetch status from db
      *
      * @return \BO\Zmsentities\Mail
+     *
+     * @param false|string $itemId
      */
-    public function readEntity($itemId, $resolveReferences = 1)
+    public function readEntity(string|false $itemId, $resolveReferences = 1)
     {
         $query = new \BO\Zmsbackend\Mail\Repository\MailQueue(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -31,7 +33,7 @@ class Mail extends \BO\Zmsbackend\Base
         return $mail;
     }
 
-    public function readEntities(array $itemIds, $resolveReferences = 1, $limit = 300, $order = 'ASC')
+    public function readEntities(array $itemIds, $resolveReferences = 1, $limit = 300, string $order = 'ASC'): Collection
     {
         $mailList = new Collection();
         $query = new \BO\Zmsbackend\Mail\Repository\MailQueue(\BO\Zmsbackend\Query\Base::SELECT);
@@ -54,7 +56,7 @@ class Mail extends \BO\Zmsbackend\Base
     }
 
 
-    public function readEntitiesIds(array $itemIds, $resolveReferences = 1, $limit = 300, $order = 'ASC')
+    public function readEntitiesIds(array $itemIds, $resolveReferences = 1, $limit = 300, string $order = 'ASC')
     {
 
         $query = new \BO\Zmsbackend\Mail\Repository\MailQueue(\BO\Zmsbackend\Query\Base::SELECT);
@@ -68,7 +70,7 @@ class Mail extends \BO\Zmsbackend\Base
         return $this->fetchList($query, new Entity());
     }
 
-    public function readList($resolveReferences = 1, $limit = 300, $order = 'ASC')
+    public function readList($resolveReferences = 1, $limit = 300, string $order = 'ASC'): Collection
     {
         $mailList = new Collection();
         $query = new \BO\Zmsbackend\Mail\Repository\MailQueue(\BO\Zmsbackend\Query\Base::SELECT);
@@ -90,7 +92,7 @@ class Mail extends \BO\Zmsbackend\Base
     }
 
 
-    public function readListIds($resolveReferences = 1, $limit = 300, $order = 'ASC')
+    public function readListIds($resolveReferences = 1, $limit = 300, string $order = 'ASC')
     {
         $query = new \BO\Zmsbackend\Mail\Repository\MailQueue(\BO\Zmsbackend\Query\Base::SELECT);
         $query->selectFields(['id', 'createTimestamp'])
@@ -104,9 +106,15 @@ class Mail extends \BO\Zmsbackend\Base
 
 
 
+    /**
+     * @return Entity
+     */
     #[\Override]
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
+        if (!$entity instanceof Entity) {
+            throw new \InvalidArgumentException('Expected ' . Entity::class);
+        }
         $multiPart = $this->readMultiPartByQueueId($entity->id);
         $entity->addMultiPart($multiPart);
         if (1 <= $resolveReferences) {
@@ -124,7 +132,7 @@ class Mail extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function writeInQueueWithAdmin(Entity $mail)
+    public function writeInQueueWithAdmin(Entity $mail): Entity
     {
         $query = new \BO\Zmsbackend\Mail\Repository\MailQueue(\BO\Zmsbackend\Query\Base::INSERT);
         $process = new \BO\Zmsentities\Process($mail->process);
@@ -146,7 +154,7 @@ class Mail extends \BO\Zmsbackend\Base
         return $this->readEntity($queueId);
     }
 
-    public function writeInQueue(Entity $mail, \DateTimeInterface $dateTime, $count = true)
+    public function writeInQueue(Entity $mail, \DateTimeInterface $dateTime, bool $count = true): Entity
     {
         $query = new \BO\Zmsbackend\Mail\Repository\MailQueue(\BO\Zmsbackend\Query\Base::INSERT);
         $process = new \BO\Zmsentities\Process($mail->process);
@@ -181,7 +189,7 @@ class Mail extends \BO\Zmsbackend\Base
     public function writeInQueueWithDailyProcessList(
         \BO\Zmsentities\Scope $scope,
         Entity $mail
-    ) {
+    ): Entity {
         $query = new \BO\Zmsbackend\Mail\Repository\MailQueue(\BO\Zmsbackend\Query\Base::INSERT);
         $department = (new \BO\Zmsbackend\Department\Service\Department())->readByScopeId($scope->getId(), 0);
         $query->addValues(
@@ -200,7 +208,12 @@ class Mail extends \BO\Zmsbackend\Base
         return $this->readEntity($queueId);
     }
 
-    protected function writeMimeparts($queueId, $multipart)
+    /**
+     * @param false|string $queueId
+     *
+     * @return true
+     */
+    protected function writeMimeparts(string|false $queueId, $multipart): bool
     {
         $success = true;
         foreach ($multipart as $part) {
@@ -239,14 +252,14 @@ class Mail extends \BO\Zmsbackend\Base
         return $this->perform($query, $itemIds);
     }
 
-    public function readReminderLastRun($now)
+    public function readReminderLastRun(\DateTimeInterface $now)
     {
         $lastRun = (new \BO\Zmsbackend\Config\Service\Config())->readProperty('status__mailReminderLastRun', false);
         $lastRunDateTime = ($lastRun) ? new \DateTimeImmutable($lastRun) : $now;
         return $lastRunDateTime;
     }
 
-    public function writeReminderLastRun($now)
+    public function writeReminderLastRun(\DateTimeInterface $now): void
     {
         (new \BO\Zmsbackend\Config\Service\Config())->replaceProperty('status__mailReminderLastRun', $now->format('Y-m-d H:i:s'));
     }

@@ -30,13 +30,16 @@ use Psr\Http\Message\ResponseInterface;
  */
 class ProcessListSummaryMail extends \BO\Zmsbackend\Api\BaseController
 {
-    public const PROCESSLIST_SUMMARY_REQUEST_REPETITION_SEC = 600;
+    public const int PROCESSLIST_SUMMARY_REQUEST_REPETITION_SEC = 600;
 
     /**
      * @SuppressWarnings(Param)
+     *
      * @param RequestInterface $request
      * @param ResponseInterface $response
      * @param array $args
+     *
+     * @return ResponseInterface
      */
     #[\Override]
     public function readResponse(
@@ -78,7 +81,7 @@ class ProcessListSummaryMail extends \BO\Zmsbackend\Api\BaseController
         return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
     }
 
-    protected function readDepartment($config, $process = null): Department
+    protected function readDepartment(\BO\Zmsentities\Config $config, Process|null $process = null): Department
     {
         $department = (null != $process && null != $process->getScopeId()) ?
             (new DepartmentRepository())->readByScopeId($process->getScopeId(), 0) :
@@ -89,38 +92,41 @@ class ProcessListSummaryMail extends \BO\Zmsbackend\Api\BaseController
         return $department;
     }
 
-    protected function setWithProcessClient(Mail $entity, $mailAddress): Mail
+    protected function setWithProcessClient(Mail $entity, string $mailAddress): Mail
     {
-        $process = new \BO\Zmsbackend\Process\Service\Process();
+        $process = new Process();
         $client = $entity->getClient();
         if ($client === null || !$client->hasEmail()) {
             $process->getFirstClient()->email = $mailAddress;
         }
-        $entity->process = $process ;
+        $entity->process = $process;
 
         return $entity;
     }
 
-    protected function writeLogEntry($mailAddress, ProcessList $collection)
+    protected function writeLogEntry(string $mailAddress, ProcessList $collection): void
     {
         $logRepository = new EventLogRepository();
-        $newLogEntry = new \BO\Zmsbackend\EventLog\Service\EventLog();
+        $newLogEntry = new EventLog();
         $newLogEntry->addData([
-            'name' => \BO\Zmsbackend\EventLog\Service\EventLog::CLIENT_PROCESSLIST_REQUEST,
+            'name' => EventLog::CLIENT_PROCESSLIST_REQUEST,
             'origin' => 'zmsbackend ' . Version::getString(),
             'referenceType' => 'mail.recipient.hash',
             'reference' => $logRepository->hashStringValue($mailAddress),
             'context' => ['found' => $collection->getIds()],
-        ])->setSecondsToLive(\BO\Zmsbackend\EventLog\Service\EventLog::LIVETIME_DAY);
+        ])->setSecondsToLive(EventLog::LIVETIME_DAY);
 
         $logRepository->writeEntity($newLogEntry);
     }
 
+    /**
+     * @return void
+     */
     protected function testEventLogEntries($mailAddress)
     {
         $logRepository = new EventLogRepository();
         $eventLogEntries = $logRepository->readByNameAndRef(
-            \BO\Zmsbackend\EventLog\Service\EventLog::CLIENT_PROCESSLIST_REQUEST,
+            EventLog::CLIENT_PROCESSLIST_REQUEST,
             $logRepository->hashStringValue($mailAddress)
         );
         $youngestTime = new DateTime('-' . self::PROCESSLIST_SUMMARY_REQUEST_REPETITION_SEC . ' seconds');

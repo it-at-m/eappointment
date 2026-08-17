@@ -32,7 +32,7 @@ class ValidFile extends Valid
         'png' => 'image/png'
     );
 
-    public function isFile($name = 'fileupload', $message = 'No valid file found.')
+    public function isFile($name = 'fileupload', $message = 'No valid file found.'): static
     {
         $this->fileName = $name;
         $this->validated = true;
@@ -42,7 +42,7 @@ class ValidFile extends Valid
         return $this;
     }
 
-    public function hasType($type = 'jpeg', $message = 'Invalid file type.')
+    public function hasType($type = 'jpeg', $message = 'Invalid file type.'): static
     {
         if (isset($_FILES[$this->fileName])) {
             if (
@@ -55,7 +55,7 @@ class ValidFile extends Valid
         return $this;
     }
 
-    public function hasMaxSize($maxSize = 50, $message = 'File size not valid.')
+    public function hasMaxSize($maxSize = 50, $message = 'File size not valid.'): static
     {
         $maxByteSize = $maxSize * 1000 * 1024;
         if (isset($_FILES[$this->fileName])) {

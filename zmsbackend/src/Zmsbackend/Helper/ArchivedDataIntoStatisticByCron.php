@@ -29,7 +29,7 @@ class ArchivedDataIntoStatisticByCron
         $this->query = new \BO\Zmsbackend\Process\Service\ProcessStatusArchived();
     }
 
-    public function startProcessing(\DateTimeImmutable $dateTime, $commit = false)
+    public function startProcessing(\DateTimeImmutable $dateTime, bool $commit = false): void
     {
         $scopeList = (new \BO\Zmsbackend\Scope\Service\Scope())->readList(0);
         $dateTime = $dateTime->modify($this->timespan);
@@ -72,7 +72,7 @@ class ArchivedDataIntoStatisticByCron
         return $this->archivedList;
     }
 
-    protected function logMessage($message, string $level = 'info')
+    protected function logMessage(string $message, string $level = 'info'): void
     {
         $this->writeVerboseCronLog($message, $level);
     }
@@ -84,9 +84,9 @@ class ArchivedDataIntoStatisticByCron
         $department,
         $organisation,
         $owner,
-        $dateTime,
-        $commit = false
-    ) {
+        \DateTimeImmutable|false $dateTime,
+        bool $commit = false
+    ): void {
         $requestIds = (new \BO\Zmsbackend\Request\Service\Request())
             ->readRequestIdsByArchiveId($process->archiveId);
         $processingTime = null;

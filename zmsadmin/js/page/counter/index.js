@@ -27,8 +27,7 @@ class View extends Workstation {
             this.loadQueueTable(),
             this.loadAppointmentForm(),
             this.loadQueueInfo(),
-            this.loadAppointmentTimes(),
-            this.loadHeaderScope()
+            this.loadAppointmentTimes()
         ])
     }
 }

@@ -7,6 +7,9 @@
 
 namespace BO\Zmsdldb\Entity;
 
+/**
+ * @extends \ArrayObject<string, mixed>
+ */
 class Base extends \ArrayObject
 {
     /**
@@ -33,6 +36,7 @@ class Base extends \ArrayObject
     /**
      * return a path for this entity
      *
+     * @psalm-api
      */
     public function getPath()
     {
@@ -42,7 +46,7 @@ class Base extends \ArrayObject
         return $this['path'];
     }
 
-    public static function hasValidOffset($item, $index)
+    public static function hasValidOffset($item, string $index): bool
     {
         return (
             (is_object($item) && $item->offsetExists($index)) ||
@@ -50,6 +54,7 @@ class Base extends \ArrayObject
         );
     }
 
+    /** @psalm-api */
     public function getLocale()
     {
         $meta = $this['meta'];
@@ -59,6 +64,7 @@ class Base extends \ArrayObject
         return $this['meta']['locale'];
     }
 
+    /** @psalm-api */
     public function getLink()
     {
         if (!$this->offsetExists('link')) {
@@ -75,7 +81,7 @@ class Base extends \ArrayObject
         return $this['type'];
     }
 
-    protected static function subcount($countable)
+    protected static function subcount($countable): int|null
     {
         if (is_array($countable) || $countable instanceof \Countable) {
             return count($countable);
@@ -108,7 +114,10 @@ class Base extends \ArrayObject
         }
     }
 
-    public static function doubleUnterlineToArray(&$array, $key, $value)
+    /**
+     * @param static $array
+     */
+    public static function doubleUnterlineToArray(&$array, string $key, $value)
     {
         if (is_null($key)) {
             return $array = $value;

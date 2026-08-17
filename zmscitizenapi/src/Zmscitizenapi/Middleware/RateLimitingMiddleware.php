@@ -15,7 +15,7 @@ use Psr\SimpleCache\CacheInterface;
 
 class RateLimitingMiddleware implements MiddlewareInterface
 {
-    private const ERROR_RATE_LIMIT = 'rateLimitExceeded';
+    private const string ERROR_RATE_LIMIT = 'rateLimitExceeded';
     private int $maxRequests;
     private int $cacheExpiry;
     private int $maxRetries;
@@ -165,6 +165,7 @@ class RateLimitingMiddleware implements MiddlewareInterface
 
     /**
      * For testing purposes - allows checking if a lock exists
+     * @psalm-api
      */
     public function isLocked(string $ip): bool
     {

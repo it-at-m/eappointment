@@ -13,7 +13,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class RequestSizeLimitMiddleware implements MiddlewareInterface
 {
-    private const ERROR_TOO_LARGE = 'requestEntityTooLarge';
+    private const string ERROR_TOO_LARGE = 'requestEntityTooLarge';
     private int $maxSize;
     private LoggerService $logger;
     public function __construct(LoggerService $logger)

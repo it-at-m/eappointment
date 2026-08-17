@@ -24,21 +24,21 @@ define('ZMS_MESSAGING_SMTP_DEBUG', getenv('ZMS_MESSAGING_SMTP_DEBUG') !== false)
 
 class App extends \BO\Zmsmessaging\Application
 {
-    const APP_PATH = APP_PATH;
+    const string APP_PATH = __DIR__;
 
     // Uncomment the following lines on debugging
-    const DEBUG = false;
+    const bool DEBUG = false;
 
     /**
      * HTTP access for api
      */
-    const HTTP_BASE_URL = ZMS_API_URL;
+    const string HTTP_BASE_URL = ZMS_API_URL;
 
-    const IDENTIFIER = ZMS_IDENTIFIER;
+    const string IDENTIFIER = ZMS_IDENTIFIER;
     /**
      * Name of the module
      */
-    const MODULE_NAME = ZMS_MODULE_NAME;
+    const string MODULE_NAME = ZMS_MODULE_NAME;
 
     public static $httpUser = '_system_messenger';
 

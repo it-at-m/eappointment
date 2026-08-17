@@ -13,9 +13,9 @@ class ProcessStatusArchived extends \BO\Zmsbackend\Query\Base implements \BO\Zms
      *
      * @var String TABLE mysql table reference
      */
-    public const TABLE = 'buergerarchiv';
-    public const STATISTIC_TABLE = 'statistik';
-    public const ALIAS = 'process';
+    public const string TABLE = 'buergerarchiv';
+    public const string STATISTIC_TABLE = 'statistik';
+    public const string ALIAS = 'process';
 
     const QUERY_INSERT_IN_STATISTIC = '
         INSERT INTO ' . self::STATISTIC_TABLE . ' SET
@@ -32,6 +32,10 @@ class ProcessStatusArchived extends \BO\Zmsbackend\Query\Base implements \BO\Zms
             processing_time = :processingTime
     ';
 
+    /**
+     * @return (\BO\Zmsbackend\Query\Builder\Expression|string)[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -66,19 +70,19 @@ class ProcessStatusArchived extends \BO\Zmsbackend\Query\Base implements \BO\Zms
         ];
     }
 
-    public function addConditionArchiveId($archiveId)
+    public function addConditionArchiveId($archiveId): static
     {
         $this->query->where('process.BuergerarchivID', '=', $archiveId);
         return $this;
     }
 
-    public function addConditionScopeId($scopeId)
+    public function addConditionScopeId($scopeId): static
     {
         $this->query->where('process.StandortID', '=', $scopeId);
         return $this;
     }
 
-    public function addConditionScopeIds($scopeIds)
+    public function addConditionScopeIds($scopeIds): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $condition) use ($scopeIds) {
             foreach ($scopeIds as $scopeId) {
@@ -90,13 +94,16 @@ class ProcessStatusArchived extends \BO\Zmsbackend\Query\Base implements \BO\Zms
     }
 
 
-    public function addConditionTime(\DateTimeInterface $now)
+    public function addConditionTime(\DateTimeInterface $now): static
     {
         $this->query->where('process.Datum', '=', $now->format('Y-m-d'));
         return $this;
     }
 
-    public function addConditionTimes(array $dateTimes)
+    /**
+     * @psalm-api
+     */
+    public function addConditionTimes(array $dateTimes): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $condition) use ($dateTimes) {
             foreach ($dateTimes as $dateTime) {
@@ -107,19 +114,19 @@ class ProcessStatusArchived extends \BO\Zmsbackend\Query\Base implements \BO\Zms
         return $this;
     }
 
-    public function addConditionIsMissed($missed)
+    public function addConditionIsMissed($missed): static
     {
         $this->query->where('process.nicht_erschienen', '=', $missed);
         return $this;
     }
 
-    public function addConditionWithAppointment($withAppointment)
+    public function addConditionWithAppointment($withAppointment): static
     {
         $this->query->where('process.mitTermin', '=', $withAppointment);
         return $this;
     }
 
-    public function addJoinStatisticFailed($dateTime, \BO\Zmsentities\Scope $scope)
+    public function addJoinStatisticFailed($dateTime, \BO\Zmsentities\Scope $scope): static
     {
         //use existing index with StandortID and Datum
         $this->leftJoin(
@@ -141,7 +148,7 @@ class ProcessStatusArchived extends \BO\Zmsbackend\Query\Base implements \BO\Zms
         });
         return $this;
     }
-    public function addValuesNewArchive(\BO\Zmsentities\Process $process, \DateTimeInterface $now)
+    public function addValuesNewArchive(\BO\Zmsentities\Process $process, \DateTimeInterface $now): void
     {
         $processingTimeStr = $process->getProcessingTime();
         $bearbeitungszeit = null;
@@ -213,7 +220,7 @@ class ProcessStatusArchived extends \BO\Zmsbackend\Query\Base implements \BO\Zms
         return $services;
     }
 
-    public function addConditionOlderThanDate(\DateTimeInterface $dateTime)
+    public function addConditionOlderThanDate(\DateTimeInterface $dateTime): static
     {
         // Assuming 'Datum' is the column name that holds the date of the record
         // and you want to select records older than the specified $dateTime

@@ -8,7 +8,7 @@ use BO\Zmsentities\Collection\ProviderList as Collection;
 
 class Provider extends \BO\Zmsbackend\Base
 {
-    public function readEntity($source, $providerId, $resolveReferences = 0, $disableCache = false)
+    public function readEntity($source, $providerId, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "provider-$source-$providerId-$resolveReferences";
 
@@ -33,6 +33,7 @@ class Provider extends \BO\Zmsbackend\Base
         return $provider;
     }
 
+    /** @psalm-api */
     public function readEntityById($providerId, $resolveReferences = 0, $disableCache = false)
     {
         $cacheKey = "provider-byid-$providerId-$resolveReferences";
@@ -81,9 +82,8 @@ class Provider extends \BO\Zmsbackend\Base
 
     /**
      * @SuppressWarnings(Param)
-     *
      */
-    protected function readCollection($query)
+    protected function readCollection(\BO\Zmsbackend\Provider\Repository\Provider $query): Collection
     {
         $providerList = new Collection();
         $statement = $this->fetchStatement($query);
@@ -94,7 +94,11 @@ class Provider extends \BO\Zmsbackend\Base
         return $providerList;
     }
 
-    public function readListBySource($source, $resolveReferences = 0, $isAssigned = null, $requestIdCsv = null)
+    /**
+     * @param null|true $isAssigned
+     *
+     */
+    public function readListBySource($source, int $resolveReferences = 0, bool|null $isAssigned = null, $requestIdCsv = null)
     {
         $this->testSource($source);
         $query = new \BO\Zmsbackend\Provider\Repository\Provider(\BO\Zmsbackend\Query\Base::SELECT);
@@ -194,7 +198,7 @@ class Provider extends \BO\Zmsbackend\Base
         return $provider;
     }
 
-    public function writeDeleteEntity($providerId, $source)
+    public function writeDeleteEntity($providerId, $source): bool
     {
         $provider = $this->readEntity($source, $providerId);
         $query = new \BO\Zmsbackend\Provider\Repository\Provider(\BO\Zmsbackend\Query\Base::DELETE);
@@ -204,13 +208,16 @@ class Provider extends \BO\Zmsbackend\Base
         return $this->deleteItem($query);
     }
 
-    public function writeDeleteListBySource($source)
+    public function writeDeleteListBySource(string $source): bool
     {
         $query = new \BO\Zmsbackend\Provider\Repository\Provider(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionProviderSource($source);
         return $this->deleteItem($query);
     }
 
+    /**
+     * @return void
+     */
     protected function testSource($source)
     {
         if (! (new \BO\Zmsbackend\Source\Service\Source())->readEntity($source)) {
@@ -218,6 +225,9 @@ class Provider extends \BO\Zmsbackend\Base
         }
     }
 
+    /**
+     * @return void
+     */
     public function removeCache(Entity $provider)
     {
         if (!App::$cache || !isset($provider->id)) {

@@ -90,7 +90,7 @@ class DayOff extends \BO\Zmsbackend\Base
         return $dayOffListCommon->addList($dayOffList);
     }
 
-    public function readByYear($year)
+    public function readByYear($year): Collection
     {
         $dayOffList = new Collection();
         $query = new \BO\Zmsbackend\Dayoff\Repository\DayOff(\BO\Zmsbackend\Query\Base::SELECT);
@@ -108,7 +108,7 @@ class DayOff extends \BO\Zmsbackend\Base
         return $dayOffList;
     }
 
-    public function readCommonByYear($year)
+    public function readCommonByYear($year): Collection
     {
         $dayOffList = new Collection();
         $query = new \BO\Zmsbackend\Dayoff\Repository\DayOff(\BO\Zmsbackend\Query\Base::SELECT);
@@ -137,7 +137,7 @@ class DayOff extends \BO\Zmsbackend\Base
      *
      * @return \BO\Zmsentities\Collection\DayoffList
      */
-    public function writeCommonDayoffsByYear($dayoffList, $year = null, $drop = true)
+    public function writeCommonDayoffsByYear($dayoffList, $year = null, bool $drop = true)
     {
         if ($drop && $year) {
             static::$commonList = null;
@@ -193,7 +193,7 @@ class DayOff extends \BO\Zmsbackend\Base
         $this->removeCache();
     }
 
-    public function deleteEntity($itemId)
+    public function deleteEntity($itemId): bool
     {
         $query = new \BO\Zmsbackend\Dayoff\Repository\DayOff(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionDayOffId($itemId);
@@ -203,6 +203,9 @@ class DayOff extends \BO\Zmsbackend\Base
         return ($this->deleteItem($query));
     }
 
+    /**
+     * @return void
+     */
     public function removeCache()
     {
         if (!App::$cache) {

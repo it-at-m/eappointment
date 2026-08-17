@@ -10,13 +10,17 @@ class Closure extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'closures';
+    const string TABLE = 'closures';
 
     /**
      * No resolving required here
      */
     protected $resolveLevel = 0;
 
+    /**
+     * @return string[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -30,7 +34,10 @@ class Closure extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         ];
     }
 
-    public function addConditionDate(DateTime $date)
+    /**
+     * @psalm-api
+     */
+    public function addConditionDate(DateTime $date): static
     {
         $this->query->where('closure.year', '=', $date->format('Y'));
         $this->query->where('closure.month', '=', $date->format('m'));
@@ -38,12 +45,13 @@ class Closure extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionScopeId($scopeId)
+    public function addConditionScopeId(int $scopeId): static
     {
         $this->query->where('closure.StandortID', '=', $scopeId);
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionScopeIds(array $scopeIds)
     {
         $ids = array_values(array_unique(array_map('intval', $scopeIds)));
@@ -72,7 +80,10 @@ class Closure extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionDateRange(\DateTimeInterface $from, \DateTimeInterface $until)
+    /**
+     * @psalm-api
+     */
+    public function addConditionDateRange(\DateTimeInterface $from, \DateTimeInterface $until): static
     {
         $dateExpr = self::expression(
             "DATE(CONCAT(closure.year,'-',LPAD(closure.month,2,'0'),'-',LPAD(closure.day,2,'0')))"
@@ -82,7 +93,7 @@ class Closure extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addSelectVirtualDate()
+    public function addSelectVirtualDate(): static
     {
         $this->query->select([
             $this->getPrefixed('date') => self::expression(
@@ -92,7 +103,7 @@ class Closure extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionId($id)
+    public function addConditionId($id): static
     {
         $this->query->where('closure.id', '=', $id);
         return $this;

@@ -49,8 +49,8 @@ class ProcessConfirmationMail extends \BO\Zmsbackend\Api\BaseController
 
     protected static function writeMail(Process $process)
     {
-        $config = (new \BO\Zmsbackend\Config\Service\Config())->readEntity();
-        $department = (new \BO\Zmsbackend\Department\Service\Department())->readByScopeId($process->scope['id']);
+        $config = (new Config())->readEntity();
+        $department = (new Department())->readByScopeId($process->scope['id']);
         $collection = static::getProcessListOverview($process, $config);
 
         $status = ($process->isWithAppointment()) ? 'appointment' : 'queued';
@@ -66,7 +66,10 @@ class ProcessConfirmationMail extends \BO\Zmsbackend\Api\BaseController
         return $mail;
     }
 
-    protected function testProcessData($process)
+    /**
+     * @return void
+     */
+    protected function testProcessData(Process $process)
     {
         $authCheck = (new ProcessRepository())->readAuthKeyByProcessId($process->id);
         if (! $authCheck) {
@@ -81,7 +84,7 @@ class ProcessConfirmationMail extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
-    public static function getProcessListOverview($process, $config)
+    public static function getProcessListOverview(Process $process, \BO\Zmsentities\Config $config): Collection
     {
         $collection  = (new Collection())->addEntity($process);
         if (

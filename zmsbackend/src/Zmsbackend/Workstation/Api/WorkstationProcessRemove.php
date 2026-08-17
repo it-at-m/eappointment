@@ -76,7 +76,7 @@ class WorkstationProcessRemove extends \BO\Zmsbackend\Api\BaseController
             $process->wasMissed = false;
             $process['wasMissed'] = false;
             $process->queue['callCount'] = max(0, (int) $process->queue['callCount'] - 1);
-            if ((int) $process->queue['callCount'] === 0) {
+            if ($process->queue['callCount'] === 0) {
                 $process->queue['callTime'] = 0;
                 $process->queue['lastCallTime'] = 0;
             }

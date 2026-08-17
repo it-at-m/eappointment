@@ -50,36 +50,48 @@ define('ZMS_DLDB_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '/cache/
 
 class App extends \BO\Zmsbackend\Application
 {
-    const APP_PATH = APP_PATH;
-    const IDENTIFIER = 'Zmsbackend-ENV';
-    const DEBUG = false;
-    const DB_ENABLE_WSREPSYNCWAIT = true;
+    const string APP_PATH = __DIR__;
+    const string IDENTIFIER = 'Zmsbackend-ENV';
+    const bool DEBUG = false;
+    const bool DB_ENABLE_WSREPSYNCWAIT = true;
     /**
      * @var String DB_DSN_READONLY
      */
-    const DB_DSN_READONLY = DSN_RO;
+    const string DB_DSN_READONLY = DSN_RO;
 
     /**
      * @var String DB_DSN_READWRITE
      */
-    const DB_DSN_READWRITE = DSN_RW;
+    const string DB_DSN_READWRITE = DSN_RW;
 
     /**
      * @var String DB_USERNAME
      */
-    const DB_USERNAME = MYSQL_USER;
+    const string DB_USERNAME = MYSQL_USER;
 
     /**
      * @var String DB_PASSWORD
      */
-    const DB_PASSWORD = MYSQL_PASSWORD;
+    const string DB_PASSWORD = MYSQL_PASSWORD;
 
     /**
      * Use caching
      *
      */
     const TWIG_CACHE = ZMS_DLDB_TWIG_CACHE;
-    const MODULE_NAME = 'zmsdldb';
+    const string MODULE_NAME = 'zmsdldb';
+
+    /** Fallback when settings key d115.openingTime is unset */
+    const string D115_DEFAULT_OPENINGTIME = '';
+
+    /** Fallback when settings key d115.messageHtml is unset */
+    const string D115_DEFAULT_TEXT = '';
+
+    /** Mapbox/OSM access token for frontend maps */
+    const string OSM_ACCESS_TOKEN = '';
+
+    /** Leaflet gestureHandling option value */
+    const string OSM_GESTURE_HANDLING = 'true';
 }
 
 // Uncomment the following line for testing data with vendor/bin/importTestData
