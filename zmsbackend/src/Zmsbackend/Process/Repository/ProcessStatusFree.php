@@ -2,9 +2,6 @@
 
 namespace BO\Zmsbackend\Process\Repository;
 
-/**
- *
- */
 class ProcessStatusFree extends \BO\Zmsbackend\Query\Base
 {
     /**
@@ -12,7 +9,7 @@ class ProcessStatusFree extends \BO\Zmsbackend\Query\Base
      *
      * see also \BO\Zmsbackend\Day\Repository\Day::QUERY_DAYLIST_JOIN
      */
-    const QUERY_SELECT_PROCESSLIST_DAYS = '
+    const string QUERY_SELECT_PROCESSLIST_DAYS = '
         SELECT
             -- tmp_avail.*,
             "free" AS status,
@@ -60,7 +57,7 @@ class ProcessStatusFree extends \BO\Zmsbackend\Query\Base
      *
      * see also \BO\Zmsbackend\Day\Repository\Day::QUERY_DAYLIST_JOIN_AVAILABILITY
      */
-    const QUERY_SELECT_PROCESSLIST_DAYS_AVAILABILITY = '
+    const string QUERY_SELECT_PROCESSLIST_DAYS_AVAILABILITY = '
         SELECT
             -- tmp_avail.*,
             "free" AS status,
@@ -110,9 +107,9 @@ class ProcessStatusFree extends \BO\Zmsbackend\Query\Base
             INNER JOIN slot_sequence sq ON sq.slotsequence <= tmp_avail.free
     ';
 
-    const GROUPBY_SELECT_PROCESSLIST_DAY = 'GROUP BY scope__id, appointments__0__date';
+    const string GROUPBY_SELECT_PROCESSLIST_DAY = 'GROUP BY scope__id, appointments__0__date';
 
-    public static function buildDaysCondition($days)
+    public static function buildDaysCondition(array $days): string
     {
         $sql = 'AND (';
         $sqlPats = [];

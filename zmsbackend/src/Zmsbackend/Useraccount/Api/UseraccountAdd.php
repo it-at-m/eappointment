@@ -41,7 +41,10 @@ class UseraccountAdd extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    protected function testEntity($entity, $input)
+    /**
+     * @return void
+     */
+    protected function testEntity(\BO\Zmsentities\Useraccount $entity, $input)
     {
         if (0 == count($input)) {
             throw new \BO\Zmsbackend\Useraccount\Exception\UseraccountInvalidInput();

@@ -7,14 +7,20 @@ class Link extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'kundenlinks';
+    const string TABLE = 'kundenlinks';
 
     /**
      * No resolving required here
      */
     protected $resolveLevel = 0;
 
-    public function getEntityMapping()
+    /**
+     * @psalm-api
+     *
+     * @return string[]
+     *
+     */
+    public function getEntityMapping(): array
     {
         return [
             'id' => 'link.linkid',
@@ -26,13 +32,13 @@ class Link extends \BO\Zmsbackend\Query\Base
         ];
     }
 
-    public function addConditionLinkId($linkId)
+    public function addConditionLinkId($linkId): static
     {
         $this->query->where('link.linkid', '=', $linkId);
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId)
+    public function addConditionDepartmentId($departmentId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias('behoerde', 'link_department'),
@@ -45,7 +51,11 @@ class Link extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Link $entity, $departmentId)
+    /**
+     * @return (int|mixed)[]
+     *
+     */
+    public function reverseEntityMapping(\BO\Zmsentities\Link $entity, $departmentId): array
     {
         $data = array();
         $data['behoerdenid'] = ($entity->organisation) ? 0 : $departmentId;

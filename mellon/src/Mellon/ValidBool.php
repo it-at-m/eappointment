@@ -28,6 +28,7 @@ class ValidBool extends Valid
      * @param String $message error message in case of failure
      *
      * @return self
+     * @psalm-api
      */
     public function isBool($message = 'not a boolean value')
     {

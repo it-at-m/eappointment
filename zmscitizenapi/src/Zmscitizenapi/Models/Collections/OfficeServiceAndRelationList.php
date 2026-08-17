@@ -34,6 +34,9 @@ class OfficeServiceAndRelationList extends Entity implements JsonSerializable
         ];
     }
 
+    /**
+     * @return void
+     */
     private function ensureValid()
     {
         if (!$this->testValid()) {

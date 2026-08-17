@@ -71,7 +71,11 @@ class ProcessReserve extends BaseController
         return $process->withUpdatedData($input, $dateTime, $scope);
     }
 
-    public static function getValidatedForm($validator, $process)
+    /**
+     * @return (bool|mixed)[]
+     *
+     */
+    public static function getValidatedForm($validator, Process $process): array
     {
         $processValidator = new ProcessValidator($process);
         $delegatedProcess = $processValidator->getDelegatedProcess();

@@ -13,7 +13,7 @@ use BO\Zmsentities\Collection\RequestList as Collection;
  */
 class Request extends \BO\Zmsbackend\Base
 {
-    public function readEntity($source, $requestId, $resolveReferences = 0, $disableCache = false)
+    public function readEntity(string $source, string $requestId, int|null $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "request-$source-$requestId-$resolveReferences";
 
@@ -43,6 +43,7 @@ class Request extends \BO\Zmsbackend\Base
         return $request;
     }
 
+    /** @psalm-api */
     public function readEntityById($requestId, $resolveReferences = 0, $disableCache = false)
     {
         $cacheKey = "request-byid-$requestId-$resolveReferences";
@@ -95,9 +96,8 @@ class Request extends \BO\Zmsbackend\Base
 
     /**
      * @SuppressWarnings(Param)
-     *
      */
-    protected function readCollection($query)
+    protected function readCollection(\BO\Zmsbackend\Request\Repository\Request $query): Collection
     {
         $requestList = new Collection();
         $statement = $this->fetchStatement($query);
@@ -216,7 +216,7 @@ class Request extends \BO\Zmsbackend\Base
         return $collection;
     }
 
-    public function readAllRequestsForProcessIds(array $processIds, $resolveReferences = 0): array
+    public function readAllRequestsForProcessIds(array $processIds, int $resolveReferences = 0): array
     {
         $processIds = array_values(array_unique(array_filter(
             array_map('intval', $processIds),
@@ -298,7 +298,7 @@ class Request extends \BO\Zmsbackend\Base
         return $ids;
     }
 
-    public function readListByProvider($source, $providerId, $resolveReferences = 0)
+    public function readListByProvider($source, $providerId, int $resolveReferences = 0)
     {
         $this->testSource($source);
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
@@ -451,7 +451,7 @@ class Request extends \BO\Zmsbackend\Base
         return $requestList;
     }
 
-    public function readListByCluster(\BO\Zmsentities\Cluster $cluster, $resolveReferences = 0)
+    public function readListByCluster(\BO\Zmsentities\Cluster $cluster, $resolveReferences = 0): Collection
     {
         $intersectList = array();
         if ($cluster->scopes->count()) {
@@ -521,7 +521,7 @@ class Request extends \BO\Zmsbackend\Base
         return $this->readEntity($source, $request['id'], 0, true);
     }
 
-    public function writeDeleteEntity($requestId, $source)
+    public function writeDeleteEntity($requestId, $source): bool
     {
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionRequestId($requestId);
@@ -530,13 +530,16 @@ class Request extends \BO\Zmsbackend\Base
         return $this->deleteItem($query);
     }
 
-    public function writeDeleteListBySource($source)
+    public function writeDeleteListBySource(string $source): bool
     {
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionRequestSource($source);
         return $this->deleteItem($query);
     }
 
+    /**
+     * @return void
+     */
     protected function testSource($source)
     {
         if (! (new \BO\Zmsbackend\Source\Service\Source())->readEntity($source)) {
@@ -544,6 +547,9 @@ class Request extends \BO\Zmsbackend\Base
         }
     }
 
+    /**
+     * @return void
+     */
     public function removeCache(Entity $request)
     {
         if (!App::$cache) {

@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class Contact extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'object_id' => 'object_id',
         'locale' => 'locale',
         'name' => 'name',
@@ -15,10 +15,10 @@ class Contact extends Base
     ];
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(['object_id', 'locale'], array_values($this->get(['object_id', 'locale'])))
             );
         } catch (\Exception $e) {

@@ -42,7 +42,10 @@ class SessionUpdate extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    protected function testMatching($session)
+    /**
+     * @return void
+     */
+    protected function testMatching(\BO\Zmsentities\Session $session)
     {
         if (false === \BO\Zmsbackend\Helper\Matching::isProviderExisting($session)) {
             throw new \BO\Zmsbackend\Matching\Exception\ProviderNotFound();

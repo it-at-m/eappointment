@@ -102,7 +102,10 @@ class ProcessUpdate extends \BO\Zmsbackend\Api\BaseController
         return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
     }
 
-    protected function testProcessData($entity, bool $checkMailLimit = true)
+    /**
+     * @return void
+     */
+    protected function testProcessData(\BO\Zmsentities\Process $entity, bool $checkMailLimit = true)
     {
         $authCheck = (new \BO\Zmsbackend\Process\Service\Process())->readAuthKeyByProcessId($entity->id);
 

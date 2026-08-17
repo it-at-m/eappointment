@@ -138,6 +138,7 @@ Required environment variables for ATAF tests:
 ### API Endpoints
 - `BASE_URI` - ZMS API base (default in `zmsautomation-test`: `http://web/terminvereinbarung/api/2` for Docker Compose / devcontainer). Use `http://localhost/...` when the test process runs **inside** the `web` container and should hit local Apache only.
 - `CITIZEN_API_BASE_URI` - Citizen API base (default: `http://web/terminvereinbarung/api/citizen`) — **direct** to zms-web. REST steps use this; **refarch-gateway is not used** for those pings.
+- `ZMS_CONFIG_SECURE_TOKEN` - Token for `X-Token` on protected API calls such as `GET /status/` (default: `hash`, same as local `.env`). Required for zmsbackend health checks after ZMSKVR-1349.
 - `ADMIN_BASE_URI` / `STATISTIC_BASE_URI` - Defaults use `http://localhost/terminvereinbarung/.../` (typical when tests run inside the `web` container).
 - `CITIZEN_VIEW_BASE_URI` / `CITIZENVIEW_PORT` - CitizenView / Vite dev server (defaults: port `8082`, base `http://citizenview:8082/`). Override if your stack uses another port (e.g. prebuilt nginx image on `8080`).
 - `REFARCH_GATEWAY_OFFICES_URL` - Optional override for the extra health ping that hits the gateway (default: `http://refarch-gateway:8080/buergeransicht/api/citizen/offices-and-services/`). Same URL path the browser uses; produces lines in gateway logs.

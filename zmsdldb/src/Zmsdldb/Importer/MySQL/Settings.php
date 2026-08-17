@@ -4,16 +4,25 @@ namespace BO\Zmsdldb\Importer\MySQL;
 
 class Settings extends Base
 {
-    protected $getCurrentEntitys = false;
-    protected $entityClass = '\\BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Setting';
+    protected bool $getCurrentEntitys = false;
+    /** @var class-string<\BO\Zmsdldb\Importer\MySQL\Entity\Base>|null */
+    protected ?string $entityClass = \BO\Zmsdldb\Importer\MySQL\Entity\Setting::class;
 
+    /** @psalm-api */
     #[\Override]
     public function runImport(): bool
     {
         try {
-            $this->importData = array_shift($this->importData);
+            $shifted = array_shift($this->importData);
+            if (!is_array($shifted)) {
+                throw new \RuntimeException('Invalid settings import data');
+            }
+            $this->importData = $shifted;
 
-            $settings = $this->importData['settings'];
+            $settings = $this->importData['settings'] ?? [];
+            if (!is_array($settings)) {
+                throw new \RuntimeException('Invalid settings payload');
+            }
             $settings['boroughs'] = json_encode(($this->importData['boroughs'] ?? ''));
             $settings['office'] = json_encode(($this->importData['office'] ?? ''));
 

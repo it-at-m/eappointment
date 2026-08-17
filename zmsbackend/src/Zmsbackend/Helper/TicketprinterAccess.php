@@ -12,7 +12,7 @@ class TicketprinterAccess
      *
      * @return array $useraccount
     */
-    public static function testTicketprinter($entity)
+    public static function testTicketprinter(\BO\Zmsentities\Ticketprinter $entity)
     {
         if ($entity->hasId()) {
             $organisation = (new \BO\Zmsbackend\Organisation\Service\Organisation())->readByHash($entity->hash);
@@ -22,6 +22,9 @@ class TicketprinterAccess
         self::testMatchingClusterAndScopes($entity, $organisation->getId());
     }
 
+    /**
+     * @return void
+     */
     public static function testMatchingClusterAndScopes($entity, $organisationId)
     {
         if (isset($entity->buttons) && $entity->buttons) {
@@ -38,6 +41,9 @@ class TicketprinterAccess
         }
     }
 
+    /**
+     * @return void
+     */
     public static function testTicketprinterNotFound($entity)
     {
         if (! $entity->hasId() || ! (new \BO\Zmsbackend\Ticketprinter\Service\Ticketprinter())->readByHash($entity->getId())->hasId()) {
@@ -45,6 +51,11 @@ class TicketprinterAccess
         }
     }
 
+    /**
+     * @psalm-api
+     *
+     * @return void
+     */
     public static function testTicketprinterIsProtectedEnabled($entity, $isProtectionEnabled)
     {
         if ($isProtectionEnabled && ! $entity->isEnabled()) {
@@ -52,6 +63,9 @@ class TicketprinterAccess
         }
     }
 
+    /**
+     * @return void
+     */
     public static function testTicketprinterValidHash($entity)
     {
         if (

@@ -61,7 +61,10 @@ class ProcessQueued extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    protected function testProcessData($entity)
+    /**
+     * @return void
+     */
+    protected function testProcessData(\BO\Zmsentities\Process $entity)
     {
         $authCheck = (new Query())->readAuthKeyByProcessId($entity->id);
         if (! $authCheck) {

@@ -76,6 +76,7 @@ class AuthenticatedUser implements JsonSerializable
         return $this;
     }
 
+    /** @psalm-api */
     public function getEmail(): ?string
     {
         return $this->email;
@@ -87,6 +88,7 @@ class AuthenticatedUser implements JsonSerializable
         return $this;
     }
 
+    /** @psalm-api */
     public function getGivenName(): ?string
     {
         return $this->givenName;
@@ -98,6 +100,7 @@ class AuthenticatedUser implements JsonSerializable
         return $this;
     }
 
+    /** @psalm-api */
     public function getFamilyName(): ?string
     {
         return $this->familyName;

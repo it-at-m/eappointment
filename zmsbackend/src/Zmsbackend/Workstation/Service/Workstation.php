@@ -29,6 +29,9 @@ class Workstation extends \BO\Zmsbackend\Base
         return $this->readResolvedReferences($workstation, $resolveReferences);
     }
 
+    /**
+     * @return \BO\Zmsentities\Schema\Entity
+     */
     #[\Override]
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
@@ -61,7 +64,7 @@ class Workstation extends \BO\Zmsbackend\Base
         return ($loggedInWorkstation['hash']) ? $loggedInWorkstation['hash'] : null;
     }
 
-    public function readLoggedInListByScope($scopeId, \DateTimeInterface $dateTime, $resolveReferences = 0)
+    public function readLoggedInListByScope($scopeId, \DateTimeInterface $dateTime, $resolveReferences = 0): Collection
     {
         $workstationList = new \BO\Zmsentities\Collection\WorkstationList();
         $query = new \BO\Zmsbackend\Workstation\Repository\Workstation(\BO\Zmsbackend\Query\Base::SELECT);
@@ -83,7 +86,7 @@ class Workstation extends \BO\Zmsbackend\Base
         return $workstationList;
     }
 
-    public function readLoggedInListByCluster($clusterId, \DateTimeInterface $dateTime, $resolveReferences = 0)
+    public function readLoggedInListByCluster($clusterId, \DateTimeInterface $dateTime, $resolveReferences = 0): Collection
     {
         $workstationList = new \BO\Zmsentities\Collection\WorkstationList();
         $cluster = (new \BO\Zmsbackend\Cluster\Service\Cluster())->readEntity($clusterId, $resolveReferences);
@@ -111,7 +114,7 @@ class Workstation extends \BO\Zmsbackend\Base
         return $workstation;
     }
 
-    public function readCollectionByDepartmentId($departmentId, $resolveReferences = 0)
+    public function readCollectionByDepartmentId($departmentId, $resolveReferences = 0): Collection
     {
         $collection = new Collection();
         $query = new \BO\Zmsbackend\Workstation\Repository\Workstation(\BO\Zmsbackend\Query\Base::SELECT);
@@ -295,6 +298,7 @@ class Workstation extends \BO\Zmsbackend\Base
      * @param int|string $useraccountId
      *
      * @return Entity
+     * @psalm-api
      */
     public function updateEntityAuthkey($loginName, $password, $authKey, \DateTimeInterface $sessionExpiry, $resolveReferences)
     {

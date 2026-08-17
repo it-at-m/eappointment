@@ -5789,6 +5789,11 @@
  *          tags:
  *              - status
  *          parameters:
+ *              -   name: X-Token
+ *                  description: "Required when not logged in (e.g. Grafana / status-logger). Must match ZMS_CONFIG_SECURE_TOKEN."
+ *                  in: header
+ *                  type: string
+ *                  required: false
  *              -   name: includeProcessStats
  *                  description: "Collecting stats about processes slows the request down. For healthcheck, this data might not be necessary. Default is to include the stats, a value of 0 skip the stats."
  *                  in: query
@@ -5798,6 +5803,8 @@
  *                  description: "success"
  *                  schema:
  *                      $ref: "schema/status.json"
+ *              401:
+ *                  description: "missing workstation login and invalid or missing X-Token"
  */
 \App::$slim->get(
     '/status/',

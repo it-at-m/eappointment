@@ -8,9 +8,9 @@ class ExchangeClientorganisation extends \BO\Zmsbackend\Query\Base
      * @var String TABLE mysql table reference
      */
 
-    const TABLE = 'statistik';
+    const string TABLE = 'statistik';
 
-    const BATABLE = 'buergeranliegen';
+    const string BATABLE = 'buergeranliegen';
 
     const QUERY_READ_REPORT = '
     SELECT

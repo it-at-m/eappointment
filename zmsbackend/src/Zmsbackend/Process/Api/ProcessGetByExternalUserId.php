@@ -61,7 +61,7 @@ class ProcessGetByExternalUserId extends \BO\Zmsbackend\Api\BaseController
         if (
             $processExternalUserId === null
             || $processExternalUserId === ''
-            || (string) $processExternalUserId !== (string) $externalUserId
+            || (string) $processExternalUserId !== $externalUserId
         ) {
             throw new \BO\Zmsbackend\Process\Exception\ExternalUserIdMatchFailed();
         }

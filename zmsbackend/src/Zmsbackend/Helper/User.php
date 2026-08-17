@@ -20,7 +20,7 @@ class User
 
     public static $request = null;
 
-    private const SUPERUSER_ONLY_ROLES = [
+    private const array SUPERUSER_ONLY_ROLES = [
         'system_admin',
         'audit_viewer',
     ];
@@ -31,7 +31,7 @@ class User
         static::readWorkstation($resolveReferences);
     }
 
-    public static function readWorkstation($resolveReferences = 0)
+    public static function readWorkstation(int $resolveReferences = 0)
     {
         $request = (static::$request) ? static::$request : Render::$request;
         if (! static::$workstation) {
@@ -56,6 +56,9 @@ class User
     /**
      * @throws \BO\Zmsbackend\Workstation\Exception\WorkstationAlreadyAssigned
      *
+     * @psalm-api
+     *
+     * @return void
      */
     public static function testWorkstationAssigend(\BO\Zmsentities\Workstation $entity, $resolveReferences = 0)
     {
@@ -80,8 +83,9 @@ class User
     /**
      * @throws \BO\Zmsentities\Exception\UserAccountAccessRightsFailed
      *
+     * @return void
      */
-    public static function testWorkstationAccessRights($useraccount)
+    public static function testWorkstationAccessRights(\BO\Zmsentities\Useraccount $useraccount)
     {
         if (
             (
@@ -98,7 +102,7 @@ class User
     }
 
 
-    public static function testWorkstationAssignedRoles($useraccount): void
+    public static function testWorkstationAssignedRoles(\BO\Zmsentities\Useraccount $useraccount): void
     {
         if (! $useraccount->offsetExists('roles') || ! is_array($useraccount['roles'])) {
             throw new \BO\Zmsbackend\Useraccount\Exception\UseraccountInvalidRoleAssignment();
@@ -137,7 +141,10 @@ class User
         return $userAccount->hasId();
     }
 
-    public static function checkPermissions(...$requiredPermissions)
+    /**
+     * @param \BO\Zmsentities\Useraccount\EntityAccess|string $requiredPermissions
+     */
+    public static function checkPermissions(string|\BO\Zmsentities\Useraccount\EntityAccess ...$requiredPermissions)
     {
         $workstation = static::readWorkstation();
 
@@ -148,7 +155,7 @@ class User
         return $workstation;
     }
 
-    public static function checkAnyPermission(...$requiredPermissions)
+    public static function checkAnyPermission(string ...$requiredPermissions)
     {
         $workstation = static::readWorkstation();
 
@@ -159,7 +166,7 @@ class User
         return $workstation;
     }
 
-    public static function checkDepartments($departmentIds)
+    public static function checkDepartments($departmentIds): DepartmentList
     {
         $normalizedIds = self::normalizeDepartmentIds($departmentIds);
         $departments = new DepartmentList();
@@ -250,9 +257,8 @@ class User
 
     /**
      * Get X-Api-Key from header
-     *
-    */
-    public static function hasXApiKey($request)
+     */
+    public static function hasXApiKey(\Psr\Http\Message\RequestInterface $request): bool
     {
         $xApiKeyEntity = null;
         $xApiKey = $request->getHeaderLine('x-api-key');
@@ -262,7 +268,10 @@ class User
         return ($xApiKeyEntity && $xApiKeyEntity->hasId());
     }
 
-    public static function testWorkstationIsOveraged($workstation)
+    /**
+     * @return void
+     */
+    public static function testWorkstationIsOveraged(\BO\Zmsentities\Workstation $workstation)
     {
         if ($workstation->hasId() && $workstation->getUseraccount()->isOveraged(\App::$now)) {
             $exception = new \BO\Zmsbackend\Useraccount\Exception\AuthKeyFound();
@@ -279,7 +288,11 @@ class User
         return $department;
     }
 
-    public static function normalizeDepartmentIds(array $departmentIds)
+    /**
+     * @return int[]
+     *
+     */
+    public static function normalizeDepartmentIds(array $departmentIds): array
     {
         $normalized = [];
         foreach ($departmentIds as $departmentId) {

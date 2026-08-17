@@ -6,41 +6,33 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class SessionData implements SessionInterface
 {
-    /**
-     * @var array
-     */
-    protected $data;
+    /** @var array<array-key, mixed> */
+    protected array $data = [];
 
-    /**
-     * @var boolean
-     */
-    private $isLocked = false;
+    private bool $isLocked = false;
 
-
-    protected $entityClass = null;
+    protected ?object $entityClass = null;
 
     /**
      * __construct is not allowed, use
      * - {@see SessionData::getSessionFromName}
      * instead
      */
-    public function __construct($data = null)
+    public function __construct(?array $data = null)
     {
-        $this->data = $data;
+        $this->data = $data ?? [];
     }
 
     /**
      *
      * @SuppressWarnings(Superglobals)
      * @SuppressWarnings(Unused)
-     *
-     * @return self
      */
-    public static function getSession(Request $request)
+    public static function getSession(Request $request): self
     {
         if (headers_sent() === false && session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
-            if (!count($_SESSION)) {
+            if (!isset($_SESSION) || count($_SESSION) === 0) {
                 $_SESSION['status'] = 'start';
             };
             $session = $_SESSION;
@@ -53,14 +45,17 @@ class SessionData implements SessionInterface
         return $instance;
     }
 
-    public function writeData()
+    public function writeData(): void
     {
         session_write_close();
         $this->isLocked = true;
     }
 
+    /**
+     * @return void
+     */
     #[\Override]
-    public function setGroup(array $group, $clear)
+    public function setGroup(array $group, bool $clear = false): void
     {
         foreach ($group as $index => $items) {
             if ($clear) {
@@ -75,13 +70,10 @@ class SessionData implements SessionInterface
     }
 
     /**
-     *
      * @SuppressWarnings(Superglobals)
-     *
-     * @return array
      */
     #[\Override]
-    public function set($key, $value, $groupIndex = null)
+    public function set(int|string $key, mixed $value, int|string|null $groupIndex = null): void
     {
         if (null === $groupIndex) {
             $this->data[$key] = self::convertValueToScalar($value);
@@ -95,7 +87,7 @@ class SessionData implements SessionInterface
     }
 
     #[\Override]
-    public function get($key, $groupIndex = null, $default = null)
+    public function get(int|string $key, int|string|null $groupIndex = null, mixed $default = null): mixed
     {
         if (! $this->has($key, $groupIndex)) {
             return self::convertValueToScalar($default);
@@ -107,9 +99,9 @@ class SessionData implements SessionInterface
     }
 
     #[\Override]
-    public function getEntity()
+    public function getEntity(): mixed
     {
-        if (null === $this->entityClass) {
+        if ($this->entityClass === null) {
             throw new \Exception("Entity-Class not set");
         }
         $sessionContent = clone $this->entityClass;
@@ -117,14 +109,17 @@ class SessionData implements SessionInterface
         return $sessionContent;
     }
 
-    public function setEntityClass($entityClass)
+    public function setEntityClass(?object $entityClass): static
     {
         $this->entityClass = $entityClass;
         return $this;
     }
 
+    /**
+     * @return void
+     */
     #[\Override]
-    public function remove($key, $groupIndex = null)
+    public function remove(int|string $key, int|string|null $groupIndex = null): void
     {
         if (null === $groupIndex) {
             unset($this->data[$key]);
@@ -134,13 +129,10 @@ class SessionData implements SessionInterface
     }
 
     /**
-     *
      * @SuppressWarnings(Superglobals)
-     *
-     * @return self
      */
     #[\Override]
-    public function clearGroup($groupIndex = null)
+    public function clearGroup(int|string|null $groupIndex = null): void
     {
         if (null !== $groupIndex) {
             $this->data[$groupIndex] = [];
@@ -149,28 +141,26 @@ class SessionData implements SessionInterface
     }
 
     /**
-     *
      * @SuppressWarnings(Superglobals)
-     *
-     * @return self
      */
     #[\Override]
-    public function clear()
+    public function clear(): void
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
-            setcookie(session_name(), '', time() - 3600, '/');
+            $sessionName = session_name();
+            if (is_string($sessionName)) {
+                setcookie($sessionName, '', time() - 3600, '/');
+            }
             $_SESSION = array();
             session_destroy();
         }
     }
 
     /**
-     *
      * @SuppressWarnings(Superglobals)
-     *
-     * @return self
+     * @psalm-api
      */
-    public function restart()
+    public function restart(): void
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_regenerate_id(true);
@@ -179,8 +169,11 @@ class SessionData implements SessionInterface
         }
     }
 
+    /**
+     * @return bool|null
+     */
     #[\Override]
-    public function has($key, $groupIndex = null)
+    public function has(int|string $key, int|string|null $groupIndex = null): ?bool
     {
         if (null === $groupIndex) {
             return array_key_exists($key, $this->data);
@@ -189,10 +182,14 @@ class SessionData implements SessionInterface
                 return array_key_exists($key, $this->data[$groupIndex]);
             }
         }
+        return false;
     }
 
+    /**
+     * @return bool
+     */
     #[\Override]
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return empty($this->data);
     }
@@ -206,8 +203,12 @@ class SessionData implements SessionInterface
         return json_encode($this->data);
     }
 
-    private static function convertValueToScalar($value)
+    private static function convertValueToScalar(mixed $value): mixed
     {
-        return json_decode(json_encode($value), true);
+        $encoded = json_encode($value);
+        if ($encoded === false) {
+            return null;
+        }
+        return json_decode($encoded, true);
     }
 }

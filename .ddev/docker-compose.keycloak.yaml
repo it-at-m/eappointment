@@ -36,10 +36,26 @@ services:
       - default
     restart: "no"
 
-  init-keycloak:
+  # 0.2.131 JAR is Java 24; upstream image still ships a 23 JRE.
+  init-keycloak-jar:
     image: klg71/keycloakmigration:0.2.131@sha256:a311cce3b961062000e6e9ef08ecb5712f3ea81859beeee8cd0c836fe8e4f2cf
+    # Image is amd64-only. Apple Silicon (arm64) still works: Podman emulates this
+    # one-shot `cp`. Java itself runs natively on Temurin below.
+    platform: linux/amd64
+    volumes:
+      - keycloakmigration-jar:/out
+    entrypoint: ["/bin/sh", "-c", "cp /keycloakmigration.jar /entrypoint.sh /out/"]
+    networks:
+      - default
+    restart: "no"
+
+  init-keycloak:
+    image: eclipse-temurin:25-jre-alpine@sha256:28db6fdf60e38945e43d840c0333aeaec66c15943070104f7586fd3c9d1665b0
+    working_dir: /opt/keycloakmigration
     depends_on:
       init-keycloak-token:
+        condition: service_completed_successfully
+      init-keycloak-jar:
         condition: service_completed_successfully
     environment:
       - ADMIN_USER=admin
@@ -51,7 +67,9 @@ services:
       # One-shot exit makes `ddev start` fail ("container exited"). Stay idle after success.
       - STAY_IDLE=true
     volumes:
+      - keycloakmigration-jar:/opt/keycloakmigration:ro
       - ../.resources/keycloak/migration:/migration
+    entrypoint: ["/bin/sh", "./entrypoint.sh"]
     networks:
       - default
     restart: "no"
@@ -61,4 +79,7 @@ services:
       timeout: 3s
       retries: 36
       start_period: 30s
+
+volumes:
+  keycloakmigration-jar:
 

@@ -10,15 +10,18 @@ use BO\Zmsentities\Slot;
  */
 class SlotList extends Base
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Slot';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Slot';
 
     /**
      * Compare two slots and return the lower values
+     *
      * @param array $slotA
      * @param array $slotB
+     *
      * @return array $slotA modified
+     *
      */
-    public function takeLowerSlotValue($indexA, $indexB)
+    public function takeLowerSlotValue(int $indexA, int $indexB)
     {
         $slotA = $this[$indexA];
         $slotB = $this[$indexB];
@@ -31,7 +34,7 @@ class SlotList extends Base
         return $this;
     }
 
-    public function setEmptySlotValues($index)
+    public function setEmptySlotValues(int|string $index): static
     {
         $slot = $this->getSlot($index);
         if (null !== $slot) {
@@ -42,7 +45,7 @@ class SlotList extends Base
         return $this;
     }
 
-    public function isAvailableForAll($slotType)
+    public function isAvailableForAll($slotType): bool
     {
         foreach ($this as $slot) {
             if ($slot[$slotType] < 1) {
@@ -54,9 +57,8 @@ class SlotList extends Base
 
     /**
      * Get a slot for a given time
-     *
      */
-    public function getByDateTime(\DateTimeInterface $dateTime)
+    public function getByDateTime(\DateTimeInterface $dateTime): Slot|false
     {
         foreach ($this as $slot) {
             if ($slot->hasTime() && $slot->time == $dateTime->format('H:i')) {
@@ -98,7 +100,7 @@ class SlotList extends Base
         return $slotList;
     }
 
-    public function extendList($slotList, $prevSlot, $appointment)
+    public function extendList(self $slotList, Slot|null $prevSlot, \BO\Zmsentities\Appointment $appointment)
     {
         $startTime = \BO\Zmsentities\Helper\DateTime::create(
             $appointment->toDateTime()->format('Y-m-d') . ' ' . $prevSlot->time
@@ -152,7 +154,7 @@ class SlotList extends Base
         return $containsAppointment;
     }
 
-    public function getSlot($index)
+    public function getSlot($index): Slot|null
     {
         $index = intval($index);
         if (!isset($this[$index])) {
@@ -161,7 +163,7 @@ class SlotList extends Base
         return $this[$index];
     }
 
-    public function getSummerizedSlot($slot = null)
+    public function getSummerizedSlot($slot = null): Slot
     {
         $sum = ($slot instanceof Slot) ? $slot : new Slot();
         $sum->type = Slot::SUM;
@@ -175,7 +177,7 @@ class SlotList extends Base
     /*
      * reduce slotlist from slots smaller than reference time (today) + 1800 seconds
      */
-    public function withTimeGreaterThan(\DateTimeInterface $dateTime)
+    public function withTimeGreaterThan(\DateTimeInterface $dateTime): static
     {
         $slotList = clone $this;
         $referenceTime = $dateTime->getTimestamp() + 1800;
@@ -197,7 +199,7 @@ class SlotList extends Base
         $slotType,
         $requests,
         $slotsRequired
-    ) {
+    ): ProcessList {
         $processList = new ProcessList();
         foreach ($this as $slot) {
             if ($slotsRequired > 1 && $slot->type != Slot::REDUCED) {
@@ -229,7 +231,7 @@ class SlotList extends Base
         return $processList;
     }
 
-    public function withReducedSlots($slotsRequired)
+    public function withReducedSlots($slotsRequired): static
     {
         $slotList = clone $this;
         if ($slotsRequired > 1) {
