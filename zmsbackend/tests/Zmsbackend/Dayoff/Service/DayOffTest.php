@@ -45,7 +45,7 @@ class DayOffTest extends \BO\Zmsbackend\Tests\Service\Base
     public function testReadByDepartmentIdReturnsCommonDayoffsOnly()
     {
         $dayOffList = (new Dayoff())->readByDepartmentId('77');
-        $this->assertTrue($dayOffList->hasEntityByDay('2016-12-25'), "Common dayoff date 2016-12-25 not recognized.");
+        $this->assertTrue($dayOffList->hasEntityByDate('2016-12-25'), "Common dayoff date 2016-12-25 not recognized.");
         $this->assertNull($dayOffList->getEntityByName('Personalversammlung'));
     }
 }
