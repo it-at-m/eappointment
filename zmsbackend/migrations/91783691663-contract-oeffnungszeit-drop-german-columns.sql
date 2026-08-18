@@ -1,12 +1,12 @@
--- Contract phase: drop German twin columns and sync triggers on oeffnungszeit.
+-- Contract phase: drop German twin columns on oeffnungszeit.
 -- Run only after expand migration 91783691662 and deploy of code that
 -- reads/writes English column names only (PK OeffnungszeitID and table name unchanged).
 --
+-- No DROP TRIGGER: expand never creates triggers (SQLSTATE 1419 on managed MySQL
+-- with binary logging and no SUPER). DROP TRIGGER IF EXISTS fails with the same error.
+--
 -- Table rename oeffnungszeit → availability and PK OeffnungszeitID → availability_id
 -- are intentionally deferred to a follow-up expand/contract pair.
-
-DROP TRIGGER IF EXISTS `oeffnungszeit_english_bi`;
-DROP TRIGGER IF EXISTS `oeffnungszeit_english_bu`;
 
 ALTER TABLE `oeffnungszeit`
     DROP COLUMN IF EXISTS `StandortID`,
