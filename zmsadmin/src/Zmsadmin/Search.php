@@ -41,7 +41,6 @@ class Search extends BaseController
             $scopeIds
         );
         $logList = $this->readLogSearchResults($workstation, $parameters, $scopeIds);
-        [$processList, $processListOther] = $this->splitProcessListsByScope($workstation, $processList);
 
         return Render::withHtml(
             $response,
@@ -57,7 +56,6 @@ class Search extends BaseController
                 'perPage' => $parameters['perPage'],
                 'workstation' => $workstation,
                 'processList' => $processList,
-                'processListOther' => $processListOther,
                 'logList' => $logList ?? [],
                 'searchProcessQuery' => $parameters['queryString'],
                 'processSearchTotal' => $processSearchTotal,
@@ -207,18 +205,6 @@ class Search extends BaseController
             $scopeIds,
             $workstation->getUseraccount()->isSuperUser()
         );
-    }
-
-    private function splitProcessListsByScope($workstation, ?ProcessList $processList): array
-    {
-        $processList = $processList ?? new ProcessList();
-        $processListOther = new ProcessList();
-        if (!$workstation->getUseraccount()->isSuperUser()) {
-            $processListOther = $processList->withOutScopeId($workstation->scope['id']);
-            $processList = $processList->withScopeId($workstation->scope['id']);
-        }
-
-        return [$processList, $processListOther];
     }
 
     private function filterProcessListForUserRights(?ProcessList $processList, array $scopeIds): ProcessList
