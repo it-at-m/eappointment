@@ -33,6 +33,9 @@ class ScopeAvailabilityDay extends BaseController
         $data['title'] = 'Behörden und Standorte - Öffnungszeiten';
         $data['menuActive'] = 'owner';
         $data['workstation'] = $workstation;
+        $data['canViewAvailabilityHistory'] = ScopeAvailabilityHistory::canViewAvailabilityHistory(
+            $workstation->getUseraccount()
+        );
         return Render::withHtml(
             $response,
             'page/availabilityday.twig',

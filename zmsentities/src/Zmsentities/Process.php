@@ -557,7 +557,9 @@ class Process extends Schema\Entity
             }
         }
 
-        unset($entity['createTimestamp']);
+        if (!in_array('createTimestamp', $keepArray)) {
+            unset($entity['createTimestamp']);
+        }
         unset($entity['createIP']);
         if ($entity->toProperty()->scope->status->isAvailable()) {
             unset($entity['scope']['status']);
