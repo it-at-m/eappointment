@@ -2,6 +2,8 @@
 
 namespace BO\Zmsbackend\Tests\Process\Api;
 
+use BO\Zmsbackend\ProcessSearchHistory\Service\ProcessSearchHistory as HistoryService;
+
 class ProcessFinishedTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ProcessFinished";
@@ -14,6 +16,7 @@ class ProcessFinishedTest extends \BO\Zmsbackend\Tests\Api\Base
 
         $process = json_decode($this->readFixture("GetProcess_10030.json"));
         $process->status = 'finished';
+        $process->clients[0]->telephone = '08912345678';
         $response = $this->render([], [
             '__body' => json_encode($process)
         ], []);
@@ -23,6 +26,16 @@ class ProcessFinishedTest extends \BO\Zmsbackend\Tests\Api\Base
 
         $entity = (new \BO\Zmsbackend\Process\Service\Process)->readEntity($process->id, new \BO\Zmsbackend\Helper\NoAuth);
         $this->assertEquals('blocked', $entity->status);
+
+        $historyEntry = $this->readHistoryEntry((int) $process->id);
+
+        $this->assertIsArray($historyEntry);
+        $this->assertSame((int) $process->id, (int) $historyEntry['process_id']);
+        $this->assertSame(HistoryService::STATUS_COMPLETED, $historyEntry['status']);
+        $this->assertSame(\App::$now->format('Y-m-d H:i:s'), $historyEntry['finalized_at']);
+        $this->assertSame('08912345678', $historyEntry['telephone']);
+
+        return $response;
     }
 
     public function testRenderingPending()
@@ -42,6 +55,8 @@ class ProcessFinishedTest extends \BO\Zmsbackend\Tests\Api\Base
 
         $entity = (new \BO\Zmsbackend\Process\Service\Process)->readEntity($process->id, new \BO\Zmsbackend\Helper\NoAuth);
         $this->assertEquals('pending', $entity->status);
+
+        $this->assertSame(0, $this->countHistoryEntries((int) $process->id));
     }
 
     public function testUnvalidCredentials()
@@ -118,5 +133,39 @@ class ProcessFinishedTest extends \BO\Zmsbackend\Tests\Api\Base
                 "amendment": "Beispiel Termin"
             }'
         ], []);
+    }
+
+    private function readHistoryEntry(int $processId)
+    {
+        return (new HistoryService())->fetchRow(
+            '
+                SELECT
+                    `process_id`,
+                    `status`,
+                    `finalized_at`,
+                    `telephone`
+                FROM `process_search_history`
+                WHERE `process_id` = :processId
+                ORDER BY `id` DESC
+                LIMIT 1
+            ',
+            [
+                'processId' => $processId,
+            ]
+        );
+    }
+
+    private function countHistoryEntries(int $processId): int
+    {
+        return (int) (new HistoryService())->fetchValue(
+            '
+                SELECT COUNT(*)
+                FROM `process_search_history`
+                WHERE `process_id` = :processId
+            ',
+            [
+                'processId' => $processId,
+            ]
+        );
     }
 }

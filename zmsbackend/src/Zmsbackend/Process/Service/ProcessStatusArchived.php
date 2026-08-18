@@ -125,7 +125,8 @@ class ProcessStatusArchived extends Process
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now,
         bool $calculateStatistic = false,
-        ?\BO\Zmsentities\Useraccount $useraccount = null
+        ?\BO\Zmsentities\Useraccount $useraccount = null,
+        ?string $historyStatus = null
     ) {
         if ($process->isDereferenced() || !$process->getScopeId()) {
             return null;
@@ -138,6 +139,19 @@ class ProcessStatusArchived extends Process
             null,
             $useraccount
         );
+
+        if ($historyStatus !== null) {
+            $historyService = new \BO\Zmsbackend\ProcessSearchHistory\Service\ProcessSearchHistory(
+                $this->getWriter(),
+                $this->getReader()
+            );
+
+            $historyService->writeHistoryEntry(
+                $process,
+                $historyStatus,
+                $now
+            );
+        }
         $archived = null;
         if ($this->writeBlockedEntity($process)) {
             $archived = $this->writeNewArchivedProcess($process, $now, 0, $calculateStatistic);
