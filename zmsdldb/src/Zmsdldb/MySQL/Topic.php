@@ -11,13 +11,11 @@ use BO\Zmsdldb\MySQL\Entity\Topic as Entity;
 use BO\Zmsdldb\MySQL\Collection\Topics as Collection;
 use BO\Zmsdldb\Elastic\Topic as Base;
 
-/**
-  *
-  */
+/** @psalm-api */
 class Topic extends Base
 {
     #[\Override]
-    public function fetchList()
+    public function fetchList(): Collection
     {
         try {
             $sqlArgs = [$this->locale];
@@ -27,8 +25,8 @@ class Topic extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($topiclist) {
-                $topic = new \BO\Zmsdldb\MySQL\Entity\Topic();
+            $stm->fetchAll(\PDO::FETCH_FUNC, function (?string $data_json) use ($topiclist): void {
+                $topic = new Entity();
                 $topic->offsetSet('data_json', $data_json);
 
                 $topiclist[$topic['id']] = $topic;
@@ -42,24 +40,24 @@ class Topic extends Base
 
     /**
      *
-     * @return Entity
+     * @return Entity|false
      */
     #[\Override]
-    public function fetchPath($topic_path)
+    public function fetchPath($topic_path): Entity|false
     {
         try {
-            $sqlArgs = [$this->locale, (string)$topic_path];
+            $sqlArgs = [$this->locale, $topic_path];
             $sql = 'SELECT data_json FROM topic WHERE locale = ? AND path = ?';
 
             $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\\BO\\Zmsdldb\\MySQL\\Entity\\Topic');
+            $stm->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, Entity::class);
             $stm->execute($sqlArgs);
 
-            if (!$stm || ($stm && $stm->rowCount() == 0)) {
+            if ($stm->rowCount() === 0) {
                 return false;
             }
             $topic = $stm->fetch();
-            return $topic;
+            return $topic instanceof Entity ? $topic : false;
         } catch (\Exception $e) {
             throw $e;
         }
@@ -67,31 +65,31 @@ class Topic extends Base
 
     /**
      *
-     * @return Entity
+     * @return Entity|false
      */
     #[\Override]
-    public function fetchId($itemId)
+    public function fetchId(mixed $itemId): Entity|false
     {
         try {
             $sqlArgs = [$this->locale, (int)$itemId];
             $sql = 'SELECT data_json FROM topic WHERE locale = ? AND id = ?';
 
             $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\\BO\\Zmsdldb\\MySQL\\Entity\\Topic');
+            $stm->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, Entity::class);
             $stm->execute($sqlArgs);
 
-            if (!$stm || ($stm && $stm->rowCount() == 0)) {
+            if ($stm->rowCount() === 0) {
                 return false;
             }
             $topic = $stm->fetch();
-            return $topic;
+            return $topic instanceof Entity ? $topic : false;
         } catch (\Exception $e) {
             throw $e;
         }
     }
 
     #[\Override]
-    public function readSearchResultList($querystring)
+    public function readSearchResultList($querystring): Collection
     {
         try {
             #$querystring = '+' . implode(' +', explode(' ', $querystring));
@@ -117,8 +115,8 @@ class Topic extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($topiclist) {
-                $topic = new \BO\Zmsdldb\MySQL\Entity\Topic();
+            $stm->fetchAll(\PDO::FETCH_FUNC, function (?string $data_json) use ($topiclist): void {
+                $topic = new Entity();
                 $topic->offsetSet('data_json', $data_json);
 
                 $topiclist[$topic['id']] = $topic;

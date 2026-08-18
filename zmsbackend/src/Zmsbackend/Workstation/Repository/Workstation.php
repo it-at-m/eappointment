@@ -11,7 +11,7 @@ class Workstation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'nutzer';
+    const string TABLE = 'nutzer';
 
     const QUERY_LOGIN = '
         UPDATE
@@ -88,17 +88,24 @@ class Workstation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
             `Passworthash` = ?
     ';
 
+    /**
+     * @return void
+     */
     #[\Override]
     protected function addRequiredJoins()
     {
     }
 
-    public function getLockWorkstationId()
+    public function getLockWorkstationId(): string
     {
         return 'SELECT * FROM `' . self::getTablename() . '` A
             WHERE A.`NutzerID` = :workstationId FOR UPDATE';
     }
 
+    /**
+     * @return string[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -128,7 +135,7 @@ class Workstation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $joins;
     }
 
-    public function addJoinScope()
+    public function addJoinScope(): \BO\Zmsbackend\Query\Scope
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias(\BO\Zmsbackend\Query\Scope::TABLE, 'scope'),
@@ -141,7 +148,7 @@ class Workstation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
     }
 
 
-    public function addJoinUseraccount()
+    public function addJoinUseraccount(): \BO\Zmsbackend\Useraccount\Repository\Useraccount
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias(\BO\Zmsbackend\Useraccount\Repository\Useraccount::TABLE, 'useraccount'),
@@ -153,43 +160,52 @@ class Workstation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $joinQuery;
     }
 
-    public function addConditionLoginName($loginName)
+    public function addConditionLoginName($loginName): static
     {
         $this->query->where('workstation.Name', '=', $loginName);
         return $this;
     }
 
-    public function addConditionWorkstationName($workstationName)
+    /**
+     * @psalm-api
+     */
+    public function addConditionWorkstationName($workstationName): static
     {
         $this->query->where('workstation.Arbeitsplatznr', '=', $workstationName);
         return $this;
     }
 
-    public function addConditionWorkstationIsNotCounter()
+    /**
+     * @psalm-api
+     */
+    public function addConditionWorkstationIsNotCounter(): static
     {
         $this->query->where('workstation.Arbeitsplatznr', '>', 0);
         return $this;
     }
 
-    public function addConditionWorkstationId($workstationId)
+    public function addConditionWorkstationId($workstationId): static
     {
         $this->query->where('workstation.NutzerID', '=', $workstationId);
         return $this;
     }
 
-    public function addConditionScopeId($scopeId)
+    public function addConditionScopeId($scopeId): static
     {
         $this->query->where('workstation.StandortID', '=', $scopeId);
         return $this;
     }
 
-    public function addConditionTime($now)
+    /**
+     * @psalm-api
+     */
+    public function addConditionTime($now): static
     {
         $this->query->where('workstation.Datum', '=', $now->format('Y-m-d'));
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId)
+    public function addConditionDepartmentId($departmentId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias(\BO\Zmsbackend\Useraccount\Repository\Useraccount::TABLE_ASSIGNMENT, 'workstation_department'),
@@ -201,7 +217,7 @@ class Workstation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Workstation $entity)
+    public function reverseEntityMapping(\BO\Zmsentities\Workstation $entity): array
     {
         $data = array();
         if ((isset($entity['hint']) && '' == $entity['hint']) || ! isset($entity['hint'])) {

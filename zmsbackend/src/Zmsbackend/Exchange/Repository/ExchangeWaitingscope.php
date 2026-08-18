@@ -7,9 +7,9 @@ class ExchangeWaitingscope extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'wartenrstatistik';
+    const string TABLE = 'wartenrstatistik';
 
-    const WAITING_VALUES = "
+    const string WAITING_VALUES = "
         AVG(hour_00_waiting_time_spontaneous) as hour_00_waiting_time_spontaneous,
         AVG(hour_01_waiting_time_spontaneous) as hour_01_waiting_time_spontaneous,
         AVG(hour_02_waiting_time_spontaneous) as hour_02_waiting_time_spontaneous,
@@ -289,7 +289,7 @@ class ExchangeWaitingscope extends \BO\Zmsbackend\Query\Base
      * For backward compatibility on db table optimization, we have to convert the field name
      * Drawback: No prepared statement using the date
      */
-    public static function getQuerySelectByDateTime(\DateTimeInterface $date, bool $withAppointment = false)
+    public static function getQuerySelectByDateTime(\DateTimeInterface $date, bool $withAppointment = false): string
     {
         $hourSuffix = $withAppointment ? 'appointment' : 'spontaneous';
 
@@ -321,7 +321,7 @@ class ExchangeWaitingscope extends \BO\Zmsbackend\Query\Base
      * For backward compatibility on db table optimization, we have to convert the field name
      * Drawback: No prepared statement using the date
      */
-    public static function getQueryUpdateByDateTime(\DateTimeInterface $date, bool $withAppointment = false)
+    public static function getQueryUpdateByDateTime(\DateTimeInterface $date, bool $withAppointment = false): string
     {
         $hourSuffix = $withAppointment ? 'appointment' : 'spontaneous';
 

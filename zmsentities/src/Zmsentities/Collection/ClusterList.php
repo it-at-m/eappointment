@@ -7,9 +7,9 @@ namespace BO\Zmsentities\Collection;
  */
 class ClusterList extends Base
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Cluster';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Cluster';
 
-    public function hasScope($scopeId)
+    public function hasScope($scopeId): bool
     {
         foreach ($this as $entity) {
             foreach ($entity['scopes'] as $scope) {
@@ -22,7 +22,7 @@ class ClusterList extends Base
         return false;
     }
 
-    public function withUniqueClusters()
+    public function withUniqueClusters(): self
     {
         $clusterList = new self();
         foreach ($this as $cluster) {
@@ -33,6 +33,9 @@ class ClusterList extends Base
         return $clusterList;
     }
 
+    /**
+     * @return static
+     */
     #[\Override]
     public function sortByName()
     {

@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class Location extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'id' => 'id',
         'name' => 'name',
         'category.name' => 'category_name',
@@ -26,11 +26,11 @@ class Location extends Base
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     #[\Override]
-    protected function setupMapping()
+    protected function setupMapping(): void
     {
         $this->referanceMapping = [
             'name' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale',
@@ -53,7 +53,7 @@ class Location extends Base
                 'selfAsArray' => true
             ],
             'address' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale',
@@ -76,7 +76,7 @@ class Location extends Base
                 'selfAsArray' => true
             ],
             'meta.keywords' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale',
@@ -99,7 +99,7 @@ class Location extends Base
                 'selfAsArray' => true
             ],
             'meta' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Meta',
+                'class' => Meta::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale'
@@ -116,7 +116,7 @@ class Location extends Base
                 'clearFields' => ['type' => static::getTableName(), 'locale' => $this->get('meta.locale')],
             ],
             'contact' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Contact',
+                'class' => Contact::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale',
@@ -136,7 +136,7 @@ class Location extends Base
     }
 
     #[\Override]
-    public function preSetupFields()
+    public function preSetupFields(): void
     {
         #$this->dataRaw['payment'] = [
         #    'payment_info' => $this->dataRaw['payment'],
@@ -150,13 +150,11 @@ class Location extends Base
     }
 
     #[\Override]
-    public function preSetup()
+    public function preSetup(): void
     {
         try {
-            $fields = $this->get(['id', 'meta.locale', 'meta.hash']);
-            $fields[] = static::getTableName();
             $this->setStatus(static::STATUS_OLD);
-            if ($this->itemNeedsUpdate(...array_values($fields))) {
+            if ($this->entityNeedsUpdate()) {
                 $this->setStatus(static::STATUS_NEW);
                 $this->setupFields();
                 $this->deleteEntity();
@@ -168,10 +166,10 @@ class Location extends Base
     }
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(['id', 'locale'], array_values($this->get(['id', 'meta.locale'])))
             );
         } catch (\Exception $e) {
@@ -180,10 +178,10 @@ class Location extends Base
     }
 
     #[\Override]
-    public function clearEntity(array $addWhere = []): bool
+    public function clearEntity(array $addWhere = []): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 ['locale' => $this->get('meta.locale')]
             );
         } catch (\Exception $e) {

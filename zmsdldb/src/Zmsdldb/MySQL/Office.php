@@ -14,28 +14,40 @@ use BO\Zmsdldb\Elastic\Office as Base;
 /**
   *
   */
+/** @psalm-api */
 class Office extends Base
 {
-    protected static $officeList = [];
+    protected static Collection|array $officeList = [];
 
     #[\Override]
-    protected function parseData($data)
+    protected function parseData(mixed $data): Collection
     {
         return $this->getItemList();
     }
 
     #[\Override]
-    public function getItemList()
+    public function getItemList(): Collection
     {
         try {
-            if (empty(static::$officeList)) {
+            if (!static::$officeList instanceof Collection) {
                 $officeListJson = $this->access()->fromSetting()->fetchName('office');
-                $officeList = json_decode($officeListJson, true);
+                $officeList = is_string($officeListJson) ? json_decode($officeListJson, true) : [];
+                if (!is_array($officeList)) {
+                    $officeList = [];
+                }
 
                 static::$officeList = new Collection();
                 foreach ($officeList as $item) {
-                    static::$officeList[$item['path']] = new Entity($item);
-                    static::$officeList[$item['plural']] = static::$officeList[$item['path']];
+                    if (!is_array($item)) {
+                        continue;
+                    }
+                    $office = new Entity($item);
+                    if (isset($item['path'])) {
+                        static::$officeList[$item['path']] = $office;
+                    }
+                    if (isset($item['plural'])) {
+                        static::$officeList[$item['plural']] = $office;
+                    }
                 }
                 #echo '<pre>' . htmlspecialchars(print_r((static::$officeList),1)) . '</pre>';exit;
             }
@@ -46,20 +58,21 @@ class Office extends Base
     }
 
     #[\Override]
-    public function fetchList()
+    public function fetchList(): Collection
     {
         return $this->getItemList();
     }
 
     #[\Override]
-    public function fetchId($itemId)
+    public function fetchId(mixed $itemId): Entity|false
     {
         $list = $this->fetchList();
-        return $list[$itemId] ?? false;
+        $office = $list[$itemId] ?? false;
+        return $office instanceof Entity ? $office : false;
     }
 
     #[\Override]
-    public function fetchPath($itemId)
+    public function fetchPath(mixed $itemId): Entity|false
     {
         return $this->fetchId($itemId);
     }

@@ -14,6 +14,7 @@ use BO\Zmsbackend\Process\Service\Process as Query;
 use BO\Zmsbackend\Process\Service\ProcessStatusQueued;
 use BO\Zmsbackend\Workstation\Service\Workstation;
 use BO\Zmsentities\Collection\RequestList;
+use BO\Zmsbackend\ProcessSearchHistory\Service\ProcessSearchHistory as HistoryService;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -39,7 +40,7 @@ class ProcessRedirect extends \BO\Zmsbackend\Api\BaseController
         $process->status = 'finished';
         $process = (new Query())->updateEntity($process, \App::$now, 0, 'processing', $workstation->getUseraccount());
         (new \BO\Zmsbackend\Workstation\Service\Workstation())->writeRemovedProcess($workstation);
-        $processStatusArchived->writeEntityFinished($process, \App::$now, false);
+        $processStatusArchived->writeEntityFinished($process, \App::$now, false, $workstation->getUseraccount(), HistoryService::STATUS_COMPLETED);
         $newProcess->displayNumber = $process->displayNumber;
         $newProcess = (new \BO\Zmsbackend\Process\Service\Process())->redirectToScope($newProcess, $process->scope, $process->queue['number'] ?? $process->id, $workstation->getUseraccount());
         \App::$log->info('Process redirected', [
@@ -53,6 +54,9 @@ class ProcessRedirect extends \BO\Zmsbackend\Api\BaseController
         return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
     }
 
+    /**
+     * @return void
+     */
     protected function testProcessData($entity)
     {
         $entity->testValid();
@@ -64,6 +68,9 @@ class ProcessRedirect extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
+    /**
+     * @return void
+     */
     protected function testProcessAccess($workstation, $process)
     {
         $cluster = (new \BO\Zmsbackend\Cluster\Service\Cluster())->readByScopeId($workstation->scope['id'], 1);
@@ -77,7 +84,7 @@ class ProcessRedirect extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
-    protected function readValidProcess($workstation, $entity, $input)
+    protected function readValidProcess($workstation, \BO\Zmsentities\Process $entity, $input)
     {
         if ($entity->hasProcessCredentials()) {
             $this->testProcessData($entity);

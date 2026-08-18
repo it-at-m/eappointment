@@ -16,9 +16,9 @@ use BO\Zmsentities\Process;
  */
 class ProcessList extends Base
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Process';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Process';
 
-    public function toProcessListByTime($format = null)
+    public function toProcessListByTime(string|null $format = null): self
     {
         $list = new self();
         foreach ($this as $process) {
@@ -32,7 +32,7 @@ class ProcessList extends Base
         return $list;
     }
 
-    public function withRequest($requestId)
+    public function withRequest($requestId): self
     {
         $list = new self();
         foreach ($this as $process) {
@@ -43,7 +43,7 @@ class ProcessList extends Base
         return $list;
     }
 
-    public function sortByScopeName()
+    public function sortByScopeName(): static
     {
         $this->uasort(function ($a, $b) {
             return strcmp(
@@ -54,7 +54,7 @@ class ProcessList extends Base
         return $this;
     }
 
-    public function sortByAppointmentDate()
+    public function sortByAppointmentDate(): static
     {
         $this->uasort(function ($a, $b) {
             return ($a->getFirstAppointment()->date - $b->getFirstAppointment()->date);
@@ -62,7 +62,7 @@ class ProcessList extends Base
         return $this;
     }
 
-    public function sortByArrivalTime()
+    public function sortByArrivalTime(): static
     {
         $this->uasort(function ($a, $b) {
             return ($a->queue['arrivalTime'] - $b->queue['arrivalTime']);
@@ -70,7 +70,7 @@ class ProcessList extends Base
         return $this;
     }
 
-    public function sortByEstimatedWaitingTime()
+    public function sortByEstimatedWaitingTime(): static
     {
         $this->uasort(function ($a, $b) {
             return ($a->queue['waitingTimeEstimate'] - $b->queue['waitingTimeEstimate']);
@@ -78,7 +78,7 @@ class ProcessList extends Base
         return $this;
     }
 
-    public function sortByClientName()
+    public function sortByClientName(): static
     {
         $this->uasort(function ($a, $b) {
             return strcmp(
@@ -89,7 +89,7 @@ class ProcessList extends Base
         return $this;
     }
 
-    public function sortByTimeKey()
+    public function sortByTimeKey(): static
     {
         $this->uksort(function ($a, $b) {
             return ($a - $b);
@@ -97,7 +97,7 @@ class ProcessList extends Base
         return $this;
     }
 
-    public function toProcessListByStatusList(array $statusList)
+    public function toProcessListByStatusList(array $statusList): self
     {
         $collection = new self();
         foreach ($this as $process) {
@@ -108,7 +108,11 @@ class ProcessList extends Base
         return $collection;
     }
 
-    public function toConflictListByDay()
+    /**
+     * @return ((mixed|null)[][]|mixed)[][][]
+     *
+     */
+    public function toConflictListByDay(): array
     {
         $list = [];
         $oldList = clone $this;
@@ -158,7 +162,7 @@ class ProcessList extends Base
         return $list->withUniqueRequests();
     }
 
-    public function getAppointmentList()
+    public function getAppointmentList(): AppointmentList
     {
         $appointmentList = new AppointmentList();
         foreach ($this as $process) {
@@ -171,7 +175,7 @@ class ProcessList extends Base
         return $appointmentList;
     }
 
-    public function setTempAppointmentToProcess($dateTime, $scopeId)
+    public function setTempAppointmentToProcess($dateTime, $scopeId): static
     {
         $addedAppointment = false;
         $appointment = (new \BO\Zmsentities\Appointment())->addDate($dateTime->getTimestamp())->addScope($scopeId);
@@ -190,7 +194,7 @@ class ProcessList extends Base
         return $this;
     }
 
-    public function toQueueList($now)
+    public function toQueueList($now): QueueList
     {
         $queueList = new QueueList();
         foreach ($this as $process) {
@@ -201,7 +205,7 @@ class ProcessList extends Base
         return $queueList;
     }
 
-    public function withAvailability(\BO\Zmsentities\Availability $availability)
+    public function withAvailability(\BO\Zmsentities\Availability $availability): static
     {
         $processList = new static();
         foreach ($this as $process) {
@@ -212,7 +216,7 @@ class ProcessList extends Base
         return $processList;
     }
 
-    public function withAvailabilityStrict(\BO\Zmsentities\Availability $availability)
+    public function withAvailabilityStrict(\BO\Zmsentities\Availability $availability): static
     {
         $processList = new static();
         $slotList = $availability->getSlotList();
@@ -224,7 +228,7 @@ class ProcessList extends Base
         return $processList;
     }
 
-    public function withDepartmentHasMailFrom()
+    public function withDepartmentHasMailFrom(): static
     {
         $processList = new static();
         foreach ($this as $process) {
@@ -238,7 +242,7 @@ class ProcessList extends Base
 
 
 
-    public function setConflictAmendment()
+    public function setConflictAmendment(): static
     {
         foreach ($this as $process) {
             $process->amendment = 'Die Slots für diesen Zeitraum wurden überbucht';
@@ -252,7 +256,7 @@ class ProcessList extends Base
         return $this;
     }
 
-    public function withOutAvailability(\BO\Zmsentities\Collection\AvailabilityList $availabilityList)
+    public function withOutAvailability(\BO\Zmsentities\Collection\AvailabilityList $availabilityList): static
     {
         $processList = new static();
         foreach ($this->toProcessListByTime('Y-m-d') as $processListByDate) {
@@ -274,7 +278,7 @@ class ProcessList extends Base
         return $processList;
     }
 
-    public function withUniqueScope($oncePerHour = false)
+    public function withUniqueScope($oncePerHour = false): static
     {
         $processList = new static();
         $scopeKeyList = [];
@@ -293,7 +297,7 @@ class ProcessList extends Base
         return $processList;
     }
 
-    public function withAccess(\BO\Zmsentities\Useraccount $useraccount)
+    public function withAccess(\BO\Zmsentities\Useraccount $useraccount): static
     {
         $list = new static();
         foreach ($this as $process) {
@@ -305,7 +309,7 @@ class ProcessList extends Base
         return $list;
     }
 
-    public function withScopeId($scopeId)
+    public function withScopeId($scopeId): static
     {
         $processList = new static();
         foreach ($this as $process) {
@@ -316,7 +320,7 @@ class ProcessList extends Base
         return $processList;
     }
 
-    public function withOutScopeId($scopeId)
+    public function withOutScopeId($scopeId): static
     {
         $processList = new static();
         foreach ($this as $process) {
@@ -327,7 +331,7 @@ class ProcessList extends Base
         return $processList;
     }
 
-    public function withOutProcessId($processId)
+    public function withOutProcessId($processId): static
     {
         $processList = new static();
         foreach ($this as $process) {
@@ -338,7 +342,7 @@ class ProcessList extends Base
         return $processList;
     }
 
-    public function withoutExpiredAppointmentDate(\DateTimeInterface $now)
+    public function withoutExpiredAppointmentDate(\DateTimeInterface $now): self
     {
         $conflictList = new self();
         foreach ($this as $process) {
@@ -349,7 +353,7 @@ class ProcessList extends Base
         return $conflictList;
     }
 
-    public function withinExactDate(\DateTimeInterface $now)
+    public function withinExactDate(\DateTimeInterface $now): self
     {
         $processList = new self();
         foreach ($this as $process) {
@@ -360,7 +364,7 @@ class ProcessList extends Base
         return $processList;
     }
 
-    public function withoutDublicatedConflicts()
+    public function withoutDublicatedConflicts(): self
     {
         $collection = new self();
         foreach ($this as $conflict) {
@@ -383,7 +387,7 @@ class ProcessList extends Base
         return $collection;
     }
 
-    public function withoutProcessByStatus($process, $status)
+    public function withoutProcessByStatus(Process $process, $status)
     {
         $collection = clone $this;
         $collection = (1 <= $collection->count() && ! Messaging::isEmptyProcessListAllowed($status)) ?
@@ -395,7 +399,7 @@ class ProcessList extends Base
     /*
     * reduce process list to items with appointment time in range of given appointment
     */
-    public function withTimeRangeByAppointment(\BO\Zmsentities\Appointment $appointment)
+    public function withTimeRangeByAppointment(\BO\Zmsentities\Appointment $appointment): self
     {
         $processList = new self();
         if ($this->count()) {

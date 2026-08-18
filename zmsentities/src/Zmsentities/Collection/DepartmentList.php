@@ -9,9 +9,9 @@ use BO\Zmsentities\Helper\Property;
  */
 class DepartmentList extends Base implements JsonUnindexed
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Department';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Department';
 
-    public function withOutClusterDuplicates()
+    public function withOutClusterDuplicates(): self
     {
         $departmentList = new self();
         foreach ($this as $department) {
@@ -55,7 +55,7 @@ class DepartmentList extends Base implements JsonUnindexed
         return $clusterList->withUniqueClusters();
     }
 
-    public function withAccess(\BO\Zmsentities\Useraccount $useraccount)
+    public function withAccess(\BO\Zmsentities\Useraccount $useraccount): static
     {
         $list = new static();
         foreach ($this as $department) {
@@ -69,7 +69,7 @@ class DepartmentList extends Base implements JsonUnindexed
         return $list;
     }
 
-    public function withMatchingScopes(ScopeList $scopeList)
+    public function withMatchingScopes(ScopeList $scopeList): static
     {
         $list = new static();
         foreach ($this as $department) {
@@ -88,6 +88,9 @@ class DepartmentList extends Base implements JsonUnindexed
         return $list;
     }
 
+    /**
+     * @return static
+     */
     #[\Override]
     public function sortByName()
     {
@@ -103,6 +106,10 @@ class DepartmentList extends Base implements JsonUnindexed
         return $this;
     }
 
+    /**
+     * @return array
+     *
+     */
     #[\Override]
     public function getIds()
     {

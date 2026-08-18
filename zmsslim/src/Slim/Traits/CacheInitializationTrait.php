@@ -23,14 +23,4 @@ trait CacheInitializationTrait
         static::$SOURCE_CACHE_TTL = $ttl;
         static::$cache = CacheBootstrap::create($cacheDir, $ttl);
     }
-
-    private static function validateCacheDirectory(): void
-    {
-        CacheBootstrap::validateDirectory(static::$CACHE_DIR);
-    }
-
-    private static function setupCache(): void
-    {
-        static::$cache = CacheBootstrap::create(static::$CACHE_DIR, static::$SOURCE_CACHE_TTL);
-    }
 }

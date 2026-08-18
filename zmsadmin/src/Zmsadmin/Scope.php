@@ -96,7 +96,7 @@ class Scope extends BaseController
         return $source;
     }
 
-    protected function writeUpdatedEntity($input, $entityId = null, Entity $existingScope = null, $workstation = null)
+    protected function writeUpdatedEntity(array $input, $entityId = null, Entity $existingScope = null, $workstation = null)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
         if ($workstation && !$workstation->getUseraccount()->hasPermissions(['scope'])) {
@@ -116,7 +116,7 @@ class Scope extends BaseController
         });
     }
 
-    protected function writeUploadedImage(\Psr\Http\Message\RequestInterface $request, $entityId, $input)
+    protected function writeUploadedImage(\Psr\Http\Message\RequestInterface $request, $entityId, array $input): void
     {
         if (isset($input['removeImage']) && $input['removeImage']) {
             \App::$http->readDeleteResult('/scope/' . $entityId . '/imagedata/calldisplay/');

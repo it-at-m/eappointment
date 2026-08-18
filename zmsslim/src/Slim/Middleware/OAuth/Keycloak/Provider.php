@@ -3,6 +3,7 @@
 namespace BO\Slim\Middleware\OAuth\Keycloak;
 
 use Stevenmaguire\OAuth2\Client\Provider\Keycloak;
+use BO\Zmsclient\OAuthService;
 use BO\Zmsclient\Psr7\Client;
 use League\OAuth2\Client\Token\AccessToken;
 use BO\Zmsentities\Useraccount;
@@ -10,19 +11,18 @@ use BO\Zmsentities\Useraccount;
 /**
  * @SuppressWarnings(PHPMD)
  */
-
 class Provider extends Keycloak
 {
-    const PROVIDERNAME = 'keycloak';
+    const string PROVIDERNAME = 'keycloak';
 
-    protected $oauthService;
+    protected OAuthService $oauthService;
 
-    public function __construct($client = null, ?\BO\Zmsclient\OAuthService $oauthService = null)
+    public function __construct(mixed $client = null, ?OAuthService $oauthService = null)
     {
-        $this->oauthService = $oauthService ?: new \BO\Zmsclient\OAuthService(\App::$http, \App::CONFIG_SECURE_TOKEN);
-        $client = ((null === $client)) ? new Client() : $client;
+        $this->oauthService = $oauthService ?? new OAuthService(\App::$http, \App::CONFIG_SECURE_TOKEN);
+        $client = $client ?? new Client();
         $options = $this->getOptionsFromJsonFile();
-        return parent::__construct($options, ['httpClient' => $client]);
+        parent::__construct($options, ['httpClient' => $client]);
     }
 
     #[\Override]
@@ -42,10 +42,14 @@ class Provider extends Keycloak
     {
         $resourceOwner = $this->getResourceOwner($token);
         $config = $this->oauthService->readConfig();
-        $ownerData['username'] = $resourceOwner->getName() . '@' . static::PROVIDERNAME;
+        $ownerData = [
+            'username' => ($resourceOwner->getName() ?? '') . '@' . static::PROVIDERNAME,
+        ];
         if (1 == $config->getPreference('oidc', 'onlyVerifiedMail')) {
             $email = $resourceOwner->getEmail();
-            if ($email && $resourceOwner->toArray()['email_verified'] ?? false) {
+            $ownerArray = $resourceOwner->toArray();
+            $emailVerified = $ownerArray['email_verified'] ?? false;
+            if (is_string($email) && $email !== '' && $emailVerified === true) {
                 $ownerData['email'] = $email;
             }
         } else {
@@ -56,30 +60,41 @@ class Provider extends Keycloak
 
     private function getOptionsFromJsonFile(): array
     {
-        $config_data = file_get_contents(\App::APP_PATH . '/' . static::PROVIDERNAME . '.json');
-        if (gettype($config_data) === 'string') {
-            $config_data = json_decode($config_data, true);
-        }
+        $configData = $this->readKeycloakConfig();
         $realmData = $this->getBasicOptionsFromJsonFile();
-        $realmData['clientSecret'] = $config_data['credentials']['secret'];
-        $realmData['authServerUrl'] = $config_data['auth-server-url'];
-        $realmData['verify'] = $config_data['ssl-verify'] ?? true;
+        $realmData['clientSecret'] = $configData['credentials']['secret'] ?? '';
+        $realmData['authServerUrl'] = $configData['auth-server-url'] ?? '';
+        $realmData['verify'] = $configData['ssl-verify'] ?? true;
         return $realmData;
     }
 
     public function getBasicOptionsFromJsonFile(): array
     {
-        $config_data = file_get_contents(\App::APP_PATH . '/' . static::PROVIDERNAME . '.json');
-        if (gettype($config_data) === 'string') {
-            $config_data = json_decode($config_data, true);
+        $configData = $this->readKeycloakConfig();
+        return [
+            'realm' => $configData['realm'] ?? '',
+            'clientId' => $configData['clientId'] ?? '',
+            'clientName' => $configData['clientName'] ?? '',
+            'redirectUri' => $configData['auth-redirect-url'] ?? '',
+            'logoutUri' => $configData['logout-redirect-url'] ?? '',
+            'version' => $configData['version'] ?? '',
+            'accessRole' => $configData['access-role'] ?? '',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function readKeycloakConfig(): array
+    {
+        $configJson = file_get_contents(\App::APP_PATH . '/' . static::PROVIDERNAME . '.json');
+        if (!is_string($configJson)) {
+            throw new \RuntimeException('Unable to read keycloak.json');
         }
-        $realmData['realm'] = $config_data['realm'];
-        $realmData['clientId'] = $config_data['clientId'];
-        $realmData['clientName'] = $config_data['clientName'];
-        $realmData['redirectUri'] = $config_data['auth-redirect-url'];
-        $realmData['logoutUri'] = $config_data['logout-redirect-url'];
-        $realmData['version'] = $config_data['version'];
-        $realmData['accessRole'] = $config_data['access-role'];
-        return $realmData;
+        $configData = json_decode($configJson, true);
+        if (!is_array($configData)) {
+            throw new \RuntimeException('Invalid keycloak.json');
+        }
+        return $configData;
     }
 }

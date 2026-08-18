@@ -44,7 +44,7 @@ class Validator
         $this->validationResult = $this->validator->validate($data, $schemaJson);
     }
 
-    private function loadSchemas()
+    private function loadSchemas(): void
     {
         $schemaPath = realpath(dirname(__FILE__) . '/../../../schema') . '/';
         $this->validator->resolver()->registerPrefix('schema://', $schemaPath);
@@ -80,7 +80,7 @@ class Validator
         return $errorsReducedList;
     }
 
-    private function extractErrors(OpisValidationError $error)
+    private function extractErrors(OpisValidationError $error): array
     {
         $errors = [];
         $message = $this->getCustomMessage($error);
@@ -127,7 +127,7 @@ class Validator
         return $error->message();
     }
 
-    public static function getOriginPointer(OpisValidationError $error)
+    public static function getOriginPointer(OpisValidationError $error): string
     {
         $dataInfo = $error->data();
 

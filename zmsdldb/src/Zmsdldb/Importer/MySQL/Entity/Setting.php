@@ -4,16 +4,16 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class Setting extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'name' => 'name',
         'value' => 'value',
     ];
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(['name'], array_values((array)$this->get('name')))
             );
         } catch (\Exception $e) {

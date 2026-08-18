@@ -4,8 +4,8 @@ namespace BO\Zmsentities\Tests;
 
 class ScopeTest extends EntityCommonTests
 {
-    const DEFAULT_TIME = '2016-04-01 11:50:00';
-    const LAST_GIVEN_NUMBER_TIME = '2015-11-19 10:25:59';
+    const string DEFAULT_TIME = '2016-04-01 11:50:00';
+    const string LAST_GIVEN_NUMBER_TIME = '2015-11-19 10:25:59';
 
     public $entityclass = '\BO\Zmsentities\Scope';
 

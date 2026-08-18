@@ -10,11 +10,15 @@ use BO\Zmsentities\Collection\ProcessList as Collection;
  */
 class ProcessStatusFree extends Process
 {
+    /**
+     * @return (\BO\Zmsbackend\Day\Service\Day|\BO\Zmsentities\Calendar|array)[]
+     *
+     */
     private function prepareCalendarAndDays(
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeInterface $now,
-        $slotsRequired = null
-    ) {
+        int|null $slotsRequired = null
+    ): array {
         $calendar = (new \BO\Zmsbackend\Calendar\Service\Calendar())->readResolvedEntity($calendar, $now, true);
         $dayquery = new \BO\Zmsbackend\Day\Service\Day();
         $dayquery->writeTemporaryScopeList($calendar, $slotsRequired);
@@ -99,9 +103,9 @@ class ProcessStatusFree extends Process
 
     private function getProcessDataHandle(
         array $days,
-        $slotType,
-        $slotsRequired,
-        $groupData,
+        string $slotType,
+        int|null $slotsRequired,
+        bool $groupData,
         bool $useAvailabilityQuery = false
     ) {
         $query = $useAvailabilityQuery
@@ -125,10 +129,10 @@ class ProcessStatusFree extends Process
     public function readFreeProcesses(
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeInterface $now,
-        $slotType = 'public',
-        $slotsRequired = null,
-        $groupData = false
-    ) {
+        string $slotType = 'public',
+        int|null $slotsRequired = null,
+        bool $groupData = false
+    ): Collection {
         list($calendar, $dayquery, $days) = $this->prepareCalendarAndDays($calendar, $now, $slotsRequired);
         $processData = $this->getProcessDataHandle($days, $slotType, $slotsRequired, $groupData);
         $processList = new Collection();
@@ -352,7 +356,7 @@ class ProcessStatusFree extends Process
         ];
     }
 
-    public function readReservedProcesses($resolveReferences = 2)
+    public function readReservedProcesses($resolveReferences = 2): Collection
     {
         $processList = new Collection();
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);

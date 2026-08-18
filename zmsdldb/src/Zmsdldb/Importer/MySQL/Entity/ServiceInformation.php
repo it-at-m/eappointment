@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class ServiceInformation extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'service_id' => 'service_id',
         'locale' => 'locale',
         'name' => 'name',
@@ -15,13 +15,13 @@ class ServiceInformation extends Base
     ];
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(
                     ['service_id', 'locale', 'type'],
-                    array_values($this->get('service_id', 'locale', 'type'))
+                    array_values($this->get(['service_id', 'locale', 'type']))
                 )
             );
         } catch (\Exception $e) {

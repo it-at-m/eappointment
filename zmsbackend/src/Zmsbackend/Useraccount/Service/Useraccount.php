@@ -14,9 +14,9 @@ use BO\Zmsentities\Collection\UseraccountList as Collection;
  */
 class Useraccount extends \BO\Zmsbackend\Base
 {
-    private const CACHE_VERSION_KEY = 'useraccountCacheVersion';
-    private const CACHE_INDEX_PREFIX = 'useraccountCacheIndex-';
-    private const CACHE_INDEX_GLOBAL = 'all';
+    private const string CACHE_VERSION_KEY = 'useraccountCacheVersion';
+    private const string CACHE_INDEX_PREFIX = 'useraccountCacheIndex-';
+    private const string CACHE_INDEX_GLOBAL = 'all';
 
     /**
      * Read or initialize the cache version for all useraccount-related cache entries.
@@ -234,13 +234,16 @@ class Useraccount extends \BO\Zmsbackend\Base
     /**
      * Sanitize cache key by replacing reserved characters
      * Reserved characters: {}()/\@:
+     *
+     * @return string|string[]
+     *
      */
-    protected function sanitizeCacheKey($key)
+    protected function sanitizeCacheKey(string $key): array|string
     {
         return str_replace(['{', '}', '(', ')', '/', '\\', '@', ':'], '_', $key);
     }
 
-    public function readIsUserExisting($loginName, $password = false)
+    public function readIsUserExisting($loginName, $password = false): bool
     {
         $query = new \BO\Zmsbackend\Useraccount\Repository\Useraccount(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -253,7 +256,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return ($useraccount->hasId()) ? true : false;
     }
 
-    public function readEntity($loginname, $resolveReferences = 1, $disableCache = false)
+    public function readEntity($loginname, int $resolveReferences = 1, bool $disableCache = false)
     {
         $version = $this->getUseraccountCacheVersion();
         $cacheKey = $this->sanitizeCacheKey("useraccount-v{$version}-$loginname-$resolveReferences");
@@ -298,9 +301,15 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $useraccount;
     }
 
+    /**
+     * @return Entity
+     */
     #[\Override]
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences): Entity
     {
+        if (!$entity instanceof Entity) {
+            throw new \InvalidArgumentException('Expected ' . Entity::class);
+        }
         if (0 < $resolveReferences && $entity->toProperty()->id->get()) {
             $entity->departments = $this->readAssignedDepartmentList($entity, $resolveReferences);
         }
@@ -376,7 +385,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $result;
     }
 
-    protected function readListStatement($statement, $resolveReferences)
+    protected function readListStatement($statement, $resolveReferences): Collection
     {
         $query = new \BO\Zmsbackend\Useraccount\Repository\Useraccount(\BO\Zmsbackend\Query\Base::SELECT);
         $collection = new Collection();
@@ -395,7 +404,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $collection;
     }
 
-    public function readAssignedDepartmentList($useraccount, $resolveReferences = 0)
+    public function readAssignedDepartmentList(Entity $useraccount, $resolveReferences = 0)
     {
         if ($useraccount->isSuperUser()) {
             $query = \BO\Zmsbackend\Useraccount\Repository\Useraccount::QUERY_READ_SUPERUSER_DEPARTMENTS;
@@ -407,7 +416,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $this->buildDepartmentList($departmentData, $resolveReferences);
     }
 
-    protected function readAssignedDepartmentListsForAll(Collection $useraccounts, $resolveReferences = 0)
+    protected function readAssignedDepartmentListsForAll(Collection $useraccounts, $resolveReferences = 0): array
     {
         if (count($useraccounts) === 0) {
             return [];
@@ -427,7 +436,11 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $result;
     }
 
-    protected function separateSuperusersFromRegularUsers(Collection $useraccounts)
+    /**
+     * @return array[]
+     *
+     */
+    protected function separateSuperusersFromRegularUsers(Collection $useraccounts): array
     {
         $superusers = [];
         $regularUsers = [];
@@ -441,7 +454,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return [$superusers, $regularUsers];
     }
 
-    protected function loadSuperuserDepartments(array $superusers, $resolveReferences = 0)
+    protected function loadSuperuserDepartments(array $superusers, $resolveReferences = 0): array
     {
         // Load all departments once - all superusers have access to all departments
             $query = \BO\Zmsbackend\Useraccount\Repository\Useraccount::QUERY_READ_SUPERUSER_DEPARTMENTS;
@@ -466,7 +479,11 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $this->buildDepartmentListsForUsers($regularUsers, $assignmentsByUser, $resolveReferences);
     }
 
-    protected function groupAssignmentsByUser(array $allAssignments)
+    /**
+     * @return array[]
+     *
+     */
+    protected function groupAssignmentsByUser(array $allAssignments): array
     {
         $assignmentsByUser = [];
         foreach ($allAssignments as $assignment) {
@@ -479,7 +496,11 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $assignmentsByUser;
     }
 
-    protected function buildDepartmentListsForUsers(array $useraccountNames, array $assignmentsByUser, $resolveReferences = 0)
+    /**
+     * @return \BO\Zmsentities\Collection\DepartmentList[]
+     *
+     */
+    protected function buildDepartmentListsForUsers(array $useraccountNames, array $assignmentsByUser, $resolveReferences = 0): array
     {
         // Collect ALL unique department IDs from all useraccounts
         $allDepartmentIds = [];
@@ -523,7 +544,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $result;
     }
 
-    protected function buildDepartmentList(array $items, $resolveReferences = 0)
+    protected function buildDepartmentList(array $items, $resolveReferences = 0): \BO\Zmsentities\Collection\DepartmentList
     {
         $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
 
@@ -548,7 +569,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $departmentList;
     }
 
-    public function readEntityByAuthKey($xAuthKey, $resolveReferences = 0)
+    public function readEntityByAuthKey(string $xAuthKey, $resolveReferences = 0)
     {
         $hashedAuthKey = hash('sha256', $xAuthKey);
         $query = new \BO\Zmsbackend\Useraccount\Repository\Useraccount(\BO\Zmsbackend\Query\Base::SELECT);
@@ -757,7 +778,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $this->readEntity($entity->getId(), $resolveReferences, true);
     }
 
-    public function deleteEntity($loginName)
+    public function deleteEntity($loginName): bool
     {
         // Read entity before deletion to get cache info
         $entity = $this->readEntity($loginName, 0, true);
@@ -775,7 +796,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $result;
     }
 
-    protected function updateAssignedDepartments($entity)
+    protected function updateAssignedDepartments(Entity $entity): void
     {
         $loginName = $entity->id;
         if (!$entity->isSuperUser()) {
@@ -807,7 +828,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $this->perform($query, [$userId]);
     }
 
-    protected function buildSearchCacheKey($prefix, $resolveReferences, $workstation, $queryString, array $departmentIds = [])
+    protected function buildSearchCacheKey(string $prefix, $resolveReferences, $workstation, $queryString, array $departmentIds = []): string
     {
         $version = $this->getUseraccountCacheVersion();
         $workstationKey = '';
@@ -818,7 +839,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return "{$prefix}-v{$version}{$departmentKey}-$resolveReferences$workstationKey-query-" . md5($queryString);
     }
 
-    protected function getCachedResult($cacheKey, $disableCache, $logMessage, array $logContext = [])
+    protected function getCachedResult($cacheKey, $disableCache, string $logMessage, array $logContext = [])
     {
         $result = null;
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
@@ -832,7 +853,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $result;
     }
 
-    protected function setCachedResult($cacheKey, $result, array $departmentIds, $logMessage, array $logContext = [])
+    protected function setCachedResult($cacheKey, $result, array $departmentIds, string $logMessage, array $logContext = []): void
     {
         if (App::$cache) {
             App::$cache->set($cacheKey, $result);
@@ -845,7 +866,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         }
     }
 
-    protected function executeSearchQuery(array $parameter, $resolveReferences, $workstation)
+    protected function executeSearchQuery(array $parameter, $resolveReferences, $workstation): Collection
     {
         $query = new \BO\Zmsbackend\Useraccount\Repository\Useraccount(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -886,7 +907,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $collection;
     }
 
-    protected function executeSearchByDepartmentIdsQuery(array $departmentIds, array $parameter, $resolveReferences, $workstation)
+    protected function executeSearchByDepartmentIdsQuery(array $departmentIds, array $parameter, $resolveReferences, $workstation): Collection
     {
         $query = new \BO\Zmsbackend\Useraccount\Repository\Useraccount(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addResolvedReferences($resolveReferences)
@@ -929,8 +950,9 @@ class Useraccount extends \BO\Zmsbackend\Base
 
     /**
      * @SuppressWarnings(NPathComplexity)
+     *
      */
-    public function readSearch(array $parameter, $resolveReferences = 0, $workstation = null, $disableCache = false)
+    public function readSearch(array $parameter, int $resolveReferences = 0, $workstation = null, $disableCache = false)
     {
         $queryString = isset($parameter['query']) ? $parameter['query'] : '';
         $cacheKey = $this->buildSearchCacheKey('useraccountReadSearch', $resolveReferences, $workstation, $queryString);
@@ -952,8 +974,9 @@ class Useraccount extends \BO\Zmsbackend\Base
 
     /**
      * @SuppressWarnings(NPathComplexity)
+     *
      */
-    public function readSearchByDepartmentIds(array $departmentIds, array $parameter, $resolveReferences = 0, $workstation = null, $disableCache = false)
+    public function readSearchByDepartmentIds(array $departmentIds, array $parameter, int $resolveReferences = 0, $workstation = null, $disableCache = false)
     {
         sort($departmentIds);
         $queryString = isset($parameter['query']) ? $parameter['query'] : '';
@@ -976,7 +999,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $result;
     }
 
-    public function readListRole($roleName, $resolveReferences = 0, $workstation = null)
+    public function readListRole($roleName, int $resolveReferences = 0, $workstation = null)
     {
         $version = $this->getUseraccountCacheVersion();
         $workstationKey = '';
@@ -1037,8 +1060,11 @@ class Useraccount extends \BO\Zmsbackend\Base
 
     /**
      * @SuppressWarnings(NPathComplexity)
+     *
+     * @param false $disableCache
+     *
      */
-    public function readListByRoleAndDepartmentIds($roleName, array $departmentIds, $resolveReferences = 0, $disableCache = false, $workstation = null)
+    public function readListByRoleAndDepartmentIds($roleName, array $departmentIds, int $resolveReferences = 0, bool $disableCache = false, $workstation = null)
     {
         sort($departmentIds);
         $version = $this->getUseraccountCacheVersion();
@@ -1103,7 +1129,10 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $result;
     }
 
-    public function removeCache($useraccount, array $previousDepartmentIds = [], ?string $oldLoginName = null)
+    /**
+     * @return void
+     */
+    public function removeCache(Entity $useraccount, array $previousDepartmentIds = [], ?string $oldLoginName = null)
     {
         if (!App::$cache) {
             return;

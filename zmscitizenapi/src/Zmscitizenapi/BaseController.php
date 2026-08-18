@@ -32,6 +32,7 @@ abstract class BaseController extends \BO\Slim\Controller
         }
     }
 
+    /** @psalm-api */
     protected function getExceptionContext(): string
     {
         $className = (new \ReflectionClass($this))->getShortName();

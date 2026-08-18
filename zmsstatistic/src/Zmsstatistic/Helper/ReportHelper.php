@@ -7,7 +7,7 @@ use DateTimeImmutable;
 
 class ReportHelper
 {
-    public static function withMaxAndAverage($entity, $targetKey)
+    public static function withMaxAndAverage($entity, string $targetKey)
     {
         foreach ($entity->data as $date => $dateItems) {
             $maxima = 0;

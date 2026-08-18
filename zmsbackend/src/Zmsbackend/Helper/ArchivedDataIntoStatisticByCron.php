@@ -72,7 +72,7 @@ class ArchivedDataIntoStatisticByCron
         return $this->archivedList;
     }
 
-    protected function logMessage($message, string $level = 'info')
+    protected function logMessage(string $message, string $level = 'info'): void
     {
         $this->writeVerboseCronLog($message, $level);
     }
@@ -84,9 +84,9 @@ class ArchivedDataIntoStatisticByCron
         $department,
         $organisation,
         $owner,
-        $dateTime,
+        \DateTimeImmutable|false $dateTime,
         bool $commit = false
-    ) {
+    ): void {
         $requestIds = (new \BO\Zmsbackend\Request\Service\Request())
             ->readRequestIdsByArchiveId($process->archiveId);
         $processingTime = null;

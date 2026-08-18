@@ -23,7 +23,7 @@ class TicketprinterDeleteByCron
         $this->scopeList = (new \BO\Zmsbackend\Scope\Service\Scope())->readList();
     }
 
-    public function startProcessing($commit)
+    public function startProcessing($commit): void
     {
         $ticketprinterList = (new \BO\Zmsbackend\Ticketprinter\Service\Ticketprinter())->readExpiredTicketprinterList($this->deleteDateTime);
         foreach ($ticketprinterList as $entity) {
@@ -36,7 +36,7 @@ class TicketprinterDeleteByCron
         }
     }
 
-    protected function deleteTicketpinter(\BO\Zmsentities\Ticketprinter $entity)
+    protected function deleteTicketpinter(\BO\Zmsentities\Ticketprinter $entity): void
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Service\Ticketprinter();
         if ($query->deleteEntity($entity->id) && $this->verbose) {

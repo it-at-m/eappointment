@@ -34,7 +34,11 @@ class Mail extends BaseController
         }
     }
 
-    public function initQueueTransmission($action = false)
+    /**
+     * @return (mixed|string[])[]
+     *
+     */
+    public function initQueueTransmission($action = false): array
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
@@ -111,7 +115,11 @@ class Mail extends BaseController
         return $resultList;
     }
 
-    public function sendQueueItems($action, array $itemIds)
+    /**
+     * @return ((array|mixed|null|string)[]|string)[]
+     *
+     */
+    public function sendQueueItems($action, array $itemIds): array
     {
         $endpoint = '/mails/';
         $params = [
@@ -256,7 +264,7 @@ class Mail extends BaseController
      * @SuppressWarnings("CyclomaticComplexity")
      * @SuppressWarnings("NPathComplexity")
      */
-    protected function readMailer(MailEntity $entity)
+    protected function readMailer(MailEntity $entity): PHPMailer
     {
         $this->testEntity($entity);
         $encoding = 'base64';
@@ -314,7 +322,11 @@ class Mail extends BaseController
         return $mailer;
     }
 
-    private function startProcess($command, $ids)
+    /**
+     * @return (mixed|resource|resource[])[]|null
+     *
+     */
+    private function startProcess(string $command, string $ids): array|null
     {
         $descriptorSpec = [
             0 => ["pipe", "r"], // stdin

@@ -273,6 +273,9 @@ use Slim\Routing\RouteCollectorProxy;
     $group->get('/{id:\d+}/availability/day/{date:\d\d\d\d-\d\d-\d\d}/conflicts/', \BO\Zmsadmin\ScopeAvailabilityDayConflicts::class)
         ->setName("scopeAvailabilityDayConflict");
 
+    $group->get('/{id:\d+}/availability/history/', \BO\Zmsadmin\ScopeAvailabilityHistory::class)
+        ->setName("scopeAvailabilityHistory");
+
     $group->get('/{id:\d+}/availability/month/[{date:\d\d\d\d-\d\d}/]', \BO\Zmsadmin\ScopeAvailabilityMonth::class)
         ->setName("scopeAvailabilityMonth");
 

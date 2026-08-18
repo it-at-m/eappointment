@@ -184,7 +184,10 @@ class Service extends Base
         return $serviceList;
     }
 
-    public function fetchServicesForCompilation($authoritys = [], $locations = [], $services = [])
+    /**
+     * @psalm-api
+     */
+    public function fetchServicesForCompilation($authoritys = [], $locations = [], $services = []): Collection
     {
         $limit = 1000;
 

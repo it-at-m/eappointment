@@ -4,10 +4,14 @@ namespace BO\Zmsentities;
 
 class Organisation extends Schema\Entity implements Useraccount\AccessInterface
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "organisation.json";
 
+    /**
+     * @return (Collection\DepartmentList|string)[]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -22,7 +26,7 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
         return $this->getDepartmentList()->hasEntity($departmentId);
     }
 
-    public function getDepartmentList()
+    public function getDepartmentList(): Collection\DepartmentList
     {
         if (!$this->departments instanceof Collection\DepartmentList) {
             $this->departments = new Collection\DepartmentList((array)$this->departments);
@@ -38,6 +42,9 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
         return $this->toProperty()->preferences->$index->get();
     }
 
+    /**
+     * @return bool
+     */
     #[\Override]
     public function hasAccess(Useraccount $useraccount)
     {
@@ -48,6 +55,7 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
     /**
      * Reduce data of dereferenced entities to a required minimum
      *
+     * @return static
      */
     #[\Override]
     public function withLessData(array $keepArray = [])
