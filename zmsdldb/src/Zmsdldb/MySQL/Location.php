@@ -14,10 +14,11 @@ use BO\Zmsdldb\Elastic\Location as Base;
 /**
  * @SuppressWarnings(Coupling)
  */
+/** @psalm-api */
 class Location extends Base
 {
     #[\Override]
-    public function fetchId($itemId)
+    public function fetchId(mixed $itemId): Entity|false
     {
         try {
             if ($itemId) {
@@ -25,13 +26,13 @@ class Location extends Base
                 $sql = 'SELECT data_json FROM location WHERE locale = ? AND id = ?';
 
                 $stm = $this->access()->prepare($sql);
-                $stm->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\\BO\\Zmsdldb\\MySQL\\Entity\\Location');
+                $stm->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, Entity::class);
                 $stm->execute($sqlArgs);
-                if (!$stm || ($stm && $stm->rowCount() == 0)) {
+                if ($stm->rowCount() === 0) {
                     return false;
                 }
-                $service = $stm->fetch();
-                return $service;
+                $location = $stm->fetch();
+                return $location instanceof Entity ? $location : false;
             }
             return false;
         } catch (\Exception $e) {
@@ -40,7 +41,7 @@ class Location extends Base
     }
 
     #[\Override]
-    public function fetchList($service_csv = false, $mixLanguages = false)
+    public function fetchList($service_csv = false, $mixLanguages = false): Collection
     {
         # COALESCE(l2.data_json, l.data_json) AS data_json
         # IF(l2.id, l2.data_json, l.data_json) AS data_json
@@ -61,7 +62,7 @@ class Location extends Base
                 ";
             }
 
-            if (!empty($service_csv)) {
+            if (is_string($service_csv) && $service_csv !== '') {
                 #$sqlArgs[] = $this->locale;
                 $ids = explode(',', $service_csv);
                 $questionMarks = array_fill(0, count($ids), '?');
@@ -79,7 +80,7 @@ class Location extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($locationList) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function (?string $data_json) use ($locationList): void {
                 $location = new \BO\Zmsdldb\MySQL\Entity\Location();
                 $location->offsetSet('data_json', $data_json);
 
@@ -93,7 +94,7 @@ class Location extends Base
     }
 
     #[\Override]
-    public function fetchListByOffice($office, $mixLanguages = false)
+    public function fetchListByOffice($office, $mixLanguages = false): Collection
     {
         try {
             $sqlArgs = [$this->locale];
@@ -122,7 +123,7 @@ class Location extends Base
             $locationList = new Collection();
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($locationList) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function (?string $data_json) use ($locationList): void {
                 $location = new \BO\Zmsdldb\MySQL\Entity\Location();
                 $location->offsetSet('data_json', $data_json);
 
@@ -140,7 +141,7 @@ class Location extends Base
      * @return Collection
      */
     #[\Override]
-    public function fetchFromCsv($location_csv, $mixLanguages = false)
+    public function fetchFromCsv($location_csv, $mixLanguages = false): Collection
     {
         try {
             $sqlArgs = [$this->locale];
@@ -168,7 +169,7 @@ class Location extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($locationList) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function (?string $data_json) use ($locationList): void {
                 $location = new \BO\Zmsdldb\MySQL\Entity\Location();
                 $location->offsetSet('data_json', $data_json);
 
@@ -182,7 +183,7 @@ class Location extends Base
     }
 
     #[\Override]
-    protected function fetchGeoJsonLocations($category, $getAll)
+    protected function fetchGeoJsonLocations($category, $getAll): Collection
     {
         try {
             $sqlArgs = [$this->locale, $this->locale, $this->locale];
@@ -198,7 +199,7 @@ class Location extends Base
                 meta AS m ON m.object_id = l.id AND m.locale = ?
             WHERE l.locale = ?';
 
-            if (!empty($category) && false === $getAll) {
+            if (is_string($category) && $category !== '' && false === $getAll) {
                 $sqlArgs[] = $category;
                 $sql .= ' AND category_identifier = ?';
             }
@@ -209,15 +210,15 @@ class Location extends Base
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
             $stm->fetchAll(\PDO::FETCH_FUNC, function (
-                $id,
-                $name,
-                $authority_name,
-                $category_json,
-                $contact_json,
-                $address_json,
-                $geo_json,
-                $meta__url
-            ) use ($locationList) {
+                mixed $id,
+                mixed $name,
+                mixed $authority_name,
+                mixed $category_json,
+                mixed $contact_json,
+                mixed $address_json,
+                mixed $geo_json,
+                mixed $meta__url
+            ) use ($locationList): void {
                 $location = new \BO\Zmsdldb\MySQL\Entity\Location();
                 $location->offsetSet('id', $id);
                 $location->offsetSet('name', $name);
@@ -241,7 +242,7 @@ class Location extends Base
      * @todo Refactoring required, functions in this class should return entities, not JSON data
      */
     #[\Override]
-    public function fetchGeoJson($category = null, $getAll = false)
+    public function fetchGeoJson($category = null, $getAll = false): array
     {
         $locationList = $this->fetchGeoJsonLocations($category, $getAll);
         $geoJson = [];
@@ -250,19 +251,19 @@ class Location extends Base
         //    $geoJson['category'] = $category;
         //}
         foreach ($locationList as $location) {
+            if (!$location instanceof Entity) {
+                continue;
+            }
             if (empty($location['category']['identifier'])) {
                 continue;
             }
             if (!isset($geoJson[$location['category']['identifier']])) {
-                $geoJson[$location['category']['identifier']] = [
+                $identifier = $location['category']['identifier'];
+                $hasCategoryFilter = is_string($category) && $category !== '';
+                $geoJson[$identifier] = [
                     'name' => $location['category']['name'],
                     'type' => 'cluster',
-                    'active' => (
-                        !empty($category)
-                        && $category == $location['category']['identifier'] ? true : (
-                            !empty($category) && $category != $location['category']['identifier'] ? false : true
-                        )
-                    ),
+                    'active' => !$hasCategoryFilter || $category === $identifier,
                     'data' => ['type' => 'FeatureCollection', 'features' => []]
                 ];
             }
@@ -272,7 +273,7 @@ class Location extends Base
     }
 
     #[\Override]
-    public function readSearchResultList($query, $service_csv = null)
+    public function readSearchResultList($query, $service_csv = null): Collection
     {
         try {
             #$query = '+' . implode(' +', explode(' ', $query));
@@ -298,7 +299,7 @@ class Location extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($locationList) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function (?string $data_json) use ($locationList): void {
                 $location = new \BO\Zmsdldb\MySQL\Entity\Location();
                 $location->offsetSet('data_json', $data_json);
 
@@ -312,7 +313,7 @@ class Location extends Base
     }
 
     #[\Override]
-    public function fetchLocationsForCompilation($authoritys = [], $locations = [])
+    public function fetchLocationsForCompilation($authoritys = [], $locations = []): Collection
     {
         try {
             $sqlArgs = [$this->locale];
@@ -337,7 +338,7 @@ class Location extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($locationList) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function (?string $data_json) use ($locationList): void {
                 $location = new \BO\Zmsdldb\MySQL\Entity\Location();
                 $location->offsetSet('data_json', $data_json);
 

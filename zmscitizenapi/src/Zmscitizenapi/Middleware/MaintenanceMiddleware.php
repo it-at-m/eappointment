@@ -12,8 +12,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class MaintenanceMiddleware implements MiddlewareInterface
 {
-    private const HTTP_UNAVAILABLE = 503;
-    private const ERROR_UNAVAILABLE = 'serviceUnavailable';
+    private const int HTTP_UNAVAILABLE = 503;
+    private const string ERROR_UNAVAILABLE = 'serviceUnavailable';
     #[\Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

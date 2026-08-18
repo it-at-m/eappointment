@@ -11,7 +11,7 @@ class Status extends \BO\Zmsbackend\Base
      *
      * @return \BO\Zmsentities\Status
      */
-    public function readEntity(\DateTimeImmutable $now, $includeProcessStats = true)
+    public function readEntity(\DateTimeImmutable $now, bool $includeProcessStats = true)
     {
         $entity = new Entity();
         $configVariables = $this->readConfigVariables();
@@ -113,7 +113,7 @@ class Status extends \BO\Zmsbackend\Base
      *
      * @return string
      */
-    public function getConfigProblems($configVariables)
+    public function getConfigProblems(array $configVariables)
     {
         $problems = [];
         if ($configVariables['tmp_table_size'] < 32000000) {
@@ -146,10 +146,10 @@ class Status extends \BO\Zmsbackend\Base
     protected function readOutdatedSlots()
     {
         $stats = $this->getReader()->fetchOne(
-            'SELECT COUNT(*) cnt, MIN(a.updateTimestamp) oldest
-             FROM slot s 
+            'SELECT COUNT(*) cnt, MIN(a.updated_at) oldest
+             FROM slot s
              LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
-             WHERE s.updateTimestamp < a.updateTimestamp AND s.status = "free"'
+             WHERE s.updateTimestamp < a.updated_at AND s.status = "free"'
         );
         return $stats;
     }

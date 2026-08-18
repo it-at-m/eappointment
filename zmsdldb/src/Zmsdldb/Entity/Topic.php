@@ -12,7 +12,7 @@ namespace BO\Zmsdldb\Entity;
  */
 class Topic extends Base
 {
-    public function getServiceIds()
+    public function getServiceIds(): array
     {
         $serviceIds = array();
         foreach ($this['relation']['services'] as $service) {
@@ -21,12 +21,18 @@ class Topic extends Base
         return $serviceIds;
     }
 
-    public function isLinked()
+    /**
+     * @psalm-api
+     */
+    public function isLinked(): bool
     {
         return ($this['relation']['navi'] || static::subcount($this['relation']['navi']));
     }
 
-    public function getServiceLocationLinkList()
+    /**
+     * @psalm-api
+     */
+    public function getServiceLocationLinkList(): \BO\Zmsdldb\Collection\Base
     {
         $list = new \BO\Zmsdldb\Collection\Base();
         $items = array(
@@ -42,6 +48,7 @@ class Topic extends Base
         return $list;
     }
 
+    /** @psalm-api */
     public function getParentId()
     {
         if (count($this['relation']['parents']) > 1) {

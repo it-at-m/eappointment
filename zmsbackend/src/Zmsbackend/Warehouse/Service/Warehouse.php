@@ -85,7 +85,7 @@ class Warehouse extends \BO\Zmsbackend\Base
         ],
     ];
 
-    public function readSubjectsList()
+    public function readSubjectsList(): Exchange
     {
         $entity = (new Exchange())->withLessData();
         $entity->addDictionaryEntry('subject', 'string', 'subject name');

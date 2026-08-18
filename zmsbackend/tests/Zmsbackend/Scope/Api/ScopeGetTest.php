@@ -11,7 +11,7 @@ class ScopeGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ScopeGet";
 
-    const SCOPE_ID = 141;
+    const int SCOPE_ID = 141;
 
     public function testReducedDataAccess()
     {

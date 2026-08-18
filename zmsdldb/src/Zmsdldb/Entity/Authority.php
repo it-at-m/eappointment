@@ -19,7 +19,7 @@ class Authority extends Base
         }
     }
 
-    public static function create($name)
+    public static function create($name): self
     {
         $data = array(
             'name' => $name,
@@ -37,6 +37,7 @@ class Authority extends Base
      *            allow external links, default false
      *
      * @return Bool
+     * @psalm-api
      */
     public function hasAppointments($serviceCsv = null, $external = false)
     {
@@ -52,6 +53,7 @@ class Authority extends Base
      * Check if locations are available
      *
      * @return Bool
+     * @psalm-api
      */
     public function hasLocations()
     {
@@ -64,6 +66,7 @@ class Authority extends Base
      *            only check for this office
      * @return Authority
      *
+     * @psalm-api
      */
     public function getLocationListByOfficePath($officepath)
     {
@@ -80,6 +83,7 @@ class Authority extends Base
      * @param Int $locationId
      *
      * @return Bool
+     * @psalm-api
      */
     public function hasLocationId($locationId)
     {
@@ -92,6 +96,7 @@ class Authority extends Base
      * @param Int $locationId
      *
      * @return self
+     * @psalm-api
      */
     public function removeLocation($locationId)
     {
@@ -122,12 +127,12 @@ class Authority extends Base
         return false;
     }
 
-    public function clearLocations()
+    public function clearLocations(): void
     {
         $this['locations'] = new \BO\Zmsdldb\Collection\Locations();
     }
 
-    public function addLocation(\BO\Zmsdldb\Entity\Location $location)
+    public function addLocation(\BO\Zmsdldb\Entity\Location $location): void
     {
         $this['locations'][$location['id']] = $location;
     }

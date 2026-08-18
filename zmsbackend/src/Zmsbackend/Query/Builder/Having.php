@@ -66,6 +66,7 @@ trait Having
      * @param   string|null             $operator   Operator (=, !=, <>, <= etc)
      * @param   mixed|null              $value      Value to test against
      * @return  $this|array                         $this on set, array on get
+     * @psalm-api
      */
     public function orHaving($field = null, $operator = null, $value = null)
     {

@@ -7,9 +7,9 @@ use Psr\Http\Message\ResponseInterface;
 
 class ModuleAccess
 {
-    public const MODULE_ADMIN = 'zmsadmin';
+    public const string MODULE_ADMIN = 'zmsadmin';
 
-    public const MODULE_STATISTIC = 'zmsstatistic';
+    public const string MODULE_STATISTIC = 'zmsstatistic';
 
     public static function rejectWrongModuleAccess(
         string $application,

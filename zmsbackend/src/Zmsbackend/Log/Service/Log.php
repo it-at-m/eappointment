@@ -13,33 +13,33 @@ use DateTime;
  */
 class Log extends \BO\Zmsbackend\Base
 {
-    const PROCESS = 'buerger';
-    const MIGRATION = 'migration';
-    const ERROR = 'error';
+    const string PROCESS = 'buerger';
+    const string MIGRATION = 'migration';
+    const string ERROR = 'error';
 
-    const ACTION_MAIL_SUCCESS = 'E-Mail-Versand erfolgreich';
-    const ACTION_MAIL_FAIL = 'E-Mail-Versand ist fehlgeschlagen';
-    const ACTION_STATUS_CHANGE = 'Terminstatus wurde geändert';
-    const ACTION_SEND_REMINDER = 'Erinnerungsmail wurde gesendet';
-    const ACTION_REMOVED = 'Termin aus der Warteschlange entfernt';
-    const ACTION_CALLED = 'Termin wurde aufgerufen';
-    const ACTION_ARCHIVED = 'Termin wurde archiviert';
-    const ACTION_EDITED = 'Termin wurde geändert';
-    const ACTION_REDIRECTED = 'Termin wurde weitergeleitet';
-    const ACTION_NEW = 'Neuer Termin wurde erstellt';
-    const ACTION_DELETED = 'Termin wurde gelöscht';
-    const ACTION_CANCELED = 'Termin wurde abgesagt';
+    const string ACTION_MAIL_SUCCESS = 'E-Mail-Versand erfolgreich';
+    const string ACTION_MAIL_FAIL = 'E-Mail-Versand ist fehlgeschlagen';
+    const string ACTION_STATUS_CHANGE = 'Terminstatus wurde geändert';
+    const string ACTION_SEND_REMINDER = 'Erinnerungsmail wurde gesendet';
+    const string ACTION_REMOVED = 'Termin aus der Warteschlange entfernt';
+    const string ACTION_CALLED = 'Termin wurde aufgerufen';
+    const string ACTION_ARCHIVED = 'Termin wurde archiviert';
+    const string ACTION_EDITED = 'Termin wurde geändert';
+    const string ACTION_REDIRECTED = 'Termin wurde weitergeleitet';
+    const string ACTION_NEW = 'Neuer Termin wurde erstellt';
+    const string ACTION_DELETED = 'Termin wurde gelöscht';
+    const string ACTION_CANCELED = 'Termin wurde abgesagt';
 
-    private const FULLTEXT_SEARCH_COLUMNS = 'citizen_name, services, scope_name, citizen_email';
+    private const string FULLTEXT_SEARCH_COLUMNS = 'citizen_name, services, scope_name, citizen_email';
 
-    private const TEXT_SEARCH_COLUMNS = [
+    private const array TEXT_SEARCH_COLUMNS = [
         'citizen_name',
         'services',
         'scope_name',
         'citizen_email',
     ];
 
-    private const INDEXED_COLUMNS = [
+    private const array INDEXED_COLUMNS = [
         'action',
         'display_number',
         'queue_number',
@@ -55,7 +55,7 @@ class Log extends \BO\Zmsbackend\Base
         'process_amendment',
     ];
 
-    private const ACTION_LABEL_TO_CODE = [
+    private const array ACTION_LABEL_TO_CODE = [
         self::ACTION_MAIL_SUCCESS => 'mail_success',
         self::ACTION_MAIL_FAIL => 'mail_fail',
         self::ACTION_STATUS_CHANGE => 'status_changed',
@@ -73,9 +73,9 @@ class Log extends \BO\Zmsbackend\Base
     public static $operator = 'lib';
 
     public static function writeLogEntry(
-        $message,
-        $referenceId,
-        $type = self::PROCESS,
+        string $message,
+        int $referenceId,
+        string $type = self::PROCESS,
         ?int $scopeId = null,
         ?string $userId = null,
         ?array $indexedFields = null
@@ -112,6 +112,9 @@ class Log extends \BO\Zmsbackend\Base
         return $log->perform($sql, $parameters);
     }
 
+    /**
+     * @return void
+     */
     public static function writeProcessLog(
         string $method,
         string $action,
@@ -176,6 +179,7 @@ class Log extends \BO\Zmsbackend\Base
         return self::ACTION_LABEL_TO_CODE[$label] ?? null;
     }
 
+    /** @psalm-api */
     public static function actionLabelFromCode(?string $code): ?string
     {
         return Entity::actionLabelFromCode($code);
@@ -186,7 +190,7 @@ class Log extends \BO\Zmsbackend\Base
         return Entity::formatDisplayFields($log);
     }
 
-    public function readByProcessId($processId)
+    public function readByProcessId($processId): LogList
     {
         $query = new \BO\Zmsbackend\Log\Repository\Log(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping();
@@ -199,10 +203,10 @@ class Log extends \BO\Zmsbackend\Base
         $generalSearch,
         $service,
         $provider,
-        $date,
+        DateTime|null $date,
         $userAction,
-        $page = 1,
-        $perPage = 100,
+        int $page = 1,
+        int $perPage = 100,
         ?array $scopeIds = null
     ) {
         $fieldValues = [];
@@ -233,7 +237,7 @@ class Log extends \BO\Zmsbackend\Base
         int $perPage,
         int $offset,
         ?array $scopeIds = null
-    ) {
+    ): LogList {
         $params = ['logType' => self::PROCESS];
         $conditions = array_merge(
             ['type = :logType'],
@@ -249,7 +253,7 @@ class Log extends \BO\Zmsbackend\Base
             $sql .= ' WHERE ' . implode(' AND ', $conditions);
         }
 
-        $sql .= ' ORDER BY ts DESC LIMIT ' . (int) $perPage . ' OFFSET ' . (int) $offset;
+        $sql .= ' ORDER BY ts DESC LIMIT ' . $perPage . ' OFFSET ' . $offset;
 
         $logs = new LogList();
         foreach ($this->fetchAll($sql, $params) as $row) {
@@ -350,7 +354,10 @@ class Log extends \BO\Zmsbackend\Base
         return $row;
     }
 
-    public function delete($processId)
+    /**
+     * @psalm-api
+     */
+    public function delete($processId): LogList
     {
         $query = new \BO\Zmsbackend\Log\Repository\Log(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping();
@@ -359,7 +366,7 @@ class Log extends \BO\Zmsbackend\Base
         return $logList;
     }
 
-    protected static function backtraceLogEntry()
+    protected static function backtraceLogEntry(): string
     {
         $trace = debug_backtrace();
         $short = '';

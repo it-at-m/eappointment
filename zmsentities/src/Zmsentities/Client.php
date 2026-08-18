@@ -6,6 +6,10 @@ class Client extends Schema\Entity
 {
     public static $schema = "client.json";
 
+    /**
+     * @return (false|int|string)[]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -18,17 +22,17 @@ class Client extends Schema\Entity
         ];
     }
 
-    public function hasFamilyName()
+    public function hasFamilyName(): bool
     {
         return ($this->toProperty()->familyName->get()) ? true : false;
     }
 
-    public function hasEmail()
+    public function hasEmail(): bool
     {
         return ($this->toProperty()->email->get()) ? true : false;
     }
 
-    public function hasTelephone()
+    public function hasTelephone(): bool
     {
         return ($this->toProperty()->telephone->get()) ? true : false;
     }
@@ -38,7 +42,7 @@ class Client extends Schema\Entity
         return $this->toProperty()->emailSendCount->get();
     }
 
-    public function hasSurveyAccepted()
+    public function hasSurveyAccepted(): bool
     {
         return (1 == $this->toProperty()->surveyAccepted->get()) ? true : false;
     }

@@ -9,7 +9,7 @@ namespace BO\Zmsdldb\Collection;
 
 class Services extends Base
 {
-    public function containsLocation($locationCsv = null)
+    public function containsLocation($locationCsv = null): self
     {
         $list = new self();
         foreach ($this as $service) {
@@ -20,7 +20,7 @@ class Services extends Base
         return $list;
     }
 
-    public function getIds()
+    public function getIds(): array
     {
         $idList = array();
         foreach ($this as $service) {
@@ -29,7 +29,10 @@ class Services extends Base
         return $idList;
     }
 
-    public function getNames()
+    /**
+     * @psalm-api
+     */
+    public function getNames(): array
     {
         $nameList = array();
         foreach ($this as $service) {
@@ -38,12 +41,20 @@ class Services extends Base
         return $nameList;
     }
 
-    public function getCSV()
+    /**
+     * @psalm-api
+     */
+    public function getCSV(): string
     {
         return implode(',', $this->getIds());
     }
 
-    public function isLocale($locale)
+    /**
+     * @psalm-api
+     *
+     * @return null|self
+     */
+    public function isLocale($locale): self|null
     {
         $list = new self();
         foreach ($this as $service) {

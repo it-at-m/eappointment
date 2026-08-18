@@ -4,10 +4,14 @@ namespace BO\Zmsentities;
 
 class Request extends Schema\Entity
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "request.json";
 
+    /**
+     * @return (null|string)[]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -29,7 +33,7 @@ class Request extends Schema\Entity
         return parent::withReference($additionalData);
     }
 
-    public function hasAppointmentFromProviderData()
+    public function hasAppointmentFromProviderData(): bool
     {
         if (isset($this['data']) && isset($this['data']['locations'])) {
             foreach ($this['data']['locations'] as $provider) {

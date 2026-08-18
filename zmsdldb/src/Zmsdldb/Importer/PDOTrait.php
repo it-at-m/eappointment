@@ -21,6 +21,7 @@ trait PDOTrait
 
     /**
      * parameters see https://www.php.net/manual/de/pdo.query.php
+     * @psalm-api
      */
     public function query(...$args)
     {
@@ -33,6 +34,7 @@ trait PDOTrait
 
     /**
      * parameters see https://www.php.net/manual/de/pdo.exec.php
+     * @psalm-api
      */
 
     public function exec(...$args)
@@ -46,6 +48,7 @@ trait PDOTrait
 
     /**
      * parameters see https://www.php.net/manual/de/pdo.prepare.php
+     * @psalm-api
      */
     public function prepare(...$args)
     {
@@ -83,6 +86,7 @@ trait PDOTrait
         }
     }
 
+    /** @psalm-api */
     public function inTransaction()
     {
         try {

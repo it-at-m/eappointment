@@ -7,14 +7,20 @@ class Mimepart extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'mailpart';
+    const string TABLE = 'mailpart';
 
     /**
      * No resolving required here
      */
     protected $resolveLevel = 0;
 
-    public function getEntityMapping()
+    /**
+     * @psalm-api
+     *
+     * @return string[]
+     *
+     */
+    public function getEntityMapping(): array
     {
         return [
             'mime' => 'mimepart.mime',
@@ -23,7 +29,7 @@ class Mimepart extends \BO\Zmsbackend\Query\Base
         ];
     }
 
-    public function addConditionQueueId($queueId)
+    public function addConditionQueueId($queueId): static
     {
         $this->query->where('mimepart.queueId', '=', $queueId);
         return $this;

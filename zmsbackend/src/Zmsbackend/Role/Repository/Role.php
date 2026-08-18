@@ -7,8 +7,12 @@ class Role extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     /**
      * @var string TABLE mysql table reference
      */
-    const TABLE = 'role';
+    const string TABLE = 'role';
 
+    /**
+     * @return (\BO\Zmsbackend\Query\Builder\Expression|string)[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -49,6 +53,7 @@ class Role extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
         return $this;
     }
 
+    /** @psalm-api */
     public function addConditionNames(array $names): self
     {
         if ($names === []) {

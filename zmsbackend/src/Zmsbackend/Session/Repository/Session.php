@@ -7,14 +7,14 @@ class Session extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'sessiondata';
+    const string TABLE = 'sessiondata';
 
     /**
      * No resolving required here
      */
     protected $resolveLevel = 0;
 
-    const QUERY_WRITE = '
+    const string QUERY_WRITE = '
         REPLACE INTO
             sessiondata
         SET
@@ -23,7 +23,7 @@ class Session extends \BO\Zmsbackend\Query\Base
             sessioncontent=?
     ';
 
-    const QUERY_DELETE = '
+    const string QUERY_DELETE = '
         DELETE FROM
             sessiondata
         WHERE
@@ -31,7 +31,13 @@ class Session extends \BO\Zmsbackend\Query\Base
             sessionname=?
     ';
 
-    public function getEntityMapping()
+    /**
+     * @psalm-api
+     *
+     * @return string[]
+     *
+     */
+    public function getEntityMapping(): array
     {
         return [
             'id' => 'session.sessionid',
@@ -40,19 +46,19 @@ class Session extends \BO\Zmsbackend\Query\Base
         ];
     }
 
-    public function addConditionSessionId($sessionId)
+    public function addConditionSessionId($sessionId): static
     {
         $this->query->where('session.sessionid', '=', $sessionId);
         return $this;
     }
 
-    public function addConditionSessionName($sessionName)
+    public function addConditionSessionName(string $sessionName): static
     {
         $this->query->where('session.sessionname', '=', $sessionName);
         return $this;
     }
 
-    public function addConditionSessionDeleteInterval($deleteInSeconds)
+    public function addConditionSessionDeleteInterval(int $deleteInSeconds): static
     {
         $this->query->where(
             self::expression(

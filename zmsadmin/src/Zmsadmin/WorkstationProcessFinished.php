@@ -107,7 +107,7 @@ class WorkstationProcessFinished extends BaseController
         Workstation $workstation,
         ?Process $process = null,
         ?int $nextProcessId = null
-    ) {
+    ): \BO\Slim\Response {
         $process ??= clone $workstation->getProcess();
         $process['status'] = ('pending' != $process['status']) ? 'finished' : $process['status'];
         \App::$http->readPostResult('/process/status/finished/', new Process($process))->getEntity();
@@ -123,6 +123,9 @@ class WorkstationProcessFinished extends BaseController
     }
 
 
+    /**
+     * @return void
+     */
     protected function testProcess(Workstation $workstation)
     {
         if (! $workstation->getProcess()->hasId()) {

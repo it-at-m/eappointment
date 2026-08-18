@@ -8,7 +8,7 @@ class Apikey extends \BO\Zmsbackend\Base
 {
     public static $cache = [];
 
-    public function readEntity($apiKey)
+    public function readEntity($apiKey): Entity
     {
         $query = new \BO\Zmsbackend\Apikey\Repository\Apikey(\BO\Zmsbackend\Query\Base::SELECT);
         $query
