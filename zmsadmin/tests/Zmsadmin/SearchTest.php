@@ -379,9 +379,9 @@ class SearchTest extends Base
 
         $this->assertStringContainsString('Terminstatus', $body);
 
-        $this->assertStringContainsString('Status: geplant', $body);
-        $this->assertStringContainsString('Status: abgeschlossen', $body);
-        $this->assertStringContainsString('Status: nicht erschienen', $body);
+        $this->assertStringContainsString('Status: Geplant', $body);
+        $this->assertStringContainsString('Status: Abgeschlossen', $body);
+        $this->assertStringContainsString('Status: Nicht erschienen', $body);
 
         $this->assertStringContainsString('selectedprocess=100504', $body);
         $this->assertStringContainsString('selectedprocess=101002', $body);
