@@ -64,7 +64,7 @@ class Day extends \BO\Zmsbackend\Query\Base
             (
                 SELECT
                     IFNULL(COUNT(p.slotID), 0) AS confirmed,
-                    IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots) AS slotsRequired,
+                    IF(a.multiple_slots_allowed, c.slotsRequired, :forceRequiredSlots) AS slotsRequired,
                     s.slotID,
                     s.year,
                     s.month,
@@ -85,7 +85,7 @@ class Day extends \BO\Zmsbackend\Query\Base
                         ON s.availabilityID = a.OeffnungszeitID
                     LEFT JOIN slot_hiera h
                         ON h.ancestorID = s.slotID
-                        AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots)
+                        AND h.ancestorLevel <= IF(a.multiple_slots_allowed, c.slotsRequired, :forceRequiredSlots)
                     LEFT JOIN slot_process p
                         ON h.slotID = p.slotID
                     LEFT JOIN closures cc
@@ -142,7 +142,7 @@ class Day extends \BO\Zmsbackend\Query\Base
             (
                 SELECT
                     IFNULL(occ.confirmed, 0) AS confirmed,
-                    IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots) AS slotsRequired,
+                    IF(a.multiple_slots_allowed, c.slotsRequired, :forceRequiredSlots) AS slotsRequired,
                     s.slotID,
                     s.year,
                     s.month,
@@ -162,7 +162,7 @@ class Day extends \BO\Zmsbackend\Query\Base
                         ON s.availabilityID = a.OeffnungszeitID
                     LEFT JOIN slot_hiera h
                         ON h.ancestorID = s.slotID
-                        AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots)
+                        AND h.ancestorLevel <= IF(a.multiple_slots_allowed, c.slotsRequired, :forceRequiredSlots)
                     INNER JOIN slot s2
                         ON h.slotID = s2.slotID
                         AND s2.status = "free"
