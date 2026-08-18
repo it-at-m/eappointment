@@ -71,6 +71,17 @@ class AvailabilityHistoryByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
         }
     }
 
+    public function testEmptyListIsSuccess()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
+
+        $response = $this->render(['id' => self::SCOPE_ID], ['action' => 'deleted']);
+        $this->assertTrue(200 == $response->getStatusCode());
+        $body = json_decode((string) $response->getBody(), true);
+        $this->assertFalse($body['meta']['error']);
+        $this->assertSame([], $body['data']);
+    }
+
     public function testFilterByActionDeleted()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
@@ -112,8 +123,8 @@ class AvailabilityHistoryByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
                 'workstations' => '3/3',
                 'bookable' => '0-5',
                 'description' => 'Neue Öffnungszeit',
-                // Must fall inside App::$now default retention (tests freeze now at 2016-04-01).
-                'changedAt' => '2016-04-01 11:00:00',
+                // Wall-clock timestamp: GET filters by real now, not frozen App::$now.
+                'changedAt' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
                 'changedBy' => 'unittest',
             ]
         );
