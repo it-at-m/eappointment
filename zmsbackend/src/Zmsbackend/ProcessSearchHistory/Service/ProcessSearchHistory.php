@@ -122,7 +122,7 @@ class ProcessSearchHistory extends \BO\Zmsbackend\Base
 
             'appointmentAt' => $this->getAppointmentAt($process),
             'bookedAt' => $this->dateTimeFromTimestamp(
-                (int) $process->createTimestamp
+                (int) $process['createTimestamp']
             ),
             'calledAt' => $this->dateTimeFromTimestamp(
                 (int) $process
@@ -170,7 +170,7 @@ class ProcessSearchHistory extends \BO\Zmsbackend\Base
         ProcessEntity $process
     ): string {
         $processId = (int) $process->getId();
-        $createTimestamp = (int) $process->createTimestamp;
+        $createTimestamp = (int) $process['createTimestamp'];
         $authKey = (string) $process->getAuthKey();
 
         if (
@@ -222,11 +222,7 @@ class ProcessSearchHistory extends \BO\Zmsbackend\Base
     private function getScope(
         ProcessEntity $process
     ): ScopeEntity {
-        if ($process->scope instanceof ScopeEntity) {
-            return $process->scope;
-        }
-
-        return new ScopeEntity($process->scope);
+        return $process->getCurrentScope();
     }
 
     private function dateTimeFromTimestamp(
@@ -286,7 +282,7 @@ class ProcessSearchHistory extends \BO\Zmsbackend\Base
         ProcessEntity $process
     ): \DateTimeImmutable {
         $appointment = $process->getFirstAppointment();
-        $timestamp = (int) $appointment->date;
+        $timestamp = $appointment->toDateTime()->getTimestamp();
 
         if ($timestamp <= 0) {
             throw new \InvalidArgumentException(

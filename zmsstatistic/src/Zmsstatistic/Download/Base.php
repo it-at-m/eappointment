@@ -179,6 +179,7 @@ class Base extends BaseController
         return $spreadsheet;
     }
 
+    /** @psalm-api */
     protected function setDateTime(string $dateString): \DateTime
     {
         $dateArr = explode('-', $dateString);
@@ -195,6 +196,7 @@ class Base extends BaseController
     }
 
     /**
+     * @psalm-api
      * @return false|string
      */
     protected function getFormatedDates(\DateTimeInterface $date, string $pattern = 'MMMM'): string|false
