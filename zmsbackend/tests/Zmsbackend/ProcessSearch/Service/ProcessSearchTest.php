@@ -600,9 +600,16 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Service\Base
         }
     }
 
-    public function testReadSearchRespectsHistoryNinetyDayBoundary(): void
+    public function testReadSearchRespectsConfiguredHistoryRetentionBoundary(): void
     {
         $historyService = new HistoryService();
+
+        $configService = new \BO\Zmsbackend\Config\Service\Config();
+
+        $configService->replaceProperty(
+            'processSearchHistory__deleteOlderThanDays',
+            '120'
+        );
 
         $processService = new Query(
             $historyService->getWriter(),
@@ -632,7 +639,7 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Service\Base
 
         $historyBoundary =
             \DateTimeImmutable::createFromInterface($now)
-                ->modify('-90 days');
+                ->modify('-120 days');
 
         $searchService = new ProcessSearchService(
             $historyService->getWriter(),
@@ -720,6 +727,11 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Service\Base
             $searchService->readSearchCount([
                 'processId' => 990029,
             ])
+        );
+
+        $configService->replaceProperty(
+            'processSearchHistory__deleteOlderThanDays',
+            '90'
         );
     }
 

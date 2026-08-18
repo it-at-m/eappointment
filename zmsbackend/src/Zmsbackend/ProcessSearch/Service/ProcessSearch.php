@@ -6,9 +6,12 @@ use BO\Zmsbackend\ProcessSearch\Repository\ProcessSearch as ProcessSearchReposit
 use BO\Zmsbackend\Query\Base as QueryBase;
 use BO\Zmsentities\Collection\ProcessList as Collection;
 use BO\Zmsentities\Process as Entity;
+use BO\Zmsbackend\Config\Service\Config as ConfigService;
 
 class ProcessSearch extends \BO\Zmsbackend\Base
 {
+    private const DEFAULT_HISTORY_DAYS = 90;
+
     public function mapSearchRowToProcess(array $row): Entity
     {
         return new Entity([
@@ -277,11 +280,13 @@ class ProcessSearch extends \BO\Zmsbackend\Base
             return $entity;
         }
 
-        return (new \BO\Zmsbackend\Process\Service\Process())
+        (new \BO\Zmsbackend\Process\Service\Process())
             ->readResolvedReferences(
                 $entity,
                 $resolveReferences
             );
+
+        return $entity;
     }
 
     protected function buildCombinedSearchSql(
@@ -413,7 +418,26 @@ class ProcessSearch extends \BO\Zmsbackend\Base
                 new \DateTimeZone('Europe/Berlin')
             );
 
+        $config = (new ConfigService())->readEntity();
+
+        $retentionDays = filter_var(
+            $config->getPreference(
+                'processSearchHistory',
+                'deleteOlderThanDays'
+            ),
+            FILTER_VALIDATE_INT,
+            [
+                'options' => [
+                    'min_range' => 1,
+                ],
+            ]
+        );
+
+        if ($retentionDays === false) {
+            $retentionDays = self::DEFAULT_HISTORY_DAYS;
+        }
+
         return \DateTimeImmutable::createFromInterface($now)
-            ->modify('-90 days');
+            ->modify('-' . $retentionDays . ' days');
     }
 }

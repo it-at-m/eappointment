@@ -34,6 +34,8 @@ class ProcessFinishedTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertSame(HistoryService::STATUS_COMPLETED, $historyEntry['status']);
         $this->assertSame(\App::$now->format('Y-m-d H:i:s'), $historyEntry['finalized_at']);
         $this->assertSame('08912345678', $historyEntry['telephone']);
+
+        return $response;
     }
 
     public function testRenderingPending()
