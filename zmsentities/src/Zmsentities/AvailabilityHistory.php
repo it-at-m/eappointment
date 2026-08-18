@@ -10,13 +10,13 @@ class AvailabilityHistory extends Schema\Entity
 
     public static $schema = 'availabilityhistory.json';
 
-    public const ACTION_CREATED = 'created';
-    public const ACTION_UPDATED = 'updated';
-    public const ACTION_DELETED = 'deleted';
-    public const ACTION_DLDB_SLOT_UPDATE = 'dldb_slot_update';
+    public const string ACTION_CREATED = 'created';
+    public const string ACTION_UPDATED = 'updated';
+    public const string ACTION_DELETED = 'deleted';
+    public const string ACTION_DLDB_SLOT_UPDATE = 'dldb_slot_update';
 
     /** @var list<string> */
-    public const ACTIONS = [
+    public const array ACTIONS = [
         self::ACTION_CREATED,
         self::ACTION_UPDATED,
         self::ACTION_DELETED,
@@ -24,7 +24,7 @@ class AvailabilityHistory extends Schema\Entity
     ];
 
     /** @var array<string, int> */
-    public const WEEKDAY_BITS = [
+    public const array WEEKDAY_BITS = [
         'sunday' => 1,
         'monday' => 2,
         'tuesday' => 4,

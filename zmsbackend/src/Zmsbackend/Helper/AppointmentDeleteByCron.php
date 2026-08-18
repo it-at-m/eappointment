@@ -40,11 +40,12 @@ class AppointmentDeleteByCron
         "pending"
     ];
 
-    protected $count = [];
+    /** @var array<string, int> */
+    protected array $count = [];
 
-    protected $now;
+    protected \DateTimeInterface $now;
 
-    public function __construct($timeIntervalDays, \DateTimeInterface $now, $verbose = false)
+    public function __construct(int $timeIntervalDays, \DateTimeInterface $now, bool $verbose = false)
     {
         $this->now = $now;
         $deleteInSeconds = (24 * 60 * 60) * $timeIntervalDays;

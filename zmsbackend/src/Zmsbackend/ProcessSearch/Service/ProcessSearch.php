@@ -10,7 +10,7 @@ use BO\Zmsbackend\Config\Service\Config as ConfigService;
 
 class ProcessSearch extends \BO\Zmsbackend\Base
 {
-    private const DEFAULT_HISTORY_DAYS = 90;
+    private const int DEFAULT_HISTORY_DAYS = 90;
 
     public function mapSearchRowToProcess(array $row): Entity
     {
@@ -52,9 +52,9 @@ class ProcessSearch extends \BO\Zmsbackend\Base
 
     public function readSearch(
         array $parameter,
-        $resolveReferences = 0,
-        $limit = 100,
-        $offset = 0
+        int $resolveReferences = 0,
+        int $limit = 100,
+        int $offset = 0
     ): Collection {
         $combined = $this->buildCombinedSearchSql(
             $parameter,
@@ -274,7 +274,7 @@ class ProcessSearch extends \BO\Zmsbackend\Base
 
     protected function resolveSearchReferences(
         Entity $entity,
-        $resolveReferences
+        int $resolveReferences
     ): Entity {
         if (($entity->source ?? 'active') === 'history') {
             return $entity;

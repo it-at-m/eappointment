@@ -578,6 +578,7 @@
                 <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::value" />
                 <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::limit" />
                 <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::offset" />
+                <referencedMethod name="BO\Zmsbackend\Query\Builder\Query::resetSelect" />
             </errorLevel>
         </UndefinedMethod>
         <UndefinedClass>

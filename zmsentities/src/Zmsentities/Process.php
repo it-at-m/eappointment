@@ -10,6 +10,12 @@ use BO\Zmsentities\Helper\Property;
  * @SuppressWarnings(Coupling)
  * @SuppressWarnings(Public)
  * @SuppressWarnings(TooManyMethods)
+ *
+ * Schema-backed entity (ArrayObject::ARRAY_AS_PROPS); document dynamic keys for Psalm.
+ *
+ * @property int $createTimestamp
+ * @property Scope|array $scope
+ * @property string $status
  */
 class Process extends Schema\Entity
 {

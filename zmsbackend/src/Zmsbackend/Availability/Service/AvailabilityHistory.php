@@ -13,34 +13,34 @@ use App;
 
 class AvailabilityHistory extends \BO\Zmsbackend\Base
 {
-    public const ACTION_CREATED = Entity::ACTION_CREATED;
-    public const ACTION_UPDATED = Entity::ACTION_UPDATED;
-    public const ACTION_DELETED = Entity::ACTION_DELETED;
-    public const ACTION_DLDB_SLOT_UPDATE = Entity::ACTION_DLDB_SLOT_UPDATE;
+    public const string ACTION_CREATED = Entity::ACTION_CREATED;
+    public const string ACTION_UPDATED = Entity::ACTION_UPDATED;
+    public const string ACTION_DELETED = Entity::ACTION_DELETED;
+    public const string ACTION_DLDB_SLOT_UPDATE = Entity::ACTION_DLDB_SLOT_UPDATE;
 
-    public const DEFAULT_RETENTION_DAYS = 180;
-    public const MAX_ROWS = 500;
+    public const int DEFAULT_RETENTION_DAYS = 180;
+    public const int MAX_ROWS = 500;
 
-    private const COMMENT_MAX_LENGTH = 200;
+    private const int COMMENT_MAX_LENGTH = 200;
 
-    public function writeCreated(Availability $availability, ?string $changedBy = null): bool
+    public function writeCreated(Availability $availability, ?string $changedBy = null): void
     {
-        return $this->write(self::ACTION_CREATED, $availability, $changedBy);
+        $this->write(self::ACTION_CREATED, $availability, $changedBy);
     }
 
-    public function writeUpdated(Availability $availability, ?string $changedBy = null): bool
+    public function writeUpdated(Availability $availability, ?string $changedBy = null): void
     {
-        return $this->write(self::ACTION_UPDATED, $availability, $changedBy);
+        $this->write(self::ACTION_UPDATED, $availability, $changedBy);
     }
 
-    public function writeDeleted(Availability $availability, ?string $changedBy = null): bool
+    public function writeDeleted(Availability $availability, ?string $changedBy = null): void
     {
-        return $this->write(self::ACTION_DELETED, $availability, $changedBy);
+        $this->write(self::ACTION_DELETED, $availability, $changedBy);
     }
 
-    public function writeDldbSlotUpdate(Availability $availability): bool
+    public function writeDldbSlotUpdate(Availability $availability): void
     {
-        return $this->write(self::ACTION_DLDB_SLOT_UPDATE, $availability, 'dldb');
+        $this->write(self::ACTION_DLDB_SLOT_UPDATE, $availability, 'dldb');
     }
 
     public function readListByScopeId(
@@ -136,7 +136,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         return $value;
     }
 
-    protected function write(string $action, Availability $availability, ?string $changedBy): bool
+    protected function write(string $action, Availability $availability, ?string $changedBy): void
     {
         try {
             $scopeId = (int) ($availability->scope['id'] ?? 0);
@@ -145,7 +145,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
                     'action' => $action,
                     'availability_id' => $availability->id ?? null,
                 ]);
-                return false;
+                return;
             }
 
             $snapshot = $this->buildSnapshot($availability);
@@ -157,14 +157,13 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
                 'changed_by' => $changedBy ?? $this->resolveChangedBy(),
             ])));
 
-            return (bool) $this->writeItem($query);
+            $this->writeItem($query);
         } catch (\Throwable $exception) {
             App::$log->error('availability_history write failed', [
                 'action' => $action,
                 'availability_id' => $availability->id ?? null,
                 'exception' => $exception->getMessage(),
             ]);
-            return false;
         }
     }
 

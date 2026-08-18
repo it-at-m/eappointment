@@ -11,11 +11,11 @@ use BO\Zmsentities\Scope as ScopeEntity;
 
 class ProcessSearchHistory extends \BO\Zmsbackend\Base
 {
-    public const STATUS_COMPLETED = 'completed';
-    public const STATUS_MISSED = 'missed';
+    public const string STATUS_COMPLETED = 'completed';
+    public const string STATUS_MISSED = 'missed';
 
-    private const RESOLVE_REFERENCES = 2;
-    private const DUPLICATE_KEY_ERROR_CODE = 1062;
+    private const int RESOLVE_REFERENCES = 2;
+    private const int DUPLICATE_KEY_ERROR_CODE = 1062;
 
     /**
      * Bei einem bereits vorhandenen history_key wird kein zweiter

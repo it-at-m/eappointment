@@ -309,7 +309,8 @@ class ProcessList extends Base
         return $list;
     }
 
-    public function withScopeId($scopeId): static
+    /** @psalm-api */
+    public function withScopeId(int|string $scopeId): static
     {
         $processList = new static();
         foreach ($this as $process) {
@@ -320,7 +321,8 @@ class ProcessList extends Base
         return $processList;
     }
 
-    public function withOutScopeId($scopeId): static
+    /** @psalm-api */
+    public function withOutScopeId(int|string $scopeId): static
     {
         $processList = new static();
         foreach ($this as $process) {
