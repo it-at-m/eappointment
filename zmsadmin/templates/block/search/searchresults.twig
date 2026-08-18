@@ -79,7 +79,7 @@
                                     {{process.clients.0.familyName}} ({{process.displayNumber}})
                                 </a>
                             {% else %}
-                                <a tabindex="1" href="{{ urlGet("counter", {}, {'selectedprocess': process.id, 'date': process.appointments.0.date|date('Y-m-d'), 'selectedscope': process.scope.id }) }}">
+                                <a tabindex="1" href="{{ urlGet("workstation", {}, {'selectedprocess': process.id, 'date': process.appointments.0.date|date('Y-m-d'), 'selectedscope': process.scope.id }) }}">
                                     {{process.clients.0.familyName}} ({{process.displayNumber}})
                                 </a>
                             {% endif %}
