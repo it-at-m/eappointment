@@ -83,15 +83,22 @@ class Validator
     private function extractErrors(OpisValidationError $error): array
     {
         $errors = [];
+        $message = $this->getCustomMessage($error);
 
         $errors[] = new OpisValidationError(
             $error->keyword(),
             $error->schema(),
             $error->data(),
-            $this->getCustomMessage($error),
+            $message,
             $error->args(),
             []
         );
+
+        // Custom x-locale messages already describe the full constraint (e.g. oneOf).
+        // Do not also surface Opis branch/sub-errors in admin forms.
+        if ($message !== $error->message()) {
+            return $errors;
+        }
 
         foreach ($error->subErrors() as $subError) {
             if ($subError instanceof OpisValidationError) {

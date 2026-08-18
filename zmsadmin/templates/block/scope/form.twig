@@ -20,7 +20,7 @@
 
 {% set permissions = workstation.useraccount.permissions %}
 
-{% from 'element/helper/form.twig' import formgroup, formbutton, inputfield, custombutton, checkboxfield, inputsubmit %}
+{% from 'element/helper/form.twig' import formgroup, formbutton, inputfield, custombutton, checkboxfield, inputsubmit, errormessage %}
 
 <section class="block scope-form">
 
@@ -236,22 +236,138 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
-                        {
-                            "label": "Maximale Anzahl an Terminen pro E-Mail-Adresse:", "description": "Wird 1 eingestellt, können Bürger*innen ihre Termine nicht selbständig umbuchen."
-                        },
-                        [{
-                            "type":"input",
-                            "parameter": {
-                                "name": "preferences[client][appointmentsPerMail]",
-                                "value": scope.preferences.client.appointmentsPerMail,
-                                "maxlength": 2,
-                                "max": 99,
-                                "integer": true,
-                                "integerNullable": true
+                    {% set appointmentsPerMailValue = scope.preferences.client.appointmentsPerMail|default('') %}
+                    {% set appointmentsPerMailUnlimited = appointmentsPerMailValue is empty %}
+                    {% set appointmentsPerMailDisplay = appointmentsPerMailUnlimited ? 2 : appointmentsPerMailValue %}
+                    <p class="form-hint">
+                        Bei aktiver Begrenzung muss der Wert mindestens zwei betragen, damit Bürger*innen Termine verschieben können.
+                    </p>
+                    <fieldset class="form-group{% if exception and exception.data['preferences/client/appointmentsPerMail'].messages is defined %} has-error is-invalid{% endif %}">
+                        <legend class="label">Maximale Anzahl an Terminen pro E-Mail-Adresse:</legend>
+                        <div class="controls">
+                            <div class="formelements appointments-per-mail-limit" style="display:flex;align-items:center;gap:1rem;flex-wrap:nowrap;">
+                                <input
+                                    type="hidden"
+                                    id="appointmentsPerMailHidden"
+                                    name="preferences[client][appointmentsPerMail]"
+                                    value=""
+                                    {% if not appointmentsPerMailUnlimited %}disabled="disabled"{% endif %}
+                                >
+                                <div class="form-input-counter" id="appointmentsPerMailCounter" style="margin:0;">
+                                    <div class="input-counter">
+                                        <button type="button" class="button decrement" id="appointmentsPerMailDecrement" aria-label="Wert verringern"{% if appointmentsPerMailUnlimited or appointmentsPerMailDisplay <= 2 %} disabled{% endif %}>−</button>
+                                        <input
+                                            type="text"
+                                            inputmode="numeric"
+                                            id="appointmentsPerMailInput"
+                                            name="preferences[client][appointmentsPerMail]"
+                                            value="{{ appointmentsPerMailUnlimited ? '' : appointmentsPerMailDisplay|e }}"
+                                            class="form-control form-input"
+                                            readonly="readonly"
+                                            {% if exception and exception.data['preferences/client/appointmentsPerMail'].messages is defined %}aria-describedby="error_appointmentsPerMailInput"{% endif %}
+                                            {% if appointmentsPerMailUnlimited %}disabled="disabled"{% endif %}
+                                        >
+                                        <button type="button" class="button increment" id="appointmentsPerMailIncrement" aria-label="Wert erhöhen"{% if appointmentsPerMailUnlimited or appointmentsPerMailDisplay >= 99 %} disabled{% endif %}>+</button>
+                                    </div>
+                                </div>
+                                <div class="form-check" style="margin:0;flex:0 0 auto;white-space:nowrap;">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="appointmentsPerMailUnlimited"
+                                        {% if appointmentsPerMailUnlimited %}checked="checked"{% endif %}
+                                    >
+                                    <label class="form-check-label" for="appointmentsPerMailUnlimited">Unbegrenzt</label>
+                                </div>
+                            </div>
+                            {% if exception and exception.data['preferences/client/appointmentsPerMail'].messages is defined %}
+                                {{ errormessage(exception.data['preferences/client/appointmentsPerMail'].messages, 'appointmentsPerMailInput') }}
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                    <script>
+                        (function () {
+                            var min = 2;
+                            var max = 99;
+                            var checkbox = document.getElementById('appointmentsPerMailUnlimited');
+                            var input = document.getElementById('appointmentsPerMailInput');
+                            var hidden = document.getElementById('appointmentsPerMailHidden');
+                            var decrement = document.getElementById('appointmentsPerMailDecrement');
+                            var increment = document.getElementById('appointmentsPerMailIncrement');
+                            if (!checkbox || !input || !hidden || !decrement || !increment) {
+                                return;
                             }
-                        }]
-                    ) }}
+                            var lastValue = (input.value !== '' && Number(input.value) >= min) ? String(Number(input.value)) : String(min);
+
+                            function updateButtons() {
+                                var value = Number(input.value || 0);
+                                var disabled = checkbox.checked || input.disabled;
+                                decrement.disabled = disabled || !(value > min);
+                                increment.disabled = disabled || !(value < max);
+                            }
+
+                            function setLimitedValue(value) {
+                                var next = Number(value);
+                                if (!(next >= min)) {
+                                    next = min;
+                                }
+                                if (next > max) {
+                                    next = max;
+                                }
+                                lastValue = String(next);
+                                input.value = lastValue;
+                                updateButtons();
+                            }
+
+                            function sync() {
+                                if (checkbox.checked) {
+                                    if (input.value !== '' && Number(input.value) >= min) {
+                                        lastValue = String(Number(input.value));
+                                    }
+                                    input.value = '';
+                                    input.setAttribute('disabled', 'disabled');
+                                    decrement.disabled = true;
+                                    increment.disabled = true;
+                                    hidden.removeAttribute('disabled');
+                                    hidden.value = '';
+                                    return;
+                                }
+                                input.removeAttribute('disabled');
+                                hidden.setAttribute('disabled', 'disabled');
+                                setLimitedValue(lastValue);
+                            }
+
+                            checkbox.addEventListener('change', sync);
+                            decrement.addEventListener('click', function () {
+                                if (checkbox.checked || input.disabled) {
+                                    return;
+                                }
+                                setLimitedValue(Number(input.value || min) - 1);
+                            });
+                            increment.addEventListener('click', function () {
+                                if (checkbox.checked || input.disabled) {
+                                    return;
+                                }
+                                setLimitedValue(Number(input.value || min) + 1);
+                            });
+                            input.addEventListener('keydown', function (event) {
+                                if (event.key === 'ArrowUp') {
+                                    event.preventDefault();
+                                    setLimitedValue(Number(input.value || min) + 1);
+                                    return;
+                                }
+                                if (event.key === 'ArrowDown') {
+                                    event.preventDefault();
+                                    setLimitedValue(Number(input.value || min) - 1);
+                                    return;
+                                }
+                                if (event.key.length === 1 || event.key === 'Backspace' || event.key === 'Delete') {
+                                    event.preventDefault();
+                                }
+                            });
+                            sync();
+                        })();
+                    </script>
 
 					{{ formgroup(
                         {
