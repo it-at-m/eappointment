@@ -20,7 +20,8 @@ class AvailabilityHistory extends \BO\Zmsbackend\Query\Base implements \BO\Zmsba
     /** @var list<string> */
     public const array ALLOWED_ACTIONS = Entity::ACTIONS;
 
-    protected int $resolveLevel = 0;
+    /** @var int */
+    protected $resolveLevel = 0;
 
     public function __construct(
         mixed $queryType,
