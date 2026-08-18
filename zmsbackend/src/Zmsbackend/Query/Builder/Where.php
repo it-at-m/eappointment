@@ -63,6 +63,7 @@ trait Where
      * @param   string|null             $operator   Operator (=, !=, <>, <= etc)
      * @param   mixed|null              $value      Value to test against
      * @return  $this|array                         $this on set, array on get
+     * @psalm-api
      */
     public function orWhere($field = null, $operator = null, $value = null)
     {
@@ -76,7 +77,10 @@ trait Where
         return $this;
     }
 
-    public function whereIn(string $field, array $values)
+    /**
+     * @psalm-api
+     */
+    public function whereIn(string $field, array $values): static|array
     {
         if (empty($values)) {
             throw new \InvalidArgumentException('whereIn() requires a non-empty $values array.');

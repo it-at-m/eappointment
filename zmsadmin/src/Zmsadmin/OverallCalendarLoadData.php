@@ -11,6 +11,9 @@ use Psr\Http\Message\ResponseInterface;
 
 class OverallCalendarLoadData extends BaseController
 {
+    /**
+     * @return ResponseInterface
+     */
     #[\Override]
     public function readResponse(
         RequestInterface $request,

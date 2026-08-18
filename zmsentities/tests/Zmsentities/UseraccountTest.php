@@ -9,7 +9,7 @@ namespace BO\Zmsentities\Tests;
  */
 class UseraccountTest extends EntityCommonTests
 {
-    const DEFAULT_TIME = '2016-04-01 11:55:00';
+    const string DEFAULT_TIME = '2016-04-01 11:55:00';
 
     public $entityclass = '\BO\Zmsentities\Useraccount';
 

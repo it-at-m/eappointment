@@ -90,7 +90,10 @@ class WorkstationProcess extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
-    protected function validateProcessCurrentDate($process)
+    /**
+     * @return void
+     */
+    protected function validateProcessCurrentDate(\BO\Zmsentities\Process|null $process)
     {
         if (!$process || !$process->hasId() || !$process->isWithAppointment()) {
             return;
@@ -118,7 +121,10 @@ class WorkstationProcess extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
-    protected function testProcessData($entity)
+    /**
+     * @return void
+     */
+    protected function testProcessData(\BO\Zmsentities\Process $entity)
     {
         $authCheck = (new Query())->readAuthKeyByProcessId($entity->id);
         if (! $authCheck) {
@@ -129,7 +135,10 @@ class WorkstationProcess extends \BO\Zmsbackend\Api\BaseController
         \BO\Zmsbackend\Helper\Matching::testCurrentScopeHasRequest($entity);
     }
 
-    protected function testProcess($process, $workstation, $allowClusterWideCall)
+    /**
+     * @return void
+     */
+    protected function testProcess(\BO\Zmsentities\Process $process, $workstation, $allowClusterWideCall)
     {
         if ('called' == $process->status || 'processing' == $process->status) {
             throw new \BO\Zmsbackend\Process\Exception\ProcessAlreadyCalled();

@@ -16,7 +16,7 @@ use DateTime;
 
 class WorkstationInfo
 {
-    public static function getInfoBoxData(Workstation $workstation, $selectedDate)
+    public static function getInfoBoxData(Workstation $workstation, string $selectedDate)
     {
         $infoData = array(
             'waitingTimeEstimate' => 0,
@@ -73,7 +73,7 @@ class WorkstationInfo
         return $infoData;
     }
 
-    public static function stringTimeToMinute($time)
+    public static function stringTimeToMinute($time): int
     {
         $timeArray = explode(':', $time === null ? '' : $time);
 
@@ -103,7 +103,11 @@ class WorkstationInfo
             ->getCollection();
     }
 
-    protected static function getAdditionalInfoData($infoData, $queueListHelper)
+    /**
+     * @param (float|int|mixed)[] $infoData
+     *
+     */
+    protected static function getAdditionalInfoData(array $infoData, QueueListHelper $queueListHelper)
     {
         $infoData['waitingTimeEstimate'] = $queueListHelper->getEstimatedWaitingTime();
         $infoData['waitingTimeOptimistic'] = $queueListHelper->getOptimisticWaitingTime();

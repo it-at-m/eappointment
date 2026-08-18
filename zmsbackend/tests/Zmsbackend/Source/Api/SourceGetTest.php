@@ -8,7 +8,7 @@ class SourceGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "SourceGet";
 
-    const SOURCE = 'unittest';
+    const string SOURCE = 'unittest';
 
     public function testRendering()
     {

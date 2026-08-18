@@ -8,6 +8,9 @@ declare(strict_types=1);
 
 namespace BO\Slim;
 
+/**
+ * @psalm-suppress PropertyNotSetInConstructor
+ */
 class Request extends \Slim\Psr7\Request
 {
     /**
@@ -19,6 +22,7 @@ class Request extends \Slim\Psr7\Request
      * @param  mixed  $default The default value.
      *
      * @return mixed
+     * @psalm-api
      */
     public function getParam(string $key, $default = null)
     {
@@ -41,12 +45,13 @@ class Request extends \Slim\Psr7\Request
      * please use explicitly the query params or parsed request body params
      *
      * @return mixed[]
+     * @psalm-api
      */
-    public function getParams()
+    public function getParams(): array
     {
         $params = $this->getQueryParams();
         $postParams = $this->getParsedBody();
-        if ($postParams) {
+        if (is_array($postParams) || is_object($postParams)) {
             $params = array_replace($params, (array)$postParams);
         }
 
@@ -62,8 +67,9 @@ class Request extends \Slim\Psr7\Request
      * @param mixed  $default Default value to return if the attribute does not exist.
      *
      * @return mixed
+     * @psalm-api
      */
-    public function getCookieParam($key, $default = null)
+    public function getCookieParam(string $key, $default = null)
     {
         $cookies = $this->getCookieParams();
         $result = $default;
@@ -77,26 +83,11 @@ class Request extends \Slim\Psr7\Request
     /**
      * @deprecated (use SlimApp::getBasePath() or resolve a named route instead)
      * @return string
+     * @psalm-api
      */
     public function getBasePath(): string
     {
-        $basePath = getenv('ZMS_MODULE_BASEPATH') !== false ? getenv('ZMS_MODULE_BASEPATH') : '';
-        if (empty($basePath)) {
-            $serverParams = $this->getServerParams();
-
-            if (!isset($serverParams['REQUEST_URI']) || !isset($serverParams['SCRIPT_NAME'])) {
-                return $basePath;
-            }
-
-            while (
-                min(strlen($serverParams['REQUEST_URI']), strlen($serverParams['SCRIPT_NAME'])) > strlen($basePath)
-                && strncmp($serverParams['REQUEST_URI'], $serverParams['SCRIPT_NAME'], strlen($basePath) + 1) === 0
-            ) {
-                $basePath = substr($serverParams['REQUEST_URI'], 0, strlen($basePath) + 1);
-            }
-        }
-
-        return rtrim($basePath, '/');
+        return $this->resolveBasePath();
     }
 
     /**
@@ -108,19 +99,47 @@ class Request extends \Slim\Psr7\Request
      *
      * @deprecated
      * @return string
+     * @psalm-api
      */
-    public function getBaseUrl()
+    public function getBaseUrl(): string
     {
         $scheme = $this->getUri()->getScheme();
         $authority = $this->getUri()->getAuthority();
-        $basePath = $this->getBasePath();
+        $basePath = $this->resolveBasePath();
 
         if ($authority !== '' && substr($basePath, 0, 1) !== '/') {
             $basePath = $basePath . '/' . $basePath;
         }
 
         return ($scheme !== '' ? $scheme . ':' : '')
-            . ($authority ? '//' . $authority : '')
+            . ($authority !== '' ? '//' . $authority : '')
             . rtrim($basePath, '/');
+    }
+
+    private function resolveBasePath(): string
+    {
+        $envBasePath = getenv('ZMS_MODULE_BASEPATH');
+        $basePath = $envBasePath !== false ? $envBasePath : '';
+        if ($basePath === '') {
+            $serverParams = $this->getServerParams();
+            $requestUri = $serverParams['REQUEST_URI'] ?? null;
+            $scriptName = $serverParams['SCRIPT_NAME'] ?? null;
+            if (!is_string($requestUri) || !is_string($scriptName)) {
+                return $basePath;
+            }
+
+            while (
+                min(strlen($requestUri), strlen($scriptName)) > strlen($basePath)
+                && strncmp($requestUri, $scriptName, strlen($basePath) + 1) === 0
+            ) {
+                $nextPath = substr($requestUri, 0, strlen($basePath) + 1);
+                if ($nextPath === false) {
+                    break;
+                }
+                $basePath = $nextPath;
+            }
+        }
+
+        return rtrim($basePath, '/');
     }
 }

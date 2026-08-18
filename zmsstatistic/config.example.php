@@ -12,19 +12,19 @@ class App extends \BO\Zmsstatistic\Application
 {
     const string IDENTIFIER = ZMS_IDENTIFIER;
     const bool DEBUG = false;
-    const TWIG_CACHE = ZMS_STATISTIC_TWIG_CACHE;
+    const mixed TWIG_CACHE = ZMS_STATISTIC_TWIG_CACHE;
 
     /**
      * HTTP url for api
      */
-    const HTTP_BASE_URL = ZMS_API_URL;
+    const string HTTP_BASE_URL = ZMS_API_URL;
 
     /**
      * Name of the module
      */
     const string MODULE_NAME = ZMS_MODULE_NAME;
 
-    public static $http_curl_config = [
+    public static array $http_curl_config = [
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_TIMEOUT => ZMS_CURL_TIMEOUT,
         //CURLOPT_VERBOSE => true,

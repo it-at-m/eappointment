@@ -18,6 +18,7 @@ class ValidArray extends \BO\Mellon\Valid
      * @param String $message error message in case of failure
      *
      * @return self
+     * @psalm-api
      */
     public function isArray($message = 'no valid array')
     {

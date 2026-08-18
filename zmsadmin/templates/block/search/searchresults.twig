@@ -27,14 +27,15 @@
                     <input type="date" id="search-date" name="date" value="{{ date }}" class="form-control">
                 </div>
 
-                <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
-                    <label class="form-label">Sachbearbeiter</label><br>
+                {% if workstation.useraccount.permissions.logs|default(false) %}
+                    <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
+                        <label class="form-label">Sachbearbeiter</label><br>
 
-                    <input type="radio" id="search-user-yes" name="user" value="1" {% if userAction == 1 %}checked="checked"{% endif %}> <label for="search-user-yes">Ja</label>
-                    <input type="radio" id="search-user-no" name="user" value="2" {% if userAction == 2 %}checked="checked"{% endif %}> <label for="search-user-no">Nein</label>
-                    <input type="radio" id="search-user-none" name="user" value="0" {% if userAction == 0 %}checked="checked"{% endif %}> <label for="search-user-none">Ohne Filter</label>
-                </div>
-
+                        <input type="radio" id="search-user-yes" name="user" value="1" {% if userAction == 1 %}checked="checked"{% endif %}> <label for="search-user-yes">Ja</label>
+                        <input type="radio" id="search-user-no" name="user" value="2" {% if userAction == 2 %}checked="checked"{% endif %}> <label for="search-user-no">Nein</label>
+                        <input type="radio" id="search-user-none" name="user" value="0" {% if userAction == 0 %}checked="checked"{% endif %}> <label for="search-user-none">Ohne Filter</label>
+                    </div>
+                {% endif %}
                 <input type="hidden" name="perPage" value="{{ perPage }}">
                 {% if hideNavigation %}
                     <input type="hidden" name="hideNavigation" value="1">
@@ -48,7 +49,7 @@
 
         {% if processSearchTotal is defined and (searchProcessQuery or service or provider or date) %}
             <p class="m-5" style="margin-top: 0;">
-                {% set shownCount = processList.count() + processListOther.count() %}
+                {% set shownCount = processList.count() %}
                 {% if processSearchTotal > shownCount %}
                     Es werden {{ shownCount }} von {{ processSearchTotal }} Treffern angezeigt.
                     Bitte verfeinern Sie Ihre Suche oder blättern Sie zur nächsten Seite.
@@ -59,7 +60,7 @@
         {% endif %}
 
         <div tabindex="1" class="table-responsive-wrapper">
-            <table class="table--base" data-processList-count="{{ processList.count() }}"  data-processListOther-count="{{ processListOther.count() }}">
+            <table class="table--base" data-processList-count="{{ processList.count() }}">
                 <thead>
                 <tr>
                     <th>Name (Nr.)</th>
@@ -68,19 +69,26 @@
                     <th>Telefon</th>
                     <th>E-Mail</th>
                     <th>Anmerkung</th>
+                    <th>Terminstatus</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for process in processList %}
                     <tr>
                         <td>
-                            {% if process.status == "pending" %}
+                            {% if process.source == "history" %}
+                                {{ process.clients.0.familyName }} ({{ process.displayNumber }})
+                            {% elseif process.status == "pending" %}
                                 <a tabindex="1">
-                                    {{process.clients.0.familyName}} ({{process.displayNumber}})
+                                    {{ process.clients.0.familyName }} ({{ process.displayNumber }})
                                 </a>
                             {% else %}
-                                <a tabindex="1" href="{{ urlGet("counter", {}, {'selectedprocess': process.id, 'date': process.appointments.0.date|date('Y-m-d'), 'selectedscope': process.scope.id }) }}">
-                                    {{process.clients.0.familyName}} ({{process.displayNumber}})
+                                <a tabindex="1" href="{{ urlGet("counter", {}, {
+                                    'selectedprocess': process.id,
+                                    'date': process.appointments.0.date|date('Y-m-d'),
+                                    'selectedscope': process.scope.id
+                                }) }}">
+                                    {{ process.clients.0.familyName }} ({{ process.displayNumber }})
                                 </a>
                             {% endif %}
                         </td>
@@ -89,19 +97,26 @@
                         <td>{{process.clients.0.telephone}}</td>
                         <td>{{process.clients.0.email}}</td>
                         <td class="limited-width"><div class="queue-table-text-cell queue-table-free-text">{{ process.amendment|default('')|e|nl2br }}</div></td>
-                    </tr>
-                {% endfor %}
-                {% for process in processListOther %}
-                    <tr>
                         <td>
-                            {{process.clients.0.familyName}} ({{process.displayNumber}})
+                            {% if process.appointmentStatus == "planned" %}
+                                <div>Status: Geplant</div>
+                            {% elseif process.appointmentStatus == "completed" %}
+                                <div>Status: Abgeschlossen</div>
+                            {% elseif process.appointmentStatus == "missed" %}
+                                <div>Status: Nicht erschienen</div>
+                            {% endif %}
+
+                            {% if process.createTimestamp|default(0) > 0 %}
+                                <div>Buchung: {{ process.createTimestamp|date('d.m.Y, H:i') }}&nbsp;Uhr</div>
+                            {% endif %}
+
+                            {% if process.queue.callTime|default(0) > 0 %}
+                                <div>Terminaufruf: {{ process.queue.callTime|date('d.m.Y, H:i') }}&nbsp;Uhr</div>
+                            {% endif %}
                         </td>
-                        <td>{{process.appointments.0.date|date('d.m.Y, H:i')}}&nbsp;Uhr</td>
-                        <td>{{process.scope.contact.name}} {{process.scope.shortName}}</td>
-                        <td colspan="4"><small>(nicht im aktuellen Standort)</small></td>
                     </tr>
                 {% endfor %}
-                {% if processList.count() == 0 and processListOther.count() == 0 %}
+                {% if processList.count() == 0 %}
                     <tr>
                         <td colspan="7" tabindex="1">Keine Ergebnisse gefunden</td>
                     </tr>
@@ -115,7 +130,7 @@
                         <tr>
                             <td>{{ log.reference }}</td>
                             <td>{{log.ts|date('d.m.Y, H:i:s')}}&nbsp;Uhr</td>
-                            <td colspan="4">
+                            <td colspan="5">
                                 {{ log.message }}<br>
                                 {% if data is defined %}
                                     {% for key, value in data %}
