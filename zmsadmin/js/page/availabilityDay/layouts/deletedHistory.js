@@ -1,5 +1,6 @@
 import React, { useEffect, useState, Fragment } from 'react'
 import PropTypes from 'prop-types'
+import $ from 'jquery'
 import {
     ACTION_LABELS,
     formatChangedAt,
@@ -26,15 +27,10 @@ const DeletedAvailabilityHistory = ({ historyUrl, refreshKey }) => {
         const separator = String(historyUrl).includes('?') ? '&' : '?'
         const url = `${historyUrl}${separator}action=deleted`
 
-        fetch(url, {
-            method: 'GET',
-            credentials: 'same-origin',
-            headers: { Accept: 'application/json' }
-        }).then((response) => {
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`)
-            }
-            return response.json()
+        new Promise((resolve, reject) => {
+            $.ajax(url, { method: 'GET' })
+                .done((payload) => resolve(payload))
+                .fail((xhr) => reject(new Error(`HTTP ${xhr.status}`)))
         }).then((payload) => {
             if (cancelled) {
                 return
