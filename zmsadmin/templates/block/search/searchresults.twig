@@ -49,7 +49,7 @@
 
         {% if processSearchTotal is defined and (searchProcessQuery or service or provider or date) %}
             <p class="m-5" style="margin-top: 0;">
-                {% set shownCount = processList.count() + processListOther.count() %}
+                {% set shownCount = processList.count() %}
                 {% if processSearchTotal > shownCount %}
                     Es werden {{ shownCount }} von {{ processSearchTotal }} Treffern angezeigt.
                     Bitte verfeinern Sie Ihre Suche oder blättern Sie zur nächsten Seite.
@@ -60,7 +60,7 @@
         {% endif %}
 
         <div tabindex="1" class="table-responsive-wrapper">
-            <table class="table--base" data-processList-count="{{ processList.count() }}"  data-processListOther-count="{{ processListOther.count() }}">
+            <table class="table--base" data-processList-count="{{ processList.count() }}">
                 <thead>
                 <tr>
                     <th>Name (Nr.)</th>
@@ -99,11 +99,11 @@
                         <td class="limited-width"><div class="queue-table-text-cell queue-table-free-text">{{ process.amendment|default('')|e|nl2br }}</div></td>
                         <td>
                             {% if process.appointmentStatus == "planned" %}
-                                <div>Status: geplant</div>
+                                <div>Status: Geplant</div>
                             {% elseif process.appointmentStatus == "completed" %}
-                                <div>Status: abgeschlossen</div>
+                                <div>Status: Abgeschlossen</div>
                             {% elseif process.appointmentStatus == "missed" %}
-                                <div>Status: nicht erschienen</div>
+                                <div>Status: Nicht erschienen</div>
                             {% endif %}
 
                             {% if process.createTimestamp|default(0) > 0 %}
@@ -116,17 +116,7 @@
                         </td>
                     </tr>
                 {% endfor %}
-                {% for process in processListOther %}
-                    <tr>
-                        <td>
-                            {{process.clients.0.familyName}} ({{process.displayNumber}})
-                        </td>
-                        <td>{{process.appointments.0.date|date('d.m.Y, H:i')}}&nbsp;Uhr</td>
-                        <td>{{process.scope.contact.name}} {{process.scope.shortName}}</td>
-                        <td colspan="4"><small>(nicht im aktuellen Standort)</small></td>
-                    </tr>
-                {% endfor %}
-                {% if processList.count() == 0 and processListOther.count() == 0 %}
+                {% if processList.count() == 0 %}
                     <tr>
                         <td colspan="7" tabindex="1">Keine Ergebnisse gefunden</td>
                     </tr>

@@ -290,11 +290,11 @@ class ProcessSearch extends \BO\Zmsbackend\Base
         ?int $limit = null,
         int $offset = 0
     ): array {
-        $activeQuery = $this->buildSearchQuery(
+        $searchRepository = $this->buildSearchQuery(
             $parameter
         );
 
-        $activeQuery->addCombinedActiveProjection();
+        $searchRepository->addCombinedActiveProjection();
 
         $scopeIds = null;
 
@@ -327,7 +327,7 @@ class ProcessSearch extends \BO\Zmsbackend\Base
 
         $historyParameters = [];
 
-        $historySql = $activeQuery->getHistorySelectSql(
+        $historySql = $searchRepository->getHistorySelectSql(
             $scopeIds,
             $appointmentFrom,
             $searchQuery,
@@ -345,7 +345,7 @@ class ProcessSearch extends \BO\Zmsbackend\Base
             ]
         );
 
-        $combinedSql = $activeQuery->getCombinedSelectSql(
+        $combinedSql = $searchRepository->getCombinedSelectSql(
             $historySql
         );
 
@@ -372,7 +372,7 @@ class ProcessSearch extends \BO\Zmsbackend\Base
         }
 
         $parameters = array_merge(
-            $activeQuery->getParameters(),
+            $searchRepository->getParameters(),
             $historyParameters
         );
 
