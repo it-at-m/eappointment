@@ -121,8 +121,11 @@ class AvailabilityHistory extends \BO\Zmsbackend\Query\Base implements \BO\Zmsba
         ];
     }
 
+    /**
+     * @param array $data
+     */
     #[\Override]
-    public function postProcess(array $data): array
+    public function postProcess($data): array
     {
         $intFields = [
             'id',
