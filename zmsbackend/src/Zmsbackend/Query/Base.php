@@ -70,8 +70,9 @@ abstract class Base
     /**
      * List of joined aliasnames to avoid double joins
      *
+     * @var list<string>
      */
-    protected $joinedAliasList = [];
+    protected array $joinedAliasList = [];
 
     /**
      * List of joined queries to avoid double joins
@@ -79,7 +80,8 @@ abstract class Base
      */
     protected $joinedQueryList = [];
 
-    protected $withEntities = [];
+    /** @var list<string> */
+    protected array $withEntities = [];
 
     /**
      * Create query builder if necessary

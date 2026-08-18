@@ -17,6 +17,7 @@ use BO\Zmsentities\Exception\UserAccountMissingRights;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
+/** @psalm-api */
 class AvailabilityHistoryByScope extends \BO\Zmsbackend\Api\BaseController
 {
     /**

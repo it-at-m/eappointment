@@ -13,9 +13,9 @@ use BO\Zmsbackend\Config\Service\Config as ConfigRepository;
 
 class AvailabilityHistoryCleanUpByCron
 {
-    protected $verbose = false;
+    protected bool $verbose = false;
 
-    public function __construct($verbose = false)
+    public function __construct(bool $verbose = false)
     {
         if ($verbose) {
             $this->verbose = true;
@@ -23,14 +23,14 @@ class AvailabilityHistoryCleanUpByCron
         }
     }
 
-    protected function log($message)
+    protected function log(string $message): void
     {
         if ($this->verbose) {
             \App::$log->info($message);
         }
     }
 
-    public function startProcessing($commit = false): int
+    public function startProcessing(bool $commit = false): int
     {
         $config = (new ConfigRepository())->readEntity();
         $olderThan = (int) ($config->getPreference('availability_history', 'deleteOlderThanDays')

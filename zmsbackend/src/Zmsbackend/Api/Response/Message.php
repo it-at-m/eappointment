@@ -11,20 +11,14 @@ use Psr\Http\Message\RequestInterface;
  */
 class Message implements \JsonSerializable
 {
-    /**
-     * @var \BO\Zmsentities\Metaresult $meta
-     */
-    public $meta = null;
+    public \BO\Zmsentities\Metaresult $meta;
 
     /**
      * @var Mixed $data
      */
     public mixed $data = null;
 
-    /**
-     * @var Mixed $data
-     */
-    public $statuscode = 200;
+    public int $statuscode = 200;
 
 
     protected RequestInterface $request;

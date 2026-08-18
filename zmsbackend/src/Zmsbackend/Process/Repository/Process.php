@@ -702,6 +702,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    /** @psalm-api */
     public function addOrderByAppointmentDate(): static
     {
         $this->query->orderBy('process.Datum', 'ASC');
@@ -710,6 +711,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    /** @psalm-api */
     public function addOrderBySearchRelevance(string $queryString): static
     {
         $queryString = trim($queryString);
