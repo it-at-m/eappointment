@@ -9,6 +9,7 @@ namespace BO\Zmsbackend\Availability\Api;
 
 use BO\Slim\Render;
 use BO\Zmsbackend\Availability\Service\Availability as AvailabilityRepository;
+use BO\Zmsbackend\Availability\Service\AvailabilityHistory as AvailabilityHistoryService;
 use BO\Zmsbackend\Helper\CalculateSlots as CalculateSlotsHelper;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -32,6 +33,7 @@ class AvailabilityDelete extends \BO\Zmsbackend\Api\BaseController
         $entity = $repository->readEntity($args['id'], 2);
 
         if ($entity->scope && $entity->hasId() && $repository->deleteEntity($entity->getId())) {
+            (new AvailabilityHistoryService())->writeDeleted($entity);
             (new CalculateSlotsHelper(\App::DEBUG))->writePostProcessingByScope($entity->scope, \App::$now);
             App::$log->info('Deleted availability', [
                 'id' => $entity->getId(),
