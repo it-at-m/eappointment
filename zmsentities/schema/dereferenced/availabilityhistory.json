@@ -1,6 +1,6 @@
 {
   "type": "object",
-  "description": "Append-only audit snapshot of an opening-hours (availability) change for tech-admin history (ZMSKVR-1249). Display fields mirror the admin day table; weekday uses the same bit-flag object shape as availability.weekday.",
+  "description": "Append-only audit snapshot of an opening-hours (availability) change for tech-admin history (ZMSKVR-1249). Snapshot fields use the same English names as oeffnungszeit; weekday uses the same bit-flag object shape as availability.weekday.",
   "example": {
     "id": 1,
     "scopeId": 141,
@@ -15,15 +15,23 @@
       "saturday": 0,
       "sunday": 0
     },
-    "series": "jede Woche",
-    "validFrom": "03.08.2026",
-    "validTo": "06.09.2026",
-    "timeRange": "10:00 - 12:00",
-    "type": "Terminkunden",
-    "slotTime": "15min",
-    "workstations": "3/3",
-    "bookable": "0-5",
-    "description": "Neue Öffnungszeit",
+    "startDate": "2026-08-03",
+    "endDate": "2026-09-06",
+    "everyXWeeks": 1,
+    "everyOtherWeek": 0,
+    "startTime": "00:00:00",
+    "appointmentStartTime": "10:00:00",
+    "endTime": "00:00:00",
+    "appointmentEndTime": "12:00:00",
+    "timeSlot": "00:15:00",
+    "workstationCount": 0,
+    "appointmentWorkstationCount": 3,
+    "comment": "Neue Öffnungszeit",
+    "internetReduction": 0,
+    "multipleSlotsAllowed": 0,
+    "openFromDays": 0,
+    "openUntilDays": 5,
+    "version": 1,
     "changedAt": "2016-04-01 11:00:00",
     "changedBy": "unittest"
   },
@@ -136,50 +144,119 @@
         }
       }
     },
-    "series": {
+    "startDate": {
       "type": "string",
       "default": "",
-      "description": "Human-readable series label as shown in the admin day table"
+      "description": "Validity start date Y-m-d (oeffnungszeit.start_date)"
     },
-    "validFrom": {
+    "endDate": {
       "type": "string",
       "default": "",
-      "description": "Validity start date formatted d.m.Y"
+      "description": "Validity end date Y-m-d (oeffnungszeit.end_date)"
     },
-    "validTo": {
-      "type": "string",
-      "default": "",
-      "description": "Validity end date formatted d.m.Y"
+    "everyXWeeks": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^[0-9]+$" }
+      ],
+      "default": 0,
+      "description": "Repeat every N weeks (oeffnungszeit.every_x_weeks)"
     },
-    "timeRange": {
-      "type": "string",
-      "default": "",
-      "description": "Daily time range, e.g. '10:00 - 12:00'"
+    "everyOtherWeek": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^[0-9]+$" }
+      ],
+      "default": 0,
+      "description": "Nth week of month (oeffnungszeit.every_other_week)"
     },
-    "type": {
+    "startTime": {
       "type": "string",
-      "default": "",
-      "description": "Human-readable availability type label (e.g. Terminkunden)"
+      "default": "00:00:00",
+      "description": "Walk-in start time (oeffnungszeit.start_time)"
     },
-    "slotTime": {
+    "appointmentStartTime": {
       "type": "string",
-      "default": "",
-      "description": "Slot length label, e.g. '15min'"
+      "default": "00:00:00",
+      "description": "Appointment start time (oeffnungszeit.appointment_start_time)"
     },
-    "workstations": {
+    "endTime": {
       "type": "string",
-      "default": "",
-      "description": "Workstation counts as intern/public, e.g. '3/3'"
+      "default": "00:00:00",
+      "description": "Walk-in end time (oeffnungszeit.end_time)"
     },
-    "bookable": {
+    "appointmentEndTime": {
       "type": "string",
-      "default": "",
-      "description": "Bookable day range as start-end, e.g. '0-5'"
+      "default": "00:00:00",
+      "description": "Appointment end time (oeffnungszeit.appointment_end_time)"
     },
-    "description": {
+    "timeSlot": {
       "type": "string",
-      "default": "",
-      "description": "Internal note snapshot"
+      "default": "00:00:00",
+      "description": "Slot length as TIME (oeffnungszeit.time_slot)"
+    },
+    "workstationCount": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^-?[0-9]+$" }
+      ],
+      "default": 0,
+      "description": "Workstation count snapshot (oeffnungszeit.workstation_count)"
+    },
+    "appointmentWorkstationCount": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^-?[0-9]+$" }
+      ],
+      "default": 0,
+      "description": "Intern workstation count (oeffnungszeit.appointment_workstation_count)"
+    },
+    "comment": {
+      "type": ["null", "string"],
+      "default": null,
+      "description": "Internal note (oeffnungszeit.comment)"
+    },
+    "internetReduction": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "number" },
+        { "type": "string", "pattern": "^-?[0-9]+$" }
+      ],
+      "default": 0,
+      "description": "Intern minus public workstations (oeffnungszeit.internet_reduction)"
+    },
+    "multipleSlotsAllowed": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "boolean" },
+        { "type": "string", "pattern": "^[01]$" }
+      ],
+      "default": 0,
+      "description": "Multiple slots allowed (oeffnungszeit.multiple_slots_allowed)"
+    },
+    "openFromDays": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^-?[0-9]+$" }
+      ],
+      "default": 0,
+      "description": "Bookable from days (oeffnungszeit.open_from_days)"
+    },
+    "openUntilDays": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^-?[0-9]+$" }
+      ],
+      "default": 0,
+      "description": "Bookable until days (oeffnungszeit.open_until_days)"
+    },
+    "version": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^[0-9]+$" }
+      ],
+      "default": 1,
+      "description": "Availability version at snapshot time"
     },
     "changedAt": {
       "type": "string",

@@ -81,6 +81,17 @@
         sunday: 'Sonntag'
     };
     var weekdayOrder = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    var seriesLabels = {
+        '0': 'einmaliger Termin',
+        '-1': 'jede Woche',
+        '-2': 'alle 2 Wochen',
+        '-3': 'alle 3 Wochen',
+        '1': 'jede 1. Woche im Monat',
+        '2': 'jede 2. Woche im Monat',
+        '3': 'jede 3. Woche im Monat',
+        '4': 'jede 4. Woche im Monat',
+        '5': 'jede letzte Woche im Monat'
+    };
 
     function formatWeekdays(weekday) {
         if (!weekday || typeof weekday !== 'object') {
@@ -91,6 +102,97 @@
         }).map(function (key) {
             return weekdayLabels[key];
         }).join(', ');
+    }
+
+    function isZeroTime(value) {
+        if (!value) {
+            return true;
+        }
+        var normalized = String(value).trim();
+        return normalized === '00:00:00' || normalized === '00:00' || normalized === '0:00' || normalized === '0';
+    }
+
+    function pad(n) {
+        return n < 10 ? '0' + n : String(n);
+    }
+
+    function formatDate(value) {
+        if (!value) {
+            return '';
+        }
+        var match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (match) {
+            return match[3] + '.' + match[2] + '.' + match[1];
+        }
+        return String(value);
+    }
+
+    function formatTime(value) {
+        if (!value) {
+            return '';
+        }
+        var match = String(value).match(/^(\d{1,2}):(\d{2})/);
+        if (!match) {
+            return '';
+        }
+        return pad(parseInt(match[1], 10)) + ':' + match[2];
+    }
+
+    function formatSeries(row) {
+        var afterWeeks = parseInt(row.everyXWeeks, 10) || 0;
+        var weekOfMonth = parseInt(row.everyOtherWeek, 10) || 0;
+        var key = '0';
+        if (afterWeeks > 0) {
+            key = String(-afterWeeks);
+        } else if (weekOfMonth > 0) {
+            key = String(weekOfMonth);
+        }
+        return seriesLabels[key] || '';
+    }
+
+    function formatType(row) {
+        return isZeroTime(row.appointmentStartTime) ? 'Spontankunden' : 'Terminkunden';
+    }
+
+    function formatTimeRange(row) {
+        var useAppointment = !isZeroTime(row.appointmentStartTime);
+        var startLabel = formatTime(useAppointment ? row.appointmentStartTime : row.startTime);
+        var endLabel = formatTime(useAppointment ? row.appointmentEndTime : row.endTime);
+        if (!startLabel && !endLabel) {
+            return '';
+        }
+        return startLabel + ' - ' + endLabel;
+    }
+
+    function formatSlotTime(row) {
+        var match = String(row.timeSlot || '').match(/^(\d{1,2}):(\d{2})/);
+        if (!match) {
+            return '';
+        }
+        return (parseInt(match[1], 10) * 60 + parseInt(match[2], 10)) + 'min';
+    }
+
+    function formatWorkstations(row) {
+        var intern = parseInt(row.appointmentWorkstationCount, 10);
+        if (isNaN(intern)) {
+            return '';
+        }
+        var reduction = parseInt(row.internetReduction, 10) || 0;
+        var publicCount = intern - reduction;
+        if (publicCount < 0) {
+            publicCount = 0;
+        }
+        return intern + '/' + publicCount;
+    }
+
+    function formatBookable(row) {
+        if (row.openFromDays === null || row.openFromDays === undefined || row.openFromDays === '') {
+            return '';
+        }
+        if (row.openUntilDays === null || row.openUntilDays === undefined || row.openUntilDays === '') {
+            return '';
+        }
+        return row.openFromDays + '-' + row.openUntilDays;
     }
 
     function cell(text) {
@@ -124,15 +226,15 @@
             }
             tr.appendChild(meta);
             tr.appendChild(cell(formatWeekdays(row.weekday)));
-            tr.appendChild(cell(row.series));
-            tr.appendChild(cell(row.validFrom));
-            tr.appendChild(cell(row.validTo));
-            tr.appendChild(cell(row.timeRange));
-            tr.appendChild(cell(row.type));
-            tr.appendChild(cell(row.slotTime));
-            tr.appendChild(cell(row.workstations));
-            tr.appendChild(cell(row.bookable));
-            tr.appendChild(cell(row.description));
+            tr.appendChild(cell(formatSeries(row)));
+            tr.appendChild(cell(formatDate(row.startDate)));
+            tr.appendChild(cell(formatDate(row.endDate)));
+            tr.appendChild(cell(formatTimeRange(row)));
+            tr.appendChild(cell(formatType(row)));
+            tr.appendChild(cell(formatSlotTime(row)));
+            tr.appendChild(cell(formatWorkstations(row)));
+            tr.appendChild(cell(formatBookable(row)));
+            tr.appendChild(cell(row.comment));
             tbodyEl.appendChild(tr);
         });
         statusEl.hidden = true;

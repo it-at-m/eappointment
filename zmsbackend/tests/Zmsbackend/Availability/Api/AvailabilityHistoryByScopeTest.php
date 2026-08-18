@@ -22,11 +22,16 @@ class AvailabilityHistoryByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertSame(62, array_sum($body['data'][0]['weekday']));
         $this->assertSame(2, $body['data'][0]['weekday']['monday']);
         $this->assertSame(0, $body['data'][0]['weekday']['saturday']);
-        $this->assertSame('Terminkunden', $body['data'][0]['type']);
-        $this->assertSame('15min', $body['data'][0]['slotTime']);
-        $this->assertSame('3/3', $body['data'][0]['workstations']);
-        $this->assertSame('0-5', $body['data'][0]['bookable']);
-        $this->assertSame('Neue Öffnungszeit', $body['data'][0]['description']);
+        $this->assertSame('2026-08-03', $body['data'][0]['startDate']);
+        $this->assertSame('2026-09-06', $body['data'][0]['endDate']);
+        $this->assertSame(1, $body['data'][0]['everyXWeeks']);
+        $this->assertSame('10:00:00', $body['data'][0]['appointmentStartTime']);
+        $this->assertSame('12:00:00', $body['data'][0]['appointmentEndTime']);
+        $this->assertSame('00:15:00', $body['data'][0]['timeSlot']);
+        $this->assertSame(3, $body['data'][0]['appointmentWorkstationCount']);
+        $this->assertSame(0, $body['data'][0]['openFromDays']);
+        $this->assertSame(5, $body['data'][0]['openUntilDays']);
+        $this->assertSame('Neue Öffnungszeit', $body['data'][0]['comment']);
     }
 
     public function testMissingAccessRights()
@@ -101,28 +106,38 @@ class AvailabilityHistoryByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
     {
         (new \BO\Zmsbackend\Availability\Service\AvailabilityHistory())->perform(
             'INSERT INTO availability_history
-                (scope_id, availability_id, action, weekday, series, valid_from, valid_to,
-                 time_range, type, slot_time, workstations, bookable, description,
-                 changed_at, changed_by)
+                (scope_id, availability_id, action, start_date, end_date, every_x_weeks, every_other_week,
+                 weekday, start_time, appointment_start_time, end_time, appointment_end_time, time_slot,
+                 workstation_count, appointment_workstation_count, comment, internet_reduction,
+                 multiple_slots_allowed, open_from_days, open_until_days, version, changed_at, changed_by)
              VALUES
-                (:scopeId, :availabilityId, :action, :weekday, :series, :validFrom, :validTo,
-                 :timeRange, :type, :slotTime, :workstations, :bookable, :description,
-                 :changedAt, :changedBy)',
+                (:scopeId, :availabilityId, :action, :startDate, :endDate, :everyXWeeks, :everyOtherWeek,
+                 :weekday, :startTime, :appointmentStartTime, :endTime, :appointmentEndTime, :timeSlot,
+                 :workstationCount, :appointmentWorkstationCount, :comment, :internetReduction,
+                 :multipleSlotsAllowed, :openFromDays, :openUntilDays, :version, :changedAt, :changedBy)',
             [
                 'scopeId' => self::SCOPE_ID,
                 'availabilityId' => $availabilityId,
                 'action' => $action,
+                'startDate' => '2026-08-03',
+                'endDate' => '2026-09-06',
+                'everyXWeeks' => 1,
+                'everyOtherWeek' => 0,
                 // Mo–Fr bit matrix (same as availability.weekday): 2|4|8|16|32 = 62
                 'weekday' => 62,
-                'series' => 'jede Woche',
-                'validFrom' => '03.08.2026',
-                'validTo' => '06.09.2026',
-                'timeRange' => '10:00 - 12:00',
-                'type' => 'Terminkunden',
-                'slotTime' => '15min',
-                'workstations' => '3/3',
-                'bookable' => '0-5',
-                'description' => 'Neue Öffnungszeit',
+                'startTime' => '00:00:00',
+                'appointmentStartTime' => '10:00:00',
+                'endTime' => '00:00:00',
+                'appointmentEndTime' => '12:00:00',
+                'timeSlot' => '00:15:00',
+                'workstationCount' => 0,
+                'appointmentWorkstationCount' => 3,
+                'comment' => 'Neue Öffnungszeit',
+                'internetReduction' => 0,
+                'multipleSlotsAllowed' => 0,
+                'openFromDays' => 0,
+                'openUntilDays' => 5,
+                'version' => 1,
                 // Wall-clock timestamp: GET filters by real now, not frozen App::$now.
                 'changedAt' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
                 'changedBy' => 'unittest',
