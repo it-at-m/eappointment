@@ -62,9 +62,15 @@ class AvailabilityHistoryByScope extends \BO\Zmsbackend\Api\BaseController
             $availabilityId ? (int) $availabilityId : null,
             $action
         );
+        $message->setUpdatedMetaData();
+        // Empty history is a valid list. setUpdatedMetaData() otherwise maps it to
+        // meta.error = "Not found", which zmsadmin/zmsclient turns into HTTP 500.
+        $message->statuscode = 200;
+        $message->meta->error = false;
+        $message->meta->message = '';
 
         $response = Render::withLastModified($response, time(), '0');
-        return Render::withJson($response, $message->setUpdatedMetaData(), 200);
+        return Render::withJson($response, $message, 200);
     }
 
     protected function assertTechAdminAccess(RequestInterface $request): void
@@ -84,7 +90,12 @@ class AvailabilityHistoryByScope extends \BO\Zmsbackend\Api\BaseController
         $fromParam = Validator::param('from')->isString()->getValue();
         $toParam = Validator::param('to')->isString()->getValue();
 
-        $now = \DateTimeImmutable::createFromInterface(App::$now ?? new \DateTimeImmutable('now'));
+        // History rows use MySQL CURRENT_TIMESTAMP (wall clock). Do not use App::$now:
+        // ZMS_TIMEADJUST on remote freezes that clock, so GET misses real inserts.
+        $timezone = App::$now instanceof \DateTimeInterface
+            ? App::$now->getTimezone()
+            : new \DateTimeZone('Europe/Berlin');
+        $now = new \DateTimeImmutable('now', $timezone);
         $to = $toParam
             ? $this->parseDateParam($toParam, true)
             : $now->setTime(23, 59, 59);
