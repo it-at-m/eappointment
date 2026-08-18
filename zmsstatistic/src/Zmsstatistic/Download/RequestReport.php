@@ -68,8 +68,11 @@ class RequestReport extends Base
         return $spreadsheet;
     }
 
-    public function writeHeader(ReportEntity $report, \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet, $datePatternCol): void
-    {
+    public function writeHeader(
+        ReportEntity $report,
+        \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet,
+        string $datePatternCol
+    ): void {
         $reportHeader = [];
         $reportHeader[] = 'Dienstleistung';
         $reportHeader[] = 'Ø Bearbeitungsdauer';

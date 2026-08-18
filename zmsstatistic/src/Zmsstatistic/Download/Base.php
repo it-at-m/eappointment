@@ -179,7 +179,7 @@ class Base extends BaseController
         return $spreadsheet;
     }
 
-    protected function setDateTime($dateString): \DateTime
+    protected function setDateTime(string $dateString): \DateTime
     {
         $dateArr = explode('-', $dateString);
         if (2 == count($dateArr)) {
@@ -197,7 +197,7 @@ class Base extends BaseController
     /**
      * @return false|string
      */
-    protected function getFormatedDates($date, $pattern = 'MMMM'): string|false
+    protected function getFormatedDates(\DateTimeInterface $date, string $pattern = 'MMMM'): string|false
     {
         $dateFormatter = new \IntlDateFormatter(
             'de-DE',
