@@ -5,6 +5,13 @@ import {
     ACTION_LABELS,
     formatChangedAt,
     formatWeekdays,
+    formatHistoryDate,
+    formatHistorySeries,
+    formatHistoryType,
+    formatHistoryTimeRange,
+    formatHistorySlotTime,
+    formatHistoryWorkstations,
+    formatHistoryBookable,
     AvailabilityHistoryPanel
 } from './historyShared'
 
@@ -132,15 +139,15 @@ const DeletedAvailabilityHistory = ({ historyUrl, refreshKey }) => {
                                                     {row.changedBy ? <div>{row.changedBy}</div> : null}
                                                 </td>
                                                 <td>{formatWeekdays(row.weekday) || '–'}</td>
-                                                <td>{row.series || '–'}</td>
-                                                <td>{row.validFrom || '–'}</td>
-                                                <td>{row.validTo || '–'}</td>
-                                                <td>{row.timeRange || '–'}</td>
-                                                <td>{row.type || '–'}</td>
-                                                <td>{row.slotTime || '–'}</td>
-                                                <td>{row.workstations || '–'}</td>
-                                                <td>{row.bookable || '–'}</td>
-                                                <td>{row.description || '–'}</td>
+                                                <td>{formatHistorySeries(row) || '–'}</td>
+                                                <td>{formatHistoryDate(row.startDate) || '–'}</td>
+                                                <td>{formatHistoryDate(row.endDate) || '–'}</td>
+                                                <td>{formatHistoryTimeRange(row) || '–'}</td>
+                                                <td>{formatHistoryType(row) || '–'}</td>
+                                                <td>{formatHistorySlotTime(row) || '–'}</td>
+                                                <td>{formatHistoryWorkstations(row) || '–'}</td>
+                                                <td>{formatHistoryBookable(row) || '–'}</td>
+                                                <td>{row.comment || '–'}</td>
                                             </tr>
                                             {historyOpen ?
                                                 <tr className="availability-history-row">

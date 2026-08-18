@@ -21,29 +21,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
     public const DEFAULT_RETENTION_DAYS = 180;
     public const MAX_ROWS = 500;
 
-    private const DESCRIPTION_MAX_LENGTH = 512;
-
-    /** @var array<string, string> */
-    private const TYPE_LABELS = [
-        'openinghours' => 'Spontankunden',
-        'appointment' => 'Terminkunden',
-    ];
-
-    /** @var array<int, string> */
-    private const SERIES_AFTER_WEEKS = [
-        1 => 'jede Woche',
-        2 => 'alle 2 Wochen',
-        3 => 'alle 3 Wochen',
-    ];
-
-    /** @var array<int, string> */
-    private const SERIES_WEEK_OF_MONTH = [
-        1 => 'jede 1. Woche im Monat',
-        2 => 'jede 2. Woche im Monat',
-        3 => 'jede 3. Woche im Monat',
-        4 => 'jede 4. Woche im Monat',
-        5 => 'jede letzte Woche im Monat',
-    ];
+    private const COMMENT_MAX_LENGTH = 200;
 
     public function writeCreated(Availability $availability, ?string $changedBy = null): bool
     {
@@ -108,58 +86,54 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
 
     public function buildSnapshot(Availability $availability): array
     {
-        $startDate = $availability->getStartDateTime()->format('d.m.Y');
-        $endDate = $availability->getEndDateTime()->format('d.m.Y');
-        $startTime = $availability->getStartDateTime()->format('H:i');
-        $endTime = $availability->getEndDateTime()->format('H:i');
-        $slotMinutes = (int) ($availability->slotTimeInMinutes ?? $availability->getSlotTimeInMinutes());
-        $bookableFrom = $availability->bookable['startInDays'] ?? null;
-        $bookableTo = $availability->bookable['endInDays'] ?? null;
-        $intern = (int) ($availability->workstationCount['intern'] ?? 0);
-        $public = (int) ($availability->workstationCount['public'] ?? 0);
-        $description = trim((string) ($availability->description ?? ''));
-        if (mb_strlen($description) > self::DESCRIPTION_MAX_LENGTH) {
-            $description = mb_substr($description, 0, self::DESCRIPTION_MAX_LENGTH - 3) . '...';
+        $comment = $availability->description ?? null;
+        if (is_string($comment) && mb_strlen($comment) > self::COMMENT_MAX_LENGTH) {
+            $comment = mb_substr($comment, 0, self::COMMENT_MAX_LENGTH - 3) . '...';
         }
 
+        $intern = (int) ($availability->workstationCount['intern'] ?? 0);
+        $public = (int) ($availability->workstationCount['public'] ?? 0);
+        $slotMinutes = (int) ($availability->slotTimeInMinutes ?? $availability->getSlotTimeInMinutes());
+        $isOpeningHours = $availability->type === 'openinghours';
+
         return [
+            'start_date' => $availability->getStartDateTime()->format('Y-m-d'),
+            'end_date' => $availability->getEndDateTime()->format('Y-m-d'),
+            'every_x_weeks' => (int) ($availability->repeat['afterWeeks'] ?? 0),
+            'every_other_week' => (int) ($availability->repeat['weekOfMonth'] ?? 0),
             'weekday' => Entity::encodeWeekdayMask($availability),
-            'series' => $this->resolveSeriesLabel($availability),
-            'valid_from' => $startDate,
-            'valid_to' => $endDate,
-            'time_range' => "{$startTime} - {$endTime}",
-            'type' => self::TYPE_LABELS[$availability->type] ?? (string) $availability->type,
-            'slot_time' => $slotMinutes . 'min',
-            'workstations' => "{$intern}/{$public}",
-            'bookable' => $this->formatBookableRange($bookableFrom, $bookableTo),
-            'description' => $description,
+            'start_time' => $isOpeningHours ? $this->formatTimeValue($availability->startTime) : '00:00:00',
+            'end_time' => $isOpeningHours ? $this->formatTimeValue($availability->endTime) : '00:00:00',
+            'appointment_start_time' => $isOpeningHours
+                ? '00:00:00'
+                : $this->formatTimeValue($availability->startTime),
+            'appointment_end_time' => $isOpeningHours
+                ? '00:00:00'
+                : $this->formatTimeValue($availability->endTime),
+            'time_slot' => gmdate('H:i:s', max(0, $slotMinutes) * 60),
+            'workstation_count' => 0,
+            'appointment_workstation_count' => $intern,
+            'comment' => $comment,
+            'internet_reduction' => $intern - $public,
+            'multiple_slots_allowed' => !empty($availability->multipleSlotsAllowed) ? 1 : 0,
+            'open_from_days' => (int) ($availability->bookable['startInDays'] ?? 0),
+            'open_until_days' => (int) ($availability->bookable['endInDays'] ?? 0),
+            'version' => $availability->version !== null ? (int) $availability->version : 1,
         ];
     }
 
-    protected function resolveSeriesLabel(Availability $availability): string
+    protected function formatTimeValue(mixed $value): string
     {
-        $afterWeeks = (int) ($availability->repeat['afterWeeks'] ?? 0);
-        $weekOfMonth = (int) ($availability->repeat['weekOfMonth'] ?? 0);
-
-        if ($afterWeeks > 0) {
-            return self::SERIES_AFTER_WEEKS[$afterWeeks] ?? "alle {$afterWeeks} Wochen";
-        }
-        if ($weekOfMonth > 0) {
-            return self::SERIES_WEEK_OF_MONTH[$weekOfMonth]
-                ?? ($weekOfMonth >= 5
-                    ? self::SERIES_WEEK_OF_MONTH[5]
-                    : "jede {$weekOfMonth}. Woche im Monat");
+        if ($value === null || $value === '' || $value === 0 || $value === '0') {
+            return '00:00:00';
         }
 
-        return 'einmaliger Termin';
-    }
+        $value = trim((string) $value);
+        if (preg_match('/^\d{1,2}:\d{2}$/', $value) === 1) {
+            return $value . ':00';
+        }
 
-    protected function formatBookableRange($from, $to): string
-    {
-        $fromLabel = ($from === null || $from === '') ? '?' : (string) $from;
-        $toLabel = ($to === null || $to === '') ? '?' : (string) $to;
-
-        return "{$fromLabel}-{$toLabel}";
+        return $value;
     }
 
     protected function write(string $action, Availability $availability, ?string $changedBy): bool

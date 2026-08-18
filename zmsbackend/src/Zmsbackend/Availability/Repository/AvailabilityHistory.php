@@ -40,16 +40,24 @@ class AvailabilityHistory extends \BO\Zmsbackend\Query\Base implements \BO\Zmsba
             'scopeId' => self::ALIAS . '.scope_id',
             'availabilityId' => self::ALIAS . '.availability_id',
             'action' => self::ALIAS . '.action',
+            'startDate' => self::ALIAS . '.start_date',
+            'endDate' => self::ALIAS . '.end_date',
+            'everyXWeeks' => self::ALIAS . '.every_x_weeks',
+            'everyOtherWeek' => self::ALIAS . '.every_other_week',
             'weekday' => self::ALIAS . '.weekday',
-            'series' => self::ALIAS . '.series',
-            'validFrom' => self::ALIAS . '.valid_from',
-            'validTo' => self::ALIAS . '.valid_to',
-            'timeRange' => self::ALIAS . '.time_range',
-            'type' => self::ALIAS . '.type',
-            'slotTime' => self::ALIAS . '.slot_time',
-            'workstations' => self::ALIAS . '.workstations',
-            'bookable' => self::ALIAS . '.bookable',
-            'description' => self::ALIAS . '.description',
+            'startTime' => self::ALIAS . '.start_time',
+            'appointmentStartTime' => self::ALIAS . '.appointment_start_time',
+            'endTime' => self::ALIAS . '.end_time',
+            'appointmentEndTime' => self::ALIAS . '.appointment_end_time',
+            'timeSlot' => self::ALIAS . '.time_slot',
+            'workstationCount' => self::ALIAS . '.workstation_count',
+            'appointmentWorkstationCount' => self::ALIAS . '.appointment_workstation_count',
+            'comment' => self::ALIAS . '.comment',
+            'internetReduction' => self::ALIAS . '.internet_reduction',
+            'multipleSlotsAllowed' => self::ALIAS . '.multiple_slots_allowed',
+            'openFromDays' => self::ALIAS . '.open_from_days',
+            'openUntilDays' => self::ALIAS . '.open_until_days',
+            'version' => self::ALIAS . '.version',
             'changedAt' => self::ALIAS . '.changed_at',
             'changedBy' => self::ALIAS . '.changed_by',
         ];
@@ -86,16 +94,24 @@ class AvailabilityHistory extends \BO\Zmsbackend\Query\Base implements \BO\Zmsba
             'scope_id' => (int) $row['scope_id'],
             'availability_id' => $row['availability_id'] !== null ? (int) $row['availability_id'] : null,
             'action' => $row['action'],
+            'start_date' => (string) $row['start_date'],
+            'end_date' => (string) $row['end_date'],
+            'every_x_weeks' => (int) ($row['every_x_weeks'] ?? 0),
+            'every_other_week' => (int) ($row['every_other_week'] ?? 0),
             'weekday' => (int) $row['weekday'],
-            'series' => (string) $row['series'],
-            'valid_from' => (string) $row['valid_from'],
-            'valid_to' => (string) $row['valid_to'],
-            'time_range' => (string) $row['time_range'],
-            'type' => (string) $row['type'],
-            'slot_time' => (string) $row['slot_time'],
-            'workstations' => (string) $row['workstations'],
-            'bookable' => (string) $row['bookable'],
-            'description' => (string) $row['description'],
+            'start_time' => (string) ($row['start_time'] ?? '00:00:00'),
+            'appointment_start_time' => (string) ($row['appointment_start_time'] ?? '00:00:00'),
+            'end_time' => (string) ($row['end_time'] ?? '00:00:00'),
+            'appointment_end_time' => (string) ($row['appointment_end_time'] ?? '00:00:00'),
+            'time_slot' => (string) ($row['time_slot'] ?? '00:00:00'),
+            'workstation_count' => (int) ($row['workstation_count'] ?? 0),
+            'appointment_workstation_count' => (int) ($row['appointment_workstation_count'] ?? 0),
+            'comment' => $row['comment'] ?? null,
+            'internet_reduction' => (int) ($row['internet_reduction'] ?? 0),
+            'multiple_slots_allowed' => (int) ($row['multiple_slots_allowed'] ?? 0),
+            'open_from_days' => (int) ($row['open_from_days'] ?? 0),
+            'open_until_days' => (int) ($row['open_until_days'] ?? 0),
+            'version' => (int) ($row['version'] ?? 1),
             'changed_by' => $row['changed_by'],
         ];
     }
@@ -103,12 +119,66 @@ class AvailabilityHistory extends \BO\Zmsbackend\Query\Base implements \BO\Zmsba
     #[\Override]
     public function postProcess($data): array
     {
-        $data[$this->getPrefixed('id')] = (int) $data[$this->getPrefixed('id')];
-        $data[$this->getPrefixed('scopeId')] = (int) $data[$this->getPrefixed('scopeId')];
+        $intFields = [
+            'id',
+            'scopeId',
+            'everyXWeeks',
+            'everyOtherWeek',
+            'workstationCount',
+            'appointmentWorkstationCount',
+            'internetReduction',
+            'multipleSlotsAllowed',
+            'openFromDays',
+            'openUntilDays',
+            'version',
+        ];
+        foreach ($intFields as $field) {
+            $data[$this->getPrefixed($field)] = (int) $data[$this->getPrefixed($field)];
+        }
+
         $availabilityId = $data[$this->getPrefixed('availabilityId')];
         $data[$this->getPrefixed('availabilityId')] = $availabilityId !== null ? (int) $availabilityId : null;
         $data[$this->getPrefixed('weekday')] = Entity::decodeWeekdayMask((int) $data[$this->getPrefixed('weekday')]);
+        $data[$this->getPrefixed('startDate')] = $this->asDateString($data[$this->getPrefixed('startDate')]);
+        $data[$this->getPrefixed('endDate')] = $this->asDateString($data[$this->getPrefixed('endDate')]);
+        $data[$this->getPrefixed('startTime')] = $this->asTimeString($data[$this->getPrefixed('startTime')]);
+        $data[$this->getPrefixed('appointmentStartTime')] = $this->asTimeString(
+            $data[$this->getPrefixed('appointmentStartTime')]
+        );
+        $data[$this->getPrefixed('endTime')] = $this->asTimeString($data[$this->getPrefixed('endTime')]);
+        $data[$this->getPrefixed('appointmentEndTime')] = $this->asTimeString(
+            $data[$this->getPrefixed('appointmentEndTime')]
+        );
+        $data[$this->getPrefixed('timeSlot')] = $this->asTimeString($data[$this->getPrefixed('timeSlot')]);
 
         return $data;
+    }
+
+    private function asDateString(mixed $value): string
+    {
+        if ($value instanceof \DateTimeInterface) {
+            return $value->format('Y-m-d');
+        }
+
+        $value = (string) $value;
+        if (preg_match('/^\d{4}-\d{2}-\d{2}/', $value) === 1) {
+            return substr($value, 0, 10);
+        }
+
+        return $value;
+    }
+
+    private function asTimeString(mixed $value): string
+    {
+        if ($value instanceof \DateTimeInterface) {
+            return $value->format('H:i:s');
+        }
+
+        $value = (string) $value;
+        if (preg_match('/^\d{1,2}:\d{2}(:\d{2})?/', $value, $matches) === 1) {
+            return $matches[0];
+        }
+
+        return $value;
     }
 }
