@@ -4,7 +4,7 @@
     <div class="board__header">
         <h2 class="board__heading heading"
             id="availability-history-heading"
-            data-url="{{ urlGet('scopeAvailabilityHistory', {'id': scope.id}, {}) }}">
+            data-url="{{ includeUrl }}/scope/{{ scope.id }}/availability/history/">
             Änderungsverlauf
         </h2>
     </div>
@@ -143,18 +143,11 @@
     statusEl.textContent = 'Wird geladen…';
     wrapEl.hidden = true;
 
-    fetch(heading.getAttribute('data-url'), {
-        method: 'GET',
-        credentials: 'same-origin',
-        headers: { 'Accept': 'application/json' }
-    }).then(function (response) {
-        if (!response.ok) {
-            throw new Error('HTTP ' + response.status);
-        }
-        return response.json();
-    }).then(function (payload) {
+    window.jQuery.ajax(heading.getAttribute('data-url'), {
+        method: 'GET'
+    }).done(function (payload) {
         renderRows(payload.data || []);
-    }).catch(function () {
+    }).fail(function () {
         statusEl.textContent = 'Änderungsverlauf konnte nicht geladen werden.';
         statusEl.hidden = false;
         wrapEl.hidden = true;

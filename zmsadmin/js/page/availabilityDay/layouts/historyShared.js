@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
+import $ from 'jquery'
 import { weekDayList } from '../helpers'
+
+const loadHistory = (url) => new Promise((resolve, reject) => {
+    $.ajax(url, { method: 'GET' })
+        .done((payload) => resolve(payload))
+        .fail((xhr) => reject(new Error(`HTTP ${xhr.status}`)))
+})
 
 export const ACTION_LABELS = {
     created: 'Erstellt',
@@ -91,16 +98,7 @@ export const AvailabilityHistoryPanel = ({ historyUrl, availabilityId, refreshKe
         const separator = String(historyUrl).includes('?') ? '&' : '?'
         const url = `${historyUrl}${separator}availabilityId=${encodeURIComponent(availabilityId)}`
 
-        fetch(url, {
-            method: 'GET',
-            credentials: 'same-origin',
-            headers: { Accept: 'application/json' }
-        }).then((response) => {
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`)
-            }
-            return response.json()
-        }).then((payload) => {
+        loadHistory(url).then((payload) => {
             if (cancelled) {
                 return
             }

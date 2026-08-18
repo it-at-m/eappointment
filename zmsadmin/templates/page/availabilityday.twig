@@ -94,7 +94,7 @@
         data-busyslots="{{ busySlotsForAvailabilities|json_encode }}"
         data-canViewAvailabilityHistory="{{ canViewAvailabilityHistory|default(false) ? 'true' : 'false' }}"
         {% if canViewAvailabilityHistory|default(false) %}
-        data-historyUrl="{{ urlGet('scopeAvailabilityHistory', {'id': scope.id}, {}) }}"
+        data-historyUrl="{{ includeUrl }}/scope/{{ scope.id }}/availability/history/"
         {% endif %}
         ></div>
 
