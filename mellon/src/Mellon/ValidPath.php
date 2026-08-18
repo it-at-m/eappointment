@@ -18,6 +18,7 @@ class ValidPath extends ValidString
      * @param String $message error message in case of failure
      *
      * @return self
+     * @psalm-api
      */
     public function isPath($message = 'no valid path')
     {

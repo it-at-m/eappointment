@@ -6,9 +6,9 @@ class AppointmentUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "AppointmentUpdate";
 
-    const PROCESS_ID = 94860; // with appointment date 1464595200 2016-05-30 10:00
+    const int PROCESS_ID = 94860; // with appointment date 1464595200 2016-05-30 10:00
 
-    const AUTHKEY = 'cdce';
+    const string AUTHKEY = 'cdce';
 
     public function testRendering()
     {

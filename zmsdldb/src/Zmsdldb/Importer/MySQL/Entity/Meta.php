@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class Meta extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'object_id' => 'object_id',
         'hash' => 'hash',
         'locale' => 'locale',
@@ -16,12 +16,12 @@ class Meta extends Base
     ];
 
     #[\Override]
-    protected function setupMapping()
+    protected function setupMapping(): void
     {
         $this->referanceMapping = [
             /*
             'keywords' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'object_id' => 'object_id',
                     'locale' => 'locale',
@@ -44,7 +44,7 @@ class Meta extends Base
                 'selfAsArray' => true
             ],
             'titles' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'object_id' => 'object_id',
                     'locale' => 'locale',
@@ -70,20 +70,22 @@ class Meta extends Base
     }
 
     #[\Override]
-    public function postSetupFields()
+    public function postSetupFields(): void
     {
-        if (array_key_exists('lastupdate', $this->fields) && !empty($this->fields['lastupdate'])) {
-            $this->fields['lastupdate'] = date_format(date_create($this->fields['lastupdate']), 'Y-m-d H:i:s');
-        } elseif (!array_key_exists('lastupdate', $this->fields) || empty($this->fields['lastupdate'])) {
+        $lastupdate = $this->fields['lastupdate'] ?? null;
+        $created = is_string($lastupdate) && $lastupdate !== '' ? date_create($lastupdate) : false;
+        if ($created instanceof \DateTimeInterface) {
+            $this->fields['lastupdate'] = $created->format('Y-m-d H:i:s');
+        } else {
             $this->fields['lastupdate'] = '1970-01-01 01:00:00';
         }
     }
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(
                     ['object_id', 'locale', 'type'],
                     array_values($this->get(['object_id', 'locale', 'type']))
@@ -95,10 +97,10 @@ class Meta extends Base
     }
 
     #[\Override]
-    public function clearEntity(array $addWhere = []): bool
+    public function clearEntity(array $addWhere = []): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(['type', 'locale'], array_values($this->get(['type', 'locale'])))
             );
         } catch (\Exception $e) {
@@ -106,16 +108,8 @@ class Meta extends Base
         }
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function itemNeedsUpdateAlt(
-        int $objectId = 0,
-        string $locale = '',
-        string $objectHash = '',
-        string $type = ''
-    ): bool {
+    public function itemNeedsUpdateAlt(): bool
+    {
         try {
             $statment = $this->getPDOAccess()->prepare(
                 "SELECT count(1) AS count FROM meta WHERE object_id = ? AND locale = ? AND hash = ? AND type = ?"
@@ -131,11 +125,9 @@ class Meta extends Base
                     $needsUpdate = true;
                 }
             }
-            #print_r([$needsUpdate ? 'T' : 'F', $fields]);
             return $needsUpdate;
         } catch (\Exception $e) {
             throw $e;
         }
-        return false;
     }
 }

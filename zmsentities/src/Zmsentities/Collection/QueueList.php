@@ -10,21 +10,21 @@ namespace BO\Zmsentities\Collection;
  */
 class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Queue';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Queue';
 
-    public const FAKE_WAITINGNUMBER = -1;
+    public const int FAKE_WAITINGNUMBER = -1;
 
-    public const STATUS_IGNORE = ['called', 'processing', 'missed', 'parked'];
+    public const array STATUS_IGNORE = ['called', 'processing', 'missed', 'parked'];
 
-    public const STATUS_APPEND = ['missed', 'parked'];
+    public const array STATUS_APPEND = ['missed', 'parked'];
 
-    public const STATUS_CALLED = ['called', 'processing'];
+    public const array STATUS_CALLED = ['called', 'processing'];
 
-    public const STATUS_FAKE = ['fake'];
+    public const array STATUS_FAKE = ['fake'];
 
-    public const DEFAULT_PRIORITY_WITHOUT_APPOINTMENT = 3;
+    public const int DEFAULT_PRIORITY_WITHOUT_APPOINTMENT = 3;
 
-    public const DEFAULT_PRIORITY_WITH_APPOINTMENT = 2;
+    public const int DEFAULT_PRIORITY_WITH_APPOINTMENT = 2;
 
     protected $processTimeAverage;
 
@@ -32,7 +32,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     protected $fromProcessList = false;
 
-    public function setWaitingTimePreferences($processTimeAverage, $workstationCount)
+    public function setWaitingTimePreferences($processTimeAverage, $workstationCount): static
     {
         if ($processTimeAverage <= 0) {
             throw new \Exception("QueueList::withEstimatedWaitingTime() requires processTimeAverage");
@@ -42,7 +42,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $this;
     }
 
-    public function setTransferedProcessList($bool = true)
+    public function setTransferedProcessList(bool $bool = true): static
     {
         $this->fromProcessList = $bool;
         return $this;
@@ -131,7 +131,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $queueWithWaitingTime;
     }
 
-    private function getSortPriority($queue): int
+    private function getSortPriority(\BO\Zmsentities\Queue $queue): int
     {
         $priority = self::DEFAULT_PRIORITY_WITHOUT_APPOINTMENT;
         if (empty($queue['priority']) && $queue['withAppointment']) {
@@ -144,7 +144,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $priority;
     }
 
-    public function withWaitingTime(\DateTimeInterface $dateTime)
+    public function withWaitingTime(\DateTimeInterface $dateTime): static
     {
         $queueList = $this;
         $timestamp = $dateTime->getTimestamp();
@@ -156,7 +156,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $queueList;
     }
 
-    public function withSortedArrival()
+    public function withSortedArrival(): static
     {
         $queueList = $this;
         $queueList->uasort(function ($first, $second) {
@@ -177,7 +177,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $queueList->sortByCustomKey('waitingTimeEstimate');
     }
 
-    public function withAppointment()
+    public function withAppointment(): self
     {
         $queueList = new self();
         foreach ($this as $entity) {
@@ -188,7 +188,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $queueList;
     }
 
-    public function withOutAppointment()
+    public function withOutAppointment(): self
     {
         $queueList = new self();
         foreach ($this as $entity) {
@@ -199,7 +199,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $queueList;
     }
 
-    public function getEstimatedWaitingTime($processTimeAverage, $workstationCount, \DateTimeInterface $dateTime)
+    public function getEstimatedWaitingTime($processTimeAverage, $workstationCount, \DateTimeInterface $dateTime): array
     {
         $queueList = $this->withFakeWaitingnumber($dateTime);
         $queueList = $queueList
@@ -212,7 +212,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $dataOfFackedEntity;
     }
 
-    public function withFakeWaitingnumber(\DateTimeInterface $dateTime)
+    public function withFakeWaitingnumber(\DateTimeInterface $dateTime): static
     {
         $queueList = $this;
         $process = new \BO\Zmsentities\Process(['status' => 'deleted']);
@@ -237,7 +237,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $entity;
     }
 
-    public function getQueueByNumber($number)
+    public function getQueueByNumber(int $number): \BO\Zmsentities\Queue|null
     {
         foreach ($this as $entity) {
             if ($entity->number == $number) {
@@ -275,7 +275,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return null;
     }
 
-    public function getQueuePositionByNumber($number)
+    public function getQueuePositionByNumber($number): int|null
     {
         $list = array_values($this->getArrayCopy());
         foreach ($list as $key => $entity) {
@@ -286,7 +286,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return null;
     }
 
-    public function getCountWithWaitingTime(?\DateTimeInterface $dateTime = null)
+    public function getCountWithWaitingTime(?\DateTimeInterface $dateTime = null): self
     {
         $queueList = new self();
         $timestamp = $dateTime ? $dateTime->getTimestamp() : null;
@@ -314,9 +314,8 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     /**
      * @param array $statusList of possible strings in process.status
-     *
      */
-    public function withStatus(array $statusList)
+    public function withStatus(array $statusList): self
     {
         $queueList = new self();
         foreach ($this as $entity) {
@@ -329,9 +328,8 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     /**
      * @param array $statusList of excepted strings in process.status
-     *
      */
-    public function withoutStatus(array $statusList)
+    public function withoutStatus(array $statusList): self
     {
         $queueList = new self();
         foreach ($this as $entity) {
@@ -342,7 +340,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $queueList;
     }
 
-    public function withShortNameDestinationHint(\BO\Zmsentities\Cluster $cluster, \BO\Zmsentities\Scope $scope)
+    public function withShortNameDestinationHint(\BO\Zmsentities\Cluster $cluster, \BO\Zmsentities\Scope $scope): self
     {
         $queueList = $this;
         $list = new self();
@@ -355,7 +353,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $list;
     }
 
-    public function toProcessList()
+    public function toProcessList(): ProcessList
     {
         $processList = new ProcessList();
         foreach ($this as $queue) {
@@ -367,7 +365,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $processList;
     }
 
-    public function withoutDublicates()
+    public function withoutDublicates(): self
     {
         $list = new self();
         $exists = [];
@@ -381,7 +379,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $list; // Cloning with this function
     }
 
-    public function getWaitingNumberList()
+    public function getWaitingNumberList(): array
     {
         $list = [];
         foreach ($this as $entity) {
@@ -390,12 +388,12 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $list;
     }
 
-    public function getWaitingNumberListCsv()
+    public function getWaitingNumberListCsv(): string
     {
         return implode(',', $this->getWaitingNumberList());
     }
 
-    public function withSelectedProcessFirst(\BO\Zmsentities\Process $process)
+    public function withSelectedProcessFirst(\BO\Zmsentities\Process $process): self
     {
         $queueList = $this;
         $list = new self();
@@ -408,7 +406,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $list;
     }
 
-    public function sortByCallTime(string $order)
+    public function sortByCallTime(string $order): self
     {
         $queueListArray = [];
         foreach ($this as $entity) {

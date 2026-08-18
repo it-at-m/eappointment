@@ -8,9 +8,9 @@ class WorkstationProcessWaitingnumberTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "WorkstationProcessWaitingnumber";
 
-    const PROCESS_ID = 10255;
+    const int PROCESS_ID = 10255;
 
-    const AUTHKEY = '29ed';
+    const string AUTHKEY = '29ed';
 
     public function testRendering()
     {

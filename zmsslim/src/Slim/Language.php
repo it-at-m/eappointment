@@ -3,19 +3,21 @@
 namespace BO\Slim;
 
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
+use Symfony\Component\Translation\Translator;
 
 class Language
 {
-    public static $supportedLanguages = array();
+    public static array $supportedLanguages = array();
 
-    public $current = '';
+    public string $current = '';
 
-    protected $currentLocale = '';
+    protected string $currentLocale = '';
 
-    protected $default = '';
+    protected string $default = '';
 
-    protected static $translatorInstance = null;
+    protected static ?Translator $translatorInstance = null;
 
     public function __construct(RequestInterface $request, array $supportedLanguages)
     {
@@ -26,6 +28,7 @@ class Language
         $this->setCurrentLocale();
         $defaultLang = $this->getDefault();
 
+        /** @psalm-suppress RedundantCondition Module App subclasses may set MULTILANGUAGE to false. */
         if (
             \App::MULTILANGUAGE
             || (strlen($fallbackLocale) > 0 && strlen($this->currentLocale) > 0 && strlen($defaultLang) > 0)
@@ -43,36 +46,38 @@ class Language
         }
     }
 
-    public function getDefaultLanguageName()
+    /** @psalm-api */
+    public function getDefaultLanguageName(): ?string
     {
         $default = \App::$supportedLanguages[$this->getDefault()]['name'] ?? null;
         return $default;
     }
 
-    public function getCurrentLanguage($lang = '')
+    public function getCurrentLanguage(string $lang = ''): string
     {
         $current = (isset(self::$supportedLanguages[$this->current])) ? $this->current : $this->getDefault();
         return ($lang != '') ? $lang : $current;
     }
 
-    public function getLocale($locale = '')
+    public function getLocale(string $locale = ''): string
     {
         $locale = ('' == $locale) ? $this->getDefault() : $locale;
         if (
             isset(self::$supportedLanguages[$this->getCurrentLanguage($locale)]) &&
             isset(self::$supportedLanguages[$this->getCurrentLanguage($locale)]['locale'])
         ) {
-            $locale = self::$supportedLanguages[$this->getCurrentLanguage($locale)]['locale'];
+            $locale = (string) self::$supportedLanguages[$this->getCurrentLanguage($locale)]['locale'];
         }
         return $locale;
     }
 
-    public function getCurrentLocale()
+    /** @psalm-api */
+    public function getCurrentLocale(): string
     {
         return $this->currentLocale;
     }
 
-    public function setCurrentLocale()
+    public function setCurrentLocale(): void
     {
         if (class_exists("Locale")) {
             \Locale::setDefault($this->currentLocale);
@@ -80,8 +85,13 @@ class Language
         \setlocale(LC_ALL, $this->getLocaleList($this->currentLocale));
     }
 
-    protected function getLocaleList($locale)
+    /**
+     * @return string[]
+     *
+     */
+    protected function getLocaleList(string $locale): array
     {
+        $localeList = [];
         $localeList[] = $this->getCurrentLanguage();
         $localeList[] = $locale;
         $suffixList = ['utf8', 'utf-8'];
@@ -91,40 +101,50 @@ class Language
         return $localeList;
     }
 
-    public function getDefault()
+    public function getDefault(): string
     {
-        if (! $this->default) {
-            foreach (self::$supportedLanguages as $lang_id => $lang_data) {
-                if (isset($lang_data['default']) && $lang_data['default']) {
-                    $this->default = $lang_id;
-                    break;
-                }
-            }
-            if (! $this->default) {
-                reset(self::$supportedLanguages);
-                $this->default = key(self::$supportedLanguages);
+        if ($this->default !== '') {
+            return $this->default;
+        }
+        foreach (self::$supportedLanguages as $lang_id => $lang_data) {
+            if (isset($lang_data['default']) && $lang_data['default']) {
+                $this->default = (string) $lang_id;
+                return $this->default;
             }
         }
+        $first = array_key_first(self::$supportedLanguages);
+        $this->default = $first !== null ? (string) $first : '';
         return $this->default;
     }
 
     // Detect current language based on request URI or Parameter
-    protected function getLanguageFromRequest(RequestInterface $request)
+    protected function getLanguageFromRequest(RequestInterface $request): string
     {
         $language = $this->getLanguageFromUri($request);
-        $route = $request->getAttribute('route');
 
-        if ($route instanceof \Slim\Routing\Route) {
-            $lang = $route->getArgument('lang');
-            $language = (!empty($lang)) ? $lang : $language;
+        if ($request instanceof ServerRequestInterface) {
+            $route = $request->getAttribute('route');
+            if ($route instanceof \Slim\Routing\Route) {
+                $lang = $route->getArgument('lang');
+                if ($lang !== null && $lang !== '') {
+                    $language = $lang;
+                }
+            }
         }
 
         return $language;
     }
 
-    protected function getLanguageFromUri($request)
+    protected function getLanguageFromUri(RequestInterface $request): string
     {
-        $requestParamLang = $request->getParam('lang');
-        return ($requestParamLang) ? $requestParamLang : $this->getDefault();
+        if ($request instanceof Request) {
+            $requestParamLang = $request->getParam('lang');
+            return ($requestParamLang) ? (string) $requestParamLang : $this->getDefault();
+        }
+        if ($request instanceof ServerRequestInterface) {
+            $query = $request->getQueryParams();
+            return !empty($query['lang']) ? (string) $query['lang'] : $this->getDefault();
+        }
+        return $this->getDefault();
     }
 }

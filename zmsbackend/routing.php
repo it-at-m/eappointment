@@ -4728,6 +4728,48 @@
 
 /**
  *  @swagger
+ *  "/scope/{id}/availability/history/":
+ *      get:
+ *          summary: Get opening-hours change history for a scope
+ *          x-since: 2.25
+ *          tags:
+ *              - scope
+ *              - availability
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: from
+ *                  description: "Inclusive start date (Y-m-d). Defaults to 180 days before to."
+ *                  in: query
+ *                  type: string
+ *              -   name: to
+ *                  description: "Inclusive end date (Y-m-d). Defaults to today."
+ *                  in: query
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success, newest first"
+ *              403:
+ *                  description: "tech admin (system_admin / superuser) required"
+ *              404:
+ *                  description: "scope id does not exist"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/availability/history/',
+    '\BO\Zmsbackend\Availability\Api\AvailabilityHistoryByScope'
+)
+    ->setName("AvailabilityHistoryByScope");
+
+/**
+ *  @swagger
  *  "/scope/{id}/conflict/":
  *      get:
  *          summary: Get a list of conflicts by scope and date

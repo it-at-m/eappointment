@@ -15,6 +15,9 @@ use BO\Zmsdldb\Collection\Topics as Collection;
  */
 class Topic extends Base
 {
+    /**
+     * @return Collection
+     */
     #[\Override]
     protected function parseData($data)
     {
@@ -40,7 +43,8 @@ class Topic extends Base
 
     /**
      *
-     * @return Entity
+     * @return Entity|false
+     * @psalm-api
      */
     public function fetchPath($topic_path)
     {
@@ -55,6 +59,7 @@ class Topic extends Base
 
     /**
      * @return Entity
+     * @psalm-api
      */
     public function readSearchResultList($querystring)
     {

@@ -10,6 +10,7 @@ import TableView from './timetable/tableview.js'
 import SaveBar from './saveBar'
 import AccordionLayout from './layouts/accordion'
 import PageLayout from './layouts/page'
+import DeletedAvailabilityHistory from './layouts/deletedHistory'
 import { inArray, showSpinner, hideSpinner } from '../../lib/utils'
 import ExceptionHandler from '../../lib/exceptionHandler';
 import BaseView from '../../lib/baseview';
@@ -776,6 +777,9 @@ class AvailabilityPage extends Component {
             onDelete={onDelete}
             onAbort={this.onRevertUpdates.bind(this)}
             slotBuckets={this.state.slotbuckets}
+            historyUrl={this.props.historyurl}
+            canViewAvailabilityHistory={Boolean(this.props.canviewavailabilityhistory)}
+            historyRefreshKey={this.state.lastSave || 0}
         />
     }
 
@@ -1001,6 +1005,15 @@ class AvailabilityPage extends Component {
     }
 
     render() {
+        const deletedHistory = (
+            this.props.canviewavailabilityhistory && this.props.historyurl
+        ) ? (
+            <DeletedAvailabilityHistory
+                historyUrl={this.props.historyurl}
+                refreshKey={this.state.lastSave || 0}
+            />
+        ) : null
+
         return (
             <PageLayout
                 tabs={<TabsBar selected={this.state.selectedTab} tabs={this.props.tabs} onSelect={this.onTabSelect.bind(this)} />}
@@ -1009,6 +1022,7 @@ class AvailabilityPage extends Component {
                 accordion={this.renderAvailabilityAccordion()}
                 saveBarBottom={this.renderSaveBar({ setSuccessRef: false })}
                 conflicts={<Conflicts conflicts={this.state.conflicts} onSelect={this.onConflictedIdSelect.bind(this)} />}
+                deletedHistory={deletedHistory}
             />
         )
     }
@@ -1019,7 +1033,9 @@ AvailabilityPage.propTypes = {
     timestamp: PropTypes.number,
     scope: PropTypes.object,
     links: PropTypes.object,
-    tabs: PropTypes.array
+    tabs: PropTypes.array,
+    historyurl: PropTypes.string,
+    canviewavailabilityhistory: PropTypes.bool
 }
 
 export default AvailabilityPage

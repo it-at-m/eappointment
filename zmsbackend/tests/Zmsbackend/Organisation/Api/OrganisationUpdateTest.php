@@ -11,7 +11,7 @@ class OrganisationUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "OrganisationUpdate";
 
-    const SCOPE_ID = 143;
+    const int SCOPE_ID = 143;
 
     public function testRendering()
     {

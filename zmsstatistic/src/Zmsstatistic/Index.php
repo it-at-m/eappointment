@@ -148,7 +148,7 @@ class Index extends BaseController
         }
         return $exceptionData;
     }
-    protected function getProviderList($config)
+    protected function getProviderList($config): array
     {
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider') ?? '');
         $oidcproviderlist = [];

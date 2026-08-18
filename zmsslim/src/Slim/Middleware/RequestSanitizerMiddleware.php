@@ -114,7 +114,7 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
             throw new \RuntimeException('String exceeds maximum length');
         }
 
-        $value = preg_replace('/[\x00-\x1F\x7F]/u', '', $value);
+        $value = preg_replace('/[\x00-\x1F\x7F]/u', '', $value) ?? '';
         $value = trim($value);
         if (!mb_check_encoding($value, 'UTF-8')) {
             $this->logger->logWarning('Invalid string encoding detected.', ['value' => $value]);

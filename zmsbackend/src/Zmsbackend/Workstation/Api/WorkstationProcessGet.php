@@ -47,7 +47,10 @@ class WorkstationProcessGet extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    protected function validateProcessStatus($process)
+    /**
+     * @return void
+     */
+    protected function validateProcessStatus(\BO\Zmsentities\Process $process)
     {
         $blockedStatuses = ['reserved', 'preconfirmed', 'deleted', 'called', 'processing'];
 

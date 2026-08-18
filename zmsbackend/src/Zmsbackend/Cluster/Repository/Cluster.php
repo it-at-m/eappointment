@@ -7,9 +7,9 @@ class Cluster extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'standortcluster';
+    const string TABLE = 'standortcluster';
 
-    public function getQueryWriteAssignedScopes()
+    public function getQueryWriteAssignedScopes(): string
     {
         return '
             REPLACE INTO `clusterzuordnung`
@@ -19,7 +19,7 @@ class Cluster extends \BO\Zmsbackend\Query\Base
         ';
     }
 
-    public function getQueryDeleteAssignedScopes()
+    public function getQueryDeleteAssignedScopes(): string
     {
         return '
             DELETE FROM `clusterzuordnung`
@@ -28,7 +28,13 @@ class Cluster extends \BO\Zmsbackend\Query\Base
         ';
     }
 
-    public function getEntityMapping()
+    /**
+     * @psalm-api
+     *
+     * @return string[]
+     *
+     */
+    public function getEntityMapping(): array
     {
         return [
             'id' => 'cluster.clusterID',
@@ -39,13 +45,13 @@ class Cluster extends \BO\Zmsbackend\Query\Base
         ];
     }
 
-    public function addConditionClusterId($clusterId)
+    public function addConditionClusterId($clusterId): static
     {
         $this->query->where('cluster.clusterID', '=', $clusterId);
         return $this;
     }
 
-    public function addConditionDepartmentId($departementId)
+    public function addConditionDepartmentId($departementId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias('standort', 'scope'),
@@ -57,7 +63,7 @@ class Cluster extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionScopeId($scopeId)
+    public function addConditionScopeId($scopeId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias('standort', 'scope'),
@@ -69,7 +75,11 @@ class Cluster extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Cluster $entity)
+    /**
+     * @return (int|mixed)[]
+     *
+     */
+    public function reverseEntityMapping(\BO\Zmsentities\Cluster $entity): array
     {
         $data = array();
         $data['name'] = $entity->name;
@@ -83,6 +93,9 @@ class Cluster extends \BO\Zmsbackend\Query\Base
         return $data;
     }
 
+    /**
+     * @return void
+     */
     #[\Override]
     public function addRequiredJoins()
     {

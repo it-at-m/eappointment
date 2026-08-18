@@ -14,6 +14,26 @@ class FactoryTest extends EntityCommonTests
         $this->assertTrue('Session' == $factory->getEntityName(), 'Failed to get EntityName of factored entity');
     }
 
+    public function testAvailabilityHistorySchemaResolvesPascalCaseClass()
+    {
+        $factory = \BO\Zmsentities\Schema\Factory::create([
+            '$schema' => 'https://schema.berlin.de/queuemanagement/availabilityhistory.json',
+            'scopeId' => 141,
+            'action' => 'created',
+            'weekday' => [
+                'monday' => 2,
+                'tuesday' => 0,
+                'wednesday' => 0,
+                'thursday' => 0,
+                'friday' => 0,
+                'saturday' => 0,
+                'sunday' => 0,
+            ],
+        ]);
+        $this->assertSame('AvailabilityHistory', $factory->getEntityName());
+        $this->assertEntity('\BO\Zmsentities\AvailabilityHistory', $factory->getEntity());
+    }
+
     public function testException()
     {
         $data = $this->getExampleData();

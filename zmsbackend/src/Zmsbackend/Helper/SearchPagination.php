@@ -4,11 +4,11 @@ namespace BO\Zmsbackend\Helper;
 
 final class SearchPagination
 {
-    public const DEFAULT_RESULTS_PER_PAGE = 100;
+    public const int DEFAULT_RESULTS_PER_PAGE = 100;
 
-    public const MIN_RESULTS_PER_PAGE = 1;
+    public const int MIN_RESULTS_PER_PAGE = 1;
 
-    public const MAX_RESULTS_PER_PAGE = 1000;
+    public const int MAX_RESULTS_PER_PAGE = 1000;
 
     public static function normalizePage(int $requestedPage): int
     {
