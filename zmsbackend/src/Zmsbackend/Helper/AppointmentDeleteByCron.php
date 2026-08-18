@@ -42,8 +42,11 @@ class AppointmentDeleteByCron
 
     protected $count = [];
 
+    protected $now;
+
     public function __construct($timeIntervalDays, \DateTimeInterface $now, $verbose = false)
     {
+        $this->now = $now;
         $deleteInSeconds = (24 * 60 * 60) * $timeIntervalDays;
         $time = new \DateTimeImmutable();
         $this->time = $time->setTimestamp($now->getTimestamp() - $deleteInSeconds);
@@ -134,7 +137,21 @@ class AppointmentDeleteByCron
             if (in_array($process->status, $this->archivelist)) {
                 $this->log("INFO: $processCount. Archive $process");
                 $process = $this->updateProcessStatus($process);
+
                 if ($commit && $this->shouldArchiveProcess($process)) {
+                    $historyStatus = $this->determineHistoryStatus($process);
+
+                    if ($historyStatus !== null) {
+                        $historyService =
+                            new \BO\Zmsbackend\ProcessSearchHistory\Service\ProcessSearchHistory();
+
+                        $historyService->writeHistoryEntry(
+                            $process,
+                            $historyStatus,
+                            $this->now
+                        );
+                    }
+
                     $this->archiveProcess($process);
                 }
             }
@@ -157,6 +174,21 @@ class AppointmentDeleteByCron
         return $process;
     }
 
+    protected function determineHistoryStatus(\BO\Zmsentities\Process $process): ?string
+    {
+        return match ($process->status) {
+            'missed' =>
+                \BO\Zmsbackend\ProcessSearchHistory\Service\ProcessSearchHistory::STATUS_MISSED,
+
+            'processing',
+            'parked',
+            'pending' =>
+                \BO\Zmsbackend\ProcessSearchHistory\Service\ProcessSearchHistory::STATUS_COMPLETED,
+
+            default => null,
+        };
+    }
+
     protected function shouldArchiveProcess(\BO\Zmsentities\Process $process): bool
     {
         if ($process->isDereferenced()) {
@@ -173,9 +205,8 @@ class AppointmentDeleteByCron
     protected function archiveProcess(\BO\Zmsentities\Process $process): void
     {
         $verbose = $this->verbose;
-        $now = new \DateTimeImmutable();
         $archiver = new \BO\Zmsbackend\Process\Service\ProcessStatusArchived();
-        $archived = $archiver->writeEntityFinished($process, $now);
+        $archived = $archiver->writeEntityFinished($process, $this->now);
         if ($archived && $verbose) {
             $this->log("INFO: Archived with Status=$process->status and Id=" . $archived->archiveId);
         }

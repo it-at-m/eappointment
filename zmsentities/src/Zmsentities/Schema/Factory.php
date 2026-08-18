@@ -48,6 +48,15 @@ class Factory
         }
         $schema = $this->data['$schema'];
         $entityName = preg_replace('#^.*/([^/]+)\.json#', '$1', $schema);
-        return ucfirst($entityName ?? '');
+        $entityName = ucfirst($entityName ?? '');
+
+        // jsonSerialize() lowercases the class short name (AvailabilityHistory →
+        // availabilityhistory.json). ucfirst then yields Availabilityhistory, which
+        // PSR-4 cannot autoload on Linux.
+        $classAliases = [
+            'Availabilityhistory' => 'AvailabilityHistory',
+        ];
+
+        return $classAliases[$entityName] ?? $entityName;
     }
 }
