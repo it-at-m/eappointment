@@ -91,7 +91,12 @@
         data-tabs="{{ tabs | json_encode }}"
         data-slotbuckets={{ slotBuckets|json_encode }}
         data-maxslots="{{ maxSlotsForAvailabilities|json_encode }}"
-        data-busyslots="{{ busySlotsForAvailabilities|json_encode }}" ></div>
+        data-busyslots="{{ busySlotsForAvailabilities|json_encode }}"
+        data-canViewAvailabilityHistory="{{ canViewAvailabilityHistory|default(false) ? 'true' : 'false' }}"
+        {% if canViewAvailabilityHistory|default(false) %}
+        data-historyUrl="{{ includeUrl }}/scope/{{ scope.id }}/availability/history/"
+        {% endif %}
+        ></div>
 
     <style>
         .hidden {

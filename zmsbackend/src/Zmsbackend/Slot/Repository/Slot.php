@@ -110,7 +110,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
            WHERE
              (
                a.OeffnungszeitID IS NULL
-               OR a.Endedatum < :dateString
+               OR a.end_date < :dateString
              )
              AND s.scopeID = :scopeID
     ';
@@ -122,7 +122,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
            SET s.status = "cancelled"
            WHERE
              a.OeffnungszeitID IS NULL
-               OR a.Endedatum < :dateString
+               OR a.end_date < :dateString
     ';
 
     const string QUERY_SELECT_DELETABLE_SLOT_PROCESS = '

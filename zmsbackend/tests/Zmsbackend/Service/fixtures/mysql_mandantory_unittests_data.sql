@@ -33,8 +33,8 @@ UNLOCK TABLES;
 UPDATE `buerger` SET `bestaetigt` = 1 WHERE `BuergerID` IN (10118, 10114, 10030);
 
 -- Fix ProcessReserveTest and ProcessFreeTest for QUERY_CANCEL_AVAILABILITY_AFTER_BOOKABLE:
--- Set Offen_bis = 60 for availability 94678 to match the expected endInDays: 60 in the test fixtures
-UPDATE `oeffnungszeit` SET `Offen_bis` = 60 WHERE `OeffnungszeitID` = 94678;
+-- Set open_until_days = 60 for availability 94678 to match the expected endInDays: 60 in the test fixtures
+UPDATE `oeffnungszeit` SET `open_until_days` = 60 WHERE `OeffnungszeitID` = 94678;
 
 LOCK TABLES `closures` WRITE;
 
@@ -80,7 +80,7 @@ SET `InfoDienstleisterID` = 9999999
 WHERE `StandortID` IN (65001, 65002, 65202)
   AND ( `InfoDienstleisterID` = 0 OR `InfoDienstleisterID` IS NULL );
 
-DELETE FROM `oeffnungszeit`     WHERE `StandortID` IN (65202);
+DELETE FROM `oeffnungszeit`     WHERE `scope_id` IN (65202);
 DELETE FROM `overview_calendar` WHERE `scope_id`   IN (65001,65002,65202);
 
 INSERT INTO `overview_calendar`
@@ -91,13 +91,13 @@ VALUES
     (65002, 965003, 'cancelled', '2025-05-14 11:00:00', '2025-05-14 11:05:00', '2025-05-05 00:00:00');
 
 INSERT INTO `oeffnungszeit`
-(`OeffnungszeitID`,`StandortID`,`Startdatum`,`Endedatum`,
- `allexWochen`,`jedexteWoche`,`Wochentag`,
- `Anfangszeit`,`Terminanfangszeit`,`Endzeit`,`Terminendzeit`,
- `Timeslot`,
- `Anzahlarbeitsplaetze`,`Anzahlterminarbeitsplaetze`,
- `kommentar`,`reduktionTermineImInternet`,`erlaubemehrfachslots`,
- `Offen_ab`,`Offen_bis`,`updateTimestamp`)
+(`OeffnungszeitID`,`scope_id`,`start_date`,`end_date`,
+ `every_x_weeks`,`every_other_week`,`weekday`,
+ `start_time`,`appointment_start_time`,`end_time`,`appointment_end_time`,
+ `time_slot`,
+ `workstation_count`,`appointment_workstation_count`,
+ `comment`,`internet_reduction`,`multiple_slots_allowed`,
+ `open_from_days`,`open_until_days`,`updated_at`)
 VALUES
     (965202, 65202, '2025-05-14','2025-05-14',
      0,1,32,

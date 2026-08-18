@@ -13,6 +13,7 @@ use BO\Zmsbackend\Availability\Exception\AvailabilityListUpdateFailed;
 use BO\Zmsentities\Availability;
 use BO\Zmsentities\Collection\AvailabilityList;
 use BO\Zmsbackend\Availability\Service\Availability as AvailabilityRepository;
+use BO\Zmsbackend\Availability\Service\AvailabilityHistory as AvailabilityHistoryService;
 use BO\Zmsbackend\Connection\Select as DbConnection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -102,6 +103,7 @@ class AvailabilityListUpdate extends \BO\Zmsbackend\Api\BaseController
     protected function updateAvailability(Availability $availability, int $resolveReferences): ?Availability
     {
         $repository = new AvailabilityRepository();
+        $history = new AvailabilityHistoryService();
         $updatedAvailability = null;
         if ($availability->id) {
             $existingAvailability = $repository->readEntity($availability->id);
@@ -109,6 +111,7 @@ class AvailabilityListUpdate extends \BO\Zmsbackend\Api\BaseController
                 $availability->version = $existingAvailability->version + 1;
                 $this->resetOpeningHours($existingAvailability);
                 $updatedAvailability = $repository->updateEntity($availability->id, $availability, $resolveReferences);
+                $history->writeUpdated($updatedAvailability);
                 App::$log->info('Updated availability', [
                     'id' => $availability->id,
                     'scope_id' => $availability->scope['id'],
@@ -123,6 +126,7 @@ class AvailabilityListUpdate extends \BO\Zmsbackend\Api\BaseController
             }
         } else {
             $updatedAvailability = $repository->writeEntity($availability, $resolveReferences);
+            $history->writeCreated($updatedAvailability);
             App::$log->info('Created new availability', [
                 'id' => $updatedAvailability->id,
                 'scope_id' => $availability->scope['id'],
