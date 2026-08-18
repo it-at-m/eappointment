@@ -67,8 +67,8 @@ class AvailabilityHistoryByScope extends \BO\Zmsbackend\Api\BaseController
         // Empty history is a valid list. setUpdatedMetaData() otherwise maps it to
         // meta.error = "Not found", which zmsadmin/zmsclient turns into HTTP 500.
         $message->statuscode = 200;
-        $message->meta->error = false;
-        $message->meta->message = '';
+        $message->meta['error'] = false;
+        $message->meta['message'] = '';
 
         $response = Render::withLastModified($response, time(), '0');
         return Render::withJson($response, $message, 200);

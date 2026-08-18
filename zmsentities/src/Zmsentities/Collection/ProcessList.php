@@ -314,7 +314,7 @@ class ProcessList extends Base
     {
         $processList = new static();
         foreach ($this as $process) {
-            if ($scopeId == $process->scope['id']) {
+            if ($scopeId == $process->getScopeId()) {
                 $processList[] = clone $process;
             }
         }
@@ -326,7 +326,7 @@ class ProcessList extends Base
     {
         $processList = new static();
         foreach ($this as $process) {
-            if ($scopeId != $process->scope['id']) {
+            if ($scopeId != $process->getScopeId()) {
                 $processList[] = clone $process;
             }
         }

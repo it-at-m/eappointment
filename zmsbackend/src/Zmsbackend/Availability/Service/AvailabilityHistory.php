@@ -86,39 +86,39 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
 
     public function buildSnapshot(Availability $availability): array
     {
-        $comment = $availability->description ?? null;
+        $comment = $availability['description'] ?? null;
         if (is_string($comment) && mb_strlen($comment) > self::COMMENT_MAX_LENGTH) {
             $comment = mb_substr($comment, 0, self::COMMENT_MAX_LENGTH - 3) . '...';
         }
 
-        $intern = (int) ($availability->workstationCount['intern'] ?? 0);
-        $public = (int) ($availability->workstationCount['public'] ?? 0);
-        $slotMinutes = (int) ($availability->slotTimeInMinutes ?? $availability->getSlotTimeInMinutes());
-        $isOpeningHours = $availability->type === 'openinghours';
+        $intern = (int) ($availability['workstationCount']['intern'] ?? 0);
+        $public = (int) ($availability['workstationCount']['public'] ?? 0);
+        $slotMinutes = (int) ($availability['slotTimeInMinutes'] ?? $availability->getSlotTimeInMinutes());
+        $isOpeningHours = $availability['type'] === 'openinghours';
 
         return [
             'start_date' => $availability->getStartDateTime()->format('Y-m-d'),
             'end_date' => $availability->getEndDateTime()->format('Y-m-d'),
-            'every_x_weeks' => (int) ($availability->repeat['afterWeeks'] ?? 0),
-            'every_other_week' => (int) ($availability->repeat['weekOfMonth'] ?? 0),
+            'every_x_weeks' => (int) ($availability['repeat']['afterWeeks'] ?? 0),
+            'every_other_week' => (int) ($availability['repeat']['weekOfMonth'] ?? 0),
             'weekday' => Entity::encodeWeekdayMask($availability),
-            'start_time' => $isOpeningHours ? $this->formatTimeValue($availability->startTime) : '00:00:00',
-            'end_time' => $isOpeningHours ? $this->formatTimeValue($availability->endTime) : '00:00:00',
+            'start_time' => $isOpeningHours ? $this->formatTimeValue($availability['startTime']) : '00:00:00',
+            'end_time' => $isOpeningHours ? $this->formatTimeValue($availability['endTime']) : '00:00:00',
             'appointment_start_time' => $isOpeningHours
                 ? '00:00:00'
-                : $this->formatTimeValue($availability->startTime),
+                : $this->formatTimeValue($availability['startTime']),
             'appointment_end_time' => $isOpeningHours
                 ? '00:00:00'
-                : $this->formatTimeValue($availability->endTime),
+                : $this->formatTimeValue($availability['endTime']),
             'time_slot' => gmdate('H:i:s', max(0, $slotMinutes) * 60),
             'workstation_count' => 0,
             'appointment_workstation_count' => $intern,
             'comment' => $comment,
             'internet_reduction' => $intern - $public,
-            'multiple_slots_allowed' => !empty($availability->multipleSlotsAllowed) ? 1 : 0,
-            'open_from_days' => (int) ($availability->bookable['startInDays'] ?? 0),
-            'open_until_days' => (int) ($availability->bookable['endInDays'] ?? 0),
-            'version' => $availability->version !== null ? (int) $availability->version : 1,
+            'multiple_slots_allowed' => !empty($availability['multipleSlotsAllowed']) ? 1 : 0,
+            'open_from_days' => (int) ($availability['bookable']['startInDays'] ?? 0),
+            'open_until_days' => (int) ($availability['bookable']['endInDays'] ?? 0),
+            'version' => $availability['version'] !== null ? (int) $availability['version'] : 1,
         ];
     }
 
