@@ -14,6 +14,7 @@ use BO\Zmsentities\Exception\UserAccountAccessRightsFailed;
 use BO\Zmsentities\Exception\WorkstationMissingScope;
 use BO\Zmsentities\Useraccount;
 use BO\Zmsentities\Workstation;
+use Psr\Http\Message\RequestInterface;
 
 class Access extends \BO\Slim\Controller
 {
@@ -29,7 +30,7 @@ class Access extends \BO\Slim\Controller
 
     protected $owner = null;
 
-    protected function initAccessRights($request): void
+    protected function initAccessRights(RequestInterface $request): void
     {
         $this->workstation = $this->readWorkstation();
         if ($this->workstation && isset($this->workstation->scope['id']) && $this->workstation->scope['id'] > 0) {
@@ -73,17 +74,14 @@ class Access extends \BO\Slim\Controller
         }
     }
 
-    protected function validateAccessRights($request): void
+    protected function validateAccessRights(RequestInterface $request): void
     {
         $path = $request->getUri()->getPath();
         $this->validateAccess($path);
         $this->validateScope($path);
     }
 
-    /**
-     * @return void
-     */
-    protected function validateAccess($path)
+    protected function validateAccess(string $path): void
     {
         if (
             (false !== strpos($path, 'owner') && ! $this->owner) ||
@@ -94,10 +92,7 @@ class Access extends \BO\Slim\Controller
         }
     }
 
-    /**
-     * @return void
-     */
-    protected function validateScope($path)
+    protected function validateScope(string $path): void
     {
         if (
             $this->isPathWithoutScope($path)
@@ -107,7 +102,7 @@ class Access extends \BO\Slim\Controller
         }
     }
 
-    protected function isPathWithoutScope($path): bool
+    protected function isPathWithoutScope(string $path): bool
     {
         // TODO: refactor to integrate these access rules in the controller to make them visible
         return (false === strpos($path, 'select')
