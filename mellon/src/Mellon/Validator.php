@@ -169,10 +169,7 @@ class Validator
         return self::value($this->input, $name);
     }
 
-    /**
-     * @return self
-     */
-    public static function collection($validatorList)
+    public static function collection(array $validatorList): Collection
     {
         $collection = new Collection($validatorList);
         return $collection;
