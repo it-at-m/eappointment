@@ -10,9 +10,9 @@ if (count($scopeIds)) {
 $verbose = preg_grep('#^--?v(erbose)?$#', $argv);
 $commit = preg_grep('#^--commit$#', $argv);
 
-$job = new \BO\Zmsbackend\Helper\SendProcessListToScopeAdmin($verbose, $scopeId);
+$job = new \BO\Zmsbackend\Helper\QueueProcessListToScopeAdmin($verbose, $scopeId);
 $job->startProcessing($commit);
 
 if (!$commit) {
-    \App::$log->notice('Use with --commit to send email.');
+    \App::$log->notice('Use with --commit to queue emails.');
 }
