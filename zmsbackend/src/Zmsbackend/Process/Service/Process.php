@@ -782,7 +782,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         $selectQuery
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
-            ->addConditionProcessDeleteInterval($expirationDate)
+            ->addConditionProcessDeleteBeforeDate($expirationDate)
             ->addConditionStatus($status)
             ->addConditionIgnoreSlots()
             ->addLimit($limit, $offset);
