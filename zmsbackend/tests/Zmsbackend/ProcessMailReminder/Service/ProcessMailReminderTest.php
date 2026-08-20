@@ -39,7 +39,7 @@ class ProcessMailReminderTest extends \BO\Zmsbackend\Tests\Service\Base
     public function testCronHelperTwoDays()
     {
         $now = new \DateTimeImmutable("2016-04-01 07:40");
-        $helper = new \BO\Zmsbackend\Helper\SendMailReminder($now, 48, false);
+        $helper = new \BO\Zmsbackend\Helper\QueueMailReminder($now, 48, false);
         $helper->setLimit(10);
         $helper->setLoopCount(5);
         $helper->startProcessing(true);
@@ -50,7 +50,7 @@ class ProcessMailReminderTest extends \BO\Zmsbackend\Tests\Service\Base
     public function testCronHelperTwoHours()
     {
         $now = new \DateTimeImmutable("2016-04-01 13:40");
-        $helper = new \BO\Zmsbackend\Helper\SendMailReminder($now, 120, false);
+        $helper = new \BO\Zmsbackend\Helper\QueueMailReminder($now, 120, false);
         $helper->setLimit(6);
         $helper->setLoopCount(3);
         $helper->startProcessing(true);
