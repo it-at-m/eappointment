@@ -4,9 +4,9 @@ namespace BO\Zmsbackend\Department\Repository;
 
 class Department extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\MappingInterface
 {
-    const TABLE = 'behoerde';
+    const string TABLE = 'behoerde';
 
-    const QUERY_MAIL_UPDATE = '
+    const string QUERY_MAIL_UPDATE = '
         SET @tempEmailID = (SELECT emailID from email WHERE BehoerdenID=:departmentId);
         REPLACE INTO
             email
@@ -19,10 +19,14 @@ class Department extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Que
             send_reminder_minutes_before=:sendEmailReminderMinutesBefore
     ';
 
-    const QUERY_MAIL_DELETE = '
+    const string QUERY_MAIL_DELETE = '
         DELETE FROM email WHERE BehoerdenID=?
     ';
 
+    /**
+     * @return (\BO\Zmsbackend\Query\Builder\Expression|string)[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -50,6 +54,9 @@ class Department extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Que
         ];
     }
 
+    /**
+     * @return void
+     */
     #[\Override]
     public function addRequiredJoins()
     {
@@ -61,7 +68,7 @@ class Department extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Que
         );
     }
 
-    public function addConditionScopeId($scopeId)
+    public function addConditionScopeId($scopeId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias('standort', 'scope_department'),
@@ -73,13 +80,13 @@ class Department extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Que
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId)
+    public function addConditionDepartmentId($departmentId): static
     {
         $this->query->where('department.BehoerdenID', '=', $departmentId);
         return $this;
     }
 
-    public function addConditionDepartmentIds(array $departmentIds)
+    public function addConditionDepartmentIds(array $departmentIds): static
     {
         if (!empty($departmentIds)) {
             $this->query->whereIn('department.BehoerdenID', $departmentIds);
@@ -87,13 +94,17 @@ class Department extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Que
         return $this;
     }
 
-    public function addConditionOrganisationId($organisationId)
+    public function addConditionOrganisationId($organisationId): static
     {
         $this->query->where('department.OrganisationsID', '=', $organisationId);
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Department $entity, $parentId = null)
+    /**
+     * @return (mixed|string)[]
+     *
+     */
+    public function reverseEntityMapping(\BO\Zmsentities\Department $entity, $parentId = null): array
     {
         $data = array();
         if (null !== $parentId) {

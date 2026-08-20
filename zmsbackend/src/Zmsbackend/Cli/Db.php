@@ -10,7 +10,7 @@ class Db
 {
     public static $baseDSN = '';
 
-    public static function startExecuteSqlFile($file, $databaseName = null, $verbose = true)
+    public static function startExecuteSqlFile(string $file, $databaseName = null, bool $verbose = true): void
     {
         $databaseConnection = self::startUsingDatabase($databaseName, $verbose);
         $startedAt = microtime(true);
@@ -55,13 +55,20 @@ class Db
         }
     }
 
-    public static function executeSql($query, $databaseName = null)
+    /**
+     * @psalm-api
+     */
+    public static function executeSql($query, $databaseName = null): void
     {
         $databaseConnection = self::startUsingDatabase($databaseName, false);
         $databaseConnection->exec($query);
     }
 
-    public static function startUsingDatabase($databaseName = null, $verbose = true): \BO\Zmsbackend\Connection\Pdo
+    /**
+     * @param null|string $databaseName
+     *
+     */
+    public static function startUsingDatabase(string|null $databaseName = null, bool $verbose = true): \BO\Zmsbackend\Connection\Pdo
     {
         if (!self::$baseDSN) {
             self::$baseDSN = \BO\Zmsbackend\Connection\Select::$writeSourceName;
@@ -79,7 +86,7 @@ class Db
         return \BO\Zmsbackend\Connection\Select::getWriteConnection();
     }
 
-    public static function startTestDataImport($fixturesDirectory, $filename = 'mysql_zmsbo.sql')
+    public static function startTestDataImport($fixturesDirectory, $filename = 'mysql_zmsbo.sql'): void
     {
         $defaultDatabaseName = \BO\Zmsbackend\Connection\Select::$dbname_zms;
 
@@ -90,13 +97,13 @@ class Db
         self::startExecuteSqlFile($fixturesDirectory . '/' . $filename);
     }
 
-    public static function startConfigDataImport()
+    public static function startConfigDataImport(): void
     {
         $defaults = new \BO\Zmsentities\Config();
         (new \BO\Zmsbackend\Config\Service\Config())->updateEntity($defaults);
     }
 
-    public static function startMigrations($migrationList, $commit = true, ?string $phase = null)
+    public static function startMigrations($migrationList, $commit = true, ?string $phase = null): int
     {
         $migrationFiles = self::resolveMigrationFileList($migrationList);
         $migrationFiles = self::filterMigrationFilesByPhase($migrationFiles, $phase);
@@ -134,6 +141,9 @@ class Db
         return $addedMigrationCount;
     }
 
+    /**
+     * @return void
+     */
     public static function executeTestData(string $testName, string $step)
     {
         $fixturesDirectory = realpath(__DIR__ . '/../../../tests/Zmsbackend/Service/fixtures/');

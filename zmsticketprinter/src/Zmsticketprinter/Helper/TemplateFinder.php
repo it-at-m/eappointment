@@ -39,9 +39,8 @@ class TemplateFinder
     /**
      * get a customized Template if it exists, otherwise return default
      * department preferred before cluster
-     *
-     **/
-    public function setCustomizedTemplate($ticketprinter, $organisation)
+     */
+    public function setCustomizedTemplate(\BO\Zmsentities\Ticketprinter $ticketprinter, \BO\Zmsentities\Organisation $organisation): static
     {
         $template = null;
         if ($this->defaultTemplate == 'default') {
@@ -51,7 +50,7 @@ class TemplateFinder
         return $this;
     }
 
-    public function getButtonTemplateType($ticketprinter)
+    public function getButtonTemplateType($ticketprinter): string
     {
         if (1 == count($ticketprinter->buttons)) {
             $buttonDisplay = 'button_single';
@@ -97,7 +96,7 @@ class TemplateFinder
         return $template;
     }
 
-    protected function getExistingTemplate(Entity $entity)
+    protected function getExistingTemplate(Entity $entity): string|null
     {
         $path = $this->subPath . '/buttonDisplay_' . $entity->getEntityName() . '_' . $entity->id . '.twig';
         if ($entity->hasId() && $this->isTemplateReadable($path)) {
@@ -106,7 +105,7 @@ class TemplateFinder
         return null;
     }
 
-    protected function isTemplateReadable($path)
+    protected function isTemplateReadable(string $path): bool
     {
         return is_readable($this->getTemplatePath() . $path);
     }
@@ -114,7 +113,7 @@ class TemplateFinder
     /**
      * @todo check against ISO definition
      */
-    protected function getTemplatePath()
+    protected function getTemplatePath(): string
     {
         return realpath(__DIR__) . '/../../../templates';
     }

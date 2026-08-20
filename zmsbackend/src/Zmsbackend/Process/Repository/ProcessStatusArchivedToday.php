@@ -13,6 +13,6 @@ class ProcessStatusArchivedToday extends ProcessStatusArchived
      *
      * @var String TABLE mysql table reference
      */
-    public const TABLE = 'buergerarchivtoday';
-    const DELETE_ALL = 'DELETE FROM buergerarchivtoday';
+    public const string TABLE = 'buergerarchivtoday';
+    const string DELETE_ALL = 'DELETE FROM buergerarchivtoday';
 }

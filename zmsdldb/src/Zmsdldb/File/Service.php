@@ -15,6 +15,9 @@ use BO\Zmsdldb\Collection\Services as Collection;
  */
 class Service extends Base
 {
+    /**
+     * @return Collection
+     */
     #[\Override]
     protected function parseData($data)
     {
@@ -32,6 +35,7 @@ class Service extends Base
      *
      * @SuppressWarnings(Param)
      * @return Collection
+     * @psalm-api
      */
     public function searchAll($querystring, $service_csv = false, $location_csv = false)
     {
@@ -49,10 +53,11 @@ class Service extends Base
     }
 
     /**
-     *
      * @return Collection
+     *
+     * @param false|string $location_csv
      */
-    public function fetchList($location_csv = false)
+    public function fetchList(string|false $location_csv = false)
     {
         #echo '<pre>' . print_r($this,1) . '</pre>';exit;
         $servicelist = $this->getItemList();
@@ -68,6 +73,7 @@ class Service extends Base
     /**
      *
      * @return Collection
+     * @psalm-api
      */
     public function fetchListRelated($service_id)
     {
@@ -116,7 +122,7 @@ class Service extends Base
      *
      * @return Collection
      */
-    public function fetchFromCsv($service_csv)
+    public function fetchFromCsv(string $service_csv)
     {
         $servicelist = new Collection();
         foreach (explode(',', $service_csv) as $service_id) {
@@ -134,6 +140,7 @@ class Service extends Base
      * root_topic in realations not usable because of multiple roots for one service
      *
      * @return Collection
+     * @psalm-api
      */
     public function fetchListFromTopic(\BO\Zmsdldb\Entity\Topic $topic)
     {
@@ -163,6 +170,7 @@ class Service extends Base
     /**
      *
      * @return Collection
+     * @psalm-api
      */
     public function readSearchResultList($query, $service_csv = '')
     {

@@ -53,8 +53,8 @@ class RequestReport extends Base
     public function writeReport(
         ReportEntity $report,
         Spreadsheet $spreadsheet,
-        $datePatternCol = 'dd.MM.yyyy'
-    ) {
+        string $datePatternCol = 'dd.MM.yyyy'
+    ): Spreadsheet {
         $sheet = $spreadsheet->getActiveSheet();
 
         $firstDay = $report->firstDay->year . '-' . $report->firstDay->month . '-' . $report->firstDay->day;
@@ -68,8 +68,11 @@ class RequestReport extends Base
         return $spreadsheet;
     }
 
-    public function writeHeader(ReportEntity $report, $sheet, $datePatternCol)
-    {
+    public function writeHeader(
+        ReportEntity $report,
+        \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet,
+        string $datePatternCol
+    ): void {
         $reportHeader = [];
         $reportHeader[] = 'Dienstleistung';
         $reportHeader[] = 'Ø Bearbeitungsdauer';
@@ -85,7 +88,7 @@ class RequestReport extends Base
     /**
      * @SuppressWarnings(Unused)
      */
-    public function writeReportData(ReportEntity $report, $sheet)
+    public function writeReportData(ReportEntity $report, \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet): void
     {
         $reportData = [];
         $firstDataRow = $sheet->getHighestRow() + 1;

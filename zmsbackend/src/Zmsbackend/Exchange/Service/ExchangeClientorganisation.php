@@ -17,7 +17,7 @@ class ExchangeClientorganisation extends \BO\Zmsbackend\Base
         \DateTimeInterface $datestart,
         \DateTimeInterface $dateend,
         $period = 'day'
-    ) {
+    ): Exchange {
         $organisation = (new \BO\Zmsbackend\Organisation\Service\Organisation())->readEntity($subjectid);
         $entity = new Exchange();
         $entity['title'] = "Kundenstatistik $organisation->name";
@@ -50,7 +50,7 @@ class ExchangeClientorganisation extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readSubjectList()
+    public function readSubjectList(): Exchange
     {
         $raw = $this->getReader()->fetchAll(\BO\Zmsbackend\Exchange\Repository\ExchangeClientorganisation::QUERY_SUBJECTS, []);
         $entity = new Exchange();
@@ -65,7 +65,7 @@ class ExchangeClientorganisation extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readPeriodList($subjectid, $period = 'day')
+    public function readPeriodList($subjectid, $period = 'day'): Exchange
     {
         $organisation = (new \BO\Zmsbackend\Organisation\Service\Organisation())->readEntity($subjectid);
         $entity = new Exchange();

@@ -8,7 +8,7 @@ namespace BO\Zmsbackend\Day\Repository;
  */
 class Day extends \BO\Zmsbackend\Query\Base
 {
-    const QUERY_CREATE_TEMPORARY_SCOPELIST = '
+    const string QUERY_CREATE_TEMPORARY_SCOPELIST = '
         CREATE TEMPORARY TABLE calendarscope (
             scopeID INT,
             year SMALLINT,
@@ -18,7 +18,7 @@ class Day extends \BO\Zmsbackend\Query\Base
         );
     ';
 
-    const QUERY_INSERT_TEMPORARY_SCOPELIST = '
+    const string QUERY_INSERT_TEMPORARY_SCOPELIST = '
         INSERT INTO calendarscope SET
             scopeID = :scopeID,
             year = :year,
@@ -26,14 +26,14 @@ class Day extends \BO\Zmsbackend\Query\Base
             slotsRequired = :slotsRequired;
     ';
 
-    const QUERY_DROP_TEMPORARY_SCOPELIST = 'DROP TEMPORARY TABLE IF EXISTS calendarscope;';
+    const string QUERY_DROP_TEMPORARY_SCOPELIST = 'DROP TEMPORARY TABLE IF EXISTS calendarscope;';
 
     /**
      * Shared daylist used by zmsadmin / classic /calendar/ (same semantics as next).
      *
      * see also \BO\Zmsbackend\Process\Repository\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAYS
      */
-    const QUERY_DAYLIST_JOIN = '
+    const string QUERY_DAYLIST_JOIN = '
         SELECT
             year,
             LPAD(month, 2, "0") AS month,
@@ -64,7 +64,7 @@ class Day extends \BO\Zmsbackend\Query\Base
             (
                 SELECT
                     IFNULL(COUNT(p.slotID), 0) AS confirmed,
-                    IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots) AS slotsRequired,
+                    IF(a.multiple_slots_allowed, c.slotsRequired, :forceRequiredSlots) AS slotsRequired,
                     s.slotID,
                     s.year,
                     s.month,
@@ -85,7 +85,7 @@ class Day extends \BO\Zmsbackend\Query\Base
                         ON s.availabilityID = a.OeffnungszeitID
                     LEFT JOIN slot_hiera h
                         ON h.ancestorID = s.slotID
-                        AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots)
+                        AND h.ancestorLevel <= IF(a.multiple_slots_allowed, c.slotsRequired, :forceRequiredSlots)
                     LEFT JOIN slot_process p
                         ON h.slotID = p.slotID
                     LEFT JOIN closures cc
@@ -111,7 +111,7 @@ class Day extends \BO\Zmsbackend\Query\Base
      *
      * see also \BO\Zmsbackend\Process\Repository\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAYS_AVAILABILITY
      */
-    const QUERY_DAYLIST_JOIN_AVAILABILITY = '
+    const string QUERY_DAYLIST_JOIN_AVAILABILITY = '
         SELECT
             year,
             LPAD(month, 2, "0") AS month,
@@ -142,7 +142,7 @@ class Day extends \BO\Zmsbackend\Query\Base
             (
                 SELECT
                     IFNULL(occ.confirmed, 0) AS confirmed,
-                    IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots) AS slotsRequired,
+                    IF(a.multiple_slots_allowed, c.slotsRequired, :forceRequiredSlots) AS slotsRequired,
                     s.slotID,
                     s.year,
                     s.month,
@@ -162,7 +162,7 @@ class Day extends \BO\Zmsbackend\Query\Base
                         ON s.availabilityID = a.OeffnungszeitID
                     LEFT JOIN slot_hiera h
                         ON h.ancestorID = s.slotID
-                        AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots)
+                        AND h.ancestorLevel <= IF(a.multiple_slots_allowed, c.slotsRequired, :forceRequiredSlots)
                     INNER JOIN slot s2
                         ON h.slotID = s2.slotID
                         AND s2.status = "free"

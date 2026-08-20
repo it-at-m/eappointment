@@ -14,7 +14,11 @@ class Department extends \BO\Zmsbackend\Base
 {
     public static $departmentCache = array();
 
-    public function readEntity($departmentId, $resolveReferences = 0, $disableCache = false)
+    /**
+     * @param false|string $departmentId
+     *
+     */
+    public function readEntity(string|false $departmentId, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "department-$departmentId-$resolveReferences";
 
@@ -45,12 +49,18 @@ class Department extends \BO\Zmsbackend\Base
         return null;
     }
 
+    /**
+     * @return Entity
+     */
     #[\Override]
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $entity,
         $resolveReferences,
         $disableCache = false
-    ) {
+    ): Entity {
+        if (!$entity instanceof Entity) {
+            throw new \InvalidArgumentException('Expected ' . Entity::class);
+        }
         $entity['links'] = (new \BO\Zmsbackend\Link\Service\Link())->readByDepartmentId($entity->id, $disableCache);
         $entity['scopes'] = (new \BO\Zmsbackend\Scope\Service\Scope())
             ->readByDepartmentId($entity->id, $resolveReferences - 1, $disableCache)
@@ -66,7 +76,7 @@ class Department extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readList($resolveReferences = 0)
+    public function readList($resolveReferences = 0): Collection
     {
         $departmentList = new Collection();
         $query = new \BO\Zmsbackend\Department\Repository\Department(\BO\Zmsbackend\Query\Base::SELECT);
@@ -84,7 +94,12 @@ class Department extends \BO\Zmsbackend\Base
         return $departmentList;
     }
 
-    public function readEntitiesByIds(array $departmentIds, $resolveReferences = 0)
+    /**
+     *
+     * @return Entity[]
+     *
+     */
+    public function readEntitiesByIds(array $departmentIds, int $resolveReferences = 0): array
     {
         if (empty($departmentIds)) {
             return [];
@@ -110,7 +125,7 @@ class Department extends \BO\Zmsbackend\Base
         return $departments;
     }
 
-    public function readByScopeId($scopeId, $resolveReferences = 0)
+    public function readByScopeId($scopeId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Department\Repository\Department(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -121,7 +136,7 @@ class Department extends \BO\Zmsbackend\Base
         return (isset($department['id']) && $department['id']) ? $department->withOutClusterDuplicates() : null;
     }
 
-    public function readByOrganisationId($organisationId, $resolveReferences = 0)
+    public function readByOrganisationId($organisationId, int $resolveReferences = 0): Collection
     {
         $departmentList = new Collection();
         $query = new \BO\Zmsbackend\Department\Repository\Department(\BO\Zmsbackend\Query\Base::SELECT);
@@ -181,9 +196,6 @@ class Department extends \BO\Zmsbackend\Base
         if ($entity->toProperty()->links->isAvailable()) {
             $this->writeDepartmentLinks($lastInsertId, $entity->links);
         }
-        if ($entity->toProperty()->dayoff->isAvailable()) {
-            $this->writeDepartmentDayoffs($lastInsertId, $entity->dayoff);
-        }
         if ($entity->toProperty()->email->isAvailable()) {
             $this->updateDepartmentMail(
                 $lastInsertId,
@@ -209,9 +221,6 @@ class Department extends \BO\Zmsbackend\Base
         if ($entity->toProperty()->links->isAvailable()) {
             $this->writeDepartmentLinks($departmentId, $entity->links);
         }
-        if ($entity->toProperty()->dayoff->isAvailable()) {
-            $this->writeDepartmentDayoffs($departmentId, $entity->dayoff);
-        }
         if ($entity->toProperty()->email->isAvailable()) {
             $this->updateDepartmentMail(
                 $departmentId,
@@ -224,33 +233,13 @@ class Department extends \BO\Zmsbackend\Base
         return $this->readEntity($departmentId, 0, true);
     }
 
-    protected function writeDepartmentDayoffs($departmentId, $dayoffList)
-    {
-        if (!$departmentId) {
-            throw new \BO\Zmsbackend\Department\Exception\InvalidId();
-        }
-        $existingDayoffs = (new \BO\Zmsbackend\Dayoff\Service\DayOff())->readOnlyByDepartmentId($departmentId);
-        if ($existingDayoffs->count()) {
-            foreach ($existingDayoffs as $item) {
-                $query = new \BO\Zmsbackend\Dayoff\Service\DayOff();
-                $query->deleteEntity($item->getId());
-            }
-        }
 
-        foreach ($dayoffList as $dayoff) {
-            $query = new \BO\Zmsbackend\Dayoff\Repository\DayOff(\BO\Zmsbackend\Query\Base::INSERT);
-            $query->addValues(
-                [
-                    'behoerdenid' => $departmentId,
-                    'Feiertag' => $dayoff['name'],
-                    'Datum' => (new \DateTimeImmutable('@' . $dayoff['date']))->format('Y-m-d')
-                ]
-            );
-            $this->writeItem($query);
-        }
-    }
-
-    protected function writeDepartmentLinks($departmentId, $links)
+    /**
+     * @param false|string $departmentId
+     *
+     * @return void
+     */
+    protected function writeDepartmentLinks(string|false $departmentId, $links)
     {
         if (!$departmentId) {
             throw new \BO\Zmsbackend\Department\Exception\InvalidId();
@@ -270,8 +259,11 @@ class Department extends \BO\Zmsbackend\Base
         }
     }
 
+    /**
+     * @param false|string $departmentId
+     */
     protected function updateDepartmentMail(
-        $departmentId,
+        string|false $departmentId,
         $email,
         $sendEmailReminderEnabled,
         $sendEmailReminderMinutesBefore
@@ -290,7 +282,7 @@ class Department extends \BO\Zmsbackend\Base
         $departmentId,
         \DateTimeInterface $dateTime,
         $resolveReferences = 0
-    ) {
+    ): \BO\Zmsentities\Collection\QueueList {
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         $department = $this->readEntity($departmentId, 2);
 
@@ -305,7 +297,10 @@ class Department extends \BO\Zmsbackend\Base
         return $queueList;
     }
 
-    public function removeCache($department)
+    /**
+     * @return void
+     */
+    public function removeCache(Entity $department)
     {
         if (!\App::$cache || !isset($department->id)) {
             return;

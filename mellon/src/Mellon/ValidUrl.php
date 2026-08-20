@@ -19,6 +19,7 @@ class ValidUrl extends ValidString
      * @param String $message error message in case of failure
      *
      * @return self
+     * @psalm-api
      */
     public function isUrl($message = 'no valid url')
     {

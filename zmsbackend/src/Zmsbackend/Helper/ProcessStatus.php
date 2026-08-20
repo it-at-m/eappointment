@@ -15,7 +15,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
         \DateTimeInterface $dateTime,
         $resolveReferences,
         $userAccount
-    ) {
+    ): \BO\Zmsentities\Process {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::UPDATE);
         $query->addConditionProcessId($process['id']);
         $query->addConditionAuthKey($process['authKey']);
@@ -91,24 +91,28 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
         return $status;
     }
 
+    /** @psalm-api */
     protected function setStatusPreconfirmed($process)
     {
         $process['status'] = $process::STATUS_PRECONFIRMED;
         return $process;
     }
 
+    /** @psalm-api */
     protected function setStatusConfirmed($process)
     {
         $process['status'] = $process::STATUS_CONFIRMED;
         return $process;
     }
 
+    /** @psalm-api */
     protected function setStatusCalled($process)
     {
         $process['status'] = $process::STATUS_CALLED;
         return $process;
     }
 
+    /** @psalm-api */
     protected function setStatusReserved($process)
     {
         $process['status'] = $process::STATUS_RESERVED;
@@ -119,6 +123,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * check if it is a blocked appointment
      *
      * @return Bool
+     * @psalm-api
      */
     protected function isBlockedProcess($process)
     {
@@ -129,6 +134,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * check if it is a queued appointment
      *
      * @return Bool
+     * @psalm-api
      */
     protected function isQueuedProcess($process)
     {
@@ -145,6 +151,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * check if it is a confirmed appointment
      *
      * @return Bool
+     * @psalm-api
      */
     protected function isPreconfirmedProcess($process)
     {
@@ -160,6 +167,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * check if it is a confirmed appointment
      *
      * @return Bool
+     * @psalm-api
      */
     protected function isConfirmedProcess($process)
     {
@@ -175,6 +183,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * check if it is a reserved appointment
      *
      * @return Bool
+     * @psalm-api
      */
     protected function isReservedProcess($process)
     {
@@ -189,6 +198,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * check if it is a called appointment
      *
      * @return Bool
+     * @psalm-api
      */
     protected function isCalledProcess($process)
     {
@@ -205,6 +215,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * check if it is a processing appointment
      *
      * @return Bool
+     * @psalm-api
      */
     protected function isProcessingProcess($process)
     {
@@ -220,6 +231,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * check if it is a processing appointment
      *
      * @return Bool
+     * @psalm-api
      */
     protected function isPendingProcess($process)
     {
@@ -236,6 +248,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * check if it is a missed appointment
      *
      * @return Bool
+     * @psalm-api
      */
     protected function isMissedProcess($process)
     {
@@ -251,6 +264,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * check if it is a missed appointment
      *
      * @return Bool
+     * @psalm-api
      */
     protected function isParkedProcess($process)
     {
@@ -266,6 +280,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * check if it is a deleted appointment
      *
      * @return Bool
+     * @psalm-api
      */
     protected function isDeletedProcess($process)
     {

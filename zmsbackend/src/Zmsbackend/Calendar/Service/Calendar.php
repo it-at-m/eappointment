@@ -15,9 +15,9 @@ class Calendar extends \BO\Zmsbackend\Base
         Entity $calendar,
         \DateTimeInterface $now,
         $resolveOnlyScopes = false,
-        $slotType = 'public',
+        string $slotType = 'public',
         $slotsRequired = 0,
-        $resolveScopeReferences = true
+        bool $resolveScopeReferences = true
     ) {
         $calendar['freeProcesses'] = new \BO\Zmsentities\Collection\ProcessList();
         $calendar['scopes'] = $calendar->getScopeList();
@@ -38,9 +38,8 @@ class Calendar extends \BO\Zmsbackend\Base
 
     /**
      * Resolve calendar scopes
-     *
      */
-    protected function readResolvedScopes(Entity $calendar)
+    protected function readResolvedScopes(Entity $calendar): Entity
     {
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
         $scopeReader = new \BO\Zmsbackend\Scope\Service\Scope();
@@ -56,9 +55,8 @@ class Calendar extends \BO\Zmsbackend\Base
 
     /**
      * Resolve Reference dayoff for departments, but do not resolve circular scope->department->scopes
-     *
      */
-    protected function readResolvedScopeReferences(Entity $calendar)
+    protected function readResolvedScopeReferences(Entity $calendar): Entity
     {
         foreach ($calendar->scopes as $scope) {
             $scope['dayoff'] = (new \BO\Zmsbackend\Dayoff\Service\DayOff())->readByScopeId($scope['id']);
@@ -66,7 +64,7 @@ class Calendar extends \BO\Zmsbackend\Base
         return $calendar;
     }
 
-    protected function readResolvedRequests(Entity $calendar)
+    protected function readResolvedRequests(Entity $calendar): Entity
     {
         $requestReader = new \BO\Zmsbackend\Request\Service\Request();
         $requestRelationQuery = new \BO\Zmsbackend\RequestRelation\Service\RequestRelation();
@@ -96,7 +94,7 @@ class Calendar extends \BO\Zmsbackend\Base
         return $calendar;
     }
 
-    protected function readResolvedClusters(Entity $calendar)
+    protected function readResolvedClusters(Entity $calendar): Entity
     {
         $scopeReader = new \BO\Zmsbackend\Scope\Service\Scope();
         foreach ($calendar['clusters'] as $cluster) {
@@ -107,7 +105,7 @@ class Calendar extends \BO\Zmsbackend\Base
         return $calendar;
     }
 
-    protected function readResolvedProviders(Entity $calendar)
+    protected function readResolvedProviders(Entity $calendar): Entity
     {
         $scopeReader = new \BO\Zmsbackend\Scope\Service\Scope();
         $providerReader = new \BO\Zmsbackend\Provider\Service\Provider();
@@ -126,7 +124,7 @@ class Calendar extends \BO\Zmsbackend\Base
         \DateTimeInterface $now,
         $slotType,
         $slotsRequiredForce
-    ) {
+    ): Entity {
         if (!$resolveOnlyScopes) {
             $dayQuery = new \BO\Zmsbackend\Day\Service\Day();
             $dayList = $dayQuery->readByCalendar($calendar, $slotsRequiredForce);

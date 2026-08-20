@@ -11,6 +11,9 @@
 
 class MailTemplatePreviewMail extends BaseController
 {
+    /**
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,

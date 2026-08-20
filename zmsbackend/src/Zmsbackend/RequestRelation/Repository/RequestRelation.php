@@ -4,10 +4,14 @@ namespace BO\Zmsbackend\RequestRelation\Repository;
 
 class RequestRelation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\MappingInterface
 {
-    const TABLE = 'request_provider';
+    const string TABLE = 'request_provider';
 
-    const ALIAS = 'request_provider';
+    const string ALIAS = 'request_provider';
 
+    /**
+     * @return string[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -21,6 +25,10 @@ class RequestRelation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbacken
         ];
     }
 
+    /**
+     * @return \BO\Zmsbackend\Query\Builder\Expression[]
+     *
+     */
     #[\Override]
     public function getReferenceMapping()
     {
@@ -34,25 +42,25 @@ class RequestRelation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbacken
         ];
     }
 
-    public function addConditionRequestId($requestId)
+    public function addConditionRequestId($requestId): static
     {
         $this->query->where(self::TABLE . '.request__id', '=', $requestId);
         return $this;
     }
 
-    public function addConditionProviderId($providerId)
+    public function addConditionProviderId($providerId): static
     {
         $this->query->where(self::TABLE . '.provider__id', '=', $providerId);
         return $this;
     }
 
-    public function addConditionBookable()
+    public function addConditionBookable(): static
     {
         $this->query->where(self::TABLE . '.bookable', '=', 1);
         return $this;
     }
 
-    public function addConditionSource($sourceName)
+    public function addConditionSource($sourceName): static
     {
         $this->query->where(self::TABLE . '.source', '=', $sourceName);
         return $this;

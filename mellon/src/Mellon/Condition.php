@@ -2,9 +2,6 @@
 
 namespace BO\Mellon;
 
-/**
- *
- */
 class Condition
 {
     protected $collection = [];
@@ -17,7 +14,7 @@ class Condition
         }
     }
 
-    public function addValid(Valid $valid)
+    public function addValid(Valid $valid): static
     {
         $this->getCollection()->addValid($valid);
         return $this;

@@ -49,7 +49,7 @@ class QueueListHelper
         return (static::getList()->getQueuePositionByNumber($entity->number));
     }
 
-    protected static function createFullList($scope)
+    protected static function createFullList(Scope $scope)
     {
         $fullList = \App::$http
             ->readGetResult('/scope/' . $scope->getId() . '/queue/')
@@ -57,7 +57,7 @@ class QueueListHelper
         return ($fullList) ? $fullList : new QueueList();
     }
 
-    protected static function createQueueList($process)
+    protected static function createQueueList(Process|null $process): QueueList
     {
         $queueList = new QueueList();
         if (static::$fullList->count()) {

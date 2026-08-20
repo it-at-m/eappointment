@@ -63,7 +63,11 @@ class ProcessChange extends BaseController
         return $newProcess->withUpdatedData($input, $dateTime, $scope);
     }
 
-    protected static function getValidatedForm($validator, $process)
+    /**
+     * @return (bool|mixed)[]
+     *
+     */
+    protected static function getValidatedForm($validator, $process): array
     {
         $processValidator = new ProcessValidator($process);
         $delegatedProcess = $processValidator->getDelegatedProcess();
@@ -171,13 +175,13 @@ class ProcessChange extends BaseController
         return $newProcess;
     }
 
-    protected static function writeDeletedMail($oldProcess)
+    protected static function writeDeletedMail($oldProcess): void
     {
             $oldProcess->status = 'deleted';
             ProcessDelete::writeDeleteMailNotifications($oldProcess);
     }
 
-    protected static function writeConfirmedMail($input, $newProcess)
+    protected static function writeConfirmedMail($input, $newProcess): void
     {
         if ('confirmed' == $newProcess->getStatus()) {
             Helper\AppointmentFormHelper::updateMail($input, $newProcess);

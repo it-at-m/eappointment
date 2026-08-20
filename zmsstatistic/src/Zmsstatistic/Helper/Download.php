@@ -72,12 +72,12 @@ class Download
     }
 
     public function setSpreadSheet(
-        $title = 'statistic',
+        string $title = 'statistic',
         $creator = 'berlinonline',
         $subject = '',
         $description = 'statistic document',
         $keywords = 'statistic zms'
-    ) {
+    ): static {
         $this->title = $title;
         $this->spreadsheet = new Spreadsheet();
         $this->spreadsheet
