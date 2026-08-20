@@ -67,7 +67,11 @@ class WorkstationProcessCalledTest extends Base
             'exclude' => 82252
         ], []);
         $this->assertStringContainsString(
-            'Dieser Arbeitsplatz hat schon einen Vorgang aufgerufen. Dieser wird weiterhin verwendet.',
+            'Sie haben bereits einen Kunden aufgerufen.',
+            (string)$response->getBody()
+        );
+        $this->assertStringContainsString(
+            'Bitte schließen Sie den aktuellen Vorgang zuerst ab.',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
