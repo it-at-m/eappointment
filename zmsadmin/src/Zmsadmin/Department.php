@@ -36,7 +36,6 @@ class Department extends BaseController
 
         if ($request->getMethod() === 'POST') {
             $input = $this->withCleanupLinks($input);
-            $input = $this->withCleanupDayoffs($input);
             $input = $this->withEmailReminderDefaultValues($input);
             $result = $this->writeUpdatedEntity($input, $entityId);
             if ($result instanceof Entity) {
@@ -85,18 +84,6 @@ class Department extends BaseController
         return $input;
     }
 
-    protected function withCleanupDayoffs(array $input): array
-    {
-        if (!isset($input['dayoff'])) {
-            return $input;
-        }
-        $dayoffs = $input['dayoff'];
-        $input['dayoff'] = array_filter($dayoffs, function ($dayoff) {
-            return !($dayoff['name'] === '');
-        });
-
-        return $input;
-    }
 
     private function withEmailReminderDefaultValues(array $input): array
     {
@@ -115,7 +102,6 @@ class Department extends BaseController
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
         $entity->id = $entityId;
-        $entity->dayoff = $entity->getDayoffList()->withTimestampFromDateformat();
         return $this->handleEntityWrite(function () use ($entity) {
             return \App::$http->readPostResult(
                 '/department/' . $entity->id . '/',

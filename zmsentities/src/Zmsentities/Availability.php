@@ -11,6 +11,17 @@ namespace BO\Zmsentities;
  *
  * @property int|string $id
  * @property Scope|array $scope
+ * @property string|null $description
+ * @property array $workstationCount
+ * @property int|string|null $slotTimeInMinutes
+ * @property string $type
+ * @property string|null $startTime
+ * @property string|null $endTime
+ * @property array $repeat
+ * @property bool|int|string|null $multipleSlotsAllowed
+ * @property array $bookable
+ * @property int|null $version
+ * @property array $weekday
  */
 class Availability extends Schema\Entity
 {

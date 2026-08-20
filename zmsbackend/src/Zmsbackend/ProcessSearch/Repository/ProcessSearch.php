@@ -4,9 +4,9 @@ namespace BO\Zmsbackend\ProcessSearch\Repository;
 
 class ProcessSearch extends \BO\Zmsbackend\Process\Repository\Process
 {
-    const ALIAS = 'process';
+    const string ALIAS = 'process';
 
-    private const ACTIVE_SEARCH_STATUSES = [
+    private const array ACTIVE_SEARCH_STATUSES = [
         'reserved',
         'preconfirmed',
         'confirmed',

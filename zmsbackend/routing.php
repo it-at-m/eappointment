@@ -4764,7 +4764,7 @@
  */
 \App::$slim->get(
     '/scope/{id:\d{1,11}}/availability/history/',
-    '\BO\Zmsbackend\Availability\Api\AvailabilityHistoryByScope'
+    \BO\Zmsbackend\Availability\Api\AvailabilityHistoryByScope::class
 )
     ->setName("AvailabilityHistoryByScope");
 
