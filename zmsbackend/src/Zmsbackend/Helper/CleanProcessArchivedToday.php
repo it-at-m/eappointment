@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmsbackend\Helper;
 
 use BO\Zmsbackend\Process\Service\ProcessStatusArchived;
+use DateTimeInterface;
 
 class CleanProcessArchivedToday
 {
@@ -25,12 +26,14 @@ class CleanProcessArchivedToday
         }
     }
 
-    public static function startProcessing($commit = false): void
+    public function startProcessing(bool $commit, DateTimeInterface $now): void
     {
-        $logRepo = new \BO\Zmsbackend\Process\Service\ProcessStatusArchived();
+        $logRepo = new ProcessStatusArchived();
         if ($commit) {
-            \App::$log->info('Executing archived process cleanup with commit');
-            $result = $logRepo->deleteAllToday();
+            \App::$log->info('Executing archived process cleanup with commit', [
+                'beforeDate' => $now->format('Y-m-d'),
+            ]);
+            $result = $logRepo->deleteBeforeDate($now);
             \App::$log->info('Archived process cleanup completed', ['success' => $result]);
         }
     }
