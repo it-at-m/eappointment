@@ -15,6 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 class AppointmentUpdateController extends BaseController
 {
     private AppointmentUpdateService $service;
+    /** @psalm-api */
     public function __construct()
     {
         $this->service = new AppointmentUpdateService();

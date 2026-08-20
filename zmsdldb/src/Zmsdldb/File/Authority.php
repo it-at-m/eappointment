@@ -15,6 +15,9 @@ use BO\Zmsdldb\Collection\Authorities as Collection;
  */
 class Authority extends Base
 {
+    /**
+     * @return Collection
+     */
     #[\Override]
     protected function parseData($data)
     {
@@ -74,6 +77,7 @@ class Authority extends Base
     /**
      *
      * @return Collection
+     * @psalm-api
      */
     public function readListByOfficePath($officepath)
     {
@@ -84,6 +88,7 @@ class Authority extends Base
         return $authoritylist;
     }
 
+    /** @psalm-api */
     public function fetchSource()
     {
         return $this->getItemList();

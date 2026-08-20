@@ -111,6 +111,9 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $ticketprinter;
     }
 
+    /**
+     * @return void
+     */
     protected function readExceptions(Entity $ticketprinter)
     {
         $query = new \BO\Zmsbackend\Scope\Service\Scope();
@@ -120,7 +123,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         }
     }
 
-    protected function readWithContactData(Entity $entity)
+    protected function readWithContactData(Entity $entity): Entity
     {
         $contact = new \BO\Zmsentities\Contact();
 
@@ -142,7 +145,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readSingleScopeFromButtonList(Entity $ticketprinter)
+    public function readSingleScopeFromButtonList(Entity $ticketprinter): \BO\Zmsentities\Scope|null
     {
         $scope = null;
         if (1 == $ticketprinter->getScopeList()->count()) {
@@ -241,7 +244,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $this->deleteItem($query);
     }
 
-    public function readExpiredTicketprinterList($expirationDate)
+    public function readExpiredTicketprinterList($expirationDate): Collection
     {
         $selectQuery = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT);
         $selectQuery

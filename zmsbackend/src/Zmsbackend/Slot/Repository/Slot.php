@@ -8,41 +8,41 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
      *
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'slot';
+    const string TABLE = 'slot';
 
-    const QUERY_OPTIMIZE_SLOT = 'OPTIMIZE TABLE slot;';
-    const QUERY_OPTIMIZE_SLOT_HIERA = 'OPTIMIZE TABLE slot_hiera;';
-    const QUERY_OPTIMIZE_SLOT_PROCESS = 'OPTIMIZE TABLE slot_proces;';
-    const QUERY_OPTIMIZE_PROCESS = 'OPTIMIZE TABLE buerger;';
+    const string QUERY_OPTIMIZE_SLOT = 'OPTIMIZE TABLE slot;';
+    const string QUERY_OPTIMIZE_SLOT_HIERA = 'OPTIMIZE TABLE slot_hiera;';
+    const string QUERY_OPTIMIZE_SLOT_PROCESS = 'OPTIMIZE TABLE slot_proces;';
+    const string QUERY_OPTIMIZE_PROCESS = 'OPTIMIZE TABLE buerger;';
 
-    const QUERY_LAST_CHANGED = 'SELECT MAX(updateTimestamp) AS dateString FROM slot;';
+    const string QUERY_LAST_CHANGED = 'SELECT MAX(updateTimestamp) AS dateString FROM slot;';
 
-    const QUERY_LAST_CHANGED_AVAILABILITY = '
+    const string QUERY_LAST_CHANGED_AVAILABILITY = '
         SELECT MAX(updateTimestamp) AS dateString FROM slot WHERE availabilityID = :availabilityID AND status="free";';
 
-    const QUERY_LAST_IN_AVAILABILITY = '
+    const string QUERY_LAST_IN_AVAILABILITY = '
         SELECT CONCAT(year, "-", LPAD(month, 2, "0"), "-", LPAD(day, 2, "0")) AS dateString
         FROM slot
         WHERE availabilityID = :availabilityID AND status="free"
         ORDER BY year DESC, month DESC, day DESC
         LIMIT 1;';
 
-    const QUERY_OLDEST_VERSION_IN_AVAILABILITY = '
+    const string QUERY_OLDEST_VERSION_IN_AVAILABILITY = '
         SELECT `version`
         FROM slot
         WHERE availabilityID = :availabilityID AND status="free"
         ORDER BY `version` ASC
         LIMIT 1;';
 
-    const QUERY_LAST_CHANGED_SCOPE = '
+    const string QUERY_LAST_CHANGED_SCOPE = '
         SELECT MAX(updateTimestamp) AS dateString FROM slot WHERE scopeID = :scopeID;';
 
-    const QUERY_INSERT_SLOT_PROCESS = '
+    const string QUERY_INSERT_SLOT_PROCESS = '
         INSERT INTO slot_process
         VALUES(?,?,?) 
     ';
 
-    const QUERY_SELECT_BY_SCOPE_AND_DAY = '
+    const string QUERY_SELECT_BY_SCOPE_AND_DAY = '
         SELECT
             s.*
         FROM slot s
@@ -53,7 +53,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
             AND s.day = :day
     ';
 
-    const QUERY_SELECT_MISSING_PROCESS = '
+    const string QUERY_SELECT_MISSING_PROCESS = '
         SELECT 
           s.slotID,
           b.BuergerID,
@@ -70,12 +70,12 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
         WHERE
           sp.processID IS NULL
     ';
-    const QUERY_SELECT_MISSING_PROCESS_BY_SCOPE = '
+    const string QUERY_SELECT_MISSING_PROCESS_BY_SCOPE = '
           AND s.scopeID = :scopeID
     ';
 
 
-    const QUERY_INSERT_SLOT_PROCESS_ID = '
+    const string QUERY_INSERT_SLOT_PROCESS_ID = '
         REPLACE INTO slot_process
         SELECT 
           s.slotID,
@@ -92,17 +92,17 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
         WHERE
           b.BuergerID = :processId
     ';
-    const QUERY_DELETE_SLOT_PROCESS_CANCELLED = '
+    const string QUERY_DELETE_SLOT_PROCESS_CANCELLED = '
         DELETE sp 
             FROM slot_process sp LEFT JOIN slot s USING (slotID)
             WHERE (s.status = "cancelled" OR s.status IS NULL)
     ';
-    const QUERY_DELETE_SLOT_PROCESS_CANCELLED_BY_SCOPE = '
+    const string QUERY_DELETE_SLOT_PROCESS_CANCELLED_BY_SCOPE = '
                 AND s.scopeID = :scopeID
     ';
 
 
-    const QUERY_UPDATE_SLOT_MISSING_AVAILABILITY_BY_SCOPE = '
+    const string QUERY_UPDATE_SLOT_MISSING_AVAILABILITY_BY_SCOPE = '
     UPDATE
          slot s
            LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
@@ -110,22 +110,22 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
            WHERE
              (
                a.OeffnungszeitID IS NULL
-               OR a.Endedatum < :dateString
+               OR a.end_date < :dateString
              )
              AND s.scopeID = :scopeID
     ';
 
-    const QUERY_UPDATE_SLOT_MISSING_AVAILABILITY = '
+    const string QUERY_UPDATE_SLOT_MISSING_AVAILABILITY = '
     UPDATE
          slot s
            LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
            SET s.status = "cancelled"
            WHERE
              a.OeffnungszeitID IS NULL
-               OR a.Endedatum < :dateString
+               OR a.end_date < :dateString
     ';
 
-    const QUERY_SELECT_DELETABLE_SLOT_PROCESS = '
+    const string QUERY_SELECT_DELETABLE_SLOT_PROCESS = '
         SELECT sp.processID AS processId
             FROM slot_process sp
               LEFT JOIN buerger b ON sp.processID = b.BuergerID
@@ -143,17 +143,17 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
                 )
               ) 
     ';
-    const QUERY_SELECT_DELETABLE_SLOT_PROCESS_BY_SCOPE = '
+    const string QUERY_SELECT_DELETABLE_SLOT_PROCESS_BY_SCOPE = '
               AND b.StandortID = :scopeID
     ';
 
-    const QUERY_DELETE_SLOT_PROCESS_ID = '
+    const string QUERY_DELETE_SLOT_PROCESS_ID = '
         DELETE sp 
             FROM slot_process sp 
             WHERE sp.processID = :processId
     ';
 
-    const QUERY_UPDATE_SLOT_STATUS = "
+    const string QUERY_UPDATE_SLOT_STATUS = "
         UPDATE slot
           LEFT JOIN (
           SELECT s.slotID,
@@ -167,7 +167,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
         WHERE slot.status != calc.newstatus
 ";
 
-    const QUERY_SELECT_SLOT = '
+    const string QUERY_SELECT_SLOT = '
     SELECT slotID FROM slot WHERE
       scopeID = :scopeID
       AND year = :year
@@ -195,29 +195,29 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     FOR UPDATE
 ';
 
-    const QUERY_INSERT_ANCESTOR = '
+    const string QUERY_INSERT_ANCESTOR = '
     INSERT INTO slot_hiera SET slotID = :slotID, ancestorID = :ancestorID, ancestorLevel = :ancestorLevel
 ';
 
-    const QUERY_DELETE_ANCESTOR = '
+    const string QUERY_DELETE_ANCESTOR = '
     DELETE FROM slot_hiera WHERE slotID = :slotID
 ';
 
-    const QUERY_CANCEL_AVAILABILITY = '
+    const string QUERY_CANCEL_AVAILABILITY = '
         UPDATE slot SET status = "cancelled" WHERE availabilityID = :availabilityID
 ';
 
-    const QUERY_CANCEL_AVAILABILITY_BEFORE_BOOKABLE = '
+    const string QUERY_CANCEL_AVAILABILITY_BEFORE_BOOKABLE = '
             UPDATE slot SET status = "cancelled" WHERE availabilityID = :availabilityID 
             AND CONCAT(year, "-", LPAD(month, 2, "0"), "-", LPAD(day, 2, "0")) < :providedDate
 ';
 
-    const QUERY_CANCEL_AVAILABILITY_AFTER_BOOKABLE = '
+    const string QUERY_CANCEL_AVAILABILITY_AFTER_BOOKABLE = '
             UPDATE slot SET status = "cancelled" WHERE availabilityID = :availabilityID 
             AND CONCAT(year, "-", LPAD(month, 2, "0"), "-", LPAD(day, 2, "0")) > :providedDate
     ';
 
-    const QUERY_CANCEL_SLOT_OLD_BY_SCOPE = '
+    const string QUERY_CANCEL_SLOT_OLD_BY_SCOPE = '
     UPDATE slot SET status =  "cancelled" 
         WHERE scopeID = :scopeID AND (
             (year < :year)
@@ -226,27 +226,31 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
         )
 ';
 
-    const QUERY_CANCEL_SLOT_OLD = '
+    const string QUERY_CANCEL_SLOT_OLD = '
     UPDATE slot SET status =  "cancelled" 
         WHERE (year < :year)
             OR (year = :year AND  month < :month) 
             OR (year = :year AND  month = :month AND  day <= :day AND time < :time)
 ';
 
-    const QUERY_DELETE_SLOT_OLD = '
+    const string QUERY_DELETE_SLOT_OLD = '
     DELETE FROM slot 
         WHERE (year < :year) 
             OR (year = :year AND  month < :month) 
             OR (year = :year AND  month = :month AND  day < :day)
 ';
 
-    const QUERY_DELETE_SLOT_HIERA = '
+    const string QUERY_DELETE_SLOT_HIERA = '
         DELETE sh 
             FROM slot_hiera sh LEFT JOIN slot s USING(slotID)
             WHERE s.slotID IS NULL
     ';
 
 
+    /**
+     * @return array
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -254,11 +258,15 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
         ];
     }
 
+    /**
+     * @return (mixed|string)[]
+     *
+     */
     public function reverseEntityMapping(
         \BO\Zmsentities\Slot $slot,
         \BO\Zmsentities\Availability $availability,
         \DateTimeInterface $date
-    ) {
+    ): array {
         $data = array();
         $data['scopeID'] = $availability->scope->id;
         $data['availabilityID'] = $availability->id;
@@ -274,7 +282,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
         return $data;
     }
 
-    public function addConditionSlotId($slotID)
+    public function addConditionSlotId($slotID): static
     {
         $this->query->where('slot.slotID', '=', $slotID);
         return $this;

@@ -4,20 +4,24 @@ namespace BO\Zmsentities;
 
 class Day extends Schema\Entity
 {
-    public const PRIMARY = 'day';
+    public const string PRIMARY = 'day';
 
-    public const FULL = 'full';
+    public const string FULL = 'full';
 
-    public const BOOKABLE = 'bookable';
+    public const string BOOKABLE = 'bookable';
 
-    public const NOTBOOKABLE = 'notBookable';
+    public const string NOTBOOKABLE = 'notBookable';
 
-    public const RESTRICTED = 'restricted';
+    public const string RESTRICTED = 'restricted';
 
-    public const DETAIL = 'detail';
+    public const string DETAIL = 'detail';
 
     public static $schema = "day.json";
 
+    /**
+     * @return (Slot|string)[]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -38,7 +42,7 @@ class Day extends Schema\Entity
         return "Day {$this->status}@{$this->year}-{$this->month}-{$this->day} with " . $this->freeAppointments;
     }
 
-    public function setDateTime(\DateTimeInterface $dateTime)
+    public function setDateTime(\DateTimeInterface $dateTime): static
     {
         $this['year'] = $dateTime->format('Y');
         $this['month'] = $dateTime->format('m');
@@ -65,12 +69,12 @@ class Day extends Schema\Entity
         return (0 < $freeAppointmentCount);
     }
 
-    public function isBookable()
+    public function isBookable(): bool
     {
         return ($this->status == self::BOOKABLE);
     }
 
-    public function hasAppointments()
+    public function hasAppointments(): bool
     {
         return ($this->status == self::BOOKABLE || $this->status == self::FULL);
     }
@@ -96,7 +100,7 @@ class Day extends Schema\Entity
         return $this;
     }
 
-    public function withAddedDay(Day $day)
+    public function withAddedDay(Day $day): static
     {
         $merged = clone $this;
         if (!$merged->freeAppointments instanceof Slot) {
@@ -114,7 +118,7 @@ class Day extends Schema\Entity
         return $this::getCalculatedDayHash($this->day, $this->month, $this->year);
     }
 
-    public static function getCalculatedDayHash($dayNumber, $month, $year)
+    public static function getCalculatedDayHash($dayNumber, $month, $year): string
     {
         $dateHash = str_pad($dayNumber, 2, '0', STR_PAD_LEFT)
             . "-"

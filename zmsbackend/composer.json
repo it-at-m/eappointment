@@ -88,6 +88,7 @@
         "bin/deleteBlacklistedMail",
         "bin/deleteDayoffData",
         "bin/deleteOldAvailabilityData",
+        "bin/deleteOldAvailabilityHistory",
         "bin/deleteOldEventLogEntries",
         "bin/deleteOldLogs",
         "bin/deleteArchivedProcessForToday",
@@ -99,8 +100,8 @@
         "bin/resetApiQuota",
         "bin/resetGhostWorkstationCount",
         "bin/resetWorkstations",
-        "bin/sendMailReminder",
-        "bin/sendProcessListToScopeAdmin",
+        "bin/queueMailReminder",
+        "bin/queueProcessListToScopeAdmin",
         "bin/updateDldbData"
     ],
     "autoload": {

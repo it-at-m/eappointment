@@ -18,7 +18,10 @@ class MailTemplates extends \BO\Zmsbackend\Base
     }
 
 
-    public function readList()
+    /**
+     * @psalm-api
+     */
+    public function readList(): \BO\Zmsentities\Collection\MailtemplateList
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping();
@@ -26,7 +29,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return $logList;
     }
 
-    public function readListWithoutProvider()
+    public function readListWithoutProvider(): \BO\Zmsentities\Collection\MailtemplateList
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping();
@@ -35,7 +38,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return $logList;
     }
 
-    public function readListByProvider($providerId)
+    public function readListByProvider($providerId): \BO\Zmsentities\Collection\MailtemplateList
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping();
@@ -52,7 +55,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
     }
 
 
-    public function readTemplate($templateName)
+    public function readTemplate($templateName): Mailtemplate
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -60,7 +63,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return $this->fetchOne($query, new Mailtemplate());
     }
 
-    public function readTemplateById($templateId)
+    public function readTemplateById($templateId): Mailtemplate
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -68,13 +71,14 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return $this->fetchOne($query, new Mailtemplate());
     }
 
-    public function deleteTemplateById($templateId)
+    public function deleteTemplateById($templateId): bool
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionId($templateId);
         return $this->deleteItem($query);
     }
 
+    /** @psalm-api */
     public function updateTemplateContent($templateName, $templateContent)
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::UPDATE);
@@ -109,7 +113,10 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return $this->readTemplate($templateName);
     }
 
-    public function updateEntity(MailTemplate $config)
+    /**
+     * @psalm-api
+     */
+    public function updateEntity(MailTemplate $config): Mailtemplate|null
     {
         $compareEntity = $this->readEntity();
         $result = false;
@@ -138,6 +145,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return ($result) ? $this->readEntity() : null;
     }
 
+    /** @psalm-api */
     public function readProperty($property, $forUpdate = false)
     {
         $sql = \BO\Zmsbackend\Mail\Repository\Mailtemplate::QUERY_SELECT_PROPERTY;
@@ -147,6 +155,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return $this->fetchValue($sql, [$property]);
     }
 
+    /** @psalm-api */
     public function replaceProperty($property, $value)
     {
         return $this->perform(\BO\Zmsbackend\Mail\Repository\Mailtemplate::QUERY_REPLACE_PROPERTY, [
@@ -160,6 +169,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
      *
      *
      * @return bool
+     * @psalm-api
      */
     public function deleteProperty($property)
     {
@@ -168,7 +178,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return $this->deleteItem($query);
     }
 
-    protected function fetchData($querySql)
+    protected function fetchData(string $querySql): Mailtemplate
     {
         $splittedHash = array();
         $dataList = $this->getReader()->fetchAll($querySql);
@@ -179,7 +189,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return new Mailtemplate($splittedHash);
     }
 
-    protected function getSpecifiedValue($value)
+    protected function getSpecifiedValue($value): int|string
     {
         if (is_bool($value)) {
             return ($value) ? 1 : 0;
@@ -187,7 +197,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return trim($value);
     }
 
-    protected function mergeMailTemplatesWithCustomizations($generalTemplates, $customTemplates)
+    protected function mergeMailTemplatesWithCustomizations($generalTemplates, $customTemplates): array
     {
 
         $customTemplatesByName = [];

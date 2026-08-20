@@ -31,13 +31,16 @@ use BO\Zmsentities\Collection\ProcessList;
  */
 class ZmsApiFacadeService
 {
-    private const CACHE_KEY_OFFICES = 'processed_offices';
-    private const CACHE_KEY_SCOPES = 'processed_scopes';
-    private const CACHE_KEY_SERVICES = 'processed_services';
-    private const CACHE_KEY_OFFICES_AND_SERVICES = 'processed_offices_and_services';
-    private const CACHE_KEY_SERVICES_BY_OFFICE_PREFIX = 'processed_services_by_office_';
+    private const string CACHE_KEY_OFFICES = 'processed_offices';
+    private const string CACHE_KEY_SCOPES = 'processed_scopes';
+    private const string CACHE_KEY_SERVICES = 'processed_services';
+    private const string CACHE_KEY_OFFICES_AND_SERVICES = 'processed_offices_and_services';
+    private const string CACHE_KEY_SERVICES_BY_OFFICE_PREFIX = 'processed_services_by_office_';
 
-    private static function setMappedCache(string $cacheKey, mixed $data): void
+    /**
+     * @param OfficeList|OfficeServiceAndRelationList|ServiceList|ThinnedScopeList $data
+     */
+    private static function setMappedCache(string $cacheKey, OfficeList|ThinnedScopeList|ServiceList|OfficeServiceAndRelationList $data): void
     {
         if (\App::$cache) {
             \App::$cache->set($cacheKey, $data, \App::$SOURCE_CACHE_TTL);

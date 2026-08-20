@@ -76,7 +76,7 @@ class ProcessSave extends BaseController
         );
     }
 
-    protected function getSuccessMessage(Process $process)
+    protected function getSuccessMessage(Process $process): string
     {
         return ($process->isWithAppointment()) ? 'process_updated' : 'process_withoutappointment_updated';
     }
@@ -114,7 +114,7 @@ class ProcessSave extends BaseController
         return $process;
     }
 
-    private function shouldSendNotifications($requestData, Process $process)
+    private function shouldSendNotifications($requestData, Process $process): bool
     {
         $requestIds = $requestData['requests'] ?? [];
         $currentRequestIds = [];

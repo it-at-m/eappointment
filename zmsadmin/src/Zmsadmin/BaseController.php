@@ -34,7 +34,11 @@ abstract class BaseController extends \BO\Slim\Controller
         return parent::__invoke($request, $response, $args);
     }
 
-    public function getSchemaConstraintList($schema)
+    /**
+     * @return array[]
+     *
+     */
+    public function getSchemaConstraintList($schema): array
     {
         $list = [];
         $locale = \App::$language->getLocale();

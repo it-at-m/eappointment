@@ -6,11 +6,11 @@ class ProcessGetByExternalUserIdTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ProcessGetByExternalUserId";
 
-    const PROCESS_ID = 10030;
+    const int PROCESS_ID = 10030;
 
-    const AUTHKEY = '1c56';
+    const string AUTHKEY = '1c56';
 
-    const EXTERNAL_USER_ID = 'gh1582-citizen-user';
+    const string EXTERNAL_USER_ID = 'gh1582-citizen-user';
 
     protected function assignExternalUserIdToTestProcess(): void
     {

@@ -109,7 +109,7 @@ class Validator
      *
      * @return \BO\Mellon\Unvalidated
      */
-    public function getParameter($name)
+    public function getParameter(string $name)
     {
         if ($this->hasParameter($name)) {
             return new \BO\Mellon\Unvalidated($this->parameters[$name], $name);
@@ -169,10 +169,7 @@ class Validator
         return self::value($this->input, $name);
     }
 
-    /**
-     * @return self
-     */
-    public static function collection($validatorList)
+    public static function collection(array $validatorList): Collection
     {
         $collection = new Collection($validatorList);
         return $collection;

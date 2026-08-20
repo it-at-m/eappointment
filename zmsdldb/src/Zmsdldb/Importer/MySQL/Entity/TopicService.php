@@ -4,16 +4,16 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class TopicService extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'id' => 'service_id',
         'topic_id' => 'topic_id',
     ];
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(
                     ['topic_id', 'service_id'],
                     array_values($this->get('topic_id', 'id'))

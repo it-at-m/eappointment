@@ -10,12 +10,11 @@ namespace BO\Zmsdldb\MySQL;
 use BO\Zmsdldb\MySQL\Collection\Links as Collection;
 use BO\Zmsdldb\Elastic\Link as Base;
 
-/**
- */
+/** @psalm-api */
 class Link extends Base
 {
     #[\Override]
-    public function readSearchResultList($query)
+    public function readSearchResultList($query): Collection
     {
         try {
             #$query = '+' . implode(' +', explode(' ', $query));
@@ -30,7 +29,7 @@ class Link extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($linklist) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function (?string $data_json) use ($linklist): void {
                 $link = new \BO\Zmsdldb\MySQL\Entity\Link();
                 $link->offsetSet('data_json', $data_json);
                 $linklist[$link['link']] = $link;

@@ -1,0 +1,272 @@
+{
+  "type": "object",
+  "description": "Append-only audit snapshot of an opening-hours (availability) change for tech-admin history (ZMSKVR-1249). Snapshot fields use the same English names as oeffnungszeit; weekday uses the same bit-flag object shape as availability.weekday.",
+  "example": {
+    "id": 1,
+    "scopeId": 141,
+    "availabilityId": 68985,
+    "action": "created",
+    "weekday": {
+      "monday": 2,
+      "tuesday": 4,
+      "wednesday": 8,
+      "thursday": 16,
+      "friday": 32,
+      "saturday": 0,
+      "sunday": 0
+    },
+    "startDate": "2026-08-03",
+    "endDate": "2026-09-06",
+    "everyXWeeks": 1,
+    "everyOtherWeek": 0,
+    "startTime": "00:00:00",
+    "appointmentStartTime": "10:00:00",
+    "endTime": "00:00:00",
+    "appointmentEndTime": "12:00:00",
+    "timeSlot": "00:15:00",
+    "workstationCount": 0,
+    "appointmentWorkstationCount": 3,
+    "comment": "Neue Öffnungszeit",
+    "internetReduction": 0,
+    "multipleSlotsAllowed": 0,
+    "openFromDays": 0,
+    "openUntilDays": 5,
+    "version": 1,
+    "changedAt": "2016-04-01 11:00:00",
+    "changedBy": "unittest"
+  },
+  "required": [
+    "scopeId",
+    "action",
+    "weekday"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^[0-9]+$" },
+        { "type": "null" }
+      ],
+      "description": "History row ID"
+    },
+    "scopeId": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^[0-9]+$" }
+      ],
+      "description": "Scope the availability belongs to"
+    },
+    "availabilityId": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^[0-9]+$" },
+        { "type": "null" }
+      ],
+      "description": "Availability ID; kept after the availability row is deleted"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "created",
+        "updated",
+        "deleted",
+        "dldb_slot_update"
+      ],
+      "description": "Change action that produced this history row"
+    },
+    "weekday": {
+      "type": "object",
+      "description": "Same weekday bit-flag object as availability.weekday (decoded from availability_history.weekday INT)",
+      "properties": {
+        "monday": {
+          "default": false,
+          "oneOf": [
+            { "type": "null" },
+            { "type": "number" },
+            { "type": "boolean" },
+            { "type": "string", "pattern": "^[0-9]+$" }
+          ]
+        },
+        "tuesday": {
+          "default": false,
+          "oneOf": [
+            { "type": "null" },
+            { "type": "number" },
+            { "type": "boolean" },
+            { "type": "string", "pattern": "^[0-9]+$" }
+          ]
+        },
+        "wednesday": {
+          "default": false,
+          "oneOf": [
+            { "type": "null" },
+            { "type": "number" },
+            { "type": "boolean" },
+            { "type": "string", "pattern": "^[0-9]+$" }
+          ]
+        },
+        "thursday": {
+          "default": false,
+          "oneOf": [
+            { "type": "null" },
+            { "type": "number" },
+            { "type": "boolean" },
+            { "type": "string", "pattern": "^[0-9]+$" }
+          ]
+        },
+        "friday": {
+          "default": false,
+          "oneOf": [
+            { "type": "null" },
+            { "type": "number" },
+            { "type": "boolean" },
+            { "type": "string", "pattern": "^[0-9]+$" }
+          ]
+        },
+        "saturday": {
+          "default": false,
+          "oneOf": [
+            { "type": "null" },
+            { "type": "number" },
+            { "type": "boolean" },
+            { "type": "string", "pattern": "^[0-9]+$" }
+          ]
+        },
+        "sunday": {
+          "default": false,
+          "oneOf": [
+            { "type": "null" },
+            { "type": "number" },
+            { "type": "boolean" },
+            { "type": "string", "pattern": "^[0-9]+$" }
+          ]
+        }
+      }
+    },
+    "startDate": {
+      "type": "string",
+      "default": "",
+      "description": "Validity start date Y-m-d (oeffnungszeit.start_date)"
+    },
+    "endDate": {
+      "type": "string",
+      "default": "",
+      "description": "Validity end date Y-m-d (oeffnungszeit.end_date)"
+    },
+    "everyXWeeks": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^[0-9]+$" }
+      ],
+      "default": 0,
+      "description": "Repeat every N weeks (oeffnungszeit.every_x_weeks)"
+    },
+    "everyOtherWeek": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^[0-9]+$" }
+      ],
+      "default": 0,
+      "description": "Nth week of month (oeffnungszeit.every_other_week)"
+    },
+    "startTime": {
+      "type": "string",
+      "default": "00:00:00",
+      "description": "Walk-in start time (oeffnungszeit.start_time)"
+    },
+    "appointmentStartTime": {
+      "type": "string",
+      "default": "00:00:00",
+      "description": "Appointment start time (oeffnungszeit.appointment_start_time)"
+    },
+    "endTime": {
+      "type": "string",
+      "default": "00:00:00",
+      "description": "Walk-in end time (oeffnungszeit.end_time)"
+    },
+    "appointmentEndTime": {
+      "type": "string",
+      "default": "00:00:00",
+      "description": "Appointment end time (oeffnungszeit.appointment_end_time)"
+    },
+    "timeSlot": {
+      "type": "string",
+      "default": "00:00:00",
+      "description": "Slot length as TIME (oeffnungszeit.time_slot)"
+    },
+    "workstationCount": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^-?[0-9]+$" }
+      ],
+      "default": 0,
+      "description": "Workstation count snapshot (oeffnungszeit.workstation_count)"
+    },
+    "appointmentWorkstationCount": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^-?[0-9]+$" }
+      ],
+      "default": 0,
+      "description": "Intern workstation count (oeffnungszeit.appointment_workstation_count)"
+    },
+    "comment": {
+      "type": ["null", "string"],
+      "default": null,
+      "description": "Internal note (oeffnungszeit.comment)"
+    },
+    "internetReduction": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "number" },
+        { "type": "string", "pattern": "^-?[0-9]+$" }
+      ],
+      "default": 0,
+      "description": "Intern minus public workstations (oeffnungszeit.internet_reduction)"
+    },
+    "multipleSlotsAllowed": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "boolean" },
+        { "type": "string", "pattern": "^[01]$" }
+      ],
+      "default": 0,
+      "description": "Multiple slots allowed (oeffnungszeit.multiple_slots_allowed)"
+    },
+    "openFromDays": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^-?[0-9]+$" }
+      ],
+      "default": 0,
+      "description": "Bookable from days (oeffnungszeit.open_from_days)"
+    },
+    "openUntilDays": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^-?[0-9]+$" }
+      ],
+      "default": 0,
+      "description": "Bookable until days (oeffnungszeit.open_until_days)"
+    },
+    "version": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^[0-9]+$" }
+      ],
+      "default": 1,
+      "description": "Availability version at snapshot time"
+    },
+    "changedAt": {
+      "type": "string",
+      "default": "",
+      "description": "Change timestamp Y-m-d H:i:s"
+    },
+    "changedBy": {
+      "type": "string",
+      "default": "",
+      "description": "Actor user id or system identifier"
+    }
+  }
+}

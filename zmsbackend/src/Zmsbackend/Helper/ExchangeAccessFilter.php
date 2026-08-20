@@ -52,7 +52,10 @@ class ExchangeAccessFilter
         return static::$filteredEntity;
     }
 
-    protected static function getFilteredEntityByUseraccountPermissions($permission, $filteredKey)
+    /**
+     * @psalm-api
+     */
+    protected static function getFilteredEntityByUseraccountPermissions($permission, $filteredKey): void
     {
         if (! static::$workstation->getUseraccount()->hasPermissions([$permission])) {
             unset(static::$filteredEntity->data[$filteredKey]);
@@ -61,15 +64,20 @@ class ExchangeAccessFilter
 
     /**
      * @SuppressWarnings(UnusedFormalParameter)
+     *
+     * @psalm-api
      */
-    protected static function getFilteredEntityByUseraccountSuperuser($unused, $filteredKey)
+    protected static function getFilteredEntityByUseraccountSuperuser($unused, $filteredKey): void
     {
         if (! static::$workstation->getUseraccount()->isSuperUser()) {
             unset(static::$filteredEntity->data[$filteredKey]);
         }
     }
 
-    protected static function getFilteredEntityByScope($entityId, $filteredKey)
+    /**
+     * @psalm-api
+     */
+    protected static function getFilteredEntityByScope($entityId, $filteredKey): void
     {
         if (static::$workstation->getUseraccount()->hasPermissions(['scope'])) {
             if (! static::$workstation->getScopeListFromAssignedDepartments()->hasEntity($entityId)) {
@@ -78,7 +86,10 @@ class ExchangeAccessFilter
         }
     }
 
-    protected static function getFilteredEntityByDepartment($entityId, $filteredKey)
+    /**
+     * @psalm-api
+     */
+    protected static function getFilteredEntityByDepartment($entityId, $filteredKey): void
     {
         if (static::$workstation->getUseraccount()->hasPermissions(['department'])) {
             if (! static::$workstation->getDepartmentList()->hasEntity($entityId)) {
@@ -87,7 +98,10 @@ class ExchangeAccessFilter
         }
     }
 
-    protected static function getFilteredEntityByOrganisation($entityId, $filteredKey)
+    /**
+     * @psalm-api
+     */
+    protected static function getFilteredEntityByOrganisation($entityId, $filteredKey): void
     {
         if (static::$workstation->getUseraccount()->hasPermissions(['organisation'])) {
             if (! static::$organisationList->hasEntity($entityId)) {
@@ -96,7 +110,7 @@ class ExchangeAccessFilter
         }
     }
 
-    protected static function getOrganisationListByDepartments()
+    protected static function getOrganisationListByDepartments(): \BO\Zmsentities\Collection\OrganisationList
     {
         $organisationList = new \BO\Zmsentities\Collection\OrganisationList();
         foreach (static::$workstation->getDepartmentList() as $department) {
