@@ -3,11 +3,11 @@
     {% block board_title %}<i aria-hidden="true" title="{{ ("Kunde in Bearbeitung")|trans }}" class="fas fa-info-circle"></i> {% trans %}Kunde in Bearbeitung{% endtrans %}{% endblock %}
     {% block board_body %}
         <p>
-            {% trans %}Es befindet sich bereits ein Kunde in Bearbeitung. Möchten Sie den aktuellen Termin beenden und den ausgewählten Kunden aufrufen?{% endtrans %}
+            {% trans %}Aktuell ist ein Kundenkontakt aktiv. Möchten Sie den aktuellen Termin fertig stellen und den ausgewählten Kunden aufrufen?{% endtrans %}
         </p>
         <div class="form-actions">
             <a data-action-abort class="button button--default button-abort" href="#">{% trans %}Zurück zum aktuellen Vorgang{% endtrans %}</a>
-            <a data-action-ok class="button button--diamond button-ok" href="#">{% trans %}Aktuellen Termin abschließen und Kunden aufrufen{% endtrans %}</a>
+            <a data-action-ok class="button button--diamond button-ok" href="#">{% trans %}Aktuellen Termin fertig stellen und Kunden aufrufen{% endtrans %}</a>
         </div>
     {% endblock %}
 

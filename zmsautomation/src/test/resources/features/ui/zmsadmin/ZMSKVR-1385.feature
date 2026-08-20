@@ -50,7 +50,7 @@ Funktionalität: Wechsel auf anderen Warteschlangen-Kunden während laufender Be
 
 
 	@web @zmsadmin @ZMSKVR-1385 @automatisiert @executeLocally
-	Szenario: [AUT] Option 1 - Aktuellen Termin abschließen und ausgewählten Kunden aufrufen
+	Szenario: [AUT] Option 1 - Aktuellen Termin fertig stellen und ausgewählten Kunden aufrufen
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
 		Und  Sie für "Standort" den Wert "Bürgerbüro Orleansplatz (KVR-II/231 KP) Abholung" auswählen.
@@ -66,7 +66,7 @@ Funktionalität: Wechsel auf anderen Warteschlangen-Kunden während laufender Be
 		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Ja, Kunde erschienen" klicken.
 		Wenn Der Sachbearbeiter "<TestData.Termin2>" aus der Warteliste aufruft.
 		Dann erscheint das Bestätigungsfenster zum Wechsel des Warteschlangen-Kunden.
-		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Aktuellen Termin abschließen und Kunden aufrufen" klicken.
+		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Aktuellen Termin fertig stellen und Kunden aufrufen" klicken.
 		Und  Sie ggf. die Statistikbearbeitung abschließen.
 		Dann wird der wartende Kunde "<TestData.Termin2>" aufgerufen.
 		Dann wird der Kundennamen "<TestData.Kunde2>" unter Kundeninformation angezeigt.

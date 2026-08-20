@@ -118,7 +118,7 @@ public class AdminSteps {
         case "Zurück zum aktuellen Vorgang":
             PROCESSING_STATION_SECTION.clickStayOnCurrentProcessInConfirmDialog();
             break;
-        case "Aktuellen Termin abschließen und Kunden aufrufen":
+        case "Aktuellen Termin fertig stellen und Kunden aufrufen":
             PROCESSING_STATION_SECTION.clickFinishAndCallSelectedInConfirmDialog();
             break;
         default:
