@@ -420,7 +420,7 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
                 By.cssSelector("section.board.dialog a.button-abort")));
         Assert.assertFalse(findElementsByLocatorType(
                 TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME),
-                "//section[contains(@class,'dialog')]//*[contains(text(),'Es befindet sich bereits ein Kunde in Bearbeitung')]",
+                "//section[contains(@class,'dialog')]//*[contains(text(),'Aktuell ist ein Kundenkontakt aktiv')]",
                 LocatorType.XPATH).isEmpty(),
                 "Expected confirm dialog text about a customer already in progress.");
     }
@@ -434,7 +434,7 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
                 "Confirm dialog for switching queue customer should not be visible.");
         Assert.assertTrue(findElementsByLocatorType(
                 TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME),
-                "//section[contains(@class,'board') and contains(@class,'dialog')]//*[contains(text(),'Es befindet sich bereits ein Kunde in Bearbeitung')]",
+                "//section[contains(@class,'board') and contains(@class,'dialog')]//*[contains(text(),'Aktuell ist ein Kundenkontakt aktiv')]",
                 LocatorType.XPATH).isEmpty(),
                 "Confirm dialog text for switching queue customer should not be visible.");
     }
@@ -445,7 +445,7 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         wait.withMessage("Already-called process error message is not visible!");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
                 "//section[contains(@class,'message--error')]//*[contains(text(),"
-                        + "'Dieser Arbeitsplatz hat schon einen Vorgang aufgerufen. Dieser wird weiterhin verwendet.')]"
+                        + "'Bitte schließen Sie den aktuellen Vorgang zuerst ab.')]"
         )));
     }
 
@@ -466,7 +466,7 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
     }
 
     public void clickFinishAndCallSelectedInConfirmDialog() {
-        ScenarioLogManager.getLogger().info("Clicking \"Aktuellen Termin abschließen und Kunden aufrufen\"...");
+        ScenarioLogManager.getLogger().info("Clicking \"Aktuellen Termin fertig stellen und Kunden aufrufen\"...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "section.board.dialog a.button-ok", LocatorType.CSSSELECTOR, false, CONTEXT);
     }
 
