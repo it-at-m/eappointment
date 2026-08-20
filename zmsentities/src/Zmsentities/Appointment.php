@@ -4,6 +4,11 @@ namespace BO\Zmsentities;
 
 use BO\Zmsentities\Helper\Property;
 
+/**
+ * Schema-backed entity (ArrayObject::ARRAY_AS_PROPS); document dynamic keys for Psalm.
+ *
+ * @property int $date
+ */
 class Appointment extends Schema\Entity
 {
     public const string PRIMARY = 'id';

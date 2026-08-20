@@ -8,22 +8,27 @@ use BO\Zmsentities\AvailabilityHistory as Entity;
 
 class AvailabilityHistory extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\MappingInterface
 {
-    public const TABLE = 'availability_history';
+    public const string TABLE = 'availability_history';
 
-    public const ALIAS = 'availabilityHistory';
+    public const string ALIAS = 'availabilityHistory';
 
-    public const QUERY_DELETE_OLDER_THAN = '
+    public const string QUERY_DELETE_OLDER_THAN = '
         DELETE FROM availability_history
         WHERE changed_at < :cutoff
     ';
 
     /** @var list<string> */
-    public const ALLOWED_ACTIONS = Entity::ACTIONS;
+    public const array ALLOWED_ACTIONS = Entity::ACTIONS;
 
+    /** @var int */
     protected $resolveLevel = 0;
 
-    public function __construct($queryType, $prefix = '', $name = false, $resolveLevel = null)
-    {
+    public function __construct(
+        mixed $queryType,
+        string $prefix = '',
+        string|false $name = false,
+        mixed $resolveLevel = null
+    ) {
         parent::__construct($queryType, $prefix, $name, $resolveLevel);
 
         if ($queryType === self::SELECT) {
@@ -33,7 +38,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Query\Base implements \BO\Zmsba
     }
 
     #[\Override]
-    public function getEntityMapping()
+    public function getEntityMapping(): array
     {
         return [
             'id' => self::ALIAS . '.id',
@@ -116,6 +121,9 @@ class AvailabilityHistory extends \BO\Zmsbackend\Query\Base implements \BO\Zmsba
         ];
     }
 
+    /**
+     * @param array $data
+     */
     #[\Override]
     public function postProcess($data): array
     {

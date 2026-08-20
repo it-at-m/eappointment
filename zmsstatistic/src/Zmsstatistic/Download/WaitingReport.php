@@ -121,8 +121,11 @@ class WaitingReport extends Base
         return $spreadsheet;
     }
 
-    public function writeHeader(ReportEntity $report, \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet, $datePatternCol): void
-    {
+    public function writeHeader(
+        ReportEntity $report,
+        \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet,
+        string $datePatternCol
+    ): void {
         $reportHeader = [];
         $reportHeader[] = null;
         $reportHeader[] = 'Max.';
@@ -195,8 +198,12 @@ class WaitingReport extends Base
         $sheet->fromArray($reportTotal, null, 'A' . ($sheet->getHighestRow() + 1));
     }
 
-    public function writeReportPart(ReportEntity $report, \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet, $rangeName, $headline): void
-    {
+    public function writeReportPart(
+        ReportEntity $report,
+        \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet,
+        string $rangeName,
+        string $headline
+    ): void {
         $entity = clone $report;
         $totals = $entity->data['max'];
         unset($entity->data['max']);

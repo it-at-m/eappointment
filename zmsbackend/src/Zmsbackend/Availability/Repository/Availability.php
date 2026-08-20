@@ -233,28 +233,28 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
     public function reverseEntityMapping(\BO\Zmsentities\Availability $entity): array
     {
         $data = array();
-        $data['scope_id'] = $entity->scope['id'];
-        $data['open_from_days'] = $entity->bookable['startInDays'];
-        $data['open_until_days'] = $entity->bookable['endInDays'];
-        $data['comment'] = $entity->description;
+        $data['scope_id'] = $entity['scope']['id'];
+        $data['open_from_days'] = $entity['bookable']['startInDays'];
+        $data['open_until_days'] = $entity['bookable']['endInDays'];
+        $data['comment'] = $entity['description'];
         $data['start_date'] = $entity->getStartDateTime()->format('Y-m-d');
         $data['end_date'] = $entity->getEndDateTime()->format('Y-m-d');
-        $data['version'] = $entity->version;
-        if ('openinghours' == $entity->type) {
-            $data['start_time'] = $entity->startTime;
-            $data['end_time'] = $entity->endTime;
+        $data['version'] = $entity['version'];
+        if ('openinghours' == $entity['type']) {
+            $data['start_time'] = $entity['startTime'];
+            $data['end_time'] = $entity['endTime'];
             $data['appointment_start_time'] = 0;
             $data['appointment_end_time'] = 0;
         } else {
             $data['start_time'] = 0;
             $data['end_time'] = 0;
-            $data['appointment_start_time'] = $entity->startTime;
-            $data['appointment_end_time'] = $entity->endTime;
+            $data['appointment_start_time'] = $entity['startTime'];
+            $data['appointment_end_time'] = $entity['endTime'];
         }
-        $data['every_x_weeks'] = $entity->repeat['afterWeeks'];
-        $data['every_other_week'] = $entity->repeat['weekOfMonth'];
-        $data['time_slot'] = gmdate("H:i", $entity->slotTimeInMinutes * 60);
-        $data['multiple_slots_allowed'] = $entity->multipleSlotsAllowed ? 1 : 0;
+        $data['every_x_weeks'] = $entity['repeat']['afterWeeks'];
+        $data['every_other_week'] = $entity['repeat']['weekOfMonth'];
+        $data['time_slot'] = gmdate("H:i", $entity['slotTimeInMinutes'] * 60);
+        $data['multiple_slots_allowed'] = $entity['multipleSlotsAllowed'] ? 1 : 0;
         $wochentagBinaryCoded = 0;
         $binaryCodes = [
             'sunday' => 1,
@@ -265,15 +265,15 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
             'friday' => 32,
             'saturday' => 64,
             ];
-        foreach ($entity->weekday as $weekday => $isActive) {
+        foreach ($entity['weekday'] as $weekday => $isActive) {
             if ($isActive) {
                 $wochentagBinaryCoded |= $binaryCodes[$weekday];
             }
         }
         $data['weekday'] = $wochentagBinaryCoded;
-        $data['appointment_workstation_count'] = $entity->workstationCount['intern'];
+        $data['appointment_workstation_count'] = $entity['workstationCount']['intern'];
         $data['internet_reduction'] =
-            $entity->workstationCount['intern'] - $entity->workstationCount['public'];
+            $entity['workstationCount']['intern'] - $entity['workstationCount']['public'];
 
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);

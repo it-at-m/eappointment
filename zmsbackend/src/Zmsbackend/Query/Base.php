@@ -65,21 +65,24 @@ abstract class Base
 
     protected static $sqlCache = [];
 
-    protected $currentSqlString = null;
+    protected string|null $currentSqlString = null;
 
     /**
      * List of joined aliasnames to avoid double joins
      *
+     * @var list<string>
      */
-    protected $joinedAliasList = [];
+    protected array $joinedAliasList = [];
 
     /**
      * List of joined queries to avoid double joins
      *
+     * @var list<self>
      */
-    protected $joinedQueryList = [];
+    protected array $joinedQueryList = [];
 
-    protected $withEntities = [];
+    /** @var list<string> */
+    protected array $withEntities = [];
 
     /**
      * Create query builder if necessary

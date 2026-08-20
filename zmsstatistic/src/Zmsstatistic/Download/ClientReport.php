@@ -85,8 +85,11 @@ class ClientReport extends Base
         $sheet->fromArray($reportHeader, null, 'A' . ($sheet->getHighestRow() + 2));
     }
 
-    public function writeTotalsRow(ReportEntity $report, \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet, $datePatternTotals): void
-    {
+    public function writeTotalsRow(
+        ReportEntity $report,
+        \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet,
+        string $datePatternTotals
+    ): void {
         if ('totals' == end($report->data)['date']) {
             $totals = array_pop($report->data);
             $dateString = $report->firstDay->year . '-' . $report->firstDay->month . '-' . $report->firstDay->day;
@@ -116,8 +119,12 @@ class ClientReport extends Base
         }
     }
 
-    public function writeReportData(ReportEntity $report, \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet, $datePatternCol1, $datePatternCol2): void
-    {
+    public function writeReportData(
+        ReportEntity $report,
+        \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet,
+        string $datePatternCol1,
+        string $datePatternCol2
+    ): void {
         $reportData = [];
 
         foreach ($report->data as $row => $entry) {
@@ -150,7 +157,7 @@ class ClientReport extends Base
         $sheet->fromArray($reportData, null, 'A' . ($sheet->getHighestRow() + 1));
     }
 
-    private function calculateNoAppointment($totals): string
+    private function calculateNoAppointment(array $totals): string
     {
         if (isset($totals['clientscount']) && isset($totals['withappointment'])) {
             return (string) ($totals['clientscount'] - $totals['withappointment']);
@@ -158,7 +165,7 @@ class ClientReport extends Base
         return 'N/A';
     }
 
-    private function calculateMissedNoAppointment($totals): string
+    private function calculateMissedNoAppointment(array $totals): string
     {
         if (isset($totals['missed']) && isset($totals['missedwithappointment'])) {
             return (string) ($totals['missed'] - $totals['missedwithappointment']);
@@ -166,7 +173,7 @@ class ClientReport extends Base
         return 'N/A';
     }
 
-    private function calculateNoAppointmentForRow($entry): string
+    private function calculateNoAppointmentForRow(array $entry): string
     {
         if (isset($entry['clientscount']) && isset($entry['withappointment'])) {
             return (string) ($entry['clientscount'] - $entry['withappointment']);
@@ -174,7 +181,7 @@ class ClientReport extends Base
         return 'N/A';
     }
 
-    private function calculateMissedNoAppointmentForRow($entry): string
+    private function calculateMissedNoAppointmentForRow(array $entry): string
     {
         if (isset($entry['missed']) && isset($entry['missedwithappointment'])) {
             return (string) ($entry['missed'] - $entry['missedwithappointment']);

@@ -309,22 +309,24 @@ class ProcessList extends Base
         return $list;
     }
 
-    public function withScopeId($scopeId): static
+    /** @psalm-api */
+    public function withScopeId(int|string $scopeId): static
     {
         $processList = new static();
         foreach ($this as $process) {
-            if ($scopeId == $process->scope['id']) {
+            if ($scopeId == $process->getScopeId()) {
                 $processList[] = clone $process;
             }
         }
         return $processList;
     }
 
-    public function withOutScopeId($scopeId): static
+    /** @psalm-api */
+    public function withOutScopeId(int|string $scopeId): static
     {
         $processList = new static();
         foreach ($this as $process) {
-            if ($scopeId != $process->scope['id']) {
+            if ($scopeId != $process->getScopeId()) {
                 $processList[] = clone $process;
             }
         }

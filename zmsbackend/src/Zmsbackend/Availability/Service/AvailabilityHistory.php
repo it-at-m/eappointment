@@ -13,34 +13,34 @@ use App;
 
 class AvailabilityHistory extends \BO\Zmsbackend\Base
 {
-    public const ACTION_CREATED = Entity::ACTION_CREATED;
-    public const ACTION_UPDATED = Entity::ACTION_UPDATED;
-    public const ACTION_DELETED = Entity::ACTION_DELETED;
-    public const ACTION_DLDB_SLOT_UPDATE = Entity::ACTION_DLDB_SLOT_UPDATE;
+    public const string ACTION_CREATED = Entity::ACTION_CREATED;
+    public const string ACTION_UPDATED = Entity::ACTION_UPDATED;
+    public const string ACTION_DELETED = Entity::ACTION_DELETED;
+    public const string ACTION_DLDB_SLOT_UPDATE = Entity::ACTION_DLDB_SLOT_UPDATE;
 
-    public const DEFAULT_RETENTION_DAYS = 180;
-    public const MAX_ROWS = 500;
+    public const int DEFAULT_RETENTION_DAYS = 180;
+    public const int MAX_ROWS = 500;
 
-    private const COMMENT_MAX_LENGTH = 200;
+    private const int COMMENT_MAX_LENGTH = 200;
 
-    public function writeCreated(Availability $availability, ?string $changedBy = null): bool
+    public function writeCreated(Availability $availability, ?string $changedBy = null): void
     {
-        return $this->write(self::ACTION_CREATED, $availability, $changedBy);
+        $this->write(self::ACTION_CREATED, $availability, $changedBy);
     }
 
-    public function writeUpdated(Availability $availability, ?string $changedBy = null): bool
+    public function writeUpdated(Availability $availability, ?string $changedBy = null): void
     {
-        return $this->write(self::ACTION_UPDATED, $availability, $changedBy);
+        $this->write(self::ACTION_UPDATED, $availability, $changedBy);
     }
 
-    public function writeDeleted(Availability $availability, ?string $changedBy = null): bool
+    public function writeDeleted(Availability $availability, ?string $changedBy = null): void
     {
-        return $this->write(self::ACTION_DELETED, $availability, $changedBy);
+        $this->write(self::ACTION_DELETED, $availability, $changedBy);
     }
 
-    public function writeDldbSlotUpdate(Availability $availability): bool
+    public function writeDldbSlotUpdate(Availability $availability): void
     {
-        return $this->write(self::ACTION_DLDB_SLOT_UPDATE, $availability, 'dldb');
+        $this->write(self::ACTION_DLDB_SLOT_UPDATE, $availability, 'dldb');
     }
 
     public function readListByScopeId(
@@ -86,39 +86,39 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
 
     public function buildSnapshot(Availability $availability): array
     {
-        $comment = $availability->description ?? null;
+        $comment = $availability['description'] ?? null;
         if (is_string($comment) && mb_strlen($comment) > self::COMMENT_MAX_LENGTH) {
             $comment = mb_substr($comment, 0, self::COMMENT_MAX_LENGTH - 3) . '...';
         }
 
-        $intern = (int) ($availability->workstationCount['intern'] ?? 0);
-        $public = (int) ($availability->workstationCount['public'] ?? 0);
-        $slotMinutes = (int) ($availability->slotTimeInMinutes ?? $availability->getSlotTimeInMinutes());
-        $isOpeningHours = $availability->type === 'openinghours';
+        $intern = (int) ($availability['workstationCount']['intern'] ?? 0);
+        $public = (int) ($availability['workstationCount']['public'] ?? 0);
+        $slotMinutes = (int) ($availability['slotTimeInMinutes'] ?? $availability->getSlotTimeInMinutes());
+        $isOpeningHours = $availability['type'] === 'openinghours';
 
         return [
             'start_date' => $availability->getStartDateTime()->format('Y-m-d'),
             'end_date' => $availability->getEndDateTime()->format('Y-m-d'),
-            'every_x_weeks' => (int) ($availability->repeat['afterWeeks'] ?? 0),
-            'every_other_week' => (int) ($availability->repeat['weekOfMonth'] ?? 0),
+            'every_x_weeks' => (int) ($availability['repeat']['afterWeeks'] ?? 0),
+            'every_other_week' => (int) ($availability['repeat']['weekOfMonth'] ?? 0),
             'weekday' => Entity::encodeWeekdayMask($availability),
-            'start_time' => $isOpeningHours ? $this->formatTimeValue($availability->startTime) : '00:00:00',
-            'end_time' => $isOpeningHours ? $this->formatTimeValue($availability->endTime) : '00:00:00',
+            'start_time' => $isOpeningHours ? $this->formatTimeValue($availability['startTime']) : '00:00:00',
+            'end_time' => $isOpeningHours ? $this->formatTimeValue($availability['endTime']) : '00:00:00',
             'appointment_start_time' => $isOpeningHours
                 ? '00:00:00'
-                : $this->formatTimeValue($availability->startTime),
+                : $this->formatTimeValue($availability['startTime']),
             'appointment_end_time' => $isOpeningHours
                 ? '00:00:00'
-                : $this->formatTimeValue($availability->endTime),
+                : $this->formatTimeValue($availability['endTime']),
             'time_slot' => gmdate('H:i:s', max(0, $slotMinutes) * 60),
             'workstation_count' => 0,
             'appointment_workstation_count' => $intern,
             'comment' => $comment,
             'internet_reduction' => $intern - $public,
-            'multiple_slots_allowed' => !empty($availability->multipleSlotsAllowed) ? 1 : 0,
-            'open_from_days' => (int) ($availability->bookable['startInDays'] ?? 0),
-            'open_until_days' => (int) ($availability->bookable['endInDays'] ?? 0),
-            'version' => $availability->version !== null ? (int) $availability->version : 1,
+            'multiple_slots_allowed' => !empty($availability['multipleSlotsAllowed']) ? 1 : 0,
+            'open_from_days' => (int) ($availability['bookable']['startInDays'] ?? 0),
+            'open_until_days' => (int) ($availability['bookable']['endInDays'] ?? 0),
+            'version' => $availability['version'] !== null ? (int) $availability['version'] : 1,
         ];
     }
 
@@ -136,7 +136,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         return $value;
     }
 
-    protected function write(string $action, Availability $availability, ?string $changedBy): bool
+    protected function write(string $action, Availability $availability, ?string $changedBy): void
     {
         try {
             $scopeId = (int) ($availability->scope['id'] ?? 0);
@@ -145,7 +145,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
                     'action' => $action,
                     'availability_id' => $availability->id ?? null,
                 ]);
-                return false;
+                return;
             }
 
             $snapshot = $this->buildSnapshot($availability);
@@ -157,14 +157,13 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
                 'changed_by' => $changedBy ?? $this->resolveChangedBy(),
             ])));
 
-            return (bool) $this->writeItem($query);
+            $this->writeItem($query);
         } catch (\Throwable $exception) {
             App::$log->error('availability_history write failed', [
                 'action' => $action,
                 'availability_id' => $availability->id ?? null,
                 'exception' => $exception->getMessage(),
             ]);
-            return false;
         }
     }
 

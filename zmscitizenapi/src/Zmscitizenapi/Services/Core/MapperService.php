@@ -416,6 +416,9 @@ class MapperService
 
         // Generate ICS content if process has appointments with time
         $icsContent = self::generateIcsContent($myProcess);
+        $scope = $myProcess->getCurrentScope();
+        $contactName = $scope['contact']['name'] ?? null;
+        $providerId = $scope['provider']['id'] ?? 0;
 
         return new ThinnedProcess(
             processId: isset($myProcess->id) ? (int) $myProcess->id : 0,
@@ -427,9 +430,9 @@ class MapperService
             customTextfield2: isset($myProcess->customTextfield2) ? $myProcess->customTextfield2 : null,
             email: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->email)) ? $myProcess->clients[0]->email : null,
             telephone: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->telephone)) ? $myProcess->clients[0]->telephone : null,
-            officeName: (isset($myProcess->scope->contact) && isset($myProcess->scope->contact->name)) ? $myProcess->scope->contact->name : null,
-            officeId: (isset($myProcess->scope->provider) && isset($myProcess->scope->provider->id)) ? (int) $myProcess->scope->provider->id : 0,
-            scope: isset($myProcess->scope) ? self::scopeToThinnedScope($myProcess->scope) : null,
+            officeName: $contactName !== null && $contactName !== '' ? $contactName : null,
+            officeId: (int) $providerId,
+            scope: isset($myProcess['scope']) ? self::scopeToThinnedScope($scope) : null,
             subRequestCounts: array_values($subRequestCounts),
             serviceId: isset($mainServiceId) ? (int) $mainServiceId : 0,
             serviceName: isset($mainServiceName) ? $mainServiceName : null,

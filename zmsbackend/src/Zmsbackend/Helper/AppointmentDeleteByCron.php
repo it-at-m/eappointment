@@ -40,11 +40,12 @@ class AppointmentDeleteByCron
         "pending"
     ];
 
-    protected $count = [];
+    /** @var array<string, int> */
+    protected array $count = [];
 
-    protected $now;
+    protected \DateTimeInterface $now;
 
-    public function __construct($timeIntervalDays, \DateTimeInterface $now, $verbose = false)
+    public function __construct(int $timeIntervalDays, \DateTimeInterface $now, bool $verbose = false)
     {
         $this->now = $now;
         $deleteInSeconds = (24 * 60 * 60) * $timeIntervalDays;
@@ -168,15 +169,15 @@ class AppointmentDeleteByCron
 
     protected function updateProcessStatus(\BO\Zmsentities\Process $process): \BO\Zmsentities\Process
     {
-        if (in_array($process->status, ["confirmed", "queued", "called"])) {
-            $process->status = 'missed';
+        if (in_array($process->getStatus(), ["confirmed", "queued", "called"])) {
+            $process->setStatus('missed');
         }
         return $process;
     }
 
     protected function determineHistoryStatus(\BO\Zmsentities\Process $process): ?string
     {
-        return match ($process->status) {
+        return match ($process->getStatus()) {
             'missed' =>
                 \BO\Zmsbackend\ProcessSearchHistory\Service\ProcessSearchHistory::STATUS_MISSED,
 
