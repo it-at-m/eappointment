@@ -31,9 +31,7 @@ class OrganisationAddDepartment extends BaseController
         $organisation = \App::$http->readGetResult('/organisation/' . $organisationId . '/')->getEntity();
         if ($request->getMethod() === 'POST') {
             $input = $this->withCleanupLinks($input);
-            $input = $this->withCleanupDayoffs($input);
             $entity = (new Entity($input))->withCleanedUpFormData();
-            $entity->dayoff = $entity->getDayoffList()->withTimestampFromDateformat();
             $department = \App::$http->readPostResult('/organisation/' . $organisationId . '/department/', $entity)
                 ->getEntity();
             return \BO\Slim\Render::redirect(
@@ -70,20 +68,6 @@ class OrganisationAddDepartment extends BaseController
 
         $input['links'] = array_filter($links, function ($link) {
             return !($link['name'] === '' && $link['url'] == '');
-        });
-
-        return $input;
-    }
-
-    /**
-     * @return (array|mixed)[]
-     *
-     */
-    protected function withCleanupDayoffs(array $input): array
-    {
-        $dayoffs = $input['dayoff'];
-        $input['dayoff'] = array_filter($dayoffs, function ($dayoff) {
-            return !($dayoff['name'] === '');
         });
 
         return $input;
