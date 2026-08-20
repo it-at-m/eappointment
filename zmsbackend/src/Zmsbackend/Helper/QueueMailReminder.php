@@ -11,7 +11,7 @@ use BO\Zmsentities\Collection\ProcessList as Collection;
 use BO\Zmsentities\Mail;
 use BO\Zmsentities\Process;
 
-class SendMailReminder
+class QueueMailReminder
 {
     public \DateTimeInterface $dateTime;
 
@@ -40,7 +40,7 @@ class SendMailReminder
         if ($verbose) {
             $this->verbose = true;
             $this->log(
-                "\nINFO: Send email reminder (Limits: " .
+                "\nINFO: Queue email reminder (Limits: " .
                 $configLimit . "|" . $configBatchSize . ") dependent on last run: " .
                 $this->lastRun->format('Y-m-d H:i:s')
             );
@@ -76,7 +76,7 @@ class SendMailReminder
         }
         $this->writeMailReminderList($commit);
         $this->log("\nINFO: Last run " . $this->dateTime->format('Y-m-d H:i:s'));
-        $this->log("\nSUMMARY: Sent mail reminder: " . $this->count);
+        $this->log("\nSUMMARY: Queued mail reminder: " . $this->count);
     }
 
     protected function writeMailReminderList($commit): void
