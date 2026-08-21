@@ -16,6 +16,15 @@ class ExchangeRequestscopeTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertEquals(17, count($entity->data));
     }
 
+    public function testReadEntityByMonth()
+    {
+        $query = new Query();
+        $entity = $query->readEntity(141, new DateTime('2016-01-01'), new DateTime('2016-12-31'), 'month');
+        $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
+        $this->assertGreaterThan(0, count($entity->data));
+        $this->assertMatchesRegularExpression('/^\d{4}-\d{2}$/', $entity->data[0][3]);
+    }
+
     public function testSubject()
     {
         $query = new Query();
