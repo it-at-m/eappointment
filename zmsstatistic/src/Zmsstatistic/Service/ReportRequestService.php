@@ -56,18 +56,19 @@ class ReportRequestService
 
         try {
             $reportHelper = new ReportHelper();
-            $years = $reportHelper->getYearsForDateRange($fromDate, $toDate);
-            $combinedData = $this->fetchAndCombineDataFromYears($reportHelper, $scopeId, $years, $fromDate, $toDate);
+            $groupby = $reportHelper->getGroupByForDateRange($fromDate, $toDate);
+            $exchangeRequest = $this->fetchExchangeRequest($scopeId, $fromDate, $toDate, $groupby);
 
-            if (empty($combinedData['data'])) {
+            if ($exchangeRequest === null || empty($exchangeRequest->data) || !is_array($exchangeRequest->data)) {
                 return null;
             }
 
             return $this->createFilteredExchangeRequest(
-                $combinedData['entity'],
-                $combinedData['data'],
+                $exchangeRequest,
+                $exchangeRequest->data,
                 $fromDate,
-                $toDate
+                $toDate,
+                $groupby
             );
         } catch (Exception $exception) {
             return null;
@@ -107,48 +108,26 @@ class ReportRequestService
     }
 
     /**
-     * Fetch and combine data from multiple years
+     * One warehouse call for the full from/to range (fromDate/toDate override the year in the path).
      */
-    private function fetchAndCombineDataFromYears(ReportHelper $reportHelper, string $scopeId, array $years, string $fromDate, string $toDate): array
-    {
-        $combinedData = [];
-        $baseEntity = null;
+    private function fetchExchangeRequest(
+        string $scopeId,
+        string $fromDate,
+        string $toDate,
+        string $groupby
+    ): mixed {
+        $fromYear = substr($fromDate, 0, 4);
 
-        foreach ($years as $year) {
-            $bounds = $reportHelper->getYearDateBounds($year, $fromDate, $toDate);
-            if ($bounds === null) {
-                continue;
-            }
-            try {
-                $exchangeRequest = \App::$http
-                    ->readGetResult(
-                        '/warehouse/requestscope/' . $scopeId . '/' . $year . '/',
-                        [
-                            'groupby' => 'day',
-                            'fromDate' => $bounds['from'],
-                            'toDate' => $bounds['to'],
-                        ]
-                    )
-                    ->getEntity();
-
-                // Use the first successfully fetched entity as the base
-                if ($baseEntity === null) {
-                    $baseEntity = $exchangeRequest;
-                }
-
-                // Combine data from all years
-                if (isset($exchangeRequest->data) && is_array($exchangeRequest->data)) {
-                    $combinedData = array_merge($combinedData, $exchangeRequest->data);
-                }
-            } catch (Exception $exception) {
-                // Continue with other years - don't fail completely if one year is missing
-            }
-        }
-
-        return [
-            'entity' => $baseEntity,
-            'data' => $combinedData
-        ];
+        return \App::$http
+            ->readGetResult(
+                '/warehouse/requestscope/' . $scopeId . '/' . $fromYear . '/',
+                [
+                    'groupby' => $groupby,
+                    'fromDate' => $fromDate,
+                    'toDate' => $toDate,
+                ]
+            )
+            ->getEntity();
     }
 
     /**
@@ -158,14 +137,12 @@ class ReportRequestService
         $exchangeRequestBasic,
         array $filteredData,
         string $fromDate,
-        string $toDate
+        string $toDate,
+        string $groupby = 'day'
     ): mixed {
         $exchangeRequest = $exchangeRequestBasic;
         $exchangeRequest->data = $filteredData;
-
-        if (!isset($exchangeRequest->period)) {
-            $exchangeRequest->period = 'day';
-        }
+        $exchangeRequest->period = $groupby;
 
         $exchangeRequest->firstDay = (new Day())->setDateTime(new DateTime($fromDate));
         $exchangeRequest->lastDay = (new Day())->setDateTime(new DateTime($toDate));
