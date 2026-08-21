@@ -18,9 +18,13 @@ class ExchangeRequestscope extends \BO\Zmsbackend\Base
         \DateTimeInterface $dateend,
         $period = 'day'
     ): Exchange {
-        $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($subjectid);
+        $subjectIdList = array_values(array_filter(array_map('trim', explode(',', (string) $subjectid))));
+        $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($subjectIdList[0] ?? $subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Dienstleistungsstatistik " . $scope->contact->name . " " . $scope->shortName;
+        $entity['title'] = "Dienstleistungsstatistik "
+            . ($scope?->contact?->name ?? '')
+            . " "
+            . ($scope?->shortName ?? '');
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('scopeid', 'string', 'ID of a scope', 'scope.id');
         $entity->addDictionaryEntry('departmentid', 'string', 'ID of a department', '');
@@ -29,7 +33,10 @@ class ExchangeRequestscope extends \BO\Zmsbackend\Base
         $entity->addDictionaryEntry('name', 'string', 'Name of request');
         $entity->addDictionaryEntry('requestscount', 'number', 'Amount of requests');
         $entity->addDictionaryEntry('processingtime', 'number', 'Average processing time in minutes');
-        $subjectIdList = explode(',', $subjectid);
+
+        if ($subjectIdList === []) {
+            return $entity;
+        }
 
         $raw = $this
             ->getReader()
