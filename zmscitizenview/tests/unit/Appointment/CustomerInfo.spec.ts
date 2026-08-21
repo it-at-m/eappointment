@@ -31,7 +31,13 @@ describe("CustomerInfo", () => {
     });
 
     mockAppointmentProvider = {
-      appointment: ref<{ scope?: { reservationDuration?: number } } | null>({
+      appointment: ref<{
+        processId?: string;
+        authKey?: string;
+        scope?: { reservationDuration?: number };
+      } | null>({
+        processId: "100001",
+        authKey: "test-auth-key",
         scope: { reservationDuration: 15 },
       }),
     };
@@ -260,7 +266,7 @@ describe("CustomerInfo", () => {
       await nextTick();
 
       let nextButton = findNextButton(wrapper);
-      // enabled
+      // enabled (reservation processId/authKey present)
       expect(nextButton.attributes("disabled")).toBeUndefined();
 
       wrapper.vm.loadingStates.isUpdatingAppointment.value = true;
@@ -273,6 +279,20 @@ describe("CustomerInfo", () => {
       await nextTick();
       nextButton = findNextButton(wrapper);
       expect(nextButton.attributes("disabled")).toBeUndefined();
+    });
+
+    it("disables the next button while reserved appointment is not restored yet", async () => {
+      mockAppointmentProvider.appointment.value = {
+        scope: { reservationDuration: 15 },
+      };
+      mockCustomerData.value.firstName = "Max";
+      mockCustomerData.value.lastName = "Mustermann";
+      mockCustomerData.value.mailAddress = "max@test.de";
+      const wrapper = createWrapper();
+      await nextTick();
+
+      const nextButton = findNextButton(wrapper);
+      expect(nextButton.attributes("disabled")).toBeDefined();
     });
   });
 
@@ -385,6 +405,30 @@ describe("CustomerInfo", () => {
       expect(wrapper.find(".m-form").exists()).toBe(false);
       const buttons = wrapper.findAll(".m-button-group .muc-button");
       expect(buttons.length).toBe(1); // only back-button
+    });
+  });
+
+  describe("ZMSKVR-1571 scope fallback from appointment", () => {
+    it("shows telephone and custom fields from appointment.scope when selectedProvider is missing", async () => {
+      mockSelectedProvider.value = null;
+      mockAppointmentProvider.appointment.value = {
+        scope: {
+          reservationDuration: 15,
+          telephoneActivated: true,
+          telephoneRequired: false,
+          customTextfieldActivated: true,
+          customTextfieldLabel: "Zusatzfeld",
+          customTextfield2Activated: true,
+          customTextfield2Label: "Zusatzfeld 2",
+        },
+      };
+
+      const wrapper = createWrapper();
+      await nextTick();
+
+      expect(wrapper.find("#telephonenumber").exists()).toBe(true);
+      expect(wrapper.find("#remarks").exists()).toBe(true);
+      expect(wrapper.find("#remarks2").exists()).toBe(true);
     });
   });
 });

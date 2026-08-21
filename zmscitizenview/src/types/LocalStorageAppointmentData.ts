@@ -1,7 +1,7 @@
 /**
- * Non-sensitive UI state persisted across Münchner Login.
+ * UI state persisted across Münchner Login (OAuth redirect remount).
  * Store only IDs/counts — never authKey, PII, captchaToken, or full
- * service/provider objects (avoids clear-text storage of appointment-named fields).
+ * service/provider objects. Contact fields live on the reserved appointment.
  */
 export interface LocalStorageUiData {
   timestamp: number;

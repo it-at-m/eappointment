@@ -50,6 +50,7 @@ interface WrapperOverrides {
   selectedService?: any;
   selectedProvider?: any;
   selectedTimeslot?: number;
+  appointment?: any;
   props?: Record<string, any>;
 }
 
@@ -63,6 +64,9 @@ const createWrapper = (overrides: WrapperOverrides = {}) => {
         selectedTimeslot: {
           selectedProvider: ref(overrides.selectedProvider ?? null),
           selectedTimeslot: ref(overrides.selectedTimeslot ?? 0),
+        },
+        appointment: {
+          appointment: ref(overrides.appointment ?? undefined),
         },
         selectableProviders: ref([]),
         loadingStates: {
@@ -3378,6 +3382,193 @@ describe("AppointmentSelection", () => {
 
       expect(wrapper.vm.isSwitchingProvider).toBe(false);
       expect(wrapper.find(".m-spinner-container").exists()).toBe(false);
+    });
+  });
+
+  describe("ZMSKVR-1571 multi-office selectedProvider retention", () => {
+    it("keeps the reserved office when multiple alternative locations stay checked", async () => {
+      const wrapper = createWrapper({
+        appointment: {
+          processId: "12345",
+          officeId: "1",
+          scope: { id: "1", telephoneActivated: true },
+        },
+        selectedProvider: {
+          id: 1,
+          name: "Bürgerbüro Scheidplatz",
+          address: {
+            street: "Belgradstraße",
+            house_number: "1",
+            postal_code: "80804",
+            city: "München",
+          },
+          scope: { id: "1", telephoneActivated: true },
+          showAlternativeLocations: true,
+        },
+        selectedService: {
+          id: "service1",
+          providers: [
+            {
+              id: 1,
+              name: "Bürgerbüro Scheidplatz",
+              address: {
+                street: "Belgradstraße",
+                house_number: "1",
+                postal_code: "80804",
+                city: "München",
+              },
+              scope: { id: "1", telephoneActivated: true },
+              showAlternativeLocations: true,
+            },
+            {
+              id: 2,
+              name: "Bürgerbüro Alternative",
+              address: {
+                street: "Other",
+                house_number: "2",
+                postal_code: "80331",
+                city: "München",
+              },
+              scope: { id: "2" },
+              showAlternativeLocations: true,
+            },
+          ],
+        },
+      });
+
+      wrapper.vm.selectableProviders = [
+        {
+          id: 1,
+          name: "Bürgerbüro Scheidplatz",
+          address: {
+            street: "Belgradstraße",
+            house_number: "1",
+            postal_code: "80804",
+            city: "München",
+          },
+          scope: { id: "1", telephoneActivated: true },
+          showAlternativeLocations: true,
+        },
+        {
+          id: 2,
+          name: "Bürgerbüro Alternative",
+          address: {
+            street: "Other",
+            house_number: "2",
+            postal_code: "80331",
+            city: "München",
+          },
+          scope: { id: "2" },
+          showAlternativeLocations: true,
+        },
+      ];
+
+      wrapper.vm.selectedProviders = { "1": true, "2": true };
+      await nextTick();
+      await flushPromises();
+
+      expect(wrapper.vm.selectedProvider?.id).toBe(1);
+      expect(wrapper.vm.selectedProvider?.name).toBe("Bürgerbüro Scheidplatz");
+    });
+
+    it("keeps the current office when it differs from the reserved officeId and both stay checked", async () => {
+      const scheidplatz = {
+        id: 1,
+        name: "Bürgerbüro Scheidplatz",
+        address: {
+          street: "Belgradstraße",
+          house_number: "1",
+          postal_code: "80804",
+          city: "München",
+        },
+        scope: { id: "1", telephoneActivated: true },
+        showAlternativeLocations: true,
+      };
+      const alternative = {
+        id: 2,
+        name: "Bürgerbüro Alternative",
+        address: {
+          street: "Other",
+          house_number: "2",
+          postal_code: "80331",
+          city: "München",
+        },
+        scope: { id: "2" },
+        showAlternativeLocations: true,
+      };
+
+      const wrapper = createWrapper({
+        appointment: {
+          processId: "12345",
+          officeId: "1",
+          scope: { id: "1", telephoneActivated: true },
+        },
+        selectedProvider: alternative,
+        selectedService: {
+          id: "service1",
+          providers: [scheidplatz, alternative],
+        },
+      });
+
+      wrapper.vm.selectableProviders = [scheidplatz, alternative];
+      wrapper.vm.selectedProviders = { "1": true, "2": true };
+      await nextTick();
+      await flushPromises();
+
+      // User later selects the alternative office while both Orte stay checked.
+      wrapper.vm.selectedProvider = alternative;
+      wrapper.vm.selectedProviders = { "1": true, "2": true };
+      await nextTick();
+      await flushPromises();
+
+      expect(wrapper.vm.selectedProvider?.id).toBe(2);
+    });
+
+    it("keeps a shared-booking peer when only the display Ort checkbox is checked", async () => {
+      const peer = {
+        id: 10503,
+        name: "Bürgerbüro Ruppertstraße Ausbildung",
+        address: {
+          street: "Ruppertstraße",
+          house_number: "19",
+          postal_code: "80337",
+          city: "München",
+        },
+        scope: { id: "10503" },
+      };
+      const displayOrt = {
+        id: 10489,
+        name: "Bürgerbüro Ruppertstraße",
+        address: {
+          street: "Ruppertstraße",
+          house_number: "19",
+          postal_code: "80337",
+          city: "München",
+        },
+        scope: { id: "10489" },
+        sharedBookingOfficeIds: [10503],
+        showAlternativeLocations: true,
+      };
+
+      const wrapper = createWrapper({
+        appointment: {
+          processId: "100547",
+          officeId: "10503",
+          scope: { id: "10503" },
+        },
+        selectedProvider: peer,
+        selectedService: {
+          id: "1063475",
+          providers: [displayOrt, peer],
+        },
+      });
+
+      wrapper.vm.selectableProviders = [displayOrt];
+      wrapper.vm.selectedProviders = { "10489": true };
+      await nextTick();
+      await flushPromises();
+
+      expect(wrapper.vm.selectedProvider?.id).toBe(10503);
     });
   });
 });

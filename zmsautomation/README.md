@@ -159,6 +159,8 @@ Required environment variables for ATAF tests:
 ### UI tests (SSO)
 For local UI tests (Statistik, Admin), the default SSO user is the Keycloak `ataf` user (password `vorschau`), created by Keycloak migration `.resources/keycloak/migration/07_add-system-users.yml` and related DB data in Flyway (e.g. `V16__add_keycloak_system_users.sql`). Credentials are set in `testautomation.properties` (`testautomation.userName` / `testautomation.userPassword`) or via ATAF environment variables. For other environments (e.g. ssodev.muenchen.de), override with the appropriate credentials.
 
+For zmscitizenview Bürger-Login, use Keycloak user `citizen` / `vorschau` on public client `dbs-fragments` (migrations `09_add-citizen-client.yml`, `10_add-citizen-token-mappers.yml`). Credentials: `testautomation.citizenUserName` / `testautomation.citizenUserPassword`. Local Vite needs `VITE_USE_LOCAL_CITIZEN_LOGIN=true` (see `zmscitizenview/.env.development`).
+
 For role-specific local dev and API tests, use Keycloak users named after the role (password `vorschau`), e.g. `agent_basic`, from `.resources/keycloak/migration/08_add-role-test-users.yml` with matching ZMS accounts `<role>@keycloak` in Flyway `V22__add_role_test_users.sql`. Roles: `agent_basic`, `agent_queue`, `agent_queue_plus`, `appointment_admin`, `reporting_viewer`, `user_admin`, `audit_viewer`, `system_admin`.
 
 ### Example
@@ -225,6 +227,7 @@ Additional REST features (availability, offices-and-services, etc.) may be added
 
 #### zmscitizenview UI (`ui/zmscitizenview/`)
 - `zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature` - zmscitizenview Ruppertstraße UI booking (Kalenderansicht); Ort = checkbox list or single-provider teaser; slot wait until **MucSpinner** (`.m-spinner-container`) cleared after day load + timeslot in DOM; `#provider-*` on reserve, preconfirm, confirm
+- `zmskvr-1571_scheidplatz_contact_location_back_login.feature` - Scheidplatz (102524) Übersicht Ort + Kontakt phone/Zusatz after Bürger-Login (Keycloak `dbs-fragments` / `citizen`) and Zurück
 
 #### Statistik UI (`ui/zmsstatistic/`)
 - Features for the Statistik web UI (Dienstleistungsstatistik, Kundenstatistik, CSV export, etc.)
