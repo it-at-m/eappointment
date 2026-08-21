@@ -11,8 +11,17 @@ class DateTimeFormatTest extends TestCase
     {
         $request = \BO\Slim\Tests\Base::createBasicRequest('GET', '/unittest/');
         $exception = new \BO\Slim\Exception\SessionFailed();
+        $before = time();
         $infoArr = \BO\Slim\TwigExceptionHandler::getExtendedExceptionInfo($exception, $request);
-        $this->assertEquals($infoArr['servertime'], (new \DateTimeImmutable())->format('Y-m-d H:i:s'));
+        $after = time();
+        $serverTime = \DateTimeImmutable::createFromFormat(
+            'Y-m-d H:i:s',
+            $infoArr['servertime'],
+            new \DateTimeZone('Europe/Berlin')
+        );
+        $this->assertInstanceOf(\DateTimeImmutable::class, $serverTime);
+        $this->assertGreaterThanOrEqual($before, $serverTime->getTimestamp());
+        $this->assertLessThanOrEqual($after, $serverTime->getTimestamp());
     }
 
     public function testTwigDateFormat()
