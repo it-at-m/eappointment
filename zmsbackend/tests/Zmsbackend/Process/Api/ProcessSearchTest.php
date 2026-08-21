@@ -68,9 +68,13 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Api\Base
             'id' => 65991,
         ]);
 
-        $this
+        $useraccount = $this
             ->setWorkstation()
-            ->getUseraccount()
+            ->getUseraccount();
+
+        $useraccount->roles = ['appointment_admin'];
+
+        $useraccount
             ->setPermissions('customersearch')
             ->addDepartment($allowedDepartment);
 
@@ -161,9 +165,13 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Api\Base
         $department = new \BO\Zmsentities\Department();
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => 65991]);
 
-        $this
+        $useraccount = $this
             ->setWorkstation()
-            ->getUseraccount()
+            ->getUseraccount();
+
+        $useraccount->roles = ['appointment_admin'];
+
+        $useraccount
             ->setPermissions('customersearch')
             ->addDepartment($department);
 
@@ -315,9 +323,13 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Api\Base
             'id' => 65991,
         ]);
 
-        $this
+        $useraccount = $this
             ->setWorkstation()
-            ->getUseraccount()
+            ->getUseraccount();
+
+        $useraccount->roles = ['appointment_admin'];
+
+        $useraccount
             ->setPermissions('customersearch')
             ->addDepartment($department);
 
@@ -680,9 +692,13 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Api\Base
             'id' => 65991,
         ]);
 
-        $this
+        $useraccount = $this
             ->setWorkstation()
-            ->getUseraccount()
+            ->getUseraccount();
+
+        $useraccount->roles = ['appointment_admin'];
+
+        $useraccount
             ->setPermissions('customersearch')
             ->addDepartment($department);
 
@@ -888,9 +904,13 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Api\Base
             'id' => 65991,
         ]);
 
-        $this
+        $useraccount = $this
             ->setWorkstation()
-            ->getUseraccount()
+            ->getUseraccount();
+
+        $useraccount->roles = ['appointment_admin'];
+
+        $useraccount
             ->setPermissions('customersearch')
             ->addDepartment($department);
 
@@ -1167,5 +1187,70 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Api\Base
         $response = $this->render([], ['query' => 'dayoff', 'scopeIds' => (string) self::SCOPE_ID], []);
         $this->assertStringNotContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testHistoryIsHiddenForUnauthorizedRole(): void
+    {
+        $historyService = new HistoryService();
+
+        $processService = new ProcessService(
+            $historyService->getWriter(),
+            $historyService->getReader()
+        );
+
+        $process = $processService->readEntity(
+            990029,
+            'history-test-auth',
+            2
+        );
+
+        $historyService->writeHistoryEntry(
+            $process,
+            HistoryService::STATUS_COMPLETED,
+            \DateTimeImmutable::createFromInterface(\App::$now)
+        );
+
+        $department = new \BO\Zmsentities\Department();
+        $department->scopes[] = new \BO\Zmsentities\Scope([
+            'id' => 65991,
+        ]);
+
+        $useraccount = $this
+            ->setWorkstation()
+            ->getUseraccount();
+
+        $useraccount->roles = ['agent_queue'];
+
+        $useraccount
+            ->setPermissions('customersearch')
+            ->addDepartment($department);
+
+        $response = $this->render(
+            [],
+            ['processId' => 990029],
+            []
+        );
+
+        $payload = json_decode(
+            (string) $response->getBody(),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        $this->assertCount(
+            1,
+            $payload['data']
+        );
+
+        $this->assertSame(
+            'active',
+            $payload['data'][0]['source']
+        );
+
+        $this->assertSame(
+            1,
+            (int) $payload['meta']['totalCount']
+        );
     }
 }
