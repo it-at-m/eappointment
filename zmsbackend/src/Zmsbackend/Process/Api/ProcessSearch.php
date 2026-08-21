@@ -38,6 +38,7 @@ class ProcessSearch extends \BO\Zmsbackend\Api\BaseController
         $offset = SearchPagination::offset($page, $resultsPerPage);
 
         $parameters = $request->getParams();
+        unset($parameters['denyHistory']);
         unset($parameters['resolveReferences']);
         unset($parameters['lessResolvedData']);
         unset($parameters['limit']);
@@ -49,13 +50,21 @@ class ProcessSearch extends \BO\Zmsbackend\Api\BaseController
             }
         }
 
-        if (!$workstation->getUseraccount()->isSuperUser()) {
+        $useraccount = $workstation->getUseraccount();
+
+        if (!$useraccount->isSuperUser()) {
             $scopeIds = $workstation->getUseraccount()
                 ->getDepartmentList()
                 ->getUniqueScopeList()
                 ->getIds();
             $parameters['scopeIds'] = implode(',', $scopeIds);
         }
+
+        $parameters['denyHistory'] = !(
+            $useraccount->isSuperUser()
+            || $useraccount->hasRole('appointment_admin')
+            || $useraccount->hasRole('audit_viewer')
+        );
 
         $processQuery = new ProcessSearchService();
         $totalCount = $processQuery->readSearchCount($parameters);
