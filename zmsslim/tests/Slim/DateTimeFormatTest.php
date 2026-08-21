@@ -14,14 +14,14 @@ class DateTimeFormatTest extends TestCase
         $before = time();
         $infoArr = \BO\Slim\TwigExceptionHandler::getExtendedExceptionInfo($exception, $request);
         $after = time();
-        $serverTime = \DateTimeImmutable::createFromFormat(
-            'Y-m-d H:i:s',
-            $infoArr['servertime'],
-            new \DateTimeZone('Europe/Berlin')
-        );
-        $this->assertInstanceOf(\DateTimeImmutable::class, $serverTime);
-        $this->assertGreaterThanOrEqual($before, $serverTime->getTimestamp());
-        $this->assertLessThanOrEqual($after, $serverTime->getTimestamp());
+        $expectedTimes = [];
+        for ($timestamp = $before; $timestamp <= $after; $timestamp++) {
+            $formatted = \BO\Slim\Helper::getFormatedDates($timestamp, 'yyyy-MM-dd HH:mm:ss');
+            if (is_string($formatted) && $formatted !== '') {
+                $expectedTimes[] = $formatted;
+            }
+        }
+        $this->assertContains($infoArr['servertime'], array_values(array_unique($expectedTimes)));
     }
 
     public function testTwigDateFormat()
