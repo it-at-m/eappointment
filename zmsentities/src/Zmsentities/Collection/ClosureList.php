@@ -7,14 +7,14 @@ namespace BO\Zmsentities\Collection;
  */
 class ClosureList extends Base
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\Closure';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Closure';
 
-    public function hasEntityByDate($date)
+    public function hasEntityByDate($date): bool
     {
         return $this->getByDate($date) ? true : false;
     }
 
-    public function getByDate($date)
+    public function getByDate($date): \BO\Zmsentities\Closure|false
     {
         $date = (new \BO\Zmsentities\Helper\DateTime($date))->format('Y-m-d');
         foreach ($this as $entity) {
@@ -25,7 +25,7 @@ class ClosureList extends Base
         return false;
     }
 
-    public function getEntityByName($name)
+    public function getEntityByName($name): \BO\Zmsentities\Closure|null
     {
         $result = null;
         foreach ($this as $entity) {
@@ -36,7 +36,7 @@ class ClosureList extends Base
         return $result;
     }
 
-    public function withTimestampFromDateformat($fromFormat = 'd.m.Y')
+    public function withTimestampFromDateformat($fromFormat = 'd.m.Y'): self
     {
         $collection = new self();
         foreach ($this as $data) {
@@ -48,7 +48,10 @@ class ClosureList extends Base
         return $collection;
     }
 
-    public function testDatesInYear($year)
+    /**
+     * @return true
+     */
+    public function testDatesInYear($year): bool
     {
         foreach ($this as $data) {
             $entity = new \BO\Zmsentities\Closure($data); // if source is an array
@@ -60,7 +63,7 @@ class ClosureList extends Base
         return true;
     }
 
-    public function withNew(ClosureList $closureList)
+    public function withNew(ClosureList $closureList): self
     {
         $list = new self();
         foreach ($closureList as $entity) {

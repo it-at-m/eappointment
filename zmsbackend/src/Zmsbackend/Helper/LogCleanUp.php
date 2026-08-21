@@ -23,14 +23,14 @@ class LogCleanUp
         }
     }
 
-    protected function log($message)
+    protected function log(string $message): void
     {
         if ($this->verbose) {
             \App::$log->info($message);
         }
     }
 
-    public static function startProcessing($commit = false)
+    public static function startProcessing($commit = false): void
     {
         \App::$log->info('Starting log cleanup process');
 
@@ -46,7 +46,7 @@ class LogCleanUp
         if ($commit) {
             \App::$log->info('Executing log cleanup with commit');
             $result = $logRepo->clearLogsOlderThan((int) $olderThan);
-            \App::$log->info('Log cleanup completed', ['success' => (bool) $result]);
+            \App::$log->info('Log cleanup completed', ['success' => $result]);
         }
     }
 }

@@ -9,7 +9,10 @@ namespace BO\Zmsdldb\Collection;
 
 class Topics extends Base
 {
-    public function getNames()
+    /**
+     * @psalm-api
+     */
+    public function getNames(): array
     {
         $nameList = array();
         foreach ($this as $topic) {

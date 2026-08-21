@@ -288,8 +288,8 @@
                 "bin/resetApiQuota",
                 "bin/resetGhostWorkstationCount",
                 "bin/resetWorkstations",
-                "bin/sendMailReminder",
-                "bin/sendProcessListToScopeAdmin",
+                "bin/queueMailReminder",
+                "bin/queueProcessListToScopeAdmin",
                 "bin/updateDldbData"
             ],
             "type": "library",

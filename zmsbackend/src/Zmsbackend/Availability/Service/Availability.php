@@ -12,7 +12,11 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
 {
     public static $cache = [];
 
-    public function readEntity($availabilityId, $resolveReferences = 0, $preferCache = false)
+    /**
+     * @param false|int|string $availabilityId
+     *
+     */
+    public function readEntity(string|int|false $availabilityId, int $resolveReferences = 0, $preferCache = false)
     {
         $cacheKey = "$availabilityId-$resolveReferences";
         if (!$preferCache || !array_key_exists($cacheKey, self::$cache)) {
@@ -28,6 +32,9 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
         return clone self::$cache[$cacheKey];
     }
 
+    /**
+     * @return \BO\Zmsentities\Schema\Entity
+     */
     #[\Override]
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $entity,
@@ -66,7 +73,7 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
 
     public function readList(
         $scopeId,
-        $resolveReferences = 0,
+        int $resolveReferences = 0,
         \DateTimeInterface $startDate = null,
         \DateTimeInterface $endDate = null
     ) {
@@ -106,10 +113,10 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
 
     public function readAvailabilityListByScope(
         \BO\Zmsentities\Scope $scope,
-        $resolveReferences = 0,
+        int $resolveReferences = 0,
         \DateTimeImmutable $startDate = null,
         \DateTimeImmutable $endDate = null
-    ) {
+    ): Collection {
         $collection = new Collection();
         $query = new \BO\Zmsbackend\Availability\Repository\Availability(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -163,7 +170,7 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
     /*
     ** Returns a list of availabilities with end date older than 4 weeks
     */
-    public function readAvailabilityListBefore(\DateTimeImmutable $datetime, $resolveReferences = 0)
+    public function readAvailabilityListBefore(\DateTimeImmutable $datetime, $resolveReferences = 0): Collection
     {
         $collection = new Collection();
         $query = new \BO\Zmsbackend\Availability\Repository\Availability(\BO\Zmsbackend\Query\Base::SELECT);
@@ -184,7 +191,7 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
         return $collection;
     }
 
-    public function readOpeningHoursListByDate($scopeId, \DateTimeInterface $now, $resolveReferences = 0)
+    public function readOpeningHoursListByDate($scopeId, \DateTimeInterface $now, int $resolveReferences = 0): Collection
     {
         $collection = new Collection();
         $query = new \BO\Zmsbackend\Availability\Repository\Availability(\BO\Zmsbackend\Query\Base::SELECT);
@@ -248,8 +255,9 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
      * @param int|string $entityId
      *
      * @return Entity
+     *
      */
-    public function updateEntity($entityId, \BO\Zmsentities\Availability $entity, $resolveReferences = 0)
+    public function updateEntity($entityId, \BO\Zmsentities\Availability $entity, int $resolveReferences = 0)
     {
         self::$cache = [];
         $entity->testValid();

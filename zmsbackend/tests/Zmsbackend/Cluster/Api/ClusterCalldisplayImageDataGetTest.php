@@ -11,7 +11,7 @@ class ClusterCalldisplayImageDataGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ClusterCalldisplayImageDataGet";
 
-    const CLUSTER_ID = 109;
+    const int CLUSTER_ID = 109;
 
     public function testRendering()
     {

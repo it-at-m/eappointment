@@ -8,8 +8,6 @@
 namespace BO\Slim;
 
 use App;
-use Fig\Http\Message\StatusCodeInterface;
-use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -17,29 +15,18 @@ use BO\Slim\Response;
 
 class Render
 {
-    /**
-     * @var ContainerInterface|null $containerInterface
-     *
-     */
-    public static $container = null;
+    public static ?ContainerInterface $container = null;
 
-    /**
-     * @var RequestInterface|null $request;
-     *
-     */
-    public static $request = null;
+    public static ?RequestInterface $request = null;
 
-    /**
-     * @var ResponseInterface $response;
-     *
-     */
-    public static $response = null;
+    public static ?ResponseInterface $response = null;
 
-    /**
-     * @return ResponseInterface
-     */
-    public static function withHtml(ResponseInterface $response, $template, $parameters = array(), $status = 200)
-    {
+    public static function withHtml(
+        ResponseInterface $response,
+        string $template,
+        array $parameters = [],
+        int $status = 200
+    ): ResponseInterface {
         Profiler::add("Controller");
         $response  = $response->withStatus($status);
         $response  = $response->withHeader('Content-Type', 'text/html; charset=utf-8');
@@ -47,25 +34,24 @@ class Render
         $request = self::$request;
         if (null === $request && null !== self::$container) {
             $request = self::$container->get('request');
+            $request = $request instanceof RequestInterface ? $request : null;
         }
-        App::$templatedefaults['includeUrl'] = Helper\TemplateUrls::resolveIncludeUrl($request);
-        App::$templatedefaults['baseUrl'] = Helper\TemplateUrls::resolveBaseUrl($request);
+        $templateRequest = $request instanceof Request ? $request : null;
+        App::$templatedefaults['includeUrl'] = Helper\TemplateUrls::resolveIncludeUrl($templateRequest);
+        App::$templatedefaults['baseUrl'] = Helper\TemplateUrls::resolveBaseUrl($templateRequest);
         $parameters = array_merge(App::$templatedefaults, $parameters);
-        $response  = App::$slim->getContainer()->get('view')->render($response, $template, $parameters);
+        $response  = self::requireContainer()->get('view')->render($response, $template, $parameters);
         Profiler::add("Rendering");
         return $response ;
     }
 
-    /**
-     * @return ResponseInterface
-     */
-    public static function html($template, $parameters = array(), $status = 200)
+    public static function html(string $template, array $parameters = [], int $status = 200): ResponseInterface
     {
-        self::$response = self::withHtml(self::$response, $template, $parameters, $status);
+        self::$response = self::withHtml(self::requireResponse(), $template, $parameters, $status);
         return self::$response;
     }
 
-    public static function withXml(ResponseInterface $response, $data, $status = 200)
+    public static function withXml(ResponseInterface $response, string $data, int $status = 200): ResponseInterface
     {
         Profiler::add("Controller");
         $response = $response->withStatus($status);
@@ -75,114 +61,136 @@ class Render
         return $response;
     }
 
-    public static function withJson(ResponseInterface $response, $data, $status = 200)
+    public static function withJson(ResponseInterface $response, mixed $data, int $status = 200): ResponseInterface
     {
         Profiler::add("Controller");
         $response = $response->withStatus($status);
         $response = $response->withHeader('Content-Type', 'application/json');
-        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES));
+        $payload = json_encode($data, JSON_UNESCAPED_SLASHES);
+        $response->getBody()->write($payload !== false ? $payload : 'null');
         Profiler::add("Rendering");
         return $response;
     }
 
-    /**
-     * @return ResponseInterface
-     */
-    public static function json($data, $status = 200)
+    public static function json(mixed $data, int $status = 200): ResponseInterface
     {
-        self::$response = self::withJson(self::$response, $data, $status);
+        self::$response = self::withJson(self::requireResponse(), $data, $status);
         return self::$response;
     }
 
-    /**
-     * @return ResponseInterface
-     */
-    public static function xml($data, $status = 200)
+    public static function xml(string $data, int $status = 200): ResponseInterface
     {
-        self::$response = self::withXml(self::$response, $data, $status);
+        self::$response = self::withXml(self::requireResponse(), $data, $status);
         return self::$response;
     }
 
     /**
      * Add `Last-Modified` header to PSR7 response object
      *
-     * @param  ResponseInterface $response A PSR7 response object
-     * @param  int|string        $time     A UNIX timestamp or a valid `strtotime()` string
+     * @param ResponseInterface $response A PSR7 response object
+     * @param int|string        $date     A UNIX timestamp or a valid `strtotime()` string
+     * @param string $expires
      *
      * @return ResponseInterface           A new PSR7 response object with `Last-Modified` header
-     * @throws InvalidArgumentException if the last modified date cannot be parsed
+     *
      */
-    public static function withLastModified(ResponseInterface $response, $date, $expires = '+5 minutes')
-    {
+    public static function withLastModified(
+        ResponseInterface $response,
+        string|int $date,
+        string $expires = '+5 minutes'
+    ): ResponseInterface {
         return self::getCachableResponse($response, $date, $expires);
     }
 
     /**
-     * @param String $date strtotime interpreted
-     * @param String $expires strtotime interpreted
+     * @param string|int $date strtotime interpreted
+     * @param string $expires strtotime interpreted
      *
      * @return ResponseInterface
      */
-    public static function lastModified($date, $expires = '+5 minutes')
+    public static function lastModified(string|int $date, string $expires = '+5 minutes'): ResponseInterface
     {
-        self::$response = self::withLastModified(self::$response, $date, $expires);
+        self::$response = self::withLastModified(self::requireResponse(), $date, $expires);
         return self::$response;
     }
 
     /**
-     * @param String $date strtotime interpreted
-     * @param String $expires strtotime interpreted
+     * @param string|int $date strtotime interpreted
+     * @param string $expires strtotime interpreted
      *
      * @return ResponseInterface
      */
     public static function getCachableResponse(
         ResponseInterface $response,
-        $date,
-        $expires = '+5 minutes'
-    ) {
-
-        if (!$date) {
-            $date = time();
-        } elseif (!is_int($date)) {
-            $date = strtotime($date);
+        string|int $date,
+        string $expires = '+5 minutes'
+    ): ResponseInterface {
+        if (is_int($date)) {
+            $timestamp = $date !== 0 ? $date : time();
+        } else {
+            $parsed = strtotime($date);
+            $timestamp = $parsed !== false ? $parsed : time();
         }
 
-        $maxAge = strtotime($expires) - time();
-        if (false === strtotime($expires)) {
+        $expireTs = strtotime($expires);
+        if ($expireTs === false) {
             $expires = '+' . $expires . ' seconds';
-            $maxAge = intval($expires);
+            $maxAge = (int) $expires;
+        } else {
+            $maxAge = $expireTs - time();
         }
         $response = $response->withAddedHeader('Cache-Control', 'max-age=' . $maxAge);
-        $response = App::$slim->getContainer()->get('cache')->withExpires($response, $expires);
-        $response = App::$slim->getContainer()->get('cache')->withLastModified($response, $date);
+        $cache = self::requireContainer()->get('cache');
+        $response = $cache->withExpires($response, $expires);
+        $response = $cache->withLastModified($response, $timestamp);
 
         return $response;
     }
 
     /**
-     * @param String $route_name
+     * @param string $route_name
      * @param array $arguments parameters in the route path
-     * @param array $parameter parameters to append with "?"
-     * @param Int $statuscode see an HTTP reference
-     *
-     * \Psr\Http\Message\ResponseInterface
+     * @param array|null $parameter parameters to append with "?"
+     * @param int $statuscode see an HTTP reference
      */
-    public static function redirect($route_name, $arguments, $parameter = null, $statuscode = 302)
-    {
+    public static function redirect(
+        string $route_name,
+        array $arguments,
+        ?array $parameter = null,
+        int $statuscode = 302
+    ): Response {
         Profiler::add("Controller");
 
         $url = App::$slim->urlFor($route_name, $arguments);
-        $url = Helper::proxySanitizeUri($url);
-        $url = preg_replace('#^.*?(https?://)#', '\1', $url); // allow http:// routes
-        if ($parameter) {
+        $sanitized = Helper::proxySanitizeUri($url);
+        $url = is_string($sanitized) ? $sanitized : $url;
+        $url = preg_replace('#^.*?(https?://)#', '\1', $url) ?? $url; // allow http:// routes
+        if ($parameter !== null && $parameter !== []) {
             $url .= '?' . http_build_query($parameter);
         }
 
         $response = App::$slim->getResponseFactory()->createResponse($statuscode);
-        $response = App::$slim->getContainer()->get('cache')->denyCache($response);
+        $response = self::requireContainer()->get('cache')->denyCache($response);
         /** @var Response $response */
-        $response = $response->withHeader('Location', (string) $url);
+        $response = $response->withHeader('Location', $url);
 
         return $response->withAddedHeader('Cache-Control', 'max-age=0');
+    }
+
+    private static function requireContainer(): ContainerInterface
+    {
+        $container = App::$slim->getContainer();
+        if (!$container instanceof ContainerInterface) {
+            throw new \RuntimeException('Slim container is not initialized');
+        }
+        return $container;
+    }
+
+    private static function requireResponse(): ResponseInterface
+    {
+        if (!self::$response instanceof ResponseInterface) {
+            throw new \RuntimeException('Render response is not initialized');
+        }
+        return self::$response;
     }
 }

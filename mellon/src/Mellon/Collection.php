@@ -79,6 +79,7 @@ class Collection
 
     /**
      * @return Array
+     * @psalm-api
      */
     public function getValues()
     {
@@ -86,13 +87,14 @@ class Collection
     }
 
 
-    public function addValid(Valid ...$validList)
+    public function addValid(Valid ...$validList): void
     {
         foreach ($validList as $valid) {
             $this->validatorList[$valid->getName()] = $valid;
         }
     }
 
+    /** @psalm-api */
     public function getValid($parameterName): Parameter
     {
         if (isset($this->validatorList[$parameterName])) {

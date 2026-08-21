@@ -4,9 +4,9 @@ namespace BO\Zmsclient\Tests;
 
 class SessionTest extends Base
 {
-    const SESSION_NAME = 'ZmsclientUnittest';
+    const string SESSION_NAME = 'ZmsclientUnittest';
 
-    const SESSION_ID = '0058pfv918e8ipmbadj05sm1e7';
+    const string SESSION_ID = '0058pfv918e8ipmbadj05sm1e7';
 
     public function testBasic()
     {

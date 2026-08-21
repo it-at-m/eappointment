@@ -7,6 +7,9 @@ use BO\Zmsbackend\Role\Service\Role;
 
 class RoleGet extends \BO\Zmsbackend\Api\BaseController
 {
+    /**
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function readResponse($request, $response, array $args)
     {
         (new \BO\Zmsbackend\Helper\User($request, 1))->checkPermissions('superuser');

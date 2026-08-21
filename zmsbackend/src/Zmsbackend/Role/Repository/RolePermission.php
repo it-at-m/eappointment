@@ -7,7 +7,7 @@ class RolePermission extends \BO\Zmsbackend\Query\Base
     /**
      * @var string TABLE mysql table reference
      */
-    const TABLE = 'role_permission';
+    const string TABLE = 'role_permission';
 
     public function addConditionRoleId(int $roleId): self
     {

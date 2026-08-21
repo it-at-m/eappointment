@@ -14,9 +14,9 @@ use BO\Zmsentities\Collection\ProcessList;
 
 class Search extends BaseController
 {
-    private const DEFAULT_RESULTS_PER_PAGE = 100;
+    private const int DEFAULT_RESULTS_PER_PAGE = 100;
 
-    private const MAX_RESULTS_PER_PAGE = 1000;
+    private const int MAX_RESULTS_PER_PAGE = 1000;
 
     /**
      * @SuppressWarnings(Param)
@@ -41,7 +41,6 @@ class Search extends BaseController
             $scopeIds
         );
         $logList = $this->readLogSearchResults($workstation, $parameters, $scopeIds);
-        [$processList, $processListOther] = $this->splitProcessListsByScope($workstation, $processList);
 
         return Render::withHtml(
             $response,
@@ -57,7 +56,6 @@ class Search extends BaseController
                 'perPage' => $parameters['perPage'],
                 'workstation' => $workstation,
                 'processList' => $processList,
-                'processListOther' => $processListOther,
                 'logList' => $logList ?? [],
                 'searchProcessQuery' => $parameters['queryString'],
                 'processSearchTotal' => $processSearchTotal,
@@ -96,7 +94,7 @@ class Search extends BaseController
             'perPage' => $resultsPerPage,
             'hideNavigation' => $hideNavigation,
             'isSearchRequested' => (
-                trim((string) $queryString) !== ''
+                trim($queryString) !== ''
                 || trim($service) !== ''
                 || trim($provider) !== ''
                 || ($date !== null && trim($date) !== '')
@@ -209,19 +207,7 @@ class Search extends BaseController
         );
     }
 
-    private function splitProcessListsByScope($workstation, ?ProcessList $processList): array
-    {
-        $processList = $processList ?? new ProcessList();
-        $processListOther = new ProcessList();
-        if (!$workstation->getUseraccount()->isSuperUser()) {
-            $processListOther = $processList->withOutScopeId($workstation->scope['id']);
-            $processList = $processList->withScopeId($workstation->scope['id']);
-        }
-
-        return [$processList, $processListOther];
-    }
-
-    private function filterProcessListForUserRights(?ProcessList $processList, array $scopeIds)
+    private function filterProcessListForUserRights(?ProcessList $processList, array $scopeIds): ProcessList
     {
         if (empty($processList)) {
             return new ProcessList();
@@ -242,7 +228,7 @@ class Search extends BaseController
         ?LogList $logList,
         array $scopeIds,
         bool $bypassScopeFilter = false
-    ) {
+    ): LogList {
         if (!isset($logList) || !$logList) {
             $logList = new LogList();
         }

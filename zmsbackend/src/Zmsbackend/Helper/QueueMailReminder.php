@@ -11,7 +11,7 @@ use BO\Zmsentities\Collection\ProcessList as Collection;
 use BO\Zmsentities\Mail;
 use BO\Zmsentities\Process;
 
-class SendMailReminder
+class QueueMailReminder
 {
     public \DateTimeInterface $dateTime;
 
@@ -40,14 +40,14 @@ class SendMailReminder
         if ($verbose) {
             $this->verbose = true;
             $this->log(
-                "\nINFO: Send email reminder (Limits: " .
+                "\nINFO: Queue email reminder (Limits: " .
                 $configLimit . "|" . $configBatchSize . ") dependent on last run: " .
                 $this->lastRun->format('Y-m-d H:i:s')
             );
         }
     }
 
-    protected function log($message)
+    protected function log(string $message): void
     {
         if ($this->verbose) {
             \App::$log->info($message);
@@ -59,27 +59,27 @@ class SendMailReminder
         return $this->count;
     }
 
-    public function setLimit($limit)
+    public function setLimit($limit): void
     {
         $this->limit = $limit;
     }
 
-    public function setLoopCount($loopCount)
+    public function setLoopCount($loopCount): void
     {
         $this->loopCount = $loopCount;
     }
 
-    public function startProcessing($commit)
+    public function startProcessing($commit): void
     {
         if ($commit) {
             (new MailRepository())->writeReminderLastRun($this->dateTime);
         }
         $this->writeMailReminderList($commit);
         $this->log("\nINFO: Last run " . $this->dateTime->format('Y-m-d H:i:s'));
-        $this->log("\nSUMMARY: Sent mail reminder: " . $this->count);
+        $this->log("\nSUMMARY: Queued mail reminder: " . $this->count);
     }
 
-    protected function writeMailReminderList($commit)
+    protected function writeMailReminderList($commit): void
     {
         // The offset parameter was removed here, because with each loop the processes are searched, which have not
         // been processed yet. An offset leads to the fact that with the renewed search the first results are skipped.
@@ -97,7 +97,7 @@ class SendMailReminder
         $this->count += $count;
     }
 
-    protected function writeByCallback($commit, \Closure $callback)
+    protected function writeByCallback($commit, \Closure $callback): int
     {
         $processCount = 0;
         while ($processCount < $this->limit) {
@@ -115,7 +115,7 @@ class SendMailReminder
         return $processCount;
     }
 
-    protected function writeReminder(Process $process, $commit, $processCount)
+    protected function writeReminder(Process $process, $commit, int $processCount): void
     {
         $department = (new DepartmentRepository())->readByScopeId($process->getScopeId(), 0);
         if ($process->getFirstClient()->hasEmail() && $department->hasMail()) {
@@ -142,7 +142,7 @@ class SendMailReminder
         }
     }
 
-    protected function getProcessListOverview(Process $process, \BO\Zmsentities\Config $config)
+    protected function getProcessListOverview(Process $process, \BO\Zmsentities\Config $config): Collection
     {
         $collection  = (new Collection())->addEntity($process);
         if (in_array(getenv('ZMS_ENV'), explode(',', $config->getPreference('appointments', 'enableSummaryByMail')))) {
