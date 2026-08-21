@@ -38,6 +38,31 @@ class CalendarAvailabilityTest extends Base
         }
     }
 
+    public function testSlotsWindowOutsideHorizonDoesNotThrow()
+    {
+        $start = \App::$now;
+        $end = (clone $start)->modify('+1 month');
+        $yesterday = (clone $start)->modify('-1 day')->format('Y-m-d');
+        $result = (new Query())->readFromQuery(
+            \App::$now,
+            'public',
+            0,
+            $start->format('Y-m-d'),
+            $end->format('Y-m-t'),
+            '122217',
+            '120703',
+            '1',
+            'dldb',
+            'dldb',
+            $yesterday,
+            $yesterday
+        );
+
+        $this->assertGreaterThanOrEqual($start->format('Y-m-d'), $result['slotsStartDate']);
+        $this->assertLessThanOrEqual($end->format('Y-m-t'), $result['slotsEndDate']);
+        $this->assertSame($result['slotsStartDate'], $result['slotsEndDate']);
+    }
+
     public function testServiceCountExceedsMaximum()
     {
         $this->expectException(\BO\Zmsbackend\Slot\Exception\Calendar\InvalidAvailabilityInput::class);
