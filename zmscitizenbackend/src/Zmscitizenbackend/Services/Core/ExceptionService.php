@@ -149,6 +149,7 @@ class ExceptionService
 
                     break;
                 case 'BO\\Zmsentities\\Exception\\SchemaValidation':
+                case 'BO\\Zmscitizenbackend\\Exceptions\\SchemaValidation':
                     $error = self::getError('invalidSchema');
 
                     break;

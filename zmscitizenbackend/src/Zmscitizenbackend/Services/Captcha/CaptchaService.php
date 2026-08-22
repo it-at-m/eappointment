@@ -6,7 +6,7 @@ namespace BO\Zmscitizenbackend\Services\Captcha;
 
 use BO\Zmscitizenbackend\Utils\ClientIpHelper;
 use BO\Zmscitizenbackend\Models\CaptchaInterface;
-use BO\Zmsentities\Schema\Entity;
+use BO\Zmscitizenbackend\Schema\Entity;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;

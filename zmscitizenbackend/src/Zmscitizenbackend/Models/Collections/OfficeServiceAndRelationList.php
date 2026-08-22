@@ -7,7 +7,7 @@ namespace BO\Zmscitizenbackend\Models\Collections;
 use BO\Zmscitizenbackend\Models\Collections\OfficeList;
 use BO\Zmscitizenbackend\Models\Collections\OfficeServiceRelationList;
 use BO\Zmscitizenbackend\Models\Collections\ServiceList;
-use BO\Zmsentities\Schema\Entity;
+use BO\Zmscitizenbackend\Schema\Entity;
 use InvalidArgumentException;
 use JsonSerializable;
 

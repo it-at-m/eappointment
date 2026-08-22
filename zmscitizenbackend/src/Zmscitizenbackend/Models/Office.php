@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenbackend\Models;
 
-use BO\Zmsentities\Schema\Entity;
+use BO\Zmscitizenbackend\Schema\Entity;
 use BO\Zmscitizenbackend\Models\ThinnedScope;
 use InvalidArgumentException;
 use JsonSerializable;

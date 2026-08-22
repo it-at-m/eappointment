@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenbackend\Models;
 
-use BO\Zmsentities\Schema\Entity;
+use BO\Zmscitizenbackend\Schema\Entity;
 use JsonSerializable;
 
 class AvailableCalendar extends Entity implements JsonSerializable
