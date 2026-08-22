@@ -9,19 +9,16 @@ use BO\Zmscitizenbackend\Repository\AppointmentReserveRepository;
 use BO\Zmscitizenbackend\Services\Captcha\CaptchaRequirementTrait;
 use BO\Zmscitizenbackend\Services\Captcha\TokenValidationService;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
-use BO\Zmscitizenbackend\Services\Core\ZmsApiFacadeService;
 
 class AppointmentReserveService
 {
     use CaptchaRequirementTrait;
 
     private TokenValidationService $tokenValidator;
-    private ZmsApiFacadeService $zmsApiFacadeService;
 
     public function __construct()
     {
         $this->tokenValidator = new TokenValidationService();
-        $this->zmsApiFacadeService = new ZmsApiFacadeService();
     }
 
     public function processReservation(array $body, bool $showUnpublished = false): ThinnedProcess|array

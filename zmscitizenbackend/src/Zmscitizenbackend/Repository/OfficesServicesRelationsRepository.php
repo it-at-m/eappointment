@@ -76,6 +76,37 @@ class OfficesServicesRelationsRepository
         }
     }
 
+    public function isCaptchaRequiredForOfficeIds(array $officeIds): bool
+    {
+        $wanted = [];
+        foreach ($officeIds as $officeIdRaw) {
+            $officeId = (int) $officeIdRaw;
+            if ($officeId > 0) {
+                $wanted[$officeId] = $officeId;
+            }
+        }
+        if ($wanted === []) {
+            return false;
+        }
+
+        try {
+            $sources = SourceNames::configured();
+            $pdo = Select::getReadConnection();
+            [$sourcePlaceholders, $params] = self::sourcePlaceholders($sources);
+            [$officePlaceholders, $officeParams] = self::officePlaceholders(array_values($wanted));
+            $params = array_merge($params, $officeParams);
+
+            $value = $pdo->fetchValue(
+                self::captchaRequiredByOfficesSql($sourcePlaceholders, $officePlaceholders),
+                $params
+            );
+
+            return $value !== null && $value !== false && (int) $value === 1;
+        } catch (\Exception $exception) {
+            ExceptionService::handleException($exception);
+        }
+    }
+
     /**
      * @param list<string> $sources
      * @return array{0: string, 1: array<string, string|int>}
@@ -88,6 +119,22 @@ class OfficesServicesRelationsRepository
             $key = 'source' . $index;
             $placeholders[] = ':' . $key;
             $params[$key] = $source;
+        }
+        return [implode(', ', $placeholders), $params];
+    }
+
+    /**
+     * @param list<int> $officeIds
+     * @return array{0: string, 1: array<string, int>}
+     */
+    private static function officePlaceholders(array $officeIds): array
+    {
+        $placeholders = [];
+        $params = [];
+        foreach ($officeIds as $index => $officeId) {
+            $key = 'office' . $index;
+            $placeholders[] = ':' . $key;
+            $params[$key] = $officeId;
         }
         return [implode(', ', $placeholders), $params];
     }
@@ -188,6 +235,21 @@ WHERE request_provider.provider__id = :officeId
     AND request_provider.bookable = 1
     AND request_provider.source IN ({$placeholders})
 ORDER BY request.id
+SQL;
+    }
+
+    private static function captchaRequiredByOfficesSql(string $sourcePlaceholders, string $officePlaceholders): string
+    {
+        return <<<SQL
+SELECT 1
+FROM standort AS scope
+INNER JOIN provider
+    ON provider.id = scope.InfoDienstleisterID
+    AND provider.source = scope.source
+WHERE provider.id IN ({$officePlaceholders})
+    AND provider.source IN ({$sourcePlaceholders})
+    AND scope.captcha_activated_required != 0
+LIMIT 1
 SQL;
     }
 

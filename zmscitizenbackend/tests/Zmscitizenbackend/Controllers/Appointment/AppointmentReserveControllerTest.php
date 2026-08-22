@@ -40,7 +40,6 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
     public function testRendering()
     {
-        $this->setSourceApiCall();
         $this->stubReserve($this->sampleAppointment("BEGIN:VCALENDAR\r\nEND:VCALENDAR"));
 
         $parameters = [
@@ -75,7 +74,6 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
     public function testAppointmentNotAvailable()
     {
-        $this->setSourceApiCall();
         $repository = $this->createStub(AppointmentReserveRepository::class);
         $repository->method('reserveAppointment')->willReturnCallback(
             static function (): ThinnedProcess {
@@ -361,22 +359,6 @@ class AppointmentReserveControllerTest extends ControllerTestCase
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
-    private function setSourceApiCall(): void
-    {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/source/unittest/',
-                    'parameters' => [
-                        'resolveReferences' => 2,
-                    ],
-                    'response' => $this->readFixture("GET_reserve_SourceGet_dldb.json"),
-                ],
-            ]
-        );
-    }
-
     private function stubOfficeServices(): void
     {
         $repository = $this->createStub(OfficesServicesRelationsRepository::class);
@@ -385,6 +367,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
                 return $officeId === 10546 ? ['1063423'] : [];
             }
         );
+        $repository->method('isCaptchaRequiredForOfficeIds')->willReturn(false);
         OfficesServicesRelationsRepository::use($repository);
     }
 

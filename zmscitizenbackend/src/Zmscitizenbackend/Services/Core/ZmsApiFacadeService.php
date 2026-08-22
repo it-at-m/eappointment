@@ -231,50 +231,9 @@ class ZmsApiFacadeService
         return $result;
     }
 
-    /**
-     * One offices + scopes load, then in-memory captcha checks for all office IDs.
-     * Avoids per-office scope reloads that each rebuild a full ThinnedScope.
-     */
     public static function isCaptchaRequiredForAnyOffice(array $officeIds): bool
     {
-        $wanted = [];
-        foreach ($officeIds as $officeIdRaw) {
-            $officeId = (int) $officeIdRaw;
-            if ($officeId > 0) {
-                $wanted[$officeId] = true;
-            }
-        }
-        if ($wanted === []) {
-            return false;
-        }
-
-        $providerById = [];
-        foreach (ZmsApiClientService::getOffices() as $provider) {
-            $providerById[(int) $provider->id] = $provider;
-        }
-
-        $scopes = ZmsApiClientService::getScopes();
-        if (!$scopes instanceof ScopeList) {
-            return false;
-        }
-
-        foreach (array_keys($wanted) as $officeId) {
-            $provider = $providerById[$officeId] ?? null;
-            if ($provider === null) {
-                continue;
-            }
-            $source = (string) ($provider->source ?? '');
-            if ($source === '') {
-                continue;
-            }
-
-            $matchingScope = $scopes->withProviderID($source, (string) $officeId)->getIterator()->current();
-            if ($matchingScope instanceof Scope && $matchingScope->getCaptchaActivatedRequired()) {
-                return true;
-            }
-        }
-
-        return false;
+        return OfficesServicesRelationsRepository::create()->isCaptchaRequiredForOfficeIds($officeIds);
     }
 
     /**

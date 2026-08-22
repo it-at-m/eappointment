@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenbackend\Services\Captcha;
 
-/**
- * Requires the using class to define: private ZmsApiFacadeService $zmsApiFacadeService
- */
+use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
+
 trait CaptchaRequirementTrait
 {
     private function isCaptchaRequiredForOfficeIds(array $officeIds): bool
     {
-        return $this->zmsApiFacadeService->isCaptchaRequiredForAnyOffice($officeIds);
+        return OfficesServicesRelationsRepository::create()->isCaptchaRequiredForOfficeIds($officeIds);
     }
 
     private function isCaptchaRequiredForOfficeId(?int $officeId): bool

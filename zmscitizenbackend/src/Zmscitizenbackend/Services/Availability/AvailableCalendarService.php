@@ -16,12 +16,10 @@ class AvailableCalendarService
     use ServiceLocationValidationTrait;
 
     private TokenValidationService $tokenValidator;
-    private ZmsApiFacadeService $zmsApiFacadeService;
 
     public function __construct()
     {
         $this->tokenValidator = new TokenValidationService();
-        $this->zmsApiFacadeService = new ZmsApiFacadeService();
     }
 
     public function getAvailableCalendar(
