@@ -17,6 +17,7 @@ use BO\Zmscitizenbackend\Models\Collections\OfficeServiceRelationList;
 use BO\Zmscitizenbackend\Models\Collections\OfficeServiceAndRelationList;
 use BO\Zmscitizenbackend\Models\Collections\ServiceList;
 use BO\Zmscitizenbackend\Models\Collections\ThinnedScopeList;
+use BO\Zmscitizenbackend\Repository\AvailableCalendarRepository;
 use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
 use BO\Zmsentities\Collection\RequestRelationList;
 use BO\Zmsentities\Process;
@@ -387,49 +388,14 @@ class ZmsApiFacadeService
         ?string $slotsStartDate = null,
         ?string $slotsEndDate = null
     ): AvailableCalendar|array {
-        $params = [
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-            'officeIds' => implode(',', $officeIds),
-            'serviceIds' => implode(',', $serviceIds),
-        ];
-        if ($serviceCounts !== []) {
-            $params['serviceCounts'] = implode(',', $serviceCounts);
-        }
-        if ($slotsStartDate !== null && $slotsStartDate !== '') {
-            $params['slotsStartDate'] = $slotsStartDate;
-        }
-        if ($slotsEndDate !== null && $slotsEndDate !== '') {
-            $params['slotsEndDate'] = $slotsEndDate;
-        }
-
-        $availability = ZmsApiClientService::getCalendarAvailability($params);
-
-        $formattedDays = [];
-        foreach ($availability['days'] ?? [] as $day) {
-            $offices = [];
-            foreach ($day['appointments'] ?? [] as $officeId => $timestamps) {
-                $offices[] = [
-                    'officeId' => (string) $officeId,
-                    'appointments' => array_map('intval', array_values((array) $timestamps)),
-                ];
-            }
-
-            $formattedDays[] = [
-                'date' => (string) ($day['date'] ?? ''),
-                'providerIDs' => (string) ($day['providerIDs'] ?? ''),
-                'offices' => $offices,
-            ];
-        }
-
-        return new AvailableCalendar(
-            (string) ($availability['startDate'] ?? $startDate),
-            (string) ($availability['endDate'] ?? $endDate),
-            $formattedDays,
-            (string) ($availability['slotsStartDate'] ?? $slotsStartDate ?? $startDate),
-            (string) ($availability['slotsEndDate'] ?? $slotsEndDate ?? $endDate),
-            isset($availability['prevBookableDate']) ? (string) $availability['prevBookableDate'] : null,
-            isset($availability['nextBookableDate']) ? (string) $availability['nextBookableDate'] : null
+        return AvailableCalendarRepository::create()->readAvailableCalendar(
+            $officeIds,
+            $serviceIds,
+            $serviceCounts,
+            $startDate,
+            $endDate,
+            $slotsStartDate,
+            $slotsEndDate
         );
     }
 

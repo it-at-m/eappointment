@@ -132,6 +132,14 @@ class ExceptionServiceTest extends TestCase
             'CalendarWithoutScopes' => [
                 'BO\\Zmsbackend\\Calendar\\Exception\\CalendarWithoutScopes',
                 'noAppointmentForThisScope'
+            ],
+            'CitizenInvalidAvailabilityInput' => [
+                'BO\\Zmscitizenbackend\\Exceptions\\InvalidAvailabilityInput',
+                'invalidDateRange'
+            ],
+            'CitizenCalendarWithoutScopes' => [
+                'BO\\Zmscitizenbackend\\Exceptions\\CalendarWithoutScopes',
+                'noAppointmentForThisScope'
             ]
         ];
     }

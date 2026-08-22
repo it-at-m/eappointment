@@ -9,6 +9,7 @@ use BO\Zmscitizenbackend\Controllers\UnpublishedAccessTrait;
 use BO\Zmscitizenbackend\Services\Availability\AvailableCalendarService;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
 use BO\Zmscitizenbackend\Utils\ErrorMessages;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -19,8 +20,9 @@ class AvailableCalendarController extends BaseController
     private AvailableCalendarService $service;
 
     /** @psalm-api */
-    public function __construct()
+    public function __construct(ContainerInterface $containerInterface)
     {
+        parent::__construct($containerInterface);
         $this->initializeUnpublishedAccess();
         $this->service = new AvailableCalendarService();
     }
