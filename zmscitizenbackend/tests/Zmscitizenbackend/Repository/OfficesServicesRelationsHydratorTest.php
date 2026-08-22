@@ -7,7 +7,7 @@ namespace BO\Zmscitizenbackend\Tests\Repository;
 use BO\Zmscitizenbackend\Models\Collections\OfficeServiceAndRelationList;
 use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsHydrator;
 use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
-use BO\Zmscitizenbackend\Tests\Fixtures\OfficesServicesRelationsRows;
+use BO\Zmscitizenbackend\Tests\Helper\OfficesServicesRelationsRows;
 use PHPUnit\Framework\TestCase;
 
 class OfficesServicesRelationsHydratorTest extends TestCase
