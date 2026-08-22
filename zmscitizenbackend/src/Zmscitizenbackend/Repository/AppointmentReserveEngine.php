@@ -7,7 +7,6 @@ namespace BO\Zmscitizenbackend\Repository;
 use BO\Zmscitizenbackend\Connection\Pdo;
 use BO\Zmscitizenbackend\Exceptions\AppointmentNotAvailable;
 use BO\Zmscitizenbackend\Utils\ClientIpHelper;
-use BO\Zmsentities\Calendar as CalendarEntity;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -106,7 +105,7 @@ class AppointmentReserveEngine
      */
     private function findMatchingAppointment(
         AvailableCalendarEngine $calendarEngine,
-        CalendarEntity $calendar,
+        BookingCalendar $calendar,
         int $timestamp
     ): array {
         $processes = $calendarEngine->readDeduplicatedFreeProcesses(
@@ -183,7 +182,7 @@ class AppointmentReserveEngine
 
     private function assertStillFree(
         AvailableCalendarEngine $calendarEngine,
-        CalendarEntity $calendar,
+        BookingCalendar $calendar,
         int $timestamp
     ): void {
         $this->findMatchingAppointment($calendarEngine, $calendar, $timestamp);
@@ -195,7 +194,7 @@ class AppointmentReserveEngine
      * @return array{processId: int, authKey: string}
      */
     private function writeReservedProcess(
-        CalendarEntity $calendar,
+        BookingCalendar $calendar,
         array $match,
         array $slotTimes,
         int $timestamp
@@ -278,8 +277,8 @@ class AppointmentReserveEngine
         }
 
         foreach ($calendar->requests as $request) {
-            $requestId = is_array($request) ? ($request['id'] ?? null) : ($request->id ?? null);
-            $source = is_array($request) ? ($request['source'] ?? $match['source']) : ($request->source ?? $match['source']);
+            $requestId = $request['id'] ?? null;
+            $source = $request['source'] ?? $match['source'];
             if ($requestId === null) {
                 continue;
             }

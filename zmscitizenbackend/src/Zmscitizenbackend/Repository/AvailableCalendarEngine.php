@@ -7,11 +7,6 @@ namespace BO\Zmscitizenbackend\Repository;
 use BO\Zmscitizenbackend\Connection\Pdo;
 use BO\Zmscitizenbackend\Exceptions\CalendarWithoutScopes;
 use BO\Zmscitizenbackend\Exceptions\InvalidAvailabilityInput;
-use BO\Zmsentities\Calendar as CalendarEntity;
-use BO\Zmsentities\Collection\DayList;
-use BO\Zmsentities\Collection\ScopeList;
-use BO\Zmsentities\Day;
-use BO\Zmsentities\Scope;
 
 /**
  * Combined calendar days + free appointment slots in a single DB pass.
@@ -93,7 +88,7 @@ class AvailableCalendarEngine
      * @return array<string, mixed>
      */
     private function readAvailability(
-        CalendarEntity $calendar,
+        BookingCalendar $calendar,
         \DateTimeInterface $now,
         string $slotsStartDate,
         string $slotsEndDate
@@ -216,14 +211,14 @@ class AvailableCalendarEngine
         );
     }
 
-    private function withoutUnrelatedScopes(CalendarEntity $calendar, int $slotsRequiredForce): CalendarEntity
+    private function withoutUnrelatedScopes(BookingCalendar $calendar, int $slotsRequiredForce): BookingCalendar
     {
         if ($slotsRequiredForce) {
             return $calendar;
         }
 
         foreach ($calendar->scopes as $key => $scope) {
-            if ($calendar->scopes->getRequiredSlotsByScope($scope) < 1) {
+            if ($calendar->requiredSlotsFor($scope) < 1) {
                 unset($calendar->scopes[$key]);
             }
         }
@@ -302,13 +297,17 @@ class AvailableCalendarEngine
         return [$monthStart, $monthEnd];
     }
 
-    private function filterDaysInDateRange(DayList $days, string $startDate, string $endDate): DayList
+    /**
+     * @param array<int|string, array<string, mixed>> $days
+     * @return array<int|string, array<string, mixed>>
+     */
+    private function filterDaysInDateRange(array $days, string $startDate, string $endDate): array
     {
-        $filtered = new DayList();
-        foreach ($days as $day) {
+        $filtered = [];
+        foreach ($days as $key => $day) {
             $date = $this->formatDayIso($day);
             if ($date >= $startDate && $date <= $endDate) {
-                $filtered->addEntity($day);
+                $filtered[$key] = $day;
             }
         }
 
@@ -316,10 +315,11 @@ class AvailableCalendarEngine
     }
 
     /**
-     * @return array{0: string, 1: string, 2: DayList}
+     * @param array<int|string, array<string, mixed>> $slotDays
+     * @return array{0: string, 1: string, 2: array<int|string, array<string, mixed>>}
      */
     private function narrowSlotsWindowToFirstBookableDay(
-        DayList $slotDays,
+        array $slotDays,
         string $slotsStartDate,
         string $slotsEndDate
     ): array {
@@ -332,7 +332,7 @@ class AvailableCalendarEngine
         }
 
         if ($firstBookableDate === null) {
-            return [$slotsStartDate, $slotsEndDate, new DayList()];
+            return [$slotsStartDate, $slotsEndDate, []];
         }
 
         return [
@@ -343,14 +343,14 @@ class AvailableCalendarEngine
     }
 
     private function readBookableDaysForRange(
-        CalendarEntity $calendar,
+        BookingCalendar $calendar,
         int $slotsRequired,
         string $slotType,
         \DateTimeInterface $now,
         string $rangeStartDate,
         string $rangeEndDate,
         bool $rewrite
-    ): DayList {
+    ): array {
         $savedFirst = $calendar->firstDay;
         $savedLast = $calendar->lastDay;
         $calendar->firstDay = $this->datePartsFromIso($rangeStartDate);
@@ -362,19 +362,24 @@ class AvailableCalendarEngine
             } else {
                 $this->writeTemporaryScopeList($calendar, $slotsRequired);
             }
-            $dayList = $this->readListFromPreparedTemporaryScopeList($slotsRequired)
-                ->setStatusByType($slotType, $now)
-                ->withDaysInDateRange($calendar->getFirstDay(), $calendar->getLastDay());
+            $dayList = BookingCalendar::daysInRange(
+                BookingCalendar::withStatusByType(
+                    $this->readListFromPreparedTemporaryScopeList($slotsRequired),
+                    $slotType,
+                    $now
+                ),
+                $calendar->firstDateTime(),
+                $calendar->lastDateTime()
+            );
         } finally {
             $calendar->firstDay = $savedFirst;
             $calendar->lastDay = $savedLast;
         }
 
-        $bookableDays = new DayList();
-        foreach ($dayList as $day) {
-            $status = is_array($day) ? ($day['status'] ?? null) : ($day['status'] ?? null);
-            if ($status === 'bookable') {
-                $bookableDays->addEntity($day);
+        $bookableDays = [];
+        foreach ($dayList as $key => $day) {
+            if (($day['status'] ?? null) === 'bookable') {
+                $bookableDays[$key] = $day;
             }
         }
 
@@ -385,7 +390,7 @@ class AvailableCalendarEngine
      * @return array{0: ?string, 1: ?string}
      */
     private function findAdjacentBookableDatesByScan(
-        CalendarEntity $calendar,
+        BookingCalendar $calendar,
         int $slotsRequired,
         string $slotType,
         \DateTimeInterface $now,
@@ -415,7 +420,7 @@ class AvailableCalendarEngine
     }
 
     private function findFirstBookableDateAfter(
-        CalendarEntity $calendar,
+        BookingCalendar $calendar,
         int $slotsRequired,
         string $slotType,
         \DateTimeInterface $now,
@@ -466,7 +471,7 @@ class AvailableCalendarEngine
     }
 
     private function findFirstBookableDateBefore(
-        CalendarEntity $calendar,
+        BookingCalendar $calendar,
         int $slotsRequired,
         string $slotType,
         \DateTimeInterface $now,
@@ -516,16 +521,12 @@ class AvailableCalendarEngine
         return null;
     }
 
-    private function formatDayIso(Day $day): string
+    /**
+     * @param array<string, mixed> $day
+     */
+    private function formatDayIso(array $day): string
     {
-        $dayData = $this->dayToArray($day);
-
-        return sprintf(
-            '%04d-%02d-%02d',
-            (int) ($dayData['year'] ?? 0),
-            (int) ($dayData['month'] ?? 0),
-            (int) ($dayData['day'] ?? 0)
-        );
+        return BookingCalendar::dayIso($day);
     }
 
     private function buildCalendarFromQuery(
@@ -534,8 +535,8 @@ class AvailableCalendarEngine
         string $officeIds,
         string $serviceIds,
         string $serviceCounts
-    ): CalendarEntity {
-        $calendar = new CalendarEntity();
+    ): BookingCalendar {
+        $calendar = new BookingCalendar();
         $calendar->firstDay = $this->datePartsFromIso($startDate);
         $calendar->lastDay = $this->datePartsFromIso($endDate);
         $this->addProvidersFromQuery($calendar, $officeIds);
@@ -544,7 +545,7 @@ class AvailableCalendarEngine
         return $calendar;
     }
 
-    private function addProvidersFromQuery(CalendarEntity $calendar, string $officeIds): void
+    private function addProvidersFromQuery(BookingCalendar $calendar, string $officeIds): void
     {
         $officeIdList = $this->parseCsv($officeIds);
         $providerSources = $this->readSourceMap('provider', $officeIdList);
@@ -565,7 +566,7 @@ class AvailableCalendarEngine
     }
 
     private function addRequestsFromQuery(
-        CalendarEntity $calendar,
+        BookingCalendar $calendar,
         string $serviceIds,
         string $serviceCounts
     ): void {
@@ -620,12 +621,13 @@ class AvailableCalendarEngine
         return $map;
     }
 
-    private function resolveScopesAndSlots(CalendarEntity $calendar): CalendarEntity
+    private function resolveScopesAndSlots(BookingCalendar $calendar): BookingCalendar
     {
         $providerIdSet = $this->providerIdSet($calendar);
-        $calendar['scopes'] = $this->readScopesForProviders(array_keys($providerIdSet))->withUniqueScopes();
+        $calendar->scopes = $this->readScopesForProviders(array_keys($providerIdSet));
+        $calendar->uniqueScopes();
         if (count($calendar->scopes) < 1) {
-            throw new CalendarWithoutScopes("No scopes resolved in $calendar");
+            throw new CalendarWithoutScopes('No scopes resolved for the given offices');
         }
 
         $this->addRequiredSlotsFromRequests($calendar, $providerIdSet);
@@ -636,7 +638,7 @@ class AvailableCalendarEngine
     /**
      * @return array<string, true>
      */
-    private function providerIdSet(CalendarEntity $calendar): array
+    private function providerIdSet(BookingCalendar $calendar): array
     {
         $providerIdSet = [];
         foreach ($calendar->providers as $provider) {
@@ -648,10 +650,11 @@ class AvailableCalendarEngine
 
     /**
      * @param list<string> $providerIds
+     * @return array<int|string, array<string, mixed>>
      */
-    private function readScopesForProviders(array $providerIds): ScopeList
+    private function readScopesForProviders(array $providerIds): array
     {
-        $scopeList = new ScopeList();
+        $scopeList = [];
         if ($providerIds === []) {
             return $scopeList;
         }
@@ -672,7 +675,7 @@ ORDER BY standort.StandortID
 SQL;
         $rows = $this->pdo->fetchAll($sql, $params);
         foreach (is_array($rows) ? $rows : [] as $row) {
-            $scopeList->addEntity(new Scope([
+            $scopeList[] = [
                 'id' => (int) $row['id'],
                 'source' => (string) $row['source'],
                 'provider' => [
@@ -680,7 +683,7 @@ SQL;
                     'source' => (string) $row['source'],
                     'data' => $this->decodeProviderData($row['provider_data'] ?? null),
                 ],
-            ]));
+            ];
         }
 
         return $scopeList;
@@ -702,17 +705,17 @@ SQL;
     /**
      * @param array<string, true> $providerIdSet
      */
-    private function addRequiredSlotsFromRequests(CalendarEntity $calendar, array $providerIdSet): void
+    private function addRequiredSlotsFromRequests(BookingCalendar $calendar, array $providerIdSet): void
     {
         $relationsByKey = $this->readRequestRelations($calendar);
-        foreach ($calendar['requests'] as $request) {
+        foreach ($calendar->requests as $request) {
             $key = (string) $request['source'] . ':' . (string) $request['id'];
             foreach ($relationsByKey[$key] ?? [] as $relation) {
                 $providerId = (string) $relation['provider__id'];
                 if ($providerIdSet !== [] && !isset($providerIdSet[$providerId])) {
                     continue;
                 }
-                $calendar->scopes->addRequiredSlots(
+                $calendar->addRequiredSlots(
                     (string) $relation['source'],
                     $relation['provider__id'],
                     (int) $relation['slots']
@@ -724,10 +727,10 @@ SQL;
     /**
      * @return array<string, list<array<string, mixed>>>
      */
-    private function readRequestRelations(CalendarEntity $calendar): array
+    private function readRequestRelations(BookingCalendar $calendar): array
     {
         $requestIds = [];
-        foreach ($calendar['requests'] as $request) {
+        foreach ($calendar->requests as $request) {
             $requestIds[] = (string) $request['id'];
         }
         $requestIds = array_values(array_unique($requestIds));
@@ -752,19 +755,17 @@ SQL;
         return $relationsByKey;
     }
 
-    private function writeTemporaryScopeList(CalendarEntity $calendar, int $slotsRequiredForce): void
+    private function writeTemporaryScopeList(BookingCalendar $calendar, int $slotsRequiredForce): void
     {
         $this->pdo->exec(AvailableCalendarQueries::QUERY_CREATE_TEMPORARY_SCOPELIST);
-        $monthList = $calendar->getMonthList();
         $slotsRequired = $slotsRequiredForce;
-        foreach ($monthList as $month) {
-            $dateTime = $month->getFirstDay();
+        foreach ($calendar->monthStarts() as $dateTime) {
             foreach ($calendar->scopes as $scope) {
                 if (!$slotsRequiredForce) {
-                    $slotsRequired = $calendar->scopes->getRequiredSlotsByScope($scope);
+                    $slotsRequired = $calendar->requiredSlotsFor($scope);
                 }
                 $this->pdo->perform(AvailableCalendarQueries::QUERY_INSERT_TEMPORARY_SCOPELIST, [
-                    'scopeID' => $scope->id,
+                    'scopeID' => $scope['id'],
                     'year' => $dateTime->format('Y'),
                     'month' => $dateTime->format('m'),
                     'slotsRequired' => $slotsRequired > 1 ? round($slotsRequired, 0) : 1,
@@ -774,7 +775,7 @@ SQL;
         $this->tempScopeListExists = true;
     }
 
-    private function rewriteTemporaryScopeList(CalendarEntity $calendar, int $slotsRequiredForce): void
+    private function rewriteTemporaryScopeList(BookingCalendar $calendar, int $slotsRequiredForce): void
     {
         if ($this->tempScopeListExists) {
             $this->pdo->exec(AvailableCalendarQueries::QUERY_DROP_TEMPORARY_SCOPELIST);
@@ -801,7 +802,7 @@ SQL;
         string $serviceIds,
         string $serviceCounts,
         string $day
-    ): CalendarEntity {
+    ): BookingCalendar {
         $calendar = $this->buildCalendarFromQuery($day, $day, $officeIds, $serviceIds, $serviceCounts);
         $calendar = $this->resolveScopesAndSlots($calendar);
         $calendar = $this->withoutUnrelatedScopes($calendar, 0);
@@ -811,22 +812,25 @@ SQL;
         $this->writeTemporaryScopeList($calendar, 0);
 
         $parts = $this->datePartsFromIso($day);
-        $dayEntity = new Day([
+        $dayData = [
             'year' => $parts['year'],
             'month' => $parts['month'],
             'day' => $parts['day'],
-            'status' => Day::BOOKABLE,
-        ]);
-        $dayList = new DayList();
-        $dayList[$dayEntity->getDayHash()] = $dayEntity;
-        $calendar->days = $dayList;
+            'status' => 'bookable',
+        ];
+        $calendar->days = [
+            BookingCalendar::dayHash($dayData) => $dayData,
+        ];
 
         return $calendar;
     }
 
-    private function readListFromPreparedTemporaryScopeList(int $slotsRequiredForce): DayList
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private function readListFromPreparedTemporaryScopeList(int $slotsRequiredForce): array
     {
-        $dayList = new DayList();
+        $dayList = [];
         $dayData = $this->pdo->fetchAll(
             AvailableCalendarQueries::QUERY_DAYLIST_JOIN_AVAILABILITY,
             [
@@ -835,8 +839,8 @@ SQL;
             ]
         );
         foreach (is_array($dayData) ? $dayData : [] as $day) {
-            $day = new Day($day);
-            $dayList[$day->getDayHash()] = $day;
+            $day = BookingCalendar::nestRow(is_array($day) ? $day : []);
+            $dayList[BookingCalendar::dayHash($day)] = $day;
         }
 
         return $dayList;
@@ -846,7 +850,7 @@ SQL;
      * @return list<array<string, mixed>>
      */
     public function readDeduplicatedFreeProcesses(
-        CalendarEntity $calendar,
+        BookingCalendar $calendar,
         string $slotType = 'public',
         int $slotsRequired = 0,
         bool $useAvailabilityQuery = true
@@ -863,7 +867,7 @@ SQL;
      * @return list<array<string, mixed>>
      */
     private function readFreeProcessesMinimalFromPreparedCalendar(
-        CalendarEntity $calendar,
+        BookingCalendar $calendar,
         string $slotType,
         int $slotsRequired,
         bool $useAvailabilityQuery = true
@@ -899,7 +903,7 @@ SQL;
     /**
      * @return list<\DateTimeInterface>
      */
-    private function buildDaysListFromCalendarDays(CalendarEntity $calendar): array
+    private function buildDaysListFromCalendarDays(BookingCalendar $calendar): array
     {
         if (!isset($calendar->days) || count($calendar->days) < 1) {
             return $this->buildDaysList($calendar);
@@ -907,10 +911,7 @@ SQL;
 
         $daysByDate = [];
         foreach ($calendar->days as $day) {
-            if (!$day instanceof Day) {
-                $day = new Day($day);
-            }
-            $dateTime = $day->toDateTime();
+            $dateTime = BookingCalendar::dayToDateTime($day);
             $daysByDate[$dateTime->format('Y-m-d')] = $dateTime;
         }
 
@@ -926,13 +927,14 @@ SQL;
     /**
      * @return list<\DateTimeInterface>
      */
-    private function buildDaysList(CalendarEntity $calendar): array
+    private function buildDaysList(BookingCalendar $calendar): array
     {
-        $selectedDate = $calendar->getFirstDay();
+        $selectedDate = $calendar->firstDateTime();
         $days = [$selectedDate];
-        if ($calendar->getLastDay(false)) {
+        $lastDay = $calendar->lastDateTime(false);
+        if ($lastDay) {
             $days = [];
-            while ($selectedDate <= $calendar->getLastDay(false)) {
+            while ($selectedDate <= $lastDay) {
                 $days[] = $selectedDate;
                 $selectedDate = $selectedDate->modify('+1 day');
             }
@@ -1037,7 +1039,7 @@ SQL;
      * @param array<string, mixed> $item
      * @return array<string, mixed>|null
      */
-    private function extractProcessInfo(array $item, CalendarEntity $calendar): ?array
+    private function extractProcessInfo(array $item, BookingCalendar $calendar): ?array
     {
         $scopeId = $item['scope__id'] ?? null;
         $dateString = $item['appointments__0__date'] ?? null;
@@ -1051,30 +1053,31 @@ SQL;
             return null;
         }
 
-        $scope = $calendar->scopes->getEntity($scopeId);
+        $scope = $calendar->scopeById($scopeId);
         if (!$scope) {
             return null;
         }
 
-        $providerId = $scope->getProviderId();
+        $provider = $scope['provider'] ?? [];
+        $providerId = $provider['id'] ?? null;
         if (!$providerId) {
             return null;
         }
 
         $sharedBookingOfficeIds = null;
-        $provider = $scope->getProvider();
+        $providerData = $provider['data'] ?? [];
         if (
-            $provider
-            && isset($provider->data['sharedBookingOfficeIds'])
-            && is_array($provider->data['sharedBookingOfficeIds'])
-            && $provider->data['sharedBookingOfficeIds'] !== []
+            is_array($providerData)
+            && isset($providerData['sharedBookingOfficeIds'])
+            && is_array($providerData['sharedBookingOfficeIds'])
+            && $providerData['sharedBookingOfficeIds'] !== []
         ) {
-            $sharedBookingOfficeIds = array_map('intval', $provider->data['sharedBookingOfficeIds']);
+            $sharedBookingOfficeIds = array_map('intval', $providerData['sharedBookingOfficeIds']);
         }
 
         return [
             'scopeId' => $scopeId,
-            'source' => $scope->getSource(),
+            'source' => $scope['source'] ?? 'dldb',
             'providerId' => $providerId,
             'sharedBookingOfficeIds' => $sharedBookingOfficeIds,
             'date' => $date,
@@ -1151,7 +1154,7 @@ SQL;
      * @return array<string, mixed>
      */
     private function buildResult(
-        CalendarEntity $calendar,
+        BookingCalendar $calendar,
         array $processList,
         string $slotsStartDate,
         string $slotsEndDate,
@@ -1168,7 +1171,7 @@ SQL;
         $days = [];
 
         foreach ($calendar->days as $day) {
-            $dayData = $this->dayToArray($day);
+            $dayData = $day;
             if (($dayData['status'] ?? null) !== 'bookable') {
                 continue;
             }
@@ -1260,18 +1263,6 @@ SQL;
         unset($byOffice, $timestamps);
 
         return $grouped;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function dayToArray(mixed $day): array
-    {
-        if ($day instanceof Day) {
-            return $day->getArrayCopy();
-        }
-
-        return (array) $day;
     }
 
     /**
