@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenbackend\Models\Collections;
 
 use BO\Zmscitizenbackend\Models\Service;
-use BO\Zmsentities\Schema\Entity;
+use BO\Zmscitizenbackend\Schema\Entity;
 use InvalidArgumentException;
 use JsonSerializable;
 
