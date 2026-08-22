@@ -12,7 +12,6 @@ use BO\Zmscitizenbackend\Exceptions\UnauthorizedException;
 use BO\Zmscitizenbackend\Models\AuthenticatedUser;
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
 use BO\Zmscitizenbackend\Services\Core\ExceptionService;
-use BO\Zmscitizenbackend\Services\Core\ZmsApiClientService;
 
 class AppointmentUpdateRepository
 {
@@ -41,7 +40,7 @@ class AppointmentUpdateRepository
             $pdo = Select::getWriteConnection();
             $this->persistClientData($pdo, $process, $user, $processId);
             $appointment = $this->reloadAppointment($pdo, $processId);
-            $this->attachIcs($appointment, $processId);
+            IcsRepository::create()->attachIcs($appointment);
 
             return $appointment;
         } catch (\Exception $exception) {
@@ -130,22 +129,6 @@ class AppointmentUpdateRepository
         }
 
         return $appointment;
-    }
-
-    private function attachIcs(ThinnedProcess $appointment, int $processId): void
-    {
-        $hydrator = new AppointmentByIdHydrator();
-        if (!$hydrator->shouldGenerateIcs($appointment->timestamp, $appointment->status)) {
-            return;
-        }
-        $icsAuthKey = $appointment->authKey ?? '';
-        if ($icsAuthKey === '') {
-            return;
-        }
-        $icsContent = ZmsApiClientService::getIcsContent($processId, $icsAuthKey);
-        if ($icsContent) {
-            $appointment->setIcsContent($icsContent);
-        }
     }
 
     private function assertMailLimit(Pdo $pdo, ThinnedProcess $process): void

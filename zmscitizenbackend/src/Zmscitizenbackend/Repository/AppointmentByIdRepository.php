@@ -12,7 +12,6 @@ use BO\Zmscitizenbackend\Exceptions\UnauthorizedException;
 use BO\Zmscitizenbackend\Models\AuthenticatedUser;
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
 use BO\Zmscitizenbackend\Services\Core\ExceptionService;
-use BO\Zmscitizenbackend\Services\Core\ZmsApiClientService;
 
 class AppointmentByIdRepository
 {
@@ -47,16 +46,7 @@ class AppointmentByIdRepository
 
             $hydrator = new AppointmentByIdHydrator();
             $appointment = $hydrator->hydrate($processRow, $requestRows);
-
-            if ($hydrator->shouldGenerateIcs($appointment->timestamp, $appointment->status)) {
-                $icsAuthKey = $appointment->authKey ?? '';
-                if ($icsAuthKey !== '') {
-                    $icsContent = ZmsApiClientService::getIcsContent($processId, $icsAuthKey);
-                    if ($icsContent) {
-                        $appointment->setIcsContent($icsContent);
-                    }
-                }
-            }
+            IcsRepository::create()->attachIcs($appointment);
 
             return $appointment;
         } catch (\Exception $exception) {
