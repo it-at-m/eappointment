@@ -68,6 +68,7 @@ class ExceptionService
 
                     break;
                 case 'BO\\Zmsbackend\\Process\\Exception\\ProcessNotReservedAnymore':
+                case 'BO\\Zmscitizenbackend\\Exceptions\\ProcessNotReservedAnymore':
                     $error = self::getError('processNotReservedAnymore');
 
                     break;

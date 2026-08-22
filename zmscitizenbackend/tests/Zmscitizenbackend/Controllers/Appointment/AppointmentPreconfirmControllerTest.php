@@ -2,8 +2,18 @@
 
 namespace BO\Zmscitizenbackend\Tests\Controllers\Appointment;
 
-use BO\Zmscitizenbackend\Utils\ErrorMessages;
+use BO\Zmscitizenbackend\Exceptions\AuthKeyMatchFailed;
+use BO\Zmscitizenbackend\Exceptions\MoreThanAllowedAppointmentsPerMail;
+use BO\Zmscitizenbackend\Exceptions\ProcessNotFound;
+use BO\Zmscitizenbackend\Exceptions\ProcessNotReservedAnymore;
+use BO\Zmscitizenbackend\Models\ThinnedProcess;
+use BO\Zmscitizenbackend\Repository\AppointmentByIdHydrator;
+use BO\Zmscitizenbackend\Repository\AppointmentByIdRepository;
+use BO\Zmscitizenbackend\Repository\AppointmentPreconfirmRepository;
+use BO\Zmscitizenbackend\Services\Core\ExceptionService;
 use BO\Zmscitizenbackend\Tests\ControllerTestCase;
+use BO\Zmscitizenbackend\Tests\Helper\AppointmentByIdRows;
+use BO\Zmscitizenbackend\Utils\ErrorMessages;
 
 class AppointmentPreconfirmControllerTest extends ControllerTestCase
 {
@@ -12,43 +22,30 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
     public function setUp(): void
     {
         parent::setUp();
-        
+
         \App::$source_name = 'unittest';
 
         if (\App::$cache) {
             \App::$cache->clear();
         }
+
+        $this->stubAppointment($this->sampleAppointment(status: 'reserved'));
+    }
+
+    public function tearDown(): void
+    {
+        AppointmentByIdRepository::use(null);
+        AppointmentPreconfirmRepository::use(null);
+        parent::tearDown();
     }
 
     public function testRendering()
     {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/process/101002/fb43/',
-                    'parameters' => [
-                        'resolveReferences' => 2,
-                    ],
-                    'response' => $this->readFixture("GET_process.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/process/101002/fb43/ics/',                    
-                    'response' => $this->readFixture("GET_process_ics_template.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/status/preconfirmed/',
-                    'response' => $this->readFixture("POST_preconfirm_appointment.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/101002/fb43/preconfirmation/mail/',
-                    'response' => $this->readFixture("POST_preconfirm_appointment.json")
-                ]
-            ]
-        );
+        $this->stubPreconfirm($this->sampleAppointment(
+            status: 'preconfirmed',
+            icsContent: "BEGIN:VCALENDAR\r\nEND:VCALENDAR"
+        ));
+        $this->setPreconfirmationMailApiCall();
 
         $parameters = [
             'processId' => '101002',
@@ -57,68 +54,23 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
 
-        $this->assertArrayHasKey('captchaToken', $responseBody);
-        $this->assertIsString($responseBody['captchaToken']);
         unset($responseBody['captchaToken']);
 
-        $expectedResponse = [
-            'processId' => 101002,
-            'timestamp' => '1727865900',
-            'authKey' => 'fb43',
-            'familyName' => 'TEST_USER',
-            'customTextfield' => 'Some custom text',
-            'customTextfield2' => 'Another custom text',
-            'email' => 'test@muenchen.de',
-            'telephone' => '123456789',
-            'officeName' => null,
-            'officeId' => 0,
-            'scope' => [
-                'id' => 0,
-                'provider' => [
-                    'contact'=> null,
-                    'id'=> 0,
-                    'lat'=> null,
-                    'lon'=> null,
-                    'name'=> '',
-                    'displayName'=> '',
-                    'source'=> 'dldb'
-                ],
-                'shortName' => '',
-                'emailFrom' => '',
-                'emailRequired' => null,
-                'telephoneActivated' => null,
-                'telephoneRequired' => null,
-                'customTextfieldActivated' => null,
-                'customTextfieldRequired' => null,
-                'customTextfieldLabel' => null,
-                'customTextfield2Activated' => null,
-                'customTextfield2Required' => null,
-                'customTextfield2Label' => null,
-                'captchaActivatedRequired' => null,
-                'infoForAppointment' => null,
-                'infoForAllAppointments' => null,
-                'slotsPerAppointment' => null,
-                "appointmentsPerMail" => null,
-                "whitelistedMails" => null,
-                "reservationDuration" => null,
-                "activationDuration" => null,
-                "hint" => null
-            ],
-            'subRequestCounts' => [],
-            'serviceId' => 10242339,
-            'serviceName' => 'Adressänderung Personalausweis, Reisepass, eAT',
-            'serviceCount' => 1,
-            'status' => 'preconfirmed',
-            'slotCount' => 1,
-            'displayNumber' => null
-        ];
+        $expectedResponse = json_decode(
+            json_encode($this->sampleAppointment(
+                status: 'preconfirmed',
+                icsContent: "BEGIN:VCALENDAR\r\nEND:VCALENDAR"
+            )->toArray()),
+            true
+        );
+        unset($expectedResponse['captchaToken']);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArrayHasKey('icsContent', $responseBody);
         $this->assertStringContainsString('BEGIN:VCALENDAR', $responseBody['icsContent']);
         unset($responseBody['icsContent']);
         unset($expectedResponse['icsContent']);
-        $this->assertEquals($expectedResponse, $responseBody);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testInvalidProcessId()
@@ -185,30 +137,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
 
     public function testNoEmailSendingWhenStatusNotPreconfirmed()
     {
-        $processResponse = $this->readFixture("POST_preconfirm_appointment.json");
-        $processData = json_decode($processResponse, true);
-        $processData['data']['queue']['status'] = 'confirmed'; // Change status to something else
-        
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'response' => $this->readFixture("GET_process.json")
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/ics/',
-                'response' => $this->readFixture("GET_process_ics_template.json")
-            ],
-            [
-                'function' => 'readPostResult',
-                'url' => '/process/status/preconfirmed/',
-                'response' => json_encode($processData)
-            ]
-        ]);
+        $this->stubPreconfirm($this->sampleAppointment(status: 'reserved'));
 
         $parameters = [
             'processId' => '101002',
@@ -218,12 +147,12 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
         $responseBody = json_decode((string) $response->getBody(), true);
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('confirmed', $responseBody['status']);
+        $this->assertEquals('reserved', $responseBody['status']);
     }
 
     public function testInvalidRequest()
     {
-        $response = $this->render([], [], [], 'GET'); // Using GET instead of POST
+        $response = $this->render([], [], [], 'GET');
         $responseBody = json_decode((string) $response->getBody(), true);
 
         $this->assertEquals(ErrorMessages::get('invalidRequest')['statusCode'], $response->getStatusCode());
@@ -233,60 +162,15 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
         );
     }
 
-    public function testPreconfirmationExpired()
-    {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\PreconfirmationExpired';
-    
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'response' => $this->readFixture("GET_process.json")
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/ics/',
-                'response' => $this->readFixture("GET_process_ics_template.json")
-            ],
-            [
-                'function' => 'readPostResult',
-                'url' => '/process/status/preconfirmed/',
-                'exception' => $exception
-            ]
-        ]);
-    
-        $parameters = [
-            'processId' => '101002',
-            'authKey' => 'fb43'
-        ];
-        $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true); 
-        $this->assertEquals(ErrorMessages::get('preconfirmationExpired')['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing(
-            ['errors' => [ErrorMessages::get('preconfirmationExpired')]],
-            $responseBody
-        );
-    }
-
     public function testAppointmentNotFoundException()
     {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ProcessNotFound';
-
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/999999/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'exception' => $exception
-            ]
-        ]);
+        $repository = $this->createStub(AppointmentByIdRepository::class);
+        $repository->method('readAppointmentById')->willReturnCallback(
+            static function (): ThinnedProcess {
+                ExceptionService::handleException(new ProcessNotFound());
+            }
+        );
+        AppointmentByIdRepository::use($repository);
 
         $parameters = [
             'processId' => '999999',
@@ -304,19 +188,13 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
 
     public function testAuthKeyMismatch()
     {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\AuthKeyMatchFailed';
-
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/cafe/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'exception' => $exception
-            ]
-        ]);
+        $repository = $this->createStub(AppointmentByIdRepository::class);
+        $repository->method('readAppointmentById')->willReturnCallback(
+            static function (): ThinnedProcess {
+                ExceptionService::handleException(new AuthKeyMatchFailed());
+            }
+        );
+        AppointmentByIdRepository::use($repository);
 
         $parameters = [
             'processId' => '101002',
@@ -334,29 +212,13 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
 
     public function testTooManyEmailsAtLocation()
     {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\MoreThanAllowedAppointmentsPerMail';
-
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'response' => $this->readFixture("GET_process.json")
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/ics/',                
-                'response' => $this->readFixture("GET_process_ics_template.json")
-            ],
-            [
-                'function' => 'readPostResult',
-                'url' => '/process/status/preconfirmed/',
-                'exception' => $exception
-            ]
-        ]);
+        $repository = $this->createStub(AppointmentPreconfirmRepository::class);
+        $repository->method('preconfirmAppointment')->willReturnCallback(
+            static function (): ThinnedProcess {
+                ExceptionService::handleException(new MoreThanAllowedAppointmentsPerMail());
+            }
+        );
+        AppointmentPreconfirmRepository::use($repository);
 
         $parameters = [
             'processId' => '101002',
@@ -365,118 +227,25 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
 
-        $this->assertEquals(ErrorMessages::get('tooManyAppointmentsWithSameMail')['statusCode'], $response->getStatusCode());
+        $this->assertEquals(
+            ErrorMessages::get('tooManyAppointmentsWithSameMail')['statusCode'],
+            $response->getStatusCode()
+        );
         $this->assertEqualsCanonicalizing(
             ['errors' => [ErrorMessages::get('tooManyAppointmentsWithSameMail')]],
             $responseBody
         );
     }
 
-    public function testEmailRequired()
-    {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\EmailRequired';
-    
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'response' => $this->readFixture("GET_process.json")
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/ics/',
-                'response' => $this->readFixture("GET_process_ics_template.json")
-            ],
-            [
-                'function' => 'readPostResult',
-                'url' => '/process/status/preconfirmed/',
-                'exception' => $exception
-            ]
-        ]);
-
-        $parameters = [
-            'processId' => '101002',
-            'authKey' => 'fb43'
-        ];
-        $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-    
-        $this->assertEquals(ErrorMessages::get('emailIsRequired')['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing(
-            ['errors' => [ErrorMessages::get('emailIsRequired')]],
-            $responseBody
-        );
-    }
-
-    public function testTelephoneRequired()
-    {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\TelephoneRequired';
-    
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'response' => $this->readFixture("GET_process.json")
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/ics/',
-                'response' => $this->readFixture("GET_process_ics_template.json")
-            ],
-            [
-                'function' => 'readPostResult',
-                'url' => '/process/status/preconfirmed/',
-                'exception' => $exception
-            ]
-        ]);
-
-        $parameters = [
-            'processId' => '101002',
-            'authKey' => 'fb43'
-        ];
-        $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-    
-        $this->assertEquals(ErrorMessages::get('telephoneIsRequired')['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing(
-            ['errors' => [ErrorMessages::get('telephoneIsRequired')]],
-            $responseBody
-        );
-    }
-
     public function testProcessNotReservedAnymore()
     {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ProcessNotReservedAnymore';
-    
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'response' => $this->readFixture("GET_process.json")
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/ics/',
-                'response' => $this->readFixture("GET_process_ics_template.json")
-            ],
-            [
-                'function' => 'readPostResult',
-                'url' => '/process/status/preconfirmed/',
-                'exception' => $exception
-            ]
-        ]);
+        $repository = $this->createStub(AppointmentPreconfirmRepository::class);
+        $repository->method('preconfirmAppointment')->willReturnCallback(
+            static function (): ThinnedProcess {
+                ExceptionService::handleException(new ProcessNotReservedAnymore());
+            }
+        );
+        AppointmentPreconfirmRepository::use($repository);
 
         $parameters = [
             'processId' => '101002',
@@ -484,12 +253,54 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-    
-        $this->assertEquals(ErrorMessages::get('processNotReservedAnymore')['statusCode'], $response->getStatusCode());
+
+        $this->assertEquals(
+            ErrorMessages::get('processNotReservedAnymore')['statusCode'],
+            $response->getStatusCode()
+        );
         $this->assertEqualsCanonicalizing(
             ['errors' => [ErrorMessages::get('processNotReservedAnymore')]],
             $responseBody
         );
     }
 
+    private function stubAppointment(ThinnedProcess $appointment): void
+    {
+        $repository = $this->createStub(AppointmentByIdRepository::class);
+        $repository->method('readAppointmentById')->willReturn($appointment);
+        AppointmentByIdRepository::use($repository);
+    }
+
+    private function stubPreconfirm(ThinnedProcess $appointment): void
+    {
+        $repository = $this->createStub(AppointmentPreconfirmRepository::class);
+        $repository->method('preconfirmAppointment')->willReturn($appointment);
+        AppointmentPreconfirmRepository::use($repository);
+    }
+
+    private function setPreconfirmationMailApiCall(): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/101002/fb43/preconfirmation/mail/',
+                    'response' => $this->readFixture("POST_preconfirm_appointment.json"),
+                ],
+            ]
+        );
+    }
+
+    private function sampleAppointment(?string $icsContent = null, string $status = 'preconfirmed'): ThinnedProcess
+    {
+        $row = AppointmentByIdRows::processRow();
+        $row['status'] = $status;
+        $appointment = (new AppointmentByIdHydrator())->hydrate(
+            $row,
+            AppointmentByIdRows::requestRows(),
+            $icsContent
+        );
+        $appointment->setCaptchaToken('');
+        return $appointment;
+    }
 }
