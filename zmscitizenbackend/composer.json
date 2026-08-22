@@ -15,6 +15,9 @@
     "config": {
         "allow-plugins": {
             "php-http/discovery": true
+        },
+        "platform": {
+            "php": "8.3.0"
         }
     },
     "require-dev": {
@@ -27,10 +30,12 @@
     },
     "require": {
         "php": ">=8.3",
+        "ext-pdo": "*",
         "eappointment/mellon": "@dev",
         "eappointment/zmsslim": "@dev",
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsentities": "@dev",
+        "aura/sql": "^5",
         "symfony/cache": "^6.0",
         "psr/simple-cache": "^3.0",
         "firebase/php-jwt": "^7.0",
