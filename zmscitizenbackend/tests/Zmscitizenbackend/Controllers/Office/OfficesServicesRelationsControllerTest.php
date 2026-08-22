@@ -9,7 +9,7 @@ use BO\Zmscitizenbackend\Models\Collections\ServiceList;
 use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsHydrator;
 use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
 use BO\Zmscitizenbackend\Tests\ControllerTestCase;
-use BO\Zmscitizenbackend\Tests\Fixtures\OfficesServicesRelationsRows;
+use BO\Zmscitizenbackend\Tests\Helper\OfficesServicesRelationsRows;
 
 class OfficesServicesRelationsControllerTest extends ControllerTestCase
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BO\Zmscitizenbackend\Tests\Fixtures;
+namespace BO\Zmscitizenbackend\Tests\Helper;
 
 class OfficesServicesRelationsRows
 {
