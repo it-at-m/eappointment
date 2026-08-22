@@ -2,12 +2,15 @@
 
 namespace BO\Zmscitizenbackend\Tests\Controllers\Appointment;
 
+use BO\Zmscitizenbackend\Models\ThinnedProcess;
+use BO\Zmscitizenbackend\Repository\AppointmentByIdHydrator;
+use BO\Zmscitizenbackend\Repository\MyAppointmentsRepository;
 use BO\Zmscitizenbackend\Tests\ControllerTestCase;
+use BO\Zmscitizenbackend\Tests\Helper\AppointmentByIdRows;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 class MyAppointmentsControllerTest extends ControllerTestCase
 {
-
     protected $classname = "\BO\Zmscitizenbackend\Controllers\Appointment\MyAppointmentsController";
 
     public function setUp(): void
@@ -19,6 +22,12 @@ class MyAppointmentsControllerTest extends ControllerTestCase
         if (\App::$cache) {
             \App::$cache->clear();
         }
+    }
+
+    public function tearDown(): void
+    {
+        MyAppointmentsRepository::use(null);
+        parent::tearDown();
     }
 
     public static function unauthenticatedHeaderProvider(): array
@@ -48,13 +57,26 @@ class MyAppointmentsControllerTest extends ControllerTestCase
         ];
     }
 
+    public function testRendering()
+    {
+        $this->stubAppointments([$this->sampleAppointment("BEGIN:VCALENDAR\r\nEND:VCALENDAR")]);
+        $token_part = base64_encode(json_encode(['lhmExtID' => 'ext_1']));
+        $response = $this->render([], [
+            '__header' => [
+                'Authorization' => 'Bearer .' . $token_part . '.',
+            ],
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        return $response;
+    }
+
     #[DataProvider('unauthenticatedHeaderProvider')]
     public function testUnauthenticated(array $headers)
     {
         $parameters = [
             '__header' => $headers
         ];
-        $response = $this->render([], $parameters, [], 'POST');
+        $response = $this->render([], $parameters);
         $responseBody = json_decode((string) $response->getBody(), true);
 
         $expectedResponse = [
@@ -72,11 +94,6 @@ class MyAppointmentsControllerTest extends ControllerTestCase
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
-    // overriding base method
-    public function testRendering() {
-        $this->assertTrue(true);
-    }
-
     public static function basicRenderingProvider(): array
     {
         return [
@@ -92,37 +109,22 @@ class MyAppointmentsControllerTest extends ControllerTestCase
                 null,
                 true,
             ],
-
         ];
     }
 
     #[DataProvider('basicRenderingProvider')]
     public function testBasicRendering(?int $filterId, bool $emptyOptionalOidcClaims)
     {
+        $captured = [];
+        $this->stubAppointments(
+            [$this->sampleAppointment("BEGIN:VCALENDAR\r\nEND:VCALENDAR")],
+            $captured
+        );
+
         $additionalParameters = [];
         if (!empty($filterId)) {
             $additionalParameters['filterId'] = $filterId;
         }
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/process/101002/fb43/ics/',
-                    'parameters' => null,
-                    'response' => $this->readFixture("GET_process_ics_template.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/process/externaluserid/ext_1/',
-                    'parameters' => [
-                        'resolveReferences' => 2,
-                        'status' => 'confirmed',
-                        ...$additionalParameters,
-                    ],
-                    'response' => $this->readFixture("GET_process.json")
-                ],
-            ]
-        );
 
         $claims = [
             'lhmExtID' => 'ext_1',
@@ -138,78 +140,75 @@ class MyAppointmentsControllerTest extends ControllerTestCase
         $token_part = base64_encode(json_encode($claims));
         $parameters = [
             '__header' => [
-                'Authorization' => 'Bearer .'.$token_part.'.',
+                'Authorization' => 'Bearer .' . $token_part . '.',
             ],
             ...$additionalParameters,
         ];
-        $response = $this->render([], $parameters, [], 'POST');
+        $response = $this->render([], $parameters);
         $responseBody = json_decode((string) $response->getBody(), true);
-        $expectedResponse = [
-            [
-                'processId' => 101002,
-                'timestamp' => '1724907600',
-                'authKey' => 'fb43',
-                'familyName' => 'Doe',
-                'customTextfield' => '',
-                'customTextfield2' => '',
-                'email' => 'johndoe@example.com',
-                'telephone' => '0123456789',
-                'officeName' => 'Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)',
-                'officeId' => 102522,
-                'scope' => [
-                    'id' => 64,
-                    'provider' => [
-                        'id' => 102522,
-                        'name' => 'Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)',
-                        'displayName' => 'Bürgerbüro Orleansplatz DEV',
-                        'lat' => null,
-                        'lon' => null,
-                        'source' => 'dldb',
-                        'contact' => [
-                            "city" => "Muenchen",
-                            "country" => "Germany",
-                            "name" => "Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)",
-                            "postalCode" => "81667",
-                            "region" => "Muenchen",
-                            "street" => "Orleansstraße",
-                            "streetNumber" => "50"
-                        ],
-                    ],
-                    'shortName' => 'DEVV',
-                    'emailFrom' => 'no-reply@muenchen.de',
-                    'emailRequired' => true,
-                    'telephoneActivated' => true,
-                    'telephoneRequired' => true,
-                    'customTextfieldActivated' => true,
-                    'customTextfieldRequired' => true,
-                    'customTextfieldLabel' => 'Nachname des Kindes',
-                    'customTextfield2Activated' => true,
-                    'customTextfield2Required' => true,
-                    'customTextfield2Label' => 'Zusätzliche Bemerkung',
-                    'captchaActivatedRequired' => false,
-                    'infoForAppointment' => '',
-                    'infoForAllAppointments' => '',
-                    'slotsPerAppointment' => null,
-                    "appointmentsPerMail" => '1',
-                    "whitelistedMails" => '',
-                    "reservationDuration" => 15,
-                    "activationDuration" => 15,
-                    "hint" => ''
-                ],
-                'subRequestCounts' => [],
-                'serviceId' => 1063424,
-                'serviceName' => 'Gewerbe anmelden',
-                'serviceCount' => 1,
-                'status' => 'confirmed',
-                'captchaToken' => '',
-                'slotCount' => 1,
-                'displayNumber' => null,
-                'icsContent' => "BEGIN:VCALENDAR\r\nX-LOTUS-CHARSET:UTF-8\r\nCALSCALE:GREGORIAN\r\nVERSION:2.0\r\nPRODID:ZMS-München\r\nX-WR-TIMEZONE:Europe/Berlin\r\nBEGIN:VTIMEZONE\r\nTZID:Europe/Berlin\r\nX-LIC-LOCATION:Europe/Berlin\r\nBEGIN:DAYLIGHT\r\nTZOFFSETFROM:+0100\r\nTZOFFSETTO:+0200\r\nTZNAME:CEST\r\nDTSTART:19700329T020000\r\nRRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=3\r\nEND:DAYLIGHT\r\nBEGIN:STANDARD\r\nTZOFFSETFROM:+0200\r\nTZOFFSETTO:+0100\r\nTZNAME:CET\r\nDTSTART:19701025T030000\r\nRRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10\r\nEND:STANDARD\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:20251029-102522\r\nLOCATION:Landeshauptstadt München - Bürgerbüro Forstenrieder Allee, Fors\r\n tenrieder Allee 61a\r\nGEO:48.85299;2.36885\r\nSUMMARY:Reisepass\r\nDESCRIPTION:Guten Tag Tom Fink\\,\r\n Sie haben folgenden Termin bei uns gebucht: \r\n --- \r\n  **Terminnummer:**  102522 \r\n  **Leistung:**  \r\n 1x **[Reisepass ](https://stadt.muenchen.de/service/info/1063453/)**\r\n \r\n **Zeit:** \r\nMittwoch\\, 29.10.2025\\, 07:00 Uhr \r\n **Ort:** \r\nBürgerbüro Forstenrieder Allee\\, Forstenrieder Allee 61a\\, 81476\\, Münch\r\n en \r\nEingang 19B\\, Wartezone A – Erdgeschoss \r\n--- \r\n**Hinweise zur Vorbereitung:**\r\n- Tragen Sie den Termin in Ihren Kalender ein. Im Anhang finden Sie eine\r\n  ics-Datei zum Import.\r\n- Vergewissern Sie sich\\, dass Sie alle Voraussetzungen für die gebuchte\r\n n Leistungen erfüllen.\r\n- Tragen Sie alle benötigten Unterlagen zusammen und halten Sie sie für \r\n Ihren Termin bereit.\r\n--- \r\nIhnen ist etwas dazwischengekommen? Dann geben Sie uns Bescheid: \r\n[**Termin absagen oder verschieben**](https://service.berlin.de/terminvereinbarung/#/appointment/eyJpZCI6MTAwODIyLCJhdXRoS2V5IjoiOGNjZiJ9)\r\nMit freundlichen Grüßen\r\nLandeshauptstadt München \r\n![Logo der Landeshauptstadt München](https://assets.muenchen.de/logos/lh\r\n m/logo-lhm-muenchen-256.jpg)\r\n \r\nKreisverwaltungsreferat \r\nHauptabteilung II Bürgerangelegenheiten \r\nBürgerbüro Meldewesen\\, Kfz- und Fundangelegenheiten \r\nServicetelefon: [+49 89 233-96000](tel:+498923396000) \r\nNachricht: [Kontaktformular Bürgerbüro](https://service.muenchen.de/inte\r\n lliform/forms/01/02/02/buergerbuero_kontakt/index) \r\nWebsite: [muenchen.de/kvr](https://muenchen.de/kvr) \r\n---\r\n Dies ist eine automatisch erstellte Nachricht. Bitte antworten Sie nich\r\n t auf diese E-Mail.\r\nCLASS:PUBLIC\r\nDTSTART;TZID=Europe/Berlin:20251029T070000\r\nDTEND;TZID=Europe/Berlin:20251029T071500\r\nDTSTAMP:20251020T160550\r\nBEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:München-Termin: 102522\r\nTRIGGER:-P1D\r\nEND:VALARM\r\nSTATUS:CONFIRMED\r\nEND:VEVENT\r\nEND:VCALENDAR",
-            ]
-        ];
+
+        $expectedResponse = json_decode(
+            json_encode([$this->sampleAppointment("BEGIN:VCALENDAR\r\nEND:VCALENDAR")->toArray()]),
+            true
+        );
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+        $this->assertSame('ext_1', $captured['externalUserId'] ?? null);
+        $this->assertSame($filterId, $captured['filterId'] ?? null);
+        $this->assertSame('confirmed', $captured['status'] ?? null);
     }
 
+    public function testEmptyList()
+    {
+        $this->stubAppointments([]);
+
+        $claims = [
+            'lhmExtID' => 'ext_1',
+        ];
+        $token_part = base64_encode(json_encode($claims));
+        $parameters = [
+            '__header' => [
+                'Authorization' => 'Bearer .' . $token_part . '.',
+            ],
+        ];
+        $response = $this->render([], $parameters);
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([], $responseBody);
+    }
+
+    /**
+     * @param list<ThinnedProcess> $appointments
+     * @param array<string, mixed> $captured
+     */
+    private function stubAppointments(array $appointments, array &$captured = []): void
+    {
+        $repository = $this->createStub(MyAppointmentsRepository::class);
+        $repository->method('readAppointmentsForUser')->willReturnCallback(
+            static function (
+                string $externalUserId,
+                ?int $filterId = null,
+                ?string $status = null
+            ) use ($appointments, &$captured): array {
+                $captured['externalUserId'] = $externalUserId;
+                $captured['filterId'] = $filterId;
+                $captured['status'] = $status;
+                return $appointments;
+            }
+        );
+        MyAppointmentsRepository::use($repository);
+    }
+
+    private function sampleAppointment(?string $icsContent = null): ThinnedProcess
+    {
+        $appointment = (new AppointmentByIdHydrator())->hydrate(
+            AppointmentByIdRows::processRow(),
+            AppointmentByIdRows::requestRows(),
+            $icsContent
+        );
+        $appointment->setCaptchaToken('');
+        return $appointment;
+    }
 }
