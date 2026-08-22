@@ -18,7 +18,7 @@ https://it-at-m.github.io/eappointment/zmscitizenbackend/public/doc/index.html
 ```
 
 
-* Under /public/doc are the schema from zmsentities. A symbolic link points to the corresponding folder under vendor/eappointment/zmsentities/schema.
+* Under /public/doc/schema are the citizen JSON schemas owned by this module (`../../schema`).
 
 * Under /bin there is a build_swagger.js file. This is executed via ``npm run doc`` and validates the existing swagger.yaml file. If valid, the open api annotations are read from routing.php and the remaining information such as info, definitions, version and tags are compiled from the yaml files under ./partials into a complete swagger.yaml. 
 

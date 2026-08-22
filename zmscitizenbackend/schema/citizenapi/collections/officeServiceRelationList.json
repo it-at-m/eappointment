@@ -1,0 +1,14 @@
+{
+    "type": ["array", "object", "null"],
+    "properties": {
+        "relations": {
+            "type": "array",
+            "items": {
+              "$ref": "../officeServiceRelation.json"
+            }
+        }
+    },
+    "required": [
+        "relations"
+    ]
+}

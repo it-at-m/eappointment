@@ -1,0 +1,19 @@
+{
+  "type": ["object", "array"],
+  "patternProperties": {
+    "^[0-9]+$": {
+      "type": ["object", "array"],
+      "patternProperties": {
+        "^[0-9]+$": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1,
+      "maxProperties": 1
+    }
+  }
+}

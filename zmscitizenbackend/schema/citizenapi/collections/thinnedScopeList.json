@@ -1,0 +1,18 @@
+{
+  "type": [
+    "array",
+    "object",
+    "null"
+  ],
+  "properties": {
+    "scopes": {
+      "type": "array",
+      "items": {
+        "$ref": "../thinnedScope.json"
+      }
+    }
+  },
+  "required": [
+    "scopes"
+  ]
+}
