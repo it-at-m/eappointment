@@ -6,6 +6,7 @@ use BO\Zmscitizenbackend\Exceptions\InvalidAvailabilityInput;
 use BO\Zmscitizenbackend\Models\AvailableCalendar;
 use BO\Zmscitizenbackend\Repository\AvailableCalendarHydrator;
 use BO\Zmscitizenbackend\Repository\AvailableCalendarRepository;
+use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
 use BO\Zmscitizenbackend\Services\Core\ExceptionService;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
 use BO\Zmscitizenbackend\Tests\ControllerTestCase;
@@ -26,11 +27,13 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         }
 
         ValidationService::clearOfficeServicesCacheForTesting();
+        $this->stubOfficeServices();
     }
 
     public function tearDown(): void
     {
         AvailableCalendarRepository::use(null);
+        OfficesServicesRelationsRepository::use(null);
         parent::tearDown();
     }
 
@@ -710,6 +713,21 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         $repository = $this->createStub(AvailableCalendarRepository::class);
         $repository->method('readAvailableCalendar')->willReturn($this->calendarFromFixture($fixture));
         AvailableCalendarRepository::use($repository);
+    }
+
+    private function stubOfficeServices(): void
+    {
+        $repository = $this->createStub(OfficesServicesRelationsRepository::class);
+        $repository->method('readServiceIdsByOfficeId')->willReturnCallback(
+            static function (int $officeId): array {
+                return match ($officeId) {
+                    9999998 => ['1'],
+                    102522 => ['1063424'],
+                    default => [],
+                };
+            }
+        );
+        OfficesServicesRelationsRepository::use($repository);
     }
 
     private function setSourceApiCall(): void

@@ -31,6 +31,7 @@ class OfficesServicesRelationsRepositoryTest extends TestCase
         $empty = new OfficeServiceAndRelationList(new OfficeList(), new ServiceList(), new OfficeServiceRelationList());
         $override = $this->createStub(OfficesServicesRelationsRepository::class);
         $override->method('readOfficesAndServices')->willReturn($empty);
+        $override->method('readServiceIdsByOfficeId')->willReturn([]);
         OfficesServicesRelationsRepository::use($override);
         OfficesServicesRelationsRepository::use(null);
 

@@ -5,6 +5,7 @@ namespace BO\Zmscitizenbackend\Tests\Services\Core;
 
 use BO\Zmscitizenbackend\Utils\ErrorMessages;
 use BO\Zmscitizenbackend\Models\ThinnedScope;
+use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
 use BO\Zmsentities\Collection\ScopeList;
 use BO\Zmsentities\Process;
@@ -13,6 +14,13 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class ValidationServiceTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        OfficesServicesRelationsRepository::use(null);
+        ValidationService::clearOfficeServicesCacheForTesting();
+        parent::tearDown();
+    }
+
     public function testValidateServerGetRequest(): void
     {
         // Test valid GET request
@@ -419,5 +427,32 @@ class ValidationServiceTest extends TestCase
 
         // Test maximum allowed service count
         $this->assertEmpty(ValidationService::validateServiceArrays([1], [25]));
+    }
+
+    public function testValidateServiceLocationCombination(): void
+    {
+        ValidationService::clearOfficeServicesCacheForTesting();
+        $repository = $this->createStub(OfficesServicesRelationsRepository::class);
+        $repository->method('readServiceIdsByOfficeId')->willReturn(['1063424', '1']);
+        OfficesServicesRelationsRepository::use($repository);
+
+        $this->assertEmpty(
+            ValidationService::validateServiceLocationCombination(102522, [1063424])
+        );
+        $this->assertEquals(
+            ['errors' => [ErrorMessages::get('invalidLocationAndServiceCombination')]],
+            ValidationService::validateServiceLocationCombination(102522, [999])
+        );
+        $this->assertEquals(
+            ['errors' => [ErrorMessages::get('invalidOfficeId')]],
+            ValidationService::validateServiceLocationCombination(0, [1063424])
+        );
+        $this->assertEquals(
+            ['errors' => [ErrorMessages::get('invalidServiceId')]],
+            ValidationService::validateServiceLocationCombination(102522, [])
+        );
+
+        OfficesServicesRelationsRepository::use(null);
+        ValidationService::clearOfficeServicesCacheForTesting();
     }
 }

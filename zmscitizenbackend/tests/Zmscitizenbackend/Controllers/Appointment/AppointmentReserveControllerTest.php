@@ -6,7 +6,9 @@ use BO\Zmscitizenbackend\Exceptions\AppointmentNotAvailable;
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
 use BO\Zmscitizenbackend\Repository\AppointmentByIdHydrator;
 use BO\Zmscitizenbackend\Repository\AppointmentReserveRepository;
+use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
 use BO\Zmscitizenbackend\Services\Core\ExceptionService;
+use BO\Zmscitizenbackend\Services\Core\ValidationService;
 use BO\Zmscitizenbackend\Tests\ControllerTestCase;
 use BO\Zmscitizenbackend\Tests\Helper\AppointmentByIdRows;
 use BO\Zmscitizenbackend\Utils\ErrorMessages;
@@ -24,11 +26,15 @@ class AppointmentReserveControllerTest extends ControllerTestCase
         if (\App::$cache) {
             \App::$cache->clear();
         }
+
+        ValidationService::clearOfficeServicesCacheForTesting();
+        $this->stubOfficeServices();
     }
 
     public function tearDown(): void
     {
         AppointmentReserveRepository::use(null);
+        OfficesServicesRelationsRepository::use(null);
         parent::tearDown();
     }
 
@@ -369,6 +375,17 @@ class AppointmentReserveControllerTest extends ControllerTestCase
                 ],
             ]
         );
+    }
+
+    private function stubOfficeServices(): void
+    {
+        $repository = $this->createStub(OfficesServicesRelationsRepository::class);
+        $repository->method('readServiceIdsByOfficeId')->willReturnCallback(
+            static function (int $officeId): array {
+                return $officeId === 10546 ? ['1063423'] : [];
+            }
+        );
+        OfficesServicesRelationsRepository::use($repository);
     }
 
     private function stubReserve(ThinnedProcess $appointment): void
