@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace BO\Zmscitizenbackend\Services\Availability;
 
 use BO\Zmscitizenbackend\Models\AvailableCalendar;
+use BO\Zmscitizenbackend\Repository\AvailableCalendarRepository;
 use BO\Zmscitizenbackend\Services\Captcha\CaptchaRequirementTrait;
 use BO\Zmscitizenbackend\Services\Captcha\TokenValidationService;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
-use BO\Zmscitizenbackend\Services\Core\ZmsApiFacadeService;
 
 class AvailableCalendarService
 {
@@ -38,7 +38,7 @@ class AvailableCalendarService
             return $errors;
         }
 
-        return ZmsApiFacadeService::getCalendarAvailability(
+        return AvailableCalendarRepository::create()->readAvailableCalendar(
             $clientData->officeIds,
             $clientData->serviceIds,
             $clientData->serviceCounts,

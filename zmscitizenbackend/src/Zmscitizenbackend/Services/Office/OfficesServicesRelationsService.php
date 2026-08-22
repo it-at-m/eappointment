@@ -5,17 +5,25 @@ declare(strict_types=1);
 namespace BO\Zmscitizenbackend\Services\Office;
 
 use BO\Zmscitizenbackend\Models\Collections\OfficeServiceAndRelationList;
-use BO\Zmscitizenbackend\Services\Core\ZmsApiFacadeService;
+use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
 
 class OfficesServicesRelationsService
 {
+    private const string CACHE_KEY_OFFICES_AND_SERVICES = 'processed_offices_and_services';
+
     public function getServicesAndOfficesList(bool $showUnpublished = false): OfficeServiceAndRelationList|array
     {
-        return $this->getServicesAndOffices($showUnpublished);
-    }
+        $cacheKey = self::CACHE_KEY_OFFICES_AND_SERVICES . ($showUnpublished ? '_unpublished' : '');
 
-    private function getServicesAndOffices(bool $showUnpublished): array|OfficeServiceAndRelationList
-    {
-        return ZmsApiFacadeService::getServicesAndOffices($showUnpublished);
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
+        $result = OfficesServicesRelationsRepository::create()->readOfficesAndServices($showUnpublished);
+        if (\App::$cache) {
+            \App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
+        }
+
+        return $result;
     }
 }
