@@ -99,6 +99,10 @@ class ExceptionServiceTest extends TestCase
                 'BO\\Zmsbackend\\Process\\Exception\\MoreThanAllowedAppointmentsPerMail',
                 'tooManyAppointmentsWithSameMail'
             ],
+            'CitizenMoreThanAllowedAppointmentsPerMail' => [
+                'BO\\Zmscitizenbackend\\Exceptions\\MoreThanAllowedAppointmentsPerMail',
+                'tooManyAppointmentsWithSameMail'
+            ],
             'PreconfirmationExpired' => [
                 'BO\\Zmsbackend\\Process\\Exception\\PreconfirmationExpired',
                 'preconfirmationExpired'
