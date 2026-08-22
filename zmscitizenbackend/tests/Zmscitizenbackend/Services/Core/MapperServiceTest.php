@@ -25,8 +25,6 @@ use BO\Zmsentities\Collection\RequestRelationList;
 
 class MapperServiceTest extends TestCase
 {
-    private $originalFacade;
-
     protected function setUp(): void
     {
         parent::setUp();

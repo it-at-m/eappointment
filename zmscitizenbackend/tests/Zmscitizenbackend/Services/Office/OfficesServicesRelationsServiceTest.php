@@ -1,20 +1,17 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenbackend\Tests\Services\Office;
 
 use BO\Zmscitizenbackend\Models\Collections\OfficeList;
-use BO\Zmscitizenbackend\Models\Collections\ServiceList;
-use BO\Zmscitizenbackend\Models\Collections\OfficeServiceRelationList;
 use BO\Zmscitizenbackend\Models\Collections\OfficeServiceAndRelationList;
-use BO\Zmscitizenbackend\Services\Core\ZmsApiFacadeService;
+use BO\Zmscitizenbackend\Models\Collections\OfficeServiceRelationList;
+use BO\Zmscitizenbackend\Models\Collections\ServiceList;
+use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
 use BO\Zmscitizenbackend\Services\Office\OfficesServicesRelationsService;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
- */
 class OfficesServicesRelationsServiceTest extends TestCase
 {
     private OfficesServicesRelationsService $service;
@@ -23,26 +20,30 @@ class OfficesServicesRelationsServiceTest extends TestCase
     {
         parent::setUp();
         $this->service = new OfficesServicesRelationsService();
+        if (\App::$cache) {
+            \App::$cache->clear();
+        }
+    }
+
+    protected function tearDown(): void
+    {
+        OfficesServicesRelationsRepository::use(null);
+        if (\App::$cache) {
+            \App::$cache->clear();
+        }
+        parent::tearDown();
     }
 
     public function testGetServicesAndOfficesListReturnsOfficeServiceAndRelationList(): void
     {
-        // Arrange
-        $offices = new OfficeList();
-        $services = new ServiceList();
-        $relations = new OfficeServiceRelationList();
-        $expectedList = new OfficeServiceAndRelationList($offices, $services, $relations);
-        
-        $this->createMockFacade($expectedList);
+        $expectedList = new OfficeServiceAndRelationList(new OfficeList(), new ServiceList(), new OfficeServiceRelationList());
+        $this->stubRepository($expectedList);
 
-        // Act
         $result = $this->service->getServicesAndOfficesList();
 
-        // Assert
         $this->assertInstanceOf(OfficeServiceAndRelationList::class, $result);
-        $this->assertEquals($expectedList, $result);
-        
-        // Verify the structure
+        $this->assertSame($expectedList, $result);
+
         $resultArray = $result->toArray();
         $this->assertArrayHasKey('offices', $resultArray);
         $this->assertArrayHasKey('services', $resultArray);
@@ -51,35 +52,38 @@ class OfficesServicesRelationsServiceTest extends TestCase
 
     public function testGetServicesAndOfficesListReturnsEmptyList(): void
     {
-        // Arrange
-        $offices = new OfficeList();
-        $services = new ServiceList();
-        $relations = new OfficeServiceRelationList();
-        $expectedList = new OfficeServiceAndRelationList($offices, $services, $relations);
-        
-        $this->createMockFacade($expectedList);
+        $expectedList = new OfficeServiceAndRelationList(new OfficeList(), new ServiceList(), new OfficeServiceRelationList());
+        $this->stubRepository($expectedList);
 
-        // Act
         $result = $this->service->getServicesAndOfficesList();
 
-        // Assert
         $this->assertInstanceOf(OfficeServiceAndRelationList::class, $result);
-        
+
         $resultArray = $result->toArray();
         $this->assertEmpty($resultArray['offices']);
         $this->assertEmpty($resultArray['services']);
         $this->assertEmpty($resultArray['relations']);
     }
 
-    private function createMockFacade(OfficeServiceAndRelationList $returnValue): void
+    public function testGetServicesAndOfficesListPassesShowUnpublished(): void
     {
-        eval('
-            namespace BO\Zmscitizenbackend\Services\Core;
-            class ZmsApiFacadeService {
-                public static function getServicesAndOffices(): \BO\Zmscitizenbackend\Models\Collections\OfficeServiceAndRelationList|array {
-                    return unserialize(\'' . serialize($returnValue) . '\');
-                }
-            }
-        ');
+        $expectedList = new OfficeServiceAndRelationList(new OfficeList(), new ServiceList(), new OfficeServiceRelationList());
+        $repository = $this->createMock(OfficesServicesRelationsRepository::class);
+        $repository->expects($this->once())
+            ->method('readOfficesAndServices')
+            ->with(true)
+            ->willReturn($expectedList);
+        OfficesServicesRelationsRepository::use($repository);
+
+        $result = $this->service->getServicesAndOfficesList(true);
+
+        $this->assertSame($expectedList, $result);
+    }
+
+    private function stubRepository(OfficeServiceAndRelationList $returnValue): void
+    {
+        $repository = $this->createStub(OfficesServicesRelationsRepository::class);
+        $repository->method('readOfficesAndServices')->willReturn($returnValue);
+        OfficesServicesRelationsRepository::use($repository);
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace BO\Zmscitizenbackend\Services\Core;
 
 use BO\Zmsentities\Helper\ProcessPlainText;
-use BO\Zmscitizenbackend\Models\Office;
 use BO\Zmscitizenbackend\Models\Combinable;
 use BO\Zmscitizenbackend\Models\OfficeServiceRelation;
 use BO\Zmscitizenbackend\Models\Service;
@@ -13,7 +12,6 @@ use BO\Zmscitizenbackend\Models\ThinnedContact;
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
 use BO\Zmscitizenbackend\Models\ThinnedProvider;
 use BO\Zmscitizenbackend\Models\ThinnedScope;
-use BO\Zmscitizenbackend\Models\Collections\OfficeList;
 use BO\Zmscitizenbackend\Models\Collections\OfficeServiceRelationList;
 use BO\Zmscitizenbackend\Models\Collections\ServiceList;
 use BO\Zmscitizenbackend\Models\Collections\ThinnedScopeList;
@@ -27,7 +25,6 @@ use BO\Zmsentities\Provider;
 use BO\Zmsentities\Queue;
 use BO\Zmsentities\Request;
 use BO\Zmsentities\Scope;
-use BO\Zmsentities\Collection\ProviderList;
 use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Collection\RequestRelationList;
 
@@ -37,22 +34,6 @@ use BO\Zmsentities\Collection\RequestRelationList;
  */
 class MapperService
 {
-    private static function resolveAllowDisabledServicesMix(\BO\Zmsentities\Schema\Entity $provider): ?array
-    {
-        if (!isset($provider->data['allowDisabledServicesMix']) || !is_array($provider->data['allowDisabledServicesMix'])) {
-            return null;
-        }
-        return array_map('intval', $provider->data['allowDisabledServicesMix']);
-    }
-
-    private static function resolveSharedBookingOfficeIds(\BO\Zmsentities\Schema\Entity $provider): ?array
-    {
-        if (!isset($provider->data['sharedBookingOfficeIds']) || !is_array($provider->data['sharedBookingOfficeIds'])) {
-            return null;
-        }
-        return array_map('intval', $provider->data['sharedBookingOfficeIds']);
-    }
-
     public static function mapScopeForProvider(
         int $providerId,
         ThinnedScopeList $scopes,
@@ -118,86 +99,6 @@ class MapperService
             return null;
         }
         return (int) $activationDuration;
-    }
-
-    /**
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     * @SuppressWarnings(PHPMD.NPathComplexity)
-     * @TODO: Extract mapping logic into specialized mapper classes for each entity type
-     *
-     */
-    public static function mapOfficesWithScope(ProviderList $providerList, bool $showUnpublished = false): OfficeList
-    {
-        $offices = [];
-        $scopes = ZmsApiFacadeService::getScopes();
-        if (!$scopes instanceof ThinnedScopeList) {
-            return new OfficeList();
-        }
-
-        foreach ($providerList as $provider) {
-            // ✅ Source normalisieren: leerer String -> Fallback auf App::$source_name
-            $providerSource = isset($provider->source) && $provider->source !== ''
-                ? (string)$provider->source
-                : \App::$source_name;
-
-            $providerScope = self::mapScopeForProvider(
-                (int) $provider->id,
-                $scopes,
-                $providerSource
-            );
-
-            if (!$showUnpublished && isset($provider->data['public']) && !(bool) $provider->data['public']) {
-                continue;
-            }
-
-            $offices[] = new Office(
-                id: isset($provider->id) ? (int) $provider->id : 0,
-                name: isset($provider->displayName) ? $provider->displayName : (isset($provider->name) ? $provider->name : null),
-                address: isset($provider->data['address']) ? $provider->data['address'] : null,
-                showAlternativeLocations: isset($provider->data['showAlternativeLocations']) ? $provider->data['showAlternativeLocations'] : null,
-                displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [],
-                organization: $provider->data['organization'] ?? null,
-                organizationUnit: $provider->data['organizationUnit'] ?? null,
-                slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null,
-                geo: isset($provider->data['geo']) ? $provider->data['geo'] : null,
-                disabledByServices: isset($provider->data['dontShowByServices']) ? $provider->data['dontShowByServices'] : [],
-                priority: isset($provider->data['prio']) ? $provider->data['prio'] : 1,
-                scope: isset($providerScope) && !isset($providerScope['errors']) ? new ThinnedScope(
-                    id: isset($providerScope->id) ? $providerScope->id : 0,
-                    provider: isset($providerScope->provider) ? $providerScope->provider : null,
-                    shortName: isset($providerScope->shortName) ? $providerScope->shortName : null,
-                    emailFrom: isset($providerScope->emailFrom) ? $providerScope->emailFrom : null,
-                    emailRequired: isset($providerScope->emailRequired) ? $providerScope->emailRequired : null,
-                    telephoneActivated: isset($providerScope->telephoneActivated) ? $providerScope->telephoneActivated : null,
-                    telephoneRequired: isset($providerScope->telephoneRequired) ? $providerScope->telephoneRequired : null,
-                    customTextfieldActivated: isset($providerScope->customTextfieldActivated) ? $providerScope->customTextfieldActivated : null,
-                    customTextfieldRequired: isset($providerScope->customTextfieldRequired) ? $providerScope->customTextfieldRequired : null,
-                    customTextfieldLabel: isset($providerScope->customTextfieldLabel) ? $providerScope->customTextfieldLabel : null,
-                    customTextfield2Activated: isset($providerScope->customTextfield2Activated) ? $providerScope->customTextfield2Activated : null,
-                    customTextfield2Required: isset($providerScope->customTextfield2Required) ? $providerScope->customTextfield2Required : null,
-                    customTextfield2Label: isset($providerScope->customTextfield2Label) ? $providerScope->customTextfield2Label : null,
-                    captchaActivatedRequired: isset($providerScope->captchaActivatedRequired) ? $providerScope->captchaActivatedRequired : null,
-                    infoForAppointment: isset($providerScope->infoForAppointment)
-                        ? ($providerScope->infoForAppointment === '' ? null : $providerScope->infoForAppointment)
-                        : null,
-                    infoForAllAppointments: isset($providerScope->infoForAllAppointments)
-                        ? ($providerScope->infoForAllAppointments === '' ? null : $providerScope->infoForAllAppointments)
-                        : null,
-                    appointmentsPerMail: isset($providerScope->appointmentsPerMail) ? ($providerScope->appointmentsPerMail === '' ? null : $providerScope->appointmentsPerMail) : null,
-                    slotsPerAppointment: isset($providerScope->slotsPerAppointment) ? ($providerScope->slotsPerAppointment === '' ? null : $providerScope->slotsPerAppointment) : null,
-                    whitelistedMails: isset($providerScope->whitelistedMails) ? ($providerScope->whitelistedMails === '' ? null : $providerScope->whitelistedMails) : null,
-                    reservationDuration: (int) self::extractReservationDuration($providerScope),
-                    activationDuration: self::extractActivationDuration($providerScope),
-                    hint: isset($providerScope->hint) ? (trim($providerScope->hint) === '' ? null : $providerScope->hint) : null
-                ) : null,
-                slotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ($providerScope->slotsPerAppointment === '' ? null : $providerScope->slotsPerAppointment) : null,
-                parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null,
-                allowDisabledServicesMix: self::resolveAllowDisabledServicesMix($provider),
-                sharedBookingOfficeIds: self::resolveSharedBookingOfficeIds($provider)
-            );
-        }
-
-        return new OfficeList($offices);
     }
 
     public static function mapCombinable(array $serviceCombinations): ?Combinable
