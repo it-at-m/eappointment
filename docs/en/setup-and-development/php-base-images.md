@@ -106,6 +106,7 @@ graph TD
     PHPBASE -->|provides runtime for| zmsdldb
     PHPBASE -->|provides runtime for| mellon
     PHPBASE -->|provides runtime for| zmscitizenapi
+    PHPBASE -->|provides runtime for| zmscitizenbackend
 
     subgraph refarch["refarch"]
         style refarch stroke-dasharray:5
@@ -126,6 +127,7 @@ graph TD
         zmsdldb
         mellon
         zmscitizenapi
+        zmscitizenbackend
     end
 
     classDef foundation fill:#e3f2fd,stroke:#0277bd,stroke-width:3px
@@ -135,6 +137,7 @@ graph TD
 
     class PHPBASE foundation
     class zmscitizenapi citizenapi
+    class zmscitizenbackend citizenapi
     class refarch_gateway gateway
     class zmscitizenview citizenview
 ```

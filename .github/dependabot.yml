@@ -114,6 +114,14 @@ updates:
     target-branch: "next"
 
   - package-ecosystem: "composer"
+    directory: "/zmscitizenbackend"
+    schedule:
+      interval: "daily"
+      time: "04:00"
+      timezone: "Europe/Berlin"
+    target-branch: "next"
+
+  - package-ecosystem: "composer"
     directory: "/zmsclient"
     schedule:
       interval: "daily"

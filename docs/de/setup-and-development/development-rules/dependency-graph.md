@@ -73,6 +73,7 @@ graph TD;
         zmsdldb
         mellon
         zmscitizenapi
+        zmscitizenbackend
     end
 
     subgraph runtime [Laufzeit / externe Dienste]
@@ -107,6 +108,7 @@ graph TD;
     classDef layout fill:#fff8e1,stroke:#f9a825,stroke-width:2px;
 
     class zmscitizenapi citizenapi;
+    class zmscitizenbackend citizenapi;
     class refarch-gateway gateway;
     class zmscitizenview citizenview;
     class dbs runtimeSvc;
@@ -139,6 +141,7 @@ Hinweise zu Gateway-Verhalten sowie Sicherheits-/Routing-Details siehe RefArch-A
 ### Backend-APIs und Kerndienste
 
 - `zmscitizenapi`: API-Schicht für Bürgerbuchungs-Flows; bildet Backend-Entitäten auf schlanke Frontend-DTOs ab.
+- `zmscitizenbackend`: Citizen-API-Backend unter dem RefArch-Namen, parallel zur live `zmscitizenapi` ([#2899](https://github.com/it-at-m/eappointment/issues/2899)). Traffic bleibt bis zum Cutover auf `zmscitizenapi`.
 - `zmsbackend`: einheitliche Kern-Backend-REST-API und Datenbankzugriff für Vorgangs-, Warteschlangen-, Termin- und Verwaltungs-Flows.
 - `zmsdldb`: Importer/Transformer für externe DLDB-/SADB-Quellen.
 - `zmsclient`: HTTP-/API-Client-Abstraktionen, modulübergreifend genutzt.

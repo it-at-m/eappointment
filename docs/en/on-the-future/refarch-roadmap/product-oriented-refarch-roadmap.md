@@ -235,7 +235,7 @@ graph TD;
 - **Frontend Modernization**: All frontend modules converted to Vue.js applications; `zmsadmin` and `zmsstatistic` no longer depend on `zmslayout`
 - **API Gateway Pattern**: Separate gateways for internal and citizen-facing applications
 - **Backend Refactoring (PHP, done — [GH-2604](https://github.com/it-at-m/eappointment/issues/2604))**: `zmsapi`, `zmsdb`, and related layers consolidated into **`zmsbackend`** (PHP/Slim). **Target (Spring):** further consolidation into a Spring Boot **`zmsbackend`** service.
-- **Citizen backend**: `zmscitizenapi` → **`zmscitizenbackend`**; drops HTTP calls to the admin REST API in favour of direct JPA/SQL against the shared schema
+- **Citizen backend (PHP, in progress — [GH-2899](https://github.com/it-at-m/eappointment/issues/2899))**: **`zmscitizenbackend`** exists side-by-side with live **`zmscitizenapi`**. Schema, DB, and repository work proceeds in the new module until cutover. **Target (Spring):** keep the `zmscitizenbackend` name.
 - **zmsmessaging**: Dedicated EAI service for notifications
 - **zmsdldb**: EAI service for Stadt München data integration with `zmsdldbmapper`. Even possible to add other mappers for other cities.
 - **Microservices Architecture**: Clear separation of concerns with dedicated services

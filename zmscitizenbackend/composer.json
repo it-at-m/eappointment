@@ -1,0 +1,40 @@
+{
+    "name": "eappointment/zmscitizenbackend",
+    "description": "Standalone Citizen API backend (RefArch name). Parallel to zmscitizenapi until cutover.",
+    "license": "EUPL-1.2",
+    "authors": [],
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        },
+        "platform": {
+            "php": "8.3.99"
+        }
+    },
+    "require-dev": {
+        "vimeo/psalm": "6.5.0",
+        "phpmd/phpmd": "@stable",
+        "squizlabs/php_codesniffer": "^4.0",
+        "phpunit/phpunit": "^11",
+        "roave/security-advisories": "dev-latest"
+    },
+    "require": {
+        "php": ">=8.3",
+        "roave/security-advisories": "dev-latest"
+    },
+    "autoload": {
+        "psr-4": {
+            "BO\\Zmscitizenbackend\\": "src/Zmscitizenbackend/",
+            "BO\\Zmscitizenbackend\\Tests\\": "tests/Zmscitizenbackend/"
+        }
+    }
+}
