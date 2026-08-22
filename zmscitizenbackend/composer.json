@@ -13,9 +13,6 @@
         }
     ],
     "config": {
-        "allow-plugins": {
-            "php-http/discovery": true
-        },
         "platform": {
             "php": "8.3.0"
         }
@@ -33,9 +30,10 @@
         "ext-pdo": "*",
         "eappointment/mellon": "@dev",
         "eappointment/zmsslim": "@dev",
-        "eappointment/zmsclient": "@dev",
-        "eappointment/zmsentities": "@dev",
         "aura/sql": "^5",
+        "league/html-to-markdown": "^5.1",
+        "opis/json-schema": "^2.4",
+        "twig/intl-extra": "^3.0",
         "symfony/cache": "^6.0",
         "psr/simple-cache": "^3.0",
         "firebase/php-jwt": "^7.0",

@@ -8,6 +8,7 @@ use BO\Zmscitizenbackend\Services\Core\ProcessContextExtractor;
 use BO\Zmscitizenbackend\Utils\ErrorMessages;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+
 // @codingStandardsIgnoreFile
 chdir(__DIR__);
 
@@ -46,12 +47,6 @@ if (defined('MYSQL_DATABASE')) {
 }
 
 \App::$slim->addBodyParsingMiddleware();
-
-\App::$http = new \BO\Zmsclient\Http(\App::ZMS_API_URL);
-if (\App::$httpPassword !== false) {
-    \App::$http->setUserInfo(\App::$httpUser, \App::$httpPassword);
-}
-//\BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
 
 $errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
 $errorMiddleware->setDefaultErrorHandler(new \BO\Zmscitizenbackend\Utils\ErrorHandler());

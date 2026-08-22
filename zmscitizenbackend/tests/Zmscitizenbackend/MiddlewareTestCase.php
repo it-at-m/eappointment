@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace BO\Zmscitizenbackend\Tests;
 
 use BO\Zmscitizenbackend\Tests\TestLogger;
-use BO\Zmsclient\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Psr7\Factory\ResponseFactory;
+use Slim\Psr7\Factory\UriFactory;
 
 abstract class MiddlewareTestCase extends TestCase
 {
@@ -24,7 +24,7 @@ abstract class MiddlewareTestCase extends TestCase
         $this->logger = new TestLogger();  // Create instance instead of using class name
         $this->responseFactory = new ResponseFactory();
     }
-    
+
     protected function tearDown(): void
     {
         TestLogger::verifyNoMoreLogs();
@@ -51,7 +51,7 @@ abstract class MiddlewareTestCase extends TestCase
                 }
             }
         );
-        $request->method('getUri')->willReturn(new Uri('http://localhost/test'));
+        $request->method('getUri')->willReturn((new UriFactory())->createUri('http://localhost/test'));
         return $request;
     }
 
