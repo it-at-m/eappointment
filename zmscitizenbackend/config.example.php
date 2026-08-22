@@ -1,9 +1,7 @@
 <?php
-define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'https://localhost/terminvereinbarung/api/2');
 define('MAINTENANCE_MODE_ENABLED', filter_var(getenv('MAINTENANCE_ENABLED'), FILTER_VALIDATE_BOOLEAN));
 define('ZMS_IDENTIFIER', getenv('ZMS_IDENTIFIER') ? getenv('ZMS_IDENTIFIER') : 'zms');
 define('ZMS_MODULE_NAME', 'zmscitizenbackend');
-define('ZMS_API_PASSWORD_CITIZENAPI', getenv('ZMS_API_PASSWORD_CITIZENAPI'));
 define('ZMS_CITIZENLOGIN_EXTERNALUSERID_CLAIM_NAME', 'lhmExtID');
 
 if (!defined('MYSQL_USER')) {
@@ -47,11 +45,6 @@ if (getenv('MYSQL_PORT_RO')) {
 class App extends \BO\Zmscitizenbackend\Application
 {
     /**
-     * HTTP url for api
-     */
-    const string ZMS_API_URL = ZMS_API_URL;
-
-    /**
      * Flag for enabling maintenance mode
      */
     const bool MAINTENANCE_MODE_ENABLED = MAINTENANCE_MODE_ENABLED;
@@ -65,16 +58,6 @@ class App extends \BO\Zmscitizenbackend\Application
      * Name of the module
      */
     const string MODULE_NAME = ZMS_MODULE_NAME;
-
-    /**
-     * User for the upstream API
-     */
-    public static $httpUser = '_system_citizenapi';
-
-    /**
-     * Password for the upstream API
-     */
-    public static $httpPassword = ZMS_API_PASSWORD_CITIZENAPI;
 
     /**
      * Name of the OIDC claim that uniquely identifies a citizen user.

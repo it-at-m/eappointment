@@ -53,8 +53,6 @@ class Application extends \BO\Slim\Application
     public const string IDENTIFIER = 'zms';
     public const string MODULE_NAME = 'zmscitizenbackend';
     public static string $source_name = "dldb,zms";
-    public static $http = null;
-    public static array $http_curl_config = [];
     public static ?CacheInterface $cache = null;
     // Cache config
     public static string $CACHE_DIR;

@@ -20,6 +20,7 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
     {
         parent::setUp();
         \App::$source_name = 'unittest';
+        \App::$RATE_LIMIT_MAX_REQUESTS = 60;
 
         if (\App::$cache) {
             \App::$cache->clear();
@@ -41,14 +42,14 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
         $request = $this->createRequest();
         $response = new Response();
         $handler = $this->createHandler($response);
-        
+
         // Mock lock acquisition
         $this->cache->expects($this->once())
             ->method('has')
             ->willReturn(false);
-            
+
         $this->cache->method('set')
-            ->willReturnCallback(function(string $key, $value, $ttl) {
+            ->willReturnCallback(function (string $key, $value, $ttl) {
                 if (str_contains($key, '_lock')) {
                     $this->assertTrue($value === true);
                     $this->assertEquals(1, $ttl);
@@ -66,11 +67,11 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
             'count' => 1,
             'timestamp' => $currentTime
         ];
-        
+
         $this->cache->expects($this->any())
             ->method('get')
             ->willReturn($requestData);
-            
+
         $this->cache->expects($this->any())
             ->method('delete')
             ->willReturn(true);
@@ -95,7 +96,7 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
             ->willReturn(false);
 
         $this->cache->method('set')
-            ->willReturnCallback(function(string $key, $value, $ttl) {
+            ->willReturnCallback(function (string $key, $value, $ttl) {
                 $this->assertTrue(str_contains($key, '_lock'));
                 $this->assertTrue($value === true);
                 $this->assertEquals(1, $ttl);
@@ -107,11 +108,11 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
             'count' => 60,
             'timestamp' => $currentTime
         ];
-        
+
         $this->cache->expects($this->any())
             ->method('get')
             ->willReturn($requestData);
-            
+
         $this->cache->expects($this->any())
             ->method('delete')
             ->willReturn(true);
@@ -144,7 +145,7 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
             ->willReturn(false);
 
         $this->cache->method('set')
-            ->willReturnCallback(function(string $key, $value, $ttl) {
+            ->willReturnCallback(function (string $key, $value, $ttl) {
                 if (str_contains($key, '_lock')) {
                     $this->assertTrue($value === true);
                     $this->assertEquals(1, $ttl);
@@ -161,7 +162,7 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
         $this->cache->expects($this->any())
             ->method('get')
             ->willReturn(null);
-            
+
         $this->cache->expects($this->any())
             ->method('delete')
             ->willReturn(true);
@@ -186,7 +187,7 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
             ->willReturn(false);
 
         $this->cache->method('set')
-            ->willReturnCallback(function(string $key, $value, $ttl) {
+            ->willReturnCallback(function (string $key, $value, $ttl) {
                 $this->assertTrue(str_contains($key, '_lock'));
                 $this->assertTrue($value === true);
                 $this->assertEquals(1, $ttl);
@@ -209,43 +210,43 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
         $this->assertSame('59', $result->getHeaderLine('X-RateLimit-Remaining'));
         $this->assertSame('60', $result->getHeaderLine('X-RateLimit-Limit'));
     }
-    
+
     public function testBackoffExponentialGrowth(): void
     {
         $request = $this->createRequest();
         $response = new Response();
         $handler = $this->createHandler($response);
-    
+
         // Lock held for first two attempts
         $this->cache->expects($this->exactly(3))
             ->method('has')
             ->willReturnOnConsecutiveCalls(true, true, false);
-    
+
         $startTime = microtime(true);
         $result = $this->middleware->process($request, $handler);
         $endTime = microtime(true);
-    
+
         // Second retry should have waited at least 4x backoffMin
         $minExpectedDelay = \App::getRateLimit()['backoffMin'] * 4 / 1000;
         $this->assertGreaterThan($minExpectedDelay, $endTime - $startTime);
         $this->assertSame($response->getStatusCode(), $result->getStatusCode());
     }
-    
+
     public function testLockTimeout(): void
     {
         $request = $this->createRequest();
         $response = new Response();
         $handler = $this->createHandler($response);
-    
+
         // Lock exists but times out
         $this->cache->method('has')
-            ->willReturnCallback(function() {
+            ->willReturnCallback(function () {
                 static $calls = 0;
                 // Simulate lock timeout after lockTimeout seconds
                 sleep(\App::getRateLimit()['lockTimeout']);
                 return ++$calls === 1;
             });
-    
+
         $result = $this->middleware->process($request, $handler);
         $this->assertSame($response->getStatusCode(), $result->getStatusCode());
     }
