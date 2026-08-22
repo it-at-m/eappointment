@@ -10,6 +10,7 @@ use BO\Zmscitizenbackend\Models\ThinnedProcess;
 use BO\Zmscitizenbackend\Repository\AppointmentByIdHydrator;
 use BO\Zmscitizenbackend\Repository\AppointmentByIdRepository;
 use BO\Zmscitizenbackend\Repository\AppointmentPreconfirmRepository;
+use BO\Zmscitizenbackend\Repository\MailQueueRepository;
 use BO\Zmscitizenbackend\Services\Core\ExceptionService;
 use BO\Zmscitizenbackend\Tests\ControllerTestCase;
 use BO\Zmscitizenbackend\Tests\Helper\AppointmentByIdRows;
@@ -30,12 +31,14 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
         }
 
         $this->stubAppointment($this->sampleAppointment(status: 'reserved'));
+        MailQueueRepository::use($this->createStub(MailQueueRepository::class));
     }
 
     public function tearDown(): void
     {
         AppointmentByIdRepository::use(null);
         AppointmentPreconfirmRepository::use(null);
+        MailQueueRepository::use(null);
         parent::tearDown();
     }
 
@@ -45,7 +48,6 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
             status: 'preconfirmed',
             icsContent: "BEGIN:VCALENDAR\r\nEND:VCALENDAR"
         ));
-        $this->setPreconfirmationMailApiCall();
 
         $parameters = [
             'processId' => '101002',
@@ -276,19 +278,6 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
         $repository = $this->createStub(AppointmentPreconfirmRepository::class);
         $repository->method('preconfirmAppointment')->willReturn($appointment);
         AppointmentPreconfirmRepository::use($repository);
-    }
-
-    private function setPreconfirmationMailApiCall(): void
-    {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/101002/fb43/preconfirmation/mail/',
-                    'response' => $this->readFixture("POST_preconfirm_appointment.json"),
-                ],
-            ]
-        );
     }
 
     private function sampleAppointment(?string $icsContent = null, string $status = 'preconfirmed'): ThinnedProcess

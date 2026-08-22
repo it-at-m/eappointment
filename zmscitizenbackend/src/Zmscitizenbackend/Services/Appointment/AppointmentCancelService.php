@@ -8,9 +8,8 @@ use BO\Zmscitizenbackend\Models\AuthenticatedUser;
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
 use BO\Zmscitizenbackend\Repository\AppointmentByIdRepository;
 use BO\Zmscitizenbackend\Repository\AppointmentCancelRepository;
-use BO\Zmscitizenbackend\Services\Core\MapperService;
+use BO\Zmscitizenbackend\Repository\MailQueueRepository;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
-use BO\Zmscitizenbackend\Services\Core\ZmsApiFacadeService;
 
 class AppointmentCancelService
 {
@@ -69,7 +68,6 @@ class AppointmentCancelService
 
     private function sendCancellationEmail(ThinnedProcess $process): void
     {
-        $processEntity = MapperService::thinnedProcessToProcess($process);
-        ZmsApiFacadeService::sendCancellationEmail($processEntity);
+        MailQueueRepository::create()->queueCancellationMail($process);
     }
 }

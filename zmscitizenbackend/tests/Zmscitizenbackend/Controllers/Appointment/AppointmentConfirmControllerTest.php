@@ -9,6 +9,7 @@ use BO\Zmscitizenbackend\Models\ThinnedProcess;
 use BO\Zmscitizenbackend\Repository\AppointmentByIdHydrator;
 use BO\Zmscitizenbackend\Repository\AppointmentByIdRepository;
 use BO\Zmscitizenbackend\Repository\AppointmentConfirmRepository;
+use BO\Zmscitizenbackend\Repository\MailQueueRepository;
 use BO\Zmscitizenbackend\Services\Core\ExceptionService;
 use BO\Zmscitizenbackend\Tests\ControllerTestCase;
 use BO\Zmscitizenbackend\Tests\Helper\AppointmentByIdRows;
@@ -29,12 +30,14 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
         }
 
         $this->stubAppointment($this->sampleAppointment(status: 'reserved'));
+        MailQueueRepository::use($this->createStub(MailQueueRepository::class));
     }
 
     public function tearDown(): void
     {
         AppointmentByIdRepository::use(null);
         AppointmentConfirmRepository::use(null);
+        MailQueueRepository::use(null);
         parent::tearDown();
     }
 
@@ -44,7 +47,6 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
             status: 'confirmed',
             icsContent: "BEGIN:VCALENDAR\r\nEND:VCALENDAR"
         ));
-        $this->setConfirmationMailApiCall();
 
         $parameters = [
             'processId' => '101002',
@@ -252,19 +254,6 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
         $repository = $this->createStub(AppointmentConfirmRepository::class);
         $repository->method('confirmAppointment')->willReturn($appointment);
         AppointmentConfirmRepository::use($repository);
-    }
-
-    private function setConfirmationMailApiCall(): void
-    {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/101002/fb43/confirmation/mail/',
-                    'response' => $this->readFixture("POST_confirm_appointment.json"),
-                ],
-            ]
-        );
     }
 
     private function sampleAppointment(?string $icsContent = null, string $status = 'confirmed'): ThinnedProcess

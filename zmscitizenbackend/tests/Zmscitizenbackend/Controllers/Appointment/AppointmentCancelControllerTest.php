@@ -9,6 +9,7 @@ use BO\Zmscitizenbackend\Models\ThinnedProcess;
 use BO\Zmscitizenbackend\Repository\AppointmentByIdHydrator;
 use BO\Zmscitizenbackend\Repository\AppointmentByIdRepository;
 use BO\Zmscitizenbackend\Repository\AppointmentCancelRepository;
+use BO\Zmscitizenbackend\Repository\MailQueueRepository;
 use BO\Zmscitizenbackend\Services\Core\ExceptionService;
 use BO\Zmscitizenbackend\Tests\ControllerTestCase;
 use BO\Zmscitizenbackend\Tests\Helper\AppointmentByIdRows;
@@ -29,19 +30,20 @@ class AppointmentCancelControllerTest extends ControllerTestCase
         }
 
         $this->stubAppointment($this->sampleAppointment());
+        MailQueueRepository::use($this->createStub(MailQueueRepository::class));
     }
 
     public function tearDown(): void
     {
         AppointmentByIdRepository::use(null);
         AppointmentCancelRepository::use(null);
+        MailQueueRepository::use(null);
         parent::tearDown();
     }
 
     public function testRendering()
     {
         $this->stubCancel($this->sampleAppointment(status: 'deleted'));
-        $this->setCancellationMailApiCall();
 
         $parameters = [
             'processId' => '101002',
@@ -238,7 +240,6 @@ class AppointmentCancelControllerTest extends ControllerTestCase
             'processId' => '101002',
             'authKey' => 'fb43'
         ];
-        $this->setCancellationMailApiCall();
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
 
@@ -261,19 +262,6 @@ class AppointmentCancelControllerTest extends ControllerTestCase
         $repository = $this->createStub(AppointmentCancelRepository::class);
         $repository->method('cancelAppointment')->willReturn($appointment);
         AppointmentCancelRepository::use($repository);
-    }
-
-    private function setCancellationMailApiCall(): void
-    {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/101002/fb43/delete/mail/',
-                    'response' => $this->readFixture("POST_cancel_appointment.json"),
-                ],
-            ]
-        );
     }
 
     private function sampleAppointment(

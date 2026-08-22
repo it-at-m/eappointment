@@ -8,10 +8,9 @@ use BO\Zmscitizenbackend\Models\AuthenticatedUser;
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
 use BO\Zmscitizenbackend\Repository\AppointmentByIdRepository;
 use BO\Zmscitizenbackend\Repository\AppointmentConfirmRepository;
+use BO\Zmscitizenbackend\Repository\MailQueueRepository;
 use BO\Zmscitizenbackend\Services\Captcha\CaptchaService;
-use BO\Zmscitizenbackend\Services\Core\MapperService;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
-use BO\Zmscitizenbackend\Services\Core\ZmsApiFacadeService;
 
 class AppointmentConfirmService
 {
@@ -67,7 +66,6 @@ class AppointmentConfirmService
 
     private function sendConfirmationEmail(ThinnedProcess $process): void
     {
-        $processEntity = MapperService::thinnedProcessToProcess($process);
-        ZmsApiFacadeService::sendConfirmationEmail($processEntity);
+        MailQueueRepository::create()->queueConfirmationMail($process);
     }
 }
