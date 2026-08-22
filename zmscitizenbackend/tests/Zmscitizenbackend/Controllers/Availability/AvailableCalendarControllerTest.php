@@ -2,9 +2,14 @@
 
 namespace BO\Zmscitizenbackend\Tests\Controllers\Availability;
 
-use BO\Zmscitizenbackend\Utils\ErrorMessages;
-use BO\Zmscitizenbackend\Tests\ControllerTestCase;
+use BO\Zmscitizenbackend\Exceptions\InvalidAvailabilityInput;
+use BO\Zmscitizenbackend\Models\AvailableCalendar;
+use BO\Zmscitizenbackend\Repository\AvailableCalendarHydrator;
+use BO\Zmscitizenbackend\Repository\AvailableCalendarRepository;
+use BO\Zmscitizenbackend\Services\Core\ExceptionService;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
+use BO\Zmscitizenbackend\Tests\ControllerTestCase;
+use BO\Zmscitizenbackend\Utils\ErrorMessages;
 
 class AvailableCalendarControllerTest extends ControllerTestCase
 {
@@ -21,6 +26,12 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         }
 
         ValidationService::clearOfficeServicesCacheForTesting();
+    }
+
+    public function tearDown(): void
+    {
+        AvailableCalendarRepository::use(null);
+        parent::tearDown();
     }
 
     public function testRendering()
@@ -96,32 +107,23 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
-    public function testSlotsDateWindowPassedToBackend()
+    public function testSlotsDateWindowPassedToRepository()
     {
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/source/unittest/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'response' => $this->readFixture('GET_SourceGet_dldb.json'),
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/calendar/availability/',
-                'parameters' => [
-                    'startDate' => '2024-08-21',
-                    'endDate' => '2024-10-21',
-                    'officeIds' => '9999998',
-                    'serviceIds' => '1',
-                    'serviceCounts' => '1',
-                    'slotsStartDate' => '2024-08-21',
-                    'slotsEndDate' => '2024-09-21',
-                ],
-                'response' => $this->readFixture('GET_calendar_availability.json'),
-            ],
-        ]);
+        $this->setSourceApiCall();
+        $repository = $this->createMock(AvailableCalendarRepository::class);
+        $repository->expects($this->once())
+            ->method('readAvailableCalendar')
+            ->with(
+                ['9999998'],
+                ['1'],
+                ['1'],
+                '2024-08-21',
+                '2024-10-21',
+                '2024-08-21',
+                '2024-09-21'
+            )
+            ->willReturn($this->calendarFromFixture());
+        AvailableCalendarRepository::use($repository);
 
         $parameters = [
             'officeIds' => '9999998',
@@ -674,31 +676,14 @@ class AvailableCalendarControllerTest extends ControllerTestCase
 
     public function testInvalidDateRange()
     {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Calendar\\Exception\\InvalidFirstDay';
-
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/source/unittest/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'response' => $this->readFixture('GET_SourceGet_dldb.json'),
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/calendar/availability/',
-                'parameters' => [
-                    'startDate' => '2024-08-29',
-                    'endDate' => '2024-09-04',
-                    'officeIds' => '9999998',
-                    'serviceIds' => '1',
-                    'serviceCounts' => '1',
-                ],
-                'exception' => $exception,
-            ],
-        ]);
+        $this->setSourceApiCall();
+        $repository = $this->createStub(AvailableCalendarRepository::class);
+        $repository->method('readAvailableCalendar')->willReturnCallback(
+            static function (): AvailableCalendar {
+                ExceptionService::handleException(new InvalidAvailabilityInput('startDate must not be after endDate'));
+            }
+        );
+        AvailableCalendarRepository::use($repository);
 
         $parameters = [
             'startDate' => '2024-08-29',
@@ -721,6 +706,14 @@ class AvailableCalendarControllerTest extends ControllerTestCase
 
     private function setCalendarAvailabilityApiCalls(string $fixture = 'GET_calendar_availability.json'): void
     {
+        $this->setSourceApiCall();
+        $repository = $this->createStub(AvailableCalendarRepository::class);
+        $repository->method('readAvailableCalendar')->willReturn($this->calendarFromFixture($fixture));
+        AvailableCalendarRepository::use($repository);
+    }
+
+    private function setSourceApiCall(): void
+    {
         $this->setApiCalls([
             [
                 'function' => 'readGetResult',
@@ -730,18 +723,18 @@ class AvailableCalendarControllerTest extends ControllerTestCase
                 ],
                 'response' => $this->readFixture('GET_SourceGet_dldb.json'),
             ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/calendar/availability/',
-                'parameters' => [
-                    'startDate' => '2024-08-21',
-                    'endDate' => '2024-08-23',
-                    'officeIds' => '9999998',
-                    'serviceIds' => '1',
-                    'serviceCounts' => '1',
-                ],
-                'response' => $this->readFixture($fixture),
-            ],
         ]);
+    }
+
+    private function calendarFromFixture(string $fixture = 'GET_calendar_availability.json'): AvailableCalendar
+    {
+        $body = json_decode($this->readFixture($fixture), true);
+        $data = is_array($body['data'] ?? null) ? $body['data'] : [];
+
+        return (new AvailableCalendarHydrator())->hydrate(
+            $data,
+            (string) ($data['startDate'] ?? ''),
+            (string) ($data['endDate'] ?? '')
+        );
     }
 }

@@ -114,6 +114,7 @@ class ExceptionService
                     break;
             // Calendar exceptions
                 case 'BO\\Zmsbackend\\Calendar\\Exception\\InvalidFirstDay':
+                case 'BO\\Zmscitizenbackend\\Exceptions\\InvalidAvailabilityInput':
                     $error = self::getError('invalidDateRange');
 
                     break;
@@ -121,6 +122,7 @@ class ExceptionService
                     $error = self::getError('noAppointmentForThisScope');
                     break;
                 case 'BO\\Zmsbackend\\Calendar\\Exception\\CalendarWithoutScopes':
+                case 'BO\\Zmscitizenbackend\\Exceptions\\CalendarWithoutScopes':
                     $error = self::getError('noAppointmentForThisScope');
                     break;
             // Other entity exceptions
