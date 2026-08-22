@@ -1,0 +1,35 @@
+{
+    "title": "AltchaVerifyPayload",
+    "type": "object",
+    "properties": {
+        "challenge": {
+            "$ref": "createChallengeResponse.json"
+        },
+        "solution": {
+            "type": "object",
+            "properties": {
+                "counter": {
+                    "type": "number",
+                    "description": "Brute-forced integer that satisfies the proof of work"
+                },
+                "derivedKey": {
+                    "type": "string",
+                    "description": "Lowercase hex of the derived key for counter"
+                },
+                "time": {
+                    "type": "number",
+                    "description": "Time of challenge completion in milliseconds"
+                }
+            },
+            "required": [
+                "counter",
+                "derivedKey"
+            ]
+        }
+    },
+    "required": [
+        "challenge",
+        "solution"
+    ],
+    "description": "Decoded JSON structure inside the base64-encoded payload field of POST /captcha-verify/"
+}
