@@ -7,10 +7,35 @@ namespace BO\Zmscitizenbackend\Helper;
 class MailTemplateProvider
 {
     /**
+     * @var array<string, string>
+     */
+    public const array DEFAULTS = [
+        'mail_queued.twig' => 'template is empty',
+        'mail_confirmation.twig' => 'template is empty',
+        'mail_reminder.twig' => 'template is empty',
+        'mail_delete.twig' => 'template is empty',
+        'mail_survey.twig' => 'template is empty',
+        'mail_processlist_overview.twig' => 'template is empty',
+        'mail_preconfirmed.twig' => 'template is empty',
+        'icsappointment.twig' => 'template is empty',
+        'icsappointment_delete.twig' => 'template is empty',
+        'mail_admin_delete.twig' => 'template is empty',
+        'mail_admin_update.twig' => 'template is empty',
+    ];
+
+    /**
      * @param array<string, string> $templates
      */
     public function __construct(private array $templates)
     {
+    }
+
+    /**
+     * @param array<string, string> $overrides
+     */
+    public static function withDefaults(array $overrides = []): self
+    {
+        return new self(array_merge(self::DEFAULTS, $overrides));
     }
 
     /** @psalm-api */

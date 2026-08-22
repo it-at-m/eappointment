@@ -17,23 +17,6 @@ class IcsRepository
 {
     private static ?self $instance = null;
 
-    /**
-     * @var array<string, string>
-     */
-    private const array DEFAULT_TEMPLATES = [
-        'mail_queued.twig' => 'template is empty',
-        'mail_confirmation.twig' => 'template is empty',
-        'mail_reminder.twig' => 'template is empty',
-        'mail_delete.twig' => 'template is empty',
-        'mail_survey.twig' => 'template is empty',
-        'mail_processlist_overview.twig' => 'template is empty',
-        'mail_preconfirmed.twig' => 'template is empty',
-        'icsappointment.twig' => 'template is empty',
-        'icsappointment_delete.twig' => 'template is empty',
-        'mail_admin_delete.twig' => 'template is empty',
-        'mail_admin_update.twig' => 'template is empty',
-    ];
-
     public static function use(?self $repository): void
     {
         self::$instance = $repository;
@@ -83,10 +66,7 @@ class IcsRepository
             } elseif (is_object($provider) && isset($provider->id)) {
                 $providerId = (int) $provider->id;
             }
-            $templates = array_merge(
-                self::DEFAULT_TEMPLATES,
-                MailTemplatesRepository::create()->readMergedTemplatesForProvider($providerId)
-            );
+            $templates = MailTemplatesRepository::create()->readMergedTemplatesForProvider($providerId);
             $config = $this->readConfig();
             $ics = Messaging::getMailIcs(
                 $process,
@@ -94,7 +74,7 @@ class IcsRepository
                 'appointment',
                 null,
                 false,
-                new MailTemplateProvider($templates)
+                MailTemplateProvider::withDefaults($templates)
             );
 
             $content = $ics->getContent();

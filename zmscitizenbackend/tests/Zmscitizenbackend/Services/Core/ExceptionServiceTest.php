@@ -103,6 +103,10 @@ class ExceptionServiceTest extends TestCase
                 'BO\\Zmsbackend\\Process\\Exception\\EmailRequired',
                 'emailIsRequired'
             ],
+            'CitizenEmailRequired' => [
+                'BO\\Zmscitizenbackend\\Exceptions\\EmailRequired',
+                'emailIsRequired'
+            ],
             'TelephoneRequired' => [
                 'BO\\Zmsbackend\\Process\\Exception\\TelephoneRequired',
                 'telephoneIsRequired'

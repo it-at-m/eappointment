@@ -91,6 +91,7 @@ class ExceptionService
 
                     break;
                 case 'BO\\Zmsbackend\\Process\\Exception\\EmailRequired':
+                case 'BO\\Zmscitizenbackend\\Exceptions\\EmailRequired':
                     $error = self::getError('emailIsRequired');
 
                     break;
