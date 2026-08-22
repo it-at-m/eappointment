@@ -9,15 +9,18 @@ use BO\Zmscitizenbackend\Utils\ErrorMessages;
 use BO\Zmscitizenbackend\Services\Appointment\AppointmentConfirmService;
 use BO\Zmscitizenbackend\Services\Core\AuthenticationService;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class AppointmentConfirmController extends BaseController
 {
     private AppointmentConfirmService $service;
+
     /** @psalm-api */
-    public function __construct()
+    public function __construct(ContainerInterface $containerInterface)
     {
+        parent::__construct($containerInterface);
         $this->service = new AppointmentConfirmService();
     }
 
@@ -26,13 +29,21 @@ class AppointmentConfirmController extends BaseController
     {
         $requestErrors = ValidationService::validateServerPostRequest($request);
         if (!empty($requestErrors['errors'])) {
-            return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest')['statusCode']);
+            return $this->createJsonResponse(
+                $response,
+                $requestErrors,
+                ErrorMessages::get('invalidRequest')['statusCode']
+            );
         }
 
         $authenticatedUser = AuthenticationService::getAuthenticatedUser($request);
         $result = $this->service->processConfirm($request->getParsedBody(), $authenticatedUser);
         return is_array($result) && isset($result['errors'])
-            ? $this->createJsonResponse($response, $result, ErrorMessages::getHighestStatusCode($result['errors']))
+            ? $this->createJsonResponse(
+                $response,
+                $result,
+                ErrorMessages::getHighestStatusCode($result['errors'])
+            )
             : $this->createJsonResponse($response, $result->toArray(), 200);
     }
 }

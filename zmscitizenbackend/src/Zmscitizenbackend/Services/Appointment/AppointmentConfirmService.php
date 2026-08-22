@@ -6,10 +6,12 @@ namespace BO\Zmscitizenbackend\Services\Appointment;
 
 use BO\Zmscitizenbackend\Models\AuthenticatedUser;
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
+use BO\Zmscitizenbackend\Repository\AppointmentByIdRepository;
+use BO\Zmscitizenbackend\Repository\AppointmentConfirmRepository;
 use BO\Zmscitizenbackend\Services\Captcha\CaptchaService;
+use BO\Zmscitizenbackend\Services\Core\MapperService;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
 use BO\Zmscitizenbackend\Services\Core\ZmsApiFacadeService;
-use BO\Zmscitizenbackend\Services\Core\MapperService;
 
 class AppointmentConfirmService
 {
@@ -28,16 +30,13 @@ class AppointmentConfirmService
             return $errors;
         }
 
-        $reservedProcess = $this->getReservedProcess($clientData->processId, $clientData->authKey, $authenticatedUser);
-        if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
-            return $reservedProcess;
-        }
+        $reservedProcess = AppointmentByIdRepository::create()->readAppointmentById(
+            (int) $clientData->processId,
+            $clientData->authKey,
+            $authenticatedUser
+        );
 
-        // Todo: check if the email template confirmed exists for the scope before submitting and sending
-        $result = $this->confirmProcess($reservedProcess);
-        if (is_array($result) && !empty($result['errors'])) {
-            return $result;
-        }
+        $result = AppointmentConfirmRepository::create()->confirmAppointment($reservedProcess);
 
         $token = $this->captchaService->generateToken();
         $result->setCaptchaToken($token);
@@ -48,7 +47,6 @@ class AppointmentConfirmService
 
         return $result;
     }
-
 
     private function extractClientData(array $body): object
     {
@@ -65,22 +63,6 @@ class AppointmentConfirmService
     private function validateClientData(object $data): array
     {
         return ValidationService::validateGetProcessById($data->processId, $data->authKey);
-    }
-
-    private function getReservedProcess(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
-    {
-        return ZmsApiFacadeService::getThinnedProcessById($processId, $authKey, $user);
-    }
-
-    private function confirmProcess(ThinnedProcess $process): ThinnedProcess|array
-    {
-        $processEntity = MapperService::thinnedProcessToProcess($process);
-        $result = ZmsApiFacadeService::confirmAppointment($processEntity);
-        if (is_array($result) && !empty($result['errors'])) {
-            return $result;
-        }
-
-        return MapperService::processToThinnedProcess($result);
     }
 
     private function sendConfirmationEmail(ThinnedProcess $process): void

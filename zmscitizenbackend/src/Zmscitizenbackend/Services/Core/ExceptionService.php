@@ -72,6 +72,7 @@ class ExceptionService
 
                     break;
                 case 'BO\\Zmsbackend\\Process\\Exception\\ProcessNotPreconfirmedAnymore':
+                case 'BO\\Zmscitizenbackend\\Exceptions\\ProcessNotPreconfirmedAnymore':
                     $error = self::getError('processNotPreconfirmedAnymore');
 
                     break;

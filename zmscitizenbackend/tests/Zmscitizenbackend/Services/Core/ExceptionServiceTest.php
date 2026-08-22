@@ -75,6 +75,10 @@ class ExceptionServiceTest extends TestCase
                 'BO\\Zmsbackend\\Process\\Exception\\ProcessNotPreconfirmedAnymore',
                 'processNotPreconfirmedAnymore'
             ],
+            'CitizenProcessNotPreconfirmedAnymore' => [
+                'BO\\Zmscitizenbackend\\Exceptions\\ProcessNotPreconfirmedAnymore',
+                'processNotPreconfirmedAnymore'
+            ],
             'ProcessDeleteFailed' => [
                 'BO\\Zmsbackend\\Process\\Exception\\ProcessDeleteFailed',
                 'processDeleteFailed'
