@@ -47,8 +47,20 @@ class ExceptionServiceTest extends TestCase
                 'BO\\Zmsbackend\\Process\\Exception\\ProcessNotFound',
                 'appointmentNotFound'
             ],
+            'CitizenProcessNotFound' => [
+                'BO\\Zmscitizenbackend\\Exceptions\\ProcessNotFound',
+                'appointmentNotFound'
+            ],
             'AuthKeyMatchFailed' => [
                 'BO\\Zmsbackend\\Process\\Exception\\AuthKeyMatchFailed',
+                'authKeyMismatch'
+            ],
+            'CitizenAuthKeyMatchFailed' => [
+                'BO\\Zmscitizenbackend\\Exceptions\\AuthKeyMatchFailed',
+                'authKeyMismatch'
+            ],
+            'CitizenExternalUserIdMatchFailed' => [
+                'BO\\Zmscitizenbackend\\Exceptions\\ExternalUserIdMatchFailed',
                 'authKeyMismatch'
             ],
             'ProcessAlreadyCalled' => [

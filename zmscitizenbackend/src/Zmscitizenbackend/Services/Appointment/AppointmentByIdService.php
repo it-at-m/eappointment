@@ -6,9 +6,9 @@ namespace BO\Zmscitizenbackend\Services\Appointment;
 
 use BO\Zmscitizenbackend\Models\AuthenticatedUser;
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
+use BO\Zmscitizenbackend\Repository\AppointmentByIdRepository;
 use BO\Zmscitizenbackend\Services\Captcha\CaptchaService;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
-use BO\Zmscitizenbackend\Services\Core\ZmsApiFacadeService;
 
 class AppointmentByIdService
 {
@@ -54,6 +54,6 @@ class AppointmentByIdService
 
     private function getAppointment(?int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
     {
-        return ZmsApiFacadeService::getThinnedProcessById($processId, $authKey, $user);
+        return AppointmentByIdRepository::create()->readAppointmentById((int) $processId, $authKey, $user);
     }
 }
