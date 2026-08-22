@@ -29,6 +29,7 @@
     },
     "require": {
         "php": ">=8.3",
+        "opis/json-schema": "^2.4",
         "roave/security-advisories": "dev-latest"
     },
     "autoload": {

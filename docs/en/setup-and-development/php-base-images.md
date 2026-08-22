@@ -90,6 +90,7 @@ graph TD
     zmscitizenapi --> zmsslim
     zmscitizenapi --> zmsclient
     zmscitizenapi --> zmsentities
+    zmscitizenbackend --> opis_json_schema["opis/json-schema"]
 
     zmscitizenapi -.-> zmsbackend
     refarch_gateway -.-> zmscitizenapi

@@ -1,0 +1,74 @@
+{
+  "title": "Service",
+  "type": [
+    "array",
+    "object",
+    "null"
+  ],
+  "properties": {
+    "id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Unique identifier for the service"
+    },
+    "name": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Name of the service"
+    },
+    "maxQuantity": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Maximum quantity of the service"
+    },
+    "combinable": {
+      "$ref": "./combinable.json"
+    },
+    "public": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "Indicates whether the service is publicly visible"
+    },
+    "parentId": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Parent-Service ID (falls diese Service-Variante zu einem Parent gehört)"
+    },
+    "variantId": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Variant-ID (z.B. ZMS-Variantenkennung)"
+    },
+    "rootParentId": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Root service ID for service info links; equals id for root services"
+    },
+    "showOnStartPage": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "Indicates whether the service is visible on the start page (ServiceFinder)"
+    }
+  },
+  "required": [
+    "id",
+    "name"
+  ],
+  "description": "Schema definition for the Service entity"
+}

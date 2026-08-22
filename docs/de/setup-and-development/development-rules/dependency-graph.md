@@ -33,6 +33,7 @@ graph TD;
     zmsslim --> mellon;
 
     zmscitizenapi --> mellon & zmsslim & zmsclient & zmsentities;
+    zmscitizenbackend --> opis_json_schema["opis/json-schema"];
 
     %% npm-file:-Abhängigkeiten (gestrichelt)
     zmsadmin -.-> zmslayout;
@@ -141,7 +142,7 @@ Hinweise zu Gateway-Verhalten sowie Sicherheits-/Routing-Details siehe RefArch-A
 ### Backend-APIs und Kerndienste
 
 - `zmscitizenapi`: API-Schicht für Bürgerbuchungs-Flows; bildet Backend-Entitäten auf schlanke Frontend-DTOs ab.
-- `zmscitizenbackend`: Citizen-API-Backend unter dem RefArch-Namen, parallel zur live `zmscitizenapi` ([#2899](https://github.com/it-at-m/eappointment/issues/2899)). Traffic bleibt bis zum Cutover auf `zmscitizenapi`.
+- `zmscitizenbackend`: Citizen-API-Backend unter dem RefArch-Namen, parallel zur live `zmscitizenapi` ([#2899](https://github.com/it-at-m/eappointment/issues/2899)). Besitzt die Citizen-JSON-Schemas und die Modellvalidierung. Traffic bleibt bis zum Cutover auf `zmscitizenapi`.
 - `zmsbackend`: einheitliche Kern-Backend-REST-API und Datenbankzugriff für Vorgangs-, Warteschlangen-, Termin- und Verwaltungs-Flows.
 - `zmsdldb`: Importer/Transformer für externe DLDB-/SADB-Quellen.
 - `zmsclient`: HTTP-/API-Client-Abstraktionen, modulübergreifend genutzt.

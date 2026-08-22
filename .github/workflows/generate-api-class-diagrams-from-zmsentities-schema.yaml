@@ -64,8 +64,10 @@ jobs:
                       with open(file) as f:
                           schemas.append((file.stem, json.load(f), ''))
               
-              # Load citizen schemas
-              citizen_dir = Path('zmsentities/schema/citizenapi')
+              # Load citizen schemas (owned by zmscitizenbackend; fall back to zmsentities for older trees)
+              citizen_dir = Path('zmscitizenbackend/schema/citizenapi')
+              if not citizen_dir.exists():
+                  citizen_dir = Path('zmsentities/schema/citizenapi')
               if citizen_dir.exists():
                   for file in citizen_dir.glob('*.json'):
                       with open(file) as f:
