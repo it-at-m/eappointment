@@ -102,8 +102,6 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
     public function testMissingOfficeId()
     {
-        $this->setApiCalls([]);
-
         $parameters = [
             'serviceId' => ['1063423'],
             'serviceCount' => [1],
@@ -123,8 +121,6 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
     public function testMissingServiceId()
     {
-        $this->setApiCalls([]);
-
         $parameters = [
             'officeId' => 10546,
             'serviceCount' => [1],
@@ -144,8 +140,6 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
     public function testMissingTimestamp()
     {
-        $this->setApiCalls([]);
-
         $parameters = [
             'officeId' => 10546,
             'serviceId' => ['1063423'],
@@ -165,8 +159,6 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
     public function testMissingOfficeIdAndServiceId()
     {
-        $this->setApiCalls([]);
-
         $parameters = [
             'serviceCount' => [1],
             'timestamp' => "32526616522"
@@ -187,8 +179,6 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
     public function testMissingOfficeIdAndTimestamp()
     {
-        $this->setApiCalls([]);
-
         $parameters = [
             'serviceId' => ['1063423'],
             'serviceCount' => [1]
@@ -209,8 +199,6 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
     public function testMissingServiceIdAndTimestamp()
     {
-        $this->setApiCalls([]);
-
         $parameters = [
             'officeId' => 10546,
             'serviceCount' => [1]
@@ -231,8 +219,6 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
     public function testMissingAllFields()
     {
-        $this->setApiCalls([]);
-
         $parameters = [];
 
         $response = $this->render([], $parameters, [], 'POST');
@@ -252,8 +238,6 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
     public function testInvalidOfficeIdFormat()
     {
-        $this->setApiCalls([]);
-    
         $parameters = [
             'officeId' => 'invalid_id',
             'serviceId' => ['1063423'],
@@ -274,8 +258,6 @@ class AppointmentReserveControllerTest extends ControllerTestCase
     
     public function testInvalidServiceIdFormat()
     {
-        $this->setApiCalls([]);
-    
         $parameters = [
             'officeId' => 10546,
             'serviceId' => ['invalid_service_id'],
@@ -296,8 +278,6 @@ class AppointmentReserveControllerTest extends ControllerTestCase
     
     public function testInvalidTimestampFormat()
     {
-        $this->setApiCalls([]);
-    
         $parameters = [
             'officeId' => 10546,
             'serviceId' => ['1063423'],
@@ -317,8 +297,6 @@ class AppointmentReserveControllerTest extends ControllerTestCase
     }
     public function testEmptyServiceIdArray()
     {
-        $this->setApiCalls([]);
-    
         $parameters = [
             'officeId' => 10546,
             'serviceId' => [],
@@ -339,8 +317,6 @@ class AppointmentReserveControllerTest extends ControllerTestCase
     
     public function testInvalidServiceCount()
     {
-        $this->setApiCalls([]);
-    
         $parameters = [
             'officeId' => 10546,
             'serviceId' => ['1063423'],
