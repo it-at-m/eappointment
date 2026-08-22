@@ -67,4 +67,35 @@ class AppointmentByIdHydratorTest extends TestCase
         $this->assertFalse($hydrator->shouldGenerateIcs('1724907600', 'deleted'));
         $this->assertTrue($hydrator->shouldGenerateIcs('1724907600', 'confirmed'));
     }
+
+    public function testForCanceledCitizenResponseZerosOfficeAndKeepsScopeId(): void
+    {
+        $hydrator = new AppointmentByIdHydrator();
+        $appointment = $hydrator->hydrate(
+            AppointmentByIdRows::processRow(),
+            AppointmentByIdRows::requestRows()
+        );
+        $appointment->status = 'deleted';
+        $appointment->familyName = '(abgesagt)';
+
+        $canceled = $hydrator->forCanceledCitizenResponse($appointment);
+        $scope = $canceled->scope?->toArray();
+
+        $this->assertSame(0, $canceled->officeId);
+        $this->assertNull($canceled->officeName);
+        $this->assertSame('', $canceled->telephone);
+        $this->assertSame('johndoe@example.com', $canceled->email);
+        $this->assertSame(1063424, $canceled->serviceId);
+        $this->assertSame('Gewerbe anmelden', $canceled->serviceName);
+        $this->assertSame('(abgesagt)', $canceled->familyName);
+        $this->assertSame(64, $scope['id']);
+        $this->assertSame(0, $scope['provider']->toArray()['id']);
+        $this->assertSame('', $scope['provider']->toArray()['name']);
+        $this->assertNull($scope['provider']->toArray()['displayName']);
+        $this->assertNull($scope['provider']->toArray()['contact']);
+        $this->assertSame('', $scope['shortName']);
+        $this->assertSame('', $scope['emailFrom']);
+        $this->assertNull($scope['emailRequired']);
+        $this->assertSame('', $scope['whitelistedMails']);
+    }
 }

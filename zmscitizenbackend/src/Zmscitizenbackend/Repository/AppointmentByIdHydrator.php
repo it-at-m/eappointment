@@ -68,6 +68,53 @@ class AppointmentByIdHydrator
     }
 
     /**
+     * Match the former zmscitizenapi cancel JSON: zmsbackend re-read the process
+     * with resolveReferences=0, so office/provider fields were empty while scope.id stayed.
+     */
+    public function forCanceledCitizenResponse(ThinnedProcess $appointment): ThinnedProcess
+    {
+        $scopeId = $appointment->scope?->id ?? 0;
+        $source = $appointment->scope?->provider?->source ?? '';
+
+        return new ThinnedProcess(
+            processId: $appointment->processId,
+            timestamp: $appointment->timestamp,
+            authKey: $appointment->authKey,
+            familyName: $appointment->familyName,
+            customTextfield: $appointment->customTextfield,
+            customTextfield2: $appointment->customTextfield2,
+            email: $appointment->email,
+            telephone: '',
+            officeName: null,
+            officeId: 0,
+            scope: new ThinnedScope(
+                id: $scopeId,
+                provider: new ThinnedProvider(
+                    id: 0,
+                    name: '',
+                    displayName: null,
+                    source: $source,
+                    lat: null,
+                    lon: null,
+                    contact: null
+                ),
+                shortName: '',
+                emailFrom: '',
+                whitelistedMails: ''
+            ),
+            subRequestCounts: $appointment->subRequestCounts,
+            serviceId: $appointment->serviceId,
+            serviceName: $appointment->serviceName,
+            serviceCount: $appointment->serviceCount,
+            status: $appointment->status,
+            captchaToken: $appointment->captchaToken ?? '',
+            slotCount: $appointment->slotCount,
+            displayNumber: $appointment->displayNumber,
+            icsContent: $appointment->icsContent
+        );
+    }
+
+    /**
      * @param array<string, mixed> $row
      */
     private function mapScope(array $row): ?ThinnedScope
