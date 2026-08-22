@@ -18,7 +18,7 @@ This module contains **API and UI tests** for ZMS using the ATAF (Test Automatio
   - `zms/ataf/ui/pages/**` - Page objects for Admin, Statistik, Bürgeransicht, Mailinator  
 - `src/test/resources/features/` - Cucumber feature files  
   - `rest/zmsapi/` - ZMS REST API features (legacy folder/tag name; targets `zmsbackend` at `/terminvereinbarung/api/2`)  
-  - `rest/zmscitizenapi/` - Citizen REST API features  
+  - `rest/zmscitizenbackend/` - Citizen REST API features  
   - `ui/zmsadmin/` - Admin UI features  
   - `ui/buergeransicht/` - Legacy eappointment citizen view UI features  
   - `ui/zmsstatistic/` - Statistik UI features  
@@ -104,7 +104,7 @@ mvn test -Pataf-api
 # optionally filter:
 # mvn test -Pataf-api -Dcucumber.filter.tags="@rest"
 # mvn test -Pataf-api -Dcucumber.filter.tags="@zmsapi"
-# mvn test -Pataf-api -Dcucumber.filter.tags="@zmscitizenapi"
+# mvn test -Pataf-api -Dcucumber.filter.tags="@zmscitizenbackend"
 ```
 
 - **UI-only tests (Selenium/ATAF web, no REST Assured)**:
@@ -184,7 +184,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 - **API tags**
   - `@rest` - All REST API tests
   - `@zmsapi` - REST API tests (`features/rest/zmsapi/**`; served by `zmsbackend`)
-  - `@zmscitizenapi` - Citizen API tests (`features/rest/zmscitizenapi/**`)
+  - `@zmscitizenbackend` - Citizen API tests (`features/rest/zmscitizenbackend/**`)
 - **UI tags**
   - `@web` - All web UI tests
   - `@zmsadmin` - Admin UI features (`features/ui/zmsadmin/**`)
@@ -210,7 +210,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 #### REST API (`rest/zmsapi/`, served by `zmsbackend`)
 - `status.feature` - Status endpoint tests (converted from `StatusEndpointTest`)
 
-#### Citizen API (`rest/zmscitizenapi/`)
+#### Citizen API (`rest/zmscitizenbackend/`)
 - `zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature` - Ruppertstraße Citizen API booking (10502 / 10489 / 10492, jump-in)
 
 Additional REST features (availability, offices-and-services, etc.) may be added over time; this list reflects files currently present under `features/rest/`.
