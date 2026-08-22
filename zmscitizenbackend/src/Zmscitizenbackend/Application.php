@@ -7,6 +7,40 @@ namespace BO\Zmscitizenbackend;
 use BO\Slim\Traits\CacheInitializationTrait;
 use Psr\SimpleCache\CacheInterface;
 
+if (!defined('MYSQL_USER')) {
+    define('MYSQL_USER', getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root');
+}
+if (!defined('MYSQL_PASSWORD')) {
+    define('MYSQL_PASSWORD', getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') : 'zmsbackend');
+}
+if (!defined('MYSQL_DATABASE')) {
+    define('MYSQL_DATABASE', getenv('MYSQL_DATABASE') ? getenv('MYSQL_DATABASE') : 'zmsbo');
+}
+if (getenv('MYSQL_PORT')) {
+    $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=";
+    $dsn .= parse_url(getenv('MYSQL_PORT'), PHP_URL_HOST);
+    $dsn .= ';port=';
+    $dsn .= parse_url(getenv('MYSQL_PORT'), PHP_URL_PORT);
+    if (!defined('DSN_RW')) {
+        define('DSN_RW', $dsn);
+    }
+} elseif (!defined('DSN_RW')) {
+    define('DSN_RW', 'mysql:dbname=' . MYSQL_DATABASE . ';host=127.0.0.1');
+}
+if (getenv('MYSQL_PORT_RO')) {
+    $mysqlPortList = explode(',', getenv('MYSQL_PORT_RO'));
+    $mysqlPortRO = trim($mysqlPortList[array_rand($mysqlPortList)]);
+    $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=";
+    $dsn .= parse_url($mysqlPortRO, PHP_URL_HOST);
+    $dsn .= ';port=';
+    $dsn .= parse_url($mysqlPortRO, PHP_URL_PORT);
+    if (!defined('DSN_RO')) {
+        define('DSN_RO', $dsn);
+    }
+} elseif (!defined('DSN_RO')) {
+    define('DSN_RO', DSN_RW);
+}
+
 /**
  * @SuppressWarnings(PHPMD.TooManyFields)
  * @SuppressWarnings(PHPMD.NPathComplexity)
@@ -61,6 +95,12 @@ class Application extends \BO\Slim\Application
     public static string $IP_BLACKLIST;
 
     public static string $ACCESS_UNPUBLISHED_ON_DOMAIN;
+
+    public const string DB_DSN_READONLY = DSN_RO;
+    public const string DB_DSN_READWRITE = DSN_RW;
+    public const string DB_USERNAME = MYSQL_USER;
+    public const string DB_PASSWORD = MYSQL_PASSWORD;
+    public const bool DB_IS_GALERA = false;
 
     public static function initialize(): void
     {

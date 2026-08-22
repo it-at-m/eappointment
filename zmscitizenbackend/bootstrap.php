@@ -31,6 +31,20 @@ require(APP_PATH . '/config.php');
 // Set option for environment, routing, logging and templating
 \BO\Slim\Bootstrap::init();
 
+\BO\Zmscitizenbackend\Connection\Select::$enableProfiling = \App::DEBUG;
+\BO\Zmscitizenbackend\Connection\Select::$readSourceName = \App::DB_DSN_READONLY;
+\BO\Zmscitizenbackend\Connection\Select::$writeSourceName = \App::DB_DSN_READWRITE;
+\BO\Zmscitizenbackend\Connection\Select::$username = \App::DB_USERNAME;
+\BO\Zmscitizenbackend\Connection\Select::$password = \App::DB_PASSWORD;
+\BO\Zmscitizenbackend\Connection\Select::$galeraConnection = \App::DB_IS_GALERA;
+\BO\Zmscitizenbackend\Connection\Select::$pdoOptions = [
+    \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+];
+\BO\Zmscitizenbackend\Connection\Select::$connectionTimezone = ' ' . \App::$now->getTimezone()->getName();
+if (defined('MYSQL_DATABASE')) {
+    \BO\Zmscitizenbackend\Connection\Select::$dbname_zms = MYSQL_DATABASE;
+}
+
 \App::$slim->addBodyParsingMiddleware();
 
 \App::$http = new \BO\Zmsclient\Http(\App::ZMS_API_URL);
