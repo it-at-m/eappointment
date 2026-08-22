@@ -6,9 +6,11 @@ namespace BO\Zmscitizenbackend\Services\Appointment;
 
 use BO\Zmscitizenbackend\Models\AuthenticatedUser;
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
+use BO\Zmscitizenbackend\Repository\AppointmentByIdRepository;
+use BO\Zmscitizenbackend\Repository\AppointmentCancelRepository;
+use BO\Zmscitizenbackend\Services\Core\MapperService;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
 use BO\Zmscitizenbackend\Services\Core\ZmsApiFacadeService;
-use BO\Zmscitizenbackend\Services\Core\MapperService;
 
 class AppointmentCancelService
 {
@@ -20,11 +22,11 @@ class AppointmentCancelService
             return $errors;
         }
 
-        $process = $this->getProcess($clientData->processId, $clientData->authKey, $authenticatedUser);
-
-        if (is_array($process) && !empty($process['errors'])) {
-            return $process;
-        }
+        $process = AppointmentByIdRepository::create()->readAppointmentById(
+            (int) $clientData->processId,
+            $clientData->authKey,
+            $authenticatedUser
+        );
 
         if (!$this->canBeCancelled($process)) {
             return ['errors' => [
@@ -36,11 +38,10 @@ class AppointmentCancelService
         }
 
         if ($process->status !== 'reserved') {
-            // Todo: check if the email template cancelled exists for the scope before submitting and sending
             $this->sendCancellationEmail($process);
         }
 
-        return $this->cancelProcess($process);
+        return AppointmentCancelRepository::create()->cancelAppointment($process);
     }
 
     private function extractClientData(array $body): object
@@ -60,26 +61,10 @@ class AppointmentCancelService
         return ValidationService::validateGetProcessById($data->processId, $data->authKey);
     }
 
-    private function getProcess(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
-    {
-        return ZmsApiFacadeService::getThinnedProcessById($processId, $authKey, $user);
-    }
-
     private function canBeCancelled(ThinnedProcess $process): bool
     {
         $appointmentTime = new \DateTimeImmutable("@{$process->timestamp}");
         return $appointmentTime > \App::$now;
-    }
-
-    private function cancelProcess(ThinnedProcess $process): ThinnedProcess|array
-    {
-        $processEntity = MapperService::thinnedProcessToProcess($process);
-        $result = ZmsApiFacadeService::cancelAppointment($processEntity);
-        if (is_array($result) && !empty($result['errors'])) {
-            return $result;
-        }
-
-        return MapperService::processToThinnedProcess($result);
     }
 
     private function sendCancellationEmail(ThinnedProcess $process): void
