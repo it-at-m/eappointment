@@ -6,9 +6,11 @@ namespace BO\Zmscitizenbackend\Services\Appointment;
 
 use BO\Zmscitizenbackend\Models\AuthenticatedUser;
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
+use BO\Zmscitizenbackend\Repository\AppointmentByIdRepository;
+use BO\Zmscitizenbackend\Repository\AppointmentPreconfirmRepository;
+use BO\Zmscitizenbackend\Services\Core\MapperService;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
 use BO\Zmscitizenbackend\Services\Core\ZmsApiFacadeService;
-use BO\Zmscitizenbackend\Services\Core\MapperService;
 
 class AppointmentPreconfirmService
 {
@@ -20,16 +22,13 @@ class AppointmentPreconfirmService
             return $errors;
         }
 
-        $reservedProcess = $this->getReservedProcess($clientData->processId, $clientData->authKey, $authenticatedUser);
-        if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
-            return $reservedProcess;
-        }
+        $reservedProcess = AppointmentByIdRepository::create()->readAppointmentById(
+            (int) $clientData->processId,
+            $clientData->authKey,
+            $authenticatedUser
+        );
 
-        // Todo: check if the email template preconfirmed exists for the scope before submitting and sending
-        $result = $this->preconfirmProcess($reservedProcess);
-        if (is_array($result) && !empty($result['errors'])) {
-            return $result;
-        }
+        $result = AppointmentPreconfirmRepository::create()->preconfirmAppointment($reservedProcess);
 
         if ($result->status === 'preconfirmed') {
             $this->sendPreconfirmationEmail($result);
@@ -53,22 +52,6 @@ class AppointmentPreconfirmService
     private function validateClientData(object $data): array
     {
         return ValidationService::validateGetProcessById($data->processId, $data->authKey);
-    }
-
-    private function getReservedProcess(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
-    {
-        return ZmsApiFacadeService::getThinnedProcessById($processId, $authKey, $user);
-    }
-
-    private function preconfirmProcess(ThinnedProcess $process): ThinnedProcess|array
-    {
-        $processEntity = MapperService::thinnedProcessToProcess($process);
-        $result = ZmsApiFacadeService::preconfirmAppointment($processEntity);
-        if (is_array($result) && !empty($result['errors'])) {
-            return $result;
-        }
-
-        return MapperService::processToThinnedProcess($result);
     }
 
     private function sendPreconfirmationEmail(ThinnedProcess $process): void
