@@ -783,7 +783,7 @@ SQL;
         $this->writeTemporaryScopeList($calendar, $slotsRequiredForce);
     }
 
-    private function dropTemporaryScopeList(): void
+    public function dropTemporaryScopeList(): void
     {
         try {
             $this->pdo->exec(AvailableCalendarQueries::QUERY_DROP_TEMPORARY_SCOPELIST);
@@ -791,6 +791,37 @@ SQL;
             // ignore, table may not exist if resolve failed first
         }
         $this->tempScopeListExists = false;
+    }
+
+    /**
+     * Resolve scopes and fill calendarscope for a single booking day on this PDO session.
+     */
+    public function prepareBookingCalendar(
+        string $officeIds,
+        string $serviceIds,
+        string $serviceCounts,
+        string $day
+    ): CalendarEntity {
+        $calendar = $this->buildCalendarFromQuery($day, $day, $officeIds, $serviceIds, $serviceCounts);
+        $calendar = $this->resolveScopesAndSlots($calendar);
+        $calendar = $this->withoutUnrelatedScopes($calendar, 0);
+        if (count($calendar->scopes) < 1) {
+            throw new CalendarWithoutScopes('No matching scopes found for given location(s)');
+        }
+        $this->writeTemporaryScopeList($calendar, 0);
+
+        $parts = $this->datePartsFromIso($day);
+        $dayEntity = new Day([
+            'year' => $parts['year'],
+            'month' => $parts['month'],
+            'day' => $parts['day'],
+            'status' => Day::BOOKABLE,
+        ]);
+        $dayList = new DayList();
+        $dayList[$dayEntity->getDayHash()] = $dayEntity;
+        $calendar->days = $dayList;
+
+        return $calendar;
     }
 
     private function readListFromPreparedTemporaryScopeList(int $slotsRequiredForce): DayList
@@ -814,18 +845,39 @@ SQL;
     /**
      * @return list<array<string, mixed>>
      */
+    public function readDeduplicatedFreeProcesses(
+        CalendarEntity $calendar,
+        string $slotType = 'public',
+        int $slotsRequired = 0,
+        bool $useAvailabilityQuery = true
+    ): array {
+        return $this->readFreeProcessesMinimalFromPreparedCalendar(
+            $calendar,
+            $slotType,
+            $slotsRequired,
+            $useAvailabilityQuery
+        );
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
     private function readFreeProcessesMinimalFromPreparedCalendar(
         CalendarEntity $calendar,
         string $slotType,
-        int $slotsRequired
+        int $slotsRequired,
+        bool $useAvailabilityQuery = true
     ): array {
         $days = $this->buildDaysListFromCalendarDays($calendar);
         if ($days === []) {
             return [];
         }
 
+        $query = $useAvailabilityQuery
+            ? AvailableCalendarQueries::QUERY_SELECT_PROCESSLIST_DAYS_AVAILABILITY
+            : AvailableCalendarQueries::QUERY_SELECT_PROCESSLIST_DAYS;
         $sql = sprintf(
-            AvailableCalendarQueries::QUERY_SELECT_PROCESSLIST_DAYS_AVAILABILITY,
+            $query,
             AvailableCalendarQueries::buildDaysCondition($days)
         );
         $rows = $this->pdo->fetchAll($sql, [
@@ -1025,7 +1077,10 @@ SQL;
             'source' => $scope->getSource(),
             'providerId' => $providerId,
             'sharedBookingOfficeIds' => $sharedBookingOfficeIds,
-            'date' => $date
+            'date' => $date,
+            'slotCount' => isset($item['appointments__0__slotCount'])
+                ? (int) $item['appointments__0__slotCount']
+                : 1,
         ];
     }
 
@@ -1048,6 +1103,7 @@ SQL;
             'appointments' => [
                 [
                     'date' => (string) $processInfo['date'],
+                    'slotCount' => $processInfo['slotCount'] ?? 1,
                     'scope' => [
                         'id' => $processInfo['scopeId'],
                         'source' => $processInfo['source'],
