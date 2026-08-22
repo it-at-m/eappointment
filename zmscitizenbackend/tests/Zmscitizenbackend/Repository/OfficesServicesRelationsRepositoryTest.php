@@ -32,6 +32,7 @@ class OfficesServicesRelationsRepositoryTest extends TestCase
         $override = $this->createStub(OfficesServicesRelationsRepository::class);
         $override->method('readOfficesAndServices')->willReturn($empty);
         $override->method('readServiceIdsByOfficeId')->willReturn([]);
+        $override->method('isCaptchaRequiredForOfficeIds')->willReturn(false);
         OfficesServicesRelationsRepository::use($override);
         OfficesServicesRelationsRepository::use(null);
 

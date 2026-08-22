@@ -112,7 +112,6 @@ class AvailableCalendarControllerTest extends ControllerTestCase
 
     public function testSlotsDateWindowPassedToRepository()
     {
-        $this->setSourceApiCall();
         $repository = $this->createMock(AvailableCalendarRepository::class);
         $repository->expects($this->once())
             ->method('readAvailableCalendar')
@@ -679,7 +678,6 @@ class AvailableCalendarControllerTest extends ControllerTestCase
 
     public function testInvalidDateRange()
     {
-        $this->setSourceApiCall();
         $repository = $this->createStub(AvailableCalendarRepository::class);
         $repository->method('readAvailableCalendar')->willReturnCallback(
             static function (): AvailableCalendar {
@@ -709,7 +707,6 @@ class AvailableCalendarControllerTest extends ControllerTestCase
 
     private function setCalendarAvailabilityApiCalls(string $fixture = 'GET_calendar_availability.json'): void
     {
-        $this->setSourceApiCall();
         $repository = $this->createStub(AvailableCalendarRepository::class);
         $repository->method('readAvailableCalendar')->willReturn($this->calendarFromFixture($fixture));
         AvailableCalendarRepository::use($repository);
@@ -727,21 +724,8 @@ class AvailableCalendarControllerTest extends ControllerTestCase
                 };
             }
         );
+        $repository->method('isCaptchaRequiredForOfficeIds')->willReturn(false);
         OfficesServicesRelationsRepository::use($repository);
-    }
-
-    private function setSourceApiCall(): void
-    {
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/source/unittest/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'response' => $this->readFixture('GET_SourceGet_dldb.json'),
-            ],
-        ]);
     }
 
     private function calendarFromFixture(string $fixture = 'GET_calendar_availability.json'): AvailableCalendar
