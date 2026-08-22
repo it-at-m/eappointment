@@ -9,7 +9,7 @@ use BO\Zmscitizenbackend\Models\ThinnedProcess;
 use BO\Zmscitizenbackend\Repository\AppointmentByIdRepository;
 use BO\Zmscitizenbackend\Repository\AppointmentUpdateRepository;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
-use BO\Zmsentities\Helper\ProcessPlainText;
+use BO\Zmscitizenbackend\Helper\ProcessPlainText;
 
 class AppointmentUpdateService
 {

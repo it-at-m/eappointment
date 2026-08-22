@@ -7,15 +7,9 @@ namespace BO\Zmscitizenbackend\Repository;
 use BO\Zmscitizenbackend\Connection\Pdo;
 use BO\Zmscitizenbackend\Connection\Select;
 use BO\Zmscitizenbackend\Exceptions\EmailRequired;
-use BO\Zmscitizenbackend\Helper\MailTemplateProvider;
+use BO\Zmscitizenbackend\Helper\MailTemplateRenderer;
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
 use BO\Zmscitizenbackend\Services\Core\ExceptionService;
-use BO\Zmscitizenbackend\Services\Core\MapperService;
-use BO\Zmsentities\Collection\ProcessList;
-use BO\Zmsentities\Config;
-use BO\Zmsentities\Department;
-use BO\Zmsentities\Mail;
-use BO\Zmsentities\Process;
 
 class MailQueueRepository
 {
@@ -49,15 +43,16 @@ class MailQueueRepository
     private function queue(ThinnedProcess $appointment, string $kind): void
     {
         try {
-            $process = MapperService::thinnedProcessToProcess($appointment);
-            $this->assertEmailWhenRequired($process);
-            if (!$process->getFirstClient()->hasEmail() || !$process->scope->hasEmailFrom()) {
+            $this->assertEmailWhenRequired($appointment);
+            $email = trim((string) ($appointment->email ?? ''));
+            $emailFrom = trim((string) ($appointment->scope?->emailFrom ?? ''));
+            if ($email === '' || $emailFrom === '') {
                 return;
             }
 
-            $status = $this->mailStatus($process, $kind);
-            $mail = $this->buildMail($process, $status);
-            $this->writeInQueue($mail);
+            $status = $this->mailStatus($appointment, $kind);
+            $rendered = MailTemplateRenderer::forAppointment($appointment)->renderMail($appointment, $status);
+            $this->writeInQueue($appointment, $rendered);
         } catch (EmailRequired $exception) {
             throw $exception;
         } catch (\RuntimeException $exception) {
@@ -67,70 +62,71 @@ class MailQueueRepository
         }
     }
 
-    private function assertEmailWhenRequired(Process $process): void
+    private function assertEmailWhenRequired(ThinnedProcess $appointment): void
     {
-        $emailRequired = (bool) $process->toProperty()->scope->preferences->client->emailRequired->get();
-        if ($emailRequired && !$process->getFirstClient()->hasEmail()) {
+        $emailRequired = (bool) ($appointment->scope?->emailRequired);
+        $email = trim((string) ($appointment->email ?? ''));
+        if ($emailRequired && $email === '') {
             throw new EmailRequired();
         }
     }
 
-    private function mailStatus(Process $process, string $kind): string
+    private function mailStatus(ThinnedProcess $appointment, string $kind): string
     {
+        $withAppointment = $this->hasAppointmentTime($appointment);
+
         return match ($kind) {
-            'confirmation' => $process->isWithAppointment() ? 'appointment' : 'queued',
-            'preconfirmation' => $process->isWithAppointment() ? 'preconfirmed' : 'queued',
+            'confirmation' => $withAppointment ? 'appointment' : 'queued',
+            'preconfirmation' => $withAppointment ? 'preconfirmed' : 'queued',
             default => 'deleted',
         };
     }
 
-    private function buildMail(Process $process, string $status): Mail
+    private function hasAppointmentTime(ThinnedProcess $appointment): bool
     {
-        $provider = $process->scope->provider ?? null;
-        $providerId = 0;
-        if (is_array($provider) || $provider instanceof \ArrayAccess) {
-            $providerId = (int) ($provider['id'] ?? 0);
-        } elseif (is_object($provider) && isset($provider->id)) {
-            $providerId = (int) $provider->id;
+        $timestamp = (int) ($appointment->timestamp ?? 0);
+        if ($timestamp <= 0) {
+            return false;
         }
 
-        $templates = MailTemplatesRepository::create()->readMergedTemplatesForProvider($providerId);
-        $config = $this->readConfig();
-        $department = new Department(['id' => $this->readDepartmentId((int) $process->getScopeId())]);
-        $collection = (new ProcessList())->addEntity($process);
-
-        return (new Mail())
-            ->setTemplateProvider(MailTemplateProvider::withDefaults($templates))
-            ->toResolvedEntity($collection, $config, $status)
-            ->withDepartment($department);
+        return date('H:i', $timestamp) !== '00:00';
     }
 
-    private function writeInQueue(Mail $mail): void
+    /**
+     * @param array{
+     *     subject: string,
+     *     createIP: string,
+     *     parts: list<array{mime: string, content: string, base64: bool}>
+     * } $rendered
+     */
+    private function writeInQueue(ThinnedProcess $appointment, array $rendered): void
     {
-        $client = $mail->getFirstClient();
         $pdo = Select::getWriteConnection();
         $now = \App::$now instanceof \DateTimeInterface ? \App::$now : new \DateTimeImmutable();
 
         $pdo->perform(MailQueueQueries::QUERY_INSERT_QUEUE, [
-            'processId' => (int) $mail->getProcessId(),
-            'departmentId' => (int) ($mail->department->getId() ?? 0),
-            'createIP' => (string) ($mail->createIP ?? ''),
+            'processId' => (int) $appointment->processId,
+            'departmentId' => $this->readDepartmentId((int) ($appointment->scope?->id ?? 0)),
+            'createIP' => $rendered['createIP'],
             'createTimestamp' => (int) $now->format('U'),
-            'subject' => (string) ($mail->subject ?? ''),
-            'clientFamilyName' => (string) ($client->familyName ?? ''),
-            'clientEmail' => (string) ($client->email ?? ''),
+            'subject' => $rendered['subject'],
+            'clientFamilyName' => (string) ($appointment->familyName ?? ''),
+            'clientEmail' => (string) ($appointment->email ?? ''),
         ]);
         $queueId = (int) $pdo->lastInsertId();
         if ($queueId < 1) {
             throw new \RuntimeException('Failed to write mail queue');
         }
 
-        $this->writeMimeParts($pdo, $queueId, $mail);
+        $this->writeMimeParts($pdo, $queueId, $rendered['parts']);
     }
 
-    private function writeMimeParts(Pdo $pdo, int $queueId, Mail $mail): void
+    /**
+     * @param list<array{mime: string, content: string, base64: bool}> $parts
+     */
+    private function writeMimeParts(Pdo $pdo, int $queueId, array $parts): void
     {
-        foreach ($mail->multipart ?? [] as $part) {
+        foreach ($parts as $part) {
             $mime = (string) ($part['mime'] ?? '');
             $content = (string) ($part['content'] ?? '');
             if ($mime === '' || $content === '') {
@@ -158,23 +154,5 @@ class MailQueueRepository
             return 0;
         }
         return (int) ($row['department_id'] ?? 0);
-    }
-
-    private function readConfig(): Config
-    {
-        $pdo = Select::getReadConnection();
-        $rows = $pdo->fetchAll(IcsQueries::QUERY_SELECT_CONFIG, []);
-        $rows = is_array($rows) ? $rows : [];
-
-        $hash = [];
-        foreach ($rows as $row) {
-            $name = (string) ($row['name'] ?? '');
-            if ($name === '') {
-                continue;
-            }
-            $hash[$name] = $row['value'] ?? '';
-        }
-
-        return new Config($hash);
     }
 }

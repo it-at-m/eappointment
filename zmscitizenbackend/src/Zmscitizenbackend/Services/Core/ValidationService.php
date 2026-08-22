@@ -7,10 +7,8 @@ namespace BO\Zmscitizenbackend\Services\Core;
 use BO\Zmscitizenbackend\Utils\ErrorMessages;
 use BO\Zmscitizenbackend\Models\ThinnedScope;
 use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
-use BO\Zmsentities\Helper\ProcessPlainText;
+use BO\Zmscitizenbackend\Helper\ProcessPlainText;
 use BO\Zmscitizenbackend\Services\Captcha\TokenValidationService;
-use BO\Zmsentities\Process;
-use BO\Zmsentities\Collection\ScopeList;
 use DateTime;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -285,67 +283,6 @@ class ValidationService
         if ($fieldValue !== null && $fieldValue !== '' && mb_strlen($normalized, 'UTF-8') > ProcessPlainText::MAX_CUSTOM_TEXTFIELD_CHARS) {
             $errors[] = self::getError($errorKey);
         }
-    }
-
-    public static function validateGetProcessNotFound(?Process $process): array
-    {
-        return !$process
-            ? ['errors' => [self::getError('appointmentNotAvailable')]]
-            : [];
-    }
-
-    public static function validateScopesNotFound(?ScopeList $scopes): array
-    {
-        return empty($scopes) || $scopes->count() === 0
-            ? ['errors' => [self::getError('scopesNotFound')]]
-            : [];
-    }
-
-    public static function validateServicesNotFound(?array $services): array
-    {
-        return empty($services)
-            ? ['errors' => [self::getError('requestNotFound')]]
-            : [];
-    }
-
-    public static function validateOfficesNotFound(?array $offices): array
-    {
-        return empty($offices)
-            ? ['errors' => [self::getError('providerNotFound')]]
-            : [];
-    }
-
-    public static function validatenoAppointmentForThisScope(): array
-    {
-        return ['errors' => [self::getError('noAppointmentForThisScope')]];
-    }
-
-    public static function validateServiceArrays(array $serviceIds, array $serviceCounts): array
-    {
-        $errors = [];
-        if (empty($serviceIds) || empty($serviceCounts)) {
-            $errors[] = self::getError('emptyServiceArrays');
-        }
-
-        if (count($serviceIds) !== count($serviceCounts)) {
-            $errors[] = self::getError('mismatchedArrays');
-        }
-
-        foreach ($serviceIds as $id) {
-            if (!is_numeric($id)) {
-                $errors[] = self::getError('invalidServiceId');
-                break;
-            }
-        }
-
-        foreach ($serviceCounts as $count) {
-            if (!self::isValidServiceCount($count)) {
-                $errors[] = self::getError('invalidServiceCount');
-                break;
-            }
-        }
-
-        return $errors;
     }
 
     /*  Helper methods for validation */
