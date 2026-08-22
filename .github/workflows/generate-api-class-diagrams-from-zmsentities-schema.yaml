@@ -70,6 +70,16 @@ jobs:
                   for file in citizen_dir.glob('*.json'):
                       with open(file) as f:
                           schemas.append((file.stem, json.load(f), 'citizen'))
+
+              citizen_backend_dir = Path('zmscitizenbackend/schema/citizenapi')
+              if citizen_backend_dir.exists():
+                  for file in citizen_backend_dir.glob('*.json'):
+                      with open(file) as f:
+                          schemas.append((file.stem, json.load(f), 'citizenbackend'))
+              citizen_backend_meta = Path('zmscitizenbackend/schema/metaresult.json')
+              if citizen_backend_meta.exists():
+                  with open(citizen_backend_meta) as f:
+                      schemas.append((citizen_backend_meta.stem, json.load(f), 'citizenbackend'))
               
               return schemas
 
@@ -296,6 +306,7 @@ jobs:
                   <div class="nav">
                       <a href="zmsbackend.html">ZMS Backend API Schema</a>
                       <a href="zmscitizenapi.html">ZMS Citizen API Schema</a>
+                      <a href="zmscitizenbackend.html">ZMS Citizen Backend Schema</a>
                       <!--<a href="index.html">Combined View</a>-->
                   </div>
                   
@@ -401,6 +412,7 @@ jobs:
               # Generate separate diagrams
               zmsbackend_mermaid = convert_schemas_to_mermaid(schemas, prefix_filter='')
               zmscitizenapi_mermaid = convert_schemas_to_mermaid(schemas, prefix_filter='citizen')
+              zmscitizenbackend_mermaid = convert_schemas_to_mermaid(schemas, prefix_filter='citizenbackend')
               combined_mermaid = convert_schemas_to_mermaid(schemas)
               
               # Create pages
@@ -409,6 +421,9 @@ jobs:
               )
               diagrams_dir.joinpath('zmscitizenapi.html').write_text(
                   create_diagram_page('ZMS Citizen API Schema', zmscitizenapi_mermaid)
+              )
+              diagrams_dir.joinpath('zmscitizenbackend.html').write_text(
+                  create_diagram_page('ZMS Citizen Backend Schema', zmscitizenbackend_mermaid)
               )
               diagrams_dir.joinpath('index.html').write_text(
                   create_diagram_page('Combined API Schemas', combined_mermaid)

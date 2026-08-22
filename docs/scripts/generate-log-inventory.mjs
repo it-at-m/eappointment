@@ -18,6 +18,7 @@ const MODULE_PREFIXES = [
   "zmsentities",
   "zmsclient",
   "zmscitizenapi",
+  "zmscitizenbackend",
   "zmsmessaging",
   "zmsstatistic",
   "zmsticketprinter",

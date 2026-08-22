@@ -63,6 +63,7 @@ body:
         - zmsbase
         - zmscalldisplay
         - zmscitizenapi
+        - zmscitizenbackend
         - zmscitizenview
         - zmsclient
         - zmsdldb

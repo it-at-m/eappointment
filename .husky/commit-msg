@@ -30,7 +30,7 @@ printf "${GREEN}✓ Docs formatting OK.${NC}\n"
 
 # Skip PHP checks when this commit touches no PHP modules (e.g. zmscitizenview-only).
 staged_files=$(git diff --cached --name-only --diff-filter=ACMR)
-php_relevant=$(echo "$staged_files" | grep -E '^(zmsbackend|zmsapi|zmsadmin|zmscitizenapi|zmsslim|zmsclient|zmsentities|zmsdldb|zmsmessaging|zmsstatistic|zmscalldisplay|zmsticketprinter|zmsbase)/|\.php$' || true)
+php_relevant=$(echo "$staged_files" | grep -E '^(zmsbackend|zmsapi|zmsadmin|zmscitizenapi|zmscitizenbackend|zmsslim|zmsclient|zmsentities|zmsdldb|zmsmessaging|zmsstatistic|zmscalldisplay|zmsticketprinter|zmsbase)/|\.php$' || true)
 if [ -z "$php_relevant" ]; then
   printf "${YELLOW}⚠ No PHP module changes staged. Skipping PHP code style and PHPMD checks.${NC}\n"
   exit 0

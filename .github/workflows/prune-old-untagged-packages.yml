@@ -31,6 +31,7 @@ jobs:
           "zmsstatistic",
           "zmsticketprinter",
           "zmscitizenapi",
+          "zmscitizenbackend",
           "zmscitizenview"
         ]
       max-parallel: 8
@@ -117,6 +118,6 @@ jobs:
       - name: Summary
         run: |
           echo "Package cleanup completed."
-          echo "Processed packages: zmsbase, zmsmessaging, zmsapi, zmsbackend, zmscalldisplay, zmsadmin, zmsstatistic, zmsticketprinter, zmscitizenapi, zmscitizenview"
+          echo "Processed packages: zmsbase, zmsmessaging, zmsapi, zmsbackend, zmscalldisplay, zmsadmin, zmsstatistic, zmsticketprinter, zmscitizenapi, zmscitizenbackend, zmscitizenview"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

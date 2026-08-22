@@ -14,6 +14,8 @@ Links open the README on GitHub (`main` branch).
 - [zmscalldisplay/README.md](https://github.com/it-at-m/eappointment/blob/main/zmscalldisplay/README.md)
 - [zmscitizenapi/README.md](https://github.com/it-at-m/eappointment/blob/main/zmscitizenapi/README.md)
 - [zmscitizenapi/public/doc/README.md](https://github.com/it-at-m/eappointment/blob/main/zmscitizenapi/public/doc/README.md)
+- [zmscitizenbackend/README.md](https://github.com/it-at-m/eappointment/blob/main/zmscitizenbackend/README.md)
+- [zmscitizenbackend/public/doc/README.md](https://github.com/it-at-m/eappointment/blob/main/zmscitizenbackend/public/doc/README.md)
 - [zmsclient/README.md](https://github.com/it-at-m/eappointment/blob/main/zmsclient/README.md)
 - [zmsdldb/README.md](https://github.com/it-at-m/eappointment/blob/main/zmsdldb/README.md)
 - [zmsentities/README.md](https://github.com/it-at-m/eappointment/blob/main/zmsentities/README.md)
