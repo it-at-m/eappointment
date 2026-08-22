@@ -6,8 +6,8 @@ namespace BO\Zmscitizenbackend\Services\Core;
 
 use BO\Zmscitizenbackend\Utils\ErrorMessages;
 use BO\Zmscitizenbackend\Models\ThinnedScope;
+use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
 use BO\Zmsentities\Helper\ProcessPlainText;
-use BO\Zmscitizenbackend\Services\Core\ZmsApiFacadeService;
 use BO\Zmscitizenbackend\Services\Captcha\TokenValidationService;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Collection\ScopeList;
@@ -86,16 +86,8 @@ class ValidationService
 
         $cacheKey = $officeId . '|' . ($showUnpublished ? '1' : '0');
         if (!isset(self::$officeServicesCache[$cacheKey])) {
-            $serviceList = ZmsApiFacadeService::getServicesByOfficeId($officeId, $showUnpublished);
-            $ids = [];
-            if (is_array($serviceList) && isset($serviceList['errors'])) {
-                self::$officeServicesCache[$cacheKey] = [];
-            } else {
-                foreach ($serviceList->services as $service) {
-                    $ids[] = (string)$service->id;
-                }
-                self::$officeServicesCache[$cacheKey] = $ids;
-            }
+            self::$officeServicesCache[$cacheKey] = OfficesServicesRelationsRepository::create()
+                ->readServiceIdsByOfficeId($officeId, $showUnpublished);
         }
         $availableServiceIds = self::$officeServicesCache[$cacheKey];
 

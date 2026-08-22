@@ -46,8 +46,39 @@ class OfficesServicesRelationsRepository
     }
 
     /**
+     * @return list<string>
+     */
+    public function readServiceIdsByOfficeId(int $officeId, bool $showUnpublished = false): array
+    {
+        try {
+            $sources = SourceNames::configured();
+            $pdo = Select::getReadConnection();
+            [$placeholders, $params] = self::sourcePlaceholders($sources);
+            $params['officeId'] = $officeId;
+
+            $rows = $pdo->fetchAll(self::servicesByOfficeSql($placeholders), $params);
+            $rows = is_array($rows) ? $rows : [];
+
+            $serviceIds = [];
+            foreach ($rows as $row) {
+                if (!$showUnpublished && self::isUnpublishedRequest($row['request_data'] ?? null)) {
+                    continue;
+                }
+                $serviceId = (string) ($row['service_id'] ?? '');
+                if ($serviceId !== '' && !in_array($serviceId, $serviceIds, true)) {
+                    $serviceIds[] = $serviceId;
+                }
+            }
+
+            return $serviceIds;
+        } catch (\Exception $exception) {
+            ExceptionService::handleException($exception);
+        }
+    }
+
+    /**
      * @param list<string> $sources
-     * @return array{0: string, 1: array<string, string>}
+     * @return array{0: string, 1: array<string, string|int>}
      */
     private static function sourcePlaceholders(array $sources): array
     {
@@ -141,5 +172,36 @@ FROM request_provider
 WHERE request_provider.source IN ({$placeholders})
     AND request_provider.bookable = 1
 SQL;
+    }
+
+    private static function servicesByOfficeSql(string $placeholders): string
+    {
+        return <<<SQL
+SELECT
+    request.id AS service_id,
+    request.data AS request_data
+FROM request_provider
+INNER JOIN request
+    ON request.id = request_provider.request__id
+    AND request.source = request_provider.source
+WHERE request_provider.provider__id = :officeId
+    AND request_provider.bookable = 1
+    AND request_provider.source IN ({$placeholders})
+ORDER BY request.id
+SQL;
+    }
+
+    private static function isUnpublishedRequest(mixed $requestData): bool
+    {
+        $data = $requestData;
+        if (is_string($requestData) && $requestData !== '') {
+            $decoded = json_decode($requestData, true);
+            $data = is_array($decoded) ? $decoded : [];
+        }
+        if (!is_array($data) || !isset($data['public'])) {
+            return false;
+        }
+
+        return !$data['public'];
     }
 }
