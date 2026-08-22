@@ -145,10 +145,9 @@ class AppointmentCancelRepository
         $requestRows = $pdo->fetchAll(self::requestsSql(), ['processId' => $processId]);
         $requestRows = is_array($requestRows) ? $requestRows : [];
 
-        $appointment = (new AppointmentByIdHydrator())->hydrate($processRow, $requestRows);
-        if ($appointment->captchaToken === null) {
-            $appointment->setCaptchaToken('');
-        }
+        $hydrator = new AppointmentByIdHydrator();
+        $appointment = $hydrator->hydrate($processRow, $requestRows);
+        $appointment = $hydrator->forCanceledCitizenResponse($appointment);
 
         return $appointment;
     }
