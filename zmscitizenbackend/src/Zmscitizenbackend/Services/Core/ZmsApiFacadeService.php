@@ -17,6 +17,7 @@ use BO\Zmscitizenbackend\Models\Collections\OfficeServiceRelationList;
 use BO\Zmscitizenbackend\Models\Collections\OfficeServiceAndRelationList;
 use BO\Zmscitizenbackend\Models\Collections\ServiceList;
 use BO\Zmscitizenbackend\Models\Collections\ThinnedScopeList;
+use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
 use BO\Zmsentities\Collection\RequestRelationList;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Scope;
@@ -222,19 +223,7 @@ class ZmsApiFacadeService
             return $cachedData;
         }
 
-        $providerList = ZmsApiClientService::getOffices();
-        $requestList = ZmsApiClientService::getServices();
-        $relationList = ZmsApiClientService::getRequestRelationList();
-
-        $offices = MapperService::mapOfficesWithScope($providerList, $showUnpublished);
-        $services = MapperService::mapServicesWithCombinations(
-            $requestList,
-            $relationList,
-            $showUnpublished
-        );
-        $relations = MapperService::mapRelations($relationList, $showUnpublished);
-
-        $result = new OfficeServiceAndRelationList($offices, $services, $relations);
+        $result = OfficesServicesRelationsRepository::create()->readOfficesAndServices($showUnpublished);
 
         self::setMappedCache($cacheKey, $result);
 

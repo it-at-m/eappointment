@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenbackend\Controllers\Office;
 
-use App;
 use BO\Zmscitizenbackend\BaseController;
 use BO\Zmscitizenbackend\Utils\ErrorMessages;
 use BO\Zmscitizenbackend\Services\Office\OfficesServicesRelationsService;
@@ -12,6 +11,7 @@ use BO\Zmscitizenbackend\Services\Core\ValidationService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use BO\Zmscitizenbackend\Controllers\UnpublishedAccessTrait;
+use Psr\Container\ContainerInterface;
 
 class OfficesServicesRelationsController extends BaseController
 {
@@ -21,8 +21,9 @@ class OfficesServicesRelationsController extends BaseController
     private bool $showUnpublished;
 
     /** @psalm-api */
-    public function __construct()
+    public function __construct(ContainerInterface $containerInterface)
     {
+        parent::__construct($containerInterface);
         $this->service = new OfficesServicesRelationsService();
         $this->initializeUnpublishedAccess();
     }
