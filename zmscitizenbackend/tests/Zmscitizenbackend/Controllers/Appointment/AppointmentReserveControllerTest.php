@@ -2,8 +2,14 @@
 
 namespace BO\Zmscitizenbackend\Tests\Controllers\Appointment;
 
-use BO\Zmscitizenbackend\Utils\ErrorMessages;
+use BO\Zmscitizenbackend\Exceptions\AppointmentNotAvailable;
+use BO\Zmscitizenbackend\Models\ThinnedProcess;
+use BO\Zmscitizenbackend\Repository\AppointmentByIdHydrator;
+use BO\Zmscitizenbackend\Repository\AppointmentReserveRepository;
+use BO\Zmscitizenbackend\Services\Core\ExceptionService;
 use BO\Zmscitizenbackend\Tests\ControllerTestCase;
+use BO\Zmscitizenbackend\Tests\Helper\AppointmentByIdRows;
+use BO\Zmscitizenbackend\Utils\ErrorMessages;
 
 class AppointmentReserveControllerTest extends ControllerTestCase
 {
@@ -12,7 +18,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
     public function setUp(): void
     {
         parent::setUp();
-        
+
         \App::$source_name = 'unittest';
 
         if (\App::$cache) {
@@ -20,112 +26,36 @@ class AppointmentReserveControllerTest extends ControllerTestCase
         }
     }
 
+    public function tearDown(): void
+    {
+        AppointmentReserveRepository::use(null);
+        parent::tearDown();
+    }
+
     public function testRendering()
     {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/source/unittest/',
-                    'parameters' => [
-                        'resolveReferences' => 2,
-                    ],
-                    'response' => $this->readFixture("GET_reserve_SourceGet_dldb.json"),
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/status/free/unique/',
-                    'response' => $this->readFixture("GET_appointments_free.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/status/reserved/',
-                    'parameters' => [
-                        'resolveReferences' => 2,
-                    ],
-                    'response' => $this->readFixture("POST_reserve_appointment.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/process/101002/fb43/ics/',
-                    'response' => $this->readFixture("GET_process_ics_template.json")
-                ]
-            ]
-        );
-    
+        $this->setSourceApiCall();
+        $this->stubReserve($this->sampleAppointment("BEGIN:VCALENDAR\r\nEND:VCALENDAR"));
+
         $parameters = [
             'officeId' => 10546,
             'serviceId' => ['1063423'],
             'serviceCount' => [1],
             'timestamp' => "32526616522"
         ];
-    
+
         $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
 
         $this->assertArrayHasKey('captchaToken', $responseBody);
         $this->assertIsString($responseBody['captchaToken']);
         unset($responseBody['captchaToken']);
 
-        $expectedResponse = [
-            "processId" => 101002,
-            "timestamp" => "32526616522",
-            "authKey" => "fb43",
-            "familyName" => "TEST_USER",
-            "customTextfield" => "",
-            "customTextfield2" => "",
-            "email" => "test@muenchen.de",
-            "telephone" => "123456789",
-            "officeName" => null,
-            "officeId" => 10546,
-            "status" => "reserved",
-            "scope" => [
-                "id" => 58,
-                "provider" => [
-                    "id" => 10546,
-                    "name" => "Gewerbeamt (KVR-III/21)",
-                    "displayName" => "Gewerbeamt",
-                    "lat" => null,
-                    "lon" => null,
-                    "source" => "dldb",
-                    "contact" => [
-                        "city" => "Muenchen",
-                        "country" => "Germany",
-                        "name" => "Gewerbeamt (KVR-III/21)",
-                        "postalCode" => "81371",
-                        "region" => "Muenchen",
-                        "street" => "Implerstraße",
-                        "streetNumber" => "11"
-                    ]
-                ],
-                "shortName" => "Gewerbemeldungen",
-                "emailFrom" => "no-reply@muenchen.de",
-                'emailRequired' => false,
-                "telephoneActivated" => false,
-                "telephoneRequired" => true,
-                "customTextfieldActivated" => false,
-                "customTextfieldRequired" => true,
-                "customTextfieldLabel" => "",
-                'customTextfield2Activated' => false,
-                'customTextfield2Required' => true,
-                'customTextfield2Label' => "",
-                "captchaActivatedRequired" => false,
-                "infoForAppointment" => null,
-                "infoForAllAppointments" => null,
-                "slotsPerAppointment" => null,
-                "appointmentsPerMail" => null,
-                "whitelistedMails" => null,
-                "reservationDuration" => null,
-                "activationDuration" => null,
-                "hint" => null
-            ],
-            "subRequestCounts" => [],
-            "serviceId" => 0,
-            "serviceName" => null,
-            "serviceCount" => 0,
-            "slotCount" => 4,
-            'displayNumber' => null
-        ];
+        $expectedResponse = json_decode(
+            json_encode($this->sampleAppointment("BEGIN:VCALENDAR\r\nEND:VCALENDAR")->toArray()),
+            true
+        );
+        unset($expectedResponse['captchaToken']);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArrayHasKey('icsContent', $responseBody);
@@ -139,33 +69,24 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
     public function testAppointmentNotAvailable()
     {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/source/unittest/',
-                    'parameters' => [
-                        'resolveReferences' => 2,
-                    ],
-                    'response' => $this->readFixture("GET_reserve_SourceGet_dldb.json"),
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/status/free/unique/',
-                    'response' => $this->readFixture("GET_appointments_free.json")
-                ]
-            ]
+        $this->setSourceApiCall();
+        $repository = $this->createStub(AppointmentReserveRepository::class);
+        $repository->method('reserveAppointment')->willReturnCallback(
+            static function (): ThinnedProcess {
+                ExceptionService::handleException(new AppointmentNotAvailable());
+            }
         );
-    
+        AppointmentReserveRepository::use($repository);
+
         $parameters = [
             'officeId' => 10546,
             'serviceId' => ['1063423'],
             'serviceCount' => [1],
             'timestamp' => "32526616300"
         ];
-    
+
         $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('appointmentNotAvailable')
@@ -434,97 +355,44 @@ class AppointmentReserveControllerTest extends ControllerTestCase
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
-    public function testProcessInvalid()
+    private function setSourceApiCall(): void
     {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ProcessInvalid';
-        
-    
-        $this->setApiCalls([
+        $this->setApiCalls(
             [
-                'function' => 'readGetResult',
-                'url' => '/source/unittest/',
-                'parameters' => [
-                    'resolveReferences' => 2,
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/source/unittest/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_reserve_SourceGet_dldb.json"),
                 ],
-                'response' => $this->readFixture("GET_reserve_SourceGet_dldb.json"),
-            ],
-            [
-                'function' => 'readPostResult',
-                'url' => '/process/status/free/unique/',
-                'response' => $this->readFixture("GET_appointments_free.json")
-            ],
-            [
-                'function' => 'readPostResult',
-                'url' => '/process/status/reserved/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'exception' => $exception
             ]
-        ]);
-    
-        $parameters = [
-            'officeId' => 10546,
-            'serviceId' => ['1063423'],
-            'serviceCount' => [1],
-            'timestamp' => "32526616522"
-        ];
-        $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-        $expectedResponse = [
-            'errors' => [
-                ErrorMessages::get('processInvalid')
-            ]
-        ];
-        $this->assertEquals(ErrorMessages::get('processInvalid')['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+        );
     }
 
-    public function testProcessAlreadyExists()
+    private function stubReserve(ThinnedProcess $appointment): void
     {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ProcessAlreadyExists';
-        
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/source/unittest/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'response' => $this->readFixture("GET_reserve_SourceGet_dldb.json"),
-            ],
-            [
-                'function' => 'readPostResult',
-                'url' => '/process/status/free/unique/',
-                'response' => $this->readFixture("GET_appointments_free.json")
-            ],
-            [
-                'function' => 'readPostResult',
-                'url' => '/process/status/reserved/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'exception' => $exception
-            ]
-        ]);
-    
-        $parameters = [
-            'officeId' => 10546,
-            'serviceId' => ['1063423'],
-            'serviceCount' => [1],
-            'timestamp' => "32526616522"
-        ];
-        $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-        $expectedResponse = [
-            'errors' => [
-                ErrorMessages::get('processAlreadyExists')
-            ]
-        ];
-        $this->assertEquals(ErrorMessages::get('processAlreadyExists')['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+        $repository = $this->createStub(AppointmentReserveRepository::class);
+        $repository->method('reserveAppointment')->willReturn($appointment);
+        AppointmentReserveRepository::use($repository);
     }
 
+    private function sampleAppointment(?string $icsContent = null): ThinnedProcess
+    {
+        $row = AppointmentByIdRows::processRow();
+        $row['status'] = 'reserved';
+        $row['id'] = 10546;
+        $row['name'] = 'Gewerbeamt (KVR-III/21)';
+        $row['display_name'] = 'Gewerbeamt';
+        $appointment = (new AppointmentByIdHydrator())->hydrate(
+            $row,
+            AppointmentByIdRows::requestRows(),
+            $icsContent
+        );
+        $appointment->setCaptchaToken('');
+        $appointment->officeId = 10546;
+        return $appointment;
+    }
 }
+

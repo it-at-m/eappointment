@@ -115,6 +115,11 @@ class ExceptionService
                     $error = self::getError('invalidApiClient');
 
                     break;
+                case 'BO\\Zmsbackend\\Process\\Exception\\ProcessReserveFailed':
+                case 'BO\\Zmscitizenbackend\\Exceptions\\AppointmentNotAvailable':
+                    $error = self::getError('appointmentNotAvailable');
+
+                    break;
             // Calendar exceptions
                 case 'BO\\Zmsbackend\\Calendar\\Exception\\InvalidFirstDay':
                 case 'BO\\Zmscitizenbackend\\Exceptions\\InvalidAvailabilityInput':

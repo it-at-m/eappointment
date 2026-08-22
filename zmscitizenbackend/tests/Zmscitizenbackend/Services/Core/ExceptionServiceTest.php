@@ -106,6 +106,14 @@ class ExceptionServiceTest extends TestCase
             'ApiclientInvalid' => [
                 'BO\\Zmsbackend\\Process\\Exception\\ApiclientInvalid',
                 'invalidApiClient'
+            ],
+            'ProcessReserveFailed' => [
+                'BO\\Zmsbackend\\Process\\Exception\\ProcessReserveFailed',
+                'appointmentNotAvailable'
+            ],
+            'AppointmentNotAvailable' => [
+                'BO\\Zmscitizenbackend\\Exceptions\\AppointmentNotAvailable',
+                'appointmentNotAvailable'
             ]
         ];
     }
