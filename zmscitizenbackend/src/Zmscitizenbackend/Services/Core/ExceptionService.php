@@ -52,11 +52,14 @@ class ExceptionService
                     break;
             // Process exceptions
                 case 'BO\\Zmsbackend\\Process\\Exception\\ProcessNotFound':
+                case 'BO\\Zmscitizenbackend\\Exceptions\\ProcessNotFound':
                     $error = self::getError('appointmentNotFound');
 
                     break;
                 case 'BO\\Zmsbackend\\Process\\Exception\\AuthKeyMatchFailed':
                 case 'BO\\Zmsbackend\\Process\\Exception\\ExternalUserIdMatchFailed':
+                case 'BO\\Zmscitizenbackend\\Exceptions\\AuthKeyMatchFailed':
+                case 'BO\\Zmscitizenbackend\\Exceptions\\ExternalUserIdMatchFailed':
                     $error = self::getError('authKeyMismatch');
 
                     break;

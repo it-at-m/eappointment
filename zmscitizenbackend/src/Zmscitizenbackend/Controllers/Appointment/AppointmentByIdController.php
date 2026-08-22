@@ -9,15 +9,18 @@ use BO\Zmscitizenbackend\Utils\ErrorMessages;
 use BO\Zmscitizenbackend\Services\Appointment\AppointmentByIdService;
 use BO\Zmscitizenbackend\Services\Core\AuthenticationService;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class AppointmentByIdController extends BaseController
 {
     private AppointmentByIdService $service;
+
     /** @psalm-api */
-    public function __construct()
+    public function __construct(ContainerInterface $containerInterface)
     {
+        parent::__construct($containerInterface);
         $this->service = new AppointmentByIdService();
     }
 

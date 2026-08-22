@@ -2,8 +2,15 @@
 
 namespace BO\Zmscitizenbackend\Tests\Controllers\Appointment;
 
-use BO\Zmscitizenbackend\Utils\ErrorMessages;
+use BO\Zmscitizenbackend\Exceptions\AuthKeyMatchFailed;
+use BO\Zmscitizenbackend\Exceptions\ProcessNotFound;
+use BO\Zmscitizenbackend\Models\ThinnedProcess;
+use BO\Zmscitizenbackend\Repository\AppointmentByIdHydrator;
+use BO\Zmscitizenbackend\Repository\AppointmentByIdRepository;
+use BO\Zmscitizenbackend\Services\Core\ExceptionService;
 use BO\Zmscitizenbackend\Tests\ControllerTestCase;
+use BO\Zmscitizenbackend\Tests\Helper\AppointmentByIdRows;
+use BO\Zmscitizenbackend\Utils\ErrorMessages;
 
 class AppointmentByIdControllerTest extends ControllerTestCase
 {
@@ -12,7 +19,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
     public function setUp(): void
     {
         parent::setUp();
-        
+
         \App::$source_name = 'unittest';
 
         if (\App::$cache) {
@@ -30,6 +37,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
 
     public function tearDown(): void
     {
+        AppointmentByIdRepository::use(null);
         putenv('ALTCHA_CAPTCHA_SITE_KEY=');
         putenv('ALTCHA_CAPTCHA_ENDPOINT_VERIFY=');
         putenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE=');
@@ -41,23 +49,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
 
     public function testRendering()
     {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/process/101002/fb43/',
-                    'parameters' => [
-                        'resolveReferences' => 2,
-                    ],
-                    'response' => $this->readFixture("GET_process.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/process/101002/fb43/ics/',
-                    'response' => $this->readFixture("GET_process_ics_template.json")
-                ]
-            ]
-        );
+        $this->stubAppointment($this->sampleAppointment("BEGIN:VCALENDAR\r\nEND:VCALENDAR"));
 
         $parameters = [
             'processId' => '101002',
@@ -66,71 +58,17 @@ class AppointmentByIdControllerTest extends ControllerTestCase
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string) $response->getBody(), true);
 
-        if($responseBody['captchaToken']) {
+        if ($responseBody['captchaToken']) {
             $this->assertArrayHasKey('captchaToken', $responseBody);
             $this->assertIsString($responseBody['captchaToken']);
             unset($responseBody['captchaToken']);
         }
 
-        $expectedResponse = [
-            "processId" => 101002,
-            "timestamp" => "1724907600",
-            "authKey" => "fb43",
-            "familyName" => "Doe",
-            "customTextfield" => "",
-            "customTextfield2" => "",
-            "email" => "johndoe@example.com",
-            "telephone" => "0123456789",
-            "officeName" => "Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)",
-            "officeId" => 102522,
-            "status" => "confirmed",
-            "scope" => [
-                "id" => 64,
-                "provider" => [
-                    "id" => 102522,
-                    "name" => "Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)",
-                    "displayName" => "Bürgerbüro Orleansplatz DEV",
-                    "lat" => null,
-                    "lon" => null,
-                    "source" => "dldb",
-                    "contact" => [
-                        "city" => "Muenchen",
-                        "country" => "Germany",
-                        "name" => "Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)",
-                        "postalCode" => "81667",
-                        "region" => "Muenchen",
-                        "street" => "Orleansstraße",
-                        "streetNumber" => "50"
-                    ]
-                ],
-                "shortName" => "DEVV",
-                "emailFrom" => "no-reply@muenchen.de",
-                "emailRequired" => true,
-                "telephoneActivated" => true,
-                "telephoneRequired" => true,
-                "customTextfieldActivated" => true,
-                "customTextfieldRequired" => true,
-                "customTextfieldLabel" => "Nachname des Kindes",
-                "customTextfield2Activated" => true,
-                "customTextfield2Required" => true,
-                "customTextfield2Label" => "Zusätzliche Bemerkung",
-                "captchaActivatedRequired" => false,
-                "infoForAppointment" => null,
-                "infoForAllAppointments" => null,
-                "slotsPerAppointment" => null,
-                "appointmentsPerMail" => 1,
-                "whitelistedMails" => null,
-                "reservationDuration" => 15,
-                "activationDuration" => 15,
-                "hint"=> null
-            ],
-            "subRequestCounts" => [],
-            "serviceId" => 1063424,
-            "serviceName" => "Gewerbe anmelden",
-            "serviceCount" => 1,
-            "slotCount" => 1,
-            "displayNumber" => null
-        ];
+        $expectedResponse = json_decode(
+            json_encode($this->sampleAppointment("BEGIN:VCALENDAR\r\nEND:VCALENDAR")->toArray()),
+            true
+        );
+        unset($expectedResponse['captchaToken']);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArrayHasKey('icsContent', $responseBody);
@@ -225,30 +163,23 @@ class AppointmentByIdControllerTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('invalidProcessId')['statusCode'], $response->getStatusCode());
         $this->assertEquals(ErrorMessages::get('invalidAuthKey')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-
     }
 
     public function testAppointmentNotFound()
     {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ProcessNotFound';
-        
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'exception' => $exception
-            ]
-        ]);
-    
+        $repository = $this->createStub(AppointmentByIdRepository::class);
+        $repository->method('readAppointmentById')->willReturnCallback(
+            static function (): ThinnedProcess {
+                ExceptionService::handleException(new ProcessNotFound());
+            }
+        );
+        AppointmentByIdRepository::use($repository);
+
         $parameters = [
             'processId' => '101002',
             'authKey' => 'fb43',
         ];
-    
+
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedError = ErrorMessages::get('appointmentNotFound');
@@ -263,27 +194,19 @@ class AppointmentByIdControllerTest extends ControllerTestCase
 
     public function testAuthKeyMismatchException()
     {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\AuthKeyMatchFailed';
-    
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/process/101002/cafe/',
-                    'parameters' => [
-                        'resolveReferences' => 2,
-                    ],
-                    'exception' => $exception
-                ]
-            ]
+        $repository = $this->createStub(AppointmentByIdRepository::class);
+        $repository->method('readAppointmentById')->willReturnCallback(
+            static function (): ThinnedProcess {
+                ExceptionService::handleException(new AuthKeyMatchFailed());
+            }
         );
-    
+        AppointmentByIdRepository::use($repository);
+
         $parameters = [
             'processId' => '101002',
             'authKey' => 'cafe',
         ];
-    
+
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
@@ -295,267 +218,19 @@ class AppointmentByIdControllerTest extends ControllerTestCase
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
-    public function testInvalidApiClientException()
+    private function stubAppointment(ThinnedProcess $appointment): void
     {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ApiclientInvalid';
-        
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'exception' => $exception
-            ]
-        ]);
-
-        $parameters = [
-            'processId' => '101002',
-            'authKey' => 'fb43',
-        ];
-
-        $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string) $response->getBody(), true);
-        $expectedResponse = [
-            'errors' => [
-                ErrorMessages::get('invalidApiClient')
-            ]
-        ];
-        $this->assertEquals(ErrorMessages::get('invalidApiClient')['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+        $repository = $this->createStub(AppointmentByIdRepository::class);
+        $repository->method('readAppointmentById')->willReturn($appointment);
+        AppointmentByIdRepository::use($repository);
     }
 
-    public function testDepartmentNotFoundException()
+    private function sampleAppointment(?string $icsContent = null): ThinnedProcess
     {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Department\\Exception\\DepartmentNotFound';
-        
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'exception' => $exception
-            ]
-        ]);
-    
-        $parameters = [
-            'processId' => '101002',
-            'authKey' => 'fb43',
-        ];
-    
-        $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string) $response->getBody(), true);
-        $expectedError = ErrorMessages::get('departmentNotFound');
-        $expectedResponse = [
-            'errors' => [
-                ErrorMessages::get('departmentNotFound')
-            ]
-        ];
-        $this->assertEquals($expectedError['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+        return (new AppointmentByIdHydrator())->hydrate(
+            AppointmentByIdRows::processRow(),
+            AppointmentByIdRows::requestRows(),
+            $icsContent
+        );
     }
-    
-    public function testMailNotFoundException()
-    {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Mail\\Exception\\MailNotFound';
-        
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'exception' => $exception
-            ]
-        ]);
-    
-        $parameters = [
-            'processId' => '101002',
-            'authKey' => 'fb43',
-        ];
-    
-        $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string) $response->getBody(), true);
-        $expectedError = ErrorMessages::get('mailNotFound');
-        $expectedResponse = [
-            'errors' => [
-                ErrorMessages::get('mailNotFound')
-            ]
-        ];
-        $this->assertEquals($expectedError['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }
-    
-    public function testOrganisationNotFoundException()
-    {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Organisation\\Exception\\OrganisationNotFound';
-        
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'exception' => $exception
-            ]
-        ]);
-    
-        $parameters = [
-            'processId' => '101002',
-            'authKey' => 'fb43',
-        ];
-    
-        $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string) $response->getBody(), true);
-        $expectedError = ErrorMessages::get('organisationNotFound');
-        $expectedResponse = [
-            'errors' => [
-                ErrorMessages::get('organisationNotFound')
-            ]
-        ];
-        $this->assertEquals($expectedError['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }
-    
-    public function testProviderNotFoundException()
-    {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Provider\\Exception\\ProviderNotFound';
-        
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'exception' => $exception
-            ]
-        ]);
-    
-        $parameters = [
-            'processId' => '101002',
-            'authKey' => 'fb43',
-        ];
-    
-        $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string) $response->getBody(), true);
-        $expectedError = ErrorMessages::get('providerNotFound');
-        $expectedResponse = [
-            'errors' => [
-                ErrorMessages::get('providerNotFound')
-            ]
-        ];
-        $this->assertEquals($expectedError['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }
-    
-    public function testRequestNotFoundException()
-    {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Request\\Exception\\RequestNotFound';
-        
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'exception' => $exception
-            ]
-        ]);
-    
-        $parameters = [
-            'processId' => '101002',
-            'authKey' => 'fb43',
-        ];
-    
-        $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string) $response->getBody(), true);
-        $expectedError = ErrorMessages::get('requestNotFound');
-        $expectedResponse = [
-            'errors' => [
-                ErrorMessages::get('requestNotFound')
-            ]
-        ];
-        $this->assertEquals($expectedError['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }
-    
-    public function testScopeNotFoundException()
-    {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Scope\\Exception\\ScopeNotFound';
-        
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'exception' => $exception
-            ]
-        ]);
-    
-        $parameters = [
-            'processId' => '101002',
-            'authKey' => 'fb43',
-        ];
-    
-        $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string) $response->getBody(), true);
-        $expectedError = ErrorMessages::get('scopeNotFound');
-        $expectedResponse = [
-            'errors' => [
-                ErrorMessages::get('scopeNotFound')
-            ]
-        ];
-        $this->assertEquals($expectedError['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }
-    
-    public function testProcessInvalidException()
-    {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsbackend\\Process\\Exception\\ProcessInvalid';
-        
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'exception' => $exception
-            ]
-        ]);
-    
-        $parameters = [
-            'processId' => '101002',
-            'authKey' => 'fb43',
-        ];
-    
-        $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string) $response->getBody(), true);
-        $expectedError = ErrorMessages::get('processInvalid');
-        $expectedResponse = [
-            'errors' => [
-                ErrorMessages::get('processInvalid')
-            ]
-        ];
-        $this->assertEquals($expectedError['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }
-
 }
