@@ -1,0 +1,18 @@
+{
+  "type": [
+    "array",
+    "object",
+    "null"
+  ],
+  "properties": {
+    "offices": {
+      "type": "array",
+      "items": {
+        "$ref": "../office.json"
+      }
+    }
+  },
+  "required": [
+    "offices"
+  ]
+}

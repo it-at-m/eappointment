@@ -31,11 +31,13 @@ jobs:
         run: |
           composer install --working-dir=zmsbackend
           composer install --working-dir=zmscitizenapi
+          composer install --working-dir=zmscitizenbackend
 
       - name: Run PHP post-install scripts
         run: |
           cd zmsbackend && bin/configure && composer run-script post-install-cmd && cd ..
           cd zmscitizenapi && bin/configure && composer run-script post-install-cmd && cd ..
+          cd zmscitizenbackend && bin/configure && composer run-script post-install-cmd && cd ..
 
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
@@ -46,16 +48,19 @@ jobs:
         run: |
           (cd zmsbackend && npm install)
           (cd zmscitizenapi && npm install)
+          (cd zmscitizenbackend && npm install)
 
       - name: Build projects
         run: |
           (cd zmsbackend && npm run build)
           (cd zmscitizenapi && npm run build)
+          (cd zmscitizenbackend && npm run build)
 
       - name: Generate Swagger documentation
         run: |
           (cd zmsbackend && npm run doc && npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml)
           (cd zmscitizenapi && npm run doc && npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml)
+          (cd zmscitizenbackend && npm run doc && npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml)
 
       - name: Upload API docs artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -65,6 +70,7 @@ jobs:
           path: |
             zmsbackend/public/doc/
             zmscitizenapi/public/doc/
+            zmscitizenbackend/public/doc/
 
       - name: Set job result
         id: set-result

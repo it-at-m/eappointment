@@ -1,0 +1,118 @@
+<?php
+
+use BO\Slim\LoggerService;
+use BO\Slim\Middleware\RequestLoggingMiddleware;
+use BO\Slim\Middleware\RequestSanitizerMiddleware;
+use BO\Slim\Middleware\SecurityHeadersMiddleware;
+use BO\Zmscitizenbackend\Services\Core\ProcessContextExtractor;
+use BO\Zmscitizenbackend\Utils\ErrorMessages;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+// @codingStandardsIgnoreFile
+chdir(__DIR__);
+
+// define the application path as single global constant
+if (!defined('APP_PATH')) {
+    define('APP_PATH', realpath(__DIR__));
+}
+
+// use autoloading offered by composer, see composer.json for path settings
+if (file_exists(APP_PATH . '/vendor/autoload.php')) {
+    define('VENDOR_PATH', APP_PATH . '/vendor');
+} else {
+    define('VENDOR_PATH', APP_PATH . '/../..');
+}
+require_once(VENDOR_PATH . '/autoload.php');
+
+
+// initialize the static \App singleton
+require(APP_PATH . '/config.php');
+
+// Set option for environment, routing, logging and templating
+\BO\Slim\Bootstrap::init();
+
+\BO\Zmscitizenbackend\Connection\Select::$enableProfiling = \App::DEBUG;
+\BO\Zmscitizenbackend\Connection\Select::$readSourceName = \App::DB_DSN_READONLY;
+\BO\Zmscitizenbackend\Connection\Select::$writeSourceName = \App::DB_DSN_READWRITE;
+\BO\Zmscitizenbackend\Connection\Select::$username = \App::DB_USERNAME;
+\BO\Zmscitizenbackend\Connection\Select::$password = \App::DB_PASSWORD;
+\BO\Zmscitizenbackend\Connection\Select::$galeraConnection = \App::DB_IS_GALERA;
+\BO\Zmscitizenbackend\Connection\Select::$pdoOptions = [
+    \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+];
+\BO\Zmscitizenbackend\Connection\Select::$connectionTimezone = ' ' . \App::$now->getTimezone()->getName();
+if (defined('MYSQL_DATABASE')) {
+    \BO\Zmscitizenbackend\Connection\Select::$dbname_zms = MYSQL_DATABASE;
+}
+
+\App::$slim->addBodyParsingMiddleware();
+
+\App::$http = new \BO\Zmsclient\Http(\App::ZMS_API_URL);
+if (\App::$httpPassword !== false) {
+    \App::$http->setUserInfo(\App::$httpUser, \App::$httpPassword);
+}
+//\BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
+
+$errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
+$errorMiddleware->setDefaultErrorHandler(new \BO\Zmscitizenbackend\Utils\ErrorHandler());
+
+// Initialize cache for rate limiting
+$cache = new \Symfony\Component\Cache\Psr16Cache(
+    new \Symfony\Component\Cache\Adapter\FilesystemAdapter()
+);
+
+
+$logger = new LoggerService();
+LoggerService::$requestContextEnricher = [ProcessContextExtractor::class, 'extractProcessContext'];
+LoggerService::$errorCodeResolver = static fn (string $errorCode): array => ErrorMessages::get($errorCode);
+
+$requestLimits = App::getRequestLimits();
+$securityHeaderErrorResponse = static function (\Throwable $e, ServerRequestInterface $request): ResponseInterface {
+    $response = App::$slim->getResponseFactory()->createResponse();
+    $error = ErrorMessages::get('securityHeaderViolation');
+    $response = $response->withStatus($error['statusCode'])
+        ->withHeader('Content-Type', 'application/json');
+    $response->getBody()->write(json_encode(['errors' => [$error]]));
+    return $response;
+};
+
+// Security middleware (order is important)
+// Maintenance middleware must be first to intercept all requests
+App::$slim->add(new \BO\Zmscitizenbackend\Middleware\MaintenanceMiddleware());
+App::$slim->add(new RequestLoggingMiddleware($logger));
+App::$slim->add(new SecurityHeadersMiddleware($logger, null, $securityHeaderErrorResponse));
+App::$slim->add(new \BO\Zmscitizenbackend\Middleware\RateLimitingMiddleware($cache, $logger));
+App::$slim->add(new RequestSanitizerMiddleware(
+    $logger,
+    $requestLimits['maxRecursionDepth'],
+    $requestLimits['maxStringLength']
+));
+App::$slim->add(new \BO\Zmscitizenbackend\Middleware\RequestSizeLimitMiddleware($logger));
+App::$slim->add(new \BO\Zmscitizenbackend\Middleware\IpFilterMiddleware($logger));
+
+// Add handler for Method Not Allowed
+$errorMiddleware->setErrorHandler(
+    \Slim\Exception\HttpMethodNotAllowedException::class,
+    function (
+        \Psr\Http\Message\ServerRequestInterface $request,
+        \Throwable $exception
+    ) {
+        $response = \App::$slim->getResponseFactory()->createResponse();
+        $response = $response->withStatus(405)
+            ->withHeader('Content-Type', 'application/json');
+
+        $responseBody = json_encode([
+            'errors' => [
+                \BO\Zmscitizenbackend\Utils\ErrorMessages::get('requestMethodNotAllowed')
+            ]
+        ]);
+
+        \App::$log->info('Method not allowed', ['response' => json_decode($responseBody, true)]);
+
+        $response->getBody()->write($responseBody);
+        return $response;
+    }
+);
+
+// load routing
+\BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');

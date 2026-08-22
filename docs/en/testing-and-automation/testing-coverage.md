@@ -7,6 +7,7 @@ Coverage HTML from CI is published under [https://it-at-m.github.io/eappointment
 - [zmsadmin](https://it-at-m.github.io/eappointment/coverage/coverage-zmsadmin/html/)
 - [zmscalldisplay](https://it-at-m.github.io/eappointment/coverage/coverage-zmscalldisplay/html/)
 - [zmscitizenapi](https://it-at-m.github.io/eappointment/coverage/coverage-zmscitizenapi/html/)
+- [zmscitizenbackend](https://it-at-m.github.io/eappointment/coverage/coverage-zmscitizenbackend/html/)
 - [zmsdldb](https://it-at-m.github.io/eappointment/coverage/coverage-zmsdldb/html/)
 - [zmsentities](https://it-at-m.github.io/eappointment/coverage/coverage-zmsentities/html/)
 - [zmsmessaging](https://it-at-m.github.io/eappointment/coverage/coverage-zmsmessaging/html/)

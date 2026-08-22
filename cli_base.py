@@ -32,6 +32,7 @@ class EappointmentCli:
     "zmsmessaging",
     "zmsstatistic",
     "zmscitizenapi",
+    "zmscitizenbackend",
     "zmsticketprinter",
   ]
 

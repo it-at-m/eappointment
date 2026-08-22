@@ -1,0 +1,549 @@
+<?php
+
+declare(strict_types=1);
+
+namespace BO\Zmscitizenbackend\Services\Core;
+
+use BO\Slim\LoggerService;
+use BO\Zmscitizenbackend\Exceptions\UnauthorizedException;
+use BO\Zmscitizenbackend\Models\AuthenticatedUser;
+use BO\Zmscitizenbackend\Models\AvailableCalendar;
+use BO\Zmscitizenbackend\Models\Office;
+use BO\Zmscitizenbackend\Models\Service;
+use BO\Zmscitizenbackend\Models\ThinnedProcess;
+use BO\Zmscitizenbackend\Models\ThinnedScope;
+use BO\Zmscitizenbackend\Models\Collections\OfficeList;
+use BO\Zmscitizenbackend\Models\Collections\OfficeServiceRelationList;
+use BO\Zmscitizenbackend\Models\Collections\OfficeServiceAndRelationList;
+use BO\Zmscitizenbackend\Models\Collections\ServiceList;
+use BO\Zmscitizenbackend\Models\Collections\ThinnedScopeList;
+use BO\Zmscitizenbackend\Repository\AvailableCalendarRepository;
+use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
+use BO\Zmsentities\Collection\RequestRelationList;
+use BO\Zmsentities\Process;
+use BO\Zmsentities\Scope;
+use BO\Zmsentities\Collection\ScopeList;
+use BO\Zmsentities\Collection\ProviderList;
+use BO\Zmsentities\Collection\RequestList;
+use BO\Zmsentities\Collection\ProcessList;
+
+/**
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @TODO: Break down this facade into smaller domain-specific facades or use the Command pattern
+ */
+class ZmsApiFacadeService
+{
+    private const string CACHE_KEY_OFFICES = 'processed_offices';
+    private const string CACHE_KEY_SCOPES = 'processed_scopes';
+    private const string CACHE_KEY_SERVICES = 'processed_services';
+    private const string CACHE_KEY_OFFICES_AND_SERVICES = 'processed_offices_and_services';
+    private const string CACHE_KEY_SERVICES_BY_OFFICE_PREFIX = 'processed_services_by_office_';
+
+    /**
+     * @param OfficeList|OfficeServiceAndRelationList|ServiceList|ThinnedScopeList $data
+     */
+    private static function setMappedCache(string $cacheKey, OfficeList|ThinnedScopeList|ServiceList|OfficeServiceAndRelationList $data): void
+    {
+        if (\App::$cache) {
+            \App::$cache->set($cacheKey, $data, \App::$SOURCE_CACHE_TTL);
+            LoggerService::logInfo('Second-level cache set', [
+                'key' => $cacheKey,
+                'ttl' => \App::$SOURCE_CACHE_TTL
+            ]);
+        }
+    }
+
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
+    public static function getOffices(bool $showUnpublished = false): OfficeList
+    {
+        $cacheKey = self::CACHE_KEY_OFFICES . ($showUnpublished ? '_unpublished' : '');
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
+        $providerList = ZmsApiClientService::getOffices();
+        $scopeList = ZmsApiClientService::getScopes();
+        $offices = [];
+        $scopeMap = [];
+        foreach ($scopeList as $scope) {
+            if ($scope->getProvider()) {
+                $scopeMap[$scope->getProvider()->source . '_' . $scope->getProvider()->id] = $scope;
+            }
+        }
+
+        foreach ($providerList as $provider) {
+            if (!$showUnpublished && isset($provider->data['public']) && !(bool) $provider->data['public']) {
+                continue;
+            }
+
+            $matchingScope = $scopeMap[$provider->source . '_' . $provider->id] ?? null;
+            $offices[] = new Office(
+                id: (int) $provider->id,
+                name: $provider->displayName ?? $provider->name,
+                address: $provider->data['address'] ?? null,
+                showAlternativeLocations: $provider->data['showAlternativeLocations'] ?? null,
+                displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [],
+                organization: $provider->data['organization'] ?? null,
+                organizationUnit: $provider->data['organizationUnit'] ?? null,
+                slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null,
+                geo: $provider->data['geo'] ?? null,
+                scope: $matchingScope ? new ThinnedScope(
+                    id: (int) $matchingScope->id,
+                    provider: MapperService::providerToThinnedProvider($provider),
+                    shortName: (string) $matchingScope->getShortName(),
+                    emailFrom: (string) $matchingScope->getEmailFrom(),
+                    emailRequired: (bool) $matchingScope->getEmailRequired(),
+                    telephoneActivated: (bool) $matchingScope->getTelephoneActivated(),
+                    telephoneRequired: (bool) $matchingScope->getTelephoneRequired(),
+                    customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated(),
+                    customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired(),
+                    customTextfieldLabel: $matchingScope->getCustomTextfieldLabel(),
+                    customTextfield2Activated: (bool) $matchingScope->getCustomTextfield2Activated(),
+                    customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required(),
+                    customTextfield2Label: $matchingScope->getCustomTextfield2Label(),
+                    captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired(),
+                    infoForAppointment: $matchingScope->getInfoForAppointment(),
+                    infoForAllAppointments: $matchingScope->getInfoForAllAppointments(),
+                    slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()),
+                    appointmentsPerMail: ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()),
+                    whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
+                    activationDuration: MapperService::extractActivationDuration($matchingScope),
+                    reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
+                    hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '')  ? (string) $matchingScope->getScopeHint() : null
+                ) : null,
+                slotsPerAppointment: $matchingScope ? ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) : null
+            );
+        }
+
+        $result = new OfficeList($offices);
+
+        self::setMappedCache($cacheKey, $result);
+
+        return $result;
+    }
+
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
+    public static function getScopes(): ThinnedScopeList|array
+    {
+        $cacheKey = self::CACHE_KEY_SCOPES;
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
+        $providerList = ZmsApiClientService::getOffices();
+        $scopeList = ZmsApiClientService::getScopes();
+        $scopeMap = [];
+        foreach ($scopeList as $scope) {
+            $scopeProvider = $scope->getProvider();
+            if ($scopeProvider && $scopeProvider->id && $scopeProvider->source) {
+                $key = $scopeProvider->source . '_' . $scopeProvider->id;
+                $scopeMap[$key] = $scope;
+            }
+        }
+
+        $scopesProjectionList = [];
+        foreach ($providerList as $provider) {
+            $key = $provider->source . '_' . $provider->id;
+            if (isset($scopeMap[$key])) {
+                $matchingScope = $scopeMap[$key];
+                $scopesProjectionList[] = new ThinnedScope(
+                    id: (int) $matchingScope->id,
+                    provider: MapperService::providerToThinnedProvider($provider),
+                    shortName: (string) $matchingScope->getShortName(),
+                    emailFrom: (string) $matchingScope->getEmailFrom(),
+                    emailRequired: (bool) $matchingScope->getEmailRequired(),
+                    telephoneActivated: (bool) $matchingScope->getTelephoneActivated(),
+                    telephoneRequired: (bool) $matchingScope->getTelephoneRequired(),
+                    customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated(),
+                    customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired(),
+                    customTextfieldLabel: $matchingScope->getCustomTextfieldLabel(),
+                    customTextfield2Activated: (bool) $matchingScope->getCustomTextfield2Activated(),
+                    customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required(),
+                    customTextfield2Label: $matchingScope->getCustomTextfield2Label(),
+                    captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired(),
+                    infoForAppointment: $matchingScope->getInfoForAppointment(),
+                    infoForAllAppointments: $matchingScope->getInfoForAllAppointments(),
+                    slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()),
+                    appointmentsPerMail: ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()),
+                    whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
+                    reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
+                    activationDuration: MapperService::extractActivationDuration($matchingScope),
+                    hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '') ? (string) $matchingScope->getScopeHint() : null
+                );
+            }
+        }
+
+        $result = new ThinnedScopeList($scopesProjectionList);
+
+        self::setMappedCache($cacheKey, $result);
+
+        return $result;
+    }
+
+    public static function getServices(bool $showUnpublished = false): ServiceList|array
+    {
+        $cacheKey = self::CACHE_KEY_SERVICES . ($showUnpublished ? '_unpublished' : '');
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
+        $requestList = ZmsApiClientService::getServices();
+        $services = [];
+        foreach ($requestList as $request) {
+            $additionalData = $request->getAdditionalData();
+            if (
+                !$showUnpublished
+                && isset($additionalData['public'])
+                && !$additionalData['public']
+            ) {
+                continue;
+            }
+
+            $services[] = new Service(id: (int) $request->getId(), name: $request->getName(), maxQuantity: $additionalData['maxQuantity'] ?? 1);
+        }
+
+        $result = new ServiceList($services);
+
+        self::setMappedCache($cacheKey, $result);
+
+        return $result;
+    }
+
+    public static function getServicesAndOffices(bool $showUnpublished = false): OfficeServiceAndRelationList|array
+    {
+        $cacheKey = self::CACHE_KEY_OFFICES_AND_SERVICES . ($showUnpublished ? '_unpublished' : '');
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
+        $result = OfficesServicesRelationsRepository::create()->readOfficesAndServices($showUnpublished);
+
+        self::setMappedCache($cacheKey, $result);
+
+        return $result;
+    }
+
+    /**
+     * One offices + scopes load, then in-memory captcha checks for all office IDs.
+     * Avoids per-office scope reloads that each rebuild a full ThinnedScope.
+     */
+    public static function isCaptchaRequiredForAnyOffice(array $officeIds): bool
+    {
+        $wanted = [];
+        foreach ($officeIds as $officeIdRaw) {
+            $officeId = (int) $officeIdRaw;
+            if ($officeId > 0) {
+                $wanted[$officeId] = true;
+            }
+        }
+        if ($wanted === []) {
+            return false;
+        }
+
+        $providerById = [];
+        foreach (ZmsApiClientService::getOffices() as $provider) {
+            $providerById[(int) $provider->id] = $provider;
+        }
+
+        $scopes = ZmsApiClientService::getScopes();
+        if (!$scopes instanceof ScopeList) {
+            return false;
+        }
+
+        foreach (array_keys($wanted) as $officeId) {
+            $provider = $providerById[$officeId] ?? null;
+            if ($provider === null) {
+                continue;
+            }
+            $source = (string) ($provider->source ?? '');
+            if ($source === '') {
+                continue;
+            }
+
+            $matchingScope = $scopes->withProviderID($source, (string) $officeId)->getIterator()->current();
+            if ($matchingScope instanceof Scope && $matchingScope->getCaptchaActivatedRequired()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
+    public static function getScopeById(?int $scopeId): ThinnedScope|array
+    {
+        $scopeList = ZmsApiClientService::getScopes();
+        $matchingScope = null;
+        foreach ($scopeList as $scope) {
+            if ((int) $scope->id === (int) $scopeId) {
+                $matchingScope = $scope;
+                break;
+            }
+        }
+
+        $tempScopeList = new ScopeList();
+        if ($matchingScope !== null) {
+            $tempScopeList->addEntity($matchingScope);
+        }
+        $errors = ValidationService::validateScopesNotFound($tempScopeList);
+        if (is_array($errors) && !empty($errors['errors'])) {
+            return $errors;
+        }
+
+        if ($matchingScope === null) {
+            return ValidationService::validateScopesNotFound(new ScopeList());
+        }
+
+        $scopeProvider = $matchingScope->getProvider();
+        return new ThinnedScope(
+            id: (int) $matchingScope->id,
+            provider: $scopeProvider ? MapperService::providerToThinnedProvider($scopeProvider) : null,
+            shortName: (string) $matchingScope->getShortName(),
+            emailFrom: (string) $matchingScope->getEmailFrom(),
+            emailRequired: (bool) $matchingScope->getEmailRequired(),
+            telephoneActivated: (bool) $matchingScope->getTelephoneActivated(),
+            telephoneRequired: (bool) $matchingScope->getTelephoneRequired(),
+            customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated(),
+            customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired(),
+            customTextfieldLabel: $matchingScope->getCustomTextfieldLabel() ?? null,
+            customTextfield2Activated: (bool) $matchingScope->getCustomTextfield2Activated(),
+            customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required(),
+            customTextfield2Label: $matchingScope->getCustomTextfield2Label() ?? null,
+            captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired(),
+            infoForAppointment: $matchingScope->getInfoForAppointment() ?? null,
+            infoForAllAppointments: $matchingScope->getInfoForAllAppointments() ?? null,
+            slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()),
+            appointmentsPerMail: ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()),
+            whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
+            reservationDuration: MapperService::extractReservationDuration($matchingScope),
+            activationDuration: MapperService::extractActivationDuration($matchingScope),
+            hint: ((string) $matchingScope->getScopeHint() === '' ? null : (string) $matchingScope->getScopeHint())
+        );
+    }
+
+    public static function getServicesByOfficeId(int $officeId, bool $showUnpublished = false): ServiceList|array
+    {
+        $cacheKey = self::CACHE_KEY_SERVICES_BY_OFFICE_PREFIX . $officeId . ($showUnpublished ? '_unpublished' : '');
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
+        $requestList = ZmsApiClientService::getServices();
+        $requestRelationList = ZmsApiClientService::getRequestRelationList();
+        $requestMap = [];
+        foreach ($requestList as $request) {
+            $additionalData = $request->getAdditionalData();
+            if (
+                !$showUnpublished
+                && isset($additionalData['public'])
+                && !$additionalData['public']
+            ) {
+                continue;
+            }
+
+            $requestMap[$request->id] = $request;
+        }
+
+        $services = [];
+        foreach ($requestRelationList as $relation) {
+            if ((int) $relation->provider->id === $officeId) {
+                $requestId = $relation->request->id;
+                if (isset($requestMap[$requestId])) {
+                    $request = $requestMap[$requestId];
+                    $services[] = new Service(id: (int) $request->id, name: $request->name, maxQuantity: $request->getAdditionalData()['maxQuantity'] ?? 1);
+                }
+            }
+        }
+
+        $errors = ValidationService::validateServicesNotFound($services);
+        if (is_array($errors) && !empty($errors['errors'])) {
+            return $errors;
+        }
+
+        $result = new ServiceList($services);
+
+        self::setMappedCache($cacheKey, $result);
+
+        return $result;
+    }
+
+    public static function getCalendarAvailability(
+        array $officeIds,
+        array $serviceIds,
+        array $serviceCounts,
+        string $startDate,
+        string $endDate,
+        ?string $slotsStartDate = null,
+        ?string $slotsEndDate = null
+    ): AvailableCalendar|array {
+        return AvailableCalendarRepository::create()->readAvailableCalendar(
+            $officeIds,
+            $serviceIds,
+            $serviceCounts,
+            $startDate,
+            $endDate,
+            $slotsStartDate,
+            $slotsEndDate
+        );
+    }
+
+    public static function getFreeAppointments(int $officeId, array $serviceIds, array $serviceCounts, array $date): ProcessList|array
+    {
+        $providerList = ZmsApiClientService::getOffices();
+        $requestList  = ZmsApiClientService::getServices();
+
+        $providerSource = [];
+        foreach ($providerList as $p) {
+            $providerSource[(string)$p->id] = (string)($p->source ?? '');
+        }
+        $requestSource  = [];
+        foreach ($requestList as $r) {
+            $requestSource[(string)$r->id] = (string)($r->source ?? '');
+        }
+
+        $oid = (string)$officeId;
+        $provSrc = $providerSource[$oid] ?? null;
+        if (!$provSrc) {
+            return ['errors' => [['message' => 'Unknown provider source for ID ' . $oid]]];
+        }
+
+        $office = ['id' => $officeId, 'source' => $provSrc];
+
+        $requests = [];
+        foreach ($serviceIds as $id => $serviceId) {
+            $sid   = (string)$serviceId;
+            $reqSrc = $requestSource[$sid] ?? null;
+            if (!$reqSrc) {
+                return ['errors' => [['message' => 'Unknown service source for ID ' . $sid]]];
+            }
+            $count = (int)($serviceCounts[$id] ?? 1);
+            for ($k = 0; $k < $count; $k++) {
+                $requests[] = ['id' => $serviceId, 'source' => $reqSrc];
+            }
+        }
+
+        return ZmsApiClientService::getFreeTimeslots(
+            new ProviderList([$office]),
+            new RequestList($requests),
+            $date,
+            $date
+        );
+    }
+
+    public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): ThinnedProcess|array
+    {
+        $errors = ValidationService::validateServiceArrays($serviceIds, $serviceCounts);
+        if (!empty($errors)) {
+            return $errors;
+        }
+        $process = ZmsApiClientService::reserveTimeslot($appointmentProcess, $serviceIds, $serviceCounts);
+        return MapperService::processToThinnedProcess($process);
+    }
+
+    public static function getProcessById(?int $processId, ?string $authKey, ?AuthenticatedUser $user): Process
+    {
+        // AuthKey check needs to be first
+        if (!is_null($authKey)) {
+            return ZmsApiClientService::getProcessById($processId, $authKey);
+        } elseif (!is_null($user)) {
+            $externalUserId = $user->getExternalUserId();
+            return ZmsApiClientService::getProcessByIdAuthenticated($processId, $externalUserId);
+        } else {
+            throw new UnauthorizedException();
+        }
+    }
+
+    /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
+    public static function getThinnedProcessById(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
+    {
+        $process = self::getProcessById($processId, $authKey, $user);
+        $errors = ValidationService::validateGetProcessNotFound($process);
+        if (is_array($errors) && !empty($errors['errors'])) {
+            return $errors;
+        }
+        return MapperService::processToThinnedProcess($process);
+    }
+
+    public static function updateClientData(Process $reservedProcess): Process|array
+    {
+        $clientUpdateResult = ZmsApiClientService::submitClientData($reservedProcess);
+        if (isset($clientUpdateResult['error'])) {
+            return $clientUpdateResult;
+        }
+        return $clientUpdateResult;
+    }
+
+    public static function preconfirmAppointment(Process $reservedProcess): Process|array
+    {
+        $clientUpdateResult = ZmsApiClientService::preconfirmProcess($reservedProcess);
+        if (isset($clientUpdateResult['error'])) {
+            return $clientUpdateResult;
+        }
+        return $clientUpdateResult;
+    }
+
+    public static function confirmAppointment(Process $preconfirmedProcess): Process|array
+    {
+        $clientUpdateResult = ZmsApiClientService::confirmProcess($preconfirmedProcess);
+        if (isset($clientUpdateResult['error'])) {
+            return $clientUpdateResult;
+        }
+        return $clientUpdateResult;
+    }
+
+    public static function cancelAppointment(Process $confirmedProcess): Process|array
+    {
+        $clientUpdateResult = ZmsApiClientService::cancelAppointment($confirmedProcess);
+        if (isset($clientUpdateResult['error'])) {
+            return $clientUpdateResult;
+        }
+        return $clientUpdateResult;
+    }
+
+    public static function sendPreconfirmationEmail(Process $reservedProcess): Process|array
+    {
+        $clientUpdateResult = ZmsApiClientService::sendPreconfirmationEmail($reservedProcess);
+        if (isset($clientUpdateResult['error'])) {
+            return $clientUpdateResult;
+        }
+        return $clientUpdateResult;
+    }
+
+    public static function sendConfirmationEmail(Process $preconfirmedProcess): Process|array
+    {
+        $clientUpdateResult = ZmsApiClientService::sendConfirmationEmail($preconfirmedProcess);
+        if (isset($clientUpdateResult['error'])) {
+            return $clientUpdateResult;
+        }
+        return $clientUpdateResult;
+    }
+
+    public static function sendCancellationEmail(Process $confirmedProcess): Process|array
+    {
+        $clientUpdateResult = ZmsApiClientService::sendCancellationEmail($confirmedProcess);
+        if (isset($clientUpdateResult['error'])) {
+            return $clientUpdateResult;
+        }
+        return $clientUpdateResult;
+    }
+
+    public static function getAppointmentsByExternalUserId(string $externalUserId, ?int $filterId = null, ?string $status = null): ProcessList
+    {
+        return ZmsApiClientService::getProcessesByExternalUserId($externalUserId, $filterId, $status);
+    }
+}

@@ -95,6 +95,10 @@
   - changed-files:
     - any-glob-to-any-file: ['zmscitizenapi/**']
 
+"Module: zmscitizenbackend":
+  - changed-files:
+    - any-glob-to-any-file: ['zmscitizenbackend/**']
+
 "Module: zmscitizenview":
   - changed-files:
     - any-glob-to-any-file: ['zmscitizenview/**']
