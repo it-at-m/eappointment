@@ -87,6 +87,10 @@ class ExceptionServiceTest extends TestCase
                 'BO\\Zmsbackend\\Process\\Exception\\ProcessDeleteFailed',
                 'processDeleteFailed'
             ],
+            'CitizenProcessDeleteFailed' => [
+                'BO\\Zmscitizenbackend\\Exceptions\\ProcessDeleteFailed',
+                'processDeleteFailed'
+            ],
             'ProcessInvalid' => [
                 'BO\\Zmsbackend\\Process\\Exception\\ProcessInvalid',
                 'processInvalid'

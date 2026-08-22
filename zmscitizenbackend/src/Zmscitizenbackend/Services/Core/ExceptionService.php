@@ -78,6 +78,7 @@ class ExceptionService
 
                     break;
                 case 'BO\\Zmsbackend\\Process\\Exception\\ProcessDeleteFailed':
+                case 'BO\\Zmscitizenbackend\\Exceptions\\ProcessDeleteFailed':
                     $error = self::getError('processDeleteFailed');
 
                     break;
