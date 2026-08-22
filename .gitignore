@@ -173,6 +173,8 @@ bin/
 !zmsbackend/bin/**
 !zmscitizenapi/bin/
 !zmscitizenapi/bin/build_swagger.js
+!zmscitizenbackend/bin/
+!zmscitizenbackend/bin/build_swagger.js
 tmp/
 *.tmp
 *.bak

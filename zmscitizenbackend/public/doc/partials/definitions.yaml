@@ -1,0 +1,19 @@
+definitions:
+  appointment:
+    $ref: "schema/citizenapi/thinnedProcess.json"
+  appointmentCancel:
+    $ref: "schema/citizenapi/appointmentCancel.json"
+  appointmentConfirm:
+    $ref: "schema/citizenapi/appointmentConfirm.json"
+  appointmentPreconfirm:
+    $ref: "schema/citizenapi/appointmentPreconfirm.json"
+  appointmentReserve:
+    $ref: "schema/citizenapi/appointmentReserve.json"
+  appointmentUpdate:
+    $ref: "schema/citizenapi/appointmentUpdate.json"
+  captchaDetails:
+    $ref: "schema/citizenapi/captcha/altchaCaptcha.json"
+  officesAndServices:
+    $ref: "schema/citizenapi/collections/officeServiceAndRelationList.json"
+  scope:
+    $ref: "schema/citizenapi/thinnedScope.json"

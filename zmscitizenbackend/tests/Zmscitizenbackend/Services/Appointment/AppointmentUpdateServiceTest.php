@@ -1,0 +1,241 @@
+<?php
+
+declare(strict_types=1);
+
+namespace BO\Zmscitizenbackend\Tests\Services\Appointment;
+
+use PHPUnit\Framework\TestCase;
+use BO\Zmscitizenbackend\Models\ThinnedProcess;
+use BO\Zmscitizenbackend\Services\Appointment\AppointmentUpdateService;
+
+class AppointmentUpdateServiceTest extends TestCase
+{
+    private AppointmentUpdateService $service;
+    private \ReflectionClass $reflector;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->service = new AppointmentUpdateService();
+        $this->reflector = new \ReflectionClass(AppointmentUpdateService::class);
+    }
+
+    private function invokePrivateMethod(string $methodName, array $params = []): mixed
+    {
+        $method = $this->reflector->getMethod($methodName);
+        $method->setAccessible(true);
+        return $method->invokeArgs($this->service, $params);
+    }
+
+    public function testExtractClientDataWithValidInput(): void
+    {
+        $body = [
+            'processId' => '12345',
+            'authKey' => 'fb43',
+            'familyName' => 'Doe',
+            'email' => 'john@example.com',
+            'telephone' => '1234567890',
+            'customTextfield' => 'Custom Info',
+            'customTextfield2' => 'Custom Info 2'
+        ];
+
+        $result = $this->invokePrivateMethod('extractClientData', [$body]);
+
+        $this->assertEquals(12345, $result->processId);
+        $this->assertEquals('fb43', $result->authKey);
+        $this->assertEquals('Doe', $result->familyName);
+        $this->assertEquals('john@example.com', $result->email);
+        $this->assertEquals('1234567890', $result->telephone);
+        $this->assertEquals('Custom Info', $result->customTextfield);
+        $this->assertEquals('Custom Info 2', $result->customTextfield2);
+    }
+
+    public function testExtractClientDataWithInvalidProcessId(): void
+    {
+        $body = [
+            'processId' => 'invalid',
+            'authKey' => 'fb43'
+        ];
+
+        $result = $this->invokePrivateMethod('extractClientData', [$body]);
+
+        $this->assertNull($result->processId);
+        $this->assertEquals('fb43', $result->authKey);
+        $this->assertNull($result->familyName);
+        $this->assertNull($result->email);
+        $this->assertNull($result->telephone);
+        $this->assertNull($result->customTextfield);
+        $this->assertNull($result->customTextfield2);
+    }
+
+    public function testExtractClientDataWithEmptyAuthKey(): void
+    {
+        $body = [
+            'processId' => '12345',
+            'authKey' => ''
+        ];
+
+        $result = $this->invokePrivateMethod('extractClientData', [$body]);
+
+        $this->assertEquals(12345, $result->processId);
+        $this->assertNull($result->authKey);
+    }
+
+    public function testValidateClientDataWithValidData(): void
+    {
+        $processJson = [
+            '$schema' => 'https://localhost/terminvereinbarung/api/2/',
+            'meta' => [
+                '$schema' => 'https://schema.berlin.de/queuemanagement/metaresult.json',
+                'error' => false,
+                'generated' => '2019-02-08T14:45:15+01:00',
+                'server' => 'Zmsbackend'
+            ],
+            'data' => [
+                '$schema' => 'https://schema.berlin.de/queuemanagement/process.json',
+                'id' => 101002,
+                'authKey' => 'fb43',
+                'status' => 'confirmed',
+                'appointments' => [
+                    [
+                        'date' => 1724907600,
+                        'scope' => [
+                            'id' => '1063424'
+                        ],
+                        'slotCount' => '1'
+                    ]
+                ],
+                'scope' => [
+                    '$schema' => 'https://schema.berlin.de/queuemanagement/scope.json',
+                    'id' => '64',
+                    'source' => 'dldb',
+                    'provider' => [
+                        'id' => '64',
+                        'source' => 'dldb',
+                        'name' => 'Test Provider'
+                    ],
+                    'preferences' => [
+                        'client' => [
+                            'customTextfieldActivated' => true,
+                            'customTextfieldRequired' => true,
+                            'customTextfieldLabel' => 'Test Label',
+                            'customTextfield2Activated' => true,
+                            'customTextfield2Required' => true,
+                            'customTextfield2Label' => 'Test Label 2',
+                            'telephoneActivated' => true,
+                            'telephoneRequired' => true
+                        ]
+                    ]
+                ],
+                'clients' => [
+                    [
+                        'familyName' => 'Doe',
+                        'email' => 'john@example.com',
+                        'emailSendCount' => '0',
+                        'surveyAccepted' => 1,
+                        'telephone' => '1234567890'
+                    ]
+                ],
+                'requests' => [
+                    [
+                        'id' => '1063424',
+                        'name' => 'Test Service',
+                        'source' => 'dldb'
+                    ]
+                ]
+            ]
+        ];
+        $processResponse = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
+        $processResponse->method('getBody')
+            ->willReturn(\GuzzleHttp\Psr7\Utils::streamFor(json_encode($processJson)));
+        $processResponse->method('getStatusCode')
+            ->willReturn(200);
+    
+
+        $mockHttpClient = $this->createMock(\BO\Zmsclient\Http::class);
+        $mockHttpClient->expects($this->exactly(2))
+            ->method('readGetResult')
+            ->willReturnCallback(function($url, $params) use ($processResponse) {
+                if (strpos($url, '/process/101002/fb43/ics/') !== false) {
+                    return new \BO\Zmsclient\Result($processResponse);
+                }
+                if (strpos($url, '/process/101002/fb43/') !== false) {
+                    return new \BO\Zmsclient\Result($processResponse);
+                }
+                throw new \RuntimeException("Unexpected URL: " . $url);
+            });
+    
+        $originalHttp = \App::$http;
+    
+        try {
+            \App::$http = $mockHttpClient;
+    
+            $data = (object)[
+                'processId' => 101002,
+                'authKey' => 'fb43',
+                'familyName' => 'Doe',
+                'email' => 'john@example.com',
+                'telephone' => '1234567890',
+                'customTextfield' => 'Custom Info',
+                'customTextfield2' => 'Custom Info 2'
+            ];
+    
+            $result = $this->invokePrivateMethod('validateClientData', [$data, null]);
+            $this->assertInstanceOf(ThinnedProcess::class, $result);
+        } finally {
+            \App::$http = $originalHttp;
+        }
+    }
+
+    public function testValidateClientDataWithInvalidData(): void
+    {
+        $data = (object)[
+            'processId' => null,
+            'authKey' => null,
+            'familyName' => null,
+            'email' => null,
+            'telephone' => null,
+            'customTextfield' => null,
+            'customTextfield2' => null
+        ];
+
+        $result = $this->invokePrivateMethod('validateClientData', [$data, null]);
+
+        $this->assertArrayHasKey('errors', $result);
+    }
+
+    public function testUpdateProcessWithClientData(): void
+    {
+        $process = new ThinnedProcess();
+        $process->familyName = 'Old Name';
+        $process->email = 'old@example.com';
+        
+        $data = (object)[
+            'familyName' => 'New Name',
+            'email' => 'new@example.com',
+            'telephone' => null,
+            'customTextfield' => null,
+            'customTextfield2' => null
+        ];
+
+        $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data]);
+
+        $this->assertEquals('New Name', $result->familyName);
+        $this->assertEquals('new@example.com', $result->email);
+        $this->assertNull($result->telephone);
+        $this->assertNull($result->customTextfield);
+        $this->assertNull($result->customTextfield2);
+    }
+
+    public function testProcessUpdateWithValidationErrors(): void
+    {
+        $body = [
+            'processId' => 'invalid',
+            'authKey' => ''
+        ];
+
+        $result = $this->service->processUpdate($body, null);
+
+        $this->assertArrayHasKey('errors', $result);
+    }
+}

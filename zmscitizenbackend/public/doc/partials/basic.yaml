@@ -1,0 +1,7 @@
+basePath: /terminvereinbarung/api/citizen
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
