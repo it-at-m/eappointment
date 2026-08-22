@@ -96,6 +96,7 @@ class ExceptionService
 
                     break;
                 case 'BO\\Zmsbackend\\Process\\Exception\\MoreThanAllowedAppointmentsPerMail':
+                case 'BO\\Zmscitizenbackend\\Exceptions\\MoreThanAllowedAppointmentsPerMail':
                     $error = self::getError('tooManyAppointmentsWithSameMail');
 
                     break;
