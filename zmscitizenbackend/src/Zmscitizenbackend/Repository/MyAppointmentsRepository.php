@@ -8,7 +8,6 @@ use BO\Zmscitizenbackend\Connection\Pdo;
 use BO\Zmscitizenbackend\Connection\Select;
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
 use BO\Zmscitizenbackend\Services\Core\ExceptionService;
-use BO\Zmscitizenbackend\Services\Core\ZmsApiClientService;
 
 class MyAppointmentsRepository
 {
@@ -70,7 +69,7 @@ class MyAppointmentsRepository
                 if ($appointment->captchaToken === null) {
                     $appointment->setCaptchaToken('');
                 }
-                self::attachIcs($hydrator, $appointment, $processId);
+                IcsRepository::create()->attachIcs($appointment);
                 $appointments[] = $appointment;
             }
 
@@ -101,26 +100,6 @@ class MyAppointmentsRepository
         }
 
         return $byProcessId;
-    }
-
-    private static function attachIcs(
-        AppointmentByIdHydrator $hydrator,
-        ThinnedProcess $appointment,
-        int $processId
-    ): void {
-        if (!$hydrator->shouldGenerateIcs($appointment->timestamp, $appointment->status)) {
-            return;
-        }
-
-        $icsAuthKey = $appointment->authKey ?? '';
-        if ($icsAuthKey === '') {
-            return;
-        }
-
-        $icsContent = ZmsApiClientService::getIcsContent($processId, $icsAuthKey);
-        if ($icsContent) {
-            $appointment->setIcsContent($icsContent);
-        }
     }
 
     /**

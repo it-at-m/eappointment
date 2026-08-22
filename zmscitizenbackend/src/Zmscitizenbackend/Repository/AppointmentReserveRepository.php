@@ -7,7 +7,6 @@ namespace BO\Zmscitizenbackend\Repository;
 use BO\Zmscitizenbackend\Connection\Select;
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
 use BO\Zmscitizenbackend\Services\Core\ExceptionService;
-use BO\Zmscitizenbackend\Services\Core\ZmsApiClientService;
 
 class AppointmentReserveRepository
 {
@@ -67,19 +66,7 @@ class AppointmentReserveRepository
                 $appointment->setCaptchaToken('');
             }
             $appointment->officeId = $officeId;
-
-            if ($hydrator->shouldGenerateIcs($appointment->timestamp, $appointment->status)) {
-                $icsAuthKey = $appointment->authKey ?? $credentials['authKey'];
-                if ($icsAuthKey !== '') {
-                    $icsContent = ZmsApiClientService::getIcsContent(
-                        $credentials['processId'],
-                        $icsAuthKey
-                    );
-                    if ($icsContent) {
-                        $appointment->setIcsContent($icsContent);
-                    }
-                }
-            }
+            IcsRepository::create()->attachIcs($appointment);
 
             return $appointment;
         } catch (\Exception $exception) {

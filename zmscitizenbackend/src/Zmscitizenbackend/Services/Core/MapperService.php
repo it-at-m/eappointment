@@ -17,6 +17,7 @@ use BO\Zmscitizenbackend\Models\Collections\OfficeList;
 use BO\Zmscitizenbackend\Models\Collections\OfficeServiceRelationList;
 use BO\Zmscitizenbackend\Models\Collections\ServiceList;
 use BO\Zmscitizenbackend\Models\Collections\ThinnedScopeList;
+use BO\Zmscitizenbackend\Repository\IcsRepository;
 use BO\Zmscitizenbackend\Utils\ClientIpHelper;
 use BO\Zmsentities\Appointment;
 use BO\Zmsentities\Client;
@@ -655,7 +656,7 @@ class MapperService
             return null;
         }
 
-        $content = ZmsApiClientService::getIcsContent((int) $process->getId(), (string) $process->getAuthKey());
+        $content = IcsRepository::create()->readIcsContentForProcess($process);
         return $content ?: null;
     }
 }

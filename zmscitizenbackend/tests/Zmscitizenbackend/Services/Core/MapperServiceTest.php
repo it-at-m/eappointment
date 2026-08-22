@@ -10,6 +10,7 @@ use BO\Zmscitizenbackend\Models\ThinnedProcess;
 use BO\Zmsentities\Request;
 use BO\Zmsentities\RequestRelation;
 use PHPUnit\Framework\TestCase;
+use BO\Zmscitizenbackend\Repository\IcsRepository;
 use BO\Zmscitizenbackend\Services\Core\MapperService;
 use BO\Zmscitizenbackend\Models\ThinnedScope;
 use BO\Zmscitizenbackend\Models\ThinnedProvider;
@@ -33,10 +34,14 @@ class MapperServiceTest extends TestCase
         if (\App::$cache) {
             \App::$cache->clear();
         }
+        $ics = $this->createStub(IcsRepository::class);
+        $ics->method('readIcsContentForProcess')->willReturn(null);
+        IcsRepository::use($ics);
     }
 
     protected function tearDown(): void
     {
+        IcsRepository::use(null);
         parent::tearDown();
     }
 
