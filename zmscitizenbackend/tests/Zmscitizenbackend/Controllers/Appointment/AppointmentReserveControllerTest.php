@@ -4,9 +4,9 @@ namespace BO\Zmscitizenbackend\Tests\Controllers\Appointment;
 
 use BO\Zmscitizenbackend\Exceptions\AppointmentNotAvailable;
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
-use BO\Zmscitizenbackend\Repository\AppointmentByIdHydrator;
-use BO\Zmscitizenbackend\Repository\AppointmentReserveRepository;
-use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
+use BO\Zmscitizenbackend\Repository\Appointment\AppointmentByIdHydrator;
+use BO\Zmscitizenbackend\Repository\Appointment\AppointmentReserveRepository;
+use BO\Zmscitizenbackend\Repository\Office\OfficesServicesRelationsRepository;
 use BO\Zmscitizenbackend\Services\Core\ExceptionService;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
 use BO\Zmscitizenbackend\Tests\ControllerTestCase;

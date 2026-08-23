@@ -8,7 +8,7 @@ use BO\Zmscitizenbackend\Models\Collections\OfficeList;
 use BO\Zmscitizenbackend\Models\Collections\OfficeServiceAndRelationList;
 use BO\Zmscitizenbackend\Models\Collections\OfficeServiceRelationList;
 use BO\Zmscitizenbackend\Models\Collections\ServiceList;
-use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
+use BO\Zmscitizenbackend\Repository\Office\OfficesServicesRelationsRepository;
 use BO\Zmscitizenbackend\Services\Office\OfficesServicesRelationsService;
 use PHPUnit\Framework\TestCase;
 

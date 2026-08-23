@@ -4,9 +4,9 @@ namespace BO\Zmscitizenbackend\Tests\Controllers\Availability;
 
 use BO\Zmscitizenbackend\Exceptions\InvalidAvailabilityInput;
 use BO\Zmscitizenbackend\Models\AvailableCalendar;
-use BO\Zmscitizenbackend\Repository\AvailableCalendarHydrator;
-use BO\Zmscitizenbackend\Repository\AvailableCalendarRepository;
-use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
+use BO\Zmscitizenbackend\Repository\Availability\AvailableCalendarHydrator;
+use BO\Zmscitizenbackend\Repository\Availability\AvailableCalendarRepository;
+use BO\Zmscitizenbackend\Repository\Office\OfficesServicesRelationsRepository;
 use BO\Zmscitizenbackend\Services\Core\ExceptionService;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
 use BO\Zmscitizenbackend\Tests\ControllerTestCase;

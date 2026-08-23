@@ -6,7 +6,7 @@ namespace BO\Zmscitizenbackend\Services\Core;
 
 use BO\Zmscitizenbackend\Utils\ErrorMessages;
 use BO\Zmscitizenbackend\Models\ThinnedScope;
-use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
+use BO\Zmscitizenbackend\Repository\Office\OfficesServicesRelationsRepository;
 use BO\Zmscitizenbackend\Helper\ProcessPlainText;
 use BO\Zmscitizenbackend\Services\Captcha\TokenValidationService;
 use DateTime;

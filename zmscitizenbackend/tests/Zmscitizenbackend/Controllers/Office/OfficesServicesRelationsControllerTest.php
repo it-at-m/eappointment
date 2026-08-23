@@ -6,8 +6,8 @@ use BO\Zmscitizenbackend\Models\Collections\OfficeList;
 use BO\Zmscitizenbackend\Models\Collections\OfficeServiceAndRelationList;
 use BO\Zmscitizenbackend\Models\Collections\OfficeServiceRelationList;
 use BO\Zmscitizenbackend\Models\Collections\ServiceList;
-use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsHydrator;
-use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
+use BO\Zmscitizenbackend\Repository\Office\OfficesServicesRelationsHydrator;
+use BO\Zmscitizenbackend\Repository\Office\OfficesServicesRelationsRepository;
 use BO\Zmscitizenbackend\Tests\ControllerTestCase;
 use BO\Zmscitizenbackend\Tests\Helper\OfficesServicesRelationsRows;
 

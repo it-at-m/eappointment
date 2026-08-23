@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenbackend\Helper;
 
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
-use BO\Zmscitizenbackend\Repository\MailTemplatesRepository;
+use BO\Zmscitizenbackend\Repository\Mail\MailTemplatesRepository;
 use BO\Zmscitizenbackend\Utils\ClientIpHelper;
 use League\HTMLToMarkdown\HtmlConverter;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;

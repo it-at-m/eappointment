@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenbackend\Helper;
 
 use BO\Zmscitizenbackend\Connection\Select;
-use BO\Zmscitizenbackend\Repository\IcsQueries;
+use BO\Zmscitizenbackend\Repository\Mail\IcsQueries;
 
 class ConfigPreferences
 {

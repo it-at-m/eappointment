@@ -6,9 +6,9 @@ namespace BO\Zmscitizenbackend\Services\Appointment;
 
 use BO\Zmscitizenbackend\Models\AuthenticatedUser;
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
-use BO\Zmscitizenbackend\Repository\AppointmentByIdRepository;
-use BO\Zmscitizenbackend\Repository\AppointmentCancelRepository;
-use BO\Zmscitizenbackend\Repository\MailQueueRepository;
+use BO\Zmscitizenbackend\Repository\Appointment\AppointmentByIdRepository;
+use BO\Zmscitizenbackend\Repository\Appointment\AppointmentCancelRepository;
+use BO\Zmscitizenbackend\Repository\Mail\MailQueueRepository;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
 
 class AppointmentCancelService

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenbackend\Services\Appointment;
 
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
-use BO\Zmscitizenbackend\Repository\AppointmentReserveRepository;
+use BO\Zmscitizenbackend\Repository\Appointment\AppointmentReserveRepository;
 use BO\Zmscitizenbackend\Services\Captcha\CaptchaRequirementTrait;
 use BO\Zmscitizenbackend\Services\Captcha\TokenValidationService;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
