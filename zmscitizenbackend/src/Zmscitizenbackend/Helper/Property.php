@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenbackend\Helper;
 
-use BO\Zmscitizenbackend\Exceptions\PropertyOffsetReadOnly;
+use BO\Zmscitizenbackend\Schema\Exception\PropertyOffsetReadOnly;
 
 /**
  * @implements \ArrayAccess<array-key, mixed>

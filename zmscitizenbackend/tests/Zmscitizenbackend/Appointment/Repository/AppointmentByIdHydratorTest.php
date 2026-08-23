@@ -1,0 +1,101 @@
+<?php
+
+declare(strict_types=1);
+
+namespace BO\Zmscitizenbackend\Tests\Appointment\Repository;
+
+use BO\Zmscitizenbackend\Appointment\Repository\AppointmentByIdHydrator;
+use BO\Zmscitizenbackend\Tests\Appointment\Helper\AppointmentByIdRows;
+use PHPUnit\Framework\TestCase;
+
+class AppointmentByIdHydratorTest extends TestCase
+{
+    public function testHydrateMapsProcessAndScope(): void
+    {
+        $appointment = (new AppointmentByIdHydrator())->hydrate(
+            AppointmentByIdRows::processRow(),
+            AppointmentByIdRows::requestRows(),
+            "BEGIN:VCALENDAR\r\nEND:VCALENDAR"
+        );
+        $payload = $appointment->toArray();
+
+        $this->assertSame(101002, $payload['processId']);
+        $this->assertSame('fb43', $payload['authKey']);
+        $this->assertSame('Doe', $payload['familyName']);
+        $this->assertSame('johndoe@example.com', $payload['email']);
+        $this->assertSame(102522, $payload['officeId']);
+        $this->assertSame('Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)', $payload['officeName']);
+        $this->assertSame('confirmed', $payload['status']);
+        $this->assertSame(1063424, $payload['serviceId']);
+        $this->assertSame('Gewerbe anmelden', $payload['serviceName']);
+        $this->assertSame(1, $payload['serviceCount']);
+        $this->assertSame([], $payload['subRequestCounts']);
+        $this->assertSame(64, $payload['scope']->toArray()['id']);
+        $this->assertTrue($payload['scope']->toArray()['emailRequired']);
+        $this->assertSame(15, $payload['scope']->toArray()['reservationDuration']);
+        $this->assertNull($payload['displayNumber']);
+        $this->assertSame("BEGIN:VCALENDAR\r\nEND:VCALENDAR", $payload['icsContent']);
+    }
+
+    public function testHydrateCountsSubRequests(): void
+    {
+        $requests = [
+            ['id' => '10', 'name' => 'Main', 'source' => 'dldb'],
+            ['id' => '10', 'name' => 'Main', 'source' => 'dldb'],
+            ['id' => '20', 'name' => 'Extra', 'source' => 'dldb'],
+        ];
+        $appointment = (new AppointmentByIdHydrator())->hydrate(
+            AppointmentByIdRows::processRow(),
+            $requests
+        );
+
+        $this->assertSame(10, $appointment->serviceId);
+        $this->assertSame(2, $appointment->serviceCount);
+        $this->assertSame(
+            [['id' => 20, 'name' => 'Extra', 'count' => 1]],
+            $appointment->subRequestCounts
+        );
+    }
+
+    public function testShouldGenerateIcsSkipsMidnightAndDeleted(): void
+    {
+        $hydrator = new AppointmentByIdHydrator();
+        $this->assertFalse($hydrator->shouldGenerateIcs(null, 'confirmed'));
+        $this->assertFalse($hydrator->shouldGenerateIcs('0', 'confirmed'));
+        $midnight = (string) strtotime('2024-08-29 00:00:00');
+        $this->assertFalse($hydrator->shouldGenerateIcs($midnight, 'confirmed'));
+        $this->assertFalse($hydrator->shouldGenerateIcs('1724907600', 'deleted'));
+        $this->assertTrue($hydrator->shouldGenerateIcs('1724907600', 'confirmed'));
+    }
+
+    public function testForCanceledCitizenResponseZerosOfficeAndKeepsScopeId(): void
+    {
+        $hydrator = new AppointmentByIdHydrator();
+        $appointment = $hydrator->hydrate(
+            AppointmentByIdRows::processRow(),
+            AppointmentByIdRows::requestRows()
+        );
+        $appointment->status = 'deleted';
+        $appointment->familyName = '(abgesagt)';
+
+        $canceled = $hydrator->forCanceledCitizenResponse($appointment);
+        $scope = $canceled->scope?->toArray();
+
+        $this->assertSame(0, $canceled->officeId);
+        $this->assertNull($canceled->officeName);
+        $this->assertSame('', $canceled->telephone);
+        $this->assertSame('johndoe@example.com', $canceled->email);
+        $this->assertSame(1063424, $canceled->serviceId);
+        $this->assertSame('Gewerbe anmelden', $canceled->serviceName);
+        $this->assertSame('(abgesagt)', $canceled->familyName);
+        $this->assertSame(64, $scope['id']);
+        $this->assertSame(0, $scope['provider']->toArray()['id']);
+        $this->assertSame('', $scope['provider']->toArray()['name']);
+        $this->assertNull($scope['provider']->toArray()['displayName']);
+        $this->assertNull($scope['provider']->toArray()['contact']);
+        $this->assertSame('', $scope['shortName']);
+        $this->assertSame('', $scope['emailFrom']);
+        $this->assertNull($scope['emailRequired']);
+        $this->assertSame('', $scope['whitelistedMails']);
+    }
+}

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenbackend\Tests\Schema;
 
-use BO\Zmscitizenbackend\Exceptions\SchemaFailedParseJsonFile;
-use BO\Zmscitizenbackend\Exceptions\SchemaMissingJsonFile;
-use BO\Zmscitizenbackend\Models\Office;
+use BO\Zmscitizenbackend\Schema\Exception\SchemaFailedParseJsonFile;
+use BO\Zmscitizenbackend\Schema\Exception\SchemaMissingJsonFile;
+use BO\Zmscitizenbackend\Office\Model\Office;
 use BO\Zmscitizenbackend\Schema\Loader;
 use PHPUnit\Framework\TestCase;
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenbackend\Schema;
 
-use BO\Zmscitizenbackend\Exceptions\SchemaValidation;
+use BO\Zmscitizenbackend\Schema\Exception\SchemaValidation;
 use BO\Zmscitizenbackend\Helper\Property;
 
 /**

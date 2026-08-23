@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenbackend\Tests\Connection;
 
 use BO\Zmscitizenbackend\Connection\Select;
-use BO\Zmscitizenbackend\Exceptions\PDOFailed;
+use BO\Zmscitizenbackend\Connection\Exception\PDOFailed;
 use PHPUnit\Framework\TestCase;
 
 class ConnectionTest extends TestCase
