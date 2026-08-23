@@ -6,7 +6,7 @@ namespace BO\Zmscitizenbackend\Services\Appointment;
 
 use BO\Zmscitizenbackend\Models\AuthenticatedUser;
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
-use BO\Zmscitizenbackend\Repository\AppointmentByIdRepository;
+use BO\Zmscitizenbackend\Repository\Appointment\AppointmentByIdRepository;
 use BO\Zmscitizenbackend\Services\Captcha\CaptchaService;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
 

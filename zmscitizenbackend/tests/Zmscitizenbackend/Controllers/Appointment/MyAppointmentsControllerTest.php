@@ -3,8 +3,8 @@
 namespace BO\Zmscitizenbackend\Tests\Controllers\Appointment;
 
 use BO\Zmscitizenbackend\Models\ThinnedProcess;
-use BO\Zmscitizenbackend\Repository\AppointmentByIdHydrator;
-use BO\Zmscitizenbackend\Repository\MyAppointmentsRepository;
+use BO\Zmscitizenbackend\Repository\Appointment\AppointmentByIdHydrator;
+use BO\Zmscitizenbackend\Repository\Appointment\MyAppointmentsRepository;
 use BO\Zmscitizenbackend\Tests\ControllerTestCase;
 use BO\Zmscitizenbackend\Tests\Helper\AppointmentByIdRows;
 use PHPUnit\Framework\Attributes\DataProvider;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenbackend\Services\Office;
 
 use BO\Zmscitizenbackend\Models\Collections\OfficeServiceAndRelationList;
-use BO\Zmscitizenbackend\Repository\OfficesServicesRelationsRepository;
+use BO\Zmscitizenbackend\Repository\Office\OfficesServicesRelationsRepository;
 
 class OfficesServicesRelationsService
 {

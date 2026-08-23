@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenbackend\Services\Availability;
 
 use BO\Zmscitizenbackend\Models\AvailableCalendar;
-use BO\Zmscitizenbackend\Repository\AvailableCalendarRepository;
+use BO\Zmscitizenbackend\Repository\Availability\AvailableCalendarRepository;
 use BO\Zmscitizenbackend\Services\Captcha\CaptchaRequirementTrait;
 use BO\Zmscitizenbackend\Services\Captcha\TokenValidationService;
 use BO\Zmscitizenbackend\Services\Core\ValidationService;
