@@ -4,7 +4,7 @@ use BO\Slim\LoggerService;
 use BO\Slim\Middleware\RequestLoggingMiddleware;
 use BO\Slim\Middleware\RequestSanitizerMiddleware;
 use BO\Slim\Middleware\SecurityHeadersMiddleware;
-use BO\Zmscitizenbackend\Services\Core\ProcessContextExtractor;
+use BO\Zmscitizenbackend\Core\Service\ProcessContextExtractor;
 use BO\Zmscitizenbackend\Utils\ErrorMessages;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenbackend\Connection;
 
 use BO\Slim\Helper\Sanitizer;
-use BO\Zmscitizenbackend\Exceptions\PDOFailed;
+use BO\Zmscitizenbackend\Connection\Exception\PDOFailed;
 
 /**
  * @codeCoverageIgnore

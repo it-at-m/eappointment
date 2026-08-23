@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenbackend\Schema;
 
-use BO\Zmscitizenbackend\Exceptions\SchemaFailedParseJsonFile;
-use BO\Zmscitizenbackend\Exceptions\SchemaMissingJsonFile;
+use BO\Zmscitizenbackend\Schema\Exception\SchemaFailedParseJsonFile;
+use BO\Zmscitizenbackend\Schema\Exception\SchemaMissingJsonFile;
 
 class Loader
 {
