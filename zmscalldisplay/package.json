@@ -47,7 +47,7 @@
     "picomatch": "^4.0.4",
     "postcss": "^8.5.26",
     "qrcode-generator": "2.0.4",
-    "sass": "^1.101.7",
+    "sass": "^1.103.1",
     "svgo": "^4.0.2"
   },
   "// overrides.brace-expansion": "Force 5.0.8 for CVE-2026-14257 (DoS via unbounded expansion length); no 1.x/2.x backport.",
