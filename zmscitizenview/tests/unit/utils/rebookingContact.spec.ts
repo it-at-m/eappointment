@@ -1,4 +1,5 @@
 import type { AppointmentDTO } from "@/api/models/AppointmentDTO";
+import type { Scope } from "@/api/models/Scope";
 
 import { describe, expect, it } from "vitest";
 
@@ -11,6 +12,13 @@ import {
   PLACEHOLDER_RESERVE_EMAIL,
   splitFamilyName,
 } from "@/utils/rebookingContact";
+
+const baseScope = (overrides: Partial<Scope> = {}): Scope => ({
+  id: "1",
+  provider: { id: "1", source: "dldb" },
+  shortName: "test",
+  ...overrides,
+});
 
 const baseAppointment = (
   overrides: Partial<AppointmentDTO> = {}
@@ -85,23 +93,29 @@ describe("rebookingContact", () => {
       customTextfield: "",
       customTextfield2: "",
     });
-    expect(hasMissingRequiredContact(appointment, {})).toBe(false);
+    expect(hasMissingRequiredContact(appointment, baseScope())).toBe(false);
     expect(
-      hasMissingRequiredContact(appointment, {
-        telephoneActivated: true,
-        telephoneRequired: true,
-      })
+      hasMissingRequiredContact(
+        appointment,
+        baseScope({
+          telephoneActivated: true,
+          telephoneRequired: true,
+        })
+      )
     ).toBe(true);
     expect(
-      hasMissingRequiredContact(appointment, {
-        customTextfield2Activated: true,
-        customTextfield2Required: true,
-      })
+      hasMissingRequiredContact(
+        appointment,
+        baseScope({
+          customTextfield2Activated: true,
+          customTextfield2Required: true,
+        })
+      )
     ).toBe(true);
     expect(
       hasMissingRequiredContact(
         baseAppointment({ email: PLACEHOLDER_RESERVE_EMAIL }),
-        {}
+        baseScope()
       )
     ).toBe(true);
   });

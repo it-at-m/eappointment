@@ -133,6 +133,12 @@ describe("appointmentLoginStorage", () => {
       expect(parsed).not.toHaveProperty("customTextfield");
     });
 
+    it("round-trips reservationStartMs", () => {
+      const withTimer = { ...uiData, reservationStartMs: 1_700_000_000_000 };
+      saveUiToLocalStorage(withTimer);
+      expect(getFreshLocalStorageUiData()).toEqual(withTimer);
+    });
+
     it("clears localStorage", () => {
       saveUiToLocalStorage(uiData);
       clearAppointmentLocalStorage();

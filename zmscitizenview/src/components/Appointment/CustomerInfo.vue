@@ -249,35 +249,26 @@ const providerScope = computed(
   () => selectedProvider.value?.scope ?? appointment.value?.scope
 );
 
-const lockFirstName = computed(
-  () =>
-    Boolean(props.isRebooking) &&
-    isFilledContactValue(customerData.value.firstName)
-);
-const lockLastName = computed(
-  () =>
-    Boolean(props.isRebooking) &&
-    isFilledContactValue(customerData.value.lastName)
-);
-const lockMailAddress = computed(
-  () =>
-    Boolean(props.isRebooking) &&
-    isFilledContactValue(customerData.value.mailAddress)
-);
-const lockTelephoneNumber = computed(
-  () =>
-    Boolean(props.isRebooking) &&
-    isFilledContactValue(customerData.value.telephoneNumber)
-);
-const lockCustomTextfield = computed(
-  () =>
-    Boolean(props.isRebooking) &&
-    isFilledContactValue(customerData.value.customTextfield)
-);
+/**
+ * Lock only the values that already existed when the contact step opened.
+ * A live computed would disable a field while the citizen types into it.
+ */
+const lockedFields = ref({
+  firstName: false,
+  lastName: false,
+  mailAddress: false,
+  telephoneNumber: false,
+  customTextfield: false,
+  customTextfield2: false,
+});
+
+const lockFirstName = computed(() => lockedFields.value.firstName);
+const lockLastName = computed(() => lockedFields.value.lastName);
+const lockMailAddress = computed(() => lockedFields.value.mailAddress);
+const lockTelephoneNumber = computed(() => lockedFields.value.telephoneNumber);
+const lockCustomTextfield = computed(() => lockedFields.value.customTextfield);
 const lockCustomTextfield2 = computed(
-  () =>
-    Boolean(props.isRebooking) &&
-    isFilledContactValue(customerData.value.customTextfield2)
+  () => lockedFields.value.customTextfield2
 );
 
 const loadingStates = inject("loadingStates", {
@@ -439,6 +430,18 @@ const errorDisplayCustomTextfield2 = computed(
 onMounted(() => {
   inputLines1.value = countLines(customerData.value.customTextfield ?? "");
   inputLines2.value = countLines(customerData.value.customTextfield2 ?? "");
+
+  if (props.isRebooking) {
+    const data = customerData.value;
+    lockedFields.value = {
+      firstName: isFilledContactValue(data.firstName),
+      lastName: isFilledContactValue(data.lastName),
+      mailAddress: isFilledContactValue(data.mailAddress),
+      telephoneNumber: isFilledContactValue(data.telephoneNumber),
+      customTextfield: isFilledContactValue(data.customTextfield),
+      customTextfield2: isFilledContactValue(data.customTextfield2),
+    };
+  }
 });
 
 const validForm = computed(

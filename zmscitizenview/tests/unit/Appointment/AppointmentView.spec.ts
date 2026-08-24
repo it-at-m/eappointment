@@ -2188,6 +2188,33 @@ describe("AppointmentView", () => {
 
       expect(wrapper.vm.currentView).toBe(2);
     });
+
+    it("falls back to contact when skip-contact rebook update fails", async () => {
+      mockUpdate.mockResolvedValueOnce({
+        errors: [{ errorCode: "invalidTelephone" }],
+      } as any);
+
+      const wrapper = createWrapperWithAppointmentHash();
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.rebookedAppointment = {
+        ...completeRebookedAppointment,
+      } as any;
+      wrapper.vm.appointment = { processId: "new-1", authKey: "newkey" } as any;
+      wrapper.vm.currentView = 1;
+      wrapper.vm.selectedProvider = {
+        id: "789",
+        scope: {
+          telephoneActivated: true,
+          telephoneRequired: true,
+        },
+      } as any;
+
+      await wrapper.vm.continueRebookingAfterReserve();
+      await nextTick();
+
+      expect(mockUpdate).toHaveBeenCalled();
+      expect(wrapper.vm.currentView).toBe(2);
+    });
   });
 
   describe("Reschedule Error (Vergangener Termin)", () => {

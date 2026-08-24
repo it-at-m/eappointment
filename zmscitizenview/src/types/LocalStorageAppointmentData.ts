@@ -10,4 +10,6 @@ export interface LocalStorageUiData {
   selectedServiceMap: Record<string, number>;
   selectedProviderId: string;
   selectedTimeslot: number;
+  /** Epoch ms when the current reservation started — not PII. */
+  reservationStartMs?: number;
 }

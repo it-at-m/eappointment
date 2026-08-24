@@ -127,6 +127,19 @@
               />
             </div>
             <div v-if="currentView === 2">
+              <div v-if="hasUpdateAppointmentError">
+                <muc-callout
+                  :type="toCalloutType(apiErrorTranslation.errorType)"
+                >
+                  <template #content>
+                    <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                  </template>
+
+                  <template #header>
+                    {{ t(apiErrorTranslation.headerKey) }}
+                  </template>
+                </muc-callout>
+              </div>
               <customer-info
                 :global-state="globalState"
                 :show-login-option="showLoginOption && !isRebooking"
@@ -1067,6 +1080,9 @@ const persistUiIdsForLogin = () => {
       selectedServiceMap: Object.fromEntries(selectedServiceMap.value),
       selectedProviderId: String(selectedProvider.value.id),
       selectedTimeslot: selectedTimeslot.value,
+      ...(reservationStartMs.value != null
+        ? { reservationStartMs: reservationStartMs.value }
+        : {}),
     });
   }
 };
@@ -1200,6 +1216,9 @@ const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
 
   selectedTimeslot.value = uiData.selectedTimeslot;
   currentView.value = isAppointmentInPast.value ? 3 : uiData.currentView;
+  if (typeof uiData.reservationStartMs === "number") {
+    reservationStartMs.value = uiData.reservationStartMs;
+  }
 };
 
 const runLoginResumeFromHashAndLocalStorage = (

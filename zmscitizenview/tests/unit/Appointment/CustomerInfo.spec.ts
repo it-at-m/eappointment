@@ -464,6 +464,29 @@ describe("CustomerInfo", () => {
       expect(wrapper.find("#remarks2").attributes("disabled")).toBeUndefined();
     });
 
+    it("does not lock a required field while the citizen types into it", async () => {
+      mockCustomerData.value.firstName = "Max";
+      mockCustomerData.value.lastName = "Mustermann";
+      mockCustomerData.value.mailAddress = "max@example.com";
+      mockCustomerData.value.telephoneNumber = "";
+      mockSelectedProvider.value.scope.telephoneActivated = true;
+      mockSelectedProvider.value.scope.telephoneRequired = true;
+
+      const wrapper = createWrapper({ isRebooking: true });
+      await nextTick();
+
+      expect(
+        wrapper.find("#telephonenumber").attributes("disabled")
+      ).toBeUndefined();
+
+      mockCustomerData.value.telephoneNumber = "0";
+      await nextTick();
+
+      expect(
+        wrapper.find("#telephonenumber").attributes("disabled")
+      ).toBeUndefined();
+    });
+
     it("does not lock fields during a new booking", async () => {
       mockCustomerData.value.firstName = "Max";
       mockCustomerData.value.lastName = "Mustermann";

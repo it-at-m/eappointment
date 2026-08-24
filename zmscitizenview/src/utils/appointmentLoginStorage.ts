@@ -99,6 +99,7 @@ export function parseUiLocalStorage(data: string): LocalStorageUiData | null {
       selectedProviderId?: string;
       selectedServiceMap?: Record<string, number>;
       selectedTimeslot?: number;
+      reservationStartMs?: number;
       selectedService?: { id?: string };
       selectedProvider?: { id?: string };
     };
@@ -121,6 +122,9 @@ export function parseUiLocalStorage(data: string): LocalStorageUiData | null {
       selectedServiceMap: raw.selectedServiceMap ?? {},
       selectedProviderId: String(selectedProviderId),
       selectedTimeslot: raw.selectedTimeslot ?? 0,
+      ...(typeof raw.reservationStartMs === "number"
+        ? { reservationStartMs: raw.reservationStartMs }
+        : {}),
     };
   } catch {
     return null;
