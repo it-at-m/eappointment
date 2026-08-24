@@ -67,6 +67,7 @@ class AppointmentReserveRepository
                 $appointment->setCaptchaToken('');
             }
             $appointment->officeId = $officeId;
+            ProcessLogRepository::create()->writeCreated($appointment);
             IcsRepository::create()->attachIcs($appointment);
 
             return $appointment;
