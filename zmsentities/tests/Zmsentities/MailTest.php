@@ -151,6 +151,8 @@ class MailTest extends EntityCommonTests
         $entity->client = null;
         $resolvedEntity = $entity->toResolvedEntity($process, $config, 'queued');
         $this->assertStringContainsString('Sie haben folgende Dienstleistung ausgewählt:', $resolvedEntity->getPlainPart());
+        $this->assertStringContainsString('muenchen.de/dienstleistungsfinder/muenchen/', $resolvedEntity->getHtmlPart());
+        $this->assertStringNotContainsString('service.berlin.de/dienstleistung/', $resolvedEntity->getHtmlPart());
     }
 
     public function testQueuedMailWithMultipleRequests()
@@ -205,6 +207,8 @@ class MailTest extends EntityCommonTests
 
         $this->assertStringContainsString('hiermit bestätigen wir Ihre Wartenummer', $resolvedEntity->getHtmlPart());
         $this->assertStringContainsString('Erforderliche Unterlagen', $resolvedEntity->getHtmlPart());
+        $this->assertStringContainsString('muenchen.de/dienstleistungsfinder/muenchen/', $resolvedEntity->getHtmlPart());
+        $this->assertStringNotContainsString('service.berlin.de/dienstleistung/', $resolvedEntity->getHtmlPart());
     }
 
     public function testMailWithOneRequest()
