@@ -49,7 +49,7 @@ Feature: ZMSKVR-833 / ZMSKVR-1025 Rebooking onto a Bürgerbüro that requires cu
     And the appointment customTextfield should be ""
     When I attempt to update the appointment changing familyName to "Hacker Name"
     Then the response status code should be 400
-    And the response errors should include errorCode "invalidFamilyName"
+    And the response errors should include errorCode "familyNameCannotBeChanged"
     And I fetch the appointment for the current process
     Then the appointment familyName should be "ATAF Test User"
     And the appointment customTextfield should be ""

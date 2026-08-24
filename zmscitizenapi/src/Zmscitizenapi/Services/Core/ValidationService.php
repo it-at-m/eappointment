@@ -267,19 +267,19 @@ class ValidationService
         ?string $customTextfield2
     ): array {
         $errors = [];
-        self::rejectChangedStoredField($stored->familyName, $familyName, 'invalidFamilyName', $errors);
-        self::rejectChangedStoredField($stored->email, $email, 'invalidEmail', $errors, true);
-        self::rejectChangedStoredField($stored->telephone, $telephone, 'invalidTelephone', $errors);
+        self::rejectChangedStoredField($stored->familyName, $familyName, 'familyNameCannotBeChanged', $errors);
+        self::rejectChangedStoredField($stored->email, $email, 'emailCannotBeChanged', $errors, true);
+        self::rejectChangedStoredField($stored->telephone, $telephone, 'telephoneCannotBeChanged', $errors);
         self::rejectChangedStoredField(
             self::normalizedCustomText($stored->customTextfield),
             self::normalizedCustomText($customTextfield),
-            'invalidCustomTextfield',
+            'customTextfieldCannotBeChanged',
             $errors
         );
         self::rejectChangedStoredField(
             self::normalizedCustomText($stored->customTextfield2),
             self::normalizedCustomText($customTextfield2),
-            'invalidCustomTextfield2',
+            'customTextfield2CannotBeChanged',
             $errors
         );
 

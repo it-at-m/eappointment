@@ -318,11 +318,11 @@ class ValidationServiceTest extends TestCase
             'Hacked',
             'New required field'
         );
-        $this->assertContains(ErrorMessages::get('invalidFamilyName'), $result['errors']);
-        $this->assertContains(ErrorMessages::get('invalidEmail'), $result['errors']);
-        $this->assertContains(ErrorMessages::get('invalidTelephone'), $result['errors']);
-        $this->assertContains(ErrorMessages::get('invalidCustomTextfield'), $result['errors']);
-        $this->assertNotContains(ErrorMessages::get('invalidCustomTextfield2'), $result['errors']);
+        $this->assertContains(ErrorMessages::get('familyNameCannotBeChanged'), $result['errors']);
+        $this->assertContains(ErrorMessages::get('emailCannotBeChanged'), $result['errors']);
+        $this->assertContains(ErrorMessages::get('telephoneCannotBeChanged'), $result['errors']);
+        $this->assertContains(ErrorMessages::get('customTextfieldCannotBeChanged'), $result['errors']);
+        $this->assertNotContains(ErrorMessages::get('customTextfield2CannotBeChanged'), $result['errors']);
     }
 
     public function testValidateUnchangedStoredContactAllowsFillingEmptyAndPlaceholderValues(): void
