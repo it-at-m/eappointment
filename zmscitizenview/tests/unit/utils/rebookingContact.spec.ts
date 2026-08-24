@@ -6,6 +6,8 @@ import { describe, expect, it } from "vitest";
 import { CustomerData } from "@/types/CustomerData";
 import {
   applyAppointmentContactToCustomerData,
+  copyAppointmentContact,
+  copyCustomerDataOntoAppointment,
   hasMissingRequiredContact,
   isFilledContactValue,
   isPlaceholderEmail,
@@ -76,6 +78,42 @@ describe("rebookingContact", () => {
     expect(customerData.telephoneNumber).toBe("089123");
     expect(customerData.customTextfield).toBe("note");
     expect(customerData.customTextfield2).toBe("note2");
+  });
+
+  it("copies customerData onto the appointment and omits empty extras", () => {
+    const appointment = baseAppointment({
+      telephone: "old",
+      customTextfield: "old",
+      customTextfield2: "old",
+    });
+    copyCustomerDataOntoAppointment(
+      appointment,
+      new CustomerData("Max", "Mustermann", "max@example.com", "", "", "")
+    );
+    expect(appointment.familyName).toBe("Max Mustermann");
+    expect(appointment.email).toBe("max@example.com");
+    expect(appointment.telephone).toBeUndefined();
+    expect(appointment.customTextfield).toBeUndefined();
+    expect(appointment.customTextfield2).toBeUndefined();
+  });
+
+  it("copies appointment contact onto another appointment", () => {
+    const target = baseAppointment();
+    copyAppointmentContact(
+      target,
+      baseAppointment({
+        familyName: "Anna Muster",
+        email: "anna@example.com",
+        telephone: "0891",
+        customTextfield: "a",
+        customTextfield2: "b",
+      })
+    );
+    expect(target.familyName).toBe("Anna Muster");
+    expect(target.email).toBe("anna@example.com");
+    expect(target.telephone).toBe("0891");
+    expect(target.customTextfield).toBe("a");
+    expect(target.customTextfield2).toBe("b");
   });
 
   it("does not copy placeholder email onto customerData", () => {

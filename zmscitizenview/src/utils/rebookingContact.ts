@@ -60,6 +60,34 @@ export function applyAppointmentContactToCustomerData(
   }
 }
 
+export function copyCustomerDataOntoAppointment(
+  appointment: AppointmentDTO,
+  customerData: CustomerData
+): void {
+  appointment.familyName = customerData.firstName + " " + customerData.lastName;
+  appointment.email = customerData.mailAddress;
+  appointment.telephone = customerData.telephoneNumber
+    ? customerData.telephoneNumber
+    : undefined;
+  appointment.customTextfield = customerData.customTextfield
+    ? customerData.customTextfield
+    : undefined;
+  appointment.customTextfield2 = customerData.customTextfield2
+    ? customerData.customTextfield2
+    : undefined;
+}
+
+export function copyAppointmentContact(
+  target: AppointmentDTO,
+  source: AppointmentDTO
+): void {
+  target.familyName = source.familyName;
+  target.email = source.email;
+  target.telephone = source.telephone;
+  target.customTextfield = source.customTextfield;
+  target.customTextfield2 = source.customTextfield2;
+}
+
 /**
  * True when the target scope still needs contact data the citizen has not provided.
  * Email is always required in the Bürgerfrontend contact form.

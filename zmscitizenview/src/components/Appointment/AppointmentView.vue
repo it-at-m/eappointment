@@ -428,9 +428,12 @@ import {
   getFreshLocalStorageUiData,
   parseAppointmentHash,
   resolveAppointmentAuthHash,
-  saveUiToLocalStorage,
-  setAppointmentAuthHashForLogin,
 } from "@/utils/appointmentLoginStorage";
+import { requestLogin as startAppointmentOidcLogin } from "@/utils/appointmentOidcLogin";
+import {
+  continueRebookingAfterReserve as continueRebookingAfterReserveFlow,
+  targetScopeForRebooking,
+} from "@/utils/appointmentRebooking";
 import { getTokenData } from "@/utils/auth";
 import { toCalloutType } from "@/utils/callout";
 import {
@@ -454,7 +457,7 @@ import {
 } from "@/utils/errorHandler";
 import {
   applyAppointmentContactToCustomerData,
-  hasMissingRequiredContact,
+  copyCustomerDataOntoAppointment,
 } from "@/utils/rebookingContact";
 import { isExpired } from "@/utils/timestampInPast";
 
@@ -780,69 +783,36 @@ const setServices = () => {
   }
 };
 
-const copyRebookedContactOntoAppointment = () => {
-  if (!appointment.value || !rebookedAppointment.value) {
-    return;
-  }
-  appointment.value.familyName = rebookedAppointment.value.familyName;
-  appointment.value.email = rebookedAppointment.value.email;
-  appointment.value.telephone = rebookedAppointment.value.telephone;
-  appointment.value.customTextfield = rebookedAppointment.value.customTextfield;
-  appointment.value.customTextfield2 =
-    rebookedAppointment.value.customTextfield2;
-};
-
-const fillCustomerDataFromRebookedAppointment = () => {
-  if (!rebookedAppointment.value) {
-    return;
-  }
-  applyAppointmentContactToCustomerData(
-    customerData.value,
-    rebookedAppointment.value
-  );
-};
-
-const targetScopeForRebooking = () =>
-  selectedProvider.value?.scope ?? appointment.value?.scope;
-
-const continueRebookingAfterReserve = () => {
-  fillCustomerDataFromRebookedAppointment();
-  copyRebookedContactOntoAppointment();
-  if (
-    rebookedAppointment.value &&
-    hasMissingRequiredContact(
-      rebookedAppointment.value,
-      targetScopeForRebooking()
-    )
-  ) {
-    currentView.value = 2;
-    return;
-  }
-  return setRebookData();
-};
-
-const setRebookData = () => {
-  if (appointment.value && rebookedAppointment.value) {
-    copyRebookedContactOntoAppointment();
-    clearContextErrors(errorStateMap.value);
-    currentContext.value = "update";
-    return updateAppointment(props.globalState, appointment.value).then(
-      (data) => {
-        if ((data as AppointmentDTO).processId != undefined) {
-          appointment.value = data as AppointmentDTO;
-          currentView.value = 3;
-        } else {
-          handleErrorApiResponse(
-            data,
-            errorStates.errorStateMap,
-            currentErrorData.value
-          );
-          currentView.value = 2;
-        }
-      }
-    );
-  }
-};
+const continueRebookingAfterReserve = () =>
+  continueRebookingAfterReserveFlow({
+    appointment: appointment.value,
+    rebookedAppointment: rebookedAppointment.value,
+    customerData: customerData.value,
+    targetScope: targetScopeForRebooking(
+      selectedProvider.value,
+      appointment.value
+    ),
+    globalState: props.globalState,
+    prepareUpdate: () => {
+      clearContextErrors(errorStateMap.value);
+      currentContext.value = "update";
+    },
+    goToContact: () => {
+      currentView.value = 2;
+    },
+    goToOverview: (booked) => {
+      appointment.value = booked;
+      currentView.value = 3;
+    },
+    handleUpdateError: (data) => {
+      handleErrorApiResponse(
+        data,
+        errorStates.errorStateMap,
+        currentErrorData.value
+      );
+      currentView.value = 2;
+    },
+  });
 
 const nextReserveAppointment = () => {
   if (isReservingAppointment.value) {
@@ -896,7 +866,7 @@ const nextUpdateAppointment = () => {
   if (appointment.value) {
     isUpdatingAppointment.value = true;
     clearContextErrors(errorStateMap.value);
-    copyCustomerDataOntoAppointment();
+    copyCustomerDataOntoAppointment(appointment.value, customerData.value);
 
     currentContext.value = "update";
     return updateAppointment(props.globalState, appointment.value)
@@ -1041,82 +1011,26 @@ const goToTop = async () => {
   window.scrollTo({ top: 0, behavior: "instant" });
 };
 
-const copyCustomerDataOntoAppointment = () => {
-  if (!appointment.value) {
-    return;
-  }
-  appointment.value.familyName =
-    customerData.value.firstName + " " + customerData.value.lastName;
-  appointment.value.email = customerData.value.mailAddress;
-  appointment.value.telephone = customerData.value.telephoneNumber
-    ? customerData.value.telephoneNumber
-    : undefined;
-  appointment.value.customTextfield = customerData.value.customTextfield
-    ? customerData.value.customTextfield
-    : undefined;
-  appointment.value.customTextfield2 = customerData.value.customTextfield2
-    ? customerData.value.customTextfield2
-    : undefined;
-};
+const loginUiSnapshot = () => ({
+  currentView: currentView.value,
+  selectedServiceId: selectedService.value
+    ? String(selectedService.value.id)
+    : undefined,
+  selectedProviderId: selectedProvider.value
+    ? String(selectedProvider.value.id)
+    : undefined,
+  selectedServiceMap: selectedServiceMap.value,
+  selectedTimeslot: selectedTimeslot.value,
+  reservationStartMs: reservationStartMs.value,
+});
 
-const applyContactFromAppointment = (booked: AppointmentDTO) => {
-  if (booked.telephone) {
-    customerData.value.telephoneNumber =
-      customerData.value.telephoneNumber || booked.telephone;
-  }
-  if (booked.customTextfield) {
-    customerData.value.customTextfield =
-      customerData.value.customTextfield || booked.customTextfield;
-  }
-  if (booked.customTextfield2) {
-    customerData.value.customTextfield2 =
-      customerData.value.customTextfield2 || booked.customTextfield2;
-  }
-};
-
-const persistUiIdsForLogin = () => {
-  if (selectedService.value && selectedProvider.value) {
-    saveUiToLocalStorage({
-      timestamp: Date.now(),
-      currentView: currentView.value,
-      selectedServiceId: String(selectedService.value.id),
-      selectedServiceMap: Object.fromEntries(selectedServiceMap.value),
-      selectedProviderId: String(selectedProvider.value.id),
-      selectedTimeslot: selectedTimeslot.value,
-      ...(reservationStartMs.value != null
-        ? { reservationStartMs: reservationStartMs.value }
-        : {}),
-    });
-  }
-};
-
-const startOidcLogin = () => {
-  persistUiIdsForLogin();
-  setAppointmentAuthHashForLogin(
-    appointment.value?.processId,
-    appointment.value?.authKey
+const requestLogin = () =>
+  startAppointmentOidcLogin(
+    loginUiSnapshot(),
+    appointment.value,
+    customerData.value,
+    props.globalState
   );
-  document.dispatchEvent(
-    new CustomEvent("authorization-request", {
-      detail: {
-        loginProvider: undefined,
-        authLevel: undefined,
-      },
-    })
-  );
-};
-
-const requestLogin = () => {
-  // Persist phone / Zusatzfelder on the reserved appointment so they survive
-  // OAuth remount without writing PII to localStorage (ZMSKVR-1002 / CodeQL).
-  if (appointment.value?.processId && appointment.value?.authKey) {
-    copyCustomerDataOntoAppointment();
-    return updateAppointment(props.globalState, appointment.value)
-      .catch(() => undefined)
-      .finally(startOidcLogin);
-  }
-  startOidcLogin();
-};
 
 const viewAppointment = () => {
   const url = resolveAgainstCurrentPage(
@@ -1273,7 +1187,10 @@ const runLoginResumeFromHashAndLocalStorage = (
         (response) => {
           if ((response as AppointmentDTO).processId != undefined) {
             appointment.value = response as AppointmentDTO;
-            applyContactFromAppointment(appointment.value);
+            applyAppointmentContactToCustomerData(
+              customerData.value,
+              appointment.value
+            );
             if (reservationStartMs.value == null) {
               reservationStartMs.value = Date.now();
             }
