@@ -5,8 +5,8 @@ Feature: ZMSKVR-833 / ZMSKVR-1025 Rebooking onto a Bürgerbüro that requires cu
   I want to rebook from a Bürgerbüro where custom text is optional onto one where it is required
   So that Kontakt opens for the missing Pflichtfeld instead of skipping to Übersicht
 
-  # Ausbildung 10503 (scope 372): custom text activated, not required (V24 standort).
-  # Haupt 10489 (scope 160): custom_text_field_required=1 on standort (V5).
+  # Ausbildung 10503 (scope 372): custom text activated, not required (V26).
+  # Haupt 10489 (scope 160): custom text activated and required (V26).
   # Shared booking: one Ort checkbox (10489); timeslots expose the real owner (10503 vs 10489).
   # Same-scope rebooking is already covered by ZMSKVR-1500 and is not tested here.
 
