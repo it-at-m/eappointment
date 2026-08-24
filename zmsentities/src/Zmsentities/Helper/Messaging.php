@@ -78,6 +78,29 @@ class Messaging
 
     protected static function twigView(): Environment
     {
+        return self::createTwigEnvironment(self::filesystemLoader());
+    }
+
+    protected static function dbTwigView($templateProvider): Environment
+    {
+        $loader = new \Twig\Loader\ChainLoader([
+            new \Twig\Loader\ArrayLoader($templateProvider->getTemplates()),
+            self::filesystemLoader(),
+        ]);
+        return self::createTwigEnvironment($loader);
+    }
+
+    protected static function createTwigEnvironment(\Twig\Loader\LoaderInterface $loader): Environment
+    {
+        $twig = new Environment($loader, array(//'cache' => '/cache/',
+        ));
+        $twig->addExtension(new TranslationExtension());
+        $twig->addExtension(new IntlExtension());
+        return $twig;
+    }
+
+    protected static function filesystemLoader(): FilesystemLoader
+    {
         $templatePath = TemplateFinder::getTemplatePath();
         $customTemplatesPath = 'custom_templates/';
 
@@ -100,20 +123,7 @@ class Messaging
         }
 
         $loader->addPath($templatePath, 'zmsentities');
-        $twig = new Environment($loader, array(//'cache' => '/cache/',
-        ));
-        $twig->addExtension(new TranslationExtension());
-        $twig->addExtension(new IntlExtension());
-        return $twig;
-    }
-
-    protected static function dbTwigView($templateProvider): Environment
-    {
-        $loader = new \Twig\Loader\ArrayLoader($templateProvider->getTemplates());
-        $twig = new \Twig\Environment($loader);
-        $twig->addExtension(new TranslationExtension());
-        $twig->addExtension(new IntlExtension());
-        return $twig;
+        return $loader;
     }
 
     public static function getMailContentPreview($templateContent, $process): string
