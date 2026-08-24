@@ -147,7 +147,7 @@ class RequestReport extends Base
                 'Summe',
                 $overallProcessingTime,
                 $totalSum
-            ]
+            ],
             $dateSums
         );
 
