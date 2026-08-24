@@ -96,7 +96,7 @@ class RequestReport extends Base
         $dateSums = [];
 
         foreach ($report->data as $name => $entry) {
-            if ($name !== 'sum' && $name !== 'average_processingtime') {
+            if ($name !== 'sum' && $name !== 'average_processingtime' && $name !== 'average_processingtime_overall') {
                 $rowData = [];
                 if ($name === ReportEntity::REQUEST_STAT_NAME_UNCATEGORIZED) {
                     $rowData[] = 'Dienstleistung wurde nicht erfasst';
@@ -135,8 +135,21 @@ class RequestReport extends Base
         }
 
         $sheet->fromArray($reportData, null, 'A' . $firstDataRow);
+        $overallProcessingTime =
+        isset(
+            $report->data['average_processingtime_overall']
+        )
+             && is_numeric($report->data['average_processingtime_overall'])
+             ? ReportHelper::formatTimeValue($report->data['average_processingtime_overall']) : '0';
         $sumRowIndex = $sheet->getHighestRow() + 2;
-        $sumRow = array_merge(['Summe', '', $totalSum], $dateSums);
+        $sumRow = array_merge(
+            [
+                'Summe',
+                $overallProcessingTime,
+                $totalSum
+            ]
+            $dateSums
+        );
 
         $sheet->fromArray($sumRow, null, 'A' . $sumRowIndex);
     }

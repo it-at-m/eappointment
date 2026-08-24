@@ -215,7 +215,7 @@ class Exchange extends Schema\Entity
             return $entity;
         }
 
-        $reserved = ['sum', 'average_processingtime'];
+        $reserved = ['sum', 'average_processingtime', 'average_processingtime_overall'];
         $tailStatNames = [
             self::REQUEST_STAT_NAME_UNCATEGORIZED,
             self::REQUEST_STAT_NAME_NONEXISTENT,
@@ -266,6 +266,32 @@ class Exchange extends Schema\Entity
             $entity->data[$date]['max'] = $maxima;
             $entity->data[$date]['average'] = (! $total || ! $count) ? 0 : floor($total / $count);
         }
+        return $entity;
+    }
+
+    public function withWeightedAverageProcessingTime(): static
+    {
+        $entity = clone $this;
+        $weightedSum = 0.0;
+        $totalCount = 0;
+
+        $averages = $entity->data['average_processingtime'] ?? [];
+        $sums = $entity->data['sum'] ?? [];
+
+        foreach ($averages as $name => $average) {
+            if (!is_numeric($average)) {
+                continue;
+            }
+            $count = (int) ($sums[$name] ?? 0);
+            if ($count <= 0) {
+                continue;
+            }
+
+            $weightedSum += ((float) $average * $count);
+            $totalCount += $count;
+        }
+        $entity->data['average_processingtime_overall'] = $totalCount > 0 ? round($weightedSum / $totalCount, 2) : null;
+
         return $entity;
     }
 
