@@ -391,7 +391,6 @@ import {
   cancelAppointment,
   confirmAppointment,
   fetchAppointment,
-  fetchServicesAndProviders,
   preconfirmAppointment,
   reserveAppointment,
   updateAppointment,
@@ -418,10 +417,10 @@ import { StepperItem } from "@/types/StepperTypes";
 import { SubService } from "@/types/SubService";
 import {
   getApiStatusState,
-  handleApiResponseForDownTime,
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
+import { loadOfficesAndServicesCatalog } from "@/utils/appointmentCatalog";
 import {
   clearAppointmentAuthHashSession,
   clearAppointmentLocalStorage,
@@ -1056,6 +1055,16 @@ const viewAppointment = () => {
 const getProviders = (serviceId: string, providers: string[] | null) =>
   providersForService(serviceId, providers, relations.value, offices.value);
 
+const applyCatalog = (catalog: {
+  services: Service[];
+  relations: Relation[];
+  offices: Office[];
+}) => {
+  services.value = catalog.services;
+  relations.value = catalog.relations;
+  offices.value = catalog.offices;
+};
+
 const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
   selectedServiceMap.value = new Map(
     Object.entries(uiData.selectedServiceMap ?? {})
@@ -1109,30 +1118,18 @@ const runLoginResumeFromHashAndLocalStorage = (
   loadedAppointmentHash.value = hash;
   clearContextErrors(errorStateMap.value);
 
-  fetchServicesAndProviders(
+  loadOfficesAndServicesCatalog(
     props.serviceId ?? undefined,
     props.locationId ?? undefined,
-    props.globalState?.baseUrl ?? undefined
+    props.globalState?.baseUrl ?? undefined,
+    errorStates.errorStateMap,
+    errorStates.currentErrorData
   )
-    .then((data) => {
-      handleErrorApiResponse(
-        data,
-        errorStates.errorStateMap,
-        currentErrorData.value
-      );
-
-      if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
+    .then((catalog) => {
+      if (!catalog) {
         return;
       }
-
-      if ((data as any)?.errors?.length) {
-        return;
-      }
-
-      services.value = (data as any).services;
-      relations.value = (data as any).relations;
-      offices.value = (data as any).offices;
-
+      applyCatalog(catalog);
       applyLocalStorageUiData(uiData);
 
       return fetchAppointment(props.globalState, appointmentData).then(
@@ -1257,25 +1254,18 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
   clearContextErrors(errorStateMap.value);
   rebookOrCancelDialog.value = true;
 
-  fetchServicesAndProviders(
+  loadOfficesAndServicesCatalog(
     props.serviceId ?? undefined,
     props.locationId ?? undefined,
-    props.globalState?.baseUrl ?? undefined
+    props.globalState?.baseUrl ?? undefined,
+    errorStates.errorStateMap,
+    errorStates.currentErrorData
   )
-    .then((data) => {
-      handleErrorApiResponse(
-        data,
-        errorStates.errorStateMap,
-        currentErrorData.value
-      );
-
-      if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
+    .then((catalog) => {
+      if (!catalog) {
         return;
       }
-
-      services.value = (data as any).services;
-      relations.value = (data as any).relations;
-      offices.value = (data as any).offices;
+      applyCatalog(catalog);
 
       fetchAppointment(props.globalState, appointmentData).then((data) => {
         if ((data as AppointmentDTO).processId != undefined) {
@@ -1517,29 +1507,18 @@ onMounted(() => {
   if (uiData) {
     clearContextErrors(errorStateMap.value);
 
-    fetchServicesAndProviders(
+    loadOfficesAndServicesCatalog(
       props.serviceId ?? undefined,
       props.locationId ?? undefined,
-      props.globalState?.baseUrl ?? undefined
+      props.globalState?.baseUrl ?? undefined,
+      errorStates.errorStateMap,
+      errorStates.currentErrorData
     )
-      .then((data) => {
-        handleErrorApiResponse(
-          data,
-          errorStates.errorStateMap,
-          currentErrorData.value
-        );
-
-        if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
+      .then((catalog) => {
+        if (!catalog) {
           return;
         }
-
-        if ((data as any)?.errors?.length) {
-          return;
-        }
-
-        services.value = (data as any).services;
-        relations.value = (data as any).relations;
-        offices.value = (data as any).offices;
+        applyCatalog(catalog);
 
         // UI-only restore — never apply authKey from localStorage (legacy or new).
         applyLocalStorageUiData(uiData);
