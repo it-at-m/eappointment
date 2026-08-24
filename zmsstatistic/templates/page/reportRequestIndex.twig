@@ -66,7 +66,9 @@
                     {% set serviceNotProvidedKey = 'nonexistent' %}
                     {% for name, entry in exchangeRequest.data %}
 
-                        {% if name != "average_processingtime" and name != "sum" %}
+                        {% if name != "average_processingtime"
+                        and name !="average_processingtime_overall"
+                         and name != "sum" %}
                         <tr{% if name == uncategorizedRequestKey or name == serviceNotProvidedKey %} class="report-board--request-stat-special"{% endif %}>
                             <th class="report-board--long-text">
                                 {% if name == uncategorizedRequestKey %}
@@ -80,7 +82,7 @@
 
                             {% if exchangeRequest.period == "day" %}
                                 <td class="report-board--summary">
-                                    {{ timeutils.formatMinutesToTime(exchangeRequest.data.average_processingtime_overall) }}
+                                    {{ timeutils.formatMinutesToTime(exchangeRequest.data.average_processingtime[name]) }}
                                 </td>
                             {% endif %}
 
@@ -115,12 +117,16 @@
                     <tr>
                         <th class="report-board--long-text">
                             Summe
+                            {% if exchangeRequest.period == "day" %}
                             <br>
-                             <small>Ø Bearbeitungsdauer (unabhängig von DL)</small>
+                            <small>Ø Bearbeitungsdauer (unabhängig von DL)</small>
+                            {% endif %}
                         </th>
 
                         {% if exchangeRequest.period == "day" %}
-                            <td class="report-board--summary">-</td>
+                            <td class="report-board--summary">
+                                {{ timeutils.formatMinutesToTime(exchangeRequest.data.average_processingtime_overall)}}
+                            </td>
                         {% endif %}
 
                         <td class="report-board--summary">
