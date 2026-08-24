@@ -1,0 +1,54 @@
+<?php
+
+declare(strict_types=1);
+
+namespace BO\Zmscitizenbackend\Office\Model\Collections;
+
+use BO\Zmscitizenbackend\Office\Model\Office;
+use BO\Zmscitizenbackend\Schema\Entity;
+use InvalidArgumentException;
+use JsonSerializable;
+
+class OfficeList extends Entity implements JsonSerializable
+{
+    public static $schema = "citizenapi/collections/officeList.json";
+    public array $offices = [];
+    public function __construct(array $offices = [])
+    {
+        foreach ($offices as $office) {
+            try {
+                if (!$office instanceof Office) {
+                    throw new InvalidArgumentException("Element is not an instance of Office.");
+                }
+                $this->offices[] = $office;
+            } catch (\Exception $e) {
+                \App::$log->warning('Invalid Office skipped', ['exception' => $e->getMessage()]);
+            }
+        }
+
+        $this->ensureValid();
+    }
+
+    /**
+     * @return void
+     */
+    private function ensureValid()
+    {
+        if (!$this->testValid()) {
+            throw new InvalidArgumentException("The provided data is invalid according to the schema.");
+        }
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'offices' => array_map(fn(Office $office) => $office->toArray(), $this->offices),
+        ];
+    }
+
+    #[\Override]
+    public function jsonSerialize(): mixed
+    {
+        return $this->toArray();
+    }
+}

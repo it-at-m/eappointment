@@ -23,7 +23,7 @@ on:
         description: |
           Run the full scheduled shard matrix: main + next; UI modules (zmsadmin,
           zmscitizenview, zmsstatistic) on chrome + firefox; API modules (zmsapi,
-          zmscitizenapi) once each. Ignores module/browser inputs below.
+          zmscitizenbackend) once each. Ignores module/browser inputs below.
         required: true
         type: boolean
         default: false
@@ -55,8 +55,8 @@ on:
         required: true
         type: boolean
         default: true
-      module_zmscitizenapi:
-        description: "zmscitizenapi REST tests (@zmscitizenapi)"
+      module_zmscitizenbackend:
+        description: "zmscitizenbackend REST tests (@zmscitizenbackend)"
         required: true
         type: boolean
         default: true
@@ -85,7 +85,7 @@ on:
         required: false
         default: ""
       browser:
-        description: Browser for UI tests (ignored for API-only modules zmsapi / zmscitizenapi)
+        description: Browser for UI tests (ignored for API-only modules zmsapi / zmscitizenbackend)
         required: true
         type: choice
         options:
@@ -147,7 +147,7 @@ jobs:
               --arg citizenview "$(append_not_ignore '@zmscitizenview')" \
               --arg statistic "$(append_not_ignore '@zmsstatistic')" \
               --arg zmsapi "$(append_not_ignore '@zmsapi')" \
-              --arg zmscitizenapi "$(append_not_ignore '@zmscitizenapi')" \
+              --arg zmscitizenbackend "$(append_not_ignore '@zmscitizenbackend')" \
               '
               {
                 include: (
@@ -165,7 +165,7 @@ jobs:
                     ["main", "next"][] as $branch
                     | [
                         {shard: "zmsapi", test_layer: "api", tag_filter: $zmsapi},
-                        {shard: "zmscitizenapi", test_layer: "api", tag_filter: $zmscitizenapi}
+                        {shard: "zmscitizenbackend", test_layer: "api", tag_filter: $zmscitizenbackend}
                       ][] as $shard
                     | $shard + {branch: $branch, browser: "chrome", use_custom_tags: false}
                   ]
@@ -204,12 +204,12 @@ jobs:
                 --arg citizenview "$(append_not_ignore '@zmscitizenview')" \
                 --arg statistic "$(append_not_ignore '@zmsstatistic')" \
                 --arg zmsapi "$(append_not_ignore '@zmsapi')" \
-                --arg zmscitizenapi "$(append_not_ignore '@zmscitizenapi')" \
+                --arg zmscitizenbackend "$(append_not_ignore '@zmscitizenbackend')" \
                 --argjson module_admin "${{ inputs.module_admin }}" \
                 --argjson module_citizenview "${{ inputs.module_citizenview }}" \
                 --argjson module_statistic "${{ inputs.module_statistic }}" \
                 --argjson module_zmsapi "${{ inputs.module_zmsapi }}" \
-                --argjson module_zmscitizenapi "${{ inputs.module_zmscitizenapi }}" \
+                --argjson module_zmscitizenbackend "${{ inputs.module_zmscitizenbackend }}" \
                 '
                 {
                   include: [
@@ -225,8 +225,8 @@ jobs:
                     if $module_zmsapi then
                       {shard: "zmsapi", test_layer: "api", tag_filter: $zmsapi, use_custom_tags: false}
                     else empty end,
-                    if $module_zmscitizenapi then
-                      {shard: "zmscitizenapi", test_layer: "api", tag_filter: $zmscitizenapi, use_custom_tags: false}
+                    if $module_zmscitizenbackend then
+                      {shard: "zmscitizenbackend", test_layer: "api", tag_filter: $zmscitizenbackend, use_custom_tags: false}
                     else empty end
                   ]
                   | map(. + {branch: $branch, browser: $browser})
@@ -302,7 +302,7 @@ jobs:
         run: |
           set -euo pipefail
           PHP_TAG="${{ steps.tags.outputs.php_tag }}"
-          modules=(zmsadmin zmsbackend zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+          modules=(zmsadmin zmsbackend zmscalldisplay zmscitizenbackend zmsmessaging zmsstatistic zmsticketprinter)
           for m in "${modules[@]}"; do
             echo "Pulling $m:$PHP_TAG"
             docker pull "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG"
@@ -434,7 +434,7 @@ jobs:
           set -euo pipefail
           WEB_CONT="zms-web"
           PHP_TAG="${{ steps.tags.outputs.php_tag }}"
-          modules=(zmsadmin zmsbackend zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+          modules=(zmsadmin zmsbackend zmscalldisplay zmscitizenbackend zmsmessaging zmsstatistic zmsticketprinter)
           layout_modules=(zmsadmin zmsstatistic)
 
           retry() {
@@ -510,7 +510,7 @@ jobs:
             chmod -R 777 /var/www/html/cache 2>/dev/null || true
 
             # Module cache dirs (local devcontainer does similar in postStartCommand)
-            for dir in zmsadmin zmsbackend zmscalldisplay zmscitizenapi zmsstatistic zmsticketprinter zmsmessaging; do
+            for dir in zmsadmin zmsbackend zmscalldisplay zmscitizenbackend zmsstatistic zmsticketprinter zmsmessaging; do
               mkdir -p "/var/www/html/$dir/cache"
               chown -R www-data:www-data "/var/www/html/$dir/cache" 2>/dev/null || true
               chmod -R 777 "/var/www/html/$dir/cache" 2>/dev/null || true

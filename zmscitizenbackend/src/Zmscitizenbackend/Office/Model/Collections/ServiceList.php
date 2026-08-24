@@ -1,0 +1,54 @@
+<?php
+
+declare(strict_types=1);
+
+namespace BO\Zmscitizenbackend\Office\Model\Collections;
+
+use BO\Zmscitizenbackend\Office\Model\Service;
+use BO\Zmscitizenbackend\Schema\Entity;
+use InvalidArgumentException;
+use JsonSerializable;
+
+class ServiceList extends Entity implements JsonSerializable
+{
+    public static $schema = "citizenapi/collections/serviceList.json";
+    public array $services = [];
+    public function __construct(array $services = [])
+    {
+        foreach ($services as $service) {
+            try {
+                if (!$service instanceof Service) {
+                    throw new InvalidArgumentException("Element is not an instance of Service.");
+                }
+                $this->services[] = $service;
+            } catch (\Exception $e) {
+                \App::$log->warning('Invalid Service skipped', ['exception' => $e->getMessage()]);
+            }
+        }
+
+        $this->ensureValid();
+    }
+
+    /**
+     * @return void
+     */
+    private function ensureValid()
+    {
+        if (!$this->testValid()) {
+            throw new InvalidArgumentException("The provided data is invalid according to the schema.");
+        }
+    }
+
+    public function toArray(): array
+    {
+        return [
+            "services" => array_map(fn(Service $service) => $service->toArray(), $this->services)
+        ];
+    }
+
+    #[\Override]
+    public function jsonSerialize(): mixed
+    {
+        return $this->toArray();
+    }
+}

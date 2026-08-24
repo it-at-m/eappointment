@@ -21,7 +21,7 @@ This module contains API and UI tests for ZMS using [ATAF](https://it-at-m.githu
   - `zms/ataf/ui/pages/**` - page objects for Admin, Statistik, Buergeransicht, Mailinator
 - `src/test/resources/features/` - Cucumber feature files
   - `rest/zmsapi/` - ZMS REST API features (legacy folder/tag name; targets `zmsbackend` at `/terminvereinbarung/api/2`)
-  - `rest/zmscitizenapi/` - Citizen REST API features
+  - `rest/zmscitizenbackend/` - Citizen REST API features
   - `ui/zmsadmin/` - Admin UI features
   - `ui/buergeransicht/` - deprecated legacy citizen frontend UI features from `it-at-m/eappointment-buergeransicht` (not used for `zmscitizenview`)
   - `ui/zmsstatistic/` - Statistik UI features
@@ -105,7 +105,7 @@ mvn test -Pataf-api
 # optionally filter:
 # mvn test -Pataf-api -Dcucumber.filter.tags="@rest"
 # mvn test -Pataf-api -Dcucumber.filter.tags="@zmsapi"
-# mvn test -Pataf-api -Dcucumber.filter.tags="@zmscitizenapi"
+# mvn test -Pataf-api -Dcucumber.filter.tags="@zmscitizenbackend"
 ```
 
 - UI-only tests (Selenium/[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) web, no REST Assured):
@@ -239,7 +239,7 @@ cd zmsautomation && mvn test
 - API tags:
   - `@rest`
   - `@zmsapi` (legacy tag; REST API served by `zmsbackend`)
-  - `@zmscitizenapi`
+  - `@zmscitizenbackend`
 - UI tags:
   - `@web`
   - `@zmsadmin`
@@ -263,7 +263,7 @@ cd zmsautomation && mvn test
 ### API Features (`src/test/resources/features/rest/`)
 
 - `rest/zmsapi/status.feature` - status endpoint tests (against `zmsbackend`)
-- `rest/zmscitizenapi/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature` - Citizen API booking flow
+- `rest/zmscitizenbackend/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature` - Citizen API booking flow
 
 ### UI Features (`src/test/resources/features/ui/`)
 

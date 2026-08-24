@@ -1,0 +1,33 @@
+{
+  "type": [
+    "array",
+    "object",
+    "null"
+  ],
+  "description": "Contains information about offices, services, and their relations. Includes details about each office, available services, and how they are related.",
+  "properties": {
+    "offices": {
+      "type": "array",
+      "items": {
+        "$ref": "../office.json"
+      }
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "$ref": "../service.json"
+      }
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "$ref": "../officeServiceRelation.json"
+      }
+    }
+  },
+  "required": [
+    "offices",
+    "services",
+    "relations"
+  ]
+}

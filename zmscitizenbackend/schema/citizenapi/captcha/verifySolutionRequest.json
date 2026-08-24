@@ -1,0 +1,14 @@
+{
+    "title": "CaptchaVerifyRequest",
+    "type": "object",
+    "properties": {
+        "payload": {
+            "type": "string",
+            "description": "Base64-encoded JSON (URL-safe alphabet) containing the Altcha challenge and solution. After decoding, the JSON conforms to altchaVerifyPayload.json."
+        }
+    },
+    "required": [
+        "payload"
+    ],
+    "description": "Request body for POST /captcha-verify/. The server adds siteKey, siteSecret, and clientAddress when forwarding verification to the Altcha service."
+}

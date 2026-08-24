@@ -1,0 +1,240 @@
+<?php
+
+declare(strict_types=1);
+
+namespace BO\Zmscitizenbackend;
+
+use BO\Slim\Traits\CacheInitializationTrait;
+use Psr\SimpleCache\CacheInterface;
+
+if (!defined('MYSQL_USER')) {
+    define('MYSQL_USER', getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root');
+}
+if (!defined('MYSQL_PASSWORD')) {
+    define('MYSQL_PASSWORD', getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') : 'zmsbackend');
+}
+if (!defined('MYSQL_DATABASE')) {
+    define('MYSQL_DATABASE', getenv('MYSQL_DATABASE') ? getenv('MYSQL_DATABASE') : 'zmsbo');
+}
+if (getenv('MYSQL_PORT')) {
+    $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=";
+    $dsn .= parse_url(getenv('MYSQL_PORT'), PHP_URL_HOST);
+    $dsn .= ';port=';
+    $dsn .= parse_url(getenv('MYSQL_PORT'), PHP_URL_PORT);
+    if (!defined('DSN_RW')) {
+        define('DSN_RW', $dsn);
+    }
+} elseif (!defined('DSN_RW')) {
+    define('DSN_RW', 'mysql:dbname=' . MYSQL_DATABASE . ';host=127.0.0.1');
+}
+if (getenv('MYSQL_PORT_RO')) {
+    $mysqlPortList = explode(',', getenv('MYSQL_PORT_RO'));
+    $mysqlPortRO = trim($mysqlPortList[array_rand($mysqlPortList)]);
+    $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=";
+    $dsn .= parse_url($mysqlPortRO, PHP_URL_HOST);
+    $dsn .= ';port=';
+    $dsn .= parse_url($mysqlPortRO, PHP_URL_PORT);
+    if (!defined('DSN_RO')) {
+        define('DSN_RO', $dsn);
+    }
+} elseif (!defined('DSN_RO')) {
+    define('DSN_RO', DSN_RW);
+}
+
+/**
+ * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @TODO: Refactor this class into smaller focused classes (LoggerInitializer, MiddlewareInitializer) to reduce complexity
+ */
+class Application extends \BO\Slim\Application
+{
+    use CacheInitializationTrait;
+
+    public const string IDENTIFIER = 'zms';
+    public const string MODULE_NAME = 'zmscitizenbackend';
+    public static string $source_name = "dldb,zms";
+    public static ?CacheInterface $cache = null;
+    // Cache config
+    public static string $CACHE_DIR;
+    public static int $SOURCE_CACHE_TTL;
+    public static bool $MAINTENANCE_MODE_ENABLED;
+    // Logger config
+
+    public static int $LOGGER_MAX_REQUESTS;
+    public static int $LOGGER_MAX_ERROR_REQUESTS;
+    public static int $LOGGER_RESPONSE_LENGTH;
+    public static int $LOGGER_STACK_LINES;
+    public static int $LOGGER_MESSAGE_SIZE;
+    public static int $LOGGER_CACHE_TTL;
+    public static int $LOGGER_MAX_RETRIES;
+    public static int $LOGGER_BACKOFF_MIN;
+    public static int $LOGGER_BACKOFF_MAX;
+    public static int $LOGGER_LOCK_TIMEOUT;
+    // Captcha config
+    public static bool $CAPTCHA_ENABLED;
+    public static string $CAPTCHA_TOKEN_SECRET;
+    public static int $CAPTCHA_TOKEN_TTL;
+    public static string $ALTCHA_CAPTCHA_SITE_KEY;
+    public static string $ALTCHA_CAPTCHA_SITE_SECRET;
+    public static string $ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE;
+    public static string $ALTCHA_CAPTCHA_ENDPOINT_VERIFY;
+    // Rate limiting config
+    public static int $RATE_LIMIT_MAX_REQUESTS;
+    public static int $RATE_LIMIT_CACHE_TTL;
+    public static int $RATE_LIMIT_MAX_RETRIES;
+    public static int $RATE_LIMIT_BACKOFF_MIN;
+    public static int $RATE_LIMIT_BACKOFF_MAX;
+    public static int $RATE_LIMIT_LOCK_TIMEOUT;
+    // Request limits config
+    public static int $MAX_REQUEST_SIZE;
+    public static int $MAX_STRING_LENGTH;
+    public static int $MAX_RECURSION_DEPTH;
+    // IP Filter config
+    public static string $IP_BLACKLIST;
+
+    public static string $ACCESS_UNPUBLISHED_ON_DOMAIN;
+
+    public const string DB_DSN_READONLY = DSN_RO;
+    public const string DB_DSN_READWRITE = DSN_RW;
+    public const string DB_USERNAME = MYSQL_USER;
+    public const string DB_PASSWORD = MYSQL_PASSWORD;
+    public const bool DB_IS_GALERA = false;
+
+    public static function initialize(): void
+    {
+        self::initializeMaintenanceMode();
+        self::initializeSource();
+        self::initializeLogger();
+        self::initializeCaptcha();
+        self::initializeCache(__DIR__ . '/cache');
+        self::initializeMiddleware();
+    }
+
+    private static function initializeMaintenanceMode(): void
+    {
+        self::$MAINTENANCE_MODE_ENABLED = filter_var(getenv('MAINTENANCE_ENABLED'), FILTER_VALIDATE_BOOLEAN);
+    }
+
+    private static function initializeSource(): void
+    {
+        $fromEnv = getenv('SOURCE_NAME');
+        if (is_string($fromEnv) && trim($fromEnv) !== '') {
+            self::$source_name = trim($fromEnv);
+        }
+    }
+
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @TODO: Extract logger initialization logic into a dedicated LoggerInitializer class
+     */
+    private static function initializeLogger(): void
+    {
+        self::$LOGGER_MAX_REQUESTS = (int) (getenv('ZMS_CITIZENAPI_LOGGER_MAX_REQUESTS') ?: 1000);
+        self::$LOGGER_MAX_ERROR_REQUESTS = (int) (getenv('ZMS_CITIZENAPI_LOGGER_MAX_ERROR_REQUESTS') ?: 0);
+        self::$LOGGER_RESPONSE_LENGTH = (int) (getenv('ZMS_CITIZENAPI_LOGGER_RESPONSE_LENGTH') ?: 1048576);
+        // 1MB
+        self::$LOGGER_STACK_LINES = (int) (getenv('ZMS_CITIZENAPI_LOGGER_STACK_LINES') ?: 20);
+        self::$LOGGER_MESSAGE_SIZE = (int) (getenv('ZMS_CITIZENAPI_LOGGER_MESSAGE_SIZE') ?: 8192);
+        // 8KB
+        self::$LOGGER_CACHE_TTL = (int) (getenv('ZMS_CITIZENAPI_LOGGER_CACHE_TTL') ?: 60);
+        self::$LOGGER_MAX_RETRIES = (int) (getenv('ZMS_CITIZENAPI_LOGGER_MAX_RETRIES') ?: 3);
+        self::$LOGGER_BACKOFF_MIN = (int) (getenv('ZMS_CITIZENAPI_LOGGER_BACKOFF_MIN') ?: 100);
+        self::$LOGGER_BACKOFF_MAX = (int) (getenv('ZMS_CITIZENAPI_LOGGER_BACKOFF_MAX') ?: 1000);
+        self::$LOGGER_LOCK_TIMEOUT = (int) (getenv('ZMS_CITIZENAPI_LOGGER_LOCK_TIMEOUT') ?: 5);
+        \BO\Slim\LoggerService::configure(self::getLoggerConfig());
+    }
+
+    private static function initializeCaptcha(): void
+    {
+        self::$CAPTCHA_ENABLED = filter_var(getenv('CAPTCHA_ENABLED'), FILTER_VALIDATE_BOOLEAN);
+        self::$CAPTCHA_TOKEN_SECRET = getenv('CAPTCHA_TOKEN_SECRET') ?: '';
+        self::$CAPTCHA_TOKEN_TTL = (int) getenv('CAPTCHA_TOKEN_TTL') ?: 300;
+        self::$ALTCHA_CAPTCHA_SITE_KEY = getenv('ALTCHA_CAPTCHA_SITE_KEY') ?: '';
+        self::$ALTCHA_CAPTCHA_SITE_SECRET = getenv('ALTCHA_CAPTCHA_SITE_SECRET') ?: '';
+        self::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE = getenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE')
+            ?: 'https://captcha.muenchen.de/api/v1/captcha/challenge';
+        self::$ALTCHA_CAPTCHA_ENDPOINT_VERIFY = getenv('ALTCHA_CAPTCHA_ENDPOINT_VERIFY')
+            ?: 'https://captcha.muenchen.de/api/v1/captcha/verify';
+    }
+
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @TODO: Extract middleware initialization logic into a dedicated MiddlewareInitializer class
+     */
+    private static function initializeMiddleware(): void
+    {
+        // Rate limiting
+        self::$RATE_LIMIT_MAX_REQUESTS = (int) (getenv('RATE_LIMIT_MAX_REQUESTS') ?: 60);
+        self::$RATE_LIMIT_CACHE_TTL = (int) (getenv('RATE_LIMIT_CACHE_TTL') ?: 60);
+        self::$RATE_LIMIT_MAX_RETRIES = (int) (getenv('RATE_LIMIT_MAX_RETRIES') ?: 3);
+        self::$RATE_LIMIT_BACKOFF_MIN = (int) (getenv('RATE_LIMIT_BACKOFF_MIN') ?: 10);
+        self::$RATE_LIMIT_BACKOFF_MAX = (int) (getenv('RATE_LIMIT_BACKOFF_MAX') ?: 50);
+        self::$RATE_LIMIT_LOCK_TIMEOUT = (int) (getenv('RATE_LIMIT_LOCK_TIMEOUT') ?: 1);
+        // Request limits
+        self::$MAX_REQUEST_SIZE = (int) (getenv('MAX_REQUEST_SIZE') ?: 10485760);
+        // 10MB
+        self::$MAX_STRING_LENGTH = (int) (getenv('MAX_STRING_LENGTH') ?: 32768);
+        // 32KB
+        self::$MAX_RECURSION_DEPTH = (int) (getenv('MAX_RECURSION_DEPTH') ?: 10);
+        // IP Filter
+        self::$IP_BLACKLIST = getenv('IP_BLACKLIST') ?: '';
+
+        self::$ACCESS_UNPUBLISHED_ON_DOMAIN = getenv('ACCESS_UNPUBLISHED_ON_DOMAIN') ?: '';
+    }
+
+    /** @psalm-api */
+    public static function reinitializeMiddlewareConfig(): void
+    {
+        self::initializeMiddleware();
+    }
+
+    public static function getLoggerConfig(): array
+    {
+        return [
+            'maxRequests' => self::$LOGGER_MAX_REQUESTS,
+            'maxErrorRequests' => self::$LOGGER_MAX_ERROR_REQUESTS,
+            'responseLength' => self::$LOGGER_RESPONSE_LENGTH,
+            'stackLines' => self::$LOGGER_STACK_LINES,
+            'messageSize' => self::$LOGGER_MESSAGE_SIZE,
+            'cacheTtl' => self::$LOGGER_CACHE_TTL,
+            'maxRetries' => self::$LOGGER_MAX_RETRIES,
+            'backoffMin' => self::$LOGGER_BACKOFF_MIN,
+            'backoffMax' => self::$LOGGER_BACKOFF_MAX,
+            'lockTimeout' => self::$LOGGER_LOCK_TIMEOUT
+        ];
+    }
+
+    public static function getRateLimit(): array
+    {
+        return [
+            'maxRequests' => self::$RATE_LIMIT_MAX_REQUESTS,
+            'cacheExpiry' => self::$RATE_LIMIT_CACHE_TTL,
+            'maxRetries' => self::$RATE_LIMIT_MAX_RETRIES,
+            'backoffMin' => self::$RATE_LIMIT_BACKOFF_MIN,
+            'backoffMax' => self::$RATE_LIMIT_BACKOFF_MAX,
+            'lockTimeout' => self::$RATE_LIMIT_LOCK_TIMEOUT
+        ];
+    }
+
+    public static function getRequestLimits(): array
+    {
+        return [
+            'maxSize' => self::$MAX_REQUEST_SIZE,
+            'maxStringLength' => self::$MAX_STRING_LENGTH,
+            'maxRecursionDepth' => self::$MAX_RECURSION_DEPTH
+        ];
+    }
+
+    public static function getIpBlacklist(): string
+    {
+        return self::$IP_BLACKLIST ?: '';
+    }
+
+    /** @psalm-api */
+    public static function getAccessUnpublishedOnDomain(): ?string
+    {
+        return self::$ACCESS_UNPUBLISHED_ON_DOMAIN ?: null;
+    }
+}
+
+Application::initialize();
