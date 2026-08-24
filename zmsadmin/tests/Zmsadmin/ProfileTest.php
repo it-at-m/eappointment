@@ -25,7 +25,6 @@ class ProfileTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/profile/',
-                    'parameters' => [],
                     'response' => $this->readFixture(
                         'GET_workstation_profile.json'
                     ),
@@ -98,7 +97,6 @@ class ProfileTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/profile/',
-                    'parameters' => [],
                     'exception' => $exception,
                 ],
             ]
