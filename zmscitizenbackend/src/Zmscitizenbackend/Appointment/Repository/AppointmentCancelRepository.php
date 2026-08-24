@@ -38,10 +38,13 @@ class AppointmentCancelRepository
             $pdo = Select::getWriteConnection();
             $wasReserved = $this->persistCanceledStatus($pdo, $process, $processId);
             if ($wasReserved) {
+                ProcessLogRepository::create()->writeDeleted($process);
                 return $process;
             }
 
-            $appointment = $this->reloadAppointment($pdo, $processId);
+            $appointment = $this->hydrateAppointment($pdo, $processId);
+            ProcessLogRepository::create()->writeCanceled($appointment);
+            $appointment = (new AppointmentByIdHydrator())->forCanceledCitizenResponse($appointment);
             IcsRepository::create()->attachIcs($appointment);
 
             return $appointment;
@@ -137,7 +140,7 @@ class AppointmentCancelRepository
         ]);
     }
 
-    private function reloadAppointment(Pdo $pdo, int $processId): ThinnedProcess
+    private function hydrateAppointment(Pdo $pdo, int $processId): ThinnedProcess
     {
         $processRow = $pdo->fetchOne(self::processSql(), ['processId' => $processId]);
         if (!is_array($processRow) || $processRow === []) {
@@ -146,11 +149,7 @@ class AppointmentCancelRepository
         $requestRows = $pdo->fetchAll(self::requestsSql(), ['processId' => $processId]);
         $requestRows = is_array($requestRows) ? $requestRows : [];
 
-        $hydrator = new AppointmentByIdHydrator();
-        $appointment = $hydrator->hydrate($processRow, $requestRows);
-        $appointment = $hydrator->forCanceledCitizenResponse($appointment);
-
-        return $appointment;
+        return (new AppointmentByIdHydrator())->hydrate($processRow, $requestRows);
     }
 
     private static function processSql(): string

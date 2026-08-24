@@ -41,6 +41,7 @@ class AppointmentUpdateRepository
             $pdo = Select::getWriteConnection();
             $this->persistClientData($pdo, $process, $user, $processId);
             $appointment = $this->reloadAppointment($pdo, $processId);
+            ProcessLogRepository::create()->writeEdited($appointment);
             IcsRepository::create()->attachIcs($appointment);
 
             return $appointment;

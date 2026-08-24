@@ -39,6 +39,10 @@ class AppointmentPreconfirmRepository
             $pdo = Select::getWriteConnection();
             $this->persistPreconfirmedStatus($pdo, $process, $processId);
             $appointment = $this->reloadAppointment($pdo, $processId);
+            ProcessLogRepository::create()->writeStatusChanged(
+                $appointment,
+                'AppointmentPreconfirmRepository'
+            );
             IcsRepository::create()->attachIcs($appointment);
 
             return $appointment;
