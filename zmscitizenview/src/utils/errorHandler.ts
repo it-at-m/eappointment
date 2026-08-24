@@ -28,6 +28,7 @@ export function createErrorStateMap(): ErrorStateMap {
     "apiErrorInvalidApiClient",
     "apiErrorInvalidAuthKey",
     "apiErrorInvalidCustomTextfield",
+    "apiErrorInvalidCustomTextfield2",
     "apiErrorInvalidDate",
     "apiErrorInvalidEmail",
     "apiErrorInvalidEndDate",

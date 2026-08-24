@@ -49,6 +49,8 @@
   "apiErrorInvalidAuthKeyText": "Leider kann Ihr Termin nicht aktiviert werden. Bitte überprüfen Sie, ob Sie den richtigen Link verwendet haben.",
   "apiErrorInvalidCustomTextfieldHeader": "Ungültiges benutzerdefiniertes Textfeld",
   "apiErrorInvalidCustomTextfieldText": "Bitte geben Sie die notwendigen Informationen ein.",
+  "apiErrorInvalidCustomTextfield2Header": "Ungültiges benutzerdefiniertes Textfeld",
+  "apiErrorInvalidCustomTextfield2Text": "Bitte geben Sie die notwendigen Informationen ein.",
   "apiErrorInvalidDateHeader": "Ungültiges Datum",
   "apiErrorInvalidDateText": "Bitte geben Sie ein gültiges Datum ein.",
   "apiErrorInvalidEmailHeader": "Ungültige E-Mail-Adresse",

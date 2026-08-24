@@ -208,6 +208,19 @@ class ValidationServiceTest extends TestCase
             ErrorMessages::get('invalidEmail'),
             $result['errors']
         );
+
+        $result = ValidationService::validateAppointmentUpdateFields(
+            'John Doe',
+            'test@muenchen.de',
+            '+1234567890',
+            'Custom text',
+            'Another Custom text',
+            $scope
+        );
+        $this->assertContains(
+            ErrorMessages::get('invalidEmail'),
+            $result['errors']
+        );
     
         $result = ValidationService::validateAppointmentUpdateFields(
             'John Doe',

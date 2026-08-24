@@ -129,7 +129,8 @@
             <div v-if="currentView === 2">
               <customer-info
                 :global-state="globalState"
-                :show-login-option="showLoginOption"
+                :show-login-option="showLoginOption && !isRebooking"
+                :is-rebooking="isRebooking"
                 :login-failed="loginFailed"
                 :t="t"
                 @back="decreaseCurrentView"
@@ -438,6 +439,10 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
+import {
+  applyAppointmentContactToCustomerData,
+  hasMissingRequiredContact,
+} from "@/utils/rebookingContact";
 import { isExpired } from "@/utils/timestampInPast";
 
 const props = defineProps<{
@@ -760,29 +765,67 @@ const setServices = () => {
   }
 };
 
+const copyRebookedContactOntoAppointment = () => {
+  if (!appointment.value || !rebookedAppointment.value) {
+    return;
+  }
+  appointment.value.familyName = rebookedAppointment.value.familyName;
+  appointment.value.email = rebookedAppointment.value.email;
+  appointment.value.telephone = rebookedAppointment.value.telephone;
+  appointment.value.customTextfield = rebookedAppointment.value.customTextfield;
+  appointment.value.customTextfield2 =
+    rebookedAppointment.value.customTextfield2;
+};
+
+const fillCustomerDataFromRebookedAppointment = () => {
+  if (!rebookedAppointment.value) {
+    return;
+  }
+  applyAppointmentContactToCustomerData(
+    customerData.value,
+    rebookedAppointment.value
+  );
+};
+
+const targetScopeForRebooking = () =>
+  selectedProvider.value?.scope ?? appointment.value?.scope;
+
+const continueRebookingAfterReserve = () => {
+  fillCustomerDataFromRebookedAppointment();
+  copyRebookedContactOntoAppointment();
+  if (
+    rebookedAppointment.value &&
+    hasMissingRequiredContact(
+      rebookedAppointment.value,
+      targetScopeForRebooking()
+    )
+  ) {
+    currentView.value = 2;
+    return;
+  }
+  return setRebookData();
+};
+
 const setRebookData = () => {
   if (appointment.value && rebookedAppointment.value) {
-    appointment.value.familyName = rebookedAppointment.value.familyName;
-    appointment.value.email = rebookedAppointment.value.email;
-    appointment.value.telephone = rebookedAppointment.value.telephone;
-    appointment.value.customTextfield =
-      rebookedAppointment.value.customTextfield;
-    appointment.value.customTextfield2 =
-      rebookedAppointment.value.customTextfield2;
+    copyRebookedContactOntoAppointment();
     clearContextErrors(errorStateMap.value);
     currentContext.value = "update";
-    updateAppointment(props.globalState, appointment.value).then((data) => {
-      if ((data as AppointmentDTO).processId != undefined) {
-        appointment.value = data as AppointmentDTO;
-      } else {
-        handleErrorApiResponse(
-          data,
-          errorStates.errorStateMap,
-          currentErrorData.value
-        );
+    return updateAppointment(props.globalState, appointment.value).then(
+      (data) => {
+        if ((data as AppointmentDTO).processId != undefined) {
+          appointment.value = data as AppointmentDTO;
+          currentView.value = 3;
+        } else {
+          handleErrorApiResponse(
+            data,
+            errorStates.errorStateMap,
+            currentErrorData.value
+          );
+          currentView.value = 2;
+        }
       }
-      currentView.value = 3;
-    });
+    );
   }
 };
 
@@ -812,7 +855,7 @@ const nextReserveAppointment = () => {
         appointment.value = data as AppointmentDTO;
         reservationStartMs.value = Date.now();
         if (isRebooking.value) {
-          setRebookData();
+          continueRebookingAfterReserve();
         } else {
           increaseCurrentView();
         }
@@ -840,10 +883,11 @@ const nextUpdateAppointment = () => {
     copyCustomerDataOntoAppointment();
 
     currentContext.value = "update";
-    updateAppointment(props.globalState, appointment.value)
+    return updateAppointment(props.globalState, appointment.value)
       .then((data) => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
+          increaseCurrentView();
         } else {
           handleErrorApiResponse(
             data,
@@ -851,7 +895,6 @@ const nextUpdateAppointment = () => {
             currentErrorData.value
           );
         }
-        increaseCurrentView();
       })
       .finally(() => {
         isUpdatingAppointment.value = false;

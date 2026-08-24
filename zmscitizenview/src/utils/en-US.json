@@ -48,6 +48,8 @@
   "apiErrorInvalidAuthKeyText": "Unfortunately, your appointment cannot be activated. Please check that you have used the correct link.",
   "apiErrorInvalidCustomTextfieldHeader": "Invalid custom textfield.",
   "apiErrorInvalidCustomTextfieldText": "Please enter the required information.",
+  "apiErrorInvalidCustomTextfield2Header": "Invalid custom textfield.",
+  "apiErrorInvalidCustomTextfield2Text": "Please enter the required information.",
   "apiErrorInvalidDateHeader": "Invalid date.",
   "apiErrorInvalidDateText": "Please enter a valid date.",
   "apiErrorInvalidEmailHeader": "Invalid email address.",

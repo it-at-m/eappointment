@@ -83,6 +83,7 @@
       id="firstname"
       v-model="customerData.firstName"
       autocomplete="given-name"
+      :disabled="lockFirstName"
       :error-msg="errorDisplayFirstName"
       :label="t('firstName')"
       max="50"
@@ -92,6 +93,7 @@
       id="lastname"
       v-model="customerData.lastName"
       autocomplete="family-name"
+      :disabled="lockLastName"
       :error-msg="errorDisplayLastName"
       :label="t('lastName')"
       max="50"
@@ -101,6 +103,7 @@
       id="mailaddress"
       v-model="customerData.mailAddress"
       autocomplete="email"
+      :disabled="lockMailAddress"
       :error-msg="errorDisplayMailAddress"
       :label="t('mailAddress')"
       max="50"
@@ -111,6 +114,7 @@
       id="telephonenumber"
       v-model="customerData.telephoneNumber"
       autocomplete="tel"
+      :disabled="lockTelephoneNumber"
       :error-msg="errorDisplayTelephoneNumber"
       :label="t('telephoneNumber')"
       :required="!!providerScope?.telephoneRequired"
@@ -121,6 +125,7 @@
       v-if="providerScope?.customTextfieldActivated"
       id="remarks"
       v-model="customerData.customTextfield"
+      :disabled="lockCustomTextfield"
       :error-msg="errorDisplayCustomTextfield"
       :label="providerScope?.customTextfieldLabel ?? undefined"
       :required="providerScope?.customTextfieldRequired ?? undefined"
@@ -132,6 +137,7 @@
       v-if="providerScope?.customTextfield2Activated"
       id="remarks2"
       v-model="customerData.customTextfield2"
+      :disabled="lockCustomTextfield2"
       :error-msg="errorDisplayCustomTextfield2"
       :label="providerScope?.customTextfield2Label ?? undefined"
       :required="providerScope?.customTextfield2Required ?? undefined"
@@ -187,6 +193,7 @@ import {
   normalizePlainText,
   plainTextCharCount,
 } from "@/utils/processPlainText";
+import { isFilledContactValue } from "@/utils/rebookingContact";
 import { countLines, handleInput } from "@/utils/textfieldRows";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
@@ -210,6 +217,7 @@ const handleInput2 = (event: Event) => {
 const props = defineProps<{
   globalState: GlobalState;
   showLoginOption: boolean;
+  isRebooking?: boolean;
   loginFailed?: boolean;
   t: (key: string, params?: Record<string, unknown>) => string;
 }>();
@@ -239,6 +247,37 @@ const hasReservedAppointment = computed(
 /** Prefer selected office scope; fall back to reserved appointment scope (login/back). */
 const providerScope = computed(
   () => selectedProvider.value?.scope ?? appointment.value?.scope
+);
+
+const lockFirstName = computed(
+  () =>
+    Boolean(props.isRebooking) &&
+    isFilledContactValue(customerData.value.firstName)
+);
+const lockLastName = computed(
+  () =>
+    Boolean(props.isRebooking) &&
+    isFilledContactValue(customerData.value.lastName)
+);
+const lockMailAddress = computed(
+  () =>
+    Boolean(props.isRebooking) &&
+    isFilledContactValue(customerData.value.mailAddress)
+);
+const lockTelephoneNumber = computed(
+  () =>
+    Boolean(props.isRebooking) &&
+    isFilledContactValue(customerData.value.telephoneNumber)
+);
+const lockCustomTextfield = computed(
+  () =>
+    Boolean(props.isRebooking) &&
+    isFilledContactValue(customerData.value.customTextfield)
+);
+const lockCustomTextfield2 = computed(
+  () =>
+    Boolean(props.isRebooking) &&
+    isFilledContactValue(customerData.value.customTextfield2)
 );
 
 const loadingStates = inject("loadingStates", {

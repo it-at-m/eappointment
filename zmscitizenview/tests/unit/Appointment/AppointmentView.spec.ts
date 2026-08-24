@@ -2098,6 +2098,98 @@ describe("AppointmentView", () => {
     });
   });
 
+  describe("Rebooking required contact fields", () => {
+    const mockUpdate = vi.mocked(ZMSAppointmentAPI.updateAppointment);
+
+    beforeEach(() => {
+      mockUpdate.mockReset();
+      mockUpdate.mockResolvedValue({ processId: "new-1" } as any);
+    });
+
+    const completeRebookedAppointment = {
+      processId: "old",
+      authKey: "oldkey",
+      familyName: "Max Mustermann",
+      email: "max@example.com",
+      telephone: "0891234567",
+      customTextfield: "note",
+      customTextfield2: "note2",
+    };
+
+    it("skips contact and updates when the target scope is already complete", async () => {
+      const wrapper = createWrapperWithAppointmentHash();
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.rebookedAppointment = {
+        ...completeRebookedAppointment,
+      } as any;
+      wrapper.vm.appointment = { processId: "new-1", authKey: "newkey" } as any;
+      wrapper.vm.selectedProvider = {
+        id: "789",
+        scope: {
+          telephoneActivated: true,
+          telephoneRequired: true,
+          customTextfieldActivated: true,
+          customTextfieldRequired: true,
+          customTextfield2Activated: true,
+          customTextfield2Required: true,
+        },
+      } as any;
+
+      await wrapper.vm.continueRebookingAfterReserve();
+
+      expect(mockUpdate).toHaveBeenCalled();
+      expect(wrapper.vm.currentView).toBe(3);
+    });
+
+    it("opens contact when the target scope requires a missing custom textfield", async () => {
+      const wrapper = createWrapperWithAppointmentHash();
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.rebookedAppointment = {
+        ...completeRebookedAppointment,
+        customTextfield2: "",
+      } as any;
+      wrapper.vm.appointment = { processId: "new-1", authKey: "newkey" } as any;
+      wrapper.vm.selectedProvider = {
+        id: "789",
+        scope: {
+          customTextfield2Activated: true,
+          customTextfield2Required: true,
+        },
+      } as any;
+
+      wrapper.vm.continueRebookingAfterReserve();
+      await nextTick();
+
+      expect(mockUpdate).not.toHaveBeenCalled();
+      expect(wrapper.vm.currentView).toBe(2);
+      expect(wrapper.vm.customerData.firstName).toBe("Max");
+      expect(wrapper.vm.customerData.mailAddress).toBe("max@example.com");
+    });
+
+    it("stays on contact when update fails instead of showing a dead-end overview", async () => {
+      mockUpdate.mockResolvedValueOnce({
+        errors: [{ errorCode: "invalidTelephone" }],
+      } as any);
+
+      const wrapper = createWrapperWithAppointmentHash();
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.rebookedAppointment = {
+        ...completeRebookedAppointment,
+        telephone: "",
+      } as any;
+      wrapper.vm.appointment = { processId: "new-1", authKey: "newkey" } as any;
+      wrapper.vm.currentView = 2;
+      wrapper.vm.customerData.firstName = "Max";
+      wrapper.vm.customerData.lastName = "Mustermann";
+      wrapper.vm.customerData.mailAddress = "max@example.com";
+
+      await wrapper.vm.nextUpdateAppointment();
+      await nextTick();
+
+      expect(wrapper.vm.currentView).toBe(2);
+    });
+  });
+
   describe("Reschedule Error (Vergangener Termin)", () => {
     it('zeigt die Meldung "rescheduleError" und den Neu-buchen-Button, wenn der Termin in der Vergangenheit liegt', async () => {
       // avoid disruptive residues from previous tests
