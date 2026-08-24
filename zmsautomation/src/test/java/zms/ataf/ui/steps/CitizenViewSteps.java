@@ -159,6 +159,47 @@ public class CitizenViewSteps {
         page.waitForPreconfirmPageAfterUpdate();
     }
 
+    /**
+     * ZMSKVR-833: first booking at a scope where custom text is optional — do not fill Bemerkung so
+     * rebooking onto a required-field Bürgerbüro still has a missing Pflichtfeld.
+     */
+    @When("I enter contact details without optional remarks in the citizen view")
+    public void iEnterContactDetailsWithoutOptionalRemarks() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: fill contact details without optional Bemerkung and Weiter");
+        page.fillContactDetailsRandomWithoutOptionalRemarks();
+        page.clickWeiter(30);
+        page.waitForPreconfirmPageAfterUpdate();
+    }
+
+    /** ZMSKVR-833: rebooking reserve must land on Kontakt, not skip to Übersicht. */
+    @Then("the contact form should be visible in the citizen view")
+    public void theContactFormShouldBeVisibleInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Kontakt form (Kontaktdaten) visible");
+        page.assertContactFormVisible();
+    }
+
+    @Then("the filled name and email fields should be locked on the contact form in the citizen view")
+    public void theFilledNameAndEmailFieldsShouldBeLockedOnTheContactForm() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Vorname/Nachname/E-Mail locked on rebooking Kontakt");
+        page.assertFilledNameAndEmailLockedOnContactForm();
+    }
+
+    @Then("the required custom text field should be editable on the contact form in the citizen view")
+    public void theRequiredCustomTextFieldShouldBeEditableOnTheContactForm() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert required Bemerkung editable on rebooking Kontakt");
+        page.assertRequiredCustomTextFieldEditableOnContactForm();
+    }
+
+    @When("I fill required custom text fields on the contact form in the citizen view")
+    public void iFillRequiredCustomTextFieldsOnTheContactForm() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: fill required Bemerkung on rebooking Kontakt");
+        page.fillRequiredCustomTextFieldsOnContactForm();
+    }
+
     @When("I accept communication in the citizen view")
     public void iAcceptCommunication() {
         ScenarioLogManager.getLogger().info("zmscitizenview: accept electronic communication");
