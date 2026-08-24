@@ -455,7 +455,10 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
-import { getProviders as providersForService } from "@/utils/getProviders";
+import {
+  officeFromCatalog,
+  getProviders as providersForService,
+} from "@/utils/getProviders";
 import {
   applyAppointmentContactToCustomerData,
   copyCustomerDataOntoAppointment,
@@ -1077,24 +1080,7 @@ const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
     (office) => String(office.id) === String(uiData.selectedProviderId)
   );
   if (foundOffice) {
-    selectedProvider.value = new OfficeImpl(
-      foundOffice.id,
-      foundOffice.name,
-      foundOffice.address,
-      foundOffice.showAlternativeLocations,
-      foundOffice.displayNameAlternatives,
-      foundOffice.organization,
-      foundOffice.organizationUnit,
-      foundOffice.slotTimeInMinutes,
-      foundOffice.disabledByServices,
-      foundOffice.allowDisabledServicesMix,
-      foundOffice.scope,
-      foundOffice.slotsPerAppointment,
-      foundOffice.slots,
-      foundOffice.priority || 1,
-      foundOffice.parentId,
-      foundOffice.sharedBookingOfficeIds
-    );
+    selectedProvider.value = officeFromCatalog(foundOffice);
   }
 
   selectedTimeslot.value = uiData.selectedTimeslot;
@@ -1320,24 +1306,10 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
               (office) => office.id == appointment.value?.officeId
             );
             if (foundOffice) {
-              selectedProvider.value = new OfficeImpl(
-                foundOffice.id,
-                foundOffice.name,
-                foundOffice.address,
-                foundOffice.showAlternativeLocations,
-                foundOffice.displayNameAlternatives,
-                foundOffice.organization,
-                foundOffice.organizationUnit,
-                foundOffice.slotTimeInMinutes,
-                undefined,
-                foundOffice.allowDisabledServicesMix,
-                foundOffice.scope,
-                foundOffice.slotsPerAppointment,
-                undefined,
-                foundOffice.priority || 1,
-                foundOffice.parentId,
-                foundOffice.sharedBookingOfficeIds
-              );
+              selectedProvider.value = officeFromCatalog(foundOffice, {
+                disabledByServices: undefined,
+                slots: undefined,
+              });
             }
 
             if (appointment.value.subRequestCounts.length > 0) {

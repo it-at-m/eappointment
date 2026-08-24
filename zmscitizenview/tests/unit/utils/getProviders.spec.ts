@@ -1,33 +1,34 @@
-import { describe, it, expect } from "vitest";
-import { getProviders } from "@/utils/getProviders";
+import { describe, expect, it } from "vitest";
+
+import { getProviders, officeFromCatalog } from "@/utils/getProviders";
 
 const relations = [
   {
     officeId: "1",
     serviceId: "1",
-    slots: 1
+    slots: 1,
   },
   {
     officeId: "2",
     serviceId: "1",
-    slots: 1
+    slots: 1,
   },
   {
     officeId: "3",
     serviceId: "1",
-    slots: 2
+    slots: 2,
   },
   {
     officeId: "1",
     serviceId: "2",
-    slots: 2
+    slots: 2,
   },
   {
     officeId: "2",
     serviceId: "3",
-    slots: 1
+    slots: 1,
   },
-]
+];
 
 const offices = [
   {
@@ -38,12 +39,12 @@ const offices = [
       city: "Munich",
       postal_code: "11111",
       street: "Street 1",
-      hint: false
+      hint: false,
     },
     showAlternativeLocations: false,
     displayNameAlternatives: [],
     organization: "organization 1",
-    slotTimeInMinutes: 4
+    slotTimeInMinutes: 4,
   },
   {
     id: "2",
@@ -53,12 +54,12 @@ const offices = [
       city: "Munich",
       postal_code: "22222",
       street: "Street 2",
-      hint: false
+      hint: false,
     },
     showAlternativeLocations: false,
     displayNameAlternatives: [],
     organization: "organization 2",
-    slotTimeInMinutes: 3
+    slotTimeInMinutes: 3,
   },
   {
     id: "3",
@@ -68,18 +69,18 @@ const offices = [
       city: "Munich",
       postal_code: "33333",
       street: "Street 3",
-      hint: false
+      hint: false,
     },
     showAlternativeLocations: false,
     displayNameAlternatives: [],
     organization: "organization 3",
-    slotTimeInMinutes: 2
-  }
-]
+    slotTimeInMinutes: 2,
+  },
+];
 
 describe("calculateEstimatedDuration", () => {
   it("returns list of providers with no given providers", () => {
-    const providers = getProviders("1",null, relations, offices);
+    const providers = getProviders("1", null, relations, offices);
     expect(providers.length).toBe(offices.length);
     expect(providers[0].id).toBe("1");
     expect(providers[0].slots).toBe(1);
@@ -89,7 +90,7 @@ describe("calculateEstimatedDuration", () => {
     expect(providers[2].slots).toBe(2);
   });
   it("returns list of providers with given providers", () => {
-    const providers = getProviders("1",["1","3"], relations, offices);
+    const providers = getProviders("1", ["1", "3"], relations, offices);
     expect(providers.length).toBe(2);
     expect(providers[0].id).toBe("1");
     expect(providers[0].slots).toBe(1);
@@ -98,7 +99,33 @@ describe("calculateEstimatedDuration", () => {
   });
 
   it("returns empty list with given providers", () => {
-    const providers = getProviders("3",["1","3"], relations, offices);
+    const providers = getProviders("3", ["1", "3"], relations, offices);
     expect(providers.length).toBe(0);
+  });
+
+  it("copies catalog office fields into OfficeImpl", () => {
+    const office = officeFromCatalog({
+      ...offices[0],
+      disabledByServices: ["9"],
+      slots: 4,
+      priority: 3,
+    });
+    expect(office.id).toBe("1");
+    expect(office.disabledByServices).toEqual(["9"]);
+    expect(office.slots).toBe(4);
+    expect(office.priority).toBe(3);
+  });
+
+  it("allows hash-load overrides to clear slots and disabledByServices", () => {
+    const office = officeFromCatalog(
+      {
+        ...offices[0],
+        disabledByServices: ["9"],
+        slots: 4,
+      },
+      { disabledByServices: undefined, slots: undefined }
+    );
+    expect(office.disabledByServices).toBeUndefined();
+    expect(office.slots).toBeUndefined();
   });
 });
