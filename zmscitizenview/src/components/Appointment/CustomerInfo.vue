@@ -87,7 +87,7 @@
     <fieldset
       class="contact-lock"
       data-contact-lock="firstname"
-      :disabled="lockFirstName"
+      :disabled="locks.firstName"
     >
       <muc-input
         id="firstname"
@@ -102,7 +102,7 @@
     <fieldset
       class="contact-lock"
       data-contact-lock="lastname"
-      :disabled="lockLastName"
+      :disabled="locks.lastName"
     >
       <muc-input
         id="lastname"
@@ -117,7 +117,7 @@
     <fieldset
       class="contact-lock"
       data-contact-lock="mailaddress"
-      :disabled="lockMailAddress"
+      :disabled="locks.mailAddress"
     >
       <muc-input
         id="mailaddress"
@@ -133,7 +133,7 @@
       v-if="providerScope?.telephoneActivated"
       class="contact-lock"
       data-contact-lock="telephonenumber"
-      :disabled="lockTelephoneNumber"
+      :disabled="locks.telephoneNumber"
     >
       <muc-input
         id="telephonenumber"
@@ -150,7 +150,7 @@
       v-if="providerScope?.customTextfieldActivated"
       class="contact-lock"
       data-contact-lock="remarks"
-      :disabled="lockCustomTextfield"
+      :disabled="locks.customTextfield"
     >
       <muc-text-area
         id="remarks"
@@ -167,7 +167,7 @@
       v-if="providerScope?.customTextfield2Activated"
       class="contact-lock"
       data-contact-lock="remarks2"
-      :disabled="lockCustomTextfield2"
+      :disabled="locks.customTextfield2"
     >
       <muc-text-area
         id="remarks2"
@@ -222,26 +222,15 @@ import {
   MucInput,
   MucTextArea,
 } from "@muenchen/muc-patternlab-vue";
-import {
-  computed,
-  inject,
-  nextTick,
-  onMounted,
-  onUpdated,
-  ref,
-  watch,
-} from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 
 import { GlobalState } from "@/types/GlobalState";
 import {
   normalizePlainText,
   plainTextCharCount,
 } from "@/utils/processPlainText";
-import {
-  isFilledContactValue,
-  splitFamilyName,
-} from "@/utils/rebookingContact";
 import { countLines, handleInput } from "@/utils/textfieldRows";
+import { useContactFieldLocks } from "@/utils/useContactFieldLocks";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
 /**
@@ -301,112 +290,12 @@ const providerScope = computed(
   () => selectedProvider.value?.scope ?? appointment.value?.scope
 );
 
-/**
- * Lock from the previous appointment, not from live customerData. Otherwise
- * typing into an empty required field would disable it, and a mount snapshot
- * misses values that are copied onto customerData a tick later.
- * muc-input has no disabled prop — fieldsets disable the native control.
- */
-const previousAppointment = computed(
-  () => rebookedAppointment.value ?? appointment.value
-);
-
-const previousName = computed(() =>
-  splitFamilyName(previousAppointment.value?.familyName)
-);
-
-const lockFirstName = computed(
-  () =>
-    Boolean(props.isRebooking) &&
-    isFilledContactValue(previousName.value.firstName)
-);
-const lockLastName = computed(
-  () =>
-    Boolean(props.isRebooking) &&
-    isFilledContactValue(previousName.value.lastName)
-);
-const lockMailAddress = computed(
-  () =>
-    Boolean(props.isRebooking) &&
-    isFilledContactValue(previousAppointment.value?.email)
-);
-const lockTelephoneNumber = computed(
-  () =>
-    Boolean(props.isRebooking) &&
-    isFilledContactValue(previousAppointment.value?.telephone)
-);
-const lockCustomTextfield = computed(
-  () =>
-    Boolean(props.isRebooking) &&
-    isFilledContactValue(previousAppointment.value?.customTextfield)
-);
-const lockCustomTextfield2 = computed(
-  () =>
-    Boolean(props.isRebooking) &&
-    isFilledContactValue(previousAppointment.value?.customTextfield2)
-);
-
 const contactForm = ref<HTMLFormElement | null>(null);
-
-const LOCKED_CONTROL_BG = "var(--color-neutral-100, #f2f2f2)";
-const LOCKED_CONTROL_FG = "var(--color-neutral-600, #6d6d6d)";
-
-function applyNativeDisabledOnFieldset(fieldset: HTMLFieldSetElement): void {
-  const locked = fieldset.disabled;
-  const control = fieldset.querySelector<
-    HTMLInputElement | HTMLTextAreaElement
-  >(
-    "input:not([type=hidden]):not([type=checkbox]):not([type=radio]), textarea"
-  );
-  if (!control) {
-    return;
-  }
-  control.disabled = locked;
-  if (locked) {
-    control.setAttribute("disabled", "");
-    control.style.setProperty(
-      "background-color",
-      LOCKED_CONTROL_BG,
-      "important"
-    );
-    control.style.setProperty("color", LOCKED_CONTROL_FG, "important");
-    control.style.setProperty("cursor", "not-allowed", "important");
-  } else {
-    control.removeAttribute("disabled");
-    control.style.removeProperty("background-color");
-    control.style.removeProperty("color");
-    control.style.removeProperty("cursor");
-  }
-}
-
-const applyContactLocksToNativeControls = async () => {
-  await nextTick();
-  const form = contactForm.value;
-  if (!form) {
-    return;
-  }
-  form
-    .querySelectorAll<HTMLFieldSetElement>("fieldset[data-contact-lock]")
-    .forEach(applyNativeDisabledOnFieldset);
-};
-
-watch(
-  [
-    lockFirstName,
-    lockLastName,
-    lockMailAddress,
-    lockTelephoneNumber,
-    lockCustomTextfield,
-    lockCustomTextfield2,
-  ],
-  () => {
-    void applyContactLocksToNativeControls();
-  },
-  { immediate: true, flush: "post" }
-);
-
-onUpdated(() => {
-  void applyContactLocksToNativeControls();
+const locks = useContactFieldLocks({
+  isRebooking: () => Boolean(props.isRebooking),
+  appointment,
+  rebookedAppointment,
+  form: contactForm,
 });
 
 const loadingStates = inject("loadingStates", {
