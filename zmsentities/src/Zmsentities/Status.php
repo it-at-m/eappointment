@@ -4,9 +4,13 @@ namespace BO\Zmsentities;
 
 class Status extends Schema\Entity
 {
-    public const PRIMARY = 'version';
+    public const string PRIMARY = 'version';
     public static $schema = "status.json";
 
+    /**
+     * @return (float|int|string)[][]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {

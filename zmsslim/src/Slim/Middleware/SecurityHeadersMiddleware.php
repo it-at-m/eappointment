@@ -12,7 +12,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class SecurityHeadersMiddleware implements MiddlewareInterface
 {
-    private const DEFAULT_SECURITY_HEADERS = [
+    private const array DEFAULT_SECURITY_HEADERS = [
         'X-Frame-Options' => 'DENY',
         'X-Content-Type-Options' => 'nosniff',
         'X-XSS-Protection' => '1; mode=block',

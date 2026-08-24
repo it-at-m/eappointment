@@ -85,4 +85,17 @@ public final class TestConfig {
         return getConfigValue("AUTH_TOKEN", "AUTH_TOKEN", null);
     }
 
+    /**
+     * Secure token for endpoints that accept {@code X-Token}
+     * (e.g. {@code GET /status/}, config API). Matches {@code ZMS_CONFIG_SECURE_TOKEN}.
+     * Default: {@code hash} (local ddev / devcontainer).
+     */
+    public static String getSecureToken() {
+        return getConfigValue(
+            "ZMS_CONFIG_SECURE_TOKEN",
+            "ZMS_CONFIG_SECURE_TOKEN",
+            "hash"
+        );
+    }
+
 }

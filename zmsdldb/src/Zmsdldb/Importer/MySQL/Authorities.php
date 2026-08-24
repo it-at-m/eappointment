@@ -4,16 +4,21 @@ namespace BO\Zmsdldb\Importer\MySQL;
 
 class Authorities extends Base
 {
-    protected $entityClass = '\\BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Authority';
+    /** @var class-string<\BO\Zmsdldb\Importer\MySQL\Entity\Base>|null */
+    protected ?string $entityClass = \BO\Zmsdldb\Importer\MySQL\Entity\Authority::class;
 
+    /** @psalm-api */
     #[\Override]
     public function runImport(): bool
     {
         try {
             if ($this->needsUpdate()) {
                 foreach ($this->getIterator() as $authority) {
+                    if (!is_array($authority)) {
+                        continue;
+                    }
                     $authority = $this->createEntity($authority);
-                    $this->removeEntityFromCurrentList($authority->get('id'));
+                    $this->removeEntityFromCurrentList((int) $authority->get('id'));
                     $authority->save();
                 }
             }

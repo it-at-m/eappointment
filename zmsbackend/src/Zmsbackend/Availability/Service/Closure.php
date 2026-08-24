@@ -40,7 +40,7 @@ class Closure extends \BO\Zmsbackend\Base
         return $closureList;
     }
 
-    public function readByScopeIdAndDate($scopeId, DateTime $date)
+    public function readByScopeIdAndDate($scopeId, DateTime $date): Entity
     {
         $query = new \BO\Zmsbackend\Availability\Repository\Closure(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -74,7 +74,7 @@ class Closure extends \BO\Zmsbackend\Base
         return $result ;
     }
 
-    public function deleteEntity($closure)
+    public function deleteEntity($closure): bool
     {
         $query = new \BO\Zmsbackend\Availability\Repository\Closure(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionId($closure->getId());
@@ -108,7 +108,7 @@ class Closure extends \BO\Zmsbackend\Base
         return $this->readEntity($id);
     }
 
-    public function readEntity($id)
+    public function readEntity(string|false $id): Entity
     {
         $query = new \BO\Zmsbackend\Availability\Repository\Closure(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()

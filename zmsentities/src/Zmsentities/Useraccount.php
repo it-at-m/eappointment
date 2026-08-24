@@ -11,10 +11,14 @@ use BO\Zmsentities\Helper\Property;
  */
 class Useraccount extends Schema\Entity
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "useraccount.json";
 
+    /**
+     * @return (Collection\DepartmentList|false[])[]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -55,7 +59,10 @@ class Useraccount extends Schema\Entity
         ];
     }
 
-    public function hasProperties()
+    /**
+     * @return true
+     */
+    public function hasProperties(): bool
     {
         foreach (func_get_args() as $property) {
             if (!$this->toProperty()->$property->get()) {
@@ -66,7 +73,7 @@ class Useraccount extends Schema\Entity
         return true;
     }
 
-    public function getDepartmentList()
+    public function getDepartmentList(): Collection\DepartmentList
     {
         if (!$this->departments instanceof Collection\DepartmentList) {
             $this->departments = new Collection\DepartmentList($this->departments);
@@ -77,7 +84,7 @@ class Useraccount extends Schema\Entity
         return $this->departments;
     }
 
-    public function addDepartment($department)
+    public function addDepartment(Department|array $department): static
     {
         $this->departments[] = $department;
         return $this;
@@ -106,7 +113,7 @@ class Useraccount extends Schema\Entity
     }
 
 
-    public function setPermissions()
+    public function setPermissions(): static
     {
         $givenPermissions = func_get_args();
         foreach ($givenPermissions as $permission) {
@@ -216,7 +223,7 @@ class Useraccount extends Schema\Entity
         return in_array($role, $this->getRoles(), true);
     }
 
-    public function testPermissions(array $requiredPermissions)
+    public function testPermissions(array $requiredPermissions): static
     {
         if (! $this->hasId()) {
             throw new Exception\UserAccountMissingLogin();
@@ -231,7 +238,7 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function testAnyPermission(array $requiredPermissions)
+    public function testAnyPermission(array $requiredPermissions): static
     {
         if (! $this->hasId()) {
             throw new Exception\UserAccountMissingLogin();
@@ -246,7 +253,7 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function isOveraged(\DateTimeInterface $dateTime)
+    public function isOveraged(\DateTimeInterface $dateTime): bool
     {
         if (Property::__keyExists('lastLogin', $this)) {
             $lastLogin = (new \DateTimeImmutable())->setTimestamp($this['lastLogin'])->modify('23:59:59');
@@ -260,7 +267,7 @@ class Useraccount extends Schema\Entity
         return $this->toProperty()->permissions?->superuser?->get() ?? false;
     }
 
-    public function getDepartmentById($departmentId)
+    public function getDepartmentById($departmentId): Department
     {
         foreach ($this->departments as $department) {
             if ($departmentId == $department['id']) {
@@ -270,7 +277,7 @@ class Useraccount extends Schema\Entity
         return new Department();
     }
 
-    public function getDepartmentByIds(array $departmentIds)
+    public function getDepartmentByIds(array $departmentIds): Department
     {
         foreach ($this->departments as $department) {
             if (in_array($department['id'], $departmentIds)) {
@@ -291,7 +298,7 @@ class Useraccount extends Schema\Entity
         return $department;
     }
 
-    public function setPassword($input)
+    public function setPassword($input): static
     {
         if (isset($input['password']) && '' != $input['password']) {
             $this->password = $input['password'];
@@ -305,7 +312,7 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function withDepartmentList()
+    public function withDepartmentList(): static
     {
         $departmentList = new Collection\DepartmentList();
         $entity = clone $this;
@@ -319,6 +326,9 @@ class Useraccount extends Schema\Entity
         return $entity;
     }
 
+    /**
+     * @return static
+     */
     #[\Override]
     public function withCleanedUpFormData($keepPassword = false)
     {
@@ -362,7 +372,7 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function withVerifiedHash($password)
+    public function withVerifiedHash($password): static
     {
         $useraccount = clone $this;
         if ($useraccount->isPasswordNeedingRehash()) {
@@ -371,7 +381,7 @@ class Useraccount extends Schema\Entity
         return $useraccount;
     }
 
-    public function isPasswordNeedingRehash()
+    public function isPasswordNeedingRehash(): bool
     {
         return password_needs_rehash($this->password, PASSWORD_DEFAULT);
     }
@@ -381,12 +391,15 @@ class Useraccount extends Schema\Entity
      *
      * @return string $hash
     */
-    public function getHash($string)
+    public function getHash(string $string)
     {
         $hash = password_hash($string, PASSWORD_DEFAULT);
         return $hash;
     }
 
+    /**
+     * @return static
+     */
     #[\Override]
     public function withLessData()
     {

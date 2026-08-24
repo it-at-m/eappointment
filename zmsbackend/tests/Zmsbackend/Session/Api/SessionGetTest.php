@@ -6,9 +6,9 @@ class SessionGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "SessionGet";
 
-    const SESSION_ID = 'unittest';
+    const string SESSION_ID = 'unittest';
 
-    const SESSION_NAME = 'unittest';
+    const string SESSION_NAME = 'unittest';
 
     public function testRendering()
     {

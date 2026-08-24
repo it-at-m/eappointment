@@ -46,6 +46,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
     /**
      * @SuppressWarnings(Cyclomatic)
      * @return string
+     * @psalm-api
      */
     protected function getApiMockup()
     {
@@ -109,13 +110,17 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
 
     /**
      * Overwrite this function if api calls definition needs function calls
+     * @psalm-api
      */
     protected function getApiCalls()
     {
         return $this->apiCalls;
     }
 
-    protected function getGraphQL($parameters)
+    /**
+     * @psalm-api
+     */
+    protected function getGraphQL($parameters): GraphQLInterpreter|null
     {
         if (isset($parameters['gql'])) {
             $gqlString = $parameters['gql'];
@@ -127,7 +132,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         return null;
     }
 
-    public function setApiCalls($apiCalls)
+    public function setApiCalls($apiCalls): void
     {
         $this->apiCalls = $apiCalls;
         \App::$http = $this->getApiMockup();

@@ -16,6 +16,9 @@ use BO\Zmsdldb\Collection\Offices as Collection;
   */
 class Office extends Base
 {
+    /**
+     * @return Collection
+     */
     #[\Override]
     protected function parseData($data)
     {
@@ -32,6 +35,7 @@ class Office extends Base
         return $this->getItemList();
     }
 
+    /** @psalm-api */
     public function fetchPath($itemId)
     {
         return $this->fetchId($itemId);

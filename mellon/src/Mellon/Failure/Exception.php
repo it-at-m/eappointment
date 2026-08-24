@@ -9,10 +9,6 @@ namespace BO\Mellon\Failure;
 
 use BO\Mellon\Valid;
 
-/**
-  *
-  *
-  */
 class Exception extends \Exception
 {
     /**
@@ -21,7 +17,7 @@ class Exception extends \Exception
      */
     protected $validator = null;
 
-    public function setValidator(Valid $validator)
+    public function setValidator(Valid $validator): static
     {
         $this->validator = $validator;
         $this->message = (string)$validator->getMessages();

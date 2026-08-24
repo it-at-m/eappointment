@@ -5,7 +5,7 @@ namespace BO\Zmsbackend\Helper;
 /**
  * @codeCoverageIgnore
  */
-class SendProcessListToScopeAdmin
+class QueueProcessListToScopeAdmin
 {
     protected $scopeList;
 
@@ -17,7 +17,7 @@ class SendProcessListToScopeAdmin
     {
         $this->dateTime = new \DateTimeImmutable();
         if ($verbose) {
-            \App::$log->info('Send process list of current day to scope admin');
+            \App::$log->info('Queue process list of current day for scope admin');
             $this->verbose = true;
         }
         if ($scopeId) {
@@ -28,7 +28,7 @@ class SendProcessListToScopeAdmin
         }
     }
 
-    public function startProcessing($commit)
+    public function startProcessing($commit): void
     {
         foreach ($this->scopeList as $scope) {
             if ($this->verbose) {
@@ -43,8 +43,8 @@ class SendProcessListToScopeAdmin
                    ->withSortedArrival()
                    ->toProcessList();
                 if ($processList->count() > 0) {
-                    if ($this->sendListToQueue($scope, $processList) && $this->verbose) {
-                        \App::$log->info('Send processList to scope admin', [
+                    if ($this->writeListToQueue($scope, $processList) && $this->verbose) {
+                        \App::$log->info('Queue processList for scope admin', [
                             'email' => $scope->getContactEmail(),
                         ]);
                     }
@@ -55,7 +55,7 @@ class SendProcessListToScopeAdmin
         }
     }
 
-    protected function sendListToQueue($scope, $processList)
+    protected function writeListToQueue($scope, \BO\Zmsentities\Collection\ProcessList $processList): void
     {
         $entity = (new \BO\Zmsentities\Mail())->toScopeAdminProcessList($processList, $scope, $this->dateTime);
         if (! (new \BO\Zmsbackend\Mail\Service\Mail())->writeInQueueWithDailyProcessList($scope, $entity)) {

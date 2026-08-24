@@ -43,7 +43,7 @@ class Calendar
         return $this->dateTime;
     }
 
-    public function readMonthListByScopeList(ScopeList $scopeList, $slotType, $slotsRequired)
+    public function readMonthListByScopeList(ScopeList $scopeList, string $slotType, int $slotsRequired)
     {
         // TODO Berechne die Tage im Kalendar
         $this->calendar->scopes = $scopeList;
@@ -69,9 +69,9 @@ class Calendar
 
     public function readAvailableSlotsFromDayAndScopeList(
         ScopeList $scopeList,
-        $slotType = 'intern',
-        $slotsRequired = 0,
-        $forWeek = false
+        string $slotType = 'intern',
+        int $slotsRequired = 0,
+        bool $forWeek = false
     ) {
         $this->calendar->scopes = $scopeList;
 
@@ -163,13 +163,17 @@ class Calendar
         return $this->toDayListByHour($dayList);
     }
 
-    protected function getDateTimeFromWeekAndYear($week, $year)
+    protected function getDateTimeFromWeekAndYear($week, $year): DateTimeImmutable
     {
         $dateTime = new DateTimeImmutable();
         return $dateTime->setISODate($year, $week);
     }
 
-    public function toProcessListByHour(ProcessList $processList)
+    /**
+     * @return ProcessList[][]
+     *
+     */
+    public function toProcessListByHour(ProcessList $processList): array
     {
         $list = array();
         $oldList = $processList;
@@ -195,7 +199,11 @@ class Calendar
         return $list;
     }
 
-    public function toDayListByHour(DayList $dayList)
+    /**
+     * @return ((ProcessList|mixed)[]|Day)[][]
+     *
+     */
+    public function toDayListByHour(DayList $dayList): array
     {
         $list = array();
         $hours = array();
@@ -225,7 +233,11 @@ class Calendar
         return $list;
     }
 
-    private function splitByDate(ProcessList $processList)
+    /**
+     * @return ProcessList[]
+     *
+     */
+    private function splitByDate(ProcessList $processList): array
     {
         $list = [];
 

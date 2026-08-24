@@ -135,7 +135,7 @@ class Base extends BaseController
         return $spreadsheet;
     }
 
-    protected function writeInfoHeader(array $args, Spreadsheet $spreadsheet)
+    protected function writeInfoHeader(array $args, Spreadsheet $spreadsheet): Spreadsheet|null
     {
         $sheet = $spreadsheet->getActiveSheet();
         $infoData[] = static::$subjectTranslations[$args['category']];
@@ -179,7 +179,8 @@ class Base extends BaseController
         return $spreadsheet;
     }
 
-    protected function setDateTime($dateString)
+    /** @psalm-api */
+    protected function setDateTime(string $dateString): \DateTime
     {
         $dateArr = explode('-', $dateString);
         if (2 == count($dateArr)) {
@@ -194,7 +195,11 @@ class Base extends BaseController
         return new \DateTime($dateString);
     }
 
-    protected function getFormatedDates($date, $pattern = 'MMMM')
+    /**
+     * @psalm-api
+     * @return false|string
+     */
+    protected function getFormatedDates(\DateTimeInterface $date, string $pattern = 'MMMM'): string|false
     {
         $dateFormatter = new \IntlDateFormatter(
             'de-DE',

@@ -144,11 +144,28 @@ services:
       - default
     restart: "no"
 
-  init-keycloak:
+  # 0.2.131 JAR is Java 24; upstream image still ships a 23 JRE.
+  init-keycloak-jar:
     image: klg71/keycloakmigration:0.2.131@sha256:a311cce3b961062000e6e9ef08ecb5712f3ea81859beeee8cd0c836fe8e4f2cf
+    # Image is amd64-only. Apple Silicon (arm64) still works: Podman emulates this
+    # one-shot `cp`. Java itself runs natively on Temurin below.
+    platform: linux/amd64
+    container_name: zms-init-keycloak-jar
+    volumes:
+      - keycloakmigration-jar:/out
+    entrypoint: ["/bin/sh", "-c", "cp /keycloakmigration.jar /entrypoint.sh /out/"]
+    networks:
+      - default
+    restart: "no"
+
+  init-keycloak:
+    image: eclipse-temurin:25-jre-alpine@sha256:3137541deb3cac6626b5d9a4a2187bc0d6a34312f858bd2c67dd01e732e6b682
     container_name: zms-init-keycloak
+    working_dir: /opt/keycloakmigration
     depends_on:
       init-keycloak-token:
+        condition: service_completed_successfully
+      init-keycloak-jar:
         condition: service_completed_successfully
     environment:
       - ADMIN_USER=admin
@@ -159,7 +176,9 @@ services:
       - KEYCLOAK_CHANGELOG=/migration/keycloak-changelog.yml
       - EXIT_ON_ERROR=true
     volumes:
+      - keycloakmigration-jar:/opt/keycloakmigration:ro,z
       - ../.resources/keycloak/migration:/migration:z
+    entrypoint: ["/bin/sh", "./entrypoint.sh"]
     networks:
       - default
     restart: "no"
@@ -167,3 +186,4 @@ services:
 volumes:
   db-data:
   citizenview-node-modules:
+  keycloakmigration-jar:
