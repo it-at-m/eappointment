@@ -2,15 +2,17 @@
 
 namespace BO\Zmsadmin\Tests;
 
+use Psr\Http\Message\ResponseInterface;
+
 class ProfileTest extends Base
 {
     protected $arguments = [];
 
     protected $parameters = [];
 
-    protected $classname = 'Profile';
+    protected $classname = "Profile";
 
-    public function testRendering(): void
+    public function testRendering(): ResponseInterface
     {
         $this->setApiCalls(
             [
@@ -75,6 +77,8 @@ class ProfileTest extends Base
             'Passwortwiederholung',
             $body
         );
+
+        return $response;
     }
 
     public function testProfileApiExceptionIsForwarded(): void
