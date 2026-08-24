@@ -160,16 +160,14 @@ public class CitizenViewSteps {
     }
 
     /**
-     * ZMSKVR-833: first booking at a scope where custom text is optional — do not fill Bemerkung so
-     * rebooking onto a required-field Bürgerbüro still has a missing Pflichtfeld.
+     * ZMSKVR-833: first booking at a scope where custom text is optional — fill Kontakt but stay on
+     * the form (no Weiter) so per-step screenshots show the values before Übersicht.
      */
     @When("I enter contact details without optional remarks in the citizen view")
     public void iEnterContactDetailsWithoutOptionalRemarks() {
         ScenarioLogManager.getLogger()
-                .info("zmscitizenview: fill contact details without optional Bemerkung and Weiter");
+                .info("zmscitizenview: fill contact details without optional Bemerkung (stay on Kontakt)");
         page.fillContactDetailsRandomWithoutOptionalRemarks();
-        page.clickWeiter(30);
-        page.waitForPreconfirmPageAfterUpdate();
     }
 
     /** ZMSKVR-833: rebooking reserve must land on Kontakt, not skip to Übersicht. */

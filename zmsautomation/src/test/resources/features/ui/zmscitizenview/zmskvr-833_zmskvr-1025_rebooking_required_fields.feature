@@ -28,7 +28,10 @@ Feature: ZMSKVR-833 / ZMSKVR-1025 Rebooking onto a Bürgerbüro that requires cu
     And I scroll to and highlight the preferred timeslot for office 10503 in the citizen view
     And I click the highlighted timeslot in the citizen view
     And I continue after slot selection with Weiter for office 10503 in the citizen view
+    Then the contact form should be visible in the citizen view
     When I enter contact details without optional remarks in the citizen view
+    Then the contact form should be visible in the citizen view
+    When I continue from the contact form in the citizen view
     Then the booking summary should show provider 10503 in the citizen view
     When I accept communication in the citizen view
     And I continue from the preconfirm step in the citizen view

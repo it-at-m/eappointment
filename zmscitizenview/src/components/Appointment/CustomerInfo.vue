@@ -77,6 +77,7 @@
   </h2>
   <form
     v-if="!isExpired"
+    ref="contactForm"
     class="m-form m-form--default"
   >
     <!--
@@ -221,7 +222,15 @@ import {
   MucInput,
   MucTextArea,
 } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, onMounted, ref } from "vue";
+import {
+  computed,
+  inject,
+  nextTick,
+  onMounted,
+  onUpdated,
+  ref,
+  watch,
+} from "vue";
 
 import { GlobalState } from "@/types/GlobalState";
 import {
@@ -336,6 +345,69 @@ const lockCustomTextfield2 = computed(
     Boolean(props.isRebooking) &&
     isFilledContactValue(previousAppointment.value?.customTextfield2)
 );
+
+const contactForm = ref<HTMLFormElement | null>(null);
+
+const LOCKED_CONTROL_BG = "var(--color-neutral-100, #f2f2f2)";
+const LOCKED_CONTROL_FG = "var(--color-neutral-600, #6d6d6d)";
+
+function applyNativeDisabledOnFieldset(fieldset: HTMLFieldSetElement): void {
+  const locked = fieldset.disabled;
+  const control = fieldset.querySelector<
+    HTMLInputElement | HTMLTextAreaElement
+  >(
+    "input:not([type=hidden]):not([type=checkbox]):not([type=radio]), textarea"
+  );
+  if (!control) {
+    return;
+  }
+  control.disabled = locked;
+  if (locked) {
+    control.setAttribute("disabled", "");
+    control.style.setProperty(
+      "background-color",
+      LOCKED_CONTROL_BG,
+      "important"
+    );
+    control.style.setProperty("color", LOCKED_CONTROL_FG, "important");
+    control.style.setProperty("cursor", "not-allowed", "important");
+  } else {
+    control.removeAttribute("disabled");
+    control.style.removeProperty("background-color");
+    control.style.removeProperty("color");
+    control.style.removeProperty("cursor");
+  }
+}
+
+const applyContactLocksToNativeControls = async () => {
+  await nextTick();
+  const form = contactForm.value;
+  if (!form) {
+    return;
+  }
+  form
+    .querySelectorAll<HTMLFieldSetElement>("fieldset[data-contact-lock]")
+    .forEach(applyNativeDisabledOnFieldset);
+};
+
+watch(
+  [
+    lockFirstName,
+    lockLastName,
+    lockMailAddress,
+    lockTelephoneNumber,
+    lockCustomTextfield,
+    lockCustomTextfield2,
+  ],
+  () => {
+    void applyContactLocksToNativeControls();
+  },
+  { immediate: true, flush: "post" }
+);
+
+onUpdated(() => {
+  void applyContactLocksToNativeControls();
+});
 
 const loadingStates = inject("loadingStates", {
   isReservingAppointment: ref(false),
@@ -535,6 +607,20 @@ const previousStep = () => emit("back");
   margin: 0;
   min-inline-size: 0;
   padding: 0;
+}
+
+.contact-lock:disabled {
+  pointer-events: none;
+
+  :deep(.m-input),
+  :deep(.m-textarea),
+  :deep(input),
+  :deep(textarea) {
+    background-color: var(--color-neutral-100, #f2f2f2) !important;
+    color: var(--color-neutral-600, #6d6d6d) !important;
+    cursor: not-allowed;
+    opacity: 1;
+  }
 }
 
 .login-option-block--with-error {

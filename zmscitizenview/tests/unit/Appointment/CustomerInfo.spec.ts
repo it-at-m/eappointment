@@ -72,12 +72,12 @@ describe("CustomerInfo", () => {
         },
         stubs: {
           "muc-input": {
-            template: '<input :id="id" :disabled="disabled" />',
-            props: ["id", "disabled"],
+            template: '<input :id="id" class="m-input" />',
+            props: ["id"],
           },
           "muc-text-area": {
-            template: '<textarea :id="id" :disabled="disabled" />',
-            props: ["id", "disabled"],
+            template: '<textarea :id="id" class="m-textarea" />',
+            props: ["id"],
           },
           "muc-button": {
             template:
@@ -455,6 +455,16 @@ describe("CustomerInfo", () => {
           .element as HTMLFieldSetElement
       ).disabled;
 
+    const nativeControlDisabled = (
+      wrapper: ReturnType<typeof createWrapper>,
+      name: string
+    ) => {
+      const fieldset = wrapper.find(`[data-contact-lock="${name}"]`);
+      const control = fieldset.find("input, textarea");
+      return (control.element as HTMLInputElement | HTMLTextAreaElement)
+        .disabled;
+    };
+
     it("locks filled contact fields and leaves required empty fields editable", async () => {
       mockAppointmentProvider.appointment.value!.familyName = "Max Mustermann";
       mockAppointmentProvider.appointment.value!.email = "max@example.com";
@@ -470,12 +480,18 @@ describe("CustomerInfo", () => {
 
       const wrapper = createWrapper({ isRebooking: true });
       await nextTick();
+      await nextTick();
 
       expect(isLocked(wrapper, "firstname")).toBe(true);
       expect(isLocked(wrapper, "lastname")).toBe(true);
       expect(isLocked(wrapper, "mailaddress")).toBe(true);
+      expect(nativeControlDisabled(wrapper, "firstname")).toBe(true);
+      expect(nativeControlDisabled(wrapper, "lastname")).toBe(true);
+      expect(nativeControlDisabled(wrapper, "mailaddress")).toBe(true);
       expect(isLocked(wrapper, "telephonenumber")).toBe(false);
       expect(isLocked(wrapper, "remarks2")).toBe(false);
+      expect(nativeControlDisabled(wrapper, "telephonenumber")).toBe(false);
+      expect(nativeControlDisabled(wrapper, "remarks2")).toBe(false);
     });
 
     it("locks name and email from the previous appointment even if customerData is still empty", async () => {
@@ -487,10 +503,13 @@ describe("CustomerInfo", () => {
 
       const wrapper = createWrapper({ isRebooking: true });
       await nextTick();
+      await nextTick();
 
       expect(isLocked(wrapper, "firstname")).toBe(true);
       expect(isLocked(wrapper, "lastname")).toBe(true);
       expect(isLocked(wrapper, "mailaddress")).toBe(true);
+      expect(nativeControlDisabled(wrapper, "firstname")).toBe(true);
+      expect(nativeControlDisabled(wrapper, "mailaddress")).toBe(true);
     });
 
     it("does not lock a required field while the citizen types into it", async () => {
@@ -523,9 +542,12 @@ describe("CustomerInfo", () => {
 
       const wrapper = createWrapper({ isRebooking: false });
       await nextTick();
+      await nextTick();
 
       expect(isLocked(wrapper, "firstname")).toBe(false);
       expect(isLocked(wrapper, "mailaddress")).toBe(false);
+      expect(nativeControlDisabled(wrapper, "firstname")).toBe(false);
+      expect(nativeControlDisabled(wrapper, "mailaddress")).toBe(false);
     });
   });
 });
