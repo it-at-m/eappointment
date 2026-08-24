@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Useraccountprofile extends Schema\Entity
 {
-    public const PRIMARY = 'username';
+    public const string PRIMARY = 'username';
 
     public static $schema = 'useraccountprofile.json';
 
