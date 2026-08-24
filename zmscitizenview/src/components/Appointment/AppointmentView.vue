@@ -719,6 +719,8 @@ provide<SelectedAppointmentProvider>("appointment", {
   appointment,
 } as SelectedAppointmentProvider);
 
+provide("rebookedAppointment", rebookedAppointment);
+
 provide<ServiceLinkProvider>("serviceLinkProvider", {
   serviceLinkId,
   updateServiceLinkId,

@@ -715,7 +715,8 @@ public class CitizenViewPage extends BasePage {
                         + "var found=scanRoot(document);if(!found)found=scanRoot(document.body);"
                         + "if(!found||!found.ctrl)return null;"
                         + "var e=found.ctrl,h=found.host;"
-                        + "return !!(e.disabled||e.readOnly||e.getAttribute('aria-disabled')==='true'"
+                        + "return !!(e.disabled||e.readOnly||(typeof e.matches==='function'&&e.matches(':disabled'))"
+                        + "||e.getAttribute('aria-disabled')==='true'"
                         + "||(h&&(h.disabled||h.hasAttribute('disabled')||h.getAttribute('aria-disabled')==='true')));";
         Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, id);
         return Boolean.TRUE.equals(o);

@@ -79,72 +79,106 @@
     v-if="!isExpired"
     class="m-form m-form--default"
   >
-    <muc-input
-      id="firstname"
-      v-model="customerData.firstName"
-      autocomplete="given-name"
+    <!--
+      muc-input / muc-text-area have no disabled prop (fallthrough lands on a
+      wrapper div). A fieldset is what actually disables the native control.
+    -->
+    <fieldset
+      class="contact-lock"
+      data-contact-lock="firstname"
       :disabled="lockFirstName"
-      :error-msg="errorDisplayFirstName"
-      :label="t('firstName')"
-      max="50"
-      required
-    />
-    <muc-input
-      id="lastname"
-      v-model="customerData.lastName"
-      autocomplete="family-name"
+    >
+      <muc-input
+        id="firstname"
+        v-model="customerData.firstName"
+        autocomplete="given-name"
+        :error-msg="errorDisplayFirstName"
+        :label="t('firstName')"
+        max="50"
+        required
+      />
+    </fieldset>
+    <fieldset
+      class="contact-lock"
+      data-contact-lock="lastname"
       :disabled="lockLastName"
-      :error-msg="errorDisplayLastName"
-      :label="t('lastName')"
-      max="50"
-      required
-    />
-    <muc-input
-      id="mailaddress"
-      v-model="customerData.mailAddress"
-      autocomplete="email"
+    >
+      <muc-input
+        id="lastname"
+        v-model="customerData.lastName"
+        autocomplete="family-name"
+        :error-msg="errorDisplayLastName"
+        :label="t('lastName')"
+        max="50"
+        required
+      />
+    </fieldset>
+    <fieldset
+      class="contact-lock"
+      data-contact-lock="mailaddress"
       :disabled="lockMailAddress"
-      :error-msg="errorDisplayMailAddress"
-      :label="t('mailAddress')"
-      max="50"
-      required
-    />
-    <muc-input
+    >
+      <muc-input
+        id="mailaddress"
+        v-model="customerData.mailAddress"
+        autocomplete="email"
+        :error-msg="errorDisplayMailAddress"
+        :label="t('mailAddress')"
+        max="50"
+        required
+      />
+    </fieldset>
+    <fieldset
       v-if="providerScope?.telephoneActivated"
-      id="telephonenumber"
-      v-model="customerData.telephoneNumber"
-      autocomplete="tel"
+      class="contact-lock"
+      data-contact-lock="telephonenumber"
       :disabled="lockTelephoneNumber"
-      :error-msg="errorDisplayTelephoneNumber"
-      :label="t('telephoneNumber')"
-      :required="!!providerScope?.telephoneRequired"
-      max="50"
-      placeholder="+491511234567"
-    />
-    <muc-text-area
+    >
+      <muc-input
+        id="telephonenumber"
+        v-model="customerData.telephoneNumber"
+        autocomplete="tel"
+        :error-msg="errorDisplayTelephoneNumber"
+        :label="t('telephoneNumber')"
+        :required="!!providerScope?.telephoneRequired"
+        max="50"
+        placeholder="+491511234567"
+      />
+    </fieldset>
+    <fieldset
       v-if="providerScope?.customTextfieldActivated"
-      id="remarks"
-      v-model="customerData.customTextfield"
+      class="contact-lock"
+      data-contact-lock="remarks"
       :disabled="lockCustomTextfield"
-      :error-msg="errorDisplayCustomTextfield"
-      :label="providerScope?.customTextfieldLabel ?? undefined"
-      :required="providerScope?.customTextfieldRequired ?? undefined"
-      :maxlength="MAX_CUSTOM_TEXT_CHARS"
-      :rows="textfieldRows1"
-      @input="handleInput1"
-    />
-    <muc-text-area
+    >
+      <muc-text-area
+        id="remarks"
+        v-model="customerData.customTextfield"
+        :error-msg="errorDisplayCustomTextfield"
+        :label="providerScope?.customTextfieldLabel ?? undefined"
+        :required="providerScope?.customTextfieldRequired ?? undefined"
+        :maxlength="MAX_CUSTOM_TEXT_CHARS"
+        :rows="textfieldRows1"
+        @input="handleInput1"
+      />
+    </fieldset>
+    <fieldset
       v-if="providerScope?.customTextfield2Activated"
-      id="remarks2"
-      v-model="customerData.customTextfield2"
+      class="contact-lock"
+      data-contact-lock="remarks2"
       :disabled="lockCustomTextfield2"
-      :error-msg="errorDisplayCustomTextfield2"
-      :label="providerScope?.customTextfield2Label ?? undefined"
-      :required="providerScope?.customTextfield2Required ?? undefined"
-      :maxlength="MAX_CUSTOM_TEXT_CHARS"
-      :rows="textfieldRows2"
-      @input="handleInput2"
-    />
+    >
+      <muc-text-area
+        id="remarks2"
+        v-model="customerData.customTextfield2"
+        :error-msg="errorDisplayCustomTextfield2"
+        :label="providerScope?.customTextfield2Label ?? undefined"
+        :required="providerScope?.customTextfield2Required ?? undefined"
+        :maxlength="MAX_CUSTOM_TEXT_CHARS"
+        :rows="textfieldRows2"
+        @input="handleInput2"
+      />
+    </fieldset>
   </form>
   <div class="m-button-group">
     <muc-button
@@ -171,6 +205,7 @@
 </template>
 
 <script setup lang="ts">
+import type { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import type {
   CustomerDataProvider,
   SelectedAppointmentProvider,
@@ -193,7 +228,10 @@ import {
   normalizePlainText,
   plainTextCharCount,
 } from "@/utils/processPlainText";
-import { isFilledContactValue } from "@/utils/rebookingContact";
+import {
+  isFilledContactValue,
+  splitFamilyName,
+} from "@/utils/rebookingContact";
 import { countLines, handleInput } from "@/utils/textfieldRows";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
@@ -236,6 +274,11 @@ const { appointment } = inject<SelectedAppointmentProvider>("appointment", {
   appointment: ref(undefined),
 }) as SelectedAppointmentProvider;
 
+const rebookedAppointment = inject<Ref<AppointmentDTO | undefined>>(
+  "rebookedAppointment",
+  ref(undefined)
+);
+
 /**
  * After Bürger-Login remount, appointment is re-fetched async. Weiter must stay
  * disabled until processId is back — nextUpdateAppointment no-ops without it.
@@ -250,25 +293,48 @@ const providerScope = computed(
 );
 
 /**
- * Lock only the values that already existed when the contact step opened.
- * A live computed would disable a field while the citizen types into it.
+ * Lock from the previous appointment, not from live customerData. Otherwise
+ * typing into an empty required field would disable it, and a mount snapshot
+ * misses values that are copied onto customerData a tick later.
+ * muc-input has no disabled prop — fieldsets disable the native control.
  */
-const lockedFields = ref({
-  firstName: false,
-  lastName: false,
-  mailAddress: false,
-  telephoneNumber: false,
-  customTextfield: false,
-  customTextfield2: false,
-});
+const previousAppointment = computed(
+  () => rebookedAppointment.value ?? appointment.value
+);
 
-const lockFirstName = computed(() => lockedFields.value.firstName);
-const lockLastName = computed(() => lockedFields.value.lastName);
-const lockMailAddress = computed(() => lockedFields.value.mailAddress);
-const lockTelephoneNumber = computed(() => lockedFields.value.telephoneNumber);
-const lockCustomTextfield = computed(() => lockedFields.value.customTextfield);
+const previousName = computed(() =>
+  splitFamilyName(previousAppointment.value?.familyName)
+);
+
+const lockFirstName = computed(
+  () =>
+    Boolean(props.isRebooking) &&
+    isFilledContactValue(previousName.value.firstName)
+);
+const lockLastName = computed(
+  () =>
+    Boolean(props.isRebooking) &&
+    isFilledContactValue(previousName.value.lastName)
+);
+const lockMailAddress = computed(
+  () =>
+    Boolean(props.isRebooking) &&
+    isFilledContactValue(previousAppointment.value?.email)
+);
+const lockTelephoneNumber = computed(
+  () =>
+    Boolean(props.isRebooking) &&
+    isFilledContactValue(previousAppointment.value?.telephone)
+);
+const lockCustomTextfield = computed(
+  () =>
+    Boolean(props.isRebooking) &&
+    isFilledContactValue(previousAppointment.value?.customTextfield)
+);
 const lockCustomTextfield2 = computed(
-  () => lockedFields.value.customTextfield2
+  () =>
+    Boolean(props.isRebooking) &&
+    isFilledContactValue(previousAppointment.value?.customTextfield2)
 );
 
 const loadingStates = inject("loadingStates", {
@@ -430,18 +496,6 @@ const errorDisplayCustomTextfield2 = computed(
 onMounted(() => {
   inputLines1.value = countLines(customerData.value.customTextfield ?? "");
   inputLines2.value = countLines(customerData.value.customTextfield2 ?? "");
-
-  if (props.isRebooking) {
-    const data = customerData.value;
-    lockedFields.value = {
-      firstName: isFilledContactValue(data.firstName),
-      lastName: isFilledContactValue(data.lastName),
-      mailAddress: isFilledContactValue(data.mailAddress),
-      telephoneNumber: isFilledContactValue(data.telephoneNumber),
-      customTextfield: isFilledContactValue(data.customTextfield),
-      customTextfield2: isFilledContactValue(data.customTextfield2),
-    };
-  }
 });
 
 const validForm = computed(
@@ -474,6 +528,13 @@ const previousStep = () => emit("back");
 
 .m-button-group {
   margin-top: 48px;
+}
+
+.contact-lock {
+  border: 0;
+  margin: 0;
+  min-inline-size: 0;
+  padding: 0;
 }
 
 .login-option-block--with-error {

@@ -34,6 +34,11 @@ describe("CustomerInfo", () => {
       appointment: ref<{
         processId?: string;
         authKey?: string;
+        familyName?: string;
+        email?: string;
+        telephone?: string;
+        customTextfield?: string;
+        customTextfield2?: string;
         scope?: { reservationDuration?: number };
       } | null>({
         processId: "100001",
@@ -441,7 +446,18 @@ describe("CustomerInfo", () => {
   });
 
   describe("Rebooking field lock", () => {
+    const isLocked = (
+      wrapper: ReturnType<typeof createWrapper>,
+      name: string
+    ) =>
+      (
+        wrapper.find(`[data-contact-lock="${name}"]`)
+          .element as HTMLFieldSetElement
+      ).disabled;
+
     it("locks filled contact fields and leaves required empty fields editable", async () => {
+      mockAppointmentProvider.appointment.value!.familyName = "Max Mustermann";
+      mockAppointmentProvider.appointment.value!.email = "max@example.com";
       mockCustomerData.value.firstName = "Max";
       mockCustomerData.value.lastName = "Mustermann";
       mockCustomerData.value.mailAddress = "max@example.com";
@@ -455,16 +471,31 @@ describe("CustomerInfo", () => {
       const wrapper = createWrapper({ isRebooking: true });
       await nextTick();
 
-      expect(wrapper.find("#firstname").attributes("disabled")).toBeDefined();
-      expect(wrapper.find("#lastname").attributes("disabled")).toBeDefined();
-      expect(wrapper.find("#mailaddress").attributes("disabled")).toBeDefined();
-      expect(
-        wrapper.find("#telephonenumber").attributes("disabled")
-      ).toBeUndefined();
-      expect(wrapper.find("#remarks2").attributes("disabled")).toBeUndefined();
+      expect(isLocked(wrapper, "firstname")).toBe(true);
+      expect(isLocked(wrapper, "lastname")).toBe(true);
+      expect(isLocked(wrapper, "mailaddress")).toBe(true);
+      expect(isLocked(wrapper, "telephonenumber")).toBe(false);
+      expect(isLocked(wrapper, "remarks2")).toBe(false);
+    });
+
+    it("locks name and email from the previous appointment even if customerData is still empty", async () => {
+      mockAppointmentProvider.appointment.value!.familyName = "Max Mustermann";
+      mockAppointmentProvider.appointment.value!.email = "max@example.com";
+      mockCustomerData.value.firstName = "";
+      mockCustomerData.value.lastName = "";
+      mockCustomerData.value.mailAddress = "";
+
+      const wrapper = createWrapper({ isRebooking: true });
+      await nextTick();
+
+      expect(isLocked(wrapper, "firstname")).toBe(true);
+      expect(isLocked(wrapper, "lastname")).toBe(true);
+      expect(isLocked(wrapper, "mailaddress")).toBe(true);
     });
 
     it("does not lock a required field while the citizen types into it", async () => {
+      mockAppointmentProvider.appointment.value!.familyName = "Max Mustermann";
+      mockAppointmentProvider.appointment.value!.email = "max@example.com";
       mockCustomerData.value.firstName = "Max";
       mockCustomerData.value.lastName = "Mustermann";
       mockCustomerData.value.mailAddress = "max@example.com";
@@ -475,19 +506,17 @@ describe("CustomerInfo", () => {
       const wrapper = createWrapper({ isRebooking: true });
       await nextTick();
 
-      expect(
-        wrapper.find("#telephonenumber").attributes("disabled")
-      ).toBeUndefined();
+      expect(isLocked(wrapper, "telephonenumber")).toBe(false);
 
       mockCustomerData.value.telephoneNumber = "0";
       await nextTick();
 
-      expect(
-        wrapper.find("#telephonenumber").attributes("disabled")
-      ).toBeUndefined();
+      expect(isLocked(wrapper, "telephonenumber")).toBe(false);
     });
 
     it("does not lock fields during a new booking", async () => {
+      mockAppointmentProvider.appointment.value!.familyName = "Max Mustermann";
+      mockAppointmentProvider.appointment.value!.email = "max@example.com";
       mockCustomerData.value.firstName = "Max";
       mockCustomerData.value.lastName = "Mustermann";
       mockCustomerData.value.mailAddress = "max@example.com";
@@ -495,10 +524,8 @@ describe("CustomerInfo", () => {
       const wrapper = createWrapper({ isRebooking: false });
       await nextTick();
 
-      expect(wrapper.find("#firstname").attributes("disabled")).toBeUndefined();
-      expect(
-        wrapper.find("#mailaddress").attributes("disabled")
-      ).toBeUndefined();
+      expect(isLocked(wrapper, "firstname")).toBe(false);
+      expect(isLocked(wrapper, "mailaddress")).toBe(false);
     });
   });
 });
