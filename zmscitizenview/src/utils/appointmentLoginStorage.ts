@@ -113,7 +113,7 @@ export function parseUiLocalStorage(data: string): LocalStorageUiData | null {
     ) {
       return null;
     }
-    // Persist IDs only — never restore legacy full objects / credentials / PII.
+    // Persist IDs only — never restore credentials / PII / full office objects.
     return {
       timestamp: raw.timestamp,
       currentView: raw.currentView,
@@ -136,6 +136,7 @@ export function getFreshLocalStorageUiData(
   }
   const parsed = parseUiLocalStorage(raw);
   if (!parsed || nowMs - parsed.timestamp >= LOCALSTORAGE_UI_TTL_MS) {
+    clearAppointmentLocalStorage();
     return null;
   }
   return parsed;

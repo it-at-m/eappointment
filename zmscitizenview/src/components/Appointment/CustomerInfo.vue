@@ -107,46 +107,34 @@
       required
     />
     <muc-input
-      v-if="
-        selectedProvider &&
-        selectedProvider.scope &&
-        selectedProvider.scope.telephoneActivated
-      "
+      v-if="providerScope?.telephoneActivated"
       id="telephonenumber"
       v-model="customerData.telephoneNumber"
       autocomplete="tel"
       :error-msg="errorDisplayTelephoneNumber"
       :label="t('telephoneNumber')"
-      :required="selectedProvider.scope.telephoneRequired"
+      :required="!!providerScope?.telephoneRequired"
       max="50"
       placeholder="+491511234567"
     />
     <muc-text-area
-      v-if="
-        selectedProvider &&
-        selectedProvider.scope &&
-        selectedProvider.scope.customTextfieldActivated
-      "
+      v-if="providerScope?.customTextfieldActivated"
       id="remarks"
       v-model="customerData.customTextfield"
       :error-msg="errorDisplayCustomTextfield"
-      :label="selectedProvider.scope.customTextfieldLabel ?? undefined"
-      :required="selectedProvider.scope.customTextfieldRequired ?? undefined"
+      :label="providerScope?.customTextfieldLabel ?? undefined"
+      :required="providerScope?.customTextfieldRequired ?? undefined"
       :maxlength="MAX_CUSTOM_TEXT_CHARS"
       :rows="textfieldRows1"
       @input="handleInput1"
     />
     <muc-text-area
-      v-if="
-        selectedProvider &&
-        selectedProvider.scope &&
-        selectedProvider.scope.customTextfield2Activated
-      "
+      v-if="providerScope?.customTextfield2Activated"
       id="remarks2"
       v-model="customerData.customTextfield2"
       :error-msg="errorDisplayCustomTextfield2"
-      :label="selectedProvider.scope.customTextfield2Label ?? undefined"
-      :required="selectedProvider.scope.customTextfield2Required ?? undefined"
+      :label="providerScope?.customTextfield2Label ?? undefined"
+      :required="providerScope?.customTextfield2Required ?? undefined"
       :maxlength="MAX_CUSTOM_TEXT_CHARS"
       :rows="textfieldRows2"
       @input="handleInput2"
@@ -163,7 +151,9 @@
     </muc-button>
     <muc-button
       v-if="!isExpired"
-      :disabled="loadingStates.isUpdatingAppointment.value"
+      :disabled="
+        loadingStates.isUpdatingAppointment.value || !hasReservedAppointment
+      "
       :icon="'arrow-right'"
       @click="nextStep"
     >
@@ -175,7 +165,11 @@
 </template>
 
 <script setup lang="ts">
-import type { SelectedTimeslotProvider } from "@/types/ProvideInjectTypes";
+import type {
+  CustomerDataProvider,
+  SelectedAppointmentProvider,
+  SelectedTimeslotProvider,
+} from "@/types/ProvideInjectTypes";
 import type { Ref } from "vue";
 
 import {
@@ -189,7 +183,6 @@ import {
 import { computed, inject, onMounted, ref } from "vue";
 
 import { GlobalState } from "@/types/GlobalState";
-import { CustomerDataProvider } from "@/types/ProvideInjectTypes";
 import {
   normalizePlainText,
   plainTextCharCount,
@@ -230,6 +223,23 @@ const { customerData } = inject<CustomerDataProvider>(
 const { selectedProvider } = inject<SelectedTimeslotProvider>(
   "selectedTimeslot"
 ) as SelectedTimeslotProvider;
+
+const { appointment } = inject<SelectedAppointmentProvider>("appointment", {
+  appointment: ref(undefined),
+}) as SelectedAppointmentProvider;
+
+/**
+ * After Bürger-Login remount, appointment is re-fetched async. Weiter must stay
+ * disabled until processId is back — nextUpdateAppointment no-ops without it.
+ */
+const hasReservedAppointment = computed(
+  () => !!appointment.value?.processId && !!appointment.value?.authKey
+);
+
+/** Prefer selected office scope; fall back to reserved appointment scope (login/back). */
+const providerScope = computed(
+  () => selectedProvider.value?.scope ?? appointment.value?.scope
+);
 
 const loadingStates = inject("loadingStates", {
   isReservingAppointment: ref(false),
@@ -317,7 +327,7 @@ const errorMessageTelephoneNumber = computed(() => {
 
   if (
     !customerData.value.telephoneNumber &&
-    selectedProvider.value?.scope?.telephoneRequired
+    providerScope.value?.telephoneRequired
   ) {
     return props.t("errorMessageTelephoneNumberRequired");
   } else if (
@@ -344,7 +354,7 @@ const errorMessageCustomTextfield = computed(() => {
   if (!showErrorMessage.value) return undefined;
 
   if (
-    selectedProvider.value?.scope?.customTextfieldRequired &&
+    providerScope.value?.customTextfieldRequired &&
     !normalizePlainText(customerData.value.customTextfield).trim()
   ) {
     return props.t("errorMessageCustomTextfield");
@@ -367,7 +377,7 @@ const errorMessageCustomTextfield2 = computed(() => {
   if (!showErrorMessage.value) return undefined;
 
   if (
-    selectedProvider.value?.scope?.customTextfield2Required &&
+    providerScope.value?.customTextfield2Required &&
     !normalizePlainText(customerData.value.customTextfield2).trim()
   ) {
     return props.t("errorMessageCustomTextfield2");

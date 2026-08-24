@@ -99,10 +99,12 @@
               />
             </div>
 
-            <!-- Keep mounted across customer-info (view 2) so back does not remount/refetch. -->
+            <!-- Keep mounted across customer-info and summary so back/login do not remount/refetch. -->
             <div v-show="currentView === 1">
               <AppointmentSelection
-                v-if="currentView === 1 || currentView === 2"
+                v-if="
+                  currentView === 1 || currentView === 2 || currentView === 3
+                "
                 :key="appointmentSelectionKey"
                 :global-state="globalState"
                 :is-rebooking="isRebooking"
@@ -835,18 +837,7 @@ const nextUpdateAppointment = () => {
   if (appointment.value) {
     isUpdatingAppointment.value = true;
     clearContextErrors(errorStateMap.value);
-    appointment.value.familyName =
-      customerData.value.firstName + " " + customerData.value.lastName;
-    appointment.value.email = customerData.value.mailAddress;
-    appointment.value.telephone = customerData.value.telephoneNumber
-      ? customerData.value.telephoneNumber
-      : undefined;
-    appointment.value.customTextfield = customerData.value.customTextfield
-      ? customerData.value.customTextfield
-      : undefined;
-    appointment.value.customTextfield2 = customerData.value.customTextfield2
-      ? customerData.value.customTextfield2
-      : undefined;
+    copyCustomerDataOntoAppointment();
 
     currentContext.value = "update";
     updateAppointment(props.globalState, appointment.value)
@@ -991,7 +982,40 @@ const goToTop = async () => {
   window.scrollTo({ top: 0, behavior: "instant" });
 };
 
-const requestLogin = () => {
+const copyCustomerDataOntoAppointment = () => {
+  if (!appointment.value) {
+    return;
+  }
+  appointment.value.familyName =
+    customerData.value.firstName + " " + customerData.value.lastName;
+  appointment.value.email = customerData.value.mailAddress;
+  appointment.value.telephone = customerData.value.telephoneNumber
+    ? customerData.value.telephoneNumber
+    : undefined;
+  appointment.value.customTextfield = customerData.value.customTextfield
+    ? customerData.value.customTextfield
+    : undefined;
+  appointment.value.customTextfield2 = customerData.value.customTextfield2
+    ? customerData.value.customTextfield2
+    : undefined;
+};
+
+const applyContactFromAppointment = (booked: AppointmentDTO) => {
+  if (booked.telephone) {
+    customerData.value.telephoneNumber =
+      customerData.value.telephoneNumber || booked.telephone;
+  }
+  if (booked.customTextfield) {
+    customerData.value.customTextfield =
+      customerData.value.customTextfield || booked.customTextfield;
+  }
+  if (booked.customTextfield2) {
+    customerData.value.customTextfield2 =
+      customerData.value.customTextfield2 || booked.customTextfield2;
+  }
+};
+
+const persistUiIdsForLogin = () => {
   if (selectedService.value && selectedProvider.value) {
     saveUiToLocalStorage({
       timestamp: Date.now(),
@@ -1002,6 +1026,10 @@ const requestLogin = () => {
       selectedTimeslot: selectedTimeslot.value,
     });
   }
+};
+
+const startOidcLogin = () => {
+  persistUiIdsForLogin();
   setAppointmentAuthHashForLogin(
     appointment.value?.processId,
     appointment.value?.authKey
@@ -1014,6 +1042,18 @@ const requestLogin = () => {
       },
     })
   );
+};
+
+const requestLogin = () => {
+  // Persist phone / Zusatzfelder on the reserved appointment so they survive
+  // OAuth remount without writing PII to localStorage (ZMSKVR-1002 / CodeQL).
+  if (appointment.value?.processId && appointment.value?.authKey) {
+    copyCustomerDataOntoAppointment();
+    return updateAppointment(props.globalState, appointment.value)
+      .catch(() => undefined)
+      .finally(startOidcLogin);
+  }
+  startOidcLogin();
 };
 
 const viewAppointment = () => {
@@ -1168,6 +1208,10 @@ const runLoginResumeFromHashAndLocalStorage = (
         (response) => {
           if ((response as AppointmentDTO).processId != undefined) {
             appointment.value = response as AppointmentDTO;
+            applyContactFromAppointment(appointment.value);
+            if (reservationStartMs.value == null) {
+              reservationStartMs.value = Date.now();
+            }
             if ("captchaToken" in response && (response as any).captchaToken) {
               captchaToken.value =
                 captchaToken.value ||

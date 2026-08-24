@@ -248,6 +248,7 @@ import { fetchAvailableCalendar } from "@/api/ZMSAppointmentAPI";
 import { GlobalState } from "@/types/GlobalState";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import {
+  SelectedAppointmentProvider,
   SelectedServiceProvider,
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
@@ -293,6 +294,10 @@ const { selectedService } = inject<SelectedServiceProvider>(
 const { selectedProvider, selectedTimeslot } = inject<SelectedTimeslotProvider>(
   "selectedTimeslot"
 ) as SelectedTimeslotProvider;
+
+const { appointment } = inject<SelectedAppointmentProvider>("appointment", {
+  appointment: ref(undefined),
+}) as SelectedAppointmentProvider;
 
 const loadingStates = inject("loadingStates", {
   isReservingAppointment: ref(false),
@@ -2156,6 +2161,18 @@ onMounted(() => {
     // Claim the initial fetch before checkbox init so the selectedProviders watch
     // cannot schedule a parallel refresh while onMounted loads the calendar.
     initialCalendarLoadPending = true;
+
+    // Resolve reserved office before checkbox init — shared-booking peers (e.g. Ausbildung
+    // 10503 under Ort 10489) are often absent from selectableProviders, and the
+    // selectedProviders watch would otherwise overwrite them with the display Ort.
+    const reservedOfficeId = appointment.value?.officeId;
+    const reservedProvider =
+      (reservedOfficeId ? getOfficeById(reservedOfficeId) : undefined) ||
+      selectedProvider.value;
+    if (appointment.value?.processId && reservedProvider) {
+      selectedProvider.value = reservedProvider;
+    }
+
     selectedProviders.value = selectableProviders.value.reduce(
       (acc, item) => {
         acc[item.id] = props.preselectedOfficeId
@@ -2174,11 +2191,20 @@ onMounted(() => {
       ])
     );
 
-    void showSelectionForProvider(firstOfficeToShow ?? offices[0]).finally(
-      () => {
+    // Remount after reservation (back from summary / login restore): keep the
+    // chosen office and timeslot; only refresh calendar availability.
+    if (appointment.value?.processId && reservedProvider) {
+      selectedProvider.value = reservedProvider;
+      void fetchAvailableDaysForSelection().finally(() => {
         initialCalendarLoadPending = false;
-      }
-    );
+      });
+    } else {
+      void showSelectionForProvider(firstOfficeToShow ?? offices[0]).finally(
+        () => {
+          initialCalendarLoadPending = false;
+        }
+      );
+    }
   }
 });
 
@@ -2249,17 +2275,35 @@ watch(
     if (captchaSessionExpired.value) {
       return;
     }
-    // Sync single-selection provider immediately
+    // Sync selectedProvider with checkbox state. Shared-booking peers (real slot
+    // owner under a display Ort) must stay selected while their Ort is checked —
+    // otherwise overview Ort flips to the checkbox id (ZMSKVR-1046 / 1571).
     const selectedIds = Object.keys(selectedProviders.value).filter(
       (id) => selectedProviders.value[id]
     );
-    if (selectedIds.length === 1 && selectableProviders.value) {
-      const provider = selectableProviders.value.find(
-        (p) => p.id.toString() === selectedIds[0]
-      );
-      selectedProvider.value = provider ?? undefined;
-    } else if (selectedIds.length !== 1) {
+    if (selectedIds.length === 0) {
       selectedProvider.value = undefined;
+    } else if (selectableProviders.value) {
+      const currentOfficeId = selectedProvider.value?.id;
+      const retainedOfficeId =
+        currentOfficeId != null &&
+        isOfficeIdSelectedForCalendar(currentOfficeId)
+          ? currentOfficeId
+          : appointment.value?.officeId;
+      if (
+        retainedOfficeId != null &&
+        isOfficeIdSelectedForCalendar(retainedOfficeId)
+      ) {
+        const retainedProvider = getOfficeById(retainedOfficeId);
+        if (retainedProvider) {
+          selectedProvider.value = retainedProvider;
+        }
+      } else if (selectedIds.length === 1) {
+        const provider = selectableProviders.value.find(
+          (p) => p.id.toString() === selectedIds[0]
+        );
+        selectedProvider.value = provider ?? undefined;
+      }
     }
 
     const hasAvailableDays =

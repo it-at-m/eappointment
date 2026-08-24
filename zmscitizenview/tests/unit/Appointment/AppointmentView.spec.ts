@@ -31,6 +31,7 @@ vi.mock("@/api/ZMSAppointmentAPI", async () => {
     preconfirmAppointment: vi.fn(),
     cancelAppointment: vi.fn(),
     fetchAppointment: vi.fn(),
+    updateAppointment: vi.fn(),
   };
 });
 
@@ -65,6 +66,10 @@ describe("AppointmentView", () => {
 
   beforeEach(() => {
     vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockReset();
+    vi.mocked(ZMSAppointmentAPI.updateAppointment).mockReset();
+    vi.mocked(ZMSAppointmentAPI.updateAppointment).mockResolvedValue({
+      processId: "proc-1",
+    } as any);
   });
 
   const mockBaseUrl = "https://www.muenchen.de";
@@ -2211,7 +2216,7 @@ describe("AppointmentView", () => {
       );
     });
 
-    it("requestLogin stores UI data without authKey, PII, or captchaToken", () => {
+    it("requestLogin stores UI data without authKey, PII, or captchaToken", async () => {
       const replaceStateSpy = vi
         .spyOn(history, "replaceState")
         .mockImplementation(() => {});
@@ -2258,7 +2263,13 @@ describe("AppointmentView", () => {
         serviceCount: 1,
       } as any;
 
-      wrapper.vm.requestLogin();
+      await wrapper.vm.requestLogin();
+
+      expect(ZMSAppointmentAPI.updateAppointment).toHaveBeenCalledTimes(1);
+      const updatedAppointment = vi.mocked(ZMSAppointmentAPI.updateAppointment)
+        .mock.calls[0][1];
+      expect(updatedAppointment.telephone).toBe("089123456");
+      expect(updatedAppointment.customTextfield).toBe("secret-note");
 
       const stored = localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
       expect(stored).toBeTruthy();
@@ -2270,6 +2281,8 @@ describe("AppointmentView", () => {
       expect(stored).not.toContain("captchaToken");
       expect(stored).not.toContain("slotsPerAppointment");
       expect(stored).not.toContain("Test Provider");
+      expect(stored).not.toContain("089123456");
+      expect(stored).not.toContain("secret-note");
       const parsed = JSON.parse(stored as string);
       expect(parsed.appointment).toBeUndefined();
       expect(parsed.customerData).toBeUndefined();
@@ -2278,12 +2291,40 @@ describe("AppointmentView", () => {
       expect(parsed.selectedProvider).toBeUndefined();
       expect(parsed.selectedServiceId).toBe("123");
       expect(parsed.selectedProviderId).toBe("789");
+      expect(parsed.telephoneNumber).toBeUndefined();
+      expect(parsed.customTextfield).toBeUndefined();
+      expect(parsed.customTextfield2).toBeUndefined();
 
       expect(
         sessionStorage.getItem(SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH)
       ).toBe(btoa(JSON.stringify({ id: "proc-1", authKey: "secret-key" })));
       expect(replaceStateSpy).toHaveBeenCalled();
       replaceStateSpy.mockRestore();
+    });
+
+    it("requestLogin still starts OIDC when contact update fails", async () => {
+      vi.mocked(ZMSAppointmentAPI.updateAppointment).mockRejectedValue(
+        new Error("network")
+      );
+      const wrapper = createWrapper({ showLoginOption: true });
+      wrapper.vm.selectedService = { id: "123", name: "Test Service" } as any;
+      wrapper.vm.selectedProvider = { id: "789", name: "Test Provider" } as any;
+      wrapper.vm.appointment = {
+        processId: "proc-1",
+        authKey: "secret-key",
+      } as any;
+      wrapper.vm.customerData = {
+        telephoneNumber: "089123456",
+      } as any;
+
+      await wrapper.vm.requestLogin();
+
+      expect(
+        sessionStorage.getItem(SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH)
+      ).toBe(btoa(JSON.stringify({ id: "proc-1", authKey: "secret-key" })));
+      const stored = localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
+      expect(stored).toBeTruthy();
+      expect(stored).not.toContain("089123456");
     });
 
     it("login resume merges hash credentials with UI localStorage and ignores legacy LS authKey", async () => {
@@ -2324,6 +2365,8 @@ describe("AppointmentView", () => {
         timestamp: Math.floor(Date.now() / 1000) + 3600,
         familyName: "Mustermann",
         email: "max@example.com",
+        telephone: "089123456",
+        customTextfield: "secret-note",
         officeId: "789",
         scope: {},
         subRequestCounts: [],
@@ -2348,6 +2391,8 @@ describe("AppointmentView", () => {
       expect(wrapper.vm.customerData?.mailAddress).not.toBe(
         "legacy@example.com"
       );
+      expect(wrapper.vm.customerData?.telephoneNumber).toBe("089123456");
+      expect(wrapper.vm.customerData?.customTextfield).toBe("secret-note");
       expect(wrapper.vm.captchaToken).not.toBe("legacy-captcha");
       expect(wrapper.vm.currentView).toBe(2);
       expect(wrapper.vm.rebookOrCancelDialog).toBe(false);
