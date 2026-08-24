@@ -389,8 +389,6 @@ import { Relation } from "@/api/models/Relation";
 import { Service } from "@/api/models/Service";
 import {
   cancelAppointment,
-  confirmAppointment,
-  fetchAppointment,
   preconfirmAppointment,
   reserveAppointment,
   updateAppointment,
@@ -400,10 +398,8 @@ import AppointmentSummary from "@/components/Appointment/AppointmentSummary.vue"
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
-import { AppointmentHash } from "@/types/AppointmentHashTypes";
 import { CustomerData } from "@/types/CustomerData";
 import { GlobalState } from "@/types/GlobalState";
-import { LocalStorageUiData } from "@/types/LocalStorageAppointmentData";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import {
   CustomerDataProvider,
@@ -414,20 +410,12 @@ import {
 } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
-import { SubService } from "@/types/SubService";
 import {
   getApiStatusState,
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
-import { loadOfficesAndServicesCatalog } from "@/utils/appointmentCatalog";
-import {
-  clearAppointmentAuthHashSession,
-  clearAppointmentLocalStorage,
-  getFreshLocalStorageUiData,
-  parseAppointmentHash,
-  resolveAppointmentAuthHash,
-} from "@/utils/appointmentLoginStorage";
+import { createAppointmentBootstrap } from "@/utils/appointmentBootstrap";
 import { requestLogin as startAppointmentOidcLogin } from "@/utils/appointmentOidcLogin";
 import {
   continueRebookingAfterReserve as continueRebookingAfterReserveFlow,
@@ -436,7 +424,6 @@ import {
 import { getTokenData } from "@/utils/auth";
 import { toCalloutType } from "@/utils/callout";
 import {
-  APPOINTMENT_ACTION_TYPE,
   QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
   resolveAgainstCurrentPage,
@@ -454,14 +441,7 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
-import {
-  officeFromCatalog,
-  getProviders as providersForService,
-} from "@/utils/getProviders";
-import {
-  applyAppointmentContactToCustomerData,
-  copyCustomerDataOntoAppointment,
-} from "@/utils/rebookingContact";
+import { copyCustomerDataOntoAppointment } from "@/utils/rebookingContact";
 import { isExpired } from "@/utils/timestampInPast";
 
 const props = defineProps<{
@@ -659,6 +639,22 @@ const focusActiveStepperItem = async () => {
   );
 
   activeIcon?.focus();
+};
+
+const clearBookingError = (): void => {
+  captchaError.value = false;
+
+  errorStateMap.value.apiErrorAppointmentNotAvailable.value = false;
+  errorStateMap.value.apiErrorCaptchaExpired.value = false;
+  errorStateMap.value.apiErrorCaptchaMissing.value = false;
+  errorStateMap.value.apiErrorCaptchaInvalid.value = false;
+
+  errorStates.currentErrorData.value = null;
+};
+
+const clearAllErrors = (): void => {
+  clearContextErrors(errorStateMap.value);
+  clearBookingError();
 };
 
 // Track the current context based on API calls and props
@@ -997,6 +993,45 @@ const nextCancelReschedule = () => {
   rebookOrCancelDialog.value = true;
 };
 
+const {
+  nextConfirmAppointment,
+  runConfirmFromHash,
+  onAppointmentHashChange,
+  bootstrapOnMounted,
+} = createAppointmentBootstrap({
+  props,
+  services,
+  relations,
+  offices,
+  selectedService,
+  selectedServiceMap,
+  selectedProvider,
+  selectedTimeslot,
+  currentView,
+  appointment,
+  rebookedAppointment,
+  customerData,
+  captchaToken,
+  reservationStartMs,
+  preselectedLocationId,
+  loadedAppointmentHash,
+  isLoadingAppointmentFromHash,
+  rebookOrCancelDialog,
+  confirmAppointmentSuccess,
+  appointmentAlreadyActivated,
+  confirmedAppointmentHash,
+  isBookingAppointment,
+  isRebooking,
+  currentContext,
+  isAppointmentInPast,
+  errorStates,
+  updateServiceLinkId,
+  nextRescheduleAppointment,
+  nextCancelAppointment,
+  clearAllErrors,
+  focusActiveStepperItem,
+});
+
 /**
  * Adjusts the active step in the stepper to the current view
  */
@@ -1052,127 +1087,6 @@ const viewAppointment = () => {
   location.href = url.toString();
 };
 
-const getProviders = (serviceId: string, providers: string[] | null) =>
-  providersForService(serviceId, providers, relations.value, offices.value);
-
-const applyCatalog = (catalog: {
-  services: Service[];
-  relations: Relation[];
-  offices: Office[];
-}) => {
-  services.value = catalog.services;
-  relations.value = catalog.relations;
-  offices.value = catalog.offices;
-};
-
-const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
-  selectedServiceMap.value = new Map(
-    Object.entries(uiData.selectedServiceMap ?? {})
-  );
-
-  const foundService = services.value.find(
-    (service) => String(service.id) === String(uiData.selectedServiceId)
-  );
-  if (foundService) {
-    selectedService.value = foundService as ServiceImpl;
-    const count = selectedServiceMap.value.get(String(foundService.id));
-    if (count != undefined) {
-      selectedService.value.count = count;
-    }
-    selectedService.value.providers = getProviders(
-      selectedService.value.id,
-      null
-    );
-  }
-
-  const foundOffice = offices.value.find(
-    (office) => String(office.id) === String(uiData.selectedProviderId)
-  );
-  if (foundOffice) {
-    selectedProvider.value = officeFromCatalog(foundOffice);
-  }
-
-  selectedTimeslot.value = uiData.selectedTimeslot;
-  currentView.value = isAppointmentInPast.value ? 3 : uiData.currentView;
-  if (typeof uiData.reservationStartMs === "number") {
-    reservationStartMs.value = uiData.reservationStartMs;
-  }
-};
-
-const runLoginResumeFromHashAndLocalStorage = (
-  hash: string,
-  uiData: LocalStorageUiData
-): void => {
-  const appointmentData = parseAppointmentHash(hash);
-  if (!appointmentData) {
-    handleApiError(
-      "appointmentNotFound",
-      errorStateMap.value,
-      currentErrorData.value
-    );
-    clearAppointmentLocalStorage();
-    clearAppointmentAuthHashSession();
-    return;
-  }
-
-  loadedAppointmentHash.value = hash;
-  clearContextErrors(errorStateMap.value);
-
-  loadOfficesAndServicesCatalog(
-    props.serviceId ?? undefined,
-    props.locationId ?? undefined,
-    props.globalState?.baseUrl ?? undefined,
-    errorStates.errorStateMap,
-    errorStates.currentErrorData
-  )
-    .then((catalog) => {
-      if (!catalog) {
-        return;
-      }
-      applyCatalog(catalog);
-      applyLocalStorageUiData(uiData);
-
-      return fetchAppointment(props.globalState, appointmentData).then(
-        (response) => {
-          if ((response as AppointmentDTO).processId != undefined) {
-            appointment.value = response as AppointmentDTO;
-            applyAppointmentContactToCustomerData(
-              customerData.value,
-              appointment.value
-            );
-            if (reservationStartMs.value == null) {
-              reservationStartMs.value = Date.now();
-            }
-            if ("captchaToken" in response && (response as any).captchaToken) {
-              captchaToken.value =
-                captchaToken.value ||
-                ((response as any).captchaToken as string);
-            }
-            // Keep stepper step from UI localStorage (do not open reschedule/cancel dialog).
-            currentView.value = isAppointmentInPast.value
-              ? 3
-              : uiData.currentView;
-            clearAppointmentLocalStorage();
-            clearAppointmentAuthHashSession();
-          } else {
-            handleErrorApiResponse(
-              response,
-              errorStates.errorStateMap,
-              currentErrorData.value
-            );
-          }
-        }
-      );
-    })
-    .catch(() => {
-      handleApiError(
-        "appointmentNotFound",
-        errorStateMap.value,
-        currentErrorData.value
-      );
-    });
-};
-
 const handleInvalidJumpinLink = () => {
   handleApiError(
     "invalidJumpinLink",
@@ -1188,22 +1102,6 @@ const handleServiceFinderRateLimitError = () => {
     currentErrorData.value,
     "warning"
   );
-};
-
-const clearBookingError = (): void => {
-  captchaError.value = false;
-
-  errorStateMap.value.apiErrorAppointmentNotAvailable.value = false;
-  errorStateMap.value.apiErrorCaptchaExpired.value = false;
-  errorStateMap.value.apiErrorCaptchaMissing.value = false;
-  errorStateMap.value.apiErrorCaptchaInvalid.value = false;
-
-  errorStates.currentErrorData.value = null;
-};
-
-const clearAllErrors = (): void => {
-  clearContextErrors(errorStateMap.value);
-  clearBookingError();
 };
 
 const handleCaptchaTokenChanged = (token?: string | null): void => {
@@ -1222,238 +1120,6 @@ const downloadIcsAppointment = () => {
   downloadIcsFile(appointment.value?.icsContent);
 };
 
-const resetConfirmRouteState = (): void => {
-  confirmAppointmentSuccess.value = false;
-  appointmentAlreadyActivated.value = false;
-  confirmedAppointmentHash.value = null;
-  isBookingAppointment.value = false;
-};
-
-const runAppointmentFromHash = (hash: string | undefined): void => {
-  if (
-    !hash ||
-    hash === loadedAppointmentHash.value ||
-    isLoadingAppointmentFromHash.value
-  ) {
-    return;
-  }
-
-  const appointmentData = parseAppointmentHash(hash);
-  if (!appointmentData) {
-    handleApiError(
-      "appointmentNotFound",
-      errorStateMap.value,
-      currentErrorData.value
-    );
-    return;
-  }
-
-  resetConfirmRouteState();
-  loadedAppointmentHash.value = hash;
-  isLoadingAppointmentFromHash.value = true;
-  clearContextErrors(errorStateMap.value);
-  rebookOrCancelDialog.value = true;
-
-  loadOfficesAndServicesCatalog(
-    props.serviceId ?? undefined,
-    props.locationId ?? undefined,
-    props.globalState?.baseUrl ?? undefined,
-    errorStates.errorStateMap,
-    errorStates.currentErrorData
-  )
-    .then((catalog) => {
-      if (!catalog) {
-        return;
-      }
-      applyCatalog(catalog);
-
-      fetchAppointment(props.globalState, appointmentData).then((data) => {
-        if ((data as AppointmentDTO).processId != undefined) {
-          if ("captchaToken" in data && data.captchaToken) {
-            captchaToken.value = data.captchaToken as string;
-          }
-          appointment.value = data as AppointmentDTO;
-          selectedService.value = services.value.find(
-            (service) => service.id == appointment.value?.serviceId
-          );
-          if (selectedService.value) {
-            selectedService.value.count = appointment.value.serviceCount;
-            selectedService.value.providers = getProviders(
-              selectedService.value.id,
-              null
-            );
-
-            updateServiceLinkId(
-              String(
-                selectedService.value.rootParentId ??
-                  selectedService.value.id ??
-                  ""
-              )
-            );
-
-            preselectedLocationId.value = appointment.value.officeId;
-            const foundOffice = offices.value.find(
-              (office) => office.id == appointment.value?.officeId
-            );
-            if (foundOffice) {
-              selectedProvider.value = officeFromCatalog(foundOffice, {
-                disabledByServices: undefined,
-                slots: undefined,
-              });
-            }
-
-            if (appointment.value.subRequestCounts.length > 0) {
-              appointment.value.subRequestCounts.forEach((subRequestCount) => {
-                const subRequest = services.value.find(
-                  (service) => service.id == subRequestCount.id
-                ) as Service;
-                const subService = new SubService(
-                  subRequest.id,
-                  subRequest.name,
-                  subRequest.maxQuantity,
-                  getProviders(subRequest.id, null),
-                  subRequestCount.count
-                );
-                if (
-                  selectedService.value &&
-                  !selectedService.value.subServices
-                ) {
-                  selectedService.value.subServices = [];
-                }
-                selectedService.value?.subServices?.push(subService);
-              });
-            }
-            if (!appointmentData.action || isAppointmentInPast.value) {
-              currentView.value = 3;
-            } else if (
-              appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
-            ) {
-              nextRescheduleAppointment();
-            } else {
-              nextCancelAppointment();
-            }
-          }
-        } else {
-          handleApiError(
-            "appointmentNotFound",
-            errorStateMap.value,
-            currentErrorData.value
-          );
-        }
-      });
-    })
-    .finally(() => {
-      isLoadingAppointmentFromHash.value = false;
-    });
-};
-
-const runConfirmFromHash = (hash: string | undefined): void => {
-  if (!hash || isBookingAppointment.value) {
-    return;
-  }
-
-  // Already showing the activated overview for this confirm link.
-  if (
-    appointmentAlreadyActivated.value &&
-    hash === confirmedAppointmentHash.value
-  ) {
-    return;
-  }
-
-  // Same confirm link opened again after a successful activation in this session
-  // (hash watch re-fired without a full remount — e.g. leave route then reopen).
-  if (
-    confirmAppointmentSuccess.value &&
-    hash === confirmedAppointmentHash.value
-  ) {
-    showAlreadyActivatedAppointment(hash);
-    return;
-  }
-
-  // Duplicate in-flight confirm for the same hash.
-  if (hash === confirmedAppointmentHash.value) {
-    return;
-  }
-
-  const appointmentData = parseAppointmentHash(hash);
-  if (!appointmentData) {
-    handleApiError(
-      "appointmentNotFound",
-      errorStateMap.value,
-      currentErrorData.value
-    );
-    return;
-  }
-
-  confirmedAppointmentHash.value = hash;
-  loadedAppointmentHash.value = null;
-  clearAllErrors();
-  currentView.value = 5;
-  isBookingAppointment.value = true;
-  nextConfirmAppointment(appointmentData, hash);
-};
-
-function showAlreadyActivatedAppointment(hash: string): void {
-  clearContextErrors(errorStateMap.value);
-  // runAppointmentFromHash resets confirm route state; re-apply afterwards.
-  runAppointmentFromHash(hash);
-  appointmentAlreadyActivated.value = true;
-  confirmedAppointmentHash.value = hash;
-}
-
-function nextConfirmAppointment(
-  appointmentData: AppointmentHash,
-  hash: string
-) {
-  confirmAppointment(props.globalState, appointmentData)
-    .then((data) => {
-      currentView.value = 5;
-
-      if ((data as AppointmentDTO).processId != undefined) {
-        confirmAppointmentSuccess.value = true;
-        appointment.value = data as AppointmentDTO;
-        clearContextErrors(errorStateMap.value);
-        if (isRebooking.value && rebookedAppointment.value) {
-          currentContext.value = "cancel";
-          cancelAppointment(props.globalState, rebookedAppointment.value);
-        }
-      } else {
-        const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
-
-        if (firstErrorCode === "processNotPreconfirmedAnymore") {
-          Promise.resolve(
-            fetchAppointment(props.globalState, appointmentData)
-          ).then((fetched) => {
-            if ((fetched as AppointmentDTO)?.processId != undefined) {
-              showAlreadyActivatedAppointment(hash);
-              return;
-            }
-            handleApiError(
-              "preconfirmationExpired",
-              errorStateMap.value,
-              currentErrorData.value
-            );
-          });
-        } else if (firstErrorCode === "appointmentNotFound") {
-          handleApiError(
-            "preconfirmationExpired",
-            errorStateMap.value,
-            currentErrorData.value
-          );
-        } else {
-          handleErrorApiResponse(
-            data,
-            errorStates.errorStateMap,
-            currentErrorData.value
-          );
-        }
-      }
-    })
-    .finally(() => {
-      isBookingAppointment.value = false;
-    });
-}
-
 watch(
   () => props.confirmAppointmentHash,
   (hash) => {
@@ -1464,82 +1130,12 @@ watch(
 watch(
   () => props.appointmentHash,
   (hash) => {
-    if (!hash) {
-      loadedAppointmentHash.value = null;
-      return;
-    }
-    const uiData = getFreshLocalStorageUiData();
-    if (uiData) {
-      runLoginResumeFromHashAndLocalStorage(hash, uiData);
-      return;
-    }
-    runAppointmentFromHash(hash);
+    onAppointmentHashChange(hash);
   }
 );
 
 onMounted(() => {
-  runConfirmFromHash(props.confirmAppointmentHash);
-
-  if (props.confirmAppointmentHash) {
-    clearAppointmentLocalStorage();
-    clearAppointmentAuthHashSession();
-    focusActiveStepperItem();
-    return;
-  }
-
-  const authHash = resolveAppointmentAuthHash(props.appointmentHash);
-  const uiData = getFreshLocalStorageUiData();
-
-  if (authHash && uiData) {
-    runLoginResumeFromHashAndLocalStorage(authHash, uiData);
-    focusActiveStepperItem();
-    return;
-  }
-
-  if (authHash) {
-    runAppointmentFromHash(authHash);
-    clearAppointmentLocalStorage();
-    clearAppointmentAuthHashSession();
-    focusActiveStepperItem();
-    return;
-  }
-
-  if (uiData) {
-    clearContextErrors(errorStateMap.value);
-
-    loadOfficesAndServicesCatalog(
-      props.serviceId ?? undefined,
-      props.locationId ?? undefined,
-      props.globalState?.baseUrl ?? undefined,
-      errorStates.errorStateMap,
-      errorStates.currentErrorData
-    )
-      .then((catalog) => {
-        if (!catalog) {
-          return;
-        }
-        applyCatalog(catalog);
-
-        // UI-only restore — never apply authKey from localStorage (legacy or new).
-        applyLocalStorageUiData(uiData);
-        clearAppointmentLocalStorage();
-        clearAppointmentAuthHashSession();
-      })
-      .catch(() => {
-        handleApiError(
-          "appointmentNotFound",
-          errorStateMap.value,
-          currentErrorData.value
-        );
-      });
-
-    focusActiveStepperItem();
-    return;
-  }
-
-  clearAppointmentLocalStorage();
-  clearAppointmentAuthHashSession();
-  focusActiveStepperItem();
+  bootstrapOnMounted();
 });
 </script>
 <style lang="scss" scoped>
