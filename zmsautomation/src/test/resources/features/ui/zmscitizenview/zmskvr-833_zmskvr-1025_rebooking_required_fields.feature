@@ -37,6 +37,10 @@ Feature: ZMSKVR-833 / ZMSKVR-1025 Rebooking onto a Bürgerbüro that requires cu
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
     Then the confirmation success callout should be visible in the citizen view
+    # First confirm only shows "Ihr Termin wurde gebucht."; Termin verschieben
+    # appears after reopening the link (already-activated overview), same as ZMSKVR-1500.
+    When I reopen the confirmation deep link in the browser
+    Then the already activated appointment banner should be visible in the citizen view
     When I reschedule the appointment in the citizen view
     Then provider checkbox 10489 should be visible in the citizen view
     When I select office 10489 in the citizen view
