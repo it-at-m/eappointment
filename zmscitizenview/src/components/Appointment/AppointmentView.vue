@@ -455,6 +455,7 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
+import { getProviders as providersForService } from "@/utils/getProviders";
 import {
   applyAppointmentContactToCustomerData,
   copyCustomerDataOntoAppointment,
@@ -1049,43 +1050,8 @@ const viewAppointment = () => {
   location.href = url.toString();
 };
 
-const getProviders = (serviceId: string, providers: string[] | null) => {
-  const officesAtService = new Array<OfficeImpl>();
-  relations.value.forEach((relation) => {
-    if (relation.serviceId == serviceId) {
-      const office = offices.value.find(
-        (office) => office.id == relation.officeId
-      );
-      if (office) {
-        const foundOffice: OfficeImpl = new OfficeImpl(
-          office.id,
-          office.name,
-          office.address,
-          office.showAlternativeLocations,
-          office.displayNameAlternatives,
-          office.organization,
-          office.organizationUnit,
-          office.slotTimeInMinutes,
-          office.disabledByServices,
-          office.allowDisabledServicesMix,
-          office.scope,
-          office.slotsPerAppointment,
-          office.slots,
-          office.priority || 1,
-          office.parentId,
-          office.sharedBookingOfficeIds
-        );
-
-        if (!providers || providers.includes(foundOffice.id.toString())) {
-          foundOffice.slots = relation.slots;
-          officesAtService.push(foundOffice);
-        }
-      }
-    }
-  });
-
-  return officesAtService;
-};
+const getProviders = (serviceId: string, providers: string[] | null) =>
+  providersForService(serviceId, providers, relations.value, offices.value);
 
 const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
   selectedServiceMap.value = new Map(
