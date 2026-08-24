@@ -57,7 +57,10 @@ class ProcessPreconfirm extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    protected function testProcessData($entity)
+    /**
+     * @return void
+     */
+    protected function testProcessData(\BO\Zmsentities\Process $entity)
     {
         $authCheck = (new \BO\Zmsbackend\Process\Service\Process())->readAuthKeyByProcessId($entity->id);
 
@@ -72,6 +75,11 @@ class ProcessPreconfirm extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
+    /**
+     * @psalm-api
+     *
+     * @return void
+     */
     protected function validateProcessLimits(\BO\Zmsentities\Process $process)
     {
         if (! (new \BO\Zmsbackend\Process\Service\Process())->isAppointmentSlotCountAllowed($process)) {

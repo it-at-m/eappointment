@@ -11,9 +11,9 @@ class WorkstationUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "WorkstationUpdate";
 
-    const PLACE = '12';
+    const string PLACE = '12';
 
-    const SCOPEID = 141;
+    const int SCOPEID = 141;
 
     public static $loginName = 'testadmin';
 

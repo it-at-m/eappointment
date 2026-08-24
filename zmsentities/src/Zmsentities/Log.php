@@ -4,22 +4,22 @@ namespace BO\Zmsentities;
 
 class Log extends Schema\Entity
 {
-    public const PRIMARY = 'reference';
+    public const string PRIMARY = 'reference';
 
-    public const ACTION_MAIL_SUCCESS = 'E-Mail-Versand erfolgreich';
-    public const ACTION_MAIL_FAIL = 'E-Mail-Versand ist fehlgeschlagen';
-    public const ACTION_STATUS_CHANGE = 'Terminstatus wurde geändert';
-    public const ACTION_SEND_REMINDER = 'Erinnerungsmail wurde gesendet';
-    public const ACTION_REMOVED = 'Termin aus der Warteschlange entfernt';
-    public const ACTION_CALLED = 'Termin wurde aufgerufen';
-    public const ACTION_ARCHIVED = 'Termin wurde archiviert';
-    public const ACTION_EDITED = 'Termin wurde geändert';
-    public const ACTION_REDIRECTED = 'Termin wurde weitergeleitet';
-    public const ACTION_NEW = 'Neuer Termin wurde erstellt';
-    public const ACTION_DELETED = 'Termin wurde gelöscht';
-    public const ACTION_CANCELED = 'Termin wurde abgesagt';
+    public const string ACTION_MAIL_SUCCESS = 'E-Mail-Versand erfolgreich';
+    public const string ACTION_MAIL_FAIL = 'E-Mail-Versand ist fehlgeschlagen';
+    public const string ACTION_STATUS_CHANGE = 'Terminstatus wurde geändert';
+    public const string ACTION_SEND_REMINDER = 'Erinnerungsmail wurde gesendet';
+    public const string ACTION_REMOVED = 'Termin aus der Warteschlange entfernt';
+    public const string ACTION_CALLED = 'Termin wurde aufgerufen';
+    public const string ACTION_ARCHIVED = 'Termin wurde archiviert';
+    public const string ACTION_EDITED = 'Termin wurde geändert';
+    public const string ACTION_REDIRECTED = 'Termin wurde weitergeleitet';
+    public const string ACTION_NEW = 'Neuer Termin wurde erstellt';
+    public const string ACTION_DELETED = 'Termin wurde gelöscht';
+    public const string ACTION_CANCELED = 'Termin wurde abgesagt';
 
-    private const ACTION_CODE_TO_LABEL = [
+    private const array ACTION_CODE_TO_LABEL = [
         'mail_success' => self::ACTION_MAIL_SUCCESS,
         'mail_fail' => self::ACTION_MAIL_FAIL,
         'status_changed' => self::ACTION_STATUS_CHANGE,
@@ -34,7 +34,7 @@ class Log extends Schema\Entity
         'canceled' => self::ACTION_CANCELED,
     ];
 
-    private const DISPLAY_TEXT_FIELDS = [
+    private const array DISPLAY_TEXT_FIELDS = [
         'user_id' => 'Sachbearbeiter*in',
         'display_number' => 'Terminnummer',
         'citizen_name' => 'Bürger*in',
@@ -47,7 +47,7 @@ class Log extends Schema\Entity
         'db_status' => 'DB Status',
     ];
 
-    private const DISPLAY_OPTIONAL_NUMBER_FIELDS = [
+    private const array DISPLAY_OPTIONAL_NUMBER_FIELDS = [
         'queue_number' => 'Wartenummer',
         'slot_count' => 'Slots',
     ];

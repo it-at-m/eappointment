@@ -4,12 +4,16 @@ namespace BO\Zmsentities;
 
 class Queue extends Schema\Entity implements Helper\NoSanitize
 {
-    public const PRIMARY = 'arrivalTime';
+    public const string PRIMARY = 'arrivalTime';
 
     public static $schema = "queue.json";
 
     protected $process;
 
+    /**
+     * @return (int|null)[]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -26,13 +30,13 @@ class Queue extends Schema\Entity implements Helper\NoSanitize
         ];
     }
 
-    public function setProcess(Process $parentProcess)
+    public function setProcess(Process $parentProcess): static
     {
         $this->process = $parentProcess;
         return $this;
     }
 
-    public function getProcess()
+    public function getProcess(): Process|null
     {
         if ($this->process instanceof Process) {
             $process = clone $this->process;

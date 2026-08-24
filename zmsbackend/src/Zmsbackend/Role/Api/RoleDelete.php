@@ -9,6 +9,9 @@ use Psr\Http\Message\ResponseInterface;
 
 class RoleDelete extends \BO\Zmsbackend\Api\BaseController
 {
+    /**
+     * @return ResponseInterface
+     */
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,

@@ -30,6 +30,7 @@ class SessionHandler implements \SessionHandlerInterface
         static::$lastInstance = $this;
     }
 
+    /** @psalm-api */
     public static function getLastInstance(): ?self
     {
         return static::$lastInstance;
@@ -50,6 +51,7 @@ class SessionHandler implements \SessionHandlerInterface
         return true;
     }
 
+    /** @psalm-api Required by SessionHandlerInterface and used by PHP session shutdown. */
     #[\Override]
     public function close(): bool
     {
@@ -109,6 +111,7 @@ class SessionHandler implements \SessionHandlerInterface
      * @SuppressWarnings(UnusedFormalParameter)
      * @SuppressWarnings(ShortMethodName)
      * @codeCoverageIgnore
+     * @psalm-api
      */
     #[\Override]
     public function gc(int $max_lifetime): int|false

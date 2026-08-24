@@ -285,16 +285,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          REF_TYPE="branch"
           REF_NAME="${{ matrix.branch }}"
 
           SANITIZED="$(echo "$REF_NAME" | sed 's/[\/:]/-/g')"
           PHP_TAG="branch-${SANITIZED}"
           BRANCH_SLUG="$SANITIZED"
 
-          echo "branch_name=$REF_NAME" >> "$GITHUB_OUTPUT"
-          echo "branch_slug=$BRANCH_SLUG" >> "$GITHUB_OUTPUT"
-          echo "php_tag=$PHP_TAG" >> "$GITHUB_OUTPUT"
+          {
+            echo "branch_name=$REF_NAME"
+            echo "branch_slug=$BRANCH_SLUG"
+            echo "php_tag=$PHP_TAG"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Pull prebuilt PHP module images
         shell: bash
@@ -318,15 +319,26 @@ jobs:
           docker compose -f docker-compose.yaml up -d \
             web db citizenview refarch-gateway keycloak init-keycloak
 
+          exit_code=""
           for _ in {1..60}; do
             state="$(docker inspect -f '{{.State.Status}}' zms-init-keycloak 2>/dev/null || echo missing)"
             if [ "$state" = "exited" ]; then
-              echo "init-keycloak finished."
+              exit_code="$(docker inspect -f '{{.State.ExitCode}}' zms-init-keycloak)"
+              echo "init-keycloak finished with exit code ${exit_code}."
               docker logs zms-init-keycloak || true
               break
             fi
             sleep 2
           done
+          if [ -z "${exit_code}" ]; then
+            echo "init-keycloak did not exit in time."
+            docker logs zms-init-keycloak || true
+            exit 1
+          fi
+          if [ "${exit_code}" != "0" ]; then
+            echo "Keycloak migration failed (exit ${exit_code})."
+            exit 1
+          fi
 
       - name: Install missing tooling inside web container
         shell: bash
@@ -445,6 +457,8 @@ jobs:
           if ! docker exec -u root "$WEB_CONT" bash -lc 'test -d /var/www/html/zmslayout/js && test -d /var/www/html/zmslayout/scss'; then
             echo "zmslayout not on bind mount; streaming via tar"
             docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/zmslayout"
+            # WEB_CONT is passed via env so the inner shell can expand it.
+            # shellcheck disable=SC2016
             retry 3 10 env WEB_CONT="$WEB_CONT" bash -c 'tar cf - -C ./zmslayout . | docker exec -i -u root "$WEB_CONT" tar -xf - -C /var/www/html/zmslayout/'
           fi
 

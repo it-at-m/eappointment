@@ -7,9 +7,9 @@ class ExchangeSlotscope extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'slot_process';
+    const string TABLE = 'slot_process';
 
-    const QUERY_READ_REPORT = '
+    const string QUERY_READ_REPORT = '
     SELECT
         `scopeID` as subjectid,
         CONCAT(year, "-", LPAD(month, 2, 0), "-", LPAD(day, 2, 0)) as date,

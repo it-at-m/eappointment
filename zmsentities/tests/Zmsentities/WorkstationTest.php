@@ -10,7 +10,7 @@ class WorkstationTest extends EntityCommonTests
 {
     public $entityclass = '\BO\Zmsentities\Workstation';
 
-    const DEFAULT_TIME = '2015-11-19 11:55:00';
+    const string DEFAULT_TIME = '2015-11-19 11:55:00';
 
     public function testBasic()
     {

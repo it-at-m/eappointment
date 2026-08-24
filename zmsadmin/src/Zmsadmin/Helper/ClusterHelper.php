@@ -34,6 +34,7 @@ class ClusterHelper
         return static::$workstation->getScopeList(static::$cluster);
     }
 
+    /** @psalm-api */
     public static function getProcessList($selectedDate)
     {
         if (static::isClusterEnabled()) {
@@ -52,7 +53,7 @@ class ClusterHelper
         return ($processList) ? $processList->getCollection() : new ProcessList();
     }
 
-    public static function getNextProcess($excludedIds)
+    public static function getNextProcess(array $excludedIds)
     {
         $exclude = is_array($excludedIds) ? ExcludeIds::toQuery($excludedIds) : (string) $excludedIds;
         if (static::isClusterEnabled()) {
@@ -73,7 +74,7 @@ class ClusterHelper
         return $nextProcess;
     }
 
-    public static function isClusterEnabled()
+    public static function isClusterEnabled(): bool
     {
         return (static::$workstation->queue['clusterEnabled'] && static::$cluster);
     }

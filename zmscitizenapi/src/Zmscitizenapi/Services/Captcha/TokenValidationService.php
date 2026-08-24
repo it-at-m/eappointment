@@ -11,10 +11,10 @@ use Firebase\JWT\ExpiredException;
 
 class TokenValidationService
 {
-    public const TOKEN_VALID = 'valid';
-    public const TOKEN_MISSING = 'missing';
-    public const TOKEN_INVALID = 'invalid';
-    public const TOKEN_EXPIRED = 'expired';
+    public const string TOKEN_VALID = 'valid';
+    public const string TOKEN_MISSING = 'missing';
+    public const string TOKEN_INVALID = 'invalid';
+    public const string TOKEN_EXPIRED = 'expired';
     private string $captchaTokenSecret;
 
     public function __construct()

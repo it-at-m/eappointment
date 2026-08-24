@@ -77,7 +77,7 @@ class SourceEdit extends BaseController
         );
     }
 
-    protected function writeUpdatedEntity($input)
+    protected function writeUpdatedEntity(array $input)
     {
         $entity = (new Source($input))->withCleanedUpFormData();
         return $this->handleEntityWrite(function () use ($entity) {

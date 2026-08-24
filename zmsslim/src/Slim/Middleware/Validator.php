@@ -9,9 +9,6 @@ use BO\Slim\Factory\ResponseFactory;
 
 class Validator
 {
-    /**
-     *
-     */
     public function __invoke(
         ServerRequestInterface $request,
         ?RequestHandlerInterface $next
@@ -25,7 +22,7 @@ class Validator
         return $response;
     }
 
-    public static function withValidator(ServerRequestInterface $request)
+    public static function withValidator(ServerRequestInterface $request): ServerRequestInterface
     {
         if ("GET" == $request->getMethod()) {
             $validator = new \BO\Mellon\Validator($request->getQueryParams());

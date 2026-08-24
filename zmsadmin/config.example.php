@@ -17,7 +17,7 @@ class App extends \BO\Zmsadmin\Application
     /**
      * HTTP url for api
      */
-    const HTTP_BASE_URL = ZMS_API_URL;
+    const string HTTP_BASE_URL = ZMS_API_URL;
 
     /**
      * Name of the module

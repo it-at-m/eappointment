@@ -8,11 +8,19 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Exception\UserAccountMissingLogin;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
+
 /**
  * Handle requests concerning services
  */
 class Status extends BaseController
 {
+    private const array MISSING_LOGIN_TEMPLATES = [
+        'BO\\Zmsentities\\Exception\\UserAccountMissingLogin',
+        'BO\\Zmsbackend\\Workstation\\Exception\\WorkstationNotFound',
+    ];
+
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return \Psr\Http\Message\ResponseInterface
@@ -25,9 +33,17 @@ class Status extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         try {
             $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-        } catch (\Exception $workstationexception) {
-            $workstation = null;
+        } catch (\BO\Zmsclient\Exception $exception) {
+            if (in_array($exception->template, self::MISSING_LOGIN_TEMPLATES, true)) {
+                throw new UserAccountMissingLogin();
+            }
+            throw $exception;
         }
+
+        if (!$workstation->getUseraccount()->hasPermissions(['superuser'])) {
+            throw new UserAccountMissingRights();
+        }
+
         $result = \App::$http->readGetResult('/status/');
         return \BO\Slim\Render::withHtml(
             $response,

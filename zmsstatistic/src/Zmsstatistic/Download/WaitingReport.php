@@ -17,9 +17,9 @@ use Psr\Http\Message\ResponseInterface;
 
 class WaitingReport extends Base
 {
-    private const CUSTOMER_TYPE_GESAMT = 'gesamt';
-    private const CUSTOMER_TYPE_TERMIN = 'termin';
-    private const CUSTOMER_TYPE_SPONTAN = 'spontan';
+    private const string CUSTOMER_TYPE_GESAMT = 'gesamt';
+    private const string CUSTOMER_TYPE_TERMIN = 'termin';
+    private const string CUSTOMER_TYPE_SPONTAN = 'spontan';
 
     protected $reportPartsGesamt = [
         'waitingtime_total' => 'Durchschnittliche Wartezeit in Min. (Gesamt)',
@@ -100,8 +100,8 @@ class WaitingReport extends Base
         ReportEntity $report,
         Spreadsheet $spreadsheet,
         string $customerType,
-        $datePatternCol = 'dd.MM.yyyy',
-    ) {
+        string $datePatternCol = 'dd.MM.yyyy',
+    ): Spreadsheet {
         $this->assertValidCustomerType($customerType);
 
         $sheet = $spreadsheet->getActiveSheet();
@@ -121,8 +121,11 @@ class WaitingReport extends Base
         return $spreadsheet;
     }
 
-    public function writeHeader(ReportEntity $report, $sheet, $datePatternCol)
-    {
+    public function writeHeader(
+        ReportEntity $report,
+        \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet,
+        string $datePatternCol
+    ): void {
         $reportHeader = [];
         $reportHeader[] = null;
         $reportHeader[] = 'Max.';
@@ -169,7 +172,7 @@ class WaitingReport extends Base
         return $keyMappings[$customerType];
     }
 
-    public function writeTotals(ReportEntity $report, $sheet, string $customerType)
+    public function writeTotals(ReportEntity $report, \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet, string $customerType): void
     {
         $this->assertValidCustomerType($customerType);
 
@@ -195,8 +198,12 @@ class WaitingReport extends Base
         $sheet->fromArray($reportTotal, null, 'A' . ($sheet->getHighestRow() + 1));
     }
 
-    public function writeReportPart(ReportEntity $report, $sheet, $rangeName, $headline)
-    {
+    public function writeReportPart(
+        ReportEntity $report,
+        \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet,
+        string $rangeName,
+        string $headline
+    ): void {
         $entity = clone $report;
         $totals = $entity->data['max'];
         unset($entity->data['max']);

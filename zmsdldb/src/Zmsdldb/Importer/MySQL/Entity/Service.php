@@ -6,7 +6,7 @@ use Error;
 
 class Service extends Base
 {
-    protected $fieldMapping = [
+    protected array $fieldMapping = [
         'id' => 'id',
         'name' => 'name',
         'hint' => 'hint',
@@ -31,11 +31,11 @@ class Service extends Base
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     #[\Override]
-    protected function setupMapping()
+    protected function setupMapping(): void
     {
         $this->referanceMapping = [
             'name' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale',
@@ -59,7 +59,7 @@ class Service extends Base
             ],
             /*
             'description' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale',
@@ -83,7 +83,7 @@ class Service extends Base
             ],
             */
             'meta.keywords' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search',
+                'class' => Search::class,
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale',
@@ -106,7 +106,7 @@ class Service extends Base
                 'selfAsArray' => true
             ],
             'meta' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Meta',
+                'class' => Meta::class,
                 'neededFields' => ['id' => 'object_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => static::getTableName()
@@ -123,7 +123,7 @@ class Service extends Base
                 ],
             ],
             'authorities' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\AuthorityService',
+                'class' => AuthorityService::class,
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
 
@@ -137,7 +137,7 @@ class Service extends Base
                 ]
             ],
             'locations' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\LocationService',
+                'class' => LocationService::class,
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [],
                 'deleteFields' => [
@@ -149,11 +149,11 @@ class Service extends Base
                 ]
             ],
             'requirements' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\ServiceInformation',
+                'class' => ServiceInformation::class,
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'requirements',
-                    'sort' => function ($position, $key, $value) {
+                    'sort' => static function (int $position): int {
                         return $position;
                     }
                 ],
@@ -168,11 +168,11 @@ class Service extends Base
                 ],
             ],
             'forms' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\ServiceInformation',
+                'class' => ServiceInformation::class,
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'forms',
-                    'sort' => function ($position, $key, $value) {
+                    'sort' => static function (int $position): int {
                         return $position;
                     }
                 ],
@@ -187,11 +187,11 @@ class Service extends Base
                 ],
             ],
             'prerequisites' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\ServiceInformation',
+                'class' => ServiceInformation::class,
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'prerequisites',
-                    'sort' => function ($position, $key, $value) {
+                    'sort' => static function (int $position): int {
                         return $position;
                     }
                 ],
@@ -206,11 +206,11 @@ class Service extends Base
                 ],
             ],
             'links' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\ServiceInformation',
+                'class' => ServiceInformation::class,
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'links',
-                    'sort' => function ($position, $key, $value) {
+                    'sort' => static function (int $position): int {
                         return $position;
                     }
                 ],
@@ -225,11 +225,11 @@ class Service extends Base
                 ],
             ],
             'publications' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\ServiceInformation',
+                'class' => ServiceInformation::class,
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'publications',
-                    'sort' => function ($position, $key, $value) {
+                    'sort' => static function (int $position): int {
                         return $position;
                     }
                 ],
@@ -244,11 +244,11 @@ class Service extends Base
                 ],
             ],
             'legal' => [
-                'class' => 'BO\\Zmsdldb\\Importer\\MySQL\\Entity\\ServiceInformation',
+                'class' => ServiceInformation::class,
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'legal',
-                    'sort' => function ($position, $key, $value) {
+                    'sort' => static function (int $position): int {
                         return $position;
                     }
                 ],
@@ -266,20 +266,11 @@ class Service extends Base
     }
 
     #[\Override]
-    public function preSetup()
+    public function preSetup(): void
     {
         try {
-            $fields = $this->get(['id', 'meta.locale', 'meta.hash']);
-            $fields[] = static::getTableName();
-
-            if (is_array($fields[2]) && class_exists('\App', false) && isset(\App::$log)) {
-                \App::$log->warning('Unexpected array in service meta hash during import', [
-                    'fields' => $fields,
-                ]);
-            }
-
             $this->setStatus(static::STATUS_OLD);
-            if ($this->itemNeedsUpdate(...array_values($fields))) {
+            if ($this->entityNeedsUpdate()) {
                 $this->setStatus(static::STATUS_NEW);
                 $this->setupFields();
                 $this->deleteEntity();
@@ -291,10 +282,10 @@ class Service extends Base
     }
 
     #[\Override]
-    public function deleteEntity(): bool
+    public function deleteEntity(): void
     {
         try {
-            return $this->deleteWith(
+            $this->deleteWith(
                 array_combine(['id', 'locale'], array_values($this->get(['id', 'meta.locale'])))
             );
         } catch (\Exception $e) {
@@ -303,11 +294,11 @@ class Service extends Base
     }
 
     #[\Override]
-    public function clearEntity(array $addWhere = []): bool
+    public function clearEntity(array $addWhere = []): void
     {
         try {
             #print_r((array)$this->get(['meta.locale']));exit;
-            return $this->deleteWith(
+            $this->deleteWith(
                 ['locale' => $this->get('meta.locale')]
             );
         } catch (\Exception $e) {

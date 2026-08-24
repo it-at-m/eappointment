@@ -78,7 +78,7 @@ class MapperService
                 return $scope;
             }
 
-            if ((string)$provSrc === (string)$providerSource) {
+            if ((string)$provSrc === $providerSource) {
                 return $scope;
             }
         }
@@ -92,8 +92,7 @@ class MapperService
             return null;
         }
         if ($scope instanceof ThinnedScope) {
-            $reservationDuration = $scope->getReservationDuration();
-            return $reservationDuration !== null ? (int) $reservationDuration : null;
+            return $scope->getReservationDuration();
         }
         $reservationDuration = $scope->toProperty()?->preferences?->appointment?->reservationDuration?->get();
         return $reservationDuration !== null ? (int) $reservationDuration : null;
@@ -110,7 +109,7 @@ class MapperService
             if ($activationDuration === null || $activationDuration === '') {
                 return null;
             }
-            return (int) $activationDuration;
+            return $activationDuration;
         }
 
         $activationDuration = $scope->toProperty()?->preferences?->appointment?->activationDuration?->get();
@@ -138,7 +137,7 @@ class MapperService
             // ✅ Source normalisieren: leerer String -> Fallback auf App::$source_name
             $providerSource = isset($provider->source) && $provider->source !== ''
                 ? (string)$provider->source
-                : (string)\App::$source_name;
+                : \App::$source_name;
 
             $providerScope = self::mapScopeForProvider(
                 (int) $provider->id,
@@ -163,34 +162,34 @@ class MapperService
                 disabledByServices: isset($provider->data['dontShowByServices']) ? $provider->data['dontShowByServices'] : [],
                 priority: isset($provider->data['prio']) ? $provider->data['prio'] : 1,
                 scope: isset($providerScope) && !isset($providerScope['errors']) ? new ThinnedScope(
-                    id: isset($providerScope->id) ? (int) $providerScope->id : 0,
+                    id: isset($providerScope->id) ? $providerScope->id : 0,
                     provider: isset($providerScope->provider) ? $providerScope->provider : null,
-                    shortName: isset($providerScope->shortName) ? (string) $providerScope->shortName : null,
-                    emailFrom: isset($providerScope->emailFrom) ? (string) $providerScope->emailFrom : null,
-                    emailRequired: isset($providerScope->emailRequired) ? (bool) $providerScope->emailRequired : null,
-                    telephoneActivated: isset($providerScope->telephoneActivated) ? (bool) $providerScope->telephoneActivated : null,
-                    telephoneRequired: isset($providerScope->telephoneRequired) ? (bool) $providerScope->telephoneRequired : null,
-                    customTextfieldActivated: isset($providerScope->customTextfieldActivated) ? (bool) $providerScope->customTextfieldActivated : null,
-                    customTextfieldRequired: isset($providerScope->customTextfieldRequired) ? (bool) $providerScope->customTextfieldRequired : null,
-                    customTextfieldLabel: isset($providerScope->customTextfieldLabel) ? (string) $providerScope->customTextfieldLabel : null,
-                    customTextfield2Activated: isset($providerScope->customTextfield2Activated) ? (bool) $providerScope->customTextfield2Activated : null,
-                    customTextfield2Required: isset($providerScope->customTextfield2Required) ? (bool) $providerScope->customTextfield2Required : null,
-                    customTextfield2Label: isset($providerScope->customTextfield2Label) ? (string) $providerScope->customTextfield2Label : null,
-                    captchaActivatedRequired: isset($providerScope->captchaActivatedRequired) ? (bool) $providerScope->captchaActivatedRequired : null,
+                    shortName: isset($providerScope->shortName) ? $providerScope->shortName : null,
+                    emailFrom: isset($providerScope->emailFrom) ? $providerScope->emailFrom : null,
+                    emailRequired: isset($providerScope->emailRequired) ? $providerScope->emailRequired : null,
+                    telephoneActivated: isset($providerScope->telephoneActivated) ? $providerScope->telephoneActivated : null,
+                    telephoneRequired: isset($providerScope->telephoneRequired) ? $providerScope->telephoneRequired : null,
+                    customTextfieldActivated: isset($providerScope->customTextfieldActivated) ? $providerScope->customTextfieldActivated : null,
+                    customTextfieldRequired: isset($providerScope->customTextfieldRequired) ? $providerScope->customTextfieldRequired : null,
+                    customTextfieldLabel: isset($providerScope->customTextfieldLabel) ? $providerScope->customTextfieldLabel : null,
+                    customTextfield2Activated: isset($providerScope->customTextfield2Activated) ? $providerScope->customTextfield2Activated : null,
+                    customTextfield2Required: isset($providerScope->customTextfield2Required) ? $providerScope->customTextfield2Required : null,
+                    customTextfield2Label: isset($providerScope->customTextfield2Label) ? $providerScope->customTextfield2Label : null,
+                    captchaActivatedRequired: isset($providerScope->captchaActivatedRequired) ? $providerScope->captchaActivatedRequired : null,
                     infoForAppointment: isset($providerScope->infoForAppointment)
-                        ? ((string) $providerScope->infoForAppointment === '' ? null : (string) $providerScope->infoForAppointment)
+                        ? ($providerScope->infoForAppointment === '' ? null : $providerScope->infoForAppointment)
                         : null,
                     infoForAllAppointments: isset($providerScope->infoForAllAppointments)
-                        ? ((string) $providerScope->infoForAllAppointments === '' ? null : (string) $providerScope->infoForAllAppointments)
+                        ? ($providerScope->infoForAllAppointments === '' ? null : $providerScope->infoForAllAppointments)
                         : null,
-                    appointmentsPerMail: isset($providerScope->appointmentsPerMail) ? ((string) $providerScope->appointmentsPerMail === '' ? null : (string) $providerScope->appointmentsPerMail) : null,
-                    slotsPerAppointment: isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
-                    whitelistedMails: isset($providerScope->whitelistedMails) ? ((string) $providerScope->whitelistedMails === '' ? null : (string) $providerScope->whitelistedMails) : null,
+                    appointmentsPerMail: isset($providerScope->appointmentsPerMail) ? ($providerScope->appointmentsPerMail === '' ? null : $providerScope->appointmentsPerMail) : null,
+                    slotsPerAppointment: isset($providerScope->slotsPerAppointment) ? ($providerScope->slotsPerAppointment === '' ? null : $providerScope->slotsPerAppointment) : null,
+                    whitelistedMails: isset($providerScope->whitelistedMails) ? ($providerScope->whitelistedMails === '' ? null : $providerScope->whitelistedMails) : null,
                     reservationDuration: (int) self::extractReservationDuration($providerScope),
                     activationDuration: self::extractActivationDuration($providerScope),
-                    hint: isset($providerScope->hint) ? (trim((string) $providerScope->hint) === '' ? null : (string) $providerScope->hint) : null
+                    hint: isset($providerScope->hint) ? (trim($providerScope->hint) === '' ? null : $providerScope->hint) : null
                 ) : null,
-                slotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
+                slotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ($providerScope->slotsPerAppointment === '' ? null : $providerScope->slotsPerAppointment) : null,
                 parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null,
                 allowDisabledServicesMix: self::resolveAllowDisabledServicesMix($provider),
                 sharedBookingOfficeIds: self::resolveSharedBookingOfficeIds($provider)
@@ -417,6 +416,9 @@ class MapperService
 
         // Generate ICS content if process has appointments with time
         $icsContent = self::generateIcsContent($myProcess);
+        $scope = $myProcess->getCurrentScope();
+        $contactName = $scope['contact']['name'] ?? null;
+        $providerId = $scope['provider']['id'] ?? 0;
 
         return new ThinnedProcess(
             processId: isset($myProcess->id) ? (int) $myProcess->id : 0,
@@ -428,9 +430,9 @@ class MapperService
             customTextfield2: isset($myProcess->customTextfield2) ? $myProcess->customTextfield2 : null,
             email: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->email)) ? $myProcess->clients[0]->email : null,
             telephone: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->telephone)) ? $myProcess->clients[0]->telephone : null,
-            officeName: (isset($myProcess->scope->contact) && isset($myProcess->scope->contact->name)) ? $myProcess->scope->contact->name : null,
-            officeId: (isset($myProcess->scope->provider) && isset($myProcess->scope->provider->id)) ? (int) $myProcess->scope->provider->id : 0,
-            scope: isset($myProcess->scope) ? self::scopeToThinnedScope($myProcess->scope) : null,
+            officeName: $contactName !== null && $contactName !== '' ? $contactName : null,
+            officeId: (int) $providerId,
+            scope: isset($myProcess['scope']) ? self::scopeToThinnedScope($scope) : null,
             subRequestCounts: array_values($subRequestCounts),
             serviceId: isset($mainServiceId) ? (int) $mainServiceId : 0,
             serviceName: isset($mainServiceName) ? $mainServiceName : null,

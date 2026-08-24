@@ -33,12 +33,13 @@ class TemplateFinder
         }
     }
 
+    /** @psalm-api */
     public function getTemplate()
     {
         return $this->template;
     }
 
-    public function setCustomizedTemplate($calldisplay)
+    public function setCustomizedTemplate($calldisplay): static
     {
         $template = null;
         if ($this->defaultTemplate == 'defaultplatz') {
@@ -76,7 +77,7 @@ class TemplateFinder
         return $template;
     }
 
-    protected function getExistingTemplate(Entity $entity)
+    protected function getExistingTemplate(Entity $entity): string|null
     {
         $path = $this->subPath . '/calldisplay_' . $entity->getEntityName() . '_' . $entity->getId() . '.twig';
         if ($entity->hasId() && $this->isTemplateReadable($path)) {
@@ -86,12 +87,12 @@ class TemplateFinder
         return null;
     }
 
-    protected function isTemplateReadable($path)
+    protected function isTemplateReadable(string $path): bool
     {
         return is_readable($this->getTemplatePath() . $path);
     }
 
-    public function getTemplatePath()
+    public function getTemplatePath(): string
     {
         return realpath(__DIR__) . '/../../../templates';
     }
