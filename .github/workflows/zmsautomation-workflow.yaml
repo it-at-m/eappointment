@@ -11,7 +11,7 @@ run-name: >-
          'zmsautomation | ▶️ manual | {0} | {1}{2}{3}',
          github.ref_name,
          inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'),
-         inputs.use_custom_tags && format(' | {0}', inputs.cucumber_tag_expressions) || '',
+         inputs.cucumber_tag_expressions != '' && format(' | {0}', inputs.cucumber_tag_expressions) || (inputs.use_custom_tags && ' | custom tags' || ''),
          inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || ''
        )
   }}
@@ -62,14 +62,15 @@ on:
         default: true
       use_custom_tags:
         description: |
-          Run a single job with custom Cucumber tag expressions (ignores module
-          checkboxes and run_all_in_one_job). Use test layer and tag fields below.
+          Run a single job (ignores module checkboxes and run_all_in_one_job).
+          Implied automatically when cucumber_tag_expressions is non-empty.
         required: true
         type: boolean
         default: false
       test_layer:
         description: |
-          Only when use_custom_tags is enabled. API = REST, UI = Selenium, both = full suite in one job.
+          Used when cucumber_tag_expressions is set or use_custom_tags is enabled.
+          API = REST, UI = Selenium, both = full suite in one job.
         required: true
         type: choice
         options:
@@ -79,9 +80,10 @@ on:
         default: both
       cucumber_tag_expressions:
         description: |
-          Only when use_custom_tags is enabled. Newline-separated Cucumber tag expressions; each line
-          runs sequentially. @ignore is excluded automatically.
-          Examples: @ZMSKVR-1328, @smoke
+          Optional. Newline-separated Cucumber tag expressions; each line runs sequentially.
+          If this field is set, only those tags run (module checkboxes are ignored).
+          @ignore is excluded automatically.
+          Examples: @ZMSKVR-833, @smoke
         required: false
         default: ""
       browser:
@@ -178,13 +180,17 @@ jobs:
             BRANCH="${{ github.ref_name }}"
             BROWSER="${{ inputs.browser }}"
             TEST_LAYER="${{ inputs.test_layer }}"
+            TAG_INPUT="${{ inputs.cucumber_tag_expressions }}"
+            TAG_INPUT_TRIMMED="$(printf '%s' "$TAG_INPUT" | tr -d '[:space:]')"
 
-            if [[ "${{ inputs.use_custom_tags }}" == "true" ]]; then
+            # Filling the tag field is enough; the checkbox is optional.
+            if [[ "${{ inputs.use_custom_tags }}" == "true" || -n "$TAG_INPUT_TRIMMED" ]]; then
               jq -n \
                 --arg branch "$BRANCH" \
                 --arg browser "$BROWSER" \
                 --arg test_layer "$TEST_LAYER" \
-                '{include: [{branch: $branch, browser: $browser, shard: "custom", test_layer: $test_layer, tag_filter: "", use_custom_tags: true}]}' \
+                --arg tag_filter "$TAG_INPUT" \
+                '{include: [{branch: $branch, browser: $browser, shard: "custom", test_layer: $test_layer, tag_filter: $tag_filter, use_custom_tags: "true"}]}' \
                 > matrix.json
               echo "max_parallel=1" >> "$GITHUB_OUTPUT"
             elif [[ "${{ inputs.run_all_in_one_job }}" == "true" ]]; then
@@ -563,14 +569,26 @@ jobs:
           }
 
           TAG_LINES=()
+          USE_CUSTOM_TAGS=false
           if [[ "$MATRIX_USE_CUSTOM_TAGS" == "true" ]]; then
-            if [[ -z "$(printf '%s' "$CUSTOM_TAG_INPUT" | tr -d '[:space:]')" ]]; then
+            USE_CUSTOM_TAGS=true
+          elif [[ -n "$(printf '%s' "$CUSTOM_TAG_INPUT" | tr -d '[:space:]')" ]]; then
+            USE_CUSTOM_TAGS=true
+          fi
+
+          CUSTOM_SOURCE="$CUSTOM_TAG_INPUT"
+          if [[ -z "$(printf '%s' "$CUSTOM_SOURCE" | tr -d '[:space:]')" ]]; then
+            CUSTOM_SOURCE="$MATRIX_TAG_FILTER"
+          fi
+
+          if [[ "$USE_CUSTOM_TAGS" == "true" ]]; then
+            if [[ -z "$(printf '%s' "$CUSTOM_SOURCE" | tr -d '[:space:]')" ]]; then
               TAG_LINES=("")
             else
               while IFS= read -r line; do
                 line="$(printf '%s' "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
                 [[ -n "$line" ]] && TAG_LINES+=("$line")
-              done <<< "$CUSTOM_TAG_INPUT"
+              done <<< "$CUSTOM_SOURCE"
               [[ ${#TAG_LINES[@]} -eq 0 ]] && TAG_LINES=("")
             fi
           else
@@ -581,7 +599,7 @@ jobs:
           for expr in "${TAG_LINES[@]}"; do
             expr="$(printf '%s' "$expr" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
 
-            if [[ "$MATRIX_USE_CUSTOM_TAGS" == "true" ]]; then
+            if [[ "$USE_CUSTOM_TAGS" == "true" ]]; then
               if [[ -n "$expr" ]]; then
                 if [[ "$expr" == *"@ignore"* ]]; then
                   final_expr="$expr"
