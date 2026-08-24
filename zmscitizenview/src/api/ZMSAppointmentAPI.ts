@@ -178,7 +178,8 @@ export function reserveAppointment(
   serviceIds: string[],
   serviceCount: number[],
   providerId: string,
-  captchaToken?: string
+  captchaToken?: string,
+  sourceAppointment?: AppointmentDTO
 ): Promise<AppointmentDTO | ErrorDTO> {
   const requestBody = {
     timestamp: timeSlot,
@@ -186,6 +187,11 @@ export function reserveAppointment(
     officeId: providerId,
     serviceId: serviceIds,
     ...(captchaToken && { captchaToken }),
+    ...(sourceAppointment?.processId &&
+      sourceAppointment.authKey && {
+        sourceProcessId: sourceAppointment.processId,
+        sourceAuthKey: sourceAppointment.authKey,
+      }),
   };
 
   return request({

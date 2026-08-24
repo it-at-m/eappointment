@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services\Core;
 
 use BO\Zmscitizenapi\Utils\ErrorMessages;
+use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmsentities\Helper\ProcessPlainText;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
@@ -249,6 +250,65 @@ class ValidationService
         self::validateCustomTextField($customTextfield2, $scope?->customTextfield2Activated, $scope?->customTextfield2Required, 'invalidCustomTextfield2', $errors);
 
         return ['errors' => $errors];
+    }
+
+    public static function isFilledContactValue(?string $value): bool
+    {
+        $trimmed = trim((string) $value);
+        return $trimmed !== '' && !self::isPlaceholderReserveEmail($trimmed);
+    }
+
+    public static function validateUnchangedStoredContact(
+        ThinnedProcess $stored,
+        ?string $familyName,
+        ?string $email,
+        ?string $telephone,
+        ?string $customTextfield,
+        ?string $customTextfield2
+    ): array {
+        $errors = [];
+        self::rejectChangedStoredField($stored->familyName, $familyName, 'invalidFamilyName', $errors);
+        self::rejectChangedStoredField($stored->email, $email, 'invalidEmail', $errors, true);
+        self::rejectChangedStoredField($stored->telephone, $telephone, 'invalidTelephone', $errors);
+        self::rejectChangedStoredField(
+            self::normalizedCustomText($stored->customTextfield),
+            self::normalizedCustomText($customTextfield),
+            'invalidCustomTextfield',
+            $errors
+        );
+        self::rejectChangedStoredField(
+            self::normalizedCustomText($stored->customTextfield2),
+            self::normalizedCustomText($customTextfield2),
+            'invalidCustomTextfield2',
+            $errors
+        );
+
+        return ['errors' => $errors];
+    }
+
+    private static function normalizedCustomText(?string $value): ?string
+    {
+        return $value === null ? null : ProcessPlainText::normalize($value);
+    }
+
+    private static function rejectChangedStoredField(
+        ?string $stored,
+        ?string $incoming,
+        string $errorKey,
+        array &$errors,
+        bool $email = false
+    ): void {
+        if (!self::isFilledContactValue($stored) || $incoming === null) {
+            return;
+        }
+        $storedTrimmed = trim($stored);
+        $incomingTrimmed = trim($incoming);
+        $same = $email
+            ? strcasecmp($storedTrimmed, $incomingTrimmed) === 0
+            : $storedTrimmed === $incomingTrimmed;
+        if (!$same) {
+            $errors[] = self::getError($errorKey);
+        }
     }
 
     private static function validateFamilyNameField(?string $familyName, array &$errors): void

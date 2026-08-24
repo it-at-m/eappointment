@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Tests\Services\Core;
 
 use BO\Zmscitizenapi\Utils\ErrorMessages;
+use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmsentities\Collection\ScopeList;
@@ -298,6 +299,50 @@ class ValidationServiceTest extends TestCase
             ErrorMessages::get('invalidCustomTextfield2'),
             $result['errors']
         );
+    }
+
+    public function testValidateUnchangedStoredContactRejectsChangedRealValues(): void
+    {
+        $stored = new ThinnedProcess();
+        $stored->familyName = 'Jane Doe';
+        $stored->email = 'jane@example.com';
+        $stored->telephone = '+491234567890';
+        $stored->customTextfield = 'Existing note';
+        $stored->customTextfield2 = '';
+
+        $result = ValidationService::validateUnchangedStoredContact(
+            $stored,
+            'Attacker',
+            'attacker@example.com',
+            '+499999999999',
+            'Hacked',
+            'New required field'
+        );
+        $this->assertContains(ErrorMessages::get('invalidFamilyName'), $result['errors']);
+        $this->assertContains(ErrorMessages::get('invalidEmail'), $result['errors']);
+        $this->assertContains(ErrorMessages::get('invalidTelephone'), $result['errors']);
+        $this->assertContains(ErrorMessages::get('invalidCustomTextfield'), $result['errors']);
+        $this->assertNotContains(ErrorMessages::get('invalidCustomTextfield2'), $result['errors']);
+    }
+
+    public function testValidateUnchangedStoredContactAllowsFillingEmptyAndPlaceholderValues(): void
+    {
+        $stored = new ThinnedProcess();
+        $stored->familyName = 'Jane Doe';
+        $stored->email = 'test@muenchen.de';
+        $stored->telephone = '';
+        $stored->customTextfield = '';
+        $stored->customTextfield2 = null;
+
+        $result = ValidationService::validateUnchangedStoredContact(
+            $stored,
+            'Jane Doe',
+            'jane@example.com',
+            '+491234567890',
+            'New note',
+            'Second note'
+        );
+        $this->assertEmpty($result['errors']);
     }
 
     public function testValidateGetProcessNotFound(): void
