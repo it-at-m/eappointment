@@ -48,6 +48,7 @@
                         <th class="statistik">Ø Bearbeitungsdauer</th>
                         <th class="statistik">Summe</th>
                     {% elseif exchangeRequest.period == "month" %}
+                        <th class="statistik">Ø Bearbeitungsdauer</th>
                         <th class="statistik">{{ startDate|date('Y') }}</th>
                     {% endif %}
                     {% for date in dateRange %}
@@ -80,7 +81,7 @@
                                 {% endif %}
                             </th>
 
-                            {% if exchangeRequest.period == "day" %}
+                            {% if exchangeRequest.period == "day" or exchangeRequest.period == "month" %}
                                 <td class="report-board--summary">
                                     {{ timeutils.formatMinutesToTime(exchangeRequest.data.average_processingtime[name]) }}
                                 </td>
@@ -123,7 +124,7 @@
                             {% endif %}
                         </th>
 
-                        {% if exchangeRequest.period == "day" %}
+                        {% if exchangeRequest.period == "day" or exchangeRequest.period == "month" %}
                             <td class="report-board--summary">
                                 {{ timeutils.formatMinutesToTime(exchangeRequest.data.average_processingtime_overall)}}
                             </td>
