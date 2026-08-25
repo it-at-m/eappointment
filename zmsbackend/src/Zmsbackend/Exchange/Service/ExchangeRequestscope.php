@@ -19,7 +19,9 @@ class ExchangeRequestscope extends \BO\Zmsbackend\Base
         $period = 'day'
     ): Exchange {
         $subjectIdList = array_values(array_filter(array_map('trim', explode(',', (string) $subjectid))));
-        $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($subjectIdList[0] ?? $subjectid);
+        $scope = $subjectIdList === []
+            ? null
+            : (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($subjectIdList[0]);
         $entity = new Exchange();
         $entity['title'] = "Dienstleistungsstatistik "
             . ($scope?->contact?->name ?? '')
