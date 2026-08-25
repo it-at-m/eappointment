@@ -15,6 +15,7 @@
   font: 12px/1.2 system-ui, sans-serif;
   min-width: max-content;
   overflow-x: visible !important;
+  background: #e5e5e5 ;
 }
 
 %sticky {
@@ -82,7 +83,10 @@ $day-h: 2.2rem;
   justify-content: center;
   font-size: 10px;
 }
-.overall-calendar-open   { background: transparent;  border: 1px dashed #bbb; }
+.overall-calendar-open {
+  background: #fff;
+  border: 1px dashed #bbb;
+}
 .overall-calendar-empty  { background: transparent; }
 .overall-calendar-termin {
   color: #000;
@@ -92,7 +96,7 @@ $day-h: 2.2rem;
   background: repeating-linear-gradient(135deg, rgba(240, 240, 240, 0.5), rgba(240, 240, 240, 0.5) 6px, rgba(221, 221, 221, 0.5) 6px 12px);
 }
 
-.overall-calendar-separator        { background:#ddd;   width:2px; }
+.overall-calendar-separator        { background:#9aa1a8;   width:2px; }
 .overall-calendar-day-separator    { background:#6c757d; width:4px; }
 
 .overall-calendar > div:not(.overall-calendar-stripe):not(.overall-calendar-head):not(.overall-calendar-termin) {
@@ -267,7 +271,7 @@ body.no-page-scroll {
 
 .overall-calendar-stripe-hour {
   height: 1px;
-  background: #000;
+  background: #00000045;
 }
 
 .overall-calendar-termin-label {
