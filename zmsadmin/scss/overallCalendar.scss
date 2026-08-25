@@ -94,7 +94,8 @@ $day-h: 2.2rem;
 
 .overall-calendar-separator        { background:#ddd;   width:2px; }
 .overall-calendar-day-separator    { background:#6c757d; width:4px; }
-.overall-calendar > div:not(.overall-calendar-stripe):not(.overall-calendar-head) {
+
+.overall-calendar > div:not(.overall-calendar-stripe):not(.overall-calendar-head):not(.overall-calendar-termin) {
   z-index: 1;
 }
 
@@ -267,4 +268,11 @@ body.no-page-scroll {
 .overall-calendar-stripe-hour {
   height: 1px;
   background: #000;
+}
+
+.overall-calendar-termin-label {
+  position: relative;
+  z-index: 3;
+  background: inherit;
+  padding: 0 2px;
 }

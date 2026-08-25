@@ -598,11 +598,15 @@ function renderMultiDayCalendar(days) {
                         if (occupied.has(rowColumnKey(row, laneColumn))) continue;
 
                         const cell = addCell({
-                            text: eventCellLabel(event),
                             className: 'overall-calendar-seat overall-calendar-termin',
                             row, col: laneColumn, rowSpan: spanRows,
                             dataStatus: event.status
                         });
+
+                        const label = document.createElement('span');
+                        label.className = 'overall-calendar-termin-label';
+                        label.textContent = eventCellLabel(event);
+                        cell.appendChild(label);
                         cell.style.background = SCOPE_COLORS[scope.id];
                         if (event.status === 'cancelled') cell.classList.add('overall-calendar-cancelled');
 
