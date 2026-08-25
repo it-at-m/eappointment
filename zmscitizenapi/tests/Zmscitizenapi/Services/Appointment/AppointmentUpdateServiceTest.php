@@ -220,10 +220,34 @@ class AppointmentUpdateServiceTest extends TestCase
 
         $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data]);
 
-        $this->assertEquals('New Name', $result->familyName);
-        $this->assertEquals('new@example.com', $result->email);
+        $this->assertEquals('Old Name', $result->familyName);
+        $this->assertEquals('old@example.com', $result->email);
         $this->assertNull($result->telephone);
         $this->assertNull($result->customTextfield);
+        $this->assertNull($result->customTextfield2);
+    }
+
+    public function testUpdateProcessWithClientDataFillsEmptyStoredFields(): void
+    {
+        $process = new ThinnedProcess();
+        $process->familyName = '';
+        $process->email = 'test@muenchen.de';
+        $process->customTextfield = '';
+
+        $data = (object)[
+            'familyName' => 'Jane Doe',
+            'email' => 'jane@example.com',
+            'telephone' => '+491234567890',
+            'customTextfield' => 'Required note',
+            'customTextfield2' => null
+        ];
+
+        $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data]);
+
+        $this->assertEquals('Jane Doe', $result->familyName);
+        $this->assertEquals('jane@example.com', $result->email);
+        $this->assertEquals('+491234567890', $result->telephone);
+        $this->assertEquals('Required note', $result->customTextfield);
         $this->assertNull($result->customTextfield2);
     }
 

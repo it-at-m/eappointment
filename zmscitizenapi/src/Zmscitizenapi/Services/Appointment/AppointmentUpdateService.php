@@ -44,6 +44,18 @@ class AppointmentUpdateService
             return ['errors' => $errors];
         }
 
+        $lockErrors = ValidationService::validateUnchangedStoredContact(
+            $reservedProcess,
+            $data->familyName,
+            $data->email,
+            $data->telephone,
+            $data->customTextfield,
+            $data->customTextfield2
+        );
+        if ($lockErrors['errors'] !== []) {
+            return ['errors' => $lockErrors['errors']];
+        }
+
         $fieldErrors = ValidationService::validateAppointmentUpdateFields(
             $data->familyName,
             $data->email,
@@ -83,13 +95,25 @@ class AppointmentUpdateService
 
     private function updateProcessWithClientData(ThinnedProcess $process, object $data): ThinnedProcess
     {
-        $process->familyName = $data->familyName ?? $process->familyName ?? null;
-        $process->email = $data->email ?? $process->email ?? null;
-        $process->telephone = $data->telephone ?? $process->telephone ?? null;
-        if ($data->customTextfield !== null) {
+        if (!ValidationService::isFilledContactValue($process->familyName)) {
+            $process->familyName = $data->familyName ?? $process->familyName ?? null;
+        }
+        if (!ValidationService::isFilledContactValue($process->email)) {
+            $process->email = $data->email ?? $process->email ?? null;
+        }
+        if (!ValidationService::isFilledContactValue($process->telephone)) {
+            $process->telephone = $data->telephone ?? $process->telephone ?? null;
+        }
+        if (
+            $data->customTextfield !== null
+            && !ValidationService::isFilledContactValue($process->customTextfield)
+        ) {
             $process->customTextfield = ProcessPlainText::normalize($data->customTextfield);
         }
-        if ($data->customTextfield2 !== null) {
+        if (
+            $data->customTextfield2 !== null
+            && !ValidationService::isFilledContactValue($process->customTextfield2)
+        ) {
             $process->customTextfield2 = ProcessPlainText::normalize($data->customTextfield2);
         }
         return $process;

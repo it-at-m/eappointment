@@ -8,6 +8,7 @@ use BO\Zmscitizenapi\Utils\DateTimeFormatHelper;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Services\Captcha\CaptchaRequirementTrait;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
+use BO\Zmscitizenapi\Services\Core\MapperService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmsentities\Process;
@@ -66,11 +67,17 @@ class AppointmentReserveService
             return $errors;
         }
 
+        $sourceProcess = $this->loadSourceProcessForRebooking($clientData);
+        if (is_array($sourceProcess)) {
+            return $sourceProcess;
+        }
+
         return $this->reserveAppointment(
             $selectedProcess,
             $clientData->serviceIds,
             $clientData->serviceCounts,
-            $clientData->officeId
+            $clientData->officeId,
+            $sourceProcess
         );
     }
 
@@ -81,7 +88,30 @@ class AppointmentReserveService
             'serviceIds' => $body['serviceId'] ?? null,
             'serviceCounts' => $body['serviceCount'] ?? [1],
             'timestamp' => isset($body['timestamp']) && is_numeric($body['timestamp']) ? (int) $body['timestamp'] : null,
+            'sourceProcessId' => isset($body['sourceProcessId']) && is_numeric($body['sourceProcessId'])
+                ? (int) $body['sourceProcessId']
+                : null,
+            'sourceAuthKey' => isset($body['sourceAuthKey']) && is_string($body['sourceAuthKey'])
+                && trim($body['sourceAuthKey']) !== ''
+                ? htmlspecialchars(trim($body['sourceAuthKey']), ENT_QUOTES, 'UTF-8')
+                : null,
         ];
+    }
+
+    /**
+     * @return ThinnedProcess|array{errors: array}|null
+     */
+    private function loadSourceProcessForRebooking(object $clientData): ThinnedProcess|array|null
+    {
+        if ($clientData->sourceProcessId === null || $clientData->sourceAuthKey === null) {
+            return null;
+        }
+        $sourceProcess = ZmsApiFacadeService::getThinnedProcessById(
+            $clientData->sourceProcessId,
+            $clientData->sourceAuthKey,
+            null
+        );
+        return $sourceProcess;
     }
 
     private function findMatchingProcess(int $officeId, array $serviceIds, array $serviceCounts, int $timestamp): ?Process
@@ -114,14 +144,22 @@ class AppointmentReserveService
         return null;
     }
 
-    private function reserveAppointment(Process $process, array $serviceIds, array $serviceCounts, int $officeId): ThinnedProcess
-    {
+    private function reserveAppointment(
+        Process $process,
+        array $serviceIds,
+        array $serviceCounts,
+        int $officeId,
+        ?ThinnedProcess $sourceProcess
+    ): ThinnedProcess|array {
         $process->clients = [
             [
                 'email' => 'test@muenchen.de'
             ]
         ];
         $reservedProcess = ZmsApiFacadeService::reserveTimeslot($process, $serviceIds, $serviceCounts);
+        if (is_array($reservedProcess)) {
+            return $reservedProcess;
+        }
         if ($reservedProcess && $reservedProcess->scope && $reservedProcess->scope->id) {
             $scopeId = $reservedProcess->scope->id;
             $scope = ZmsApiFacadeService::getScopeById((int) $scopeId);
@@ -131,6 +169,35 @@ class AppointmentReserveService
             }
         }
 
+        if ($sourceProcess instanceof ThinnedProcess && $reservedProcess instanceof ThinnedProcess) {
+            return $this->copySourceContactOntoReservedProcess($reservedProcess, $sourceProcess);
+        }
+
         return $reservedProcess;
+    }
+
+    private function copySourceContactOntoReservedProcess(
+        ThinnedProcess $reservedProcess,
+        ThinnedProcess $sourceProcess
+    ): ThinnedProcess|array {
+        $reservedProcess->familyName = $sourceProcess->familyName;
+        if (ValidationService::isFilledContactValue($sourceProcess->email)) {
+            $reservedProcess->email = $sourceProcess->email;
+        }
+        $reservedProcess->telephone = $sourceProcess->telephone;
+        $reservedProcess->customTextfield = $sourceProcess->customTextfield;
+        $reservedProcess->customTextfield2 = $sourceProcess->customTextfield2;
+
+        $updatedProcess = ZmsApiFacadeService::updateClientData(
+            MapperService::thinnedProcessToProcess($reservedProcess)
+        );
+        if (is_array($updatedProcess)) {
+            return $updatedProcess;
+        }
+
+        $copiedProcess = MapperService::processToThinnedProcess($updatedProcess);
+        $copiedProcess->scope = $reservedProcess->scope;
+        $copiedProcess->officeId = $reservedProcess->officeId;
+        return $copiedProcess;
     }
 }
