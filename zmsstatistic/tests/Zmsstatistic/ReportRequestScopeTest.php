@@ -565,7 +565,7 @@ class ReportRequestScopeTest extends Base
 
         foreach ($sheet->getRowIterator() as $row) {
             $rowIndex = $row->getRowIndex();
-            if ($sheet->getCell('A' . $rowIndex)->getValue() === 'Summe') {
+            if ($sheet->getCell('A' . $rowIndex)->getValue() === 'Summe / Ø Bearbeitungsdauer (unabhängig von DL)') {
                 $foundSumRow = true;
                 $this->assertNotEmpty($sheet->getCell('B'. $rowIndex)->getValue());
 
@@ -573,7 +573,10 @@ class ReportRequestScopeTest extends Base
             }
         }
         $this->assertTrue($foundSumRow,'The XLSX export must contain a Summe row');
-
+        $this->assertSame(
+            'Summe / Ø Bearbeitungsdauer (unabhängig von DL)',
+            $sheet->getCell('A' . $rowIndex)->getValue()
+        );
         unlink($tempfile);
         
         // Clean up output buffer (discard any captured output)
