@@ -690,6 +690,37 @@ public class CitizenViewPage extends BasePage {
         return Boolean.TRUE.equals(o);
     }
 
+    /**
+     * True when the resolved input/textarea (or its muc-input / muc-text-area host) is disabled or
+     * read-only. Same id resolution as {@link #deepSetById(String, String)}.
+     */
+    public boolean deepControlDisabled(String id) {
+        CONTEXT.set();
+        String script =
+                "var want=arguments[0];"
+                        + "var ids=[];ids.push(want);"
+                        + "if(want.indexOf('input-')===0)ids.push(want.slice(6));else ids.push('input-'+want);"
+                        + "if(want.indexOf('textarea-')===0)ids.push(want.slice(9));else ids.push('textarea-'+want);"
+                        + "function byId(root,id){try{if(root.getElementById)return root.getElementById(id);}catch(e0){}"
+                        + "try{return root.querySelector('#'+id.replace(/([^a-zA-Z0-9_-])/g,'\\\\$1'));}catch(e1){"
+                        + "return root.querySelector('[id=\"'+id.replace(/\"/g,'')+'\"]');}}"
+                        + "function resolve(el){if(!el)return null;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')return el;"
+                        + "if(el.shadowRoot){var q=el.shadowRoot.querySelector("
+                        + "'input:not([type=hidden]):not([type=checkbox]):not([type=radio]),textarea');if(q)return q;}"
+                        + "return null;}"
+                        + "function scanRoot(root){if(!root)return null;for(var i=0;i<ids.length;i++){"
+                        + "var el=byId(root,ids[i]);var r=resolve(el);if(r)return {host:el,ctrl:r};}"
+                        + "var nodes=root.querySelectorAll('*');for(var j=0;j<nodes.length;j++){"
+                        + "if(nodes[j].shadowRoot){var r2=scanRoot(nodes[j].shadowRoot);if(r2)return r2;}}return null;}"
+                        + "var found=scanRoot(document);if(!found)found=scanRoot(document.body);"
+                        + "if(!found||!found.ctrl)return null;"
+                        + "var e=found.ctrl,h=found.host;"
+                        + "return !!(e.disabled||e.readOnly||e.getAttribute('aria-disabled')==='true'"
+                        + "||(h&&(h.disabled||h.hasAttribute('disabled')||h.getAttribute('aria-disabled')==='true')));";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, id);
+        return Boolean.TRUE.equals(o);
+    }
+
     /** Click first button whose visible text includes label (shadow-safe). Includes BUTTON, A, and MUC-BUTTON (modal confirm/cancel). */
     public boolean clickButtonContaining(String text) {
         CONTEXT.set();
@@ -1677,9 +1708,22 @@ public class CitizenViewPage extends BasePage {
     /**
      * Kontakt step: same name/email approach as zmsadmin ({@link RandomNameHelper} + mailinator).
      * Vorname/Nachname split; phone only if field exists (optional or required); required custom
-     * text areas only → {@link #CONTACT_LOREM_REQUIRED}.
+     * text areas only → {@link #CONTACT_LOREM_REQUIRED}. Also fills optional Bemerkung fields when
+     * present.
      */
     public void fillContactDetailsRandom() {
+        fillContactDetailsRandom(true);
+    }
+
+    /**
+     * Like {@link #fillContactDetailsRandom()} but leaves optional Bemerkung empty so a later
+     * rebooking onto a scope that requires custom text still has a missing Pflichtfeld (ZMSKVR-833).
+     */
+    public void fillContactDetailsRandomWithoutOptionalRemarks() {
+        fillContactDetailsRandom(false);
+    }
+
+    private void fillContactDetailsRandom(boolean fillOptionalRemarks) {
         CONTEXT.set();
         waitUntilShadowContains("Kontaktdaten", Math.max(30, DEFAULT_EXPLICIT_WAIT_TIME));
         try {
@@ -1712,7 +1756,9 @@ public class CitizenViewPage extends BasePage {
             ScenarioLogManager.getLogger().info("zmscitizenview: Kontakt — Telefon (field present)");
         }
         fillRequiredCustomTextAreasInShadow();
-        fillOptionalContactRemarksIfPresent();
+        if (fillOptionalRemarks) {
+            fillOptionalContactRemarksIfPresent();
+        }
         try {
             Thread.sleep(500L);
         } catch (InterruptedException e) {
@@ -1768,6 +1814,57 @@ public class CitizenViewPage extends BasePage {
             ScenarioLogManager.getLogger()
                     .info("zmscitizenview: Kontakt — filled {} required Bemerkung(en)", n);
         }
+    }
+
+    /** ZMSKVR-833: after reserve on rebooking, Kontakt must appear (not skip to Übersicht). */
+    public void assertContactFormVisible() {
+        CONTEXT.set();
+        waitUntilShadowContains("Kontaktdaten", Math.max(30, DEFAULT_EXPLICIT_WAIT_TIME));
+        Assert.assertTrue(
+                shadowDomContainsText("Kontaktdaten"),
+                "Expected Kontakt form (Kontaktdaten) after rebooking to a scope with missing required fields.");
+    }
+
+    /** ZMSKVR-833: already provided name/email stay locked; citizen cannot change them. */
+    public void assertFilledNameAndEmailLockedOnContactForm() {
+        CONTEXT.set();
+        waitUntilShadowContains("Kontaktdaten", Math.max(30, DEFAULT_EXPLICIT_WAIT_TIME));
+        Assert.assertTrue(
+                deepControlDisabled("firstname"),
+                "Vorname should be locked on rebooking Kontakt when already filled.");
+        Assert.assertTrue(
+                deepControlDisabled("lastname"),
+                "Nachname should be locked on rebooking Kontakt when already filled.");
+        Assert.assertTrue(
+                deepControlDisabled("mailaddress"),
+                "E-Mail should be locked on rebooking Kontakt when already filled.");
+    }
+
+    /** ZMSKVR-833 / ZMSKVR-1025: empty required custom text stays editable. */
+    public void assertRequiredCustomTextFieldEditableOnContactForm() {
+        CONTEXT.set();
+        Assert.assertTrue(
+                deepContactCustomTextFieldExists(),
+                "Required custom text field (#remarks) must be visible on rebooking Kontakt.");
+        Assert.assertFalse(
+                deepControlDisabled("remarks"),
+                "Required custom text field must stay editable when empty on rebooking.");
+    }
+
+    /**
+     * Fills missing required Bemerkung on rebooking Kontakt without touching locked name/email.
+     */
+    public void fillRequiredCustomTextFieldsOnContactForm() {
+        CONTEXT.set();
+        waitUntilShadowContains("Kontaktdaten", Math.max(30, DEFAULT_EXPLICIT_WAIT_TIME));
+        fillRequiredCustomTextAreasInShadow();
+        String remarks = deepGetById("remarks");
+        if (remarks == null || remarks.isBlank()) {
+            Assert.assertTrue(
+                    deepSetById("remarks", CONTACT_LOREM_REQUIRED),
+                    "Kontakt: could not set required Bemerkung (muc-text-area shadow)");
+        }
+        ScenarioLogManager.getLogger().info("zmscitizenview: Kontakt — required Bemerkung filled for rebooking");
     }
 
     public void acceptCommunication() {
