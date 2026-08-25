@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services\Core;
 
 use BO\Zmscitizenapi\Utils\ErrorMessages;
+use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmsentities\Helper\ProcessPlainText;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
@@ -251,6 +252,65 @@ class ValidationService
         return ['errors' => $errors];
     }
 
+    public static function isFilledContactValue(?string $value): bool
+    {
+        $trimmed = trim((string) $value);
+        return $trimmed !== '' && !self::isPlaceholderReserveEmail($trimmed);
+    }
+
+    public static function validateUnchangedStoredContact(
+        ThinnedProcess $stored,
+        ?string $familyName,
+        ?string $email,
+        ?string $telephone,
+        ?string $customTextfield,
+        ?string $customTextfield2
+    ): array {
+        $errors = [];
+        self::rejectChangedStoredField($stored->familyName, $familyName, 'familyNameCannotBeChanged', $errors);
+        self::rejectChangedStoredField($stored->email, $email, 'emailCannotBeChanged', $errors, true);
+        self::rejectChangedStoredField($stored->telephone, $telephone, 'telephoneCannotBeChanged', $errors);
+        self::rejectChangedStoredField(
+            self::normalizedCustomText($stored->customTextfield),
+            self::normalizedCustomText($customTextfield),
+            'customTextfieldCannotBeChanged',
+            $errors
+        );
+        self::rejectChangedStoredField(
+            self::normalizedCustomText($stored->customTextfield2),
+            self::normalizedCustomText($customTextfield2),
+            'customTextfield2CannotBeChanged',
+            $errors
+        );
+
+        return ['errors' => $errors];
+    }
+
+    private static function normalizedCustomText(?string $value): ?string
+    {
+        return $value === null ? null : ProcessPlainText::normalize($value);
+    }
+
+    private static function rejectChangedStoredField(
+        ?string $stored,
+        ?string $incoming,
+        string $errorKey,
+        array &$errors,
+        bool $email = false
+    ): void {
+        if (!self::isFilledContactValue($stored) || $incoming === null) {
+            return;
+        }
+        $storedTrimmed = trim($stored);
+        $incomingTrimmed = trim($incoming);
+        $same = $email
+            ? strcasecmp($storedTrimmed, $incomingTrimmed) === 0
+            : $storedTrimmed === $incomingTrimmed;
+        if (!$same) {
+            $errors[] = self::getError($errorKey);
+        }
+    }
+
     private static function validateFamilyNameField(?string $familyName, array &$errors): void
     {
         if (!self::isValidFamilyName($familyName)) {
@@ -260,7 +320,14 @@ class ValidationService
 
     private static function validateEmailField(?string $email, ?ThinnedScope $scope, array &$errors): void
     {
-        if ($scope && $scope->emailRequired && ($email === "" || !self::isValidEmail($email))) {
+        if (
+            $scope && $scope->emailRequired
+            && (
+                $email === ""
+                || self::isPlaceholderReserveEmail($email)
+                || !self::isValidEmail($email)
+            )
+        ) {
             $errors[] = self::getError('invalidEmail');
         }
     }
@@ -433,9 +500,16 @@ class ValidationService
         return !empty($timestamp) && is_numeric($timestamp) && $timestamp > time();
     }
 
+    private static function isPlaceholderReserveEmail(?string $email): bool
+    {
+        return is_string($email) && strcasecmp($email, 'test@muenchen.de') === 0;
+    }
+
     private static function isValidEmail(?string $email): bool
     {
-        return !empty($email) && preg_match(self::EMAIL_PATTERN, $email) === 1;
+        return !empty($email)
+            && !self::isPlaceholderReserveEmail($email)
+            && preg_match(self::EMAIL_PATTERN, $email) === 1;
     }
 
     private static function isValidTelephone(?string $telephone): bool
