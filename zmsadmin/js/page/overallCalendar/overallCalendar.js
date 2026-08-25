@@ -533,6 +533,7 @@ function renderMultiDayCalendar(days) {
                 row: 2, col: columnCursor, colSpan: lanes
             });
             headerCell.style.background = SCOPE_COLORS[scope.id];
+            headerCell.title = meta.shortName || meta.name || `Scope ${scope.id}`;
             if (isScopeClosed(dateIso, scope.id)) headerCell.classList.add('is-closed');
 
             columnCursor += lanes;
