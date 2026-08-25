@@ -567,7 +567,9 @@ class ReportRequestScopeTest extends Base
             $rowIndex = $row->getRowIndex();
             if ($sheet->getCell('A' . $rowIndex)->getValue() === 'Ø Bearbeitungsdauer (unabhängig von DL) / Summe') {
                 $foundSumRow = true;
-                $this->assertNotEmpty($sheet->getCell('B'. $rowIndex)->getValue());
+                $this->assertNotEmpty($sheet->getCell('B'. $rowIndex)->getValue(),
+                'The overall average processing time must be exported.'
+            );
 
                 break;
             }
