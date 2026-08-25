@@ -1,0 +1,38 @@
+name: 📣 Notify Webex on new release tag
+
+on:
+  push:
+    tags:
+      - "2.*-muc*"
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Webex
+        env:
+          WEBEX_BOT_TOKEN: ${{ secrets.WEBEX_BOT_TOKEN }}
+          WEBEX_ROOM_ID: ${{ secrets.WEBEX_ROOM_ID }}
+          TAG: ${{ github.ref_name }}
+          TAG_URL: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}
+          TAG_AUTHOR: ${{ github.actor }}
+          SHA: ${{ github.sha }}
+        run: |
+          jq -n \
+            --arg roomId "$WEBEX_ROOM_ID" \
+            --arg repo "${{ github.repository }}" \
+            --arg tag "$TAG" \
+            --arg author "$TAG_AUTHOR" \
+            --arg sha "$SHA" \
+            --arg url "$TAG_URL" \
+            '{roomId: $roomId, markdown: ("**New release tag pushed in " + $repo + "**\n\n**Tag:** `" + $tag + "`\n**Author:** " + $author + "\n**Commit:** `" + $sha + "`\n\n[View tag](" + $url + ")")}' \
+            | curl -fsS -o /dev/null -X POST \
+              -H "Authorization: Bearer $WEBEX_BOT_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d @- \
+              "https://webexapis.com/v1/messages"
+          echo "Webex notification sent:"
+          echo "  Tag: ${TAG}"
+          echo "  Author: ${TAG_AUTHOR}"
+          echo "  Commit: ${SHA}"
+          echo "  ${TAG_URL}"

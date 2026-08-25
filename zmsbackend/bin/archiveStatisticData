@@ -17,7 +17,7 @@ EOS;
 $limit = preg_grep('#^\d+$#', $argv);
 $limit = array_shift($limit);
 $verbose = (preg_grep('#^--?v(erbose)?$#', $argv)) ? true : false;
-$commit = preg_grep('#^--commit$#', $argv);
+$commit = (preg_grep('#^--commit$#', $argv)) ? true : false;
 
 if ($commit || $verbose) {
     if (class_exists('\App') && isset(\App::$now)) {
