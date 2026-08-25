@@ -122,6 +122,84 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
+    public function testRebookingRejectsChangedStoredContact(): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_process.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/ics/',
+                    'response' => $this->readFixture("GET_process_ics_template.json")
+                ]
+            ]
+        );
+
+        $parameters = [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'familyName' => 'Attacker',
+            'email' => 'attacker@example.com',
+            'telephone' => '999999999',
+            'customTextfield' => 'Hacked',
+            'customTextfield2' => 'Hacked 2',
+            'sourceProcessId' => '100001',
+            'sourceAuthKey' => 'oldkey',
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(ErrorMessages::get('familyNameCannotBeChanged')['statusCode'], $response->getStatusCode());
+        $this->assertContains(ErrorMessages::get('familyNameCannotBeChanged'), $responseBody['errors']);
+        $this->assertContains(ErrorMessages::get('emailCannotBeChanged'), $responseBody['errors']);
+    }
+
+    public function testFirstBookingAllowsChangingStoredContact(): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_process.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/ics/',
+                    'response' => $this->readFixture("GET_process_ics_template.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/101002/fb43/',
+                    'response' => $this->readFixture("POST_update_appointment.json")
+                ]
+            ]
+        );
+
+        $parameters = [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'familyName' => 'Jane Doe',
+            'email' => 'jane@example.com',
+            'telephone' => '123456789',
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testInvalidProcessid_ValidAuthkey_ValidFamilyname_ValidEmail_ValidTelephone_ValidCustomtextfield()
     {
         $parameters = [

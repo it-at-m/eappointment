@@ -216,6 +216,7 @@
 </template>
 
 <script setup lang="ts">
+import type { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import type { SelectedTimeslotProvider } from "@/types/ProvideInjectTypes";
 import type { Ref } from "vue";
 
@@ -243,7 +244,10 @@ import {
   normalizePlainText,
   plainTextCharCount,
 } from "@/utils/processPlainText";
-import { isFilledContactValue } from "@/utils/rebookingContact";
+import {
+  isFilledContactValue,
+  splitFamilyName,
+} from "@/utils/rebookingContact";
 import { countLines, handleInput } from "@/utils/textfieldRows";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
@@ -268,6 +272,7 @@ const props = defineProps<{
   globalState: GlobalState;
   showLoginOption: boolean;
   isRebooking?: boolean;
+  sourceAppointment?: AppointmentDTO | null;
   loginFailed?: boolean;
   t: (key: string, params?: Record<string, unknown>) => string;
 }>();
@@ -282,35 +287,30 @@ const { selectedProvider } = inject<SelectedTimeslotProvider>(
   "selectedTimeslot"
 ) as SelectedTimeslotProvider;
 
-const lockFirstName = computed(
-  () =>
-    Boolean(props.isRebooking) &&
-    isFilledContactValue(customerData.value.firstName)
+const storedName = computed(() =>
+  splitFamilyName(props.sourceAppointment?.familyName)
 );
-const lockLastName = computed(
-  () =>
-    Boolean(props.isRebooking) &&
-    isFilledContactValue(customerData.value.lastName)
+
+const lockIfStoredOnSource = (value?: string | null) =>
+  Boolean(props.isRebooking) && isFilledContactValue(value);
+
+const lockFirstName = computed(() =>
+  lockIfStoredOnSource(storedName.value.firstName)
 );
-const lockMailAddress = computed(
-  () =>
-    Boolean(props.isRebooking) &&
-    isFilledContactValue(customerData.value.mailAddress)
+const lockLastName = computed(() =>
+  lockIfStoredOnSource(storedName.value.lastName)
 );
-const lockTelephoneNumber = computed(
-  () =>
-    Boolean(props.isRebooking) &&
-    isFilledContactValue(customerData.value.telephoneNumber)
+const lockMailAddress = computed(() =>
+  lockIfStoredOnSource(props.sourceAppointment?.email)
 );
-const lockCustomTextfield = computed(
-  () =>
-    Boolean(props.isRebooking) &&
-    isFilledContactValue(customerData.value.customTextfield)
+const lockTelephoneNumber = computed(() =>
+  lockIfStoredOnSource(props.sourceAppointment?.telephone)
 );
-const lockCustomTextfield2 = computed(
-  () =>
-    Boolean(props.isRebooking) &&
-    isFilledContactValue(customerData.value.customTextfield2)
+const lockCustomTextfield = computed(() =>
+  lockIfStoredOnSource(props.sourceAppointment?.customTextfield)
+);
+const lockCustomTextfield2 = computed(() =>
+  lockIfStoredOnSource(props.sourceAppointment?.customTextfield2)
 );
 
 const contactForm = ref<HTMLFormElement | null>(null);

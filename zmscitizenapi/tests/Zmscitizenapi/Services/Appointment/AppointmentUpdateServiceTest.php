@@ -48,6 +48,8 @@ class AppointmentUpdateServiceTest extends TestCase
         $this->assertEquals('1234567890', $result->telephone);
         $this->assertEquals('Custom Info', $result->customTextfield);
         $this->assertEquals('Custom Info 2', $result->customTextfield2);
+        $this->assertNull($result->sourceProcessId);
+        $this->assertNull($result->sourceAuthKey);
     }
 
     public function testExtractClientDataWithInvalidProcessId(): void
@@ -218,12 +220,35 @@ class AppointmentUpdateServiceTest extends TestCase
             'customTextfield2' => null
         ];
 
-        $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data]);
+        $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data, true]);
 
         $this->assertEquals('Old Name', $result->familyName);
         $this->assertEquals('old@example.com', $result->email);
         $this->assertNull($result->telephone);
         $this->assertNull($result->customTextfield);
+        $this->assertNull($result->customTextfield2);
+    }
+
+    public function testUpdateProcessWithClientDataOverwritesWhenNotRebooking(): void
+    {
+        $process = new ThinnedProcess();
+        $process->familyName = 'Old Name';
+        $process->email = 'old@example.com';
+
+        $data = (object)[
+            'familyName' => 'New Name',
+            'email' => 'new@example.com',
+            'telephone' => '+491234567890',
+            'customTextfield' => 'Note',
+            'customTextfield2' => null
+        ];
+
+        $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data, false]);
+
+        $this->assertEquals('New Name', $result->familyName);
+        $this->assertEquals('new@example.com', $result->email);
+        $this->assertEquals('+491234567890', $result->telephone);
+        $this->assertEquals('Note', $result->customTextfield);
         $this->assertNull($result->customTextfield2);
     }
 
@@ -242,7 +267,7 @@ class AppointmentUpdateServiceTest extends TestCase
             'customTextfield2' => null
         ];
 
-        $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data]);
+        $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data, false]);
 
         $this->assertEquals('Jane Doe', $result->familyName);
         $this->assertEquals('jane@example.com', $result->email);
