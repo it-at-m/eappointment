@@ -161,6 +161,7 @@ class ProcessSearch extends \BO\Zmsbackend\Base
                     'limit',
                     'offset',
                     'includePast',
+                    'denyHistory',
                 ] as $reservedKey
             ) {
                 unset($parameter[$reservedKey]);
@@ -326,7 +327,8 @@ class ProcessSearch extends \BO\Zmsbackend\Base
         );
 
         $denyHistory =
-            !empty($parameter['authKey'])
+            !empty($parameter['denyHistory'])
+            || !empty($parameter['authKey'])
             || !empty($parameter['requestId'])
             || !empty($parameter['upcomingOnly']);
 
