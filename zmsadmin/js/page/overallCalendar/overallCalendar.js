@@ -7,6 +7,7 @@ let SCOPE_COLORS = {};
 let CLOSURES = new Set();
 let hideDaysWithoutOpeningHours = false;
 const STEP_MIN = 5;
+const MIN_LANE_WIDTH = 39;
 const MAX_DAYS = 14;
 const HIDE_EMPTY_DAYS_STORAGE_KEY = 'zmsadmin.overallCalendar.hideDaysWithoutOpeningHours';
 
@@ -464,7 +465,7 @@ function renderMultiDayCalendar(days) {
     days.forEach((day, dayIndex) => {
         day.scopes.forEach((scope, scopeIndex) => {
             const lanes = getLanes(day.date, scope.id);
-            templateCols.push(`repeat(${lanes}, minmax(120px,1fr))`);
+            templateCols.push(`repeat(${lanes}, minmax(${MIN_LANE_WIDTH}px, 1fr))`);
             if (scopeIndex < day.scopes.length - 1) templateCols.push('2px');
         });
         if (dayIndex < days.length - 1) templateCols.push('4px');
