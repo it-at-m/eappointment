@@ -25,6 +25,14 @@ class ExchangeRequestscopeTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertMatchesRegularExpression('/^\d{4}-\d{2}$/', $entity->data[0][3]);
     }
 
+    public function testReadEntityWithEmptySubject()
+    {
+        $query = new Query();
+        $entity = $query->readEntity('', new DateTime('2016-04-01'), new DateTime('2016-04-30'));
+        $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
+        $this->assertEquals(0, count($entity->data));
+    }
+
     public function testSubject()
     {
         $query = new Query();

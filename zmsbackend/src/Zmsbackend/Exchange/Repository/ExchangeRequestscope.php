@@ -32,7 +32,7 @@ class ExchangeRequestscope extends \BO\Zmsbackend\Query\Base
             END
         ) as name,
         SUM(agg.requestscount) as requestscount,
-        SUM(agg.processingtime * agg.requestscount) / NULLIF(SUM(agg.requestscount), 0) as processingtime
+        SUM(agg.processingsum) / NULLIF(SUM(agg.processingcount), 0) as processingtime
     FROM (
         SELECT
             s.anliegenid,
@@ -40,7 +40,8 @@ class ExchangeRequestscope extends \BO\Zmsbackend\Query\Base
             MIN(s.behoerdenid) as behoerdenid,
             MIN(s.organisationsid) as organisationsid,
             COUNT(*) as requestscount,
-            AVG(s.processing_time) as processingtime,
+            SUM(s.processing_time) as processingsum,
+            COUNT(s.processing_time) as processingcount,
             s.datum
         FROM ' . self::TABLE . ' AS s
         WHERE s.standortid IN (:scopeid) AND s.datum BETWEEN :datestart AND :dateend

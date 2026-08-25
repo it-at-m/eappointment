@@ -37,11 +37,13 @@
                 {% set monthPattern = sameYear ? "LLL" : "LLL y" %}
                 {% set dateRange = [] %}
                 {% set cursor = startMonth %}
-                {% for i in 0..240 %}
-                    {% if cursor <= endMonth %}
-                        {% set dateRange = dateRange|merge([cursor|date('Y-m')]) %}
-                        {% set cursor = cursor|date_modify('+1 month') %}
-                    {% endif %}
+                {% set monthCount =
+                    (endMonth|date('Y') * 12 + endMonth|date('n'))
+                    - (startMonth|date('Y') * 12 + startMonth|date('n'))
+                %}
+                {% for i in range(0, monthCount) %}
+                    {% set dateRange = dateRange|merge([cursor|date('Y-m')]) %}
+                    {% set cursor = cursor|date_modify('+1 month') %}
                 {% endfor %}
             {% endif %}
             <div class="table-wrapper">
