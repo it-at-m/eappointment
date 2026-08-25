@@ -139,7 +139,7 @@ class ExchangeTest extends EntityCommonTests
    
         $this->assertSame(
             12.22,
-            $result-data['average_processingtime_overall']
+            $result->data['average_processingtime_overall']
         );
     }
 
@@ -150,7 +150,7 @@ class ExchangeTest extends EntityCommonTests
         $exchange->data = [
             'sum' => [
                 'Personalausweis' => 2,
-                \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_UNCATGORIZED => 1,
+                \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_UNCATEGORIZED => 1,
             ],
             'average_processingtime' => [
                 'Personalausweis' => 10,
