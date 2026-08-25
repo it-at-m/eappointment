@@ -247,7 +247,7 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
 
     /**
      * Defaults slots window to the day range. When one side is missing, use the day range bound.
-     * Clamps the slots window to the day range intersection.
+     * Clamps the slots window to the day range intersection. No overlap snaps to the nearest bound.
      */
     private function resolveSlotsDateRange(
         string $startDate,
@@ -281,9 +281,14 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
             $slotsEnd = $endDate;
         }
         if ($slotsStart > $slotsEnd) {
-            throw new \BO\Zmsbackend\Slot\Exception\Calendar\InvalidAvailabilityInput(
-                'slots date range does not overlap startDate/endDate'
-            );
+            // No overlap: snap to the nearest day in the horizon instead of failing.
+            if ($slotsEnd < $startDate) {
+                $slotsStart = $startDate;
+                $slotsEnd = $startDate;
+            } else {
+                $slotsStart = $endDate;
+                $slotsEnd = $endDate;
+            }
         }
 
         return [$slotsStart, $slotsEnd];
