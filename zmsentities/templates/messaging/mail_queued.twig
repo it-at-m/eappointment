@@ -25,7 +25,7 @@ Sie haben keine Dienstleistungen ausgewählt.
 Sie haben folgende {{ requestalias }} ausgewählt:
 <br/><br />
     {% for request in process.requests %}
-    <strong><a href="https://service.berlin.de/dienstleistung/{{ request.id }}/standort/{{ process.scope.provider.id }}/">{{ request.name }} am Standort {{ process.scope.provider.displayName }}</a></strong><br/>
+    <strong><a href="http://www.muenchen.de/dienstleistungsfinder/muenchen/{{ request.root_parent_id }}/">{{ request.name }} am Standort {{ process.scope.provider.displayName }}</a></strong><br/>
     {% if request.source == "dldb" and request.data %}
     <div style="border-left: 1em solid #ffffff; background: #ffffff;">
     {% include "@zmsentities/detail/service_detail_prerequisites.twig" with {"service":request.data, "headerlevel":"h4"} %}
