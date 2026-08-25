@@ -256,3 +256,15 @@ body.no-page-scroll {
   text-align: center;
   pointer-events: none;
 }
+
+.overall-calendar-stripe {
+  pointer-events: none;
+  align-self: start;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.overall-calendar-stripe-hour {
+  height: 1px;
+  background: #000;
+}
