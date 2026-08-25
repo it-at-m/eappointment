@@ -120,7 +120,7 @@ class ExchangeTest extends EntityCommonTests
 
         $exchange->data = [
             'sum' => [
-                'Personalauswis' => 20,
+                'Personalausweis' => 20,
                 'Reisepass' => 5,
                 \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_UNCATEGORIZED => 2,
             ],
