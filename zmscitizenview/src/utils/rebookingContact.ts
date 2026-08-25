@@ -32,6 +32,16 @@ export function splitFamilyName(familyName?: string | null): {
   };
 }
 
+export function joinFamilyName(
+  firstName?: string | null,
+  lastName?: string | null
+): string {
+  return [firstName, lastName]
+    .map((part) => (part ?? "").trim())
+    .filter((part) => part !== "")
+    .join(" ");
+}
+
 export function applyAppointmentContactToCustomerData(
   customerData: CustomerData,
   appointment: AppointmentDTO

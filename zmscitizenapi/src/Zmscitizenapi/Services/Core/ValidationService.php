@@ -298,7 +298,7 @@ class ValidationService
         array &$errors,
         bool $email = false
     ): void {
-        if (!self::isFilledContactValue($stored) || $incoming === null) {
+        if (!self::isFilledContactValue($stored) || !self::isFilledContactValue($incoming)) {
             return;
         }
         $storedTrimmed = trim($stored);

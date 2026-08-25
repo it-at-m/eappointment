@@ -345,6 +345,26 @@ class ValidationServiceTest extends TestCase
         $this->assertEmpty($result['errors']);
     }
 
+    public function testValidateUnchangedStoredContactIgnoresBlankIncomingValues(): void
+    {
+        $stored = new ThinnedProcess();
+        $stored->familyName = 'Jane Doe';
+        $stored->email = 'jane@example.com';
+        $stored->telephone = '+491234567890';
+        $stored->customTextfield = 'Existing note';
+        $stored->customTextfield2 = 'Second note';
+
+        $result = ValidationService::validateUnchangedStoredContact(
+            $stored,
+            '',
+            '  ',
+            null,
+            '',
+            null
+        );
+        $this->assertEmpty($result['errors']);
+    }
+
     public function testValidateGetProcessNotFound(): void
     {
         // Test valid process

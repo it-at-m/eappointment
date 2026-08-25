@@ -134,6 +134,9 @@
                 :global-state="globalState"
                 :show-login-option="showLoginOption && !isRebooking"
                 :is-rebooking="isRebooking"
+                :source-appointment="
+                  isRebooking ? rebookedAppointment : undefined
+                "
                 :login-failed="loginFailed"
                 :t="t"
                 @back="decreaseCurrentView"
@@ -445,6 +448,7 @@ import {
 import {
   applyAppointmentContactToCustomerData,
   hasMissingRequiredContact,
+  joinFamilyName,
 } from "@/utils/rebookingContact";
 import { isExpired } from "@/utils/timestampInPast";
 
@@ -734,6 +738,9 @@ const decreaseCurrentView = (): void => {
  * Adjusts the current view to the active step in the stepper
  */
 const changeStep = (step: string) => {
+  if (rebookOrCancelDialog.value && !isRebooking.value) {
+    return;
+  }
   if (parseInt(step) < parseInt(activeStep.value)) {
     clearAllErrors();
     currentView.value = parseInt(step);
@@ -814,21 +821,23 @@ const setRebookData = () => {
     copyRebookedContactOntoAppointment();
     clearContextErrors(errorStateMap.value);
     currentContext.value = "update";
-    return updateAppointment(props.globalState, appointment.value).then(
-      (data) => {
-        if ((data as AppointmentDTO).processId != undefined) {
-          appointment.value = data as AppointmentDTO;
-          currentView.value = 3;
-        } else {
-          handleErrorApiResponse(
-            data,
-            errorStates.errorStateMap,
-            currentErrorData.value
-          );
-          currentView.value = 2;
-        }
+    return updateAppointment(
+      props.globalState,
+      appointment.value,
+      rebookedAppointment.value
+    ).then((data) => {
+      if ((data as AppointmentDTO).processId != undefined) {
+        appointment.value = data as AppointmentDTO;
+        currentView.value = 3;
+      } else {
+        handleErrorApiResponse(
+          data,
+          errorStates.errorStateMap,
+          currentErrorData.value
+        );
+        currentView.value = 2;
       }
-    );
+    });
   }
 };
 
@@ -884,8 +893,17 @@ const nextUpdateAppointment = () => {
   if (appointment.value) {
     isUpdatingAppointment.value = true;
     clearContextErrors(errorStateMap.value);
+    if (isRebooking.value && rebookedAppointment.value) {
+      applyAppointmentContactToCustomerData(
+        customerData.value,
+        rebookedAppointment.value
+      );
+    }
     appointment.value.familyName =
-      customerData.value.firstName + " " + customerData.value.lastName;
+      joinFamilyName(
+        customerData.value.firstName,
+        customerData.value.lastName
+      ) || appointment.value.familyName;
     appointment.value.email = customerData.value.mailAddress;
     appointment.value.telephone = customerData.value.telephoneNumber
       ? customerData.value.telephoneNumber
@@ -898,7 +916,11 @@ const nextUpdateAppointment = () => {
       : undefined;
 
     currentContext.value = "update";
-    return updateAppointment(props.globalState, appointment.value)
+    return updateAppointment(
+      props.globalState,
+      appointment.value,
+      isRebooking.value ? rebookedAppointment.value : undefined
+    )
       .then((data) => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;

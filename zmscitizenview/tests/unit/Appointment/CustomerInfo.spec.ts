@@ -408,7 +408,15 @@ describe("CustomerInfo", () => {
       mockSelectedProvider.value.scope.customTextfield2Activated = true;
       mockSelectedProvider.value.scope.customTextfield2Required = true;
 
-      const wrapper = createWrapper({ isRebooking: true });
+      const wrapper = createWrapper({
+        isRebooking: true,
+        sourceAppointment: {
+          familyName: "Max Mustermann",
+          email: "max@example.com",
+          telephone: "",
+          customTextfield2: "",
+        },
+      });
       await nextTick();
 
       expect(wrapper.find("#firstname").attributes("disabled")).toBeDefined();
@@ -418,6 +426,29 @@ describe("CustomerInfo", () => {
         wrapper.find("#telephonenumber").attributes("disabled")
       ).toBeUndefined();
       expect(wrapper.find("#remarks2").attributes("disabled")).toBeUndefined();
+    });
+
+    it("does not lock a previously empty custom text field after the user types", async () => {
+      mockSelectedProvider.value.scope.customTextfieldActivated = true;
+      mockSelectedProvider.value.scope.customTextfieldRequired = true;
+      mockCustomerData.value.customTextfield = "";
+
+      const wrapper = createWrapper({
+        isRebooking: true,
+        sourceAppointment: {
+          familyName: "Max Mustermann",
+          email: "max@example.com",
+          customTextfield: "",
+        },
+      });
+      await nextTick();
+
+      expect(wrapper.find("#remarks").attributes("disabled")).toBeUndefined();
+
+      mockCustomerData.value.customTextfield = "N";
+      await nextTick();
+
+      expect(wrapper.find("#remarks").attributes("disabled")).toBeUndefined();
     });
 
     it("does not lock fields during a new booking", async () => {

@@ -204,7 +204,8 @@ export function reserveAppointment(
 
 export function updateAppointment(
   globalState: GlobalState,
-  appointment: AppointmentDTO
+  appointment: AppointmentDTO,
+  sourceAppointment?: AppointmentDTO
 ): Promise<AppointmentDTO | ErrorDTO> {
   const requestBody = {
     processId: appointment.processId,
@@ -215,6 +216,11 @@ export function updateAppointment(
     telephone: appointment.telephone,
     customTextfield: appointment.customTextfield,
     customTextfield2: appointment.customTextfield2,
+    ...(sourceAppointment?.processId &&
+      sourceAppointment.authKey && {
+        sourceProcessId: sourceAppointment.processId,
+        sourceAuthKey: sourceAppointment.authKey,
+      }),
   };
 
   return request({

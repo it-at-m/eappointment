@@ -2208,6 +2208,36 @@ describe("AppointmentView", () => {
 
       expect(wrapper.vm.currentView).toBe(2);
     });
+
+    it("sends source appointment on update only while rebooking", async () => {
+      const wrapper = createWrapperWithAppointmentHash();
+      wrapper.vm.appointment = { processId: "new-1", authKey: "newkey" } as any;
+      wrapper.vm.currentView = 2;
+      wrapper.vm.customerData.firstName = "Max";
+      wrapper.vm.customerData.lastName = "Mustermann";
+      wrapper.vm.customerData.mailAddress = "max@example.com";
+
+      await wrapper.vm.nextUpdateAppointment();
+      expect(mockUpdate).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ familyName: "Max Mustermann" }),
+        undefined
+      );
+
+      mockUpdate.mockClear();
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.rebookedAppointment = {
+        ...completeRebookedAppointment,
+      } as any;
+      wrapper.vm.isUpdatingAppointment = false;
+
+      await wrapper.vm.nextUpdateAppointment();
+      expect(mockUpdate).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ familyName: "Max Mustermann" }),
+        expect.objectContaining({ processId: "old", authKey: "oldkey" })
+      );
+    });
   });
 
   describe("Reschedule Error (Vergangener Termin)", () => {

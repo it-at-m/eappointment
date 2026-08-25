@@ -2174,6 +2174,17 @@ onMounted(() => {
       ])
     );
 
+    const reservedProvider = selectedProvider.value;
+    const reservedTimeslot = selectedTimeslot.value;
+    if (reservedProvider) {
+      selectedProvider.value = reservedProvider;
+      selectedTimeslot.value = reservedTimeslot;
+      void fetchAvailableDaysForSelection().finally(() => {
+        initialCalendarLoadPending = false;
+      });
+      return;
+    }
+
     void showSelectionForProvider(firstOfficeToShow ?? offices[0]).finally(
       () => {
         initialCalendarLoadPending = false;

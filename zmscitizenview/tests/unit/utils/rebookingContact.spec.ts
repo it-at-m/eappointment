@@ -8,6 +8,7 @@ import {
   hasMissingRequiredContact,
   isFilledContactValue,
   isPlaceholderEmail,
+  joinFamilyName,
   PLACEHOLDER_RESERVE_EMAIL,
   splitFamilyName,
 } from "@/utils/rebookingContact";
@@ -48,6 +49,9 @@ describe("rebookingContact", () => {
       firstName: "Max",
       lastName: "",
     });
+    expect(joinFamilyName("Max", "Mustermann")).toBe("Max Mustermann");
+    expect(joinFamilyName("Max", "")).toBe("Max");
+    expect(joinFamilyName("  ", "Mustermann")).toBe("Mustermann");
   });
 
   it("copies contact data onto customerData without overwriting filled fields", () => {
