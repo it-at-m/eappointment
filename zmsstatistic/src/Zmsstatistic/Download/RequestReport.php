@@ -144,7 +144,7 @@ class RequestReport extends Base
         $sumRowIndex = $sheet->getHighestRow() + 2;
         $sumRow = array_merge(
             [
-                'Summe',
+                'Summe / Ø Bearbeitungsdauer (unabhängig von DL)',
                 $overallProcessingTime,
                 $totalSum
             ],
