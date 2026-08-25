@@ -193,6 +193,19 @@ class ReportHelper
     }
 
     /**
+     * Daily columns stay usable up to one month; longer ranges group by month
+     * so warehouse queries and HTML tables stay within gateway timeouts.
+     */
+    public function getGroupByForDateRange(string $fromDate, string $toDate): string
+    {
+        $from = new DateTimeImmutable($fromDate);
+        $to = new DateTimeImmutable($toDate);
+        $inclusiveDays = (int) $from->diff($to)->days + 1;
+
+        return $inclusiveDays > 31 ? 'month' : 'day';
+    }
+
+    /**
      * Get all years that need to be fetched for a date range
      */
     public function getYearsForDateRange(string $fromDate, string $toDate): array

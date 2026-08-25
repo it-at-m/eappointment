@@ -13,26 +13,43 @@ class ExchangeRequestscope extends \BO\Zmsbackend\Query\Base
 
     const string REQUESTTABLE = 'request';
 
+    /**
+     * Aggregate raw statistik rows by day and request first so the request
+     * name join and DATE_FORMAT grouping run on a small result, not every fact row.
+     * Inner GROUP BY uses the (standortid, datum) index; outer DATE_FORMAT is cheap.
+     */
     const QUERY_READ_REPORT = '
     SELECT
-        s.`standortid` as scopeid,
-        s.`behoerdenid` as departmentid,
-        s.`organisationsid` as organisationid,
-        DATE_FORMAT(s.`Datum`, :groupby) as date,
+        MIN(agg.standortid) as scopeid,
+        MIN(agg.behoerdenid) as departmentid,
+        MIN(agg.organisationsid) as organisationid,
+        DATE_FORMAT(agg.datum, :groupby) as date,
         (
             CASE
-              WHEN s.anliegenid = -1 THEN \'' . Exchange::REQUEST_STAT_NAME_UNCATEGORIZED . '\'
-              WHEN s.anliegenid = 0 THEN \'' . Exchange::REQUEST_STAT_NAME_NONEXISTENT . '\'
+              WHEN agg.anliegenid = -1 THEN \'' . Exchange::REQUEST_STAT_NAME_UNCATEGORIZED . '\'
+              WHEN agg.anliegenid = 0 THEN \'' . Exchange::REQUEST_STAT_NAME_NONEXISTENT . '\'
               ELSE r.name
             END
         ) as name,
-        COUNT(s.anliegenid) as requestscount,
-        AVG(s.processing_time) as processingtime
-    FROM ' . self::TABLE . ' AS s
-        LEFT JOIN ' . self::REQUESTTABLE . ' as r ON r.id = s.anliegenid
-    WHERE s.`standortid` IN (:scopeid) AND s.`Datum` BETWEEN :datestart AND :dateend
-    GROUP BY date, s.anliegenid
-    ORDER BY r.name
+        SUM(agg.requestscount) as requestscount,
+        SUM(agg.processingsum) / NULLIF(SUM(agg.processingcount), 0) as processingtime
+    FROM (
+        SELECT
+            s.anliegenid,
+            MIN(s.standortid) as standortid,
+            MIN(s.behoerdenid) as behoerdenid,
+            MIN(s.organisationsid) as organisationsid,
+            COUNT(*) as requestscount,
+            SUM(s.processing_time) as processingsum,
+            COUNT(s.processing_time) as processingcount,
+            s.datum
+        FROM ' . self::TABLE . ' AS s
+        WHERE s.standortid IN (:scopeid) AND s.datum BETWEEN :datestart AND :dateend
+        GROUP BY s.datum, s.anliegenid
+    ) as agg
+        LEFT JOIN ' . self::REQUESTTABLE . ' as r ON r.id = agg.anliegenid
+    GROUP BY date, name, agg.anliegenid
+    ORDER BY name
     ';
 
     const QUERY_SUBJECTS = '
@@ -57,15 +74,9 @@ class ExchangeRequestscope extends \BO\Zmsbackend\Query\Base
     ';
 
     const QUERY_PERIODLIST_MONTH = '
-        SELECT date
-        FROM ' . \BO\Zmsbackend\Query\Scope::TABLE . ' AS scope
-            INNER JOIN (
-              SELECT
-                `StandortID`,
-                DATE_FORMAT(`Datum`,"%Y-%m") AS date
-              FROM ' . self::TABLE . '
-            ) s ON scope.`StandortID` = s.`standortid`
-        WHERE scope.`StandortID` = :scopeid
+        SELECT DATE_FORMAT(`datum`, "%Y-%m") AS date
+        FROM ' . self::TABLE . '
+        WHERE standortid = :scopeid
         GROUP BY date
         ORDER BY date ASC
     ';
