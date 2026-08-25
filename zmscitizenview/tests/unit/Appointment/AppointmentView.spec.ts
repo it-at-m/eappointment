@@ -298,10 +298,25 @@ describe("AppointmentView", () => {
 
     it("keeps AppointmentSelection mounted on overview so back does not remount", async () => {
       const wrapper = createWrapper({ appointmentHash: undefined });
+      wrapper.vm.selectedServiceMap = new Map([["123", 1]]);
+      wrapper.vm.currentView = 1;
+      await nextTick();
+      const selection = wrapper.find('[data-test="AppointmentSelection"]');
+      expect(selection.exists()).toBe(true);
+
+      wrapper.vm.currentView = 3;
+      await nextTick();
+      expect(
+        wrapper.find('[data-test="AppointmentSelection"]').element
+      ).toBe(selection.element);
+    });
+
+    it("does not mount AppointmentSelection on hash overview without a service map", async () => {
+      const wrapper = createWrapper({ appointmentHash: undefined });
       wrapper.vm.currentView = 3;
       await nextTick();
       expect(wrapper.find('[data-test="AppointmentSelection"]').exists()).toBe(
-        true
+        false
       );
     });
   });
