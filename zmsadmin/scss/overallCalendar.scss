@@ -69,6 +69,10 @@ $day-h: 2.2rem;
   background: #f8f9fa;
   border: 1px solid #fff !important;
   font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .overall-calendar-seat {
