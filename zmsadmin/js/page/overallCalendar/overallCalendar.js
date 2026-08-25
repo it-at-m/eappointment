@@ -555,6 +555,15 @@ function renderMultiDayCalendar(days) {
         const row = timeIndex + 3;
         const isFullHour = time.endsWith(':00');
 
+        if (isFullHour) {
+            const stripe = addCell({
+                className: 'overall-calendar-stripe overall-calendar-stripe-hour',
+                row,
+                col: 2
+            });
+
+            stripe.style.gridColumn = '2 / -1';
+        }
 
         const timeCell = addCell({
             text: '\u00A0',
