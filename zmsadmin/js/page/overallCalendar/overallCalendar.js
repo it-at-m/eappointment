@@ -553,6 +553,7 @@ function renderMultiDayCalendar(days) {
 
     allTimes.forEach((time, timeIndex) => {
         const row = timeIndex + 3;
+        const endTime = allTimes[timeIndex + 1] ?? axis.end;
         const isFullHour = time.endsWith(':00');
 
         if (isFullHour) {
@@ -607,6 +608,7 @@ function renderMultiDayCalendar(days) {
                         label.className = 'overall-calendar-termin-label';
                         label.textContent = eventCellLabel(event);
                         cell.appendChild(label);
+                        cell.title = `${event.start} – ${event.end}`;
                         cell.style.background = SCOPE_COLORS[scope.id];
                         if (event.status === 'cancelled') cell.classList.add('overall-calendar-cancelled');
 
@@ -627,10 +629,12 @@ function renderMultiDayCalendar(days) {
                     if (occupied.has(rowColumnKey(row, laneColumn))) continue;
 
                     const isOpenLane = laneIndex < capacityNow;
-                    addCell({
+                    const cell = addCell({
                         className: `overall-calendar-seat overall-calendar-${isOpenLane ? 'open' : 'empty'}${closed ? ' overall-calendar-closed' : ''}`,
                         row, col: laneColumn
                     });
+
+                    cell.title = `${time} – ${endTime}`;
                 }
 
                 column += lanes;
