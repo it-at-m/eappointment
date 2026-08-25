@@ -1,5 +1,5 @@
 import { mount } from "@vue/test-utils";
-import { describe, expect, it, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { nextTick, ref } from "vue";
 
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
@@ -60,13 +60,13 @@ describe("CustomerInfo", () => {
           reservationStartMs: mockReservationStartMs,
         },
         stubs: {
-          'muc-input': {
-            template: '<input :id="id" />',
-            props: ['id'],
+          "muc-input": {
+            template: '<input :id="id" :disabled="disabled" />',
+            props: ["id", "disabled"],
           },
-          'muc-text-area': {
-            template: '<textarea :id="id" />',
-            props: ['id'],
+          "muc-text-area": {
+            template: '<textarea :id="id" :disabled="disabled" />',
+            props: ["id", "disabled"],
           },
           "muc-button": {
             template:
@@ -312,7 +312,9 @@ describe("CustomerInfo", () => {
 
     it("should show max length error when telephoneNumber exceeds maximum length", async () => {
       setupValidCustomerData();
-      mockCustomerData.value.telephoneNumber = "1".repeat(MAX_LENGTH_STANDARD + 1);
+      mockCustomerData.value.telephoneNumber = "1".repeat(
+        MAX_LENGTH_STANDARD + 1
+      );
       mockSelectedProvider.value.scope.telephoneActivated = true;
       mockSelectedProvider.value.scope.telephoneRequired = true;
       const wrapper = createWrapper();
@@ -322,7 +324,9 @@ describe("CustomerInfo", () => {
 
     it("should show max length error when customTextfield exceeds maximum length", async () => {
       setupValidCustomerData();
-      mockCustomerData.value.customTextfield = "X".repeat(MAX_LENGTH_CUSTOM + 1);
+      mockCustomerData.value.customTextfield = "X".repeat(
+        MAX_LENGTH_CUSTOM + 1
+      );
       mockSelectedProvider.value.scope.customTextfieldActivated = true;
       mockSelectedProvider.value.scope.customTextfieldRequired = true;
       const wrapper = createWrapper();
@@ -332,7 +336,9 @@ describe("CustomerInfo", () => {
 
     it("should show max length error when customTextfield2 exceeds maximum length", async () => {
       setupValidCustomerData();
-      mockCustomerData.value.customTextfield2 = "Y".repeat(MAX_LENGTH_CUSTOM + 1);
+      mockCustomerData.value.customTextfield2 = "Y".repeat(
+        MAX_LENGTH_CUSTOM + 1
+      );
       mockSelectedProvider.value.scope.customTextfield2Activated = true;
       mockSelectedProvider.value.scope.customTextfield2Required = true;
       const wrapper = createWrapper();
@@ -372,19 +378,60 @@ describe("CustomerInfo", () => {
   describe("Session timeout", () => {
     it("displays the timeout message when the reservation time has expired", async () => {
       // Reservationtime: 1 minute
-      mockAppointmentProvider.appointment.value = { scope: { reservationDuration: 1 } };
+      mockAppointmentProvider.appointment.value = {
+        scope: { reservationDuration: 1 },
+      };
       mockReservationStartMs.value = Date.now() - 2 * 60 * 1000;
-  
+
       const wrapper = createWrapper();
       await nextTick();
-  
+
       expect(wrapper.html()).toContain("apiErrorSessionTimeoutHeader");
       expect(wrapper.html()).toContain("apiErrorSessionTimeoutText");
-  
+
       // form and next-button sre not displayed
       expect(wrapper.find(".m-form").exists()).toBe(false);
       const buttons = wrapper.findAll(".m-button-group .muc-button");
       expect(buttons.length).toBe(1); // only back-button
+    });
+  });
+
+  describe("Rebooking field lock", () => {
+    it("locks filled contact fields and leaves required empty fields editable", async () => {
+      mockCustomerData.value.firstName = "Max";
+      mockCustomerData.value.lastName = "Mustermann";
+      mockCustomerData.value.mailAddress = "max@example.com";
+      mockCustomerData.value.telephoneNumber = "";
+      mockCustomerData.value.customTextfield2 = "";
+      mockSelectedProvider.value.scope.telephoneActivated = true;
+      mockSelectedProvider.value.scope.telephoneRequired = true;
+      mockSelectedProvider.value.scope.customTextfield2Activated = true;
+      mockSelectedProvider.value.scope.customTextfield2Required = true;
+
+      const wrapper = createWrapper({ isRebooking: true });
+      await nextTick();
+
+      expect(wrapper.find("#firstname").attributes("disabled")).toBeDefined();
+      expect(wrapper.find("#lastname").attributes("disabled")).toBeDefined();
+      expect(wrapper.find("#mailaddress").attributes("disabled")).toBeDefined();
+      expect(
+        wrapper.find("#telephonenumber").attributes("disabled")
+      ).toBeUndefined();
+      expect(wrapper.find("#remarks2").attributes("disabled")).toBeUndefined();
+    });
+
+    it("does not lock fields during a new booking", async () => {
+      mockCustomerData.value.firstName = "Max";
+      mockCustomerData.value.lastName = "Mustermann";
+      mockCustomerData.value.mailAddress = "max@example.com";
+
+      const wrapper = createWrapper({ isRebooking: false });
+      await nextTick();
+
+      expect(wrapper.find("#firstname").attributes("disabled")).toBeUndefined();
+      expect(
+        wrapper.find("#mailaddress").attributes("disabled")
+      ).toBeUndefined();
     });
   });
 });
