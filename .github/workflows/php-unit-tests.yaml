@@ -113,10 +113,10 @@ jobs:
   zmsbackend-test:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev@sha256:a536a926be1975d848f7ea6346dd9bcfa4b751af9f2a3fb29c654017b544c95a"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev@sha256:fcb177bdc9281c6576b4bb1c64d828a7dac0df5cce0040564b59260f8b8f5097"
     services:
       mariadb:
-        image: mariadb:10.11@sha256:de61fed4a40d3842f3ee09944ba52792156cfd9adf489b2cc670fc6ded28df8d
+        image: mariadb:10.11@sha256:8020e05c4c498d06c87f0a1db010eb79bd6f8fb30e9b763d4690c34ce1e61008
         env:
           MYSQL_ROOT_PASSWORD: zmsbackend
           MYSQL_DATABASE: zmsbo
