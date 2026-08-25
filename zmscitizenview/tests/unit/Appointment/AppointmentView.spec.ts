@@ -295,6 +295,15 @@ describe("AppointmentView", () => {
         true
       );
     });
+
+    it("keeps AppointmentSelection mounted on overview so back does not remount", async () => {
+      const wrapper = createWrapper({ appointmentHash: undefined });
+      wrapper.vm.currentView = 3;
+      await nextTick();
+      expect(wrapper.find('[data-test="AppointmentSelection"]').exists()).toBe(
+        true
+      );
+    });
   });
 
   describe("Error States", () => {

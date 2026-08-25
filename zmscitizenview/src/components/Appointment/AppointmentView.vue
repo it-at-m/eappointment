@@ -99,10 +99,12 @@
               />
             </div>
 
-            <!-- Keep mounted across customer-info (view 2) so back does not remount/refetch. -->
+            <!-- Keep mounted through overview so Zurück does not remount and wipe selectedProvider. -->
             <div v-show="currentView === 1">
               <AppointmentSelection
-                v-if="currentView === 1 || currentView === 2"
+                v-if="
+                  currentView === 1 || currentView === 2 || currentView === 3
+                "
                 :key="appointmentSelectionKey"
                 :global-state="globalState"
                 :is-rebooking="isRebooking"
