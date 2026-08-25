@@ -31,7 +31,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
-                    'response' => $this->readFixture("GET_process.json")
+                    'response' => $this->reservedProcessWithoutStoredContact()
                 ],
                 [
                     'function' => 'readGetResult',
@@ -50,7 +50,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => 'TEST_USER',
-            'email' => "test@muenchen.de",
+            'email' => "johndoe@example.com",
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
             'customTextfield2' => "Another custom text",
@@ -128,7 +128,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'processId' => null,
             'authKey' => 'fb43',
             'familyName' => 'TEST_USER',
-            'email' => 'test@muenchen.de',
+            'email' => 'johndoe@example.com',
             'telephone' => '123456789',
             'customTextfield' => 'Some custom text',
             'customTextfield2' => 'Another custom text',
@@ -154,7 +154,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->reservedProcessWithoutStoredContact()
             ],
             [
                 'function' => 'readGetResult',
@@ -199,7 +199,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->reservedProcessWithoutStoredContact()
             ],
             [
                 'function' => 'readGetResult',
@@ -242,7 +242,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->reservedProcessWithoutStoredContact()
             ],
             [
                 'function' => 'readGetResult',
@@ -285,7 +285,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->reservedProcessWithoutStoredContact()
             ],
             [
                 'function' => 'readGetResult',
@@ -326,7 +326,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->reservedProcessWithoutStoredContact()
             ],
             [
                 'function' => 'readGetResult',
@@ -339,7 +339,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => '',
-            'email' => 'test@muenchen.de',
+            'email' => 'johndoe@example.com',
             'telephone' => '123',
             'customTextfield' => '',
             'customTextfield2' => 'Another custom text',
@@ -369,7 +369,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->reservedProcessWithoutStoredContact()
             ],
             [
                 'function' => 'readGetResult',
@@ -382,7 +382,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => '',
-            'email' => 'test@muenchen.de',
+            'email' => 'johndoe@example.com',
             'telephone' => '123',
             'customTextfield' => 'Some custom text',
             'customTextfield2' => 'Another custom text',
@@ -410,7 +410,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->reservedProcessWithoutStoredContact()
             ],
             [
                 'function' => 'readGetResult',
@@ -423,7 +423,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => '',
-            'email' => 'test@muenchen.de',
+            'email' => 'johndoe@example.com',
             'telephone' => '123456789',
             'customTextfield' => '',
             'customTextfield2' => 'Another custom text',
@@ -451,7 +451,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->reservedProcessWithoutStoredContact()
             ],
             [
                 'function' => 'readGetResult',
@@ -464,7 +464,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => '',
-            'email' => 'test@muenchen.de',
+            'email' => 'johndoe@example.com',
             'telephone' => '123456789',
             'customTextfield' => 'Some custom text',
             'customTextfield2' => 'Another custom text',
@@ -490,7 +490,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->reservedProcessWithoutStoredContact()
             ],
             [
                 'function' => 'readGetResult',
@@ -533,7 +533,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->reservedProcessWithoutStoredContact()
             ],
             [
                 'function' => 'readGetResult',
@@ -574,7 +574,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->reservedProcessWithoutStoredContact()
             ],
             [
                 'function' => 'readGetResult',
@@ -615,7 +615,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->reservedProcessWithoutStoredContact()
             ],
             [
                 'function' => 'readGetResult',
@@ -654,7 +654,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->reservedProcessWithoutStoredContact()
             ],
             [
                 'function' => 'readGetResult',
@@ -667,7 +667,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => 'TEST_USER',
-            'email' => 'test@muenchen.de',
+            'email' => 'johndoe@example.com',
             'telephone' => '123',
             'customTextfield' => '',
             'customTextfield2' => 'Another custom text',
@@ -695,7 +695,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->reservedProcessWithoutStoredContact()
             ],
             [
                 'function' => 'readGetResult',
@@ -708,7 +708,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => 'TEST_USER',
-            'email' => 'test@muenchen.de',
+            'email' => 'johndoe@example.com',
             'telephone' => '123',
             'customTextfield' => 'Some custom text',
             'customTextfield2' => 'Another custom text',
@@ -734,7 +734,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->reservedProcessWithoutStoredContact()
             ],
             [
                 'function' => 'readGetResult',
@@ -747,7 +747,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => 'TEST_USER',
-            'email' => 'test@muenchen.de',
+            'email' => 'johndoe@example.com',
             'telephone' => '123456789',
             'customTextfield' => '',
             'customTextfield2' => 'Another custom text',
@@ -778,7 +778,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
-                    'response' => $this->readFixture("GET_process.json")
+                    'response' => $this->reservedProcessWithoutStoredContact()
                 ],
                 [
                     'function' => 'readGetResult',
@@ -797,7 +797,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => 'TEST_USER',
-            'email' => "test@muenchen.de",
+            'email' => "johndoe@example.com",
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
             'customTextfield2' => "Another custom text",
@@ -837,7 +837,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'processId' => '101003',
             'authKey' => 'fb43',
             'familyName' => 'TEST_USER',
-            'email' => "test@muenchen.de",
+            'email' => "johndoe@example.com",
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
             'customTextfield2' => "Another custom text",
@@ -876,7 +876,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'processId' => '101003',
             'authKey' => 'cafe',
             'familyName' => 'TEST_USER',
-            'email' => "test@muenchen.de",
+            'email' => "johndoe@example.com",
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
             'customTextfield2' => "Another custom text",
@@ -913,7 +913,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => 'TEST_USER',
-            'email' => 'test@muenchen.de',
+            'email' => 'johndoe@example.com',
             'telephone' => '123456789',
             'customTextfield' => 'Some custom text',
             'customTextfield2' => 'Another custom text',
@@ -942,7 +942,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
-                    'response' => $this->readFixture("GET_process.json")
+                    'response' => $this->reservedProcessWithoutStoredContact()
                 ],
                 [
                     'function' => 'readGetResult',
@@ -961,7 +961,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => 'TEST_USER',
-            'email' => 'test@muenchen.de',
+            'email' => 'johndoe@example.com',
             'telephone' => '123456789',
             'customTextfield' => 'Some custom text',
             'customTextfield2' => 'Another custom text',
@@ -991,7 +991,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
-                    'response' => $this->readFixture("GET_process.json")
+                    'response' => $this->reservedProcessWithoutStoredContact()
                 ],
                 [
                     'function' => 'readGetResult',
@@ -1010,7 +1010,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => 'TEST_USER',
-            'email' => "test@muenchen.de",
+            'email' => "johndoe@example.com",
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
             'customTextfield2' => "Another custom text",
@@ -1041,7 +1041,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
-                    'response' => $this->readFixture("GET_process.json")
+                    'response' => $this->reservedProcessWithoutStoredContact()
                 ],
                 [
                     'function' => 'readGetResult',
@@ -1060,7 +1060,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => 'TEST_USER',
-            'email' => "test@muenchen.de",
+            'email' => "johndoe@example.com",
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
             'customTextfield2' => "Another custom text",
@@ -1075,6 +1075,22 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
 
         $this->assertEquals(ErrorMessages::get('telephoneIsRequired')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
+    /**
+     * These update tests still fill contact on a reserved process.
+     * Empty/placeholder stored contact so the rebooking lock does not fire.
+     */
+    private function reservedProcessWithoutStoredContact(): string
+    {
+        $process = json_decode($this->readFixture('GET_process.json'), true, 512, JSON_THROW_ON_ERROR);
+        $process['data']['clients'][0]['familyName'] = '';
+        $process['data']['clients'][0]['email'] = 'test@muenchen.de';
+        $process['data']['clients'][0]['telephone'] = '';
+        $process['data']['customTextfield'] = '';
+        $process['data']['customTextfield2'] = '';
+
+        return json_encode($process, JSON_THROW_ON_ERROR);
     }
 
 }
