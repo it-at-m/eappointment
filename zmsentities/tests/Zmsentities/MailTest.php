@@ -151,6 +151,8 @@ class MailTest extends EntityCommonTests
         $entity->client = null;
         $resolvedEntity = $entity->toResolvedEntity($process, $config, 'queued');
         $this->assertStringContainsString('Sie haben folgende Dienstleistung ausgewählt:', $resolvedEntity->getPlainPart());
+        $this->assertStringContainsString('muenchen.de/dienstleistungsfinder/muenchen/', $resolvedEntity->getHtmlPart());
+        $this->assertStringNotContainsString('service.berlin.de/dienstleistung/', $resolvedEntity->getHtmlPart());
     }
 
     public function testQueuedMailWithMultipleRequests()
@@ -175,6 +177,38 @@ class MailTest extends EntityCommonTests
         $entity->client = null;
         $resolvedEntity = $entity->toResolvedEntity($process, $config, 'queued');
         $this->assertStringContainsString('Sie haben keine Dienstleistungen ausgewählt.', $resolvedEntity->getPlainPart());
+    }
+
+    public function testQueuedMailFromTemplateProviderResolvesServiceDetailIncludes()
+    {
+        $templatePath = \BO\Zmsentities\Helper\TemplateFinder::getTemplatePath();
+        $templateProvider = new class ($templatePath) {
+            public function __construct(private string $templatePath)
+            {
+            }
+
+            public function getTemplates(): array
+            {
+                return [
+                    'mail_queued.twig' => file_get_contents($this->templatePath . '/messaging/mail_queued.twig'),
+                    'snippets.twig' => file_get_contents($this->templatePath . '/messaging/snippets.twig'),
+                    'subjects.twig' => file_get_contents($this->templatePath . '/messaging/subjects.twig'),
+                ];
+            }
+        };
+
+        $entity = (new $this->entityclass())->getExample();
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $config = (new \BO\Zmsentities\Config())->getExample();
+        $entity->addMultiPart(array());
+        $entity->client = null;
+        $resolvedEntity = $entity->setTemplateProvider($templateProvider)
+            ->toResolvedEntity($process, $config, 'queued');
+
+        $this->assertStringContainsString('hiermit bestätigen wir Ihre Wartenummer', $resolvedEntity->getHtmlPart());
+        $this->assertStringContainsString('Erforderliche Unterlagen', $resolvedEntity->getHtmlPart());
+        $this->assertStringContainsString('muenchen.de/dienstleistungsfinder/muenchen/', $resolvedEntity->getHtmlPart());
+        $this->assertStringNotContainsString('service.berlin.de/dienstleistung/', $resolvedEntity->getHtmlPart());
     }
 
     public function testMailWithOneRequest()

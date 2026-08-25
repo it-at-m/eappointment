@@ -11,7 +11,7 @@ Sie haben keine Dienstleistungen ausgewählt!
     {% for request in process.requests %}
     <div style="background: #ffffff; border:1px solid #dddddd; margin-bottom:1em;">
       <div class="block" style="background: #efefef; padding:1em; margin:0em">
-        <strong>{{ loop.index }}) <a href="https://service.berlin.de/dienstleistung/{{ request.id }}/standort/{{ process.scope.provider.id }}/">{{ request.name }} am Standort {{ process.scope.provider.name }}</a></strong>
+        <strong>{{ loop.index }}) <a href="http://www.muenchen.de/dienstleistungsfinder/muenchen/{{ request.root_parent_id }}/">{{ request.name }} am Standort {{ process.scope.provider.name }}</a></strong>
       </div>
       {% if request.source == "dldb" and request.data %}
       <div class="block" style="background: #ffffff; padding:0em 1em; margin:1em 0 0 0;">
