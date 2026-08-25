@@ -246,3 +246,13 @@ body.no-page-scroll {
   background: #fdecef !important;
   border-color: #f3c1c8 !important;
 }
+
+.overall-calendar-time-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  text-align: center;
+  pointer-events: none;
+}

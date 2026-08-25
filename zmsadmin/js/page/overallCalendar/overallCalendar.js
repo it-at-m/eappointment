@@ -553,12 +553,22 @@ function renderMultiDayCalendar(days) {
 
     allTimes.forEach((time, timeIndex) => {
         const row = timeIndex + 3;
+        const isFullHour = time.endsWith(':00');
 
-        addCell({
-            text: time,
+
+        const timeCell = addCell({
+            text: '\u00A0',
             className: 'overall-calendar-time overall-calendar-stick-left',
-            row, col: 1
+            row,
+            col: 1
         });
+
+        if (isFullHour) {
+            const label = document.createElement('span');
+            label.className = 'overall-calendar-time-label';
+            label.textContent = time;
+            timeCell.appendChild(label);
+        }
 
         let column = 2;
         days.forEach((day, dayIndex) => {
