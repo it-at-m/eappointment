@@ -2228,17 +2228,18 @@ public class CitizenViewPage extends BasePage {
     }
 
     /**
-     * After opening an appointment-detail deep link, wait for the detail shell instead of a fixed sleep.
-     * Firefox can be slower than Chrome to render provider blocks after hash navigation.
+     * After opening an appointment deep link, wait for a visible shell instead of a fixed sleep.
+     * Hash booking overview ({@code #/appointment/{hash}}) is AppointmentView ({@code .m-contact}),
+     * not AppointmentDetailView ({@code #timeTitleElement}).
      */
     private void waitForAppointmentDetailShellAfterNavigation() {
         CONTEXT.set();
         try {
-            waitUntilDeepElementExists("#timeTitleElement", DEFAULT_EXPLICIT_WAIT_TIME);
-            ScenarioLogManager.getLogger().info("zmscitizenview: appointment detail shell visible (#timeTitleElement)");
+            waitUntilDeepElementExists(".m-contact, #timeTitleElement", DEFAULT_EXPLICIT_WAIT_TIME);
+            ScenarioLogManager.getLogger().info("zmscitizenview: appointment shell visible (.m-contact or #timeTitleElement)");
         } catch (TimeoutException e) {
             ScenarioLogManager.getLogger()
-                    .warn("zmscitizenview: appointment detail shell not visible after {}s; provider assertion will retry", DEFAULT_EXPLICIT_WAIT_TIME);
+                    .warn("zmscitizenview: appointment shell not visible after {}s; provider assertion will retry", DEFAULT_EXPLICIT_WAIT_TIME);
         }
     }
 

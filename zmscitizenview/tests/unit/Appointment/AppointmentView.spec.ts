@@ -1869,6 +1869,76 @@ describe("AppointmentView", () => {
       );
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(false);
     });
+
+    it("keeps the real officeId on hash load when Ort catalog only has the shared-booking display peer", async () => {
+      const mockFetchAppointment = vi.mocked(
+        ZMSAppointmentAPI.fetchAppointment
+      );
+      mockFetchAppointment.mockResolvedValueOnce({
+        processId: "100039",
+        authKey: "test-auth-key",
+        serviceId: 1063475,
+        officeId: 10503,
+        serviceCount: 1,
+        subRequestCounts: [],
+        timestamp: nowUnixSeconds() + 3600,
+        scope: {
+          hint: "Eingang B - EG - Wartebereich 04",
+          provider: {
+            id: 10503,
+            displayName: "Bürgerbüro Ruppertstraße (Ausbildung)",
+          },
+        },
+      } as any);
+
+      vi.mocked(globalThis.fetch).mockResolvedValueOnce({
+        status: 200,
+        json: async () => ({
+          offices: [
+            {
+              id: 10489,
+              name: "Bürgerbüro Ruppertstraße",
+              address: {
+                street: "Ruppertstraße",
+                house_number: "19",
+                postal_code: "80337",
+                city: "München",
+                hint: false,
+              },
+              showAlternativeLocations: true,
+              displayNameAlternatives: [],
+              organization: "KVR",
+              slotTimeInMinutes: 15,
+              sharedBookingOfficeIds: [10489, 10503],
+            },
+          ],
+          services: [{ id: 1063475, name: "Wohnsitzanmeldung" }],
+          relations: [
+            { serviceId: 1063475, officeId: 10489, slots: 1 },
+            { serviceId: 1063475, officeId: 10503, slots: 1 },
+          ],
+        }),
+      } as any);
+
+      const validHash = btoa(
+        JSON.stringify({
+          id: "100039",
+          authKey: "test-auth-key",
+          scope: {},
+        })
+      );
+
+      const wrapper = createWrapper({
+        appointmentHash: validHash,
+        serviceId: undefined,
+        locationId: undefined,
+      });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.selectedProvider?.id).toBe("10503");
+      });
+      expect(wrapper.vm.currentView).toBe(3);
+    });
   });
   describe("Book another appointment button", () => {
     it("renders with correct label and redirects to start when clicked", async () => {

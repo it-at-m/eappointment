@@ -424,6 +424,7 @@ import {
 } from "@/utils/errorHandler";
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { getProviders } from "@/utils/getProviders";
+import { resolveOfficeById } from "@/utils/resolveOfficeById";
 import sanitizeHtml from "@/utils/sanitizeHtml";
 
 const props = defineProps<{
@@ -646,7 +647,8 @@ const loadAppointment = () => {
             );
 
             selectedService.value = services.value.find(
-              (service) => service.id == appointment.value?.serviceId
+              (service) =>
+                String(service.id) === String(appointment.value?.serviceId)
             );
             if (selectedService.value) {
               selectedService.value.count = appointment.value.serviceCount;
@@ -658,13 +660,14 @@ const loadAppointment = () => {
                 offices.value
               );
 
-              const foundOffice = selectedService.value.providers.find(
-                (office) => office.id == appointment.value?.officeId
+              selectedProvider.value = resolveOfficeById(
+                appointment.value.officeId,
+                {
+                  offices: offices.value,
+                  providers: selectedService.value.providers,
+                  appointment: appointment.value,
+                }
               );
-
-              if (foundOffice) {
-                selectedProvider.value = foundOffice;
-              }
 
               if (appointment.value.subRequestCounts.length > 0) {
                 appointment.value.subRequestCounts.forEach(
