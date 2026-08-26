@@ -3463,5 +3463,42 @@ describe("AppointmentSelection", () => {
 
       expect(wrapper.vm.selectedProvider?.id).toBe(1);
     });
+
+    it("keeps a shared-booking peer office when only the display Ort stays checked", async () => {
+      const displayOrt = {
+        id: 10489,
+        name: "Bürgerbüro Ruppertstraße",
+        address: {
+          street: "Ruppertstraße",
+          house_number: "19",
+          postal_code: "80337",
+          city: "München",
+        },
+        sharedBookingOfficeIds: [10489, 10503],
+        showAlternativeLocations: false,
+      };
+      const ausbildung = {
+        id: 10503,
+        name: "Bürgerbüro Ruppertstraße (Ausbildung)",
+        address: displayOrt.address,
+        sharedBookingOfficeIds: [10489, 10503],
+        showAlternativeLocations: false,
+      };
+
+      const wrapper = createWrapper({
+        selectedProvider: ausbildung,
+        selectedService: {
+          id: "1063475",
+          providers: [displayOrt, ausbildung],
+        },
+      });
+
+      wrapper.vm.selectableProviders = [displayOrt];
+      wrapper.vm.selectedProviders = { "10489": true };
+      await nextTick();
+      await flushPromises();
+
+      expect(wrapper.vm.selectedProvider?.id).toBe(10503);
+    });
   });
 });

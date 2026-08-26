@@ -320,6 +320,16 @@ describe("AppointmentView", () => {
         false
       );
     });
+
+    it("does not keep-mount AppointmentSelection on hash overview with a leftover service map", async () => {
+      const wrapper = createWrapperWithAppointmentHash();
+      wrapper.vm.selectedServiceMap = new Map([["1063475", 1]]);
+      wrapper.vm.currentView = 3;
+      await nextTick();
+      expect(wrapper.find('[data-test="AppointmentSelection"]').exists()).toBe(
+        false
+      );
+    });
   });
 
   describe("Error States", () => {
