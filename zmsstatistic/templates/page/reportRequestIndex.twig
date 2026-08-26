@@ -117,11 +117,7 @@
 
                     <tr>
                         <th class="report-board--long-text">
-                            Summe
-                            {% if exchangeRequest.period == "day" %}
-                            <br>
-                            <small>Ø Bearbeitungsdauer (unabhängig von DL)</small>
-                            {% endif %}
+                            Ø Bearbeitungsdauer (unabhängig von DL) / Summe
                         </th>
 
                         {% if exchangeRequest.period == "day" or exchangeRequest.period == "month" %}
