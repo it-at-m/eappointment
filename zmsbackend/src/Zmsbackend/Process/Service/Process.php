@@ -269,9 +269,10 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         $process->createTimestamp = $dateTime->getTimestamp();
         $query->addValuesNewProcess($process, $parentProcess, $childProcessCount);
 
-        if (!empty($process->getDisplayNumber())) {
+        if ($parentProcess === 0 && !empty($process->getDisplayNumber())) {
             $query->addValueDisplayNumber($process);
         }
+
         $query->addValuesScopeData($process);
         $query->addValuesAppointmentData($process);
         $query->addValuesUpdateProcess($process, $dateTime, $parentProcess);
