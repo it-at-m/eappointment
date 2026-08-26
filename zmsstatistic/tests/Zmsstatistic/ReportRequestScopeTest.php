@@ -158,8 +158,8 @@ class ReportRequestScopeTest extends Base
             ]
         );
         $response = $this->render(['period' => '2016'], [ ], [ ]);
-        $this->assertStringNotContainsString(
-            'Ø Bearbeitungsdauer (unabhängig von DL)',
+        $this->assertStringContainsString(
+            'Ø Bearbeitungsdauer (unabhängig von DL) / Summe',
             (string) $response->getBody()
 );
         $this->assertStringContainsString(
