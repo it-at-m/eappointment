@@ -15,6 +15,7 @@
   font: 12px/1.2 system-ui, sans-serif;
   min-width: max-content;
   overflow-x: visible !important;
+  background: #e5e5e5 ;
 }
 
 %sticky {
@@ -25,7 +26,7 @@
 .overall-calendar-time {
   @extend %sticky;
   left: 0;
-  z-index: 2 !important;
+  z-index: 5 !important;
   text-align: center;
   white-space: nowrap;
   padding: 1px 2px;
@@ -69,6 +70,10 @@ $day-h: 2.2rem;
   background: #f8f9fa;
   border: 1px solid #fff !important;
   font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .overall-calendar-seat {
@@ -78,7 +83,13 @@ $day-h: 2.2rem;
   justify-content: center;
   font-size: 10px;
 }
-.overall-calendar-open   { background: transparent;  border: 1px dashed #bbb; }
+.overall-calendar-open {
+  background: #fff;
+  border: 1px dashed #bbb;
+}
+.overall-calendar-no-opening-hours {
+  background: #e5e5e5;
+}
 .overall-calendar-empty  { background: transparent; }
 .overall-calendar-termin {
   color: #000;
@@ -88,9 +99,10 @@ $day-h: 2.2rem;
   background: repeating-linear-gradient(135deg, rgba(240, 240, 240, 0.5), rgba(240, 240, 240, 0.5) 6px, rgba(221, 221, 221, 0.5) 6px 12px);
 }
 
-.overall-calendar-separator        { background:#ddd;   width:2px; }
+.overall-calendar-separator        { background:#9aa1a8;   width:2px; }
 .overall-calendar-day-separator    { background:#6c757d; width:4px; }
-.overall-calendar > div:not(.overall-calendar-stripe):not(.overall-calendar-head) {
+
+.overall-calendar > div:not(.overall-calendar-stripe):not(.overall-calendar-head):not(.overall-calendar-termin) {
   z-index: 1;
 }
 
@@ -241,4 +253,33 @@ body.no-page-scroll {
 .overall-calendar-scope-header.is-closed {
   background: #fdecef !important;
   border-color: #f3c1c8 !important;
+}
+
+.overall-calendar-time-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.overall-calendar-stripe {
+  pointer-events: none;
+  align-self: start;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.overall-calendar-stripe-hour {
+  height: 1px;
+  background: #00000045;
+}
+
+.overall-calendar-termin-label {
+  position: relative;
+  z-index: 3;
+  background: inherit;
+  padding: 0 2px;
 }
