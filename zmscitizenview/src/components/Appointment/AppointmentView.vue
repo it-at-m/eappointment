@@ -450,6 +450,7 @@ import {
   hasMissingRequiredContact,
   joinFamilyName,
 } from "@/utils/rebookingContact";
+import { resolveOfficeById, toOfficeImpl } from "@/utils/resolveOfficeById";
 import { isExpired } from "@/utils/timestampInPast";
 
 const props = defineProps<{
@@ -1107,34 +1108,18 @@ const viewAppointment = () => {
 const getProviders = (serviceId: string, providers: string[] | null) => {
   const officesAtService = new Array<OfficeImpl>();
   relations.value.forEach((relation) => {
-    if (relation.serviceId == serviceId) {
-      const office = offices.value.find(
-        (office) => office.id == relation.officeId
-      );
-      if (office) {
-        const foundOffice: OfficeImpl = new OfficeImpl(
-          office.id,
-          office.name,
-          office.address,
-          office.showAlternativeLocations,
-          office.displayNameAlternatives,
-          office.organization,
-          office.organizationUnit,
-          office.slotTimeInMinutes,
-          office.disabledByServices,
-          office.allowDisabledServicesMix,
-          office.scope,
-          office.slotsPerAppointment,
-          office.slots,
-          office.priority || 1,
-          office.parentId,
-          office.sharedBookingOfficeIds
-        );
+    if (String(relation.serviceId) !== String(serviceId)) {
+      return;
+    }
+    const office = offices.value.find(
+      (candidate) => String(candidate.id) === String(relation.officeId)
+    );
+    if (office) {
+      const foundOffice: OfficeImpl = toOfficeImpl(office);
 
-        if (!providers || providers.includes(foundOffice.id.toString())) {
-          foundOffice.slots = relation.slots;
-          officesAtService.push(foundOffice);
-        }
+      if (!providers || providers.includes(foundOffice.id.toString())) {
+        foundOffice.slots = relation.slots;
+        officesAtService.push(foundOffice);
       }
     }
   });
@@ -1162,29 +1147,10 @@ const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
     );
   }
 
-  const foundOffice = offices.value.find(
-    (office) => String(office.id) === String(uiData.selectedProviderId)
-  );
-  if (foundOffice) {
-    selectedProvider.value = new OfficeImpl(
-      foundOffice.id,
-      foundOffice.name,
-      foundOffice.address,
-      foundOffice.showAlternativeLocations,
-      foundOffice.displayNameAlternatives,
-      foundOffice.organization,
-      foundOffice.organizationUnit,
-      foundOffice.slotTimeInMinutes,
-      foundOffice.disabledByServices,
-      foundOffice.allowDisabledServicesMix,
-      foundOffice.scope,
-      foundOffice.slotsPerAppointment,
-      foundOffice.slots,
-      foundOffice.priority || 1,
-      foundOffice.parentId,
-      foundOffice.sharedBookingOfficeIds
-    );
-  }
+  selectedProvider.value = resolveOfficeById(uiData.selectedProviderId, {
+    offices: offices.value,
+    providers: selectedService.value?.providers,
+  });
 
   selectedTimeslot.value = uiData.selectedTimeslot;
   currentView.value = isAppointmentInPast.value ? 3 : uiData.currentView;
@@ -1376,8 +1342,9 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
             captchaToken.value = data.captchaToken as string;
           }
           appointment.value = data as AppointmentDTO;
-          selectedService.value = services.value.find(
-            (service) => service.id == appointment.value?.serviceId
+          selectedService.value = (services.value ?? []).find(
+            (service) =>
+              String(service.id) === String(appointment.value?.serviceId)
           );
           if (selectedService.value) {
             selectedService.value.count = appointment.value.serviceCount;
@@ -1394,36 +1361,14 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
               )
             );
 
-            preselectedLocationId.value = appointment.value.officeId;
-            const foundOffice = offices.value.find(
-              (office) => office.id == appointment.value?.officeId
-            );
-            if (foundOffice) {
-              selectedProvider.value = new OfficeImpl(
-                foundOffice.id,
-                foundOffice.name,
-                foundOffice.address,
-                foundOffice.showAlternativeLocations,
-                foundOffice.displayNameAlternatives,
-                foundOffice.organization,
-                foundOffice.organizationUnit,
-                foundOffice.slotTimeInMinutes,
-                undefined,
-                foundOffice.allowDisabledServicesMix,
-                foundOffice.scope,
-                foundOffice.slotsPerAppointment,
-                undefined,
-                foundOffice.priority || 1,
-                foundOffice.parentId,
-                foundOffice.sharedBookingOfficeIds
-              );
-            }
-
-            if (appointment.value.subRequestCounts.length > 0) {
+            if ((appointment.value.subRequestCounts ?? []).length > 0) {
               appointment.value.subRequestCounts.forEach((subRequestCount) => {
-                const subRequest = services.value.find(
-                  (service) => service.id == subRequestCount.id
-                ) as Service;
+                const subRequest = (services.value ?? []).find(
+                  (service) => String(service.id) === String(subRequestCount.id)
+                ) as Service | undefined;
+                if (!subRequest) {
+                  return;
+                }
                 const subService = new SubService(
                   subRequest.id,
                   subRequest.name,
@@ -1431,24 +1376,32 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
                   getProviders(subRequest.id, null),
                   subRequestCount.count
                 );
-                if (
-                  selectedService.value &&
-                  !selectedService.value.subServices
-                ) {
+                if (!selectedService.value.subServices) {
                   selectedService.value.subServices = [];
                 }
-                selectedService.value?.subServices?.push(subService);
+                selectedService.value.subServices.push(subService);
               });
             }
-            if (!appointmentData.action || isAppointmentInPast.value) {
-              currentView.value = 3;
-            } else if (
-              appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
-            ) {
-              nextRescheduleAppointment();
-            } else {
-              nextCancelAppointment();
+          }
+
+          preselectedLocationId.value = appointment.value.officeId;
+          selectedProvider.value = resolveOfficeById(
+            appointment.value.officeId,
+            {
+              offices: offices.value,
+              providers: selectedService.value?.providers,
+              appointment: appointment.value,
             }
+          );
+
+          if (!appointmentData.action || isAppointmentInPast.value) {
+            currentView.value = 3;
+          } else if (
+            appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
+          ) {
+            nextRescheduleAppointment();
+          } else {
+            nextCancelAppointment();
           }
         } else {
           handleApiError(

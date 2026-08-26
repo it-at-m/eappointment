@@ -578,6 +578,10 @@ public class CitizenApiSteps {
         body.put("telephone", "");
         body.put("customTextfield", customTextfield != null ? customTextfield : "");
         body.put("customTextfield2", "");
+        if (rebookingSourceProcessId != null && rebookingSourceAuthKey != null) {
+            body.put("sourceProcessId", rebookingSourceProcessId);
+            body.put("sourceAuthKey", rebookingSourceAuthKey);
+        }
         response = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
             .contentType("application/json")
