@@ -16,7 +16,7 @@
   },
   "// @muenchen/muc-patternlab-vue": "Pinned release for main/tags. CI switches to npm dist-tag beta on other branches (.github/scripts/zmscitizenview-select-patternlab.sh).",
   "dependencies": {
-    "@muenchen/muc-patternlab-vue": "^10.1.0-beta.1",
+    "@muenchen/muc-patternlab-vue": "^11.0.0",
     "altcha": "^3.2.2",
     "dompurify": "^3.4.14",
     "jsdom": "^30.0.0",
