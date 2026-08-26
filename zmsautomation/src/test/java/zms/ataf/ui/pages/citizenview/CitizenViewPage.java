@@ -2228,19 +2228,51 @@ public class CitizenViewPage extends BasePage {
     }
 
     /**
-     * After opening an appointment deep link, wait for a visible shell instead of a fixed sleep.
-     * Hash booking overview ({@code #/appointment/{hash}}) is AppointmentView ({@code .m-contact}),
-     * not AppointmentDetailView ({@code #timeTitleElement}).
+     * After opening an appointment deep link, wait for a <em>visible</em> shell.
+     * Hash booking overview ({@code #/appointment/{hash}}) is AppointmentView ({@code .m-contact});
+     * AppointmentDetailView uses {@code #timeTitleElement}. Ignore hidden keep-mounted calendar nodes.
      */
     private void waitForAppointmentDetailShellAfterNavigation() {
         CONTEXT.set();
         try {
-            waitUntilDeepElementExists(".m-contact, #timeTitleElement", DEFAULT_EXPLICIT_WAIT_TIME);
-            ScenarioLogManager.getLogger().info("zmscitizenview: appointment shell visible (.m-contact or #timeTitleElement)");
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(d -> deepVisibleCssExists(".m-contact") || deepVisibleCssExists("#timeTitleElement"));
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: visible appointment shell (.m-contact or #timeTitleElement)");
         } catch (TimeoutException e) {
             ScenarioLogManager.getLogger()
-                    .warn("zmscitizenview: appointment shell not visible after {}s; provider assertion will retry", DEFAULT_EXPLICIT_WAIT_TIME);
+                    .warn(
+                            "zmscitizenview: visible appointment shell not found after {}s; provider assertion will retry",
+                            DEFAULT_EXPLICIT_WAIT_TIME);
         }
+    }
+
+    private boolean deepVisibleCssExists(String cssSelector) {
+        CONTEXT.set();
+        String script =
+                "var sel=arguments[0];"
+                        + "function visible(el){"
+                        + " if(!el||el.nodeType!==1)return false;"
+                        + " var n=el;"
+                        + " while(n){"
+                        + "  if(n.nodeType===1){"
+                        + "   try{var st=getComputedStyle(n);if(st.display==='none'||st.visibility==='hidden')return false;}catch(e0){}"
+                        + "  }"
+                        + "  if(n.parentElement){n=n.parentElement;continue;}"
+                        + "  var root=n.getRootNode&&n.getRootNode();"
+                        + "  if(root&&root.host){n=root.host;continue;}"
+                        + "  break;"
+                        + " }"
+                        + " try{return el.getClientRects().length>0;}catch(e1){return true;}"
+                        + "}"
+                        + "function find(root){if(!root)return false;"
+                        + " try{var q=root.querySelectorAll(sel);for(var i=0;i<q.length;i++)if(visible(q[i]))return true;}catch(e2){}"
+                        + " if(root.shadowRoot&&find(root.shadowRoot))return true;"
+                        + " var c=root.children;if(c)for(var j=0;j<c.length;j++)if(find(c[j]))return true;"
+                        + " return false;}"
+                        + "return find(document.body);";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, cssSelector));
     }
 
     private static String mapperQuote(String s) {

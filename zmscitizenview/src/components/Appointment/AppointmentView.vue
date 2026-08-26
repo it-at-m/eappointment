@@ -100,13 +100,15 @@
             </div>
 
             <!-- Keep mounted through overview so Zurück does not remount and wipe selectedProvider.
-                 Skip hash-opened Übersicht (empty selectedServiceMap) so the calendar does not fetch. -->
+                 Skip appointmentHash (mail deep link and Bürger-Login return): leftover
+                 selectedServiceMap would remount the calendar and overwrite the real officeId. -->
             <div v-show="currentView === 1">
               <AppointmentSelection
                 v-if="
                   currentView === 1 ||
                   ((currentView === 2 || currentView === 3) &&
-                    selectedServiceMap.size > 0)
+                    selectedServiceMap.size > 0 &&
+                    !appointmentHash)
                 "
                 :key="appointmentSelectionKey"
                 :global-state="globalState"
@@ -1147,10 +1149,14 @@ const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
     );
   }
 
-  selectedProvider.value = resolveOfficeById(uiData.selectedProviderId, {
+  preselectedLocationId.value = uiData.selectedProviderId;
+  const restoredProvider = resolveOfficeById(uiData.selectedProviderId, {
     offices: offices.value,
     providers: selectedService.value?.providers,
   });
+  if (restoredProvider) {
+    selectedProvider.value = restoredProvider;
+  }
 
   selectedTimeslot.value = uiData.selectedTimeslot;
   currentView.value = isAppointmentInPast.value ? 3 : uiData.currentView;
@@ -1209,6 +1215,18 @@ const runLoginResumeFromHashAndLocalStorage = (
               captchaToken.value =
                 captchaToken.value ||
                 ((response as any).captchaToken as string);
+            }
+            const appointmentOffice = resolveOfficeById(
+              appointment.value.officeId,
+              {
+                offices: offices.value,
+                providers: selectedService.value?.providers,
+                appointment: appointment.value,
+              }
+            );
+            if (appointmentOffice) {
+              selectedProvider.value = appointmentOffice;
+              preselectedLocationId.value = String(appointmentOffice.id);
             }
             // Keep stepper step from UI localStorage (do not open reschedule/cancel dialog).
             currentView.value = isAppointmentInPast.value
@@ -1342,6 +1360,7 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
             captchaToken.value = data.captchaToken as string;
           }
           appointment.value = data as AppointmentDTO;
+          selectedServiceMap.value = new Map();
           selectedService.value = (services.value ?? []).find(
             (service) =>
               String(service.id) === String(appointment.value?.serviceId)
@@ -1384,7 +1403,7 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
             }
           }
 
-          preselectedLocationId.value = appointment.value.officeId;
+          preselectedLocationId.value = String(appointment.value.officeId);
           selectedProvider.value = resolveOfficeById(
             appointment.value.officeId,
             {
