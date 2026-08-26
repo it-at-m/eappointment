@@ -267,6 +267,10 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         $process->id = $this->readNewProcessId();
         $process->setRandomAuthKey();
         $process->createTimestamp = $dateTime->getTimestamp();
+        if ($parentProcess !== 0) {
+            $process->displayNumber = '';
+        }
+
         $query->addValuesNewProcess($process, $parentProcess, $childProcessCount);
 
         if ($parentProcess === 0 && !empty($process->getDisplayNumber())) {
