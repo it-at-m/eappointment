@@ -148,7 +148,7 @@
                 {% if workstation.id > 0 %}
                     {% if permissions.superuser %}
                         <li class="nav__link{{ menuActive == 'profile'? ' active' }}">
-                            <a title="{% trans %}Hier können Sie Ihre eigenen Anmeldedaten einsehen und sich ein neues Passwort geben{% endtrans %}" {{ menuActive == 'profile'? ' aria-current="page"' }} href="{{ urlGet('profile', {}, {}) }}">Mein Profil</a>
+                            <a title="{% trans %}Hier können Sie Ihre eigenen Anmeldedaten einsehen{% endtrans %}" {{ menuActive == 'profile'? ' aria-current="page"' }} href="{{ urlGet('profile', {}, {}) }}">Mein Profil</a>
                         </li>
                     {% endif %}
                 {% endif %}
