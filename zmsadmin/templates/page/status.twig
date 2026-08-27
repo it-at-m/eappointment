@@ -24,24 +24,20 @@
             <td>{{ status.processes.reserved }}</td>
         </tr>
         <tr class="status-process-called">
-            <th>Anzahl der aufgerufenen Termine</th>
+            <th>Anzahl der aktuell aufgerufenen Termine</th>
             <td>{{ status.processes.called }}</td>
         </tr>
         <tr class="status-process-parked">
-            <th>Anzahl der geparkten Termine</th>
+            <th>Anzahl der aktuell geparkten Termine</th>
             <td>{{ status.processes.parked }}</td>
-        </tr>
-        <tr class="status-process-deleted">
-            <th>Anzahl der abgesagten Termine<br/><small>(Werden in wenigen Minuten freigegeben)</small></th>
-            <td>{{ status.processes.deleted }}</td>
         </tr>
         <tr class="status-process-missed">
             <th>Anzahl der nicht wahrgenommenen Termine heute</th>
             <td>{{ status.processes.missed }}</td>
         </tr>
-        <tr class="status-database-nodeconnections">
-            <th>Letzter Import Dienstleistungsdatenbank</th>
-            <td>{{ status.sources.dldb.last }}</td>
+        <tr class="status-process-deleted">
+            <th>Anzahl der abgesagten Termine<br/><small>(Werden in wenigen Minuten freigegeben)</small></th>
+            <td>{{ status.processes.deleted }}</td>
         </tr>
         <tr class="status-database-nodeconnections">
             <th>Letzte Berechnung Termine</th>
@@ -73,6 +69,10 @@
         <tr class="status-process-confirmed-external">
             <th>Anzahl der gebuchten Termine mit Bürgerlogin</th>
             <td>{{ status.processes.confirmedWithExternalUserId|default(0) }}</td>
+        </tr>
+        <tr class="status-dldb-last">
+            <th>Letzter Import Dienstleistungsdatenbank</th>
+            <td>{{ status.sources.dldb.last }}</td>
         </tr>
         <tr class="status-mail-queue">
             <th>Anzahl noch nicht versendeter Mails</th>

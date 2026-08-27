@@ -27,9 +27,10 @@ class StatusTest extends Base
         $body = (string)$response->getBody();
         $this->assertStringContainsString('<th>Version</th>', $body);
         $this->assertStringContainsString('86861', $body);
-        $this->assertStringContainsString('Anzahl der aufgerufenen Termine', $body);
-        $this->assertStringContainsString('Anzahl der geparkten Termine', $body);
+        $this->assertStringContainsString('Anzahl der aktuell aufgerufenen Termine', $body);
+        $this->assertStringContainsString('Anzahl der aktuell geparkten Termine', $body);
         $this->assertStringContainsString('Anzahl der gebuchten Termine mit Bürgerlogin', $body);
+        $this->assertStringContainsString('Letzter Import Dienstleistungsdatenbank', $body);
         $this->assertStringContainsString('Anzahl noch nicht versendeter Mails', $body);
         $this->assertStringContainsString('Alter noch nicht versendeter Mails', $body);
         $this->assertStringContainsString('Aktive Sitzungen der Mitarbeitenden', $body);
@@ -76,9 +77,10 @@ class StatusTest extends Base
         );
         $response = parent::testRendering();
         $body = (string)$response->getBody();
-        $this->assertStringContainsString('Anzahl der aufgerufenen Termine', $body);
-        $this->assertStringContainsString('Anzahl der geparkten Termine', $body);
+        $this->assertStringContainsString('Anzahl der aktuell aufgerufenen Termine', $body);
+        $this->assertStringContainsString('Anzahl der aktuell geparkten Termine', $body);
         $this->assertStringNotContainsString('Anzahl der gebuchten Termine mit Bürgerlogin', $body);
+        $this->assertStringNotContainsString('Letzter Import Dienstleistungsdatenbank', $body);
         $this->assertStringNotContainsString('Auslastung der Datenbankverbindungen', $body);
         $this->assertStringNotContainsString('Status des Datenbank-Clusters', $body);
         $this->assertStringNotContainsString('Sekundengenaues Backup', $body);
