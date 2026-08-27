@@ -1,15 +1,18 @@
 <script setup>
 import { useData } from "vitepress";
-import { computed, onMounted } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 
 import featureMeta from "../data/cucumber-features.json";
 import {
   cucumberFeatureMatches,
+  cucumberGhRunCommand,
+  cucumberRunTagExpression,
   cucumberSearchQuery,
   ensureCucumberHashListener,
   openCucumberFeatureId,
   syncCucumberFeatureFromHash,
   toggleCucumberFeature,
+  ZMSAUTOMATION_WORKFLOW_URL,
 } from "./cucumberAccordion.js";
 
 const props = defineProps({
@@ -57,6 +60,48 @@ const sourceLabel = computed(() => (isDe.value ? "Quelle" : "Source"));
 
 const isTicketTag = (tag) => /^@(?:ZMSKVR|ZMS)-\d+$/i.test(tag);
 
+const copied = ref(false);
+let copiedTimer = 0;
+
+const runLabel = computed(() => {
+  if (copied.value) {
+    return isDe.value
+      ? "Kopiert. GitHub Actions wird geöffnet…"
+      : "Copied. Opening GitHub Actions…";
+  }
+  return isDe.value ? "Diesen Test auf next starten" : "Run this test on next";
+});
+
+const runHint = computed(() => {
+  const tags = cucumberRunTagExpression(meta.value);
+  if (isDe.value) {
+    return `Kopiert gh workflow run mit ${tags || "Tags"} auf next (Schreibrechte nötig)`;
+  }
+  return `Copies gh workflow run with ${tags || "tags"} on next (write access required)`;
+});
+
+const copyRunCommand = async () => {
+  const command = cucumberGhRunCommand(meta.value);
+  try {
+    await navigator.clipboard.writeText(command);
+  } catch {
+    const field = document.createElement("textarea");
+    field.value = command;
+    field.setAttribute("readonly", "");
+    field.style.position = "fixed";
+    field.style.left = "-9999px";
+    document.body.appendChild(field);
+    field.select();
+    document.execCommand("copy");
+    document.body.removeChild(field);
+  }
+  copied.value = true;
+  window.clearTimeout(copiedTimer);
+  copiedTimer = window.setTimeout(() => {
+    copied.value = false;
+  }, 2000);
+};
+
 const onToggle = () => {
   toggleCucumberFeature(props.id);
 };
@@ -64,6 +109,10 @@ const onToggle = () => {
 onMounted(() => {
   ensureCucumberHashListener();
   syncCucumberFeatureFromHash();
+});
+
+onUnmounted(() => {
+  window.clearTimeout(copiedTimer);
 });
 </script>
 
@@ -122,6 +171,51 @@ onMounted(() => {
           </span>
         </span>
       </button>
+      <a
+        class="cucumber-feature__run"
+        :class="{ 'cucumber-feature__run--copied': copied }"
+        :href="ZMSAUTOMATION_WORKFLOW_URL"
+        target="_blank"
+        rel="noopener noreferrer"
+        :aria-label="runHint"
+        :data-tooltip="runLabel"
+        @click.stop="copyRunCommand"
+      >
+        <span
+          class="cucumber-feature__run-icon"
+          aria-hidden="true"
+        >
+          <svg
+            v-if="copied"
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+          >
+            <path
+              d="M3.5 8.2 6.4 11l6.1-7"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <svg
+            v-else
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+          >
+            <path
+              d="M5 3.2v9.6L13.2 8 5 3.2Z"
+              fill="currentColor"
+            />
+          </svg>
+        </span>
+      </a>
     </h4>
     <div
       v-if="isOpen"
@@ -161,6 +255,8 @@ onMounted(() => {
 }
 
 .cucumber-feature__heading {
+  display: flex;
+  align-items: stretch;
   margin: 0;
   padding: 0;
   border: 0;
@@ -171,9 +267,10 @@ onMounted(() => {
 
 .cucumber-feature__toggle {
   display: flex;
+  flex: 1 1 auto;
   gap: 0.65rem;
   align-items: flex-start;
-  width: 100%;
+  min-width: 0;
   padding: 0.7rem 0.85rem;
   color: inherit;
   text-align: left;
@@ -190,6 +287,74 @@ onMounted(() => {
 .cucumber-feature__toggle:focus-visible {
   outline: 2px solid var(--vp-c-brand-1);
   outline-offset: -2px;
+}
+
+.cucumber-feature__run {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.65rem;
+  color: var(--vp-c-text-2);
+  text-decoration: none;
+  border-left: 1px solid var(--vp-c-divider);
+}
+
+.cucumber-feature__run:hover,
+.cucumber-feature__run:focus-visible {
+  color: var(--vp-c-brand-1);
+  background: var(--vp-c-bg-alt);
+}
+
+.cucumber-feature__run:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: -2px;
+}
+
+.cucumber-feature__run--copied {
+  color: var(--vp-c-brand-1);
+}
+
+.cucumber-feature__run-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.cucumber-feature__run::after {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 0.45rem);
+  z-index: 4;
+  width: max-content;
+  max-width: min(16rem, calc(100vw - 4rem));
+  padding: 0.28rem 0.5rem;
+  color: var(--vp-c-bg);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: normal;
+  pointer-events: none;
+  content: attr(data-tooltip);
+  background: var(--vp-c-text-1);
+  border-radius: 6px;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity 0.12s ease;
+}
+
+.cucumber-feature__run:hover::after,
+.cucumber-feature__run:focus-visible::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cucumber-feature__run::after {
+    transition: none;
+  }
 }
 
 .cucumber-feature__chevron {
