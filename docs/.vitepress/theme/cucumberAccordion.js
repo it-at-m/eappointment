@@ -8,6 +8,9 @@ export const openCucumberFeatureId = ref(null);
 /** Title/tag filter for the cucumber catalog (not Gherkin body). */
 export const cucumberSearchQuery = ref("");
 
+/** Selected run-status keys; empty means all statuses. */
+export const cucumberStatusFilter = ref([]);
+
 const featureHashPrefix = "feature-";
 
 const currentHash = () => {
@@ -86,8 +89,23 @@ export function cucumberFeatureMatches(entry, query) {
   });
 }
 
+export function cucumberFeatureVisible(entry) {
+  if (!cucumberFeatureMatches(entry, cucumberSearchQuery.value)) {
+    return false;
+  }
+  const selected = cucumberStatusFilter.value;
+  if (!selected.length) {
+    return true;
+  }
+  const status = cucumberFeatureRunResult(entry?.id)?.status || "none";
+  return selected.includes(status);
+}
+
 export function cucumberCatalogEntries() {
-  return Object.values(featureMeta);
+  return Object.entries(featureMeta).map(([id, entry]) => ({
+    id,
+    ...entry,
+  }));
 }
 
 export function cucumberGroupHasMatch(testType, module = "") {
@@ -98,7 +116,7 @@ export function cucumberGroupHasMatch(testType, module = "") {
     if (module && entry.module !== module) {
       return false;
     }
-    return cucumberFeatureMatches(entry, cucumberSearchQuery.value);
+    return cucumberFeatureVisible(entry);
   });
 }
 
@@ -107,9 +125,16 @@ export function closeCucumberFeatureIfHidden() {
   if (!id) {
     return;
   }
-  if (!cucumberFeatureMatches(featureMeta[id], cucumberSearchQuery.value)) {
+  if (!cucumberFeatureVisible({ id, ...featureMeta[id] })) {
     openCucumberFeatureId.value = null;
   }
+}
+
+export function toggleCucumberStatusFilter(status) {
+  const selected = cucumberStatusFilter.value;
+  cucumberStatusFilter.value = selected.includes(status)
+    ? selected.filter((value) => value !== status)
+    : [...selected, status];
 }
 
 export const ZMSAUTOMATION_WORKFLOW_URL =

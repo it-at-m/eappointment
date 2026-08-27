@@ -4,11 +4,10 @@ import { computed, onMounted, onUnmounted, ref } from "vue";
 
 import featureMeta from "../data/cucumber-features.json";
 import {
-  cucumberFeatureMatches,
   cucumberFeatureRunResult,
+  cucumberFeatureVisible,
   cucumberGhRunCommand,
   cucumberRunTagExpression,
-  cucumberSearchQuery,
   ensureCucumberHashListener,
   ensureCucumberRunStatus,
   formatBerlinDateTime,
@@ -17,6 +16,7 @@ import {
   toggleCucumberFeature,
   ZMSAUTOMATION_WORKFLOW_URL,
 } from "./cucumberAccordion.js";
+import CucumberStatusIcon from "./CucumberStatusIcon.vue";
 
 const props = defineProps({
   id: {
@@ -46,7 +46,7 @@ const meta = computed(() => {
 const isOpen = computed(() => openCucumberFeatureId.value === props.id);
 
 const isVisible = computed(() =>
-  cucumberFeatureMatches(meta.value, cucumberSearchQuery.value)
+  cucumberFeatureVisible({ id: props.id, ...meta.value })
 );
 
 const panelId = computed(() => `${props.id}-panel`);
@@ -217,7 +217,9 @@ onUnmounted(() => {
               :class="`cucumber-feature__result--${runResult.status}`"
               :data-tooltip="resultLabel"
               :aria-label="resultLabel"
-            />
+            >
+              <CucumberStatusIcon :status="runResult.status" />
+            </span>
             <span class="cucumber-feature__title">{{ meta.title }}</span>
           </span>
           <span class="cucumber-feature__meta">
@@ -532,24 +534,17 @@ onUnmounted(() => {
 
 .cucumber-feature__result {
   position: relative;
-  display: inline-block;
+  display: flex;
   flex-shrink: 0;
-  width: 0.7rem;
-  height: 0.7rem;
-  margin-top: 0.35rem;
-  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.2rem;
 }
 
-.cucumber-feature__result--passed {
-  background: #1a7f37;
-}
-
-.cucumber-feature__result--failed {
-  background: #cf222e;
-}
-
-.cucumber-feature__result--skipped {
-  background: var(--vp-c-text-3);
+.cucumber-feature__result svg {
+  display: block;
 }
 
 .cucumber-feature__result::after {

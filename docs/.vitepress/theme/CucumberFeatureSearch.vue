@@ -1,13 +1,17 @@
 <script setup>
 import { useData } from "vitepress";
-import { computed, watch } from "vue";
+import { computed, onMounted, watch } from "vue";
 
 import {
   closeCucumberFeatureIfHidden,
   cucumberCatalogEntries,
-  cucumberFeatureMatches,
+  cucumberFeatureVisible,
   cucumberSearchQuery,
+  cucumberStatusFilter,
+  ensureCucumberRunStatus,
+  toggleCucumberStatusFilter,
 } from "./cucumberAccordion.js";
+import CucumberStatusIcon from "./CucumberStatusIcon.vue";
 
 const { lang } = useData();
 
@@ -19,13 +23,35 @@ const placeholder = computed(() =>
     : "Search titles or tags, e.g. @ZMSKVR-1046"
 );
 
+const statusFilterLabel = computed(() =>
+  isDe.value ? "Nach Status filtern" : "Filter by status"
+);
+
+const statusOptions = computed(() => [
+  {
+    status: "passed",
+    label: isDe.value ? "Bestanden" : "Passed",
+  },
+  {
+    status: "failed",
+    label: isDe.value ? "Fehlgeschlagen" : "Failed",
+  },
+  {
+    status: "skipped",
+    label: isDe.value ? "Übersprungen" : "Skipped",
+  },
+  {
+    status: "none",
+    label: isDe.value ? "Kein Ergebnis" : "No result",
+  },
+]);
+
 const total = computed(() => cucumberCatalogEntries().length);
 
 const matchCount = computed(
   () =>
-    cucumberCatalogEntries().filter((entry) =>
-      cucumberFeatureMatches(entry, cucumberSearchQuery.value)
-    ).length
+    cucumberCatalogEntries().filter((entry) => cucumberFeatureVisible(entry))
+      .length
 );
 
 const countLabel = computed(() => {
@@ -37,15 +63,27 @@ const countLabel = computed(() => {
   return `${n} of ${m} tests`;
 });
 
+const hasActiveFilters = computed(
+  () =>
+    Boolean(cucumberSearchQuery.value) || cucumberStatusFilter.value.length > 0
+);
+
 const clearLabel = computed(() => (isDe.value ? "Zurücksetzen" : "Clear"));
 
-watch(cucumberSearchQuery, () => {
+const isStatusActive = (status) => cucumberStatusFilter.value.includes(status);
+
+watch([cucumberSearchQuery, cucumberStatusFilter], () => {
   closeCucumberFeatureIfHidden();
 });
 
 const clearSearch = () => {
   cucumberSearchQuery.value = "";
+  cucumberStatusFilter.value = [];
 };
+
+onMounted(() => {
+  ensureCucumberRunStatus();
+});
 </script>
 
 <template>
@@ -60,10 +98,31 @@ const clearSearch = () => {
         :aria-label="placeholder"
       />
     </label>
+    <div
+      class="cucumber-search__filters"
+      role="group"
+      :aria-label="statusFilterLabel"
+    >
+      <button
+        v-for="option in statusOptions"
+        :key="option.status"
+        type="button"
+        class="cucumber-search__filter"
+        :class="{
+          'cucumber-search__filter--active': isStatusActive(option.status),
+        }"
+        :aria-pressed="isStatusActive(option.status)"
+        :aria-label="option.label"
+        :data-tooltip="option.label"
+        @click="toggleCucumberStatusFilter(option.status)"
+      >
+        <CucumberStatusIcon :status="option.status" />
+      </button>
+    </div>
     <div class="cucumber-search__meta">
       <span>{{ countLabel }}</span>
       <button
-        v-if="cucumberSearchQuery"
+        v-if="hasActiveFilters"
         type="button"
         class="cucumber-search__clear"
         @click="clearSearch"
@@ -98,6 +157,67 @@ const clearSearch = () => {
 .cucumber-search__input:focus-visible {
   outline: 2px solid var(--vp-c-brand-1);
   outline-offset: 1px;
+}
+
+.cucumber-search__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.65rem;
+}
+
+.cucumber-search__filter {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  cursor: pointer;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+}
+
+.cucumber-search__filter:hover,
+.cucumber-search__filter:focus-visible {
+  background: var(--vp-c-bg-alt);
+}
+
+.cucumber-search__filter:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 1px;
+}
+
+.cucumber-search__filter--active {
+  background: var(--vp-c-brand-soft);
+  border-color: var(--vp-c-brand-1);
+}
+
+.cucumber-search__filter::after {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 50%;
+  z-index: 4;
+  width: max-content;
+  padding: 0.28rem 0.5rem;
+  color: var(--vp-c-bg);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+  content: attr(data-tooltip);
+  background: var(--vp-c-text-1);
+  border-radius: 6px;
+  opacity: 0;
+  transform: translateX(-50%);
+}
+
+.cucumber-search__filter:hover::after,
+.cucumber-search__filter:focus-visible::after {
+  opacity: 1;
 }
 
 .cucumber-search__meta {
