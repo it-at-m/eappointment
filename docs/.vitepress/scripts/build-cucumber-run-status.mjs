@@ -90,16 +90,59 @@ export const parseArtifactDirName = (dirName) => {
   };
 };
 
+const readBranchMetaFile = (dir) => {
+  const metaFile = path.join(dir, "branch-meta.json");
+  if (!fs.existsSync(metaFile)) {
+    return null;
+  }
+  try {
+    const parsed = JSON.parse(fs.readFileSync(metaFile, "utf8"));
+    if (!parsed || typeof parsed !== "object") {
+      return null;
+    }
+    const branch = parsed.branch ? String(parsed.branch) : "";
+    const branchSlug = parsed.branchSlug ? String(parsed.branchSlug) : "";
+    if (!branch && !branchSlug) {
+      return null;
+    }
+    return {
+      branch,
+      branchSlug,
+      shard: parsed.shard ? String(parsed.shard).toLowerCase() : "",
+      browser: parsed.browser ? String(parsed.browser).toLowerCase() : "",
+    };
+  } catch {
+    return null;
+  }
+};
+
 export const findArtifactMetaFromPath = (filePath) => {
   let current = path.dirname(filePath);
+  let fromDir = null;
+  let fromFile = null;
   while (current && current !== path.dirname(current)) {
-    const meta = parseArtifactDirName(path.basename(current));
-    if (meta) {
-      return meta;
+    if (!fromDir) {
+      fromDir = parseArtifactDirName(path.basename(current));
+    }
+    if (!fromFile) {
+      fromFile = readBranchMetaFile(current);
+    }
+    if (fromDir && fromFile) {
+      break;
     }
     current = path.dirname(current);
   }
-  return null;
+  const branchSlug =
+    fromDir?.branchSlug || fromFile?.branchSlug || fromFile?.branch || "";
+  if (!branchSlug) {
+    return null;
+  }
+  return {
+    branch: fromFile?.branch || "",
+    branchSlug,
+    shard: fromDir?.shard || fromFile?.shard || "",
+    browser: fromDir?.browser || fromFile?.browser || "",
+  };
 };
 
 const mergeFeature = (existing, incoming) => {
@@ -159,24 +202,8 @@ const emptyStatus = (meta = {}, branchSlug = "") => ({
   features: {},
 });
 
-export const findBranchNameFromPath = (filePath) => {
-  let current = path.dirname(filePath);
-  while (current && current !== path.dirname(current)) {
-    const metaFile = path.join(current, "branch-meta.json");
-    if (fs.existsSync(metaFile)) {
-      try {
-        const parsed = JSON.parse(fs.readFileSync(metaFile, "utf8"));
-        if (parsed?.branch) {
-          return String(parsed.branch);
-        }
-      } catch {
-        /* ignore invalid meta */
-      }
-    }
-    current = path.dirname(current);
-  }
-  return "";
-};
+export const findBranchNameFromPath = (filePath) =>
+  findArtifactMetaFromPath(filePath)?.branch || "";
 
 const ingestCucumberFile = (features, file, artifact, meta) => {
   let payload;
@@ -237,9 +264,8 @@ export const buildCucumberRunStatusByBranch = (reportsDir, meta = {}) => {
       bySlug.set(slug, emptyStatus(meta, slug));
     }
     const status = bySlug.get(slug);
-    const branchName = findBranchNameFromPath(file);
-    if (branchName) {
-      status.branch = branchName;
+    if (artifact.branch) {
+      status.branch = artifact.branch;
     }
     ingestCucumberFile(status.features, file, artifact, meta);
   }
