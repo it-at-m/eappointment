@@ -39,9 +39,9 @@
 			{{ block('error_end') }}
 		{% endblock %}
 		{% block has_called_process %}
-			{% set errorTitle = "Es ist schon ein Kunde in Bearbeitung" %}
+			{% set errorTitle = "Sie haben bereits einen Kunden aufgerufen." %}
 			{{ block('error_start') }}
-				Dieser Arbeitsplatz hat schon einen Vorgang aufgerufen. Dieser wird weiterhin verwendet.
+				Bitte schließen Sie den aktuellen Vorgang zuerst ab.
 			{{ block('error_end') }}
 		{% endblock %}
 		{% block role_deletion_failed %}
