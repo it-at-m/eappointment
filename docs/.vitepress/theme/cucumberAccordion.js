@@ -115,6 +115,12 @@ export function closeCucumberFeatureIfHidden() {
 export const ZMSAUTOMATION_WORKFLOW_URL =
   "https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml?query=branch%3Anext";
 
+export const ZMSAUTOMATION_BADGE_URL =
+  "https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml/badge.svg?branch=next";
+
+export const ZMSAUTOMATION_SCHEDULED_RUNS_API =
+  "https://api.github.com/repos/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml/runs?branch=next&event=schedule&per_page=1";
+
 const TICKET_TAG = /^@(?:ZMSKVR|ZMS)-\d+$/i;
 
 export function cucumberPrimaryTicketTag(entry) {
