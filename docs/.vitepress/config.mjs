@@ -246,6 +246,8 @@ const renderCucumberDocFor = (locale, catalog) => {
     "",
     ...t.intro,
     "",
+    "<CucumberWorkflowStatus />",
+    "",
     t.accordionHint,
     "",
     `## ${t.patternHeading}`,
