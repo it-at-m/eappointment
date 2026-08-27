@@ -1,5 +1,5 @@
 #language: de
-Funktionalität: ZMS Admin GUI Optimierung 
+Funktionalität: Termin nach Aufruf weiterleiten
 
 	#Termin-Weiterleitung
 
