@@ -1,5 +1,5 @@
 @rest @zmsapi @smoke
-Feature: ZMS API Status Endpoint
+Feature: ZMS API health check — GET /status/ returns 200
   As a client application
   I want to check the status of the ZMS API
   So that I can verify the API is available and operational

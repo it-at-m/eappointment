@@ -99,10 +99,15 @@
               />
             </div>
 
-            <!-- Keep mounted across customer-info (view 2) so back does not remount/refetch. -->
+            <!-- Keep mounted through overview so Zurück does not remount and wipe selectedProvider.
+                 Skip hash-opened Übersicht (empty selectedServiceMap) so the calendar does not fetch. -->
             <div v-show="currentView === 1">
               <AppointmentSelection
-                v-if="currentView === 1 || currentView === 2"
+                v-if="
+                  currentView === 1 ||
+                  ((currentView === 2 || currentView === 3) &&
+                    selectedServiceMap.size > 0)
+                "
                 :key="appointmentSelectionKey"
                 :global-state="globalState"
                 :is-rebooking="isRebooking"

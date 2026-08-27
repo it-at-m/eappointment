@@ -1,5 +1,5 @@
 #language: de
-Funktionalität: Default
+Funktionalität: Test-Tresen-Kundin zur Warteschlange hinzufügen
 
 	
 	@web @zmsadmin @ZMS-1549 @ZMS-1547 @E2E @automatisiert @executeLocally
