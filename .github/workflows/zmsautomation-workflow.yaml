@@ -656,12 +656,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p zmsautomation/target
           jq -n \
             --arg branch "${{ steps.tags.outputs.branch_name }}" \
             --arg slug "${{ steps.tags.outputs.branch_slug }}" \
             '{branch: $branch, branchSlug: $slug}' \
-            > zmsautomation/target/branch-meta.json
+            > branch-meta.json
 
       - name: Upload test reports (best effort)
         if: always()
@@ -670,7 +669,7 @@ jobs:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
             zmsautomation/target/cucumber.json
-            zmsautomation/target/branch-meta.json
+            branch-meta.json
             zmsautomation/target/site/cucumber-pretty/**
             zmsautomation/target/surefire-reports/**
             zmsautomation/target/screenshots/**
