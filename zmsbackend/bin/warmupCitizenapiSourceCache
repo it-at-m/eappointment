@@ -1,0 +1,36 @@
+#!/bin/bash
+# Warm zmscitizenapi offices-and-services cache after DLDB import (ZMSKVR-1191).
+# Skips when ZMS_CITIZENAPI_WARMUP_URL is unset. Failures are logged, not fatal.
+
+DIR=$(dirname "${BASH_SOURCE[0]}")
+CRON_LOG=$DIR/cronLog
+
+cron_log() {
+    local level="$1"
+    local message="$2"
+    local context="${3:-{}}"
+    php "$CRON_LOG" "$level" "$message" "$context" || echo "$message" >&2
+}
+
+WARMUP_URL="${ZMS_CITIZENAPI_WARMUP_URL:-}"
+WARMUP_TOKEN="${SOURCE_CACHE_WARMUP_TOKEN:-}"
+
+if [ -z "$WARMUP_URL" ]; then
+    cron_log info "Skipping citizenapi source cache warmup (ZMS_CITIZENAPI_WARMUP_URL unset)"
+    exit 0
+fi
+
+cron_log info "Warming citizenapi source cache" "{\"url\":\"$WARMUP_URL\"}"
+
+CURL_HEADERS=(-H "Accept: application/json")
+if [ -n "$WARMUP_TOKEN" ]; then
+    CURL_HEADERS+=(-H "X-Source-Cache-Warmup-Token: ${WARMUP_TOKEN}")
+fi
+
+if curl -fsS -X POST "${CURL_HEADERS[@]}" --max-time 180 "$WARMUP_URL" >/dev/null; then
+    cron_log info "Citizenapi source cache warmup succeeded"
+    exit 0
+fi
+
+cron_log warning "Citizenapi source cache warmup failed" "{\"url\":\"$WARMUP_URL\"}"
+exit 0
