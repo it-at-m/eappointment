@@ -11,7 +11,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Proactively invalidate and rebuild the offices-and-services source cache (ZMSKVR-1191).
+ * Proactively refresh the offices-and-services source cache in place (ZMSKVR-1191).
  */
 class SourceCacheWarmupController extends BaseController
 {
@@ -38,8 +38,8 @@ class SourceCacheWarmupController extends BaseController
             );
         }
 
-        $deletedKeys = ZmsApiFacadeService::invalidateSourceRelatedCaches();
-        $result = ZmsApiFacadeService::getServicesAndOffices(false);
+        $warmup = ZmsApiFacadeService::warmOfficesAndServicesCache();
+        $result = $warmup['result'];
 
         if (is_array($result) && isset($result['errors'])) {
             return $this->createJsonResponse(
@@ -51,7 +51,7 @@ class SourceCacheWarmupController extends BaseController
 
         return $this->createJsonResponse($response, [
             'warmed' => true,
-            'deletedKeys' => $deletedKeys,
+            'refreshedKeys' => $warmup['refreshedKeys'],
         ], 200);
     }
 }
