@@ -83,7 +83,7 @@
             <td class="alert alert-{% if status.mail.oldestSeconds < 300 %}success{% else %}error{% endif %}">{{ status.mail.oldestSeconds|default(0) }}&nbsp;Sekunden</td>
         </tr>
         <tr class="status-sessions">
-            <th>Aktive Sitzungen</th>
+            <th>Aktive Sitzungen der Mitarbeitenden</th>
             <td>{{ status.useraccounts.activeSessions|default(0) }}</td>
         </tr>
         <tr class="status-database-nodeconnections">
