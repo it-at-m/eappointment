@@ -68,7 +68,7 @@
             <td class="alert alert-{% if status.database.logbin == 'ON' %}success{% else %}error{% endif %}">{{ status.database.logbin }}</td>
         </tr>
         <tr class="status-api-version">
-            <th>API Version</th>
+            <th>Version</th>
             <td>{{ status.version.major }}.{{ status.version.minor }}.{{ status.version.patch }}</td>
         </tr>
         {% if workstation %}

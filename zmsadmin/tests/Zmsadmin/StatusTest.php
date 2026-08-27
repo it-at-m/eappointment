@@ -24,7 +24,7 @@ class StatusTest extends Base
             ]
         );
         $response = parent::testRendering();
-        $this->assertStringContainsString('API Version', (string)$response->getBody());
+        $this->assertStringContainsString('<th>Version</th>', (string)$response->getBody());
         //check processes.confirmed:
         $this->assertStringContainsString('86861', (string)$response->getBody());
     }
