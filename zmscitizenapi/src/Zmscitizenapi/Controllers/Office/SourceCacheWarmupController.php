@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace BO\Zmscitizenapi\Controllers\System;
+namespace BO\Zmscitizenapi\Controllers\Office;
 
 use BO\Zmscitizenapi\BaseController;
-use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
+use BO\Zmscitizenapi\Services\Office\OfficesServicesRelationsService;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -16,6 +16,14 @@ use Psr\Http\Message\ResponseInterface;
 class SourceCacheWarmupController extends BaseController
 {
     private const WARMUP_TOKEN_HEADER = 'X-Source-Cache-Warmup-Token';
+
+    private OfficesServicesRelationsService $service;
+
+    /** @psalm-api */
+    public function __construct()
+    {
+        $this->service = new OfficesServicesRelationsService();
+    }
 
     #[\Override]
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
@@ -38,7 +46,7 @@ class SourceCacheWarmupController extends BaseController
             );
         }
 
-        $warmup = ZmsApiFacadeService::warmOfficesAndServicesCache();
+        $warmup = $this->service->warmOfficesAndServicesCache();
         $result = $warmup['result'];
 
         if (is_array($result) && isset($result['errors'])) {
