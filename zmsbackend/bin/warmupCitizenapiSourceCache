@@ -1,36 +1,49 @@
-#!/bin/bash
-# Warm zmscitizenapi offices-and-services cache after DLDB import (ZMSKVR-1191).
-# Skips when ZMS_CITIZENAPI_WARMUP_URL is unset. Failures are logged, not fatal.
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
 
-DIR=$(dirname "${BASH_SOURCE[0]}")
-CRON_LOG=$DIR/cronLog
-
-cron_log() {
-    local level="$1"
-    local message="$2"
-    local context="${3:-{}}"
-    php "$CRON_LOG" "$level" "$message" "$context" || echo "$message" >&2
+if (!isset($argv[1]) || $argv[1] !== '--commit') {
+    \App::$log->notice('warmupCitizenapiSourceCache usage', [
+        'usage' => "Usage: {$argv[0]} --commit",
+    ]);
+    exit(0);
 }
 
-WARMUP_URL="${ZMS_CITIZENAPI_WARMUP_URL:-}"
-WARMUP_TOKEN="${SOURCE_CACHE_WARMUP_TOKEN:-}"
+$url = getenv('ZMS_CITIZENAPI_WARMUP_URL') ?: '';
+if ($url === '') {
+    \App::$log->info('Skipping citizenapi source cache warmup (ZMS_CITIZENAPI_WARMUP_URL unset)');
+    exit(0);
+}
 
-if [ -z "$WARMUP_URL" ]; then
-    cron_log info "Skipping citizenapi source cache warmup (ZMS_CITIZENAPI_WARMUP_URL unset)"
-    exit 0
-fi
+$token = getenv('SOURCE_CACHE_WARMUP_TOKEN') ?: '';
+\App::$log->info('Warming citizenapi source cache', ['url' => $url]);
 
-cron_log info "Warming citizenapi source cache" "{\"url\":\"$WARMUP_URL\"}"
+$headers = ['Accept: application/json'];
+if ($token !== '') {
+    $headers[] = 'X-Source-Cache-Warmup-Token: ' . $token;
+}
 
-CURL_HEADERS=(-H "Accept: application/json")
-if [ -n "$WARMUP_TOKEN" ]; then
-    CURL_HEADERS+=(-H "X-Source-Cache-Warmup-Token: ${WARMUP_TOKEN}")
-fi
+$handle = curl_init($url);
+curl_setopt_array($handle, [
+    CURLOPT_POST => true,
+    CURLOPT_HTTPHEADER => $headers,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_TIMEOUT => 180,
+    CURLOPT_FAILONERROR => true,
+]);
+$body = curl_exec($handle);
+$error = curl_error($handle);
+$status = (int) curl_getinfo($handle, CURLINFO_RESPONSE_CODE);
+curl_close($handle);
 
-if curl -fsS -X POST "${CURL_HEADERS[@]}" --max-time 180 "$WARMUP_URL" >/dev/null; then
-    cron_log info "Citizenapi source cache warmup succeeded"
-    exit 0
-fi
+if ($body !== false && $status >= 200 && $status < 300) {
+    \App::$log->info('Citizenapi source cache warmup succeeded');
+    exit(0);
+}
 
-cron_log warning "Citizenapi source cache warmup failed" "{\"url\":\"$WARMUP_URL\"}"
-exit 0
+\App::$log->warning('Citizenapi source cache warmup failed', [
+    'url' => $url,
+    'status' => $status,
+    'error' => $error,
+]);
+exit(0);
