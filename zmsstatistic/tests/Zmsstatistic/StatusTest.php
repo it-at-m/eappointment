@@ -36,6 +36,8 @@ class StatusTest extends Base
         $this->assertStringContainsString('Aktive Sitzungen', $body);
         $this->assertStringContainsString('Nur für technische Administration sichtbar', $body);
         $this->assertStringContainsString('Automatische Tests', $body);
+        $this->assertStringContainsString('zmsautomation', $body);
+        $this->assertStringContainsString('branch=next', $body);
         $this->assertStringContainsString('86861', $body);
     }
 
