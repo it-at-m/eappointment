@@ -5,7 +5,7 @@
 # which is likely not running in local development environments.
 # To enable these tests, ensure the old buergeransicht frontend is running at http://localhost:8082
 # and remove the @ignore tag from the scenario tags.
-Funktionalität: Default
+Funktionalität: Info-Hinweis zur Terminbuchung im Bürgerfrontend
    
 	   
    	@ignore @web @buergeransicht @ZMS-3177 @ZMS-3162 @automatisiert @executeLocally

@@ -61,4 +61,29 @@ class ChangelogTest extends Base
         $this->assertStringContainsString('https://it-at-m.github.io/eappointment/overview/changelog.html', (string)$response->getBody()); 
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testLoggedInWithoutSelectedScopeShowsHeaderSelector()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_NoScope.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'secure-token',
+                    'response' => $this->readFixture("GET_config.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertStringContainsString('page-header__scope', (string)$response->getBody());
+        $this->assertStringContainsString('Auswahl ändern', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
 }
