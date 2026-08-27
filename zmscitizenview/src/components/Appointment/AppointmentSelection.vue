@@ -2249,17 +2249,20 @@ watch(
     if (captchaSessionExpired.value) {
       return;
     }
-    // Sync single-selection provider immediately
+    // Keep the reserved office when several Orte stay checked. Clearing it here
+    // hid telephone/custom fields on Kontakt and Ort on Übersicht (ZMSKVR-1571).
     const selectedIds = Object.keys(selectedProviders.value).filter(
       (id) => selectedProviders.value[id]
     );
-    if (selectedIds.length === 1 && selectableProviders.value) {
+    if (selectedIds.length === 0) {
+      selectedProvider.value = undefined;
+    } else if (selectedIds.length === 1 && selectableProviders.value) {
       const provider = selectableProviders.value.find(
         (p) => p.id.toString() === selectedIds[0]
       );
-      selectedProvider.value = provider ?? undefined;
-    } else if (selectedIds.length !== 1) {
-      selectedProvider.value = undefined;
+      if (provider) {
+        selectedProvider.value = provider;
+      }
     }
 
     const hasAvailableDays =
