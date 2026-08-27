@@ -1,0 +1,37 @@
+{
+  "branch": "next",
+  "branchSlug": "next",
+  "runId": "33125090200",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33125090200",
+  "runStartedAt": "2026-08-27T23:06:50Z",
+  "publishedAt": "2026-08-27T23:12:50.982Z",
+  "features": {
+    "feature-rest-zmsapi-zmskvr-1328": {
+      "status": "passed",
+      "shard": "zmsapi",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/ZMSKVR-1328.feature",
+      "runId": "33125090200",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33125090200",
+      "runStartedAt": "2026-08-27T23:06:50Z"
+    },
+    "feature-rest-zmsapi-status": {
+      "status": "passed",
+      "shard": "zmsapi",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/status.feature",
+      "runId": "33125090200",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33125090200",
+      "runStartedAt": "2026-08-27T23:06:50Z"
+    },
+    "feature-rest-zmsapi-workstation-login": {
+      "status": "passed",
+      "shard": "zmsapi",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/workstation-login.feature",
+      "runId": "33125090200",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33125090200",
+      "runStartedAt": "2026-08-27T23:06:50Z"
+    }
+  }
+}
