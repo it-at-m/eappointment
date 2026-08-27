@@ -31,7 +31,11 @@ class ProviderHandler extends BaseController
         );
     }
 
-    public static function readProviderList($source)
+    /**
+     * @return (mixed|string)[][]
+     *
+     */
+    public static function readProviderList($source): array
     {
         return [
             ['name' => 'assigned', 'items' => static::readProviderAssigned($source)],

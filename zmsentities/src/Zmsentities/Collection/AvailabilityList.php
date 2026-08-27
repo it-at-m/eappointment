@@ -10,10 +10,11 @@ use BO\Zmsentities\Availability;
 
 /**
  * @SuppressWarnings(Complexity)
+ * @extends Base<\BO\Zmsentities\Availability>
  */
 class AvailabilityList extends Base
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Availability';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Availability';
 
     public function getMaxWorkstationCount()
     {
@@ -26,7 +27,7 @@ class AvailabilityList extends Base
         return $max;
     }
 
-    public function withCalculatedSlots()
+    public function withCalculatedSlots(): static
     {
         $list = clone $this;
         foreach ($list as $key => $availability) {
@@ -35,7 +36,7 @@ class AvailabilityList extends Base
         return $list;
     }
 
-    public function withType($type)
+    public function withType(string $type): static
     {
         $collection = new static();
         foreach ($this as $availability) {
@@ -46,7 +47,7 @@ class AvailabilityList extends Base
         return $collection;
     }
 
-    public function withOutDoubles()
+    public function withOutDoubles(): static
     {
         $collection = new static();
         foreach ($this as $availability) {
@@ -57,7 +58,7 @@ class AvailabilityList extends Base
         return $collection;
     }
 
-    public function hasMatchOf(Availability $availability)
+    public function hasMatchOf(Availability $availability): Availability|false
     {
         foreach ($this as $item) {
             if ($item->isMatchOf($availability)) {
@@ -67,7 +68,7 @@ class AvailabilityList extends Base
         return false;
     }
 
-    public function withDateTime(\DateTimeInterface $dateTime)
+    public function withDateTime(\DateTimeInterface $dateTime): self
     {
         $list = new self();
         foreach ($this as $availability) {
@@ -105,7 +106,7 @@ class AvailabilityList extends Base
     /*
      * is opened on a day -> not specified by a time
      */
-    public function isOpenedByDate(\DateTimeInterface $dateTime, $type = false)
+    public function isOpenedByDate(\DateTimeInterface $dateTime, $type = false): bool
     {
         foreach ($this as $availability) {
             if ($availability->isOpenedOnDate($dateTime, $type)) {
@@ -118,7 +119,7 @@ class AvailabilityList extends Base
     /*
      * is opened on a day with specified time
      */
-    public function isOpened(\DateTimeInterface $dateTime, $type = "openinghours")
+    public function isOpened(\DateTimeInterface $dateTime, $type = "openinghours"): bool
     {
         foreach ($this as $availability) {
             if ($availability->isOpened($dateTime, $type)) {
@@ -128,7 +129,7 @@ class AvailabilityList extends Base
         return false;
     }
 
-    public function hasAppointment(\BO\Zmsentities\Appointment $appointment)
+    public function hasAppointment(\BO\Zmsentities\Appointment $appointment): bool
     {
         foreach ($this as $availability) {
             if ($availability->hasAppointment($appointment)) {
@@ -138,7 +139,7 @@ class AvailabilityList extends Base
         return false;
     }
 
-    public function getSlotList()
+    public function getSlotList(): SlotList
     {
         $slotList = new SlotList();
         foreach ($this as $availability) {
@@ -149,7 +150,7 @@ class AvailabilityList extends Base
         return $slotList;
     }
 
-    public function getSlotListByType($type)
+    public function getSlotListByType($type): SlotList
     {
         $slotList = new SlotList();
         foreach ($this as $availability) {
@@ -162,7 +163,7 @@ class AvailabilityList extends Base
         return $slotList;
     }
 
-    public function getConflicts($startDate, $endDate)
+    public function getConflicts($startDate, $endDate): ProcessList
     {
         $processList = new ProcessList();
         foreach ($this as $availability) {
@@ -189,7 +190,7 @@ class AvailabilityList extends Base
         return $processList;
     }
 
-    public function hasOverlapWith(Availability $availability, \DateTimeInterface $currentDate)
+    public function hasOverlapWith(Availability $availability, \DateTimeInterface $currentDate): ProcessList
     {
         $processList = new ProcessList();
         foreach ($this as $availabilityCompare) {
@@ -269,7 +270,7 @@ class AvailabilityList extends Base
     }
 
 
-    public function withScope(\BO\Zmsentities\Scope $scope)
+    public function withScope(\BO\Zmsentities\Scope $scope): static
     {
         $list = clone $this;
         foreach ($list as $key => $availability) {
@@ -278,6 +279,9 @@ class AvailabilityList extends Base
         return $list;
     }
 
+    /**
+     * @return self
+     */
     #[\Override]
     public function withLessData(array $keepArray = [])
     {

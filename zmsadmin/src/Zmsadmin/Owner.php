@@ -27,13 +27,18 @@ class Owner extends BaseController
         array $args
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation instanceof \BO\Zmsentities\Workstation) {
+            throw new \BO\Zmsclient\Exception\BadRequest('Could not load workstation');
+        }
         if (!$workstation->getUseraccount()->hasPermissions(['jurisdiction'])) {
             throw new UserAccountMissingRights();
         }
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/owner/' . $entityId . '/')->getEntity();
-
+        if (!$entity instanceof Entity) {
+            throw new \BO\Zmsclient\Exception\BadRequest('Could not load owner');
+        }
         $input = $request->getParsedBody();
         if (array_key_exists('save', (array) $input)) {
             $entity = (new Entity($input))->withCleanedUpFormData();
@@ -55,9 +60,10 @@ class Owner extends BaseController
             $response,
             'page/owner.twig',
             array(
-                'title' => 'Kunde','workstation' => $workstation->getArrayCopy(),'menuActive' => 'owner',
-                'owner' => $entity->getArrayCopy(),
+                'title' => 'Kunde',
                 'workstation' => $workstation->getArrayCopy(),
+                'menuActive' => 'owner',
+                'owner' => $entity->getArrayCopy(),
                 'success' => $success
             )
         );

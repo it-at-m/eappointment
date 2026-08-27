@@ -101,6 +101,7 @@
                 :showLocationTitle="(selectableProviders?.length || 0) > 1"
                 :officeNameById="officeNameById"
                 :isSlotSelected="isSlotSelected"
+                :officeIdForTime="officeIdForTime"
                 :t="t"
                 @selectTimeSlot="$emit('selectTimeSlot', $event)"
               />
@@ -225,6 +226,7 @@
                 :showLocationTitle="(selectableProviders?.length || 0) > 1"
                 :officeNameById="officeNameById"
                 :isSlotSelected="isSlotSelected"
+                :officeIdForTime="officeIdForTime"
                 :t="t"
                 @selectTimeSlot="$emit('selectTimeSlot', $event)"
               />
@@ -317,6 +319,10 @@ const props = defineProps<{
   availabilityInfoHtml: string | null;
   officeNameById: (id: number | string) => string | null;
   isSlotSelected: (officeId: number | string, time: number) => boolean;
+  officeIdForTime?: (
+    time: number,
+    displayOfficeId: number | string
+  ) => number | string;
 }>();
 
 const emit = defineEmits<{

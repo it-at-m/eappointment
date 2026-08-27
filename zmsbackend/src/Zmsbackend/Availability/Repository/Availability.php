@@ -10,235 +10,251 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'oeffnungszeit';
+    const string TABLE = 'oeffnungszeit';
 
-    const TEMPORARY_DELETE = 'DELETE FROM oeffnungszeit WHERE kommentar = "--temporary--"';
+    const string TEMPORARY_DELETE = 'DELETE FROM oeffnungszeit WHERE `comment` = "--temporary--"';
 
-    const QUERY_GET_LOCK = '
+    const string QUERY_GET_LOCK = '
         SELECT OeffnungszeitID FROM oeffnungszeit WHERE OeffnungszeitID = :availabilityId FOR UPDATE
     ';
 
+    /**
+     * @return void
+     */
     #[\Override]
     public function addRequiredJoins()
     {
          $this->leftJoin(
              new \BO\Zmsbackend\Query\Alias(\BO\Zmsbackend\Query\Scope::TABLE, 'availabilityscope'),
-             'availability.StandortID',
+             'availability.scope_id',
              '=',
              'availabilityscope.StandortID'
          );
     }
 
+    /**
+     * @return (\BO\Zmsbackend\Query\Builder\Expression|string)[]
+     *
+     */
     #[\Override]
     public function getEntityMapping($type = null)
     {
         $mapping = [
             'id' => 'availability.OeffnungszeitID',
-            'scope__id' => 'availability.StandortID',
+            'scope__id' => 'availability.scope_id',
             'bookable__startInDays' => self::expression(
                 'CAST(
-                    IF(`availability`.`Offen_ab` = "0" OR `availability`.`Offen_ab`, `availability`.`Offen_ab`, `availabilityscope`.`Termine_ab`)
+                    IF(`availability`.`open_from_days` = "0" OR `availability`.`open_from_days`, `availability`.`open_from_days`, `availabilityscope`.`Termine_ab`)
                     AS SIGNED)'
             ),
             'bookable__endInDays' => self::expression(
-                'IF((`availability`.`Offen_ab` = "0" AND `availability`.`Offen_bis` = "0") OR `availability`.`Offen_bis`, `availability`.`Offen_bis`, `availabilityscope`.`Termine_bis`)'
+                'IF((`availability`.`open_from_days` = "0" AND `availability`.`open_until_days` = "0") OR `availability`.`open_until_days`, `availability`.`open_until_days`, `availabilityscope`.`Termine_bis`)'
             ),
-            'description' => 'availability.kommentar',
-            'startDate' => 'availability.Startdatum',
+            'description' => 'availability.comment',
+            'startDate' => 'availability.start_date',
             'startTime' => self::expression(
-                'IF(`availability`.`Terminanfangszeit`,`availability`.`Terminanfangszeit`,`availability`.`Anfangszeit`)'
+                'IF(`availability`.`appointment_start_time`,`availability`.`appointment_start_time`,`availability`.`start_time`)'
             ),
-            'endDate' => 'availability.Endedatum',
+            'endDate' => 'availability.end_date',
             'endTime' => self::expression(
-                'IF(`availability`.`Terminanfangszeit`, `availability`.`Terminendzeit`, `availability`.`Endzeit`)'
+                'IF(`availability`.`appointment_start_time`, `availability`.`appointment_end_time`, `availability`.`end_time`)'
             ),
-            'lastChange' => 'availability.updateTimestamp',
+            'lastChange' => 'availability.updated_at',
             'version' => 'availability.version',
-            'multipleSlotsAllowed' => 'availability.erlaubemehrfachslots',
-            'repeat__afterWeeks' => 'availability.allexWochen',
-            'repeat__weekOfMonth' => 'availability.jedexteWoche',
-            'slotTimeInMinutes' => self::expression('FLOOR(TIME_TO_SEC(`availability`.`Timeslot`) / 60)') ,
+            'multipleSlotsAllowed' => 'availability.multiple_slots_allowed',
+            'repeat__afterWeeks' => 'availability.every_x_weeks',
+            'repeat__weekOfMonth' => 'availability.every_other_week',
+            'slotTimeInMinutes' => self::expression('FLOOR(TIME_TO_SEC(`availability`.`time_slot`) / 60)') ,
             // dependant function on this IF(): \BO\Zmsbackend\Availablity\Service\Availablity::readList()
             'type' => self::expression(
-                "IF(`availability`.`Terminanfangszeit`, 'appointment', 'openinghours')"
+                "IF(`availability`.`appointment_start_time`, 'appointment', 'openinghours')"
             ),
-            'weekday__monday' => self::expression('`availability`.`Wochentag` & 2'),
-            'weekday__tuesday' => self::expression('`availability`.`Wochentag` & 4'),
-            'weekday__wednesday' => self::expression('`availability`.`Wochentag` & 8'),
-            'weekday__thursday' => self::expression('`availability`.`Wochentag` & 16'),
-            'weekday__friday' => self::expression('`availability`.`Wochentag` & 32'),
-            'weekday__saturday' => self::expression('`availability`.`Wochentag` & 64'),
-            'weekday__sunday' => self::expression('`availability`.`Wochentag` & 1'),
-            'workstationCount__intern' => 'availability.Anzahlterminarbeitsplaetze',
+            'weekday__monday' => self::expression('`availability`.`weekday` & 2'),
+            'weekday__tuesday' => self::expression('`availability`.`weekday` & 4'),
+            'weekday__wednesday' => self::expression('`availability`.`weekday` & 8'),
+            'weekday__thursday' => self::expression('`availability`.`weekday` & 16'),
+            'weekday__friday' => self::expression('`availability`.`weekday` & 32'),
+            'weekday__saturday' => self::expression('`availability`.`weekday` & 64'),
+            'weekday__sunday' => self::expression('`availability`.`weekday` & 1'),
+            'workstationCount__intern' => 'availability.appointment_workstation_count',
             'workstationCount__public' => self::expression(
-                'GREATEST(0, `availability`.`Anzahlterminarbeitsplaetze` - `availability`.`reduktionTermineImInternet`)'
+                'GREATEST(0, `availability`.`appointment_workstation_count` - `availability`.`internet_reduction`)'
             )
         ];
         if ('openinghours' == $type) {
             // Test if following line is needed: type mapping with IF() a few lines before
             //$mapping['type'] = self::expression('"openinghours"');
-            $mapping['startTime'] = 'availability.Anfangszeit';
-            $mapping['endTime'] = 'availability.Endzeit';
+            $mapping['startTime'] = 'availability.start_time';
+            $mapping['endTime'] = 'availability.end_time';
         }
         return $mapping;
     }
 
+    /**
+     * @return \BO\Zmsbackend\Query\Builder\Expression[]
+     *
+     */
     #[\Override]
     public function getReferenceMapping()
     {
         return [
-            'scope__$ref' => self::expression('CONCAT("/scope/", `availability`.`StandortID`, "/")'),
+            'scope__$ref' => self::expression('CONCAT("/scope/", `availability`.`scope_id`, "/")'),
         ];
     }
 
-    public function addConditionAvailabilityId($availabilityId)
+    public function addConditionAvailabilityId(int|string $availabilityId): static
     {
         $this->query->where('availability.OeffnungszeitID', '=', $availabilityId);
         return $this;
     }
 
-    public function addConditionScopeId($scopeId)
+    public function addConditionScopeId($scopeId): static
     {
         $this->query->where('availabilityscope.StandortID', '=', $scopeId);
         return $this;
     }
 
-    public function addConditionAppointmentHours()
+    public function addConditionAppointmentHours(): static
     {
         $this->query
-            ->where('availability.Terminanfangszeit', '!=', '00:00:00')
-            ->where('availability.Terminendzeit', '!=', '00:00:00');
+            ->where('availability.appointment_start_time', '!=', '00:00:00')
+            ->where('availability.appointment_end_time', '!=', '00:00:00');
         return $this;
     }
 
-    public function addConditionOpeningHours()
+    public function addConditionOpeningHours(): static
     {
         $this->query
-            ->where('availability.Anfangszeit', '!=', '00:00:00')
-            ->where('availability.Endzeit', '!=', '00:00:00');
+            ->where('availability.start_time', '!=', '00:00:00')
+            ->where('availability.end_time', '!=', '00:00:00');
         return $this;
     }
 
     /**
      * Used to identify old availabilities as appointment and openinghours
      *
+     * @psalm-api
      */
-    public function addConditionDoubleTypes()
+    public function addConditionDoubleTypes(): static
     {
         $this->query
-            ->where('availability.Terminanfangszeit', '!=', '00:00:00')
-            ->where('availability.Terminendzeit', '!=', '00:00:00')
-            ->where('availability.Anfangszeit', '!=', '00:00:00')
-            ->where('availability.Endzeit', '!=', '00:00:00');
+            ->where('availability.appointment_start_time', '!=', '00:00:00')
+            ->where('availability.appointment_end_time', '!=', '00:00:00')
+            ->where('availability.start_time', '!=', '00:00:00')
+            ->where('availability.end_time', '!=', '00:00:00');
         return $this;
     }
 
-    public function addConditionSkipOld(\DateTimeInterface $dateTime)
+    public function addConditionSkipOld(\DateTimeInterface $dateTime): static
     {
         $date = $dateTime->format('Y-m-d');
         $this->query
-            ->where('availability.Endedatum', '>=', $date);
+            ->where('availability.end_date', '>=', $date);
         return $this;
     }
 
     /**
      * Used to identify availabilities whose End Date was more than 4 weeks ago
      *
+     * @psalm-api
      */
-    public function addConditionOnlyOld(\DateTimeInterface $dateTime)
+    public function addConditionOnlyOld(\DateTimeInterface $dateTime): static
     {
         $date = $dateTime->format('Y-m-d');
         $this->query
-            ->where('availability.Endedatum', '<=', $date);
+            ->where('availability.end_date', '<=', $date);
         return $this;
     }
 
    /**
      * Identify availabilities between two dates
-     *
      */
-    public function addConditionTimeframe(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
+    public function addConditionTimeframe(\DateTimeInterface $startDate, \DateTimeInterface $endDate): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $condition) use ($startDate, $endDate) {
             $condition
-                ->andWith('availability.Startdatum', '<=', $endDate->format('Y-m-d'))
-                ->andWith('availability.Endedatum', '>=', $startDate->format('Y-m-d'));
+                ->andWith('availability.start_date', '<=', $endDate->format('Y-m-d'))
+                ->andWith('availability.end_date', '>=', $startDate->format('Y-m-d'));
         });
         return $this;
     }
 
-    public function addConditionDate(\DateTimeInterface $dateTime)
+    public function addConditionDate(\DateTimeInterface $dateTime): static
     {
         $date = $dateTime->format('Y-m-d');
         $this->query
-            ->where('availability.Startdatum', '<=', $date)
-            ->where('availability.Endedatum', '>=', $date);
+            ->where('availability.start_date', '<=', $date)
+            ->where('availability.end_date', '>=', $date);
         //-- match weekday
-        $this->query->where(self::expression("availability.Wochentag & POW(2, DAYOFWEEK('$date') - 1)"), '>=', '1');
+        $this->query->where(self::expression("availability.weekday & POW(2, DAYOFWEEK('$date') - 1)"), '>=', '1');
         //-- match week
         $this->query->where(self::expression("
             (
                 (
-                    availability.allexWochen
+                    availability.every_x_weeks
                     AND FLOOR(
                         (
                             FLOOR(UNIX_TIMESTAMP('$date'))
-                            - FLOOR(UNIX_TIMESTAMP(availability.Startdatum)))
+                            - FLOOR(UNIX_TIMESTAMP(availability.start_date)))
                             / 86400
                             / 7
                         )
-                        % availability.allexWochen = 0
+                        % availability.every_x_weeks = 0
                 )
                 OR (
-                    availability.jedexteWoche
+                    availability.every_other_week
                     AND (
-                        CEIL(DAYOFMONTH('$date') / 7) = availability.jedexteWoche
+                        CEIL(DAYOFMONTH('$date') / 7) = availability.every_other_week
                         OR (
-                            availability.jedexteWoche = 5
+                            availability.every_other_week = 5
                             AND CEIL(LAST_DAY('$date') / 7) = CEIL(DAYOFMONTH('$date') / 7)
                         )
                     )
                 )
-                OR (availability.allexWochen = 0 AND availability.jedexteWoche = 0)
+                OR (availability.every_x_weeks = 0 AND availability.every_other_week = 0)
             ) AND 1
             "), '=', '1');
         return $this;
     }
 
-    public function addConditionAppointmentTime(\DateTimeInterface $dateTime)
+    public function addConditionAppointmentTime(\DateTimeInterface $dateTime): static
     {
         $time = $dateTime->format('H:i:s');
-        $this->query->where("availability.Terminanfangszeit", '<=', $time);
-        $this->query->where("availability.Terminendzeit", '>', $time);
+        $this->query->where("availability.appointment_start_time", '<=', $time);
+        $this->query->where("availability.appointment_end_time", '>', $time);
 
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Availability $entity)
+    /**
+     * @return (int|mixed|string)[]
+     *
+     */
+    public function reverseEntityMapping(\BO\Zmsentities\Availability $entity): array
     {
         $data = array();
-        $data['StandortID'] = $entity->scope['id'];
-        $data['Offen_ab'] = $entity->bookable['startInDays'];
-        $data['Offen_bis'] = $entity->bookable['endInDays'];
-        $data['kommentar'] = $entity->description;
-        $data['Startdatum'] = $entity->getStartDateTime()->format('Y-m-d');
-        $data['Endedatum'] = $entity->getEndDateTime()->format('Y-m-d');
-        $data['version'] = $entity->version;
-        if ('openinghours' == $entity->type) {
-            $data['Anfangszeit'] = $entity->startTime;
-            $data['Endzeit'] = $entity->endTime;
-            $data['Terminanfangszeit'] = 0;
-            $data['Terminendzeit'] = 0;
+        $data['scope_id'] = $entity['scope']['id'];
+        $data['open_from_days'] = $entity['bookable']['startInDays'];
+        $data['open_until_days'] = $entity['bookable']['endInDays'];
+        $data['comment'] = $entity['description'];
+        $data['start_date'] = $entity->getStartDateTime()->format('Y-m-d');
+        $data['end_date'] = $entity->getEndDateTime()->format('Y-m-d');
+        $data['version'] = $entity['version'];
+        if ('openinghours' == $entity['type']) {
+            $data['start_time'] = $entity['startTime'];
+            $data['end_time'] = $entity['endTime'];
+            $data['appointment_start_time'] = 0;
+            $data['appointment_end_time'] = 0;
         } else {
-            $data['Anfangszeit'] = 0;
-            $data['Endzeit'] = 0;
-            $data['Terminanfangszeit'] = $entity->startTime;
-            $data['Terminendzeit'] = $entity->endTime;
+            $data['start_time'] = 0;
+            $data['end_time'] = 0;
+            $data['appointment_start_time'] = $entity['startTime'];
+            $data['appointment_end_time'] = $entity['endTime'];
         }
-        $data['allexWochen'] = $entity->repeat['afterWeeks'];
-        $data['jedexteWoche'] = $entity->repeat['weekOfMonth'];
-        $data['Timeslot'] = gmdate("H:i", $entity->slotTimeInMinutes * 60);
-        $data['erlaubemehrfachslots'] = $entity->multipleSlotsAllowed ? 1 : 0;
+        $data['every_x_weeks'] = $entity['repeat']['afterWeeks'];
+        $data['every_other_week'] = $entity['repeat']['weekOfMonth'];
+        $data['time_slot'] = gmdate("H:i", $entity['slotTimeInMinutes'] * 60);
+        $data['multiple_slots_allowed'] = $entity['multipleSlotsAllowed'] ? 1 : 0;
         $wochentagBinaryCoded = 0;
         $binaryCodes = [
             'sunday' => 1,
@@ -249,15 +265,15 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
             'friday' => 32,
             'saturday' => 64,
             ];
-        foreach ($entity->weekday as $weekday => $isActive) {
+        foreach ($entity['weekday'] as $weekday => $isActive) {
             if ($isActive) {
                 $wochentagBinaryCoded |= $binaryCodes[$weekday];
             }
         }
-        $data['Wochentag'] = $wochentagBinaryCoded;
-        $data['Anzahlterminarbeitsplaetze'] = $entity->workstationCount['intern'];
-        $data['reduktionTermineImInternet'] =
-            $entity->workstationCount['intern'] - $entity->workstationCount['public'];
+        $data['weekday'] = $wochentagBinaryCoded;
+        $data['appointment_workstation_count'] = $entity['workstationCount']['intern'];
+        $data['internet_reduction'] =
+            $entity['workstationCount']['intern'] - $entity['workstationCount']['public'];
 
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);
@@ -265,47 +281,47 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
             return $data;
     }
 
-    public static function getJoinExpression($process, $availability)
+    public static function getJoinExpression(string $process, string $availability): \BO\Zmsbackend\Query\Builder\Expression
     {
         // UNIX_TIMESTAMP is relative here, no dependency to TIMEZONE
         return self::expression("
-            $availability.StandortID = $process.StandortID
+            $availability.scope_id = $process.StandortID
             AND $availability.OeffnungszeitID IS NOT NULL
 
             -- match weekday
-            AND $availability.Wochentag & POW(2, DAYOFWEEK($process.Datum) - 1)
+            AND $availability.weekday & POW(2, DAYOFWEEK($process.Datum) - 1)
 
             -- match week
             AND (
                 (
-                    $availability.allexWochen
+                    $availability.every_x_weeks
                     AND FLOOR(
                         (
                             FLOOR(UNIX_TIMESTAMP($process.Datum))
-                            - FLOOR(UNIX_TIMESTAMP($availability.Startdatum)))
+                            - FLOOR(UNIX_TIMESTAMP($availability.start_date)))
                             / 86400
                             / 7
                         )
-                        % $availability.allexWochen = 0
+                        % $availability.every_x_weeks = 0
                 )
                 OR (
-                    $availability.jedexteWoche
+                    $availability.every_other_week
                     AND (
-                        CEIL(DAYOFMONTH($process.Datum) / 7) = $availability.jedexteWoche
+                        CEIL(DAYOFMONTH($process.Datum) / 7) = $availability.every_other_week
                         OR (
-                            $availability.jedexteWoche = 5
+                            $availability.every_other_week = 5
                             AND CEIL(LAST_DAY($process.Datum) / 7) = CEIL(DAYOFMONTH($process.Datum) / 7)
                         )
                     )
                 )
-                OR (availability.allexWochen = 0 AND availability.jedexteWoche = 0)
+                OR ($availability.every_x_weeks = 0 AND $availability.every_other_week = 0)
             )
 
             -- match time and date
-            AND $process.Uhrzeit >= $availability.Terminanfangszeit
-            AND $process.Uhrzeit < $availability.Terminendzeit
-            AND $process.Datum >= $availability.Startdatum
-            AND $process.Datum <= $availability.Endedatum
+            AND $process.Uhrzeit >= $availability.appointment_start_time
+            AND $process.Uhrzeit < $availability.appointment_end_time
+            AND $process.Datum >= $availability.start_date
+            AND $process.Datum <= $availability.end_date
             ");
     }
 

@@ -4,10 +4,14 @@ namespace BO\Zmsentities;
 
 class Apikey extends Schema\Entity
 {
-    public const PRIMARY = 'key';
+    public const string PRIMARY = 'key';
 
     public static $schema = "apikey.json";
 
+    /**
+     * @return Apiclient[]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -16,7 +20,7 @@ class Apikey extends Schema\Entity
         ];
     }
 
-    public function setApiClient(Apiclient $apiClient)
+    public function setApiClient(Apiclient $apiClient): void
     {
         $this['apiclient'] = $apiClient;
     }
@@ -26,14 +30,18 @@ class Apikey extends Schema\Entity
         return $this['apiclient'];
     }
 
-    public function getQuotaPositionByRoute($route)
+    /**
+     * @return false|int
+     *
+     */
+    public function getQuotaPositionByRoute($route): int|false
     {
         return (isset($this->quota) && is_array($this->quota)) ?
             array_search($route, array_column($this->quota, 'route'))
             : false;
     }
 
-    public function addQuota($route, $period)
+    public function addQuota($route, $period): static
     {
         $this->quota[] = [
             'route' => $route,
@@ -43,7 +51,7 @@ class Apikey extends Schema\Entity
         return $this;
     }
 
-    public function updateQuota($position)
+    public function updateQuota($position): static
     {
         $this->quota[$position]['requests']++;
         return $this;

@@ -14,7 +14,7 @@ services:
   test:
     depends_on:
       - mockup
-    image: ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev@sha256:cdf964fa2e02d11b1309f1006d0d71d0afef6a550d5722c7634860e5c594d4cb
+    image: ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev@sha256:fcb177bdc9281c6576b4bb1c64d828a7dac0df5cce0040564b59260f8b8f5097
     volumes:
       - type: bind
         source: "."

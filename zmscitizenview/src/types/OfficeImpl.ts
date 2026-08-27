@@ -24,6 +24,9 @@ export class OfficeImpl implements Office {
   /** Group of office IDs; JumpIn with one auto-selects equivalent in group. Legacy: boolean true. */
   allowDisabledServicesMix?: boolean | number[];
 
+  /** Peer office IDs that share one Ort but pool calendar capacity. */
+  sharedBookingOfficeIds?: number[];
+
   scope?: Scope;
 
   slotsPerAppointment?: string;
@@ -49,7 +52,8 @@ export class OfficeImpl implements Office {
     slotsPerAppointment: string | undefined,
     slots: number | undefined,
     priority: number = 1,
-    parentId: number | undefined
+    parentId: number | undefined = undefined,
+    sharedBookingOfficeIds: number[] | undefined = undefined
   ) {
     this.id = id;
     this.name = name;
@@ -66,5 +70,6 @@ export class OfficeImpl implements Office {
     this.slots = slots;
     this.priority = priority;
     this.parentId = parentId;
+    this.sharedBookingOfficeIds = sharedBookingOfficeIds;
   }
 }

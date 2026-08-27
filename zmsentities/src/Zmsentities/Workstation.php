@@ -7,13 +7,23 @@ use BO\Zmsentities\Helper\Property;
 /**
  * @SuppressWarnings(Complexity)
  *
+ * @property int|string $id
+ * @property Useraccount $useraccount
+ * @property Process $process
+ * @property string $name
+ * @property Scope $scope
+ * @property array $queue
  */
 class Workstation extends Schema\Entity
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "workstation.json";
 
+    /**
+     * @return (Process|Scope|Useraccount|int|string)[]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -39,7 +49,7 @@ class Workstation extends Schema\Entity
         return $result;
     }
 
-    public function getUseraccount()
+    public function getUseraccount(): Useraccount
     {
         if (!$this->useraccount instanceof Useraccount) {
             $this->useraccount = new Useraccount($this->useraccount);
@@ -52,7 +62,7 @@ class Workstation extends Schema\Entity
         return $this->getUseraccount()->getDepartmentById($departmentId);
     }
 
-    public function getDepartmentList()
+    public function getDepartmentList(): Collection\DepartmentList
     {
         $departmentList = new Collection\DepartmentList();
         foreach ($this->getUseraccount()->departments as $department) {
@@ -61,6 +71,9 @@ class Workstation extends Schema\Entity
         return $departmentList;
     }
 
+    /**
+     * @return void
+     */
     public function testDepartmentList()
     {
         if (0 == $this->getDepartmentList()->count()) {
@@ -83,17 +96,17 @@ class Workstation extends Schema\Entity
         return $this->getUseraccount()->hasPermissions(['logs']);
     }
 
-    public function getAuthKey()
+    public function getAuthKey(): string
     {
         return bin2hex(openssl_random_pseudo_bytes(16));
     }
 
-    public function hasAuthKey()
+    public function hasAuthKey(): bool
     {
         return (isset($this->authkey)) ? true : false;
     }
 
-    public function getVariantName()
+    public function getVariantName(): string
     {
         return (! trim($this->name)) ? 'counter' : 'workstation';
     }
@@ -103,17 +116,27 @@ class Workstation extends Schema\Entity
         return ($this->name) ? $this->name : "Tresen";
     }
 
-    public function getScope()
+    public function getScope(): Scope
     {
-        if (!$this->offsetExists('scope')) {
-            $this->scope = new Scope();
-        } elseif (!$this->scope instanceof Scope) {
-            $this->scope = new Scope($this->scope);
+        $scope = $this->offsetExists('scope') ? $this['scope'] : null;
+        if (!$scope instanceof Scope) {
+            $scope = new Scope($scope);
+            $this['scope'] = $scope;
         }
-        return $this->scope;
+        return $scope;
     }
 
-    public function getScopeList($cluster = null)
+    public function getProcess(): Process
+    {
+        $process = $this->offsetExists('process') ? $this['process'] : null;
+        if (!$process instanceof Process) {
+            $process = new Process($process);
+            $this['process'] = $process;
+        }
+        return $process;
+    }
+
+    public function getScopeList($cluster = null): Collection\ScopeList
     {
         $scopeList = new Collection\ScopeList();
         $scopeList->addEntity(new Scope($this->getScope()));
@@ -124,7 +147,7 @@ class Workstation extends Schema\Entity
         return $scopeList;
     }
 
-    public function getScopeListFromAssignedDepartments()
+    public function getScopeListFromAssignedDepartments(): Collection\ScopeList
     {
         $scopeList = new Collection\ScopeList();
         foreach ($this->getDepartmentList() as $department) {
@@ -138,6 +161,9 @@ class Workstation extends Schema\Entity
         return $scopeList;
     }
 
+    /**
+     * @return void
+     */
     public function validateProcessScopeAccess($scopeList, $process = null)
     {
         if (null === $process) {
@@ -164,7 +190,7 @@ class Workstation extends Schema\Entity
         }
     }
 
-    public function setValidatedName(array $formData)
+    public function setValidatedName(array $formData): static
     {
         if (isset($formData['workstation']) && trim($formData['workstation']->getValue())) {
             $this->name = $formData['workstation']->getValue();
@@ -174,7 +200,7 @@ class Workstation extends Schema\Entity
         return $this;
     }
 
-    public function setValidatedHint(array $formData)
+    public function setValidatedHint(array $formData): static
     {
         if (isset($formData['hint']) && $formData['hint']->getValue()) {
             $this->hint = $formData['hint']->getValue();
@@ -184,7 +210,7 @@ class Workstation extends Schema\Entity
         return $this;
     }
 
-    public function setValidatedScope(array $formData)
+    public function setValidatedScope(array $formData): static
     {
         if (isset($formData['scope']) && 'cluster' === $formData['scope']->getValue()) {
             $this->queue['clusterEnabled'] = 1;
@@ -197,7 +223,7 @@ class Workstation extends Schema\Entity
         return $this;
     }
 
-    public function setValidatedAppointmentsOnly(array $formData)
+    public function setValidatedAppointmentsOnly(array $formData): static
     {
         $this->queue['appointmentsOnly'] = (isset($formData['appointmentsOnly'])) ?
             $formData['appointmentsOnly']->getValue() :
@@ -205,12 +231,12 @@ class Workstation extends Schema\Entity
         return $this;
     }
 
-    public function isClusterEnabled()
+    public function isClusterEnabled(): bool
     {
         return $this->queue['clusterEnabled'] ? true : false;
     }
 
-    public function hasAccessToUseraccount($useraccount)
+    public function hasAccessToUseraccount($useraccount): bool
     {
         $departmentList = $this->getDepartmentList();
         $accessedList = $departmentList->withAccess($useraccount);

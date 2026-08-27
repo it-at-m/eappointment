@@ -140,6 +140,16 @@
             ],
             "description": "If array of office IDs: JumpIn with one auto-selects equivalent in group. Legacy boolean=true treated as participates in mix."
         },
+        "sharedBookingOfficeIds": {
+            "type": [
+                "array",
+                "null"
+            ],
+            "items": {
+                "type": "integer"
+            },
+            "description": "Peer office IDs that share one Ort checkbox but pool calendar capacity (all IDs queried; backend round-robins across the group)."
+        },
         "slotsPerAppointment": {
             "type": [
                 "string",

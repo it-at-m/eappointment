@@ -10,6 +10,8 @@ jobs:
   scheduled:
     name: 🛡️ Trivy Security Check (${{ matrix.branch }})
     runs-on: ubuntu-latest
+    env:
+      TRIVY_SKIP_VERSION_CHECK: "true"
     strategy:
       fail-fast: false
       matrix:
@@ -28,6 +30,8 @@ jobs:
 
       - name: Run Trivy vulnerability scanner in repository mode
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        env:
+          TRIVY_SKIP_VERSION_CHECK: "true"
         with:
           scan-type: fs
           scan-ref: .
@@ -40,6 +44,9 @@ jobs:
       - name: Convert Trivy report
         if: always() && hashFiles('trivy-report.json') != ''
         shell: bash
+        env:
+          # convert in 0.70.0 has no --skip-version-check; a set env maps to that flag and fails
+          TRIVY_SKIP_VERSION_CHECK: ""
         run: |
           trivy convert --format table --output trivy-results.txt trivy-report.json
           cat trivy-results.txt
@@ -55,7 +62,7 @@ jobs:
 
       - name: Upload Trivy scan results to GitHub Security tab
         if: always() && hashFiles('trivy-results.sarif') != ''
-        uses: github/codeql-action/upload-sarif@d1ba80a13dd99fba24a470575428917156a28b43 # v4.37.5
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
         with:
           sarif_file: trivy-results.sarif
           category: trivy-${{ matrix.branch }}

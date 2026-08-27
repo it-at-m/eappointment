@@ -591,7 +591,7 @@ class ProcessTest extends \BO\Zmsbackend\Tests\Service\Base
                 "expired process $process should be older than expiration date " . $date->format('c')
             );
         }
-        $this->assertEquals(46, $processList->count());
+        $this->assertEquals(56, $processList->count());
     }
 
     public function testDeallocateProcess()
@@ -851,5 +851,45 @@ class ProcessTest extends \BO\Zmsbackend\Tests\Service\Base
             "status"=>"reserved"
         ));
         return $input;
+    }
+
+    public function testPickRoundRobinIndexCyclesAcrossTwoCandidates()
+    {
+        $this->assertSame(0, ProcessStatusFree::pickRoundRobinIndex(0, 2));
+        $this->assertSame(1, ProcessStatusFree::pickRoundRobinIndex(1, 2));
+        $this->assertSame(0, ProcessStatusFree::pickRoundRobinIndex(2, 2));
+        $this->assertSame(1, ProcessStatusFree::pickRoundRobinIndex(3, 2));
+    }
+
+    public function testPickRoundRobinIndexCyclesAcrossThreeCandidates()
+    {
+        $this->assertSame(0, ProcessStatusFree::pickRoundRobinIndex(0, 3));
+        $this->assertSame(1, ProcessStatusFree::pickRoundRobinIndex(1, 3));
+        $this->assertSame(2, ProcessStatusFree::pickRoundRobinIndex(2, 3));
+        $this->assertSame(0, ProcessStatusFree::pickRoundRobinIndex(3, 3));
+    }
+
+    public function testPickRoundRobinIndexSingleCandidateAlwaysZero()
+    {
+        $this->assertSame(0, ProcessStatusFree::pickRoundRobinIndex(0, 1));
+        $this->assertSame(0, ProcessStatusFree::pickRoundRobinIndex(5, 1));
+    }
+
+    public function testResolveRoundRobinGroupKeyUsesProviderWhenNoSharedBooking()
+    {
+        $this->assertSame('10489', ProcessStatusFree::resolveRoundRobinGroupKey('10489', null));
+        $this->assertSame('10489', ProcessStatusFree::resolveRoundRobinGroupKey('10489', []));
+    }
+
+    public function testResolveRoundRobinGroupKeySortsSharedBookingPeers()
+    {
+        $this->assertSame(
+            '10489,10503',
+            ProcessStatusFree::resolveRoundRobinGroupKey('10503', [10503, 10489])
+        );
+        $this->assertSame(
+            '10489,10503',
+            ProcessStatusFree::resolveRoundRobinGroupKey('10489', [10489, 10503])
+        );
     }
 }

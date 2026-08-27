@@ -89,21 +89,27 @@ class ThinnedProcess extends Entity implements JsonSerializable
         $this->captchaToken = $token;
     }
 
+    /** @psalm-api */
     public function getCaptchaToken(): ?string
     {
         return $this->captchaToken;
     }
 
+    /** @psalm-api */
     public function setIcsContent(string $icsContent): void
     {
         $this->icsContent = $icsContent;
     }
 
+    /** @psalm-api */
     public function getIcsContent(): ?string
     {
         return $this->icsContent;
     }
 
+    /**
+     * @return void
+     */
     private function ensureValid()
     {
         if (!$this->testValid()) {

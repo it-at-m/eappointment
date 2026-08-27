@@ -7,8 +7,6 @@ namespace BO\Zmscitizenapi\Services\Core;
 use BO\Slim\LoggerService;
 use BO\Zmscitizenapi\Exceptions\UnauthorizedException;
 use BO\Zmscitizenapi\Models\AuthenticatedUser;
-use BO\Zmscitizenapi\Utils\DateTimeFormatHelper;
-use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Models\AvailableCalendar;
 use BO\Zmscitizenapi\Models\Office;
 use BO\Zmscitizenapi\Models\Service;
@@ -33,16 +31,11 @@ use BO\Zmsentities\Collection\ProcessList;
  */
 class ZmsApiFacadeService
 {
-    private const CACHE_KEY_OFFICES = 'processed_offices';
-    private const CACHE_KEY_SCOPES = 'processed_scopes';
-    private const CACHE_KEY_SERVICES = 'processed_services';
-    private const CACHE_KEY_OFFICES_AND_SERVICES = 'processed_offices_and_services';
-    private const CACHE_KEY_SERVICES_BY_OFFICE_PREFIX = 'processed_services_by_office_';
-
-    private static function getError(string $key): array
-    {
-        return ErrorMessages::get($key);
-    }
+    private const string CACHE_KEY_OFFICES = 'processed_offices';
+    private const string CACHE_KEY_SCOPES = 'processed_scopes';
+    private const string CACHE_KEY_SERVICES = 'processed_services';
+    private const string CACHE_KEY_OFFICES_AND_SERVICES = 'processed_offices_and_services';
+    private const string CACHE_KEY_SERVICES_BY_OFFICE_PREFIX = 'processed_services_by_office_';
 
     /**
      * Drop source + processed offices/services cache entries without clearing rate-limit keys.
@@ -137,7 +130,10 @@ class ZmsApiFacadeService
         )));
     }
 
-    private static function setMappedCache(string $cacheKey, mixed $data): void
+    /**
+     * @param OfficeList|OfficeServiceAndRelationList|ServiceList|ThinnedScopeList $data
+     */
+    private static function setMappedCache(string $cacheKey, OfficeList|ThinnedScopeList|ServiceList|OfficeServiceAndRelationList $data): void
     {
         if (\App::$cache) {
             \App::$cache->set($cacheKey, $data, \App::$SOURCE_CACHE_TTL);
@@ -339,100 +335,8 @@ class ZmsApiFacadeService
     }
 
     /**
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     * @SuppressWarnings(PHPMD.NPathComplexity)
-     */
-    public static function getScopeByOfficeId(int $officeId): ThinnedScope|array
-    {
-        $providerList = ZmsApiClientService::getOffices();
-        $selectedProvider = null;
-        foreach ($providerList as $provider) {
-            if ((int) $provider->id === (int) $officeId) {
-                $selectedProvider = $provider;
-                break;
-            }
-        }
-        if (!$selectedProvider) {
-            return ['errors' => [self::getError('officeNotFound')]];
-        }
-
-        $scopeSource = (string) ($selectedProvider->source ?? '');
-        if ($scopeSource === '') {
-            return ['errors' => [self::getError('scopeNotFound')]];
-        }
-
-        $matchingScope = ZmsApiClientService::getScopesByProviderId($scopeSource, (int) $officeId)
-            ->getIterator()
-            ->current();
-
-        if (!$matchingScope instanceof Scope) {
-            return ['errors' => [self::getError('scopeNotFound')]];
-        }
-
-        $providerMap = [];
-        foreach ($providerList as $prov) {
-            $key = ($prov->source ?? '') . '_' . $prov->id;
-            $providerMap[$key] = $prov;
-        }
-
-        $scopeProvider = $matchingScope->getProvider();
-        $providerKey = $scopeProvider ? (($scopeProvider->source ?? '') . '_' . $scopeProvider->id) : null;
-        $finalProvider = ($providerKey && isset($providerMap[$providerKey]))
-            ? $providerMap[$providerKey]
-            : $scopeProvider;
-        $result = [
-            'id' => $matchingScope->id,
-            'provider' => MapperService::providerToThinnedProvider($finalProvider),
-            'shortName' => (string) $matchingScope->getShortName(),
-            'emailFrom' => (string) $matchingScope->getEmailFrom(),
-            'emailRequired' => (bool) $matchingScope->getEmailRequired(),
-            'telephoneActivated' => (bool) $matchingScope->getTelephoneActivated(),
-            'telephoneRequired' => (bool) $matchingScope->getTelephoneRequired(),
-            'customTextfieldActivated' => (bool) $matchingScope->getCustomTextfieldActivated(),
-            'customTextfieldRequired' => (bool) $matchingScope->getCustomTextfieldRequired(),
-            'customTextfieldLabel' => $matchingScope->getCustomTextfieldLabel() ?? null,
-            'customTextfield2Activated' => (bool) $matchingScope->getCustomTextfield2Activated(),
-            'customTextfield2Required' => (bool) $matchingScope->getCustomTextfield2Required(),
-            'customTextfield2Label' => $matchingScope->getCustomTextfield2Label() ?? null,
-            'captchaActivatedRequired' => (bool) $matchingScope->getCaptchaActivatedRequired(),
-            'infoForAppointment' => $matchingScope->getInfoForAppointment() ?? null,
-            'infoForAllAppointments' => $matchingScope->getInfoForAllAppointments() ?? null,
-            'slotsPerAppointment' => ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()),
-            'appointmentsPerMail' => ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()),
-            'whitelistedMails' => ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
-            'reservationDuration' => (int) MapperService::extractReservationDuration($matchingScope),
-            'activationDuration' => MapperService::extractActivationDuration($matchingScope),
-            'hint' => (trim((string) ($matchingScope->getScopeHint() ?? '')) === '') ? null : (string) $matchingScope->getScopeHint()
-        ];
-        return new ThinnedScope(
-            id: (int) $result['id'],
-            provider: $result['provider'],
-            shortName: $result['shortName'],
-            emailFrom: $result['emailFrom'],
-            emailRequired: $result['emailRequired'],
-            telephoneActivated: $result['telephoneActivated'],
-            telephoneRequired: $result['telephoneRequired'],
-            customTextfieldActivated: $result['customTextfieldActivated'],
-            customTextfieldRequired: $result['customTextfieldRequired'],
-            customTextfieldLabel: $result['customTextfieldLabel'],
-            customTextfield2Activated: $result['customTextfield2Activated'],
-            customTextfield2Required: $result['customTextfield2Required'],
-            customTextfield2Label: $result['customTextfield2Label'],
-            captchaActivatedRequired: $result['captchaActivatedRequired'],
-            infoForAppointment: $result['infoForAppointment'],
-            infoForAllAppointments: $result['infoForAllAppointments'],
-            slotsPerAppointment: $result['slotsPerAppointment'],
-            appointmentsPerMail: $result['appointmentsPerMail'],
-            whitelistedMails: $result['whitelistedMails'],
-            reservationDuration: $result['reservationDuration'],
-            activationDuration: $result['activationDuration'],
-            hint: $result['hint']
-        );
-    }
-
-    /**
      * One offices + scopes load, then in-memory captcha checks for all office IDs.
-     * Avoids N× getScopeByOfficeId (each re-loads source data and builds a full ThinnedScope).
+     * Avoids per-office scope reloads that each rebuild a full ThinnedScope.
      */
     public static function isCaptchaRequiredForAnyOffice(array $officeIds): bool
     {

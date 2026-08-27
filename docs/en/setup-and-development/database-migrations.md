@@ -1,9 +1,9 @@
 # Database Migrations
 
-SQL migrations live in `zmsdb/migrations/`. The migration runner is `bin/migrate` (in the `zmsdb` module). From `zmsapi`, use the Composer wrapper:
+SQL migrations live in `zmsbackend/migrations/`. The migration runner is `bin/migrate` in the `zmsbackend` module:
 
 ```bash
-zmsapi/vendor/bin/migrate
+zmsbackend/bin/migrate
 ```
 
 For a full local database reset (base schema, test data, migrations, cron jobs), see [Local Database and Cache Operations](./local-database-and-cache-operations.md).
@@ -15,25 +15,25 @@ For a full local database reset (base schema, test data, migrations, cron jobs),
 Check which migrations are pending (dry run):
 
 ```bash
-ddev exec zmsapi/vendor/bin/migrate
+ddev exec "cd zmsbackend && bin/migrate"
 ```
 
 Apply all pending migrations:
 
 ```bash
-ddev exec zmsapi/vendor/bin/migrate --update
+ddev exec "cd zmsbackend && bin/migrate --update"
 ```
 
 Apply only expand-phase migrations (see below):
 
 ```bash
-ddev exec zmsapi/vendor/bin/migrate --update --phase=expand
+ddev exec "cd zmsbackend && bin/migrate --update --phase=expand"
 ```
 
 Apply only contract-phase migrations:
 
 ```bash
-ddev exec zmsapi/vendor/bin/migrate --update --phase=contract
+ddev exec "cd zmsbackend && bin/migrate --update --phase=contract"
 ```
 
 ### Podman
@@ -41,25 +41,25 @@ ddev exec zmsapi/vendor/bin/migrate --update --phase=contract
 Check which migrations are pending (dry run):
 
 ```bash
-podman exec -it zms-web bash -lc "cd zmsapi && vendor/bin/migrate"
+podman exec -it zms-web bash -lc "cd zmsbackend && bin/migrate"
 ```
 
 Apply all pending migrations:
 
 ```bash
-podman exec -it zms-web bash -lc "cd zmsapi && vendor/bin/migrate --update"
+podman exec -it zms-web bash -lc "cd zmsbackend && bin/migrate --update"
 ```
 
 Apply only expand-phase migrations:
 
 ```bash
-podman exec -it zms-web bash -lc "cd zmsapi && vendor/bin/migrate --update --phase=expand"
+podman exec -it zms-web bash -lc "cd zmsbackend && bin/migrate --update --phase=expand"
 ```
 
 Apply only contract-phase migrations:
 
 ```bash
-podman exec -it zms-web bash -lc "cd zmsapi && vendor/bin/migrate --update --phase=contract"
+podman exec -it zms-web bash -lc "cd zmsbackend && bin/migrate --update --phase=contract"
 ```
 
 Locally you usually run `--update` without `--phase` to apply everything at once. The phase flags are mainly for testing the same order used in deployment.
@@ -78,7 +78,7 @@ For the full deployment pipeline and MariaDB patterns, see [Zero-downtime deploy
 
 ## Filename prefixes
 
-All migration files go in `zmsdb/migrations/`. The filename tells the runner which phase applies:
+All migration files go in `zmsbackend/migrations/`. The filename tells the runner which phase applies:
 
 | Change type                                             | Filename pattern | `--phase`  | Example                                        |
 | ------------------------------------------------------- | ---------------- | ---------- | ---------------------------------------------- |

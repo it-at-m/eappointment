@@ -20,7 +20,7 @@ class ApiQuotaDeleteByCron
         $this->quotaList = $query->readExpiredQuotaListByPeriod($dateTime);
     }
 
-    public function startProcessing($commit)
+    public function startProcessing($commit): void
     {
         $verbose = $this->verbose;
         if ($this->quotaList) {
@@ -37,7 +37,7 @@ class ApiQuotaDeleteByCron
         }
     }
 
-    protected function removeQuota($quotaId)
+    protected function removeQuota($quotaId): void
     {
         $verbose = $this->verbose;
         if (! $verbose) {

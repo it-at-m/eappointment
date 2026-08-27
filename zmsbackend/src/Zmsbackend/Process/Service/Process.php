@@ -17,7 +17,11 @@ use BO\Zmsbackend\Helper\ProcessStatus;
  */
 class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\ResolveReferences
 {
-    public function readEntity($processId = null, $authKey = null, $resolveReferences = 2)
+    /**
+     * @param \BO\Zmsbackend\Helper\NoAuth|null|string $authKey
+     * @param int|null|string $processId
+     */
+    public function readEntity(int|string|null $processId = null, string|\BO\Zmsbackend\Helper\NoAuth|null $authKey = null, int $resolveReferences = 2): ?Entity
     {
         if (null === $processId || null === $authKey) {
             return null;
@@ -35,7 +39,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $process;
     }
 
-    public function readById($processId, $resolveReferences = 1)
+    public function readById($processId, $resolveReferences = 1): Entity
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -44,8 +48,12 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $this->fetchOne($query, new Entity());
     }
 
+    /**
+     *
+     * @return \BO\Zmsentities\Schema\Entity
+     */
     #[\Override]
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, int $resolveReferences)
     {
         if (0 <= $resolveReferences) {
             if ($entity->archiveId) {
@@ -62,8 +70,11 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
 
     /**
      * Update a process without changing appointment or scope
+     *
+     * @param null|string $previousStatus
+     *
      */
-    public function updateEntity(\BO\Zmsentities\Process $process, \DateTimeInterface $now, $resolveReferences = 0, $previousStatus = null, ?\BO\Zmsentities\Useraccount $useraccount = null)
+    public function updateEntity(\BO\Zmsentities\Process $process, \DateTimeInterface $now, int $resolveReferences = 0, string|null $previousStatus = null, ?\BO\Zmsentities\Useraccount $useraccount = null): Entity
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::UPDATE);
         $query->addConditionProcessId($process->getId());
@@ -85,7 +96,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $process;
     }
 
-    public function updateEntityDisplayNumber(Entity $process)
+    public function updateEntityDisplayNumber(Entity $process): Entity
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::UPDATE);
         $query->addConditionProcessId($process->getId());
@@ -109,6 +120,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      * @param Int $slotsRequired we cannot use process.appointments.0.slotCount, because setting slotsRequired is
      *        a priviliged operation. Just using the input would be a security flaw to get a wider selection of times
      *        If slotsRequired = 0, readFreeProcesses() uses the slotsRequired based on request-provider relation
+     * @psalm-api
      */
     public function updateEntityWithSlots(\BO\Zmsentities\Process $process, \DateTimeInterface $now, $slotType = "intern", $slotsRequired = 0, $resolveReferences = 0, $userAccount = null)
     {
@@ -142,7 +154,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $processEntity;
     }
 
-    public function redirectToScope($process, \BO\Zmsentities\Scope $scope, int $waitingNumber, ?\BO\Zmsentities\Useraccount $useraccount = null)
+    public function redirectToScope(Entity $process, \BO\Zmsentities\Scope $scope, int $waitingNumber, ?\BO\Zmsentities\Useraccount $useraccount = null): Entity
     {
         $datetime = \App::$now;
         $process->setStatus('confirmed');
@@ -161,7 +173,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $process;
     }
 
-    public function readSlotCount(\BO\Zmsentities\Process $process)
+    public function readSlotCount(\BO\Zmsentities\Process $process): Entity
     {
         $scope = new \BO\Zmsentities\Scope($process->scope);
         $requestRelationList = (new \BO\Zmsbackend\RequestRelation\Service\RequestRelation())
@@ -182,7 +194,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
     /**
      * write a new process with appointment and keep id and authkey from original process
      */
-    public function writeEntityWithNewAppointment(\BO\Zmsentities\Process $process, \BO\Zmsentities\Appointment $appointment, \DateTimeInterface $now, $slotType = 'public', $slotsRequired = 0, $resolveReferences = 0, $keepReserved = false)
+    public function writeEntityWithNewAppointment(\BO\Zmsentities\Process $process, \BO\Zmsentities\Appointment $appointment, \DateTimeInterface $now, $slotType = 'public', $slotsRequired = 0, $resolveReferences = 0, $keepReserved = false): Entity|null
     {
         // clone to new process with id = 0 and new appointment to reserve
         $processNew = clone $process;
@@ -214,7 +226,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
     /**
      * update following process with new credentials (also change process id if necessary)
      */
-    public function updateFollowingProcesses($processId, \BO\Zmsentities\Process $processData)
+    public function updateFollowingProcesses($processId, \BO\Zmsentities\Process $processData): void
     {
         $this->perform(\BO\Zmsbackend\Process\Repository\Process::QUERY_REASSIGN_PROCESS_CREDENTIALS, [
             'newProcessId' => $processData->getId(),
@@ -237,7 +249,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
     /**
      * update process requests with new credentials
      */
-    public function updateReassignedRequests($processId, $newProcessId)
+    public function updateReassignedRequests($processId, $newProcessId): void
     {
         $this->perform(\BO\Zmsbackend\Process\Repository\Process::QUERY_REASSIGN_PROCESS_REQUESTS, [
             'newProcessId' => $newProcessId,
@@ -249,7 +261,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      * write a new process to DB
      *
      */
-    protected function writeNewProcess(\BO\Zmsentities\Process $process, \DateTimeInterface $dateTime, $parentProcess = 0, $childProcessCount = 0, $retry = true, $userAccount = null)
+    protected function writeNewProcess(\BO\Zmsentities\Process $process, \DateTimeInterface $dateTime, int $parentProcess = 0, int $childProcessCount = 0, bool $retry = true, \BO\Zmsentities\Useraccount|null $userAccount = null)
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::INSERT);
         $process->id = $this->readNewProcessId();
@@ -310,7 +322,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         ) : null;
     }
 
-    protected function readList($statement, $resolveReferences)
+    protected function readList($statement, $resolveReferences): Collection
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $processList = new Collection();
@@ -319,6 +331,43 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
             $entity = $this->readResolvedReferences($entity, $resolveReferences);
             $processList->addEntity($entity);
         }
+        return $processList;
+    }
+
+    protected function readProcessesWithoutRequests($statement): Collection
+    {
+        $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
+        $processList = new Collection();
+        while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $processList->addEntity(new Entity($query->postProcessJoins($processData)));
+        }
+        return $processList;
+    }
+
+    protected function attachAllRequestsInOneQuery(Collection $processList, int $resolveReferences): Collection
+    {
+        if ($processList->count() === 0 || $resolveReferences < 0) {
+            return $processList;
+        }
+
+        $processIds = [];
+        foreach ($processList as $process) {
+            if ($process->hasId()) {
+                $processIds[] = $process->getId();
+            }
+        }
+
+        $requestsByProcessId = (new \BO\Zmsbackend\Request\Service\Request())
+            ->readAllRequestsForProcessIds($processIds, $resolveReferences - 1);
+
+        foreach ($processList as $process) {
+            if (!$process->hasId()) {
+                continue;
+            }
+            $process->requests = $requestsByProcessId[(int) $process->getId()]
+                ?? new \BO\Zmsentities\Collection\RequestList();
+        }
+
         return $processList;
     }
 
@@ -354,11 +403,12 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      * @param \DateTimeInterface $dateTime
      *
      * @return Collection
+     *
      */
     public function readProcessListByScopesAndTime(
         $scopeIds,
         \DateTimeInterface $dateTime,
-        $resolveReferences = 0,
+        int $resolveReferences = 0,
         $withEntities = []
     ) {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT, '', false, null, $withEntities);
@@ -417,8 +467,9 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      * Read processList by scopeId and status
      *
      * @return Collection
+     *
      */
-    public function readProcessListByScopeAndStatus($scopeId, $status, $resolveReferences = 0, $limit = 1000, $offset = null)
+    public function readProcessListByScopeAndStatus(int $scopeId, string $status, int $resolveReferences = 0, $limit = 1000, $offset = null)
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -429,119 +480,6 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
             ->addLimit($limit, $offset);
         $statement = $this->fetchStatement($query);
         return $this->readList($statement, $resolveReferences);
-    }
-
-    public function readSearch(array $parameter, $resolveReferences = 0, $limit = 100, $offset = 0)
-    {
-        $searchQuery = $this->extractSearchQuery($parameter);
-        $query = $this->buildSearchQuery($parameter, $resolveReferences);
-        if ($searchQuery !== null) {
-            $query->addOrderBySearchRelevance($searchQuery);
-        } else {
-            $query->addOrderByAppointmentDate();
-        }
-        $query->addLimit($limit, $offset > 0 ? $offset : null);
-
-        $statement = $this->fetchStatement($query);
-        return $this->readList($statement, $resolveReferences);
-    }
-
-    public function readSearchCount(array $parameter): int
-    {
-        $query = $this->buildSearchQuery($parameter, 0, false);
-        $query->addCountValue();
-
-        return (int) $this->fetchValue($query, $query->getParameters());
-    }
-
-    protected function buildSearchQuery(array $parameter, $resolveReferences = 0, bool $withEntityMapping = true): \BO\Zmsbackend\Process\Repository\Process
-    {
-        $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
-        $query
-            ->addResolvedReferences($resolveReferences)
-            ->addConditionAssigned()
-            ->addConditionIgnoreSlots();
-
-        if ($withEntityMapping) {
-            $query->addEntityMapping();
-        }
-
-        if (!empty($parameter['upcomingOnly'])) {
-            $now = class_exists('\App') && isset(\App::$now)
-                ? \App::$now
-                : new \DateTimeImmutable('now', new \DateTimeZone('Europe/Berlin'));
-            $query->addConditionUpcomingOnly($now);
-        }
-
-        if (array_key_exists('scopeIds', $parameter)) {
-            $scopeIds = is_array($parameter['scopeIds'])
-                ? $parameter['scopeIds']
-                : array_map('intval', explode(',', (string) $parameter['scopeIds']));
-            $scopeIds = array_values(array_filter($scopeIds));
-            $query->addConditionScopeIds($scopeIds);
-        }
-
-        if (isset($parameter['query'])) {
-            if (preg_match('#^\d+$#', $parameter['query'])) {
-                $query->addConditionProcessId($parameter['query']);
-                $query->addConditionSearch($parameter['query'], true);
-            } else {
-                $query->addConditionSearch($parameter['query']);
-            }
-            unset($parameter['query']);
-        }
-
-        if (count($parameter)) {
-            foreach (['upcomingOnly', 'scopeIds', 'page', 'limit', 'offset', 'includePast'] as $reservedKey) {
-                unset($parameter[$reservedKey]);
-            }
-            $query = $this->addSearchConditions($query, $parameter);
-        }
-
-        return $query;
-    }
-
-    protected function extractSearchQuery(array $parameter): ?string
-    {
-        if (!isset($parameter['query'])) {
-            return null;
-        }
-
-        $queryString = trim((string) $parameter['query']);
-        return $queryString !== '' ? $queryString : null;
-    }
-
-    protected function addSearchConditions(\BO\Zmsbackend\Process\Repository\Process $query, $parameter)
-    {
-        if (isset($parameter['processId']) && $parameter['processId']) {
-            $query->addConditionProcessId($parameter['processId']);
-        }
-        if (isset($parameter['name']) && $parameter['name']) {
-            $exact = (isset($parameter['exact'])) ? $parameter['exact'] : false;
-            $query->addConditionName($parameter['name'], $exact);
-        }
-        if (isset($parameter['amendment']) && $parameter['amendment']) {
-            $query->addConditionAmendment($parameter['amendment']);
-        }
-        if (isset($parameter['scopeId']) && $parameter['scopeId']) {
-            $query->addConditionScopeId($parameter['scopeId']);
-        }
-        if (isset($parameter['authKey']) && $parameter['authKey']) {
-            $query->addConditionAuthKey($parameter['authKey']);
-        }
-        if (isset($parameter['requestId']) && $parameter['requestId']) {
-            $query->addConditionRequestId($parameter['requestId']);
-        }
-        if (isset($parameter['provider']) && $parameter['provider']) {
-            $query->addConditionScopeNameSearch($parameter['provider']);
-        }
-        if (isset($parameter['service']) && $parameter['service']) {
-            $query->addConditionServiceNameSearch($parameter['service']);
-        }
-        if (isset($parameter['date']) && $parameter['date']) {
-            $query->addConditionDate($parameter['date']);
-        }
-        return $query;
     }
 
     /**
@@ -611,8 +549,9 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      * Read processList by mail address and statuslist
      *
      * @return Collection
+     *
      */
-    public function readListByMailAndStatusList(string $mailAddress, array $statusList, $resolveReferences = 1, $limit = 300): Collection
+    public function readListByMailAndStatusList(string $mailAddress, array $statusList, int $resolveReferences = 1, int $limit = 300): Collection
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -633,8 +572,9 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      * @param \BO\Zmsentities\Process $process
      *
      * @return Entity|null
+     *
      */
-    public function updateProcessStatus(Entity $process, $status, \DateTimeInterface $dateTime, $resolveReferences = 0, $userAccount = null)
+    public function updateProcessStatus(Entity $process, string $status, \DateTimeInterface $dateTime, $resolveReferences = 0, $userAccount = null)
     {
         $process = (new ProcessStatus())
             ->writeUpdatedStatus($process, $status, $dateTime, $resolveReferences, $userAccount);
@@ -774,7 +714,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $status;
     }
 
-    protected function writeRequestsToDb(\BO\Zmsentities\Process $process)
+    protected function writeRequestsToDb(\BO\Zmsentities\Process $process): void
     {
         // Beware of resolveReferences=0 to not delete the existing requests, except for queued processes
         $hasRequests = ($process->requests && count($process->requests));
@@ -797,7 +737,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         }
     }
 
-    protected function deleteRequestsForProcessId($processId)
+    protected function deleteRequestsForProcessId($processId): bool
     {
         $status = false;
         if (0 < $processId) {
@@ -865,7 +805,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $this->readList($statement, $resolveReferences);
     }
 
-    public function readEmailReminderProcessListByInterval(\DateTimeInterface $now, \DateTimeInterface $lastRun, $defaultReminderInMinutes, $limit = 500, $offset = null, $resolveReferences = 0)
+    public function readEmailReminderProcessListByInterval(\DateTimeInterface $now, \DateTimeInterface $lastRun, $defaultReminderInMinutes, $limit = 500, $offset = null, int $resolveReferences = 0)
     {
         $selectQuery = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $selectQuery
@@ -1043,7 +983,8 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
             ->addLimit($limit);
 
         $statement = $this->fetchStatement($query);
-        return $this->readList($statement, $resolveReferences);
+        $processList = $this->readProcessesWithoutRequests($statement);
+        return $this->attachAllRequestsInOneQuery($processList, (int) $resolveReferences);
     }
 
     public function readAssignedWorkstationIdForUpdate(int $processId): ?int

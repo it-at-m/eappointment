@@ -25,6 +25,10 @@ jobs:
           cache: 'npm'
           cache-dependency-path: zmscitizenview/package-lock.json
 
+      # package.json keeps the stable pin for main/tags; other refs test against npm "beta".
+      - name: Select muc-patternlab-vue channel
+        run: bash .github/scripts/zmscitizenview-select-patternlab.sh zmscitizenview
+
       - name: Install dependencies
         run: |
           cd zmscitizenview
@@ -111,4 +115,4 @@ jobs:
       - name: Set job result
         id: set-result
         if: always()
-        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
+        run: echo "result=${{ job.status }}" >> "$GITHUB_OUTPUT"

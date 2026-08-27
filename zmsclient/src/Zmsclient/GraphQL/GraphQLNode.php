@@ -8,12 +8,15 @@ class GraphQLNode extends GraphQLElement
 
     public $parent;
 
-    public function addElement($propertyName): self
+    public function addElement(string $propertyName): self
     {
         $this->propertyList[] = new GraphQLElement($propertyName);
         return $this;
     }
 
+    /**
+     * @return false|key-of<TArray>
+     */
     protected function getLastKey()
     {
         $keys = array_keys($this->propertyList);
@@ -75,6 +78,7 @@ class GraphQLNode extends GraphQLElement
         return $this;
     }
 
+    /** @psalm-api */
     public function getNodesFromIterable($data): array
     {
         $reduced = [];

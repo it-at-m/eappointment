@@ -2,9 +2,12 @@
 
 namespace BO\Zmsentities\Collection;
 
+/**
+ * @extends Base<\BO\Zmsentities\Owner>
+ */
 class OwnerList extends Base
 {
-    public const ENTITY_CLASS = '\BO\Zmsentities\Owner';
+    public const string ENTITY_CLASS = '\BO\Zmsentities\Owner';
 
     public function getOrganisationsByOwnerId($entityId)
     {
@@ -20,7 +23,11 @@ class OwnerList extends Base
         return $organisationList->sortByName();
     }
 
-    public function toDepartmentListByOrganisationName()
+    /**
+     * @return array[]
+     *
+     */
+    public function toDepartmentListByOrganisationName(): array
     {
         $list = array();
         foreach ($this as $entity) {
@@ -32,7 +39,7 @@ class OwnerList extends Base
         return $list;
     }
 
-    public function withAccess(\BO\Zmsentities\Useraccount $useraccount)
+    public function withAccess(\BO\Zmsentities\Useraccount $useraccount): static
     {
         $list = new static();
         foreach ($this as $owner) {

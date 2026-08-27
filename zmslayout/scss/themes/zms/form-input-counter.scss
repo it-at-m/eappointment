@@ -28,14 +28,21 @@
             background-color:       #ffffff !important;
             height:                 2.1em;
             font-weight:            bold;
+            width:                  3em;
+            padding-left:           1em;
+            // Hide native steppers if type=number is used anywhere
+            appearance:             textfield;
+            -moz-appearance:        textfield;
+
+            &::-webkit-inner-spin-button,
+            &::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin:             0;
+            }
         }
         input[value="0"] {
             background-color:       #f0f0f0 !important;
             font-weight:            normal;
-        }
-        input[type='number'] {
-            width:                  3em;
-            padding-left:           1em;
         }
     }
     .form-control {

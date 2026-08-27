@@ -11,7 +11,7 @@ class ScopeEmergencyRespondTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ScopeEmergencyRespond";
 
-    const SCOPE_ID = 143;
+    const int SCOPE_ID = 143;
 
     public function testNoLogin()
     {

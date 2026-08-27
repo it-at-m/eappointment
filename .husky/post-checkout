@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# $3 = 1 for branch checkout, 0 for file checkout
+if [ "$3" != "1" ]; then
+  exit 0
+fi
+
+# Drop Vite optimizeDeps cache so the next (or restarted) zmscitizenview
+# dev server does not keep stale "file missing" resolutions after a branch switch.
+# The citizenview container uses a named volume for node_modules — clear both
+# the host path (if present) and inside the running container.
+rm -rf zmscitizenview/node_modules/.vite
+
+if command -v podman >/dev/null 2>&1; then
+  podman exec zms-citizenview rm -rf /workspace/zmscitizenview/node_modules/.vite 2>/dev/null || true
+  podman restart zms-citizenview >/dev/null 2>&1 || true
+elif command -v docker >/dev/null 2>&1; then
+  docker exec zms-citizenview rm -rf /workspace/zmscitizenview/node_modules/.vite 2>/dev/null || true
+  docker restart zms-citizenview >/dev/null 2>&1 || true
+fi

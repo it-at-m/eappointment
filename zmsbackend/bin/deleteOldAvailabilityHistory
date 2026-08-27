@@ -1,0 +1,13 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+$verbose = (preg_grep('#^--?v(erbose)?$#', $argv)) ? true : false;
+$commit = (preg_grep('#^--commit$#', $argv)) ? true : false;
+
+$job = new \BO\Zmsbackend\Helper\AvailabilityHistoryCleanUpByCron($verbose);
+$job->startProcessing($commit);
+
+if (!$commit) {
+    \App::$log->notice('Use with --commit to delete entries.');
+}

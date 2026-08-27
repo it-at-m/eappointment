@@ -11,7 +11,7 @@ use \BO\Zmsentities\Collection\AvailabilityList;
  */
 class AvailabilityTest extends EntityCommonTests
 {
-    const DEFAULT_TIME = '2016-01-01 12:50:00'; //friday
+    const string DEFAULT_TIME = '2016-01-01 12:50:00'; //friday
 
     public $entityclass = '\BO\Zmsentities\Availability';
 

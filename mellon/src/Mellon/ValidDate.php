@@ -19,6 +19,7 @@ class ValidDate extends Valid
      * @param String $message error message in case of failure
      *
      * @return self
+     * @psalm-api
      */
     public function isDate($format = 'U', $message = 'no valid date')
     {

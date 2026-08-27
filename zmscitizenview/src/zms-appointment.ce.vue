@@ -44,7 +44,7 @@ const props = withDefaults(
   {
     baseUrl: undefined,
     appointmentDetailUrl: "appointment-detail.html",
-    showLoginOption: "false",
+    showLoginOption: "true",
   }
 );
 

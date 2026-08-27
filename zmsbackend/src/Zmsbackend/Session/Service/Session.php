@@ -25,7 +25,7 @@ class Session extends \BO\Zmsbackend\Base
         return $session;
     }
 
-    public function updateEntity($session)
+    public function updateEntity(Entity $session): Entity
     {
         $query = \BO\Zmsbackend\Session\Repository\Session::QUERY_WRITE;
         $this->perform($query, array(
@@ -37,7 +37,7 @@ class Session extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function deleteEntity($sessionName, $sessionId)
+    public function deleteEntity($sessionName, $sessionId): bool
     {
         $query = \BO\Zmsbackend\Session\Repository\Session::QUERY_DELETE;
         $result = $this->perform($query, array(
@@ -47,21 +47,23 @@ class Session extends \BO\Zmsbackend\Base
         return ($result) ? true : false;
     }
 
-    public function deleteByTimeInterval($sessionName, $deleteInSeconds)
+    public function deleteByTimeInterval(?string $sessionName, int $deleteInSeconds): void
     {
         $selectQuery = new \BO\Zmsbackend\Session\Repository\Session(\BO\Zmsbackend\Query\Base::SELECT);
         $selectQuery
             ->addEntityMapping()
-            ->addConditionSessionName($sessionName)
             ->addConditionSessionDeleteInterval($deleteInSeconds);
+        if ($sessionName !== null && $sessionName !== '') {
+            $selectQuery->addConditionSessionName($sessionName);
+        }
         $statement = $this->fetchStatement($selectQuery);
         while ($sessionData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $sessionData = (new \BO\Zmsbackend\Session\Repository\Session(\BO\Zmsbackend\Query\Base::SELECT))->postProcessJoins($sessionData);
             $entity = new Entity($sessionData);
             $deleteQuery = new \BO\Zmsbackend\Session\Repository\Session(\BO\Zmsbackend\Query\Base::DELETE);
             $deleteQuery
-                ->addConditionSessionName($sessionName)
-                ->addConditionSessionId($entity->id);
+                ->addConditionSessionName($entity['name'])
+                ->addConditionSessionId($entity['id']);
             $this->deleteItem($deleteQuery);
         }
     }

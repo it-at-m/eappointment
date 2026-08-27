@@ -24,12 +24,24 @@
           v-for="time in times"
           :key="time"
           class="grid-item"
+          :data-provider-id="String(providerIdFor(time))"
+          :data-timeslot="String(time)"
         >
           <muc-button
             class="timeslot"
-            :id="`provider-${officeId}-timeslot-${time}`"
-            :variant="isSlotSelected(officeId, time) ? 'primary' : 'secondary'"
-            @click="$emit('selectTimeSlot', { officeId, time })"
+            :id="`provider-${providerIdFor(time)}-timeslot-${time}`"
+            :data-provider-id="String(providerIdFor(time))"
+            :variant="
+              isSlotSelected(providerIdFor(time), time)
+                ? 'primary'
+                : 'secondary'
+            "
+            @click="
+              $emit('selectTimeSlot', {
+                officeId: providerIdFor(time),
+                time,
+              })
+            "
             :aria-label="timeSlotAriaLabel(time)"
           >
             <template #default>{{ formatTimeFromUnix(time) }}</template>
@@ -46,6 +58,7 @@ import { MucButton } from "@muenchen/muc-patternlab-vue";
 import { formatTimeFromUnix } from "@/utils/formatAppointmentDateTime";
 
 const props = defineProps<{
+  /** Display / section office (Ort title). */
   officeId: number | string;
   times: number[];
   timeLabel: string;
@@ -53,6 +66,14 @@ const props = defineProps<{
   officeNameById: (id: number | string) => string | null;
   isSlotSelected: (officeId: number | string, time: number) => boolean;
   t: (key: string) => string;
+  /**
+   * Real booking OfficeID for a timestamp (e.g. shared-booking peer).
+   * Defaults to section officeId when omitted.
+   */
+  officeIdForTime?: (
+    time: number,
+    displayOfficeId: number | string
+  ) => number | string;
 }>();
 
 defineEmits<{
@@ -62,9 +83,16 @@ defineEmits<{
   ): void;
 }>();
 
+const providerIdFor = (time: number): number | string =>
+  props.officeIdForTime?.(time, props.officeId) ?? props.officeId;
+
 const timeSlotAriaLabel = (time: number): string => {
   const timeText = formatTimeFromUnix(time);
-  const officeName = props.officeNameById(props.officeId) ?? "";
+  const providerId = providerIdFor(time);
+  const officeName =
+    props.officeNameById(providerId) ??
+    props.officeNameById(props.officeId) ??
+    "";
   const timeStampSuffix = props.t("timeStampSuffix");
 
   if (officeName) {

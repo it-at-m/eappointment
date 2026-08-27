@@ -1,6 +1,6 @@
 # eAppointment Documentation
 
-This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.io/eappointment/). It is versioned with the repository (`main`).
+This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.io/eappointment/). It is versioned with the repository (`next`).
 
 - **GitHub Repository** (manual): [https://github.com/it-at-m/eappointment/](https://github.com/it-at-m/eappointment/)
 
@@ -18,6 +18,7 @@ This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.i
 - [API reference](./operations/api-reference.md) — ReDoc and diagrams
 - [Module READMEs](./reference/module-readmes.md)
 - [DLDB Interface Documentation](./operations/dldb-interface-documentation.md)
+- [Ruppertstraße booking variants (ZMSKVR-1046)](./operations/ruppertstrasse-booking-variants.md) — multi-scope RR, shared booking, Pass exclusive/mixed
 - [Monolog logging](./operations/monolog-logging.md) — `App::$log`, `DEBUGLEVEL`
 - [Monitoring and status](./operations/monitoring-and-status.md) — Grafana, `GET /status/`
 

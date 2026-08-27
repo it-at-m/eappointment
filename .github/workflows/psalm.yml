@@ -10,7 +10,8 @@ on:
         type: boolean
   # Scheduled on main only until ~18k Psalm findings are cleared (PR/push would fail every CI).
   # Re-enable pull_request / push when errorLevel is stricter or debt is baselined.
-  # GitHub Actions cron is UTC; runs on the default branch (main) only.
+  # GitHub Actions cron is UTC; schedule runs on the default branch (main) only.
+  # workflow_dispatch works from any branch (including next) for manual verification.
   schedule:
     - cron: '0 4 * * *' # 06:00 Europe/Berlin (CEST) / 05:00 (CET)
 
@@ -26,7 +27,7 @@ concurrency:
 jobs:
   psalm:
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || github.ref == 'refs/heads/main'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
 
     strategy:
       fail-fast: false
@@ -60,7 +61,7 @@ jobs:
 
       - name: Get Composer cache directory
         id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
         working-directory: ${{ matrix.project }}
 
       - name: Cache Composer dependencies
@@ -136,7 +137,7 @@ jobs:
 
       - name: Upload SARIF results
         if: always() && steps.sarif.outputs.exists == 'true'
-        uses: github/codeql-action/upload-sarif@d1ba80a13dd99fba24a470575428917156a28b43 # v4.37.5
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
         with:
           sarif_file: results-${{ matrix.project }}.sarif
           checkout_path: ${{ matrix.project }}
@@ -158,7 +159,7 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       github.event_name == 'schedule' ||
-      (github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.run_dead_code == true)
+      (github.event_name == 'workflow_dispatch' && inputs.run_dead_code == true)
 
     steps:
       - name: Checkout repository (with submodules)
@@ -175,7 +176,7 @@ jobs:
 
       - name: Get Composer cache directory
         id: composer-cache-monorepo
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
         working-directory: zmsbackend
 
       - name: Cache Composer dependencies
@@ -256,7 +257,7 @@ jobs:
 
       - name: Upload monorepo SARIF results
         if: always() && steps.sarif_monorepo.outputs.exists == 'true'
-        uses: github/codeql-action/upload-sarif@d1ba80a13dd99fba24a470575428917156a28b43 # v4.37.5
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
         with:
           sarif_file: results-monorepo.sarif
           category: .github/workflows/psalm.yml:psalm-dead-code

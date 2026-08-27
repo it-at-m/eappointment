@@ -12,6 +12,7 @@ use BO\Mellon\Validator;
 use BO\Zmsbackend\Process\Service\ProcessStatusArchived as Query;
 use BO\Zmsbackend\Process\Service\Process;
 use BO\Zmsbackend\Workstation\Service\Workstation;
+use BO\Zmsbackend\ProcessSearchHistory\Service\ProcessSearchHistory as HistoryService;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -48,7 +49,7 @@ class ProcessFinished extends \BO\Zmsbackend\Api\BaseController
             );
             (new \BO\Zmsbackend\Workstation\Service\Workstation())->writeRemovedProcess($workstation);
         } else {
-            $query->writeEntityFinished($process, \App::$now, false, $workstation->getUseraccount());
+            $query->writeEntityFinished($process, \App::$now, false, $workstation->getUseraccount(), HistoryService::STATUS_COMPLETED);
         }
 
         if ($survey) {
@@ -63,14 +64,17 @@ class ProcessFinished extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    protected function testProcessInWorkstation($process, $workstation)
+    protected function testProcessInWorkstation(\BO\Zmsentities\Process $process, $workstation): void
     {
         $department = (new \BO\Zmsbackend\Department\Service\Department())->readByScopeId($workstation->scope['id'], 1);
         $workstation->process = $process;
         $workstation->validateProcessScopeAccess($department->getScopeList());
     }
 
-    protected function testProcessData($process)
+    /**
+     * @return void
+     */
+    protected function testProcessData(\BO\Zmsentities\Process $process)
     {
         $hasValidId = (
             $process->hasId() &&
@@ -88,7 +92,7 @@ class ProcessFinished extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
-    protected function writeSurveyMail($process)
+    protected function writeSurveyMail($process): void
     {
         $process = clone $process;
         foreach ($process->getClients() as $client) {

@@ -10,21 +10,21 @@ define('ZMS_STATISTIC_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '/c
 
 class App extends \BO\Zmsstatistic\Application
 {
-    const IDENTIFIER = ZMS_IDENTIFIER;
-    const DEBUG = false;
-    const TWIG_CACHE = ZMS_STATISTIC_TWIG_CACHE;
+    const string IDENTIFIER = ZMS_IDENTIFIER;
+    const bool DEBUG = false;
+    const mixed TWIG_CACHE = ZMS_STATISTIC_TWIG_CACHE;
 
     /**
      * HTTP url for api
      */
-    const HTTP_BASE_URL = ZMS_API_URL;
+    const string HTTP_BASE_URL = ZMS_API_URL;
 
     /**
      * Name of the module
      */
-    const MODULE_NAME = ZMS_MODULE_NAME;
+    const string MODULE_NAME = ZMS_MODULE_NAME;
 
-    public static $http_curl_config = [
+    public static array $http_curl_config = [
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_TIMEOUT => ZMS_CURL_TIMEOUT,
         //CURLOPT_VERBOSE => true,

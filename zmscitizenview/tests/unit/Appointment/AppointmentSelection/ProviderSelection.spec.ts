@@ -148,9 +148,8 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
         address: { street: "Test", house_number: "4" },
         scope: { id: "102526" },
       },
-      // Realistic Ruppertstraße pair: 10489 is restricted, 10502 is clean.
-      // Both carry allowDisabledServicesMix group [10489, 10502] so they are kept
-      // and resolved by grouping. JumpIn with 10489 auto-selects 10502 when exclusive.
+      // Realistic Ruppertstraße pair: 10489 is restricted for Pass services, 10502 is clean.
+      // Both carry allowDisabledServicesMix [10489, 10502]; mix-group collapse picks one Ort.
       {
         id: 10489,
         name: "Bürgerbüro Ruppertstraße",
@@ -192,37 +191,183 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
         },
       });
 
-      await nextTick(); // Wait for onMounted to run
-      await flushPromises(); // Wait for showSelectionForProvider -> fetchAvailableDays
+      await nextTick();
+      await flushPromises();
       const renderedProviders = wrapper.vm
         .selectableProviders as typeof testProviders;
       const resultIds = renderedProviders.map((p) => p.id).sort();
       expect(resultIds).toEqual(expectedIds.sort());
     };
 
-    // 1. Only core passport service 1063453 selected:
-    //    10489 is restricted for 1063453, 10502 is clean.
-    //    Grouping sees all selected services are in disabledByServices → shows 10502.
+    // Pass-only → exclusive → 10502
     await runTest([1063453], [102522, 102523, 102524, 102526, 10502, 54261]);
-
-    // 2. Harmless service 1234567:
-    //    Not present in any disabledByServices → both 10489 and 10502 allowed.
-    //    Grouping prefers the restricted/clean combo so 10489 is returned for Ruppertstraße.
+    // Harmless → mixed/non-exclusive → 10489
     await runTest([1234567], [102522, 102523, 102524, 102526, 10489, 54261]);
-
-    // 3. Two core passport services 1063453 + 1063441:
-    //    All selected services are in 10489.disabledByServices → exclusive match → show 10502.
+    // Two Pass services → exclusive → 10502
     await runTest(
       [1063453, 1063441],
       [102522, 102523, 102524, 102526, 10502, 54261]
     );
-
-    // 4. Mixed core + harmless: 1063453 + 1234567.
-    //    Only some selected services are in 10489.disabledByServices → mixed → keep 10489 for Ruppertstraße.
+    // Pass + harmless → mixed → 10489
     await runTest(
       [1063453, 1234567],
       [102522, 102523, 102524, 102526, 10489, 54261]
     );
+  });
+
+  it("does not collapse same-name offices without allowDisabledServicesMix", async () => {
+    const testProviders = [
+      {
+        id: 10489,
+        name: "Bürgerbüro Ruppertstraße",
+        disabledByServices: [],
+        address: { street: "Ruppertstraße", house_number: "19" },
+        scope: { id: "160" },
+      },
+      {
+        id: 10503,
+        name: "Bürgerbüro Ruppertstraße",
+        disabledByServices: [],
+        address: { street: "Ruppertstraße", house_number: "19" },
+        scope: { id: "372" },
+      },
+    ];
+
+    const wrapper = createWrapper({
+      selectedService: {
+        id: 1063475,
+        subServices: [],
+        providers: testProviders,
+      },
+    });
+
+    await nextTick();
+    await flushPromises();
+
+    const resultIds = (wrapper.vm.selectableProviders as typeof testProviders)
+      .map((p) => p.id)
+      .sort();
+    expect(resultIds).toEqual([10489, 10503]);
+  });
+
+  it("collapses sharedBookingOfficeIds peers to one Ort (lowest id)", async () => {
+    const testProviders = [
+      {
+        id: 10489,
+        name: "Bürgerbüro Ruppertstraße",
+        disabledByServices: [],
+        sharedBookingOfficeIds: [10489, 10503],
+        address: { street: "Ruppertstraße", house_number: "19" },
+        scope: { id: "160" },
+      },
+      {
+        id: 10503,
+        name: "Bürgerbüro Ruppertstraße (Ausbildung)",
+        disabledByServices: [],
+        sharedBookingOfficeIds: [10489, 10503],
+        address: { street: "Ruppertstraße", house_number: "19" },
+        scope: { id: "372" },
+      },
+    ];
+
+    const wrapper = createWrapper({
+      selectedService: {
+        id: 1063475,
+        subServices: [],
+        providers: testProviders,
+      },
+    });
+
+    await nextTick();
+    await flushPromises();
+
+    const selectable = wrapper.vm.selectableProviders as typeof testProviders;
+    expect(selectable.map((p) => p.id)).toEqual([10489]);
+    expect(selectable[0].sharedBookingOfficeIds).toEqual([10489, 10503]);
+  });
+
+  it("expands sharedBookingOfficeIds into available-calendar officeIds", async () => {
+    const { fetchAvailableCalendar } = await import("@/api/ZMSAppointmentAPI");
+    const testProviders = [
+      {
+        id: 10489,
+        name: "Bürgerbüro Ruppertstraße",
+        disabledByServices: [],
+        sharedBookingOfficeIds: [10489, 10503],
+        address: { street: "Ruppertstraße", house_number: "19" },
+        scope: { id: "160" },
+      },
+      {
+        id: 10503,
+        name: "Bürgerbüro Ruppertstraße (Ausbildung)",
+        disabledByServices: [],
+        sharedBookingOfficeIds: [10489, 10503],
+        address: { street: "Ruppertstraße", house_number: "19" },
+        scope: { id: "372" },
+      },
+    ];
+
+    createWrapper({
+      selectedService: {
+        id: 1063475,
+        subServices: [],
+        providers: testProviders,
+      },
+    });
+
+    await nextTick();
+    await flushPromises();
+
+    expect(fetchAvailableCalendar).toHaveBeenCalled();
+    const officeIdsArg = (fetchAvailableCalendar as ReturnType<typeof vi.fn>)
+      .mock.calls[0][1] as number[];
+    expect([...officeIdsArg].sort((a, b) => a - b)).toEqual([10489, 10503]);
+  });
+
+  it("does not expand sharedBooking peer when a combined service is not offered there", async () => {
+    const { fetchAvailableCalendar } = await import("@/api/ZMSAppointmentAPI");
+    const mainAndPeer = [
+      {
+        id: 10489,
+        name: "Bürgerbüro Ruppertstraße",
+        disabledByServices: [],
+        sharedBookingOfficeIds: [10489, 10503],
+        address: { street: "Ruppertstraße", house_number: "19" },
+        scope: { id: "160" },
+      },
+      {
+        id: 10503,
+        name: "Bürgerbüro Ruppertstraße (Ausbildung)",
+        disabledByServices: [],
+        sharedBookingOfficeIds: [10489, 10503],
+        address: { street: "Ruppertstraße", house_number: "19" },
+        scope: { id: "372" },
+      },
+    ];
+    const mainOnly = [mainAndPeer[0]];
+
+    createWrapper({
+      selectedService: {
+        id: 1080843,
+        providers: mainAndPeer,
+        subServices: [
+          {
+            id: 10224136,
+            count: 1,
+            // Subservice not offered at Ausbildung 10503
+            providers: mainOnly,
+          },
+        ],
+      },
+    });
+
+    await nextTick();
+    await flushPromises();
+
+    expect(fetchAvailableCalendar).toHaveBeenCalled();
+    const officeIdsArg = (fetchAvailableCalendar as ReturnType<typeof vi.fn>)
+      .mock.calls[0][1] as number[];
+    expect([...officeIdsArg].sort((a, b) => a - b)).toEqual([10489]);
   });
 
   it("auto-selects equivalent office in mix group when JumpIn has different ID (10489 vs 10502)", async () => {
@@ -261,13 +406,12 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
     });
     await nextTick();
     await flushPromises();
-    // Exclusive mode: only 10502 shown (10489 restricted for 1063441)
+    // Pass exclusive: mix-group collapse keeps 10502 only
     const selectableIds = wrapper.vm.selectableProviders.map(
       (p: { id: number }) => p.id
     );
     expect(selectableIds).toContain(10502);
     expect(selectableIds).not.toContain(10489);
-    // 10502 should be auto-selected because JumpIn had 10489 (same mix group)
     const selectedProviders = wrapper.vm.selectedProviders as Record<
       string,
       boolean

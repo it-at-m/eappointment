@@ -2,7 +2,10 @@
 
 namespace BO\Slim;
 
-define('ZMS_SESSION_DURATION', getenv('ZMS_SESSION_DURATION') ? getenv('ZMS_SESSION_DURATION') : 28800);
+define(
+    'ZMS_SESSION_DURATION',
+    (($value = getenv('ZMS_SESSION_DURATION')) !== false && $value !== '') ? $value : 36000
+);
 if (!defined('ZMS_SLIM_TWIG_CACHE')) {
     $value = getenv('ZMS_SLIM_TWIG_CACHE');
     define('ZMS_SLIM_TWIG_CACHE', ($value === 'false') ? false : ($value ?: false));
@@ -14,27 +17,37 @@ class Application
     /**
      * Root directory for the project
      */
-    const APP_PATH = '.';
-/**
+    public const string APP_PATH = '.';
+
+    /**
      * Name of the application
      */
-    const IDENTIFIER = 'unnamed slim project';
+    public const string IDENTIFIER = 'unnamed slim project';
 
-    public const MODULE_NAME = 'unnamed slim module';
-/**
+    public const string MODULE_NAME = 'unnamed slim module';
+
+    /**
      * Flag to enable debugging mode for application,
      * if debug is enabled, an exception is shown with a backtrace
      */
-    const DEBUG = false;
-    const DEBUGLEVEL = ZMS_DEBUGLEVEL;
+    public const bool DEBUG = false;
+    const string DEBUGLEVEL = ZMS_DEBUGLEVEL;
     const SESSION_DURATION = ZMS_SESSION_DURATION;
-    const LOG_ERRORS = true;
-    const LOG_DETAILS = true;
+    const string SECURE_TOKEN = '';
+    const string CONFIG_SECURE_TOKEN = '';
+    const bool RIGHTSCHECK_ENABLED = true;
+    const int JSON_COMPRESS_LEVEL = 1;
+    const string HTTP_BASE_URL = '';
+    const string CLIENTKEY = '';
+    const bool MAINTENANCE_MODE_ENABLED = false;
+    const string ZMS_CITIZENLOGIN_EXTERNALUSERID_CLAIM_NAME = '';
+    const bool LOG_ERRORS = true;
+    const bool LOG_DETAILS = true;
 /**
      * Settings for region
      */
-    const CHARSET = 'UTF-8';
-    const TIMEZONE = 'Europe/Berlin';
+    const string CHARSET = 'UTF-8';
+    const string TIMEZONE = 'Europe/Berlin';
     public static $includeUrl = null;
 /*
      * -----------------------------------------------------------------------
@@ -56,7 +69,7 @@ class Application
 /**
      * Define the path for the templates relative to APP_PATH
      */
-    const TEMPLATE_PATH = '/templates/';
+    const string TEMPLATE_PATH = '/templates/';
 /**
      * Define path for Twig template cache
      */
@@ -64,11 +77,11 @@ class Application
 /**
      * Set this option, if ESI should be used
      */
-    const ESI_ENABLED = true;
+    const bool ESI_ENABLED = true;
 /**
      * translator class
      */
-    const TRANSLATOR_CLASS = '\\Symfony\\Component\\Translation\\Translator';
+    const string TRANSLATOR_CLASS = '\\Symfony\\Component\\Translation\\Translator';
 /**
      * Default parameters for templates
      *
@@ -93,7 +106,7 @@ class Application
      * @var \BO\Slim\Language $language
      *
      */
-    const MULTILANGUAGE = true;
+    const bool MULTILANGUAGE = true;
     public static $languagesource = 'json';
     public static $language = null;
     public static $supportedLanguages = array(

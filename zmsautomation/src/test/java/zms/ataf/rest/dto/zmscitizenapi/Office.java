@@ -30,6 +30,9 @@ public class Office {
     private Object scope;
     private List<Integer> disabledByServices;
     private String slotsPerAppointment;
+    /** Shared-booking peers (e.g. Haupt 10489 + Ausbildung 10503). */
+    private List<Integer> sharedBookingOfficeIds;
+    private List<Integer> allowDisabledServicesMix;
 
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)

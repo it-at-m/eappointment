@@ -6,6 +6,9 @@ use BO\Zmsentities\Exchange;
 
 class ExchangeWaitingowner extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\ExchangeSubject
 {
+    /**
+     * @return Exchange
+     */
     #[\Override]
     public function readEntity(
         $subjectid,
@@ -65,6 +68,9 @@ class ExchangeWaitingowner extends \BO\Zmsbackend\Base implements \BO\Zmsbackend
         return $entity;
     }
 
+    /**
+     * @return Exchange
+     */
     #[\Override]
     public function readSubjectList()
     {
@@ -83,6 +89,9 @@ class ExchangeWaitingowner extends \BO\Zmsbackend\Base implements \BO\Zmsbackend
         return $entity;
     }
 
+    /**
+     * @return Exchange
+     */
     #[\Override]
     public function readPeriodList($subjectid, $period = 'day')
     {

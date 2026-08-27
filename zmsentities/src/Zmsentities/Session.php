@@ -5,16 +5,26 @@ namespace BO\Zmsentities;
 /**
  * Extension for Twig and Slim
  *
+ * Schema-backed entity (ArrayObject::ARRAY_AS_PROPS); document dynamic keys for Psalm.
+ *
+ * @property string $id
+ * @property string $name
+ * @property array $content
+ *
  * @SuppressWarnings(PublicMethod)
  * @SuppressWarnings(TooManyMethods)
  * @SuppressWarnings(Complexity)
  */
 class Session extends Schema\Entity
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "session.json";
 
+    /**
+     * @return ((int|int[]|string)[]|string)[][]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -99,6 +109,10 @@ class Session extends Schema\Entity
         return $this->toProperty()->content->basket->authKey->get();
     }
 
+    /**
+     * @return (int|string)|false|null
+     *
+     */
     public function getLastStep()
     {
         $steps = $this->toProperty()->content->human->step->get();
@@ -111,7 +125,7 @@ class Session extends Schema\Entity
         return $this->toProperty()->content->status->get();
     }
 
-    public function removeLastStep()
+    public function removeLastStep(): static
     {
         unset($this->content['human']['step'][$this->getLastStep()]);
         return $this;
@@ -139,67 +153,67 @@ class Session extends Schema\Entity
         return $this->toProperty()->content->entry->get();
     }
 
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return (! $this->hasProvider() && ! $this->hasRequests() && ! $this->hasScope()) ? true : false;
     }
 
-    public function isInChange()
+    public function isInChange(): bool
     {
         return ('inChange' == $this->getStatus()) ? true : false;
     }
 
-    public function isStalled()
+    public function isStalled(): bool
     {
         return ('stalled' == $this->getStatus()) ? true : false;
     }
 
-    public function isReserved()
+    public function isReserved(): bool
     {
         return ('reserved' == $this->getStatus()) ? true : false;
     }
 
-    public function isConfirmed()
+    public function isConfirmed(): bool
     {
         return ('confirmed' == $this->getStatus()) ? true : false;
     }
 
-    public function isPreconfirmed()
+    public function isPreconfirmed(): bool
     {
         return ('preconfirmed' == $this->getStatus()) ? true : false;
     }
 
-    public function isFinished()
+    public function isFinished(): bool
     {
         return ('finished' == $this->getStatus()) ? true : false;
     }
 
-    public function isProcessDeleted()
+    public function isProcessDeleted(): bool
     {
         return ! $this->hasProcess();
     }
 
-    public function hasStatus()
+    public function hasStatus(): bool
     {
         return (null === $this->getStatus()) ? false : true;
     }
 
-    public function hasProcess()
+    public function hasProcess(): bool
     {
         return (null === $this->getProcess()) ? false : true;
     }
 
-    public function hasAuthKey()
+    public function hasAuthKey(): bool
     {
         return (null === $this->getAuthKey()) ? false : true;
     }
 
-    public function hasChangedProcess()
+    public function hasChangedProcess(): bool
     {
         return ('inChange' == $this->getStatus()) ? true : false;
     }
 
-    public function hasPreviousAppointmentSearch()
+    public function hasPreviousAppointmentSearch(): bool
     {
         return ('inProgress' == $this->getStatus()) ? true : false;
     }
@@ -267,7 +281,7 @@ class Session extends Schema\Entity
          ) ? true : false;
     }
 
-    public function withOidcDataOnly()
+    public function withOidcDataOnly(): static
     {
         $entity = clone $this;
         if ($entity->toProperty()->content->basket->isAvailable()) {

@@ -15,6 +15,15 @@
     class="m-component"
     :id="`process-${appointment?.processId}-displayNumber-${appointment?.displayNumber}`"
   >
+    <muc-banner
+      v-if="appointmentAlreadyActivated && !isRebooking"
+      class="already-activated-banner"
+      variant="content"
+      type="success"
+      data-test="appointment-already-activated-banner"
+    >
+      {{ t("appointmentAlreadyActivatedHeader") }}
+    </muc-banner>
     <div class="m-contact">
       <div class="m-contact__body">
         <div class="m-contact__section">
@@ -354,7 +363,7 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 
-import { MucButton, MucCallout } from "@muenchen/muc-patternlab-vue";
+import { MucBanner, MucButton, MucCallout } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, ref } from "vue";
 
 import {
@@ -376,11 +385,17 @@ import { containsParagraphTag } from "@/utils/containsParagraphTag";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
-defineProps<{
-  isRebooking: boolean;
-  rebookOrCancelDialog: boolean;
-  t: (key: string) => string;
-}>();
+withDefaults(
+  defineProps<{
+    appointmentAlreadyActivated?: boolean;
+    isRebooking: boolean;
+    rebookOrCancelDialog: boolean;
+    t: (key: string) => string;
+  }>(),
+  {
+    appointmentAlreadyActivated: false,
+  }
+);
 
 const emit =
   defineEmits<
@@ -500,6 +515,11 @@ const infoForAppointmentContainsPTag = computed(() =>
 
 <style lang="scss" scoped>
 @use "@/styles/breakpoints.scss" as *;
+
+.already-activated-banner {
+  margin-bottom: 2.5rem;
+}
+
 .border-bottom {
   border-bottom: 1px solid var(--color-neutrals-blue);
 }

@@ -225,10 +225,13 @@ Together, these two generated files are the local canonical snapshots consumed b
 - `LOCATION_PRIO_BY_DISPLAY_NAME`: map of office display names to numeric priority (`prio`) used to rank/sort specific offices (for example Bürgerbüros and Feuerwachen).
 - `DONT_SHOW_LOCATION_BY_SERVICES`: per-location service blacklist rules written to `dontShowByServices` so certain services are hidden at selected offices.
 - `LOCATIONS_ALLOW_DISABLED_MIX`: groups of equivalent office IDs that get `allowDisabledServicesMix`, enabling "exclusive vs mixed" disabled-service behavior across linked offices (for JumpIn auto-selection parity).
+- `LOCATIONS_SHARED_BOOKING`: groups of office IDs that get `sharedBookingOfficeIds` for pooled Bürgeransicht booking (one Ort checkbox, all peer OfficeIDs on the calendar; distinct from exclusive/mixed mix).
 - `DONT_SHOW_SERVICE_ON_START_PAGE`: list of service IDs that set `showOnStartPage=false` during service mapping.
 - `SERVICE_COMBINATIONS`: booking-combination matrix; each row starts with a base service ID and defines which services can be booked together. Used by `getServiceCombinations()` to populate `combinable`.
 
 These constants are part of the Munich parity layer and mirror the business-rule intent from the internal mapper setup.
+
+How these rules play out for Bürgerbüro Ruppertstraße (multi-scope RR, Ausbildung shared booking, Pass exclusive/mixed) is documented with diagrams in [Ruppertstraße booking variants (ZMSKVR-1046)](./ruppertstrasse-booking-variants.md).
 
 ## How `zmscitizenapi` Consumes the Mapping
 
@@ -241,6 +244,7 @@ The office mapper reads provider data and forwards Munich-specific normalized fi
 - `provider->data['showAlternativeLocations']` -> `Office.showAlternativeLocations`
 - `provider->data['dontShowByServices']` -> `Office.disabledByServices`
 - `provider->data['allowDisabledServicesMix']` -> `Office.allowDisabledServicesMix` (normalized to int array)
+- `provider->data['sharedBookingOfficeIds']` -> `Office.sharedBookingOfficeIds` (normalized to int array)
 - `provider->data['prio']` -> `Office.priority`
 - `provider->data['slotTimeInMinutes']` -> `Office.slotTimeInMinutes`
 
@@ -260,6 +264,7 @@ The constants in `zmsdldb/src/Zmsdldb/Transformers/Munich.php` are not only inte
 - `LOCATION_PRIO_BY_DISPLAY_NAME` -> `prio` -> `Office.priority`
 - `DONT_SHOW_LOCATION_BY_SERVICES` -> `dontShowByServices` -> `Office.disabledByServices`
 - `LOCATIONS_ALLOW_DISABLED_MIX` -> `allowDisabledServicesMix` -> `Office.allowDisabledServicesMix`
+- `LOCATIONS_SHARED_BOOKING` -> `sharedBookingOfficeIds` -> `Office.sharedBookingOfficeIds`
 - `DONT_SHOW_SERVICE_ON_START_PAGE` -> `showOnStartPage` -> `Service.showOnStartPage`
 - `SERVICE_COMBINATIONS` -> `combinable` -> `Service.combinable`
 

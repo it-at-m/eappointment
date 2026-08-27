@@ -17,7 +17,7 @@ define(
 
 define(
     'ZMS_ADMIN_SESSION_DURATION',
-    getenv('ZMS_ADMIN_SESSION_DURATION') ? getenv('ZMS_ADMIN_SESSION_DURATION') : 28800
+    (($value = getenv('ZMS_ADMIN_SESSION_DURATION')) !== false && $value !== '') ? $value : 36000
 );
 
 if (($token = getenv('ZMS_CONFIG_SECURE_TOKEN')) === false || $token === '') {
@@ -37,17 +37,17 @@ class Application extends \BO\Slim\Application
      * Name of the application
      *
      */
-    const IDENTIFIER = 'zms';
+    const string IDENTIFIER = 'zms';
 
-    const MODULE_NAME = 'zmsadmin';
+    const string MODULE_NAME = 'zmsadmin';
 
     public static ?CacheInterface $cache = null;
 
-    const DEBUG = false;
+    const bool DEBUG = false;
 
     const TWIG_CACHE = ZMS_ADMIN_TWIG_CACHE;
 
-    const TEMPLATE_PATH = ZMS_ADMIN_TEMPLATE_FOLDER;
+    const string TEMPLATE_PATH = ZMS_ADMIN_TEMPLATE_FOLDER;
 
     const SESSION_DURATION = ZMS_ADMIN_SESSION_DURATION;
 
@@ -68,7 +68,7 @@ class Application extends \BO\Slim\Application
     /**
      * language preferences
      */
-    const MULTILANGUAGE = true;
+    const bool MULTILANGUAGE = true;
 
     public static $locale = 'de';
     public static $supportedLanguages = array(
@@ -88,7 +88,7 @@ class Application extends \BO\Slim\Application
     /**
     * config preferences
     */
-    const CONFIG_SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
+    const string CONFIG_SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
 
     /**
      * signature key for url signature to save query paramter with hash
@@ -104,14 +104,14 @@ class Application extends \BO\Slim\Application
 
     public static $http_curl_config = array();
 
-    const CLIENTKEY = '';
+    const string CLIENTKEY = '';
 
-    const JSON_COMPRESS_LEVEL = 1;
+    const int JSON_COMPRESS_LEVEL = 1;
 
     /**
      * HTTP url for api
      */
-    const HTTP_BASE_URL = 'http://user:pass@host.tdl';
+    const string HTTP_BASE_URL = 'http://user:pass@host.tdl';
 
     public static function initialize(): void
     {

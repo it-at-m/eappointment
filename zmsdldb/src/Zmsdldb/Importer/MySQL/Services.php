@@ -4,16 +4,21 @@ namespace BO\Zmsdldb\Importer\MySQL;
 
 class Services extends Base
 {
-    protected $entityClass = '\\BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Service';
+    /** @var class-string<\BO\Zmsdldb\Importer\MySQL\Entity\Base>|null */
+    protected ?string $entityClass = \BO\Zmsdldb\Importer\MySQL\Entity\Service::class;
 
+    /** @psalm-api */
     #[\Override]
     public function runImport(): bool
     {
         try {
             if ($this->needsUpdate()) {
                 foreach ($this->getIterator() as $service) {
+                    if (!is_array($service)) {
+                        continue;
+                    }
                     $service = $this->createEntity($service);
-                    $this->removeEntityFromCurrentList($service->get('id'));
+                    $this->removeEntityFromCurrentList((int) $service->get('id'));
                     $service->save();
                 }
             }

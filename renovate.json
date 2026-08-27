@@ -4,7 +4,10 @@
 
   "ignorePaths": ["zmsbase/**"],
 
-  "baseBranches": ["next", "/^release\\/.*/"],
+  "baseBranchPatterns": [
+    "next",
+    "/^release\\/.*/"
+  ],
 
   "timezone": "Europe/Berlin",
   "schedule": ["* 0-4 * * *"]
