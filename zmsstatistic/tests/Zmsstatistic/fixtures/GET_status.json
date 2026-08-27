@@ -18,6 +18,7 @@
     },
     "processes": {
       "confirmed": "86861",
+      "confirmedWithExternalUserId": "42",
       "called": "4",
       "parked": "2",
       "deleted": "3",
