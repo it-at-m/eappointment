@@ -98,6 +98,11 @@ const resultLabel = computed(() => {
   return when ? `${statusWord} ${when}` : statusWord;
 });
 
+const toggleLabel = computed(() => {
+  const title = meta.value.title || props.id;
+  return resultLabel.value ? `${title}. ${resultLabel.value}` : title;
+});
+
 const isTicketTag = (tag) => /^@(?:ZMSKVR|ZMS)-\d+$/i.test(tag);
 
 const copiedKind = ref("");
@@ -205,6 +210,7 @@ onUnmounted(() => {
         class="cucumber-feature__toggle"
         :aria-expanded="isOpen"
         :aria-controls="panelId"
+        :aria-label="toggleLabel"
         @click="onToggle"
       >
         <span
@@ -234,7 +240,7 @@ onUnmounted(() => {
               class="cucumber-feature__result"
               :class="`cucumber-feature__result--${runResult.status}`"
               :data-tooltip="resultLabel"
-              :aria-label="resultLabel"
+              aria-hidden="true"
             >
               <CucumberStatusIcon :status="runResult.status" />
             </span>
