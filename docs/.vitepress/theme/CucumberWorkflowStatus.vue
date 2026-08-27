@@ -3,6 +3,10 @@ import { useData } from "vitepress";
 import { computed, onMounted, ref } from "vue";
 
 import {
+  CUCUMBER_DEFAULT_BRANCH,
+  ensureCucumberPageState,
+  formatBerlinDateTime,
+  noteCucumberGithubRateLimit,
   ZMSAUTOMATION_BADGE_URL,
   ZMSAUTOMATION_SCHEDULED_RUNS_API,
   ZMSAUTOMATION_WORKFLOW_URL,
@@ -16,6 +20,7 @@ const loadState = ref("loading");
 const run = ref(null);
 
 onMounted(async () => {
+  ensureCucumberPageState();
   try {
     const response = await fetch(ZMSAUTOMATION_SCHEDULED_RUNS_API, {
       headers: {
@@ -23,6 +28,7 @@ onMounted(async () => {
         "X-GitHub-Api-Version": "2022-11-28",
       },
     });
+    await noteCucumberGithubRateLimit(response);
     if (!response.ok) {
       throw new Error(String(response.status));
     }
@@ -46,18 +52,11 @@ const formattedTime = computed(() => {
   if (!iso) {
     return "";
   }
-  return new Intl.DateTimeFormat(isDe.value ? "de-DE" : "en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "Europe/Berlin",
-    timeZoneName: "short",
-  }).format(new Date(iso));
+  return formatBerlinDateTime(iso, isDe.value ? "de" : "en");
 });
 
 const scheduleLabel = computed(() => {
+  const branch = CUCUMBER_DEFAULT_BRANCH;
   if (loadState.value === "loading") {
     return isDe.value
       ? "Letzter geplanter Lauf wird geladen…"
@@ -65,8 +64,8 @@ const scheduleLabel = computed(() => {
   }
   if (loadState.value === "empty") {
     return isDe.value
-      ? "Kein geplanter Lauf auf next gefunden"
-      : "No scheduled run on next found";
+      ? `Kein geplanter Lauf auf ${branch} gefunden`
+      : `No scheduled run on ${branch} found`;
   }
   if (loadState.value === "error") {
     return isDe.value
@@ -74,8 +73,8 @@ const scheduleLabel = computed(() => {
       : "Last scheduled run unavailable";
   }
   return isDe.value
-    ? `Letzter geplanter Lauf auf next: ${formattedTime.value}`
-    : `Last scheduled run on next: ${formattedTime.value}`;
+    ? `Letzter geplanter Lauf auf ${branch}: ${formattedTime.value}`
+    : `Last scheduled run on ${branch}: ${formattedTime.value}`;
 });
 </script>
 
@@ -88,7 +87,7 @@ const scheduleLabel = computed(() => {
     >
       <img
         :src="ZMSAUTOMATION_BADGE_URL"
-        alt="zmsautomation CI status"
+        alt="zmsautomation CI status on next"
       />
     </a>
     <p class="cucumber-workflow-status__run">

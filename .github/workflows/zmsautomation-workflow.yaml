@@ -651,6 +651,18 @@ jobs:
             exit 1
           fi
 
+      - name: Write branch meta for status publish
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p zmsautomation/target
+          jq -n \
+            --arg branch "${{ steps.tags.outputs.branch_name }}" \
+            --arg slug "${{ steps.tags.outputs.branch_slug }}" \
+            '{branch: $branch, branchSlug: $slug}' \
+            > zmsautomation/target/branch-meta.json
+
       - name: Upload test reports (best effort)
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -658,6 +670,7 @@ jobs:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
             zmsautomation/target/cucumber.json
+            zmsautomation/target/branch-meta.json
             zmsautomation/target/site/cucumber-pretty/**
             zmsautomation/target/surefire-reports/**
             zmsautomation/target/screenshots/**
@@ -695,3 +708,89 @@ jobs:
           name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: artifacts/container-logs/**
           if-no-files-found: warn
+
+  publish-cucumber-status:
+    name: Publish cucumber status JSON
+    needs: zms-automation
+    if: ${{ always() && !cancelled() }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Download cucumber reports
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          pattern: zmsautomation-ataf-reports-*
+          path: cucumber-reports
+          merge-multiple: false
+          if-no-artifact-found: ignore
+
+      - name: Build public cucumber status JSON
+        id: status
+        env:
+          RUN_ID: ${{ github.run_id }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          RUN_STARTED_AT="$(curl -fsSL \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            | jq -r '.run_started_at // empty')"
+          export RUN_STARTED_AT
+          mkdir -p "${RUNNER_TEMP}/previous-status" "${RUNNER_TEMP}/cucumber-status"
+          if git fetch origin zmsautomation-status:zmsautomation-status 2>/dev/null; then
+            while read -r file; do
+              git show "zmsautomation-status:${file}" \
+                > "${RUNNER_TEMP}/previous-status/$(basename "${file}")"
+            done < <(git ls-tree -r --name-only zmsautomation-status | grep -E '\.json$' || true)
+          fi
+          export PREVIOUS_STATUS_DIR="${RUNNER_TEMP}/previous-status"
+          if node docs/.vitepress/scripts/build-cucumber-run-status.mjs \
+            cucumber-reports \
+            "${RUNNER_TEMP}/cucumber-status"; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "No cucumber.json reports to publish"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish status JSON to zmsautomation-status
+        if: steps.status.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin zmsautomation-status:zmsautomation-status 2>/dev/null || true
+
+          if git show-ref --verify --quiet refs/heads/zmsautomation-status; then
+            git switch zmsautomation-status
+          else
+            git switch --orphan zmsautomation-status
+            git rm -rf --ignore-unmatch . >/dev/null 2>&1 || true
+          fi
+
+          cp "${RUNNER_TEMP}/cucumber-status"/*.json .
+          cat > README.md <<'EOF'
+          # zmsautomation cucumber status
+
+          Public JSON for the docs catalog. One file per tested branch
+          slug (`next.json`, `main.json`, …). `index.json` lists branches
+          that have a published zmsautomation run. `cucumber-run-status.json`
+          is a copy of `next.json`. Generated from zmsautomation runs.
+          Do not edit by hand.
+          EOF
+
+          git add README.md ./*.json
+          if git diff --staged --quiet; then
+            echo "Status JSON unchanged"
+            exit 0
+          fi
+          git commit -m "docs(ZMS): publish cucumber status from run ${GITHUB_RUN_ID}"
+          git push origin HEAD:zmsautomation-status

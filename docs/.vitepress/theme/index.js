@@ -5,6 +5,7 @@ import ChangelogEmbed from "./ChangelogEmbed.vue";
 import CucumberFeatureGroup from "./CucumberFeatureGroup.vue";
 import CucumberFeatureRow from "./CucumberFeatureRow.vue";
 import CucumberFeatureSearch from "./CucumberFeatureSearch.vue";
+import CucumberRemoteCatalog from "./CucumberRemoteCatalog.vue";
 import CucumberWorkflowStatus from "./CucumberWorkflowStatus.vue";
 import DepartmentCodeExplorerTarget from "./DepartmentCodeExplorerTarget.vue";
 import DepartmentCodeExplorerToday from "./DepartmentCodeExplorerToday.vue";
@@ -44,6 +45,7 @@ export default {
     ctx.app.component("CucumberFeatureGroup", CucumberFeatureGroup);
     ctx.app.component("CucumberFeatureRow", CucumberFeatureRow);
     ctx.app.component("CucumberFeatureSearch", CucumberFeatureSearch);
+    ctx.app.component("CucumberRemoteCatalog", CucumberRemoteCatalog);
     ctx.app.component("CucumberWorkflowStatus", CucumberWorkflowStatus);
   },
 };
