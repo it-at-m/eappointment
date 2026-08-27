@@ -481,7 +481,7 @@
  */
 \App::$slim->post(
     '/source-cache/warmup/',
-    '\BO\Zmscitizenapi\Controllers\System\SourceCacheWarmupController'
+    '\BO\Zmscitizenapi\Controllers\Office\SourceCacheWarmupController'
 )->setName("SourceCacheWarmupController");
 
 // Catch-all route for 404 errors

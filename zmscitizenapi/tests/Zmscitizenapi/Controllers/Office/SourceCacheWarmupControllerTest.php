@@ -1,13 +1,13 @@
 <?php
 
-namespace BO\Zmscitizenapi\Tests\Controllers\System;
+namespace BO\Zmscitizenapi\Tests\Controllers\Office;
 
 use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
 class SourceCacheWarmupControllerTest extends ControllerTestCase
 {
-    protected $classname = "\BO\Zmscitizenapi\Controllers\System\SourceCacheWarmupController";
+    protected $classname = "\BO\Zmscitizenapi\Controllers\Office\SourceCacheWarmupController";
 
     private ?string $previousWarmupToken = null;
 
