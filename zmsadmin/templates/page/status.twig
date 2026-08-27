@@ -23,6 +23,14 @@
             <th>Anzahl der reservierten Termine</th>
             <td>{{ status.processes.reserved }}</td>
         </tr>
+        <tr class="status-process-called">
+            <th>Anzahl der aufgerufenen Termine</th>
+            <td>{{ status.processes.called }}</td>
+        </tr>
+        <tr class="status-process-parked">
+            <th>Anzahl der geparkten Termine</th>
+            <td>{{ status.processes.parked }}</td>
+        </tr>
         <tr class="status-process-deleted">
             <th>Anzahl der abgesagten Termine<br/><small>(Werden in wenigen Minuten freigegeben)</small></th>
             <td>{{ status.processes.deleted }}</td>
@@ -33,27 +41,40 @@
         </tr>
         <tr class="status-database-nodeconnections">
             <th>Letzter Import Dienstleistungsdatenbank</th>
-            <td class="">{{ status.sources.dldb.last }}<td>
+            <td>{{ status.sources.dldb.last }}</td>
         </tr>
         <tr class="status-database-nodeconnections">
             <th>Letzte Berechnung Termine</th>
-            <td class="">{{ status.processes.lastCalculate }} <td>
+            <td>{{ status.processes.lastCalculate }}</td>
         </tr>
         <tr class="status-database-nodeconnections">
             <th>Älteste Änderung einer noch nicht neu berechneten Öffnungszeit</th>
-            <td class="">{{ status.processes.outdatedOldest }} <td>
+            <td>{{ status.processes.outdatedOldest }}</td>
         </tr>
         <tr class="status-database-nodeconnections">
             <th>Anzahl neu zu berechnender Zeit-Slots</th>
-            <td class="">{{ status.processes.outdated }} <td>
+            <td>{{ status.processes.outdated }}</td>
         </tr>
         <tr class="status-database-nodeconnections">
             <th>Verfügbare freie Zeit-Slots insgesamt</th>
-            <td class="">{{ status.processes.freeSlots }} <td>
+            <td>{{ status.processes.freeSlots }}</td>
         </tr>
-        <tr class="status-database-nodeconnections">
+        <tr class="status-api-version">
+            <th>Version</th>
+            <td>{{ status.version.major }}.{{ status.version.minor }}.{{ status.version.patch }}</td>
+        </tr>
+        {% if isSuperuser %}
+        <tr class="status-mail-queue">
+            <th>Anzahl noch nicht versendeter Mails</th>
+            <td>{{ status.mail.queueCount|default(0) }}</td>
+        </tr>
+        <tr class="status-mail-age">
             <th>Alter noch nicht versendeter Mails</th>
-            <td class="alert alert-{% if status.mail.oldestSeconds < 300 %}success{% else %}error{% endif %}">{{ status.mail.oldestSeconds|default(0) }}&nbsp;Sekunden<td>
+            <td class="alert alert-{% if status.mail.oldestSeconds < 300 %}success{% else %}error{% endif %}">{{ status.mail.oldestSeconds|default(0) }}&nbsp;Sekunden</td>
+        </tr>
+        <tr class="status-sessions">
+            <th>Aktive Sitzungen</th>
+            <td>{{ status.useraccounts.activeSessions|default(0) }}</td>
         </tr>
         <tr class="status-database-nodeconnections">
             <th>Auslastung der Datenbankverbindungen</th>
@@ -67,13 +88,6 @@
             <th>Sekundengenaues Backup</th>
             <td class="alert alert-{% if status.database.logbin == 'ON' %}success{% else %}error{% endif %}">{{ status.database.logbin }}</td>
         </tr>
-        <tr class="status-api-version">
-            <th>Version</th>
-            <td>{{ status.version.major }}.{{ status.version.minor }}.{{ status.version.patch }}</td>
-        </tr>
-        {% if workstation %}
-        {% set permissions = workstation.useraccount.permissions %}
-        {% if permissions.superuser %}
         <tr>
             <th colspan="2">
                 <h2>Automatische Tests</h2>
@@ -89,6 +103,5 @@
             </td>
         </tr>
         {% endif %}
-        {% endif %}
-</table>
+    </table>
 {% endblock %}
