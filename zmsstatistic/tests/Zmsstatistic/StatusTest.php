@@ -34,6 +34,8 @@ class StatusTest extends Base
         $this->assertStringContainsString('Alter noch nicht versendeter Mails', $body);
         $this->assertStringContainsString('Anzahl noch nicht versendeter Mails', $body);
         $this->assertStringContainsString('Aktive Sitzungen', $body);
+        $this->assertStringContainsString('Nur für technische Administration sichtbar', $body);
+        $this->assertStringContainsString('Automatische Tests', $body);
         $this->assertStringContainsString('86861', $body);
     }
 
@@ -63,6 +65,8 @@ class StatusTest extends Base
         $this->assertStringNotContainsString('Alter noch nicht versendeter Mails', $body);
         $this->assertStringNotContainsString('Anzahl noch nicht versendeter Mails', $body);
         $this->assertStringNotContainsString('Aktive Sitzungen', $body);
+        $this->assertStringNotContainsString('Nur für technische Administration sichtbar', $body);
+        $this->assertStringNotContainsString('Automatische Tests', $body);
         $this->assertStringNotContainsString('zmsautomation', $body);
     }
 
