@@ -77,22 +77,5 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
         fi
     fi
     $BIN/updateDldbData --commit
-
-    # ZMSKVR-1191: invalidate + warm citizenapi offices-and-services cache after import
-    WARMUP_URL="${ZMS_CITIZENAPI_WARMUP_URL:-}"
-    WARMUP_TOKEN="${SOURCE_CACHE_WARMUP_TOKEN:-}"
-    if [ -n "$WARMUP_URL" ]; then
-        cron_log info "Warming citizenapi source cache" "{\"url\":\"$WARMUP_URL\"}"
-        CURL_HEADERS=(-H "Accept: application/json")
-        if [ -n "$WARMUP_TOKEN" ]; then
-            CURL_HEADERS+=(-H "X-Source-Cache-Warmup-Token: ${WARMUP_TOKEN}")
-        fi
-        if curl -fsS -X POST "${CURL_HEADERS[@]}" --max-time 180 "$WARMUP_URL" >/dev/null; then
-            cron_log info "Citizenapi source cache warmup succeeded"
-        else
-            cron_log warning "Citizenapi source cache warmup failed" "{\"url\":\"$WARMUP_URL\"}"
-        fi
-    else
-        cron_log info "Skipping citizenapi source cache warmup (ZMS_CITIZENAPI_WARMUP_URL unset)"
-    fi
+    $BIN/warmupCitizenapiSourceCache
 fi
