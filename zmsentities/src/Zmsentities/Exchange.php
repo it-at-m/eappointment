@@ -274,21 +274,29 @@ class Exchange extends Schema\Entity
         $entity = clone $this;
         $weightedSum = 0.0;
         $totalCount = 0;
+        $excludedNames = [
+            self::REQUEST_STAT_NAME_UNCATEGORIZED,
+            self::REQUEST_STAT_NAME_NONEXISTENT,
+            'sum',
+            'average_processingtime',
+            'average_processingtime_overall',
+        ];
 
-        $averages = $entity->data['average_processingtime'] ?? [];
-        $sums = $entity->data['sum'] ?? [];
-
-        foreach ($averages as $name => $average) {
-            if (!is_numeric($average)) {
+        foreach ($entity->data as $name => $dateItems) {
+            if (in_array($name, $excludedNames, true) || !is_iterable($dateItems)) {
                 continue;
             }
-            $count = (int) ($sums[$name] ?? 0);
-            if ($count <= 0) {
-                continue;
-            }
 
-            $weightedSum += ((float) $average * $count);
-            $totalCount += $count;
+            foreach ($dateItems as $dateItem) {
+                $processingTime = $dateItem['processingtime'] ?? null;
+                $requestCount = $dateItem['requestscount'] ?? null;
+                if (!is_numeric($processingTime) || !is_numeric($requestCount) || $requestCount <= 0) {
+                    continue;
+                }
+
+                $weightedSum += (float) $processingTime * (int) $requestCount;
+                $totalCount += (int) $requestCount;
+            }
         }
         $entity->data['average_processingtime_overall'] = $totalCount > 0 ? round($weightedSum / $totalCount, 2) : null;
 
