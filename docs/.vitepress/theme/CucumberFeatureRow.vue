@@ -4,6 +4,8 @@ import { computed, onMounted } from "vue";
 
 import featureMeta from "../data/cucumber-features.json";
 import {
+  cucumberFeatureMatches,
+  cucumberSearchQuery,
   ensureCucumberHashListener,
   openCucumberFeatureId,
   syncCucumberFeatureFromHash,
@@ -37,6 +39,10 @@ const meta = computed(() => {
 
 const isOpen = computed(() => openCucumberFeatureId.value === props.id);
 
+const isVisible = computed(() =>
+  cucumberFeatureMatches(meta.value, cucumberSearchQuery.value)
+);
+
 const panelId = computed(() => `${props.id}-panel`);
 
 const scenarioLabel = computed(() => {
@@ -63,6 +69,7 @@ onMounted(() => {
 
 <template>
   <article
+    v-show="isVisible"
     :id="id"
     class="cucumber-feature"
     :class="{ 'cucumber-feature--open': isOpen }"

@@ -2,7 +2,9 @@ import DefaultTheme from "vitepress/theme";
 
 import BerlinChangelogEmbed from "./BerlinChangelogEmbed.vue";
 import ChangelogEmbed from "./ChangelogEmbed.vue";
+import CucumberFeatureGroup from "./CucumberFeatureGroup.vue";
 import CucumberFeatureRow from "./CucumberFeatureRow.vue";
+import CucumberFeatureSearch from "./CucumberFeatureSearch.vue";
 import DepartmentCodeExplorerTarget from "./DepartmentCodeExplorerTarget.vue";
 import DepartmentCodeExplorerToday from "./DepartmentCodeExplorerToday.vue";
 import LhmThemeExtension from "./LhmThemeExtension.vue";
@@ -38,6 +40,8 @@ export default {
       ThinnedProcessCodeExplorerToday
     );
     ctx.app.component("LogInventory", LogInventory);
+    ctx.app.component("CucumberFeatureGroup", CucumberFeatureGroup);
     ctx.app.component("CucumberFeatureRow", CucumberFeatureRow);
+    ctx.app.component("CucumberFeatureSearch", CucumberFeatureSearch);
   },
 };
