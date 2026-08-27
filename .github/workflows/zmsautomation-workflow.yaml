@@ -659,7 +659,9 @@ jobs:
           jq -n \
             --arg branch "${{ steps.tags.outputs.branch_name }}" \
             --arg slug "${{ steps.tags.outputs.branch_slug }}" \
-            '{branch: $branch, branchSlug: $slug}' \
+            --arg shard "${{ matrix.shard }}" \
+            --arg browser "${{ matrix.browser }}" \
+            '{branch: $branch, branchSlug: $slug, shard: $shard, browser: $browser}' \
             > branch-meta.json
 
       - name: Upload test reports (best effort)
