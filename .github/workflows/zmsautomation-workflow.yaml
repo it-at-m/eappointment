@@ -787,7 +787,7 @@ jobs:
           Do not edit by hand.
           EOF
 
-          git add README.md *.json
+          git add README.md ./*.json
           if git diff --staged --quiet; then
             echo "Status JSON unchanged"
             exit 0
