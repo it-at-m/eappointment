@@ -1,5 +1,5 @@
 #language: de
-Funktionalität: ZMS Admin GUI Optimierung 
+Funktionalität: Aufrufhinweis, wenn keine Kunden warten
 
 	
 	@web @zmsadmin @ZMS-2850 @ZMS-1566 @executeLocally
