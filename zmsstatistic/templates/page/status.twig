@@ -64,6 +64,12 @@
             <td>{{ status.version.major }}.{{ status.version.minor }}.{{ status.version.patch }}</td>
         </tr>
         {% if isSuperuser %}
+        <tr>
+            <th colspan="2">
+                <h2>Technische Administration</h2>
+                <small>(Nur für technische Administration sichtbar)</small>
+            </th>
+        </tr>
         <tr class="status-mail-queue">
             <th>Anzahl noch nicht versendeter Mails</th>
             <td>{{ status.mail.queueCount|default(0) }}</td>
@@ -91,7 +97,6 @@
         <tr>
             <th colspan="2">
                 <h2>Automatische Tests</h2>
-                <small>(Nur für technische Administration sichtbar)</small>
             </th>
         </tr>
         <tr class="status-api-version">
