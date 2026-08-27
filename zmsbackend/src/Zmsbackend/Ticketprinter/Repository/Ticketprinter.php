@@ -7,16 +7,16 @@ class Ticketprinter extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'kiosk';
+    const string TABLE = 'kiosk';
 
-    const PRIMARY = 'hash';
+    const string PRIMARY = 'hash';
 
     /**
      * No resolving required here
      */
     protected $resolveLevel = 0;
 
-    public function getOrganisationIdByHash()
+    public function getOrganisationIdByHash(): string
     {
         return '
             SELECT organisationsid
@@ -24,6 +24,10 @@ class Ticketprinter extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\
             WHERE ticketprinter.`cookiecode` = :hash';
     }
 
+    /**
+     * @return (\BO\Zmsbackend\Query\Builder\Expression|string)[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -36,31 +40,35 @@ class Ticketprinter extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\
         ];
     }
 
-    public function addConditionTicketprinterId($ticketprinterId)
+    public function addConditionTicketprinterId(int|string $ticketprinterId): static
     {
         $this->query->where('ticketprinter.kioskid', '=', $ticketprinterId);
         return $this;
     }
 
-    public function addConditionOrganisationId($organisationId)
+    public function addConditionOrganisationId(int $organisationId): static
     {
         $this->query->where('ticketprinter.organisationsid', '=', $organisationId);
         return $this;
     }
 
-    public function addConditionHash($hash)
+    public function addConditionHash(string $hash): static
     {
         $this->query->where('ticketprinter.cookiecode', '=', $hash);
         return $this;
     }
 
-    public function addConditionDeleteInterval($expirationDate)
+    public function addConditionDeleteInterval($expirationDate): static
     {
         $this->query->where('ticketprinter.timestamp', '<=', $expirationDate->getTimestamp());
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Ticketprinter $entity, $organisationId)
+    /**
+     * @return (int|mixed)[]
+     *
+     */
+    public function reverseEntityMapping(\BO\Zmsentities\Ticketprinter $entity, int $organisationId): array
     {
         $data = array();
         $data['organisationsid'] = $organisationId;

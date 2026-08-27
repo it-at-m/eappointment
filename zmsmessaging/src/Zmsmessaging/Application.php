@@ -23,10 +23,10 @@ class Application extends \BO\Slim\Application
     /**
      * Name of the application
      */
-    const IDENTIFIER = 'zms';
-    const MODULE_NAME = 'zmsmessaging';
+    const string IDENTIFIER = 'zms';
+    const string MODULE_NAME = 'zmsmessaging';
 
-    const DEBUG = false;
+    const bool DEBUG = false;
 
     /*
      * -----------------------------------------------------------------------
@@ -50,12 +50,12 @@ class Application extends \BO\Slim\Application
     /**
      * config preferences
      */
-    const CONFIG_SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
+    const string CONFIG_SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
 
     /**
      * HTTP url for api
      */
-    const HTTP_BASE_URL = 'http://user:pass@host.tdl';
+    const string HTTP_BASE_URL = 'http://user:pass@host.tdl';
 
     /*
      * -----------------------------------------------------------------------

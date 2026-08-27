@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?php
+
+require_once(__DIR__ . "/script_bootstrap.php");
+
+$commit = in_array('--commit', $argv, true);
+
+$now = \App::$now ?? new \DateTimeImmutable('now');
+
+$job = new \BO\Zmsbackend\Helper\ProcessSearchHistoryCleanUp();
+$job->startProcessing($now, $commit);
+
+if (!$commit) {
+    \App::$log->notice(
+        'Use with --commit to delete process search history entries.'
+    );
+}

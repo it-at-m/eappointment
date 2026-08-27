@@ -25,11 +25,12 @@ class Calldisplay extends \BO\Zmsbackend\Base
             foreach ($calldisplay->scopes as $entity) {
                 $query = new \BO\Zmsbackend\Scope\Service\Scope();
                 $scope = $query->readEntity($entity['id'], $resolveReferences - 1);
-                /* test in zmsbackend CalldisplayGet
                 if (! $scope) {
-                    throw new \BO\Zmsbackend\Calldisplay\Exception\ScopeNotFound();
+                    \App::$log->warning('Calldisplay: skip missing scope id while resolving', [
+                        'scopeId' => $entity['id'],
+                    ]);
+                    continue;
                 }
-                */
                 $scopeList->addEntity($scope);
             }
             $calldisplay->scopes = $scopeList;
@@ -39,11 +40,12 @@ class Calldisplay extends \BO\Zmsbackend\Base
             foreach ($calldisplay->clusters as $entity) {
                 $query = new \BO\Zmsbackend\Cluster\Service\Cluster();
                 $cluster = $query->readEntity($entity['id'], $resolveReferences);
-                /* test in zmsbackend CalldisplayGet
                 if (! $cluster) {
-                    throw new \BO\Zmsbackend\Calldisplay\Exception\ClusterNotFound();
+                    \App::$log->warning('Calldisplay: skip missing cluster id while resolving', [
+                        'clusterId' => $entity['id'],
+                    ]);
+                    continue;
                 }
-                */
                 $clusterList->addEntity($cluster);
             }
             $calldisplay->clusters = $clusterList;
@@ -69,7 +71,11 @@ class Calldisplay extends \BO\Zmsbackend\Base
         return $organisation;
     }
 
-    public function readImage(Entity $entity)
+    /**
+     * @return (mixed|string)[]
+     *
+     */
+    public function readImage(Entity $entity): array
     {
         $name = $entity->getImageName();
         $image = null;
@@ -97,7 +103,7 @@ class Calldisplay extends \BO\Zmsbackend\Base
         return $image;
     }
 
-    public function readContactData(Entity $entity)
+    public function readContactData(Entity $entity): \BO\Zmsentities\Contact
     {
         $contact = new \BO\Zmsentities\Contact();
         $contactNames = [];

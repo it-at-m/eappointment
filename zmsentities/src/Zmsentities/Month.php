@@ -4,12 +4,16 @@ namespace BO\Zmsentities;
 
 class Month extends Schema\Entity
 {
-    public const PRIMARY = 'month';
+    public const string PRIMARY = 'month';
 
     public $calendarDayList;
 
     public static $schema = "month.json";
 
+    /**
+     * @return Collection\DayList[]
+     *
+     */
     #[\Override]
     public function getDefaults()
     {
@@ -24,7 +28,7 @@ class Month extends Schema\Entity
         return $dateTime->modify('00:00:00');
     }
 
-    public function getDayList()
+    public function getDayList(): Collection\DayList
     {
         if (!$this->days instanceof Collection\DayList) {
             $this->days = new Collection\DayList($this->days);
@@ -32,7 +36,7 @@ class Month extends Schema\Entity
         return $this->days;
     }
 
-    public function setDays(Collection\DayList $dayList)
+    public function setDays(Collection\DayList $dayList): static
     {
         foreach ($this->getDayList() as $key => $day) {
             if (!$day instanceof Day) {
@@ -46,7 +50,7 @@ class Month extends Schema\Entity
     public static function createForDateFromDayList(
         \DateTimeInterface $currentDate,
         \BO\Zmsentities\Collection\DayList $dayList
-    ) {
+    ): self {
         $startDow = date('w', mktime(0, 0, 0, $currentDate->format('m'), 1, $currentDate->format('Y')));
         $monthDayList = $dayList->withAssociatedDays($currentDate);
         $month = (new self(

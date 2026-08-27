@@ -8,6 +8,7 @@ use BO\Zmsbackend\Query\Builder\Update;
 use BO\Zmsbackend\Query\Builder\Delete;
 use BO\Zmsbackend\Query\Builder\Dialect\MySQL;
 use BO\Zmsbackend\Query\Builder\Expression;
+use BO\Zmsbackend\Query\Builder\Query as QueryBuilder;
 
 /**
  * Base class to construct entity specific queries
@@ -25,11 +26,11 @@ abstract class Base
     /**
      * Identifier for the type of query
      */
-    const SELECT = 'SELECT';
-    const INSERT = 'INSERT';
-    const UPDATE = 'UPDATE';
-    const REPLACE = 'REPLACE';
-    const DELETE = 'DELETE';
+    const string SELECT = 'SELECT';
+    const string INSERT = 'INSERT';
+    const string UPDATE = 'UPDATE';
+    const string REPLACE = 'REPLACE';
+    const string DELETE = 'DELETE';
 
     /**
      * Name of table in DB
@@ -41,9 +42,9 @@ abstract class Base
     const ALIAS = null;
 
     /**
-     * @var \BO\Zmsbackend\Query\Builder\Query $query
+     * Concrete builder instance (Select|Insert|Update|Delete), always set in the constructor.
      */
-    protected $query = null;
+    protected QueryBuilder $query;
 
     /**
      * @var String $query
@@ -64,31 +65,41 @@ abstract class Base
 
     protected static $sqlCache = [];
 
-    protected $currentSqlString = null;
+    protected string|null $currentSqlString = null;
 
     /**
      * List of joined aliasnames to avoid double joins
      *
+     * @var list<string>
      */
-    protected $joinedAliasList = [];
+    protected array $joinedAliasList = [];
 
     /**
      * List of joined queries to avoid double joins
      *
+     * @var list<self>
      */
-    protected $joinedQueryList = [];
+    protected array $joinedQueryList = [];
 
-    protected $withEntities = [];
+    /** @var list<string> */
+    protected array $withEntities = [];
 
     /**
      * Create query builder if necessary
      *
      * @param Mixed $queryType one of the constants for a query type or of instance \BO\Zmsbackend\Query\Builder\Query
      * @param String $prefix If used in a subquery, prefix results with this string
-     * @param String $name A named query has a cached SQL as soon as called first
+     * @param string|false $name A named query has a cached SQL as soon as called first
+     * @param int|null $resolveLevel
+     * @param array $withEntities
      */
-    public function __construct($queryType, $prefix = '', $name = false, $resolveLevel = null, $withEntities = [])
-    {
+    public function __construct(
+        $queryType,
+        $prefix = '',
+        string|false $name = false,
+        mixed $resolveLevel = null,
+        array $withEntities = []
+    ) {
         $this->prefix = $prefix;
         $this->name = $name;
         $this->withEntities = $withEntities;
@@ -113,10 +124,17 @@ abstract class Base
             $this->addTableAlias();
         } elseif ($queryType instanceof self) {
             $this->query = $queryType->query;
+            // Share join-alias state with the parent query (intentional by-ref).
+            /** @psalm-suppress UnsupportedPropertyReferenceUsage */
             $this->joinedAliasList =& $queryType->joinedAliasList;
             $this->resolveLevel = $queryType->resolveLevel - 1;
-        } elseif ($queryType instanceof \BO\Zmsbackend\Query\Builder\Query) {
+        } elseif ($queryType instanceof QueryBuilder) {
             $this->query = $queryType;
+        } else {
+            throw new \InvalidArgumentException(
+                'Unsupported query type for ' . static::class . ': '
+                . (is_object($queryType) ? $queryType::class : gettype($queryType))
+            );
         }
         if ($this->query instanceof Select) {
             $this->addRequiredJoins();
@@ -152,10 +170,8 @@ abstract class Base
      * Add the from part to the queryBaseStatement
      * This implementation tries to guess the syntax using the constant TABLE in the class
      * Override the method for a special implementation or required joins
-     *
-     * @return self
      */
-    protected function addSelect()
+    protected function addSelect(): static
     {
         $table = $this::getTablename();
         $alias = $this::getAlias();
@@ -163,12 +179,12 @@ abstract class Base
         return $this;
     }
 
-    public function setDistinctSelect()
+    public function setDistinctSelect(): void
     {
         $this->query->queryBaseStatement('SELECT DISTINCT');
     }
 
-    public function setResolveLevel($resolveLevel)
+    public function setResolveLevel(int|null $resolveLevel): static
     {
         if ($resolveLevel !== null) {
             $this->resolveLevel = $resolveLevel;
@@ -217,10 +233,8 @@ abstract class Base
      * Add the from part to the queryBaseStatement
      * This implementation tries to guess the syntax using the constant TABLE in the class
      * Override the method for a special implementation or required joins
-     *
-     * @return self
      */
-    protected function addTable()
+    protected function addTable(): static
     {
         $table = $this::getTablename();
         $alias = $this::getAlias();
@@ -232,10 +246,8 @@ abstract class Base
      * Add the from part to the queryBaseStatement
      * This implementation tries to guess the syntax using the constant TABLE in the class
      * Override the method for a special implementation or required joins
-     *
-     * @return self
      */
-    protected function addTableAlias()
+    protected function addTableAlias(): static
     {
         $table = $this::getTablename();
         $alias = $this::getAlias();
@@ -246,6 +258,8 @@ abstract class Base
     /**
      * Add joins to table if required
      * Override this method if join are required for a select
+     *
+     * @return void
      */
     protected function addRequiredJoins()
     {
@@ -255,9 +269,8 @@ abstract class Base
      * resolves references by joining tables defined in the method addJoin()
      *
      * @param  Int $depth Number of levels of sub references to resolve
-     * @return self
      */
-    public function addResolvedReferences($depth)
+    public function addResolvedReferences($depth): static
     {
         $this->setResolveLevel($depth);
         if ($depth > 0) {
@@ -275,7 +288,10 @@ abstract class Base
         return $this;
     }
 
-    public function setWithEntities($withEntities = [])
+    /**
+     * @psalm-api
+     */
+    public function setWithEntities($withEntities = []): void
     {
         $this->withEntities = $withEntities;
     }
@@ -290,7 +306,7 @@ abstract class Base
         return [];
     }
 
-    protected function leftJoin($alias, $left = null, $operator = null, $right = null)
+    protected function leftJoin(Alias $alias, string|Expression|null $left = null, string|null $operator = null, string|null $right = null): QueryBuilder
     {
         $aliasId = $alias->getAliasIdentifier();
         if (!in_array($aliasId, $this->joinedAliasList)) {
@@ -302,7 +318,7 @@ abstract class Base
         return $this->query;
     }
 
-    protected function innerJoin($alias, $left = null, $operator = null, $right = null)
+    protected function innerJoin(Alias $alias, string|null $left = null, string|null $operator = null, string|null $right = null): QueryBuilder
     {
         $aliasId = $alias->getAliasIdentifier();
         if (!in_array($aliasId, $this->joinedAliasList)) {
@@ -334,6 +350,10 @@ abstract class Base
         return $this->query->params();
     }
 
+    /**
+     * @return array
+     *
+     */
     public function getReferenceMapping()
     {
         return [
@@ -345,7 +365,7 @@ abstract class Base
      *
      * @return \BO\Zmsbackend\Query\Builder\Expression
      */
-    protected static function expression($string)
+    protected static function expression(string $string)
     {
         return new Expression($string);
     }
@@ -353,21 +373,24 @@ abstract class Base
     /**
      * Add a select part to the query containing a mapping from the db schema to the entity schema
      *
-     * @return self
+     * @param mixed $type
+     * @return static
      */
-    public function addEntityMapping($type = null)
+    public function addEntityMapping(mixed $type = null): static
     {
+        // Concrete query classes provide getEntityMapping(); not all declare MappingInterface.
+        /** @psalm-suppress UndefinedMethod, TooManyArguments */
         $entityMapping = $this->getPrefixedList($this->getEntityMapping($type));
         $this->query->select($entityMapping);
         return $this;
     }
 
-    protected function getPrefixed($prefix)
+    protected function getPrefixed($prefix): string
     {
         return $this->prefix . $prefix;
     }
 
-    protected function getPrefixedList($unprefixedList)
+    protected function getPrefixedList(array $unprefixedList): array
     {
         $prefixed = [];
         foreach ($unprefixedList as $key => $value) {
@@ -378,17 +401,15 @@ abstract class Base
 
     /**
      * Add a select part to the query containing references if no resolveReferences is given
-     *
-     * @return self
      */
-    protected function addReferenceMapping()
+    protected function addReferenceMapping(): static
     {
         $referenceMapping = $this->getPrefixedList($this->getReferenceMapping());
         $this->query->select($referenceMapping);
         return $this;
     }
 
-    public function addLimit($count, $offset = null)
+    public function addLimit($count, $offset = null): static
     {
         $this->query->limit($count);
         if ($offset) {
@@ -399,10 +420,8 @@ abstract class Base
 
     /**
      * Add values to a insert or update query
-     *
-     * @return self
      */
-    public function addValues($values)
+    public function addValues(array $values): static
     {
         $this->query->values($values);
         return $this;
@@ -420,8 +439,10 @@ abstract class Base
     /**
      * postProcess data including joined queries if necessary
      *
+     * @param (null|scalar)[] $data
+     *
      */
-    public function postProcessJoins($data)
+    public function postProcessJoins(array $data)
     {
         $data = $this->postProcess($data);
         foreach ($this->joinedQueryList as $query) {
@@ -430,7 +451,7 @@ abstract class Base
         return $data;
     }
 
-    public function shouldLoadEntity($name)
+    public function shouldLoadEntity(string $name): bool
     {
         if (empty($this->withEntities)) {
             return true;

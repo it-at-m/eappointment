@@ -201,7 +201,7 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->map(['GET','POST'], '/owner/{id:\d+}/organisation/', \BO\Zmsadmin\OwnerAddOrganisation::class)
     ->setName("ownerAddOrganisation");
 
-\App::$slim->get('/owner/', '\BO\Zmsadmin\OwnerOverview')
+\App::$slim->get('/owner/', \BO\Zmsadmin\OwnerOverview::class)
     ->setName("owner_overview");
 
 \App::$slim->map(['GET','POST'], '/owner/{id:\d+}/', \BO\Zmsadmin\Owner::class)
@@ -272,6 +272,9 @@ use Slim\Routing\RouteCollectorProxy;
 
     $group->get('/{id:\d+}/availability/day/{date:\d\d\d\d-\d\d-\d\d}/conflicts/', \BO\Zmsadmin\ScopeAvailabilityDayConflicts::class)
         ->setName("scopeAvailabilityDayConflict");
+
+    $group->get('/{id:\d+}/availability/history/', \BO\Zmsadmin\ScopeAvailabilityHistory::class)
+        ->setName("scopeAvailabilityHistory");
 
     $group->get('/{id:\d+}/availability/month/[{date:\d\d\d\d-\d\d}/]', \BO\Zmsadmin\ScopeAvailabilityMonth::class)
         ->setName("scopeAvailabilityMonth");

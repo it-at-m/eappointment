@@ -3,12 +3,16 @@ run-name: >-
   ${{
     github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | UI × chrome+firefox, API once | main + next'
     || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix
-        && 'zmsautomation | ▶️ manual | full shard matrix | UI × chrome+firefox, API once | main + next')
+        && format(
+             'zmsautomation | ▶️ manual | full shard matrix | UI × chrome+firefox, API once | main + next{0}',
+             inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || ''
+           ))
     || format(
-         'zmsautomation | ▶️ manual | {0} | {1}{2}',
+         'zmsautomation | ▶️ manual | {0} | {1}{2}{3}',
          github.ref_name,
          inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'),
-         inputs.use_custom_tags && format(' | {0}', inputs.cucumber_tag_expressions) || ''
+         inputs.cucumber_tag_expressions != '' && format(' | {0}', inputs.cucumber_tag_expressions) || (inputs.use_custom_tags && ' | custom tags' || ''),
+         inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || ''
        )
   }}
 
@@ -58,14 +62,15 @@ on:
         default: true
       use_custom_tags:
         description: |
-          Run a single job with custom Cucumber tag expressions (ignores module
-          checkboxes and run_all_in_one_job). Use test layer and tag fields below.
+          Run a single job (ignores module checkboxes and run_all_in_one_job).
+          Implied automatically when cucumber_tag_expressions is non-empty.
         required: true
         type: boolean
         default: false
       test_layer:
         description: |
-          Only when use_custom_tags is enabled. API = REST, UI = Selenium, both = full suite in one job.
+          Used when cucumber_tag_expressions is set or use_custom_tags is enabled.
+          API = REST, UI = Selenium, both = full suite in one job.
         required: true
         type: choice
         options:
@@ -75,9 +80,10 @@ on:
         default: both
       cucumber_tag_expressions:
         description: |
-          Only when use_custom_tags is enabled. Newline-separated Cucumber tag expressions; each line
-          runs sequentially. @ignore is excluded automatically.
-          Examples: @ZMSKVR-1328, @smoke
+          Optional. Newline-separated Cucumber tag expressions; each line runs sequentially.
+          If this field is set, only those tags run (module checkboxes are ignored).
+          @ignore is excluded automatically.
+          Examples: @ZMSKVR-833, @smoke
         required: false
         default: ""
       browser:
@@ -94,6 +100,14 @@ on:
         required: true
         type: boolean
         default: true
+      ataf_version:
+        description: |
+          Optional ATAF Maven version override (de.muenchen.ataf:core|rest|web).
+          Leave empty to use ataf.version from zmsautomation/pom.xml on the
+          checked-out branch. Example: 0.3.3
+        required: false
+        type: string
+        default: ""
   schedule:
     # GitHub Actions cron uses UTC. 01:00 UTC ≈ 03:00 Europe/Berlin (CEST) / 02:00 (CET).
     - cron: "0 1 * * *"
@@ -166,13 +180,17 @@ jobs:
             BRANCH="${{ github.ref_name }}"
             BROWSER="${{ inputs.browser }}"
             TEST_LAYER="${{ inputs.test_layer }}"
+            TAG_INPUT="${{ inputs.cucumber_tag_expressions }}"
+            TAG_INPUT_TRIMMED="$(printf '%s' "$TAG_INPUT" | tr -d '[:space:]')"
 
-            if [[ "${{ inputs.use_custom_tags }}" == "true" ]]; then
+            # Filling the tag field is enough; the checkbox is optional.
+            if [[ "${{ inputs.use_custom_tags }}" == "true" || -n "$TAG_INPUT_TRIMMED" ]]; then
               jq -n \
                 --arg branch "$BRANCH" \
                 --arg browser "$BROWSER" \
                 --arg test_layer "$TEST_LAYER" \
-                '{include: [{branch: $branch, browser: $browser, shard: "custom", test_layer: $test_layer, tag_filter: "", use_custom_tags: true}]}' \
+                --arg tag_filter "$TAG_INPUT" \
+                '{include: [{branch: $branch, browser: $browser, shard: "custom", test_layer: $test_layer, tag_filter: $tag_filter, use_custom_tags: "true"}]}' \
                 > matrix.json
               echo "max_parallel=1" >> "$GITHUB_OUTPUT"
             elif [[ "${{ inputs.run_all_in_one_job }}" == "true" ]]; then
@@ -273,16 +291,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          REF_TYPE="branch"
           REF_NAME="${{ matrix.branch }}"
 
           SANITIZED="$(echo "$REF_NAME" | sed 's/[\/:]/-/g')"
           PHP_TAG="branch-${SANITIZED}"
           BRANCH_SLUG="$SANITIZED"
 
-          echo "branch_name=$REF_NAME" >> "$GITHUB_OUTPUT"
-          echo "branch_slug=$BRANCH_SLUG" >> "$GITHUB_OUTPUT"
-          echo "php_tag=$PHP_TAG" >> "$GITHUB_OUTPUT"
+          {
+            echo "branch_name=$REF_NAME"
+            echo "branch_slug=$BRANCH_SLUG"
+            echo "php_tag=$PHP_TAG"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Pull prebuilt PHP module images
         shell: bash
@@ -306,15 +325,26 @@ jobs:
           docker compose -f docker-compose.yaml up -d \
             web db citizenview refarch-gateway keycloak init-keycloak
 
+          exit_code=""
           for _ in {1..60}; do
             state="$(docker inspect -f '{{.State.Status}}' zms-init-keycloak 2>/dev/null || echo missing)"
             if [ "$state" = "exited" ]; then
-              echo "init-keycloak finished."
+              exit_code="$(docker inspect -f '{{.State.ExitCode}}' zms-init-keycloak)"
+              echo "init-keycloak finished with exit code ${exit_code}."
               docker logs zms-init-keycloak || true
               break
             fi
             sleep 2
           done
+          if [ -z "${exit_code}" ]; then
+            echo "init-keycloak did not exit in time."
+            docker logs zms-init-keycloak || true
+            exit 1
+          fi
+          if [ "${exit_code}" != "0" ]; then
+            echo "Keycloak migration failed (exit ${exit_code})."
+            exit 1
+          fi
 
       - name: Install missing tooling inside web container
         shell: bash
@@ -433,6 +463,8 @@ jobs:
           if ! docker exec -u root "$WEB_CONT" bash -lc 'test -d /var/www/html/zmslayout/js && test -d /var/www/html/zmslayout/scss'; then
             echo "zmslayout not on bind mount; streaming via tar"
             docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/zmslayout"
+            # WEB_CONT is passed via env so the inner shell can expand it.
+            # shellcheck disable=SC2016
             retry 3 10 env WEB_CONT="$WEB_CONT" bash -c 'tar cf - -C ./zmslayout . | docker exec -i -u root "$WEB_CONT" tar -xf - -C /var/www/html/zmslayout/'
           fi
 
@@ -500,6 +532,7 @@ jobs:
           MATRIX_USE_CUSTOM_TAGS: ${{ matrix.use_custom_tags }}
           CUSTOM_TAG_INPUT: ${{ inputs.cucumber_tag_expressions }}
           SCREENSHOT: ${{ github.event_name == 'workflow_dispatch' && inputs.per_step_screenshots || 'false' }}
+          ATAF_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.ataf_version || '' }}
         run: |
           set -euo pipefail
 
@@ -517,6 +550,15 @@ jobs:
               ;;
           esac
 
+          EXTRA_MVN_ARGS=()
+          if [[ -n "${ATAF_VERSION//[[:space:]]/}" ]]; then
+            ATAF_VERSION="$(printf '%s' "$ATAF_VERSION" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+            EXTRA_MVN_ARGS+=("-Dataf.version=${ATAF_VERSION}")
+            echo "Using ATAF version override: ${ATAF_VERSION}"
+          else
+            echo "Using ATAF version from zmsautomation/pom.xml (ataf.version)"
+          fi
+
           append_not_ignore() {
             local expr="$1"
             if [[ -z "$expr" ]]; then
@@ -527,14 +569,26 @@ jobs:
           }
 
           TAG_LINES=()
+          USE_CUSTOM_TAGS=false
           if [[ "$MATRIX_USE_CUSTOM_TAGS" == "true" ]]; then
-            if [[ -z "$(printf '%s' "$CUSTOM_TAG_INPUT" | tr -d '[:space:]')" ]]; then
+            USE_CUSTOM_TAGS=true
+          elif [[ -n "$(printf '%s' "$CUSTOM_TAG_INPUT" | tr -d '[:space:]')" ]]; then
+            USE_CUSTOM_TAGS=true
+          fi
+
+          CUSTOM_SOURCE="$CUSTOM_TAG_INPUT"
+          if [[ -z "$(printf '%s' "$CUSTOM_SOURCE" | tr -d '[:space:]')" ]]; then
+            CUSTOM_SOURCE="$MATRIX_TAG_FILTER"
+          fi
+
+          if [[ "$USE_CUSTOM_TAGS" == "true" ]]; then
+            if [[ -z "$(printf '%s' "$CUSTOM_SOURCE" | tr -d '[:space:]')" ]]; then
               TAG_LINES=("")
             else
               while IFS= read -r line; do
                 line="$(printf '%s' "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
                 [[ -n "$line" ]] && TAG_LINES+=("$line")
-              done <<< "$CUSTOM_TAG_INPUT"
+              done <<< "$CUSTOM_SOURCE"
               [[ ${#TAG_LINES[@]} -eq 0 ]] && TAG_LINES=("")
             fi
           else
@@ -545,7 +599,7 @@ jobs:
           for expr in "${TAG_LINES[@]}"; do
             expr="$(printf '%s' "$expr" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
 
-            if [[ "$MATRIX_USE_CUSTOM_TAGS" == "true" ]]; then
+            if [[ "$USE_CUSTOM_TAGS" == "true" ]]; then
               if [[ -n "$expr" ]]; then
                 if [[ "$expr" == *"@ignore"* ]]; then
                   final_expr="$expr"
@@ -582,7 +636,7 @@ jobs:
               fi
 
               bash /var/www/html/zmsautomation/zmsautomation-test "${args[@]}"
-            ' -- "$final_expr" "$SCREENSHOT" "$BROWSER" "${PROFILES[@]}"
+            ' -- "$final_expr" "$SCREENSHOT" "$BROWSER" "${PROFILES[@]}" ${EXTRA_MVN_ARGS[@]+"${EXTRA_MVN_ARGS[@]}"}
             rc=$?
             set -e
 

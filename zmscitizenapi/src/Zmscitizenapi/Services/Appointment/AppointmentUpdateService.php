@@ -17,27 +17,31 @@ class AppointmentUpdateService
     {
         $clientData = $this->extractClientData($body);
 
-        $errors = $this->validateClientData($clientData, $authenticatedUser);
-        if (!empty($errors['errors'])) {
-            return $errors;
+        $validated = $this->validateClientData($clientData, $authenticatedUser);
+        if (!$validated instanceof ThinnedProcess) {
+            return $validated;
         }
 
-        $reservedProcess = $this->getReservedProcess($clientData->processId, $clientData->authKey, $authenticatedUser);
-
-        $updatedProcess = $this->updateProcessWithClientData($reservedProcess, $clientData);
+        $updatedProcess = $this->updateProcessWithClientData($validated, $clientData);
         return $this->saveProcessUpdate($updatedProcess, $authenticatedUser);
     }
 
-    private function validateClientData(object $data, ?AuthenticatedUser $authenticatedUser): array
+    /**
+     * @return ThinnedProcess|array{errors: array}
+     */
+    private function validateClientData(object $data, ?AuthenticatedUser $authenticatedUser): ThinnedProcess|array
     {
         $authErrors = ValidationService::validateGetProcessById($data->processId, $data->authKey);
-        if (is_array($authErrors) && !empty($authErrors['errors'])) {
-            return $authErrors;
+        if ($authErrors['errors'] !== []) {
+            return ['errors' => $authErrors['errors']];
         }
 
         $reservedProcess = $this->getReservedProcess($data->processId, $data->authKey, $authenticatedUser);
-        if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
-            return $reservedProcess;
+        if (!$reservedProcess instanceof ThinnedProcess) {
+            $errors = array_key_exists('errors', $reservedProcess) && is_array($reservedProcess['errors'])
+                ? $reservedProcess['errors']
+                : [];
+            return ['errors' => $errors];
         }
 
         $fieldErrors = ValidationService::validateAppointmentUpdateFields(
@@ -48,11 +52,11 @@ class AppointmentUpdateService
             $data->customTextfield2,
             $reservedProcess->scope ?? null
         );
-        if (is_array($fieldErrors) && !empty($fieldErrors['errors'])) {
-            return $fieldErrors;
+        if ($fieldErrors['errors'] !== []) {
+            return ['errors' => $fieldErrors['errors']];
         }
 
-        return ['errors' => []];
+        return $reservedProcess;
     }
 
     private function extractClientData(array $body): object
@@ -64,11 +68,11 @@ class AppointmentUpdateService
             'authKey' => isset($body['authKey']) && is_string($body['authKey']) && trim($body['authKey']) !== ''
                 ? htmlspecialchars(trim($body['authKey']), ENT_QUOTES, 'UTF-8')
                 : null,
-            'familyName' => isset($body['familyName']) && is_string($body['familyName']) ? (string) $body['familyName'] : null,
-            'email' => isset($body['email']) && is_string($body['email']) ? (string) $body['email'] : null,
-            'telephone' => isset($body['telephone']) && is_string($body['telephone']) ? (string) $body['telephone'] : null,
-            'customTextfield' => isset($body['customTextfield']) && is_string($body['customTextfield']) ? (string) $body['customTextfield'] : null,
-            'customTextfield2' => isset($body['customTextfield2']) && is_string($body['customTextfield2']) ? (string) $body['customTextfield2'] : null,
+            'familyName' => isset($body['familyName']) && is_string($body['familyName']) ? $body['familyName'] : null,
+            'email' => isset($body['email']) && is_string($body['email']) ? $body['email'] : null,
+            'telephone' => isset($body['telephone']) && is_string($body['telephone']) ? $body['telephone'] : null,
+            'customTextfield' => isset($body['customTextfield']) && is_string($body['customTextfield']) ? $body['customTextfield'] : null,
+            'customTextfield2' => isset($body['customTextfield2']) && is_string($body['customTextfield2']) ? $body['customTextfield2'] : null,
         ];
     }
 

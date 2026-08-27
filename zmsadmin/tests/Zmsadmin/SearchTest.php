@@ -40,7 +40,7 @@ class SearchTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString('<input type="text" name="query" value="Test%20BO"', (string)$response->getBody());
+        $this->assertStringContainsString('<input type="text" id="search-query" name="query" value="Test%20BO"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -106,7 +106,6 @@ class SearchTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString('data-processList-count="5"', (string)$response->getBody());
-        $this->assertStringContainsString('data-processListOther-count="0"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -341,5 +340,151 @@ class SearchTest extends Base
         $response = $this->render($this->arguments, ['query' => '0'], []);
         $this->assertStringContainsString('name="query" value="0"', (string) $response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testRendersActiveAndHistoryAppointmentStatus()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/search/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'query' => 'status-test',
+                        'page' => 1,
+                        'limit' => 100,
+                        'scopeIds' => '380,1,141',
+                    ],
+                    'response' => $this->readFixture("GET_searchresult_active_history.json")
+                ]
+            ]
+        );
+
+        $response = $this->render(
+            $this->arguments,
+            ['query' => 'status-test'],
+            []
+        );
+
+        $body = (string) $response->getBody();
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertStringContainsString('Terminstatus', $body);
+
+        $this->assertStringContainsString('Status: Geplant', $body);
+        $this->assertStringContainsString('Status: Abgeschlossen', $body);
+        $this->assertStringContainsString('Status: Nicht erschienen', $body);
+
+        $this->assertStringContainsString('selectedprocess=100504', $body);
+        $this->assertStringContainsString('selectedprocess=101002', $body);
+
+        $this->assertStringNotContainsString('selectedprocess=201001', $body);
+        $this->assertStringNotContainsString('selectedprocess=201002', $body);
+    }
+
+    public function testRendersBookingAndCallTimes()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/search/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'query' => 'time-test',
+                        'page' => 1,
+                        'limit' => 100,
+                        'scopeIds' => '380,1,141',
+                    ],
+                    'response' => $this->readFixture("GET_searchresult_active_history.json")
+                ]
+            ]
+        );
+
+        $response = $this->render(
+            $this->arguments,
+            ['query' => 'time-test'],
+            []
+        );
+
+        $body = (string) $response->getBody();
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame(4, substr_count($body, 'Buchung:'));
+
+        $this->assertSame(1, substr_count($body, 'Terminaufruf:'));
+
+        $this->assertMatchesRegularExpression(
+            '/Buchung: \d{2}\.\d{2}\.\d{4}, \d{2}:\d{2}&nbsp;Uhr/',
+            $body
+        );
+
+        $this->assertMatchesRegularExpression(
+            '/Terminaufruf: \d{2}\.\d{2}\.\d{4}, \d{2}:\d{2}&nbsp;Uhr/',
+            $body
+        );
+    }
+
+    public function testUserWithLogsPermissionSeesUserActionFilter()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
+                ]
+            ]
+        );
+
+        $response = $this->render($this->arguments, [], []);
+        $body = (string) $response->getBody();
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertStringContainsString(
+            'id="search-user-yes"',
+            $body
+        );
+    }
+
+    public function testUserWithoutLogsPermissionDoesNotSeeUserActionFilter()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ]
+            ]
+        );
+
+        $response = $this->render($this->arguments, [], []);
+        $body = (string) $response->getBody();
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertStringNotContainsString(
+            'id="search-user-yes"',
+            $body
+        );
     }
 }

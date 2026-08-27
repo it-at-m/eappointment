@@ -20,6 +20,7 @@ use BO\Zmsentities\Collection\ScopeList;
  */
 class ZmsApiClientService
 {
+    /** @psalm-api */
     public static function getMergedMailTemplates(int $providerId): array
     {
         try {
@@ -529,19 +530,18 @@ class ZmsApiClientService
     }
 
     /**
-     * Akzeptiert sowohl:
-     * - String: "dldb", "dldb,zms", "dldb; zms", "dldb zms", "dldb|zms"
-     * - Array:  ["dldb","zms"]
+     * Accepts comma/semicolon/pipe/whitespace separated source names, e.g.
+     * "dldb", "dldb,zms", "dldb; zms", "dldb zms", "dldb|zms".
      */
     private static function getSourceNames(): array
     {
-        $raw = \App::$source_name ?? 'dldb';
-
-        if (is_array($raw)) {
-            $names = array_values(array_filter(array_map('strval', $raw)));
-        } else {
-            $s = (string)$raw;
-            $names = preg_split('/[,\;\|\s]+/', $s, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $raw = \App::$source_name;
+        if ($raw === '') {
+            $raw = 'dldb';
+        }
+        $names = preg_split('/[,\;\|\s]+/', $raw, -1, PREG_SPLIT_NO_EMPTY);
+        if ($names === false) {
+            $names = [];
         }
 
         $out = [];
@@ -552,7 +552,7 @@ class ZmsApiClientService
             }
         }
 
-        return $out ?: ['dldb'];
+        return $out !== [] ? $out : ['dldb'];
     }
 
     public static function getProcessesByExternalUserId(string $externalUserId, ?int $filterId = null, ?string $status = null): ProcessList

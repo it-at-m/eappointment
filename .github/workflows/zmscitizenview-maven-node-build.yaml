@@ -22,18 +22,27 @@ jobs:
         include:
           - app-path: zmscitizenview
     steps:
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@e9a8422d740d4e9eaef25cfeeb3a5790da97a7aa # v1.2.4
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@2bb2618a4686a01cc54518c07d9052b80b9a1078 # v1.5.2
+      # package.json keeps the stable pin for main/tags; other refs build against npm "beta".
+      - name: Set up Node.js (patternlab channel)
+        if: ${{ !(github.ref == 'refs/heads/main' || github.ref_type == 'tag') }}
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: "24"
+      - name: Select muc-patternlab-vue channel
+        if: ${{ !(github.ref == 'refs/heads/main' || github.ref_type == 'tag') }}
+        run: bash .github/scripts/zmscitizenview-select-patternlab.sh "${{ matrix.app-path }}"
       - if: ${{hashFiles(format('./{0}/package.json', matrix.app-path))!=null}}
         id: node
-        uses: it-at-m/lhm_actions/action-templates/actions/action-npm-build@e9a8422d740d4e9eaef25cfeeb3a5790da97a7aa # v1.2.4
+        uses: it-at-m/lhm_actions/action-templates/actions/action-npm-build@2bb2618a4686a01cc54518c07d9052b80b9a1078 # v1.5.2
         with:
           app-path: "${{ matrix.app-path }}"
       - if: ${{hashFiles(format('./{0}/pom.xml', matrix.app-path))!=null}}
         id: maven
-        uses: it-at-m/lhm_actions/action-templates/actions/action-maven-build@e9a8422d740d4e9eaef25cfeeb3a5790da97a7aa # v1.2.4
+        uses: it-at-m/lhm_actions/action-templates/actions/action-maven-build@2bb2618a4686a01cc54518c07d9052b80b9a1078 # v1.5.2
         with:
           app-path: "${{ matrix.app-path }}"
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-build-image@e9a8422d740d4e9eaef25cfeeb3a5790da97a7aa # v1.2.4
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-build-image@2bb2618a4686a01cc54518c07d9052b80b9a1078 # v1.5.2
         with:
           path: "${{  matrix.app-path }}"
           image-name: "${{  matrix.app-path }}"

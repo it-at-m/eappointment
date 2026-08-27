@@ -18,6 +18,7 @@ class ValidNumber extends Valid
      * @param String $message error message in case of failure
      *
      * @return self
+     * @psalm-api
      */
     public function isNumber($message = 'no valid number')
     {
@@ -31,6 +32,7 @@ class ValidNumber extends Valid
      * @param String $message error message in case of failure
      *
      * @return self
+     * @psalm-api
      */
     public function isGreaterThan($number, $message = 'too small')
     {
@@ -48,6 +50,7 @@ class ValidNumber extends Valid
      * @param String $message error message in case of failure
      *
      * @return self
+     * @psalm-api
      */
     public function isGreaterEqualThan($number, $message = 'too small')
     {
@@ -65,6 +68,7 @@ class ValidNumber extends Valid
      * @param String $message error message in case of failure
      *
      * @return self
+     * @psalm-api
      */
     public function isLowerEqualThan($number, $message = 'too small')
     {
@@ -82,6 +86,7 @@ class ValidNumber extends Valid
      * @param String $message error message in case of failure
      *
      * @return self
+     * @psalm-api
      */
     public function isLowerThan($number, $message = 'too small')
     {

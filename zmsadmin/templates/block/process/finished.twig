@@ -1,7 +1,10 @@
 {% from 'element/helper/form.twig' import formgroup, formbutton, inputsubmit, inputfield %}
 
 <div class="client-processed">
-    <form class="form--base" method="post" action="{{ urlGet('workstationProcessFinished') }}">
+    <form class="form--base" method="post" action="{{ urlGet('workstationProcessFinished', {}, nextProcessId ? {'nextprocess': nextProcessId} : {}) }}">
+        {% if nextProcessId %}
+            <input type="hidden" name="nextprocess" value="{{ nextProcessId }}">
+        {% endif %}
         
         <fieldset>
             <legend>Kundendaten für Statistik</legend>
@@ -122,7 +125,7 @@
                     }]
                 ) }}
 
-                {% for name, group in requestList %}
+                {% for name, group in scopeRequestList %}
                     {% set groupOptions = [] %}
                     {% for request in group %}
                         {% set value = 0 %}
@@ -134,13 +137,66 @@
                         {% set groupOptions = groupOptions|merge([{ "type": "counter", "parameter": {"label": request.name, "name": "requestCountList["~ request.id ~"]", "value": value} }]) %}
                     {% endfor %}
                     <fieldset>
-                        <legend>{{name}}</legend>
+                        <legend>{{ name == 'Sonstiges' ? 'Dienstleistungen Erfassen' : name }}</legend>
                         {{ formgroup(
                             {"label": null, "class": "form-group--nomaxwidth"},
                             groupOptions
                         ) }}
                     </fieldset>
                 {% endfor %}
+
+                {% set additionalDepartmentRequestList = additionalDepartmentRequestList|default({}) %}
+                {% if additionalDepartmentRequestList|length > 0 %}
+                    {% set additionalDepartmentHasValues = false %}
+                    {% for name, group in additionalDepartmentRequestList %}
+                        {% for request in group %}
+                            {% for processRequest in workstation.process.requests %}
+                                {% if processRequest.id == request.id %}
+                                    {% set additionalDepartmentHasValues = true %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    {% endfor %}
+                    <div class="statistic-additional-department-requests{% if additionalDepartmentHasValues %} is-expanded{% endif %}">
+                        <button
+                            type="button"
+                            class="button statistic-additional-department-requests__toggle"
+                            aria-expanded="{{ additionalDepartmentHasValues ? 'true' : 'false' }}"
+                            aria-controls="statistic-additional-department-requests-panel"
+                            data-label-more="Weitere Dienstleistungen anzeigen"
+                            data-label-less="Weniger Dienstleistungen anzeigen"
+                        >
+                            <span class="statistic-additional-department-requests__label">
+                                {{ additionalDepartmentHasValues ? 'Weniger Dienstleistungen anzeigen' : 'Weitere Dienstleistungen anzeigen' }}
+                            </span>
+                            <i class="fas {{ additionalDepartmentHasValues ? 'fa-chevron-up' : 'fa-chevron-down' }}" aria-hidden="true"></i>
+                        </button>
+                        <div
+                            id="statistic-additional-department-requests-panel"
+                            class="statistic-additional-department-requests__panel"
+                        >
+                            {% for name, group in additionalDepartmentRequestList %}
+                                {% set groupOptions = [] %}
+                                {% for request in group %}
+                                    {% set value = 0 %}
+                                    {% for processRequest in workstation.process.requests %}
+                                        {% if processRequest.id == request.id %}
+                                            {% set value = value + 1  %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% set groupOptions = groupOptions|merge([{ "type": "counter", "parameter": {"label": request.name, "name": "requestCountList["~ request.id ~"]", "value": value} }]) %}
+                                {% endfor %}
+                                <fieldset>
+                                    <legend>{{ name == 'Sonstiges' ? 'Weitere Dienstleistungen Erfassen' : name }}</legend>
+                                    {{ formgroup(
+                                        {"label": null, "class": "form-group--nomaxwidth"},
+                                        groupOptions
+                                    ) }}
+                                </fieldset>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </fieldset>
 

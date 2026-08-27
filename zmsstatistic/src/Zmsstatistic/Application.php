@@ -13,7 +13,7 @@ use Psr\SimpleCache\CacheInterface;
 
 define(
     'ZMS_STATISTIC_SESSION_DURATION',
-    getenv('ZMS_STATISTIC_SESSION_DURATION') ? getenv('ZMS_STATISTIC_SESSION_DURATION') : 28800
+    (int) ((($value = getenv('ZMS_STATISTIC_SESSION_DURATION')) !== false && $value !== '') ? $value : 36000)
 );
 
 if (($token = getenv('ZMS_CONFIG_SECURE_TOKEN')) === false || $token === '') {
@@ -24,7 +24,13 @@ define('ZMS_CONFIG_SECURE_TOKEN', getenv('ZMS_CONFIG_SECURE_TOKEN'));
 
 if (!defined('ZMS_STATISTIC_TWIG_CACHE')) {
     $value = getenv('ZMS_STATISTIC_TWIG_CACHE');
-    define('ZMS_STATISTIC_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '/cache/'));
+    if ($value === 'false') {
+        define('ZMS_STATISTIC_TWIG_CACHE', false);
+    } elseif ($value === false || $value === '') {
+        define('ZMS_STATISTIC_TWIG_CACHE', '/cache/');
+    } else {
+        define('ZMS_STATISTIC_TWIG_CACHE', $value);
+    }
 }
 
 class Application extends \BO\Slim\Application
@@ -33,23 +39,25 @@ class Application extends \BO\Slim\Application
      * Name of the application
      *
      */
-    const IDENTIFIER = 'zms';
+    const string IDENTIFIER = 'zms';
 
-    const MODULE_NAME = 'zmsstatistic';
+    const string MODULE_NAME = 'zmsstatistic';
 
     public static ?CacheInterface $cache = null;
 
-    const DEBUG = false;
+    const bool DEBUG = false;
 
-    const TWIG_CACHE = ZMS_STATISTIC_TWIG_CACHE;
+    const mixed TWIG_CACHE = ZMS_STATISTIC_TWIG_CACHE;
 
-    const SESSION_DURATION = ZMS_STATISTIC_SESSION_DURATION;
+    const int SESSION_DURATION = ZMS_STATISTIC_SESSION_DURATION;
 
+    /** @var string */
     public static $includeUrl = '/terminvereinbarung/statistic';
     /**
      * language preferences
      */
-    public static $locale = 'de';
+    public static string $locale = 'de';
+    /** @var array */
     public static $supportedLanguages = array(
         // Default language
         'de' => array(
@@ -68,27 +76,28 @@ class Application extends \BO\Slim\Application
      * image preferences
      */
 
+    /** @var bool */
     public static $isImageAllowed = false;
 
     /*
      * -----------------------------------------------------------------------
      * ZMS API access
      */
-    public static $http = null;
+    public static ?Http $http = null;
 
-    public static $http_curl_config = array();
+    public static array $http_curl_config = array();
 
-    const JSON_COMPRESS_LEVEL = 1;
+    const int JSON_COMPRESS_LEVEL = 1;
 
     /**
     * config preferences
     */
-    const CONFIG_SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
+    const string CONFIG_SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
 
     /**
      * HTTP url for api
      */
-    const HTTP_BASE_URL = 'http://user:pass@host.tdl';
+    const string HTTP_BASE_URL = 'http://user:pass@host.tdl';
 
     public static function initialize(): void
     {

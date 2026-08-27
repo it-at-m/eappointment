@@ -7,12 +7,12 @@ class ExchangeCapacityscope extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'slot_process';
+    const string TABLE = 'slot_process';
 
     /**
      * Time-series metrics for one scope: booked/planned capacity per day, all dates.
      */
-    const QUERY_CAPACITY_METRICS_BY_DAY_ALL_DATES = '
+    const string QUERY_CAPACITY_METRICS_BY_DAY_ALL_DATES = '
     SELECT
         `scopeID` as subjectid,
         CONCAT(year, "-", LPAD(month, 2, 0), "-", LPAD(day, 2, 0)) as date,
@@ -46,7 +46,7 @@ class ExchangeCapacityscope extends \BO\Zmsbackend\Query\Base
     /**
      * Time-series metrics for one scope: booked/planned capacity per day, within a date range.
      */
-    const QUERY_CAPACITY_METRICS_BY_DAY_IN_DATE_RANGE = '
+    const string QUERY_CAPACITY_METRICS_BY_DAY_IN_DATE_RANGE = '
     SELECT
         `scopeID` as subjectid,
         CONCAT(year, "-", LPAD(month, 2, 0), "-", LPAD(day, 2, 0)) as date,
@@ -82,7 +82,7 @@ class ExchangeCapacityscope extends \BO\Zmsbackend\Query\Base
     /**
      * Time-series metrics for one scope: booked/planned capacity per clock hour, within a date range.
      */
-    const QUERY_CAPACITY_METRICS_BY_HOUR_IN_DATE_RANGE = '
+    const string QUERY_CAPACITY_METRICS_BY_HOUR_IN_DATE_RANGE = '
     SELECT
         `scopeID` as subjectid,
         CONCAT(year, "-", LPAD(month, 2, 0), "-", LPAD(day, 2, 0), " ", LPAD(HOUR(`time`), 2, "0"), ":00") as date,

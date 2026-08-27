@@ -16,9 +16,9 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      *     * @var String TABLE mysql table reference
      */
-    const TABLE = 'buerger';
+    const string TABLE = 'buerger';
 
-    const QUERY_DEREFERENCED = "UPDATE `buerger` process LEFT JOIN `standort` s USING(StandortID)
+    const string QUERY_DEREFERENCED = "UPDATE `buerger` process LEFT JOIN `standort` s USING(StandortID)
         SET
             process.Anmerkung = ?,
             process.custom_text_field = ?,
@@ -42,7 +42,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
             OR process.istFolgeterminvon = ?
         ";
 
-    const QUERY_CANCELED = "
+    const string QUERY_CANCELED = "
         UPDATE `buerger` process LEFT JOIN `standort` s USING(StandortID)
             SET
                 process.Anmerkung = CONCAT(
@@ -62,36 +62,36 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
                 OR process.istFolgeterminvon = :processId
         ";
 
-    const QUERY_DELETE = "DELETE FROM `buerger`
+    const string QUERY_DELETE = "DELETE FROM `buerger`
         WHERE
             BuergerID = ?
             OR istFolgeterminvon = ?
         ";
 
-    const QUERY_REASSIGN_PROCESS_CREDENTIALS = "UPDATE `buerger` process
+    const string QUERY_REASSIGN_PROCESS_CREDENTIALS = "UPDATE `buerger` process
        SET 
             process.BuergerID = :newProcessId, 
             process.absagecode = :newAuthKey
         WHERE BuergerID = :processId
     ";
 
-    const QUERY_REASSIGN_PROCESS_REQUESTS = "UPDATE `buergeranliegen` requests
+    const string QUERY_REASSIGN_PROCESS_REQUESTS = "UPDATE `buergeranliegen` requests
         SET 
             requests.BuergerID = :newProcessId
         WHERE BuergerID = :processId
     ";
 
-    const QUERY_REASSIGN_FOLLWING_PROCESS = "UPDATE `buerger` process
+    const string QUERY_REASSIGN_FOLLWING_PROCESS = "UPDATE `buerger` process
         SET process.istFolgeterminvon = :newProcessId
         WHERE istFolgeterminvon = :processId
     ";
 
-    const QUERY_UPDATE_FOLLOWING_PROCESS = "UPDATE buerger 
+    const string QUERY_UPDATE_FOLLOWING_PROCESS = "UPDATE buerger 
         SET vorlaeufigeBuchung = :reserved 
         WHERE istFolgeterminvon = :processID
         ";
 
-    public function getQueryNewProcessId()
+    public function getQueryNewProcessId(): string
     {
         $random = rand(20, 999);
         return 'SELECT pseq.processId AS `nextid`
@@ -104,12 +104,12 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
             FOR UPDATE';
     }
 
-    public function getLockProcessId()
+    public function getLockProcessId(): string
     {
         return 'SELECT p.`BuergerID` FROM `' . self::getTablename() . '` p WHERE p.`BuergerID` = :processId FOR UPDATE';
     }
 
-    public function getLockAssignedWorkstationId()
+    public function getLockAssignedWorkstationId(): string
     {
         return 'SELECT p.`NutzerID`
             FROM `' . self::getTablename() . '` p
@@ -136,7 +136,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * Add Availability to the dataset
      */
-    protected function addJoinAvailability()
+    protected function addJoinAvailability(): \BO\Zmsbackend\Availability\Repository\Availability
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias(\BO\Zmsbackend\Availability\Repository\Availability::TABLE, 'availability'),
@@ -149,7 +149,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * Add Scope to the dataset
      */
-    protected function addJoinScope()
+    protected function addJoinScope(): \BO\Zmsbackend\Query\Scope
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias(\BO\Zmsbackend\Query\Scope::TABLE, 'scope'),
@@ -166,19 +166,27 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $joinQuery;
     }
 
-    public function addConditionDate($date)
+    public function addConditionDate($date): static
     {
         $this->query->where('process.Datum', '=', $date);
         return $this;
     }
 
-    public function addConditionDisplayNumber($displayNumber)
+    /**
+     * @psalm-api
+     */
+    public function addConditionDisplayNumber($displayNumber): static
     {
         $this->query->where('process.displayNumber', '=', $displayNumber);
         return $this;
     }
 
-    protected function calculateStatus()
+    /**
+     * @psalm-api
+     *
+     * @return null|string
+     */
+    protected function calculateStatus(): string|null
     {
         if ($this->query->value('Name') === '(abgesagt)') {
             return 'deleted';
@@ -251,6 +259,10 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return null;
     }
 
+    /**
+     * @return (\BO\Zmsbackend\Query\Builder\Expression|string)[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -352,7 +364,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         ], 'strlen');
     }
 
-    public function addCountValue()
+    public function addCountValue(): static
     {
         $this->query->select([
             'processCount' => self::expression('COUNT(*)'),
@@ -360,7 +372,10 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionHasTelephone()
+    /**
+     * @psalm-api
+     */
+    public function addConditionHasTelephone(): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $condition) {
             $condition
@@ -370,7 +385,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionProcessDeleteInterval(\DateTimeInterface $expirationDate)
+    public function addConditionProcessDeleteInterval(\DateTimeInterface $expirationDate): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($expirationDate) {
             $query->andWith(
@@ -385,7 +400,10 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionProcessExpiredIPTimeStamp(\DateTimeInterface $expirationDate)
+    /**
+     * @psalm-api
+     */
+    public function addConditionProcessExpiredIPTimeStamp(\DateTimeInterface $expirationDate): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($expirationDate) {
             $query->andWith('process.IPTimeStamp', '<=', $expirationDate->getTimestamp());
@@ -394,7 +412,10 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionProcessReminderInterval(\DateTimeInterface $dateTime)
+    /**
+     * @psalm-api
+     */
+    public function addConditionProcessReminderInterval(\DateTimeInterface $dateTime): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($dateTime) {
             $query
@@ -409,7 +430,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         \DateTimeInterface $now,
         \DateTimeInterface $lastRun,
         $defaultReminderInMinutes
-    ) {
+    ): static {
         $this->query
             ->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($now, $lastRun, $defaultReminderInMinutes) {
                 $query
@@ -456,7 +477,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionProcessId($processId)
+    public function addConditionProcessId(int $processId): static
     {
         $this->query->where('process.BuergerID', '=', $processId);
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $condition) {
@@ -467,7 +488,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionProcessIdFollow($processId)
+    public function addConditionProcessIdFollow($processId): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $condition) use ($processId) {
             $condition
@@ -477,7 +498,10 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionIgnoreSlots()
+    /**
+     * @psalm-api
+     */
+    public function addConditionIgnoreSlots(): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $condition) {
             $condition
@@ -487,7 +511,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionScopeId($scopeId)
+    public function addConditionScopeId(int $scopeId): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($scopeId) {
             $query
@@ -497,7 +521,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionScopeIds($scopeIds)
+    public function addConditionScopeIds(array|int $scopeIds)
     {
         if (count($scopeIds) === 0) {
             $this->query->where(self::expression('1'), '=', 0);
@@ -517,7 +541,10 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionQueueNumber($queueNumber, $queueLimit = 10000)
+    /**
+     * @psalm-api
+     */
+    public function addConditionQueueNumber($queueNumber, $queueLimit = 10000): static
     {
         ($queueLimit > $queueNumber)
             ? $this->query->where('process.wartenummer', '=', $queueNumber)
@@ -525,7 +552,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionWorkstationId($workstationId)
+    public function addConditionWorkstationId($workstationId): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($workstationId) {
             $query->andWith('process.NutzerID', '=', $workstationId);
@@ -534,7 +561,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionTime($dateTime)
+    public function addConditionTime(\DateTimeInterface|null $dateTime): static
     {
         $this->query->where('process.Datum', '=', $dateTime->format('Y-m-d'));
         return $this;
@@ -542,8 +569,10 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
 
     /**
      * Identify processes between two dates
+     *
+     * @psalm-api
      */
-    public function addConditionTimeframe(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
+    public function addConditionTimeframe(\DateTimeInterface $startDate, \DateTimeInterface $endDate): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $condition) use ($startDate, $endDate) {
             $condition
@@ -553,26 +582,32 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionAuthKey($authKey)
+    public function addConditionAuthKey($authKey): static
     {
         $authKey = urldecode($authKey);
         $this->query->where('process.absagecode', '=', $authKey);
         return $this;
     }
 
+    /**
+     * @return static
+     */
     public function addConditionAssigned()
     {
         $this->query->where('process.StandortID', '!=', "0");
         return $this;
     }
 
-    public function addConditionStatus($status)
+    public function addConditionStatus(string $status): static
     {
         $this->query->where('process.status', '=', $status);
         return $this;
     }
 
-    public function addConditionIsReserved()
+    /**
+     * @psalm-api
+     */
+    public function addConditionIsReserved(): static
     {
         $this->query->where('process.name', 'NOT IN', array(
             'dereferenced',
@@ -588,52 +623,70 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionSearch($queryString, $orWhere = false)
+    public function addConditionSearch($queryString, bool $orWhere = false): static
     {
-        $queryString = trim($queryString);
+        $queryString = trim((string) $queryString);
         $terms = $this->parseSearchTerms($queryString);
+
         if ($terms === []) {
             return $this;
         }
 
-        $condition = function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($terms) {
-            if (count($terms) > 1) {
-                foreach ($terms as $term) {
-                    $query->andWith(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $inner) use ($term) {
-                        $this->appendNamePartLikeGroup($inner, $term['value'], true);
-                    });
-                }
-                return;
+        $condition = function (
+            \BO\Zmsbackend\Query\Builder\ConditionBuilder $query
+        ) use ($terms) {
+            foreach ($terms as $term) {
+                $query->andWith(
+                    function (
+                        \BO\Zmsbackend\Query\Builder\ConditionBuilder $inner
+                    ) use ($term) {
+                        $this->appendGeneralSearchTermGroup(
+                            $inner,
+                            $term['value'],
+                            $term['quoted']
+                        );
+                    }
+                );
             }
-
-            $term = $terms[0]['value'];
-            if ($terms[0]['quoted']) {
-                $this->appendNamePartLikeGroup($query, $term, true);
-                return;
-            }
-
-            $likeContains = '%' . $this->escapeLikeValue($term) . '%';
-            $useNameWordBoundary = !$this->isNumericSearchQuery($term) && mb_strlen($term) <= 3;
-
-            if ($useNameWordBoundary) {
-                $this->appendNamePartLikeGroup($query, $term, true, true);
-            } else {
-                $query->orWith('process.Name', 'LIKE', $likeContains);
-            }
-            $query->orWith('process.EMail', 'LIKE', $likeContains);
-            $query->orWith('process.Telefonnummer', 'LIKE', $likeContains);
-            $query->orWith('process.telefonnummer_fuer_rueckfragen', 'LIKE', $likeContains);
-            $query->orWith('process.displayNumber', 'LIKE', $likeContains);
         };
+
         if ($orWhere) {
             $this->query->orWhere($condition);
         } else {
             $this->query->where($condition);
         }
+
         return $this;
     }
 
-    public function addConditionUpcomingOnly(\DateTimeInterface $now)
+    private function appendGeneralSearchTermGroup(\BO\Zmsbackend\Query\Builder\ConditionBuilder $query, string $term, bool $quoted = false): void
+    {
+        $likeContains = '%' . $this->escapeLikeValue($term) . '%';
+
+        $useNameWordBoundary = !$quoted
+            && !$this->isNumericSearchQuery($term) && mb_strlen($term) <= 3;
+
+        if ($quoted) {
+            $this->appendNamePartLikeGroup(
+                $query,
+                $term,
+                true
+            );
+        } elseif ($useNameWordBoundary) {
+            $this->appendNamePartLikeGroup($query, $term, true, true);
+        } else {
+            $query->orWith('process.Name', 'LIKE', $likeContains);
+        }
+
+        $query->orWith('process.EMail', 'LIKE', $likeContains);
+        $query->orWith('process.Telefonnummer', 'LIKE', $likeContains);
+        $query->orWith('process.telefonnummer_fuer_rueckfragen', 'LIKE', $likeContains);
+        $query->orWith('process.displayNumber', 'LIKE', $likeContains);
+        $query->orWith('process.custom_text_field', 'LIKE', $likeContains);
+        $query->orWith('process.custom_text_field2', 'LIKE', $likeContains);
+    }
+
+    public function addConditionUpcomingOnly(\DateTimeInterface $now): static
     {
         $today = $now->format('Y-m-d');
         $time = $now->format('H:i:s');
@@ -649,7 +702,8 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addOrderByAppointmentDate()
+    /** @psalm-api */
+    public function addOrderByAppointmentDate(): static
     {
         $this->query->orderBy('process.Datum', 'ASC');
         $this->query->orderBy('process.Uhrzeit', 'ASC');
@@ -657,7 +711,8 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addOrderBySearchRelevance($queryString)
+    /** @psalm-api */
+    public function addOrderBySearchRelevance(string $queryString): static
     {
         $queryString = trim($queryString);
         if ($queryString === '') {
@@ -665,16 +720,43 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         }
 
         $terms = $this->parseSearchTerms($queryString);
-        $primaryTerm = $terms[0]['value'] ?? $queryString;
-        $escapedLike = $this->escapeLikePatternForSqlLiteral($primaryTerm);
+        if ($terms === []) {
+            return $this;
+        }
+        $fullQuery = $this->escapeLikePatternForSqlLiteral($queryString);
+        $fullQueryExact = $this->escapeSqlStringLiteral($queryString);
+
+        $allTermsAsWordsConditions = [];
+        $allTermsInNameConditions = [];
+        $anyTermInNameConditions = [];
+
+        foreach ($terms as $term) {
+            $escapedTerm = $this->escapeLikePatternForSqlLiteral($term['value']);
+            $exactTerm = $this->escapeSqlStringLiteral($term['value']);
+            $allTermsAsWordsConditions[] = "("
+                . "process.Name = '{$exactTerm}'"
+                . " OR process.Name LIKE '{$escapedTerm} %'"
+                . " OR process.Name LIKE '% {$escapedTerm}'"
+                . " OR process.Name LIKE '% {$escapedTerm} %'"
+                . ")";
+            $allTermsInNameConditions[] = "process.Name LIKE '%{$escapedTerm}%'";
+            $anyTermInNameConditions[] = "process.Name LIKE '%{$escapedTerm}%'";
+        }
+        $allTermsAsWords = implode(' AND ', $allTermsAsWordsConditions);
+        $allTermsInName = implode(' AND ', $allTermsInNameConditions);
+        $anyTermInName = implode(' OR ', $anyTermInNameConditions);
+
         $this->query->orderBy(self::expression(
             "CASE
-                WHEN process.Name LIKE '{$escapedLike} %' OR process.Name = '{$escapedLike}' THEN 0
-                WHEN process.Name LIKE '% {$escapedLike}' OR process.Name LIKE '% {$escapedLike} %' THEN 1
-                WHEN process.Name LIKE '%{$escapedLike}%' THEN 2
-                ELSE 3
-            END"
+                   WHEN process.Name LIKE '{$fullQueryExact}' THEN 0
+                   WHEN process.Name LIKE '{$fullQuery} %' THEN 1
+                   WHEN {$allTermsAsWords} THEN 2
+                   WHEN {$allTermsInName} THEN 3
+                   WHEN {$anyTermInName} THEN 4
+                   ELSE 5
+                END"
         ));
+
         $this->query->orderBy('process.Datum', 'ASC');
         $this->query->orderBy('process.Uhrzeit', 'ASC');
         $this->query->orderBy('process.BuergerID', 'ASC');
@@ -731,12 +813,12 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         }
     }
 
-    private function isNumericSearchQuery($queryString): bool
+    private function isNumericSearchQuery(string $queryString): bool
     {
         return (bool) preg_match('#^\d+$#', $queryString);
     }
 
-    private function escapeLikeValue($value): string
+    private function escapeLikeValue(string $value): string
     {
         return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $value);
     }
@@ -751,7 +833,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return str_replace("'", "''", $value);
     }
 
-    public function addConditionName($name, $exactMatching = false)
+    public function addConditionName($name, $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($name) {
@@ -765,7 +847,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionMail($mailAddress, $exactMatching = false)
+    public function addConditionMail(string $mailAddress, bool $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($mailAddress) {
@@ -779,7 +861,10 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionCustomTextfield($customText, $exactMatching = false)
+    /**
+     * @psalm-api
+     */
+    public function addConditionCustomTextfield($customText, $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($customText) {
@@ -793,7 +878,10 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionCustomTextfield2($customText2, $exactMatching = false)
+    /**
+     * @psalm-api
+     */
+    public function addConditionCustomTextfield2($customText2, $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($customText2) {
@@ -807,7 +895,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionAmendment($amendment)
+    public function addConditionAmendment($amendment): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($amendment) {
             $query->andWith('process.Anmerkung', 'LIKE', "%$amendment%");
@@ -818,7 +906,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * Add Requests Join
      */
-    public function addConditionRequestId($requestId)
+    public function addConditionRequestId($requestId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias("buergeranliegen", 'buergeranliegen'),
@@ -830,7 +918,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionScopeNameSearch(string $scopeName)
+    public function addConditionScopeNameSearch(string $scopeName): static
     {
         $likeValue = '%' . $this->escapeLikeValue($scopeName) . '%';
         $this->leftJoin(
@@ -858,7 +946,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionServiceNameSearch(string $serviceName)
+    public function addConditionServiceNameSearch(string $serviceName): static
     {
         $likeValue = '%' . $this->escapeLikeValue($serviceName) . '%';
         $this->leftJoin(
@@ -882,7 +970,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * add condition to get process if deallocation time < now
      */
-    public function addConditionDeallocate($now)
+    public function addConditionDeallocate(\DateTimeInterface $now): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($now) {
             $query
@@ -893,7 +981,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addValuesNewProcess(ProcessEntity $process, $parentProcess = 0, $childProcessCount = 0)
+    public function addValuesNewProcess(ProcessEntity $process, $parentProcess = 0, $childProcessCount = 0): void
     {
         $values = [
             'BuergerID' => $process->id,
@@ -915,7 +1003,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $this->addValues($values);
     }
 
-    public function getNewDisplayNumber($process)
+    public function getNewDisplayNumber(ProcessEntity $process)
     {
         if (empty($process->scope->getPreference('queue', 'displayNumberPrefix'))) {
             return $process->id;
@@ -941,7 +1029,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $newDisplayNumber;
     }
 
-    public function checkIfDisplayNumberOnSameDateExists($scopeId, $displayNumber, $date): bool
+    public function checkIfDisplayNumberOnSameDateExists($scopeId, string $displayNumber, \DateTime|false $date): bool
     {
         $processWithDisplayNumber = (new \BO\Zmsbackend\Process\Service\Process())->readProcessWithSameDayAndDisplayNumber(
             $scopeId,
@@ -955,9 +1043,9 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     public function addValuesUpdateProcess(
         ProcessEntity $process,
         \DateTimeInterface $dateTime,
-        $parentProcess = 0,
+        int $parentProcess = 0,
         $previousStatus = null
-    ) {
+    ): void {
         $this->addValuesIPAdress($process);
         if (0 === $parentProcess) {
             $this->addValuesClientData($process);
@@ -975,14 +1063,14 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $this->addValuesExternalUserId($process);
     }
 
-    public function addValuesIPAdress(ProcessEntity $process)
+    public function addValuesIPAdress(ProcessEntity $process): void
     {
         $data = array();
         $data['IPAdresse'] = $process->createIP;
         $this->addValues($data);
     }
 
-    public function addValuesFollowingProcessData($process, $parentProcess)
+    public function addValuesFollowingProcessData(ProcessEntity $process, $parentProcess): void
     {
         $data = array();
         if (0 === $parentProcess) {
@@ -997,7 +1085,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
 
     public function addValuesAppointmentData(
         ProcessEntity $process
-    ) {
+    ): void {
         $data = array();
         $appointment = $process->getFirstAppointment();
         $datetime = $appointment->toDateTime();
@@ -1008,13 +1096,13 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
 
     public function addValuesScopeData(
         ProcessEntity $process
-    ) {
+    ): void {
         $data = array();
         $data['StandortID'] = $process->getScopeId();
         $this->addValues($data);
     }
 
-    public function addValuesStatusData(ProcessEntity $process, \DateTimeInterface $dateTime)
+    public function addValuesStatusData(ProcessEntity $process, \DateTimeInterface $dateTime): void
     {
         $data = array();
         $data['vorlaeufigeBuchung'] = ($process->status == 'reserved') ? 1 : 0;
@@ -1057,7 +1145,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $this->addValues($data);
     }
 
-    protected function addValuesClientData($process)
+    protected function addValuesClientData(ProcessEntity $process): void
     {
         $data = array();
         $client = $process->getFirstClient();
@@ -1083,13 +1171,13 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $this->addValues($data);
     }
 
-    public function addValueDisplayNumber($process)
+    public function addValueDisplayNumber(ProcessEntity $process): void
     {
         $data['displayNumber'] = $process->displayNumber;
         $this->addValues($data);
     }
 
-    protected function addProcessingTimeData($process, \DateTimeInterface $dateTime, $previousStatus = null)
+    protected function addProcessingTimeData(ProcessEntity $process, \DateTimeInterface $dateTime, $previousStatus = null): void
     {
         $data = array();
         $timeoutTime = null;
@@ -1102,17 +1190,20 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         ) {
             $timeoutTime = $dateTime->format('Y-m-d H:i:s');
             $data['timeoutTime'] = $timeoutTime;
-        } elseif ($process->status == 'processing') {
+        } elseif ($process->status == 'processing' && empty($process->showUpTime)) {
+            // Do not reset showUpTime on re-save (preserves Bearbeitungszeit)
             $showUpTime = $dateTime->format('Y-m-d H:i:s');
             $data['showUpTime'] = $showUpTime;
         } elseif ($process->status == 'finished') {
             $finishTime = $dateTime->format('Y-m-d H:i:s');
             $data['finishTime'] = $finishTime;
         } elseif (
-            $process->status == 'queued'
-            && isset($previousStatus)
+            isset($previousStatus)
             && in_array($previousStatus, ['called', 'processing'], true)
+            && in_array($process->status, ['queued', 'parked'], true)
         ) {
+            // Drop open processing segment when leaving to queue/park so a later
+            // resume starts a fresh showUpTime (park-and-resume ATAF expectation).
             $data['showUpTime'] = null;
             $data['timeoutTime'] = null;
         }
@@ -1169,7 +1260,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $this->addValues($data);
     }
 
-    protected function addValuesQueueData($process)
+    protected function addValuesQueueData(ProcessEntity $process): void
     {
         $data = array();
         $appointmentTime = $process->getFirstAppointment()->toDateTime()->format('H:i:s');
@@ -1196,7 +1287,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $this->addValues($data);
     }
 
-    protected function addValuesWaitingTimeData(ProcessEntity $process, $previousStatus = null)
+    protected function addValuesWaitingTimeData(ProcessEntity $process, $previousStatus = null): void
     {
         $data = array();
         $hasWaitingTimeAlready = (
@@ -1253,7 +1344,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     }
 
 
-    protected function addValuesWayTimeData(ProcessEntity $process)
+    protected function addValuesWayTimeData(ProcessEntity $process): void
     {
         $data = array();
         if ($process->status == 'processing') {
@@ -1266,7 +1357,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $this->addValues($data);
     }
 
-    protected function addValuesWasMissed($process)
+    protected function addValuesWasMissed(ProcessEntity $process): static
     {
         $data = [
             'wasMissed' => $process->wasMissed ? 1 : 0,
@@ -1276,7 +1367,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    protected function addValuesPriority($process)
+    protected function addValuesPriority(ProcessEntity $process): static
     {
         $data = [
             'priority' => $process->priority,
@@ -1286,7 +1377,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    protected function addValuesExternalUserId($process)
+    protected function addValuesExternalUserId(ProcessEntity $process): static
     {
         $data = [
             'external_user_id' => $process->externalUserId,
@@ -1341,12 +1432,18 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $data;
     }
 
-    public function removeDuplicates()
+    /**
+     * @psalm-api
+     */
+    public function removeDuplicates(): static
     {
         $this->query->groupBy('process.BuergerID');
         return $this;
     }
 
+    /**
+     * @return void
+     */
     #[\Override]
     protected function addRequiredJoins()
     {
@@ -1369,7 +1466,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         }
     }
 
-    public function addConditionExternalUserId(string $externalUserId)
+    public function addConditionExternalUserId(string $externalUserId): static
     {
         $this->query->where('process.external_user_id', '=', $externalUserId);
         return $this;

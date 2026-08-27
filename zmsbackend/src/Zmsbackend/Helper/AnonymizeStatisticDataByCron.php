@@ -33,7 +33,7 @@ class AnonymizeStatisticDataByCron
         }
     }
 
-    public function startAnonymizing(\DateTimeImmutable $currentDate, $commit = false)
+    public function startAnonymizing(\DateTimeImmutable $currentDate, $commit = false): void
     {
         // Adjust the currentDate based on the numeric timespan
         $targetDate = $currentDate->modify("-{$this->timespan} days");

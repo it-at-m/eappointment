@@ -10,8 +10,12 @@ class Apiclient extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Quer
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'apiclient';
+    const string TABLE = 'apiclient';
 
+    /**
+     * @return string[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -25,7 +29,7 @@ class Apiclient extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Quer
         return $mapping;
     }
 
-    public function addConditionApiclientKey($clientKey)
+    public function addConditionApiclientKey($clientKey): static
     {
         $this->query->where('apiclient.clientKey', '=', $clientKey);
         return $this;

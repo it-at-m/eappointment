@@ -8,9 +8,9 @@ class WorkstationProcessParkedTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "WorkstationProcessParked";
 
-    const PROCESS_ID = 10030;
+    const int PROCESS_ID = 10030;
 
-    const AUTHKEY = '1c56';
+    const string AUTHKEY = '1c56';
 
     public function testRendering()
     {

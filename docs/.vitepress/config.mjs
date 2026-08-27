@@ -18,8 +18,109 @@ const CUCUMBER_DOC_TARGETS = [
 ];
 const FEATURE_SOURCE_BASE =
   "https://github.com/it-at-m/eappointment/blob/main/zmsautomation/src/test/resources/features";
+const CUCUMBER_FEATURES_JSON = path.resolve(
+  import.meta.dirname,
+  "data/cucumber-features.json"
+);
 
 const toPosix = (p) => p.split(path.sep).join("/");
+
+const toFeatureAnchorId = (rel) =>
+  `feature-${rel
+    .replace(/\.feature$/i, "")
+    .replace(/[^A-Za-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .toLowerCase()}`;
+
+const uniquePreserveOrder = (tags) => {
+  const seen = new Set();
+  const out = [];
+  for (const tag of tags) {
+    const key = tag.toLowerCase();
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    out.push(tag);
+  }
+  return out;
+};
+
+const sortFeatureTags = (tags) => {
+  const unique = uniquePreserveOrder(tags);
+  unique.sort((a, b) => {
+    const aTicket = /^@(?:ZMSKVR|ZMS)-\d+$/i.test(a);
+    const bTicket = /^@(?:ZMSKVR|ZMS)-\d+$/i.test(b);
+    if (aTicket !== bTicket) {
+      return aTicket ? -1 : 1;
+    }
+    return a.localeCompare(b);
+  });
+  return unique;
+};
+
+const parseFeatureMeta = (raw) => {
+  const featureTags = [];
+  const allTags = [];
+  let title = "";
+  let firstScenario = "";
+  let scenarioCount = 0;
+  let pendingTags = [];
+  let seenFeature = false;
+
+  for (const line of raw.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) {
+      continue;
+    }
+    const tagCandidate = trimmed.split("#", 1)[0].trim();
+    if (tagCandidate && /^@(?:\S+)(?:\s+@\S+)*$/.test(tagCandidate)) {
+      const tags = tagCandidate
+        .split(/\s+/)
+        .filter((part) => part.startsWith("@"));
+      pendingTags.push(...tags);
+      allTags.push(...tags);
+      continue;
+    }
+    const featureMatch = trimmed.match(/^(?:Feature|Funktionalität):\s*(.+)$/);
+    if (featureMatch) {
+      title = featureMatch[1].trim();
+      if (!seenFeature) {
+        featureTags.push(...pendingTags);
+        seenFeature = true;
+      }
+      pendingTags = [];
+      continue;
+    }
+    const scenarioMatch = trimmed.match(
+      /^(?:Scenario Outline|Scenario Template|Szenariogrundriss|Scenario|Szenario):\s*(.*)$/
+    );
+    if (scenarioMatch) {
+      scenarioCount += 1;
+      if (!firstScenario) {
+        firstScenario = scenarioMatch[1].trim();
+      }
+      pendingTags = [];
+    }
+  }
+
+  const genericTitle = !title || /^default$/i.test(title);
+
+  return {
+    title: genericTitle ? firstScenario : title,
+    tags: sortFeatureTags(featureTags.length ? featureTags : allTags),
+    scenarioCount,
+  };
+};
+
+const writeJsonIfChanged = (target, value) => {
+  const next = `${JSON.stringify(value, null, 2)}\n`;
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  const prev = fs.existsSync(target) ? fs.readFileSync(target, "utf8") : "";
+  if (prev !== next) {
+    fs.writeFileSync(target, next, "utf8");
+  }
+};
 
 const listFeatureFiles = (dir) => {
   const out = [];
@@ -53,7 +154,8 @@ const cucumberStrings = {
     deprecated:
       "> Deprecated: These scenarios target the legacy buergeransicht frontend from `it-at-m/eappointment-buergeransicht` and are not used for `zmscitizenview`.",
     deprecatedSuffix: "(deprecated)",
-    sourceLabel: "Source",
+    accordionHint:
+      "Click a feature to view its Gherkin. Only one feature is expanded at a time.",
     noFiles: "No `.feature` files found.",
   },
   de: {
@@ -68,15 +170,28 @@ const cucumberStrings = {
     deprecated:
       "> Veraltet: Diese Szenarien adressieren das alte buergeransicht-Frontend aus `it-at-m/eappointment-buergeransicht` und werden für `zmscitizenview` nicht mehr verwendet.",
     deprecatedSuffix: "(veraltet)",
-    sourceLabel: "Quelle",
+    accordionHint:
+      "Klicke auf ein Feature, um das Gherkin anzuzeigen. Es ist immer nur ein Feature aufgeklappt.",
     noFiles: "Keine `.feature`-Dateien gefunden.",
   },
 };
 
-const renderCucumberDocFor = (locale) => {
-  const t = cucumberStrings[locale];
+const sortModuleEntries = (moduleMap) =>
+  [...moduleMap.entries()].sort(([a], [b]) => {
+    if (a === "buergeransicht") {
+      return 1;
+    }
+    if (b === "buergeransicht") {
+      return -1;
+    }
+    return a.localeCompare(b);
+  });
+
+const collectCucumberFeatures = () => {
   const featureFiles = listFeatureFiles(FEATURES_ROOT);
   const grouped = new Map();
+  const meta = {};
+  const usedIds = new Set();
 
   for (const file of featureFiles) {
     const rel = toPosix(path.relative(FEATURES_ROOT, file));
@@ -90,8 +205,34 @@ const renderCucumberDocFor = (locale) => {
     if (!moduleMap.has(module)) {
       moduleMap.set(module, []);
     }
-    moduleMap.get(module).push({ abs: file, rel });
+    const raw = fs.readFileSync(file, "utf8");
+    const parsed = parseFeatureMeta(raw);
+    let id = toFeatureAnchorId(rel);
+    if (usedIds.has(id)) {
+      let suffix = 2;
+      while (usedIds.has(`${id}-${suffix}`)) {
+        suffix += 1;
+      }
+      id = `${id}-${suffix}`;
+    }
+    usedIds.add(id);
+    meta[id] = {
+      rel,
+      fileName: path.basename(rel),
+      title: parsed.title || path.basename(rel),
+      tags: parsed.tags,
+      scenarioCount: parsed.scenarioCount,
+      sourceUrl: `${FEATURE_SOURCE_BASE}/${rel}`,
+    };
+    moduleMap.get(module).push({ abs: file, rel, id });
   }
+
+  return { featureFiles, grouped, meta };
+};
+
+const renderCucumberDocFor = (locale, catalog) => {
+  const t = cucumberStrings[locale];
+  const { featureFiles, grouped } = catalog;
 
   const lines = [
     "---",
@@ -102,6 +243,8 @@ const renderCucumberDocFor = (locale) => {
     `# ${t.title}`,
     "",
     ...t.intro,
+    "",
+    t.accordionHint,
     "",
     `## ${t.patternHeading}`,
     "",
@@ -124,7 +267,7 @@ const renderCucumberDocFor = (locale) => {
     for (const [testType, modules] of grouped) {
       lines.push(`## ${testType.toUpperCase()}`);
       lines.push("");
-      for (const [module, files] of modules) {
+      for (const [module, files] of sortModuleEntries(modules)) {
         const moduleTitle =
           testType === "ui" && module === "buergeransicht"
             ? `${module} ${t.deprecatedSuffix}`
@@ -136,19 +279,17 @@ const renderCucumberDocFor = (locale) => {
           lines.push("");
         }
         for (const item of files) {
-          const fileName = path.basename(item.rel);
-          const sourceUrl = `${FEATURE_SOURCE_BASE}/${item.rel}`;
           const raw = fs
             .readFileSync(item.abs, "utf8")
             .replaceAll("```", "\\`\\`\\`")
             .trimEnd();
-          lines.push(`#### \`${fileName}\``);
-          lines.push("");
-          lines.push(`${t.sourceLabel}: [${fileName}](${sourceUrl})`);
+          lines.push(`<CucumberFeatureRow id="${item.id}">`);
           lines.push("");
           lines.push("```gherkin");
           lines.push(raw);
           lines.push("```");
+          lines.push("");
+          lines.push("</CucumberFeatureRow>");
           lines.push("");
         }
       }
@@ -159,8 +300,10 @@ const renderCucumberDocFor = (locale) => {
 };
 
 const renderCucumberDoc = () => {
+  const catalog = collectCucumberFeatures();
+  writeJsonIfChanged(CUCUMBER_FEATURES_JSON, catalog.meta);
   for (const [target, locale] of CUCUMBER_DOC_TARGETS) {
-    const next = renderCucumberDocFor(locale);
+    const next = renderCucumberDocFor(locale, catalog);
     fs.mkdirSync(path.dirname(target), { recursive: true });
     const prev = fs.existsSync(target) ? fs.readFileSync(target, "utf8") : "";
     if (prev !== next) {
@@ -276,6 +419,7 @@ const sidebarLabels = {
     operations: "Operations",
     apiReference: "API reference",
     dldb: "DLDB Interface Documentation",
+    ruppertstrasseBookingVariants: "Ruppertstraße booking variants",
     reference: "Reference",
     moduleReadmes: "Module READMEs",
     onTheFuture: "On the Future",
@@ -329,6 +473,7 @@ const sidebarLabels = {
     operations: "Betrieb",
     apiReference: "API-Referenz",
     dldb: "DLDB-Schnittstellendokumentation",
+    ruppertstrasseBookingVariants: "Terminvarianten Ruppertstraße",
     reference: "Referenz",
     moduleReadmes: "Modul-READMEs",
     onTheFuture: "Ausblick",
@@ -499,6 +644,10 @@ const buildSidebar = (prefix, lang) => {
         {
           text: t.dldb,
           link: `${prefix}/operations/dldb-interface-documentation`,
+        },
+        {
+          text: t.ruppertstrasseBookingVariants,
+          link: `${prefix}/operations/ruppertstrasse-booking-variants`,
         },
         {
           text: t.monologLogging,

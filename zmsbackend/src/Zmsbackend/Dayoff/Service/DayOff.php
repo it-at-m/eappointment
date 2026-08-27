@@ -14,49 +14,20 @@ class DayOff extends \BO\Zmsbackend\Base
      */
     public static $commonList = null;
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function readByDepartmentId($departmentId = 0)
     {
-        $dayOffList = $this->readCommon();
-        $departmentDayoffList = $this->readOnlyByDepartmentId($departmentId);
-        if (count($departmentDayoffList)) {
-            foreach ($departmentDayoffList as $entity) {
-                if ($entity instanceof Entity) {
-                    $dayOffList->addEntity($entity);
-                }
-            }
-        }
-        return $dayOffList;
+        return $this->readCommon();
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function readOnlyByDepartmentId($departmentId = 0, $disableCache = false)
     {
-        $cacheKey = "dayOffsReadOnlyByDepartmentId-$departmentId";
-
-        if (!$disableCache && App::$cache) {
-            $data = App::$cache->get($cacheKey);
-            if (!empty($data)) {
-                return $data;
-            }
-        }
-
-        $dayOffList = new Collection();
-        $query = new \BO\Zmsbackend\Dayoff\Repository\DayOff(\BO\Zmsbackend\Query\Base::SELECT);
-        $query->addEntityMapping()
-            ->addConditionDepartmentId($departmentId);
-        $result = $this->fetchList($query, new Entity());
-        if (count($result)) {
-            foreach ($result as $entity) {
-                if ($entity instanceof Entity) {
-                    $dayOffList->addEntity($entity);
-                }
-            }
-        }
-
-        if (App::$cache) {
-            App::$cache->set($cacheKey, $dayOffList);
-        }
-
-        return $dayOffList;
+        return new Collection();
     }
 
     public function readCommon($disableCache = false)
@@ -90,40 +61,15 @@ class DayOff extends \BO\Zmsbackend\Base
         return $dayOffList;
     }
 
+   /**
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
     public function readByScopeId($scopeId = 0, $disableCache = false)
     {
-        $cacheKey = "dayOffsByScope-$scopeId";
-
-        $dayOffListCommon = $this->readCommon();
-
-        if (!$disableCache && App::$cache) {
-            $data = App::$cache->get($cacheKey);
-            if (!empty($data)) {
-                return $dayOffListCommon->addList($data);
-            }
-        }
-
-        $dayOffList = new Collection();
-        $query = new \BO\Zmsbackend\Dayoff\Repository\DayOff(\BO\Zmsbackend\Query\Base::SELECT);
-        $query->addEntityMapping()
-            ->addConditionScopeId($scopeId);
-        $result = $this->fetchList($query, new Entity());
-        if (count($result)) {
-            foreach ($result as $entity) {
-                if ($entity instanceof Entity) {
-                    $dayOffList->addEntity($entity);
-                }
-            }
-        }
-
-        if (App::$cache) {
-            App::$cache->set($cacheKey, $dayOffList);
-        }
-
-        return $dayOffListCommon->addList($dayOffList);
+        return $this->readCommon();
     }
 
-    public function readByYear($year)
+    public function readByYear($year): Collection
     {
         $dayOffList = new Collection();
         $query = new \BO\Zmsbackend\Dayoff\Repository\DayOff(\BO\Zmsbackend\Query\Base::SELECT);
@@ -141,7 +87,7 @@ class DayOff extends \BO\Zmsbackend\Base
         return $dayOffList;
     }
 
-    public function readCommonByYear($year)
+    public function readCommonByYear($year): Collection
     {
         $dayOffList = new Collection();
         $query = new \BO\Zmsbackend\Dayoff\Repository\DayOff(\BO\Zmsbackend\Query\Base::SELECT);
@@ -170,7 +116,7 @@ class DayOff extends \BO\Zmsbackend\Base
      *
      * @return \BO\Zmsentities\Collection\DayoffList
      */
-    public function writeCommonDayoffsByYear($dayoffList, $year = null, $drop = true)
+    public function writeCommonDayoffsByYear($dayoffList, $year = null, bool $drop = true)
     {
         if ($drop && $year) {
             static::$commonList = null;
@@ -226,7 +172,7 @@ class DayOff extends \BO\Zmsbackend\Base
         $this->removeCache();
     }
 
-    public function deleteEntity($itemId)
+    public function deleteEntity($itemId): bool
     {
         $query = new \BO\Zmsbackend\Dayoff\Repository\DayOff(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionDayOffId($itemId);
@@ -236,6 +182,9 @@ class DayOff extends \BO\Zmsbackend\Base
         return ($this->deleteItem($query));
     }
 
+    /**
+     * @return void
+     */
     public function removeCache()
     {
         if (!App::$cache) {

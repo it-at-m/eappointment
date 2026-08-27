@@ -4,6 +4,7 @@ namespace BO\Zmsbackend\Request\Service;
 
 use BO\Zmsbackend\Application as App;
 use BO\Zmsentities\Request as Entity;
+use BO\Zmsentities\Scope;
 use BO\Zmsentities\Collection\RequestList as Collection;
 
 /**
@@ -12,7 +13,7 @@ use BO\Zmsentities\Collection\RequestList as Collection;
  */
 class Request extends \BO\Zmsbackend\Base
 {
-    public function readEntity($source, $requestId, $resolveReferences = 0, $disableCache = false)
+    public function readEntity(string $source, string $requestId, int|null $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "request-$source-$requestId-$resolveReferences";
 
@@ -42,6 +43,7 @@ class Request extends \BO\Zmsbackend\Base
         return $request;
     }
 
+    /** @psalm-api */
     public function readEntityById($requestId, $resolveReferences = 0, $disableCache = false)
     {
         $cacheKey = "request-byid-$requestId-$resolveReferences";
@@ -94,9 +96,8 @@ class Request extends \BO\Zmsbackend\Base
 
     /**
      * @SuppressWarnings(Param)
-     *
      */
-    protected function readCollection($query)
+    protected function readCollection(\BO\Zmsbackend\Request\Repository\Request $query): Collection
     {
         $requestList = new Collection();
         $statement = $this->fetchStatement($query);
@@ -164,7 +165,7 @@ class Request extends \BO\Zmsbackend\Base
 
         $request = $this->fetchOne($query, new Entity());
         if (!$request->hasId()) {
-            throw new Exception\Request\RequestNotFound("Could not find request with ID $source/$requestId");
+            throw new \BO\Zmsbackend\Request\Exception\RequestNotFound("Could not find request with ID $source/$requestId");
         }
 
         return $request;
@@ -215,6 +216,44 @@ class Request extends \BO\Zmsbackend\Base
         return $collection;
     }
 
+    public function readAllRequestsForProcessIds(array $processIds, int $resolveReferences = 0): array
+    {
+        $processIds = array_values(array_unique(array_filter(
+            array_map('intval', $processIds),
+            static fn (int $id): bool => $id > 0
+        )));
+        if ($processIds === []) {
+            return [];
+        }
+
+        $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
+        $query->setResolveLevel($resolveReferences);
+        $query->addConditionProcessIds($processIds);
+        $query->addEntityMappingWithProcessId();
+
+        $requestsByProcessId = [];
+        foreach ($processIds as $processId) {
+            $requestsByProcessId[$processId] = new Collection();
+        }
+
+        $statement = $this->fetchStatement($query);
+        while ($requestData = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $processed = $query->postProcessJoins($requestData);
+            $processId = (int) ($processed['processId'] ?? 0);
+            unset($processed['processId']);
+            if ($processId <= 0 || !isset($requestsByProcessId[$processId])) {
+                continue;
+            }
+            $requestsByProcessId[$processId]->addEntity(new Entity($processed));
+        }
+
+        foreach ($requestsByProcessId as $processId => $requestList) {
+            $requestsByProcessId[$processId] = $this->attachRootParentIds($requestList);
+        }
+
+        return $requestsByProcessId;
+    }
+
     public function readRequestsByIds($ids, $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
@@ -238,7 +277,28 @@ class Request extends \BO\Zmsbackend\Base
         return $collection;
     }
 
-    public function readListByProvider($source, $providerId, $resolveReferences = 0)
+    public function readRequestIdsByArchiveId(int|string|null $archiveId): array
+    {
+        if ($archiveId === null || $archiveId === '' || $archiveId === 0 || $archiveId === '0') {
+            return [];
+        }
+
+        $ids = [];
+        foreach (
+            $this->fetchAll(
+                \BO\Zmsbackend\Request\Repository\Request::QUERY_BY_ARCHIVEID,
+                ['archive_id' => $archiveId]
+            ) as $row
+        ) {
+            if (array_key_exists('id', $row) && $row['id'] !== null && $row['id'] !== '') {
+                $ids[] = (int) $row['id'];
+            }
+        }
+
+        return $ids;
+    }
+
+    public function readListByProvider($source, $providerId, int $resolveReferences = 0)
     {
         $this->testSource($source);
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
@@ -253,6 +313,119 @@ class Request extends \BO\Zmsbackend\Base
             $request['timeSlotCount'] = $requestRelation->getSlotCount();
         }
         return $requestList;
+    }
+
+    public function readListByScopeAndDepartment(int $scopeId, int $resolveReferences = 0): array
+    {
+        $scopeService = new \BO\Zmsbackend\Scope\Service\Scope();
+        $scope = $scopeService->readEntity($scopeId, $resolveReferences ? $resolveReferences : 1);
+        if (!$scope || !$scope->hasId()) {
+            throw new \BO\Zmsbackend\Scope\Exception\ScopeNotFound();
+        }
+
+        $scopeRequestList = $this->readListByProvider(
+            $scope->provider['source'],
+            $scope->getProviderId(),
+            $resolveReferences
+        );
+
+        $departmentId = (int) $scopeService->readDepartmentIdByScopeId($scopeId);
+        if ($departmentId < 1) {
+            return [
+                'scopeRequests' => $scopeRequestList,
+                'additionalDepartmentRequests' => new Collection(),
+            ];
+        }
+
+        $providers = $this->readDepartmentProviders(
+            $scopeService->readByDepartmentId($departmentId, 1),
+            $departmentId
+        );
+        $departmentRequestList = $this->readAllRequestsForProviders($providers, $resolveReferences);
+        $additionalDepartmentRequestList = $this->keepRequestsNotAlreadyOnScope(
+            $scopeRequestList,
+            $departmentRequestList
+        );
+
+        return [
+            'scopeRequests' => $scopeRequestList,
+            'additionalDepartmentRequests' => $additionalDepartmentRequestList->sortByName(),
+        ];
+    }
+
+    protected function readDepartmentProviders(
+        \BO\Zmsentities\Collection\ScopeList $departmentScopes,
+        int $departmentId
+    ): array {
+        $providers = [];
+        foreach ($departmentScopes as $departmentScope) {
+            if (!$departmentScope instanceof Scope) {
+                continue;
+            }
+            try {
+                $provider = $departmentScope->getProvider();
+                $key = $provider->source . ':' . $provider->id;
+                $providers[$key] = [
+                    'source' => (string) $provider->source,
+                    'id' => $provider->id,
+                ];
+            } catch (\BO\Zmsentities\Exception\ScopeMissingProvider $exception) {
+                App::$log->warning('Skipping department scope without provider for request list', [
+                    'scopeId' => $departmentScope->id ?? null,
+                    'departmentId' => $departmentId,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        }
+
+        return $providers;
+    }
+
+    protected function readAllRequestsForProviders(array $providers, int $resolveReferences): Collection
+    {
+        $requestList = new Collection();
+        $requestKeys = [];
+        foreach ($providers as $provider) {
+            $providerRequests = $this->readListByProvider(
+                $provider['source'],
+                $provider['id'],
+                $resolveReferences
+            );
+            foreach ($providerRequests as $request) {
+                $requestKey = $this->getRequestLookupKey($request);
+                if (!isset($requestKeys[$requestKey])) {
+                    $requestKeys[$requestKey] = true;
+                    $requestList->addEntity(clone $request);
+                }
+            }
+        }
+
+        return $requestList;
+    }
+
+    protected function keepRequestsNotAlreadyOnScope(
+        Collection $scopeRequestList,
+        Collection $departmentRequestList
+    ): Collection {
+        $additionalDepartmentRequestList = new Collection();
+        $scopeRequestKeys = [];
+        foreach ($scopeRequestList as $request) {
+            if (!$request instanceof Entity) {
+                continue;
+            }
+            $scopeRequestKeys[$this->getRequestLookupKey($request)] = true;
+        }
+        foreach ($departmentRequestList as $request) {
+            if (!$request instanceof Entity) {
+                continue;
+            }
+            $requestKey = $this->getRequestLookupKey($request);
+            if (!isset($scopeRequestKeys[$requestKey])) {
+                $additionalDepartmentRequestList->addEntity(clone $request);
+            }
+        }
+
+        return $additionalDepartmentRequestList;
     }
 
     public function readListBySource($source, $resolveReferences = 0, $disableCache = false)
@@ -278,7 +451,7 @@ class Request extends \BO\Zmsbackend\Base
         return $requestList;
     }
 
-    public function readListByCluster(\BO\Zmsentities\Cluster $cluster, $resolveReferences = 0)
+    public function readListByCluster(\BO\Zmsentities\Cluster $cluster, $resolveReferences = 0): Collection
     {
         $intersectList = array();
         if ($cluster->scopes->count()) {
@@ -348,7 +521,7 @@ class Request extends \BO\Zmsbackend\Base
         return $this->readEntity($source, $request['id'], 0, true);
     }
 
-    public function writeDeleteEntity($requestId, $source)
+    public function writeDeleteEntity($requestId, $source): bool
     {
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionRequestId($requestId);
@@ -357,13 +530,16 @@ class Request extends \BO\Zmsbackend\Base
         return $this->deleteItem($query);
     }
 
-    public function writeDeleteListBySource($source)
+    public function writeDeleteListBySource(string $source): bool
     {
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionRequestSource($source);
         return $this->deleteItem($query);
     }
 
+    /**
+     * @return void
+     */
     protected function testSource($source)
     {
         if (! (new \BO\Zmsbackend\Source\Service\Source())->readEntity($source)) {
@@ -371,6 +547,9 @@ class Request extends \BO\Zmsbackend\Base
         }
     }
 
+    /**
+     * @return void
+     */
     public function removeCache(Entity $request)
     {
         if (!App::$cache) {

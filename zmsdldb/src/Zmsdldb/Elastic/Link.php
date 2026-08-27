@@ -11,10 +11,11 @@ use BO\Zmsdldb\Entity\Link as Entity;
 use BO\Zmsdldb\Collection\Links as Collection;
 use BO\Zmsdldb\File\Link as Base;
 
-/**
- */
 class Link extends Base
 {
+    /**
+     * @return Collection
+     */
     #[\Override]
     public function readSearchResultList($query)
     {

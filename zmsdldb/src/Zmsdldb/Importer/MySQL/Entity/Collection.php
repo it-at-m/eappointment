@@ -7,7 +7,8 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
  */
 class Collection implements \Countable, \ArrayAccess
 {
-    protected $entities = [];
+    /** @var array<int|string, Base> */
+    protected array $entities = [];
 
     #[\Override]
     final public function offsetExists($offset): bool
@@ -16,7 +17,7 @@ class Collection implements \Countable, \ArrayAccess
     }
 
     #[\Override]
-    final public function offsetGet($offset)
+    final public function offsetGet($offset): Base
     {
         if ($this->offsetExists($offset)) {
             return $this->entities[$offset];
@@ -53,7 +54,8 @@ class Collection implements \Countable, \ArrayAccess
         return count($this->entities);
     }
 
-    public function saveEntities()
+    /** @psalm-api */
+    public function saveEntities(): void
     {
         try {
             foreach ($this->entities as $entity) {

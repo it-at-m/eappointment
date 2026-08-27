@@ -11,6 +11,13 @@ use BO\Zmsdldb\PDOAccess;
 use BO\Zmsdldb\FileAccess
 ;
 
+/**
+ * @method \BO\Zmsdldb\Importer\MySQL\Base getServicesImporter(array $entitys, string $locale, int $options)
+ * @method \BO\Zmsdldb\Importer\MySQL\Base getLocationsImporter(array $entitys, string $locale, int $options)
+ * @method \BO\Zmsdldb\Importer\MySQL\Base getAuthoritiesImporter(array $entitys, string $locale, int $options)
+ * @method \BO\Zmsdldb\Importer\MySQL\Base getTopicsImporter(array $entitys, string $locale, int $options)
+ * @method \BO\Zmsdldb\Importer\MySQL\Base getSettingsImporter(array $entitys, string $locale, int $options)
+ */
 abstract class Base implements Options
 {
     use PDOTrait;
@@ -38,18 +45,32 @@ abstract class Base implements Options
         $this->options = $options;
     }
 
-    public function setLocaleList(array $localeList = ['de', 'en'])
+    /**
+     * @psalm-api
+     */
+    public function setLocaleList(array $localeList = ['de', 'en']): void
     {
         $this->localeList = $localeList;
     }
 
+    /**
+     * @param string $method
+     * @param array $args
+     * @return \BO\Zmsdldb\Importer\MySQL\Base
+     */
     public function __call($method, $args = [])
     {
         try {
             if (preg_match('/get(?P<importer>[A-Za-z]+)Importer/', $method, $matches)) {
                 $ImporterClass = static::class . '\\' . $matches['importer'];
                 array_unshift($args, $this->getPDOAccess());
+                /** @psalm-suppress UnsafeInstantiation */
                 $instance = new $ImporterClass(...$args);
+                if (!$instance instanceof \BO\Zmsdldb\Importer\MySQL\Base) {
+                    throw new \InvalidArgumentException(
+                        $ImporterClass . ' must extend \\BO\\Zmsdldb\\Importer\\MySQL\\Base'
+                    );
+                }
                 return $instance;
             }
             throw new \BadMethodCallException('Method ' . $method . ' not found!');
@@ -92,6 +113,11 @@ abstract class Base implements Options
         }
     }
 
+    /**
+     * @psalm-api
+     *
+     * @return void
+     */
     public function clearDatabase()
     {
         try {
@@ -139,6 +165,7 @@ abstract class Base implements Options
     /**
      *
      * @return self
+     * @psalm-api
      */
     protected function importSettings()
     {
@@ -159,6 +186,7 @@ abstract class Base implements Options
     /**
      *
      * @return self
+     * @psalm-api
      */
     protected function importTopics()
     {
@@ -180,6 +208,7 @@ abstract class Base implements Options
     /**
      *
      * @return self
+     * @psalm-api
      */
     protected function importAuthorities()
     {
@@ -198,10 +227,16 @@ abstract class Base implements Options
         }
     }
 
+    /**
+     * @return void
+     */
     public function preImport()
     {
     }
 
+    /**
+     * @return void
+     */
     public function postImport()
     {
     }

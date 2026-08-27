@@ -7,7 +7,7 @@ class Log extends \BO\Zmsbackend\Query\Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'log';
+    const string TABLE = 'log';
 
     /**
      * No resolving required here
@@ -21,7 +21,13 @@ class Log extends \BO\Zmsbackend\Query\Base
         WHERE mq.processID=?
     ';
 
-    public function getEntityMapping()
+    /**
+     * @psalm-api
+     *
+     * @return string[]
+     *
+     */
+    public function getEntityMapping(): array
     {
         return [
             'type' => 'log.type',
@@ -46,7 +52,7 @@ class Log extends \BO\Zmsbackend\Query\Base
         ];
     }
 
-    public function addConditionProcessId($processId)
+    public function addConditionProcessId($processId): static
     {
         $this->query->where('log.reference_id', '=', $processId);
         $this->query->where('log.type', '=', 'buerger');
@@ -61,7 +67,7 @@ class Log extends \BO\Zmsbackend\Query\Base
         return $data;
     }
 
-    public function addConditionOlderThan(\DateTime $olderThanDate)
+    public function addConditionOlderThan(\DateTime $olderThanDate): void
     {
         $this->query->where('log.ts', '<', $olderThanDate->format('Y-m-d H:i:s'));
     }

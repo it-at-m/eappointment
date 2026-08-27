@@ -11,6 +11,8 @@ class Roles extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
+     *
+     * @return ResponseInterface
      */
     public function readResponse(
         RequestInterface $request,

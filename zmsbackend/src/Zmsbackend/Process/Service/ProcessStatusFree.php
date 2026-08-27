@@ -10,11 +10,15 @@ use BO\Zmsentities\Collection\ProcessList as Collection;
  */
 class ProcessStatusFree extends Process
 {
+    /**
+     * @return (\BO\Zmsbackend\Day\Service\Day|\BO\Zmsentities\Calendar|array)[]
+     *
+     */
     private function prepareCalendarAndDays(
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeInterface $now,
-        $slotsRequired = null
-    ) {
+        int|null $slotsRequired = null
+    ): array {
         $calendar = (new \BO\Zmsbackend\Calendar\Service\Calendar())->readResolvedEntity($calendar, $now, true);
         $dayquery = new \BO\Zmsbackend\Day\Service\Day();
         $dayquery->writeTemporaryScopeList($calendar, $slotsRequired);
@@ -84,27 +88,24 @@ class ProcessStatusFree extends Process
             true
         );
 
-        $unique = [];
+        $processInfos = [];
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
             $processInfo = $this->extractProcessInfo($item, $calendar);
             if ($processInfo) {
-                $key = $this->generateUniqueKey($processInfo['providerId'], $processInfo['date']);
-                if (!isset($unique[$key])) {
-                    $unique[$key] = $this->createMinimalProcess($processInfo);
-                }
+                $processInfos[] = $processInfo;
             }
         }
 
         $processData->closeCursor();
 
-        return array_values($unique);
+        return $this->deduplicateWithRoundRobin($processInfos);
     }
 
     private function getProcessDataHandle(
         array $days,
-        $slotType,
-        $slotsRequired,
-        $groupData,
+        string $slotType,
+        int|null $slotsRequired,
+        bool $groupData,
         bool $useAvailabilityQuery = false
     ) {
         $query = $useAvailabilityQuery
@@ -128,10 +129,10 @@ class ProcessStatusFree extends Process
     public function readFreeProcesses(
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeInterface $now,
-        $slotType = 'public',
-        $slotsRequired = null,
-        $groupData = false
-    ) {
+        string $slotType = 'public',
+        int|null $slotsRequired = null,
+        bool $groupData = false
+    ): Collection {
         list($calendar, $dayquery, $days) = $this->prepareCalendarAndDays($calendar, $now, $slotsRequired);
         $processData = $this->getProcessDataHandle($days, $slotType, $slotsRequired, $groupData);
         $processList = new Collection();
@@ -168,21 +169,119 @@ class ProcessStatusFree extends Process
         list($calendar, $dayquery, $days) = $this->prepareCalendarAndDays($calendar, $now, $slotsRequired);
         $processData = $this->getProcessDataHandle($days, $slotType, $slotsRequired, $groupData);
 
-        $unique = [];
+        $processInfos = [];
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
             $processInfo = $this->extractProcessInfo($item, $calendar);
             if ($processInfo) {
-                $key = $this->generateUniqueKey($processInfo['providerId'], $processInfo['date']);
-                if (!isset($unique[$key])) {
-                    $unique[$key] = $this->createMinimalProcess($processInfo);
-                }
+                $processInfos[] = $processInfo;
             }
         }
 
         $processData->closeCursor();
         unset($dayquery);
 
-        return array_values($unique);
+        return $this->deduplicateWithRoundRobin($processInfos);
+    }
+
+    /**
+     * Keep one free process per round-robin group + timestamp.
+     *
+     * Default group is the provider id. When provider.data.sharedBookingOfficeIds
+     * is set, all peer providers share one group so the same wall-clock slot is
+     * offered once and successive timeslots round-robin across eligible scopes
+     * of every peer (ZMSKVR-1046). Scopes that cannot fit the slot never appear
+     * here, so fall-through is preserved.
+     *
+     * @param array<int, array<string, mixed>> $processInfos
+     * @return array<int, array<string, mixed>>
+     */
+    private function deduplicateWithRoundRobin(array $processInfos): array
+    {
+        // Composite key: round-robin group (provider or shared-office set) + slot timestamp.
+        $candidatesByGroupTimestampKey = [];
+        $groupTimestampKeyOrder = [];
+        foreach ($processInfos as $processInfo) {
+            $roundRobinGroupKey = self::resolveRoundRobinGroupKey(
+                (string) $processInfo['providerId'],
+                $processInfo['sharedBookingOfficeIds'] ?? null
+            );
+            $groupTimestampKey = $roundRobinGroupKey . '_' . $processInfo['date'];
+            if (!isset($candidatesByGroupTimestampKey[$groupTimestampKey])) {
+                $groupTimestampKeyOrder[] = $groupTimestampKey;
+                $candidatesByGroupTimestampKey[$groupTimestampKey] = [];
+            }
+            $candidatesByGroupTimestampKey[$groupTimestampKey][] = $processInfo;
+        }
+
+        $roundRobinIndexByGroup = [];
+        $deduplicatedProcesses = [];
+        foreach ($groupTimestampKeyOrder as $groupTimestampKey) {
+            $candidates = self::uniqueCandidatesSortedByScopeId(
+                $candidatesByGroupTimestampKey[$groupTimestampKey]
+            );
+            $roundRobinGroupKey = self::resolveRoundRobinGroupKey(
+                (string) $candidates[0]['providerId'],
+                $candidates[0]['sharedBookingOfficeIds'] ?? null
+            );
+            $roundRobinTimeslotIndex = $roundRobinIndexByGroup[$roundRobinGroupKey] ?? 0;
+            $chosenCandidate = $candidates[
+                self::pickRoundRobinIndex($roundRobinTimeslotIndex, count($candidates))
+            ];
+            $roundRobinIndexByGroup[$roundRobinGroupKey] = $roundRobinTimeslotIndex + 1;
+            $deduplicatedProcesses[] = $this->createMinimalProcess($chosenCandidate);
+        }
+
+        return $deduplicatedProcesses;
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $candidates
+     * @return array<int, array<string, mixed>>
+     */
+    private static function uniqueCandidatesSortedByScopeId(array $candidates): array
+    {
+        $candidatesByScopeId = [];
+        foreach ($candidates as $candidate) {
+            $candidatesByScopeId[(string) $candidate['scopeId']] = $candidate;
+        }
+        $uniqueCandidates = array_values($candidatesByScopeId);
+        usort(
+            $uniqueCandidates,
+            static fn (array $left, array $right): int =>
+                ((int) $left['scopeId']) <=> ((int) $right['scopeId'])
+        );
+
+        return $uniqueCandidates;
+    }
+
+    /**
+     * @internal Exposed for unit tests.
+     * @param array<int, int|string>|null $sharedBookingOfficeIds
+     */
+    public static function resolveRoundRobinGroupKey(
+        string $providerId,
+        ?array $sharedBookingOfficeIds
+    ): string {
+        if (!is_array($sharedBookingOfficeIds) || $sharedBookingOfficeIds === []) {
+            return $providerId;
+        }
+
+        $sortedSharedOfficeIds = array_map('intval', $sharedBookingOfficeIds);
+        sort($sortedSharedOfficeIds, SORT_NUMERIC);
+
+        return implode(',', $sortedSharedOfficeIds);
+    }
+
+    /**
+     * @internal Exposed for unit tests.
+     */
+    public static function pickRoundRobinIndex(int $timeslotIndex, int $candidateCount): int
+    {
+        if ($candidateCount < 1) {
+            throw new \InvalidArgumentException('candidateCount must be >= 1');
+        }
+
+        return $timeslotIndex % $candidateCount;
     }
 
     private function extractProcessInfo(array $item, \BO\Zmsentities\Calendar $calendar): ?array
@@ -209,17 +308,24 @@ class ProcessStatusFree extends Process
             return null;
         }
 
+        $sharedBookingOfficeIds = null;
+        $provider = $scope->getProvider();
+        if (
+            $provider
+            && isset($provider->data['sharedBookingOfficeIds'])
+            && is_array($provider->data['sharedBookingOfficeIds'])
+            && $provider->data['sharedBookingOfficeIds'] !== []
+        ) {
+            $sharedBookingOfficeIds = array_map('intval', $provider->data['sharedBookingOfficeIds']);
+        }
+
         return [
             'scopeId' => $scopeId,
             'source' => $scope->getSource(),
             'providerId' => $providerId,
+            'sharedBookingOfficeIds' => $sharedBookingOfficeIds,
             'date' => $date
         ];
-    }
-
-    private function generateUniqueKey(string $providerId, int $date): string
-    {
-        return $providerId . '_' . $date;
     }
 
     private function createMinimalProcess(array $processInfo): array
@@ -250,7 +356,7 @@ class ProcessStatusFree extends Process
         ];
     }
 
-    public function readReservedProcesses($resolveReferences = 2)
+    public function readReservedProcesses($resolveReferences = 2): Collection
     {
         $processList = new Collection();
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
@@ -285,11 +391,42 @@ class ProcessStatusFree extends Process
     public function writeEntityReserved(
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now,
-        $slotType = "public",
-        $slotsRequired = 0,
-        $resolveReferences = 0,
-        $userAccount = null
-    ) {
+        string $slotType = "public",
+        int $slotsRequired = 0,
+        int $resolveReferences = 0,
+        ?\BO\Zmsentities\Useraccount $userAccount = null
+    ): ?\BO\Zmsentities\Process {
+        $maxAttempts = 3;
+        $attempt = 0;
+        while (true) {
+            try {
+                return $this->writeEntityReservedAttempt(
+                    $process,
+                    $now,
+                    $slotType,
+                    $slotsRequired,
+                    $resolveReferences,
+                    $userAccount
+                );
+            } catch (\BO\Zmsbackend\Exception\Pdo\DeadLockFound $exception) {
+                $attempt++;
+                if ($attempt >= $maxAttempts) {
+                    throw $exception;
+                }
+                $this->resetWriteTransactionAfterDeadlock();
+                usleep(50000 * $attempt);
+            }
+        }
+    }
+
+    protected function writeEntityReservedAttempt(
+        \BO\Zmsentities\Process $process,
+        \DateTimeInterface $now,
+        string $slotType = "public",
+        int $slotsRequired = 0,
+        int $resolveReferences = 0,
+        ?\BO\Zmsentities\Useraccount $userAccount = null
+    ): ?\BO\Zmsentities\Process {
         $process = clone $process;
         $process->status = 'reserved';
         $appointment = $process->getAppointments()->getFirst();
@@ -318,5 +455,25 @@ class ProcessStatusFree extends Process
         }
         $this->writeRequestsToDb($process);
         return $this->readEntity($process->getId(), new \BO\Zmsbackend\Helper\NoAuth(), $resolveReferences);
+    }
+
+    /**
+     * After InnoDB aborts a transaction on deadlock, clear PDO state and start a fresh transaction.
+     */
+    protected function resetWriteTransactionAfterDeadlock(): void
+    {
+        $connection = \BO\Zmsbackend\Connection\Select::getWriteConnection();
+        if ($connection->inTransaction()) {
+            try {
+                $connection->rollBack();
+            } catch (\PDOException $exception) {
+                \App::$log->warning('Rollback after deadlock failed', [
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        }
+        if (!$connection->inTransaction()) {
+            $connection->beginTransaction();
+        }
     }
 }

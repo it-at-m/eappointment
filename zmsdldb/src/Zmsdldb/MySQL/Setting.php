@@ -12,20 +12,21 @@ use BO\Zmsdldb\File\Setting as Base;
 /**
   *
   */
+/** @psalm-api */
 class Setting extends Base
 {
     #[\Override]
-    public function fetchName($name)
+    public function fetchName($name): ?string
     {
         try {
             $sql = 'SELECT value FROM setting WHERE name = ?';
 
             $stm = $this->access()->prepare($sql);
-            $stm->execute([(string)$name]);
+            $stm->execute([$name]);
 
             $settingValue = $stm->fetchColumn();
 
-            return $settingValue ?? null;
+            return is_string($settingValue) ? $settingValue : null;
         } catch (\Exception $e) {
             throw $e;
         }

@@ -2,6 +2,7 @@ import DefaultTheme from "vitepress/theme";
 
 import BerlinChangelogEmbed from "./BerlinChangelogEmbed.vue";
 import ChangelogEmbed from "./ChangelogEmbed.vue";
+import CucumberFeatureRow from "./CucumberFeatureRow.vue";
 import DepartmentCodeExplorerTarget from "./DepartmentCodeExplorerTarget.vue";
 import DepartmentCodeExplorerToday from "./DepartmentCodeExplorerToday.vue";
 import LhmThemeExtension from "./LhmThemeExtension.vue";
@@ -37,5 +38,6 @@ export default {
       ThinnedProcessCodeExplorerToday
     );
     ctx.app.component("LogInventory", LogInventory);
+    ctx.app.component("CucumberFeatureRow", CucumberFeatureRow);
   },
 };

@@ -14,34 +14,35 @@
     "test": "vitest run",
     "serve-loader-test": "npm run build && ws -o -r \"/ -> /resources/loader-test\" -r \"/dist -> ../../dist\""
   },
+  "// @muenchen/muc-patternlab-vue": "Pinned release for main/tags. CI switches to npm dist-tag beta on other branches (.github/scripts/zmscitizenview-select-patternlab.sh).",
   "dependencies": {
-    "@muenchen/muc-patternlab-vue": "10.0.2",
-    "altcha": "^3.2.1",
-    "dompurify": "^3.4.12",
+    "@muenchen/muc-patternlab-vue": "^11.0.0",
+    "altcha": "^3.2.2",
+    "dompurify": "^3.4.14",
     "jsdom": "^30.0.0",
-    "vue": "^3.5.40",
-    "vue-i18n": "11.4.8",
+    "vue": "^3.5.41",
+    "vue-i18n": "11.4.10",
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
     "@babel/types": "^8.0.4",
     "@muenchen/prettier-codeformat": "^1.0.2",
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.2.0",
     "@types/webfontloader": "^1.6.35",
     "@vitejs/plugin-vue": "^6.0.8",
     "@vitest/coverage-v8": "^4.1.10",
     "@vue/eslint-config-prettier": "10.2.0",
     "@vue/eslint-config-typescript": "14.9.0",
     "@vue/test-utils": "^2.4.11",
-    "eslint": "10.8.0",
+    "eslint": "10.9.1",
     "eslint-plugin-vue": "10.10.0",
     "local-web-server": "^5.4.0",
     "lodash": "^4.18.0",
-    "sass": "^1.102.0",
+    "sass": "^1.103.1",
     "typescript": "^7.0.2",
-    "vite": "^8.2.0",
-    "vitest": "^4.1.10",
-    "vue-tsc": "^3.3.8"
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11",
+    "vue-tsc": "^3.3.11"
   },
   "// overrides.@tootallnate/once": "local-web-server -> lws-rewrite -> http-proxy-agent pins once@2; force ^3.0.1 (abort-signal hang / GHSA).",
   "// overrides.ws": "jsdom -> ws@8.18.x; force ^8.20.1 (CVE-2026-45736).",
@@ -49,6 +50,7 @@
   "// overrides.morgan": "local-web-server -> lws-log -> koa-morgan -> morgan@1.10.x; force ^1.11.0 (CVE-2026-5078).",
   "// overrides.brace-expansion": "Force 5.0.8 for CVE-2026-14257 (DoS via unbounded expansion length); no 1.x/2.x backport.",
   "// overrides.immutable": "sass pins immutable@5.1.5; force ^5.1.9 (CVE-2026-59879, CVE-2026-59880).",
+  "// overrides.nanoid": "postcss pins nanoid@3.3.16; force ^3.3.17 (CVE-2026-67213).",
   "overrides": {
     "vite-plugin-vuetify": {
       "make-dir": "5.1.0"
@@ -60,6 +62,7 @@
     "undici": "^7.29.0",
     "morgan": "^1.11.0",
     "immutable": "^5.1.9",
-    "brace-expansion": "5.0.9"
+    "brace-expansion": "5.0.9",
+    "nanoid": "^3.3.17"
   }
 }

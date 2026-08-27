@@ -6,6 +6,9 @@ use BO\Slim\Render;
 
 class RequestVariantList extends \BO\Zmsbackend\Api\BaseController
 {
+    /**
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     #[\Override]
     public function readResponse($request, $response, array $args)
     {

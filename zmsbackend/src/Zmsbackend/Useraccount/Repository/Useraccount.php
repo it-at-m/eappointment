@@ -6,7 +6,7 @@ use BO\Slim\Application as App;
 
 class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\MappingInterface
 {
-    private const VALID_PERMISSION_NAMES = [
+    private const array VALID_PERMISSION_NAMES = [
         'appointment',
         'availability',
         'calldisplay',
@@ -42,8 +42,8 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'nutzer';
-    const TABLE_ASSIGNMENT = 'nutzerzuordnung';
+    const string TABLE = 'nutzer';
+    const string TABLE_ASSIGNMENT = 'nutzerzuordnung';
 
     const QUERY_READ_ID_BY_USERNAME = '
         SELECT user.`NutzerID` AS id
@@ -68,11 +68,11 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         ORDER BY behoerdenid
     ';
 
-    const QUERY_DELETE_USER_ROLES = '
+    const string QUERY_DELETE_USER_ROLES = '
         DELETE FROM user_role WHERE user_id = ?
     ';
 
-    const QUERY_INSERT_USER_ROLES_BY_NAME = '
+    const string QUERY_INSERT_USER_ROLES_BY_NAME = '
         INSERT INTO user_role (user_id, role_id)
         SELECT ?, r.id FROM role r WHERE r.name IN (:roleNames)
     ';
@@ -106,7 +106,7 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
      * Build an SQL expression that checks whether the current useraccount has
      * a permission via user_role -> role_permission -> permission.
      */
-    protected function permissionExists(string $permissionName)
+    protected function permissionExists(string $permissionName): \BO\Zmsbackend\Query\Builder\Expression
     {
         if (!in_array($permissionName, self::VALID_PERMISSION_NAMES, true)) {
             throw new \InvalidArgumentException("Invalid permission name: $permissionName");
@@ -124,6 +124,10 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         );
     }
 
+    /**
+     * @return (\BO\Zmsbackend\Query\Builder\Expression|mixed|string)[]
+     *
+     */
     #[\Override]
     public function getEntityMapping()
     {
@@ -170,25 +174,25 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         ];
     }
 
-    public function addConditionLoginName($loginName)
+    public function addConditionLoginName($loginName): static
     {
         $this->query->where('useraccount.Name', '=', $loginName);
         return $this;
     }
 
-    public function addConditionUserId($userId)
+    public function addConditionUserId($userId): static
     {
         $this->query->where('useraccount.NutzerID', '=', $userId);
         return $this;
     }
 
-    public function addConditionPassword($password)
+    public function addConditionPassword($password): static
     {
         $this->query->where('useraccount.Passworthash', '=', $password);
         return $this;
     }
 
-    public function addConditionXauthKey($xAuthKey)
+    public function addConditionXauthKey(string $xAuthKey): static
     {
         $this->query->where('useraccount.SessionID', '=', $xAuthKey);
         $this->query->where('useraccount.SessionExpiry', '>', date('Y-m-d H:i:s', time() - App::SESSION_DURATION));
@@ -218,7 +222,7 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $this;
     }
 
-    public function addConditionSearch($queryString, $orWhere = false)
+    public function addConditionSearch($queryString, bool $orWhere = false): static
     {
         $condition = function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($queryString) {
             $queryString = trim($queryString);
@@ -233,7 +237,11 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Useraccount $entity)
+    /**
+     * @return (int|mixed)[]
+     *
+     */
+    public function reverseEntityMapping(\BO\Zmsentities\Useraccount $entity): array
     {
         $data = array();
         $data['Name'] = $entity->id;
@@ -279,7 +287,7 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $data;
     }
 
-    public function addConditionDepartmentIds(array $departmentIds)
+    public function addConditionDepartmentIds(array $departmentIds): static
     {
         $this->setDistinctSelect();
         $this->innerJoin(
@@ -292,7 +300,7 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $this;
     }
 
-    public function addConditionDepartmentIdsAndSearch(array $departmentIds, $queryString = null, $orWhere = false): self
+    public function addConditionDepartmentIdsAndSearch(array $departmentIds, $queryString = null, bool $orWhere = false): self
     {
         $this->addConditionDepartmentIds($departmentIds);
 
@@ -334,8 +342,10 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
 
     /**
      * @SuppressWarnings(UnusedFormalParameter)
+     *
+     * @param false $isWorkstationSuperuser
      */
-    public function addConditionWorkstationAccess($workstationUserId, array $workstationDepartmentIds, $isWorkstationSuperuser = false): self
+    public function addConditionWorkstationAccess($workstationUserId, array $workstationDepartmentIds, bool $isWorkstationSuperuser = false): self
     {
         // Superusers can access all useraccounts, no filtering needed
         if ($isWorkstationSuperuser) {

@@ -6,20 +6,23 @@
 
 namespace BO\Slim\Middleware;
 
+use BO\Slim\Container;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Routing\RouteContext;
 
 class Route
 {
-    protected $container;
+    protected Container $container;
 
-    public function __construct($container)
+    public function __construct(Container $container)
     {
         $this->container = $container;
     }
 
-    public function getInfo($request, RequestHandlerInterface $next): ResponseInterface
+    /** @psalm-api Called by Slim as middleware. */
+    public function getInfo(ServerRequestInterface $request, RequestHandlerInterface $next): ResponseInterface
     {
         $routeInstance = $request->getAttribute(RouteContext::ROUTE);
         if ($routeInstance instanceof \Slim\Routing\Route) {

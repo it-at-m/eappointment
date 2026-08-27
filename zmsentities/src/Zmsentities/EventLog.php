@@ -24,28 +24,28 @@ use DateTimeInterface;
  */
 class EventLog extends Schema\Entity
 {
-    public const PRIMARY = 'id';
+    public const string PRIMARY = 'id';
 
     public static $schema = "eventlog.json";
 
-    public const LIVETIME_LONGER  = 315360000; // 10 years
-    public const LIVETIME_LONG    = 94608000; // 3 years
-    public const LIVETIME_YEAR    = 31536000; // one year (365 days)
-    public const LIVETIME_DEFAULT = 15552000; // half a year (180 days)
-    public const LIVETIME_MONTH   = 2592000; // one month (30 days)
-    public const LIVETIME_WEEK    = 604800; // one week
-    public const LIVETIME_DAY     = 86400; // one day
-    public const LIVETIME_HOUR    = 3600; // one hour
+    public const int LIVETIME_LONGER  = 315360000; // 10 years
+    public const int LIVETIME_LONG    = 94608000; // 3 years
+    public const int LIVETIME_YEAR    = 31536000; // one year (365 days)
+    public const int LIVETIME_DEFAULT = 15552000; // half a year (180 days)
+    public const int LIVETIME_MONTH   = 2592000; // one month (30 days)
+    public const int LIVETIME_WEEK    = 604800; // one week
+    public const int LIVETIME_DAY     = 86400; // one day
+    public const int LIVETIME_HOUR    = 3600; // one hour
 
     /***************  Event Names ****************/
-    public const CLIENT_PROCESSLIST_REQUEST = 'CLIENT_PROCESSLIST_REQUEST';
-    public const CLIENT_PROCESSLIST_SEND = 'CLIENT_PROCESSLIST_REQUEST';
+    public const string CLIENT_PROCESSLIST_REQUEST = 'CLIENT_PROCESSLIST_REQUEST';
+    public const string CLIENT_PROCESSLIST_SEND = 'CLIENT_PROCESSLIST_REQUEST';
     // examples for future use below
-    public const QUEUE_PROCESS_SCHEDULE = 'CLIENT_PROCESSLIST_REQUEST';
-    public const QUEUE_PROCESS_DELETE = 'CLIENT_PROCESSLIST_REQUEST';
-    public const WORKSTATION_PROCESS_CALL = 'CLIENT_PROCESSLIST_REQUEST';
-    public const WORKSTATION_PROCESS_START = 'CLIENT_PROCESSLIST_REQUEST';
-    public const WORKSTATION_PROCESS_FINISH = 'CLIENT_PROCESSLIST_REQUEST';
+    public const string QUEUE_PROCESS_SCHEDULE = 'CLIENT_PROCESSLIST_REQUEST';
+    public const string QUEUE_PROCESS_DELETE = 'CLIENT_PROCESSLIST_REQUEST';
+    public const string WORKSTATION_PROCESS_CALL = 'CLIENT_PROCESSLIST_REQUEST';
+    public const string WORKSTATION_PROCESS_START = 'CLIENT_PROCESSLIST_REQUEST';
+    public const string WORKSTATION_PROCESS_FINISH = 'CLIENT_PROCESSLIST_REQUEST';
 
     #[\Override]
     public function getDefaults(): array
@@ -67,7 +67,7 @@ class EventLog extends Schema\Entity
      * {@inheritDoc}
      */
     #[\Override]
-    public function addData($mergeData): Schema\Entity
+    public function addData($mergeData): static
     {
         if (isset($mergeData['creationDateTime']) && is_string($mergeData['creationDateTime'])) {
             $mergeData['creationDateTime'] = new DateTime($mergeData['creationDateTime']);

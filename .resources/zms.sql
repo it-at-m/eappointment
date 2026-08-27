@@ -285,9 +285,8 @@ INSERT INTO `config` (`name`, `value`, `changeTimestamp`) VALUES
 ('cron__resetApiQuota', 'prod,stage,dev', '2019-08-23 15:22:12'),
 ('cron__resetGhostWorkstationCount', 'prod,stage,dev', '2019-08-23 15:22:12'),
 ('cron__resetWorkstations', 'prod,stage,dev', '2019-08-23 15:22:12'),
-('cron__sendMailReminder', 'none', '2019-08-23 15:22:12'),
-('cron__sendNotificationReminder', 'none', '2019-08-23 15:22:12'),
-('cron__sendProcessListToScopeAdmin', 'none', '2019-08-23 15:22:12'),
+('cron__queueMailReminder', 'none', '2019-08-23 15:22:12'),
+('cron__queueProcessListToScopeAdmin', 'none', '2019-08-23 15:22:12'),
 ('cron__updateDldbData', 'prod,stage,dev', '2019-08-23 15:22:12'),
 ('dldbBackup__setRetentionPeriodDays', '7', '2024-02-19 23:00:00'),
 ('dldbBackup__setRollbackDay', 'none', '2024-02-19 23:00:00'),
@@ -1529,7 +1528,8 @@ ALTER TABLE `buerger`
   ADD KEY `updateTimestamp` (`updateTimestamp`),
   ADD KEY `EMail` (`EMail`),
   ADD KEY `idx_status` (`status`),
-  ADD KEY `idx_status_standort_abholort` (`status`,`StandortID`,`AbholortID`);
+  ADD KEY `idx_status_standort_abholort` (`status`,`StandortID`,`AbholortID`),
+  ADD KEY `idx_buerger_external_user_id` (`external_user_id`);
 
 --
 -- Indexes for table `buergeranliegen`
