@@ -121,6 +121,70 @@ export const ZMSAUTOMATION_BADGE_URL =
 export const ZMSAUTOMATION_SCHEDULED_RUNS_API =
   "https://api.github.com/repos/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml/runs?branch=next&event=schedule&per_page=1";
 
+export const CUCUMBER_RUN_STATUS_URL =
+  "https://raw.githubusercontent.com/it-at-m/eappointment/zmsautomation-status/cucumber-run-status.json";
+
+/** Latest scheduled-run feature results (public JSON, no token). */
+export const cucumberRunStatus = ref(null);
+
+let cucumberRunStatusStarted = false;
+
+export function ensureCucumberRunStatus() {
+  if (typeof window === "undefined" || cucumberRunStatusStarted) {
+    return;
+  }
+  cucumberRunStatusStarted = true;
+  fetch(CUCUMBER_RUN_STATUS_URL, { cache: "no-store" })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(String(response.status));
+      }
+      return response.json();
+    })
+    .then((data) => {
+      cucumberRunStatus.value = data && typeof data === "object" ? data : null;
+    })
+    .catch(() => {
+      cucumberRunStatus.value = null;
+    });
+}
+
+export function formatBerlinDateTime(iso, locale) {
+  if (!iso) {
+    return "";
+  }
+  try {
+    return new Intl.DateTimeFormat(locale === "de" ? "de-DE" : "en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Europe/Berlin",
+      timeZoneName: "short",
+    }).format(new Date(iso));
+  } catch {
+    return String(iso);
+  }
+}
+
+export function cucumberFeatureRunResult(id) {
+  const entry = cucumberRunStatus.value?.features?.[id];
+  if (!entry?.status) {
+    return null;
+  }
+  return {
+    status: entry.status,
+    shard: entry.shard || "",
+    browser: entry.browser || "",
+    runUrl: cucumberRunStatus.value?.runUrl || "",
+    at:
+      cucumberRunStatus.value?.runStartedAt ||
+      cucumberRunStatus.value?.publishedAt ||
+      "",
+  };
+}
+
 const TICKET_TAG = /^@(?:ZMSKVR|ZMS)-\d+$/i;
 
 export function cucumberPrimaryTicketTag(entry) {

@@ -5,10 +5,13 @@ import { computed, onMounted, onUnmounted, ref } from "vue";
 import featureMeta from "../data/cucumber-features.json";
 import {
   cucumberFeatureMatches,
+  cucumberFeatureRunResult,
   cucumberGhRunCommand,
   cucumberRunTagExpression,
   cucumberSearchQuery,
   ensureCucumberHashListener,
+  ensureCucumberRunStatus,
+  formatBerlinDateTime,
   openCucumberFeatureId,
   syncCucumberFeatureFromHash,
   toggleCucumberFeature,
@@ -57,6 +60,29 @@ const scenarioLabel = computed(() => {
 });
 
 const sourceLabel = computed(() => (isDe.value ? "Quelle" : "Source"));
+
+const runResult = computed(() => cucumberFeatureRunResult(props.id));
+
+const resultLabel = computed(() => {
+  const result = runResult.value;
+  if (!result) {
+    return "";
+  }
+  const when = formatBerlinDateTime(result.at, isDe.value ? "de" : "en");
+  const statusWord =
+    result.status === "failed"
+      ? isDe.value
+        ? "Fehlgeschlagen"
+        : "Failed"
+      : result.status === "skipped"
+        ? isDe.value
+          ? "Übersprungen"
+          : "Skipped"
+        : isDe.value
+          ? "Bestanden"
+          : "Passed";
+  return when ? `${statusWord} ${when}` : statusWord;
+});
 
 const isTicketTag = (tag) => /^@(?:ZMSKVR|ZMS)-\d+$/i.test(tag);
 
@@ -140,6 +166,7 @@ const onToggle = () => {
 onMounted(() => {
   ensureCucumberHashListener();
   syncCucumberFeatureFromHash();
+  ensureCucumberRunStatus();
 });
 
 onUnmounted(() => {
@@ -183,7 +210,16 @@ onUnmounted(() => {
           </svg>
         </span>
         <span class="cucumber-feature__summary">
-          <span class="cucumber-feature__title">{{ meta.title }}</span>
+          <span class="cucumber-feature__title-row">
+            <span
+              v-if="runResult"
+              class="cucumber-feature__result"
+              :class="`cucumber-feature__result--${runResult.status}`"
+              :data-tooltip="resultLabel"
+              :aria-label="resultLabel"
+            />
+            <span class="cucumber-feature__title">{{ meta.title }}</span>
+          </span>
           <span class="cucumber-feature__meta">
             <code class="cucumber-feature__file">{{ meta.fileName }}</code>
             <span class="cucumber-feature__count">{{ scenarioLabel }}</span>
@@ -486,6 +522,60 @@ onUnmounted(() => {
   flex-direction: column;
   gap: 0.28rem;
   min-width: 0;
+}
+
+.cucumber-feature__title-row {
+  display: flex;
+  gap: 0.45rem;
+  align-items: flex-start;
+}
+
+.cucumber-feature__result {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-top: 0.35rem;
+  border-radius: 50%;
+}
+
+.cucumber-feature__result--passed {
+  background: #1a7f37;
+}
+
+.cucumber-feature__result--failed {
+  background: #cf222e;
+}
+
+.cucumber-feature__result--skipped {
+  background: var(--vp-c-text-3);
+}
+
+.cucumber-feature__result::after {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 0.4rem);
+  z-index: 5;
+  width: max-content;
+  max-width: min(16rem, calc(100vw - 4rem));
+  padding: 0.28rem 0.5rem;
+  color: var(--vp-c-bg);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: normal;
+  pointer-events: none;
+  content: attr(data-tooltip);
+  background: var(--vp-c-text-1);
+  border-radius: 6px;
+  opacity: 0;
+  transform: translateY(-50%);
+}
+
+.cucumber-feature__result:hover::after,
+.cucumber-feature__result:focus-visible::after {
+  opacity: 1;
 }
 
 .cucumber-feature__title {
