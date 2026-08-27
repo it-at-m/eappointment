@@ -24,9 +24,16 @@ class StatusTest extends Base
             ]
         );
         $response = parent::testRendering();
-        $this->assertStringContainsString('<th>Version</th>', (string)$response->getBody());
-        //check processes.confirmed:
-        $this->assertStringContainsString('86861', (string)$response->getBody());
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('<th>Version</th>', $body);
+        $this->assertStringContainsString('86861', $body);
+        $this->assertStringContainsString('Anzahl der aufgerufenen Termine', $body);
+        $this->assertStringContainsString('Anzahl der geparkten Termine', $body);
+        $this->assertStringContainsString('Anzahl noch nicht versendeter Mails', $body);
+        $this->assertStringContainsString('Alter noch nicht versendeter Mails', $body);
+        $this->assertStringContainsString('Aktive Sitzungen', $body);
+        $this->assertStringContainsString('Auslastung der Datenbankverbindungen', $body);
+        $this->assertStringContainsString('zmsautomation', $body);
     }
 
     public function testWithoutWorkstation()
@@ -46,18 +53,32 @@ class StatusTest extends Base
         parent::testRendering();
     }
 
-    public function testWithoutSuperuserPermission()
+    public function testWithoutSuperuserPermissionHidesOperationsMetrics()
     {
-        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->setApiCalls(
             [
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/status/',
+                    'response' => $this->readFixture("GET_status.json")
                 ]
             ]
         );
-        parent::testRendering();
+        $response = parent::testRendering();
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('Anzahl der aufgerufenen Termine', $body);
+        $this->assertStringContainsString('Anzahl der geparkten Termine', $body);
+        $this->assertStringNotContainsString('Auslastung der Datenbankverbindungen', $body);
+        $this->assertStringNotContainsString('Status des Datenbank-Clusters', $body);
+        $this->assertStringNotContainsString('Sekundengenaues Backup', $body);
+        $this->assertStringNotContainsString('Alter noch nicht versendeter Mails', $body);
+        $this->assertStringNotContainsString('Anzahl noch nicht versendeter Mails', $body);
+        $this->assertStringNotContainsString('Aktive Sitzungen', $body);
+        $this->assertStringNotContainsString('zmsautomation', $body);
     }
 }

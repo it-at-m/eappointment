@@ -18,6 +18,8 @@
     },
     "processes": {
       "confirmed": "86861",
+      "called": "4",
+      "parked": "2",
       "deleted": "3",
       "missed": "6",
       "reserved": "10",
@@ -37,6 +39,9 @@
       "major": "2",
       "minor": "15",
       "patch": "03"
+    },
+    "useraccounts": {
+      "activeSessions": 7
     }
   }
 }

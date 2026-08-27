@@ -7,46 +7,63 @@ class StatusTest extends Base
     protected $arguments = [];
     protected $parameters = [];
 
-    protected function getApiCalls()
-    {
-        return [
-            [
-                'function' => 'readGetResult',
-                'url' => '/workstation/',
-                'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/status/',
-                'response' => $this->readFixture("GET_status.json")
-            ]
-        ];
-    }
-
     public function testRendering()
     {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/status/',
+                    'response' => $this->readFixture("GET_status.json")
+                ]
+            ]
+        );
         $response = parent::testRendering();
-        $this->assertStringContainsString('status--table', (string)$response->getBody());
-        $this->assertStringContainsString('<th>Version</th>', (string)$response->getBody());
-        $this->assertStringContainsString('Betriebsstatus des Systems', (string)$response->getBody());
-        $this->assertStringContainsString('Anzahl der Abholer für Dokumente', (string)$response->getBody());
-        $this->assertStringContainsString('Alter noch nicht versendeter Mails', (string)$response->getBody());
-        $this->assertStringContainsString('86861', (string)$response->getBody());
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('status--table', $body);
+        $this->assertStringContainsString('<th>Version</th>', $body);
+        $this->assertStringContainsString('Betriebsstatus des Systems', $body);
+        $this->assertStringContainsString('Anzahl der Abholer für Dokumente', $body);
+        $this->assertStringContainsString('Anzahl der aufgerufenen Termine', $body);
+        $this->assertStringContainsString('Anzahl der geparkten Termine', $body);
+        $this->assertStringContainsString('Alter noch nicht versendeter Mails', $body);
+        $this->assertStringContainsString('Anzahl noch nicht versendeter Mails', $body);
+        $this->assertStringContainsString('Aktive Sitzungen', $body);
+        $this->assertStringContainsString('86861', $body);
     }
 
-    public function testWithoutSuperuserPermission()
+    public function testWithoutSuperuserPermissionHidesOperationsMetrics()
     {
-        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->setApiCalls(
             [
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'response' => $this->readFixture("GET_Workstation_BasicRights.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/status/',
+                    'response' => $this->readFixture("GET_status.json")
                 ]
             ]
         );
-        parent::testRendering();
+        $response = parent::testRendering();
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('Anzahl der aufgerufenen Termine', $body);
+        $this->assertStringContainsString('Anzahl der geparkten Termine', $body);
+        $this->assertStringNotContainsString('Auslastung der Datenbankverbindungen', $body);
+        $this->assertStringNotContainsString('Status des Datenbank-Clusters', $body);
+        $this->assertStringNotContainsString('Sekundengenaues Backup', $body);
+        $this->assertStringNotContainsString('Alter noch nicht versendeter Mails', $body);
+        $this->assertStringNotContainsString('Anzahl noch nicht versendeter Mails', $body);
+        $this->assertStringNotContainsString('Aktive Sitzungen', $body);
+        $this->assertStringNotContainsString('zmsautomation', $body);
     }
 
     public function testWithoutWorkstation()
