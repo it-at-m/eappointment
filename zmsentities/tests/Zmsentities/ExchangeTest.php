@@ -119,50 +119,42 @@ class ExchangeTest extends EntityCommonTests
         $exchange = new \BO\Zmsentities\Exchange();
 
         $exchange->data = [
-            'sum' => [
-                'Personalausweis' => 20,
-                'Reisepass' => 5,
-                \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_UNCATEGORIZED => 2,
+            'ServiceA' => [
+                '2016-04-01' => ['requestscount' => 10, 'processingtime' => 10],
+                '2016-04-02' => ['requestscount' => 90, 'processingtime' => 20],
             ],
-            'average_processingtime' => [
-                'Personalausweis' => 10,
-                'Reisepass' => 20,
-                \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_UNCATEGORIZED => 15,
+            'ServiceB' => [
+                '2016-04-01' => ['requestscount' => 5, 'processingtime' => 30],
             ],
         ];
 
         $result = $exchange->withWeightedAverageProcessingTime();
-          // (10 * 20 + 20 * 5 + 15 * 2) / (20 + 5 + 2)
-          // = 330 / 27
-          // = 12.22
-
-   
         $this->assertSame(
-            12.22,
+            19.52,
             $result->data['average_processingtime_overall']
         );
     }
 
-    public function testwithWeightedAverageProcessingTimeIncludesUncategorized()
+    public function testWithWeightedAverageProcessingTimeExcludesUncapturedRequests()
     {
         $exchange = new \BO\Zmsentities\Exchange();
 
         $exchange->data = [
-            'sum' => [
-                'Personalausweis' => 2,
-                \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_UNCATEGORIZED => 1,
+            'Personalausweis' => [
+                '2016-04-01' => ['requestscount' => 2, 'processingtime' => 10],
             ],
-            'average_processingtime' => [
-                'Personalausweis' => 10,
-                \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_UNCATEGORIZED => 40,
+            \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_UNCATEGORIZED => [
+                '2016-04-01' => ['requestscount' => 1, 'processingtime' => 40],
+            ],
+            \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_NONEXISTENT => [
+                '2016-04-01' => ['requestscount' => 1, 'processingtime' => 50],
             ],
         ];
-        
+
         $result = $exchange->withWeightedAverageProcessingTime();
 
-        // (10 * 2 + 40 *1) / 3 = 20
         $this->assertSame(
-            20.0,
+            10.0,
             $result->data['average_processingtime_overall']
         );
     }

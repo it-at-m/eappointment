@@ -558,30 +558,32 @@ class ReportRequestScopeTest extends Base
         $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
         $tempfile = tempnam(sys_get_temp_dir(), 'request-report-');
         file_put_contents($tempfile, (string) $response->getBody());
-        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($tempfile);
-        $sheet = $spreadsheet->getActiveSheet();
+        try {
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($tempfile);
+            $sheet = $spreadsheet->getActiveSheet();
 
-        $foundSumRow = false;
+            $foundSumRow = false;
 
-        foreach ($sheet->getRowIterator() as $row) {
-            $rowIndex = $row->getRowIndex();
-            if ($sheet->getCell('A' . $rowIndex)->getValue() === 'Ø Bearbeitungsdauer (unabhängig von DL) / Summe') {
-                $foundSumRow = true;
-                $this->assertNotNull($sheet->getCell('B'. $rowIndex)->getValue(),
-                'The overall average processing time must be exported.'
-            );
+            foreach ($sheet->getRowIterator() as $row) {
+                $rowIndex = $row->getRowIndex();
+                if ($sheet->getCell('A' . $rowIndex)->getValue() === 'Ø Bearbeitungsdauer (unabhängig von DL) / Summe') {
+                    $foundSumRow = true;
+                    $this->assertNotNull(
+                        $sheet->getCell('B' . $rowIndex)->getValue(),
+                        'The overall average processing time must be exported.'
+                    );
 
-                break;
+                    break;
+                }
             }
+            $this->assertTrue($foundSumRow, 'The XLSX export must contain a Summe row');
+            $this->assertSame(
+                'Ø Bearbeitungsdauer (unabhängig von DL) / Summe',
+                $sheet->getCell('A' . $rowIndex)->getValue()
+            );
+        } finally {
+            unlink($tempfile);
+            ob_end_clean();
         }
-        $this->assertTrue($foundSumRow,'The XLSX export must contain a Summe row');
-        $this->assertSame(
-            'Ø Bearbeitungsdauer (unabhängig von DL) / Summe',
-            $sheet->getCell('A' . $rowIndex)->getValue()
-        );
-        unlink($tempfile);
-        
-        // Clean up output buffer (discard any captured output)
-        ob_end_clean();
     }
 }
