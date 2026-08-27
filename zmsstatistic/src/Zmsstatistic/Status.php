@@ -10,6 +10,7 @@ namespace BO\Zmsstatistic;
 
 use BO\Slim\Render;
 use BO\Zmsentities\Exception\UserAccountMissingLogin;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -42,6 +43,10 @@ class Status extends BaseController
                 throw new UserAccountMissingLogin();
             }
             throw $exception;
+        }
+
+        if (!$workstation->getUseraccount()->hasPermissions(['superuser'])) {
+            throw new UserAccountMissingRights();
         }
 
         $result = \App::$http->readGetResult('/status/');

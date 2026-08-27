@@ -27,8 +27,25 @@ class StatusTest extends Base
     {
         $response = parent::testRendering();
         $this->assertStringContainsString('API Version', (string)$response->getBody());
-        //check processes.confirmed:
+        $this->assertStringContainsString('Betriebsstatus des Systems', (string)$response->getBody());
+        $this->assertStringContainsString('Anzahl der Abholer für Dokumente', (string)$response->getBody());
+        $this->assertStringContainsString('Alter noch nicht versendeter Mails', (string)$response->getBody());
         $this->assertStringContainsString('86861', (string)$response->getBody());
+    }
+
+    public function testWithoutSuperuserPermission()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_BasicRights.json")
+                ]
+            ]
+        );
+        parent::testRendering();
     }
 
     public function testWithoutWorkstation()
