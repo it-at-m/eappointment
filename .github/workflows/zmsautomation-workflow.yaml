@@ -721,12 +721,12 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Download cucumber reports
+        continue-on-error: true
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           pattern: zmsautomation-ataf-reports-*
           path: cucumber-reports
           merge-multiple: false
-          if-no-artifact-found: ignore
 
       - name: Build public cucumber status JSON
         id: status
