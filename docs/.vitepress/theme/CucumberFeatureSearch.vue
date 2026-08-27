@@ -76,7 +76,9 @@ const clearSearch = () => {
 
 <style scoped>
 .cucumber-search {
-  margin: 1.25rem 0 1.75rem;
+  margin: 2.25rem 0 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--vp-c-divider);
 }
 
 .cucumber-search__label {
