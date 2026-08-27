@@ -155,7 +155,7 @@ const cucumberStrings = {
       "> Deprecated: These scenarios target the legacy buergeransicht frontend from `it-at-m/eappointment-buergeransicht` and are not used for `zmscitizenview`.",
     deprecatedSuffix: "(deprecated)",
     accordionHint:
-      "Click a feature to view its Gherkin. Only one feature is expanded at a time.",
+      "Click a feature to view its Gherkin. Only one feature is expanded at a time. The play icon copies a `gh workflow run` command for that test on `next` and opens [zmsautomation on next](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml?query=branch%3Anext) (GitHub write access required).",
     noFiles: "No `.feature` files found.",
   },
   de: {
@@ -171,7 +171,7 @@ const cucumberStrings = {
       "> Veraltet: Diese Szenarien adressieren das alte buergeransicht-Frontend aus `it-at-m/eappointment-buergeransicht` und werden für `zmscitizenview` nicht mehr verwendet.",
     deprecatedSuffix: "(veraltet)",
     accordionHint:
-      "Klicke auf ein Feature, um das Gherkin anzuzeigen. Es ist immer nur ein Feature aufgeklappt.",
+      "Klicke auf ein Feature, um das Gherkin anzuzeigen. Es ist immer nur ein Feature aufgeklappt. Das Play-Symbol kopiert einen `gh workflow run`-Befehl für diesen Test auf `next` und öffnet [zmsautomation auf next](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml?query=branch%3Anext) (GitHub-Schreibrechte nötig).",
     noFiles: "Keine `.feature`-Dateien gefunden.",
   },
 };

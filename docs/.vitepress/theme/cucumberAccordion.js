@@ -111,3 +111,84 @@ export function closeCucumberFeatureIfHidden() {
     openCucumberFeatureId.value = null;
   }
 }
+
+export const ZMSAUTOMATION_WORKFLOW_URL =
+  "https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml?query=branch%3Anext";
+
+const TICKET_TAG = /^@(?:ZMSKVR|ZMS)-\d+$/i;
+
+export function cucumberPrimaryTicketTag(entry) {
+  const tags = Array.isArray(entry?.tags) ? entry.tags : [];
+  const tickets = tags.filter((tag) => TICKET_TAG.test(tag));
+  if (!tickets.length) {
+    return "";
+  }
+  const file = `${entry.fileName || ""} ${entry.rel || ""}`.toLowerCase();
+  const fromFile = tickets.find((tag) =>
+    file.includes(tag.replace(/^@/, "").toLowerCase())
+  );
+  if (fromFile) {
+    return fromFile;
+  }
+  return tickets.find((tag) => /^@ZMSKVR-/i.test(tag)) || tickets[0];
+}
+
+export function cucumberRunTagExpression(entry) {
+  if (!entry) {
+    return "";
+  }
+  const moduleTag = entry.module ? `@${entry.module}` : "";
+  const ticket = cucumberPrimaryTicketTag(entry);
+  if (ticket && moduleTag) {
+    return `(${ticket}) and ${moduleTag}`;
+  }
+  if (ticket) {
+    return ticket;
+  }
+  const tags = (Array.isArray(entry.tags) ? entry.tags : []).filter(
+    (tag) => !/^@ignore$/i.test(tag)
+  );
+  if (!moduleTag) {
+    return tags.join(" and ");
+  }
+  const extra = tags.filter(
+    (tag) =>
+      tag.toLowerCase() !== moduleTag.toLowerCase() &&
+      !/^@(?:rest|web)$/i.test(tag)
+  );
+  if (extra.length) {
+    return [moduleTag, ...extra].join(" and ");
+  }
+  return moduleTag;
+}
+
+const shellSingleQuote = (value) => `'${String(value).replace(/'/g, `'\\''`)}'`;
+
+export function cucumberGhRunCommand(entry) {
+  const tags = cucumberRunTagExpression(entry);
+  const testLayer = entry?.testType === "rest" ? "api" : "ui";
+  const fields = [
+    ["run_main_next_matrix", "false"],
+    ["run_all_in_one_job", "false"],
+    ["module_admin", "false"],
+    ["module_citizenview", "false"],
+    ["module_statistic", "false"],
+    ["module_zmsapi", "false"],
+    ["module_zmscitizenapi", "false"],
+    ["use_custom_tags", "true"],
+    ["test_layer", testLayer],
+    ["cucumber_tag_expressions", tags],
+    ["browser", "chrome"],
+    ["per_step_screenshots", "true"],
+  ];
+  const lines = [
+    "gh workflow run zmsautomation-workflow.yaml \\",
+    "  --repo it-at-m/eappointment \\",
+    "  --ref next \\",
+  ];
+  fields.forEach(([key, value], index) => {
+    const suffix = index === fields.length - 1 ? "" : " \\";
+    lines.push(`  -f ${key}=${shellSingleQuote(value)}${suffix}`);
+  });
+  return lines.join("\n");
+}
