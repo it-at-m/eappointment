@@ -1,5 +1,5 @@
 #language: de
-Funktionalität: Aufbau ZMS-Testautomatisierung
+Funktionalität: Kundenstatistik in der Statistik-Oberfläche öffnen
 
 	
 	@web @zmsstatistic @ZMS-1558 @ZMS-1738 @ZMS-1557 @E2E @automatisiert @executeLocally

@@ -1,5 +1,5 @@
 #language: de
-Funktionalität: Aufbau ZMS-Testautomatisierung,Kernsystem 
+Funktionalität: Arbeitszeiten am Standort konfigurieren
 
 	#Testschwerpunkt: Der Terminadministrator kann Arbeitszeiten und deren Gültigkeitszeiträume frei definieren
 	#

@@ -30,12 +30,22 @@ type StoredSession = {
 
 function readConfig(): LoginConfig {
   const el = document.querySelector("dbs-login");
+  let kcUrl = (
+    el?.getAttribute("kc-url") ||
+    import.meta.env.VITE_KC_URL ||
+    ""
+  ).replace(/\/$/, "");
+  // ATAF: page is http://citizenview:8082 — localhost Keycloak is unreachable
+  // from the browser container; use the compose DNS name.
+  if (
+    typeof window !== "undefined" &&
+    window.location.hostname === "citizenview" &&
+    /^(https?:\/\/)(localhost|127\.0\.0\.1)(:|\/|$)/i.test(kcUrl)
+  ) {
+    kcUrl = "http://keycloak:8080/auth";
+  }
   return {
-    kcUrl: (
-      el?.getAttribute("kc-url") ||
-      import.meta.env.VITE_KC_URL ||
-      ""
-    ).replace(/\/$/, ""),
+    kcUrl,
     realm:
       el?.getAttribute("kc-realm") || import.meta.env.VITE_KC_REALM || "zms",
     clientId:
@@ -68,12 +78,29 @@ function randomString(length = 64): string {
   return Array.from(values, (v) => chars[v % chars.length]).join("");
 }
 
-async function pkceChallenge(verifier: string): Promise<string> {
-  const digest = await crypto.subtle.digest(
-    "SHA-256",
-    new TextEncoder().encode(verifier)
+/**
+ * PKCE S256 challenge. http://citizenview (ATAF) is not a secure context, so
+ * SubtleCrypto is missing; that host may use plain PKCE against local Keycloak.
+ */
+async function pkceChallenge(
+  verifier: string
+): Promise<{ challenge: string; method: "S256" | "plain" }> {
+  if (globalThis.crypto?.subtle) {
+    const digest = await crypto.subtle.digest(
+      "SHA-256",
+      new TextEncoder().encode(verifier)
+    );
+    return { challenge: base64UrlEncode(digest), method: "S256" };
+  }
+  if (
+    typeof window !== "undefined" &&
+    window.location.hostname === "citizenview"
+  ) {
+    return { challenge: verifier, method: "plain" };
+  }
+  throw new Error(
+    "PKCE S256 requires WebCrypto SubtleCrypto (secure context)."
   );
-  return base64UrlEncode(digest);
 }
 
 function parseJwt(token: string): Record<string, unknown> {
@@ -176,7 +203,7 @@ async function startLogin(config: LoginConfig): Promise<void> {
 
   const verifier = randomString(64);
   const state = randomString(32);
-  const challenge = await pkceChallenge(verifier);
+  const { challenge, method } = await pkceChallenge(verifier);
   sessionStorage.setItem(STORAGE_VERIFIER, verifier);
   sessionStorage.setItem(STORAGE_STATE, state);
 
@@ -189,7 +216,7 @@ async function startLogin(config: LoginConfig): Promise<void> {
   url.searchParams.set("scope", "openid profile email");
   url.searchParams.set("state", state);
   url.searchParams.set("code_challenge", challenge);
-  url.searchParams.set("code_challenge_method", "S256");
+  url.searchParams.set("code_challenge_method", method);
 
   window.location.assign(url.toString());
 }
@@ -396,7 +423,9 @@ function renderHostChrome(config: LoginConfig): void {
 
   if (!loggedIn) {
     button.addEventListener("click", () => {
-      void startLogin(config);
+      void startLogin(config).catch((err) => {
+        console.error("[local-dbs-login] startLogin failed:", err);
+      });
     });
     host.appendChild(button);
     return;
@@ -518,7 +547,12 @@ export async function initLocalDbsLogin(): Promise<void> {
   }
 
   document.addEventListener(AUTH_REQUEST, () => {
-    void startLogin(config);
+    void startLogin(config).catch((err) => {
+      console.error(
+        "[local-dbs-login] startLogin (authorization-request) failed:",
+        err
+      );
+    });
   });
 
   renderHostChrome(config);

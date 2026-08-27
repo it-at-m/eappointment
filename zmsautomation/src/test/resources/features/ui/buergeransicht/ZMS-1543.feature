@@ -5,7 +5,7 @@
 # which is likely not running in local development environments.
 # To enable these tests, ensure the old buergeransicht frontend is running at http://localhost:8082
 # and remove the @ignore tag from the scenario tags.
-Funktionalität: Default
+Funktionalität: Sachbearbeitung stellt den Terminbedarf fest
    
    	#Bürger bucht einen Termin, bestätigt ihn. SB öffnet seinen Arbeitsplatz und prüft die anstehende Termine. Die Sachbearbeitung sieht weiteren Terminbedarf beim Kunden und eröffnet deshalb für diesen Intern einen Termin im Terminvereinbarungssystem.
    	@ignore @web @buergeransicht @ZMS-1543 @ZMS-1538 @ZMS-2228 @ZMS-2290 @ZMS-2202 @ZMS-2385 @E2E @automatisiert @executeLocally
