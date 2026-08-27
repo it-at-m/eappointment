@@ -3,6 +3,8 @@ import { useData } from "vitepress";
 import { computed, onMounted, ref } from "vue";
 
 import {
+  ensureCucumberRunStatus,
+  formatBerlinDateTime,
   ZMSAUTOMATION_BADGE_URL,
   ZMSAUTOMATION_SCHEDULED_RUNS_API,
   ZMSAUTOMATION_WORKFLOW_URL,
@@ -16,6 +18,7 @@ const loadState = ref("loading");
 const run = ref(null);
 
 onMounted(async () => {
+  ensureCucumberRunStatus();
   try {
     const response = await fetch(ZMSAUTOMATION_SCHEDULED_RUNS_API, {
       headers: {
@@ -46,15 +49,7 @@ const formattedTime = computed(() => {
   if (!iso) {
     return "";
   }
-  return new Intl.DateTimeFormat(isDe.value ? "de-DE" : "en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "Europe/Berlin",
-    timeZoneName: "short",
-  }).format(new Date(iso));
+  return formatBerlinDateTime(iso, isDe.value ? "de" : "en");
 });
 
 const scheduleLabel = computed(() => {
