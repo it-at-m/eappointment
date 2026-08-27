@@ -140,12 +140,11 @@ const runLabel = computed(() => {
 });
 
 const runHint = computed(() => {
-  const tags = tagExpression.value || (isDe.value ? "Tags" : "tags");
   const branch = cucumberSelectedBranch.value;
   if (isDe.value) {
-    return `Kopiert gh workflow run mit ${tags} auf ${branch} (Schreibrechte nötig)`;
+    return `Kopiert einen Befehl, um diesen Test auf ${branch} zu starten`;
   }
-  return `Copies gh workflow run with ${tags} on ${branch} (write access required)`;
+  return `Copies a command to run this test on ${branch}`;
 });
 
 const copyText = async (text) => {

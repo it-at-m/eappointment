@@ -71,7 +71,7 @@ const cucumberStrings = {
       "> Deprecated: These scenarios target the legacy buergeransicht frontend from `it-at-m/eappointment-buergeransicht` and are not used for `zmscitizenview`.",
     deprecatedSuffix: "(deprecated)",
     accordionHint:
-      "Click a feature to view its Gherkin. Only one feature is expanded at a time. Pick a branch below the search to load that branch's `.feature` files, status, and run command. The play icon copies a `gh workflow run` command for the selected branch and opens [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml) (GitHub write access required). Status icons are pass/fail from the latest published zmsautomation run on the selected branch.",
+      "Click a feature to view its Gherkin. Only one feature is expanded at a time. Pick a branch below the search to load that branch's `.feature` files, status, and run command. The play icon copies a command to start the test on the selected branch and opens [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). Status icons are pass/fail from the latest published zmsautomation run on the selected branch.",
     noFiles: "No `.feature` files found.",
   },
   de: {
@@ -87,7 +87,7 @@ const cucumberStrings = {
       "> Veraltet: Diese Szenarien adressieren das alte buergeransicht-Frontend aus `it-at-m/eappointment-buergeransicht` und werden für `zmscitizenview` nicht mehr verwendet.",
     deprecatedSuffix: "(veraltet)",
     accordionHint:
-      "Klicke auf ein Feature, um das Gherkin anzuzeigen. Es ist immer nur ein Feature aufgeklappt. Wähle unter der Suche einen Branch, um dessen `.feature`-Dateien, Status und Startbefehl zu laden. Das Play-Symbol kopiert einen `gh workflow run`-Befehl für den gewählten Branch und öffnet [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml) (GitHub-Schreibrechte nötig). Status-Icons zeigen Bestanden/Fehlgeschlagen vom letzten veröffentlichten zmsautomation-Lauf auf dem gewählten Branch.",
+      "Klicke auf ein Feature, um das Gherkin anzuzeigen. Es ist immer nur ein Feature aufgeklappt. Wähle unter der Suche einen Branch, um dessen `.feature`-Dateien, Status und Startbefehl zu laden. Das Play-Symbol kopiert einen Befehl, um den Test auf dem gewählten Branch zu starten, und öffnet [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). Status-Icons zeigen Bestanden/Fehlgeschlagen vom letzten veröffentlichten zmsautomation-Lauf auf dem gewählten Branch.",
     noFiles: "Keine `.feature`-Dateien gefunden.",
   },
 };
