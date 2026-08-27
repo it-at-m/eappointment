@@ -47,8 +47,11 @@ const formattedTime = computed(() => {
     return "";
   }
   return new Intl.DateTimeFormat(isDe.value ? "de-DE" : "en-GB", {
-    dateStyle: "medium",
-    timeStyle: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
     timeZone: "Europe/Berlin",
     timeZoneName: "short",
   }).format(new Date(iso));
