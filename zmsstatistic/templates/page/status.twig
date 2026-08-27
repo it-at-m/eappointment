@@ -1,19 +1,23 @@
 {% extends "layout/main.twig" %}
+{% block title %}Status Terminvereinbarung{% endblock %}
 {% from 'element/helper/snippets.twig' import headline1 %}
-{% block title %}{{ title }}{% endblock %}
 
 {% block headline %}
-    {{ headline1(title) }}
+    {{ headline1("Betriebsstatus des Systems") }}
 {% endblock %}
 
 {% block content %}
     <p>
-        Im folgenden findet sich ein Status der Terminvereinbarung, dem Sie entnehmen können, ob die Anwendung einwandfrei funktioniert.
+        Im Folgenden findet sich ein Status der Terminvereinbarung, dem Sie entnehmen können, ob die Anwendung einwandfrei funktioniert:
     </p>
     <table class="table--base">
         <tr class="status-process-confirmed">
             <th>Anzahl der gebuchten Termine</th>
             <td>{{ status.processes.confirmed }}</td>
+        </tr>
+        <tr class="status-process-confirmed">
+            <th>Anzahl der Abholer für Dokumente</th>
+            <td>{{ status.processes.pending }}</td>
         </tr>
         <tr class="status-process-reserved">
             <th>Anzahl der reservierten Termine</th>
@@ -28,6 +32,30 @@
             <td>{{ status.processes.missed }}</td>
         </tr>
         <tr class="status-database-nodeconnections">
+            <th>Letzter Import Dienstleistungsdatenbank</th>
+            <td>{{ status.sources.dldb.last }}</td>
+        </tr>
+        <tr class="status-database-nodeconnections">
+            <th>Letzte Berechnung Termine</th>
+            <td>{{ status.processes.lastCalculate }}</td>
+        </tr>
+        <tr class="status-database-nodeconnections">
+            <th>Älteste Änderung einer noch nicht neu berechneten Öffnungszeit</th>
+            <td>{{ status.processes.outdatedOldest }}</td>
+        </tr>
+        <tr class="status-database-nodeconnections">
+            <th>Anzahl neu zu berechnender Zeit-Slots</th>
+            <td>{{ status.processes.outdated }}</td>
+        </tr>
+        <tr class="status-database-nodeconnections">
+            <th>Verfügbare freie Zeit-Slots insgesamt</th>
+            <td>{{ status.processes.freeSlots }}</td>
+        </tr>
+        <tr class="status-database-nodeconnections">
+            <th>Alter noch nicht versendeter Mails</th>
+            <td class="alert alert-{% if status.mail.oldestSeconds < 300 %}success{% else %}error{% endif %}">{{ status.mail.oldestSeconds|default(0) }}&nbsp;Sekunden</td>
+        </tr>
+        <tr class="status-database-nodeconnections">
             <th>Auslastung der Datenbankverbindungen</th>
             <td class="alert alert-{% if status.database.nodeConnections < 51 %}success{% else %}error{% endif %}">{{ status.database.nodeConnections }}%</td>
         </tr>
@@ -35,7 +63,7 @@
             <th>Status des Datenbank-Clusters</th>
             <td class="alert alert-{% if status.database.clusterStatus != 'OFF' %}success{% else %}error{% endif %}">{{ status.database.clusterStatus }}</td>
         </tr>
-        <tr class="status-database-clusterstatus">
+        <tr class="status-database-logbin">
             <th>Sekundengenaues Backup</th>
             <td class="alert alert-{% if status.database.logbin == 'ON' %}success{% else %}error{% endif %}">{{ status.database.logbin }}</td>
         </tr>
@@ -43,5 +71,24 @@
             <th>API Version</th>
             <td>{{ status.version.major }}.{{ status.version.minor }}.{{ status.version.patch }}</td>
         </tr>
+        {% if workstation %}
+        {% set permissions = workstation.useraccount.permissions %}
+        {% if permissions.superuser %}
+        <tr>
+            <th colspan="2">
+                <h2>Automatische Tests</h2>
+                <small>(Nur für technische Administration sichtbar)</small>
+            </th>
+        </tr>
+        <tr class="status-api-version">
+            <th>zmsautomation (main)</th>
+            <td>
+                <a href="https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml?query=branch%3Amain">
+                    <img src="https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml/badge.svg?branch=main" alt="zmsautomation CI status" />
+                </a>
+            </td>
+        </tr>
+        {% endif %}
+        {% endif %}
     </table>
 {% endblock %}
