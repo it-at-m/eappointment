@@ -31,6 +31,7 @@ class StatusTest extends Base
         $this->assertStringContainsString('Anzahl der Abholer für Dokumente', $body);
         $this->assertStringContainsString('Anzahl der aufgerufenen Termine', $body);
         $this->assertStringContainsString('Anzahl der geparkten Termine', $body);
+        $this->assertStringContainsString('Anzahl der gebuchten Termine mit Bürgerlogin', $body);
         $this->assertStringContainsString('Alter noch nicht versendeter Mails', $body);
         $this->assertStringContainsString('Anzahl noch nicht versendeter Mails', $body);
         $this->assertStringContainsString('Aktive Sitzungen', $body);
@@ -61,6 +62,7 @@ class StatusTest extends Base
         $body = (string)$response->getBody();
         $this->assertStringContainsString('Anzahl der aufgerufenen Termine', $body);
         $this->assertStringContainsString('Anzahl der geparkten Termine', $body);
+        $this->assertStringNotContainsString('Anzahl der gebuchten Termine mit Bürgerlogin', $body);
         $this->assertStringNotContainsString('Auslastung der Datenbankverbindungen', $body);
         $this->assertStringNotContainsString('Status des Datenbank-Clusters', $body);
         $this->assertStringNotContainsString('Sekundengenaues Backup', $body);

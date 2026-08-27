@@ -70,6 +70,10 @@
                 <small>(Nur für technische Administration sichtbar)</small>
             </th>
         </tr>
+        <tr class="status-process-confirmed-external">
+            <th>Anzahl der gebuchten Termine mit Bürgerlogin</th>
+            <td>{{ status.processes.confirmedWithExternalUserId|default(0) }}</td>
+        </tr>
         <tr class="status-mail-queue">
             <th>Anzahl noch nicht versendeter Mails</th>
             <td>{{ status.mail.queueCount|default(0) }}</td>
