@@ -1,5 +1,5 @@
 @rest @zmsapi @ZMSKVR-1328
-Feature: A scheduled appointment is created, called up and completed at the counter
+Feature: ZMS API: book, call and finish a scheduled appointment at the counter
   As a client application
   I want to use the ZMS API workstation endpoints
   So that I can verify core admin flows via API responses

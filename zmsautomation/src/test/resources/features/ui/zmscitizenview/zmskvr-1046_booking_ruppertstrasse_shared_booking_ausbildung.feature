@@ -1,6 +1,6 @@
 #language: en
 @web @zmscitizenview @ZMSKVR-1046 @executeLocally
-Feature: ZMSKVR-1046 Ruppertstraße shared booking — zmscitizenview (Haupt 10489 + Ausbildung 10503)
+Feature: CitizenView: Ruppertstraße shared booking (Ort 10489, Slots 10489 + 10503)
   As a citizen
   I want Wohnsitzanmeldung slots from Haupt and Ausbildung to appear under one Ort
   So that sharedBookingOfficeIds pools capacity while booking still lands on the real OfficeID
