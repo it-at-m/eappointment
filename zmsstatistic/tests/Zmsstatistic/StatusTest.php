@@ -26,6 +26,7 @@ class StatusTest extends Base
     public function testRendering()
     {
         $response = parent::testRendering();
+        $this->assertStringContainsString('status--table', (string)$response->getBody());
         $this->assertStringContainsString('API Version', (string)$response->getBody());
         $this->assertStringContainsString('Betriebsstatus des Systems', (string)$response->getBody());
         $this->assertStringContainsString('Anzahl der Abholer für Dokumente', (string)$response->getBody());

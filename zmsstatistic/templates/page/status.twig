@@ -10,7 +10,7 @@
     <p>
         Im Folgenden findet sich ein Status der Terminvereinbarung, dem Sie entnehmen können, ob die Anwendung einwandfrei funktioniert:
     </p>
-    <table class="table--base">
+    <table class="status--table clean">
         <tr class="status-process-confirmed">
             <th>Anzahl der gebuchten Termine</th>
             <td>{{ status.processes.confirmed }}</td>
@@ -33,23 +33,23 @@
         </tr>
         <tr class="status-database-nodeconnections">
             <th>Letzter Import Dienstleistungsdatenbank</th>
-            <td>{{ status.sources.dldb.last }}</td>
+            <td class="">{{ status.sources.dldb.last }}</td>
         </tr>
         <tr class="status-database-nodeconnections">
             <th>Letzte Berechnung Termine</th>
-            <td>{{ status.processes.lastCalculate }}</td>
+            <td class="">{{ status.processes.lastCalculate }}</td>
         </tr>
         <tr class="status-database-nodeconnections">
             <th>Älteste Änderung einer noch nicht neu berechneten Öffnungszeit</th>
-            <td>{{ status.processes.outdatedOldest }}</td>
+            <td class="">{{ status.processes.outdatedOldest }}</td>
         </tr>
         <tr class="status-database-nodeconnections">
             <th>Anzahl neu zu berechnender Zeit-Slots</th>
-            <td>{{ status.processes.outdated }}</td>
+            <td class="">{{ status.processes.outdated }}</td>
         </tr>
         <tr class="status-database-nodeconnections">
             <th>Verfügbare freie Zeit-Slots insgesamt</th>
-            <td>{{ status.processes.freeSlots }}</td>
+            <td class="">{{ status.processes.freeSlots }}</td>
         </tr>
         <tr class="status-database-nodeconnections">
             <th>Alter noch nicht versendeter Mails</th>
