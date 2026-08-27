@@ -223,6 +223,8 @@ const collectCucumberFeatures = () => {
       tags: parsed.tags,
       scenarioCount: parsed.scenarioCount,
       sourceUrl: `${FEATURE_SOURCE_BASE}/${rel}`,
+      testType,
+      module,
     };
     moduleMap.get(module).push({ abs: file, rel, id });
   }
@@ -259,12 +261,16 @@ const renderCucumberDocFor = (locale, catalog) => {
     "    Then the response status code should be 200",
     "```",
     "",
+    "<CucumberFeatureSearch />",
+    "",
   ];
 
   if (!featureFiles.length) {
     lines.push(t.noFiles);
   } else {
     for (const [testType, modules] of grouped) {
+      lines.push(`<CucumberFeatureGroup test-type="${testType}">`);
+      lines.push("");
       lines.push(`## ${testType.toUpperCase()}`);
       lines.push("");
       for (const [module, files] of sortModuleEntries(modules)) {
@@ -272,6 +278,10 @@ const renderCucumberDocFor = (locale, catalog) => {
           testType === "ui" && module === "buergeransicht"
             ? `${module} ${t.deprecatedSuffix}`
             : module;
+        lines.push(
+          `<CucumberFeatureGroup test-type="${testType}" module="${module}">`
+        );
+        lines.push("");
         lines.push(`### ${moduleTitle}`);
         lines.push("");
         if (testType === "ui" && module === "buergeransicht") {
@@ -292,7 +302,11 @@ const renderCucumberDocFor = (locale, catalog) => {
           lines.push("</CucumberFeatureRow>");
           lines.push("");
         }
+        lines.push("</CucumberFeatureGroup>");
+        lines.push("");
       }
+      lines.push("</CucumberFeatureGroup>");
+      lines.push("");
     }
   }
 
