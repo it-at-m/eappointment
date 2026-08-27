@@ -38,96 +38,27 @@ class ZmsApiFacadeService
     private const string CACHE_KEY_SERVICES_BY_OFFICE_PREFIX = 'processed_services_by_office_';
 
     /**
-     * Drop source + processed offices/services cache entries without clearing rate-limit keys.
+     * Fetch fresh source data and overwrite the public offices-and-services cache in place.
+     * Existing entries stay readable until the new values are written.
      *
-     * @return list<string>
+     * @return array{result: OfficeServiceAndRelationList|array, refreshedKeys: list<string>}
      */
-    public static function invalidateSourceRelatedCaches(): array
+    public static function warmOfficesAndServicesCache(): array
     {
-        if (!\App::$cache) {
-            return [];
-        }
+        $refreshedKeys = ZmsApiClientService::refreshSourceCaches();
+        $cacheKey = self::CACHE_KEY_OFFICES_AND_SERVICES;
+        $result = self::rebuildServicesAndOfficesCache(false, $cacheKey);
+        $refreshedKeys[] = $cacheKey;
 
-        $keys = [
-            self::CACHE_KEY_OFFICES,
-            self::CACHE_KEY_OFFICES . '_unpublished',
-            self::CACHE_KEY_SCOPES,
-            self::CACHE_KEY_SERVICES,
-            self::CACHE_KEY_SERVICES . '_unpublished',
-            self::CACHE_KEY_OFFICES_AND_SERVICES,
-            self::CACHE_KEY_OFFICES_AND_SERVICES . '_unpublished',
-        ];
-
-        $sourceName = \App::$source_name ?? 'dldb';
-        $sourceKeys = [];
-        foreach (explode(',', (string) $sourceName) as $source) {
-            $source = trim($source);
-            if ($source !== '') {
-                $sourceKeys[] = 'source_' . $source;
-            }
-        }
-
-        foreach (self::collectCachedOfficeIds($sourceKeys) as $officeId) {
-            $keys[] = self::CACHE_KEY_SERVICES_BY_OFFICE_PREFIX . $officeId;
-            $keys[] = self::CACHE_KEY_SERVICES_BY_OFFICE_PREFIX . $officeId . '_unpublished';
-        }
-
-        $keys = array_merge($keys, $sourceKeys);
-
-        $deleted = [];
-        foreach (array_values(array_unique($keys)) as $key) {
-            if (\App::$cache->delete($key)) {
-                $deleted[] = $key;
-            }
-        }
-
-        LoggerService::logInfo('Source-related cache invalidated', [
-            'deletedKeys' => $deleted,
+        $refreshedKeys = array_values(array_unique($refreshedKeys));
+        LoggerService::logInfo('Offices-and-services cache warmed', [
+            'refreshedKeys' => $refreshedKeys,
         ]);
 
-        return $deleted;
-    }
-
-    /**
-     * Collect office IDs from still-cached source/office lists before those keys are deleted.
-     *
-     * @param list<string> $sourceKeys
-     * @return list<int>
-     */
-    private static function collectCachedOfficeIds(array $sourceKeys): array
-    {
-        $officeIds = [];
-
-        foreach (
-            [
-                self::CACHE_KEY_OFFICES,
-                self::CACHE_KEY_OFFICES . '_unpublished',
-            ] as $officeListKey
-        ) {
-            $officeList = \App::$cache->get($officeListKey);
-            if ($officeList instanceof OfficeList) {
-                foreach ($officeList->offices as $office) {
-                    if ($office instanceof Office) {
-                        $officeIds[] = (int) $office->id;
-                    }
-                }
-            }
-        }
-
-        foreach ($sourceKeys as $sourceKey) {
-            $source = \App::$cache->get($sourceKey);
-            if (!$source instanceof \BO\Zmsentities\Source) {
-                continue;
-            }
-            foreach ($source->getProviderList() as $provider) {
-                $officeIds[] = (int) $provider->id;
-            }
-        }
-
-        return array_values(array_unique(array_filter(
-            $officeIds,
-            static fn (int $id): bool => $id > 0
-        )));
+        return [
+            'result' => $result,
+            'refreshedKeys' => $refreshedKeys,
+        ];
     }
 
     /**
@@ -315,6 +246,13 @@ class ZmsApiFacadeService
             return $cachedData;
         }
 
+        return self::rebuildServicesAndOfficesCache($showUnpublished, $cacheKey);
+    }
+
+    private static function rebuildServicesAndOfficesCache(
+        bool $showUnpublished,
+        string $cacheKey
+    ): OfficeServiceAndRelationList|array {
         $providerList = ZmsApiClientService::getOffices();
         $requestList = ZmsApiClientService::getServices();
         $relationList = ZmsApiClientService::getRequestRelationList();

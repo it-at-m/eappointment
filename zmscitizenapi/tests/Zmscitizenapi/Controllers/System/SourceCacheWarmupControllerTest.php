@@ -111,12 +111,14 @@ class SourceCacheWarmupControllerTest extends ControllerTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $body = json_decode((string) $response->getBody(), true);
         $this->assertTrue($body['warmed']);
-        $this->assertContains('processed_offices_and_services', $body['deletedKeys']);
-        $this->assertContains('source_unittest', $body['deletedKeys']);
+        $this->assertContains('processed_offices_and_services', $body['refreshedKeys']);
+        $this->assertContains('source_unittest', $body['refreshedKeys']);
+        $this->assertArrayNotHasKey('deletedKeys', $body);
         $this->assertNotEquals(['stale' => true], \App::$cache->get('processed_offices_and_services'));
+        $this->assertNotEquals(['stale' => true], \App::$cache->get('source_unittest'));
     }
 
-    public function testWarmupInvalidatesPerOfficeKeysFromCachedSource()
+    public function testWarmupDoesNotDropPerOfficeKeys()
     {
         $sourceJson = json_decode($this->readFixture("GET_SourceGet_dldb.json"), true);
         $source = new \BO\Zmsentities\Source($sourceJson['data']);
@@ -143,9 +145,9 @@ class SourceCacheWarmupControllerTest extends ControllerTestCase
 
         $this->assertEquals(200, $response->getStatusCode());
         $body = json_decode((string) $response->getBody(), true);
-        $this->assertContains('processed_services_by_office_9999998', $body['deletedKeys']);
-        $this->assertContains('processed_services_by_office_9999998_unpublished', $body['deletedKeys']);
-        $this->assertNull(\App::$cache->get('processed_services_by_office_9999998'));
-        $this->assertNull(\App::$cache->get('processed_services_by_office_9999998_unpublished'));
+        $this->assertTrue($body['warmed']);
+        $this->assertNotContains('processed_services_by_office_9999998', $body['refreshedKeys']);
+        $this->assertSame(['stale' => true], \App::$cache->get('processed_services_by_office_9999998'));
+        $this->assertSame(['stale' => true], \App::$cache->get('processed_services_by_office_9999998_unpublished'));
     }
 }

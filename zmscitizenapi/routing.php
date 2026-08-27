@@ -463,7 +463,7 @@
  * @swagger
  * /source-cache/warmup/:
  *   post:
- *     summary: Invalidate and rebuild the offices-and-services source cache
+ *     summary: Refresh the offices-and-services source cache in place
  *     tags:
  *       - cache
  *     parameters:
@@ -473,7 +473,7 @@
  *         type: string
  *     responses:
  *       200:
- *         description: Cache invalidated and offices-and-services rebuilt
+ *         description: Fresh source data fetched and offices-and-services cache overwritten
  *       403:
  *         description: Missing or invalid warmup token
  *       404:
