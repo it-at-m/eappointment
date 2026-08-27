@@ -3380,4 +3380,48 @@ describe("AppointmentSelection", () => {
       expect(wrapper.find(".m-spinner-container").exists()).toBe(false);
     });
   });
+
+  describe("ZMSKVR-1571 selectedProvider retention", () => {
+    it("does not clear the reserved office when multiple locations stay checked", async () => {
+      const reservedOffice = {
+        id: 1,
+        name: "Bürgerbüro A",
+        address: {
+          street: "Main",
+          house_number: "1",
+          postal_code: "80331",
+          city: "München",
+        },
+        scope: { telephoneActivated: true, customTextfieldActivated: true },
+        showAlternativeLocations: true,
+      };
+      const otherOffice = {
+        id: 2,
+        name: "Bürgerbüro B",
+        address: {
+          street: "Other",
+          house_number: "2",
+          postal_code: "80331",
+          city: "München",
+        },
+        scope: { id: "2" },
+        showAlternativeLocations: true,
+      };
+
+      const wrapper = createWrapper({
+        selectedProvider: reservedOffice,
+        selectedService: {
+          id: "service1",
+          providers: [reservedOffice, otherOffice],
+        },
+      });
+
+      wrapper.vm.selectableProviders = [reservedOffice, otherOffice];
+      wrapper.vm.selectedProviders = { "1": true, "2": true };
+      await nextTick();
+      await flushPromises();
+
+      expect(wrapper.vm.selectedProvider?.id).toBe(1);
+    });
+  });
 });
