@@ -45,6 +45,7 @@
         position:               absolute;
         bottom:                 -1.5em;
         right:                  0;
+        white-space:            nowrap;
         a {
             color:              lighten($color-text-lightest,30%);
             text-decoration:    none;
