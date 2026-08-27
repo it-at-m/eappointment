@@ -36,6 +36,8 @@ class StatusTest extends Base
         $this->assertStringContainsString('Nur für technische Administration sichtbar', $body);
         $this->assertStringContainsString('Automatische Tests', $body);
         $this->assertStringContainsString('zmsautomation', $body);
+        $this->assertStringContainsString('branch=next', $body);
+        $this->assertStringNotContainsString('zmsautomation (main)', $body);
     }
 
     public function testWithoutWorkstation()
