@@ -2,19 +2,21 @@
 import { useData } from "vitepress";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 
-import featureMeta from "../data/cucumber-features.json";
 import {
+  cucumberFeatureMeta,
   cucumberFeatureRunResult,
+  cucumberFeatureSourceUrl,
   cucumberFeatureVisible,
   cucumberGhRunCommand,
   cucumberRunTagExpression,
+  cucumberSelectedBranch,
+  cucumberWorkflowUrl,
   ensureCucumberHashListener,
-  ensureCucumberRunStatus,
+  ensureCucumberPageState,
   formatBerlinDateTime,
   openCucumberFeatureId,
   syncCucumberFeatureFromHash,
   toggleCucumberFeature,
-  ZMSAUTOMATION_WORKFLOW_URL,
 } from "./cucumberAccordion.js";
 import CucumberStatusIcon from "./CucumberStatusIcon.vue";
 
@@ -30,7 +32,7 @@ const { lang } = useData();
 const isDe = computed(() => lang.value === "de");
 
 const meta = computed(() => {
-  const entry = featureMeta[props.id];
+  const entry = cucumberFeatureMeta(props.id);
   if (entry) {
     return entry;
   }
@@ -40,8 +42,20 @@ const meta = computed(() => {
     tags: [],
     scenarioCount: 0,
     sourceUrl: "",
+    rel: "",
+    body: "",
   };
 });
+
+const sourceHref = computed(
+  () =>
+    cucumberFeatureSourceUrl(meta.value.rel, cucumberSelectedBranch.value) ||
+    meta.value.sourceUrl
+);
+
+const workflowHref = computed(() =>
+  cucumberWorkflowUrl(cucumberSelectedBranch.value)
+);
 
 const isOpen = computed(() => openCucumberFeatureId.value === props.id);
 
@@ -109,20 +123,24 @@ const tagsHint = computed(() => {
 });
 
 const runLabel = computed(() => {
+  const branch = cucumberSelectedBranch.value;
   if (copiedKind.value === "run") {
     return isDe.value
       ? "Kopiert. GitHub Actions wird geöffnet…"
       : "Copied. Opening GitHub Actions…";
   }
-  return isDe.value ? "Diesen Test auf next starten" : "Run this test on next";
+  return isDe.value
+    ? `Diesen Test auf ${branch} starten`
+    : `Run this test on ${branch}`;
 });
 
 const runHint = computed(() => {
   const tags = tagExpression.value || (isDe.value ? "Tags" : "tags");
+  const branch = cucumberSelectedBranch.value;
   if (isDe.value) {
-    return `Kopiert gh workflow run mit ${tags} auf next (Schreibrechte nötig)`;
+    return `Kopiert gh workflow run mit ${tags} auf ${branch} (Schreibrechte nötig)`;
   }
-  return `Copies gh workflow run with ${tags} on next (write access required)`;
+  return `Copies gh workflow run with ${tags} on ${branch} (write access required)`;
 });
 
 const copyText = async (text) => {
@@ -166,7 +184,7 @@ const onToggle = () => {
 onMounted(() => {
   ensureCucumberHashListener();
   syncCucumberFeatureFromHash();
-  ensureCucumberRunStatus();
+  ensureCucumberPageState();
 });
 
 onUnmounted(() => {
@@ -298,7 +316,7 @@ onUnmounted(() => {
         <a
           class="cucumber-feature__action"
           :class="{ 'cucumber-feature__action--copied': copiedKind === 'run' }"
-          :href="ZMSAUTOMATION_WORKFLOW_URL"
+          :href="workflowHref"
           target="_blank"
           rel="noopener noreferrer"
           :aria-label="runHint"
@@ -349,18 +367,22 @@ onUnmounted(() => {
       role="region"
     >
       <p
-        v-if="meta.sourceUrl"
+        v-if="sourceHref"
         class="cucumber-feature__source"
       >
         {{ sourceLabel }}:
         <a
-          :href="meta.sourceUrl"
+          :href="sourceHref"
           target="_blank"
           rel="noopener noreferrer"
           >{{ meta.fileName }}</a
         >
       </p>
       <slot />
+      <pre
+        v-if="!$slots.default && meta.body"
+        class="cucumber-feature__gherkin"
+        >{{ meta.body }}</pre>
     </div>
   </article>
 </template>
@@ -627,6 +649,19 @@ onUnmounted(() => {
 .cucumber-feature__source {
   margin: 0 0 0.75rem;
   font-size: 0.9rem;
+}
+
+.cucumber-feature__gherkin {
+  margin: 0;
+  padding: 1rem 1.15rem;
+  overflow: auto;
+  color: var(--vp-c-text-1);
+  background: var(--vp-code-bg, var(--vp-c-bg-alt));
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: var(--vp-font-family-mono);
+  line-height: 1.55;
+  white-space: pre;
 }
 
 .cucumber-feature__panel :deep(div[class*="language-"]) {

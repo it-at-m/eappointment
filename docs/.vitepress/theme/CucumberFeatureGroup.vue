@@ -1,7 +1,10 @@
 <script setup>
 import { computed } from "vue";
 
-import { cucumberGroupHasMatch } from "./cucumberAccordion.js";
+import {
+  cucumberGroupHasMatch,
+  cucumberUsesRemoteCatalog,
+} from "./cucumberAccordion.js";
 
 const props = defineProps({
   testType: {
@@ -12,16 +15,23 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  remote: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-const isVisible = computed(() =>
-  cucumberGroupHasMatch(props.testType, props.module)
-);
+const isVisible = computed(() => {
+  if (props.remote !== cucumberUsesRemoteCatalog()) {
+    return false;
+  }
+  return cucumberGroupHasMatch(props.testType, props.module);
+});
 </script>
 
 <template>
   <div
-    v-show="isVisible"
+    v-if="isVisible"
     class="cucumber-feature-group"
   >
     <slot />
