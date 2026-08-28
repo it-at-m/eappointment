@@ -36,4 +36,26 @@ class LoginTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertEntity("\\BO\\Zmsentities\\Workstation", $workstation);
         $this->assertEquals(true, $userAccount->hasId());
     }
+
+    public function testOidcLoginRefreshesLastLogin()
+    {
+        $query = new Query();
+        $loginName = static::$username;
+        $query->perform(
+            'UPDATE nutzer SET lastUpdate = ? WHERE Name = ?',
+            ['2015-11-19 08:00:00', $loginName]
+        );
+        $now = static::$now;
+        $workstation = $query->writeEntityLoginByOidc(
+            $loginName,
+            'oidc-auth-key',
+            $now,
+            (new \DateTime())->setTimestamp($now->getTimestamp() + 28800)
+        );
+        $this->assertFalse($workstation->getUseraccount()->isOveraged($now));
+        $this->assertSame(
+            $now->format('Y-m-d'),
+            (new \DateTimeImmutable())->setTimestamp((int)$workstation->getUseraccount()->lastLogin)->format('Y-m-d')
+        );
+    }
 }
