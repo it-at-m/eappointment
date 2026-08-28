@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 ARG PHP_VERSION
 FROM ghcr.io/it-at-m/eappointment/zmsbase:${PHP_VERSION}-dev as build
 RUN useradd --shell /bin/bash --create-home build
@@ -9,7 +10,8 @@ ARG APP_VERSION=version.unknown
 ENV COMPOSER_MIRROR_PATH_REPOS=1
 ENV ZMS_VERSION=${APP_VERSION}
 RUN echo "${APP_VERSION}" > VERSION
-RUN make live
+RUN --mount=type=secret,id=github_token,required=false,mode=0444 \
+    bash /build/.github/scripts/composer-ci.sh --make-live
 
 ARG PHP_VERSION
 FROM ghcr.io/it-at-m/eappointment/zmsbase:${PHP_VERSION}-base

@@ -28,9 +28,11 @@ jobs:
           tools: composer
 
       - name: Install PHP dependencies
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          composer install --working-dir=zmsbackend
-          composer install --working-dir=zmscitizenapi
+          bash .github/scripts/composer-ci.sh install --working-dir=zmsbackend
+          bash .github/scripts/composer-ci.sh install --working-dir=zmscitizenapi
 
       - name: Run PHP post-install scripts
         run: |

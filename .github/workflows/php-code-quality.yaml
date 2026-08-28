@@ -18,10 +18,24 @@ jobs:
           persist-credentials: false
       - name: Configure Git Safe Directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ matrix.module }}-${{ hashFiles(format('{0}/composer.lock', matrix.module)) }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.module }}-
+
       - name: Install Composer Dependencies
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd "${{ matrix.module }}"
-          composer install --no-progress --prefer-dist --optimize-autoloader
+          bash "${GITHUB_WORKSPACE}/.github/scripts/composer-ci.sh" install --no-progress --prefer-dist --optimize-autoloader
 
       - name: PHPCS / PSR-12
         run: |
