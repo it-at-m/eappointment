@@ -428,6 +428,24 @@ describe("CustomerInfo", () => {
       expect(wrapper.find("#remarks2").attributes("disabled")).toBeUndefined();
     });
 
+    it("locks first name only for a single-word source familyName", async () => {
+      mockCustomerData.value.firstName = "Max";
+      mockCustomerData.value.lastName = "";
+      mockCustomerData.value.mailAddress = "max@example.com";
+
+      const wrapper = createWrapper({
+        isRebooking: true,
+        sourceAppointment: {
+          familyName: "Max",
+          email: "max@example.com",
+        },
+      });
+      await nextTick();
+
+      expect(wrapper.find("#firstname").attributes("disabled")).toBeDefined();
+      expect(wrapper.find("#lastname").attributes("disabled")).toBeUndefined();
+    });
+
     it("does not lock a previously empty custom text field after the user types", async () => {
       mockSelectedProvider.value.scope.customTextfieldActivated = true;
       mockSelectedProvider.value.scope.customTextfieldRequired = true;

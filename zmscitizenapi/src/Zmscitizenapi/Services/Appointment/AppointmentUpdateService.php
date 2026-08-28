@@ -117,9 +117,7 @@ class AppointmentUpdateService
         object $data,
         bool $lockStoredContact = false
     ): ThinnedProcess {
-        if (!$lockStoredContact || !ValidationService::isFilledContactValue($process->familyName)) {
-            $process->familyName = $data->familyName ?? $process->familyName ?? null;
-        }
+        $this->writeFamilyNameIfAllowed($process, $data, $lockStoredContact);
         if (!$lockStoredContact || !ValidationService::isFilledEmail($process->email)) {
             $process->email = $data->email ?? $process->email ?? null;
         }
@@ -139,6 +137,20 @@ class AppointmentUpdateService
             $process->customTextfield2 = ProcessPlainText::normalize($data->customTextfield2);
         }
         return $process;
+    }
+
+    private function writeFamilyNameIfAllowed(
+        ThinnedProcess $process,
+        object $data,
+        bool $lockStoredContact
+    ): void {
+        if (
+            !$lockStoredContact
+            || !ValidationService::isFilledContactValue($process->familyName)
+            || ValidationService::isSameOrCompletedFamilyName($process->familyName, $data->familyName ?? null)
+        ) {
+            $process->familyName = $data->familyName ?? $process->familyName ?? null;
+        }
     }
 
     private function saveProcessUpdate(ThinnedProcess $process, ?AuthenticatedUser $authenticatedUser): ThinnedProcess|array

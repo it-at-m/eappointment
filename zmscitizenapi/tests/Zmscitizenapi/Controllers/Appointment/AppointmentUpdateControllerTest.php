@@ -161,6 +161,47 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
         $this->assertContains(ErrorMessages::get('emailCannotBeChanged'), $responseBody['errors']);
     }
 
+    public function testRebookingAllowsCompletingSingleWordFamilyName(): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_process.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/ics/',
+                    'response' => $this->readFixture("GET_process_ics_template.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/101002/fb43/',
+                    'response' => $this->readFixture("POST_update_appointment.json")
+                ]
+            ]
+        );
+
+        $parameters = [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'familyName' => 'Doe Smith',
+            'email' => 'johndoe@example.com',
+            'telephone' => '0123456789',
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
+            'sourceProcessId' => '100001',
+            'sourceAuthKey' => 'oldkey',
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testFirstBookingAllowsChangingStoredContact(): void
     {
         $this->setApiCalls(

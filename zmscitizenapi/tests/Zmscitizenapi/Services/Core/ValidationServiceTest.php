@@ -325,6 +325,36 @@ class ValidationServiceTest extends TestCase
         $this->assertNotContains(ErrorMessages::get('customTextfield2CannotBeChanged'), $result['errors']);
     }
 
+    public function testValidateUnchangedStoredContactAllowsCompletingSingleWordFamilyName(): void
+    {
+        $stored = new ThinnedProcess();
+        $stored->familyName = 'Max';
+        $stored->email = 'max@example.com';
+        $stored->telephone = '';
+        $stored->customTextfield = '';
+        $stored->customTextfield2 = null;
+
+        $result = ValidationService::validateUnchangedStoredContact(
+            $stored,
+            'Max Mustermann',
+            'max@example.com',
+            '+491234567890',
+            'New note',
+            'Second note'
+        );
+        $this->assertEmpty($result['errors']);
+
+        $replaced = ValidationService::validateUnchangedStoredContact(
+            $stored,
+            'Anna',
+            'max@example.com',
+            null,
+            null,
+            null
+        );
+        $this->assertContains(ErrorMessages::get('familyNameCannotBeChanged'), $replaced['errors']);
+    }
+
     public function testValidateUnchangedStoredContactAllowsFillingEmptyAndPlaceholderValues(): void
     {
         $stored = new ThinnedProcess();
