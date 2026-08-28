@@ -2,6 +2,7 @@
 
 namespace BO\Zmsbackend\Tests\UserAccount\Service;
 
+use BO\Zmsbackend\Department\Service\Department as DepartmentService;
 use \BO\Zmsbackend\Useraccount\Service\Useraccount as Query;
 use \BO\Zmsbackend\Workstation\Service\Workstation;
 use \BO\Zmsentities\Useraccount as Entity;
@@ -20,6 +21,14 @@ class UserAccountTest extends \BO\Zmsbackend\Tests\Service\Base
         $query = new Query();
         $entity = $query->readEntity(static::$username, 1);
         $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $entity);
+    }
+
+    private function addTestDepartment(
+        WorkstationEntity $workstation
+    ): void {
+        $workstation->getUseraccount()->addDepartment(
+            (new DepartmentService())->readEntity(72)
+        );
     }
 
     public function testReadWorkstationFailed()
@@ -98,35 +107,73 @@ class UserAccountTest extends \BO\Zmsbackend\Tests\Service\Base
     public function testReadWorkstationListByScope()
     {
         $this->writeTestLogin();
-        $workstationList = (new \BO\Zmsbackend\Workstation\Service\Workstation())->readLoggedInListByScope(141, $this->dateTime);
-        $workstationList[0]->useraccount->id = "testuser";
-        $this->assertEntityList("\\BO\\Zmsentities\\Workstation", $workstationList);
+
+        $workstationList = (new Workstation())
+            ->readLoggedInListByScope(141, $this->dateTime);
+
+        foreach ($workstationList as $workstation) {
+            $workstation->useraccount->id = 'testuser';
+            $this->addTestDepartment($workstation);
+        }
+
+        $this->assertEntityList(
+            "\\BO\\Zmsentities\\Workstation",
+            $workstationList
+        );
     }
 
     public function testReadWorkstationListByCluster()
     {
         $this->writeTestLogin();
-        $workstationList = (new \BO\Zmsbackend\Workstation\Service\Workstation())->readLoggedInListByCluster(109, $this->dateTime);
-        $workstationList[0]->useraccount->id = "testuser";
+
+        $workstationList = (new Workstation())
+            ->readLoggedInListByCluster(109, $this->dateTime);
+
+        foreach ($workstationList as $workstation) {
+            $workstation->useraccount->id = 'testuser';
+            $this->addTestDepartment($workstation);
+        }
+
         $this->assertEquals(1, $workstationList->count());
-        $this->assertEntityList("\\BO\\Zmsentities\\Workstation", $workstationList);
+        $this->assertEntityList(
+            "\\BO\\Zmsentities\\Workstation",
+            $workstationList
+        );
     }
 
     public function testReadWorkstationListByDepartment()
     {
         $this->writeTestLogin();
-        $workstationList = (new \BO\Zmsbackend\Workstation\Service\Workstation())->readCollectionByDepartmentId(72);
-        $workstationList[0]->useraccount->id = "testuser";
-        $this->assertEntityList("\\BO\\Zmsentities\\Workstation", $workstationList);
+
+        $workstationList = (new Workstation())
+            ->readCollectionByDepartmentId(72);
+
+        foreach ($workstationList as $workstation) {
+            $workstation->useraccount->id = 'testuser';
+            $this->addTestDepartment($workstation);
+        }
+
+        $this->assertEntityList(
+            "\\BO\\Zmsentities\\Workstation",
+            $workstationList
+        );
         $this->assertEquals(3, $workstationList->getFirst()->name);
     }
 
     public function testReadWorkstationByScopeAndName()
     {
         $this->writeTestLogin();
-        $workstation = (new \BO\Zmsbackend\Workstation\Service\Workstation())->readWorkstationByScopeAndName(141, 3);
-        $workstation->useraccount->id = "testuser";
-        $this->assertEntity("\\BO\\Zmsentities\\Workstation", $workstation);
+
+        $workstation = (new Workstation())
+            ->readWorkstationByScopeAndName(141, 3);
+
+        $workstation->useraccount->id = 'testuser';
+        $this->addTestDepartment($workstation);
+
+        $this->assertEntity(
+            "\\BO\\Zmsentities\\Workstation",
+            $workstation
+        );
     }
 
     public function testReadWorkstationByScopeAndNameFailed()
