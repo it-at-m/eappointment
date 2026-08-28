@@ -1404,14 +1404,14 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
           }
 
           preselectedLocationId.value = String(appointment.value.officeId);
-          selectedProvider.value = resolveOfficeById(
-            appointment.value.officeId,
-            {
-              offices: offices.value,
-              providers: selectedService.value?.providers,
-              appointment: appointment.value,
-            }
-          );
+          const resolvedOffice = resolveOfficeById(appointment.value.officeId, {
+            offices: offices.value,
+            providers: selectedService.value?.providers,
+            appointment: appointment.value,
+          });
+          if (resolvedOffice) {
+            selectedProvider.value = resolvedOffice;
+          }
 
           if (!appointmentData.action || isAppointmentInPast.value) {
             currentView.value = 3;
