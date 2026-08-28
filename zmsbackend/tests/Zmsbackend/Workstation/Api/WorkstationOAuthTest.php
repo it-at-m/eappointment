@@ -41,6 +41,35 @@ class WorkstationOAuthTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertSame(200, $response->getStatusCode());
     }
 
+    public function testOidcLoginRefreshesLastLogin()
+    {
+        (new \BO\Zmsbackend\Workstation\Service\Workstation())->perform(
+            'UPDATE nutzer SET lastUpdate = ? WHERE Name = ?',
+            ['2015-11-19 08:00:00', 'testadmin@keycloak']
+        );
+
+        $response = $this->render(
+            [],
+            [
+                '__header' => [
+                    'X-AuthKey' => md5(static::$authKey),
+                ],
+                '__body' => static::$useraccount,
+                'nocommit' => 1,
+                'state' => md5(static::$authKey),
+            ],
+            []
+        );
+
+        $payload = json_decode((string)$response->getBody(), true);
+        $useraccount = new \BO\Zmsentities\Useraccount($payload['data']['useraccount']);
+        $this->assertFalse($useraccount->isOveraged(\App::$now));
+        $this->assertSame(
+            \App::$now->format('Y-m-d'),
+            (new \DateTimeImmutable())->setTimestamp((int)$useraccount->lastLogin)->format('Y-m-d')
+        );
+    }
+
 
     public function testInvalidStateHeaderMismatch()
     {
