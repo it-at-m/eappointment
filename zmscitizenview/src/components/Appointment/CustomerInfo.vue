@@ -81,7 +81,8 @@
     class="m-form m-form--default"
   >
     <!--
-      muc-input / muc-text-area have no disabled prop (fallthrough lands on a
+      TODO: use muc-input / muc-text-area disabled prop when muc-patternlab-vue
+      supports it. Today they have no disabled prop (fallthrough lands on a
       wrapper div). A fieldset plus native disable actually locks the control.
     -->
     <fieldset
