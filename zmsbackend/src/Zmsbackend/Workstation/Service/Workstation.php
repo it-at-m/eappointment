@@ -143,6 +143,7 @@ class Workstation extends \BO\Zmsbackend\Base
                 $authKey,
                 $sessionExpiry->format('Y-m-d H:i:s'),
                 $dateTime->format('Y-m-d'),
+                $dateTime->format('Y-m-d H:i:s'),
                 $loginName
             )
         );
