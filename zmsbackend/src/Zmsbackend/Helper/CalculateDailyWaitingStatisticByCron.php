@@ -2,81 +2,73 @@
 
 namespace BO\Zmsbackend\Helper;
 
-use BO\Zmsbackend\Base\Service\Base;
 use DateTimeImmutable;
 
 /**
- * Berechnung der Wartezeiten pro Standort und Stunde,
+ * Berechnung der Wartezeiten pro Standort und Stunde.
  *
- * Liest alle 'buerger'-Einträge für ein Datum, filtert stornierte/ohne Wartezeit,
- * korrigiert StandortIDs aus Anmerkungen und speichert die Durchschnittswerte
- * in 'wartenrstatistik'.
+ * Liest archivierte Prozesse für ein Datum, filtert Einträge ohne Wartezeit,
+ * und speichert die Durchschnittswerte in 'wartenrstatistik'.
+ * Bereits vorhandene Zeilen für (Standort, Datum) werden aktualisiert.
  */
 class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
 {
     public function run(DateTimeImmutable $day, bool $commit = false): void
     {
-                    \App::$log->info('CalculateDailyWaitingStatisticByCron started', ['date' => $day->format('Y-m-d')]);
+        \App::$log->info('CalculateDailyWaitingStatisticByCron started', ['date' => $day->format('Y-m-d')]);
 
-        $buergerRows = $this->fetchBuergerData($day);
-        $statsByScopeDate = $this->processBuergerRows($buergerRows);
+        $archiveRows = $this->fetchArchiveData($day);
+        $statsByScopeDate = $this->processArchiveRows($archiveRows);
         $this->saveStatistics($statsByScopeDate, $commit);
 
-                    \App::$log->info('CalculateDailyWaitingStatisticByCron finished', ['date' => $day->format('Y-m-d')]);
+        \App::$log->info('CalculateDailyWaitingStatisticByCron finished', ['date' => $day->format('Y-m-d')]);
     }
 
-    // Alle 'buerger'-Einträge für das Datum laden (außer stornierte bzw. gelöschte).
-    private function fetchBuergerData(DateTimeImmutable $day): array
+    private function fetchArchiveData(DateTimeImmutable $day): array
     {
         $sql = "
             SELECT
-              BuergerID,
               StandortID,
               Datum,
-              Uhrzeit,
-              wsm_aufnahmezeit,
+              `Timestamp`,
+              mitTermin,
               waiting_time,
-              way_time,
-              Name,
-              Anmerkung,
-              custom_text_field,
-              custom_text_field2
-            FROM buerger
+              way_time
+            FROM buergerarchiv
             WHERE Datum = :theDay
-              AND Name NOT IN ('(abgesagt)')  
+              AND StandortID > 0
         ";
         return $this->getReader()->fetchAll($sql, [
             'theDay' => $day->format('Y-m-d'),
         ]);
     }
 
-
-    private function processBuergerRows(array $buergerRows): array
+    private function processArchiveRows(array $archiveRows): array
     {
         $statsByScopeDate = [];
 
-        foreach ($buergerRows as $br) {
-            // Wenn waiting_time NULL oder leer ist => storniert oder hatte keine echte Wartezeit => überspringen
-            if (empty($br['waiting_time'])) {
+        foreach ($archiveRows as $row) {
+            // Same skip as the former buerger path: no waiting_time => skip count, wait, and way
+            if (empty($row['waiting_time'])) {
                 continue;
             }
 
-            $scopeId = $this->determineValidScopeId($br);
+            $scopeId = (int) $row['StandortID'];
             if ($scopeId <= 0) {
                 continue;
             }
 
-            [$hour, $type] = $this->determineHourAndType($br);
+            [$hour, $type] = $this->determineHourAndType($row);
+            if ($hour < 0 || $hour > 23) {
+                continue;
+            }
 
-            $waitMins = $this->timeToMinutes($br['waiting_time']);
-            $wayMins = is_numeric($br['way_time'])
-                ? (float) $br['way_time']
-                : $this->timeToMinutes($br['way_time']);
+            $waitMins = (float) $row['waiting_time'];
+            $wayMins = is_numeric($row['way_time']) ? (float) $row['way_time'] : 0.0;
 
-            $dateStr = $br['Datum'];
+            $dateStr = $row['Datum'];
             $this->initializeStatsIfNeeded($statsByScopeDate, $scopeId, $dateStr);
 
-            // Eintrag zur Stats hinzufügen
             $statsByScopeDate[$scopeId][$dateStr][$hour][$type]['count'] += 1;
             $statsByScopeDate[$scopeId][$dateStr][$hour][$type]['sumWait'] += $waitMins;
             $statsByScopeDate[$scopeId][$dateStr][$hour][$type]['sumWay'] += $wayMins;
@@ -85,44 +77,15 @@ class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
         return $statsByScopeDate;
     }
 
-    // StandortID korrigieren, falls 0. => Wir parsen bei Bedarf aus Anmerkung / custom_text_field.
-    private function determineValidScopeId(array $buergerRecord): int
+    private function determineHourAndType(array $archiveRecord): array
     {
-        $scopeId = (int)$buergerRecord['StandortID'];
-        if ($scopeId <= 0) {
-            $parsedScope = $this->extractScopeFromAnmerkung(
-                $buergerRecord['Anmerkung'],
-                $buergerRecord['custom_text_field'],
-                $buergerRecord['custom_text_field2'],
-            );
-
-            if ($parsedScope) {
-                $scopeId = $parsedScope;
-            }
-        }
-
-        return $scopeId;
-    }
-
-    // Unterscheidung zwischen "spontan" und "termin"
-    // - Wenn 'Uhrzeit'=='00:00:00', behandeln wir es als spontan angekommen => Stunde aus wsm_aufnahmezeit
-    private function determineHourAndType(array $buergerRecord): array
-    {
-        $type = 'termin';
-        $hourStr = $buergerRecord['Uhrzeit'];
-
-        if ($buergerRecord['Uhrzeit'] === '00:00:00') {
-            $type = 'spontan';
-            $hourStr = $buergerRecord['wsm_aufnahmezeit'];
-        }
-
-        $parts = explode(':', $hourStr);
-        $hour = (int)$parts[0];
+        $type = ((int) $archiveRecord['mitTermin'] === 1) ? 'termin' : 'spontan';
+        $parts = explode(':', (string) $archiveRecord['Timestamp']);
+        $hour = isset($parts[0]) && $parts[0] !== '' ? (int) $parts[0] : -1;
 
         return [$hour, $type];
     }
 
-    // Falls für diesen StandortID das Datum noch nicht existiert
     private function initializeStatsIfNeeded(array &$statsByScopeDate, int $scopeId, string $dateStr): void
     {
         if (!isset($statsByScopeDate[$scopeId])) {
@@ -144,59 +107,71 @@ class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
     {
         foreach ($statsByScopeDate as $scopeId => $dateArray) {
             foreach ($dateArray as $dateStr => $hoursData) {
-                $this->insertStatisticsRow($scopeId, $dateStr, $commit);
-                $this->updateStatisticsValues($scopeId, $dateStr, $hoursData, $commit);
+                $this->updateStatisticsValues((int) $scopeId, $dateStr, $hoursData, $commit);
             }
         }
     }
 
-    //Eine Zeile in wartenrstatistik für jeden (Standort, Datum) einfügen
-    private function insertStatisticsRow(int $scopeId, string $dateStr, bool $commit): void
+    private function ensureStatisticsRow(int $scopeId, string $dateStr): int
     {
-        if ($commit) {
-            $insertSql = "
-                INSERT IGNORE INTO wartenrstatistik (standortid, datum)
-                VALUES (:sid, :d)
-            ";
-            $this->perform($insertSql, [
+        $existingId = $this->fetchValue(
+            'SELECT wartenrstatistikid
+             FROM wartenrstatistik
+             WHERE standortid = :sid
+               AND datum = :d
+             ORDER BY wartenrstatistikid ASC
+             LIMIT 1',
+            [
                 'sid' => $scopeId,
-                'd'   => $dateStr
-            ]);
+                'd' => $dateStr,
+            ]
+        );
+
+        if ($existingId) {
+            return (int) $existingId;
         }
+
+        $this->perform(
+            'INSERT INTO wartenrstatistik (standortid, datum) VALUES (:sid, :d)',
+            [
+                'sid' => $scopeId,
+                'd' => $dateStr,
+            ]
+        );
+
+        return (int) $this->getWriter()->lastInsertId();
     }
 
     private function updateStatisticsValues(int $scopeId, string $dateStr, array $hoursData, bool $commit): void
     {
-        // Eine einzelne UPDATE-Anweisung für alle 24 Stundenspalten erstellen
-        $updateParams = [
-            'sid' => $scopeId,
-            'd'   => $dateStr
-        ];
+        $updateParams = [];
         $updateCols = [];
 
-        // Für jede Stunde 0..23 Spalten für "spontan" und "termin" füllen
         foreach (range(0, 23) as $hour) {
             $this->addHourUpdateColumns($updateCols, $updateParams, $hour, $hoursData, 'spontan');
             $this->addHourUpdateColumns($updateCols, $updateParams, $hour, $hoursData, 'termin');
         }
 
+        if (!$commit) {
+            \App::$log->info('[DRY RUN] update scope statistics', [
+                'scopeId' => $scopeId,
+                'date' => $dateStr,
+            ]);
+            return;
+        }
+
+        $rowId = $this->ensureStatisticsRow($scopeId, $dateStr);
+        $updateParams['id'] = $rowId;
+
         $sqlUpdate = sprintf(
-            "UPDATE wartenrstatistik
+            'UPDATE wartenrstatistik
              SET %s
-             WHERE standortid = :sid
-               AND datum = :d
-             LIMIT 1",
+             WHERE wartenrstatistikid = :id
+             LIMIT 1',
             implode(', ', $updateCols)
         );
 
-        if ($commit) {
-            $this->perform($sqlUpdate, $updateParams);
-        } else {
-                            \App::$log->info('[DRY RUN] update scope statistics', [
-                    'scopeId' => $scopeId,
-                    'date' => $dateStr,
-                            ]);
-        }
+        $this->perform($sqlUpdate, $updateParams);
     }
 
     private function addHourUpdateColumns(
@@ -215,7 +190,6 @@ class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
         $avgWait = ($count > 0)
             ? round($hoursData[$hour][$type]['sumWait'] / $count, 2)
             : 0.0;
-        // sumWay is total fractional minutes from buerger.way_time (same unit as waiting_time); hourly column is average minutes
         $avgWay = ($count > 0)
             ? round($hoursData[$hour][$type]['sumWay'] / $count, 2)
             : 0.0;
@@ -227,37 +201,6 @@ class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
         $updateParams[$colWaitCount] = $count;
         $updateParams[$colWaitTime] = $avgWait;
         $updateParams[$colWayTime] = $avgWay;
-    }
-
-    private function extractScopeFromAnmerkung(?string $anmerkung, ?string $customText, ?string $customText2): ?int
-    {
-        if (!$anmerkung && !$customText && !$customText2) {
-            return null;
-        }
-        // Match StandortID from var_export-style array: both quoted and unquoted integers
-        $pattern = "/'StandortID'\s*=>\s*'?([0-9]+)'?/";
-        foreach ([$anmerkung, $customText, $customText2] as $txt) {
-            if (preg_match($pattern, (string)$txt, $matches)) {
-                return (int)$matches[1];
-            }
-        }
-        return null;
-    }
-
-    private function timeToMinutes(?string $timeStr): float
-    {
-        if (!$timeStr || $timeStr === '00:00:00') {
-            return 0.0;
-        }
-        $parts = explode(':', $timeStr);
-        if (count($parts) !== 3) {
-            return 0.0;
-        }
-        $h = (int)$parts[0];
-        $m = (int)$parts[1];
-        $s = (int)$parts[2];
-        $totalSeconds = $h * 3600 + $m * 60 + $s;
-        return round($totalSeconds / 60, 2);
     }
 
     private function hourSuffixForStatistic(string $type): string
