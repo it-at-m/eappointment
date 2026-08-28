@@ -92,9 +92,7 @@ const isLegacyModule = cucumberIsLegacyBuergeransicht;
           :test-type="group.testType"
           :module="mod.module"
         >
-          <h3 v-if="!isLegacyModule(group.testType, mod.module)">
-            {{ moduleTitle(group.testType, mod.module) }}
-          </h3>
+          <h3>{{ moduleTitle(group.testType, mod.module) }}</h3>
           <blockquote v-if="isLegacyModule(group.testType, mod.module)">
             {{ deprecatedNote }}
           </blockquote>
