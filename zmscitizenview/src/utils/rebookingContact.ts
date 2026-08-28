@@ -10,8 +10,11 @@ export function isPlaceholderEmail(email?: string | null): boolean {
 }
 
 export function isFilledContactValue(value?: string | null): boolean {
-  const trimmed = (value ?? "").trim();
-  return trimmed !== "" && !isPlaceholderEmail(trimmed);
+  return (value ?? "").trim() !== "";
+}
+
+export function isFilledEmail(email?: string | null): boolean {
+  return isFilledContactValue(email) && !isPlaceholderEmail(email);
 }
 
 export function getContactFieldLocks(
@@ -31,7 +34,8 @@ export function getContactFieldLocks(
   return {
     firstName: lockIfStoredOnSource(storedName.firstName),
     lastName: lockIfStoredOnSource(storedName.lastName),
-    mailAddress: lockIfStoredOnSource(sourceAppointment?.email),
+    mailAddress:
+      Boolean(isRebooking) && isFilledEmail(sourceAppointment?.email),
     telephoneNumber: lockIfStoredOnSource(sourceAppointment?.telephone),
     customTextfield: lockIfStoredOnSource(sourceAppointment?.customTextfield),
     customTextfield2: lockIfStoredOnSource(sourceAppointment?.customTextfield2),
@@ -78,8 +82,8 @@ export function applyAppointmentContactToCustomerData(
     customerData.lastName = lastName;
   }
   if (
-    isFilledContactValue(appointment.email) &&
-    !isFilledContactValue(customerData.mailAddress)
+    isFilledEmail(appointment.email) &&
+    !isFilledEmail(customerData.mailAddress)
   ) {
     customerData.mailAddress = appointment.email;
   }
@@ -102,7 +106,7 @@ export function hasMissingRequiredContact(
   appointment: AppointmentDTO,
   scope?: Scope | null
 ): boolean {
-  if (!isFilledContactValue(appointment.email)) {
+  if (!isFilledEmail(appointment.email)) {
     return true;
   }
   if (!isFilledContactValue(appointment.familyName)) {

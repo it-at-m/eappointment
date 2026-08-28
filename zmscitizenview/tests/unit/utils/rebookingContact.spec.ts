@@ -8,6 +8,7 @@ import {
   getContactFieldLocks,
   hasMissingRequiredContact,
   isFilledContactValue,
+  isFilledEmail,
   isPlaceholderEmail,
   joinFamilyName,
   PLACEHOLDER_RESERVE_EMAIL,
@@ -33,10 +34,12 @@ const baseAppointment = (
   }) as AppointmentDTO;
 
 describe("rebookingContact", () => {
-  it("treats reserve placeholder mail as empty", () => {
+  it("treats reserve placeholder mail as empty only for email", () => {
     expect(isPlaceholderEmail(PLACEHOLDER_RESERVE_EMAIL)).toBe(true);
     expect(isPlaceholderEmail("Max@Example.com")).toBe(false);
-    expect(isFilledContactValue(PLACEHOLDER_RESERVE_EMAIL)).toBe(false);
+    expect(isFilledEmail(PLACEHOLDER_RESERVE_EMAIL)).toBe(false);
+    expect(isFilledEmail("max@example.com")).toBe(true);
+    expect(isFilledContactValue(PLACEHOLDER_RESERVE_EMAIL)).toBe(true);
     expect(isFilledContactValue("  ")).toBe(false);
     expect(isFilledContactValue("max@example.com")).toBe(true);
   });
@@ -61,8 +64,9 @@ describe("rebookingContact", () => {
     expect(
       getContactFieldLocks(true, {
         email: PLACEHOLDER_RESERVE_EMAIL,
+        customTextfield: PLACEHOLDER_RESERVE_EMAIL,
       } as AppointmentDTO)
-    ).toMatchObject({ mailAddress: false });
+    ).toMatchObject({ mailAddress: false, customTextfield: true });
     expect(
       getContactFieldLocks(false, {
         familyName: "Max Mustermann",
@@ -139,5 +143,14 @@ describe("rebookingContact", () => {
         {}
       )
     ).toBe(true);
+    expect(
+      hasMissingRequiredContact(
+        baseAppointment({ customTextfield: PLACEHOLDER_RESERVE_EMAIL }),
+        {
+          customTextfieldActivated: true,
+          customTextfieldRequired: true,
+        }
+      )
+    ).toBe(false);
   });
 });

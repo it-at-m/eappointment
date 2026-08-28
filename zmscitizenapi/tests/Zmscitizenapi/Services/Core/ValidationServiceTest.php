@@ -345,6 +345,26 @@ class ValidationServiceTest extends TestCase
         $this->assertEmpty($result['errors']);
     }
 
+    public function testValidateUnchangedStoredContactKeepsPlaceholderLikeCustomText(): void
+    {
+        $stored = new ThinnedProcess();
+        $stored->familyName = 'Jane Doe';
+        $stored->email = 'jane@example.com';
+        $stored->telephone = '';
+        $stored->customTextfield = 'test@muenchen.de';
+        $stored->customTextfield2 = null;
+
+        $result = ValidationService::validateUnchangedStoredContact(
+            $stored,
+            'Jane Doe',
+            'jane@example.com',
+            null,
+            'Replaced note',
+            null
+        );
+        $this->assertContains(ErrorMessages::get('customTextfieldCannotBeChanged'), $result['errors']);
+    }
+
     public function testValidateUnchangedStoredContactIgnoresBlankIncomingValues(): void
     {
         $stored = new ThinnedProcess();

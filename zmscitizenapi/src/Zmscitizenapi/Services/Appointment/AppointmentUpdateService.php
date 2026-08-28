@@ -120,7 +120,7 @@ class AppointmentUpdateService
         if (!$lockStoredContact || !ValidationService::isFilledContactValue($process->familyName)) {
             $process->familyName = $data->familyName ?? $process->familyName ?? null;
         }
-        if (!$lockStoredContact || !ValidationService::isFilledContactValue($process->email)) {
+        if (!$lockStoredContact || !ValidationService::isFilledEmail($process->email)) {
             $process->email = $data->email ?? $process->email ?? null;
         }
         if (!$lockStoredContact || !ValidationService::isFilledContactValue($process->telephone)) {
