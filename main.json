@@ -1,38 +1,11 @@
 {
-  "branch": "next",
-  "branchSlug": "next",
+  "branch": "main",
+  "branchSlug": "main",
   "runId": "33171599512",
   "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33171599512",
   "runStartedAt": "2026-08-28T12:34:02Z",
   "publishedAt": "2026-08-28T13:21:16.719Z",
   "features": {
-    "feature-rest-zmsapi-zmskvr-1328": {
-      "status": "passed",
-      "shard": "zmsapi",
-      "browser": "chrome",
-      "rel": "rest/zmsapi/ZMSKVR-1328.feature",
-      "runId": "33171599512",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33171599512",
-      "runStartedAt": "2026-08-28T12:34:02Z"
-    },
-    "feature-rest-zmsapi-status": {
-      "status": "passed",
-      "shard": "zmsapi",
-      "browser": "chrome",
-      "rel": "rest/zmsapi/status.feature",
-      "runId": "33171599512",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33171599512",
-      "runStartedAt": "2026-08-28T12:34:02Z"
-    },
-    "feature-rest-zmsapi-workstation-login": {
-      "status": "passed",
-      "shard": "zmsapi",
-      "browser": "chrome",
-      "rel": "rest/zmsapi/workstation-login.feature",
-      "runId": "33171599512",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33171599512",
-      "runStartedAt": "2026-08-28T12:34:02Z"
-    },
     "feature-ui-zmsadmin-zms-1546": {
       "status": "passed",
       "shard": "zmsadmin",
@@ -61,7 +34,7 @@
       "runStartedAt": "2026-08-28T12:34:02Z"
     },
     "feature-ui-zmsadmin-zms-2389": {
-      "status": "passed",
+      "status": "failed",
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/ZMS-2389.feature",
@@ -159,11 +132,29 @@
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33171599512",
       "runStartedAt": "2026-08-28T12:34:02Z"
     },
-    "feature-ui-zmsadmin-zmskvr-1385": {
+    "feature-rest-zmsapi-zmskvr-1328": {
       "status": "passed",
-      "shard": "zmsadmin",
+      "shard": "zmsapi",
       "browser": "chrome",
-      "rel": "ui/zmsadmin/ZMSKVR-1385.feature",
+      "rel": "rest/zmsapi/ZMSKVR-1328.feature",
+      "runId": "33171599512",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33171599512",
+      "runStartedAt": "2026-08-28T12:34:02Z"
+    },
+    "feature-rest-zmsapi-status": {
+      "status": "passed",
+      "shard": "zmsapi",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/status.feature",
+      "runId": "33171599512",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33171599512",
+      "runStartedAt": "2026-08-28T12:34:02Z"
+    },
+    "feature-rest-zmsapi-workstation-login": {
+      "status": "passed",
+      "shard": "zmsapi",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/workstation-login.feature",
       "runId": "33171599512",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33171599512",
       "runStartedAt": "2026-08-28T12:34:02Z"
@@ -209,15 +200,6 @@
       "shard": "zmscitizenview",
       "browser": "chrome",
       "rel": "ui/zmscitizenview/zmskvr-1500_already_activated_confirm_banner.feature",
-      "runId": "33171599512",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33171599512",
-      "runStartedAt": "2026-08-28T12:34:02Z"
-    },
-    "feature-ui-zmscitizenview-zmskvr-1571-scheidplatz-contact-location-back-login": {
-      "status": "passed",
-      "shard": "zmscitizenview",
-      "browser": "chrome",
-      "rel": "ui/zmscitizenview/zmskvr-1571_scheidplatz_contact_location_back_login.feature",
       "runId": "33171599512",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33171599512",
       "runStartedAt": "2026-08-28T12:34:02Z"
