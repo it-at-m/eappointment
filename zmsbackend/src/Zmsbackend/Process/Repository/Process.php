@@ -400,6 +400,21 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    public function addConditionProcessDeleteBeforeDate(\DateTimeInterface $date): static
+    {
+        $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($date) {
+            $query->andWith(
+                self::expression(
+                    'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)'
+                ),
+                '<',
+                $date->format('Y-m-d') . ' 00:00:00'
+            );
+        });
+        $this->query->orderBy('appointments__0__date', 'ASC');
+        return $this;
+    }
+
     /**
      * @psalm-api
      */
