@@ -3,8 +3,8 @@
   "branchSlug": "feature-zmskvr-1191-proactive-source-cache-warmup",
   "runId": "33131217505",
   "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-  "runStartedAt": "2026-08-28T02:06:38Z",
-  "publishedAt": "2026-08-28T02:41:50.923Z",
+  "runStartedAt": "2026-08-28T07:06:46Z",
+  "publishedAt": "2026-08-28T07:55:49.797Z",
   "features": {
     "feature-ui-zmsadmin-zms-1546": {
       "status": "passed",
@@ -13,7 +13,7 @@
       "rel": "ui/zmsadmin/ZMS-1546.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmsadmin-zms-1548": {
       "status": "passed",
@@ -22,7 +22,7 @@
       "rel": "ui/zmsadmin/ZMS-1548.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmsadmin-zms-1549": {
       "status": "passed",
@@ -31,7 +31,7 @@
       "rel": "ui/zmsadmin/ZMS-1549.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmsadmin-zms-2389": {
       "status": "passed",
@@ -40,7 +40,7 @@
       "rel": "ui/zmsadmin/ZMS-2389.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmsadmin-zms-2577": {
       "status": "passed",
@@ -49,7 +49,7 @@
       "rel": "ui/zmsadmin/ZMS-2577.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmsadmin-zms-2578": {
       "status": "passed",
@@ -58,7 +58,7 @@
       "rel": "ui/zmsadmin/ZMS-2578.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmsadmin-zms-2702": {
       "status": "passed",
@@ -67,7 +67,7 @@
       "rel": "ui/zmsadmin/ZMS-2702.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmsadmin-zms-2850": {
       "status": "passed",
@@ -76,7 +76,7 @@
       "rel": "ui/zmsadmin/ZMS-2850.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmsadmin-zms-2851": {
       "status": "passed",
@@ -85,7 +85,7 @@
       "rel": "ui/zmsadmin/ZMS-2851.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmsadmin-zms-2853": {
       "status": "passed",
@@ -94,7 +94,7 @@
       "rel": "ui/zmsadmin/ZMS-2853.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmsadmin-zms-3160": {
       "status": "passed",
@@ -103,7 +103,7 @@
       "rel": "ui/zmsadmin/ZMS-3160.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmsadmin-zms-3171": {
       "status": "passed",
@@ -112,7 +112,7 @@
       "rel": "ui/zmsadmin/ZMS-3171.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmsadmin-zms-878": {
       "status": "passed",
@@ -121,7 +121,7 @@
       "rel": "ui/zmsadmin/ZMS-878.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmsadmin-zmskvr-1328": {
       "status": "passed",
@@ -130,7 +130,7 @@
       "rel": "ui/zmsadmin/ZMSKVR-1328.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmsadmin-zmskvr-1385": {
       "status": "passed",
@@ -139,7 +139,7 @@
       "rel": "ui/zmsadmin/ZMSKVR-1385.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-rest-zmsapi-zmskvr-1328": {
       "status": "passed",
@@ -148,7 +148,7 @@
       "rel": "rest/zmsapi/ZMSKVR-1328.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-rest-zmsapi-status": {
       "status": "passed",
@@ -157,7 +157,7 @@
       "rel": "rest/zmsapi/status.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-rest-zmsapi-workstation-login": {
       "status": "passed",
@@ -166,7 +166,7 @@
       "rel": "rest/zmsapi/workstation-login.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-rest-zmscitizenapi-zmskvr-1046-booking-ruppertstrasse-shared-booking-ausbildung-citizenapi": {
       "status": "passed",
@@ -175,7 +175,7 @@
       "rel": "rest/zmscitizenapi/zmskvr-1046_booking_ruppertstrasse_shared_booking_ausbildung_citizenapi.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-rest-zmscitizenapi-zmskvr-1124-booking-ruppertstrasse-pass-calendar-jumpin-links-citizenapi": {
       "status": "passed",
@@ -184,7 +184,7 @@
       "rel": "rest/zmscitizenapi/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmscitizenview-zmskvr-1046-booking-ruppertstrasse-shared-booking-ausbildung": {
       "status": "failed",
@@ -193,7 +193,7 @@
       "rel": "ui/zmscitizenview/zmskvr-1046_booking_ruppertstrasse_shared_booking_ausbildung.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmscitizenview-zmskvr-1124-booking-ruppertstrasse-pass-calendar-jumpin-links": {
       "status": "passed",
@@ -202,7 +202,7 @@
       "rel": "ui/zmscitizenview/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmscitizenview-zmskvr-1500-already-activated-confirm-banner": {
       "status": "passed",
@@ -211,7 +211,7 @@
       "rel": "ui/zmscitizenview/zmskvr-1500_already_activated_confirm_banner.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmscitizenview-zmskvr-1571-scheidplatz-contact-location-back-login": {
       "status": "passed",
@@ -220,7 +220,7 @@
       "rel": "ui/zmscitizenview/zmskvr-1571_scheidplatz_contact_location_back_login.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmsstatistic-zms-1558": {
       "status": "passed",
@@ -229,7 +229,7 @@
       "rel": "ui/zmsstatistic/ZMS-1558.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     },
     "feature-ui-zmsstatistic-zms-1559": {
       "status": "passed",
@@ -238,7 +238,7 @@
       "rel": "ui/zmsstatistic/ZMS-1559.feature",
       "runId": "33131217505",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33131217505",
-      "runStartedAt": "2026-08-28T02:06:38Z"
+      "runStartedAt": "2026-08-28T07:06:46Z"
     }
   }
 }
