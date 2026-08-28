@@ -7,6 +7,7 @@ let SCOPE_COLORS = {};
 let CLOSURES = new Set();
 let hideDaysWithoutOpeningHours = false;
 const STEP_MIN = 5;
+const MIN_LANE_WIDTH = 39;
 const MAX_DAYS = 14;
 const HIDE_EMPTY_DAYS_STORAGE_KEY = 'zmsadmin.overallCalendar.hideDaysWithoutOpeningHours';
 
@@ -464,7 +465,7 @@ function renderMultiDayCalendar(days) {
     days.forEach((day, dayIndex) => {
         day.scopes.forEach((scope, scopeIndex) => {
             const lanes = getLanes(day.date, scope.id);
-            templateCols.push(`repeat(${lanes}, minmax(120px,1fr))`);
+            templateCols.push(`repeat(${lanes}, minmax(${MIN_LANE_WIDTH}px, 1fr))`);
             if (scopeIndex < day.scopes.length - 1) templateCols.push('2px');
         });
         if (dayIndex < days.length - 1) templateCols.push('4px');
@@ -532,6 +533,7 @@ function renderMultiDayCalendar(days) {
                 row: 2, col: columnCursor, colSpan: lanes
             });
             headerCell.style.background = SCOPE_COLORS[scope.id];
+            headerCell.title = meta.shortName || meta.name || `Scope ${scope.id}`;
             if (isScopeClosed(dateIso, scope.id)) headerCell.classList.add('is-closed');
 
             columnCursor += lanes;
@@ -551,12 +553,32 @@ function renderMultiDayCalendar(days) {
 
     allTimes.forEach((time, timeIndex) => {
         const row = timeIndex + 3;
+        const endTime = allTimes[timeIndex + 1] ?? axis.end;
+        const isFullHour = time.endsWith(':00');
 
-        addCell({
-            text: time,
+        if (isFullHour) {
+            const stripe = addCell({
+                className: 'overall-calendar-stripe overall-calendar-stripe-hour',
+                row,
+                col: 2
+            });
+
+            stripe.style.gridColumn = '2 / -1';
+        }
+
+        const timeCell = addCell({
+            text: '\u00A0',
             className: 'overall-calendar-time overall-calendar-stick-left',
-            row, col: 1
+            row,
+            col: 1
         });
+
+        if (isFullHour) {
+            const label = document.createElement('span');
+            label.className = 'overall-calendar-time-label';
+            label.textContent = time;
+            timeCell.appendChild(label);
+        }
 
         let column = 2;
         days.forEach((day, dayIndex) => {
@@ -577,11 +599,16 @@ function renderMultiDayCalendar(days) {
                         if (occupied.has(rowColumnKey(row, laneColumn))) continue;
 
                         const cell = addCell({
-                            text: eventCellLabel(event),
                             className: 'overall-calendar-seat overall-calendar-termin',
                             row, col: laneColumn, rowSpan: spanRows,
                             dataStatus: event.status
                         });
+
+                        const label = document.createElement('span');
+                        label.className = 'overall-calendar-termin-label';
+                        label.textContent = eventCellLabel(event);
+                        cell.appendChild(label);
+                        cell.title = `${event.start} – ${event.end}`;
                         cell.style.background = SCOPE_COLORS[scope.id];
                         if (event.status === 'cancelled') cell.classList.add('overall-calendar-cancelled');
 
@@ -602,10 +629,12 @@ function renderMultiDayCalendar(days) {
                     if (occupied.has(rowColumnKey(row, laneColumn))) continue;
 
                     const isOpenLane = laneIndex < capacityNow;
-                    addCell({
+                    const cell = addCell({
                         className: `overall-calendar-seat overall-calendar-${isOpenLane ? 'open' : 'empty'}${closed ? ' overall-calendar-closed' : ''}`,
                         row, col: laneColumn
                     });
+
+                    cell.title = `${time} – ${endTime}`;
                 }
 
                 column += lanes;
