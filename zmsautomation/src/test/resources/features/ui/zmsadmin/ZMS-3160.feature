@@ -1,5 +1,5 @@
 #language: de
-Funktionalität: Default
+Funktionalität: Behörde und Standort nur mit Bestätigung löschen
 
 	
 	@web @zmsadmin @ZMS-3160 @ZMS-3162 @automatisiert @executeLocally

@@ -1,8 +1,23 @@
 {% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
 {% block title %}Sie sind nicht eingeloggt{% endblock %}
 
+{% block pageheader_middle %}
+    {% if workstation %}
+        {{ parent() }}
+    {% else %}
+        <span class="sitename">Statistik - Anmeldung für Behördenmitarbeiter</span>
+    {% endif %}
+{% endblock %}
+
+{% block pageheader_right %}
+    {% if workstation %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
 {% block headline %}
-    {{ snippets.headline1("Sie sind nicht eingeloggt.") }}
+    {{ headline1("Sie sind nicht eingeloggt.") }}
 {% endblock %}
 {% block content %}
 

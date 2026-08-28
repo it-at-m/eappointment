@@ -5,7 +5,7 @@
 # which is likely not running in local development environments.
 # To enable these tests, ensure the old buergeransicht frontend is running at http://localhost:8082
 # and remove the @ignore tag from the scenario tags.
-Funktionalität: Roave SecurityAdvisories wieder einbauen
+Funktionalität: Bürger bucht, ändert und löscht einen Termin (zms-demo)
    
    	#Das Terminvereinbarungssystem ermöglicht es den Kunden, die Ihren Termin über das Internet vereinbart haben, dass diese Ihren Termin selbständig ändern oder löschen können.
    	@ignore @web @buergeransicht @ZMS-1761 @ZMS-1538 @ZMS-2820 @ZMS-1825 @ZMS-1754 @E2E @automatisiert @executeLocally

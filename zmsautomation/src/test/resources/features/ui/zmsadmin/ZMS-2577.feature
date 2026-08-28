@@ -1,5 +1,5 @@
 #language: de
-Funktionalität: Default
+Funktionalität: Clusterstandorte auch für Sachbearbeitung anzeigen
 
 	@web @zmsadmin @ZMS-2577 @automatisiert @executeLocally
 		Szenario: [AUT] Test zu "Alle Clusterstandorte" auch für Sachbearbeitung ermöglichen

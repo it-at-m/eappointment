@@ -1,5 +1,5 @@
 #language: de
-Funktionalität: Default
+Funktionalität: Vorbelegung „Mit E-Mail-Bestätigung“ ist konfigurierbar
 
 	
 	@web @zmsadmin @ZMS-3171 @ZMS-3162 @automatisiert @executeLocally
