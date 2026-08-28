@@ -269,10 +269,18 @@ class UseraccountAddTest extends Base
             $body
         );
 
-        $this->assertSame(
-            2,
-            substr_count($body, $message),
-            'Die Standortmeldung muss oben und unter dem Feld erscheinen.'
+        $escapedMessage = preg_quote($message, '~');
+
+        $this->assertMatchesRegularExpression(
+            '~<li>\s*' . $escapedMessage . '\s*</li>~s',
+            $body,
+            'Die Standortmeldung fehlt im allgemeinen Fehlerbereich.'
+        );
+
+        $this->assertMatchesRegularExpression(
+            '~</i>\s*Fehler:\s*' . $escapedMessage . '\s*</li>~s',
+            $body,
+            'Die Standortmeldung fehlt unterhalb des Feldes „Behörde“.'
         );
 
         $this->assertStringContainsString(
