@@ -1,6 +1,6 @@
 #language: en
 @web @zmscitizenview @ZMSKVR-1500 @executeLocally @jumpin @pickupCalendar
-Feature: ZMSKVR-1500 Already-activated confirm link — MucBanner success
+Feature: CitizenView: bereits aktivierter Confirm-Link zeigt MucBanner
   As a citizen
   I want to reopen an already used confirmation deep link
   So that I see a MucBanner success that my appointment is already activated

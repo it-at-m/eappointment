@@ -1,5 +1,5 @@
 #language: de
-Funktionalität: Default
+Funktionalität: Dienstleistungsstatistik in der Statistik-Oberfläche öffnen
 
 	
 	@web @zmsstatistic @ZMS-1559 @ZMS-1557 @E2E @automatisiert @executeLocally
