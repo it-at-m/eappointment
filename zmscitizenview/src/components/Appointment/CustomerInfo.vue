@@ -237,9 +237,11 @@ import {
   normalizePlainText,
   plainTextCharCount,
 } from "@/utils/processPlainText";
-import { getContactFieldLocks } from "@/utils/rebookingContact";
+import {
+  getContactFieldLocks,
+  useNativeContactLocks,
+} from "@/utils/rebookingContact";
 import { countLines, handleInput } from "@/utils/textfieldRows";
-import { useNativeContactLocks } from "@/utils/useNativeContactLocks";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
 /**
