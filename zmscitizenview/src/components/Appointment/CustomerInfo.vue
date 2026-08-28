@@ -228,15 +228,7 @@ import {
   MucInput,
   MucTextArea,
 } from "@muenchen/muc-patternlab-vue";
-import {
-  computed,
-  inject,
-  nextTick,
-  onMounted,
-  onUpdated,
-  ref,
-  watch,
-} from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 
 import { GlobalState } from "@/types/GlobalState";
 import { CustomerDataProvider } from "@/types/ProvideInjectTypes";
@@ -244,11 +236,9 @@ import {
   normalizePlainText,
   plainTextCharCount,
 } from "@/utils/processPlainText";
-import {
-  isFilledContactValue,
-  splitFamilyName,
-} from "@/utils/rebookingContact";
+import { getContactFieldLocks } from "@/utils/rebookingContact";
 import { countLines, handleInput } from "@/utils/textfieldRows";
+import { useNativeContactLocks } from "@/utils/useNativeContactLocks";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
 /**
@@ -287,94 +277,27 @@ const { selectedProvider } = inject<SelectedTimeslotProvider>(
   "selectedTimeslot"
 ) as SelectedTimeslotProvider;
 
-const storedName = computed(() =>
-  splitFamilyName(props.sourceAppointment?.familyName)
+const contactLocks = computed(() =>
+  getContactFieldLocks(props.isRebooking, props.sourceAppointment)
 );
-
-const lockIfStoredOnSource = (value?: string | null) =>
-  Boolean(props.isRebooking) && isFilledContactValue(value);
-
-const lockFirstName = computed(() =>
-  lockIfStoredOnSource(storedName.value.firstName)
-);
-const lockLastName = computed(() =>
-  lockIfStoredOnSource(storedName.value.lastName)
-);
-const lockMailAddress = computed(() =>
-  lockIfStoredOnSource(props.sourceAppointment?.email)
-);
-const lockTelephoneNumber = computed(() =>
-  lockIfStoredOnSource(props.sourceAppointment?.telephone)
-);
-const lockCustomTextfield = computed(() =>
-  lockIfStoredOnSource(props.sourceAppointment?.customTextfield)
-);
-const lockCustomTextfield2 = computed(() =>
-  lockIfStoredOnSource(props.sourceAppointment?.customTextfield2)
+const lockFirstName = computed(() => contactLocks.value.firstName);
+const lockLastName = computed(() => contactLocks.value.lastName);
+const lockMailAddress = computed(() => contactLocks.value.mailAddress);
+const lockTelephoneNumber = computed(() => contactLocks.value.telephoneNumber);
+const lockCustomTextfield = computed(() => contactLocks.value.customTextfield);
+const lockCustomTextfield2 = computed(
+  () => contactLocks.value.customTextfield2
 );
 
 const contactForm = ref<HTMLFormElement | null>(null);
-
-const LOCKED_CONTROL_BG = "var(--color-neutral-100, #f2f2f2)";
-const LOCKED_CONTROL_FG = "var(--color-neutral-600, #6d6d6d)";
-
-function applyNativeDisabledOnFieldset(fieldset: HTMLFieldSetElement): void {
-  const locked = fieldset.disabled;
-  const control = fieldset.querySelector<
-    HTMLInputElement | HTMLTextAreaElement
-  >(
-    "input:not([type=hidden]):not([type=checkbox]):not([type=radio]), textarea"
-  );
-  if (!control) {
-    return;
-  }
-  control.disabled = locked;
-  if (locked) {
-    control.setAttribute("disabled", "");
-    control.style.setProperty(
-      "background-color",
-      LOCKED_CONTROL_BG,
-      "important"
-    );
-    control.style.setProperty("color", LOCKED_CONTROL_FG, "important");
-    control.style.setProperty("cursor", "not-allowed", "important");
-  } else {
-    control.removeAttribute("disabled");
-    control.style.removeProperty("background-color");
-    control.style.removeProperty("color");
-    control.style.removeProperty("cursor");
-  }
-}
-
-const applyContactLocksToNativeControls = async () => {
-  await nextTick();
-  const form = contactForm.value;
-  if (!form) {
-    return;
-  }
-  form
-    .querySelectorAll<HTMLFieldSetElement>("fieldset[data-contact-lock]")
-    .forEach(applyNativeDisabledOnFieldset);
-};
-
-watch(
-  [
-    lockFirstName,
-    lockLastName,
-    lockMailAddress,
-    lockTelephoneNumber,
-    lockCustomTextfield,
-    lockCustomTextfield2,
-  ],
-  () => {
-    void applyContactLocksToNativeControls();
-  },
-  { immediate: true, flush: "post" }
-);
-
-onUpdated(() => {
-  void applyContactLocksToNativeControls();
-});
+useNativeContactLocks(contactForm, [
+  lockFirstName,
+  lockLastName,
+  lockMailAddress,
+  lockTelephoneNumber,
+  lockCustomTextfield,
+  lockCustomTextfield2,
+]);
 
 const loadingStates = inject("loadingStates", {
   isReservingAppointment: ref(false),

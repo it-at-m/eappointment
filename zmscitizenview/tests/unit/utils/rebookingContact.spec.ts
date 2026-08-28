@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import { CustomerData } from "@/types/CustomerData";
 import {
   applyAppointmentContactToCustomerData,
+  getContactFieldLocks,
   hasMissingRequiredContact,
   isFilledContactValue,
   isPlaceholderEmail,
@@ -38,6 +39,36 @@ describe("rebookingContact", () => {
     expect(isFilledContactValue(PLACEHOLDER_RESERVE_EMAIL)).toBe(false);
     expect(isFilledContactValue("  ")).toBe(false);
     expect(isFilledContactValue("max@example.com")).toBe(true);
+  });
+
+  it("locks filled rebooking fields and leaves empty or placeholder ones editable", () => {
+    expect(
+      getContactFieldLocks(true, {
+        familyName: "Max Mustermann",
+        email: "max@example.com",
+        telephone: "",
+        customTextfield: "note",
+        customTextfield2: "",
+      } as AppointmentDTO)
+    ).toEqual({
+      firstName: true,
+      lastName: true,
+      mailAddress: true,
+      telephoneNumber: false,
+      customTextfield: true,
+      customTextfield2: false,
+    });
+    expect(
+      getContactFieldLocks(true, {
+        email: PLACEHOLDER_RESERVE_EMAIL,
+      } as AppointmentDTO)
+    ).toMatchObject({ mailAddress: false });
+    expect(
+      getContactFieldLocks(false, {
+        familyName: "Max Mustermann",
+        email: "max@example.com",
+      } as AppointmentDTO)
+    ).toMatchObject({ firstName: false, mailAddress: false });
   });
 
   it("splits familyName into first and last name", () => {

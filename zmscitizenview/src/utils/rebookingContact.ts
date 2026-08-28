@@ -14,6 +14,30 @@ export function isFilledContactValue(value?: string | null): boolean {
   return trimmed !== "" && !isPlaceholderEmail(trimmed);
 }
 
+export function getContactFieldLocks(
+  isRebooking: boolean | undefined,
+  sourceAppointment?: AppointmentDTO | null
+): {
+  firstName: boolean;
+  lastName: boolean;
+  mailAddress: boolean;
+  telephoneNumber: boolean;
+  customTextfield: boolean;
+  customTextfield2: boolean;
+} {
+  const lockIfStoredOnSource = (value?: string | null) =>
+    Boolean(isRebooking) && isFilledContactValue(value);
+  const storedName = splitFamilyName(sourceAppointment?.familyName);
+  return {
+    firstName: lockIfStoredOnSource(storedName.firstName),
+    lastName: lockIfStoredOnSource(storedName.lastName),
+    mailAddress: lockIfStoredOnSource(sourceAppointment?.email),
+    telephoneNumber: lockIfStoredOnSource(sourceAppointment?.telephone),
+    customTextfield: lockIfStoredOnSource(sourceAppointment?.customTextfield),
+    customTextfield2: lockIfStoredOnSource(sourceAppointment?.customTextfield2),
+  };
+}
+
 export function splitFamilyName(familyName?: string | null): {
   firstName: string;
   lastName: string;
