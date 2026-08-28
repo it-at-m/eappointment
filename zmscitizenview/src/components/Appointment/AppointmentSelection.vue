@@ -2174,6 +2174,19 @@ onMounted(() => {
       ])
     );
 
+    // Keep a reserved/hash office (e.g. Ausbildung 10503) instead of replacing
+    // it with the collapsed display Ort when the calendar remounts.
+    const reservedProvider = selectedProvider.value;
+    const reservedTimeslot = selectedTimeslot.value;
+    if (reservedProvider) {
+      selectedProvider.value = reservedProvider;
+      selectedTimeslot.value = reservedTimeslot;
+      void fetchAvailableDaysForSelection().finally(() => {
+        initialCalendarLoadPending = false;
+      });
+      return;
+    }
+
     void showSelectionForProvider(firstOfficeToShow ?? offices[0]).finally(
       () => {
         initialCalendarLoadPending = false;
@@ -2261,7 +2274,16 @@ watch(
         (p) => p.id.toString() === selectedIds[0]
       );
       if (provider) {
-        selectedProvider.value = provider;
+        const currentId = Number(selectedProvider.value?.id);
+        const checkedId = Number(provider.id);
+        const currentIsSharedPeer =
+          Number.isFinite(currentId) &&
+          currentId !== checkedId &&
+          Array.isArray(provider.sharedBookingOfficeIds) &&
+          provider.sharedBookingOfficeIds.map(Number).includes(currentId);
+        if (!currentIsSharedPeer) {
+          selectedProvider.value = provider;
+        }
       }
     }
 
