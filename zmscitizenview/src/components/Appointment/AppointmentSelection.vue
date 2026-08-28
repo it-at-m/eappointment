@@ -2174,6 +2174,8 @@ onMounted(() => {
       ])
     );
 
+    // Keep a reserved/hash office (e.g. Ausbildung 10503) instead of replacing
+    // it with the collapsed display Ort when the calendar remounts.
     const reservedProvider = selectedProvider.value;
     const reservedTimeslot = selectedTimeslot.value;
     if (reservedProvider) {

@@ -244,7 +244,7 @@ use Slim\Routing\RouteCollectorProxy;
  * Profile
  * -------------------------------------------------------------------------
  */
-\App::$slim->map(['GET', 'POST'], '/profile/', \BO\Zmsadmin\Profile::class)
+\App::$slim->get('/profile/', \BO\Zmsadmin\Profile::class)
     ->setName("profile");
 
 
