@@ -262,6 +262,22 @@ class ValidationService
         return self::isFilledContactValue($email) && !self::isPlaceholderReserveEmail($email);
     }
 
+    /**
+     * True when incoming equals stored, or completes it with further name parts
+     * ("Max" -> "Max Mustermann"). The citizen form splits familyName on the first
+     * space and can leave lastName editable when the stored value is a single word.
+     */
+    public static function isSameOrCompletedFamilyName(?string $stored, ?string $incoming): bool
+    {
+        $storedTrimmed = trim((string) $stored);
+        $incomingTrimmed = trim((string) $incoming);
+        if ($storedTrimmed === '' || $incomingTrimmed === '') {
+            return false;
+        }
+        return $incomingTrimmed === $storedTrimmed
+            || str_starts_with($incomingTrimmed, $storedTrimmed . ' ');
+    }
+
     public static function validateUnchangedStoredContact(
         ThinnedProcess $stored,
         ?string $familyName,
@@ -271,7 +287,7 @@ class ValidationService
         ?string $customTextfield2
     ): array {
         $errors = [];
-        self::rejectChangedStoredField($stored->familyName, $familyName, 'familyNameCannotBeChanged', $errors);
+        self::rejectChangedStoredFamilyName($stored->familyName, $familyName, $errors);
         self::rejectChangedStoredField($stored->email, $email, 'emailCannotBeChanged', $errors, true);
         self::rejectChangedStoredField($stored->telephone, $telephone, 'telephoneCannotBeChanged', $errors);
         self::rejectChangedStoredField(
@@ -293,6 +309,16 @@ class ValidationService
     private static function normalizedCustomText(?string $value): ?string
     {
         return $value === null ? null : ProcessPlainText::normalize($value);
+    }
+
+    private static function rejectChangedStoredFamilyName(?string $stored, ?string $incoming, array &$errors): void
+    {
+        if (!self::isFilledContactValue($stored) || !self::isFilledContactValue($incoming)) {
+            return;
+        }
+        if (!self::isSameOrCompletedFamilyName($stored, $incoming)) {
+            $errors[] = self::getError('familyNameCannotBeChanged');
+        }
     }
 
     private static function rejectChangedStoredField(

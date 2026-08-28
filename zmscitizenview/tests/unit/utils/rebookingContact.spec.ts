@@ -73,6 +73,12 @@ describe("rebookingContact", () => {
         email: "max@example.com",
       } as AppointmentDTO)
     ).toMatchObject({ firstName: false, mailAddress: false });
+    expect(
+      getContactFieldLocks(true, {
+        familyName: "Max",
+        email: "max@example.com",
+      } as AppointmentDTO)
+    ).toMatchObject({ firstName: true, lastName: false });
   });
 
   it("splits familyName into first and last name", () => {

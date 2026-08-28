@@ -32,6 +32,8 @@ export function getContactFieldLocks(
     Boolean(isRebooking) && isFilledContactValue(value);
   const storedName = splitFamilyName(sourceAppointment?.familyName);
   return {
+    // Single-word familyName ("Max") locks firstName only. The API accepts
+    // completing that stored value with further name parts.
     firstName: lockIfStoredOnSource(storedName.firstName),
     lastName: lockIfStoredOnSource(storedName.lastName),
     mailAddress:
