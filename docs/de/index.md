@@ -15,6 +15,7 @@ Dieses Handbuch ist die Hauptanlaufstelle auf [GitHub Pages](https://it-at-m.git
 - [PHP-Basis-Images](./setup-and-development/php-base-images.md)
 - [Unit-Tests in ZMS](./testing-and-automation/testing-unit.md)
 - [Unit-Test-Abdeckung](./testing-and-automation/testing-coverage.md)
+- [Aktuelle Cucumber-Tests in zmsautomation](./testing-and-automation/zmsautomation-cucumber-current.md)
 - [API-Referenz](./operations/api-reference.md) — ReDoc und Diagramme
 - [Modul-READMEs](./reference/module-readmes.md)
 - [DLDB-Schnittstellendokumentation](./operations/dldb-interface-documentation.md)
