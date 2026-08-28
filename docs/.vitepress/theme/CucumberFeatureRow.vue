@@ -8,6 +8,7 @@ import {
   cucumberFeatureSourceUrl,
   cucumberFeatureVisible,
   cucumberGhRunCommand,
+  cucumberIsLegacyBuergeransicht,
   cucumberRunTagExpression,
   cucumberSelectedBranch,
   cucumberWorkflowUrl,
@@ -107,6 +108,10 @@ const isTicketTag = (tag) => /^@(?:ZMSKVR|ZMS)-\d+$/i.test(tag);
 
 const copiedKind = ref("");
 let copiedTimer = 0;
+
+const showRunAction = computed(
+  () => !cucumberIsLegacyBuergeransicht(meta.value)
+);
 
 const tagExpression = computed(() => cucumberRunTagExpression(meta.value));
 
@@ -319,6 +324,7 @@ onUnmounted(() => {
           </span>
         </button>
         <a
+          v-if="showRunAction"
           class="cucumber-feature__action"
           :class="{ 'cucumber-feature__action--copied': copiedKind === 'run' }"
           :href="workflowHref"

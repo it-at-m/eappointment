@@ -199,6 +199,13 @@ export function cucumberFeatureMeta(id) {
   return featureMeta[id] || null;
 }
 
+export function cucumberIsLegacyBuergeransicht(testType, module = "") {
+  if (testType && typeof testType === "object") {
+    return testType.testType === "ui" && testType.module === "buergeransicht";
+  }
+  return testType === "ui" && module === "buergeransicht";
+}
+
 export function cucumberGroupHasMatch(testType, module = "") {
   return cucumberCatalogEntries().some((entry) => {
     if (entry.testType !== testType) {
