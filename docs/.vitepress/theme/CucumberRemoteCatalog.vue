@@ -5,6 +5,7 @@ import { computed } from "vue";
 import {
   cucumberCatalogLoadState,
   cucumberGroupedCatalog,
+  cucumberIsLegacyBuergeransicht,
   cucumberSelectedBranch,
   cucumberUsesRemoteCatalog,
 } from "./cucumberAccordion.js";
@@ -44,11 +45,13 @@ const deprecatedNote = computed(() =>
 );
 
 const moduleTitle = (testType, module) => {
-  if (testType === "ui" && module === "buergeransicht") {
+  if (cucumberIsLegacyBuergeransicht(testType, module)) {
     return isDe.value ? `${module} (veraltet)` : `${module} (deprecated)`;
   }
   return module;
 };
+
+const isLegacyModule = cucumberIsLegacyBuergeransicht;
 </script>
 
 <template>
@@ -89,10 +92,10 @@ const moduleTitle = (testType, module) => {
           :test-type="group.testType"
           :module="mod.module"
         >
-          <h3>{{ moduleTitle(group.testType, mod.module) }}</h3>
-          <blockquote
-            v-if="group.testType === 'ui' && mod.module === 'buergeransicht'"
-          >
+          <h3 v-if="!isLegacyModule(group.testType, mod.module)">
+            {{ moduleTitle(group.testType, mod.module) }}
+          </h3>
+          <blockquote v-if="isLegacyModule(group.testType, mod.module)">
             {{ deprecatedNote }}
           </blockquote>
           <CucumberFeatureRow
