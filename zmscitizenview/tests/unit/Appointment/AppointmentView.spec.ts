@@ -1949,6 +1949,65 @@ describe("AppointmentView", () => {
       });
       expect(wrapper.vm.currentView).toBe(3);
     });
+
+    it("keeps the current office when hash load cannot resolve officeId", async () => {
+      let resolveFetch: (value: unknown) => void = () => undefined;
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockReturnValueOnce(
+        new Promise((resolve) => {
+          resolveFetch = resolve;
+        })
+      );
+
+      const validHash = btoa(
+        JSON.stringify({
+          id: "100040",
+          authKey: "test-auth-key",
+          scope: {},
+        })
+      );
+
+      const wrapper = createWrapper({
+        appointmentHash: validHash,
+        serviceId: undefined,
+        locationId: undefined,
+      });
+
+      await vi.waitFor(() => {
+        expect(ZMSAppointmentAPI.fetchAppointment).toHaveBeenCalled();
+      });
+
+      wrapper.vm.selectedProvider = {
+        id: "789",
+        name: "Known office",
+        address: {
+          street: "Test Street",
+          house_number: "123",
+          postal_code: "12345",
+          city: "Test City",
+        },
+      };
+
+      resolveFetch({
+        processId: "100040",
+        authKey: "test-auth-key",
+        serviceId: 1063475,
+        officeId: 99999,
+        serviceCount: 1,
+        subRequestCounts: [],
+        timestamp: nowUnixSeconds() + 3600,
+        scope: {
+          provider: {
+            id: 1,
+            displayName: "Unrelated office",
+          },
+        },
+      });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointment?.processId).toBe("100040");
+      });
+      expect(wrapper.vm.selectedProvider?.id).toBe("789");
+    });
   });
   describe("Book another appointment button", () => {
     it("renders with correct label and redirects to start when clicked", async () => {
