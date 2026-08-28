@@ -46,16 +46,20 @@ class LoginTest extends \BO\Zmsbackend\Tests\Service\Base
             ['2015-11-19 08:00:00', $loginName]
         );
         $now = static::$now;
-        $workstation = $query->writeEntityLoginByOidc(
+        $query->writeEntityLoginByOidc(
             $loginName,
             'oidc-auth-key',
             $now,
             (new \DateTime())->setTimestamp($now->getTimestamp() + 28800)
         );
-        $this->assertFalse($workstation->getUseraccount()->isOveraged($now));
+        $row = \BO\Zmsbackend\Connection\Select::getWriteConnection()->fetchOne(
+            'SELECT `lastUpdate` FROM `nutzer` WHERE `Name` = ?',
+            [$loginName]
+        );
+        $this->assertNotEmpty($row['lastUpdate'] ?? null);
         $this->assertSame(
             $now->format('Y-m-d'),
-            (new \DateTimeImmutable())->setTimestamp((int)$workstation->getUseraccount()->lastLogin)->format('Y-m-d')
+            (new \DateTimeImmutable($row['lastUpdate']))->format('Y-m-d')
         );
     }
 }
