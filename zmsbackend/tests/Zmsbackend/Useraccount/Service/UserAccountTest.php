@@ -2,7 +2,6 @@
 
 namespace BO\Zmsbackend\Tests\UserAccount\Service;
 
-use BO\Zmsbackend\Department\Service\Department as DepartmentService;
 use \BO\Zmsbackend\Useraccount\Service\Useraccount as Query;
 use \BO\Zmsbackend\Workstation\Service\Workstation;
 use \BO\Zmsentities\Useraccount as Entity;
@@ -21,14 +20,6 @@ class UserAccountTest extends \BO\Zmsbackend\Tests\Service\Base
         $query = new Query();
         $entity = $query->readEntity(static::$username, 1);
         $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $entity);
-    }
-
-    private function addTestDepartment(
-        WorkstationEntity $workstation
-    ): void {
-        $workstation->getUseraccount()->addDepartment(
-            (new DepartmentService())->readEntity(72)
-        );
     }
 
     public function testReadWorkstationFailed()
@@ -109,17 +100,27 @@ class UserAccountTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->writeTestLogin();
 
         $workstationList = (new Workstation())
-            ->readLoggedInListByScope(141, $this->dateTime);
+            ->readLoggedInListByScope(
+                141,
+                $this->dateTime,
+                2
+            );
 
-        foreach ($workstationList as $workstation) {
-            $workstation->useraccount->id = 'testuser';
-            $this->addTestDepartment($workstation);
-        }
+        $this->assertGreaterThan(
+            0,
+            $workstationList->count()
+        );
 
         $this->assertEntityList(
             "\\BO\\Zmsentities\\Workstation",
             $workstationList
         );
+
+        foreach ($workstationList as $workstation) {
+            $this->assertTrue(
+                $workstation->getUseraccount()->hasDepartment(72)
+            );
+        }        
     }
 
     public function testReadWorkstationListByCluster()
@@ -127,18 +128,24 @@ class UserAccountTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->writeTestLogin();
 
         $workstationList = (new Workstation())
-            ->readLoggedInListByCluster(109, $this->dateTime);
-
-        foreach ($workstationList as $workstation) {
-            $workstation->useraccount->id = 'testuser';
-            $this->addTestDepartment($workstation);
-        }
+            ->readLoggedInListByCluster(
+                109,
+                $this->dateTime,
+                2
+            );
 
         $this->assertEquals(1, $workstationList->count());
+
         $this->assertEntityList(
             "\\BO\\Zmsentities\\Workstation",
             $workstationList
         );
+
+        foreach ($workstationList as $workstation) {
+            $this->assertTrue(
+                $workstation->getUseraccount()->hasDepartment(72)
+            );
+        }
     }
 
     public function testReadWorkstationListByDepartment()
@@ -146,18 +153,22 @@ class UserAccountTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->writeTestLogin();
 
         $workstationList = (new Workstation())
-            ->readCollectionByDepartmentId(72);
-
-        foreach ($workstationList as $workstation) {
-            $workstation->useraccount->id = 'testuser';
-            $this->addTestDepartment($workstation);
-        }
+            ->readCollectionByDepartmentId(72, 2);
 
         $this->assertEntityList(
             "\\BO\\Zmsentities\\Workstation",
             $workstationList
         );
-        $this->assertEquals(3, $workstationList->getFirst()->name);
+        $this->assertEquals(
+            3,
+            $workstationList->getFirst()->name
+        );
+
+        foreach ($workstationList as $workstation) {
+            $this->assertTrue(
+                $workstation->getUseraccount()->hasDepartment(72)
+            );
+        }        
     }
 
     public function testReadWorkstationByScopeAndName()
@@ -165,15 +176,20 @@ class UserAccountTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->writeTestLogin();
 
         $workstation = (new Workstation())
-            ->readWorkstationByScopeAndName(141, 3);
-
-        $workstation->useraccount->id = 'testuser';
-        $this->addTestDepartment($workstation);
+            ->readWorkstationByScopeAndName(
+                141,
+                3,
+                2
+            );
 
         $this->assertEntity(
             "\\BO\\Zmsentities\\Workstation",
             $workstation
         );
+
+        $this->assertTrue(
+            $workstation->getUseraccount()->hasDepartment(72)
+        );       
     }
 
     public function testReadWorkstationByScopeAndNameFailed()
