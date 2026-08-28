@@ -1,5 +1,5 @@
 #language: de
-Funktionalität: Default
+Funktionalität: Terminkunde über Tresen anlegen, aufrufen und abschließen
 
 
     @web @zmsadmin @ZMSKVR-1328 @automatisiert @executeLocally

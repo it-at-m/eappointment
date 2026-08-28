@@ -1,5 +1,5 @@
 #language: de
-Funktionalität: Default
+Funktionalität: Tresen zeigt die aktuelle Warteschlange
 
 	
 	@web @zmsadmin @ZMS-1548 @ZMS-1547 @E2E @automatisiert @executeLocally
