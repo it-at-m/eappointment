@@ -101,10 +101,10 @@ const onToggle = () => {
   <div
     v-if="isVisible"
     class="cucumber-feature-group"
-    :class="{ 'cucumber-feature-group--collapse': isCollapsible }"
   >
     <template v-if="isCollapsible">
-      <h3 class="cucumber-module-collapse__heading">
+      <h3>{{ heading }}</h3>
+      <div class="cucumber-module-collapse">
         <button
           type="button"
           class="cucumber-module-collapse__toggle"
@@ -133,15 +133,14 @@ const onToggle = () => {
               />
             </svg>
           </span>
-          <span class="cucumber-module-collapse__title">{{ heading }}</span>
           <span class="cucumber-module-collapse__count">{{ countLabel }}</span>
         </button>
-      </h3>
-      <div
-        v-show="isOpen"
-        class="cucumber-module-collapse__body"
-      >
-        <slot />
+        <div
+          v-show="isOpen"
+          class="cucumber-module-collapse__body"
+        >
+          <slot />
+        </div>
       </div>
     </template>
     <template v-else>
@@ -151,21 +150,12 @@ const onToggle = () => {
 </template>
 
 <style scoped>
-.cucumber-feature-group--collapse {
+.cucumber-module-collapse {
   margin: 0 0 1.25rem;
   overflow: hidden;
   background: var(--vp-c-bg-soft);
   border: 1px solid var(--vp-c-divider);
   border-radius: 10px;
-}
-
-.cucumber-module-collapse__heading {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  line-height: 1.4;
 }
 
 .cucumber-module-collapse__toggle {
@@ -180,6 +170,8 @@ const onToggle = () => {
   background: transparent;
   border: 0;
   font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 
 .cucumber-module-collapse__toggle:hover {
@@ -212,16 +204,9 @@ const onToggle = () => {
   }
 }
 
-.cucumber-module-collapse__title {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
 .cucumber-module-collapse__count {
-  flex-shrink: 0;
+  flex: 1 1 auto;
   color: var(--vp-c-text-2);
-  font-size: 0.85rem;
-  font-weight: 500;
 }
 
 .cucumber-module-collapse__body {
