@@ -254,8 +254,12 @@ class ValidationService
 
     public static function isFilledContactValue(?string $value): bool
     {
-        $trimmed = trim((string) $value);
-        return $trimmed !== '' && !self::isPlaceholderReserveEmail($trimmed);
+        return trim((string) $value) !== '';
+    }
+
+    public static function isFilledEmail(?string $email): bool
+    {
+        return self::isFilledContactValue($email) && !self::isPlaceholderReserveEmail($email);
     }
 
     public static function validateUnchangedStoredContact(
@@ -298,7 +302,13 @@ class ValidationService
         array &$errors,
         bool $email = false
     ): void {
-        if (!self::isFilledContactValue($stored) || !self::isFilledContactValue($incoming)) {
+        $storedFilled = $email
+            ? self::isFilledEmail($stored)
+            : self::isFilledContactValue($stored);
+        $incomingFilled = $email
+            ? self::isFilledEmail($incoming)
+            : self::isFilledContactValue($incoming);
+        if (!$storedFilled || !$incomingFilled) {
             return;
         }
         $storedTrimmed = trim($stored);

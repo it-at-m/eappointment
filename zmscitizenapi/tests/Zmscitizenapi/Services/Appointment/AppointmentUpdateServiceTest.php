@@ -276,6 +276,30 @@ class AppointmentUpdateServiceTest extends TestCase
         $this->assertNull($result->customTextfield2);
     }
 
+    public function testUpdateProcessWithClientDataAllowsPlaceholderEmailButLocksCustomText(): void
+    {
+        $process = new ThinnedProcess();
+        $process->familyName = 'Jane Doe';
+        $process->email = 'test@muenchen.de';
+        $process->customTextfield = 'test@muenchen.de';
+
+        $data = (object)[
+            'familyName' => 'Jane Doe',
+            'email' => 'jane@example.com',
+            'telephone' => '+491234567890',
+            'customTextfield' => 'Replaced note',
+            'customTextfield2' => null
+        ];
+
+        $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data, true]);
+
+        $this->assertEquals('Jane Doe', $result->familyName);
+        $this->assertEquals('jane@example.com', $result->email);
+        $this->assertEquals('+491234567890', $result->telephone);
+        $this->assertEquals('test@muenchen.de', $result->customTextfield);
+        $this->assertNull($result->customTextfield2);
+    }
+
     public function testProcessUpdateWithValidationErrors(): void
     {
         $body = [

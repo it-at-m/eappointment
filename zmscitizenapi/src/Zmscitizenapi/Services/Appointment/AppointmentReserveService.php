@@ -181,7 +181,7 @@ class AppointmentReserveService
         ThinnedProcess $sourceProcess
     ): ThinnedProcess|array {
         $reservedProcess->familyName = $sourceProcess->familyName;
-        if (ValidationService::isFilledContactValue($sourceProcess->email)) {
+        if (ValidationService::isFilledEmail($sourceProcess->email)) {
             $reservedProcess->email = $sourceProcess->email;
         }
         $reservedProcess->telephone = $sourceProcess->telephone;
