@@ -6,14 +6,10 @@
 --
 -- There was no Standort for provider 7. This adds scope 377 under Behörde 2
 -- (Gewerbeamt) so intern booking can select those variants.
---
--- agent_queue (V22) is only assigned to Behörde 40; grant Behörde 2 so the
--- REST twin can POST /process/status/reserved/ with slotType=intern.
+-- Dropdown label is provider.name + shortName: "Gewerbeamt Telefon/Video".
+-- REST logs in as superuser ataf (not agent_queue, who is only Behörde 40).
 --
 -- IDs 373/376 already have V6 preferences without matching V5 standorts.
-
-INSERT IGNORE INTO `nutzerzuordnung` (`nutzerid`, `behoerdenid`)
-VALUES (5133, 2);
 
 INSERT INTO `standort` (`StandortID`, `BehoerdenID`, `InfoDienstleisterID`, `Hinweis`, `Bezeichnung`, `Adresse`, `Stadtplanlink`, `Bearbeitungszeit`, `Kennung`, `Termine_ab`, `Termine_bis`, `smswarteschlange`, `smswmsbestaetigung`, `smsbenachrichtigungsfrist`, `smsbenachrichtigungstext`, `smsbestaetigungstext`, `wartenrsperre`, `wartenrhinweis`, `notruffunktion`, `notrufausgeloest`, `notrufinitiierung`, `notrufantwort`, `emailPflichtfeld`, `anmerkungPflichtfeld`, `anmerkungLabel`, `telefonPflichtfeld`, `standortinfozeile`, `standortkuerzel`, `aufrufanzeigetext`, `reservierungsdauer`, `anzahlwiederaufruf`, `startwartenr`, `endwartenr`, `letztewartenr`, `wartenrdatum`, `mehrfachtermine`, `schreibschutz`, `ohnestatistik`, `smskioskangebotsfrist`, `emailstandortadmin`, `wartenummernkontingent`, `vergebenewartenummern`, `kundenbefragung`, `kundenbef_label`, `kundenbef_emailtext`, `telefonaktiviert`, `virtuellesachbearbeiterzahl`, `datumvirtuellesachbearbeiterzahl`, `smsnachtrag`, `loeschdauer`, `updateTimestamp`, `source`, `custom_text_field_label`, `custom_text_field_active`, `custom_text_field_required`, `admin_mail_on_appointment`, `admin_mail_on_deleted`, `admin_mail_on_updated`, `admin_mail_on_mail_sent`, `appointments_per_mail`, `whitelisted_mails`, `slots_per_appointment`, `info_for_appointment`, `aktivierungsdauer`, `captcha_activated_required`, `email_confirmation_activated`, `custom_text_field2_label`, `custom_text_field2_active`, `custom_text_field2_required`, `info_for_all_appointments`, `last_display_number`, `max_display_number`, `display_number_prefix`) VALUES
 (377, 2, 7, '', 'Gewerbeamt Varianten', 'Implerstraße 11', '', '00:12:00', 0, 0, 60, 0, 0, 10, '', '', 0, '', 1, 0, NULL, NULL, 1, 0, '', 0, 'Gewerbeamt Varianten', 'Telefon/Video', 'Herzlich Willkommen', 15, 0, 1, 999, 1, '2025-11-17', 1, 1, 1, 0, '', 999, 1, 0, '', '', 0, -1, '2025-11-17', 0, 15, NOW(), 'zms', '', 0, 0, 0, 0, 0, 0, 0, '', 0, '', 60, 0, 0, '', 0, 0, '', 0, 9999, '');

@@ -6,7 +6,7 @@ Feature: ZMS API intern booking of a zms variant that is only in request_provide
 
   Background:
     Given the ZMS API is available
-    And I am logged in to the ZMS API as "agent_queue"
+    And I am logged in to the ZMS API as "ataf"
 
   Scenario: Intern reserve Gewerbeanmeldung Telefon at the zms Gewerbeamt variant scope
     When I update the workstation with scope 377 and counter "4" with the X-AuthKey
