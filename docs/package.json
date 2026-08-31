@@ -14,7 +14,7 @@
   "devDependencies": {
     "@muenchen/prettier-codeformat": "^1.0.2",
     "esbuild": "^0.28.1",
-    "markdown-it": "^14.1.0",
+    "markdown-it": "^15.0.0",
     "mermaid": "11.17.2",
     "prettier": "^3.5.3",
     "vitepress": "^1.6.3"
