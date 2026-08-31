@@ -80,7 +80,7 @@ sequenceDiagram
 | ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE | Altcha challenge endpoint | https://captcha.muenchen.de/api/v1/captcha/challenge |
 | ALTCHA_CAPTCHA_ENDPOINT_VERIFY | Altcha verification endpoint | https://captcha.muenchen.de/api/v1/captcha/verify |
 | **Rate Limiting** |
-| RATE_LIMIT_MAX_REQUESTS | Maximum requests per window | 60 |
+| RATE_LIMIT_MAX_REQUESTS | Maximum requests per window | 600 |
 | RATE_LIMIT_CACHE_TTL | Rate limit cache TTL in seconds | 60 |
 | RATE_LIMIT_MAX_RETRIES | Maximum retry attempts | 3 |
 | RATE_LIMIT_BACKOFF_MIN | Minimum backoff time in milliseconds | 10 |
@@ -554,7 +554,7 @@ sequenceDiagram
         API-->>C: 200 OK + Headers
     else Over Limit
         API-->>C: 429 Too Many Requests
-        Note over C,API: X-RateLimit-Limit: 60<br>X-RateLimit-Remaining: 0<br>X-RateLimit-Reset: timestamp
+        Note over C,API: X-RateLimit-Limit: 600<br>X-RateLimit-Remaining: 0<br>X-RateLimit-Reset: timestamp
     end
 ```
 
@@ -591,13 +591,13 @@ Here's how it works:
      - Key pattern: `rate_limit_{md5(ip)}`
      - TTL: 60 seconds
      - Stores request counts per IP
-     - The rate limit cache tracks request counts per IP address using a distributed locking mechanism to prevent race conditions. Each IP is allowed 60 requests per minute, with the counter auto-resetting after the TTL expires.
+     - The rate limit cache tracks request counts per IP address using a distributed locking mechanism to prevent race conditions. Each IP is allowed 600 requests per minute, with the counter auto-resetting after the TTL expires.
    
    - **Logger Cache**:
      - Key pattern: Uses counter key
      - TTL: 60 seconds
      - Tracks log rate limiting
-     - The rate limit cache tracks request counts per IP address using a distributed locking mechanism to prevent race conditions. Each IP is allowed 60 requests per minute, with the counter auto-resetting after the TTL expires.
+     - The rate limit cache tracks request counts per IP address using a distributed locking mechanism to prevent race conditions. Each IP is allowed 600 requests per minute, with the counter auto-resetting after the TTL expires.
    
    - **DLDB Source Cache**:
      - Key pattern: `source_{source_name}`
