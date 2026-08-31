@@ -53,6 +53,7 @@ RUN apt-get update \
       wget \
       nano \
       mariadb-client \
+      locales \
       python3-click \
       python3-colorama \
       python3-git \
@@ -79,6 +80,9 @@ RUN apt-get update \
  && ln -sf /usr/bin/firefox-esr /usr/bin/firefox \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
+
+# Add locale de_DE.UTF-8
+RUN echo "de_DE.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen
 
 # --------------------------------------------------
 # Xdebug

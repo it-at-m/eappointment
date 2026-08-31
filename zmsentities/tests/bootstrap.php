@@ -1,8 +1,5 @@
 <?php
-\setlocale(LC_ALL, 'de_DE.utf-8', 'de_DE.UTF-8', 'de_DE');
-if (\class_exists(\Locale::class)) {
-    \Locale::setDefault('de_DE');
-}
+\setlocale(LC_ALL, 'de_DE.utf-8');
 \date_default_timezone_set('Europe/Berlin');
 
 if (!defined('APP_PATH')) {
