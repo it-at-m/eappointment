@@ -44,7 +44,7 @@ class ProcessSearch extends \BO\Zmsbackend\Api\BaseController
         unset($parameters['limit']);
         unset($parameters['page']);
 
-        foreach (['service', 'provider', 'date'] as $filterKey) {
+        foreach (['service', 'provider', 'date', 'status'] as $filterKey) {
             if (!isset($parameters[$filterKey]) || trim((string) $parameters[$filterKey]) === '') {
                 unset($parameters[$filterKey]);
             }

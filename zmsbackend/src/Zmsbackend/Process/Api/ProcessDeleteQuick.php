@@ -10,6 +10,7 @@ namespace BO\Zmsbackend\Process\Api;
 use BO\Slim\Render;
 use BO\Zmsbackend\Process\Service\Process;
 use BO\Zmsbackend\Process\Service\ProcessStatusArchived;
+use BO\Zmsbackend\ProcessSearchHistory\Service\ProcessSearchHistory as HistoryService;
 use BO\Zmsbackend\Mail\Service\Mail;
 use BO\Zmsbackend\Config\Service\Config;
 use BO\Mellon\Validator;
@@ -31,6 +32,7 @@ class ProcessDeleteQuick extends ProcessDelete
         $process = (new \BO\Zmsbackend\Process\Service\Process())->readEntity($args['id'], new \BO\Zmsbackend\Helper\NoAuth(), 2);
 
         $this->testProcess($workstation, $process);
+        $this->writeCancelSearchHistory($process, HistoryService::STATUS_CANCELLED_BY_STAFF);
 
         if ($process->hasId() && $process->scope && $process->status == 'confirmed') {
             (new \BO\Zmsbackend\OverviewCalendar\Service\OverviewCalendar())->perform(

@@ -1151,4 +1151,90 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Service\Base
             )
         );
     }
+
+    public function testReadSearchFiltersCancelledHistoryStatuses(): void
+    {
+        $historyService = new HistoryService();
+
+        $processService = new Query(
+            $historyService->getWriter(),
+            $historyService->getReader()
+        );
+
+        $process = $processService->readEntity(
+            990029,
+            'history-test-auth',
+            2
+        );
+
+        $finalizedAt = new \DateTimeImmutable('2016-04-18 12:00:00');
+
+        $historyService->writeHistoryEntry(
+            $process,
+            HistoryService::STATUS_CANCELLED_BY_CITIZEN,
+            $finalizedAt
+        );
+
+        $now = class_exists('\App') && isset(\App::$now)
+            ? \App::$now
+            : new \DateTimeImmutable(
+                'now',
+                new \DateTimeZone('Europe/Berlin')
+            );
+
+        $appointmentAt =
+            \DateTimeImmutable::createFromInterface($now)
+                ->modify('-1 day');
+
+        $historyService->perform(
+            '
+                UPDATE process_search_history
+                SET
+                    appointment_at = :appointmentAt,
+                    status = :status
+                WHERE process_id = :processId
+            ',
+            [
+                'appointmentAt' => $appointmentAt
+                    ->format('Y-m-d H:i:s'),
+                'status' => HistoryService::STATUS_CANCELLED_BY_CITIZEN,
+                'processId' => 990029,
+            ]
+        );
+
+        $searchService = new ProcessSearchService(
+            $historyService->getWriter(),
+            $historyService->getReader()
+        );
+
+        $cancelledCitizen = $searchService->readSearch([
+            'processId' => 990029,
+            'status' => 'cancelled_citizen',
+        ]);
+
+        $this->assertCount(1, $cancelledCitizen);
+
+        $cancelledProcess = $cancelledCitizen->getFirst();
+
+        $this->assertSame('history', $cancelledProcess->source);
+        $this->assertSame('cancelled_citizen', $cancelledProcess->appointmentStatus);
+        $this->assertSame('deleted', $cancelledProcess->status);
+        $this->assertSame($finalizedAt->getTimestamp(), (int) $cancelledProcess->finalizedAt);
+
+        $cancelledStaff = $searchService->readSearch([
+            'processId' => 990029,
+            'status' => 'cancelled_staff',
+        ]);
+
+        $this->assertCount(0, $cancelledStaff);
+
+        $planned = $searchService->readSearch([
+            'processId' => 990029,
+            'status' => 'planned',
+        ]);
+
+        $this->assertCount(1, $planned);
+        $this->assertSame('active', $planned->getFirst()->source);
+        $this->assertSame('planned', $planned->getFirst()->appointmentStatus);
+    }
 }

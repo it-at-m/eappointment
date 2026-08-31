@@ -382,6 +382,8 @@ class SearchTest extends Base
         $this->assertStringContainsString('Status: Geplant', $body);
         $this->assertStringContainsString('Status: Abgeschlossen', $body);
         $this->assertStringContainsString('Status: Nicht erschienen', $body);
+        $this->assertStringContainsString('Status: Abgesagt durch Kunden', $body);
+        $this->assertStringContainsString('Status: Abgesagt durch Sachbearbeitung', $body);
 
         $this->assertStringContainsString('selectedprocess=100504', $body);
         $this->assertStringContainsString('selectedprocess=101002', $body);
@@ -425,9 +427,11 @@ class SearchTest extends Base
 
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertSame(4, substr_count($body, 'Buchung:'));
+        $this->assertSame(6, substr_count($body, 'Buchung:'));
 
         $this->assertSame(1, substr_count($body, 'Terminaufruf:'));
+
+        $this->assertSame(2, substr_count($body, 'Stornierung:'));
 
         $this->assertMatchesRegularExpression(
             '/Buchung: \d{2}\.\d{2}\.\d{4}, \d{2}:\d{2}&nbsp;Uhr/',
@@ -486,5 +490,46 @@ class SearchTest extends Base
             'id="search-user-yes"',
             $body
         );
+    }
+
+    public function testStatusFilterIsPassedToProcessSearch()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/search/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'page' => 1,
+                        'limit' => 100,
+                        'status' => 'cancelled_citizen',
+                        'scopeIds' => '380,1,141',
+                    ],
+                    'response' => $this->readFixture("GET_searchresult_active_history.json")
+                ]
+            ]
+        );
+
+        $response = $this->render(
+            $this->arguments,
+            ['status' => 'cancelled_citizen'],
+            []
+        );
+
+        $body = (string) $response->getBody();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringContainsString(
+            'value="cancelled_citizen" selected="selected"',
+            $body
+        );
+        $this->assertStringContainsString('Status: Abgesagt durch Kunden', $body);
     }
 }
