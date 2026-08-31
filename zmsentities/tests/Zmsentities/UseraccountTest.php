@@ -324,4 +324,53 @@ class UseraccountTest extends EntityCommonTests
         $entity->id = '';
         $this->assertNull($entity->getOidcProviderFromName());
     }
+
+    public function testLoginPayloadDoesNotRequireDepartments()
+    {
+        $entity = new \BO\Zmsentities\Useraccount([
+            'id' => 'johndoe',
+            'password' => 'secret1',
+        ]);
+        $this->assertTrue($entity->testValid());
+    }
+
+    public function testEmptyDepartmentsRejected()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
+        $entity = new \BO\Zmsentities\Useraccount([
+            'id' => 'johndoe',
+            'password' => 'secret1',
+            'departments' => [],
+        ]);
+        $entity->testValid();
+    }
+
+    public function testWorkstationUpdateWithoutDepartmentsIsValid()
+    {
+        $workstation = (new \BO\Zmsentities\Workstation())->getExample();
+        unset($workstation->useraccount['departments']);
+        $this->assertTrue($workstation->testValid());
+    }
+
+    public function testGetDepartmentListDoesNotPersistOmittedDepartments()
+    {
+        $entity = new \BO\Zmsentities\Useraccount([
+            'id' => 'johndoe',
+            'password' => 'secret1',
+        ]);
+        $this->assertSame(0, $entity->getDepartmentList()->count());
+        $this->assertFalse(isset($entity['departments']));
+        $this->assertTrue($entity->testValid());
+    }
+
+    public function testAddDataAcceptsPlainObject()
+    {
+        $entity = new \BO\Zmsentities\Useraccount();
+        $entity->addData((object) [
+            'id' => 'johndoe',
+            'password' => 'secret1',
+        ]);
+        $this->assertSame('johndoe', $entity->id);
+        $this->assertTrue($entity->testValid());
+    }
 }
