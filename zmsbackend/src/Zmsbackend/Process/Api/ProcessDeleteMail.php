@@ -36,6 +36,7 @@ class ProcessDeleteMail extends \BO\Zmsbackend\Api\BaseController
 
         $process->testValid();
         $this->testProcessData($process);
+        $process = (new ProcessRepository())->readEntity($process->id, $process->authKey);
 
         \BO\Zmsbackend\Connection\Select::getWriteConnection();
 
@@ -75,6 +76,8 @@ class ProcessDeleteMail extends \BO\Zmsbackend\Api\BaseController
         $authCheck = (new ProcessRepository())->readAuthKeyByProcessId($process->getId());
         if (! $authCheck) {
             throw new \BO\Zmsbackend\Process\Exception\ProcessNotFound();
+        } elseif ($authCheck['authKey'] !== $process->authKey) {
+            throw new \BO\Zmsbackend\Process\Exception\AuthKeyMatchFailed();
         } elseif (
             $process->toProperty()->scope->preferences->client->emailRequired->get() &&
             ! $process->getFirstClient()->hasEmail()

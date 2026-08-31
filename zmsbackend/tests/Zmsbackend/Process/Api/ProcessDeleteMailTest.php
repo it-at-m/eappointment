@@ -26,6 +26,50 @@ class ProcessDeleteMailTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->render([], [], []);
     }
 
+    public function testAuthKeyMatchFailed()
+    {
+        $this->expectException('\BO\Zmsbackend\Process\Exception\AuthKeyMatchFailed');
+        $this->expectExceptionCode(403);
+        $this->render([], [
+            '__body' => '{
+                "id": '. self::PROCESS_ID .',
+                "authKey": "1234",
+                "scope": {
+                    "id": 141,
+                    "provider": {
+                        "id": 123456,
+                        "name": "Flughafen Schönefeld, Aufsicht",
+                        "source": "dldb"
+                    },
+                    "shortName": "Zentrale"
+                },
+                "clients": [
+                    {
+                        "familyName": "Max Mustermann",
+                        "email": "max@service.berlin.de",
+                        "telephone": "030 115"
+                    }
+                ],
+                "appointments" : [
+                    {
+                        "date": 1447869172,
+                        "scope": {
+                            "id": 141,
+                            "provider": {
+                                "id": 123456,
+                                "name": "Flughafen Schönefeld, Aufsicht",
+                                "source": "dldb"
+                            },
+                            "shortName": "Zentrale"
+                        },
+                        "slotCount": 2
+                    }
+                ],
+                "status": "confirmed"
+            }'
+        ], []);
+    }
+
     public function testNotFound()
     {
         $this->expectException('\BO\Zmsbackend\Process\Exception\ProcessNotFound');
