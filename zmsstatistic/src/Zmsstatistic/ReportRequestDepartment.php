@@ -44,6 +44,7 @@ class ReportRequestDepartment extends BaseController
             ->toGrouped($this->groupfields, $this->hashset)
             ->withRequestsSum()
             ->withAverage('processingtime')
+            ->withWeightedAverageProcessingTime()
             ->withUncapturedRequestRowSortedLast();
         }
 
