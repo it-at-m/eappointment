@@ -638,7 +638,7 @@ class ProcessSearch extends \BO\Zmsbackend\Process\Repository\Process
                 true
             )
         ) {
-            $this->query->where(self::expression('1 = 0'));
+            $this->query->where('process.status', '=', $status);
             return $this;
         }
 
