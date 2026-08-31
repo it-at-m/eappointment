@@ -11,4 +11,4 @@ if (!$commit) {
 }
 
 $job = new \BO\Zmsbackend\Helper\CleanProcessArchivedToday($verbose);
-$job->startProcessing($commit);
+$job->startProcessing((bool) $commit, \App::$now);

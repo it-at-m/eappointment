@@ -1,5 +1,5 @@
 #language: de
-Funktionalität: Wechsel auf anderen Warteschlangen-Kunden während laufender Bearbeitung
+Funktionalität: Während der Bearbeitung auf einen anderen Warteschlangen-Kunden wechseln
 
 
 	@web @zmsadmin @ZMSKVR-1385 @automatisiert @executeLocally

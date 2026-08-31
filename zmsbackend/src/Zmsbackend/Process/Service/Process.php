@@ -267,11 +267,16 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         $process->id = $this->readNewProcessId();
         $process->setRandomAuthKey();
         $process->createTimestamp = $dateTime->getTimestamp();
+        if ($parentProcess !== 0) {
+            $process->displayNumber = '';
+        }
+
         $query->addValuesNewProcess($process, $parentProcess, $childProcessCount);
 
-        if (!empty($process->getDisplayNumber())) {
+        if ($parentProcess === 0 && !empty($process->getDisplayNumber())) {
             $query->addValueDisplayNumber($process);
         }
+
         $query->addValuesScopeData($process);
         $query->addValuesAppointmentData($process);
         $query->addValuesUpdateProcess($process, $dateTime, $parentProcess);
@@ -782,7 +787,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         $selectQuery
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
-            ->addConditionProcessDeleteInterval($expirationDate)
+            ->addConditionProcessDeleteBeforeDate($expirationDate)
             ->addConditionStatus($status)
             ->addConditionIgnoreSlots()
             ->addLimit($limit, $offset);
