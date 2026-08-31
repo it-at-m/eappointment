@@ -1,28 +1,28 @@
 {
   "branch": "feature-zmskvr-1049-internal-booking-request-provider",
   "branchSlug": "feature-zmskvr-1049-internal-booking-request-provider",
-  "runId": "33415650589",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33415650589",
-  "runStartedAt": "2026-08-31T16:43:11Z",
-  "publishedAt": "2026-08-31T16:53:51.636Z",
+  "runId": "33421513374",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33421513374",
+  "runStartedAt": "2026-08-31T17:47:55Z",
+  "publishedAt": "2026-08-31T17:56:00.141Z",
   "features": {
     "feature-rest-zmsapi-zmskvr-1049": {
-      "status": "skipped",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "rel": "rest/zmsapi/ZMSKVR-1049.feature",
-      "runId": "33415650589",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33415650589",
-      "runStartedAt": "2026-08-31T16:43:11Z"
+      "runId": "33421513374",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33421513374",
+      "runStartedAt": "2026-08-31T17:47:55Z"
     },
     "feature-ui-zmsadmin-zmskvr-1049": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "rel": "ui/zmsadmin/ZMSKVR-1049.feature",
-      "runId": "33415650589",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33415650589",
-      "runStartedAt": "2026-08-31T16:43:11Z"
+      "runId": "33421513374",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33421513374",
+      "runStartedAt": "2026-08-31T17:47:55Z"
     }
   }
 }
