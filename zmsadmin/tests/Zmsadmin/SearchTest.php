@@ -492,6 +492,29 @@ class SearchTest extends Base
         );
     }
 
+    public function testStatusOnlySearchDoesNotLoadUnfilteredLogs()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
+                ]
+            ]
+        );
+
+        $response = $this->render(
+            $this->arguments,
+            ['status' => 'cancelled_citizen'],
+            []
+        );
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringNotContainsString('Log-Ergebnisse', (string) $response->getBody());
+    }
+
     public function testStatusFilterIsPassedToProcessSearch()
     {
         $this->setApiCalls(
