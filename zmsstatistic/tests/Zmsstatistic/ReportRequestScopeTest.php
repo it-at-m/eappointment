@@ -106,6 +106,14 @@ class ReportRequestScopeTest extends Base
             (string) $response->getBody()
         );
         $this->assertStringContainsString(
+            'Ø Bearbeitungsdauer (unabhängig von DL)',
+            (string) $response->getBody()
+        );
+        $this->assertStringNotContainsString(
+            'average_processingtime_overall',
+            (string) $response->getBody()
+    );
+        $this->assertStringContainsString(
             'Auswertung für Bürgeramt Heerstraße im Zeitraum April 2016',
             (string) $response->getBody()
         );
@@ -150,6 +158,10 @@ class ReportRequestScopeTest extends Base
             ]
         );
         $response = $this->render(['period' => '2016'], [ ], [ ]);
+        $this->assertStringContainsString(
+            'Ø Bearbeitungsdauer (unabhängig von DL) / Summe',
+            (string) $response->getBody()
+);
         $this->assertStringContainsString(
             '<th class="statistik">2016</th>',
             (string) $response->getBody()
@@ -219,7 +231,15 @@ class ReportRequestScopeTest extends Base
             'Auswertung für die ausgewählten Standorte im Zeitraum 01.04.2016 bis 30.04.2016',
             (string) $response->getBody()
         );
-    }
+        $this->assertStringContainsString(
+            'Ø Bearbeitungsdauer (unabhängig von DL)',
+            (string) $response->getBody()
+        );
+            $this->assertStringNotContainsString(
+            'average_processingtime_overall',
+            (string) $response->getBody()
+        );
+     }
 
     public function testWithDateRangeAcrossYears()
     {
@@ -536,8 +556,34 @@ class ReportRequestScopeTest extends Base
             [ ]
         );
         $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
-        
-        // Clean up output buffer (discard any captured output)
-        ob_end_clean();
+        $tempfile = tempnam(sys_get_temp_dir(), 'request-report-');
+        file_put_contents($tempfile, (string) $response->getBody());
+        try {
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($tempfile);
+            $sheet = $spreadsheet->getActiveSheet();
+
+            $foundSumRow = false;
+
+            foreach ($sheet->getRowIterator() as $row) {
+                $rowIndex = $row->getRowIndex();
+                if ($sheet->getCell('A' . $rowIndex)->getValue() === 'Ø Bearbeitungsdauer (unabhängig von DL) / Summe') {
+                    $foundSumRow = true;
+                    $this->assertNotNull(
+                        $sheet->getCell('B' . $rowIndex)->getValue(),
+                        'The overall average processing time must be exported.'
+                    );
+
+                    break;
+                }
+            }
+            $this->assertTrue($foundSumRow, 'The XLSX export must contain a Summe row');
+            $this->assertSame(
+                'Ø Bearbeitungsdauer (unabhängig von DL) / Summe',
+                $sheet->getCell('A' . $rowIndex)->getValue()
+            );
+        } finally {
+            unlink($tempfile);
+            ob_end_clean();
+        }
     }
 }
