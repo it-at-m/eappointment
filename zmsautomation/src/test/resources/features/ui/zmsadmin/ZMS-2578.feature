@@ -1,5 +1,5 @@
 #language: de
-Funktionalität: Default
+Funktionalität: Aufgerufenen Termin parken
 
 	@web @zmsadmin @ZMS-2578 @automatisiert @executeLocally
 	Szenario: [AUT] Test Parken aufgerufener Termine

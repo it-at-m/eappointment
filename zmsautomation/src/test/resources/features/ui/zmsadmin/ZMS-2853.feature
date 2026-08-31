@@ -1,5 +1,5 @@
 #language: de
-Funktionalität: ZMS Admin GUI Optimierung 
+Funktionalität: Kundeninformation direkt nach Aufruf anzeigen
 
 	
 	@web @zmsadmin @ZMS-2853 @ZMS-1499 @ZMS-3162 @executeLocally

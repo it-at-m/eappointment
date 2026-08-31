@@ -1,6 +1,6 @@
 #language: en
 @web @zmscitizenview @ZMSKVR-1124 @executeLocally
-Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 10502, Hauptkalender 10489, Abholung 10492, jump-in)
+Feature: CitizenView: Ruppertstraße Passkalender, Hauptkalender und Abholung (jump-in)
   As a citizen
   I want to book via the citizen view UI
   So that jump-in links route to the correct office (Passkalender 10502, Hauptkalender 10489, Abholung 10492)

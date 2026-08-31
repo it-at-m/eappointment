@@ -1,0 +1,34 @@
+{
+    "type": "object",
+    "description": "Profile information of the currently authenticated user.",
+    "example": {
+        "username": "max.mustermann",
+        "role": "Sachbearbeitung (Basis)",
+        "permissions": [
+            "Sachbearbeiteransicht aufrufen + Termine aufrufen/verwalten/vergeben/verschieben/stornieren (inkl. Benachrichtigungsmail senden)"
+        ]
+    },
+    "required": [
+        "username",
+        "role",
+        "permissions"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "username": {
+            "type": "string",
+            "description": "Login name without the Keycloak provider suffix."
+        },
+        "role": {
+            "type": "string",
+            "description": "German description of the assigned role."
+        },
+        "permissions": {
+            "type": "array",
+            "description": "German descriptions of the permissions assigned through the role.",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}
