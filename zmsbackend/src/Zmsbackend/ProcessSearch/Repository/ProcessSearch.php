@@ -119,13 +119,18 @@ class ProcessSearch extends \BO\Zmsbackend\Process\Repository\Process
                 CASE
                     WHEN history.status = "completed" THEN "finished"
                     WHEN history.status = "missed" THEN "missed"
+                    WHEN history.status = "cancelled_citizen" THEN "deleted"
+                    WHEN history.status = "cancelled_staff" THEN "blocked"
                     ELSE NULL
                 END AS technical_status,
                 CASE
                     WHEN history.status = "completed" THEN "completed"
                     WHEN history.status = "missed" THEN "missed"
+                    WHEN history.status = "cancelled_citizen" THEN "cancelled_citizen"
+                    WHEN history.status = "cancelled_staff" THEN "cancelled_staff"
                     ELSE NULL
                 END AS appointment_status,
+                history.finalized_at AS finalized_at,
                 "history" AS source,
                 history.id AS source_record_id
             FROM process_search_history history
@@ -294,6 +299,46 @@ class ProcessSearch extends \BO\Zmsbackend\Process\Repository\Process
             $parameters,
             $filters
         );
+
+        $this->addHistoryAppointmentStatusFilter(
+            $conditions,
+            $parameters,
+            $filters
+        );
+    }
+
+    private function addHistoryAppointmentStatusFilter(
+        array &$conditions,
+        array &$parameters,
+        array $filters
+    ): void {
+        $status = isset($filters['appointmentStatus'])
+            ? trim((string) $filters['appointmentStatus'])
+            : '';
+
+        if ($status === '') {
+            return;
+        }
+
+        if ($status === 'planned') {
+            $conditions[] = '1 = 0';
+            return;
+        }
+
+        $historyStatus = match ($status) {
+            'completed' => 'completed',
+            'missed' => 'missed',
+            'cancelled_citizen' => 'cancelled_citizen',
+            'cancelled_staff' => 'cancelled_staff',
+            default => null,
+        };
+
+        if ($historyStatus === null) {
+            return;
+        }
+
+        $conditions[] = 'history.status = ?';
+        $parameters[] = $historyStatus;
     }
 
     private function addHistoryNameFilter(
@@ -578,6 +623,37 @@ class ProcessSearch extends \BO\Zmsbackend\Process\Repository\Process
         return $this;
     }
 
+    public function addConditionAppointmentStatusFilter(string $status): self
+    {
+        $status = trim($status);
+
+        if ($status === '') {
+            return $this;
+        }
+
+        if (
+            in_array(
+                $status,
+                ['completed', 'cancelled_citizen', 'cancelled_staff'],
+                true
+            )
+        ) {
+            $this->query->where('1', '=', 0);
+            return $this;
+        }
+
+        if ($status === 'missed') {
+            $this->query->where('process.status', '=', 'missed');
+            return $this;
+        }
+
+        if ($status === 'planned') {
+            $this->query->where('process.status', '!=', 'missed');
+        }
+
+        return $this;
+    }
+
     public function addCombinedActiveProjection(): self
     {
         $this->leftJoin(
@@ -650,6 +726,8 @@ class ProcessSearch extends \BO\Zmsbackend\Process\Repository\Process
             'technical_status' => $mapping['status'],
 
             'appointment_status' => $mapping['appointmentStatus'],
+
+            'finalized_at' => self::expression('NULL'),
 
             'source' => $mapping['source'],
 

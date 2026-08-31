@@ -50,6 +50,7 @@ class Search extends BaseController
                 'hideNavigation' => (bool) $parameters['hideNavigation'],
                 'service' => $parameters['service'],
                 'provider' => $parameters['provider'],
+                'status' => $parameters['status'],
                 'userAction' => $parameters['userAction'],
                 'date' => $parameters['date'],
                 'page' => $parameters['page'],
@@ -77,6 +78,7 @@ class Search extends BaseController
 
         $service = $this->readStringParameter($validator, 'service');
         $provider = $this->readStringParameter($validator, 'provider');
+        $status = $this->readAppointmentStatusParameter($validator);
         $date = $validator->getParameter('date')->isString()->setDefault(null)->getValue();
         $page = $this->readNumberParameter($validator, 'page', 1);
         $userAction = $this->readNumberParameter($validator, 'user', 0);
@@ -89,6 +91,7 @@ class Search extends BaseController
             'page' => $page,
             'service' => $service ? trim($service) : null,
             'provider' => $provider ? trim($provider) : null,
+            'status' => $status,
             'date' => $date !== null && trim($date) !== '' ? trim($date) : null,
             'userAction' => $userAction,
             'perPage' => $resultsPerPage,
@@ -98,6 +101,7 @@ class Search extends BaseController
                 || trim($service) !== ''
                 || trim($provider) !== ''
                 || ($date !== null && trim($date) !== '')
+                || $status !== null
                 || $userAction !== 0
             ),
         ];
@@ -143,7 +147,8 @@ class Search extends BaseController
     {
         return $parameters['service'] !== null
             || $parameters['provider'] !== null
-            || $parameters['date'] !== null;
+            || $parameters['date'] !== null
+            || $parameters['status'] !== null;
     }
 
     private function buildProcessSearchParameters($workstation, array $parameters, array $scopeIds): array
@@ -165,6 +170,9 @@ class Search extends BaseController
         }
         if ($parameters['date'] !== null) {
             $searchParameters['date'] = $parameters['date'];
+        }
+        if ($parameters['status'] !== null) {
+            $searchParameters['status'] = $parameters['status'];
         }
         if (!$workstation->getUseraccount()->isSuperUser()) {
             $searchParameters['scopeIds'] = implode(',', $scopeIds);
@@ -247,6 +255,30 @@ class Search extends BaseController
         }
 
         return $list;
+    }
+
+    private function readAppointmentStatusParameter($validator): ?string
+    {
+        $status = trim((string) $this->readStringParameter($validator, 'status'));
+
+        if (
+            $status === ''
+            || !in_array(
+                $status,
+                [
+                    'planned',
+                    'completed',
+                    'missed',
+                    'cancelled_citizen',
+                    'cancelled_staff',
+                ],
+                true
+            )
+        ) {
+            return null;
+        }
+
+        return $status;
     }
 
     private function readStringParameter($validator, string $name, string $default = ''): string

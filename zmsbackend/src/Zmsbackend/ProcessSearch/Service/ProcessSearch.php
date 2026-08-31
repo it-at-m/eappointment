@@ -12,6 +12,14 @@ class ProcessSearch extends \BO\Zmsbackend\Base
 {
     private const int DEFAULT_HISTORY_DAYS = 90;
 
+    private const array APPOINTMENT_STATUS_FILTERS = [
+        'planned',
+        'completed',
+        'missed',
+        'cancelled_citizen',
+        'cancelled_staff',
+    ];
+
     public function mapSearchRowToProcess(array $row): Entity
     {
         return new Entity([
@@ -47,6 +55,9 @@ class ProcessSearch extends \BO\Zmsbackend\Base
             'status' => (string) $row['technical_status'],
             'source' => (string) $row['source'],
             'appointmentStatus' => (string) $row['appointment_status'],
+            'finalizedAt' => !empty($row['finalized_at'])
+                ? strtotime((string) $row['finalized_at'])
+                : 0,
         ]);
     }
 
@@ -107,6 +118,16 @@ class ProcessSearch extends \BO\Zmsbackend\Base
             ->addConditionIgnoreSlots()
             ->addConditionActiveSearchStatuses();
 
+        $appointmentStatus = $this->normalizeAppointmentStatusFilter(
+            $parameter['status'] ?? null
+        );
+
+        if ($appointmentStatus !== null) {
+            $query->addConditionAppointmentStatusFilter(
+                $appointmentStatus
+            );
+        }
+
         if (!empty($parameter['upcomingOnly'])) {
             $now = class_exists('\App') && isset(\App::$now)
                 ? \App::$now
@@ -162,6 +183,7 @@ class ProcessSearch extends \BO\Zmsbackend\Base
                     'offset',
                     'includePast',
                     'denyHistory',
+                    'status',
                 ] as $reservedKey
             ) {
                 unset($parameter[$reservedKey]);
@@ -349,6 +371,9 @@ class ProcessSearch extends \BO\Zmsbackend\Base
                 'processId' => $parameter['processId'] ?? null,
                 'scopeId' => $parameter['scopeId'] ?? null,
                 'denyHistory' => $denyHistory,
+                'appointmentStatus' => $this->normalizeAppointmentStatusFilter(
+                    $parameter['status'] ?? null
+                ),
             ]
         );
 
@@ -409,6 +434,20 @@ class ProcessSearch extends \BO\Zmsbackend\Base
             'sql' => $sql,
             'parameters' => $combined['parameters'],
         ];
+    }
+
+    private function normalizeAppointmentStatusFilter(mixed $status): ?string
+    {
+        $status = trim((string) $status);
+
+        if (
+            $status === ''
+            || !in_array($status, self::APPOINTMENT_STATUS_FILTERS, true)
+        ) {
+            return null;
+        }
+
+        return $status;
     }
 
     protected function getHistoryAppointmentFrom(): \DateTimeImmutable

@@ -3,6 +3,7 @@
 namespace BO\Zmsbackend\Tests\Process\Api;
 
 use \BO\Zmsbackend\Process\Service\ProcessStatusFree;
+use BO\Zmsbackend\ProcessSearchHistory\Service\ProcessSearchHistory as HistoryService;
 
 class ProcessDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
 {
@@ -23,6 +24,12 @@ class ProcessDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
         
         $entity = (new \BO\Zmsbackend\Process\Service\Process)->readEntity(10029, new \BO\Zmsbackend\Helper\NoAuth);
         $this->assertEquals('deleted', $entity->status);
+
+        $historyEntry = $this->readHistoryEntry(10029);
+        $this->assertIsArray($historyEntry);
+        $this->assertSame(HistoryService::STATUS_CANCELLED_BY_CITIZEN, $historyEntry['status']);
+        $this->assertSame('J525', $historyEntry['citizen_name']);
+        $this->assertSame(\App::$now->format('Y-m-d H:i:s'), $historyEntry['finalized_at']);
     }
 
     public function testReserved()
@@ -82,5 +89,25 @@ class ProcessDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->expectException('BO\Zmsbackend\Process\Exception\ProcessNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => $this->processId, 'authKey' => $this->authKey], [], []);
+    }
+
+    private function readHistoryEntry(int $processId)
+    {
+        return (new HistoryService())->fetchRow(
+            '
+                SELECT
+                    `process_id`,
+                    `status`,
+                    `citizen_name`,
+                    `finalized_at`
+                FROM `process_search_history`
+                WHERE `process_id` = :processId
+                ORDER BY `id` DESC
+                LIMIT 1
+            ',
+            [
+                'processId' => $processId,
+            ]
+        );
     }
 }
