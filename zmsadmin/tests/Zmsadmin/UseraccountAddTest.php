@@ -198,7 +198,7 @@ class UseraccountAddTest extends Base
 
     public function testMissingDepartmentValidation()
     {
-        $message = 'Bitte wählen Sie (mindestens) einen Standort aus.';
+        $message = 'Bitte wählen Sie (mindestens) eine Behörde aus.';
 
         $exception = new \BO\Zmsclient\Exception();
         $exception->template =
