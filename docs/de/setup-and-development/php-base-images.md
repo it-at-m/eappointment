@@ -44,6 +44,8 @@ Jeder Image-Job meldet sich bei GHCR an, baut die Image-Targets, validiert den P
 
 - `ghcr.io/it-at-m/eappointment/zmsbase`
 
+Dieser GHCR-Publish ist die öffentliche Hälfte des [CI/CD-Ablaufs](../operations/ci-cd.md) (Quay-Spiegel, GitLab-Helm, OpenShift).
+
 ## Modul-Abhängigkeitskontext
 
 ```mermaid
