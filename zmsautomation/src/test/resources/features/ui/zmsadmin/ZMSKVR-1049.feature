@@ -7,7 +7,7 @@ Funktionalität: Interner Terminkunde für zms-Variante ohne Eintrag in provider
         Wenn Sie zur Webseite der Administration navigieren.
         Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
         Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-        Und Sie für "Standort" den Wert "Gewerbeamt Varianten Telefon/Video" auswählen.
+        Und Sie für "Standort" den Wert "Gewerbeamt Telefon/Video" auswählen.
         Und Sie in Feld "Platz-Nr. oder Tresen" den Text "4" eingeben.
         Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
         Dann wird die Seite Sachbearbeiterplatz angezeigt.
@@ -19,7 +19,7 @@ Funktionalität: Interner Terminkunde für zms-Variante ohne Eintrag in provider
         Wenn Sie zur Webseite der Administration navigieren.
         Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
         Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-        Und Sie für "Standort" den Wert "Gewerbeamt Varianten Telefon/Video" auswählen.
+        Und Sie für "Standort" den Wert "Gewerbeamt Telefon/Video" auswählen.
         Und Sie in Feld "Platz-Nr. oder Tresen" den Text "4" eingeben.
         Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
         Dann wird die Seite Sachbearbeiterplatz angezeigt.
