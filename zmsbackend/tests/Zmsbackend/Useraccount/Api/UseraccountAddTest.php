@@ -257,7 +257,7 @@ class UseraccountAddTest extends \BO\Zmsbackend\Tests\Api\Base
                 $exception->data
             );
             $this->assertSame(
-                'Bitte wählen Sie (mindestens) einen Standort aus.',
+                'Bitte wählen Sie (mindestens) eine Behörde aus.',
                 $exception->data['/departments']['messages']['minItems']
             );
         }
@@ -288,7 +288,7 @@ class UseraccountAddTest extends \BO\Zmsbackend\Tests\Api\Base
                 $exception->data
             );
             $this->assertSame(
-                'Bitte wählen Sie (mindestens) einen Standort aus.',
+                'Bitte wählen Sie (mindestens) eine Behörde aus.',
                 $exception->data['/departments']['messages']['minItems']
             );
         }

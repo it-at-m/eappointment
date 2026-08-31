@@ -248,7 +248,7 @@
         "de_DE": {
           "pointer": "Behörde",
           "messages": {
-            "minItems": "Bitte wählen Sie (mindestens) einen Standort aus."
+            "minItems": "Bitte wählen Sie (mindestens) eine Behörde aus."
           }
         }
       }
