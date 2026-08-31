@@ -2,6 +2,8 @@
 
 namespace BO\Zmsbackend\Tests\Useraccount\Api;
 
+use BO\Zmsentities\Exception\SchemaValidation;
+
 class UseraccountAddTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "UseraccountAdd";
@@ -226,5 +228,69 @@ class UseraccountAddTest extends \BO\Zmsbackend\Tests\Api\Base
                 "password": "unittest"
             }'
         ], []);
+    }
+
+    public function testMissingDepartmentRejectedForUserAdmin()
+    {
+        $workstation = $this->setWorkstation(137, 'testadmin');
+        $workstation->getUseraccount()->roles = ['user_admin'];
+        $workstation
+            ->getUseraccount()
+            ->setPermissions('useraccount');
+
+        $this->setDepartment(74);
+
+        try {
+            $this->render([], [
+                '__body' => '{
+                    "roles": ["agent_queue"],
+                    "id": "unittest-no-department",
+                    "password": "unittest"
+                }'
+            ], []);
+
+            $this->fail('Expected SchemaValidation was not thrown');
+        } catch (SchemaValidation $exception) {
+            $this->assertSame(400, $exception->getCode());
+            $this->assertArrayHasKey(
+                '/departments',
+                $exception->data
+            );
+            $this->assertSame(
+                'Bitte wählen Sie (mindestens) einen Standort aus.',
+                $exception->data['/departments']['messages']['minItems']
+            );
+        }
+    }
+
+    public function testMissingDepartmentRejectedForSuperuser()
+    {
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->roles = ['system_admin'];
+        $workstation
+            ->getUseraccount()
+            ->setPermissions('superuser');
+
+        try {
+            $this->render([], [
+                '__body' => '{
+                    "roles": ["agent_queue"],
+                    "id": "unittest-superuser-no-department",
+                    "password": "unittest"
+                }'
+            ], []);
+
+            $this->fail('Expected SchemaValidation was not thrown');
+        } catch (SchemaValidation $exception) {
+            $this->assertSame(400, $exception->getCode());
+            $this->assertArrayHasKey(
+                '/departments',
+                $exception->data
+            );
+            $this->assertSame(
+                'Bitte wählen Sie (mindestens) einen Standort aus.',
+                $exception->data['/departments']['messages']['minItems']
+            );
+        }
     }
 }
