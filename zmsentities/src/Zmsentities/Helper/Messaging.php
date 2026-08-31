@@ -92,6 +92,9 @@ class Messaging
 
     protected static function createTwigEnvironment(\Twig\Loader\LoaderInterface $loader): Environment
     {
+        if (\class_exists(\Locale::class)) {
+            \Locale::setDefault('de_DE');
+        }
         $twig = new Environment($loader, array(//'cache' => '/cache/',
         ));
         $twig->addExtension(new TranslationExtension());
