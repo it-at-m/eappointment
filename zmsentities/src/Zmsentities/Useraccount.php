@@ -60,7 +60,13 @@ class Useraccount extends Schema\Entity
     #[\Override]
     public function addData(array|object $mergeData): static
     {
-        if (isset($mergeData['departments']) && !($this['departments'] ?? null) instanceof Collection\DepartmentList) {
+        $hasDepartments = false;
+        if (is_array($mergeData) || $mergeData instanceof \ArrayAccess) {
+            $hasDepartments = isset($mergeData['departments']);
+        } elseif (is_object($mergeData)) {
+            $hasDepartments = isset($mergeData->departments);
+        }
+        if ($hasDepartments && !($this['departments'] ?? null) instanceof Collection\DepartmentList) {
             $this->departments = new Collection\DepartmentList();
         }
         return parent::addData($mergeData);
@@ -82,8 +88,11 @@ class Useraccount extends Schema\Entity
 
     public function getDepartmentList(): Collection\DepartmentList
     {
-        if (!isset($this['departments']) || !$this->departments instanceof Collection\DepartmentList) {
-            $this->departments = new Collection\DepartmentList($this['departments'] ?? []);
+        if (!isset($this['departments'])) {
+            return new Collection\DepartmentList();
+        }
+        if (!$this->departments instanceof Collection\DepartmentList) {
+            $this->departments = new Collection\DepartmentList($this->departments);
             foreach ($this->departments as $key => $department) {
                 $this->departments[$key] = new Department($department);
             }
@@ -93,7 +102,11 @@ class Useraccount extends Schema\Entity
 
     public function addDepartment(Department|array $department): static
     {
-        $this->getDepartmentList();
+        if (!isset($this['departments'])) {
+            $this->departments = new Collection\DepartmentList();
+        } elseif (!$this->departments instanceof Collection\DepartmentList) {
+            $this->getDepartmentList();
+        }
         $this->departments[] = $department;
         return $this;
     }

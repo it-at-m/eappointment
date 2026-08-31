@@ -351,4 +351,26 @@ class UseraccountTest extends EntityCommonTests
         unset($workstation->useraccount['departments']);
         $this->assertTrue($workstation->testValid());
     }
+
+    public function testGetDepartmentListDoesNotPersistOmittedDepartments()
+    {
+        $entity = new \BO\Zmsentities\Useraccount([
+            'id' => 'johndoe',
+            'password' => 'secret1',
+        ]);
+        $this->assertSame(0, $entity->getDepartmentList()->count());
+        $this->assertFalse(isset($entity['departments']));
+        $this->assertTrue($entity->testValid());
+    }
+
+    public function testAddDataAcceptsPlainObject()
+    {
+        $entity = new \BO\Zmsentities\Useraccount();
+        $entity->addData((object) [
+            'id' => 'johndoe',
+            'password' => 'secret1',
+        ]);
+        $this->assertSame('johndoe', $entity->id);
+        $this->assertTrue($entity->testValid());
+    }
 }
