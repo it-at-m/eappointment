@@ -7,12 +7,13 @@ The graph also shows the runtime services every deployment depends on:
 - `zmsbase` — pre-built PHP runtime images for every PHP module (see [PHP Base Images](../php-base-images)).
 - `Digital Citizen Service (DBS)` — Munich's open-source citizen identity broker for BundID, BayernID and Elster, reached at the `refarch-gateway` layer (see [it-at-m/dbs](https://it-at-m.github.io/dbs/)).
 - `CaptchaService` — Munich's open-source ALTCHA-based proof-of-work CAPTCHA service that gates the citizen booking flow against bot scraping. Fetched by `zmscitizenview` to render the challenge and called by `zmscitizenapi` to verify the solution (see [it-at-m/captchaservice](https://it-at-m.github.io/captchaservice/)).
+- [`muc-patternlab-vue`](https://github.com/it-at-m/muc-patternlab-vue) — Munich's Vue component library based on [MDE5 Patternlab](https://patternlab.muenchen.space/). npm dependency of `zmscitizenview` (`@muenchen/muc-patternlab-vue`).
 - `zmsautomation` — Maven-based acceptance tests on **[ATAF](https://it-at-m.github.io/agile-test-automation-framework/)** (Agile Test Automation Framework; artifacts `de.muenchen.ataf`): Cucumber scenarios with **REST Assured** for API tests and **Selenium** (via [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) web) for UI tests. Not a Composer dependency of the PHP modules; it drives HTTP/browser flows against deployed instances (see [`zmsautomation/README.md`](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/README.md)).
 
 **Reading the edges**
 
 - Solid arrow (`A --> B`): A has B as a code dependency (composer).
-- Dashed arrow (`A -.-> B`): build / integration dependency, or npm `file:` dependency (for example `zmsadmin` → `zmslayout`). A is built and deployed on top of B but does not pull it as a Composer dependency.
+- Dashed arrow (`A -.-> B`): build / integration dependency, or npm dependency (registry package or `file:`, for example `zmsadmin` → `zmslayout`, `zmscitizenview` → `muc-patternlab-vue`). A is built and deployed on top of B but does not pull it as a Composer dependency.
 - Thick arrow (`A ==> B`): runtime / infrastructure dependency. A talks to B at runtime, or B provides A's runtime environment.
 
 In the **Test automation** subgraph only, the dashed edge **`ataf -.-> zmsautomation`** reads as _framework → consumer_ ([ATAF](https://it-at-m.github.io/agile-test-automation-framework/) supplies Cucumber plus REST Assured for API and Selenium for UI to `zmsautomation`), not as the Composer-style “A built on B” rule above.
@@ -34,9 +35,10 @@ graph TD;
 
     zmscitizenapi --> mellon & zmsslim & zmsclient & zmsentities;
 
-    %% npm file: dependencies (dashed)
+    %% npm dependencies (dashed)
     zmsadmin -.-> zmslayout;
     zmsstatistic -.-> zmslayout;
+    zmscitizenview -.-> mucpatternlab;
 
     %% Build / integration dependencies (dashed)
     zmscitizenapi -.-> zmsbackend;
@@ -95,6 +97,7 @@ graph TD;
     subgraph shared_frontend [Shared layout assets]
         style shared_frontend stroke-dasharray: 5, 2, 1, 2
         zmslayout["zmslayout<br>vendored SCSS/JS"]
+        mucpatternlab["muc-patternlab-vue<br>MDE5 Vue components"]
     end
 
     %% Styling
@@ -115,13 +118,14 @@ graph TD;
     class zmsautomation automation;
     class ataf automation;
     class zmslayout layout;
+    class mucpatternlab layout;
 ```
 
 ## Frontend vs Backend Modules
 
 ### Frontend
 
-- `zmscitizenview`: Vue3 citizen-facing booking frontend built on [RefArch](https://refarch.oss.muenchen.de).
+- `zmscitizenview`: Vue3 citizen-facing booking frontend built on [RefArch](https://refarch.oss.muenchen.de). UI components come from [`muc-patternlab-vue`](https://github.com/it-at-m/muc-patternlab-vue) (`@muenchen/muc-patternlab-vue`).
 - `refarch-gateway`: frontend gateway/BFF layer used by `zmscitizenview`.
 - `zmsadmin`: administration UI module (with backend/API integration).
 - `zmsstatistic`: statistics/reporting UI module (with backend/API integration).
@@ -131,6 +135,7 @@ graph TD;
 ### Shared layout assets
 
 - `zmslayout`: vendored Berlin Online layout SCSS and JavaScript (`bo-zms-layout-js`, `bo-zms-layout-scss`), shared by `zmsadmin` and `zmsstatistic` via npm `file:` dependencies. `zmscalldisplay` and `zmsticketprinter` use their own PHP/Twig UI stacks and do not depend on `zmslayout` today. A RefArch/Vue refactor of `zmsadmin`, `zmsstatistic`, and the other internal PHP frontends (see [Product-Oriented RefArch Roadmap](/on-the-future/refarch-roadmap/product-oriented-refarch-roadmap)) would replace `zmslayout` with Vue/Vuetify rather than extending it.
+- [`muc-patternlab-vue`](https://github.com/it-at-m/muc-patternlab-vue): Munich Vue component library on [MDE5 Patternlab](https://patternlab.muenchen.space/). npm dependency of `zmscitizenview` (`@muenchen/muc-patternlab-vue`). Not used by the PHP admin/statistic UIs, which still use `zmslayout`.
 
 `zmscitizenview` follows the RefArch reference architecture patterns and uses `refarch-gateway` as its gateway layer.
 This means requests from `zmscitizenview` are routed through `refarch-gateway` before they reach `zmscitizenapi`.
