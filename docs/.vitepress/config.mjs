@@ -351,6 +351,7 @@ const sidebarLabels = {
     zmsautomation: "zmsautomation Documentation",
     cucumberCurrent: "Current Cucumber Tests",
     operations: "Operations",
+    cicd: "CI/CD",
     apiReference: "API reference",
     dldb: "DLDB Interface Documentation",
     ruppertstrasseBookingVariants: "Ruppertstraße booking variants",
@@ -405,6 +406,7 @@ const sidebarLabels = {
     zmsautomation: "zmsautomation-Dokumentation",
     cucumberCurrent: "Aktuelle Cucumber-Tests",
     operations: "Betrieb",
+    cicd: "CI/CD",
     apiReference: "API-Referenz",
     dldb: "DLDB-Schnittstellendokumentation",
     ruppertstrasseBookingVariants: "Terminvarianten Ruppertstraße",
@@ -571,6 +573,10 @@ const buildSidebar = (prefix, lang) => {
     {
       text: t.operations,
       items: [
+        {
+          text: t.cicd,
+          link: `${prefix}/operations/ci-cd`,
+        },
         {
           text: t.apiReference,
           link: `${prefix}/operations/api-reference`,

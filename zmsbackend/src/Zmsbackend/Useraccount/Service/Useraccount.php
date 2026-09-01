@@ -139,12 +139,8 @@ class Useraccount extends \BO\Zmsbackend\Base
 
     protected function extractDepartmentIdsFromEntity($useraccount): array
     {
-        if (!isset($useraccount->departments) || empty($useraccount->departments)) {
-            return [];
-        }
-
         $ids = [];
-        foreach ($useraccount->departments as $department) {
+        foreach ($useraccount->getDepartmentList() as $department) {
             if (is_object($department) && isset($department->id)) {
                 $ids[] = $department->id;
             } elseif (is_array($department) && isset($department['id'])) {
@@ -802,7 +798,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         if (!$entity->isSuperUser()) {
             $this->deleteAssignedDepartments($loginName);
             $userId = $this->readEntityIdByLoginName($loginName);
-            foreach ($entity->departments as $department) {
+            foreach ($entity->getDepartmentList() as $department) {
                 $this->perform(
                     \BO\Zmsbackend\Useraccount\Repository\Useraccount::QUERY_WRITE_ASSIGNED_DEPARTMENTS,
                     array(

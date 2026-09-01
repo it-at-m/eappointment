@@ -44,6 +44,8 @@ Each image job logs in to GHCR, builds image targets, validates PHP startup (`ph
 
 - `ghcr.io/it-at-m/eappointment/zmsbase`
 
+That GHCR publish is the public half of the [CI/CD flow](../operations/ci-cd.md) (Quay mirror, GitLab Helm, OpenShift).
+
 ## Module dependency context
 
 ```mermaid

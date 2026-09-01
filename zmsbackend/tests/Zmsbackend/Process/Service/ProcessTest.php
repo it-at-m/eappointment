@@ -892,4 +892,49 @@ class ProcessTest extends \BO\Zmsbackend\Tests\Service\Base
             ProcessStatusFree::resolveRoundRobinGroupKey('10489', [10489, 10503])
         );
     }
+
+    public function testFollowingProcessDoesNotGetDisplayNumber()
+    {
+        $now = static::$now;
+
+        $query = new class extends Query {
+            public function writeFollowingProcess(
+                Entity $process,
+                \DateTimeInterface $now,
+                int $parentProcess
+            ): Entity {
+                return $this->writeNewProcess(
+                    $process,
+                    $now,
+                    $parentProcess
+                );
+            }
+        };
+
+        $process = self::getTestProcessEntity();
+        $process->displayNumber = 'TEST123';
+
+        $followingProcess = $query->writeFollowingProcess(
+            $process,
+            $now,
+            10029
+        );
+
+        $connection = \BO\Zmsbackend\Connection\Select::getWriteConnection();
+
+        $statement = $connection->prepare(
+            'SELECT displayNumber
+            FROM buerger
+            WHERE BuergerID = :processId'
+        );
+
+        $statement->execute([
+            'processId' => $followingProcess->id
+        ]);
+
+        $row = $statement->fetch(\PDO::FETCH_ASSOC);
+
+        $this->assertIsArray($row);
+        $this->assertNull($row['displayNumber']);
+    }
 }
