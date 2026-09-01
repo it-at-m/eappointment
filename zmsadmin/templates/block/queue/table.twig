@@ -355,8 +355,15 @@
 										{% else %}
 											{{ item.queue.arrivalTime|date("H:i") }}
 										{% endif %}
-										{% if item.queue.waitingTime and isToday %}
-											<p class="queue-table-amendment-time">+{{ item.queue.waitingTime}}&nbsp;Min.</p>
+										{% set waitingTime = item.queue.waitingTime %}
+										{% set waitingTimeParts = (waitingTime ~ '')|split(':') %}
+										{% if waitingTimeParts|length == 3 %}
+											{% set waitingTimeMinutes = waitingTimeParts[0] * 60 + waitingTimeParts[1] %}
+										{% else %}
+											{% set waitingTimeMinutes = waitingTime %}
+										{% endif %}
+										{% if waitingTimeMinutes > 0 and isToday %}
+											<p class="queue-table-amendment-time">+{{ waitingTimeMinutes }}&nbsp;Min.</p>
 										{% endif %}
 									</td>
 									<td title="{{ item.amendment|default('')|replace({'\r': ''})|e('html_attr') }}">
