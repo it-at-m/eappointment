@@ -16,8 +16,7 @@ class Useraccount extends Schema\Entity
     public static $schema = "useraccount.json";
 
     /**
-     * @return (Collection\DepartmentList|false[])[]
-     *
+     * @return array<string, mixed>
      */
     #[\Override]
     public function getDefaults()
@@ -55,8 +54,22 @@ class Useraccount extends Schema\Entity
                 "waitingqueue" => false,
                 "superuser" => false
             ],
-            'departments' => new Collection\DepartmentList(),
         ];
+    }
+
+    #[\Override]
+    public function addData(array|object $mergeData): static
+    {
+        $hasDepartments = false;
+        if (is_array($mergeData) || $mergeData instanceof \ArrayAccess) {
+            $hasDepartments = isset($mergeData['departments']);
+        } elseif (is_object($mergeData)) {
+            $hasDepartments = isset($mergeData->departments);
+        }
+        if ($hasDepartments && !($this['departments'] ?? null) instanceof Collection\DepartmentList) {
+            $this->departments = new Collection\DepartmentList();
+        }
+        return parent::addData($mergeData);
     }
 
     /**
@@ -75,6 +88,9 @@ class Useraccount extends Schema\Entity
 
     public function getDepartmentList(): Collection\DepartmentList
     {
+        if (!isset($this['departments'])) {
+            return new Collection\DepartmentList();
+        }
         if (!$this->departments instanceof Collection\DepartmentList) {
             $this->departments = new Collection\DepartmentList($this->departments);
             foreach ($this->departments as $key => $department) {
@@ -86,17 +102,20 @@ class Useraccount extends Schema\Entity
 
     public function addDepartment(Department|array $department): static
     {
+        if (!isset($this['departments'])) {
+            $this->departments = new Collection\DepartmentList();
+        } elseif (!$this->departments instanceof Collection\DepartmentList) {
+            $this->getDepartmentList();
+        }
         $this->departments[] = $department;
         return $this;
     }
 
     public function getDepartment($departmentId)
     {
-        if (count($this->departments)) {
-            foreach ($this->getDepartmentList() as $department) {
-                if ($department['id'] == $departmentId) {
-                    return $department;
-                }
+        foreach ($this->getDepartmentList() as $department) {
+            if ($department['id'] == $departmentId) {
+                return $department;
             }
         }
         return new Department(['name' => 'Not existing']);
@@ -269,7 +288,7 @@ class Useraccount extends Schema\Entity
 
     public function getDepartmentById($departmentId): Department
     {
-        foreach ($this->departments as $department) {
+        foreach ($this->getDepartmentList() as $department) {
             if ($departmentId == $department['id']) {
                 return new Department($department);
             }
@@ -279,7 +298,7 @@ class Useraccount extends Schema\Entity
 
     public function getDepartmentByIds(array $departmentIds): Department
     {
-        foreach ($this->departments as $department) {
+        foreach ($this->getDepartmentList() as $department) {
             if (in_array($department['id'], $departmentIds)) {
                 return new Department($department);
             }
@@ -316,11 +335,14 @@ class Useraccount extends Schema\Entity
     {
         $departmentList = new Collection\DepartmentList();
         $entity = clone $this;
-        foreach ($this->departments as $department) {
-            if (! is_array($department) && ! $department instanceof Department) {
-                $department = new Department(array('id' => $department));
+        foreach ($this['departments'] ?? [] as $department) {
+            if ($department instanceof Department) {
+                $departmentList->addEntity($department);
+            } else {
+                $departmentList->addEntity(new Department(
+                    is_array($department) ? $department : ['id' => $department]
+                ));
             }
-            $departmentList->addEntity($department);
         }
         $entity->departments = $departmentList;
         return $entity;

@@ -20,6 +20,8 @@ cd {zmsadmin, zmscalldisplay, zmsdldb, zmsentities, zmsmessaging, zmsslim, zmsst
 
 ### Mit Podman
 
+Interaktiv:
+
 ```bash
 podman exec -it zms-web bash
 ```
@@ -31,6 +33,14 @@ cd {zmsadmin, zmscalldisplay, zmsdldb, zmsentities, zmsmessaging, zmsslim, zmsst
 ```bash
 ./vendor/bin/phpunit
 ```
+
+Lokales `zms-web` mountet `.devcontainer/php/xdebug.ini` mit `xdebug.mode=debug,develop` und `xdebug.start_with_request=yes`. Dadurch hängt PHPUnit (besonders **zmsadmin** und andere Slim-Apps) unter Podman auf macOS oder läuft sehr langsam. Xdebug für den PHPUnit-Prozess ausschalten:
+
+```bash
+podman exec -it zms-web bash -lc 'export XDEBUG_MODE=off; cd zmsadmin && ./vendor/bin/phpunit --no-coverage'
+```
+
+`zmsadmin` durch das gewünschte Modul ersetzen. `export XDEBUG_MODE=off;` muss vor `cd` stehen. `XDEBUG_MODE=off cd zmsadmin && ./vendor/bin/phpunit` setzt die Variable nur für `cd`, PHPUnit läuft dann weiter mit Debugger.
 
 Nützliche Flags für `./vendor/bin/phpunit`:
 

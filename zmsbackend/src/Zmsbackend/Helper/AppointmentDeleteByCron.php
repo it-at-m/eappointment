@@ -48,11 +48,11 @@ class AppointmentDeleteByCron
     public function __construct(int $timeIntervalDays, \DateTimeInterface $now, bool $verbose = false)
     {
         $this->now = $now;
-        $deleteInSeconds = (24 * 60 * 60) * $timeIntervalDays;
-        $time = new \DateTimeImmutable();
-        $this->time = $time->setTimestamp($now->getTimestamp() - $deleteInSeconds);
+        $this->time = \DateTimeImmutable::createFromInterface($now)
+            ->setTime(0, 0, 0)
+            ->modify(sprintf('-%d days', $timeIntervalDays));
         if ($verbose) {
-            $this->log("INFO: Deleting appointments older than " . $this->time->format('c'));
+            $this->log("INFO: Deleting appointments with date before " . $this->time->format('Y-m-d'));
             $this->verbose = true;
         }
     }

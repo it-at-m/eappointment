@@ -126,7 +126,7 @@ class Application extends \BO\Slim\Application
     private static function initializeMiddleware(): void
     {
         // Rate limiting
-        self::$RATE_LIMIT_MAX_REQUESTS = (int) (getenv('RATE_LIMIT_MAX_REQUESTS') ?: 60);
+        self::$RATE_LIMIT_MAX_REQUESTS = (int) (getenv('RATE_LIMIT_MAX_REQUESTS') ?: 600);
         self::$RATE_LIMIT_CACHE_TTL = (int) (getenv('RATE_LIMIT_CACHE_TTL') ?: 60);
         self::$RATE_LIMIT_MAX_RETRIES = (int) (getenv('RATE_LIMIT_MAX_RETRIES') ?: 3);
         self::$RATE_LIMIT_BACKOFF_MIN = (int) (getenv('RATE_LIMIT_BACKOFF_MIN') ?: 10);
