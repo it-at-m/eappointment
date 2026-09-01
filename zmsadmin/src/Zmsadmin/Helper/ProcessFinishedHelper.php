@@ -27,15 +27,9 @@ class ProcessFinishedHelper extends Process
         RequestList $requestList,
         $source
     ): static {
-        if (array_key_exists('ignoreRequests', $input) && $input['ignoreRequests']) {
-            $this->requests = new RequestList();
-            $request = new Request([
-                'id' => -1,
-                'source' => $source,
-                'name' =>  "Ohne Erfassung",
-            ]);
-            $this->requests[] = $request;
-        } elseif (array_key_exists('noRequestsPerformed', $input) && $input['noRequestsPerformed']) {
+        $noRequestsPerformed = (array_key_exists('noRequestsPerformed', $input) && $input['noRequestsPerformed'])
+            || (array_key_exists('ignoreRequests', $input) && $input['ignoreRequests']);
+        if ($noRequestsPerformed) {
             $this->requests = new RequestList();
             $request = new Request([
                 'id' => 0,

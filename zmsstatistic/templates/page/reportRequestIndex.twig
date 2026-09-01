@@ -72,9 +72,7 @@
                          and name != "sum" %}
                         <tr{% if name == uncategorizedRequestKey or name == serviceNotProvidedKey %} class="report-board--request-stat-special"{% endif %}>
                             <th class="report-board--long-text">
-                                {% if name == uncategorizedRequestKey %}
-                                    Dienstleistung wurde nicht erfasst
-                                {% elseif name == serviceNotProvidedKey %}
+                                {% if name == uncategorizedRequestKey or name == serviceNotProvidedKey %}
                                     Dienstleistung konnte nicht erbracht werden
                                 {% else %}
                                     {{ name|trans }}

@@ -21,8 +21,7 @@ class ExchangeRequestscope extends \BO\Zmsbackend\Query\Base
         DATE_FORMAT(s.`Datum`, :groupby) as date,
         (
             CASE
-              WHEN s.anliegenid = -1 THEN \'' . Exchange::REQUEST_STAT_NAME_UNCATEGORIZED . '\'
-              WHEN s.anliegenid = 0 THEN \'' . Exchange::REQUEST_STAT_NAME_NONEXISTENT . '\'
+              WHEN s.anliegenid IN (-1, 0) THEN \'' . Exchange::REQUEST_STAT_NAME_NONEXISTENT . '\'
               ELSE r.name
             END
         ) as name,
@@ -31,7 +30,7 @@ class ExchangeRequestscope extends \BO\Zmsbackend\Query\Base
     FROM ' . self::TABLE . ' AS s
         LEFT JOIN ' . self::REQUESTTABLE . ' as r ON r.id = s.anliegenid
     WHERE s.`standortid` IN (:scopeid) AND s.`Datum` BETWEEN :datestart AND :dateend
-    GROUP BY date, s.anliegenid
+    GROUP BY date, CASE WHEN s.anliegenid IN (-1, 0) THEN 0 ELSE s.anliegenid END
     ORDER BY r.name
     ';
 
