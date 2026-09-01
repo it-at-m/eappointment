@@ -118,6 +118,14 @@ class ReportRequestScopeTest extends Base
             (string) $response->getBody()
         );
         $this->assertStringContainsString('Reisepass beantragen', (string) $response->getBody());
+        $this->assertStringContainsString(
+            'Dienstleistung konnte nicht erbracht werden',
+            (string) $response->getBody()
+        );
+        $this->assertStringNotContainsString(
+            'Dienstleistung wurde nicht erfasst',
+            (string) $response->getBody()
+        );
     }
 
     public function testWithPeriodYear()
