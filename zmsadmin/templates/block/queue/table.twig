@@ -362,6 +362,7 @@
 										{% else %}
 											{% set waitingTimeMinutes = waitingTime %}
 										{% endif %}
+										{% set waitingTimeMinutes = waitingTimeMinutes|round(0, 'floor') %}
 										{% if waitingTimeMinutes > 0 and isToday %}
 											<p class="queue-table-amendment-time">+{{ waitingTimeMinutes }}&nbsp;Min.</p>
 										{% endif %}
