@@ -35,9 +35,9 @@
 		</form>
 		{% endif %}
 		{% if showAnyQueues %}
-		<a href="#" title="Liste neu laden" class="button button--diamond reload">
+		<a href="#" title="Listen neu laden" class="button button--diamond reload">
 			<i class="fas fa-sync" aria-hidden="true"></i>
-			<span class="aural">Liste neu laden</span>
+			<span class="aural">Listen neu laden</span>
 		</a>
 		{% endif %}
 		{% if permissions.waitingqueue %}
@@ -719,7 +719,7 @@ content.addClass('hidden')
 			</style>
 		</div>
 		{% endif %}
-		{% if showAnyQueues %}
+		{% if showAnyQueues and 'agent_basic' not in workstation.useraccount.roles|default([]) %}
 		<div class="form-actions">
 			<div class="right">
 				<button title="{% trans %}Warteschlange neu laden{% endtrans %}" class="button button-reload reload">
