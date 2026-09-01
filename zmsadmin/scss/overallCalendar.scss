@@ -282,11 +282,6 @@ body.no-page-scroll {
 }
 
 .overall-calendar-time-label {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  transform: translateY(-50%);
   text-align: center;
   pointer-events: none;
 }
@@ -301,6 +296,10 @@ body.no-page-scroll {
 .overall-calendar-stripe-hour {
   height: 1px;
   background: #00000045;
+}
+
+.overall-calendar-time-hour {
+  border-top: 1px solid #00000045;
 }
 
 .overall-calendar-termin-label {

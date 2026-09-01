@@ -591,7 +591,7 @@ function renderMultiDayCalendar(days) {
 
         const timeCell = addCell({
             text: '\u00A0',
-            className: 'overall-calendar-time overall-calendar-stick-left',
+            className: `overall-calendar-time overall-calendar-stick-left${isFullHour ? ' overall-calendar-time-hour' : ''}`,
             row,
             col: 1
         });
