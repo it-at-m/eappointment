@@ -603,7 +603,7 @@ function renderMultiDayCalendar(days) {
             timeCell.appendChild(label);
         }
 
-        let column = 2;
+        let column = 3;
         days.forEach((day, dayIndex) => {
             const dateIso = day.date;
 
@@ -664,7 +664,7 @@ function renderMultiDayCalendar(days) {
                 if (scopeIndex < day.scopes.length - 1) column++;
             });
 
-            if (dayIndex < days.length - 1) column++;
+            column++;
         });
     });
 
