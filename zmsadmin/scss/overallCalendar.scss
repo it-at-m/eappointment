@@ -15,7 +15,10 @@
   font: 12px/1.2 system-ui, sans-serif;
   min-width: max-content;
   overflow-x: visible !important;
-  background: #e5e5e5 ;
+  background: #e5e5e5;
+
+  grid-template-rows: auto auto;
+  grid-auto-rows: 12px;
 }
 
 %sticky {
@@ -27,12 +30,14 @@
   @extend %sticky;
   left: 0;
   z-index: 5 !important;
-  text-align: center;
+  text-align: right;
   white-space: nowrap;
-  padding: 1px 2px;
+  padding: 0 8px 0 4px;
   font-weight: 500;
   font-size: 11px;
   border-right: 2px solid #dee2e6;
+  line-height: 1;
+}
 }
 
 .overall-calendar-head {
@@ -77,11 +82,12 @@ $day-h: 2.2rem;
 }
 
 .overall-calendar-seat {
-  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 10px;
+  min-height: 0;
+  overflow: hidden;
 }
 .overall-calendar-open {
   background: #fff;
@@ -282,4 +288,6 @@ body.no-page-scroll {
   z-index: 3;
   background: inherit;
   padding: 0 2px;
+  line-height: 10px;
+  white-space: nowrap;
 }
