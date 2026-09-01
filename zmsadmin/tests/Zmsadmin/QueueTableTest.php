@@ -336,4 +336,65 @@ class QueueTableTest extends Base
         $this->assertStringNotContainsString('Offene Aufrufe', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testDoesNotRenderWaitingTimeBelowOneMinute()
+    {
+        foreach (['00:00:00', '00:00:45'] as $waitingTime) {
+            $response = $this->renderQueueTableWithWaitingTime($waitingTime);
+            $body = (string) $response->getBody();
+
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertStringNotContainsString('+00:00:', $body);
+            $this->assertStringNotContainsString('+0&nbsp;Min.', $body);
+        }
+    }
+
+    public function testRendersWaitingTimeAsWholeMinutes()
+    {
+        $response = $this->renderQueueTableWithWaitingTime('00:05:00');
+        $body = (string) $response->getBody();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringContainsString('+5&nbsp;Min.', $body);
+        $this->assertStringNotContainsString('+00:05:00', $body);
+    }
+
+    private function renderQueueTableWithWaitingTime(int|string $waitingTime)
+    {
+        $processFixture = json_decode($this->readFixture("GET_processList_141_20160401.json"), true);
+        $processFixture['data']['0']['queue']['waitingTime'] = $waitingTime;
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/process/2016-04-01/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
+                    'response' => json_encode($processFixture)
+                ]
+            ]
+        );
+
+        return $this->render($this->arguments, $this->parameters, []);
+    }
 }
