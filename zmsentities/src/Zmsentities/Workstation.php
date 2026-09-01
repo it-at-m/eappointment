@@ -65,7 +65,7 @@ class Workstation extends Schema\Entity
     public function getDepartmentList(): Collection\DepartmentList
     {
         $departmentList = new Collection\DepartmentList();
-        foreach ($this->getUseraccount()->departments as $department) {
+        foreach ($this->getUseraccount()->getDepartmentList() as $department) {
             $departmentList->addEntity(new Department($department));
         }
         return $departmentList;
