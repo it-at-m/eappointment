@@ -1,5 +1,5 @@
 #language: de
-Funktionalität: Default
+Funktionalität: Kundenstatistik mit Testdaten initialisieren
 
 	
 	@web @zmsadmin @ZMS-2389 @ZMS-1738 @ZMS-1557 @E2E @automatisiert @executeLocally

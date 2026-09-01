@@ -59,6 +59,9 @@ class UseraccountUpdate extends \BO\Zmsbackend\Api\BaseController
         if (0 == count($input)) {
             throw new \BO\Zmsbackend\Useraccount\Exception\UseraccountInvalidInput();
         }
+        if (!isset($entity['departments'])) {
+            $entity->departments = [];
+        }
         try {
             $entity->testValid('de_DE', 1);
         } catch (\Exception $exception) {

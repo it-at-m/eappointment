@@ -6328,6 +6328,38 @@
     ->setName("WorkstationGet");
 
 /**
+ * @swagger
+ *  "/workstation/profile/":
+ *      get:
+ *          summary: Get the profile of the currently authenticated user
+ *          tags:
+ *              - workstation
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: Authentication key of the current user
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: success
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/useraccountprofile.json"
+ *              401:
+ *                  description: login required
+ */
+\App::$slim->get(
+    '/workstation/profile/',
+    \BO\Zmsbackend\Workstation\Api\WorkstationProfileGet::class
+)
+    ->setName("WorkstationProfileGet");
+
+/**
  *  @swagger
  *  "/workstation/":
  *      post:

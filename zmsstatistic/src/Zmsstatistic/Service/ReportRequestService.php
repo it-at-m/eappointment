@@ -86,6 +86,7 @@ class ReportRequestService
                 ->toGrouped($this->groupfields, $this->hashset)
                 ->withRequestsSum()
                 ->withAverage('processingtime')
+                ->withWeightedAverageProcessingTime()
                 ->withUncapturedRequestRowSortedLast();
         } catch (Exception $exception) {
             return null;
@@ -174,7 +175,8 @@ class ReportRequestService
             $exchangeRequest = $exchangeRequest
                 ->toGrouped($this->groupfields, $this->hashset)
                 ->withRequestsSum()
-                ->withAverage('processingtime');
+                ->withAverage('processingtime')
+                ->withWeightedAverageProcessingTime();
 
             if (is_array($exchangeRequest->data)) {
                 $exchangeRequest = $exchangeRequest->withUncapturedRequestRowSortedLast();

@@ -30,9 +30,9 @@ Ihre Terminnummer wird im oben genannten Bereich auf dem Bildschirm bei Aufruf a
                 Anzahl: {{ requestGroup['count'] }}
                 
                 {% if requestGroups|length > 1 and not loop.last %}
-                    <br /><br />
-                    ----------------------
-                    <br /><br />
+                    <br><br>
+                    <span style="white-space:nowrap">——</span>
+                    <br><br>
                 {% endif %}
             {% endfor %}
         {% endif %}

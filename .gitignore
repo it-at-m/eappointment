@@ -21,6 +21,7 @@ zmsautomation/lib
 # =============== Local =================
 /local/
 coverage/
+*.pptx
 
 # Python
 __pycache__/

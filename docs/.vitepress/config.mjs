@@ -2,6 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { writeLogInventory } from "../scripts/generate-log-inventory.mjs";
+import {
+  parseFeatureMeta,
+  toFeatureAnchorId,
+} from "./lib/cucumberFeatureParse.mjs";
 
 const FEATURES_ROOT = path.resolve(
   import.meta.dirname,
@@ -24,94 +28,6 @@ const CUCUMBER_FEATURES_JSON = path.resolve(
 );
 
 const toPosix = (p) => p.split(path.sep).join("/");
-
-const toFeatureAnchorId = (rel) =>
-  `feature-${rel
-    .replace(/\.feature$/i, "")
-    .replace(/[^A-Za-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .toLowerCase()}`;
-
-const uniquePreserveOrder = (tags) => {
-  const seen = new Set();
-  const out = [];
-  for (const tag of tags) {
-    const key = tag.toLowerCase();
-    if (seen.has(key)) {
-      continue;
-    }
-    seen.add(key);
-    out.push(tag);
-  }
-  return out;
-};
-
-const sortFeatureTags = (tags) => {
-  const unique = uniquePreserveOrder(tags);
-  unique.sort((a, b) => {
-    const aTicket = /^@(?:ZMSKVR|ZMS)-\d+$/i.test(a);
-    const bTicket = /^@(?:ZMSKVR|ZMS)-\d+$/i.test(b);
-    if (aTicket !== bTicket) {
-      return aTicket ? -1 : 1;
-    }
-    return a.localeCompare(b);
-  });
-  return unique;
-};
-
-const parseFeatureMeta = (raw) => {
-  const featureTags = [];
-  const allTags = [];
-  let title = "";
-  let firstScenario = "";
-  let scenarioCount = 0;
-  let pendingTags = [];
-  let seenFeature = false;
-
-  for (const line of raw.split(/\r?\n/)) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) {
-      continue;
-    }
-    const tagCandidate = trimmed.split("#", 1)[0].trim();
-    if (tagCandidate && /^@(?:\S+)(?:\s+@\S+)*$/.test(tagCandidate)) {
-      const tags = tagCandidate
-        .split(/\s+/)
-        .filter((part) => part.startsWith("@"));
-      pendingTags.push(...tags);
-      allTags.push(...tags);
-      continue;
-    }
-    const featureMatch = trimmed.match(/^(?:Feature|Funktionalität):\s*(.+)$/);
-    if (featureMatch) {
-      title = featureMatch[1].trim();
-      if (!seenFeature) {
-        featureTags.push(...pendingTags);
-        seenFeature = true;
-      }
-      pendingTags = [];
-      continue;
-    }
-    const scenarioMatch = trimmed.match(
-      /^(?:Scenario Outline|Scenario Template|Szenariogrundriss|Scenario|Szenario):\s*(.*)$/
-    );
-    if (scenarioMatch) {
-      scenarioCount += 1;
-      if (!firstScenario) {
-        firstScenario = scenarioMatch[1].trim();
-      }
-      pendingTags = [];
-    }
-  }
-
-  const genericTitle = !title || /^default$/i.test(title);
-
-  return {
-    title: genericTitle ? firstScenario : title,
-    tags: sortFeatureTags(featureTags.length ? featureTags : allTags),
-    scenarioCount,
-  };
-};
 
 const writeJsonIfChanged = (target, value) => {
   const next = `${JSON.stringify(value, null, 2)}\n`;
@@ -155,7 +71,7 @@ const cucumberStrings = {
       "> Deprecated: These scenarios target the legacy buergeransicht frontend from `it-at-m/eappointment-buergeransicht` and are not used for `zmscitizenview`.",
     deprecatedSuffix: "(deprecated)",
     accordionHint:
-      "Click a feature to view its Gherkin. Only one feature is expanded at a time.",
+      "Click a feature to view its Gherkin. Only one feature is expanded at a time. Pick a branch below the search to load that branch's `.feature` files, status, and run command. The play icon copies a command to start the test on the selected branch and opens [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). Status icons are pass/fail from the latest published zmsautomation run on the selected branch.",
     noFiles: "No `.feature` files found.",
   },
   de: {
@@ -171,7 +87,7 @@ const cucumberStrings = {
       "> Veraltet: Diese Szenarien adressieren das alte buergeransicht-Frontend aus `it-at-m/eappointment-buergeransicht` und werden für `zmscitizenview` nicht mehr verwendet.",
     deprecatedSuffix: "(veraltet)",
     accordionHint:
-      "Klicke auf ein Feature, um das Gherkin anzuzeigen. Es ist immer nur ein Feature aufgeklappt.",
+      "Klicke auf ein Feature, um das Gherkin anzuzeigen. Es ist immer nur ein Feature aufgeklappt. Wähle unter der Suche einen Branch, um dessen `.feature`-Dateien, Status und Startbefehl zu laden. Das Play-Symbol kopiert einen Befehl, um den Test auf dem gewählten Branch zu starten, und öffnet [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). Status-Icons zeigen Bestanden/Fehlgeschlagen vom letzten veröffentlichten zmsautomation-Lauf auf dem gewählten Branch.",
     noFiles: "Keine `.feature`-Dateien gefunden.",
   },
 };
@@ -223,6 +139,8 @@ const collectCucumberFeatures = () => {
       tags: parsed.tags,
       scenarioCount: parsed.scenarioCount,
       sourceUrl: `${FEATURE_SOURCE_BASE}/${rel}`,
+      testType,
+      module,
     };
     moduleMap.get(module).push({ abs: file, rel, id });
   }
@@ -244,6 +162,8 @@ const renderCucumberDocFor = (locale, catalog) => {
     "",
     ...t.intro,
     "",
+    "<CucumberWorkflowStatus />",
+    "",
     t.accordionHint,
     "",
     `## ${t.patternHeading}`,
@@ -259,12 +179,18 @@ const renderCucumberDocFor = (locale, catalog) => {
     "    Then the response status code should be 200",
     "```",
     "",
+    "<CucumberFeatureSearch />",
+    "",
+    "<CucumberRemoteCatalog />",
+    "",
   ];
 
   if (!featureFiles.length) {
     lines.push(t.noFiles);
   } else {
     for (const [testType, modules] of grouped) {
+      lines.push(`<CucumberFeatureGroup test-type="${testType}">`);
+      lines.push("");
       lines.push(`## ${testType.toUpperCase()}`);
       lines.push("");
       for (const [module, files] of sortModuleEntries(modules)) {
@@ -272,6 +198,10 @@ const renderCucumberDocFor = (locale, catalog) => {
           testType === "ui" && module === "buergeransicht"
             ? `${module} ${t.deprecatedSuffix}`
             : module;
+        lines.push(
+          `<CucumberFeatureGroup test-type="${testType}" module="${module}">`
+        );
+        lines.push("");
         lines.push(`### ${moduleTitle}`);
         lines.push("");
         if (testType === "ui" && module === "buergeransicht") {
@@ -292,7 +222,11 @@ const renderCucumberDocFor = (locale, catalog) => {
           lines.push("</CucumberFeatureRow>");
           lines.push("");
         }
+        lines.push("</CucumberFeatureGroup>");
+        lines.push("");
       }
+      lines.push("</CucumberFeatureGroup>");
+      lines.push("");
     }
   }
 
@@ -417,6 +351,7 @@ const sidebarLabels = {
     zmsautomation: "zmsautomation Documentation",
     cucumberCurrent: "Current Cucumber Tests",
     operations: "Operations",
+    cicd: "CI/CD",
     apiReference: "API reference",
     dldb: "DLDB Interface Documentation",
     ruppertstrasseBookingVariants: "Ruppertstraße booking variants",
@@ -471,6 +406,7 @@ const sidebarLabels = {
     zmsautomation: "zmsautomation-Dokumentation",
     cucumberCurrent: "Aktuelle Cucumber-Tests",
     operations: "Betrieb",
+    cicd: "CI/CD",
     apiReference: "API-Referenz",
     dldb: "DLDB-Schnittstellendokumentation",
     ruppertstrasseBookingVariants: "Terminvarianten Ruppertstraße",
@@ -637,6 +573,10 @@ const buildSidebar = (prefix, lang) => {
     {
       text: t.operations,
       items: [
+        {
+          text: t.cicd,
+          link: `${prefix}/operations/ci-cd`,
+        },
         {
           text: t.apiReference,
           link: `${prefix}/operations/api-reference`,
