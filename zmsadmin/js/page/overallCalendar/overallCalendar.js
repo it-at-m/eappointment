@@ -461,14 +461,19 @@ function renderMultiDayCalendar(days) {
             eventsIndex.set(key, indexEventsByStart(scope.events || []));
         }
     }
-    const templateCols = ['max-content'];
-    days.forEach((day, dayIndex) => {
+
+    const templateCols = ['max-content', '4px'];
+    days.forEach(day => {
         day.scopes.forEach((scope, scopeIndex) => {
             const lanes = getLanes(day.date, scope.id);
             templateCols.push(`repeat(${lanes}, minmax(${MIN_LANE_WIDTH}px, 1fr))`);
-            if (scopeIndex < day.scopes.length - 1) templateCols.push('2px');
+
+            if (scopeIndex < day.scopes.length - 1) {
+                templateCols.push('2px');
+            }
         });
-        if (dayIndex < days.length - 1) templateCols.push('4px');
+
+        templateCols.push('4px');
     });
     container.style.display = 'grid';
     container.style.gridTemplateColumns = templateCols.join(' ');
@@ -498,7 +503,7 @@ function renderMultiDayCalendar(days) {
         col: 1
     });
 
-    let columnCursor = 2, totalRows = allTimes.length + 2;
+    let columnCursor = 3, totalRows = allTimes.length + 2;
     days.forEach((day, dayIndex) => {
         const daySpan = day.scopes.reduce((totalColumns, scope, scopeIndex) => {
             const laneCount = getLanes(day.date, scope.id);
@@ -524,16 +529,18 @@ function renderMultiDayCalendar(days) {
         dayHeader.appendChild(dayLabel);
 
         columnCursor += daySpan;
-        if (dayIndex < days.length - 1) columnCursor += 1;
+        columnCursor += 1;
     });
 
     addCell({
-        text: 'Zeit',
-        className: 'overall-calendar-head overall-calendar-scope-header overall-calendar-stick-left',
-        row: 2, col: 1
+        className: 'overall-calendar-day-separator',
+        row: 1,
+        col: 2,
+        rowSpan: totalRows
     });
 
-    columnCursor = 2;
+    columnCursor = 3;
+
     days.forEach((day, dayIndex) => {
         const dateIso = day.date;
         day.scopes.forEach((scope, scopeIndex) => {
@@ -554,10 +561,14 @@ function renderMultiDayCalendar(days) {
                 columnCursor++;
             }
         });
-        if (dayIndex < days.length - 1) {
-            addCell({className: 'overall-calendar-day-separator', row: 1, col: columnCursor, rowSpan: totalRows});
-            columnCursor++;
-        }
+        addCell({
+            className: 'overall-calendar-day-separator',
+            row: 1,
+            col: columnCursor,
+            rowSpan: totalRows
+        });
+
+        columnCursor++;
     });
 
     const occupied = new Set();
