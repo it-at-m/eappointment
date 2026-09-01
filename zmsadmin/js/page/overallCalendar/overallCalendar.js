@@ -487,9 +487,15 @@ function renderMultiDayCalendar(days) {
     };
 
     addCell({
-        text: 'Datum',
-        className: 'overall-calendar-head overall-calendar-day-header overall-calendar-sticky-corner',
-        row: 1, col: 1
+        className: 'overall-calendar-empty-header overall-calendar-stick-left',
+        row: 1,
+        col: 1
+    });
+
+    addCell({
+        className: 'overall-calendar-empty-header overall-calendar-stick-left',
+        row: 2,
+        col: 1
     });
 
     let columnCursor = 2, totalRows = allTimes.length + 2;
@@ -505,11 +511,17 @@ function renderMultiDayCalendar(days) {
             month: '2-digit'
         });
 
-        addCell({
-            text: label,
+        const dayHeader = addCell({
             className: 'overall-calendar-head overall-calendar-day-header overall-calendar-stick-top',
-            row: 1, col: columnCursor, colSpan: daySpan
+            row: 1,
+            col: columnCursor,
+            colSpan: daySpan
         });
+
+        const dayLabel = document.createElement('span');
+        dayLabel.className = 'overall-calendar-day-label';
+        dayLabel.textContent = label;
+        dayHeader.appendChild(dayLabel);
 
         columnCursor += daySpan;
         if (dayIndex < days.length - 1) columnCursor += 1;
