@@ -339,13 +339,14 @@ class QueueTableTest extends Base
 
     public function testDoesNotRenderWaitingTimeBelowOneMinute()
     {
-        foreach (['00:00:00', '00:00:45'] as $waitingTime) {
+        foreach (['00:00:00', '00:00:45', 0.75] as $waitingTime) {
             $response = $this->renderQueueTableWithWaitingTime($waitingTime);
             $body = (string) $response->getBody();
 
             $this->assertEquals(200, $response->getStatusCode());
             $this->assertStringNotContainsString('+00:00:', $body);
             $this->assertStringNotContainsString('+0&nbsp;Min.', $body);
+            $this->assertStringNotContainsString('+0.75&nbsp;Min.', $body);
         }
     }
 
@@ -359,7 +360,7 @@ class QueueTableTest extends Base
         $this->assertStringNotContainsString('+00:05:00', $body);
     }
 
-    private function renderQueueTableWithWaitingTime(int|string $waitingTime)
+    private function renderQueueTableWithWaitingTime(int|float|string $waitingTime)
     {
         $processFixture = json_decode($this->readFixture("GET_processList_141_20160401.json"), true);
         $processFixture['data']['0']['queue']['waitingTime'] = $waitingTime;
