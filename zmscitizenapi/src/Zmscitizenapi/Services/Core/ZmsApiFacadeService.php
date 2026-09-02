@@ -38,6 +38,30 @@ class ZmsApiFacadeService
     private const string CACHE_KEY_SERVICES_BY_OFFICE_PREFIX = 'processed_services_by_office_';
 
     /**
+     * Fetch fresh source data and overwrite the public offices-and-services cache in place.
+     * Existing entries stay readable until the new values are written.
+     *
+     * @return array{result: OfficeServiceAndRelationList|array, refreshedKeys: list<string>}
+     */
+    public static function warmOfficesAndServicesCache(): array
+    {
+        $refreshedKeys = ZmsApiClientService::refreshSourceCaches();
+        $cacheKey = self::CACHE_KEY_OFFICES_AND_SERVICES;
+        $result = self::rebuildServicesAndOfficesCache(false, $cacheKey);
+        $refreshedKeys[] = $cacheKey;
+
+        $refreshedKeys = array_values(array_unique($refreshedKeys));
+        LoggerService::logInfo('Offices-and-services cache warmed', [
+            'refreshedKeys' => $refreshedKeys,
+        ]);
+
+        return [
+            'result' => $result,
+            'refreshedKeys' => $refreshedKeys,
+        ];
+    }
+
+    /**
      * @param OfficeList|OfficeServiceAndRelationList|ServiceList|ThinnedScopeList $data
      */
     private static function setMappedCache(string $cacheKey, OfficeList|ThinnedScopeList|ServiceList|OfficeServiceAndRelationList $data): void
@@ -222,6 +246,13 @@ class ZmsApiFacadeService
             return $cachedData;
         }
 
+        return self::rebuildServicesAndOfficesCache($showUnpublished, $cacheKey);
+    }
+
+    private static function rebuildServicesAndOfficesCache(
+        bool $showUnpublished,
+        string $cacheKey
+    ): OfficeServiceAndRelationList|array {
         $providerList = ZmsApiClientService::getOffices();
         $requestList = ZmsApiClientService::getServices();
         $relationList = ZmsApiClientService::getRequestRelationList();
