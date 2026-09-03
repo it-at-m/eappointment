@@ -165,6 +165,36 @@ class ZmsApiClientServiceTest extends TestCase
         ZmsApiClientService::getOffices();
     }
 
+    public function testRefreshSourceCachesBypassesExistingCache(): void
+    {
+        $sourceCacheSet = false;
+        $stale = new Source();
+
+        $this->cacheMock->method('get')
+            ->with('source_unittest')
+            ->willReturn($stale);
+
+        $result = $this->createMock(Result::class);
+        $result->method('getEntity')->willReturn($this->source);
+
+        $this->httpMock->expects($this->once())
+            ->method('readGetResult')
+            ->with('/source/unittest/', ['resolveReferences' => 2])
+            ->willReturn($result);
+
+        $this->cacheMock->method('set')
+            ->willReturnCallback(function ($key, $value, $ttl) use (&$sourceCacheSet) {
+                if ($key === 'source_unittest' && $value === $this->source && $ttl === Application::$SOURCE_CACHE_TTL) {
+                    $sourceCacheSet = true;
+                }
+                return true;
+            });
+
+        $refreshed = ZmsApiClientService::refreshSourceCaches();
+        $this->assertSame(['source_unittest'], $refreshed);
+        $this->assertTrue($sourceCacheSet, 'Fresh source was not written over the existing cache entry');
+    }
+
     public function testGetScopesCacheHit(): void
     {
         $this->cacheMock->method('get')
