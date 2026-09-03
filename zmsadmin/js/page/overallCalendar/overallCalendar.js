@@ -461,14 +461,19 @@ function renderMultiDayCalendar(days) {
             eventsIndex.set(key, indexEventsByStart(scope.events || []));
         }
     }
-    const templateCols = ['max-content'];
-    days.forEach((day, dayIndex) => {
+
+    const templateCols = ['max-content', '4px'];
+    days.forEach(day => {
         day.scopes.forEach((scope, scopeIndex) => {
             const lanes = getLanes(day.date, scope.id);
             templateCols.push(`repeat(${lanes}, minmax(${MIN_LANE_WIDTH}px, 1fr))`);
-            if (scopeIndex < day.scopes.length - 1) templateCols.push('2px');
+
+            if (scopeIndex < day.scopes.length - 1) {
+                templateCols.push('2px');
+            }
         });
-        if (dayIndex < days.length - 1) templateCols.push('4px');
+
+        templateCols.push('4px');
     });
     container.style.display = 'grid';
     container.style.gridTemplateColumns = templateCols.join(' ');
@@ -487,12 +492,18 @@ function renderMultiDayCalendar(days) {
     };
 
     addCell({
-        text: 'Datum',
-        className: 'overall-calendar-head overall-calendar-day-header overall-calendar-sticky-corner',
-        row: 1, col: 1
+        className: 'overall-calendar-empty-header overall-calendar-stick-left',
+        row: 1,
+        col: 1
     });
 
-    let columnCursor = 2, totalRows = allTimes.length + 2;
+    addCell({
+        className: 'overall-calendar-empty-header overall-calendar-stick-left',
+        row: 2,
+        col: 1
+    });
+
+    let columnCursor = 3, totalRows = allTimes.length + 2;
     days.forEach((day, dayIndex) => {
         const daySpan = day.scopes.reduce((totalColumns, scope, scopeIndex) => {
             const laneCount = getLanes(day.date, scope.id);
@@ -505,23 +516,31 @@ function renderMultiDayCalendar(days) {
             month: '2-digit'
         });
 
-        addCell({
-            text: label,
+        const dayHeader = addCell({
             className: 'overall-calendar-head overall-calendar-day-header overall-calendar-stick-top',
-            row: 1, col: columnCursor, colSpan: daySpan
+            row: 1,
+            col: columnCursor,
+            colSpan: daySpan
         });
 
+        const dayLabel = document.createElement('span');
+        dayLabel.className = 'overall-calendar-day-label';
+        dayLabel.textContent = label;
+        dayHeader.appendChild(dayLabel);
+
         columnCursor += daySpan;
-        if (dayIndex < days.length - 1) columnCursor += 1;
+        columnCursor += 1;
     });
 
     addCell({
-        text: 'Zeit',
-        className: 'overall-calendar-head overall-calendar-scope-header overall-calendar-stick-left',
-        row: 2, col: 1
+        className: 'overall-calendar-day-separator',
+        row: 1,
+        col: 2,
+        rowSpan: totalRows
     });
 
-    columnCursor = 2;
+    columnCursor = 3;
+
     days.forEach((day, dayIndex) => {
         const dateIso = day.date;
         day.scopes.forEach((scope, scopeIndex) => {
@@ -542,10 +561,14 @@ function renderMultiDayCalendar(days) {
                 columnCursor++;
             }
         });
-        if (dayIndex < days.length - 1) {
-            addCell({className: 'overall-calendar-day-separator', row: 1, col: columnCursor, rowSpan: totalRows});
-            columnCursor++;
-        }
+        addCell({
+            className: 'overall-calendar-day-separator',
+            row: 1,
+            col: columnCursor,
+            rowSpan: totalRows
+        });
+
+        columnCursor++;
     });
 
     const occupied = new Set();
@@ -568,7 +591,7 @@ function renderMultiDayCalendar(days) {
 
         const timeCell = addCell({
             text: '\u00A0',
-            className: 'overall-calendar-time overall-calendar-stick-left',
+            className: `overall-calendar-time overall-calendar-stick-left${isFullHour ? ' overall-calendar-time-hour' : ''}`,
             row,
             col: 1
         });
@@ -580,7 +603,7 @@ function renderMultiDayCalendar(days) {
             timeCell.appendChild(label);
         }
 
-        let column = 2;
+        let column = 3;
         days.forEach((day, dayIndex) => {
             const dateIso = day.date;
 
@@ -641,7 +664,7 @@ function renderMultiDayCalendar(days) {
                 if (scopeIndex < day.scopes.length - 1) column++;
             });
 
-            if (dayIndex < days.length - 1) column++;
+            column++;
         });
     });
 
