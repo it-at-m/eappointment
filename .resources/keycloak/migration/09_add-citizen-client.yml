@@ -16,8 +16,6 @@ changes:
         - http://127.0.0.1:8082
         - http://citizenview:8082/*
         - http://citizenview:8082
-        - https://*.ddev.site/*
-        - http://*.ddev.site/*
 
   - updateClient:
       clientId: dbs-fragments

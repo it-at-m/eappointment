@@ -43,7 +43,6 @@ sequenceDiagram
 
 | File | Change Summary |
 |------|----------------|
-| `.ddev/config.yaml` | Updated host HTTPS and web server ports from `59002`/`59001` to `8091`/`8090` |
 | `.github/workflows/build-images.yaml` | Added `zmscitizenapi` module with PHP 8.0 |
 | `.github/workflows/unit-tests.yaml` | Added `zmscitizenapi` module to matrix configuration |
 | `.htaccess` | Added routing rules for `zmscitizenapi` module |
