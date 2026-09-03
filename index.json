@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-03T06:19:31.785Z",
+  "publishedAt": "2026-09-03T14:23:24.677Z",
   "branches": [
     {
       "name": "next",
@@ -30,6 +30,12 @@
       "slug": "feature-zmskvr-1575-profile-view-for-everyone",
       "runId": "33154260086",
       "runStartedAt": "2026-08-28T08:09:57Z"
+    },
+    {
+      "name": "feature-zmskvr-1617-service-statistics-hide-days-without-usage",
+      "slug": "feature-zmskvr-1617-service-statistics-hide-days-without-usage",
+      "runId": "33762107707",
+      "runStartedAt": "2026-09-03T13:36:45Z"
     },
     {
       "name": "fix-zmskvr-1397-hide-subminute-waiting-time",
