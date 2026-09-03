@@ -102,6 +102,16 @@ class ReportRequestScopeTest extends Base
         );
         $response = $this->render(['period' => '2016-04'], [], []);
         $this->assertStringContainsString(
+            '<th class="statistik">01.04.</th>',
+            (string) $response->getBody(),
+            'Ein Tag mit vorhandener Nutzung muss angezeigt werden.'
+        );
+        $this->assertStringNotContainsString(
+            '<th class="statistik">02.04.</th>',
+            (string) $response->getBody(),
+            'Ein Tag ohne Nutzung darf nicht angezeigt werden.'
+        );
+        $this->assertStringContainsString(
             '<th class="statistik">Summe</th>',
             (string) $response->getBody()
         );
@@ -561,6 +571,49 @@ class ReportRequestScopeTest extends Base
         try {
             $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($tempfile);
             $sheet = $spreadsheet->getActiveSheet();
+            $headerRowIndex = null;
+            $serviceRowIndex = null;
+
+            foreach ($sheet->getRowIterator() as $row) {
+                $rowIndex = $row->getRowIndex();
+                $firstCellValue = $sheet->getCell('A' . $rowIndex)->getValue();
+
+                if ($firstCellValue === 'Dienstleistung') {
+                    $headerRowIndex = $rowIndex;
+                }
+
+                if ($firstCellValue === 'Reisepass beantragen') {
+                    $serviceRowIndex = $rowIndex;
+                }
+            }
+
+            $this->assertNotNull(
+                $headerRowIndex,
+                'The XLSX export must contain the report header.'
+            );
+
+            $this->assertSame(
+                '01.04.2016',
+                $sheet->getCell('D' . $headerRowIndex)->getValue(),
+                'A day with recorded usage must be exported.'
+            );
+
+            $this->assertSame(
+                'D',
+                $sheet->getHighestColumn(),
+                'Days without usage must not create additional XLSX columns.'
+            );
+
+            $this->assertNotNull(
+                $serviceRowIndex,
+                'The XLSX export must contain services with recorded usage.'
+            );
+
+            $this->assertEquals(
+                23,
+                $sheet->getCell('D' . $serviceRowIndex)->getValue(),
+                'The request count for a day with usage must be exported.'
+            );
 
             $foundSumRow = false;
 
