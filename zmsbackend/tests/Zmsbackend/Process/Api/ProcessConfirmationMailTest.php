@@ -114,11 +114,9 @@ class ProcessConfirmationMailTest extends \BO\Zmsbackend\Tests\Api\Base
         ], []);
     }
 
-    public function testMissingMail()
+    public function testMissingMailOnPayloadUsesStoredClient()
     {
-        $this->expectException('\BO\Zmsbackend\Process\Exception\EmailRequired');
-        $this->expectExceptionCode(400);
-        $this->render([], [
+        $response = $this->render([], [
             '__body' => '{
                 "id": '. self::PROCESS_ID .',
                 "authKey": "'. self::AUTHKEY .'",
@@ -160,6 +158,8 @@ class ProcessConfirmationMailTest extends \BO\Zmsbackend\Tests\Api\Base
                 "status": "confirmed"
             }'
         ], []);
+        $this->assertStringContainsString('mail.json', (string)$response->getBody());
+        $this->assertSame(200, $response->getStatusCode());
     }
 
     public function testUnvalidInput()
