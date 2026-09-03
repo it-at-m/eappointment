@@ -2,6 +2,7 @@ chat:
   auto_reply: false
 reviews:
   review_status: true
+  request_changes_workflow: true
   auto_review:
     enabled: true
     base_branches:
