@@ -9,7 +9,7 @@ This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.i
 ## Quick Links
 
 - [Project History](./overview/project-history.md)
-- [DDEV and Devcontainer](./setup-and-development/getting-started/ddev-and-devcontainer.md)
+- [Devcontainer and Podman](./setup-and-development/getting-started/devcontainer.md)
 - [Local Database and Cache Operations](./setup-and-development/local-database-and-cache-operations.md)
 - [Dependency Upgrade Check](./setup-and-development/dependency-upgrade-check.md)
 - [PHP Base Images](./setup-and-development/php-base-images.md)
