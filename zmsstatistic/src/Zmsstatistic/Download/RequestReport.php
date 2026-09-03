@@ -98,9 +98,10 @@ class RequestReport extends Base
         foreach ($report->data as $name => $entry) {
             if ($name !== 'sum' && $name !== 'average_processingtime' && $name !== 'average_processingtime_overall') {
                 $rowData = [];
-                if ($name === ReportEntity::REQUEST_STAT_NAME_UNCATEGORIZED) {
-                    $rowData[] = 'Dienstleistung wurde nicht erfasst';
-                } elseif ($name === ReportEntity::REQUEST_STAT_NAME_NONEXISTENT) {
+                if (
+                    $name === ReportEntity::REQUEST_STAT_NAME_UNCATEGORIZED
+                    || $name === ReportEntity::REQUEST_STAT_NAME_NONEXISTENT
+                ) {
                     $rowData[] = 'Dienstleistung konnte nicht erbracht werden';
                 } else {
                     $rowData[] = $name;

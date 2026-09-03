@@ -13,7 +13,10 @@ class ExchangeRequestscopeTest extends \BO\Zmsbackend\Tests\Service\Base
         $query = new Query();
         $entity = $query->readEntity(141, new DateTime('2016-04-01'), new DateTime('2016-04-30'));
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        $this->assertEquals(17, count($entity->data));
+        $this->assertEquals(16, count($entity->data));
+        $names = array_column($entity->data, 4);
+        $this->assertContains(Exchange::REQUEST_STAT_NAME_NONEXISTENT, $names);
+        $this->assertNotContains(Exchange::REQUEST_STAT_NAME_UNCATEGORIZED, $names);
     }
 
     public function testSubject()
