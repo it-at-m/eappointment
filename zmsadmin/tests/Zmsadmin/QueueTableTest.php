@@ -360,6 +360,44 @@ class QueueTableTest extends Base
         $this->assertStringNotContainsString('+00:05:00', $body);
     }
 
+    public function testHeaderReloadButtonUsesPluralListenLabel()
+    {
+        $this->setQueueTableApiCalls($this->readFixture("GET_Workstation_Resolved2.json"));
+
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $body = (string) $response->getBody();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringContainsString('title="Listen neu laden"', $body);
+        $this->assertStringContainsString('Listen neu laden', $body);
+        $this->assertStringContainsString('Warteschlange aktualisieren', $body);
+    }
+
+    public function testAgentBasicHidesQueueReloadButton()
+    {
+        $workstation = json_decode($this->readFixture("GET_Workstation_Resolved2.json"), true);
+        $workstation['data']['useraccount']['roles'] = ['agent_basic'];
+        $workstation['data']['useraccount']['permissions'] = [
+            'appointment' => true,
+            'customersearch' => true,
+            'emergency' => true,
+            'finishedqueue' => true,
+            'missedqueue' => true,
+            'parkedqueue' => true,
+            'waitingqueue' => false,
+            'superuser' => false,
+        ];
+
+        $this->setQueueTableApiCalls(json_encode($workstation));
+
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $body = (string) $response->getBody();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringNotContainsString('Warteschlange aktualisieren', $body);
+        $this->assertStringContainsString('Listen neu laden', $body);
+    }
+
     private function renderQueueTableWithWaitingTime(int|float|string $waitingTime)
     {
         $processFixture = json_decode($this->readFixture("GET_processList_141_20160401.json"), true);
@@ -397,5 +435,40 @@ class QueueTableTest extends Base
         );
 
         return $this->render($this->arguments, $this->parameters, []);
+    }
+
+    private function setQueueTableApiCalls(string $workstationFixture): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
+                    'response' => $workstationFixture
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/process/2016-04-01/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
+                ]
+            ]
+        );
     }
 }
