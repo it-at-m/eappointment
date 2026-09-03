@@ -77,4 +77,5 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
         fi
     fi
     $BIN/updateDldbData --commit
+    $BIN/warmupCitizenapiSourceCache --commit
 fi

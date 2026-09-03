@@ -211,6 +211,51 @@ class MailTest extends EntityCommonTests
         $this->assertStringNotContainsString('service.berlin.de/dienstleistung/', $resolvedEntity->getHtmlPart());
     }
 
+    public function testDeleteMailUsesRootParentIdForServiceLink()
+    {
+        $template = <<<TWIG
+{% block german %}
+{% for requestGroup in requestGroups %}
+<a href="https://stadt.muenchen.de/service/info/{{ requestGroup['request'].root_parent_id }}/">{{ requestGroup['request'].name }}</a>
+{% endfor %}
+{% endblock %}
+TWIG;
+        $templatePath = \BO\Zmsentities\Helper\TemplateFinder::getTemplatePath();
+        $templateProvider = new class ($template, $templatePath) {
+            public function __construct(private string $template, private string $templatePath)
+            {
+            }
+
+            public function getTemplates(): array
+            {
+                return [
+                    'mail_delete.twig' => $this->template,
+                    'snippets.twig' => file_get_contents($this->templatePath . '/messaging/snippets.twig'),
+                    'subjects.twig' => file_get_contents($this->templatePath . '/messaging/subjects.twig'),
+                ];
+            }
+        };
+
+        $entity = (new $this->entityclass())->getExample();
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $process->requests = [];
+        $process->requests[] = new \BO\Zmsentities\Request([
+            'id' => '8',
+            'name' => 'Reisepass beantragen',
+            'root_parent_id' => '1063441',
+        ]);
+        $config = (new \BO\Zmsentities\Config())->getExample();
+        $entity->addMultiPart(array());
+        $entity->client = null;
+        $resolvedEntity = $entity->setTemplateProvider($templateProvider)
+            ->toResolvedEntity($process, $config, 'deleted');
+
+        $html = $resolvedEntity->getHtmlPart();
+        $this->assertStringContainsString('https://stadt.muenchen.de/service/info/1063441/', $html);
+        $this->assertStringNotContainsString('https://stadt.muenchen.de/service/info/8/', $html);
+        $this->assertStringNotContainsString('https://stadt.muenchen.de/service/info//', $html);
+    }
+
     public function testMailWithOneRequest()
     {
         $entity = (new $this->entityclass())->getExample();
