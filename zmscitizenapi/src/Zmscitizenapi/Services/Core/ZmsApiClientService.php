@@ -452,6 +452,39 @@ class ZmsApiClientService
     }
 
     /**
+     * Fetch configured sources from the backend and overwrite `source_*` keys in place.
+     * Existing entries stay readable until each new value is written.
+     *
+     * @return list<string>
+     */
+    public static function refreshSourceCaches(): array
+    {
+        $refreshed = [];
+        $loaded = 0;
+        $notFound = 0;
+
+        foreach (self::getSourceNames() as $name) {
+            $src = self::fetchSourceDataFor($name, true);
+            if ($src === null) {
+                $notFound++;
+                continue;
+            }
+            $loaded++;
+            if (\App::$cache) {
+                $refreshed[] = 'source_' . $name;
+            }
+        }
+
+        if ($loaded === 0 && $notFound > 0) {
+            $exception = new \BO\Zmsclient\Exception('Source not found');
+            $exception->template = 'BO\\Zmsbackend\\Source\\Exception\\SourceNotFound';
+            throw $exception;
+        }
+
+        return $refreshed;
+    }
+
+    /**
      * Iterate configured sources; skip individual SourceNotFound and only fail when none load.
      *
      * @param callable(Source):void $callback
@@ -478,10 +511,10 @@ class ZmsApiClientService
         }
     }
 
-    private static function fetchSourceDataFor(string $sourceName): ?Source
+    private static function fetchSourceDataFor(string $sourceName, bool $forceRefresh = false): ?Source
     {
         $cacheKey = 'source_' . $sourceName;
-        if (\App::$cache && ($data = \App::$cache->get($cacheKey))) {
+        if (!$forceRefresh && \App::$cache && ($data = \App::$cache->get($cacheKey))) {
             return $data instanceof Source ? $data : null;
         }
 
