@@ -12,6 +12,14 @@ class ProcessSearch extends \BO\Zmsbackend\Base
 {
     private const int DEFAULT_HISTORY_DAYS = 90;
 
+    private const array APPOINTMENT_STATUS_FILTERS = [
+        'planned',
+        'completed',
+        'missed',
+        'cancelled_citizen',
+        'cancelled_staff',
+    ];
+
     public function mapSearchRowToProcess(array $row): Entity
     {
         return new Entity([
@@ -47,6 +55,9 @@ class ProcessSearch extends \BO\Zmsbackend\Base
             'status' => (string) $row['technical_status'],
             'source' => (string) $row['source'],
             'appointmentStatus' => (string) $row['appointment_status'],
+            'finalizedAt' => !empty($row['finalized_at'])
+                ? strtotime((string) $row['finalized_at'])
+                : 0,
         ]);
     }
 
@@ -107,6 +118,16 @@ class ProcessSearch extends \BO\Zmsbackend\Base
             ->addConditionIgnoreSlots()
             ->addConditionActiveSearchStatuses();
 
+        $appointmentStatus = $this->normalizeAppointmentStatusFilter(
+            $parameter['status'] ?? null
+        );
+
+        if ($appointmentStatus !== null) {
+            $query->addConditionAppointmentStatusFilter(
+                $appointmentStatus
+            );
+        }
+
         if (!empty($parameter['upcomingOnly'])) {
             $now = class_exists('\App') && isset(\App::$now)
                 ? \App::$now
@@ -162,6 +183,7 @@ class ProcessSearch extends \BO\Zmsbackend\Base
                     'offset',
                     'includePast',
                     'denyHistory',
+                    'status',
                 ] as $reservedKey
             ) {
                 unset($parameter[$reservedKey]);
@@ -296,48 +318,26 @@ class ProcessSearch extends \BO\Zmsbackend\Base
         ?int $limit = null,
         int $offset = 0
     ): array {
-        $searchRepository = $this->buildSearchQuery(
-            $parameter
+        $appointmentStatus = $this->normalizeAppointmentStatusFilter(
+            $parameter['status'] ?? null
+        );
+        $includeActive = $this->includesActiveAppointmentStatus(
+            $appointmentStatus
         );
 
-        $searchRepository->addCombinedActiveProjection();
+        $searchRepository = $includeActive
+            ? $this->buildSearchQuery($parameter)
+            : new ProcessSearchRepository(QueryBase::SELECT);
 
-        $scopeIds = null;
-
-        if (array_key_exists('scopeIds', $parameter)) {
-            $scopeIds = is_array($parameter['scopeIds'])
-                ? $parameter['scopeIds']
-                : explode(
-                    ',',
-                    (string) $parameter['scopeIds']
-                );
-
-            $scopeIds = array_values(
-                array_filter(
-                    array_map(
-                        'intval',
-                        $scopeIds
-                    )
-                )
-            );
+        if ($includeActive) {
+            $searchRepository->addCombinedActiveProjection();
         }
 
-        $searchQuery = $this->extractSearchQuery(
-            $parameter
-        );
-
-        $denyHistory =
-            !empty($parameter['denyHistory'])
-            || !empty($parameter['authKey'])
-            || !empty($parameter['requestId'])
-            || !empty($parameter['upcomingOnly']);
-
         $historyParameters = [];
-
         $historySql = $searchRepository->getHistorySelectSql(
-            $scopeIds,
+            $this->readScopeIdsParameter($parameter),
             $appointmentFrom,
-            $searchQuery,
+            $this->extractSearchQuery($parameter),
             $historyParameters,
             $parameter['date'] ?? null,
             $parameter['provider'] ?? null,
@@ -348,14 +348,69 @@ class ProcessSearch extends \BO\Zmsbackend\Base
                 'amendment' => $parameter['amendment'] ?? null,
                 'processId' => $parameter['processId'] ?? null,
                 'scopeId' => $parameter['scopeId'] ?? null,
-                'denyHistory' => $denyHistory,
+                'denyHistory' => $this->shouldDenyHistory($parameter),
+                'appointmentStatus' => $appointmentStatus,
             ]
         );
 
-        $combinedSql = $searchRepository->getCombinedSelectSql(
-            $historySql
-        );
+        $combinedSql = $includeActive
+            ? $searchRepository->getCombinedSelectSql($historySql)
+            : $historySql;
 
+        return [
+            'sql' => $this->wrapCombinedSearchSql(
+                $combinedSql,
+                $limit,
+                $offset
+            ),
+            'parameters' => $includeActive
+                ? array_merge(
+                    $searchRepository->getParameters(),
+                    $historyParameters
+                )
+                : $historyParameters,
+        ];
+    }
+
+    private function includesActiveAppointmentStatus(?string $status): bool
+    {
+        return !in_array(
+            $status,
+            ['completed', 'cancelled_citizen', 'cancelled_staff'],
+            true
+        );
+    }
+
+    private function shouldDenyHistory(array $parameter): bool
+    {
+        return !empty($parameter['denyHistory'])
+            || !empty($parameter['authKey'])
+            || !empty($parameter['requestId'])
+            || !empty($parameter['upcomingOnly']);
+    }
+
+    private function readScopeIdsParameter(array $parameter): ?array
+    {
+        if (!array_key_exists('scopeIds', $parameter)) {
+            return null;
+        }
+
+        $scopeIds = is_array($parameter['scopeIds'])
+            ? $parameter['scopeIds']
+            : explode(',', (string) $parameter['scopeIds']);
+
+        return array_values(
+            array_filter(
+                array_map('intval', $scopeIds)
+            )
+        );
+    }
+
+    private function wrapCombinedSearchSql(
+        string $combinedSql,
+        ?int $limit,
+        int $offset
+    ): string {
         $sql = '
             SELECT *
             FROM (
@@ -367,26 +422,17 @@ class ProcessSearch extends \BO\Zmsbackend\Base
                 combined.source ASC
         ';
 
-        if ($limit !== null) {
-            $limit = max(0, $limit);
-            $offset = max(0, $offset);
-
-            $sql .= ' LIMIT ' . $limit;
-
-            if ($offset > 0) {
-                $sql .= ' OFFSET ' . $offset;
-            }
+        if ($limit === null) {
+            return $sql;
         }
 
-        $parameters = array_merge(
-            $searchRepository->getParameters(),
-            $historyParameters
-        );
+        $sql .= ' LIMIT ' . max(0, $limit);
 
-        return [
-            'sql' => $sql,
-            'parameters' => $parameters,
-        ];
+        if ($offset > 0) {
+            $sql .= ' OFFSET ' . max(0, $offset);
+        }
+
+        return $sql;
     }
 
     protected function buildCombinedSearchCountSql(
@@ -409,6 +455,20 @@ class ProcessSearch extends \BO\Zmsbackend\Base
             'sql' => $sql,
             'parameters' => $combined['parameters'],
         ];
+    }
+
+    private function normalizeAppointmentStatusFilter(mixed $status): ?string
+    {
+        $status = trim((string) $status);
+
+        if (
+            $status === ''
+            || !in_array($status, self::APPOINTMENT_STATUS_FILTERS, true)
+        ) {
+            return null;
+        }
+
+        return $status;
     }
 
     protected function getHistoryAppointmentFrom(): \DateTimeImmutable
