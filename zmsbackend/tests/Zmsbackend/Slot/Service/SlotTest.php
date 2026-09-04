@@ -612,6 +612,17 @@ class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
         \App::$log->debug('Slot availability debug', ['details' => $debug]);
     }
 
+    /**
+     * ZMSKVR-1260: hard cap must allow a 12-month location horizon.
+     */
+    public function testMaxDaysOfSlotCalculationAllowsTwelveMonths()
+    {
+        $this->assertGreaterThanOrEqual(
+            365,
+            \BO\Zmsbackend\Slot\Service\Slot::MAX_DAYS_OF_SLOT_CALCULATION
+        );
+    }
+
     protected function readTestAvailability()
     {
         $availability = (new \BO\Zmsbackend\Availability\Service\Availability())->readEntity(static::TEST_AVAILABILITY_ID, 2);

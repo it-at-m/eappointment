@@ -27,6 +27,9 @@ export function getServiceBaseURL(): string {
 
 export const MAX_SLOTS = 25;
 
+/** Citizen calendar request / navigation cap. Per-location bookable end still limits visible days. */
+export const BOOKING_CALENDAR_MONTHS = 12;
+
 export const OFTEN_SEARCHED_SERVICES = new Map<string, string>([
   ["1063475", "shortNameResidenceRegistration"],
   ["1063453", "shortNamePassport"],

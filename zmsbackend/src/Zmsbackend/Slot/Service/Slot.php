@@ -20,7 +20,12 @@ class Slot extends \BO\Zmsbackend\Base
      */
     const int MAX_SLOTS = 25;
 
-    const int MAX_DAYS_OF_SLOT_CALCULATION = 180;
+    /**
+     * Absolute cap for generated slots. Each availability still stops at its own
+     * bookable end (scope endInDaysDefault / availability endInDays), so locations
+     * configured for 60 or 180 days stay there. 366 covers a 12-month horizon.
+     */
+    const int MAX_DAYS_OF_SLOT_CALCULATION = 366;
 
     /**
      * @return \BO\Zmsentities\Collection\SlotList
