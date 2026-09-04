@@ -10,34 +10,6 @@ Für ein vollständiges lokales DB-Reset (Basisschema, Testdaten, Migrationen, C
 
 ## Migrationen lokal ausführen
 
-### DDEV
-
-Ausstehende Migrationen anzeigen (Dry Run):
-
-```bash
-ddev exec "cd zmsbackend && bin/migrate"
-```
-
-Alle ausstehenden Migrationen anwenden:
-
-```bash
-ddev exec "cd zmsbackend && bin/migrate --update"
-```
-
-Nur Expand-Phase (siehe unten):
-
-```bash
-ddev exec "cd zmsbackend && bin/migrate --update --phase=expand"
-```
-
-Nur Contract-Phase:
-
-```bash
-ddev exec "cd zmsbackend && bin/migrate --update --phase=contract"
-```
-
-### Podman
-
 Ausstehende Migrationen anzeigen (Dry Run):
 
 ```bash
