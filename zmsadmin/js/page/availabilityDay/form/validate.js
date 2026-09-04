@@ -148,6 +148,8 @@ function validateNullValues(data) {
     return errorList;
 }
 
+const MAX_BOOKABLE_IN_DAYS = 366;
+
 function validateBookableDayRange(data) {
     const errorList = [];
 
@@ -168,6 +170,15 @@ function validateBookableDayRange(data) {
         errorList.push({
             type: 'bookableDayRange',
             message: 'Bitte geben Sie im Feld \'von\' eine kleinere Zahl ein als im Feld \'bis\', wenn Sie bei \'Buchbar\' sind.'
+        });
+    }
+    if (
+        (Number.isFinite(startInDays) && startInDays > MAX_BOOKABLE_IN_DAYS) ||
+        (Number.isFinite(endInDays) && endInDays > MAX_BOOKABLE_IN_DAYS)
+    ) {
+        errorList.push({
+            type: 'bookableDayRangeMax',
+            message: `Bitte geben Sie bei 'Buchbar' höchstens ${MAX_BOOKABLE_IN_DAYS} Tage im Voraus ein.`
         });
     }
 
