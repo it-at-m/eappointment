@@ -196,7 +196,7 @@ class Exchange extends Schema\Entity
             }
 
             $average[$name] = $average[$name . '_count'] > 0
-                ? round($average[$name . '_sum'] / $average[$name . '_count'], 2)
+                ? $average[$name . '_sum'] / $average[$name . '_count']
                 : null;
         }
 
@@ -275,8 +275,6 @@ class Exchange extends Schema\Entity
         $weightedSum = 0.0;
         $totalCount = 0;
         $excludedNames = [
-            self::REQUEST_STAT_NAME_UNCATEGORIZED,
-            self::REQUEST_STAT_NAME_NONEXISTENT,
             'sum',
             'average_processingtime',
             'average_processingtime_overall',
@@ -298,7 +296,7 @@ class Exchange extends Schema\Entity
                 $totalCount += (int) $requestCount;
             }
         }
-        $entity->data['average_processingtime_overall'] = $totalCount > 0 ? round($weightedSum / $totalCount, 2) : null;
+        $entity->data['average_processingtime_overall'] = $totalCount > 0 ? $weightedSum / $totalCount : null;
 
         return $entity;
     }

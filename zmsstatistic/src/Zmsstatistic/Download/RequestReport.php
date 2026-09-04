@@ -110,12 +110,7 @@ class RequestReport extends Base
                     ? ReportHelper::formatTimeValue($report->data['average_processingtime'][$name])
                     : "0";
                 $rowData[] = $report->data['sum'][$name];
-
-                $includeInTotal = $name !== ReportEntity::REQUEST_STAT_NAME_UNCATEGORIZED
-                    && $name !== ReportEntity::REQUEST_STAT_NAME_NONEXISTENT;
-                if ($includeInTotal) {
-                    $totalSum += (int)($report->data['sum'][$name] ?? 0);
-                }
+                $totalSum += (int)($report->data['sum'][$name] ?? 0);
 
                 $dateTime = clone $this->firstDayDate;
                 $dateColumn = 0;
@@ -123,9 +118,7 @@ class RequestReport extends Base
                     $dateString = $dateTime->format($this->dateFormatter[$report->period]);
                     $requestCount = isset($entry[$dateString]) ? (int)$entry[$dateString]['requestscount'] : 0;
                     $rowData[] = $requestCount;
-                    if ($includeInTotal) {
-                        $dateSums[$dateColumn] = ($dateSums[$dateColumn] ?? 0) + $requestCount;
-                    }
+                    $dateSums[$dateColumn] = ($dateSums[$dateColumn] ?? 0) + $requestCount;
                     $dateColumn++;
                     $dateTime->modify('+1 ' . $report->period);
                 } while ($dateTime <= $this->lastDayDate);
