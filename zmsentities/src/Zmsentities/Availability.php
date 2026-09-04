@@ -29,8 +29,8 @@ class Availability extends Schema\Entity
 
     public const string MAX_BOOKABLE_IN_DAYS_ENV = 'ZMS_MAX_BOOKABLE_IN_DAYS';
 
-    /** Default slot / booking horizon cap when the env var is unset. */
-    public const int DEFAULT_MAX_BOOKABLE_IN_DAYS = 365;
+    /** Default slot / booking horizon cap when the env var is unset (6 months). */
+    public const int DEFAULT_MAX_BOOKABLE_IN_DAYS = 180;
 
     public static $schema = "availability.json";
 

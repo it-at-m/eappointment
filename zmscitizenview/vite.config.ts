@@ -91,7 +91,7 @@ export default defineConfig(({ mode }) => {
       __ZMS_MAX_BOOKABLE_IN_DAYS__: JSON.stringify(
         env.ZMS_MAX_BOOKABLE_IN_DAYS ||
           process.env.ZMS_MAX_BOOKABLE_IN_DAYS ||
-          "365"
+          "180"
       ),
     },
     resolve: {

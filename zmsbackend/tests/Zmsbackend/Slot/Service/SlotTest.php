@@ -613,14 +613,19 @@ class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
     }
 
     /**
-     * ZMSKVR-1260: hard cap must allow a 12-month location horizon.
+     * ZMSKVR-1260: default stays at 6 months; raise ZMS_MAX_BOOKABLE_IN_DAYS for 12.
      */
-    public function testMaxDaysOfSlotCalculationAllowsTwelveMonths()
+    public function testMaxDaysOfSlotCalculationFollowsConfiguredCap()
     {
-        $this->assertGreaterThanOrEqual(
-            365,
-            \BO\Zmsentities\Availability::getMaxBookableInDays()
+        $this->assertSame(
+            180,
+            \BO\Zmsentities\Availability::DEFAULT_MAX_BOOKABLE_IN_DAYS
         );
+        $this->assertSame(
+            \BO\Zmsentities\Availability::DEFAULT_MAX_BOOKABLE_IN_DAYS,
+            \BO\Zmsbackend\Slot\Service\Slot::MAX_DAYS_OF_SLOT_CALCULATION
+        );
+        $this->assertGreaterThan(0, \BO\Zmsentities\Availability::getMaxBookableInDays());
     }
 
     protected function readTestAvailability()
