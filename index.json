@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-04T06:24:35.539Z",
+  "publishedAt": "2026-09-04T12:20:39.713Z",
   "branches": [
     {
       "name": "next",
@@ -42,6 +42,12 @@
       "slug": "fix-zmskvr-1397-hide-subminute-waiting-time",
       "runId": "33516333463",
       "runStartedAt": "2026-09-01T13:55:29Z"
+    },
+    {
+      "name": "fix-zmskvr-1573-include-special-rows-in-request-report-sum",
+      "slug": "fix-zmskvr-1573-include-special-rows-in-request-report-sum",
+      "runId": "33871668851",
+      "runStartedAt": "2026-09-04T12:13:09Z"
     },
     {
       "name": "fix-zmskvr-833-zmskvr-1025-rebooking-from-1571",

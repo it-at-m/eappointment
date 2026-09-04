@@ -1,0 +1,28 @@
+{
+  "branch": "fix-zmskvr-1573-include-special-rows-in-request-report-sum",
+  "branchSlug": "fix-zmskvr-1573-include-special-rows-in-request-report-sum",
+  "runId": "33871668851",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33871668851",
+  "runStartedAt": "2026-09-04T12:13:09Z",
+  "publishedAt": "2026-09-04T12:20:39.713Z",
+  "features": {
+    "feature-ui-zmsstatistic-zms-1558": {
+      "status": "passed",
+      "shard": "zmsstatistic",
+      "browser": "chrome",
+      "rel": "ui/zmsstatistic/ZMS-1558.feature",
+      "runId": "33871668851",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33871668851",
+      "runStartedAt": "2026-09-04T12:13:09Z"
+    },
+    "feature-ui-zmsstatistic-zms-1559": {
+      "status": "passed",
+      "shard": "zmsstatistic",
+      "browser": "chrome",
+      "rel": "ui/zmsstatistic/ZMS-1559.feature",
+      "runId": "33871668851",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/33871668851",
+      "runStartedAt": "2026-09-04T12:13:09Z"
+    }
+  }
+}
