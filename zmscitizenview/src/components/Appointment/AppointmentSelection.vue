@@ -252,6 +252,7 @@ import {
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 import { toCalloutType } from "@/utils/callout";
+import { BOOKING_CALENDAR_MONTHS } from "@/utils/Constants";
 import {
   createErrorStates,
   getApiErrorTranslation,
@@ -464,7 +465,7 @@ const toDayKey = (value: Date | string): string => {
 const TODAY = new Date();
 const MAXDATE = new Date(
   TODAY.getFullYear(),
-  TODAY.getMonth() + 6,
+  TODAY.getMonth() + BOOKING_CALENDAR_MONTHS,
   TODAY.getDate()
 );
 
