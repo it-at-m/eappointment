@@ -647,7 +647,8 @@ const loadAppointment = () => {
             );
 
             selectedService.value = services.value.find(
-              (service) => service.id == appointment.value?.serviceId
+              (service) =>
+                String(service.id) === String(appointment.value?.serviceId)
             );
             if (selectedService.value) {
               selectedService.value.count = appointment.value.serviceCount;
