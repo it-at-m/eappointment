@@ -27,6 +27,11 @@ class Availability extends Schema\Entity
 {
     public const string PRIMARY = 'id';
 
+    public const string MAX_BOOKABLE_IN_DAYS_ENV = 'ZMS_MAX_BOOKABLE_IN_DAYS';
+
+    /** Default slot / booking horizon cap when the env var is unset (6 months). */
+    public const int DEFAULT_MAX_BOOKABLE_IN_DAYS = 180;
+
     public static $schema = "availability.json";
 
     /**
@@ -668,6 +673,16 @@ class Availability extends Schema\Entity
         return $errorList;
     }
 
+    public static function getMaxBookableInDays(): int
+    {
+        $fromEnv = getenv(self::MAX_BOOKABLE_IN_DAYS_ENV);
+        if ($fromEnv === false || $fromEnv === '') {
+            return self::DEFAULT_MAX_BOOKABLE_IN_DAYS;
+        }
+        $days = (int) $fromEnv;
+        return $days > 0 ? $days : self::DEFAULT_MAX_BOOKABLE_IN_DAYS;
+    }
+
     public function validateBookableDayRange(int $startInDays, int $endInDays): array
     {
         $errorList = [];
@@ -675,6 +690,16 @@ class Availability extends Schema\Entity
             $errorList[] = [
                 'type' => 'bookableDayRange',
                 'message' => 'Bitte geben Sie im Feld \'von\' eine kleinere Zahl ein als im Feld \'bis\', wenn Sie bei \'Buchbar\' sind.'
+            ];
+        }
+        $maxBookableInDays = self::getMaxBookableInDays();
+        if ($startInDays > $maxBookableInDays || $endInDays > $maxBookableInDays) {
+            $errorList[] = [
+                'type' => 'bookableDayRangeMax',
+                'message' => sprintf(
+                    'Bitte geben Sie bei \'Buchbar\' höchstens %d Tage im Voraus ein.',
+                    $maxBookableInDays
+                )
             ];
         }
 

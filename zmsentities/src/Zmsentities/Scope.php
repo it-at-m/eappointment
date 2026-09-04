@@ -392,6 +392,36 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return ($dateTime->getTimestamp() < $this->lastChange);
     }
 
+    public function assertBookableHorizon(): void
+    {
+        $startInDays = (int) $this->getPreference('appointment', 'startInDaysDefault', false, 0);
+        $endInDays = (int) $this->getPreference('appointment', 'endInDaysDefault', false, 0);
+        $maxBookableInDays = Availability::getMaxBookableInDays();
+        if ($startInDays <= $maxBookableInDays && $endInDays <= $maxBookableInDays) {
+            return;
+        }
+
+        $exception = new Exception\SchemaValidation(
+            sprintf(
+                'Bitte geben Sie bei \'Terminvergabe bis\' höchstens %d Tage im Voraus ein.',
+                $maxBookableInDays
+            )
+        );
+        $exception->setSchemaName($this->getEntityName());
+        $exception->data['/preferences/appointment/endInDaysDefault'] = [
+            'messages' => [
+                'maximum' => sprintf(
+                    'Bitte geben Sie bei \'Terminvergabe bis\' höchstens %d Tage im Voraus ein.',
+                    $maxBookableInDays
+                ),
+            ],
+            'headline' => '/preferences/appointment/endInDaysDefault',
+            'failed' => 1,
+            'data' => $endInDays,
+        ];
+        throw $exception;
+    }
+
     public function __toString()
     {
         $string = 'scope#';

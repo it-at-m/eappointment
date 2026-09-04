@@ -34,6 +34,7 @@ class DepartmentAddScope extends \BO\Zmsbackend\Api\BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $scope = new \BO\Zmsentities\Scope($input);
         $scope->testValid();
+        $scope->assertBookableHorizon();
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
         $message->data = (new Query())->writeEntity($scope, $args['id']);

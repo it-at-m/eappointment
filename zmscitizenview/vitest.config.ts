@@ -10,6 +10,11 @@ export default defineConfig({
       }
     })
   ],
+  define: {
+    __ZMS_MAX_BOOKABLE_IN_DAYS__: JSON.stringify(
+      process.env.ZMS_MAX_BOOKABLE_IN_DAYS || "180"
+    ),
+  },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

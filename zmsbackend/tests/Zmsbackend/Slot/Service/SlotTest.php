@@ -612,6 +612,22 @@ class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
         \App::$log->debug('Slot availability debug', ['details' => $debug]);
     }
 
+    /**
+     * ZMSKVR-1260: default stays at 6 months; raise ZMS_MAX_BOOKABLE_IN_DAYS for 12.
+     */
+    public function testMaxDaysOfSlotCalculationFollowsConfiguredCap()
+    {
+        $this->assertSame(
+            180,
+            \BO\Zmsentities\Availability::DEFAULT_MAX_BOOKABLE_IN_DAYS
+        );
+        $this->assertSame(
+            \BO\Zmsentities\Availability::DEFAULT_MAX_BOOKABLE_IN_DAYS,
+            \BO\Zmsbackend\Slot\Service\Slot::MAX_DAYS_OF_SLOT_CALCULATION
+        );
+        $this->assertGreaterThan(0, \BO\Zmsentities\Availability::getMaxBookableInDays());
+    }
+
     protected function readTestAvailability()
     {
         $availability = (new \BO\Zmsbackend\Availability\Service\Availability())->readEntity(static::TEST_AVAILABILITY_ID, 2);

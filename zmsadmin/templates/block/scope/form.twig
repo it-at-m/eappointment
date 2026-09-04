@@ -176,15 +176,16 @@
                         }]
                     ) }}
 
+					{% set maxBookableInDays = getSystemStatus('ZMS_MAX_BOOKABLE_IN_DAYS')|default(180, true) %}
 					{{ formgroup(
-                        {"label": "Terminvergabe bis:", "description": "Tage im Voraus"},
+                        {"label": "Terminvergabe bis:", "description": "Tage im Voraus, höchstens " ~ maxBookableInDays},
                         [{
                             "type":"input",
                             "parameter": {
                                 "name": "preferences[appointment][endInDaysDefault]",
                                 "value": scope.preferences.appointment.endInDaysDefault|default(60),
                                 "maxlength": 3,
-                                "max": 999,
+                                "max": maxBookableInDays,
                                 "width": 1,
                                 "integer": true
                             }
