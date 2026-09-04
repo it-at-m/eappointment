@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Upserts ZMS_PHP_BASE_TAG from the *host* machine arch (8.3-local-amd64 vs 8.3-local-arm64).
 # Usage: .devcontainer/scripts/sync-php-base-tag.sh <path-to-.env>
-# Invoked from Dev Containers (initializeCommand) and DDEV (pre-start exec-host).
+# Invoked from Dev Containers (initializeCommand).
 set -euo pipefail
 ENV_FILE="${1:-}"
 if [ -z "${ENV_FILE}" ]; then
