@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { getMaxBookableInDays } from '../maxBookableInDays';
 
 const validate = (data, props) => {
     const currentTime = new Date();
@@ -148,8 +149,6 @@ function validateNullValues(data) {
     return errorList;
 }
 
-const MAX_BOOKABLE_IN_DAYS = 366;
-
 function validateBookableDayRange(data) {
     const errorList = [];
 
@@ -172,13 +171,14 @@ function validateBookableDayRange(data) {
             message: 'Bitte geben Sie im Feld \'von\' eine kleinere Zahl ein als im Feld \'bis\', wenn Sie bei \'Buchbar\' sind.'
         });
     }
+    const maxBookableInDays = getMaxBookableInDays();
     if (
-        (Number.isFinite(startInDays) && startInDays > MAX_BOOKABLE_IN_DAYS) ||
-        (Number.isFinite(endInDays) && endInDays > MAX_BOOKABLE_IN_DAYS)
+        (Number.isFinite(startInDays) && startInDays > maxBookableInDays) ||
+        (Number.isFinite(endInDays) && endInDays > maxBookableInDays)
     ) {
         errorList.push({
             type: 'bookableDayRangeMax',
-            message: `Bitte geben Sie bei 'Buchbar' höchstens ${MAX_BOOKABLE_IN_DAYS} Tage im Voraus ein.`
+            message: `Bitte geben Sie bei 'Buchbar' höchstens ${maxBookableInDays} Tage im Voraus ein.`
         });
     }
 

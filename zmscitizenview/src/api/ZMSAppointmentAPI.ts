@@ -6,8 +6,8 @@ import { OfficesAndServicesDTO } from "@/api/models/OfficesAndServicesDTO";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
 import { GlobalState } from "@/types/GlobalState";
 import {
-  BOOKING_CALENDAR_MONTHS,
   getAPIBaseURL,
+  MAX_BOOKABLE_IN_DAYS,
   VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT,
   VUE_APP_ZMS_API_CALENDAR_AVAILABILITY_ENDPOINT,
   VUE_APP_ZMS_API_CANCEL_APPOINTMENT_ENDPOINT,
@@ -20,11 +20,8 @@ import {
 } from "@/utils/Constants";
 
 const TODAY = new Date();
-const MAXDATE = new Date(
-  TODAY.getFullYear(),
-  TODAY.getMonth() + BOOKING_CALENDAR_MONTHS,
-  TODAY.getDate()
-);
+const MAXDATE = new Date(TODAY);
+MAXDATE.setDate(TODAY.getDate() + MAX_BOOKABLE_IN_DAYS);
 
 interface Request {
   path: string;

@@ -426,7 +426,10 @@ class AvailabilityListUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
         $responseData = json_decode((string)$response->getBody(), true);
         $messageData = json_decode($responseData['meta']['message'], true);
         $this->assertEquals('bookableDayRangeMax', $messageData['errors'][0]['type']);
-        $this->assertStringContainsString('366', $messageData['errors'][0]['message']);
+        $this->assertStringContainsString(
+            (string) \BO\Zmsentities\Availability::getMaxBookableInDays(),
+            $messageData['errors'][0]['message']
+        );
     }
 
     public function testTypeValidation()
