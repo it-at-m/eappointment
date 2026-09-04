@@ -404,14 +404,15 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     {
         $startInDays = (int) $this->getPreference('appointment', 'startInDaysDefault', false, 0);
         $endInDays = (int) $this->getPreference('appointment', 'endInDaysDefault', false, 0);
-        if ($startInDays <= Availability::MAX_BOOKABLE_IN_DAYS && $endInDays <= Availability::MAX_BOOKABLE_IN_DAYS) {
+        $maxBookableInDays = Availability::getMaxBookableInDays();
+        if ($startInDays <= $maxBookableInDays && $endInDays <= $maxBookableInDays) {
             return;
         }
 
         $exception = new Exception\SchemaValidation(
             sprintf(
                 'Bitte geben Sie bei \'Terminvergabe bis\' höchstens %d Tage im Voraus ein.',
-                Availability::MAX_BOOKABLE_IN_DAYS
+                $maxBookableInDays
             )
         );
         $exception->setSchemaName($this->getEntityName());
@@ -419,7 +420,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
             'messages' => [
                 'maximum' => sprintf(
                     'Bitte geben Sie bei \'Terminvergabe bis\' höchstens %d Tage im Voraus ein.',
-                    Availability::MAX_BOOKABLE_IN_DAYS
+                    $maxBookableInDays
                 ),
             ],
             'headline' => '/preferences/appointment/endInDaysDefault',

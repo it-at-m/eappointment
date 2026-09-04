@@ -619,7 +619,7 @@ class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
     {
         $this->assertGreaterThanOrEqual(
             365,
-            \BO\Zmsbackend\Slot\Service\Slot::MAX_DAYS_OF_SLOT_CALCULATION
+            \BO\Zmsentities\Availability::getMaxBookableInDays()
         );
     }
 

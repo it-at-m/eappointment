@@ -196,7 +196,7 @@ class ScopeTest extends EntityCommonTests
         $entity = $this->getExample();
         $entity->preferences['appointment']['endInDaysDefault'] = 500;
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
-        $this->expectExceptionMessage('366');
+        $this->expectExceptionMessage((string) \BO\Zmsentities\Availability::getMaxBookableInDays());
         $entity->testValid();
     }
 }

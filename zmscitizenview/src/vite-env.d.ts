@@ -1,5 +1,7 @@
 /// <reference types="vite/client" />
 
+declare const __ZMS_MAX_BOOKABLE_IN_DAYS__: string;
+
 interface ImportMetaEnv {
   readonly SHOW_CITIZEN_LOGIN?: string;
   readonly VITE_SHOW_CITIZEN_LOGIN?: string;

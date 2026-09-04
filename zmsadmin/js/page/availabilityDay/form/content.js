@@ -4,6 +4,7 @@ import * as Inputs from '../../../lib/inputs'
 import AvailabilityDatePicker from './datepicker'
 const { Label, FormGroup, Controls, Description } = Inputs
 import { range } from '../../../lib/utils'
+import { getMaxBookableInDays } from '../maxBookableInDays'
 import { weekDayList, availabilitySeries, availabilityTypes, getDataValuesFromForm } from '../helpers'
 import ErrorBar from '../errorBar'
 
@@ -223,7 +224,7 @@ const FormContent = (props) => {
                                 />
                                 <span aria-hidden="true"> Tage im voraus</span>
                             </Controls>
-                            <Description attributes={{ "id": "help_AvDayOpenfromto" }}>Tage im voraus, höchstens 366. Keine Eingabe bedeutet die Einstellungen vom Standort zu übernehmen.</Description>
+                            <Description attributes={{ "id": "help_AvDayOpenfromto" }}>Tage im voraus, höchstens {getMaxBookableInDays()}. Keine Eingabe bedeutet die Einstellungen vom Standort zu übernehmen.</Description>
                         </FormGroup>
                     </div>
                 </fieldset>
