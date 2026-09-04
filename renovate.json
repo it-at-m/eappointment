@@ -1,14 +1,23 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
-
+  "extends": [
+    "github>it-at-m/.github//renovate-configs/renovate-config.json5"
+  ],
   "ignorePaths": ["zmsbase/**"],
-
-  "baseBranchPatterns": [
+    "baseBranchPatterns": [
     "next",
     "/^release\\/.*/"
   ],
-
+  "automergeSchedule": ["* * * * *"],
+  "schedule": ["* 0-4 * * *"],
   "timezone": "Europe/Berlin",
-  "schedule": ["* 0-4 * * *"]
+  "packageRules": [
+    {
+      "description": "Automerge non-major updates once CI is green (Renovate-side; platform automerge is unsafe without required status checks on dev)",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    }
+  ]
 }
