@@ -392,15 +392,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return ($dateTime->getTimestamp() < $this->lastChange);
     }
 
-    #[\Override]
-    public function testValid($locale = 'de_DE', $resolveLevel = 0): bool
-    {
-        parent::testValid($locale, $resolveLevel);
-        $this->assertBookableHorizon();
-        return true;
-    }
-
-    private function assertBookableHorizon(): void
+    public function assertBookableHorizon(): void
     {
         $startInDays = (int) $this->getPreference('appointment', 'startInDaysDefault', false, 0);
         $endInDays = (int) $this->getPreference('appointment', 'endInDaysDefault', false, 0);

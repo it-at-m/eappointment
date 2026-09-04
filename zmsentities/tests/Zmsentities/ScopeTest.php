@@ -191,12 +191,19 @@ class ScopeTest extends EntityCommonTests
         $this->assertTrue($requestList->hasRequests(1234), "Missing request in provider from scope");
     }
 
-    public function testValidRejectsBookableHorizonAboveMax()
+    public function testValidAllowsStoredHorizonAboveEnvCap()
+    {
+        $entity = $this->getExample();
+        $entity->preferences['appointment']['endInDaysDefault'] = 360;
+        $this->assertTrue($entity->testValid());
+    }
+
+    public function testAssertBookableHorizonRejectsAboveMax()
     {
         $entity = $this->getExample();
         $entity->preferences['appointment']['endInDaysDefault'] = 500;
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionMessage((string) \BO\Zmsentities\Availability::getMaxBookableInDays());
-        $entity->testValid();
+        $entity->assertBookableHorizon();
     }
 }
