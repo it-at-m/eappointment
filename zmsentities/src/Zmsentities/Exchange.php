@@ -275,8 +275,6 @@ class Exchange extends Schema\Entity
         $weightedSum = 0.0;
         $totalCount = 0;
         $excludedNames = [
-            self::REQUEST_STAT_NAME_UNCATEGORIZED,
-            self::REQUEST_STAT_NAME_NONEXISTENT,
             'sum',
             'average_processingtime',
             'average_processingtime_overall',

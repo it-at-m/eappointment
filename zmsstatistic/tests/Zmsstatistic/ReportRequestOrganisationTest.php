@@ -111,6 +111,15 @@ class ReportRequestOrganisationTest extends Base
             (string) $response->getBody()
         );
         $this->assertStringContainsString('Reisepass beantragen', (string) $response->getBody());
+        $this->assertStringContainsString('Dienstleistung wurde nicht erfasst', (string) $response->getBody());
+        $this->assertStringContainsString(
+            'Dienstleistung konnte nicht erbracht werden',
+            (string) $response->getBody()
+        );
+        $this->assertMatchesRegularExpression(
+            '/Ø Bearbeitungsdauer \(unabhängig von DL\) \/ Summe[\s\S]*?>\s*98\s*</',
+            (string) $response->getBody()
+        );
     }
 
     public function testWithDownloadXLSX()

@@ -118,6 +118,15 @@ class ReportRequestScopeTest extends Base
             (string) $response->getBody()
         );
         $this->assertStringContainsString('Reisepass beantragen', (string) $response->getBody());
+        $this->assertStringContainsString('Dienstleistung wurde nicht erfasst', (string) $response->getBody());
+        $this->assertStringContainsString(
+            'Dienstleistung konnte nicht erbracht werden',
+            (string) $response->getBody()
+        );
+        $this->assertMatchesRegularExpression(
+            '/Ø Bearbeitungsdauer \(unabhängig von DL\) \/ Summe[\s\S]*?>\s*98\s*</',
+            (string) $response->getBody()
+        );
     }
 
     public function testWithPeriodYear()
@@ -572,6 +581,7 @@ class ReportRequestScopeTest extends Base
                         $sheet->getCell('B' . $rowIndex)->getValue(),
                         'The overall average processing time must be exported.'
                     );
+                    $this->assertSame(98, (int) $sheet->getCell('C' . $rowIndex)->getValue());
 
                     break;
                 }

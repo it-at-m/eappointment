@@ -89,12 +89,11 @@ class ArchivedDataIntoStatisticByCron
     ): void {
         $requestIds = (new \BO\Zmsbackend\Request\Service\Request())
             ->readRequestIdsByArchiveId($process->archiveId);
-        $processingTime = null;
-        if (count($requestIds)) {
-            $processingTime = count($requestIds) === 1 ? $process->processingTime : null;
-        } else {
+        if (!count($requestIds)) {
+            // unsigned buergeranliegen.AnliegenID cannot store -1 ("ohne Erfassung")
             $requestIds = [-1];
         }
+        $processingTime = count($requestIds) === 1 ? $process->processingTime : null;
 
         foreach ($requestIds as $requestId) {
             $archived = true; // for verbose
