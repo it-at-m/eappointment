@@ -999,8 +999,26 @@ class AvailabilityTest extends EntityCommonTests
 
     public function testGetMaxBookableInDaysFallsBackToDefault()
     {
-        $this->assertSame(365, Availability::DEFAULT_MAX_BOOKABLE_IN_DAYS);
+        $this->assertSame(180, Availability::DEFAULT_MAX_BOOKABLE_IN_DAYS);
         $this->assertGreaterThan(0, Availability::getMaxBookableInDays());
+    }
+
+    public function testGetMaxBookableInDaysReadsEnv()
+    {
+        $previous = getenv(Availability::MAX_BOOKABLE_IN_DAYS_ENV);
+        try {
+            putenv(Availability::MAX_BOOKABLE_IN_DAYS_ENV);
+            $this->assertSame(180, Availability::getMaxBookableInDays());
+
+            putenv(Availability::MAX_BOOKABLE_IN_DAYS_ENV . '=365');
+            $this->assertSame(365, Availability::getMaxBookableInDays());
+        } finally {
+            if ($previous === false) {
+                putenv(Availability::MAX_BOOKABLE_IN_DAYS_ENV);
+            } else {
+                putenv(Availability::MAX_BOOKABLE_IN_DAYS_ENV . '=' . $previous);
+            }
+        }
     }
 
     public function testValidateBookableDayRangeMax()

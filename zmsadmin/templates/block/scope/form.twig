@@ -176,7 +176,7 @@
                         }]
                     ) }}
 
-					{% set maxBookableInDays = getSystemStatus('ZMS_MAX_BOOKABLE_IN_DAYS')|default(365, true) %}
+					{% set maxBookableInDays = getSystemStatus('ZMS_MAX_BOOKABLE_IN_DAYS')|default(180, true) %}
 					{{ formgroup(
                         {"label": "Terminvergabe bis:", "description": "Tage im Voraus, höchstens " ~ maxBookableInDays},
                         [{

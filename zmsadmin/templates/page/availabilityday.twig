@@ -92,7 +92,7 @@
         data-slotbuckets={{ slotBuckets|json_encode }}
         data-maxslots="{{ maxSlotsForAvailabilities|json_encode }}"
         data-busyslots="{{ busySlotsForAvailabilities|json_encode }}"
-        data-maxbookableindays="{{ getSystemStatus('ZMS_MAX_BOOKABLE_IN_DAYS')|default(365, true) }}"
+        data-maxbookableindays="{{ getSystemStatus('ZMS_MAX_BOOKABLE_IN_DAYS')|default(180, true) }}"
         data-canViewAvailabilityHistory="{{ canViewAvailabilityHistory|default(false) ? 'true' : 'false' }}"
         {% if canViewAvailabilityHistory|default(false) %}
         data-historyUrl="{{ includeUrl }}/scope/{{ scope.id }}/availability/history/"
