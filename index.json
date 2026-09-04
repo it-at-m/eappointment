@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-04T12:20:39.713Z",
+  "publishedAt": "2026-09-04T13:19:48.545Z",
   "branches": [
     {
       "name": "next",
@@ -42,6 +42,12 @@
       "slug": "fix-zmskvr-1397-hide-subminute-waiting-time",
       "runId": "33516333463",
       "runStartedAt": "2026-09-01T13:55:29Z"
+    },
+    {
+      "name": "fix-zmskvr-1424-called-queue-table-api-failed",
+      "slug": "fix-zmskvr-1424-called-queue-table-api-failed",
+      "runId": "33873401960",
+      "runStartedAt": "2026-09-04T12:33:47Z"
     },
     {
       "name": "fix-zmskvr-1573-include-special-rows-in-request-report-sum",
