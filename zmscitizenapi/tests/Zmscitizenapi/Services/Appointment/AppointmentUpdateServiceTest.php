@@ -249,6 +249,25 @@ class AppointmentUpdateServiceTest extends TestCase
         $this->assertEquals('max@example.com', $result->email);
     }
 
+    public function testUpdateProcessWithClientDataKeepsMultiWordFamilyNameWhenRebooking(): void
+    {
+        $process = new ThinnedProcess();
+        $process->familyName = 'Jane Doe';
+        $process->email = 'jane@example.com';
+
+        $data = (object)[
+            'familyName' => 'Jane Doe Smith',
+            'email' => 'jane@example.com',
+            'telephone' => null,
+            'customTextfield' => null,
+            'customTextfield2' => null
+        ];
+
+        $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data, true]);
+
+        $this->assertEquals('Jane Doe', $result->familyName);
+    }
+
     public function testUpdateProcessWithClientDataOverwritesWhenNotRebooking(): void
     {
         $process = new ThinnedProcess();

@@ -275,7 +275,10 @@ class ValidationService
             return false;
         }
         return $incomingTrimmed === $storedTrimmed
-            || str_starts_with($incomingTrimmed, $storedTrimmed . ' ');
+            || (
+                !str_contains($storedTrimmed, ' ')
+                && str_starts_with($incomingTrimmed, $storedTrimmed . ' ')
+            );
     }
 
     public static function validateUnchangedStoredContact(

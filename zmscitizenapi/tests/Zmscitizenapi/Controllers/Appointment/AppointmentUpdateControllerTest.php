@@ -202,6 +202,47 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testRebookingRejectsCompletingMultiWordFamilyName(): void
+    {
+        $process = json_decode($this->readFixture('GET_process.json'), true, 512, JSON_THROW_ON_ERROR);
+        $process['data']['clients'][0]['familyName'] = 'Jane Doe';
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => json_encode($process, JSON_THROW_ON_ERROR)
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/ics/',
+                    'response' => $this->readFixture("GET_process_ics_template.json")
+                ]
+            ]
+        );
+
+        $parameters = [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'familyName' => 'Jane Doe Smith',
+            'email' => 'johndoe@example.com',
+            'telephone' => '0123456789',
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
+            'sourceProcessId' => '100001',
+            'sourceAuthKey' => 'oldkey',
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(ErrorMessages::get('familyNameCannotBeChanged')['statusCode'], $response->getStatusCode());
+        $this->assertContains(ErrorMessages::get('familyNameCannotBeChanged'), $responseBody['errors']);
+    }
+
     public function testFirstBookingAllowsChangingStoredContact(): void
     {
         $this->setApiCalls(

@@ -355,6 +355,26 @@ class ValidationServiceTest extends TestCase
         $this->assertContains(ErrorMessages::get('familyNameCannotBeChanged'), $replaced['errors']);
     }
 
+    public function testValidateUnchangedStoredContactRejectsCompletingMultiWordFamilyName(): void
+    {
+        $stored = new ThinnedProcess();
+        $stored->familyName = 'Jane Doe';
+        $stored->email = 'jane@example.com';
+        $stored->telephone = '';
+        $stored->customTextfield = '';
+        $stored->customTextfield2 = null;
+
+        $result = ValidationService::validateUnchangedStoredContact(
+            $stored,
+            'Jane Doe Smith',
+            'jane@example.com',
+            null,
+            null,
+            null
+        );
+        $this->assertContains(ErrorMessages::get('familyNameCannotBeChanged'), $result['errors']);
+    }
+
     public function testValidateUnchangedStoredContactAllowsFillingEmptyAndPlaceholderValues(): void
     {
         $stored = new ThinnedProcess();
