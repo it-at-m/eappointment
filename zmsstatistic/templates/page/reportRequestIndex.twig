@@ -91,9 +91,7 @@
                                 {{ exchangeRequest.data.sum[name] }}
                             </td>
 
-                            {% if name != uncategorizedRequestKey and name != serviceNotProvidedKey %}
-                                {% set totalSum = totalSum + (exchangeRequest.data.sum[name]|default(0)) %}
-                            {% endif %}
+                            {% set totalSum = totalSum + (exchangeRequest.data.sum[name]|default(0)) %}
 
                             {% for date in dateRange %}
                                 {% if exchangeRequest.period == "day" %}
@@ -134,16 +132,14 @@
                             {% set dateSum = 0 %}
                             {% if exchangeRequest.period == "day" %}
                                 {% for name, entry in exchangeRequest.data %}
-                                    {% if name != "average_processingtime" and name != "average_processingtime_overall" and name != "sum"
-                                        and name != uncategorizedRequestKey and name != serviceNotProvidedKey %}
+                                    {% if name != "average_processingtime" and name != "average_processingtime_overall" and name != "sum" %}
                                         {% set dateSum = dateSum + (entry[date].requestscount|default(0)) %}
                                     {% endif %}
                                 {% endfor %}
                             {% elseif exchangeRequest.period == "month" %}
                                 {% set formattedDate = startDate|date('Y') ~"-"~ "%02d"|format(date) %}
                                 {% for name, entry in exchangeRequest.data %}
-                                    {% if name != "average_processingtime" and name != "average_processingtime_overall" and name != "sum"
-                                        and name != uncategorizedRequestKey and name != serviceNotProvidedKey %}
+                                    {% if name != "average_processingtime" and name != "average_processingtime_overall" and name != "sum" %}
                                         {% set dateSum = dateSum + (entry[formattedDate].requestscount|default(0)) %}
                                     {% endif %}
                                 {% endfor %}

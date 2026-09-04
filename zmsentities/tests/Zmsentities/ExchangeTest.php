@@ -135,7 +135,7 @@ class ExchangeTest extends EntityCommonTests
         );
     }
 
-    public function testWithWeightedAverageProcessingTimeExcludesUncapturedRequests()
+    public function testWithWeightedAverageProcessingTimeIncludesUncapturedRequests()
     {
         $exchange = new \BO\Zmsentities\Exchange();
 
@@ -154,7 +154,7 @@ class ExchangeTest extends EntityCommonTests
         $result = $exchange->withWeightedAverageProcessingTime();
 
         $this->assertSame(
-            10.0,
+            27.5,
             $result->data['average_processingtime_overall']
         );
     }
