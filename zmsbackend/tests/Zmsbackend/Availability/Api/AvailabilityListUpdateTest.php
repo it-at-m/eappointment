@@ -384,6 +384,51 @@ class AvailabilityListUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertEquals('Bitte geben Sie im Feld \'von\' eine kleinere Zahl ein als im Feld \'bis\', wenn Sie bei \'Buchbar\' sind.', $messageData['errors'][0]['message']);
     }
 
+    public function testBookableDayRangeMaxValidation()
+    {
+        $this->setWorkstation() ->getUseraccount() ->setPermissions('availability');
+        $response = $this->render([], [
+            '__body' => '{
+                "availabilityList": [
+                    {
+                        "description": "Test bookable day range above 12 months",
+                        "scope": {
+                            "id": 141
+                        },
+                        "weekday": {
+                            "monday": 1,
+                            "tuesday": 0,
+                            "wednesday": 0,
+                            "thursday": 0,
+                            "friday": 0,
+                            "saturday": 0,
+                            "sunday": 0
+                        },
+                        "startDate": ' . strtotime("+1 day") . ',
+                        "endDate": ' . strtotime("+30 days") . ',
+                        "startTime": "09:00:00",
+                        "endTime": "17:00:00",
+                        "slotTimeInMinutes": 60,
+                        "bookable": {
+                            "startInDays": 14,
+                            "endInDays": 500
+                        },
+                        "workstationCount": {
+                            "public": 1,
+                            "intern": 0
+                        }
+                    }
+                ],
+                "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
+            }'
+        ], []);
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseData = json_decode((string)$response->getBody(), true);
+        $messageData = json_decode($responseData['meta']['message'], true);
+        $this->assertEquals('bookableDayRangeMax', $messageData['errors'][0]['type']);
+        $this->assertStringContainsString('366', $messageData['errors'][0]['message']);
+    }
+
     public function testTypeValidation()
     {
         $this->setWorkstation() ->getUseraccount() ->setPermissions('availability');

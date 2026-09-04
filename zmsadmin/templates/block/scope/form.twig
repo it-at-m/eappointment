@@ -177,14 +177,14 @@
                     ) }}
 
 					{{ formgroup(
-                        {"label": "Terminvergabe bis:", "description": "Tage im Voraus"},
+                        {"label": "Terminvergabe bis:", "description": "Tage im Voraus, höchstens 366"},
                         [{
                             "type":"input",
                             "parameter": {
                                 "name": "preferences[appointment][endInDaysDefault]",
                                 "value": scope.preferences.appointment.endInDaysDefault|default(60),
                                 "maxlength": 3,
-                                "max": 999,
+                                "max": 366,
                                 "width": 1,
                                 "integer": true
                             }

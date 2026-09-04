@@ -996,4 +996,15 @@ class AvailabilityTest extends EntityCommonTests
             ]
         );
     }
+
+    public function testValidateBookableDayRangeMax()
+    {
+        $entity = new $this->entityclass();
+        $errors = $entity->validateBookableDayRange(14, 500);
+        $this->assertCount(1, $errors);
+        $this->assertSame('bookableDayRangeMax', $errors[0]['type']);
+        $this->assertStringContainsString('366', $errors[0]['message']);
+
+        $this->assertSame([], $entity->validateBookableDayRange(14, Availability::MAX_BOOKABLE_IN_DAYS));
+    }
 }

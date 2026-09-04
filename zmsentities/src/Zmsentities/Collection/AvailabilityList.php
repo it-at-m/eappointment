@@ -235,10 +235,13 @@ class AvailabilityList extends Base
                 $availability->validateEndTime($startDate, $endDate),
                 $availability->validateOriginEndTime($today, $yesterday, $endDate, $selectedDate, $kind),
                 $availability->validateType($kind),
-                $availability->validateSlotTime($startDate, $endDate),
-                $availability->validateBookableDayRange((int) $startInDays, (int) $endInDays)
+                $availability->validateSlotTime($startDate, $endDate)
             );
         }
+        $errorList = array_merge(
+            $errorList,
+            (new Availability())->validateBookableDayRange((int) $startInDays, (int) $endInDays)
+        );
         return $errorList;
     }
 
