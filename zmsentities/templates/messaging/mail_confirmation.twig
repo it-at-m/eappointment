@@ -46,9 +46,9 @@
                 Anzahl: {{ requestGroup['count'] }}
                 
                 {% if requestGroups|length > 1 and not loop.last %}
-                    <br /><br />
-                    ----------------------
-                    <br /><br />
+                    <br><br>
+                    <span style="white-space:nowrap">——</span>
+                    <br><br>
                 {% endif %}
             {% endfor %}
         {% endif %}

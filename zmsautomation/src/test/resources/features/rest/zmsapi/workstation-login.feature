@@ -1,5 +1,5 @@
 @rest @zmsapi @smoke
-Feature: ZMS API workstation login
+Feature: ZMS API workstation login and session
   As a client application
   I want to authenticate against the ZMS API workstation endpoints
   So that login behaviour is verified independently from business flows

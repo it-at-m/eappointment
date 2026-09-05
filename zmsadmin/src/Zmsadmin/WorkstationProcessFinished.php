@@ -7,6 +7,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Mellon\Validator;
 use BO\Slim\Render;
 use Psr\Http\Message\RequestInterface;
 use BO\Zmsadmin\Helper\ProcessFinishedHelper;
@@ -34,11 +35,20 @@ class WorkstationProcessFinished extends BaseController
         }
         $this->testProcess($workstation);
         $input = $request->getParsedBody();
+        $validator = $request->getAttribute('validator');
+        $nextProcessId = $validator->getParameter('nextprocess')->isNumber()->getValue();
+        if (!$nextProcessId && is_array($input) && isset($input['nextprocess'])) {
+            $nextProcessId = Validator::value($input['nextprocess'])->isNumber()->getValue();
+        }
+        if ($nextProcessId && ! \App::$allowClusterWideCall) {
+            $nextProcess = \App::$http->readGetResult('/process/' . $nextProcessId . '/')->getEntity();
+            $workstation->validateProcessScopeAccess($workstation->getScopeList(), $nextProcess);
+        }
         $statisticEnabled = $workstation->getScope()->getPreference('queue', 'statisticsEnabled');
 
         if (! $statisticEnabled) {
             $workstation->getProcess()['status'] = 'finished';
-            return $this->getFinishedResponse($workstation);
+            return $this->getFinishedResponse($workstation, null, $nextProcessId);
         }
 
         $scopeId = $workstation->getProcess()->getCurrentScope()['id']
@@ -60,7 +70,7 @@ class WorkstationProcessFinished extends BaseController
                 $selectableRequestList,
                 $source
             );
-            return $this->getFinishedResponse($workstation, $process);
+            return $this->getFinishedResponse($workstation, $process, $nextProcessId);
         }
 
         return Render::withHtml(
@@ -72,7 +82,8 @@ class WorkstationProcessFinished extends BaseController
                 'scopeRequestList' => $scopeRequestList->toSortedByGroup(),
                 'additionalDepartmentRequestList' => $additionalDepartmentRequestList->toSortedByGroup(),
                 'menuActive' => 'workstation',
-                'statisticEnabled' => $statisticEnabled
+                'statisticEnabled' => $statisticEnabled,
+                'nextProcessId' => $nextProcessId
             )
         );
     }
@@ -94,15 +105,20 @@ class WorkstationProcessFinished extends BaseController
 
     protected function getFinishedResponse(
         Workstation $workstation,
-        ?Process $process = null
+        ?Process $process = null,
+        ?int $nextProcessId = null
     ): \BO\Slim\Response {
         $process ??= clone $workstation->getProcess();
         $process['status'] = ('pending' != $process['status']) ? 'finished' : $process['status'];
         \App::$http->readPostResult('/process/status/finished/', new Process($process))->getEntity();
+        $redirectParams = [];
+        if ($nextProcessId) {
+            $redirectParams['calledprocess'] = $nextProcessId;
+        }
         return Render::redirect(
             $workstation->getVariantName(),
             array(),
-            array()
+            $redirectParams
         );
     }
 

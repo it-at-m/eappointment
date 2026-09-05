@@ -4,21 +4,7 @@ Um Unit-Tests lokal auszuführen, siehe die [GitHub Workflows](https://github.co
 
 ## Unit-Tests der PHP-Module
 
-### Mit DDEV
-
-```bash
-ddev ssh
-```
-
-```bash
-cd {zmsadmin, zmscalldisplay, zmsdldb, zmsentities, zmsmessaging, zmsslim, zmsstatistic, zmsticketprinter}
-```
-
-```bash
-./vendor/bin/phpunit
-```
-
-### Mit Podman
+Interaktiv:
 
 ```bash
 podman exec -it zms-web bash
@@ -31,6 +17,14 @@ cd {zmsadmin, zmscalldisplay, zmsdldb, zmsentities, zmsmessaging, zmsslim, zmsst
 ```bash
 ./vendor/bin/phpunit
 ```
+
+Lokales `zms-web` mountet `.devcontainer/php/xdebug.ini` mit `xdebug.mode=debug,develop` und `xdebug.start_with_request=yes`. Dadurch hängt PHPUnit (besonders **zmsadmin** und andere Slim-Apps) unter Podman auf macOS oder läuft sehr langsam. Xdebug für den PHPUnit-Prozess ausschalten:
+
+```bash
+podman exec -it zms-web bash -lc 'export XDEBUG_MODE=off; cd zmsadmin && ./vendor/bin/phpunit --no-coverage'
+```
+
+`zmsadmin` durch das gewünschte Modul ersetzen. `export XDEBUG_MODE=off;` muss vor `cd` stehen. `XDEBUG_MODE=off cd zmsadmin && ./vendor/bin/phpunit` setzt die Variable nur für `cd`, PHPUnit läuft dann weiter mit Debugger.
 
 Nützliche Flags für `./vendor/bin/phpunit`:
 
@@ -49,22 +43,13 @@ Nützliche Flags für `./vendor/bin/phpunit`:
 
 Für `zmsclient` benötigst du das PHP-Basis-Image, das einen lokalen Mock-Server startet. Das JSON in den Mocks muss zur Signatur passen, die die Entität in den Anfragen zurückgibt (das ist üblicherweise die Ursache, wenn Tests in `zmsclient` fehlschlagen).
 
-**Mit Docker:**
-
-```bash
-cd zmsclient
-docker compose down && docker compose up -d && docker exec zmsclient-test-1 ./vendor/bin/phpunit
-```
-
-**Mit Podman:**
-
 ```bash
 cd zmsclient
 ./zmsclient-test
 ./zmsclient-test --filter "testSetKeyBasic"
 ```
 
-Das Skript `zmsclient-test` erkennt und nutzt automatisch Docker oder Podman, startet die Container für einen sauberen Zustand neu und führt die PHPUnit-Tests aus.
+Das Skript `zmsclient-test` startet die Mock- und Test-Container und führt die PHPUnit-Tests aus.
 
 #### Traditionelle Methode (überschreibt lokale DB)
 
@@ -72,13 +57,11 @@ Für **zmsbackend** müssen Testdaten importiert werden. Beachte, dass dabei dei
 
 **zmsbackend** (einheitliches REST-API- und Datenbankmodul für `/terminvereinbarung/api/2`):
 
-Mit DDEV oder Podman:
-
 ```bash
 ./zmsbackend/zmsbackend-test
 ```
 
-Oder manuell (in `zms-web` / `ddev ssh`):
+Oder manuell (in `zms-web`):
 
 ```bash
 cd zmsbackend && bin/importTestData --commit
@@ -91,8 +74,7 @@ Führe deine Tests in sauberen, wegwerfbaren Containern aus, damit sie weder dei
 
 ```bash
 # Web-Container betreten
-podman exec -it zms-web bash  # Podman
-ddev ssh                      # DDEV
+podman exec -it zms-web bash
 
 # zmsbackend-Tests ausführen
 ./zmsbackend/zmsbackend-test                    # alle Tests

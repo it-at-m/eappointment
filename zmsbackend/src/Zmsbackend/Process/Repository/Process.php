@@ -400,6 +400,21 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    public function addConditionProcessDeleteBeforeDate(\DateTimeInterface $date): static
+    {
+        $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($date) {
+            $query->andWith(
+                self::expression(
+                    'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)'
+                ),
+                '<',
+                $date->format('Y-m-d') . ' 00:00:00'
+            );
+        });
+        $this->query->orderBy('appointments__0__date', 'ASC');
+        return $this;
+    }
+
     /**
      * @psalm-api
      */
@@ -1190,17 +1205,20 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         ) {
             $timeoutTime = $dateTime->format('Y-m-d H:i:s');
             $data['timeoutTime'] = $timeoutTime;
-        } elseif ($process->status == 'processing') {
+        } elseif ($process->status == 'processing' && empty($process->showUpTime)) {
+            // Do not reset showUpTime on re-save (preserves Bearbeitungszeit)
             $showUpTime = $dateTime->format('Y-m-d H:i:s');
             $data['showUpTime'] = $showUpTime;
         } elseif ($process->status == 'finished') {
             $finishTime = $dateTime->format('Y-m-d H:i:s');
             $data['finishTime'] = $finishTime;
         } elseif (
-            $process->status == 'queued'
-            && isset($previousStatus)
+            isset($previousStatus)
             && in_array($previousStatus, ['called', 'processing'], true)
+            && in_array($process->status, ['queued', 'parked'], true)
         ) {
+            // Drop open processing segment when leaving to queue/park so a later
+            // resume starts a fresh showUpTime (park-and-resume ATAF expectation).
             $data['showUpTime'] = null;
             $data['timeoutTime'] = null;
         }

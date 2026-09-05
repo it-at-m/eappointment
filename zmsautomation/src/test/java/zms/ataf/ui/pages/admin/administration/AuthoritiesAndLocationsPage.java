@@ -144,7 +144,7 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
         return DRIVER.findElements(By.id("AvDaySlottime")).stream()
                 .map(e -> e.getAttribute("value"))
                 .filter(v -> v != null && !v.isBlank())
-                .map(String::trim)
+                .map(v -> v.trim())
                 .mapToInt(v -> {
                     try {
                         return Integer.parseInt(v);
@@ -177,7 +177,10 @@ public void saveLocationChanges() {
             break;
         } catch (TimeoutException ignored) {}
     }
-    Assert.assertNotNull(save, "Could not find an enabled 'Speichern' button.");
+    if (save == null) {
+        Assert.fail("Could not find an enabled 'Speichern' button.");
+        return;
+    }
     scrollToCenterByVisibleElement(save);
     save.click();
 
@@ -343,7 +346,7 @@ public void saveLocationChanges() {
 
     private WebElement findVisibleInputById(String id) {
         return DRIVER.findElements(By.id(id)).stream()
-                .filter(WebElement::isDisplayed)
+                .filter(element -> element.isDisplayed())
                 .filter(element -> element.getRect().getHeight() > 0 && element.getRect().getWidth() > 0)
                 .findFirst()
                 .orElseGet(() -> findElementByLocatorType("//input[@id='" + id + "']", LocatorType.XPATH, true));

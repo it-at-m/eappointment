@@ -23,16 +23,21 @@ class WorkstationProcessProcessing extends BaseController
         array $args
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $workstation->process->status = 'processing';
-        $workstation->process->parkedBy = null;
         if (! $workstation->process->hasId()) {
             throw new WorkstationMissingAssignedProcess();
         }
-        $workstation->process = \App::$http->readPostResult(
-            '/process/' . $workstation->process->id . '/' . $workstation->process->authKey . '/',
-            $workstation->process,
-            ['initiator' => 'admin']
-        )->getEntity();
+
+        // Re-saving an already processing process resets showUpTime (Bearbeitungszeit).
+        // Only transition called → processing here; otherwise just render the current view.
+        if ($workstation->process->getStatus() !== 'processing') {
+            $workstation->process->status = 'processing';
+            $workstation->process->parkedBy = null;
+            $workstation->process = \App::$http->readPostResult(
+                '/process/' . $workstation->process->id . '/' . $workstation->process->authKey . '/',
+                $workstation->process,
+                ['initiator' => 'admin']
+            )->getEntity();
+        }
 
         $validator = $request->getAttribute('validator');
         $error = $validator->getParameter('error')->isString()->getValue();

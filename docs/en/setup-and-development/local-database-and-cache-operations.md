@@ -1,28 +1,5 @@
 # Local Database and Cache Operations
 
-## Using DDEV
-
-Full setup (drop all tables + base import + test data Flyway + PHP migrate + hourly + minutly + local cache clear):
-
-```bash
-ddev exec ./cli db full-setup
-```
-
-Optional manual steps:
-
-```bash
-ddev exec ./cli db drop-all-tables
-ddev import-db --file=.resources/zms.sql
-ddev exec ./cli db migrate-test-data
-ddev exec zmsbackend/bin/configure
-ddev exec zmsbackend/bin/migrate --update
-ddev exec zmsbackend/cron/cronjob.hourly --city=munich
-ddev exec zmsbackend/cron/cronjob.minutly
-ddev exec ./cli modules clear-local-cache
-```
-
-## Using Podman
-
 One-shot local dev setup (`db full-setup` first, then composer + npm install + npm build):
 
 ```bash

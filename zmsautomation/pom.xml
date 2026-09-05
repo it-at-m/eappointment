@@ -17,11 +17,11 @@
     <restassured.version>6.0.1</restassured.version>
     <assertj.version>3.27.7</assertj.version>
     <surefire.version>3.5.6</surefire.version>
-    <cucumber.version>7.34.6</cucumber.version>
+    <cucumber.version>7.34.7</cucumber.version>
     <testng.version>7.12.0</testng.version>
-    <flyway.version>13.3.0</flyway.version>
+    <flyway.version>13.4.0</flyway.version>
     <log4j.version>2.26.1</log4j.version>
-    <lombok.version>1.18.46</lombok.version>
+    <lombok.version>1.18.48</lombok.version>
     <!-- Local ATAF: cd ../agile-test-automation-framework && mvn clean install -DskipTests -->
     <ataf.version>0.3.4</ataf.version>
   </properties>
@@ -48,7 +48,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.22.1</version>
+      <version>2.22.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -82,7 +82,7 @@
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
-        <version>3.9.0</version>
+        <version>3.10.2</version>
         <configuration>
           <java>
             <includes>
@@ -99,7 +99,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.15.0</version>
+        <version>3.16.0</version>
         <configuration>
           <source>${maven.compiler.source}</source>
           <target>${maven.compiler.target}</target>

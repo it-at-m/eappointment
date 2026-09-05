@@ -17,7 +17,7 @@ Basierend auf [`.github/workflows/zmsbase-build-images.yaml`](https://github.com
 
 Die Rollenaufteilung:
 
-- Lokale Images (`8.3-local-*`, `8.4-local-*`) sind für lokale Entwicklung und `zmsautomation` gedacht. Devcontainer/DDEV nutzen standardmäßig `8.3-local-*` über `ZMS_PHP_BASE_TAG`.
+- Lokale Images (`8.3-local-*`, `8.4-local-*`) sind für lokale Entwicklung und `zmsautomation` gedacht. Devcontainer nutzt standardmäßig `8.3-local-*` über `ZMS_PHP_BASE_TAG`.
 - Nicht-lokale Images (`8.3-*`, `8.4-*` ohne `-local`) sind für produktionsnahe/laufzeitorientierte Umgebungen gedacht.
 
 Diese duale lokale Architektur unterstützt die Entwicklung auf macOS Apple Silicon und anderen Nicht-amd64-Umgebungen und bietet zugleich linux/amd64-Kompatibilität.
@@ -29,7 +29,7 @@ Die Jobs `php_v8_3_local` und `php_v8_4_local` bauen Single-Architecture-Tags in
 - `linux/amd64` auf `ubuntu-latest` → `8.3-local-amd64` / `8.4-local-amd64`
 - `linux/arm64` auf `ubuntu-24.04-arm` → `8.3-local-arm64` / `8.4-local-arm64`
 
-Devcontainer und DDEV setzen `ZMS_PHP_BASE_TAG` über [`.devcontainer/scripts/sync-php-base-tag.sh`](https://github.com/it-at-m/eappointment/blob/main/.devcontainer/scripts/sync-php-base-tag.sh).
+Devcontainer setzt `ZMS_PHP_BASE_TAG` über [`.devcontainer/scripts/sync-php-base-tag.sh`](https://github.com/it-at-m/eappointment/blob/main/.devcontainer/scripts/sync-php-base-tag.sh).
 
 ## Verhalten des Build- und Veröffentlichungs-Workflows
 
@@ -43,6 +43,8 @@ Er läuft bei:
 Jeder Image-Job meldet sich bei GHCR an, baut die Image-Targets, validiert den PHP-Start (`php-fpm -t` oder `php -v`) und pusht die resultierenden Tags nach:
 
 - `ghcr.io/it-at-m/eappointment/zmsbase`
+
+Dieser GHCR-Publish ist die öffentliche Hälfte des [CI/CD-Ablaufs](../operations/ci-cd.md) (Quay-Spiegel, GitLab-Helm, OpenShift).
 
 ## Modul-Abhängigkeitskontext
 

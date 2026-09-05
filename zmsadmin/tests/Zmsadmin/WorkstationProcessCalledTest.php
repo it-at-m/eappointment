@@ -12,6 +12,12 @@ class WorkstationProcessCalledTest extends Base
 
     protected $classname = "WorkstationProcessCalled";
 
+    public function tearDown(): void
+    {
+        \App::$allowClusterWideCall = true;
+        parent::tearDown();
+    }
+
     public function testRendering()
     {
         \App::$allowClusterWideCall = false;
@@ -61,7 +67,11 @@ class WorkstationProcessCalledTest extends Base
             'exclude' => 82252
         ], []);
         $this->assertStringContainsString(
-            'Dieser Arbeitsplatz hat schon einen Vorgang aufgerufen. Dieser wird weiterhin verwendet.',
+            'Sie haben bereits einen Kunden aufgerufen.',
+            (string)$response->getBody()
+        );
+        $this->assertStringContainsString(
+            'Bitte schließen Sie den aktuellen Vorgang zuerst ab.',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -93,6 +103,23 @@ class WorkstationProcessCalledTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertRedirect($response, '/workstation/process/processing/?');
+        $this->assertEquals(302, $response->getStatusCode());
+    }
+
+    public function testConflictWhileProcessingRedirectsWithoutConfirmPanel()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_with_process_processing.json")
+                ]
+            ]
+        );
+        $response = $this->render(['id' => 100044], [], []);
+        $this->assertRedirect($response, '/workstation/process/processing/?error=has_called_process');
         $this->assertEquals(302, $response->getStatusCode());
     }
 }

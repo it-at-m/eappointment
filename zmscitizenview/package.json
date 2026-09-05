@@ -16,12 +16,12 @@
   },
   "// @muenchen/muc-patternlab-vue": "Pinned release for main/tags. CI switches to npm dist-tag beta on other branches (.github/scripts/zmscitizenview-select-patternlab.sh).",
   "dependencies": {
-    "@muenchen/muc-patternlab-vue": "^10.1.0-beta.1",
-    "altcha": "^3.2.1",
-    "dompurify": "^3.4.13",
+    "@muenchen/muc-patternlab-vue": "^11.0.0",
+    "altcha": "^3.2.2",
+    "dompurify": "^3.4.14",
     "jsdom": "^30.0.0",
     "vue": "^3.5.41",
-    "vue-i18n": "11.4.8",
+    "vue-i18n": "11.4.10",
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
@@ -34,15 +34,15 @@
     "@vue/eslint-config-prettier": "10.2.0",
     "@vue/eslint-config-typescript": "14.9.0",
     "@vue/test-utils": "^2.4.11",
-    "eslint": "10.8.1",
+    "eslint": "10.9.1",
     "eslint-plugin-vue": "10.10.0",
     "local-web-server": "^5.4.0",
     "lodash": "^4.18.0",
-    "sass": "^1.102.0",
+    "sass": "^1.103.1",
     "typescript": "^7.0.2",
-    "vite": "^8.2.1",
-    "vitest": "^4.1.10",
-    "vue-tsc": "^3.3.10"
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11",
+    "vue-tsc": "^3.3.11"
   },
   "// overrides.@tootallnate/once": "local-web-server -> lws-rewrite -> http-proxy-agent pins once@2; force ^3.0.1 (abort-signal hang / GHSA).",
   "// overrides.ws": "jsdom -> ws@8.18.x; force ^8.20.1 (CVE-2026-45736).",
