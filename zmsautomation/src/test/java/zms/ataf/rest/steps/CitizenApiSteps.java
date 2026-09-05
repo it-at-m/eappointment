@@ -203,7 +203,7 @@ public class CitizenApiSteps {
         Assertions.assertThat(lastAvailableCalendarResponse)
             .as("Request available days first")
             .isNotNull();
-        int[] officeIds = parseOfficeIdsCsv(officeIdsCsv).stream().mapToInt(Integer::intValue).toArray();
+        int[] officeIds = parseOfficeIdsCsv(officeIdsCsv).stream().mapToInt(id -> id.intValue()).toArray();
         Assertions.assertThat(lastAvailableCalendarResponse.hasAppointmentsForAllOffices(officeIds))
             .as(
                 "Expected available-calendar to include appointment buckets for offices %s (shared booking)",

@@ -20,9 +20,6 @@ import zms.ataf.ui.base.services.pojo.OfficesAndServices;
 import zms.ataf.ui.base.services.pojo.Relation;
 import zms.ataf.ui.base.services.pojo.Service;
 
-/**
- * Author: Mohamad Daaeboul
- */
 public class ServicesUtil {
 
     private static final String TARGET_URL = "https://zms-test.muenchen.de/buergeransicht/api/backend/offices-and-services/";
@@ -37,17 +34,6 @@ public class ServicesUtil {
         } catch (Exception e) {
             ScenarioLogManager.getLogger().error("Error fetching or mapping data: {}", e.getMessage(), e);
             Assert.fail("Exception occurred during data fetching or mapping.");
-        }
-    }
-
-    private String fetchJsonResult() {
-        try (HttpClient httpClient = new HttpClient()) {
-            String jsonResult = httpClient.executeHttpGetRequest(TARGET_URL, HttpClient.AuthenticationMethod.None);
-            Assert.assertNotNull(jsonResult, "Fetched JSON result should not be null.");
-            return jsonResult;
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger().error("Error fetching JSON result: {}", e.getMessage(), e);
-            return null;
         }
     }
 
@@ -142,7 +128,7 @@ public class ServicesUtil {
                         .filter(entry -> !entry.getValue().isEmpty())
                         .collect(Collectors.toMap(
                                 entry -> getServiceById(entry.getKey()),
-                                Map.Entry::getValue
+                                entry -> entry.getValue()
                         ));
             }
         }
@@ -192,7 +178,7 @@ public class ServicesUtil {
             return officesAndServices.getRelations().stream()
                     .filter(r -> r.getServiceId().equals(serviceId) && r.getOfficeId().equals(officeId))
                     .findFirst()
-                    .map(Relation::getSlots)
+                    .map(relation -> relation.getSlots())
                     .orElse(0);
         }
         return 0;

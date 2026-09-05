@@ -314,7 +314,7 @@ public class CitizenViewSteps {
             }
             ids.add(parseIntOrFail(trimmed, "officeId"));
         }
-        int[] officeIds = ids.stream().mapToInt(Integer::intValue).toArray();
+        int[] officeIds = ids.stream().mapToInt(id -> id.intValue()).toArray();
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert timeslots present for providers {}", ids);
         page.assertTimeslotsPresentForProviders(officeIds);
@@ -331,7 +331,7 @@ public class CitizenViewSteps {
             }
             ids.add(parseIntOrFail(trimmed, "officeId"));
         }
-        int[] officeIds = ids.stream().mapToInt(Integer::intValue).toArray();
+        int[] officeIds = ids.stream().mapToInt(id -> id.intValue()).toArray();
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert timeslots absent for providers {}", ids);
         page.assertTimeslotsAbsentForProviders(officeIds);

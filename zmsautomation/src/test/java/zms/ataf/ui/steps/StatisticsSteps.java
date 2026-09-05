@@ -20,23 +20,17 @@ import zms.ataf.ui.pages.statistics.StatisticsPage;
 import zms.ataf.ui.pages.statistics.StatisticsPageContext;
 import zms.ataf.ui.pages.statistics.evaluations.CustomerStatisticsPage;
 import zms.ataf.ui.pages.statistics.evaluations.ServiceStatisticsPage;
-import zms.ataf.ui.pages.statistics.evaluations.WaitStatisticsPage;
-import zms.ataf.ui.pages.statistics.rawdata.CategoriesPage;
 
 
 public class StatisticsSteps {
     private final StatisticsPage STATISTICS_PAGE;
     private final CustomerStatisticsPage CUSTOMER_STATISTICS_PAGE;
     private final ServiceStatisticsPage SERVICE_STATISTICS_PAGE;
-    private final WaitStatisticsPage WAIT_STATISTICS_PAGE;
-    private final CategoriesPage CATEGORIES_PAGE;
 
     public StatisticsSteps() {
         STATISTICS_PAGE = new StatisticsPage(DriverUtil.getDriver());
         CUSTOMER_STATISTICS_PAGE = new CustomerStatisticsPage(DriverUtil.getDriver(), STATISTICS_PAGE.getContext());
-        WAIT_STATISTICS_PAGE = new WaitStatisticsPage(DriverUtil.getDriver(), STATISTICS_PAGE.getContext());
         SERVICE_STATISTICS_PAGE = new ServiceStatisticsPage(DriverUtil.getDriver(), STATISTICS_PAGE.getContext());
-        CATEGORIES_PAGE = new CategoriesPage(DriverUtil.getDriver(), STATISTICS_PAGE.getContext());
     }
 
     @Wenn("Sie zur Webseite der Statistik navigieren.")

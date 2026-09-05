@@ -458,7 +458,6 @@ public class ZmsApiMailSteps {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private List<MailListItem> parseMailList(Response response) {
         try {
             ObjectMapper mapper = new ObjectMapper();
