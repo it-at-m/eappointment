@@ -1042,10 +1042,6 @@ public class CitizenApiSteps {
         return null;
     }
 
-    private AvailableCalendarResponse fetchAvailableCalendar(int officeId, int serviceId, int serviceCount) {
-        return fetchAvailableCalendar(List.of(officeId), serviceId, serviceCount);
-    }
-
     private <T> T parseDataResponse(Response response, Class<T> dataClass) {
         try {
             com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
