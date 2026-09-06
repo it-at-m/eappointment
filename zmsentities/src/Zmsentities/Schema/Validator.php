@@ -59,7 +59,7 @@ class Validator
 
         // TODO: Implement persistent caching for schema file reads to reduce redundant disk I/O and improve application performance. Not just for each process.
 
-        foreach ($schemaFiles as $schemaFile) {
+        foreach ($schemaFiles !== false ? $schemaFiles : [] as $schemaFile) {
             $schemaContent = file_get_contents($schemaFile);
             $schemaName = 'schema://' . basename($schemaFile);
             $resolver->registerRaw($schemaContent, $schemaName);
