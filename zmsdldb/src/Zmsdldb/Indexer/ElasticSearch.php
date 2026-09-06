@@ -213,6 +213,7 @@ class ElasticSearch
             if (! $this->index->exists()) {
                 $indexSettings = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'ElasticSearch_Index.json');
                 if ($indexSettings === false) {
+                    $this->index = null;
                     throw new \RuntimeException('Cannot read ElasticSearch_Index.json');
                 }
                 $indexSettings = json_decode($indexSettings, true);
