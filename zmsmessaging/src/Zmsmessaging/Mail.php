@@ -15,8 +15,7 @@ use PHPMailer\PHPMailer\Exception as PHPMailerException;
 
 class Mail extends BaseController
 {
-    protected $messagesQueue = null;
-    protected $startTime;
+    protected mixed $messagesQueue = null;
 
     public function __construct(mixed $verbose = false, mixed $maxRunTime = 50)
     {
