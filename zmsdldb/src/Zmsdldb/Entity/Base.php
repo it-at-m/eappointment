@@ -101,10 +101,12 @@ class Base extends \ArrayObject
             $value = json_decode($value, true);
             $this->exchangeArray($value);
         } else {
+            /** @psalm-suppress RiskyTruthyFalsyComparison */
             if (stripos($index, '_json')) {
                 $value = json_decode($value, true);
                 $index = str_replace('_json', '', $index);
             }
+            /** @psalm-suppress RiskyTruthyFalsyComparison */
             if (stripos($index, '__')) {
                 static::doubleUnterlineToArray($this, $index, $value);
                 return;

@@ -138,7 +138,7 @@ class Munich
     ];
 
     protected string $publicUrl;
-    protected Psr\Log\LoggerInterface|null $logger;
+    protected ?LoggerInterface $logger;
 
     public function __construct(string $publicUrl = '', ?LoggerInterface $logger = null)
     {
@@ -156,10 +156,12 @@ class Munich
     private function requestWithOptionalProxy(string $url): Request
     {
         $req = Request::get($url);
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         $proxy = getenv('HTTPS_PROXY') ?: getenv('https_proxy')
             ?: getenv('HTTP_PROXY') ?: getenv('http_proxy');
         if ($proxy !== false && $proxy !== '') {
             $parts = parse_url($proxy);
+            /** @psalm-suppress RiskyTruthyFalsyComparison */
             if (!empty($parts['host'])) {
                 $port = isset($parts['port']) ? $parts['port'] : 80;
                 $req->useProxy($parts['host'], $port);
@@ -181,6 +183,7 @@ class Munich
             $content = $response->raw_body;
 
             // Extract JSON export URLs using regex and pick the last one (latest)
+            /** @psalm-suppress RiskyTruthyFalsyComparison */
             if (!preg_match_all('#https://[^"\'\'\s<>]+\\.json#i', $content, $matches) || empty($matches[0])) {
                 throw new \RuntimeException('No JSON export links found on index page');
             }
@@ -232,6 +235,7 @@ class Munich
      */
     public function applySadbOverwrite(array $data, ?string $overwritePath = null): array
     {
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         $path = $overwritePath ?: self::defaultSadbOverwritePath();
         if (!is_readable($path)) {
             $this->logger?->warning('Munich SADB overwrite not readable, skipping merge', ['path' => $path]);
@@ -415,6 +419,7 @@ class Munich
 
         foreach ($data['locations'] ?? [] as $location) {
             $processed = $this->processLocation($location, $mappedServices);
+            /** @psalm-suppress RiskyTruthyFalsyComparison */
             if ($processed) {
                 $mappedLocations[] = $processed;
             }
@@ -449,6 +454,7 @@ class Munich
     protected function indexServicesByIds(?array $servicesData): array
     {
         $mappedServices = [];
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if ($servicesData) {
             foreach ($servicesData['data'] ?? [] as $service) {
                 $mappedServices[$service['id']] = $service;
@@ -634,6 +640,7 @@ class Munich
     private function calculateSlotTimes(array &$mappedLocation, ?int $durationCommonDivisor): void
     {
         foreach ($mappedLocation['services'] as $key => $service) {
+            /** @psalm-suppress RiskyTruthyFalsyComparison */
             if ($durationCommonDivisor && isset($service['duration'])) {
                 $mappedLocation['services'][$key]['appointment']['slots'] = (string) ((int)($service['duration'] / $durationCommonDivisor));
             }

@@ -20,7 +20,7 @@ abstract class PDOAccess extends AbstractAccess
         'Topic' => 'Topics'
     ];
 
-    protected PDO|null $pdo;
+    protected ?\PDO $pdo;
 
     protected string $engine = 'SQLite';
 
