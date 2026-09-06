@@ -21,7 +21,7 @@ class BaseController
     protected $startTime;
     protected $maxRunTime = 50;
 
-    public function __construct($verbose = false, $maxRunTime = 50)
+    public function __construct(mixed $verbose = false, mixed $maxRunTime = 50)
     {
         $this->verbose = $verbose;
         $this->startTime = microtime(true);
@@ -44,7 +44,7 @@ class BaseController
         return $time;
     }
 
-    protected function sendMailer(Entity $entity, $mailer = null, $action = false)
+    protected function sendMailer(Entity $entity, mixed $mailer = null, mixed $action = false)
     {
         // @codeCoverageIgnoreStart
         $hasSendSuccess = ($action) ? $mailer->Send() : $action;
@@ -183,7 +183,7 @@ class BaseController
         }
     }
 
-    protected function convertCollectionToArray($collection): array
+    protected function convertCollectionToArray(mixed $collection): array
     {
         $this->log("Converting collection to array");
         $array = [];
