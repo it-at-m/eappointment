@@ -45,9 +45,10 @@ class SchemaValidation extends \Exception
             $this->data[$pointer]['failed'] = 1;
             $this->data[$pointer]['data'] = $error->data() !== null ? $error->data()->value() : null;
 
+            $encodedMessages = json_encode($this->data[$pointer]['messages'], JSON_UNESCAPED_SLASHES);
             $this->message .= ($this->message ? " | " : "")
                 . '[property ' . $pointer . '] '
-                . (json_encode($this->data[$pointer]['messages'], JSON_UNESCAPED_SLASHES) ?: '');
+                . ($encodedMessages !== false ? $encodedMessages : '');
         }
         return $this;
     }
