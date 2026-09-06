@@ -79,7 +79,7 @@ class Result
         if ($body->hasFailed()) {
             $content = (string) $response->getBody();
             throw new Exception\ApiFailed(
-                'API-Call failed, JSON parsing with error: ' . $body->getMessages()
+                'API-Call failed, JSON parsing with error: ' . (string) ($body->getMessages() ?? '')
                 . ' - Snippet: ' . substr(\strip_tags($content), 0, 2000) . '[...]',
                 $response,
                 $this->request
@@ -94,23 +94,30 @@ class Result
             );
         }
         $entity = Factory::create($result['meta'])->getEntity();
+        if (!$entity instanceof Metaresult) {
+            throw new Exception(
+                'Missing "meta" value on result, API-Call failed.',
+                $response,
+                $this->request
+            );
+        }
         $this->meta = $entity;
-        if ($entity->error == true) {
-            $message = $entity->message ? $entity->message : $entity->exception;
+        if (($entity['error'] ?? false) == true) {
+            $message = $entity['message'] ? $entity['message'] : ($entity['exception'] ?? '');
             $exception = new Exception(
                 'API-Error: ' . $message,
                 $response,
                 $this->request
             );
-            if (isset($entity->trace)) {
+            if (isset($entity['trace'])) {
                 $exception->trace = $entity['trace'];
             }
-            $exception->originalMessage = $entity->message;
+            $exception->originalMessage = $entity['message'] ?? null;
             if (array_key_exists('data', $result)) {
                 $exception->data = $result['data'];
             }
-            if (isset($entity->exception)) {
-                $exception->template = $entity->exception;
+            if (isset($entity['exception'])) {
+                $exception->template = $entity['exception'];
             }
             throw $exception;
         }
@@ -141,7 +148,7 @@ class Result
      *
      * @return bool
      */
-    public function isStatus($statuscode)
+    public function isStatus(int|string $statuscode)
     {
         return $this->getResponse()->getStatusCode() == $statuscode;
     }
@@ -149,32 +156,32 @@ class Result
     /**
      * Description
      *
-     * @return Entity|null|false
+     * @return Entity|null
      */
     public function getEntity()
     {
-        $entity = null;
-        if (null !== $this->getData()) {
-            $data = $this->getData();
-            $entity = reset($data);
+        $data = $this->getData();
+        if ($data === null || $data === []) {
+            return null;
         }
-        return $entity;
+        return $data[array_key_first($data)];
     }
 
     /**
      * Description
-     *
-     * @return BaseCollection|null
      */
-    public function getCollection()
+    public function getCollection(): mixed
     {
         $collection = null;
         $entity = $this->getEntity();
-        if (null !== $entity) {
+        if ($entity !== null) {
             $class = get_class($entity);
             $alias = ucfirst(preg_replace('#^.*\\\#', '', $class) ?? '');
             $className = "\\BO\\Zmsentities\\Collection\\" . $alias . "List";
-            $collection = new $className($this->getData());
+            if (class_exists($className) && is_a($className, BaseCollection::class, true)) {
+                /** @psalm-suppress UnsafeInstantiation */
+                $collection = new $className($this->getData());
+            }
         }
         return $collection;
     }
@@ -212,17 +219,11 @@ class Result
      */
     public function getIds()
     {
-        $data = $this->getData();
+        $data = $this->getData() ?? [];
         $idList = [];
 
         foreach ($data as $item) {
-            if (is_object($item) && method_exists($item, 'getId')) {
-                $idList[] = $item->getId();
-            } elseif (is_array($item) && array_key_exists('id', $item)) {
-                $idList[] = $item['id'];
-            } else {
-                throw new \UnexpectedValueException('Item is neither array nor object with getId() method');
-            }
+            $idList[] = $item->getId();
         }
 
         return implode(',', array_unique($idList));

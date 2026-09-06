@@ -11,6 +11,7 @@ namespace BO\Zmsclient\PhpUnit;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Argument;
 use BO\Zmsclient\GraphQL\GraphQLInterpreter;
+use BO\Zmsclient\Http;
 use BO\Zmsentities\Session;
 use BO\Zmsclient\SessionHandler;
 
@@ -28,14 +29,15 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
      */
     use ProphecyTrait;
 
-    protected $apiCalls = array();
+    protected array $apiCalls = array();
 
     public function setUp(): void
     {
         \App::$http = $this->getApiMockup();
         $this->sessionClass = new Session();
-        if (SessionHandler::getLastInstance() instanceof SessionHandler) {
-            SessionHandler::getLastInstance()->setHttpHandler(\App::$http);
+        $handler = SessionHandler::getLastInstance();
+        if ($handler instanceof SessionHandler) {
+            $handler->setHttpHandler(\App::$http);
         }
     }
 
@@ -45,12 +47,11 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
 
     /**
      * @SuppressWarnings(Cyclomatic)
-     * @return string
      * @psalm-api
      */
-    protected function getApiMockup()
+    protected function getApiMockup(): Http
     {
-        $mock = $this->prophesize('BO\Zmsclient\Http');
+        $mock = $this->prophesize(Http::class);
         foreach ($this->getApiCalls() as $options) {
             $parameters = isset($options['parameters']) ? $options['parameters'] : null;
             $xtoken = isset($options['xtoken']) ? $options['xtoken'] : null;
@@ -69,7 +70,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
                     $function,
                     [
                         $options['url'],
-                        Argument::that(function ($value) {
+                        Argument::that(function (mixed $value): bool {
                             return
                                 ($value instanceof \BO\Zmsentities\Schema\Entity) ||
                                 ($value instanceof \BO\Zmsentities\Collection\Base);
@@ -91,12 +92,16 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
                 $responseData = json_decode($options['response'], true);
                 $graphqlInterpreter = $this->getGraphQL($parameters);
                 if ($graphqlInterpreter) {
-                    $responseData['data'] = $graphqlInterpreter->setJson(json_encode($responseData['data']));
+                    $encodedData = json_encode($responseData['data']);
+                    $responseData['data'] = $graphqlInterpreter->setJson(
+                        $encodedData === false ? 'null' : $encodedData
+                    );
                 }
+                $encoded = json_encode($responseData);
                 $function->shouldBeCalled()
                     ->willReturn(
                         new \BO\Zmsclient\Result(
-                            $this->getResponse(json_encode($responseData), 200),
+                            $this->getResponse($encoded === false ? '{}' : $encoded, 200),
                             static::createBasicRequest()
                         )
                     );
@@ -112,7 +117,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
      * Overwrite this function if api calls definition needs function calls
      * @psalm-api
      */
-    protected function getApiCalls()
+    protected function getApiCalls(): array
     {
         return $this->apiCalls;
     }
@@ -120,7 +125,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
     /**
      * @psalm-api
      */
-    protected function getGraphQL($parameters): GraphQLInterpreter|null
+    protected function getGraphQL(?array $parameters): GraphQLInterpreter|null
     {
         if (isset($parameters['gql'])) {
             $gqlString = $parameters['gql'];
@@ -132,7 +137,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         return null;
     }
 
-    public function setApiCalls($apiCalls): void
+    public function setApiCalls(array $apiCalls): void
     {
         $this->apiCalls = $apiCalls;
         \App::$http = $this->getApiMockup();

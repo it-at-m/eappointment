@@ -4,10 +4,15 @@ namespace BO\Zmsclient\GraphQL;
 
 class GraphQLElement
 {
-    protected $propertyName;
+    protected string $propertyName;
 
-    public function __construct($propertyName = '__root')
+    public function __construct(string $propertyName = '__root')
     {
         $this->propertyName = $propertyName;
+    }
+
+    public function getPropertyName(): string
+    {
+        return $this->propertyName;
     }
 }

@@ -6,22 +6,22 @@ use BO\Zmsentities\Session;
 
 class SessionHandler implements \SessionHandlerInterface
 {
-    public $sessionName;
+    public ?string $sessionName = null;
 
     /**
      * Adds a parameter "sync" on reading the session from the API
      * Use a value of 1 to enable synchronous reads
      * if a former session write happened during a redirect
      */
-    public static $useSyncFlag = 0;
+    public static int $useSyncFlag = 0;
 
-    protected static $lastInstance = null;
+    protected static ?self $lastInstance = null;
 
     /**
      * @var \BO\Zmsclient\Http $http
      *
      */
-    protected $http = null;
+    protected Http $http;
 
 
     public function __construct(Http $http)
@@ -65,7 +65,7 @@ class SessionHandler implements \SessionHandlerInterface
         $params['sync'] = static::$useSyncFlag;
         try {
             $session = $this->http->readGetResult(
-                '/session/' . $this->sessionName . '/' . $hashedSessionId . '/',
+                '/session/' . (string) $this->sessionName . '/' . $hashedSessionId . '/',
                 $params
             )
             ->getEntity();
@@ -78,10 +78,12 @@ class SessionHandler implements \SessionHandlerInterface
                 throw $exception;
             }
         }
-        if (isset($params['oidc']) && 1 == $params['oidc'] && $session) {
+        if (isset($params['oidc']) && 1 == $params['oidc'] && $session instanceof Session) {
             $session = $session->withOidcDataOnly();
         }
-        return ($session && isset($session['content'])) ? serialize($session->getContent()) : '';
+        return ($session instanceof Session && isset($session['content']))
+            ? serialize($session->getContent())
+            : '';
     }
 
     #[\Override]
@@ -89,9 +91,9 @@ class SessionHandler implements \SessionHandlerInterface
     {
         $hashedSessionId = hash('sha256', $id);
         $entity = new Session();
-        $entity->id = $hashedSessionId;
-        $entity->name = $this->sessionName;
-        $entity->content = unserialize($data);
+        $entity['id'] = $hashedSessionId;
+        $entity['name'] = $this->sessionName;
+        $entity['content'] = unserialize($data);
 
         $session = $this->http->readPostResult('/session/', $entity, $params)
             ->getEntity();
@@ -103,8 +105,8 @@ class SessionHandler implements \SessionHandlerInterface
     public function destroy(string $id): bool
     {
         $hashedSessionId = hash('sha256', $id);
-        $result = $this->http->readDeleteResult('/session/' . $this->sessionName . '/' . $hashedSessionId . '/');
-        return ($result) ? true : false;
+        $this->http->readDeleteResult('/session/' . (string) $this->sessionName . '/' . $hashedSessionId . '/');
+        return true;
     }
 
     /**
