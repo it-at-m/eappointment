@@ -23,9 +23,9 @@ class SlotList extends Base
      */
     public function takeLowerSlotValue(int $indexA, int $indexB): static
     {
-        $slotA = $this[$indexA];
-        $slotB = $this[$indexB];
-        if (null !== $slotA && null !== $slotB) {
+        if ($this->offsetExists($indexA) && $this->offsetExists($indexB)) {
+            $slotA = $this[$indexA];
+            $slotB = $this[$indexB];
             $slotA->type = Slot::REDUCED;
             foreach (['public', 'intern'] as $type) {
                 $slotA[$type] = $slotA[$type] < $slotB[$type] ? $slotA[$type] : $slotB[$type];

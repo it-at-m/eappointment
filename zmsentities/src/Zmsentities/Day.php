@@ -57,9 +57,9 @@ class Day extends Schema\Entity
     }
 
     /**
-     * @return bool TRUE or FALSE if one or more appointments, if no appointments for $slotType were defined, than NULL
+     * @return bool|null TRUE or FALSE if one or more appointments, if no appointments for $slotType were defined, than NULL
      */
-    public function hasAppointmentsByType(mixed $slotType)
+    public function hasAppointmentsByType(mixed $slotType): bool|null
     {
         $freeAppointmentCount = $this->toProperty()->freeAppointments->{$slotType}->get();
         $allAppointmentCount = $this->toProperty()->allAppointments->{$slotType}->get();

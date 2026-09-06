@@ -141,11 +141,9 @@ class Calldisplay extends Schema\Entity
     {
         $scopeList = new Collection\ScopeList();
         $scopeIds = explode(',', $scopeIds);
-        if ($scopeIds) {
-            foreach ($scopeIds as $scopeId) {
-                $scope = new Scope(array('id' => $scopeId));
-                $scopeList->addEntity($scope);
-            }
+        foreach ($scopeIds as $scopeId) {
+            $scope = new Scope(array('id' => $scopeId));
+            $scopeList->addEntity($scope);
         }
         return $scopeList;
     }
@@ -154,11 +152,9 @@ class Calldisplay extends Schema\Entity
     {
         $clusterList = new Collection\ClusterList();
         $clusterIds = explode(',', $clusterIds);
-        if ($clusterIds) {
-            foreach ($clusterIds as $clusterId) {
-                $cluster = new Cluster(array('id' => $clusterId));
-                $clusterList->addEntity($cluster);
-            }
+        foreach ($clusterIds as $clusterId) {
+            $cluster = new Cluster(array('id' => $clusterId));
+            $clusterList->addEntity($cluster);
         }
         return $clusterList;
     }
