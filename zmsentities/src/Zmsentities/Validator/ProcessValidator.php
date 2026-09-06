@@ -74,6 +74,7 @@ class ProcessValidator
             $this->getCollection()->validatedAction($valid, $setter);
             return $this;
         }
+        return $this;
     }
 
     public function validateMail(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
