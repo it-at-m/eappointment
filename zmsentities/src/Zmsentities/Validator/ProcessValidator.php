@@ -137,7 +137,7 @@ class ProcessValidator
                 ' Zeichen'
             );
         }
-        $this->getCollection()->validatedAction($valid, function ($raw) use ($setter) {
+        $this->getCollection()->validatedAction($valid, function (mixed $raw) use ($setter) {
             $setter(ProcessPlainText::normalize($raw));
         });
         return $this;
