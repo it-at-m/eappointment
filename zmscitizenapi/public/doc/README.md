@@ -13,7 +13,7 @@ python3 -m http.server 8000
 Reachable at:
 ```
 http://[::]:8000/public/doc/
-https://zms.ddev.site/terminvereinbarung/api/citizen/doc/index.html
+http://localhost:8090/terminvereinbarung/api/citizen/doc/index.html
 https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html
 ```
 

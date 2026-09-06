@@ -18,7 +18,6 @@ jobs:
         branch: [main, next]
     permissions:
       contents: read
-      security-events: write
       actions: read
     steps:
       - name: Checkout repository
@@ -50,7 +49,6 @@ jobs:
         run: |
           trivy convert --format table --output trivy-results.txt trivy-report.json
           cat trivy-results.txt
-          trivy convert --format sarif --output trivy-results.sarif trivy-report.json
 
       - name: Upload vulnerability scan results
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -59,13 +57,6 @@ jobs:
           name: trivy-report-${{ matrix.branch }}
           path: trivy-report.json
           retention-days: 7
-
-      - name: Upload Trivy scan results to GitHub Security tab
-        if: always() && hashFiles('trivy-results.sarif') != ''
-        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
-        with:
-          sarif_file: trivy-results.sarif
-          category: trivy-${{ matrix.branch }}
 
   notify-webex:
     name: 📣 Notify Webex on scheduled failure

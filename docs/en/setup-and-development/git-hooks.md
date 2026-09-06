@@ -121,10 +121,9 @@ If you see a warning that `zms-web` is not running:
 
 ```bash
 podman ps | grep zms-web
-docker ps | grep zms-web
 ```
 
-Start the dev environment if needed ([DDEV and Devcontainer](./getting-started/ddev-and-devcontainer.md), [Podman and Dev Containers](./getting-started/macos-local-configuration/podman-and-dev-containers.md)). PHP checks are skipped when the container is down; the commit is not blocked for PHP alone.
+Start the dev environment if needed ([Devcontainer and Podman](./getting-started/devcontainer.md), [Podman and Dev Containers](./getting-started/macos-local-configuration/podman-and-dev-containers.md)). PHP checks are skipped when the container is down; the commit is not blocked for PHP alone.
 
 ### Invalid commit message format
 

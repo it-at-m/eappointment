@@ -26,8 +26,6 @@ changes:
         - https://localhost:443/terminvereinbarung/admin/oidc/*
         - https://localhost:443/terminvereinbarung/statistic/*
         - https://localhost:443/terminvereinbarung/statistic/oidc/*
-        - https://*.ddev.site/*
-        - http://*.ddev.site/*
 
   # Maps user client roles of current client into a claim "authorities"
   - addClientMapper:
