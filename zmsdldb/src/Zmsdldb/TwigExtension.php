@@ -28,6 +28,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return 'dldb';
     }
 
+    /** @psalm-suppress InvalidArgument */
     #[\Override]
     public function getFunctions()
     {
@@ -37,7 +38,6 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
             new \Twig\TwigFunction('csvAppointmentLocations', array($this, 'csvAppointmentLocations')),
             new \Twig\TwigFunction('getAppointmentForService', array($this, 'getAppointmentForService')),
             new \Twig\TwigFunction('getLocationHintByServiceId', array($this, 'getLocationHintByServiceId')),
-            /** @psalm-suppress InvalidArgument */
             new \Twig\TwigFunction('isAppointmentBookable', array($this, 'isAppointmentBookable')),
             new \Twig\TwigFunction('kindOfPayment', array($this, 'kindOfPayment')),
             new \Twig\TwigFunction('formatDateTime', array($this, 'formatDateTime')),
