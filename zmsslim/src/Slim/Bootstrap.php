@@ -44,7 +44,7 @@ class Bootstrap
     {
         $bootstrap = self::getInstance();
         $bootstrap->configureAppStatics();
-        $level = defined('\\App::DEBUGLEVEL') ? \App::DEBUGLEVEL : (getenv('DEBUGLEVEL') ?: 'INFO');
+        $level = defined('\\App::DEBUGLEVEL') ? \App::DEBUGLEVEL : self::getenvOrDefault('DEBUGLEVEL', 'INFO');
         $identifier = defined('\\App::IDENTIFIER') ? \App::IDENTIFIER : 'zms';
         $bootstrap->configureLogger($level, $identifier);
         $charset = defined('\\App::CHARSET') ? \App::CHARSET : 'UTF-8';
@@ -249,9 +249,13 @@ class Bootstrap
         $customTemplatesPath = 'custom_templates/';
         $templatePaths = (is_array(App::TEMPLATE_PATH)) ? App::TEMPLATE_PATH : [App::APP_PATH  . App::TEMPLATE_PATH];
 
-
-        if (getenv("ZMS_CUSTOM_TEMPLATES_PATH")) {
-            $customTemplatesPath = getenv("ZMS_CUSTOM_TEMPLATES_PATH");
+        $envCustomTemplatesPath = getenv('ZMS_CUSTOM_TEMPLATES_PATH');
+        if (
+            is_string($envCustomTemplatesPath)
+            && $envCustomTemplatesPath !== ''
+            && $envCustomTemplatesPath !== '0'
+        ) {
+            $customTemplatesPath = $envCustomTemplatesPath;
         }
 
         if (is_dir($customTemplatesPath)) {
@@ -314,7 +318,7 @@ class Bootstrap
     {
         $container = App::$slim->getContainer();
         $cacheFile = static::readCacheDir();
-        if ($cacheFile) {
+        if (is_string($cacheFile) && $cacheFile !== '' && $cacheFile !== '0') {
             $cacheFile = $cacheFile . '/routing.cache';
             try {
                 $container['router']->setCacheFile($cacheFile);
@@ -345,5 +349,15 @@ class Bootstrap
         $container->set('request', ServerRequestFactory::createFromGlobals());
 
         return $container;
+    }
+
+    private static function getenvOrDefault(string $name, string $default): string
+    {
+        $value = getenv($name);
+        if ($value === false || $value === '' || $value === '0') {
+            return $default;
+        }
+
+        return $value;
     }
 }
