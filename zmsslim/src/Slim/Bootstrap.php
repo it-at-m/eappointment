@@ -99,12 +99,12 @@ class Bootstrap
     }
 
     /**
-     * @return never
+     * @return void
      */
     protected function configureLocale(
-        $charset = App::CHARSET,
-        $timezone = App::TIMEZONE
-    ) {
+        string $charset = App::CHARSET,
+        string $timezone = App::TIMEZONE
+    ): void {
         ini_set('default_charset', $charset);
         date_default_timezone_set($timezone);
         mb_internal_encoding($charset);
@@ -183,7 +183,7 @@ class Bootstrap
         $formatter = new JsonFormatter();
 
         // Add processor to format time_local first
-        App::$log->pushProcessor(function ($record) {
+        App::$log->pushProcessor(function (array $record) {
             return array(
                 'time_local' => (new \DateTime())->format('Y-m-d\TH:i:sP'),
                 'client_ip' => $_SERVER['REMOTE_ADDR'] ?? '',
@@ -298,13 +298,13 @@ class Bootstrap
         $twig->addExtension($extension);
     }
 
-    public static function addTwigFilter($filter): void
+    public static function addTwigFilter(\Twig\TwigFilter $filter): void
     {
         $twig = App::$slim->getContainer()->get('view');
         $twig->getEnvironment()->addFilter($filter);
     }
 
-    public static function addTwigTemplateDirectory($namespace, $path): void
+    public static function addTwigTemplateDirectory(string $namespace, string $path): void
     {
         $twig = App::$slim->getContainer()->get('view');
         $loader = $twig->getLoader();
@@ -314,7 +314,7 @@ class Bootstrap
     /**
      * @return void
      */
-    public static function loadRouting($filename)
+    public static function loadRouting(string $filename): void
     {
         $container = App::$slim->getContainer();
         $cacheFile = static::readCacheDir();

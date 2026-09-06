@@ -29,8 +29,8 @@ class Helper
     public static function getFormatedDates(
         int|\DateTimeImmutable $timestamp,
         string $pattern = 'MMMM',
-        $locale = 'de_DE',
-        $timezone = 'Europe/Berlin'
+        string $locale = 'de_DE',
+        string $timezone = 'Europe/Berlin'
     ): string|false {
         $dateFormatter = new \IntlDateFormatter(
             $locale,
@@ -75,7 +75,7 @@ class Helper
                     $flat = [];
                     array_walk_recursive(
                         $parameterArray,
-                        function ($value) use (&$flat) {
+                        function (mixed $value) use (&$flat) {
                             $flat[] = strval($value);
                         }
                     );

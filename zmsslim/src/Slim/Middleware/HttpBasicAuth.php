@@ -30,7 +30,7 @@ class HttpBasicAuth
      */
     protected $isAuthorized;
 
-    public function __construct(callable $isAuthorized, $realm = null)
+    public function __construct(callable $isAuthorized, ?string $realm = null)
     {
         $this->isAuthorized = $isAuthorized;
         $this->realm = $realm ?: "Password " . \App::IDENTIFIER;
@@ -38,7 +38,7 @@ class HttpBasicAuth
 
     public static function useAppConfig(): callable
     {
-        return function ($authUser, $authPass) {
+        return function (string $authUser, string $authPass) {
             if (!count(\App::$httpBasicAuth)) {
                 return true;
             }
