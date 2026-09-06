@@ -35,7 +35,7 @@ class Authority extends Base
      *
      * @return Collection
      */
-    public function fetchList(bool|array $servicelist = false)
+    public function fetchList(mixed $servicelist = false)
     {
         $service_csv = implode(',', (array)$servicelist);
         $authoritylist = $this->getItemList()->removeLocations();
