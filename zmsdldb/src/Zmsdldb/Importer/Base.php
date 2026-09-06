@@ -173,7 +173,7 @@ abstract class Base implements Options
     {
         try {
             $importer = $this->getSettingsImporter(
-                $this->fileAccess->fromSetting('de')->getData(),
+                $this->fileAccess->fromSetting()->getData(),
                 'de',
                 $this->getOptions()
             );
