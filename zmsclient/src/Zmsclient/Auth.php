@@ -9,12 +9,12 @@ use App;
  */
 class Auth
 {
-    private static $cookieName = 'X-AuthKey';
+    private static string $cookieName = 'X-AuthKey';
 
     /**
      * @SuppressWarnings(Superglobals)
      */
-    public static function setKey($authKey, $expires = 0): void
+    public static function setKey(string $authKey, int $expires = 0): void
     {
         $_COOKIE[self::getCookieName()] = $authKey; // for access in the same process
         if (!headers_sent()) {
@@ -39,8 +39,9 @@ class Auth
      */
     public static function getKey(): string|null
     {
-        if (array_key_exists(self::getCookieName(), $_COOKIE)) {
-            return $_COOKIE[self::getCookieName()];
+        $cookieName = self::getCookieName();
+        if ($cookieName !== '' && array_key_exists($cookieName, $_COOKIE)) {
+            return $_COOKIE[$cookieName];
         }
         return null;
     }
@@ -50,8 +51,9 @@ class Auth
      */
     public static function removeKey(): void
     {
-        if (array_key_exists(self::getCookieName(), $_COOKIE)) {
-            $oldKey = $_COOKIE[self::getCookieName()];
+        $cookieName = self::getCookieName();
+        if ($cookieName !== '' && array_key_exists($cookieName, $_COOKIE)) {
+            $oldKey = $_COOKIE[$cookieName];
             if (class_exists('App') && isset(App::$log)) {
                 $sessionHash = hash('sha256', $oldKey);
                 App::$log->info('Auth session removed', [
@@ -60,14 +62,14 @@ class Auth
                     'hashed_session_token' => $sessionHash
                 ]);
             }
-            unset($_COOKIE[self::getCookieName()]);
+            unset($_COOKIE[$cookieName]);
             if (!headers_sent()) {
-                setcookie(self::getCookieName(), '', time() - 3600, '/');
+                setcookie($cookieName, '', time() - 3600, '/');
             }
         }
     }
 
-    public static function getCookieName()
+    public static function getCookieName(): string
     {
         return self::$cookieName;
     }
@@ -80,7 +82,7 @@ class Auth
     /**
      * @SuppressWarnings(Superglobals)
      */
-    public static function setOidcProvider($provider): void
+    public static function setOidcProvider(string $provider): void
     {
         $_COOKIE[self::getOidcName()] = $provider; // for access in the same process
         if (!headers_sent()) {
@@ -95,8 +97,9 @@ class Auth
      */
     public static function getOidcProvider(): string|false
     {
-        if (array_key_exists(self::getOidcName(), $_COOKIE)) {
-            return $_COOKIE[self::getOidcName()];
+        $cookieName = self::getOidcName();
+        if ($cookieName !== '' && array_key_exists($cookieName, $_COOKIE)) {
+            return $_COOKIE[$cookieName];
         }
         return false;
     }
