@@ -232,7 +232,7 @@ class ProcessList extends Base
     {
         $processList = new static();
         foreach ($this as $process) {
-            if ($process->scope->hasEmailFrom()) {
+            if ($process->getCurrentScope()->hasEmailFrom()) {
                 $entity = clone $process;
                 $processList->addEntity($entity);
             }
