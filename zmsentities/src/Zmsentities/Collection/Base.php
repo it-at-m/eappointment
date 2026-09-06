@@ -130,28 +130,28 @@ class Base extends \ArrayObject implements \JsonSerializable
         return null;
     }
 
-    /**
-     * @param T $entity
-     *
-     */
     public function addEntity(\BO\Zmsentities\Schema\Entity $entity): static
     {
+        /** @var T $entity */
         $this->append($entity);
         return $this;
     }
 
     /**
      * @param int|string|null $index
-     * @param T $value
+     * @param Entity|array $value
      */
     #[\Override]
     public function offsetSet(mixed $index, mixed $value): void
     {
         $className = $this::ENTITY_CLASS;
         if (is_a($value, $className)) {
+            /** @var T $value */
             parent::offsetSet($index, $value);
         } elseif (is_array($value)) {
-            parent::offsetSet($index, new $className($value));
+            /** @var T $entity */
+            $entity = new $className($value);
+            parent::offsetSet($index, $entity);
         } else {
             $given = get_debug_type($value);
             throw new \Exception('Invalid entity ' . $given . ' for collection ' . __CLASS__);
@@ -176,6 +176,9 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @param Base<T> $list
+     */
     public function addList(Base $list): static
     {
         foreach ($list as $item) {
