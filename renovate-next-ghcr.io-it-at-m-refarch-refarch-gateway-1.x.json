@@ -1,0 +1,64 @@
+{
+  "branch": "renovate/next-ghcr.io-it-at-m-refarch-refarch-gateway-1.x",
+  "branchSlug": "renovate-next-ghcr.io-it-at-m-refarch-refarch-gateway-1.x",
+  "runId": "34037729850",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34037729850",
+  "runStartedAt": "2026-09-06T13:58:56Z",
+  "publishedAt": "2026-09-06T14:34:56.244Z",
+  "features": {
+    "feature-rest-zmscitizenapi-zmskvr-1046-booking-ruppertstrasse-shared-booking-ausbildung-citizenapi": {
+      "status": "passed",
+      "shard": "zmscitizenapi",
+      "browser": "chrome",
+      "rel": "rest/zmscitizenapi/zmskvr-1046_booking_ruppertstrasse_shared_booking_ausbildung_citizenapi.feature",
+      "runId": "34037729850",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34037729850",
+      "runStartedAt": "2026-09-06T13:58:56Z"
+    },
+    "feature-rest-zmscitizenapi-zmskvr-1124-booking-ruppertstrasse-pass-calendar-jumpin-links-citizenapi": {
+      "status": "passed",
+      "shard": "zmscitizenapi",
+      "browser": "chrome",
+      "rel": "rest/zmscitizenapi/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature",
+      "runId": "34037729850",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34037729850",
+      "runStartedAt": "2026-09-06T13:58:56Z"
+    },
+    "feature-ui-zmscitizenview-zmskvr-1046-booking-ruppertstrasse-shared-booking-ausbildung": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/zmskvr-1046_booking_ruppertstrasse_shared_booking_ausbildung.feature",
+      "runId": "34037729850",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34037729850",
+      "runStartedAt": "2026-09-06T13:58:56Z"
+    },
+    "feature-ui-zmscitizenview-zmskvr-1124-booking-ruppertstrasse-pass-calendar-jumpin-links": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature",
+      "runId": "34037729850",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34037729850",
+      "runStartedAt": "2026-09-06T13:58:56Z"
+    },
+    "feature-ui-zmscitizenview-zmskvr-1500-already-activated-confirm-banner": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/zmskvr-1500_already_activated_confirm_banner.feature",
+      "runId": "34037729850",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34037729850",
+      "runStartedAt": "2026-09-06T13:58:56Z"
+    },
+    "feature-ui-zmscitizenview-zmskvr-1571-scheidplatz-contact-location-back-login": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/zmskvr-1571_scheidplatz_contact_location_back_login.feature",
+      "runId": "34037729850",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34037729850",
+      "runStartedAt": "2026-09-06T13:58:56Z"
+    }
+  }
+}
