@@ -136,7 +136,7 @@ abstract class PDOAccess extends AbstractAccess
     /**
      * parameters see https://www.php.net/manual/de/pdo.prepare.php
      */
-    public function prepare(string ...$args): mixed
+    public function prepare(mixed ...$args): mixed
     {
         try {
             return $this->requirePdo()->prepare(...$args);

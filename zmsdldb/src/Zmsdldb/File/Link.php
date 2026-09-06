@@ -26,6 +26,7 @@ class Link extends Base
         $data = $this->access()
             ->fromTopic()
             ->fetchList();
+        /** @psalm-suppress InvalidArgument */
         $this->setItemList($this->parseData($data));
     }
 
