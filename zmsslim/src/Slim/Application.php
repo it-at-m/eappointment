@@ -56,13 +56,13 @@ class Application
      */
     const string CHARSET = 'UTF-8';
     const string TIMEZONE = 'Europe/Berlin';
-    public static $includeUrl = null;
+    public static ?string $includeUrl = null;
 /*
      * -----------------------------------------------------------------------
      * current time
      */
 
-    public static $now;
+    public static ?\DateTimeInterface $now = null;
 /*
      * -----------------------------------------------------------------------
      * Slim
@@ -94,30 +94,30 @@ class Application
      * Default parameters for templates
      *
      */
-    public static $templatedefaults = array();
+    public static array $templatedefaults = array();
 /**
      * Default parameters for middleware HttpBasicAuth
      *
      */
-    public static $httpBasicAuth = array();
+    public static array $httpBasicAuth = array();
 /*
      * -----------------------------------------------------------------------
      * Logging PSR3 compatible
      */
-    public static $log = null;
+    public static mixed $log = null;
 /**
      * image preferences
      */
 
-    public static $isImageAllowed = true;
+    public static bool $isImageAllowed = true;
 /**
      * @var \BO\Slim\Language $language
      *
      */
     const bool MULTILANGUAGE = true;
-    public static $languagesource = 'json';
-    public static $language = null;
-    public static $supportedLanguages = array(
+    public static string $languagesource = 'json';
+    public static ?Language $language = null;
+    public static array $supportedLanguages = array(
         // Default language
         'de' => array(
             'name'    => 'Deutsch',
@@ -131,5 +131,5 @@ class Application
         )
     );
 // default overwritten with Bootstrap::init()
-    public static $urlSignatureSecret = 'e8dd240a854185c740384d90d771d85c';
+    public static string $urlSignatureSecret = 'e8dd240a854185c740384d90d771d85c';
 }
