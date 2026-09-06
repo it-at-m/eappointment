@@ -20,9 +20,9 @@ if (!defined('MYSQL_DATABASE')) {
 $mysqlPort = getenv('MYSQL_PORT');
 if (is_string($mysqlPort) && $mysqlPort !== '') {
     $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=";
-    $dsn .= parse_url($mysqlPort, PHP_URL_HOST);
+    $dsn .= (string) parse_url($mysqlPort, PHP_URL_HOST);
     $dsn .= ';port=';
-    $dsn .= parse_url($mysqlPort, PHP_URL_PORT);
+    $dsn .= (string) parse_url($mysqlPort, PHP_URL_PORT);
     if (!defined('DSN_RW')) {
         define('DSN_RW', $dsn);
     }
@@ -38,9 +38,9 @@ if (is_string($mysqlPortRo) && $mysqlPortRo !== '') {
     $mysqlPortList = explode(',', $mysqlPortRo);
     $mysqlPortRO = trim($mysqlPortList[array_rand($mysqlPortList)]);
     $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=";
-    $dsn .= parse_url($mysqlPortRO, PHP_URL_HOST);
+    $dsn .= (string) parse_url($mysqlPortRO, PHP_URL_HOST);
     $dsn .= ';port=';
-    $dsn .= parse_url($mysqlPortRO, PHP_URL_PORT);
+    $dsn .= (string) parse_url($mysqlPortRO, PHP_URL_PORT);
     if (!defined('DSN_RO')) {
         define('DSN_RO', $dsn);
     }
