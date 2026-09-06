@@ -43,7 +43,11 @@ class Coordinates
         if (!is_readable($file) || !is_file($file)) {
             throw new \Exception("Cannot read file $file");
         }
-        $this->data = json_decode(file_get_contents($file), 1);
+        $json = file_get_contents($file);
+        if ($json === false) {
+            throw new \Exception("Cannot read file $file");
+        }
+        $this->data = json_decode($json, 1);
     }
 
     /**

@@ -400,7 +400,7 @@ class Munich
             'meta' => [
                 'generated' => $timestamp,
                 'datacount' => count($mappedServices),
-                'hash' => md5(json_encode($mappedServices))
+                'hash' => md5((string) json_encode($mappedServices))
             ]
         ];
     }
@@ -440,7 +440,7 @@ class Munich
                 'meta' => [
                     'generated' => $timestamp,
                     'datacount' => count($servicesList),
-                    'hash' => md5(json_encode($servicesList)),
+                    'hash' => md5((string) json_encode($servicesList)),
                 ],
             ];
         }
@@ -657,7 +657,7 @@ class Munich
             'meta' => [
                 'generated' => date('Y-m-d\TH:i:s'),
                 'datacount' => count($mappedLocations),
-                'hash' => md5(json_encode($mappedLocations))
+                'hash' => md5((string) json_encode($mappedLocations))
             ]
         ];
     }

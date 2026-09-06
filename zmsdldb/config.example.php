@@ -17,12 +17,12 @@ if (!defined('MYSQL_DATABASE')) {
     define('MYSQL_DATABASE', getenv('MYSQL_DATABASE') ? getenv('MYSQL_DATABASE') : 'zmsbo');
 }
 // MYSQL_PORT of type "tcp://127.0.0.1:3306"
-/** @psalm-suppress RiskyTruthyFalsyComparison */
-if (getenv('MYSQL_PORT')) {
+$mysqlPort = getenv('MYSQL_PORT');
+if (is_string($mysqlPort) && $mysqlPort !== '') {
     $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=";
-    $dsn .= parse_url(getenv('MYSQL_PORT'), PHP_URL_HOST);
+    $dsn .= parse_url($mysqlPort, PHP_URL_HOST);
     $dsn .= ';port=';
-    $dsn .= parse_url(getenv('MYSQL_PORT'), PHP_URL_PORT);
+    $dsn .= parse_url($mysqlPort, PHP_URL_PORT);
     if (!defined('DSN_RW')) {
         define('DSN_RW', $dsn);
     }
@@ -32,10 +32,10 @@ if (getenv('MYSQL_PORT')) {
     }
 }
 // MYSQL_PORT_RO for readonly access of type "tcp://127.0.0.1:3306"
-/** @psalm-suppress RiskyTruthyFalsyComparison */
-if (getenv('MYSQL_PORT_RO')) {
+$mysqlPortRo = getenv('MYSQL_PORT_RO');
+if (is_string($mysqlPortRo) && $mysqlPortRo !== '') {
     // Allow simple load balancing with multiple values
-    $mysqlPortList = explode(',', getenv('MYSQL_PORT_RO'));
+    $mysqlPortList = explode(',', $mysqlPortRo);
     $mysqlPortRO = trim($mysqlPortList[array_rand($mysqlPortList)]);
     $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=";
     $dsn .= parse_url($mysqlPortRO, PHP_URL_HOST);
@@ -101,7 +101,7 @@ class App extends \BO\Zmsbackend\Application
 }
 
 // Uncomment the following line for testing data with vendor/bin/importTestData
-/** @psalm-suppress RiskyTruthyFalsyComparison */
-if (getenv('ZMS_TIMEADJUST')) {
-    App::$now = new DateTimeImmutable(date(getenv('ZMS_TIMEADJUST')), new DateTimeZone('Europe/Berlin'));
+$timeAdjust = getenv('ZMS_TIMEADJUST');
+if (is_string($timeAdjust) && $timeAdjust !== '') {
+    App::$now = new DateTimeImmutable(date($timeAdjust), new DateTimeZone('Europe/Berlin'));
 }

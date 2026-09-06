@@ -212,6 +212,9 @@ class ElasticSearch
             $this->index = $connection->getIndex(self::ES_INDEX_PREFIX . date(self::ES_INDEX_DATE));
             if (! $this->index->exists()) {
                 $indexSettings = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'ElasticSearch_Index.json');
+                if ($indexSettings === false) {
+                    throw new \RuntimeException('Cannot read ElasticSearch_Index.json');
+                }
                 $indexSettings = json_decode($indexSettings, true);
                 $this->index->create($indexSettings);
             }
