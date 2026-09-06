@@ -87,6 +87,7 @@ class AbstractAccess
         $actionName = 'Nothing';
         if (0 === strpos($functionName, 'fetch')) {
             $actionType = 'fetch';
+            /** @var string|null $instanceName */
             $instanceName = $this->getInstanceOnName($functionName, 5);
             $actionName = substr($functionName, 5 + strlen($instanceName ?? ''));
             if (! $actionName) {
@@ -94,6 +95,7 @@ class AbstractAccess
             }
         } elseif (0 === strpos($functionName, 'search')) {
             $actionType = 'search';
+            /** @var string|null $instanceName */
             $instanceName = $this->getInstanceOnName($functionName, 6);
             $actionName = substr($functionName, 6 + strlen($instanceName ?? ''));
             if (! $actionName) {
