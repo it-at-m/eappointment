@@ -14,12 +14,12 @@ class Factory
      */
     protected $data = null;
 
-    public function __construct($data)
+    public function __construct(mixed $data)
     {
         $this->data = $data;
     }
 
-    public static function create($data): self
+    public static function create(mixed $data): self
     {
         return new self($data);
     }

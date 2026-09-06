@@ -32,7 +32,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     protected $fromProcessList = false;
 
-    public function setWaitingTimePreferences($processTimeAverage, $workstationCount): static
+    public function setWaitingTimePreferences(mixed $processTimeAverage, mixed $workstationCount): static
     {
         if ($processTimeAverage <= 0) {
             throw new \Exception("QueueList::withEstimatedWaitingTime() requires processTimeAverage");
@@ -59,10 +59,10 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
     }
 
     public function withEstimatedWaitingTime(
-        $processTimeAverage,
-        $workstationCount,
+        int $processTimeAverage,
+        int $workstationCount,
         \DateTimeInterface $dateTime,
-        $createFake = true
+        bool $createFake = true
     ) {
         $this->setWaitingTimePreferences($processTimeAverage, $workstationCount);
         $queueFull = $this->withWaitingTime($dateTime);
@@ -199,7 +199,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $queueList;
     }
 
-    public function getEstimatedWaitingTime($processTimeAverage, $workstationCount, \DateTimeInterface $dateTime): array
+    public function getEstimatedWaitingTime(mixed $processTimeAverage, mixed $workstationCount, \DateTimeInterface $dateTime): array
     {
         $queueList = $this->withFakeWaitingnumber($dateTime);
         $queueList = $queueList
@@ -247,7 +247,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return null;
     }
 
-    public function getNextProcess(\DateTimeInterface $dateTime, $exclude = null)
+    public function getNextProcess(\DateTimeInterface $dateTime, mixed $exclude = null)
     {
         if (is_array($exclude)) {
             $excludeNumbers = $exclude;
@@ -275,7 +275,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return null;
     }
 
-    public function getQueuePositionByNumber($number): int|null
+    public function getQueuePositionByNumber(mixed $number): int|null
     {
         $list = array_values($this->getArrayCopy());
         foreach ($list as $key => $entity) {

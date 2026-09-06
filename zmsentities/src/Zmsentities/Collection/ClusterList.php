@@ -9,7 +9,7 @@ class ClusterList extends Base
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\Cluster';
 
-    public function hasScope($scopeId): bool
+    public function hasScope(mixed $scopeId): bool
     {
         foreach ($this as $entity) {
             foreach ($entity['scopes'] as $scope) {

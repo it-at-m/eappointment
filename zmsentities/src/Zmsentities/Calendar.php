@@ -32,7 +32,7 @@ class Calendar extends Schema\Entity
         ];
     }
 
-    public function addDates($date, \DateTimeInterface $now, $timeZone): static
+    public function addDates(mixed $date, \DateTimeInterface $now, mixed $timeZone): static
     {
         $validDate = \BO\Mellon\Validator::value($date)->isDate();
         $date = (! $validDate->hasFailed()) ? $validDate->getValue() : $now->format('U');
@@ -47,7 +47,7 @@ class Calendar extends Schema\Entity
      *
      * @return $this
      */
-    public function addFirstAndLastDay($date, $timeZone)
+    public function addFirstAndLastDay(mixed $date, mixed $timeZone)
     {
         $timeZone = new \DateTimeZone($timeZone);
         $dateTime = Helper\DateTime::create()->setTimezone($timeZone)->setTimestamp($date);
@@ -71,7 +71,7 @@ class Calendar extends Schema\Entity
      *
      * @return $this
      */
-    public function addProvider($source, $idList)
+    public function addProvider(mixed $source, mixed $idList)
     {
         foreach (explode(',', $idList) as $id) {
             if ($id) {
@@ -89,7 +89,7 @@ class Calendar extends Schema\Entity
      *
      * @return $this
      */
-    public function addCluster($idList)
+    public function addCluster(mixed $idList)
     {
         foreach (explode(',', $idList) as $id) {
             $cluster = new Cluster();
@@ -104,7 +104,7 @@ class Calendar extends Schema\Entity
      *
      * @return $this
      */
-    public function addRequest($source, $requestList)
+    public function addRequest(mixed $source, mixed $requestList)
     {
         foreach (explode(',', $requestList) as $id) {
             if ($id) {
@@ -122,7 +122,7 @@ class Calendar extends Schema\Entity
      *
      * @return $this
      */
-    public function addScope($scopeList)
+    public function addScope(mixed $scopeList)
     {
         foreach (explode(',', $scopeList) as $id) {
             if ($id) {
@@ -194,7 +194,7 @@ class Calendar extends Schema\Entity
      *
      * @return bool
      */
-    public function hasDay($year, $month, $dayNumber)
+    public function hasDay(mixed $year, mixed $month, mixed $dayNumber)
     {
         return $this->getDayList()->hasDay($year, $month, $dayNumber);
     }
@@ -204,7 +204,7 @@ class Calendar extends Schema\Entity
      *
      * @return \ArrayObject
      */
-    public function getDay($year, $month, $dayNumber)
+    public function getDay(mixed $year, mixed $month, mixed $dayNumber)
     {
         return $this->getDayList()->getDay($year, $month, $dayNumber);
     }
@@ -251,7 +251,7 @@ class Calendar extends Schema\Entity
         return $dateTime->modify('00:00:00');
     }
 
-    public function getLastDay($createIfNotProvided = true)
+    public function getLastDay(bool $createIfNotProvided = true)
     {
         if (! $createIfNotProvided && ! isset($this['lastDay'])) {
             return null;
@@ -271,7 +271,7 @@ class Calendar extends Schema\Entity
         return $dateTime->modify('23:59:59');
     }
 
-    public function setLastDayTime($date): static
+    public function setLastDayTime(mixed $date): static
     {
         $day = new Day();
         $day->setDateTime($date);
@@ -279,7 +279,7 @@ class Calendar extends Schema\Entity
         return $this;
     }
 
-    public function setFirstDayTime($date): static
+    public function setFirstDayTime(mixed $date): static
     {
         $day = new Day();
         $day->setDateTime($date);

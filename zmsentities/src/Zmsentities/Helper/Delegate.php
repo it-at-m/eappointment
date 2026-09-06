@@ -18,7 +18,7 @@ class Delegate
         return $this->entity;
     }
 
-    public function setter(...$propertyPath): callable
+    public function setter(mixed ...$propertyPath): callable
     {
         $entity = $this->getEntity();
 

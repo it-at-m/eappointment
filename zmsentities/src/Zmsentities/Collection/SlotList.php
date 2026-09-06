@@ -45,7 +45,7 @@ class SlotList extends Base
         return $this;
     }
 
-    public function isAvailableForAll($slotType): bool
+    public function isAvailableForAll(mixed $slotType): bool
     {
         foreach ($this as $slot) {
             if ($slot[$slotType] < 1) {
@@ -72,7 +72,7 @@ class SlotList extends Base
      * Get all slots for an appointment
      *
      */
-    public function withSlotsForAppointment(\BO\Zmsentities\Appointment $appointment, $extendSlotList = false)
+    public function withSlotsForAppointment(\BO\Zmsentities\Appointment $appointment, bool $extendSlotList = false)
     {
         $slotList = new SlotList();
         $takeFollowingSlot = 0;
@@ -154,7 +154,10 @@ class SlotList extends Base
         return $containsAppointment;
     }
 
-    public function getSlot($index): Slot|null
+    /**
+     * @param int|string $index
+     */
+    public function getSlot(string|int $index): Slot|null
     {
         $index = intval($index);
         if (!isset($this[$index])) {
@@ -163,7 +166,7 @@ class SlotList extends Base
         return $this[$index];
     }
 
-    public function getSummerizedSlot($slot = null): Slot
+    public function getSummerizedSlot(mixed $slot = null): Slot
     {
         $sum = ($slot instanceof Slot) ? $slot : new Slot();
         $sum->type = Slot::SUM;
@@ -193,12 +196,12 @@ class SlotList extends Base
     }
 
     public function getFreeProcesses(
-        $selectedDate,
+        mixed $selectedDate,
         \BO\Zmsentities\Scope $scope,
         \BO\Zmsentities\Availability $availability,
-        $slotType,
-        $requests,
-        $slotsRequired
+        mixed $slotType,
+        mixed $requests,
+        mixed $slotsRequired
     ): ProcessList {
         $processList = new ProcessList();
         foreach ($this as $slot) {
@@ -231,7 +234,7 @@ class SlotList extends Base
         return $processList;
     }
 
-    public function withReducedSlots($slotsRequired): static
+    public function withReducedSlots(mixed $slotsRequired): static
     {
         $slotList = clone $this;
         if ($slotsRequired > 1) {

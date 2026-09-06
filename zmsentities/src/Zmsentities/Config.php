@@ -37,22 +37,22 @@ class Config extends Schema\Entity
         ];
     }
 
-    public function hasType($type): bool
+    public function hasType(mixed $type): bool
     {
         return (isset($this[$type])) ? true : false;
     }
 
-    public function hasPreference($type, $key): bool
+    public function hasPreference(mixed $type, mixed $key): bool
     {
         return ($this->hasType($type) && isset($this[$type][$key])) ? true : false;
     }
 
-    public function getPreference($type, $key)
+    public function getPreference(mixed $type, mixed $key)
     {
         return $this->toProperty()->$type->$key->get();
     }
 
-    public function setPreference($type, $key, $value): static
+    public function setPreference(mixed $type, mixed $key, mixed $value): static
     {
         $preference = $this->toProperty()->$type->$key->get();
         if (null !== $preference) {

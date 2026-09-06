@@ -237,7 +237,7 @@ class Availability extends Schema\Entity
         return true;
     }
 
-    public function getAvailableSecondsPerDay($type = "intern")
+    public function getAvailableSecondsPerDay(string $type = "intern")
     {
         $start = $this->getStartDateTime()->getSecondsOfDay();
         $end = $this->getEndDateTime()->getSecondsOfDay();

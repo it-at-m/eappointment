@@ -54,7 +54,7 @@ class DayList extends Base implements JsonUnindexed
     }
 
 
-    public function hasDay($year, $month, $dayNumber): bool
+    public function hasDay(mixed $year, mixed $month, mixed $dayNumber): bool
     {
         $day = $this->getDay($year, $month, $dayNumber, false);
         return ($day === null) ? false : true;
@@ -72,7 +72,7 @@ class DayList extends Base implements JsonUnindexed
         return $dayList->sortByCustomKey('day');
     }
 
-    public function setStatusByType($slotType, \DateTimeInterface $dateTime): static
+    public function setStatusByType(mixed $slotType, \DateTimeInterface $dateTime): static
     {
         foreach ($this as $day) {
             $day->getWithStatus($slotType, $dateTime);
@@ -105,7 +105,7 @@ class DayList extends Base implements JsonUnindexed
         return $this;
     }
 
-    public function setSort($property = 'day'): static
+    public function setSort(string $property = 'day'): static
     {
         $this->uasort(function ($dayA, $dayB) use ($property) {
             return strnatcmp($dayA[$property], $dayB[$property]);

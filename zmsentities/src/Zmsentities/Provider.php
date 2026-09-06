@@ -24,7 +24,7 @@ class Provider extends Schema\Entity
     }
 
     #[\Override]
-    public function addData($mergeData): static
+    public function addData(mixed $mergeData): static
     {
         $refString = '$ref';
         if (

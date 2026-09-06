@@ -11,7 +11,7 @@ class AppointmentList extends Base
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\Appointment';
 
-    public function getByDate($date): Appointment|false
+    public function getByDate(mixed $date): Appointment|false
     {
         foreach ($this as $item) {
             if ($item['date'] == $date) {
@@ -21,7 +21,7 @@ class AppointmentList extends Base
         return false;
     }
 
-    public function hasDateScope($date, $scopeId): bool
+    public function hasDateScope(mixed $date, mixed $scopeId): bool
     {
         $item = $this->getByDate($date);
         if ($item && $item->toProperty()->scope->id->get() == $scopeId) {

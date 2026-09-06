@@ -21,7 +21,7 @@ class SchemaValidation extends \Exception
         return $this;
     }
 
-    public function setSchemaName($schemaName): static
+    public function setSchemaName(string $schemaName): static
     {
         $this->schemaName = $schemaName . '.json';
         $this->template = $schemaName;

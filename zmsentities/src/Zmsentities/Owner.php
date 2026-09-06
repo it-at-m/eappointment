@@ -21,7 +21,7 @@ class Owner extends Schema\Entity implements Useraccount\AccessInterface
             ];
     }
 
-    public function hasOrganisation($organisationId)
+    public function hasOrganisation(mixed $organisationId)
     {
         return $this->getOrganisationList()->hasEntity($organisationId);
     }

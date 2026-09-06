@@ -9,7 +9,7 @@ class RequestRelationList extends Base
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\RequestRelation';
 
-    public function hasRequest($requestIdCsv): bool
+    public function hasRequest(mixed $requestIdCsv): bool
     {
         $requestIdCsv = explode(',', $requestIdCsv);
         foreach ($requestIdCsv as $requestId) {
@@ -20,7 +20,7 @@ class RequestRelationList extends Base
         return true;
     }
 
-    public function hasProvider($providerIdCsv): bool
+    public function hasProvider(mixed $providerIdCsv): bool
     {
         $providerIdCsv = explode(',', $providerIdCsv);
         foreach ($providerIdCsv as $providerId) {
@@ -55,7 +55,7 @@ class RequestRelationList extends Base
         return $providerList->withUniqueProvider();
     }
 
-    public function getFilteredByRequestAndProvider($requestList, $providerList): self
+    public function getFilteredByRequestAndProvider(mixed $requestList, mixed $providerList): self
     {
         $list = new self();
         foreach ($requestList as $request) {

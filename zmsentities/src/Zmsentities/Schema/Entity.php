@@ -54,7 +54,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Read the json schema and let array act like an object
      */
-    public function __construct($input = null, $flags = \ArrayObject::ARRAY_AS_PROPS, $iterator_class = "ArrayIterator")
+    public function __construct(mixed $input = null, int $flags = \ArrayObject::ARRAY_AS_PROPS, string $iterator_class = "ArrayIterator")
     {
         parent::__construct($this->getDefaults(), $flags, $iterator_class);
         if ($input) {
@@ -72,7 +72,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $this->getArrayCopy();
     }
 
-    public function getUnflattenedArray($input)
+    public function getUnflattenedArray(mixed $input)
     {
         if (!$input instanceof UnflattedArray) {
             $input = new UnflattedArray($input);
@@ -112,7 +112,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
      *
      * @return bool
      */
-    public function isValid($resolveLevel = 0): bool
+    public function isValid(int $resolveLevel = 0): bool
     {
         $validator = $this->getValidator('de_DE', $resolveLevel = 0);
         return $validator->isValid();
@@ -124,7 +124,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
      * @throws \BO\Zmsentities\Exception\SchemaValidation
      * @return bool
      */
-    public function testValid($locale = 'de_DE', $resolveLevel = 0): bool
+    public function testValid(string $locale = 'de_DE', int $resolveLevel = 0): bool
     {
         $validator = $this->getValidator($locale, $resolveLevel);
         if (!$validator->isValid()) {
@@ -179,7 +179,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $entity;
     }
 
-    public function setJsonCompressLevel($jsonCompressLevel): static
+    public function setJsonCompressLevel(mixed $jsonCompressLevel): static
     {
         $this->jsonCompressLevel = $jsonCompressLevel;
         return $this;
@@ -247,7 +247,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Performs addData on a cloned entity
      */
-    public function withData($mergeData): static
+    public function withData(mixed $mergeData): static
     {
         $entity = clone $this;
         $entity->addData($mergeData);
@@ -275,12 +275,12 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return new \BO\Zmsentities\Helper\Property($this);
     }
 
-    public function hasProperty($propertyName)
+    public function hasProperty(mixed $propertyName)
     {
         return $this->toProperty()->{$propertyName}->isAvailable();
     }
 
-    public function getProperty(string $propertyName, $default = '')
+    public function getProperty(string $propertyName, string $default = '')
     {
         return $this->toProperty()->{$propertyName}->get($default);
     }
@@ -288,7 +288,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Change property without changing original
      */
-    public function withProperty($propertyName, $newValue): static
+    public function withProperty(mixed $propertyName, mixed $newValue): static
     {
         $entity = clone $this;
         $entity[$propertyName] = $newValue;

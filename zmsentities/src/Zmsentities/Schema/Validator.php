@@ -17,7 +17,7 @@ class Validator
     private static $schemasLoaded = false;
     private static $validatorInstance = null;
 
-    public function __construct($data, Schema $schemaObject, $locale)
+    public function __construct(mixed $data, Schema $schemaObject, mixed $locale)
     {
         $this->schemaData = $data;
         $this->schemaObject = $schemaObject;

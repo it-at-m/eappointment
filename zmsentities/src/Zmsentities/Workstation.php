@@ -36,7 +36,7 @@ class Workstation extends Schema\Entity
         ];
     }
 
-    public function getQueuePreference($key, $isBoolean = false)
+    public function getQueuePreference(mixed $key, bool $isBoolean = false)
     {
         $result = null;
         if (isset($this['queue']) && Property::__keyExists($key, $this['queue'])) {
@@ -57,7 +57,7 @@ class Workstation extends Schema\Entity
         return $this->useraccount;
     }
 
-    public function getDepartmentById($departmentId)
+    public function getDepartmentById(mixed $departmentId)
     {
         return $this->getUseraccount()->getDepartmentById($departmentId);
     }
@@ -136,7 +136,7 @@ class Workstation extends Schema\Entity
         return $process;
     }
 
-    public function getScopeList($cluster = null): Collection\ScopeList
+    public function getScopeList(mixed $cluster = null): Collection\ScopeList
     {
         $scopeList = new Collection\ScopeList();
         $scopeList->addEntity(new Scope($this->getScope()));
@@ -164,7 +164,7 @@ class Workstation extends Schema\Entity
     /**
      * @return void
      */
-    public function validateProcessScopeAccess($scopeList, $process = null)
+    public function validateProcessScopeAccess(mixed $scopeList, mixed $process = null)
     {
         if (null === $process) {
             $process = $this->process;
@@ -236,7 +236,7 @@ class Workstation extends Schema\Entity
         return $this->queue['clusterEnabled'] ? true : false;
     }
 
-    public function hasAccessToUseraccount($useraccount): bool
+    public function hasAccessToUseraccount(mixed $useraccount): bool
     {
         $departmentList = $this->getDepartmentList();
         $accessedList = $departmentList->withAccess($useraccount);
