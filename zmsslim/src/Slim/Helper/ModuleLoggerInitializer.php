@@ -18,23 +18,23 @@ final class ModuleLoggerInitializer
     public static function configure(string $envPrefix): void
     {
         LoggerService::configure([
-            'maxRequests' => (int) (getenv("{$envPrefix}_LOGGER_MAX_REQUESTS") ?: 1000),
-            'maxErrorRequests' => (int) (getenv("{$envPrefix}_LOGGER_MAX_ERROR_REQUESTS") ?: 0),
-            'responseLength' => (int) (getenv("{$envPrefix}_LOGGER_RESPONSE_LENGTH") ?: 1048576),
-            'stackLines' => (int) (getenv("{$envPrefix}_LOGGER_STACK_LINES") ?: 20),
-            'messageSize' => (int) (getenv("{$envPrefix}_LOGGER_MESSAGE_SIZE") ?: 8192),
-            'cacheTtl' => (int) (getenv("{$envPrefix}_LOGGER_CACHE_TTL") ?: 60),
-            'maxRetries' => (int) (getenv("{$envPrefix}_LOGGER_MAX_RETRIES") ?: 3),
-            'backoffMin' => (int) (getenv("{$envPrefix}_LOGGER_BACKOFF_MIN") ?: 100),
-            'backoffMax' => (int) (getenv("{$envPrefix}_LOGGER_BACKOFF_MAX") ?: 1000),
-            'lockTimeout' => (int) (getenv("{$envPrefix}_LOGGER_LOCK_TIMEOUT") ?: 5),
+            'maxRequests' => self::getenvInt("{$envPrefix}_LOGGER_MAX_REQUESTS", 1000),
+            'maxErrorRequests' => self::getenvInt("{$envPrefix}_LOGGER_MAX_ERROR_REQUESTS", 0),
+            'responseLength' => self::getenvInt("{$envPrefix}_LOGGER_RESPONSE_LENGTH", 1048576),
+            'stackLines' => self::getenvInt("{$envPrefix}_LOGGER_STACK_LINES", 20),
+            'messageSize' => self::getenvInt("{$envPrefix}_LOGGER_MESSAGE_SIZE", 8192),
+            'cacheTtl' => self::getenvInt("{$envPrefix}_LOGGER_CACHE_TTL", 60),
+            'maxRetries' => self::getenvInt("{$envPrefix}_LOGGER_MAX_RETRIES", 3),
+            'backoffMin' => self::getenvInt("{$envPrefix}_LOGGER_BACKOFF_MIN", 100),
+            'backoffMax' => self::getenvInt("{$envPrefix}_LOGGER_BACKOFF_MAX", 1000),
+            'lockTimeout' => self::getenvInt("{$envPrefix}_LOGGER_LOCK_TIMEOUT", 5),
         ]);
     }
 
     public static function initializeCache(?string $cacheDir = null): CacheInterface
     {
         if ($cacheDir !== null) {
-            $ttl = (int) (getenv('SOURCE_CACHE_TTL') ?: 3600);
+            $ttl = self::getenvInt('SOURCE_CACHE_TTL', 3600);
 
             return CacheBootstrap::create($cacheDir, $ttl);
         }
@@ -59,8 +59,8 @@ final class ModuleLoggerInitializer
     public static function getRequestLimits(): array
     {
         return [
-            'maxStringLength' => (int) (getenv('MAX_STRING_LENGTH') ?: 32768),
-            'maxRecursionDepth' => (int) (getenv('MAX_RECURSION_DEPTH') ?: 10),
+            'maxStringLength' => self::getenvInt('MAX_STRING_LENGTH', 32768),
+            'maxRecursionDepth' => self::getenvInt('MAX_RECURSION_DEPTH', 10),
         ];
     }
 
@@ -78,5 +78,15 @@ final class ModuleLoggerInitializer
             $requestLimits['maxRecursionDepth'],
             $requestLimits['maxStringLength']
         ));
+    }
+
+    private static function getenvInt(string $name, int $default): int
+    {
+        $value = getenv($name);
+        if ($value === false || $value === '' || $value === '0') {
+            return $default;
+        }
+
+        return (int) $value;
     }
 }

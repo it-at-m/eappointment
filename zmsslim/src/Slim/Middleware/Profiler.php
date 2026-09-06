@@ -21,6 +21,7 @@ class Profiler
             $response = (new ResponseFactory())->createResponse();
         }
 
+        /** @psalm-suppress TypeDoesNotContainType Module App subclasses may set DEBUG to true. */
         if (\App::DEBUG) {
             \BO\Slim\Profiler::addMemoryPeak();
             $response = $response->withAddedHeader('X-Profiling', \BO\Slim\Profiler::getList());
