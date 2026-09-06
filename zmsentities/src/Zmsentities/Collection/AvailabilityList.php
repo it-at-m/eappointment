@@ -16,7 +16,7 @@ class AvailabilityList extends Base
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\Availability';
 
-    public function getMaxWorkstationCount()
+    public function getMaxWorkstationCount(): mixed
     {
         $max = 0;
         foreach ($this as $availability) {
@@ -79,7 +79,7 @@ class AvailabilityList extends Base
         return $list;
     }
 
-    public function withDateTimeInRange(\DateTimeInterface $startDateTime, \DateTimeInterface $endDateTime)
+    public function withDateTimeInRange(\DateTimeInterface $startDateTime, \DateTimeInterface $endDateTime): mixed
     {
         $list = new self();
         $currentDateTime = clone $startDateTime;
@@ -94,7 +94,7 @@ class AvailabilityList extends Base
         return $list->withOutDoubles();
     }
 
-    public function getAvailableSecondsOnDateTime(\DateTimeInterface $dateTime, string $type = "intern")
+    public function getAvailableSecondsOnDateTime(\DateTimeInterface $dateTime, string $type = "intern"): mixed
     {
         $seconds = 0;
         foreach ($this->withType('appointment')->withDateTime($dateTime) as $availability) {

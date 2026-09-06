@@ -72,7 +72,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $this->getArrayCopy();
     }
 
-    public function getUnflattenedArray(mixed $input)
+    public function getUnflattenedArray(mixed $input): mixed
     {
         if (!$input instanceof UnflattedArray) {
             $input = new UnflattedArray($input);
@@ -162,7 +162,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return new $class();
     }
 
-    protected static function readJsonSchema()
+    protected static function readJsonSchema(): mixed
     {
         $class = get_called_class();
         if (!array_key_exists($class, self::$schemaCache)) {
@@ -259,7 +259,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return (false !== $this->getId()) ? true : false;
     }
 
-    public function getId()
+    public function getId(): mixed
     {
         $idName = $this::PRIMARY;
         return ($this->offsetExists($idName) && $this[$idName]) ? $this[$idName] : false;
@@ -275,12 +275,12 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return new \BO\Zmsentities\Helper\Property($this);
     }
 
-    public function hasProperty(mixed $propertyName)
+    public function hasProperty(mixed $propertyName): mixed
     {
         return $this->toProperty()->{$propertyName}->isAvailable();
     }
 
-    public function getProperty(string $propertyName, string $default = '')
+    public function getProperty(string $propertyName, string $default = ''): mixed
     {
         return $this->toProperty()->{$propertyName}->get($default);
     }

@@ -48,12 +48,12 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $this;
     }
 
-    public function getProcessTimeAverage()
+    public function getProcessTimeAverage(): mixed
     {
         return $this->processTimeAverage;
     }
 
-    public function getWorkstationCount()
+    public function getWorkstationCount(): mixed
     {
         return $this->workstationCount ? $this->workstationCount : 1;
     }
@@ -63,7 +63,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         int $workstationCount,
         \DateTimeInterface $dateTime,
         bool $createFake = true
-    ) {
+    ): \BO\Zmsentities\Collection\QueueList {
         $this->setWaitingTimePreferences($processTimeAverage, $workstationCount);
         $queueFull = $this->withWaitingTime($dateTime);
         $queueWithWaitingTime = $queueFull->withStatus(self::STATUS_CALLED);
@@ -171,7 +171,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $queueList;
     }
 
-    public function withSortedWaitingTime()
+    public function withSortedWaitingTime(): \BO\Zmsentities\Collection\Base
     {
         $queueList = $this;
         return $queueList->sortByCustomKey('waitingTimeEstimate');
@@ -227,7 +227,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $queueList;
     }
 
-    public function getFakeOrLastWaitingnumber()
+    public function getFakeOrLastWaitingnumber(): \BO\Zmsentities\Schema\Entity|false
     {
         $entity = $this->getQueueByNumber(self::FAKE_WAITINGNUMBER);
         if (!$entity) {
@@ -247,7 +247,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return null;
     }
 
-    public function getNextProcess(\DateTimeInterface $dateTime, mixed $exclude = null)
+    public function getNextProcess(\DateTimeInterface $dateTime, mixed $exclude = null): mixed
     {
         if (is_array($exclude)) {
             $excludeNumbers = $exclude;

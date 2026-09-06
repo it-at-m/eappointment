@@ -40,7 +40,7 @@ class AppointmentList extends Base
         return false;
     }
 
-    public function getCalculatedSlotCount()
+    public function getCalculatedSlotCount(): mixed
     {
         $slotCount = 0;
         foreach ($this as $appointmentItem) {

@@ -93,7 +93,7 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
-    public function getPositionByName(string $name)
+    public function getPositionByName(string $name): mixed
     {
         if (isset($this->dictionary)) {
             foreach ($this->dictionary as $entry) {
@@ -303,7 +303,7 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
-    public function getCalculatedTotals()
+    public function getCalculatedTotals(): mixed
     {
         foreach (array_reverse($this->data) as $item) {
             foreach ($item as $data) {
@@ -354,7 +354,7 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
-    public function getGroupedHashSet(array $fields, array $hashfields)
+    public function getGroupedHashSet(array $fields, array $hashfields): mixed
     {
         $list = [];
         if (count($fields)) {

@@ -11,7 +11,7 @@ class UnflattedArray
         $this->value = $value;
     }
 
-    public function getValue()
+    public function getValue(): mixed
     {
         return $this->value;
     }

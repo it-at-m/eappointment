@@ -34,12 +34,12 @@ class Mail extends Schema\Entity
         ];
     }
 
-    public function getProcessId()
+    public function getProcessId(): mixed
     {
         return $this->toProperty()->process->id->get();
     }
 
-    public function getProcessAuthKey()
+    public function getProcessAuthKey(): mixed
     {
         return $this->toProperty()->process->authKey->get();
     }
@@ -60,7 +60,7 @@ class Mail extends Schema\Entity
         return (null != $this->getIcsPart());
     }
 
-    public function getHtmlPart()
+    public function getHtmlPart(): mixed
     {
         $multiPart = $this->toProperty()->multipart->get();
         foreach ($multiPart as $part) {
@@ -72,7 +72,7 @@ class Mail extends Schema\Entity
         return null;
     }
 
-    public function getPlainPart()
+    public function getPlainPart(): mixed
     {
         foreach ($this->multipart as $part) {
             $mimepart = new Mimepart($part);
@@ -83,7 +83,7 @@ class Mail extends Schema\Entity
         return null;
     }
 
-    public function getIcsPart()
+    public function getIcsPart(): mixed
     {
         foreach ($this->multipart as $part) {
             $mimepart = new Mimepart($part);
@@ -103,7 +103,7 @@ class Mail extends Schema\Entity
         return $this->getFirstClient();
     }
 
-    public function getFirstClient()
+    public function getFirstClient(): \BO\Zmsentities\Client|null
     {
         $client = null;
         if ($this->toProperty()->process->isAvailable()) {
@@ -245,7 +245,7 @@ class Mail extends Schema\Entity
         return $this;
     }
 
-    public function getRecipient()
+    public function getRecipient(): mixed
     {
         if (! isset($this['client'])) {
             $this['client'] = $this->getFirstClient();

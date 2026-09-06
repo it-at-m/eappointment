@@ -27,7 +27,7 @@ class Mailtemplate extends Schema\Entity
         return ($this->hasType($type) && isset($this[$type][$key])) ? true : false;
     }
 
-    public function getPreference(mixed $type, mixed $key)
+    public function getPreference(mixed $type, mixed $key): mixed
     {
         return $this->toProperty()->$type->$key->get();
     }

@@ -22,7 +22,7 @@ class Month extends Schema\Entity
         ];
     }
 
-    public function getFirstDay()
+    public function getFirstDay(): \BO\Zmsentities\Helper\DateTime
     {
         $dateTime = Helper\DateTime::create($this['year'] . '-' . $this['month'] . '-1');
         return $dateTime->modify('00:00:00');

@@ -111,7 +111,7 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function getDepartment(mixed $departmentId)
+    public function getDepartment(mixed $departmentId): \BO\Zmsentities\Department
     {
         foreach ($this->getDepartmentList() as $department) {
             if ($department['id'] == $departmentId) {
@@ -121,12 +121,12 @@ class Useraccount extends Schema\Entity
         return new Department(['name' => 'Not existing']);
     }
 
-    public function hasDepartment(mixed $departmentId)
+    public function hasDepartment(mixed $departmentId): mixed
     {
         return $this->getDepartment($departmentId)->hasId();
     }
 
-    public function hasScope(mixed $scopeId)
+    public function hasScope(mixed $scopeId): mixed
     {
         return $this->getDepartmentList()->getUniqueScopeList()->hasEntity($scopeId);
     }
@@ -306,7 +306,7 @@ class Useraccount extends Schema\Entity
         return new Department();
     }
 
-    public function testDepartmentById(mixed $departmentId)
+    public function testDepartmentById(mixed $departmentId): \BO\Zmsentities\Department
     {
         $department = $this->getDepartmentById($departmentId);
         if (!$department->hasId()) {

@@ -64,47 +64,47 @@ class Session extends Schema\Entity
         ];
     }
 
-    public function getContent()
+    public function getContent(): mixed
     {
         return $this->toProperty()->content->get();
     }
 
-    public function getBasket()
+    public function getBasket(): mixed
     {
         return $this->toProperty()->content->basket->get();
     }
 
-    public function getHuman()
+    public function getHuman(): mixed
     {
         return $this->toProperty()->content->human->get();
     }
 
-    public function getRequests()
+    public function getRequests(): string
     {
         return Helper\Sorter::toSortedCsv($this->toProperty()->content->basket->requests->get());
     }
 
-    public function getProviders()
+    public function getProviders(): string
     {
         return Helper\Sorter::toSortedCsv($this->toProperty()->content->basket->providers->get());
     }
 
-    public function getProcess()
+    public function getProcess(): mixed
     {
         return $this->toProperty()->content->basket->process->get();
     }
 
-    public function getSource()
+    public function getSource(): mixed
     {
         return $this->toProperty()->content->source->get();
     }
 
-    public function getScope()
+    public function getScope(): mixed
     {
         return $this->toProperty()->content->basket->scope->get();
     }
 
-    public function getAuthKey()
+    public function getAuthKey(): mixed
     {
         return $this->toProperty()->content->basket->authKey->get();
     }
@@ -120,7 +120,7 @@ class Session extends Schema\Entity
         return (null !== $steps) ? end($steps) : $steps;
     }
 
-    public function getStatus()
+    public function getStatus(): mixed
     {
         return $this->toProperty()->content->status->get();
     }

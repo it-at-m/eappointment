@@ -36,7 +36,7 @@ class Workstation extends Schema\Entity
         ];
     }
 
-    public function getQueuePreference(mixed $key, bool $isBoolean = false)
+    public function getQueuePreference(mixed $key, bool $isBoolean = false): mixed
     {
         $result = null;
         if (isset($this['queue']) && Property::__keyExists($key, $this['queue'])) {
@@ -57,7 +57,7 @@ class Workstation extends Schema\Entity
         return $this->useraccount;
     }
 
-    public function getDepartmentById(mixed $departmentId)
+    public function getDepartmentById(mixed $departmentId): \BO\Zmsentities\Department
     {
         return $this->getUseraccount()->getDepartmentById($departmentId);
     }
@@ -81,17 +81,17 @@ class Workstation extends Schema\Entity
         }
     }
 
-    public function getProviderOfGivenScope()
+    public function getProviderOfGivenScope(): mixed
     {
         return $this->toProperty()->scope->provider->id->get();
     }
 
-    public function hasSuperUseraccount()
+    public function hasSuperUseraccount(): bool
     {
         return $this->getUseraccount()->isSuperUser();
     }
 
-    public function hasAuditAccount()
+    public function hasAuditAccount(): bool
     {
         return $this->getUseraccount()->hasPermissions(['logs']);
     }
@@ -111,7 +111,7 @@ class Workstation extends Schema\Entity
         return (! trim($this->name)) ? 'counter' : 'workstation';
     }
 
-    public function getName()
+    public function getName(): mixed
     {
         return ($this->name) ? $this->name : "Tresen";
     }

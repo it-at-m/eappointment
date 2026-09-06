@@ -72,7 +72,7 @@ class SlotList extends Base
      * Get all slots for an appointment
      *
      */
-    public function withSlotsForAppointment(\BO\Zmsentities\Appointment $appointment, bool $extendSlotList = false)
+    public function withSlotsForAppointment(\BO\Zmsentities\Appointment $appointment, bool $extendSlotList = false): mixed
     {
         $slotList = new SlotList();
         $takeFollowingSlot = 0;
@@ -100,7 +100,7 @@ class SlotList extends Base
         return $slotList;
     }
 
-    public function extendList(self $slotList, Slot|null $prevSlot, \BO\Zmsentities\Appointment $appointment)
+    public function extendList(self $slotList, Slot|null $prevSlot, \BO\Zmsentities\Appointment $appointment): \BO\Zmsentities\Collection\SlotList
     {
         $startTime = \BO\Zmsentities\Helper\DateTime::create(
             $appointment->toDateTime()->format('Y-m-d') . ' ' . $prevSlot->time

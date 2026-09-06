@@ -21,7 +21,7 @@ class Owner extends Schema\Entity implements Useraccount\AccessInterface
             ];
     }
 
-    public function hasOrganisation(mixed $organisationId)
+    public function hasOrganisation(mixed $organisationId): bool
     {
         return $this->getOrganisationList()->hasEntity($organisationId);
     }
@@ -42,7 +42,7 @@ class Owner extends Schema\Entity implements Useraccount\AccessInterface
      * @return bool
      */
     #[\Override]
-    public function hasAccess(Useraccount $useraccount)
+    public function hasAccess(Useraccount $useraccount): bool
     {
         return $useraccount->isSuperUser()
             || 0 < $this->getOrganisationList()->withAccess($useraccount)->count();

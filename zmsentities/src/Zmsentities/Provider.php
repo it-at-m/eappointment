@@ -46,7 +46,7 @@ class Provider extends Schema\Entity
         return parent::addData($mergeData);
     }
 
-    public function hasRequest(string $requestId)
+    public function hasRequest(string $requestId): bool
     {
         return $this->getRequestList()->hasRequests($requestId);
     }
@@ -67,17 +67,17 @@ class Provider extends Schema\Entity
         return $requestList;
     }
 
-    public function getSource()
+    public function getSource(): mixed
     {
         return $this->toProperty()->source->get();
     }
 
-    public function getName()
+    public function getName(): mixed
     {
         return $this->toProperty()->name->get();
     }
 
-    public function getDisplayName()
+    public function getDisplayName(): mixed
     {
         return $this->toProperty()->display_name->get();
     }
@@ -88,17 +88,17 @@ class Provider extends Schema\Entity
         return new Contact($contact);
     }
 
-    public function getLink()
+    public function getLink(): mixed
     {
         return $this->toProperty()->link->get();
     }
 
-    public function getAdditionalData()
+    public function getAdditionalData(): mixed
     {
         return $this->toProperty()->data->get();
     }
 
-    public function getSlotTimeInMinutes()
+    public function getSlotTimeInMinutes(): mixed
     {
         $data = $this->getAdditionalData();
         if (! is_array($data)) {
@@ -107,7 +107,7 @@ class Provider extends Schema\Entity
         return $data['slotTimeInMinutes'] ?? null;
     }
 
-    public function getParentId()
+    public function getParentId(): mixed
     {
         return $this->toProperty()->parent_id->get();
     }
