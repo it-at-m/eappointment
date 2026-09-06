@@ -25,9 +25,9 @@ class Validator
     /**
      * Content of STDIN
      *
-     * @var string|null $input
+     * @var string|false|null $input
      */
-    protected ?string $input = null;
+    protected string|false|null $input = null;
 
     /**
       * Singleton instance
