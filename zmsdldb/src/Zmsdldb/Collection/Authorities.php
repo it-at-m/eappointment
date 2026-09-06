@@ -37,8 +37,12 @@ class Authorities extends Base
             )
             && $location['authority']['id']
         ) {
-            $this->addAuthority($location['authority']['id'], $location['authority']['name']);
-            $this[$location['authority']['id']]['locations'][$location['id']] = $location;
+            $authorityId = $location['authority']['id'];
+            $this->addAuthority($authorityId, $location['authority']['name']);
+            $authority = $this[$authorityId];
+            if ($authority instanceof \BO\Zmsdldb\Entity\Authority) {
+                $authority['locations'][$location['id']] = $location;
+            }
         }
         return $this;
     }
