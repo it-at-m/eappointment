@@ -22,9 +22,12 @@ class ValidFile extends Valid
      * @return self
      */
 
-    protected $fileName = '';
+    protected string $fileName = '';
 
-    protected $acceptableTypes = array(
+    /**
+     * @var array<string, string>
+     */
+    protected array $acceptableTypes = array(
         'pdf' => 'application/pdf',
         'jpeg' => 'image/jpeg',
         'jpg' => 'image/jpg',
@@ -32,7 +35,7 @@ class ValidFile extends Valid
         'png' => 'image/png'
     );
 
-    public function isFile($name = 'fileupload', $message = 'No valid file found.'): static
+    public function isFile(string $name = 'fileupload', string $message = 'No valid file found.'): static
     {
         $this->fileName = $name;
         $this->validated = true;
@@ -42,7 +45,7 @@ class ValidFile extends Valid
         return $this;
     }
 
-    public function hasType($type = 'jpeg', $message = 'Invalid file type.'): static
+    public function hasType(string $type = 'jpeg', string $message = 'Invalid file type.'): static
     {
         if (isset($_FILES[$this->fileName])) {
             if (
@@ -55,7 +58,7 @@ class ValidFile extends Valid
         return $this;
     }
 
-    public function hasMaxSize($maxSize = 50, $message = 'File size not valid.'): static
+    public function hasMaxSize(int $maxSize = 50, string $message = 'File size not valid.'): static
     {
         $maxByteSize = $maxSize * 1000 * 1024;
         if (isset($_FILES[$this->fileName])) {

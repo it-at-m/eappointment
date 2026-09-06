@@ -15,9 +15,9 @@ use BO\Mellon\Valid;
   */
 class Message
 {
-    public $message = '';
+    public string $message = '';
 
-    public function __construct($message)
+    public function __construct(string $message)
     {
         $this->message = $message;
     }
