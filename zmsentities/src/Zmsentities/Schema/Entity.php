@@ -224,7 +224,8 @@ class Entity extends \ArrayObject implements \JsonSerializable
 
     public function __toString()
     {
-        return json_encode($this->jsonSerialize(), JSON_HEX_QUOT);
+        $encoded = json_encode($this->jsonSerialize(), JSON_HEX_QUOT);
+        return $encoded !== false ? $encoded : '';
     }
 
     /**
