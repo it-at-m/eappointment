@@ -111,12 +111,13 @@ class ScopeList extends Base
     }
 
     /**
-     * @return self
+     * @return static
      */
     #[\Override]
     public function withLessData(array $keepArray = [])
     {
-        $scopeList = new self();
+        /** @psalm-suppress UnsafeGenericInstantiation */
+        $scopeList = new static();
         foreach ($this as $scope) {
             $scopeList->addEntity(clone $scope->withLessData($keepArray));
         }
