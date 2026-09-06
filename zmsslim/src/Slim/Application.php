@@ -110,12 +110,9 @@ class Application
      */
 
     public static bool $isImageAllowed = true;
-/**
-     * @var \BO\Slim\Language $language
-     *
-     */
-    const bool MULTILANGUAGE = true;
+    public const bool MULTILANGUAGE = true;
     public static string $languagesource = 'json';
+    /** @var Language|null $language */
     public static ?Language $language = null;
     public static array $supportedLanguages = array(
         // Default language

@@ -9,10 +9,10 @@ use Psr\Http\Message\ResponseInterface;
 abstract class Controller
 {
     /**
-     * @var \Psr\Container\ContainerInterface $containerInterface
+     * @var \Psr\Container\ContainerInterface|null $containerInterface
      *
      */
-    protected $containerInterface = null;
+    protected ?ContainerInterface $containerInterface = null;
 
     /**
      * @var \Psr\Http\Message\RequestInterface|null $request
@@ -67,14 +67,15 @@ abstract class Controller
     // init the request with language translation
     public static function prepareRequest(RequestInterface $request): RequestInterface
     {
+        /** @psalm-suppress RedundantCondition Module App subclasses may set MULTILANGUAGE to false. */
         \App::$language = (\App::MULTILANGUAGE) ?
             new \BO\Slim\Language($request, \App::$supportedLanguages) :
             new \BO\Slim\Language($request, array_slice(\App::$supportedLanguages, 0));
-        \App::$now = (! \App::$now) ? new \DateTimeImmutable() : \App::$now;
+        \App::$now = (\App::$now instanceof \DateTimeInterface) ? \App::$now : new \DateTimeImmutable();
         return $request;
     }
 
-    public function initRequest(RequestInterface $request)
+    public function initRequest(RequestInterface $request): RequestInterface
     {
         return self::prepareRequest($request);
     }
