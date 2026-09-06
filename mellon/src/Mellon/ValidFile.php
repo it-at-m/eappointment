@@ -39,7 +39,12 @@ class ValidFile extends Valid
     {
         $this->fileName = $name;
         $this->validated = true;
-        if (empty($_FILES) || '' == $_FILES[$name]['tmp_name']) {
+        if (
+            $name === ''
+            || empty($_FILES)
+            || !isset($_FILES[$name]['tmp_name'])
+            || $_FILES[$name]['tmp_name'] === ''
+        ) {
             $this->setFailure($message);
         }
         return $this;
