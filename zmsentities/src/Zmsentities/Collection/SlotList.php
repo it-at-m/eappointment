@@ -102,6 +102,9 @@ class SlotList extends Base
 
     public function extendList(self $slotList, Slot|null $prevSlot, \BO\Zmsentities\Appointment $appointment): \BO\Zmsentities\Collection\SlotList
     {
+        if ($prevSlot === null) {
+            return $slotList;
+        }
         $slotMinutes = (string) (int) $appointment->getAvailability()->slotTimeInMinutes;
         $startTime = \BO\Zmsentities\Helper\DateTime::create(
             $appointment->toDateTime()->format('Y-m-d') . ' ' . $prevSlot->time
