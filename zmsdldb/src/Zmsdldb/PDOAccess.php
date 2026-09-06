@@ -83,6 +83,7 @@ abstract class PDOAccess extends AbstractAccess
             if (null === $this->accessInstance[$locale][$this->accessorClassName[$name]]) {
                 $accessorClass = __NAMESPACE__ . '\\' . $this->engine . '\\' . $this->accessorClassName[$name];
 
+                /** @var class-string $accessorClass */
                 $instance = new $accessorClass($this, $locale);
                 $this->accessInstance[$locale][$name] = $instance;
                 $this->accessInstance[$locale][$this->accessorNamesPlural[$name]] = $instance;
