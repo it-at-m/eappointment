@@ -130,6 +130,9 @@ class Base extends \ArrayObject
         while ($numKeys > 1) {
             $key = array_shift($keys);
             $numKeys = count($keys);
+            if ($key === null) {
+                break;
+            }
             if (! isset($array[$key]) || ! is_array($array[$key])) {
                 $array[$key] = [];
             }
@@ -137,7 +140,10 @@ class Base extends \ArrayObject
             $array = &$array[$key];
         }
 
-        $array[array_shift($keys)] = $value;
+        $lastKey = array_shift($keys);
+        if ($lastKey !== null) {
+            $array[$lastKey] = $value;
+        }
 
         return $array;
     }
