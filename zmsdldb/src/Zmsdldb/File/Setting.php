@@ -8,7 +8,6 @@
 namespace BO\Zmsdldb\File;
 
 use BO\Zmsdldb\Collection\Settings;
-use BO\Zmsdldb\Entity\Setting as Entity;
 
 /**
   * Common methods shared by access classes
