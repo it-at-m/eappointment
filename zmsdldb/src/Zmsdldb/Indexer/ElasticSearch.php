@@ -14,9 +14,9 @@ use BO\Zmsdldb\FileAccess;
  */
 class ElasticSearch
 {
-    const string ES_INDEX_PREFIX = 'dldb-';
+    public const string ES_INDEX_PREFIX = 'dldb-';
 
-    const string ES_INDEX_DATE = 'Ymd-His';
+    public const string ES_INDEX_DATE = 'Ymd-His';
 
     protected mixed $localeList = array(
         'de',
