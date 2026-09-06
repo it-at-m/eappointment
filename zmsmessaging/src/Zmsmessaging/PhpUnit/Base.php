@@ -25,7 +25,7 @@ abstract class Base extends TestCase
      */
     use ProphecyTrait;
 
-    protected $apiCalls = array();
+    protected mixed $apiCalls = array();
 
     public function setUp(): void
     {

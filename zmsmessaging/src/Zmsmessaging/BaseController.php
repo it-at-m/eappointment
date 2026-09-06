@@ -15,11 +15,11 @@ use BO\Mellon\Validator;
 
 class BaseController
 {
-    protected $verbose = false;
-    protected static $logList = [];
-    protected $workstation = null;
-    protected $startTime;
-    protected $maxRunTime = 50;
+    protected mixed $verbose = false;
+    protected static array $logList = [];
+    protected mixed $workstation = null;
+    protected float $startTime;
+    protected mixed $maxRunTime = 50;
 
     public function __construct(mixed $verbose = false, mixed $maxRunTime = 50)
     {
