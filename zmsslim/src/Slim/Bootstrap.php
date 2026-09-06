@@ -24,7 +24,7 @@ use Psr\Log\LoggerInterface;
 
 class Bootstrap
 {
-    protected static $instance = null;
+    protected static ?self $instance = null;
 
     public static function init(): void
     {
@@ -111,7 +111,7 @@ class Bootstrap
         App::$now = (! App::$now) ? new \DateTimeImmutable() : App::$now;
     }
 
-    protected static $debuglevels = array(
+    protected static array $debuglevels = array(
         'DEBUG'     => Logger::DEBUG,
         'INFO'      => Logger::INFO,
         'NOTICE'    => Logger::NOTICE,
