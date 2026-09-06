@@ -37,7 +37,7 @@ abstract class Base
     protected $locale = 'de';
 
     /**
-     * @var \BO\Zmsdldb\AbstractAccess $accessInstance
+     * @var \BO\Zmsdldb\AbstractAccess|null $accessInstance
      */
     private $accessInstance = null;
 
