@@ -85,7 +85,7 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
         $year = ($year) ? $year : date('Y');
         $dateTimeMarch = new \DateTime($year . '-03-01', new \DateTimeZone('Europe/Berlin'));
         $lastSunday = $dateTimeMarch->modify('Last Sunday of March');
-        return $lastSunday->setTime('02', '00', '00');
+        return $lastSunday->setTime(2, 0, 0);
     }
 
     public static function getSummerTimeEndDateTime(mixed $year = null): \DateTime
@@ -93,7 +93,7 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
         $year = ($year) ? $year : date('Y');
         $dateTimeOctober = new \DateTime($year . '-10-01', new \DateTimeZone('Europe/Berlin'));
         $lastSunday = $dateTimeOctober->modify('Last Sunday of October');
-        return $lastSunday->setTime('03', '00', '00');
+        return $lastSunday->setTime(3, 0, 0);
     }
 
     public function __toString(): string

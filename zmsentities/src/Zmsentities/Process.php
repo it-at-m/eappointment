@@ -151,7 +151,7 @@ class Process extends Schema\Entity
     {
         $this->requests = new Collection\RequestList();
         if ($requestCSV) {
-            foreach (explode(',', $requestCSV) as $id) {
+            foreach (explode(',', (string) $requestCSV) as $id) {
                 $this->requests->addEntity(new Request(array(
                             'source' => $source,
                             'id' => $id
@@ -210,7 +210,7 @@ class Process extends Schema\Entity
         $dateTime = Helper\DateTime::create($dateTime);
         if (isset($requestData['selectedtime'])) {
             $time = explode('-', $requestData['selectedtime']);
-            $dateTime = $dateTime->setTime($time[0], $time[1]);
+            $dateTime = $dateTime->setTime((int) $time[0], (int) $time[1]);
         }
 
         $appointment = (new Appointment())
@@ -720,7 +720,7 @@ class Process extends Schema\Entity
                 'Anmerkung' => null,
                 'IPTimeStamp' => $this->createTimestamp,
                 'LastChange' => $lastChange,
-            ), 1);
+            ), true);
     }
 
     public function toDerefencedCustomTextfield(): string|null
@@ -732,7 +732,7 @@ class Process extends Schema\Entity
                 'CustomTextfield' => null,
                 'IPTimeStamp' => $this->createTimestamp,
                 'LastChange' => $lastChange,
-            ), 1);
+            ), true);
     }
 
     public function toDerefencedCustomTextfield2(): string|null
@@ -744,7 +744,7 @@ class Process extends Schema\Entity
                 'CustomTextfield2' => null,
                 'IPTimeStamp' => $this->createTimestamp,
                 'LastChange' => $lastChange,
-            ), 1);
+            ), true);
     }
 
     public function __toString()

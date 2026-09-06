@@ -120,9 +120,9 @@ class Day extends Schema\Entity
 
     public static function getCalculatedDayHash(string|int $dayNumber, string|int $month, string|int $year): string
     {
-        $dateHash = str_pad($dayNumber, 2, '0', STR_PAD_LEFT)
+        $dateHash = str_pad((string) $dayNumber, 2, '0', STR_PAD_LEFT)
             . "-"
-            . str_pad($month, 2, '0', STR_PAD_LEFT)
+            . str_pad((string) $month, 2, '0', STR_PAD_LEFT)
             . "-$year";
         return $dateHash;
     }
