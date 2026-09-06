@@ -6,7 +6,7 @@ use BO\Zmsdldb\PDOAccess;
 
 trait PDOTrait
 {
-    protected $pdoAccess;
+    protected mixed $pdoAccess;
 
     public function setPDOAccess(PDOAccess $pdoAccess): self
     {

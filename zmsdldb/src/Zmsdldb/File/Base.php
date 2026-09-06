@@ -15,7 +15,7 @@ use BO\Zmsdldb\Exception;
   */
 abstract class Base
 {
-    protected $data = [];
+    protected mixed $data = [];
     /**
      * lazy loaded item list, use getItemList() to access this
      *

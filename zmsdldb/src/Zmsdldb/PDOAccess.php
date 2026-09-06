@@ -7,9 +7,9 @@ abstract class PDOAccess extends AbstractAccess
     /**
      * @SuppressWarnings(PHPMD.LongVariable)
      */
-    protected $accessorClassName = [];
+    protected mixed $accessorClassName = [];
 
-    protected $accessorNamesPlural = [
+    protected array $accessorNamesPlural = [
         'Authority' => 'Authorities',
         'Borough' => 'Boroughs',
         'Link' => 'Links',
@@ -20,7 +20,7 @@ abstract class PDOAccess extends AbstractAccess
         'Topic' => 'Topics'
     ];
 
-    protected $pdo;
+    protected PDO|null $pdo;
 
     protected string $engine = 'SQLite';
 
@@ -137,7 +137,7 @@ abstract class PDOAccess extends AbstractAccess
         }
     }
 
-    protected $transactionCount = 0;
+    protected int $transactionCount = 0;
 
     public function beginTransaction(): mixed
     {

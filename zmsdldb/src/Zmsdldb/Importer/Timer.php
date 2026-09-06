@@ -6,10 +6,10 @@ define('DEBUG', true);
 
 class Timer
 {
-    protected $start;
-    protected $pause;
-    protected $stop;
-    protected $elapsed;# = 0;
+    protected float $start;
+    protected float|null $pause;
+    protected float|null $stop;
+    protected mixed $elapsed;# = 0;
 
     public function __construct()
     {

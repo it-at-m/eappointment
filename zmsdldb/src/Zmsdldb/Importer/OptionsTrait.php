@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer;
 
 trait OptionsTrait
 {
-    protected $options = 0;
+    protected int $options = 0;
 
     protected function checkOptionFlag(int $optionFlag = 0): mixed
     {

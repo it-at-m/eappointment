@@ -23,14 +23,14 @@ abstract class Base implements Options
     use PDOTrait;
     use OptionsTrait;
 
-    protected $fileAccess;
+    protected \BO\Zmsdldb\FileAccess $fileAccess;
 
-    protected $localeList = [
+    protected array $localeList = [
         'de',
         'en'
     ];
 
-    protected $importTypes = [
+    protected mixed $importTypes = [
         'Services' => 'Service',
         'Locations' => 'Location',
         'Authorities' => 'Authority',
