@@ -12,6 +12,8 @@ use BO\Zmsdldb\Collection\Services as Collection;
 
 /**
  * Common methods shared by access classes
+ *
+ * @extends Base<Collection, Entity>
  */
 class Service extends Base
 {
@@ -49,6 +51,7 @@ class Service extends Base
             }));
         }
         $serviceList = $serviceList->sortByName();
+        /** @var Collection $serviceList */
         return ($location_csv) ? $serviceList->containsLocation($location_csv) : $serviceList;
     }
 

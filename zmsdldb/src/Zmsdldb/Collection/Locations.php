@@ -7,6 +7,9 @@
 
 namespace BO\Zmsdldb\Collection;
 
+/**
+ * @extends Base<\BO\Zmsdldb\Entity\Location>
+ */
 class Locations extends Base
 {
     public function __clone()

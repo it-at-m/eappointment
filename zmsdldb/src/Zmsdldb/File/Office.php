@@ -13,6 +13,7 @@ use BO\Zmsdldb\Collection\Offices as Collection;
 /**
   * Common methods shared by access classes
   *
+  * @extends Base<Collection, Entity>
   */
 class Office extends Base
 {

@@ -10,6 +10,8 @@ namespace BO\Zmsdldb\Collection;
 /**
  * @SuppressWarnings(TooManyPublicMethods)
  * Methods to apply on this collection
+ *
+ * @extends Base<\BO\Zmsdldb\Entity\Authority>
  */
 class Authorities extends Base
 {

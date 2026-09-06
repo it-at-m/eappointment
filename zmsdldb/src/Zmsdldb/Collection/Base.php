@@ -10,7 +10,8 @@ namespace BO\Zmsdldb\Collection;
 use BO\Zmsdldb\Helper\Sorter;
 
 /**
- * @extends \ArrayObject<int|string, \BO\Zmsdldb\Entity\Base>
+ * @template T of \BO\Zmsdldb\Entity\Base
+ * @extends \ArrayObject<int|string, T>
  */
 class Base extends \ArrayObject
 {

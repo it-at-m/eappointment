@@ -13,6 +13,7 @@ use BO\Zmsdldb\Entity\Setting as Entity;
 /**
   * Common methods shared by access classes
   *
+  * @extends Base<Settings, \BO\Zmsdldb\Entity\Base>
   */
 class Setting extends Base
 {

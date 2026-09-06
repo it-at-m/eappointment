@@ -12,6 +12,8 @@ use BO\Zmsdldb\Collection\Locations as Collection;
 
 /**
  * Common methods shared by access classes
+ *
+ * @extends Base<Collection, Entity>
  */
 class Location extends Base
 {

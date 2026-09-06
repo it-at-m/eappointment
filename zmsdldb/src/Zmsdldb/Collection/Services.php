@@ -7,6 +7,9 @@
 
 namespace BO\Zmsdldb\Collection;
 
+/**
+ * @extends Base<\BO\Zmsdldb\Entity\Service>
+ */
 class Services extends Base
 {
     /**
