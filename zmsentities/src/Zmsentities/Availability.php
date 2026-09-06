@@ -44,13 +44,13 @@ class Availability extends Schema\Entity
 
     /**
      * Performance costs for modifying time are high, cache the calculated value
-     * @var \DateTimeImmutable $startTimeCache
+     * @var Helper\DateTime $startTimeCache
      */
     protected $startTimeCache;
 
     /**
      * Performance costs for modifying time are high, cache the calculated value
-     * @var \DateTimeImmutable $endTimeCache
+     * @var Helper\DateTime $endTimeCache
      */
     protected $endTimeCache;
 
@@ -325,7 +325,7 @@ class Availability extends Schema\Entity
     /**
      * Get DateTimeInterface for start time of availability
      *
-     * @return \DateTimeInterface
+     * @return Helper\DateTime
      */
     public function getStartDateTime()
     {
@@ -340,7 +340,7 @@ class Availability extends Schema\Entity
     /**
      * Get DateTimeInterface for end time of availability
      *
-     * @return \DateTimeInterface
+     * @return Helper\DateTime
      */
     public function getEndDateTime()
     {
@@ -369,7 +369,7 @@ class Availability extends Schema\Entity
      *
      * @param \DateTimeInterface $now relative time to compare booking settings
      *
-     * @return \DateTimeInterface
+     * @return Helper\DateTime
      */
     public function getBookableStart(\DateTimeInterface $now)
     {
@@ -393,7 +393,7 @@ class Availability extends Schema\Entity
      *
      * @param \DateTimeInterface $now relative time to compare booking settings
      *
-     * @return \DateTimeInterface
+     * @return Helper\DateTime
      */
     public function getBookableEnd(\DateTimeInterface $now)
     {
@@ -426,7 +426,7 @@ class Availability extends Schema\Entity
         if (!$this->hasDay($bookableDate)) {
             return false;
         }
-        $bookableCurrentTime = $bookableDate->modify($now->format('H:i:s'));
+        $bookableCurrentTime = Helper\DateTime::create($bookableDate)->modify($now->format('H:i:s'));
         Helper\DateTime::create($bookableDate)->getTimestamp() + Helper\DateTime::create($now)->getSecondsOfDay();
         $startDate = $this->getBookableStart($now)->modify('00:00:00');
 
@@ -463,6 +463,7 @@ class Availability extends Schema\Entity
         if ($stopTime->getTimestamp() < $now->getTimestamp()) {
             return false;
         }
+        $startTime = Helper\DateTime::create($startTime);
         do {
             if ($this->hasDate($startTime, $now)) {
                 return true;
@@ -476,13 +477,13 @@ class Availability extends Schema\Entity
     {
         $errorList = [];
 
-        $startTime = (clone $startDate)->setTime(0, 0);
+        $startTime = Helper\DateTime::create($startDate)->setTime(0, 0);
         $isFuture = ($kind && $kind === 'future');
 
         if (
             !$isFuture &&
             $selectedDate->getTimestamp() > $today->getTimestamp() &&
-            $startTime->getTimestamp() > (clone $selectedDate)->setTime(0, 0)->getTimestamp()
+            $startTime->getTimestamp() > Helper\DateTime::create($selectedDate)->setTime(0, 0)->getTimestamp()
         ) {
             $errorList[] = [
                 'type' => 'startTimeFuture',
@@ -600,13 +601,17 @@ class Availability extends Schema\Entity
         $startDate = $this->getStartDateTime();
         $startHour = (int) $startDate->format('H');
         $startMinute = (int) $startDate->format('i');
-        $endDateTime = (clone $endDate)->setTime($endHour, $endMinute);
-        $startDateTime = (clone $startDate)->setTime($startHour, $startMinute);
+        $endDateTime = Helper\DateTime::create($endDate)->setTime($endHour, $endMinute);
+        $startDateTime = Helper\DateTime::create($startDate)->setTime($startHour, $startMinute);
         $endTimestamp = $endDateTime->getTimestamp();
         $startTimestamp = $startDateTime->getTimestamp();
         $isOrigin = ($kind && $kind === 'origin');
 
-        if (!$isOrigin && $selectedDate->getTimestamp() > $today->getTimestamp() && $endDate < (clone $selectedDate)->setTime(0, 0)) {
+        if (
+            !$isOrigin
+            && $selectedDate->getTimestamp() > $today->getTimestamp()
+            && $endDate < Helper\DateTime::create($selectedDate)->setTime(0, 0)
+        ) {
             $errorList[] = [
                 'type' => 'endTimeFuture',
                 'message' => "Das Enddatum der Öffnungszeit muss nach dem " . $yesterday->format('d.m.Y') . " liegen."

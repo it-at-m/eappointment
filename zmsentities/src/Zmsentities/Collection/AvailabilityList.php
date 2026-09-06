@@ -168,14 +168,15 @@ class AvailabilityList extends Base
         $processList = new ProcessList();
         foreach ($this as $availability) {
             $conflict = $availability->getConflict();
-            $currentDate = $startDate;
-            while ($currentDate <= $endDate) {
+            $currentDate = \BO\Zmsentities\Helper\DateTime::create($startDate);
+            $endDateTime = \BO\Zmsentities\Helper\DateTime::create($endDate);
+            while ($currentDate <= $endDateTime) {
                 if ($availability->isOpenedOnDate($currentDate)) {
                     if ($conflict) {
                         $conflictOnDay = clone $conflict;
                         // to avoid overwrite time settings from availability getConflict lets modify
                         $appointmentTime = $conflictOnDay->getFirstAppointment()->getStartTime()->format('H:i');
-                        $newDate = clone $currentDate;
+                        $newDate = \BO\Zmsentities\Helper\DateTime::create($currentDate);
                         $conflictOnDay->getFirstAppointment()->setDateTime($newDate->modify($appointmentTime));
                         $processList->addEntity($conflictOnDay);
                     }

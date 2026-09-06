@@ -293,8 +293,8 @@ class Calendar extends Schema\Entity
      */
     public function getMonthList(): Collection\MonthList
     {
-        $firstDay = $this->getFirstDay()->modify('first day of this month')->modify('00:00:00');
-        $lastDay = $this->getLastDay()->modify('last day of this month')->modify('23:59:59');
+        $firstDay = Helper\DateTime::create($this->getFirstDay())->modify('first day of this month')->modify('00:00:00');
+        $lastDay = Helper\DateTime::create($this->getLastDay())->modify('last day of this month')->modify('23:59:59');
         $currentDate = $firstDay;
         if ($firstDay->getTimestamp() > $lastDay->getTimestamp()) {
             // switch first and last day if necessary
@@ -344,8 +344,8 @@ class Calendar extends Schema\Entity
     {
         $entity = clone $this;
 
-        $firstDay = $this->getFirstDay()->modify('first day of this month')->modify('00:00:00');
-        $lastDay = $this->getLastDay()->modify('last day of this month')->modify('23:59:59');
+        $firstDay = Helper\DateTime::create($this->getFirstDay())->modify('first day of this month')->modify('00:00:00');
+        $lastDay = Helper\DateTime::create($this->getLastDay())->modify('last day of this month')->modify('23:59:59');
         $currentDate = $firstDay;
         $dayList = new Collection\DayList($entity->days);
 
