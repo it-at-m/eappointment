@@ -18,8 +18,11 @@ class Location extends Base
      */
     public function containsService(mixed $service_csv)
     {
+        if (!is_string($service_csv) && !is_int($service_csv) && !is_float($service_csv)) {
+            return false;
+        }
         $location = $this->getArrayCopy();
-        $servicecompare = explode(',', $service_csv);
+        $servicecompare = explode(',', (string) $service_csv);
         $servicecount = array();
         foreach ($location['services'] as $serviceinfo) {
             $service_id = $serviceinfo['service'];
@@ -65,8 +68,11 @@ class Location extends Base
         if (null === $serviceCsv) {
             return $this['services'];
         }
+        if (!is_string($serviceCsv) && !is_int($serviceCsv) && !is_float($serviceCsv)) {
+            return array();
+        }
         $location = $this->getArrayCopy();
-        $servicecompare = explode(',', $serviceCsv);
+        $servicecompare = explode(',', (string) $serviceCsv);
 
         $serviceList = array();
         foreach ($location['services'] as $serviceinfo) {
