@@ -47,7 +47,15 @@ class Coordinates
         if ($json === false) {
             throw new \Exception("Cannot read file $file");
         }
-        $this->data = json_decode($json, true);
+        try {
+            $decoded = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $exception) {
+            throw new \Exception("Cannot parse file $file", 0, $exception);
+        }
+        if (!is_array($decoded)) {
+            throw new \Exception("Invalid coordinate data in $file");
+        }
+        $this->data = $decoded;
     }
 
     /**
