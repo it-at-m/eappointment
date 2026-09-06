@@ -44,7 +44,7 @@ class Location extends Base
      * @return Collection
      */
     #[\Override]
-    public function fetchList(string $service_csv = '')
+    public function fetchList(bool|string $service_csv = '')
     {
         $query = Helper::boolFilteredQuery();
         $limit = 10000;

@@ -22,7 +22,7 @@ class Authority extends Base
      * @return Collection
      */
     #[\Override]
-    public function fetchList(array $servicelist = []): Collection
+    public function fetchList(bool|array $servicelist = []): Collection
     {
         try {
             $authorityList = new Collection();
