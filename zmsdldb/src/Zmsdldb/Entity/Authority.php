@@ -108,8 +108,8 @@ class Authority extends Base
     /**
      * Check if Authority is part of ServiceList
      *
-     * @param String $serviceCsv
-     *            only check for this serviceCsv
+     * @param mixed $servicelist
+     *            only check for this service list
      *
      * @return bool
      */
