@@ -76,7 +76,7 @@ class ProviderList extends Base
                 if (is_string($provider->data)) {
                     $provider->data = json_decode($provider->data);
                 } elseif (is_array($provider->data)) {
-                    $provider->data = json_decode(json_encode($provider->data, JSON_FORCE_OBJECT));
+                    $provider->data = json_decode((string) json_encode($provider->data, JSON_FORCE_OBJECT));
                 }
             } else {
                 unset($provider['data']);

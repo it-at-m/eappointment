@@ -103,9 +103,10 @@ class Messaging
     {
         $templatePath = TemplateFinder::getTemplatePath();
         $customTemplatesPath = 'custom_templates/';
+        $envPath = getenv("ZMS_CUSTOM_TEMPLATES_PATH");
 
-        if (getenv("ZMS_CUSTOM_TEMPLATES_PATH")) {
-            $customTemplatesPath = getenv("ZMS_CUSTOM_TEMPLATES_PATH");
+        if (is_string($envPath) && $envPath !== '') {
+            $customTemplatesPath = $envPath;
         }
 
         $initialTemplatePaths = [];
@@ -206,7 +207,7 @@ class Messaging
             'processList' => $collection->sortByAppointmentDate(),
             'config' => $config,
             'initiator' => $initiator,
-            'appointmentLink' => base64_encode(json_encode([
+            'appointmentLink' => base64_encode((string) json_encode([
                 'id' => $mainProcess ? $mainProcess->id : '',
                 'authKey' => $mainProcess ? $mainProcess->authKey : ''
             ]))

@@ -20,7 +20,7 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
             }
             $dateTime = $dateTime->setTimestamp($time->getTimestamp());
         } else {
-            $dateTime = new self($time, $timezone);
+            $dateTime = new self($time === false ? 'now' : $time, $timezone);
         }
         return $dateTime;
     }

@@ -37,7 +37,7 @@ class SchemaValidation extends \Exception
 
             $message = $error->message();
             foreach ($error->args() as $key => $value) {
-                $message = str_replace("{" . $key . "}", json_encode($value, JSON_UNESCAPED_SLASHES), $message);
+                $message = str_replace("{" . $key . "}", (string) json_encode($value, JSON_UNESCAPED_SLASHES), $message);
             }
 
             $this->data[$pointer]['messages'][$error->keyword()] = $message;
