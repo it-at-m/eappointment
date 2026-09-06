@@ -11,7 +11,7 @@ use BO\Zmsdldb\Helper\Sorter;
 
 /**
  * @template T of \BO\Zmsdldb\Entity\Base
- * @extends \ArrayObject<int|string|null, T>
+ * @extends \ArrayObject<int|string, T>
  */
 class Base extends \ArrayObject
 {
