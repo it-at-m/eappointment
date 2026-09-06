@@ -56,7 +56,10 @@ class RequestList extends Base
                 );
             }
             while ($counter-- > 0) {
-                $requestList[] = $this->getEntity($requestId);
+                $entity = $this->getEntity($requestId);
+                if ($entity !== null) {
+                    $requestList[] = $entity;
+                }
             }
         }
         return $requestList;

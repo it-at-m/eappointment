@@ -51,7 +51,10 @@ class ProviderList extends Base
         $providerIds = explode(',', $providerIdCsv);
         foreach ($providerIds as $providerId) {
             if (in_array($providerId, $this->getIds())) {
-                $collection->addEntity($this->getEntity($providerId));
+                $entity = $this->getEntity($providerId);
+                if ($entity !== null) {
+                    $collection->addEntity($entity);
+                }
             }
         }
         return $collection;

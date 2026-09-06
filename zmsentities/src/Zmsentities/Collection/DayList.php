@@ -13,6 +13,8 @@ class DayList extends Base implements JsonUnindexed
 
     /**
      * ATTENTION: Performance critical, keep highly optimized
+     *
+     * @return ($createDay is true ? Day : Day|null)
      */
     public function getDay(string $year, string $month, string $dayNumber, bool $createDay = true): Day|null
     {
@@ -43,12 +45,12 @@ class DayList extends Base implements JsonUnindexed
         return null;
     }
 
-    public function getDayByDateTime(\DateTimeInterface $datetime): \BO\Zmsentities\Day|null
+    public function getDayByDateTime(\DateTimeInterface $datetime): \BO\Zmsentities\Day
     {
         return $this->getDay($datetime->format('Y'), $datetime->format('m'), $datetime->format('d'));
     }
 
-    public function getDayByDay(\BO\Zmsentities\Day $day): \BO\Zmsentities\Day|null
+    public function getDayByDay(\BO\Zmsentities\Day $day): \BO\Zmsentities\Day
     {
         return $this->getDay($day->year, $day->month, $day->day);
     }

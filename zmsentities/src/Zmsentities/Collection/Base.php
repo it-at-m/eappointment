@@ -146,11 +146,14 @@ class Base extends \ArrayObject implements \JsonSerializable
     {
         $className = $this::ENTITY_CLASS;
         if (is_a($value, $className)) {
-            /** @var T $value */
-            parent::offsetSet($index, $value);
+            /** @var T $entity */
+            $entity = $value;
+            /** @psalm-suppress PossiblyNullArgument */
+            parent::offsetSet($index, $entity);
         } elseif (is_array($value)) {
             /** @var T $entity */
             $entity = new $className($value);
+            /** @psalm-suppress PossiblyNullArgument */
             parent::offsetSet($index, $entity);
         } else {
             $given = get_debug_type($value);
