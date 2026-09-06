@@ -50,7 +50,7 @@ class Location extends Base
         $limit = 10000;
         $query->getFilter()->addMust(Helper::localeFilter($this->locale));
         /** @psalm-suppress RiskyTruthyFalsyComparison */
-        if ($service_csv) {
+        if (is_string($service_csv) && $service_csv !== '') {
             foreach (explode(',', $service_csv) as $service_id) {
                 $filter = new \Elastica\Filter\Term(array(
                     'services.service' => $service_id
