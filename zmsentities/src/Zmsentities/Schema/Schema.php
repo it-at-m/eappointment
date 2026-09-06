@@ -32,7 +32,7 @@ class Schema extends \ArrayObject
         if ($resolveLevel > 0) {
             $schema = clone $this;
             $schema = $this->resolveReferences($schema, $resolveLevel);
-            $schema->setJsonObject(json_decode(json_encode($schema->toSanitizedArray(true))));
+            $schema->setJsonObject(json_decode((string) json_encode($schema->toSanitizedArray(true))));
             return $schema;
         }
         return $this;
@@ -70,9 +70,9 @@ class Schema extends \ArrayObject
         if (null !== $this->asObject) {
             $data = $this->asObject;
         } elseif (! $keepEmpty) {
-            $data = json_decode(json_encode($this->toSanitizedArray($keepEmpty)));
+            $data = json_decode((string) json_encode($this->toSanitizedArray($keepEmpty)));
         } else {
-            $data = json_decode(json_encode($this->toSanitizedArray($keepEmpty)));
+            $data = json_decode((string) json_encode($this->toSanitizedArray($keepEmpty)));
         }
         return $data;
     }

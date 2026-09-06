@@ -9,6 +9,9 @@ class Loader
     public static function asArray(string $schemaFilename): Schema
     {
         $jsonString = self::asJson($schemaFilename);
+        if (!is_string($jsonString)) {
+            throw new \BO\Zmsentities\Exception\SchemaMissingJsonFile("Missing JSON-Schema file $schemaFilename");
+        }
         $array = json_decode($jsonString, true);
         $object = json_decode($jsonString);
         if (null === $array && $jsonString) {
