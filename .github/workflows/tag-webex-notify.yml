@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Notify Webex
+        continue-on-error: true
         env:
           WEBEX_BOT_TOKEN: ${{ secrets.WEBEX_BOT_TOKEN }}
           WEBEX_ROOM_ID: ${{ secrets.WEBEX_ROOM_ID }}
@@ -18,6 +19,11 @@ jobs:
           TAG_AUTHOR: ${{ github.actor }}
           SHA: ${{ github.sha }}
         run: |
+          set -euo pipefail
+          if [ -z "${WEBEX_BOT_TOKEN}" ] || [ -z "${WEBEX_ROOM_ID}" ]; then
+            echo "Webex secrets unavailable; skipping notification."
+            exit 0
+          fi
           jq -n \
             --arg roomId "$WEBEX_ROOM_ID" \
             --arg repo "${{ github.repository }}" \

@@ -4,11 +4,19 @@ on:
   pull_request:
     types: [opened]
 
+# Serialize posts so a Dependabot/Renovate burst does not stampede the Webex API.
+concurrency:
+  group: webex-pr-notify
+  cancel-in-progress: false
+
 jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
       - name: Notify Webex
+        # Notification is best-effort. Missing secrets (Dependabot) and Webex 401/429
+        # must not fail the PR check.
+        continue-on-error: true
         env:
           WEBEX_BOT_TOKEN: ${{ secrets.WEBEX_BOT_TOKEN }}
           WEBEX_ROOM_ID: ${{ secrets.WEBEX_ROOM_ID }}
@@ -18,24 +26,55 @@ jobs:
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
           PR_BASE: ${{ github.event.pull_request.base.ref }}
           PR_HEAD: ${{ github.event.pull_request.head.ref }}
+          SKIP_BOT: ${{ contains(fromJSON('["dependabot[bot]", "renovate[bot]"]'), github.event.pull_request.user.login) }}
         run: |
-          jq -n \
-            --arg roomId "$WEBEX_ROOM_ID" \
-            --arg repo "${{ github.repository }}" \
-            --arg number "$PR_NUMBER" \
-            --arg title "$PR_TITLE" \
-            --arg author "$PR_AUTHOR" \
-            --arg head "$PR_HEAD" \
-            --arg base "$PR_BASE" \
-            --arg url "$PR_URL" \
-            '{roomId: $roomId, markdown: ("**New pull request opened in " + $repo + "**\n\n**#" + $number + ":** " + $title + "\n\n**Author:** " + $author + "\n**Branch:** `" + $head + "` → `" + $base + "`\n\n[View pull request](" + $url + ")")}' \
-            | curl -fsS -o /dev/null -X POST \
-              -H "Authorization: Bearer $WEBEX_BOT_TOKEN" \
-              -H "Content-Type: application/json" \
-              -d @- \
-              "https://webexapis.com/v1/messages"
-          echo "Webex notification sent:"
-          echo "  #${PR_NUMBER}: ${PR_TITLE}"
-          echo "  Author: ${PR_AUTHOR}"
-          echo "  Branch: ${PR_HEAD} → ${PR_BASE}"
-          echo "  ${PR_URL}"
+          set -euo pipefail
+          if [ "${SKIP_BOT}" = "true" ]; then
+            echo "Skipping Webex notification for ${PR_AUTHOR}."
+            exit 0
+          fi
+          if [ -z "${WEBEX_BOT_TOKEN}" ] || [ -z "${WEBEX_ROOM_ID}" ]; then
+            echo "Webex secrets unavailable; skipping notification."
+            exit 0
+          fi
+
+          payload="$(
+            jq -n \
+              --arg roomId "$WEBEX_ROOM_ID" \
+              --arg repo "${{ github.repository }}" \
+              --arg number "$PR_NUMBER" \
+              --arg title "$PR_TITLE" \
+              --arg author "$PR_AUTHOR" \
+              --arg head "$PR_HEAD" \
+              --arg base "$PR_BASE" \
+              --arg url "$PR_URL" \
+              '{roomId: $roomId, markdown: ("**New pull request opened in " + $repo + "**\n\n**#" + $number + ":** " + $title + "\n\n**Author:** " + $author + "\n**Branch:** `" + $head + "` → `" + $base + "`\n\n[View pull request](" + $url + ")")}'
+          )"
+
+          attempt=1
+          max=5
+          while [ "$attempt" -le "$max" ]; do
+            http_code="$(
+              curl -sS -o /tmp/webex-response -w "%{http_code}" -X POST \
+                -H "Authorization: Bearer ${WEBEX_BOT_TOKEN}" \
+                -H "Content-Type: application/json" \
+                -d "$payload" \
+                "https://webexapis.com/v1/messages" || true
+            )"
+            if [ "$http_code" = "200" ]; then
+              echo "Webex notification sent:"
+              echo "  #${PR_NUMBER}: ${PR_TITLE}"
+              echo "  Author: ${PR_AUTHOR}"
+              echo "  Branch: ${PR_HEAD} → ${PR_BASE}"
+              echo "  ${PR_URL}"
+              exit 0
+            fi
+            echo "Webex POST returned HTTP ${http_code} (attempt ${attempt}/${max})."
+            if [ -s /tmp/webex-response ]; then
+              head -c 500 /tmp/webex-response; echo
+            fi
+            sleep $((attempt * 5))
+            attempt=$((attempt + 1))
+          done
+          echo "Webex notification failed after ${max} attempts; not failing CI."
+          exit 0
