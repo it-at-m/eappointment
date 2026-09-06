@@ -30,7 +30,7 @@ class Authority extends Base
             $sqlArgs = [];
 
             /** @psalm-suppress RiskyTruthyFalsyComparison */
-            if (!empty($servicelist)) {
+            if (is_array($servicelist) && $servicelist !== []) {
                 $sqlArgs = ['de',$this->locale];
                 $questionMarks = array_fill(0, count($servicelist), '?');
 
