@@ -145,7 +145,9 @@ abstract class Base
             return false;
         }
 
-        return $itemList[$itemId];
+        /** @var TEntity $item */
+        $item = $itemList[$itemId];
+        return $item;
     }
 
     public function setAccessInstance(\BO\Zmsdldb\AbstractAccess $accessInstance): void

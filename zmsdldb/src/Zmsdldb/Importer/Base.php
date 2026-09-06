@@ -164,7 +164,7 @@ abstract class Base implements Options
 
     /**
      *
-     * @return self
+     * @return void
      * @psalm-api
      */
     protected function importSettings()
@@ -185,7 +185,7 @@ abstract class Base implements Options
 
     /**
      *
-     * @return self
+     * @return void
      * @psalm-api
      */
     protected function importTopics()
@@ -207,7 +207,7 @@ abstract class Base implements Options
 
     /**
      *
-     * @return self
+     * @return void
      * @psalm-api
      */
     protected function importAuthorities()

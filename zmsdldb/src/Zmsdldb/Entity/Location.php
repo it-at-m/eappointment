@@ -127,7 +127,7 @@ class Location extends Base
      * return geoJson
      *
      *
-     * @return string
+     * @return array
      */
     public function getGeoJson()
     {
