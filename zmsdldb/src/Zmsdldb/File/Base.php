@@ -162,6 +162,9 @@ abstract class Base
 
     public function access(): \BO\Zmsdldb\AbstractAccess
     {
+        if (!$this->accessInstance instanceof \BO\Zmsdldb\AbstractAccess) {
+            throw new Exception('Access instance is not initialized');
+        }
         return $this->accessInstance;
     }
 }
