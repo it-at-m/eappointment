@@ -111,7 +111,7 @@ class Authority extends Base
      * @param String $serviceCsv
      *            only check for this serviceCsv
      *
-     * @return self
+     * @return bool
      */
     public function isInServiceList(mixed $servicelist = array())
     {

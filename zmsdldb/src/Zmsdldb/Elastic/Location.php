@@ -160,7 +160,7 @@ class Location extends Base
      * search locations
      * this function is similar to self::searchAll() but it might get different boosts in the future
      *
-     * @return Collection
+     * @return \BO\Zmsdldb\Collection\Authorities
      */
     #[\Override]
     public function readSearchResultList(mixed $query, string $service_csv = '')

@@ -68,7 +68,7 @@ class Location extends Base
 
     /**
      *
-     * @return Collection
+     * @return \BO\Zmsdldb\Collection\Authorities
      * @psalm-api
      */
     public function readSearchResultList(mixed $query, string $service_csv = '')

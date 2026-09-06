@@ -16,6 +16,9 @@ use BO\Zmsdldb\File\Topic as Base;
   */
 class Topic extends Base
 {
+    /**
+     * @return Collection
+     */
     #[\Override]
     public function readSearchResultList(mixed $querystring)
     {

@@ -99,7 +99,7 @@ class ElasticSearch
 
     /**
      *
-     * @return self
+     * @return array
      */
     protected function readTopics()
     {
@@ -133,7 +133,7 @@ class ElasticSearch
 
     /**
      *
-     * @return self
+     * @return array
      */
     protected function readServices()
     {
@@ -151,7 +151,7 @@ class ElasticSearch
 
     /**
      *
-     * @return self
+     * @return array
      */
     protected function readLocations()
     {
@@ -169,7 +169,7 @@ class ElasticSearch
 
     /**
      *
-     * @return self
+     * @return array
      */
     protected function readAuthorities()
     {
