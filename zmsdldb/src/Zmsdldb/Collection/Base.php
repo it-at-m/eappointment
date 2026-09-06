@@ -17,9 +17,6 @@ class Base extends \ArrayObject
 {
     public function offsetSet(mixed $key, mixed $value): void
     {
-        if ($key === null) {
-            $key = $this->count();
-        }
         parent::offsetSet($key, $value);
     }
 

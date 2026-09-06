@@ -43,7 +43,7 @@ class Topic extends Base
         );
         foreach ($items as $item) {
             foreach ($item as $entity) {
-                $list[] = $entity;
+                $list->append($entity);
             }
         }
         return $list;
