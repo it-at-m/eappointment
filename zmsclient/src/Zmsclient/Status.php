@@ -15,7 +15,7 @@ class Status
      *
      * @SuppressWarnings(Complexity)
      */
-    public static function testStatus(ResponseInterface $response, $status): ResponseInterface
+    public static function testStatus(ResponseInterface $response, mixed $status): ResponseInterface
     {
         $result = '';
         if ($status instanceof \Closure) {
@@ -26,7 +26,7 @@ class Status
                 $result = "FATAL - " . $exception->getMessage();
             }
         }
-        if ($status && !$result) {
+        if ($status !== false && $status !== null && $result === '') {
             $result = [];
             $result[] = self::getDldbUpdateStats($status);
 
@@ -52,11 +52,13 @@ class Status
             if (
                 isset($status['processes'])
                 && isset($status['processes']['lastCalculate'])
-                && time() - strtotime($status['processes']['lastCalculate']) > 600
+                && is_string($status['processes']['lastCalculate'])
             ) {
-                $slotOutdate =
-                    time() - strtotime($status['processes']['lastCalculate']);
-                $result[] = "WARN - slot calculation is $slotOutdate seconds old";
+                $lastCalculate = strtotime($status['processes']['lastCalculate']);
+                if ($lastCalculate !== false && time() - $lastCalculate > 600) {
+                    $slotOutdate = time() - $lastCalculate;
+                    $result[] = "WARN - slot calculation is $slotOutdate seconds old";
+                }
             }
             $result = preg_grep('/./', $result);
             if (!count($result)) {
@@ -83,7 +85,7 @@ class Status
         return $response;
     }
 
-    public static function getDldbUpdateStats($status): string
+    public static function getDldbUpdateStats(mixed $status): string
     {
         $result = '';
         if (isset($status['sources'])) {
