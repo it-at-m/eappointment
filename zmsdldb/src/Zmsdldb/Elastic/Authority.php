@@ -20,7 +20,7 @@ class Authority extends Base
      * @return Collection
      */
     #[\Override]
-    public function fetchList(bool|array $servicelist = false)
+    public function fetchList(mixed $servicelist = false)
     {
         $boolquery = Helper::boolFilteredQuery();
         $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
