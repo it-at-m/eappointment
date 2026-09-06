@@ -55,7 +55,7 @@ abstract class Base extends TestCase
                     $function,
                     [
                         $options['url'],
-                        Argument::that(function ($value) {
+                        Argument::that(function (mixed $value) {
                             return
                                 ($value instanceof Entity) ||
                                 ($value instanceof BaseCollection);
