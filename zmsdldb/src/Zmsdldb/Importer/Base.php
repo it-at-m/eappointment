@@ -64,6 +64,7 @@ abstract class Base implements Options
             if (preg_match('/get(?P<importer>[A-Za-z]+)Importer/', $method, $matches)) {
                 $ImporterClass = static::class . '\\' . $matches['importer'];
                 array_unshift($args, $this->getPDOAccess());
+                /** @var class-string<\BO\Zmsdldb\Importer\MySQL\Base> $ImporterClass */
                 /** @psalm-suppress UnsafeInstantiation */
                 $instance = new $ImporterClass(...$args);
                 if (!$instance instanceof \BO\Zmsdldb\Importer\MySQL\Base) {
