@@ -64,15 +64,17 @@ abstract class Base implements Options
             if (preg_match('/get(?P<importer>[A-Za-z]+)Importer/', $method, $matches)) {
                 $ImporterClass = static::class . '\\' . $matches['importer'];
                 array_unshift($args, $this->getPDOAccess());
-                /** @var class-string<\BO\Zmsdldb\Importer\MySQL\Base> $ImporterClass */
-                /** @psalm-suppress UnsafeInstantiation */
-                /** @psalm-suppress InvalidStringClass */
-                $instance = new $ImporterClass(...$args);
-                if (!$instance instanceof \BO\Zmsdldb\Importer\MySQL\Base) {
+                if (
+                    !class_exists($ImporterClass)
+                    || !is_a($ImporterClass, \BO\Zmsdldb\Importer\MySQL\Base::class, true)
+                ) {
                     throw new \InvalidArgumentException(
                         $ImporterClass . ' must extend \\BO\\Zmsdldb\\Importer\\MySQL\\Base'
                     );
                 }
+                /** @var class-string<\BO\Zmsdldb\Importer\MySQL\Base> $ImporterClass */
+                /** @psalm-suppress UnsafeInstantiation */
+                $instance = new $ImporterClass(...$args);
                 return $instance;
             }
             throw new \BadMethodCallException('Method ' . $method . ' not found!');
