@@ -184,7 +184,7 @@ class FileAccess extends AbstractAccess
      * @return \BO\Zmsdldb\Collection\Authorities
      * @psalm-api
      */
-    public function fetchLocationListByOffice(bool $officepath = false)
+    public function fetchLocationListByOffice(string|false $officepath = false)
     {
         trigger_error("Deprecated function fetchLocationListByOffice, use fromAuthority()->fetchOffice()");
         /** @psalm-suppress UndefinedMethod */
