@@ -249,6 +249,7 @@ class Base extends \ArrayObject implements \JsonSerializable
      */
     public function withValueFor(mixed $param, mixed $newValue): static
     {
+        /** @psalm-suppress UnsafeGenericInstantiation */
         $list = new static();
         foreach ($this as $entry) {
             $list[] = $entry->withProperty($param, $newValue);
@@ -264,6 +265,7 @@ class Base extends \ArrayObject implements \JsonSerializable
      */
     public function withLessData(array $keepArray = [])
     {
+        /** @psalm-suppress UnsafeGenericInstantiation */
         $list = new static();
         foreach ($this as $key => $item) {
             $list[$key] = $item->withLessData($keepArray);
@@ -331,6 +333,7 @@ class Base extends \ArrayObject implements \JsonSerializable
      */
     public function withResolveLevel($resolveLevel)
     {
+        /** @psalm-suppress UnsafeGenericInstantiation */
         $collection = new static();
         foreach ($this as $entity) {
             $reduced = $entity->withResolveLevel($resolveLevel);
@@ -345,10 +348,12 @@ class Base extends \ArrayObject implements \JsonSerializable
      */
     public function chunk(mixed $length): array
     {
+        /** @psalm-suppress UnsafeGenericInstantiation */
         $chunks = [new static()];
         $id = 0;
         foreach ($this as $entry) {
             if (! isset($chunks[floor($id / $length)])) {
+                /** @psalm-suppress UnsafeGenericInstantiation */
                 $chunks[floor($id / $length)] = new static();
             }
 
