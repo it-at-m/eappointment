@@ -148,6 +148,9 @@ class Calldisplay extends Schema\Entity
         $scopeList = new Collection\ScopeList();
         $scopeIds = explode(',', $scopeIds);
         foreach ($scopeIds as $scopeId) {
+            if ($scopeId === '') {
+                continue;
+            }
             $scope = new Scope(array('id' => $scopeId));
             $scopeList->addEntity($scope);
         }
@@ -159,6 +162,9 @@ class Calldisplay extends Schema\Entity
         $clusterList = new Collection\ClusterList();
         $clusterIds = explode(',', $clusterIds);
         foreach ($clusterIds as $clusterId) {
+            if ($clusterId === '') {
+                continue;
+            }
             $cluster = new Cluster(array('id' => $clusterId));
             $clusterList->addEntity($cluster);
         }

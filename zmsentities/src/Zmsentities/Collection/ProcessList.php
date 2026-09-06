@@ -398,7 +398,7 @@ class ProcessList extends Base
         return $collection;
     }
 
-    public function withoutProcessByStatus(Process $process, string $status): mixed
+    public function withoutProcessByStatus(Process $process, string $status): static
     {
         $collection = clone $this;
         $collection = (1 <= $collection->count() && ! Messaging::isEmptyProcessListAllowed($status)) ?

@@ -324,7 +324,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $this->toProperty()->{$propertyName}->isAvailable();
     }
 
-    public function getProperty(string $propertyName, string $default = ''): mixed
+    public function getProperty(string $propertyName, mixed $default = ''): mixed
     {
         return $this->toProperty()->{$propertyName}->get($default);
     }

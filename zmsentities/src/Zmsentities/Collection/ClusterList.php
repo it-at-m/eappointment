@@ -26,7 +26,8 @@ class ClusterList extends Base
     {
         $clusterList = new self();
         foreach ($this as $cluster) {
-            if (! $clusterList->hasEntity($cluster->id)) {
+            /** @psalm-suppress RedundantConditionGivenDocblockType Constructor storage can include null. */
+            if ($cluster instanceof \BO\Zmsentities\Cluster && ! $clusterList->hasEntity($cluster->id)) {
                 $clusterList->addEntity($cluster);
             }
         }

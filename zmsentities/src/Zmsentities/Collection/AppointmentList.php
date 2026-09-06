@@ -15,7 +15,8 @@ class AppointmentList extends Base
     {
         foreach ($this as $item) {
             if ($item['date'] == $date) {
-                return $item;
+                /** @psalm-suppress RedundantCondition Runtime arrays can bypass ENTITY_CLASS. */
+                return $item instanceof Appointment ? $item : new Appointment($item);
             }
         }
         return false;

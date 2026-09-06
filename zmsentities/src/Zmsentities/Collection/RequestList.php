@@ -42,7 +42,7 @@ class RequestList extends Base
     /**
      * Filter the request list and return a new list with appropriate numbers of requests
      *
-     * @param array $countlist - a list with the request.id as number and a count as value
+     * @param array $countList - a list with the request.id as number and a count as value
      *
      * @return RequestList
      */

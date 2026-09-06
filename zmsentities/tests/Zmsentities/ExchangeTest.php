@@ -214,6 +214,24 @@ class ExchangeTest extends EntityCommonTests
         $this->assertEquals(1, count($entity->data));
     }
 
+    public function testAddDataSetWithGenerator()
+    {
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $entity = (new $this->entityclass());
+        $entity->setPeriod($now, $now);
+        $entity->addDictionaryEntry('id', 'number');
+        $entity->addDictionaryEntry('date', 'date');
+        $entity->addDictionaryEntry('name', 'string', 'Naming');
+        $values = (function () {
+            yield 1;
+            yield '2016-04-01';
+            yield 'Test';
+        })();
+        $entity->addDataSet($values);
+        $this->assertEquals([1, '2016-04-01', 'Test'], $entity->data[0]);
+        $this->assertEquals('totals', $entity->withCalculatedTotals(['id'])->getCalculatedTotals()[2]);
+    }
+
     public function testDataFormat()
     {
         $this->expectException('\Exception');
