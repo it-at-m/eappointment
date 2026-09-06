@@ -152,17 +152,14 @@ class Service extends Base
     public function fetchListFromTopic(\BO\Zmsdldb\Entity\Topic $topic)
     {
         $itemlist = new Collection();
-        $serviceIds = array();
-        if ($topic) {
-            $serviceIds = $topic->getServiceIds();
-            if ($topic['relation']['navi'] && isset($topic['relation']['childs'])) {
-                foreach ($topic['relation']['childs'] as $child) {
-                    $childtopic = $this->access()
-                        ->fromTopic()
-                        ->fetchPath($child['path']);
-                    if ($childtopic) {
-                        $serviceIds = array_merge($serviceIds, $childtopic->getServiceIds());
-                    }
+        $serviceIds = $topic->getServiceIds();
+        if ($topic['relation']['navi'] && isset($topic['relation']['childs'])) {
+            foreach ($topic['relation']['childs'] as $child) {
+                $childtopic = $this->access()
+                    ->fromTopic()
+                    ->fetchPath($child['path']);
+                if ($childtopic) {
+                    $serviceIds = array_merge($serviceIds, $childtopic->getServiceIds());
                 }
             }
         }
