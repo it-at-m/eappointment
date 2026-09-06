@@ -145,7 +145,7 @@ abstract class Base
     {
         $itemList = $this->getItemList();
 
-        if (! $itemId || !$itemList instanceof \BO\Zmsdldb\Collection\Base || !$itemList->offsetExists($itemId)) {
+        if (! $itemId || !$itemList->offsetExists($itemId)) {
             return false;
         }
 
