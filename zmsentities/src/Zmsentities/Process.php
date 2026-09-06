@@ -77,7 +77,7 @@ class Process extends Schema\Entity
         $appointment = new Appointment();
         $appointment->addScope($scope->id);
         $appointment->addSlotCount(0);
-        $appointment->addDate($dateTime->modify('00:00:00')->getTimestamp());
+        $appointment->addDate(Helper\DateTime::create($dateTime)->modify('00:00:00')->getTimestamp());
         $process = new static();
         $process->scope = $scope;
         $process->setStatus('queued');
@@ -207,9 +207,10 @@ class Process extends Schema\Entity
         if (isset($requestData['selecteddate'])) {
             $dateTime = new \DateTime($requestData['selecteddate']);
         }
+        $dateTime = Helper\DateTime::create($dateTime);
         if (isset($requestData['selectedtime'])) {
             $time = explode('-', $requestData['selectedtime']);
-            $dateTime->setTime($time[0], $time[1]);
+            $dateTime = $dateTime->setTime($time[0], $time[1]);
         }
 
         $appointment = (new Appointment())

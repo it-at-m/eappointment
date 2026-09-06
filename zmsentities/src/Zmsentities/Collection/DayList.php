@@ -138,10 +138,12 @@ class DayList extends Base implements JsonUnindexed
     public function withDaysInDateRange(\DateTimeInterface $startDate, \DateTimeInterface $endDate): self
     {
         $list = new self();
+        $rangeStart = \BO\Zmsentities\Helper\DateTime::create($startDate)->modify('00:00:00');
+        $rangeEnd = \BO\Zmsentities\Helper\DateTime::create($endDate)->modify('23:59:59');
         foreach ($this as $day) {
             if (
-                $day->toDateTime() >= $startDate->modify('00:00:00') &&
-                $day->toDateTime() <= $endDate->modify('23:59:59')
+                $day->toDateTime() >= $rangeStart &&
+                $day->toDateTime() <= $rangeEnd
             ) {
                 $list->addEntity($day);
             }
@@ -152,6 +154,7 @@ class DayList extends Base implements JsonUnindexed
     public function withDaysFromPeriod(\DateTimeInterface $startDate, \DateTimeInterface $endDate): self
     {
         $list = new self();
+        $startDate = \BO\Zmsentities\Helper\DateTime::create($startDate);
         do {
             $day = (new Day())->setDateTime($startDate);
             $list->addEntity($day);
