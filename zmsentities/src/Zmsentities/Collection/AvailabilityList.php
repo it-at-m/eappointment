@@ -82,7 +82,7 @@ class AvailabilityList extends Base
     public function withDateTimeInRange(\DateTimeInterface $startDateTime, \DateTimeInterface $endDateTime): mixed
     {
         $list = new self();
-        $currentDateTime = clone $startDateTime;
+        $currentDateTime = \BO\Zmsentities\Helper\DateTime::create($startDateTime);
         while ($currentDateTime <= $endDateTime) {
             foreach ($this as $availability) {
                 if ($availability->isOpenedOnDate($currentDateTime)) {
