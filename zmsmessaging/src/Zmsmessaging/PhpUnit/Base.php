@@ -95,6 +95,10 @@ abstract class Base extends TestCase
         return $this->apiCalls;
     }
 
+    abstract protected function getResponse(mixed $content = '', mixed $status = 200): mixed;
+
+    abstract protected function getRequest(mixed $method = "GET", mixed $uri = ''): mixed;
+
     public function setApiCalls(mixed $apiCalls): void
     {
         $this->apiCalls = $apiCalls;
