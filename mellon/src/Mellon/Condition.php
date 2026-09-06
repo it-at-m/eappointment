@@ -4,7 +4,7 @@ namespace BO\Mellon;
 
 class Condition
 {
-    protected $collection = [];
+    protected Collection $collection;
 
     public function __construct(Valid ...$validList)
     {
