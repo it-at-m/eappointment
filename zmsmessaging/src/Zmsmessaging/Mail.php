@@ -222,7 +222,7 @@ class Mail extends BaseController
         return $results;
     }
 
-    protected function getValidMailer(MailEntity $entity)
+    protected function getValidMailer(MailEntity $entity): PHPMailer|false
     {
         $message = '';
         $messageId = $entity['id'];
@@ -346,7 +346,7 @@ class Mail extends BaseController
         }
     }
 
-    private function deleteEntitiesFromQueue(array $itemIds)
+    private function deleteEntitiesFromQueue(array $itemIds): mixed
     {
         $endpoint = '/mails/';
         $params = [
