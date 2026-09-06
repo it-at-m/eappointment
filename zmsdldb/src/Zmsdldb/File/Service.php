@@ -61,7 +61,7 @@ class Service extends Base
     /**
      * @return Collection
      *
-     * @param false|string $location_csv
+     * @param bool|string $location_csv
      */
     public function fetchList(bool|string $location_csv = false)
     {

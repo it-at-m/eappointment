@@ -29,7 +29,7 @@ class Authority extends Base
         $limit = 1000;
 
         /** @psalm-suppress RiskyTruthyFalsyComparison */
-        if ($servicelist && count($servicelist)) {
+        if (is_array($servicelist) && $servicelist !== []) {
             $filter = new \Elastica\Filter\Terms('services.service', array_values((array)$servicelist));
             $filter->setExecution('and');
             $query->setPostFilter($filter);
