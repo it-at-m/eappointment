@@ -205,6 +205,12 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $queueList = $queueList
           ->withEstimatedWaitingTime($processTimeAverage, $workstationCount, $dateTime);
         $newEntity = $queueList->getFakeOrLastWaitingnumber();
+        if (!$newEntity instanceof \BO\Zmsentities\Queue) {
+            return [
+                'amountBefore' => 0,
+                'waitingTimeEstimate' => 0,
+            ];
+        }
         $dataOfFackedEntity = array(
             'amountBefore' => $queueList->getQueuePositionByNumber($newEntity->number),
             'waitingTimeEstimate' => $newEntity->waitingTimeEstimate

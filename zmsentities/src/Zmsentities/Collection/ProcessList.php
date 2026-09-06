@@ -47,8 +47,8 @@ class ProcessList extends Base
     {
         $this->uasort(function ($a, $b) {
             return strcmp(
-                Sorter::toSortableString(ucfirst($a->scope->contact['name'] ?? '')),
-                Sorter::toSortableString(ucfirst($b->scope->contact['name'] ?? ''))
+                Sorter::toSortableString(ucfirst($a->scope['contact']['name'] ?? '')),
+                Sorter::toSortableString(ucfirst($b->scope['contact']['name'] ?? ''))
             );
         });
         return $this;
@@ -283,7 +283,7 @@ class ProcessList extends Base
         $processList = new static();
         $scopeKeyList = [];
         foreach ($this as $process) {
-            $scopeKey = $process->scope->id . '-';
+            $scopeKey = $process->scope['id'] . '-';
             if ($oncePerHour) {
                 $scopeKey .= $process->getFirstAppointment()->toDateTime()->format('H');
             } else {
