@@ -30,7 +30,9 @@ class Request extends Schema\Entity
     {
         $additionalData['id'] = $this->getId();
         $additionalData['name'] = $this->getName();
-        return parent::withReference($additionalData);
+        /** @var self|array $referenced */
+        $referenced = parent::withReference($additionalData);
+        return $referenced;
     }
 
     public function hasAppointmentFromProviderData(): bool

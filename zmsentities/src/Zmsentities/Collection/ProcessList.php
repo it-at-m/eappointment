@@ -382,9 +382,12 @@ class ProcessList extends Base
      */
     public function testProcessListLength(self|Process $processList, bool $isEmptyAllowed = false): ProcessList
     {
-        $collection = ($processList instanceof Process) ?
-            (new self())->addEntity($processList) :
-            $processList;
+        if ($processList instanceof Process) {
+            $collection = new self();
+            $collection->addEntity($processList);
+        } else {
+            $collection = $processList;
+        }
 
         if (0 === $collection->count() && ! $isEmptyAllowed) {
             throw new \BO\Zmsentities\Exception\ProcessListEmpty();

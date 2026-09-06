@@ -76,7 +76,8 @@ class EventLog extends Schema\Entity
             $mergeData['expirationDateTime'] = new DateTime($mergeData['expirationDateTime']);
         }
 
-        return parent::addData($mergeData);
+        parent::addData($mergeData);
+        return $this;
     }
 
     #[\Override]
