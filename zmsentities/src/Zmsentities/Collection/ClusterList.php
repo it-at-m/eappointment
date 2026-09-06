@@ -26,7 +26,7 @@ class ClusterList extends Base
     {
         $clusterList = new self();
         foreach ($this as $cluster) {
-            if ($cluster && ! $clusterList->hasEntity($cluster->id)) {
+            if (! $clusterList->hasEntity($cluster->id)) {
                 $clusterList->addEntity($cluster);
             }
         }

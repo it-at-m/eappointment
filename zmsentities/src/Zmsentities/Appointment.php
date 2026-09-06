@@ -117,9 +117,7 @@ class Appointment extends Schema\Entity
     {
         $date = (new \DateTimeImmutable())->setTimestamp($this->date);
         //$date = \DateTimeImmutable::createFromFormat("U", $this->date);
-        if ($date) {
-            $date = $date->setTimeZone(new \DateTimeZone($timezone));
-        }
+        $date = $date->setTimeZone(new \DateTimeZone($timezone));
         return $date;
     }
 

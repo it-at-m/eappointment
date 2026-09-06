@@ -61,7 +61,7 @@ class ProviderList extends Base
     {
         $list = new self();
         foreach ($this as $provider) {
-            if ($provider && ! $list->hasEntity($provider->id)) {
+            if (! $list->hasEntity($provider->id)) {
                 $list->addEntity($provider);
             }
         }

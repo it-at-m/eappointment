@@ -49,7 +49,7 @@ class ProcessValidator
         if ($length) {
             $valid->isGreaterThan(100000, "Eine Vorgangsnummer besteht aus mindestens 6 Ziffern");
             $valid->isLowerEqualThan(99999999999, "Eine Vorgangsnummer besteht aus maximal 11 Ziffern");
-        } elseif (!$length && $isRequiredCallback !== null && $isRequiredCallback()) {
+        } elseif ($isRequiredCallback !== null && $isRequiredCallback()) {
             $valid->isRequired("Eine Vorgangsnummer wird benötigt.");
         }
         $this->getCollection()->validatedAction($valid, $setter);
