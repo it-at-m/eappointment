@@ -34,7 +34,7 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
         return 1 + ($week < $firstWeekOfMonth ? $week : $week - $firstWeekOfMonth);
         */
 
-        $dayOfMonth = $this->format('j');
+        $dayOfMonth = (int) $this->format('j');
         $weekOfMonth = ceil($dayOfMonth / 7);
         return $weekOfMonth;
     }
@@ -53,9 +53,9 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
 
     public function getSecondsOfDay(): int|float
     {
-        $hours = $this->format('G');
-        $minutes = $this->format('i');
-        $seconds = $this->format('s');
+        $hours = (int) $this->format('G');
+        $minutes = (int) $this->format('i');
+        $seconds = (int) $this->format('s');
         return $hours * 3600 + $minutes * 60 + $seconds;
     }
 
