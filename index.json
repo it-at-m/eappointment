@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-06T20:05:11.776Z",
+  "publishedAt": "2026-09-06T20:26:43.322Z",
   "branches": [
     {
       "name": "next",
@@ -36,6 +36,12 @@
       "slug": "feature-zmskvr-1617-service-statistics-hide-days-without-usage",
       "runId": "33762107707",
       "runStartedAt": "2026-09-03T13:36:45Z"
+    },
+    {
+      "name": "fix-zmsclient-psalm-alerts",
+      "slug": "fix-zmsclient-psalm-alerts",
+      "runId": "34055608232",
+      "runStartedAt": "2026-09-06T19:40:02Z"
     },
     {
       "name": "fix-zmsdldb-psalm-alerts",
