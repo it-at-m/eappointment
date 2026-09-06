@@ -71,7 +71,7 @@ class Service extends Base
 
 
     /** @psalm-api */
-    public function isResponsibleForAll()
+    public function isResponsibleForAll(): mixed
     {
         return $this['responsibility_all'];
     }

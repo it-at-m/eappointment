@@ -49,7 +49,7 @@ class Timer
         $this->start = Timer::getMicroTime();
     }
 
-    public function getTime()
+    public function getTime(): string
     {
         if (!isset($this->stop)) {
             $this->stop = Timer::getMicroTime();
@@ -58,7 +58,7 @@ class Timer
     }
 
     /** @psalm-api */
-    protected function getLapTime()
+    protected function getLapTime(): string
     {
         return $this->timeToString();
     }

@@ -89,7 +89,7 @@ class Authority extends Base
     }
 
     /** @psalm-api */
-    public function fetchSource()
+    public function fetchSource(): \BO\Zmsdldb\Collection\Base
     {
         return $this->getItemList();
     }

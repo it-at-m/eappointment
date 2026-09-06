@@ -59,7 +59,7 @@ class AbstractAccess
     }
 
 
-    private function getInstanceCompatibilities()
+    private function getInstanceCompatibilities(): mixed
     {
         $accessInstance = $this->accessInstance['de'];
         $accessInstance['Authorities'] = $accessInstance['Authority'];
@@ -154,43 +154,43 @@ class AbstractAccess
         throw new Exception("Locale for accessing $instanceName does not exists");
     }
 
-    public function fromAuthority(string $locale = 'de')
+    public function fromAuthority(string $locale = 'de'): \BO\Zmsdldb\File\Base
     {
         return $this->from('Authority', $locale);
     }
 
-    public function fromBorough()
+    public function fromBorough(): \BO\Zmsdldb\File\Base
     {
         return $this->from('Borough');
     }
 
     /** @psalm-api */
-    public function fromLink(string $locale = 'de')
+    public function fromLink(string $locale = 'de'): \BO\Zmsdldb\File\Base
     {
         return $this->from('Link', $locale);
     }
 
-    public function fromLocation(string $locale = 'de')
+    public function fromLocation(string $locale = 'de'): \BO\Zmsdldb\File\Base
     {
         return $this->from('Location', $locale);
     }
 
-    public function fromOffice()
+    public function fromOffice(): \BO\Zmsdldb\File\Base
     {
         return $this->from('Office');
     }
 
-    public function fromService(string $locale = 'de')
+    public function fromService(string $locale = 'de'): \BO\Zmsdldb\File\Base
     {
         return $this->from('Service', $locale);
     }
 
-    public function fromSetting()
+    public function fromSetting(): \BO\Zmsdldb\File\Base
     {
         return $this->from('Setting');
     }
 
-    public function fromTopic(string $locale = 'de')
+    public function fromTopic(string $locale = 'de'): \BO\Zmsdldb\File\Base
     {
         return $this->from('Topic', $locale);
     }

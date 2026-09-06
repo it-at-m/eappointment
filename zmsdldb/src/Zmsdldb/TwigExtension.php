@@ -105,7 +105,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $active;
     }
 
-    public function getD115OpeningTimes()
+    public function getD115OpeningTimes(): mixed
     {
         $settingsRepository = \App::$repository->fromSetting();
         $openinTimes = $settingsRepository->fetchName('d115.openingTime') ?? \App::D115_DEFAULT_OPENINGTIME;
@@ -113,7 +113,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $openinTimes;
     }
 
-    public function getD115Text()
+    public function getD115Text(): mixed
     {
         $settingsRepository = \App::$repository->fromSetting();
         $text = $settingsRepository->fetchName('d115.messageHtml') ?? \App::D115_DEFAULT_TEXT;
@@ -309,7 +309,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
     public function getAppointmentForLocationFromServiceAppointmentLocations(
         array $serviceAppointmentLocationList,
         mixed $locationId
-    ) {
+    ): mixed {
         if (isset($serviceAppointmentLocationList[$locationId])) {
             $appointment = $serviceAppointmentLocationList[$locationId]['appointment'];
             $appointment['responsibility_hint'] = $serviceAppointmentLocationList[$locationId]['responsibility_hint'];
@@ -319,7 +319,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return false;
     }
 
-    public function getAppointmentForService(mixed $location, mixed $service_id)
+    public function getAppointmentForService(mixed $location, mixed $service_id): mixed
     {
         $servicecompare = explode(',', $service_id);
         foreach ($location['services'] as $service) {
@@ -333,7 +333,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return false;
     }
 
-    public function getLocationHintByServiceId(mixed $location, mixed $service_id)
+    public function getLocationHintByServiceId(mixed $location, mixed $service_id): mixed
     {
         if (isset($location['services'])) {
             foreach ($location['services'] as $service) {
@@ -345,7 +345,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return false;
     }
 
-    public function dayIsBookable(mixed $dateList, mixed $day)
+    public function dayIsBookable(mixed $dateList, mixed $day): mixed
     {
         $result = false;
         if (count($dateList)) {

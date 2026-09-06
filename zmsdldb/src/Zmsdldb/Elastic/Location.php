@@ -220,7 +220,7 @@ class Location extends Base
             ->fromLocationResults($resultList);
     }
 
-    protected function fetchGeoJsonLocations(mixed $category, mixed $getAll)
+    protected function fetchGeoJsonLocations(mixed $category, mixed $getAll): mixed
     {
         $query = new \Elastica\Query();
         $query->setSource(['id', 'name', 'address.*', 'geo.*', 'meta.*', 'category.*']);

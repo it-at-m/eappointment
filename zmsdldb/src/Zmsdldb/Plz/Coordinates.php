@@ -16,7 +16,7 @@ class Coordinates
     /**
      * @param Int $plz
      */
-    public function getLatLon($plz)
+    public function getLatLon($plz): mixed
     {
         if (array_key_exists($plz, $this->data)) {
             return $this->data[$plz];
@@ -24,7 +24,7 @@ class Coordinates
         return false;
     }
 
-    public static function zip2LatLon(mixed $plz)
+    public static function zip2LatLon(mixed $plz): mixed
     {
         $coordinates = new self();
         return $coordinates->getLatLon($plz);

@@ -190,7 +190,7 @@ class Authorities extends Base
         return $authoritylist;
     }
 
-    public function toListWithOfficePath(mixed $officepath)
+    public function toListWithOfficePath(mixed $officepath): \BO\Zmsdldb\Collection\Authorities
     {
         $authoritylist = clone $this;
         foreach ($authoritylist as $key => $authority) {

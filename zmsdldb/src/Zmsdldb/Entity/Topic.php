@@ -49,7 +49,7 @@ class Topic extends Base
     }
 
     /** @psalm-api */
-    public function getParentId()
+    public function getParentId(): mixed
     {
         if (count($this['relation']['parents']) > 1) {
             foreach ($this['relation']['parents'] as $item) {

@@ -16,7 +16,7 @@ class Base extends \ArrayObject
      * return an ID for this entity
      *
      */
-    public function getId()
+    public function getId(): mixed
     {
         if (!$this->offsetExists('id')) {
             return false;
@@ -28,7 +28,7 @@ class Base extends \ArrayObject
      * return a name for this entity
      *
      */
-    public function getName()
+    public function getName(): mixed
     {
         return $this['name'];
     }
@@ -38,7 +38,7 @@ class Base extends \ArrayObject
      *
      * @psalm-api
      */
-    public function getPath()
+    public function getPath(): mixed
     {
         if (!$this->offsetExists('path')) {
             return false;
@@ -55,7 +55,7 @@ class Base extends \ArrayObject
     }
 
     /** @psalm-api */
-    public function getLocale()
+    public function getLocale(): mixed
     {
         $meta = $this['meta'];
         if (false === static::hasValidOffset($meta, 'locale')) {
@@ -65,7 +65,7 @@ class Base extends \ArrayObject
     }
 
     /** @psalm-api */
-    public function getLink()
+    public function getLink(): mixed
     {
         if (!$this->offsetExists('link')) {
             return false;
@@ -73,7 +73,7 @@ class Base extends \ArrayObject
         return $this['link'];
     }
 
-    public function getType()
+    public function getType(): mixed
     {
         if (!$this->offsetExists('type')) {
             return false;
@@ -117,7 +117,7 @@ class Base extends \ArrayObject
     /**
      * @param static $array
      */
-    public static function doubleUnterlineToArray(&$array, string $key, mixed $value)
+    public static function doubleUnterlineToArray(&$array, string $key, mixed $value): mixed
     {
         if (is_null($key)) {
             return $array = $value;

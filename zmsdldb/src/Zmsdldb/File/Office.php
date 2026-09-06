@@ -30,13 +30,13 @@ class Office extends Base
         return $itemList;
     }
 
-    public function fetchList()
+    public function fetchList(): \BO\Zmsdldb\Collection\Base
     {
         return $this->getItemList();
     }
 
     /** @psalm-api */
-    public function fetchPath(mixed $itemId)
+    public function fetchPath(mixed $itemId): \BO\Zmsdldb\Entity\Base|false
     {
         return $this->fetchId($itemId);
     }
