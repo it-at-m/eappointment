@@ -95,9 +95,6 @@ class BaseController
 
     public function deleteEntityFromQueue(Mail $entity): bool
     {
-        if (!($entity instanceof Mail)) {
-            return false;
-        }
         try {
             $entity = $this->getHttp()
                 ->readDeleteResult('/mails/' . $entity['id'] . '/')
@@ -132,16 +129,14 @@ class BaseController
         if (! $entity->hasContent()) {
             throw new \BO\Zmsmessaging\Exception\MailWithoutContent();
         }
-        if ($entity instanceof Mail) {
-            $isMail = Validator::value($entity->getRecipient())->isMail()->getValue();
-            if (!$isMail) {
+        $isMail = Validator::value($entity->getRecipient())->isMail()->getValue();
+        if (!$isMail) {
+            throw new \BO\Zmsmessaging\Exception\InvalidMailAddress();
+        }
+        if (\App::$verify_dns_enabled) {
+            $hasDns = Validator::value($entity->getRecipient())->isMail()->hasDNS()->getValue();
+            if (!$hasDns) {
                 throw new \BO\Zmsmessaging\Exception\InvalidMailAddress();
-            }
-            if (\App::$verify_dns_enabled) {
-                $hasDns = Validator::value($entity->getRecipient())->isMail()->hasDNS()->getValue();
-                if (!$hasDns) {
-                    throw new \BO\Zmsmessaging\Exception\InvalidMailAddress();
-                }
             }
         }
     }
