@@ -31,6 +31,7 @@ class Base extends \ArrayObject implements \JsonSerializable
 
     public function __construct(object|array $array = [], int $flags = 0, string $iteratorClass = "ArrayIterator")
     {
+        /** @var class-string<\ArrayIterator> $iteratorClass */
         parent::__construct($array, $flags, $iteratorClass);
     }
 
@@ -172,6 +173,9 @@ class Base extends \ArrayObject implements \JsonSerializable
             } else {
                 $className = $this::ENTITY_CLASS;
                 $entity = new $className($item);
+                if (!$entity instanceof Entity) {
+                    throw new \Exception('Invalid entity ' . get_debug_type($entity) . ' for collection ' . __CLASS__);
+                }
                 $entity->setResolveLevel($this->getResolveLevel());
                 $this->addEntity($entity);
             }

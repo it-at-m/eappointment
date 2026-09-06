@@ -58,6 +58,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
      */
     public function __construct(mixed $input = null, int $flags = \ArrayObject::ARRAY_AS_PROPS, string $iterator_class = "ArrayIterator")
     {
+        /** @var class-string<\ArrayIterator> $iterator_class */
         parent::__construct($this->getDefaults(), $flags, $iterator_class);
         if ($input) {
             $input = $this->getUnflattenedArray($input);

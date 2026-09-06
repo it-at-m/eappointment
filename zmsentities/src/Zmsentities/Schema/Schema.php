@@ -24,6 +24,7 @@ class Schema extends \ArrayObject
     public function __construct(object|array $input = [], int $flags = \ArrayObject::ARRAY_AS_PROPS, string $iterator_class = "ArrayIterator")
     {
         $this->input = $input;
+        /** @var class-string<\ArrayIterator> $iterator_class */
         parent::__construct($input, $flags, $iterator_class);
     }
 
