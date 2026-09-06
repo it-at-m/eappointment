@@ -94,7 +94,7 @@ class SlotList extends Base
                 "$appointment does not fit in $this"
             );
         }
-        if (0 < $takeFollowingSlot && $extendSlotList) {
+        if (0 < $takeFollowingSlot) {
             $slotList = $this->extendList($slotList, $currentSlot, $appointment);
         }
         return $slotList;

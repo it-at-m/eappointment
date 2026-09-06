@@ -365,7 +365,7 @@ class Process extends Schema\Entity
             return true;
         }
         $client = $this->getFirstClient();
-        return $client && isset($client->familyName) && $client->familyName === 'dereferenced';
+        return isset($client->familyName) && $client->familyName === 'dereferenced';
     }
 
     public function getCurrentScope(): Scope

@@ -15,7 +15,7 @@ class AppointmentList extends Base
     {
         foreach ($this as $item) {
             if ($item['date'] == $date) {
-                return $item instanceof Appointment ? $item : new Appointment($item);
+                return $item;
             }
         }
         return false;

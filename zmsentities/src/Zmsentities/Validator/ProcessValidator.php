@@ -68,7 +68,7 @@ class ProcessValidator
                     '/^(?:[a-f0-9]{4}|[a-f0-9]{64})$/i',
                     "Der Absagecode ist nicht korrekt"
                 );
-            } elseif ($isRequiredCallback !== null && $isRequiredCallback()) {
+            } else {
                 $valid->isRequired("Ein Absagecode wird benötigt");
             }
             $this->getCollection()->validatedAction($valid, $setter);

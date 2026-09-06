@@ -250,7 +250,7 @@ class Messaging
     ): string {
         $appointment = $process->getFirstAppointment();
         $parameters = [
-            'date' => $appointment ? $appointment->toDateTime()->format('U') : null,
+            'date' => $appointment->toDateTime()->format('U'),
             'client' => $process->getFirstClient(),
             'process' => $process,
             'config' => $config,
