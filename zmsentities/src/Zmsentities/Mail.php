@@ -191,8 +191,9 @@ class Mail extends Schema\Entity
             'base64' => false
         ));
 
+        $firstAppointment = $mainProcess ? $mainProcess->getAppointments()->getFirst() : null;
         if (
-            $mainProcess && $mainProcess->getAppointments()->getFirst()->hasTime() &&
+            $firstAppointment && $firstAppointment->hasTime() &&
             Messaging::isIcsRequired($config, $mainProcess, $status)
         ) {
             $entity->multipart[] = new Mimepart(array(

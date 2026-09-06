@@ -27,9 +27,11 @@ class Validator
         if (self::$validatorInstance === null) {
             self::$validatorInstance = new OpisValidator();
             $formats = self::$validatorInstance->parser()->getFormatResolver();
-            $formats->registerCallable("array", "sameValues", function (array $data): bool {
-                return count($data) === 2 && $data[0] === $data[1];
-            });
+            if ($formats !== null) {
+                $formats->registerCallable("array", "sameValues", function (array $data): bool {
+                    return count($data) === 2 && $data[0] === $data[1];
+                });
+            }
         }
         $this->validator = self::$validatorInstance;
 
@@ -48,7 +50,11 @@ class Validator
     {
         $schemaDir = realpath(dirname(__FILE__) . '/../../../schema');
         $schemaPath = ($schemaDir !== false ? $schemaDir : '') . '/';
-        $this->validator->resolver()->registerPrefix('schema://', $schemaPath);
+        $resolver = $this->validator->resolver();
+        if ($resolver === null) {
+            return;
+        }
+        $resolver->registerPrefix('schema://', $schemaPath);
         $schemaFiles = glob($schemaPath . '*.json');
 
         // TODO: Implement persistent caching for schema file reads to reduce redundant disk I/O and improve application performance. Not just for each process.
@@ -56,7 +62,7 @@ class Validator
         foreach ($schemaFiles as $schemaFile) {
             $schemaContent = file_get_contents($schemaFile);
             $schemaName = 'schema://' . basename($schemaFile);
-            $this->validator->resolver()->registerRaw($schemaContent, $schemaName);
+            $resolver->registerRaw($schemaContent, $schemaName);
         }
     }
 
