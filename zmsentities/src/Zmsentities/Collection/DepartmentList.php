@@ -11,6 +11,12 @@ class DepartmentList extends Base implements JsonUnindexed
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\Department';
 
+    #[\Override]
+    public function getArrayCopy(): array
+    {
+        return parent::getArrayCopy();
+    }
+
     public function withOutClusterDuplicates(): self
     {
         $departmentList = new self();
