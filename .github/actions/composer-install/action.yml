@@ -1,0 +1,45 @@
+name: Install Composer dependencies
+description: Authenticated, cached, retried composer install (mitigates GitHub zipball 504s)
+
+inputs:
+  working-directory:
+    description: Module directory that contains composer.json / composer.lock
+    required: true
+  github-token:
+    description: GitHub token used as github-oauth for api.github.com dist downloads
+    required: true
+  composer-args:
+    description: Extra arguments passed to composer install
+    required: false
+    default: --no-progress --prefer-dist --optimize-autoloader --no-interaction
+
+runs:
+  using: composite
+  steps:
+    - name: Configure Composer GitHub OAuth
+      if: inputs.github-token != ''
+      shell: bash
+      env:
+        COMPOSER_GITHUB_TOKEN: ${{ inputs.github-token }}
+      run: composer config --global github-oauth.github.com "$COMPOSER_GITHUB_TOKEN"
+
+    - name: Cache Composer packages
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+      with:
+        # Workspace path so the cache works in job containers (host-side actions/cache
+        # cannot see /root/.composer inside the container filesystem).
+        path: ${{ github.workspace }}/.composer-cache/${{ inputs.working-directory }}
+        key: ${{ runner.os }}-composer-${{ inputs.working-directory }}-${{ hashFiles(format('{0}/composer.lock', inputs.working-directory)) }}
+        restore-keys: |
+          ${{ runner.os }}-composer-${{ inputs.working-directory }}-
+
+    - name: Install Composer dependencies
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
+      env:
+        COMPOSER_CACHE_DIR: ${{ github.workspace }}/.composer-cache/${{ inputs.working-directory }}
+        COMPOSER_MAX_PARALLEL_HTTP: "4"
+      with:
+        timeout_minutes: 15
+        max_attempts: 5
+        retry_wait_seconds: 20
+        command: composer install ${{ inputs.composer-args }} --working-dir="${{ inputs.working-directory }}"

@@ -328,7 +328,7 @@ const sidebarLabels = {
     security: "Security",
     license: "License (EUPL)",
     gettingStarted: "Getting Started",
-    ddevAndDevcontainer: "DDEV and Devcontainer",
+    devcontainer: "Devcontainer and Podman",
     quickReset: "Quick reset of the local environment",
     githubCodespaces: "Getting Started with GitHub Codespaces",
     docsGettingStarted: "Getting Started with docs",
@@ -336,7 +336,6 @@ const sidebarLabels = {
     macosLocalConfig: "macOS local configuration",
     podmanDevContainers: "Podman and Dev Containers (6.x)",
     podmanDevContainersLegacy: "Podman and Dev Containers (5.8, legacy)",
-    localHttpsDdev: "Local HTTPS SSL (DDEV)",
     implementUserStory: "How do I implement a user story in ZMS?",
     keycloakLocal: "Local Keycloak Setup",
     codeFormatting: "Code Formatting",
@@ -383,7 +382,7 @@ const sidebarLabels = {
     security: "Sicherheit",
     license: "Lizenz (EUPL)",
     gettingStarted: "Erste Schritte",
-    ddevAndDevcontainer: "DDEV und Devcontainer",
+    devcontainer: "Devcontainer und Podman",
     quickReset: "Schnelles Zurücksetzen der lokalen Umgebung",
     githubCodespaces: "Erste Schritte mit GitHub Codespaces",
     docsGettingStarted: "Erste Schritte mit der Dokumentation",
@@ -391,7 +390,6 @@ const sidebarLabels = {
     macosLocalConfig: "macOS lokale Konfiguration",
     podmanDevContainers: "Podman und Dev Containers (6.x)",
     podmanDevContainersLegacy: "Podman und Dev Containers (5.8, Legacy)",
-    localHttpsDdev: "Lokales HTTPS-SSL (DDEV)",
     implementUserStory: "Wie setze ich eine User Story in ZMS um?",
     keycloakLocal: "Lokale Keycloak-Einrichtung",
     codeFormatting: "Code-Formatierung",
@@ -476,8 +474,8 @@ const buildSidebar = (prefix, lang) => {
           collapsed: false,
           items: [
             {
-              text: t.ddevAndDevcontainer,
-              link: `${prefix}/setup-and-development/getting-started/ddev-and-devcontainer`,
+              text: t.devcontainer,
+              link: `${prefix}/setup-and-development/getting-started/devcontainer`,
             },
             {
               text: t.codeFormatting,
@@ -514,10 +512,6 @@ const buildSidebar = (prefix, lang) => {
                 {
                   text: t.podmanDevContainersLegacy,
                   link: `${prefix}/setup-and-development/getting-started/macos-local-configuration/podman-and-dev-containers-legacy`,
-                },
-                {
-                  text: t.localHttpsDdev,
-                  link: `${prefix}/setup-and-development/getting-started/macos-local-configuration/local-https-ddev`,
                 },
               ],
             },
@@ -820,7 +814,7 @@ export default {
       {
         name: "keywords",
         content:
-          "eAppointment, ZMS, Zeitmanagementsystem, Termin, Munich, München, it-at-m, open source, government, docker, php, vuejs, twig, keycloak, sso, city, municipalities, appointment scheduling, sso authentication, sso login, appointment booking, ddev, government app, appointments manager, eappointments, appointment management system, municipal software, county level",
+          "eAppointment, ZMS, Zeitmanagementsystem, Termin, Munich, München, it-at-m, open source, government, podman, php, vuejs, twig, keycloak, sso, city, municipalities, appointment scheduling, sso authentication, sso login, appointment booking, government app, appointments manager, eappointments, appointment management system, municipal software, county level",
       },
     ],
   ],

@@ -203,7 +203,7 @@ public class CitizenApiSteps {
         Assertions.assertThat(lastAvailableCalendarResponse)
             .as("Request available days first")
             .isNotNull();
-        int[] officeIds = parseOfficeIdsCsv(officeIdsCsv).stream().mapToInt(Integer::intValue).toArray();
+        int[] officeIds = parseOfficeIdsCsv(officeIdsCsv).stream().mapToInt(id -> id.intValue()).toArray();
         Assertions.assertThat(lastAvailableCalendarResponse.hasAppointmentsForAllOffices(officeIds))
             .as(
                 "Expected available-calendar to include appointment buckets for offices %s (shared booking)",
@@ -1040,10 +1040,6 @@ public class CitizenApiSteps {
             }
         }
         return null;
-    }
-
-    private AvailableCalendarResponse fetchAvailableCalendar(int officeId, int serviceId, int serviceCount) {
-        return fetchAvailableCalendar(List.of(officeId), serviceId, serviceCount);
     }
 
     private <T> T parseDataResponse(Response response, Class<T> dataClass) {

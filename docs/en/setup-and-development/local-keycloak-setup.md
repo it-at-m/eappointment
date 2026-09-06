@@ -30,18 +30,10 @@ echo "127.0.0.1 keycloak" | sudo tee -a /etc/hosts
 
 After adding the entry, restart Keycloak/container stack:
 
-### Podman
-
 ```bash
 podman machine stop && \
 podman machine start && \
 devcontainer up --workspace-folder .
-```
-
-### DDEV
-
-```bash
-ddev restart
 ```
 
 Verify:
@@ -74,7 +66,7 @@ After booking while logged in, appointment detail pages keep the session (token 
 
 <img alt="Appointment detail for a booked Reisepass appointment while logged in" src="../../img/citizen_login_2.png" />
 
-After login, API calls use `/buergeransicht/authenticated/api/citizen/…`. The Vite dev proxy and local gateway both need that path (see `zmscitizenview/vite.config.ts` and `.devcontainer` / `.ddev` `local-gateway-application.yml`). Restart `refarch-gateway` and the Vite / citizenview process after pulling these changes.
+After login, API calls use `/buergeransicht/authenticated/api/citizen/…`. The Vite dev proxy and local gateway both need that path (see `zmscitizenview/vite.config.ts` and `.devcontainer/local-gateway-application.yml`). Restart `refarch-gateway` and the Vite / citizenview process after pulling these changes.
 
 The local login shim stores the access token in `localStorage` so `http://localhost:8082/appointment-overview.html`, `http://localhost:8082/appointment-detail.html`, and `http://localhost:8082/appointment-slider.html` stay logged in across tabs on the same origin. Tokens include claim `lhmExtID` (Keycloak username) so `my-appointments` can resolve the user. Re-login (and re-book if needed) after applying migration `10_add-citizen-token-mappers.yml` (includes `lhmExtID`).
 
@@ -85,7 +77,7 @@ The local login shim stores the access token in `localStorage` so `http://localh
 
 Keycloak URL used by the host pages: `http://localhost:8080/auth` (matches the realm issuer in the browser). The `keycloak` hosts entry is still useful for admin/statistic and in-container DNS.
 
-The local API gateway often runs with security disabled, so authenticated citizen API calls may succeed without JWT checks. Turning on gateway JWT validation can reuse `SSO_URL` / `SSO_REALM` / `SSO_CLIENTID` from the ddev / devcontainer `.env.template` files.
+The local API gateway often runs with security disabled, so authenticated citizen API calls may succeed without JWT checks. Turning on gateway JWT validation can reuse `SSO_URL` / `SSO_REALM` / `SSO_CLIENTID` from `.devcontainer/.env.template`.
 
 ## Podman (Linux) note
 

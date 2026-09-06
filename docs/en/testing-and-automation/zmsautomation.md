@@ -168,14 +168,11 @@ For local UI tests (Statistik, Admin), the default SSO user is Keycloak `ataf` (
 
 See also the ATAF handbook: [Standalone Usage (No Jira, Local Keycloak)](https://it-at-m.github.io/agile-test-automation-framework/usage/standalone-without-jira.html).
 
-### Docker Compose services
+### Compose services
 
-Keycloak and the migration sidecar are defined in:
+Keycloak and the migration sidecar are defined in [`.devcontainer/docker-compose.yaml`](https://github.com/it-at-m/eappointment/blob/main/.devcontainer/docker-compose.yaml).
 
-- [`.ddev/docker-compose.keycloak.yaml`](https://github.com/it-at-m/eappointment/blob/main/.ddev/docker-compose.keycloak.yaml) (DDEV)
-- [`.devcontainer/docker-compose.yaml`](https://github.com/it-at-m/eappointment/blob/main/.devcontainer/docker-compose.yaml) (devcontainer / Podman)
-
-Both stacks run:
+The stack runs:
 
 | Service         | Role                                                                                        |
 | --------------- | ------------------------------------------------------------------------------------------- |
