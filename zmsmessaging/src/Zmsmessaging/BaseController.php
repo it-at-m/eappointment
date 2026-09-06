@@ -54,8 +54,8 @@ class BaseController
         }
         // @codeCoverageIgnoreEnd
         $log = new Mimepart(['mime' => 'text/plain']);
-        $log->content = ($entity instanceof Mail) ? $entity->subject : $entity->message;
-        \App::$http->readPostResult('/log/process/' . $entity->process['id'] . '/', $log);
+        $log->content = ($entity instanceof Mail) ? $entity['subject'] : $entity['message'];
+        \App::$http->readPostResult('/log/process/' . $entity['process']['id'] . '/', $log);
         return $mailer;
     }
 
@@ -64,11 +64,11 @@ class BaseController
      */
     protected function removeEntityOlderThanOneHour(Mail $entity)
     {
-        if (3600 < \App::$now->getTimestamp() - $entity->createTimestamp) {
+        if (3600 < \App::$now->getTimestamp() - $entity['createTimestamp']) {
             $this->deleteEntityFromQueue($entity);
             $log = new Mimepart(['mime' => 'text/plain']);
             $log->content = 'Zmsmessaging Failure: Queue entry older than 1 hour has been removed';
-            \App::$http->readPostResult('/log/process/' . $entity->process['id'] . '/', $log, ['error' => 1]);
+            \App::$http->readPostResult('/log/process/' . $entity['process']['id'] . '/', $log, ['error' => 1]);
             \App::$log->warning($log->content);
             return false;
         }
@@ -81,7 +81,7 @@ class BaseController
         }
         try {
             $entity = \App::$http
-                ->readDeleteResult('/mails/' . $entity->id . '/')
+                ->readDeleteResult('/mails/' . $entity['id'] . '/')
                 ->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             throw $exception;

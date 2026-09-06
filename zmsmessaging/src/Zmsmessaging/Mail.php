@@ -148,7 +148,7 @@ class Mail extends BaseController
             $processId = $entity['process']['id'] ?? null;
             $mailer = $this->getValidMailer($entity);
             if (!$mailer) {
-                $this->log("No valid mailer for mail ID: " . $entity->id);
+                $this->log("No valid mailer for mail ID: " . $entity['id']);
                 continue;
             }
 
@@ -156,10 +156,10 @@ class Mail extends BaseController
                 $result = $this->sendMailer($entity, $mailer, $action);
                 if ($result instanceof PHPMailer) {
                     $mailResult = [
-                        'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
-                        'mailId' => $entity->id,
+                        'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity['id'],
+                        'mailId' => $entity['id'],
                         'processId' => $processId,
-                        'createTimestamp' => $entity->createTimestamp,
+                        'createTimestamp' => $entity['createTimestamp'],
                         'recipients' => $result->getAllRecipientAddresses(),
                         'mime' => $result->getMailMIME(),
                         'attachments' => $result->getAttachments(),
@@ -167,30 +167,30 @@ class Mail extends BaseController
                     ];
                     $results[] = $mailResult;
                     $processedMails[] = [
-                        'mailId' => $entity->id,
+                        'mailId' => $entity['id'],
                         'processId' => $processId,
-                        'createTimestamp' => $entity->createTimestamp,
+                        'createTimestamp' => $entity['createTimestamp'],
                     ];
                     \App::$log->info('Mail processed from queue', [
-                        'mailId' => $entity->id,
+                        'mailId' => $entity['id'],
                         'processId' => $processId,
-                        'createTimestamp' => $entity->createTimestamp,
+                        'createTimestamp' => $entity['createTimestamp'],
                     ]);
-                    $successfullySentIds[] = $entity->id;
+                    $successfullySentIds[] = $entity['id'];
                 } else {
                     $errorInfo = $result->ErrorInfo ?? 'Unknown mailer error';
                     $results[] = [
                         'errorInfo' => $errorInfo,
-                        'mailId' => $entity->id,
+                        'mailId' => $entity['id'],
                         'processId' => $processId,
                     ];
                     $this->log('Mail send failed with error: ' . $errorInfo);
                 }
             } catch (\Exception $e) {
-                $this->log("Exception while sending mail ID " . $entity->id . ": " . $e->getMessage());
+                $this->log("Exception while sending mail ID " . $entity['id'] . ": " . $e->getMessage());
                 $results[] = [
                     'errorInfo' => $e->getMessage(),
-                    'mailId' => $entity->id,
+                    'mailId' => $entity['id'],
                     'processId' => $processId,
                 ];
             }
@@ -251,7 +251,7 @@ class Mail extends BaseController
             $log = new Mimepart(['mime' => 'text/plain']);
             $log->content = $message;
             $this->log("Build Mailer Exception log message: " . $message);
-            \App::$http->readPostResult('/log/process/' . $entity->process['id'] . '/', $log, ['error' => 1]);
+            \App::$http->readPostResult('/log/process/' . $entity['process']['id'] . '/', $log, ['error' => 1]);
             return false;
         }
 
@@ -267,7 +267,7 @@ class Mail extends BaseController
     {
         $this->testEntity($entity);
         $encoding = 'base64';
-        foreach ($entity->multipart as $part) {
+        foreach ($entity['multipart'] as $part) {
             $mimepart = new Mimepart($part);
             if ($mimepart->isText()) {
                 $textPart = $mimepart->getContent();
@@ -290,7 +290,7 @@ class Mail extends BaseController
         $mailer->AltBody = (isset($textPart)) ? $textPart : '';
         $mailer->Body = (isset($htmlPart)) ? $htmlPart : '';
         $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
-        $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
+        $mailer->AddAddress($entity->getRecipient(), $entity['client']['familyName']);
 
         if (null !== $entity->getIcsPart()) {
             $mailer->AddStringAttachment(
