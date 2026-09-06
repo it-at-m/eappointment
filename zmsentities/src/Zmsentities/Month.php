@@ -53,7 +53,7 @@ class Month extends Schema\Entity
         \DateTimeInterface $currentDate,
         \BO\Zmsentities\Collection\DayList $dayList
     ): self {
-        $startDow = date('w', mktime(0, 0, 0, $currentDate->format('m'), 1, $currentDate->format('Y')));
+        $startDow = date('w', mktime(0, 0, 0, (int) $currentDate->format('m'), 1, (int) $currentDate->format('Y')));
         $monthDayList = $dayList->withAssociatedDays($currentDate);
         $month = (new self(
             array(
