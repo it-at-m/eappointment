@@ -42,7 +42,7 @@ class Messaging
         $noAttachmentDomains = $config->toProperty()->notifications->noAttachmentDomains->get();
         $noAttachmentDomains = explode(',', (string)$noAttachmentDomains);
         foreach ($noAttachmentDomains as $matching) {
-            if (trim($matching) && strpos($client->email, '@' . trim($matching))) {
+            if (trim($matching) !== '' && strpos($client->email, '@' . trim($matching)) !== false) {
                 return false;
             }
         }

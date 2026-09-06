@@ -49,7 +49,7 @@ class ProcessValidator
         if ($length) {
             $valid->isGreaterThan(100000, "Eine Vorgangsnummer besteht aus mindestens 6 Ziffern");
             $valid->isLowerEqualThan(99999999999, "Eine Vorgangsnummer besteht aus maximal 11 Ziffern");
-        } elseif (!$length && $isRequiredCallback && $isRequiredCallback()) {
+        } elseif (!$length && $isRequiredCallback !== null && $isRequiredCallback()) {
             $valid->isRequired("Eine Vorgangsnummer wird benötigt.");
         }
         $this->getCollection()->validatedAction($valid, $setter);
@@ -61,14 +61,14 @@ class ProcessValidator
         $trimmed = trim((string) $unvalid->getUnvalidated());
         $valid = (new Unvalidated($trimmed, $unvalid->getName()))->isString();
         $length = strlen($trimmed);
-        if ($length || ($isRequiredCallback && $isRequiredCallback())) {
+        if ($length || ($isRequiredCallback !== null && $isRequiredCallback())) {
             if ($length) {
                 $valid
                 ->isMatchOf(
                     '/^(?:[a-f0-9]{4}|[a-f0-9]{64})$/i',
                     "Der Absagecode ist nicht korrekt"
                 );
-            } elseif ($isRequiredCallback && $isRequiredCallback()) {
+            } elseif ($isRequiredCallback !== null && $isRequiredCallback()) {
                 $valid->isRequired("Ein Absagecode wird benötigt");
             }
             $this->getCollection()->validatedAction($valid, $setter);
@@ -87,7 +87,7 @@ class ProcessValidator
                 6,
                 "Für den Standort muss eine gültige E-Mail Adresse eingetragen werden"
             );
-        } elseif (!$length && $isRequiredCallback && $isRequiredCallback()) {
+        } elseif (!$length && $isRequiredCallback !== null && $isRequiredCallback()) {
             $valid->isBiggerThan(
                 6,
                 "Für den Email-Versand muss eine gültige E-Mail Adresse angegeben werden"

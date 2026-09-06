@@ -90,7 +90,7 @@ class Appointment extends Schema\Entity
 
     public function addSlotCount(int|null $slotCount = null): static
     {
-        if ($slotCount) {
+        if ($slotCount !== null && $slotCount !== 0) {
             $this->slotCount = $slotCount;
         } else {
             $this->slotCount += 1;
@@ -133,7 +133,9 @@ class Appointment extends Schema\Entity
     {
         $time = $this->getStartTime();
         $availability = $this->getAvailability();
-        return ($availability->slotTimeInMinutes)
+        return ($availability->slotTimeInMinutes !== null
+            && $availability->slotTimeInMinutes !== ''
+            && (int) $availability->slotTimeInMinutes !== 0)
           ? $time->modify('+' . ($availability->slotTimeInMinutes * $this->slotCount) . ' minutes')
           : $time;
     }

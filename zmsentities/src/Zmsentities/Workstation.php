@@ -173,7 +173,7 @@ class Workstation extends Schema\Entity
             $exception = new Exception\WorkstationProcessMatchScopeFailed();
             $scopeContactName = null;
             $currentScope = $process->getCurrentScope();
-            if ($currentScope && isset($currentScope['contact']['name'])) {
+            if ($currentScope instanceof Scope && isset($currentScope['contact']['name'])) {
                 $scopeContactName = $currentScope['contact']['name'];
             }
 

@@ -164,7 +164,8 @@ class Useraccount extends Schema\Entity
                 continue;
             }
 
-            if (! ($permissions?->$required?->get() ?? false)) {
+            $granted = $permissions?->$required?->get() ?? false;
+            if ($granted === false || $granted === null || $granted === 0 || $granted === '0' || $granted === '') {
                 return false;
             }
         }
@@ -191,7 +192,8 @@ class Useraccount extends Schema\Entity
                 continue;
             }
 
-            if ($permissions?->$required?->get() ?? false) {
+            $granted = $permissions?->$required?->get() ?? false;
+            if ($granted !== false && $granted !== null && $granted !== 0 && $granted !== '0' && $granted !== '') {
                 return true;
             }
         }
@@ -210,7 +212,14 @@ class Useraccount extends Schema\Entity
 
         $permissions = $this['permissions'] ?? [];
         $requiredPermission = $permissions[$permission] ?? false;
-        if (!is_array($permissions) || !$requiredPermission || '0' === $requiredPermission) {
+        if (
+            !is_array($permissions)
+            || $requiredPermission === false
+            || $requiredPermission === null
+            || $requiredPermission === 0
+            || $requiredPermission === '0'
+            || $requiredPermission === ''
+        ) {
             return false;
         }
 
