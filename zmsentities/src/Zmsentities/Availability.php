@@ -538,7 +538,7 @@ class Availability extends Schema\Entity
         });
         $foundWeekdays = [];
 
-        $currentDate = clone $startDate;
+        $currentDate = Helper\DateTime::create($startDate);
         while ($currentDate <= $endDate) {
             $weekDayName = self::$weekdayNameList[$currentDate->format('w')];
             if (in_array($weekDayName, $selectedWeekdays)) {
