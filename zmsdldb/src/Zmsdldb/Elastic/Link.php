@@ -17,7 +17,7 @@ class Link extends Base
      * @return Collection
      */
     #[\Override]
-    public function readSearchResultList($query)
+    public function readSearchResultList(mixed $query)
     {
         $boolquery = Helper::boolFilteredQuery();
         $searchquery = new \Elastica\Query\QueryString();

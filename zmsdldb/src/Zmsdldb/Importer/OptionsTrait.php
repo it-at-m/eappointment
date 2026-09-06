@@ -6,7 +6,7 @@ trait OptionsTrait
 {
     protected $options = 0;
 
-    protected function checkOptionFlag($optionFlag = 0)
+    protected function checkOptionFlag(int $optionFlag = 0)
     {
         return $this->options & $optionFlag;
     }

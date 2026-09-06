@@ -56,7 +56,7 @@ abstract class PDOAccess extends AbstractAccess
     }
 
     #[\Override]
-    public function __call($method, $args = [])
+    public function __call(mixed $method, array $args = [])
     {
         try {
             return parent::__call($method, $args);
@@ -104,7 +104,7 @@ abstract class PDOAccess extends AbstractAccess
      * parameters see https://www.php.net/manual/de/pdo.query.php
      */
 
-    public function query(...$args)
+    public function query(mixed ...$args)
     {
         try {
             return $this->pdo->query(...$args);

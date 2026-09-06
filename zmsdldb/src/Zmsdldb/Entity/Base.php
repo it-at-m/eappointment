@@ -46,7 +46,7 @@ class Base extends \ArrayObject
         return $this['path'];
     }
 
-    public static function hasValidOffset($item, string $index): bool
+    public static function hasValidOffset(mixed $item, string $index): bool
     {
         return (
             (is_object($item) && $item->offsetExists($index)) ||
@@ -81,7 +81,7 @@ class Base extends \ArrayObject
         return $this['type'];
     }
 
-    protected static function subcount($countable): int|null
+    protected static function subcount(mixed $countable): int|null
     {
         if (is_array($countable) || $countable instanceof \Countable) {
             return count($countable);
@@ -89,7 +89,7 @@ class Base extends \ArrayObject
         return null;
     }
 
-    public function __set($name, $value)
+    public function __set(string $name, mixed $value)
     {
         $this->offsetSet($name, $value);
     }
@@ -117,7 +117,7 @@ class Base extends \ArrayObject
     /**
      * @param static $array
      */
-    public static function doubleUnterlineToArray(&$array, string $key, $value)
+    public static function doubleUnterlineToArray(&$array, string $key, mixed $value)
     {
         if (is_null($key)) {
             return $array = $value;

@@ -41,7 +41,7 @@ class Authorities extends Base
         return $this;
     }
 
-    public function addAuthority($authority_id, $name): static
+    public function addAuthority(mixed $authority_id, mixed $name): static
     {
         if (! $this->hasAuthority($authority_id)) {
             $authority = \BO\Zmsdldb\Entity\Authority::create($name);
@@ -50,7 +50,7 @@ class Authorities extends Base
         return $this;
     }
 
-    public function hasAuthority($authority_id): bool
+    public function hasAuthority(mixed $authority_id): bool
     {
         return $this->offsetExists($authority_id);
     }
@@ -58,7 +58,7 @@ class Authorities extends Base
     /**
      * @psalm-api
      */
-    public function readByExtendedService($service): static
+    public function readByExtendedService(mixed $service): static
     {
         foreach ($service['authorities'] as $authority) {
             if (! $this->hasAuthority($authority['id'])) {
@@ -190,7 +190,7 @@ class Authorities extends Base
         return $authoritylist;
     }
 
-    public function toListWithOfficePath($officepath)
+    public function toListWithOfficePath(mixed $officepath)
     {
         $authoritylist = clone $this;
         foreach ($authoritylist as $key => $authority) {
@@ -206,7 +206,7 @@ class Authorities extends Base
      * @psalm-api
      */
 
-    public function toListWithAssociatedLocations($locationlist)
+    public function toListWithAssociatedLocations(mixed $locationlist)
     {
         $authoritylist = $this->removeLocations();
         foreach ($locationlist as $location) {

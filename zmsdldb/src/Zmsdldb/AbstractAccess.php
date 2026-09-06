@@ -51,7 +51,7 @@ class AbstractAccess
     /**
      * @psalm-api
      */
-    public function addAccessInstanceLocale($locale = 'de'): void
+    public function addAccessInstanceLocale(string $locale = 'de'): void
     {
         if (!isset($this->accessInstance[$locale])) {
             $this->accessInstance[$locale] = static::$accessInstanceTypes;
@@ -77,7 +77,7 @@ class AbstractAccess
      *
      * @return Mixed
      */
-    public function __call($functionName, $functionArguments)
+    public function __call(string $functionName, array $functionArguments)
     {
         if (self::$showDeprecated) {
             trigger_error("Deprecated access function: $functionName");
@@ -123,7 +123,7 @@ class AbstractAccess
      * @return string InstanceName
      *
      */
-    protected function getInstanceOnName($name, int $position = 0)
+    protected function getInstanceOnName(mixed $name, int $position = 0)
     {
         foreach (array_keys($this->getInstanceCompatibilities()) as $instanceName) {
             if ($position === strpos($name, $instanceName)) {
@@ -133,7 +133,7 @@ class AbstractAccess
         return null;
     }
 
-    protected function from(string $instanceName, $locale = 'de'): File\Base
+    protected function from(string $instanceName, string $locale = 'de'): File\Base
     {
         if (array_key_exists($instanceName, $this->accessInstance[$locale])) {
             $instance = $this->accessInstance[$locale][$instanceName];
@@ -154,7 +154,7 @@ class AbstractAccess
         throw new Exception("Locale for accessing $instanceName does not exists");
     }
 
-    public function fromAuthority($locale = 'de')
+    public function fromAuthority(string $locale = 'de')
     {
         return $this->from('Authority', $locale);
     }
@@ -165,12 +165,12 @@ class AbstractAccess
     }
 
     /** @psalm-api */
-    public function fromLink($locale = 'de')
+    public function fromLink(string $locale = 'de')
     {
         return $this->from('Link', $locale);
     }
 
-    public function fromLocation($locale = 'de')
+    public function fromLocation(string $locale = 'de')
     {
         return $this->from('Location', $locale);
     }
@@ -180,7 +180,7 @@ class AbstractAccess
         return $this->from('Office');
     }
 
-    public function fromService($locale = 'de')
+    public function fromService(string $locale = 'de')
     {
         return $this->from('Service', $locale);
     }
@@ -190,7 +190,7 @@ class AbstractAccess
         return $this->from('Setting');
     }
 
-    public function fromTopic($locale = 'de')
+    public function fromTopic(string $locale = 'de')
     {
         return $this->from('Topic', $locale);
     }

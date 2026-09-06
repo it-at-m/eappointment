@@ -19,7 +19,7 @@ class Service extends Base
      * @return Collection
      */
     #[\Override]
-    protected function parseData($data)
+    protected function parseData(mixed $data)
     {
         $itemList = new Collection();
         foreach ($data['data'] as $item) {
@@ -37,7 +37,7 @@ class Service extends Base
      * @return Collection
      * @psalm-api
      */
-    public function searchAll($querystring, $service_csv = false, $location_csv = false)
+    public function searchAll(mixed $querystring, bool $service_csv = false, bool $location_csv = false)
     {
         $serviceList = $this->fetchList($location_csv);
         if ($querystring) {
@@ -75,7 +75,7 @@ class Service extends Base
      * @return Collection
      * @psalm-api
      */
-    public function fetchListRelated($service_id)
+    public function fetchListRelated(mixed $service_id)
     {
         $service = $this->fetchId($service_id);
         $serviceList = $this->getItemList();
@@ -97,7 +97,7 @@ class Service extends Base
      *
      * @return Collection
      */
-    public function fetchCombinations($service_csv)
+    public function fetchCombinations(mixed $service_csv)
     {
         return $this->fetchList($this->fetchLocationCsv($service_csv));
     }
@@ -106,7 +106,7 @@ class Service extends Base
      *
      * @return string
      */
-    protected function fetchLocationCsv($service_csv)
+    protected function fetchLocationCsv(mixed $service_csv)
     {
         $locationlist = $this->access()
             ->fromLocation()
@@ -172,7 +172,7 @@ class Service extends Base
      * @return Collection
      * @psalm-api
      */
-    public function readSearchResultList($query, $service_csv = '')
+    public function readSearchResultList(mixed $query, string $service_csv = '')
     {
         $servicelist = $this->fetchCombinations($service_csv);
         $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use ($query) {

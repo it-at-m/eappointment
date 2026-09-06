@@ -18,11 +18,11 @@ class FileAccess extends AbstractAccess
      * @return self
      */
     public function __construct(
-        $locationJson = null,
-        $serviceJson = null,
-        $topicsJson = null,
-        $authoritiesJson = null,
-        $settingsJson = null
+        mixed $locationJson = null,
+        mixed $serviceJson = null,
+        mixed $topicsJson = null,
+        mixed $authoritiesJson = null,
+        mixed $settingsJson = null
     ) {
         if (null !== $locationJson) {
             $this->loadLocations($locationJson);
@@ -67,7 +67,7 @@ class FileAccess extends AbstractAccess
     /**
      * @psalm-api
      */
-    public function loadLocationsFromPathByLocale($path, $locale): void
+    public function loadLocationsFromPathByLocale(mixed $path, mixed $locale): void
     {
         $this->loadLocations($path . DIRECTORY_SEPARATOR . 'locations_' . $locale . '.json', $locale);
     }
@@ -75,7 +75,7 @@ class FileAccess extends AbstractAccess
     /**
      * @psalm-api
      */
-    public function loadServicesFromPathByLocale($path, $locale): void
+    public function loadServicesFromPathByLocale(mixed $path, mixed $locale): void
     {
         $this->loadServices($path . DIRECTORY_SEPARATOR . 'services_' . $locale . '.json', $locale);
     }
@@ -83,7 +83,7 @@ class FileAccess extends AbstractAccess
     /**
      * @psalm-api
      */
-    public function loadTopicsFromPathByLocale($path, $locale): void
+    public function loadTopicsFromPathByLocale(mixed $path, mixed $locale): void
     {
         $this->loadTopics($path . DIRECTORY_SEPARATOR . 'topic_' . $locale . '.json', $locale);
     }
@@ -91,7 +91,7 @@ class FileAccess extends AbstractAccess
     /**
      * @psalm-api
      */
-    public function loadAuthoritiesFromPathByLocale($path, $locale): void
+    public function loadAuthoritiesFromPathByLocale(mixed $path, mixed $locale): void
     {
         $this->loadAuthorities($path . DIRECTORY_SEPARATOR . 'authority_' . $locale . '.json', $locale);
     }
@@ -99,7 +99,7 @@ class FileAccess extends AbstractAccess
     /**
      * @psalm-api
      */
-    public function loadSettingsFromPath($path): void
+    public function loadSettingsFromPath(mixed $path): void
     {
         $this->loadSettings($path . DIRECTORY_SEPARATOR . 'settings.json');
     }
@@ -170,7 +170,7 @@ class FileAccess extends AbstractAccess
      * @todo refactor: returns services, not topics.
      * @psalm-api
      */
-    public function fetchTopicServicesList($topic_path)
+    public function fetchTopicServicesList(mixed $topic_path)
     {
         trigger_error("Deprecated function fetchTopicServicesList, use fromService()->fetchTopic()");
         return $this->fromService()->fetchTopicPath($topic_path);
@@ -183,7 +183,7 @@ class FileAccess extends AbstractAccess
      * @return \BO\Zmsdldb\Collection\Authorities
      * @psalm-api
      */
-    public function fetchLocationListByOffice($officepath = false)
+    public function fetchLocationListByOffice(bool $officepath = false)
     {
         trigger_error("Deprecated function fetchLocationListByOffice, use fromAuthority()->fetchOffice()");
         return $this->fromAuthority()->fetchOffice($officepath);

@@ -22,7 +22,7 @@ class Authority extends Base
      * @return Collection
      */
     #[\Override]
-    public function fetchList($servicelist = []): Collection
+    public function fetchList(array $servicelist = []): Collection
     {
         try {
             $authorityList = new Collection();
@@ -145,7 +145,7 @@ class Authority extends Base
      * @return Collection
      */
     #[\Override]
-    public function readListByOfficePath($officepath): Collection
+    public function readListByOfficePath(mixed $officepath): Collection
     {
         $authorityList = new Collection();
 

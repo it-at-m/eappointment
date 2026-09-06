@@ -26,7 +26,7 @@ class Base extends \ArrayObject
     /**
      * @psalm-api
      */
-    public function sortWithCollator($field = 'name', $locale = 'de'): static
+    public function sortWithCollator(string $field = 'name', string $locale = 'de'): static
     {
         $collator = collator_create($locale);
         $collator->setStrength(\Collator::QUATERNARY);

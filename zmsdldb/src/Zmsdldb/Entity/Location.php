@@ -16,7 +16,7 @@ class Location extends Base
     /**
      * @return Bool
      */
-    public function containsService($service_csv)
+    public function containsService(mixed $service_csv)
     {
         $location = $this->getArrayCopy();
         $servicecompare = explode(',', $service_csv);
@@ -45,7 +45,7 @@ class Location extends Base
      * @return FALSE or Array
      * @psalm-api
      */
-    public function getServiceInfo($service_id)
+    public function getServiceInfo(mixed $service_id)
     {
         foreach ($this['services'] as $service) {
             if ($service['service'] == $service_id) {
@@ -112,7 +112,7 @@ class Location extends Base
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @psalm-api
      */
-    public function getAppointmentForService($service_id, $external = false)
+    public function getAppointmentForService(mixed $service_id, bool $external = false)
     {
         $serviceList = $this->getServiceInfoList($service_id);
 

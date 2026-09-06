@@ -19,7 +19,7 @@ class Topic extends Base
      * @return Collection
      */
     #[\Override]
-    protected function parseData($data)
+    protected function parseData(mixed $data)
     {
         $itemList = new Collection();
         foreach ($data['data'] as $item) {
@@ -46,7 +46,7 @@ class Topic extends Base
      * @return Entity|false
      * @psalm-api
      */
-    public function fetchPath($topic_path)
+    public function fetchPath(mixed $topic_path)
     {
         $topiclist = $this->fetchList();
         foreach ($topiclist as $topic) {
@@ -61,7 +61,7 @@ class Topic extends Base
      * @return Entity
      * @psalm-api
      */
-    public function readSearchResultList($querystring)
+    public function readSearchResultList(mixed $querystring)
     {
         $topic = new Entity();
         $topic['relation']['locations'] = $this->access()->fromLocation()->readSearchResultList($querystring);

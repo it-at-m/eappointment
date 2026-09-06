@@ -21,7 +21,7 @@ class Authority extends Base
      * @return Collection
      */
     #[\Override]
-    public function fetchList($servicelist = false)
+    public function fetchList(bool $servicelist = false)
     {
         $boolquery = Helper::boolFilteredQuery();
         $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
@@ -49,7 +49,7 @@ class Authority extends Base
      * @return Collection
      */
     #[\Override]
-    public function fromLocationResults($resultList)
+    public function fromLocationResults(mixed $resultList)
     {
         $authorityList = new Collection();
         foreach ($resultList as $result) {

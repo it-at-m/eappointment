@@ -24,7 +24,7 @@ class Coordinates
         return false;
     }
 
-    public static function zip2LatLon($plz)
+    public static function zip2LatLon(mixed $plz)
     {
         $coordinates = new self();
         return $coordinates->getLatLon($plz);
