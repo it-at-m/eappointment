@@ -38,11 +38,10 @@ class Location extends Base
      * @return Collection
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function fetchList(string|false $service_csv = false, bool $mixLanguages = false)
+    public function fetchList(bool|string $service_csv = false, bool $mixLanguages = false)
     {
         $locationlist = $this->getItemList();
-        /** @psalm-suppress RiskyTruthyFalsyComparison */
-        if ($service_csv) {
+        if (is_string($service_csv) && $service_csv !== '') {
             $locationlist = new Collection(array_filter((array) $locationlist, function ($item) use ($service_csv) {
                 $location = new Entity($item);
                 return $location->containsService($service_csv);
