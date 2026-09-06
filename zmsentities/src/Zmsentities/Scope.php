@@ -256,7 +256,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         $workstationCount = null;
         if ($this->getStatus('queue', 'workstationCount') > 0) {
             $workstationCount = $this->getStatus('queue', 'workstationCount');
-        } elseif (! $workstationCount && $this->getStatus('queue', 'ghostWorkstationCount') > 0) {
+        } elseif ($this->getStatus('queue', 'ghostWorkstationCount') > 0) {
             $workstationCount = $this->getStatus('queue', 'ghostWorkstationCount');
         }
         return $workstationCount;

@@ -379,9 +379,7 @@ class Exchange extends Schema\Entity
             }
 
             foreach ($list as $key => $row) {
-                if ($row instanceof Exchange) {
-                    $list[$key] = $row->getGroupedHashSet($fields, $hashfields);
-                }
+                $list[$key] = $row->getGroupedHashSet($fields, $hashfields);
             }
         } else {
             return $this->getHashData($hashfields, true);

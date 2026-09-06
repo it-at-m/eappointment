@@ -63,7 +63,7 @@ class Useraccount extends Schema\Entity
         $hasDepartments = false;
         if (is_array($mergeData) || $mergeData instanceof \ArrayAccess) {
             $hasDepartments = isset($mergeData['departments']);
-        } elseif (is_object($mergeData)) {
+        } else {
             $hasDepartments = isset($mergeData->departments);
         }
         if ($hasDepartments && !($this['departments'] ?? null) instanceof Collection\DepartmentList) {
