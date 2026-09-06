@@ -204,7 +204,7 @@ class Munich
                 throw new \RuntimeException(
                     'Export JSON parse failed (' . $e->getMessage() . '). '
                     . 'Often means the HTTP response was not JSON (e.g. block page or missing HTTPS_PROXY in cron). '
-                    . 'Body preview: ' . $snippet,
+                    . 'Body preview: ' . (string) $snippet,
                     0,
                     $e
                 );
