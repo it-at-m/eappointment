@@ -127,7 +127,10 @@ class Session extends Schema\Entity
 
     public function removeLastStep(): static
     {
-        unset($this->content['human']['step'][$this->getLastStep()]);
+        $lastStep = $this->getLastStep();
+        if ($lastStep !== null && $lastStep !== false) {
+            unset($this->content['human']['step'][$lastStep]);
+        }
         return $this;
     }
 
