@@ -268,6 +268,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         /** @psalm-suppress UnsafeGenericInstantiation */
         $list = new static();
         foreach ($this as $key => $item) {
+            /** @psalm-suppress TooManyArguments */
             $list[$key] = $item->withLessData($keepArray);
         }
         return $list;
