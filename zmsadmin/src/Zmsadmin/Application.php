@@ -51,7 +51,7 @@ class Application extends \BO\Slim\Application
 
     const SESSION_DURATION = ZMS_ADMIN_SESSION_DURATION;
 
-    public static $includeUrl = '/terminvereinbarung/admin';
+    public static ?string $includeUrl = '/terminvereinbarung/admin';
 
     /**
      * allow cluster wide process calls
@@ -63,7 +63,7 @@ class Application extends \BO\Slim\Application
      * image preferences
      */
 
-    public static $isImageAllowed = false;
+    public static bool $isImageAllowed = false;
 
     /**
      * language preferences
@@ -71,7 +71,7 @@ class Application extends \BO\Slim\Application
     const bool MULTILANGUAGE = true;
 
     public static $locale = 'de';
-    public static $supportedLanguages = array(
+    public static array $supportedLanguages = array(
          // Default language
          'de' => array(
              'name'    => 'Deutsch',
@@ -93,7 +93,7 @@ class Application extends \BO\Slim\Application
     /**
      * signature key for url signature to save query paramter with hash
      */
-    public static $urlSignatureSecret = ZMS_CONFIG_SECURE_TOKEN;
+    public static string $urlSignatureSecret = ZMS_CONFIG_SECURE_TOKEN;
 
     /**
      * -----------------------------------------------------------------------
