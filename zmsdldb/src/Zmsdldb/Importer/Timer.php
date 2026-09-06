@@ -9,7 +9,7 @@ class Timer
     protected float $start;
     protected float|null $pause = null;
     protected float|null $stop = null;
-    protected mixed $elapsed;# = 0;
+    protected float $elapsed = 0.0;
 
     public function __construct()
     {
