@@ -47,7 +47,7 @@ class SchemaValidation extends \Exception
 
             $this->message .= ($this->message ? " | " : "")
                 . '[property ' . $pointer . '] '
-                . json_encode($this->data[$pointer]['messages'], JSON_UNESCAPED_SLASHES);
+                . (json_encode($this->data[$pointer]['messages'], JSON_UNESCAPED_SLASHES) ?: '');
         }
         return $this;
     }

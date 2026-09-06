@@ -46,7 +46,8 @@ class Validator
 
     private function loadSchemas(): void
     {
-        $schemaPath = realpath(dirname(__FILE__) . '/../../../schema') . '/';
+        $schemaDir = realpath(dirname(__FILE__) . '/../../../schema');
+        $schemaPath = ($schemaDir !== false ? $schemaDir : '') . '/';
         $this->validator->resolver()->registerPrefix('schema://', $schemaPath);
         $schemaFiles = glob($schemaPath . '*.json');
 
