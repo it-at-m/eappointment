@@ -60,7 +60,7 @@ class Topic extends Base
     }
 
     /**
-     * @return Entity
+     * @return Entity|Collection
      * @psalm-api
      */
     public function readSearchResultList(mixed $querystring)
