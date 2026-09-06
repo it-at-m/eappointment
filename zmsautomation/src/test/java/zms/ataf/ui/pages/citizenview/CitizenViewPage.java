@@ -503,7 +503,8 @@ public class CitizenViewPage extends BasePage {
      */
     public void assertTimeslotsAbsentForProviders(int... officeIds) {
         CONTEXT.set();
-        Assert.assertTrue(officeIds != null && officeIds.length > 0, "officeIds required");
+        Objects.requireNonNull(officeIds, "officeIds required");
+        Assert.assertTrue(officeIds.length > 0, "officeIds required");
         for (int officeId : officeIds) {
             Assert.assertFalse(
                     deepTimeslotPresentForProvider(officeId),
@@ -519,7 +520,8 @@ public class CitizenViewPage extends BasePage {
      */
     public void assertTimeslotsPresentForProviders(int... officeIds) {
         CONTEXT.set();
-        Assert.assertTrue(officeIds != null && officeIds.length > 0, "officeIds required");
+        Objects.requireNonNull(officeIds, "officeIds required");
+        Assert.assertTrue(officeIds.length > 0, "officeIds required");
         Set<Integer> remaining = new HashSet<>();
         for (int officeId : officeIds) {
             remaining.add(officeId);
