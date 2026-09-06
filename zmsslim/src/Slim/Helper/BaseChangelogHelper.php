@@ -22,7 +22,7 @@ abstract class BaseChangelogHelper
                     return '<' . $matches[1] . '>' . htmlspecialchars(trim($matches[2]), ENT_QUOTES, 'UTF-8') . ' <small>(' . htmlspecialchars($matches[3], ENT_QUOTES, 'UTF-8') . ')</small></' . $matches[1] . '>';
                 },
                 $unsafeHtml
-            );
+            ) ?? '';
             $purifier = new HTMLPurifier(HTMLPurifier_Config::createDefault());
             $safeHtml = $purifier->purify($unsafeHtml);
             return $safeHtml;
@@ -40,6 +40,10 @@ abstract class BaseChangelogHelper
         if (!file_exists($localFile)) {
             throw new \Exception('Local changelog file not found: ' . $localFile);
         }
-        return file_get_contents($localFile);
+        $contents = file_get_contents($localFile);
+        if ($contents === false) {
+            throw new \Exception('Local changelog file not found: ' . $localFile);
+        }
+        return $contents;
     }
 }

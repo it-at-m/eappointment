@@ -106,9 +106,9 @@ class Bootstrap
         string $timezone = App::TIMEZONE
     ): void {
         ini_set('default_charset', $charset);
-        date_default_timezone_set($timezone);
+        date_default_timezone_set($timezone !== '' ? $timezone : 'Europe/Berlin');
         mb_internal_encoding($charset);
-        App::$now = (! App::$now) ? new \DateTimeImmutable() : App::$now;
+        App::$now = ($now = App::$now) instanceof \DateTimeInterface ? $now : new \DateTimeImmutable();
     }
 
     protected static array $debuglevels = array(
@@ -122,7 +122,7 @@ class Bootstrap
         'EMERGENCY' => Logger::EMERGENCY,
     );
 
-    protected function parseDebugLevel(string $level)
+    protected function parseDebugLevel(string $level): int
     {
         return isset(static::$debuglevels[$level]) ? static::$debuglevels[$level] : static::$debuglevels['DEBUG'];
     }
@@ -153,7 +153,7 @@ class Bootstrap
             return false;
         }
 
-        return !in_array(strtolower((string) $value), ['0', 'false', 'off', 'no'], true);
+        return !in_array(strtolower($value), ['0', 'false', 'off', 'no'], true);
     }
 
     /**
@@ -169,7 +169,7 @@ class Bootstrap
             return '';
         }
 
-        return (string) $name;
+        return $name;
     }
 
     protected function configureLogger(string $level, string $identifier): void
@@ -247,7 +247,7 @@ class Bootstrap
     public static function getTwigView(): Twig
     {
         $customTemplatesPath = 'custom_templates/';
-        $templatePaths = (is_array(App::TEMPLATE_PATH)) ? App::TEMPLATE_PATH : [App::APP_PATH  . App::TEMPLATE_PATH];
+        $templatePaths = [App::APP_PATH . App::TEMPLATE_PATH];
 
         $envCustomTemplatesPath = getenv('ZMS_CUSTOM_TEMPLATES_PATH');
         if (
@@ -277,12 +277,14 @@ class Bootstrap
     public static function readCacheDir(): string|false
     {
         $path = false;
-        if (App::TWIG_CACHE) {
-            $path = App::APP_PATH . App::TWIG_CACHE;
+        $cacheDir = App::TWIG_CACHE;
+        /** @psalm-suppress TypeDoesNotContainType Module App subclasses may set TWIG_CACHE to a path string. */
+        if (is_string($cacheDir) && $cacheDir !== '') {
+            $path = App::APP_PATH . $cacheDir;
             $userinfo = posix_getpwuid(posix_getuid());
-            $user = $userinfo['name'];
+            $user = (is_array($userinfo) && isset($userinfo['name'])) ? $userinfo['name'] : 'user';
             $githead = Git::readCurrentHash();
-            $path .= ($githead) ? '/' . $user . $githead . '/' : '/' . $user . '/';
+            $path .= (is_string($githead) && $githead !== '') ? '/' . $user . $githead . '/' : '/' . $user . '/';
             if (!is_dir($path)) {
                 mkdir($path);
                 chmod($path, 0777);
@@ -293,22 +295,36 @@ class Bootstrap
 
     public static function addTwigExtension(\Twig\Extension\ExtensionInterface $extension): void
     {
+        $container = App::$slim->getContainer();
+        if (!$container instanceof Container) {
+            throw new \RuntimeException('Slim container is not initialized');
+        }
         /** @var Twig $twig */
-        $twig = App::$slim->getContainer()->get('view');
+        $twig = $container->get('view');
         $twig->addExtension($extension);
     }
 
     public static function addTwigFilter(\Twig\TwigFilter $filter): void
     {
-        $twig = App::$slim->getContainer()->get('view');
+        $container = App::$slim->getContainer();
+        if (!$container instanceof Container) {
+            throw new \RuntimeException('Slim container is not initialized');
+        }
+        $twig = $container->get('view');
         $twig->getEnvironment()->addFilter($filter);
     }
 
     public static function addTwigTemplateDirectory(string $namespace, string $path): void
     {
-        $twig = App::$slim->getContainer()->get('view');
+        $container = App::$slim->getContainer();
+        if (!$container instanceof Container) {
+            throw new \RuntimeException('Slim container is not initialized');
+        }
+        $twig = $container->get('view');
         $loader = $twig->getLoader();
-        $loader->addPath($path, $namespace);
+        if ($loader instanceof FilesystemLoader) {
+            $loader->addPath($path, $namespace);
+        }
     }
 
     /**
@@ -317,11 +333,17 @@ class Bootstrap
     public static function loadRouting(string $filename): void
     {
         $container = App::$slim->getContainer();
+        if (!$container instanceof Container) {
+            throw new \RuntimeException('Slim container is not initialized');
+        }
         $cacheFile = static::readCacheDir();
         if (is_string($cacheFile) && $cacheFile !== '' && $cacheFile !== '0') {
             $cacheFile = $cacheFile . '/routing.cache';
             try {
-                $container['router']->setCacheFile($cacheFile);
+                $router = $container->get('router');
+                if (is_object($router) && method_exists($router, 'setCacheFile')) {
+                    $router->setCacheFile($cacheFile);
+                }
             } catch (\Exception $exception) {
                 App::$log->warning('Could not write router cache file', [
                     'cacheFile' => $cacheFile,
@@ -330,6 +352,7 @@ class Bootstrap
                 throw $exception;
             }
         }
+        /** @psalm-suppress UnresolvableInclude Routing files are supplied by consuming apps. */
         require($filename);
     }
 

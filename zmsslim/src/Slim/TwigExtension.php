@@ -66,7 +66,7 @@ class TwigExtension extends AbstractExtension
 
     public static function isImageAllowed(): bool
     {
-        return (isset(\App::$isImageAllowed)) ? \App::$isImageAllowed : true;
+        return \App::$isImageAllowed;
     }
 
     public function getLanguageDescriptor(string $locale = 'de'): ?string
@@ -254,7 +254,7 @@ class TwigExtension extends AbstractExtension
         if (is_array($list)) {
             uasort($list, function ($itemA, $itemB) use ($collator, $property) {
                 $compared = collator_compare($collator, $itemA[$property], $itemB[$property]);
-                return (int) $compared;
+                return $compared;
             });
         } elseif (is_object($list) && method_exists($list, 'sortWithCollator')) {
             $list = $list->sortWithCollator($property, $locale);
