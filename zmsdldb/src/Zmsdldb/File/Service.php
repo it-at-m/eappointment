@@ -51,11 +51,11 @@ class Service extends Base
             }));
         }
         $serviceList = $serviceList->sortByName();
-        /** @var Collection $serviceList */
-        /** @psalm-suppress RiskyTruthyFalsyComparison */
-        return is_string($location_csv)
-            ? $serviceList->containsLocation($location_csv)
-            : $serviceList;
+        if (!is_string($location_csv)) {
+            return $serviceList;
+        }
+        $filtered = new Collection($serviceList->getArrayCopy());
+        return $filtered->containsLocation($location_csv);
     }
 
     /**
@@ -67,8 +67,7 @@ class Service extends Base
     {
         #echo '<pre>' . print_r($this,1) . '</pre>';exit;
         $servicelist = $this->getItemList();
-        /** @psalm-suppress RiskyTruthyFalsyComparison */
-        if ($location_csv) {
+        if (is_string($location_csv) && $location_csv !== '') {
             $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use ($location_csv) {
                 $service = new Entity($item);
                 return $service->containsLocation($location_csv);
