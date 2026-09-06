@@ -318,7 +318,7 @@ class Base extends \ArrayObject implements \JsonSerializable
     }
 
     /**
-     * @param Int $resolveLevel
+     * @param int|null $resolveLevel
      * @return self
      */
     public function setResolveLevel($resolveLevel)
