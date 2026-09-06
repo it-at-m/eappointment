@@ -95,7 +95,7 @@ abstract class Base extends TestCase
         return $this->apiCalls;
     }
 
-    public function setApiCalls($apiCalls): void
+    public function setApiCalls(mixed $apiCalls): void
     {
         $this->apiCalls = $apiCalls;
         \App::$http = $this->getApiMockup();

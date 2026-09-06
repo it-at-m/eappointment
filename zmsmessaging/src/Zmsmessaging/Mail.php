@@ -18,7 +18,7 @@ class Mail extends BaseController
     protected $messagesQueue = null;
     protected $startTime;
 
-    public function __construct($verbose = false, $maxRunTime = 50)
+    public function __construct(mixed $verbose = false, mixed $maxRunTime = 50)
     {
         parent::__construct($verbose, $maxRunTime);
         $this->log("Read Mail QueueList start with limit " . \App::$mails_per_minute . " - " . \App::$now->format('c'));
@@ -38,7 +38,7 @@ class Mail extends BaseController
      * @return (mixed|string[])[]
      *
      */
-    public function initQueueTransmission($action = false): array
+    public function initQueueTransmission(mixed $action = false): array
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
@@ -119,7 +119,7 @@ class Mail extends BaseController
      * @return ((array|mixed|null|string)[]|string)[]
      *
      */
-    public function sendQueueItems($action, array $itemIds): array
+    public function sendQueueItems(mixed $action, array $itemIds): array
     {
         $endpoint = '/mails/';
         $params = [
