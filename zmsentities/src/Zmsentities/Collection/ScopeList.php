@@ -47,7 +47,7 @@ class ScopeList extends Base
     /**
     * Get shortest bookable start date of a opened scope in scopelist
     *
-    * @return \DateTimeImmutable $date, null
+    * @return \DateTimeInterface|null
     */
     public function getShortestBookableStartOnOpenedScope(mixed $now)
     {
@@ -65,7 +65,7 @@ class ScopeList extends Base
     /**
     * Get longest bookable end date of a opened scope in scopelist
     *
-    * @return \DateTimeImmutable $date
+    * @return \DateTimeInterface|null
     */
     public function getGreatestBookableEndOnOpenedScope(mixed $now)
     {

@@ -32,8 +32,11 @@ class Factory
     public function getEntity()
     {
         $entityName = $this->getEntityName();
+        /** @var class-string<Entity> $class */
         $class = "\\BO\\Zmsentities\\$entityName";
-        return new $class(new UnflattedArray($this->data));
+        /** @var Entity $entity */
+        $entity = new $class(new UnflattedArray($this->data));
+        return $entity;
     }
 
     /**

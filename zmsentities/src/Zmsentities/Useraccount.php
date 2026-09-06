@@ -69,7 +69,8 @@ class Useraccount extends Schema\Entity
         if ($hasDepartments && !($this['departments'] ?? null) instanceof Collection\DepartmentList) {
             $this->departments = new Collection\DepartmentList();
         }
-        return parent::addData($mergeData);
+        parent::addData($mergeData);
+        return $this;
     }
 
     /**

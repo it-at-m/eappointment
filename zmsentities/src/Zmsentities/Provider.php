@@ -43,7 +43,8 @@ class Provider extends Schema\Entity
         if (isset($mergeData['parent_id'])) {
             $this['parent_id'] = $mergeData['parent_id'];
         }
-        return parent::addData($mergeData);
+        parent::addData($mergeData);
+        return $this;
     }
 
     public function hasRequest(string $requestId): bool
