@@ -90,7 +90,7 @@ abstract class Base extends TestCase
     /**
      * Overwrite this function if api calls definition needs function calls
      */
-    protected function getApiCalls()
+    protected function getApiCalls(): mixed
     {
         return $this->apiCalls;
     }

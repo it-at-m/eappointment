@@ -28,7 +28,7 @@ class BaseController
         $this->maxRunTime = $maxRunTime;
     }
 
-    public static function getLogList()
+    public static function getLogList(): array
     {
         return static::$logList;
     }
@@ -44,7 +44,7 @@ class BaseController
         return $time;
     }
 
-    protected function sendMailer(Entity $entity, mixed $mailer = null, mixed $action = false)
+    protected function sendMailer(Entity $entity, mixed $mailer = null, mixed $action = false): mixed
     {
         // @codeCoverageIgnoreStart
         $hasSendSuccess = ($action) ? $mailer->Send() : $action;
