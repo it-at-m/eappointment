@@ -18,7 +18,7 @@ class ElasticSearch
 
     const string ES_INDEX_DATE = 'Ymd-His';
 
-    protected $localeList = array(
+    protected mixed $localeList = array(
         'de',
         'en'
     );

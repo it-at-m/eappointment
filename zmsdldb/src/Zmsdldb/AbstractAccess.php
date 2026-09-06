@@ -12,9 +12,9 @@ namespace BO\Zmsdldb;
  */
 class AbstractAccess
 {
-    protected static $showDeprecated = false;
+    protected static bool $showDeprecated = false;
 
-    protected $accessInstance = array(
+    protected mixed $accessInstance = array(
         'de' => array(
             'Authority' => null,
             'Borough' => null,
@@ -37,7 +37,7 @@ class AbstractAccess
         )
     );
 
-    protected static $accessInstanceTypes = [
+    protected static mixed $accessInstanceTypes = [
         'Authority' => null,
         'Borough' => null,
         'Link' => null,
