@@ -102,15 +102,16 @@ class SlotList extends Base
 
     public function extendList(self $slotList, Slot|null $prevSlot, \BO\Zmsentities\Appointment $appointment): \BO\Zmsentities\Collection\SlotList
     {
+        $slotMinutes = (string) (int) $appointment->getAvailability()->slotTimeInMinutes;
         $startTime = \BO\Zmsentities\Helper\DateTime::create(
             $appointment->toDateTime()->format('Y-m-d') . ' ' . $prevSlot->time
-        )->modify('+' . $appointment->getAvailability()->slotTimeInMinutes . 'minute');
+        )->modify('+' . $slotMinutes . 'minute');
         $stopTime = $appointment->getEndTime();
         do {
             $slot = clone $prevSlot;
             $slot->setTime($startTime);
             $slotList[] = $slot;
-            $startTime = $startTime->modify('+' . $appointment->getAvailability()->slotTimeInMinutes . 'minute');
+            $startTime = $startTime->modify('+' . $slotMinutes . 'minute');
             // Only add a slot, if at least a minute is left, otherwise do not ("<" instead "<=")
         } while ($startTime->getTimestamp() < $stopTime->getTimestamp());
         return $slotList;

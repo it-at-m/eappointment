@@ -151,7 +151,7 @@ class ProcessValidator
         try {
             $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
             $phoneNumberObject = $phoneNumberUtil->parse($valid->getValue(), 'DE');
-            $telephone = '+' . $phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
+            $telephone = '+' . (string) $phoneNumberObject->getCountryCode() . (string) $phoneNumberObject->getNationalNumber();
         } catch (\Exception $exception) {
             $telephone = $valid->getValue();
         }
