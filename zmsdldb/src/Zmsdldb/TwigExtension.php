@@ -18,7 +18,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
 {
     private $container;
 
-    public function __construct($container = null)
+    public function __construct(mixed $container = null)
     {
         $this->container = $container;
     }
@@ -60,7 +60,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         );
     }
 
-    public function dump($item): string
+    public function dump(mixed $item): string
     {
         return '<pre>' . print_r($item, 1) . '</pre>';
     }
@@ -69,7 +69,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
      * @return (array|mixed|string)[]
      *
      */
-    public function currentRoute($lang = null): array
+    public function currentRoute(mixed $lang = null): array
     {
         if ($this->container->has('currentRoute')) {
             $routeParams = $this->container->get('currentRouteParams');
@@ -139,7 +139,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return 'gestureHandling: ' . \App::OSM_GESTURE_HANDLING;
     }
 
-    public function formatPhoneNumber($phoneNumber): string|null
+    public function formatPhoneNumber(mixed $phoneNumber): string|null
     {
         preg_match_all('/(^\+)?[\d]+/', $phoneNumber, $matches);
         $number = implode($matches[0]);
@@ -147,7 +147,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $phonenumber;
     }
 
-    public function convertOpeningTimes($name): string
+    public function convertOpeningTimes(mixed $name): string
     {
         $days = array(
             'monday' => 'Montag',
@@ -165,13 +165,13 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
     /**
      * @return false|int
      */
-    public function dateToTS($datetime): int|false
+    public function dateToTS(mixed $datetime): int|false
     {
         $timestamp = ($datetime === (int)$datetime) ? $datetime : strtotime($datetime);
         return $timestamp;
     }
 
-    public function tsToDate($timestamp): string
+    public function tsToDate(mixed $timestamp): string
     {
         $date =  date('Y-m-d', $timestamp);
         return $date;
@@ -181,7 +181,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
      * @return (false|float|int|mixed|string)[]
      *
      */
-    public function formatDateTime($dateString): array
+    public function formatDateTime(mixed $dateString): array
     {
         $dateTime = new \DateTimeImmutable($dateString, new \DateTimezone('Europe/Berlin'));
         $formatDate['date']     = Helper\DateTime::getFormatedDates($dateTime, "EE, dd. MMMM yyyy");
@@ -203,7 +203,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $formatDate;
     }
 
-    public function kindOfPayment($code): string
+    public function kindOfPayment(mixed $code): string
     {
         $result = '';
         if ($code == 0) {
@@ -224,7 +224,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
      * @return (array|mixed)[][]
      *
      */
-    public function azPrefixList($list, $property): array
+    public function azPrefixList(mixed $list, mixed $property): array
     {
         $azList = array();
         foreach ((array)$list as $item) {
@@ -244,7 +244,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $azList;
     }
 
-    protected static function sortFirstChar($string): string
+    protected static function sortFirstChar(mixed $string): string
     {
         $firstChar = mb_substr($string, 0, 1);
         $firstChar = mb_strtoupper($firstChar);
@@ -252,7 +252,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $firstChar;
     }
 
-    protected static function sortByName($left, $right): int
+    protected static function sortByName(mixed $left, mixed $right): int
     {
         return strcmp(
             self::toSortableString(strtolower($left['name'])),
@@ -275,7 +275,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $string;
     }
 
-    public function csvProperty($list, $property): string
+    public function csvProperty(mixed $list, mixed $property): string
     {
         $propertylist = array();
         foreach ($list as $item) {
@@ -286,7 +286,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return implode(',', array_unique($propertylist));
     }
 
-    public function csvAppointmentLocations($list, $service_id = ''): string
+    public function csvAppointmentLocations(mixed $list, string $service_id = ''): string
     {
         $propertylist = array();
         foreach ($list as $item) {
@@ -308,7 +308,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
      */
     public function getAppointmentForLocationFromServiceAppointmentLocations(
         array $serviceAppointmentLocationList,
-        $locationId
+        mixed $locationId
     ) {
         if (isset($serviceAppointmentLocationList[$locationId])) {
             $appointment = $serviceAppointmentLocationList[$locationId]['appointment'];
@@ -319,7 +319,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return false;
     }
 
-    public function getAppointmentForService($location, $service_id)
+    public function getAppointmentForService(mixed $location, mixed $service_id)
     {
         $servicecompare = explode(',', $service_id);
         foreach ($location['services'] as $service) {
@@ -333,7 +333,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return false;
     }
 
-    public function getLocationHintByServiceId($location, $service_id)
+    public function getLocationHintByServiceId(mixed $location, mixed $service_id)
     {
         if (isset($location['services'])) {
             foreach ($location['services'] as $service) {
@@ -345,7 +345,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return false;
     }
 
-    public function dayIsBookable($dateList, $day)
+    public function dayIsBookable(mixed $dateList, mixed $day)
     {
         $result = false;
         if (count($dateList)) {

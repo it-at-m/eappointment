@@ -21,7 +21,7 @@ class Service extends Base
      * @return Entity
      */
     #[\Override]
-    public function fetchId($itemId)
+    public function fetchId(mixed $itemId)
     {
         if ($itemId) {
             $query = Helper::boolFilteredQuery();
@@ -45,7 +45,7 @@ class Service extends Base
      * @return Collection
      */
     #[\Override]
-    public function fetchList($location_csv = false)
+    public function fetchList(bool $location_csv = false)
     {
         $boolquery = Helper::boolFilteredQuery();
         $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
@@ -72,7 +72,7 @@ class Service extends Base
      * @return Collection
      */
     #[\Override]
-    public function fetchFromCsv($service_csv)
+    public function fetchFromCsv(mixed $service_csv)
     {
         $query = Helper::boolFilteredQuery();
         $filter = new \Elastica\Filter\Ids();
@@ -99,7 +99,7 @@ class Service extends Base
      * @return Collection
      */
     #[\Override]
-    public function searchAll($querystring, $service_csv = '', $location_csv = '')
+    public function searchAll(mixed $querystring, string $service_csv = '', string $location_csv = '')
     {
         $query = new \Elastica\Query();
         $locationsCsvByUser = false;
@@ -152,7 +152,7 @@ class Service extends Base
      * @return Collection
      */
     #[\Override]
-    public function readSearchResultList($query, $service_csv = '')
+    public function readSearchResultList(mixed $query, string $service_csv = '')
     {
         $boolquery = Helper::boolFilteredQuery();
         $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
@@ -187,7 +187,7 @@ class Service extends Base
     /**
      * @psalm-api
      */
-    public function fetchServicesForCompilation($authoritys = [], $locations = [], $services = []): Collection
+    public function fetchServicesForCompilation(array $authoritys = [], array $locations = [], array $services = []): Collection
     {
         $limit = 1000;
 

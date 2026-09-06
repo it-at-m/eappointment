@@ -46,7 +46,7 @@ class SearchResults extends Base
      *
      * @return null|static
      */
-    public function addSearchResultsData($data): static|null
+    public function addSearchResultsData(mixed $data): static|null
     {
         if ($data) {
             $this[] = $data;

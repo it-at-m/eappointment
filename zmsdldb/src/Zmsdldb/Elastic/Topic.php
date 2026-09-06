@@ -17,7 +17,7 @@ use BO\Zmsdldb\File\Topic as Base;
 class Topic extends Base
 {
     #[\Override]
-    public function readSearchResultList($querystring)
+    public function readSearchResultList(mixed $querystring)
     {
         $boolquery = Helper::boolFilteredQuery();
         $searchquery = new \Elastica\Query\QueryString();

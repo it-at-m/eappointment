@@ -72,7 +72,7 @@ class ElasticSearch
      * @param String $servicesFile
      *            (optional)
      */
-    public function __construct($importOrLocationFile, $servicesFile = null)
+    public function __construct(mixed $importOrLocationFile, $servicesFile = null)
     {
         if (is_dir($importOrLocationFile)) {
             $this->dldb = new FileAccess();
@@ -223,7 +223,7 @@ class ElasticSearch
      *
      * @return self
      */
-    public function setHost($host)
+    public function setHost(mixed $host)
     {
         $this->host = $host;
         return $this;
@@ -233,7 +233,7 @@ class ElasticSearch
      *
      * @return self
      */
-    public function setPort($port)
+    public function setPort(mixed $port)
     {
         $this->port = $port;
         return $this;
@@ -243,7 +243,7 @@ class ElasticSearch
      *
      * @return self
      */
-    public function setTransport($transport)
+    public function setTransport(mixed $transport)
     {
         $this->transport = $transport;
         return $this;
@@ -254,7 +254,7 @@ class ElasticSearch
      *
      * @return self
      */
-    public function setAlias($alias)
+    public function setAlias(mixed $alias)
     {
         $this->getIndex()->refresh();
         $this->getIndex()->addAlias($alias, true);

@@ -20,7 +20,7 @@ class Office extends Base
      * @return Collection
      */
     #[\Override]
-    protected function parseData($data)
+    protected function parseData(mixed $data)
     {
         $itemList = new Collection();
         foreach ($data['data']['office'] as $item) {
@@ -36,7 +36,7 @@ class Office extends Base
     }
 
     /** @psalm-api */
-    public function fetchPath($itemId)
+    public function fetchPath(mixed $itemId)
     {
         return $this->fetchId($itemId);
     }

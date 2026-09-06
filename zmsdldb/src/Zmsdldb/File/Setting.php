@@ -20,13 +20,13 @@ class Setting extends Base
      * @return Settings
      */
     #[\Override]
-    protected function parseData($data)
+    protected function parseData(mixed $data)
     {
         return new Settings($data['data']['settings']);
     }
 
     /** @psalm-api */
-    public function fetchName($name)
+    public function fetchName(mixed $name)
     {
         return $this->fetchId($name);
     }

@@ -19,7 +19,7 @@ class Location extends Base
      * @return Collection
      */
     #[\Override]
-    protected function parseData($data)
+    protected function parseData(mixed $data)
     {
         $itemList = new Collection();
         foreach ($data['data'] as $item) {
@@ -35,7 +35,7 @@ class Location extends Base
      *
      * @return Collection
      */
-    public function fetchList($service_csv = false)
+    public function fetchList(bool $service_csv = false)
     {
         $locationlist = $this->getItemList();
         if ($service_csv) {
@@ -52,7 +52,7 @@ class Location extends Base
      * @return Collection
      * @psalm-api
      */
-    public function fetchFromCsv($location_csv)
+    public function fetchFromCsv(mixed $location_csv)
     {
         $locationlist = new Collection();
         foreach (explode(',', $location_csv) as $location_id) {
@@ -69,7 +69,7 @@ class Location extends Base
      * @return Collection
      * @psalm-api
      */
-    public function readSearchResultList($query, $service_csv = '')
+    public function readSearchResultList(mixed $query, string $service_csv = '')
     {
         $locationlist = $this->fetchList($service_csv);
         $locationlist = new Collection(array_filter((array) $locationlist, function ($item) use ($query) {
@@ -81,7 +81,7 @@ class Location extends Base
     }
 
     /** @psalm-api */
-    public function fetchListByOffice($office)
+    public function fetchListByOffice(mixed $office)
     {
         return $this->access()->fromAuthority()
         ->readListByOfficePath($office)

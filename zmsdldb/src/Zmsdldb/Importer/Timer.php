@@ -79,7 +79,7 @@ class Timer
         return $hours . "h:" . $minutes . "m:" . $seconds . "s";
     }
 
-    protected static function roundMicroTime($microTime): float
+    protected static function roundMicroTime(mixed $microTime): float
     {
         return round($microTime, 4, PHP_ROUND_HALF_UP);
     }

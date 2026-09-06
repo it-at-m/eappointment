@@ -23,7 +23,7 @@ trait PDOTrait
      * parameters see https://www.php.net/manual/de/pdo.query.php
      * @psalm-api
      */
-    public function query(...$args)
+    public function query(mixed ...$args)
     {
         try {
             return $this->getPDOAccess()->query(...$args);
@@ -37,7 +37,7 @@ trait PDOTrait
      * @psalm-api
      */
 
-    public function exec(...$args)
+    public function exec(mixed ...$args)
     {
         try {
             return $this->getPDOAccess()->exec(...$args);
@@ -50,7 +50,7 @@ trait PDOTrait
      * parameters see https://www.php.net/manual/de/pdo.prepare.php
      * @psalm-api
      */
-    public function prepare(...$args)
+    public function prepare(mixed ...$args)
     {
         try {
             return $this->getPDOAccess()->prepare(...$args);

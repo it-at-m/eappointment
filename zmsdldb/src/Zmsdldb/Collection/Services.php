@@ -9,7 +9,10 @@ namespace BO\Zmsdldb\Collection;
 
 class Services extends Base
 {
-    public function containsLocation($locationCsv = null): self
+    /**
+     * @param null|string $locationCsv
+     */
+    public function containsLocation(string|null $locationCsv = null): self
     {
         $list = new self();
         foreach ($this as $service) {
@@ -54,7 +57,7 @@ class Services extends Base
      *
      * @return null|self
      */
-    public function isLocale($locale): self|null
+    public function isLocale(mixed $locale): self|null
     {
         $list = new self();
         foreach ($this as $service) {

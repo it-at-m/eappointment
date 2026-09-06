@@ -39,9 +39,9 @@ abstract class Base
      */
     private $accessInstance = null;
 
-    abstract protected function parseData($data);
+    abstract protected function parseData(mixed $data);
 
-    public function __construct($dataFile, $locale = "de")
+    public function __construct(mixed $dataFile, string $locale = "de")
     {
         $this->dataFile = $dataFile;
         $this->locale = $locale;
@@ -123,7 +123,7 @@ abstract class Base
         return $this->itemList;
     }
 
-    protected function setItemList($list): static
+    protected function setItemList(\BO\Zmsdldb\Collection\Base $list): static
     {
         $this->itemList = $list;
         return $this;
