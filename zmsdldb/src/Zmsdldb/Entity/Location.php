@@ -40,7 +40,7 @@ class Location extends Base
     }
 
     /**
-     * @var Int $service_id
+     * @param int $service_id
      *
      * @return FALSE or Array
      * @psalm-api
