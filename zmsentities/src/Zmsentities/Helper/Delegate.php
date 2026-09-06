@@ -22,7 +22,7 @@ class Delegate
     {
         $entity = $this->getEntity();
 
-        return function ($newValue) use ($propertyPath, $entity): Entity {
+        return function (mixed $newValue) use ($propertyPath, $entity): Entity {
             self::setValueAtPath($entity, $propertyPath, $newValue);
 
             return $entity;

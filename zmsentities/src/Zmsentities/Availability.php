@@ -980,7 +980,7 @@ class Availability extends Schema\Entity
             $info .= " each " . $this['repeat']['weekOfMonth'] . ". weekOfMonth";
         }
         $info .= " on ";
-        $weekdays = array_filter($this['weekday'], function ($value) {
+        $weekdays = array_filter($this['weekday'], function (mixed $value) {
             return $value > 0;
         });
         $info .= implode(',', array_keys($weekdays));
