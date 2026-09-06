@@ -37,7 +37,7 @@ class Office extends Base
     }
 
     /** @psalm-api */
-    public function fetchPath(mixed $itemId): \BO\Zmsdldb\Entity\Base|false
+    public function fetchPath(string $itemId): \BO\Zmsdldb\Entity\Base|false
     {
         return $this->fetchId($itemId);
     }
