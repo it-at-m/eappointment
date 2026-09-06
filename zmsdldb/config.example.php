@@ -18,7 +18,7 @@ if (!defined('MYSQL_DATABASE')) {
 }
 // MYSQL_PORT of type "tcp://127.0.0.1:3306"
 $mysqlPort = getenv('MYSQL_PORT');
-if (is_string($mysqlPort) && $mysqlPort !== '') {
+if (is_string($mysqlPort) && $mysqlPort !== '' && $mysqlPort !== '0') {
     $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=";
     $dsn .= (string) parse_url($mysqlPort, PHP_URL_HOST);
     $dsn .= ';port=';
@@ -33,7 +33,7 @@ if (is_string($mysqlPort) && $mysqlPort !== '') {
 }
 // MYSQL_PORT_RO for readonly access of type "tcp://127.0.0.1:3306"
 $mysqlPortRo = getenv('MYSQL_PORT_RO');
-if (is_string($mysqlPortRo) && $mysqlPortRo !== '') {
+if (is_string($mysqlPortRo) && $mysqlPortRo !== '' && $mysqlPortRo !== '0') {
     // Allow simple load balancing with multiple values
     $mysqlPortList = explode(',', $mysqlPortRo);
     $mysqlPortRO = trim($mysqlPortList[array_rand($mysqlPortList)]);
@@ -108,6 +108,6 @@ class App extends \BO\Zmsbackend\Application
 
 // Uncomment the following line for testing data with vendor/bin/importTestData
 $timeAdjust = getenv('ZMS_TIMEADJUST');
-if (is_string($timeAdjust) && $timeAdjust !== '') {
+if (is_string($timeAdjust) && $timeAdjust !== '' && $timeAdjust !== '0') {
     App::$now = new DateTimeImmutable(date($timeAdjust), new DateTimeZone('Europe/Berlin'));
 }
