@@ -80,7 +80,10 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
     {
         $department = clone $this;
         if ($this->offsetExists('scopes') && $this->scopes) {
-            $scopeList = clone $this->scopes;
+            $scopes = $this->scopes;
+            $scopeList = $scopes instanceof Collection\ScopeList
+                ? clone $scopes
+                : new Collection\ScopeList($scopes);
             $department->scopes = new Collection\ScopeList();
             $removeScopeList = new Collection\ScopeList();
             if ($department->toProperty()->clusters->get()) {

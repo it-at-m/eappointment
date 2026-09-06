@@ -263,6 +263,9 @@ class ProcessList extends Base
             $dateTime = $processListByDate[0]->getFirstAppointment()->toDateTime();
             $slotList = $availabilityList->withType('appointment')->withDateTime($dateTime)->getSlotList();
             foreach ($processListByDate as $process) {
+                if (!$process instanceof Process) {
+                    continue;
+                }
                 try {
                     $slotList->withSlotsForAppointment($process->getFirstAppointment());
                     if (!$slotList->removeAppointment($process->getFirstAppointment())) {
