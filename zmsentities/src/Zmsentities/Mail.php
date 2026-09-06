@@ -193,7 +193,7 @@ class Mail extends Schema\Entity
 
         $firstAppointment = $mainProcess ? $mainProcess->getAppointments()->getFirst() : null;
         if (
-            $firstAppointment && $firstAppointment->hasTime() &&
+            $mainProcess && $firstAppointment && $firstAppointment->hasTime() &&
             Messaging::isIcsRequired($config, $mainProcess, $status)
         ) {
             $entity->multipart[] = new Mimepart(array(
