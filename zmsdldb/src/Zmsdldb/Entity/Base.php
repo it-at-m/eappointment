@@ -118,6 +118,7 @@ class Base extends \ArrayObject
 
     /**
      * @param static $array
+     * @param-out array|static $array
      */
     public static function doubleUnterlineToArray(&$array, string $key, mixed $value): mixed
     {
