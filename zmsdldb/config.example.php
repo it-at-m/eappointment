@@ -64,6 +64,7 @@ class App extends \BO\Zmsbackend\Application
     const bool DEBUG = false;
     const bool DB_ENABLE_WSREPSYNCWAIT = true;
     /**
+     * @psalm-suppress InvalidConstantAssignmentValue
      * @var String DB_DSN_READONLY
      */
     const string DB_DSN_READONLY = DSN_RO;
@@ -74,11 +75,13 @@ class App extends \BO\Zmsbackend\Application
     const string DB_DSN_READWRITE = DSN_RW;
 
     /**
+     * @psalm-suppress InvalidConstantAssignmentValue
      * @var String DB_USERNAME
      */
     const string DB_USERNAME = MYSQL_USER;
 
     /**
+     * @psalm-suppress InvalidConstantAssignmentValue
      * @var String DB_PASSWORD
      */
     const string DB_PASSWORD = MYSQL_PASSWORD;
