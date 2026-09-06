@@ -140,7 +140,7 @@ class ProcessList extends Base
         return $list;
     }
 
-    public function getScopeList()
+    public function getScopeList(): \BO\Zmsentities\Collection\ScopeList
     {
         $list = new ScopeList();
         foreach ($this as $process) {
@@ -151,7 +151,7 @@ class ProcessList extends Base
         return $list->withUniqueScopes();
     }
 
-    public function getRequestList()
+    public function getRequestList(): \BO\Zmsentities\Collection\RequestList
     {
         $list = new RequestList();
         foreach ($this as $process) {
@@ -392,7 +392,7 @@ class ProcessList extends Base
         return $collection;
     }
 
-    public function withoutProcessByStatus(Process $process, string $status)
+    public function withoutProcessByStatus(Process $process, string $status): mixed
     {
         $collection = clone $this;
         $collection = (1 <= $collection->count() && ! Messaging::isEmptyProcessListAllowed($status)) ?

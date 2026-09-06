@@ -31,7 +31,7 @@ class RequestRelationList extends Base
         return true;
     }
 
-    public function getRequestList()
+    public function getRequestList(): \BO\Zmsentities\Collection\RequestList
     {
         $requestList = new RequestList();
         foreach ($this as $item) {
@@ -43,7 +43,7 @@ class RequestRelationList extends Base
         return $requestList->withUniqueRequests();
     }
 
-    public function getProviderList()
+    public function getProviderList(): \BO\Zmsentities\Collection\ProviderList
     {
         $providerList = new ProviderList();
         foreach ($this as $item) {

@@ -163,7 +163,7 @@ class ScopeList extends Base
         return $this;
     }
 
-    public function getRequiredSlotsByScope(Scope $scope)
+    public function getRequiredSlotsByScope(Scope $scope): mixed
     {
         if (isset($this->slotsByID[$scope->id])) {
             return $this->slotsByID[$scope->id];
@@ -182,7 +182,7 @@ class ScopeList extends Base
         return $isOpened;
     }
 
-    public function getProviderList()
+    public function getProviderList(): \BO\Zmsentities\Collection\ProviderList
     {
         $list = new ProviderList();
         foreach ($this as $scope) {

@@ -237,7 +237,7 @@ class Availability extends Schema\Entity
         return true;
     }
 
-    public function getAvailableSecondsPerDay(string $type = "intern")
+    public function getAvailableSecondsPerDay(string $type = "intern"): mixed
     {
         $start = $this->getStartDateTime()->getSecondsOfDay();
         $end = $this->getEndDateTime()->getSecondsOfDay();
@@ -704,7 +704,7 @@ class Availability extends Schema\Entity
         return $slotList;
     }
 
-    public function getSlotTimeInMinutes()
+    public function getSlotTimeInMinutes(): mixed
     {
         return $this['slotTimeInMinutes'];
     }

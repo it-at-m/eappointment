@@ -61,7 +61,7 @@ class Calldisplay extends Schema\Entity
         return $this;
     }
 
-    public function getFullScopeList()
+    public function getFullScopeList(): \BO\Zmsentities\Collection\ScopeList
     {
         $scopeList = $this->getScopeList();
         foreach ($this->clusters as $cluster) {

@@ -50,7 +50,7 @@ class Day extends Schema\Entity
         return $this;
     }
 
-    public function toDateTime()
+    public function toDateTime(): \BO\Zmsentities\Helper\DateTime
     {
         $date = Helper\DateTime::createFromFormat('Y-m-d', $this['year'] . '-' . $this['month'] . '-' . $this['day']);
         return Helper\DateTime::create($date);
@@ -113,7 +113,7 @@ class Day extends Schema\Entity
     /**
      * Returns an unique string hash per day optimized for b-trees
      */
-    public function getDayHash()
+    public function getDayHash(): string
     {
         return $this::getCalculatedDayHash($this->day, $this->month, $this->year);
     }

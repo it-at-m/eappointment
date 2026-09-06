@@ -144,7 +144,7 @@ class Messaging
         mixed $initiator = null,
         string $status = 'appointment',
         mixed $templateProvider = false
-    ) {
+    ): string {
         $parameters = self::generateMailParameters($processList, $config, $initiator, $status);
 
         (new ProcessList())->testProcessListLength($processList, self::isEmptyProcessListAllowed($status));
@@ -229,7 +229,7 @@ class Messaging
         return $message;
     }
 
-    protected static function getTemplate(string $type, string $status)
+    protected static function getTemplate(string $type, string $status): mixed
     {
         $template = null;
         if (Property::__keyExists($type, self::$templates)) {
@@ -290,7 +290,7 @@ class Messaging
         mixed $now = false,
         mixed $templateProvider = false,
         string $message = '' // Pass $message from getMailIcs, or query if not set
-    ) {
+    ): string {
         // If $message is not provided, retrieve it from the getMailContent query
         if (empty($message)) {
             $message = self::getMailContent($process, $config, null, $status, $templateProvider);

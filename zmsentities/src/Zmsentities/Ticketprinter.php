@@ -38,7 +38,7 @@ class Ticketprinter extends Schema\Entity
         return $this;
     }
 
-    public function isEnabled()
+    public function isEnabled(): mixed
     {
         return $this->enabled;
     }
@@ -97,7 +97,7 @@ class Ticketprinter extends Schema\Entity
         );
     }
 
-    protected function getButtonData(string $string, array $button)
+    protected function getButtonData(string $string, array $button): mixed
     {
         $value = $this->getButtonValue($string, $this->getButtonType($string));
         if ('link' == $button['type']) {
@@ -116,7 +116,7 @@ class Ticketprinter extends Schema\Entity
         return $button;
     }
 
-    protected function getButtonValue(string $string, string $type)
+    protected function getButtonValue(string $string, string $type): mixed
     {
         $value = (in_array($type, ['l', 'r'])) ?
             Validator::value(substr($string, 1))->isString() :
@@ -129,7 +129,7 @@ class Ticketprinter extends Schema\Entity
         return substr($string, 0, 1);
     }
 
-    protected function getExternalLinkData(mixed $value, mixed $button)
+    protected function getExternalLinkData(mixed $value, mixed $button): mixed
     {
         if (preg_match("/\[([^\]]*)\]/", $value, $matches)) {
             $data = explode('|', $matches[1]);

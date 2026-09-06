@@ -29,17 +29,17 @@ class Source extends Schema\Entity
         ];
     }
 
-    public function getSource()
+    public function getSource(): mixed
     {
         return $this->toProperty()->source->get();
     }
 
-    public function getLabel()
+    public function getLabel(): mixed
     {
         return $this->toProperty()->label->get();
     }
 
-    public function getContact()
+    public function getContact(): mixed
     {
         return $this->toProperty()->contact->get();
     }

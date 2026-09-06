@@ -102,17 +102,17 @@ class Process extends Schema\Entity
         return $this->requests;
     }
 
-    public function getRequestIds()
+    public function getRequestIds(): mixed
     {
         return $this->getRequests()->getIds();
     }
 
-    public function getDisplayNumber()
+    public function getDisplayNumber(): mixed
     {
         return $this->displayNumber;
     }
 
-    public function getRequestCSV()
+    public function getRequestCSV(): string
     {
         return $this->getRequests()->getIdsCsv();
     }
@@ -241,12 +241,12 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function getStatus()
+    public function getStatus(): mixed
     {
         return $this->status;
     }
 
-    public function getReminderTimestamp()
+    public function getReminderTimestamp(): mixed
     {
         $timestamp = $this->toProperty()->reminderTimestamp->get();
         return ($timestamp) ? $timestamp : 0;
@@ -295,7 +295,7 @@ class Process extends Schema\Entity
         return $this['clients'];
     }
 
-    public function hasAppointment(mixed $date, mixed $scopeId)
+    public function hasAppointment(mixed $date, mixed $scopeId): bool
     {
         return $this->getAppointments()->hasDateScope($date, $scopeId);
     }
@@ -330,7 +330,7 @@ class Process extends Schema\Entity
         return (isset($this['queue']) && isset($this['queue']['number']) && $this['queue']['number']);
     }
 
-    public function getQueueNumber()
+    public function getQueueNumber(): mixed
     {
         return $this['queue']['number'];
     }
@@ -348,7 +348,7 @@ class Process extends Schema\Entity
      * which are used for processing like to pick up documents
      *
      */
-    public function getScopeId()
+    public function getScopeId(): mixed
     {
         //as current scope - see zmsbackend Query/Process EntityMapping
         return $this->toProperty()->scope->id->get();
@@ -368,7 +368,7 @@ class Process extends Schema\Entity
         return $this->getProperty('scope');
     }
 
-    public function getAmendment()
+    public function getAmendment(): mixed
     {
         return $this->toProperty()->amendment->get();
     }
@@ -378,7 +378,7 @@ class Process extends Schema\Entity
         return $this->toProperty()->showUpTime->get();
     }*/
 
-    public function getShowUpTime(string|\DateTimeInterface $default = 'now', mixed $timezone = null)
+    public function getShowUpTime(string|\DateTimeInterface $default = 'now', mixed $timezone = null): \BO\Zmsentities\Helper\DateTime
     {
         $showUpTime = $this->toProperty()->showUpTime->get();
         $showDateTime = Helper\DateTime::create($default, $timezone);
@@ -389,17 +389,17 @@ class Process extends Schema\Entity
         return $showDateTime;
     }
 
-    public function getWaitingTime()
+    public function getWaitingTime(): mixed
     {
         return $this->toProperty()->queue->waitingTime->get();
     }
 
-    public function getProcessingTime()
+    public function getProcessingTime(): mixed
     {
         return $this->toProperty()->processingTime->get();
     }
 
-    public function getFinishTime()
+    public function getFinishTime(): mixed
     {
         return $this->toProperty()->finishTime->get();
     }
@@ -412,7 +412,7 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function getCustomTextfield()
+    public function getCustomTextfield(): mixed
     {
         return $this->toProperty()->customTextfield->get();
     }
@@ -426,7 +426,7 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function getCustomTextfield2()
+    public function getCustomTextfield2(): mixed
     {
         return $this->toProperty()->customTextfield2->get();
     }
@@ -447,7 +447,7 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function getAuthKey()
+    public function getAuthKey(): mixed
     {
         return $this->toProperty()->authKey->get();
     }
@@ -468,12 +468,12 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function getCallTimeString()
+    public function getCallTimeString(): mixed
     {
         return $this->getCallTime()->format('H:i:s');
     }
 
-    public function getCallTime(string|\DateTimeInterface $default = 'now', mixed $timezone = null)
+    public function getCallTime(string|\DateTimeInterface $default = 'now', mixed $timezone = null): \BO\Zmsentities\Helper\DateTime
     {
         $callTime = $this->toProperty()->queue->callTime->get();
         $callDateTime = Helper\DateTime::create($default, $timezone);
@@ -611,7 +611,7 @@ class Process extends Schema\Entity
         return $calendar;
     }
 
-    public function toQueue(\DateTimeInterface $dateTime)
+    public function toQueue(\DateTimeInterface $dateTime): mixed
     {
         $queue = new Queue($this->queue);
         $queue->withAppointment = ($this->getFirstAppointment()->hasTime()) ? true : false;
@@ -644,7 +644,7 @@ class Process extends Schema\Entity
      * @param \DateTimeInterface|string $default
      *
      */
-    public function getArrivalTime(string|\DateTimeInterface $default = 'now', mixed $timezone = null)
+    public function getArrivalTime(string|\DateTimeInterface $default = 'now', mixed $timezone = null): \BO\Zmsentities\Helper\DateTime
     {
         $queueArrivalTime = $this->toProperty()->queue->arrivalTime->get();
 
@@ -674,22 +674,22 @@ class Process extends Schema\Entity
     /**
      * Calculate real waiting time, only available after called
      */
-    public function getWaitedSeconds(string|\DateTimeInterface $defaultTime = 'now')
+    public function getWaitedSeconds(string|\DateTimeInterface $defaultTime = 'now'): mixed
     {
         return $this->getCallTime($defaultTime)->getTimestamp() - $this->getArrivalTime($defaultTime)->getTimestamp();
     }
 
-    public function getWaitedMinutes(string|\DateTimeInterface $defaultTime = 'now')
+    public function getWaitedMinutes(string|\DateTimeInterface $defaultTime = 'now'): mixed
     {
         return $this->getWaitedSeconds($defaultTime) / 60;
     }
 
-    public function getWaySeconds(string|\DateTimeInterface $defaultTime = 'now')
+    public function getWaySeconds(string|\DateTimeInterface $defaultTime = 'now'): mixed
     {
         return $this->getShowUpTime($defaultTime)->getTimestamp() - $this->getCallTime($defaultTime)->getTimestamp();
     }
 
-    public function getWayMinutes(string|\DateTimeInterface $defaultTime = 'now')
+    public function getWayMinutes(string|\DateTimeInterface $defaultTime = 'now'): mixed
     {
         return $this->getWaySeconds($defaultTime) / 60;
     }
@@ -762,7 +762,7 @@ class Process extends Schema\Entity
         return $string;
     }
 
-    public function getExternalUserId()
+    public function getExternalUserId(): mixed
     {
         return $this->toProperty()->externalUserId->get();
     }
@@ -773,7 +773,7 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function getParkedBy()
+    public function getParkedBy(): mixed
     {
         return $this->toProperty()->parkedBy->get();
     }

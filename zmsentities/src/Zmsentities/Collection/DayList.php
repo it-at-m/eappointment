@@ -43,12 +43,12 @@ class DayList extends Base implements JsonUnindexed
         return null;
     }
 
-    public function getDayByDateTime(\DateTimeInterface $datetime)
+    public function getDayByDateTime(\DateTimeInterface $datetime): \BO\Zmsentities\Day|null
     {
         return $this->getDay($datetime->format('Y'), $datetime->format('m'), $datetime->format('d'));
     }
 
-    public function getDayByDay(\BO\Zmsentities\Day $day)
+    public function getDayByDay(\BO\Zmsentities\Day $day): \BO\Zmsentities\Day|null
     {
         return $this->getDay($day->year, $day->month, $day->day);
     }
@@ -60,7 +60,7 @@ class DayList extends Base implements JsonUnindexed
         return ($day === null) ? false : true;
     }
 
-    public function withAssociatedDays(\DateTimeInterface $currentDate)
+    public function withAssociatedDays(\DateTimeInterface $currentDate): \BO\Zmsentities\Collection\Base
     {
         $dayList = new self();
         $lastDay = $currentDate->format('t');
@@ -124,7 +124,7 @@ class DayList extends Base implements JsonUnindexed
         return false;
     }
 
-    public function getFirstBookableDay()
+    public function getFirstBookableDay(): mixed
     {
         foreach ($this as $day) {
             $day = new Day($day);

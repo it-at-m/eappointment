@@ -48,32 +48,32 @@ class Request extends Schema\Entity
         return false;
     }
 
-    public function getSource()
+    public function getSource(): mixed
     {
         return $this->toProperty()->source->get();
     }
 
-    public function getGroup()
+    public function getGroup(): mixed
     {
         return $this->toProperty()->group->get();
     }
 
-    public function getLink()
+    public function getLink(): mixed
     {
         return $this->toProperty()->link->get();
     }
 
-    public function getName()
+    public function getName(): mixed
     {
         return $this->toProperty()->name->get();
     }
 
-    public function getAdditionalData()
+    public function getAdditionalData(): mixed
     {
         return $this->toProperty()->data->get();
     }
 
-    public function getParentId()
+    public function getParentId(): mixed
     {
         return $this->toProperty()->parent_id->get();
     }
@@ -88,7 +88,7 @@ class Request extends Schema\Entity
         return (string) $this->getId();
     }
 
-    public function getVariantId()
+    public function getVariantId(): mixed
     {
         return $this->toProperty()->variant_id->get();
     }

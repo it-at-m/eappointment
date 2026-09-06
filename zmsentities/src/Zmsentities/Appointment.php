@@ -30,7 +30,7 @@ class Appointment extends Schema\Entity
         ];
     }
 
-    public function toDate(string $lang = 'de')
+    public function toDate(string $lang = 'de'): string|false
     {
         // Mittwoch 18. November 2015
         return ($lang == 'en') ? date('l F d, Y', $this->date) : Helper\DateTime::getFormatedDates(
@@ -99,7 +99,7 @@ class Appointment extends Schema\Entity
         return $this;
     }
 
-    public function getSlotCount()
+    public function getSlotCount(): mixed
     {
         return $this->slotCount;
     }
@@ -123,13 +123,13 @@ class Appointment extends Schema\Entity
         return $date;
     }
 
-    public function getStartTime()
+    public function getStartTime(): \DateTimeImmutable
     {
         $time = $this->toDateTime();
         return $time;
     }
 
-    public function getEndTime()
+    public function getEndTime(): mixed
     {
         $time = $this->getStartTime();
         $availability = $this->getAvailability();
@@ -138,7 +138,7 @@ class Appointment extends Schema\Entity
           : $time;
     }
 
-    public function getEndTimeWithCustomSlotTime(mixed $slotTimeInMinutes)
+    public function getEndTimeWithCustomSlotTime(mixed $slotTimeInMinutes): mixed
     {
         $time = $this->getStartTime();
         return $time->modify('+' . ($slotTimeInMinutes * $this->slotCount) . ' minutes');

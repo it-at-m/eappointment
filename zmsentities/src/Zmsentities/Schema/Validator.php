@@ -59,12 +59,12 @@ class Validator
         }
     }
 
-    public function isValid()
+    public function isValid(): mixed
     {
         return $this->validationResult->isValid();
     }
 
-    public function getErrors()
+    public function getErrors(): mixed
     {
         if ($this->validationResult->isValid()) {
             return [];
@@ -102,7 +102,7 @@ class Validator
         return $errors;
     }
 
-    public function getCustomMessage(OpisValidationError $error)
+    public function getCustomMessage(OpisValidationError $error): mixed
     {
         $schemaData = $error->schema()->info()->data();
         if (is_object($schemaData)) {
@@ -133,7 +133,7 @@ class Validator
         return $pointer;
     }
 
-    public function getTranslatedPointer(OpisValidationError $error)
+    public function getTranslatedPointer(OpisValidationError $error): mixed
     {
         $schemaData = $error->schema()->info()->data();
         if (is_object($schemaData)) {

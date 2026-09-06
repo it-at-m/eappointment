@@ -32,7 +32,7 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
         return ($this->toProperty()->email->isAvailable() && $this->toProperty()->email->get());
     }
 
-    public function getContactPerson()
+    public function getContactPerson(): mixed
     {
         return $this->toProperty()->contact->name->get();
     }
@@ -55,7 +55,7 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
         return $this->dayoff;
     }
 
-    public function getClusterByScopeId(mixed $scopeId)
+    public function getClusterByScopeId(mixed $scopeId): mixed
     {
         $selectedCluster = false;
         if (isset($this->clusters)) {
@@ -141,7 +141,7 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
      * @return bool
      */
     #[\Override]
-    public function hasAccess(Useraccount $useraccount)
+    public function hasAccess(Useraccount $useraccount): bool
     {
         return $useraccount->isSuperUser() || $useraccount->hasDepartment($this->id);
     }

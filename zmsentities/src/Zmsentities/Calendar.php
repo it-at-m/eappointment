@@ -181,7 +181,7 @@ class Calendar extends Schema\Entity
         return $providerList;
     }
 
-    public function getDayList()
+    public function getDayList(): Collection\DayList
     {
         if (!$this->days instanceof Collection\DayList) {
             $this->days = new Collection\DayList($this->days);
@@ -209,12 +209,12 @@ class Calendar extends Schema\Entity
         return $this->getDayList()->getDay($year, $month, $dayNumber);
     }
 
-    public function getDayByDateTime(\DateTimeInterface $datetime)
+    public function getDayByDateTime(\DateTimeInterface $datetime): mixed
     {
         return $this->getDayList()->getDayByDateTime($datetime);
     }
 
-    public function getDateTimeFromDate(array $date)
+    public function getDateTimeFromDate(array $date): \BO\Zmsentities\Helper\DateTime
     {
         $day = (isset($date['day'])) ? $date['day'] : 1;
         $date = Helper\DateTime::createFromFormat('Y-m-d', $date['year'] . '-' . $date['month'] . '-' . $day);
@@ -235,7 +235,7 @@ class Calendar extends Schema\Entity
         return true;
     }
 
-    public function getFirstDay()
+    public function getFirstDay(): mixed
     {
         if (isset($this['firstDay'])) {
             $dateTime = $this->getDateTimeFromDate(
@@ -251,7 +251,7 @@ class Calendar extends Schema\Entity
         return $dateTime->modify('00:00:00');
     }
 
-    public function getLastDay(bool $createIfNotProvided = true)
+    public function getLastDay(bool $createIfNotProvided = true): mixed
     {
         if (! $createIfNotProvided && ! isset($this['lastDay'])) {
             return null;
