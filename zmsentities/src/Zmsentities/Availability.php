@@ -44,13 +44,13 @@ class Availability extends Schema\Entity
 
     /**
      * Performance costs for modifying time are high, cache the calculated value
-     * @var Helper\DateTime $startTimeCache
+     * @var Helper\DateTime|null $startTimeCache
      */
     protected $startTimeCache;
 
     /**
      * Performance costs for modifying time are high, cache the calculated value
-     * @var Helper\DateTime $endTimeCache
+     * @var Helper\DateTime|null $endTimeCache
      */
     protected $endTimeCache;
 

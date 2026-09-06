@@ -23,7 +23,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public const string PRIMARY = 'id';
 
     /**
-     * @var String $schema Filename of JSON-Schema file
+     * @var string|null $schema Filename of JSON-Schema file
      */
     public static $schema = null;
 
@@ -33,7 +33,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public static $schemaRefPrefix = '';
 
     /**
-     * @var \ArrayObject $jsonSchema JSON-Schema definition to validate data
+     * @var \ArrayObject|null $jsonSchema JSON-Schema definition to validate data
      */
     protected $jsonSchema = null;
 
@@ -49,7 +49,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     protected static $schemaCache = [];
 
     /**
-     * @var Int $resolveLevel indicator on data integrity
+     * @var int|null $resolveLevel indicator on data integrity
      */
     protected $resolveLevel = null;
 
@@ -178,7 +178,13 @@ class Entity extends \ArrayObject implements \JsonSerializable
     {
         $class = get_called_class();
         if (!array_key_exists($class, self::$schemaCache)) {
-            self::$schemaCache[$class] = Loader::asArray($class::$schema);
+            $schemaFile = $class::$schema;
+            if (!is_string($schemaFile)) {
+                throw new \BO\Zmsentities\Exception\SchemaMissingJsonFile(
+                    'Missing JSON-Schema file for ' . $class
+                );
+            }
+            self::$schemaCache[$class] = Loader::asArray($schemaFile);
         }
         return self::$schemaCache[$class];
     }
