@@ -105,9 +105,15 @@ class Calldisplay extends Schema\Entity
     {
         $name = '';
         if (1 == $this->getScopeList()->count()) {
-            $name = "s_" . $this->getScopeList()->getFirst()->id . "_bild";
+            $scope = $this->getScopeList()->getFirst();
+            if ($scope !== null) {
+                $name = "s_" . $scope->id . "_bild";
+            }
         } elseif (1 == $this->getClusterList()->count()) {
-            $name = "c_" . $this->getClusterList()->getFirst()->id . "_bild";
+            $cluster = $this->getClusterList()->getFirst();
+            if ($cluster !== null) {
+                $name = "c_" . $cluster->id . "_bild";
+            }
         }
         return $name;
     }
