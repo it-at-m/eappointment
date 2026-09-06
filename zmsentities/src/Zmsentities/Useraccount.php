@@ -461,7 +461,7 @@ class Useraccount extends Schema\Entity
     /**
      * get oidc provider from $entity id if it exists
      *
-     * @return string $entity
+     * @return string|null $entity
     */
     public function getOidcProviderFromName()
     {

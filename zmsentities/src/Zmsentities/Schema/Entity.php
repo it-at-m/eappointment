@@ -366,7 +366,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     }
 
     /**
-     * @return Int
+     * @return int|null
      */
     public function getResolveLevel()
     {
