@@ -81,9 +81,9 @@ class Validator
     }
 
     /**
-     * @return self
+     * @return void
      */
-    public static function resetInstance()
+    public static function resetInstance(): void
     {
         self::$instance = null;
     }
