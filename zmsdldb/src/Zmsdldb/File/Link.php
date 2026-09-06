@@ -56,7 +56,7 @@ class Link extends Base
 
     /**
      *
-     * @return Entity
+     * @return Entity|false
      * @psalm-api
      */
     public function fetchPath(mixed $topic_path)
