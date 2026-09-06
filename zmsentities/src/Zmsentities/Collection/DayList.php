@@ -11,6 +11,12 @@ class DayList extends Base implements JsonUnindexed
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\Day';
 
+    #[\Override]
+    public function getArrayCopy(): array
+    {
+        return parent::getArrayCopy();
+    }
+
     /**
      * ATTENTION: Performance critical, keep highly optimized
      *
