@@ -81,7 +81,7 @@ class Link extends Base
         $result = new Collection();
         foreach ($list as $link) {
             if (false !== strpos($link['name'], $query)) {
-                $result[] = $link;
+                $result->append($link);
             }
         }
         return $result;

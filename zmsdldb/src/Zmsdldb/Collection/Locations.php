@@ -57,7 +57,7 @@ class Locations extends Base
         $list = new self();
         foreach ($this as $location) {
             if ($location->hasAppointments($serviceCsv, $external)) {
-                $list[] = $location;
+                $list->append($location);
             }
         }
         return $list;

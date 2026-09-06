@@ -20,7 +20,7 @@ class Services extends Base
         $list = new self();
         foreach ($this as $service) {
             if ($service->containsLocation($locationCsv)) {
-                $list[] = $service;
+                $list->append($service);
             }
         }
         return $list;
@@ -65,7 +65,7 @@ class Services extends Base
         $list = new self();
         foreach ($this as $service) {
             if ($service->isLocale($locale)) {
-                $list[] = $service;
+                $list->append($service);
             }
         }
         return (count($list)) ? $list : null;
