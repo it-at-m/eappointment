@@ -83,7 +83,7 @@ class Base extends \ArrayObject implements \JsonSerializable
 
     public function sortByCustomKey(string $key): static
     {
-        $this->uasort(function ($a, $b) use ($key) {
+        $this->uasort(function ($a, $b) use ($key): mixed {
             return ($a[$key] - $b[$key]);
         });
         return $this;
