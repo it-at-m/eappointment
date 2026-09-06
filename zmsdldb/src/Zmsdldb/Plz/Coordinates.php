@@ -47,7 +47,7 @@ class Coordinates
         if ($json === false) {
             throw new \Exception("Cannot read file $file");
         }
-        $this->data = json_decode($json, 1);
+        $this->data = json_decode($json, true);
     }
 
     /**

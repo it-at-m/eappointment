@@ -51,7 +51,7 @@ class Service extends Base
         $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
         $query = \Elastica\Query::create($boolquery);
         /** @psalm-suppress RiskyTruthyFalsyComparison */
-        if ($location_csv) {
+        if (is_string($location_csv) && $location_csv !== '') {
             $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
             $filter->setExecution('and');
             $query->setPostFilter($filter);
@@ -127,7 +127,7 @@ class Service extends Base
         $filter = new \Elastica\Filter\BoolFilter();
         $filter->addMust(Helper::localeFilter($this->locale));
         /** @psalm-suppress RiskyTruthyFalsyComparison */
-        if ($location_csv) {
+        if (is_string($location_csv) && $location_csv !== '') {
             $filter->addMust(new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv)));
         }
         $filteredQuery = new \Elastica\Query\Filtered($boolquery, $filter);
@@ -142,7 +142,7 @@ class Service extends Base
             $service = new Entity($result->getData());
             $serviceList[$service['id']] = $service;
         }
-        if ($locationsCsvByUser) {
+        if ($locationsCsvByUser && is_string($location_csv)) {
             $serviceList = $serviceList->containsLocation($location_csv);
         }
         return $serviceList;

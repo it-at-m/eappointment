@@ -62,7 +62,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
 
     public function dump(mixed $item): string
     {
-        return '<pre>' . print_r($item, 1) . '</pre>';
+        return '<pre>' . print_r($item, true) . '</pre>';
     }
 
     /**
