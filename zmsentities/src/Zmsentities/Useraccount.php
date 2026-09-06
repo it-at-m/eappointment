@@ -445,7 +445,7 @@ class Useraccount extends Schema\Entity
     /**
      * create useraccount from open id input data with random password
      *
-     * @return string $entity
+     * @return self
     */
     public function createFromOpenidData(mixed $data)
     {
