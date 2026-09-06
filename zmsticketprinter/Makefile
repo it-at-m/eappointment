@@ -1,5 +1,3 @@
-COMPOSER=composer
-
 help:
 	grep -P "^\w+:" Makefile|sort|perl -pe 's/^(\w+):([^\#]+)(\#\s*(.*))?/\1\n\t\4\n/'
 
@@ -8,7 +6,7 @@ now: # Dummy target
 build: css js # Build javascript and css
 
 update: # update with devel composer.json
-	COMPOSER=composer.devel.json $(COMPOSER) update
+	COMPOSER=composer.devel.json composer update
 
 css:
 	npm run css
@@ -25,14 +23,14 @@ fix: # run code fixing
 	npm run fix
 
 live: # init live system
-	COMPOSER_BINARY="$(COMPOSER)" bash ../.resources/scripts/composer-with-retry.sh install --no-dev --prefer-dist --optimize-autoloader
+	bash ../.resources/scripts/composer-with-retry.sh install --no-dev --prefer-dist --optimize-autoloader
 	npm install --legacy-peer-deps
 	npm run build
 	npm install requirejs --no-save --legacy-peer-deps
 	mkdir -p public/_libs/requirejs && cp -r node_modules/requirejs/* public/_libs/requirejs/
 
 dev: # init development system
-	$(COMPOSER) update
+	composer update
 	npm install
 
 coverage:
