@@ -26,7 +26,7 @@ class Setting extends Base
     }
 
     /** @psalm-api */
-    public function fetchName(mixed $name)
+    public function fetchName(mixed $name): \BO\Zmsdldb\Entity\Base|false
     {
         return $this->fetchId($name);
     }

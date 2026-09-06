@@ -112,7 +112,7 @@ class Location extends Base
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @psalm-api
      */
-    public function getAppointmentForService(mixed $service_id, bool $external = false)
+    public function getAppointmentForService(mixed $service_id, bool $external = false): mixed
     {
         $serviceList = $this->getServiceInfoList($service_id);
 

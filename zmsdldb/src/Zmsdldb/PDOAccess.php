@@ -77,7 +77,7 @@ abstract class PDOAccess extends AbstractAccess
     {
     }
 
-    public function loadAccessor(string $name, string $locale = 'de')
+    public function loadAccessor(string $name, string $locale = 'de'): mixed
     {
         if (isset($this->accessorClassName[$name])) {
             if (null === $this->accessInstance[$locale][$this->accessorClassName[$name]]) {
@@ -95,7 +95,7 @@ abstract class PDOAccess extends AbstractAccess
     abstract protected function connect(array $options): void;
 
     /** @psalm-api */
-    public function getConnection()
+    public function getConnection(): mixed
     {
         return $this->pdo;
     }
@@ -104,7 +104,7 @@ abstract class PDOAccess extends AbstractAccess
      * parameters see https://www.php.net/manual/de/pdo.query.php
      */
 
-    public function query(mixed ...$args)
+    public function query(mixed ...$args): mixed
     {
         try {
             return $this->pdo->query(...$args);
@@ -116,7 +116,7 @@ abstract class PDOAccess extends AbstractAccess
     /**
      * parameters see https://www.php.net/manual/de/pdo.exec.php
      */
-    public function exec(string ...$args)
+    public function exec(string ...$args): mixed
     {
         try {
             return $this->pdo->exec(...$args);
@@ -128,7 +128,7 @@ abstract class PDOAccess extends AbstractAccess
     /**
      * parameters see https://www.php.net/manual/de/pdo.prepare.php
      */
-    public function prepare(string ...$args)
+    public function prepare(string ...$args): mixed
     {
         try {
             return $this->pdo->prepare(...$args);
@@ -139,7 +139,7 @@ abstract class PDOAccess extends AbstractAccess
 
     protected $transactionCount = 0;
 
-    public function beginTransaction()
+    public function beginTransaction(): mixed
     {
         try {
             $this->transactionCount++;
@@ -152,7 +152,7 @@ abstract class PDOAccess extends AbstractAccess
         }
     }
 
-    public function commit()
+    public function commit(): mixed
     {
         try {
             $this->transactionCount--;
@@ -167,7 +167,7 @@ abstract class PDOAccess extends AbstractAccess
         }
     }
 
-    public function rollBack()
+    public function rollBack(): mixed
     {
         try {
             $this->transactionCount--;
@@ -182,7 +182,7 @@ abstract class PDOAccess extends AbstractAccess
         }
     }
 
-    public function inTransaction()
+    public function inTransaction(): mixed
     {
         try {
             return $this->pdo->inTransaction();

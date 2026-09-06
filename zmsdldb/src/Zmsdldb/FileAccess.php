@@ -170,7 +170,7 @@ class FileAccess extends AbstractAccess
      * @todo refactor: returns services, not topics.
      * @psalm-api
      */
-    public function fetchTopicServicesList(mixed $topic_path)
+    public function fetchTopicServicesList(mixed $topic_path): mixed
     {
         trigger_error("Deprecated function fetchTopicServicesList, use fromService()->fetchTopic()");
         return $this->fromService()->fetchTopicPath($topic_path);

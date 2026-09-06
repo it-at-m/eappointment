@@ -81,7 +81,7 @@ class Location extends Base
     }
 
     /** @psalm-api */
-    public function fetchListByOffice(mixed $office)
+    public function fetchListByOffice(mixed $office): mixed
     {
         return $this->access()->fromAuthority()
         ->readListByOfficePath($office)

@@ -47,7 +47,7 @@ abstract class Base
         $this->locale = $locale;
     }
 
-    public function readDataFile()
+    public function readDataFile(): mixed
     {
         if (empty($this->data)) {
             $jsonFile = $this->dataFile;
@@ -64,7 +64,7 @@ abstract class Base
     }
 
     /** @psalm-api */
-    public function getDataAsArray()
+    public function getDataAsArray(): mixed
     {
         try {
             $data = $this->readDataFile();
@@ -76,7 +76,7 @@ abstract class Base
     }
 
     /** @psalm-api */
-    public function getHash()
+    public function getHash(): mixed
     {
         try {
             $data = $this->readDataFile();
@@ -88,7 +88,7 @@ abstract class Base
     }
 
     /** @psalm-api */
-    public function getData()
+    public function getData(): mixed
     {
         try {
             $data = $this->readDataFile();
