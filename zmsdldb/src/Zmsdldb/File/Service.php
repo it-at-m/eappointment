@@ -85,6 +85,9 @@ class Service extends Base
     public function fetchListRelated(mixed $service_id)
     {
         $service = $this->fetchId($service_id);
+        if ($service === false) {
+            return new Collection();
+        }
         $serviceList = $this->getItemList();
 
         $relatedList = new Collection(
@@ -168,7 +171,9 @@ class Service extends Base
             $servicelist = $this->fetchFromCsv($servicelistCSV);
             return $servicelist;
         }
-        return $itemlist->sortByName();
+        /** @var Collection $sorted */
+        $sorted = $itemlist->sortByName();
+        return $sorted;
     }
 
     /**
