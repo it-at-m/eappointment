@@ -50,7 +50,9 @@ class Service extends Base
                 return ($nameMatch || $keywordMatch);
             }));
         }
-        $serviceList = new Collection($serviceList->sortByName()->getArrayCopy());
+        /** @var array<int|string, Entity> $sortedItems */
+        $sortedItems = $serviceList->sortByName()->getArrayCopy();
+        $serviceList = new Collection($sortedItems);
         if (!is_string($location_csv)) {
             return $serviceList;
         }
