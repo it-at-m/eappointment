@@ -1,15 +1,33 @@
 <?php
 // @codingStandardsIgnoreFile
 
-define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'https://localhost/terminvereinbarung/api/2');
+define(
+    'ZMS_API_URL',
+    (($value = getenv('ZMS_API_URL')) !== false && $value !== '')
+        ? $value
+        : 'https://localhost/terminvereinbarung/api/2'
+);
 
-define('ZMS_API_PASSWORD_MESSAGING', getenv('ZMS_API_PASSWORD_MESSAGING')
-    ? getenv('ZMS_API_PASSWORD_MESSAGING')
-    : 'examplepassword');
+define(
+    'ZMS_API_PASSWORD_MESSAGING',
+    (($value = getenv('ZMS_API_PASSWORD_MESSAGING')) !== false && $value !== '')
+        ? $value
+        : 'examplepassword'
+);
 
-define('ZMS_API_PROXY', getenv('ZMS_API_PROXY') ? getenv('ZMS_API_PROXY') : NULL);
+define(
+    'ZMS_API_PROXY',
+    (($value = getenv('ZMS_API_PROXY')) !== false && $value !== '')
+        ? $value
+        : null
+);
 
-define('ZMS_IDENTIFIER', getenv('ZMS_IDENTIFIER') ? getenv('ZMS_IDENTIFIER') : 'zms');
+define(
+    'ZMS_IDENTIFIER',
+    (($value = getenv('ZMS_IDENTIFIER')) !== false && $value !== '')
+        ? $value
+        : 'zms'
+);
 define('ZMS_MODULE_NAME', 'zmsmessaging');
 
 define('ZMS_MESSAGING_SMTP_ENABLED', getenv('ZMS_MESSAGING_SMTP_ENABLED') !== false);
