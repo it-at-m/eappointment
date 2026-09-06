@@ -88,7 +88,7 @@ class Mail extends BaseController
                         break;
                     }
 
-                    $ids = array_map(function ($message) {
+                    $ids = array_map(function ($message): mixed {
                         return $message['id'];
                     }, $batch);
                     $encodedIds = base64_encode(json_encode($ids));
