@@ -249,7 +249,7 @@ class Mail extends BaseController
             }
 
             $log = new Mimepart(['mime' => 'text/plain']);
-            $log->content = $message;
+            $log['content'] = $message;
             $this->log("Build Mailer Exception log message: " . $message);
             \App::$http->readPostResult('/log/process/' . $entity['process']['id'] . '/', $log, ['error' => 1]);
             return false;

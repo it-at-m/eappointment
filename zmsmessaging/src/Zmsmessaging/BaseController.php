@@ -54,7 +54,7 @@ class BaseController
         }
         // @codeCoverageIgnoreEnd
         $log = new Mimepart(['mime' => 'text/plain']);
-        $log->content = ($entity instanceof Mail) ? $entity['subject'] : $entity['message'];
+        $log['content'] = ($entity instanceof Mail) ? $entity['subject'] : $entity['message'];
         \App::$http->readPostResult('/log/process/' . $entity['process']['id'] . '/', $log);
         return $mailer;
     }
@@ -67,9 +67,9 @@ class BaseController
         if (3600 < \App::$now->getTimestamp() - $entity['createTimestamp']) {
             $this->deleteEntityFromQueue($entity);
             $log = new Mimepart(['mime' => 'text/plain']);
-            $log->content = 'Zmsmessaging Failure: Queue entry older than 1 hour has been removed';
+            $log['content'] = 'Zmsmessaging Failure: Queue entry older than 1 hour has been removed';
             \App::$http->readPostResult('/log/process/' . $entity['process']['id'] . '/', $log, ['error' => 1]);
-            \App::$log->warning($log->content);
+            \App::$log->warning($log['content']);
             return false;
         }
     }
