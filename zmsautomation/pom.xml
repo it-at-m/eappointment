@@ -16,7 +16,9 @@
     <junit.jupiter.version>6.1.3</junit.jupiter.version>
     <restassured.version>6.0.1</restassured.version>
     <assertj.version>3.27.7</assertj.version>
-    <surefire.version>3.6.0</surefire.version>
+    <!-- Surefire 3.6.0 dropped surefire-testng and runs TestNG via JUnit Platform, so Cucumber's
+         scenarios DataProvider runs before @BeforeClass and discovers 0 tests. Stay on 3.5.x. -->
+    <surefire.version>3.5.6</surefire.version>
     <cucumber.version>7.34.7</cucumber.version>
     <testng.version>7.12.0</testng.version>
     <flyway.version>13.5.0</flyway.version>
@@ -141,6 +143,21 @@
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.maven.surefire</groupId>
+                <artifactId>surefire-testng</artifactId>
+                <version>${surefire.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
       <dependencies>
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
@@ -214,6 +231,13 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.maven.surefire</groupId>
+                <artifactId>surefire-testng</artifactId>
+                <version>${surefire.version}</version>
+              </dependency>
+            </dependencies>
             <configuration>
               <includes>
                 <include>**/ApiTestRunner.java</include>
@@ -296,6 +320,13 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.maven.surefire</groupId>
+                <artifactId>surefire-testng</artifactId>
+                <version>${surefire.version}</version>
+              </dependency>
+            </dependencies>
             <configuration>
               <includes>
                 <include>**/UiTestRunner.java</include>
