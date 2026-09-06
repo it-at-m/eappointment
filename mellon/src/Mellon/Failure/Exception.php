@@ -12,15 +12,14 @@ use BO\Mellon\Valid;
 class Exception extends \Exception
 {
     /**
-     * @var \BO\Mellon\Valid $validator
-     *
+     * @var Valid|null $validator
      */
-    protected $validator = null;
+    protected ?Valid $validator = null;
 
     public function setValidator(Valid $validator): static
     {
         $this->validator = $validator;
-        $this->message = (string)$validator->getMessages();
+        $this->message = (string)($validator->getMessages() ?? '');
         $this->message .=
             "({"
             . $validator->getName()
