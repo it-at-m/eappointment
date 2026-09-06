@@ -91,8 +91,8 @@ class ProcessList extends Base
 
     public function sortByTimeKey(): static
     {
-        $this->uksort(function ($a, $b) {
-            return ($a - $b);
+        $this->uksort(function ($a, $b): mixed {
+            return ((int) $a - (int) $b);
         });
         return $this;
     }

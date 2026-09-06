@@ -116,7 +116,7 @@ class Exchange extends Schema\Entity
                 $calculatePosition = $this->getPositionByName($name);
                 foreach ($this->data as $item) {
                     foreach ($item as $position => $data) {
-                        if (is_numeric($data) && $calculatePosition == $position) {
+                        if (is_numeric($data) && $calculatePosition == $position && is_numeric($totals[$position])) {
                             $totals[$position] += $data;
                         }
                     }
