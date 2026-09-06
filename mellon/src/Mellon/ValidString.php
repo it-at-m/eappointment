@@ -40,7 +40,7 @@ class ValidString extends Valid
     public function isFreeOf($regex, $message = 'value contains undesired content')
     {
         $this->validated = true;
-        if (preg_match($regex, $this->value)) {
+        if ($regex !== '' && preg_match($regex, (string) $this->value)) {
             $this->setFailure($message);
         }
         return $this;
