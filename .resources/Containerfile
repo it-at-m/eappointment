@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 ARG PHP_VERSION
 FROM ghcr.io/it-at-m/eappointment/zmsbase:${PHP_VERSION}-dev as build
 RUN useradd --shell /bin/bash --create-home build
@@ -7,9 +8,13 @@ WORKDIR /build/${MODULE}
 USER build:build
 ARG APP_VERSION=version.unknown
 ENV COMPOSER_MIRROR_PATH_REPOS=1
+ENV COMPOSER_MAX_PARALLEL_HTTP=4
 ENV ZMS_VERSION=${APP_VERSION}
 RUN echo "${APP_VERSION}" > VERSION
-RUN make live
+# COMPOSER_AUTH is a BuildKit secret so the GitHub token never lands in an image layer.
+# mode=0444: this RUN executes as USER build, and secret mounts default to 0400 root.
+RUN --mount=type=secret,id=composer_auth,required=false,mode=0444 \
+    bash -c 'if [ -f /run/secrets/composer_auth ]; then export COMPOSER_AUTH="$(cat /run/secrets/composer_auth)"; fi; make live'
 
 ARG PHP_VERSION
 FROM ghcr.io/it-at-m/eappointment/zmsbase:${PHP_VERSION}-base

@@ -168,14 +168,11 @@ Für lokale UI-Tests (Statistik, Admin) ist der Standard-SSO-Benutzer der Keyclo
 
 Siehe auch das ATAF-Handbuch: [Standalone-Nutzung (ohne Jira, lokales Keycloak)](https://it-at-m.github.io/agile-test-automation-framework/de/usage/standalone-without-jira.html).
 
-### Docker-Compose-Dienste
+### Compose-Dienste
 
-Keycloak und der Migrations-Sidecar sind definiert in:
+Keycloak und der Migrations-Sidecar sind definiert in [`.devcontainer/docker-compose.yaml`](https://github.com/it-at-m/eappointment/blob/main/.devcontainer/docker-compose.yaml).
 
-- [`.ddev/docker-compose.keycloak.yaml`](https://github.com/it-at-m/eappointment/blob/main/.ddev/docker-compose.keycloak.yaml) (DDEV)
-- [`.devcontainer/docker-compose.yaml`](https://github.com/it-at-m/eappointment/blob/main/.devcontainer/docker-compose.yaml) (devcontainer / Podman)
-
-Beide Stacks starten:
+Der Stack startet:
 
 | Dienst          | Aufgabe                                                                                     |
 | --------------- | ------------------------------------------------------------------------------------------- |
