@@ -54,6 +54,9 @@ $value = getenv('ZMS_DLDB_TWIG_CACHE');
 /** @psalm-suppress RiskyTruthyFalsyComparison */
 define('ZMS_DLDB_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '/cache/'));
 
+/**
+ * @psalm-suppress InvalidConstantAssignmentValue
+ */
 class App extends \BO\Zmsbackend\Application
 {
     const string APP_PATH = __DIR__;
