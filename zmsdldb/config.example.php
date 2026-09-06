@@ -3,17 +3,21 @@
 
 // MYSQL_USER with access to DB
 if (!defined('MYSQL_USER')) {
+    /** @psalm-suppress RiskyTruthyFalsyComparison */
     define('MYSQL_USER', getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root');
 }
 // MYSQL_PASSWORD
 if (!defined('MYSQL_PASSWORD')) {
+    /** @psalm-suppress RiskyTruthyFalsyComparison */
     define('MYSQL_PASSWORD', getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') :'zmsbackend');
 }
 // MYSQL_DATABASE is the database name containing the tables
 if (!defined('MYSQL_DATABASE')) {
+    /** @psalm-suppress RiskyTruthyFalsyComparison */
     define('MYSQL_DATABASE', getenv('MYSQL_DATABASE') ? getenv('MYSQL_DATABASE') : 'zmsbo');
 }
 // MYSQL_PORT of type "tcp://127.0.0.1:3306"
+/** @psalm-suppress RiskyTruthyFalsyComparison */
 if (getenv('MYSQL_PORT')) {
     $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=";
     $dsn .= parse_url(getenv('MYSQL_PORT'), PHP_URL_HOST);
@@ -28,6 +32,7 @@ if (getenv('MYSQL_PORT')) {
     }
 }
 // MYSQL_PORT_RO for readonly access of type "tcp://127.0.0.1:3306"
+/** @psalm-suppress RiskyTruthyFalsyComparison */
 if (getenv('MYSQL_PORT_RO')) {
     // Allow simple load balancing with multiple values
     $mysqlPortList = explode(',', getenv('MYSQL_PORT_RO'));
@@ -46,6 +51,7 @@ if (getenv('MYSQL_PORT_RO')) {
 }
 
 $value = getenv('ZMS_DLDB_TWIG_CACHE');
+/** @psalm-suppress RiskyTruthyFalsyComparison */
 define('ZMS_DLDB_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '/cache/'));
 
 class App extends \BO\Zmsbackend\Application
@@ -95,6 +101,7 @@ class App extends \BO\Zmsbackend\Application
 }
 
 // Uncomment the following line for testing data with vendor/bin/importTestData
+/** @psalm-suppress RiskyTruthyFalsyComparison */
 if (getenv('ZMS_TIMEADJUST')) {
     App::$now = new DateTimeImmutable(date(getenv('ZMS_TIMEADJUST')), new DateTimeZone('Europe/Berlin'));
 }

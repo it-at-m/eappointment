@@ -64,6 +64,7 @@ class Service extends Base
     {
         #echo '<pre>' . print_r($this,1) . '</pre>';exit;
         $servicelist = $this->getItemList();
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if ($location_csv) {
             $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use ($location_csv) {
                 $service = new Entity($item);

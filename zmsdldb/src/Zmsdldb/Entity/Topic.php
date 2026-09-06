@@ -26,6 +26,7 @@ class Topic extends Base
      */
     public function isLinked(): bool
     {
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         return ($this['relation']['navi'] || static::subcount($this['relation']['navi']));
     }
 
