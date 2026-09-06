@@ -25,16 +25,16 @@ class Validator
     /**
      * Content of STDIN
      *
-     * @var String $input
+     * @var string|null $input
      */
-    protected $input = null;
+    protected ?string $input = null;
 
     /**
       * Singleton instance
       *
-      * @var self $instance
-      */
-    protected static $instance = null;
+     * @var self|null $instance
+     */
+    protected static ?self $instance = null;
 
     /**
      * Always initialize using an array of parameters
