@@ -6,8 +6,6 @@
 
 namespace BO\Zmsdldb;
 
-use Error;
-
 /**
  * Extension for Twig
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
