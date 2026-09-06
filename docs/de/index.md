@@ -9,7 +9,7 @@ Dieses Handbuch ist die Hauptanlaufstelle auf [GitHub Pages](https://it-at-m.git
 ## Schnellzugriffe
 
 - [Projektgeschichte](./overview/project-history.md)
-- [DDEV und Devcontainer](./setup-and-development/getting-started/ddev-and-devcontainer.md)
+- [Devcontainer und Podman](./setup-and-development/getting-started/devcontainer.md)
 - [Lokale Datenbank- und Cache-Operationen](./setup-and-development/local-database-and-cache-operations.md)
 - [Abhängigkeits-Aktualisierungsprüfung](./setup-and-development/dependency-upgrade-check.md)
 - [PHP-Basis-Images](./setup-and-development/php-base-images.md)

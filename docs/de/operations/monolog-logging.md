@@ -9,7 +9,7 @@ Das **Mindest-Log-Level** wird ebenfalls in zmsslim zentral gesetzt: **`DEBUGLEV
 | Thema                    | Detail                                                                               |
 | ------------------------ | ------------------------------------------------------------------------------------ |
 | Logger-Property          | `App::$log` (`Monolog\Logger`, vor Bootstrap `null`)                                 |
-| Umgebungsvariable        | `DEBUGLEVEL` (z. B. in `.env`, DDEV, Deployment) — Standard `INFO`                   |
+| Umgebungsvariable        | `DEBUGLEVEL` (z. B. in `.env` oder Deployment) — Standard `INFO`                     |
 | zmsslim-Define           | `ZMS_DEBUGLEVEL` — in `Application.php` aus `getenv('DEBUGLEVEL')` gesetzt           |
 | App-Konstante            | `App::DEBUGLEVEL` — jedes Modul erbt `ZMS_DEBUGLEVEL` von `\BO\Slim\Application`     |
 | Effektives Mindest-Level | Was nach dem Bootstrap gilt (`App::DEBUGLEVEL` zur Laufzeit)                         |
@@ -33,7 +33,7 @@ flowchart LR
   env --> zms --> app --> boot --> mono
 ```
 
-1. **Betrieb** setzt `DEBUGLEVEL` (z. B. `INFO` oder `WARNING`) in `.env`, DDEV oder Deployment.
+1. **Betrieb** setzt `DEBUGLEVEL` (z. B. `INFO` oder `WARNING`) in `.env` oder Deployment.
 2. Beim Laden von `zmsslim/src/Slim/Application.php` wird **`ZMS_DEBUGLEVEL`** aus dieser Env-Variable definiert (Standard `INFO`, falls nicht gesetzt).
 3. `\BO\Slim\Application` deklariert **`const DEBUGLEVEL = ZMS_DEBUGLEVEL`**. Jedes Modul mit `class App extends \BO\Zmsapi\Application` (usw.) erbt dieselbe Konstante, sofern nicht lokal überschrieben.
 4. Beim Bootstrap rufen **`Bootstrap::init()`** / **`ensureLogger()`** / **`initForCli()`** **`configureLogger(App::DEBUGLEVEL, App::IDENTIFIER)`** auf. Das Level ist gemeinsam; in den JSON-Logs unterscheiden sich nur **`App::IDENTIFIER`** und **`App::MODULE_NAME`** pro Modul.
@@ -68,7 +68,7 @@ Die Zuordnung steht in `zmsslim/src/Slim/Bootstrap.php` (`$debuglevels`, `parseD
 ### Beispiel-Konfiguration
 
 ```bash
-# .env / DDEV / Deployment — gilt für alle Slim-Module über zmsslim
+# .env / Deployment — gilt für alle Slim-Module über zmsslim
 DEBUGLEVEL=INFO
 ```
 
@@ -126,7 +126,7 @@ Erfolgreiche und fehlgeschlagene Request-Logs nutzen **getrennte Zähler** und d
 | `…_LOGGER_BACKOFF_MIN` / `…_LOGGER_BACKOFF_MAX` | `100` / `1000` | Backoff zwischen Wiederholungen (ms)                                                           |
 | `…_LOGGER_LOCK_TIMEOUT`                         | `5`            | Cache-Lock-Timeout (Sekunden)                                                                  |
 
-Vollständige Beispiele stehen in `.ddev/.env.template` bzw. `.devcontainer/.env.template`.
+Vollständige Beispiele stehen in `.devcontainer/.env.template`.
 
 ### Feinabstimmung bei hoher Request-Frequenz
 
