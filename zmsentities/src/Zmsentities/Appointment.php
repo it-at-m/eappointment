@@ -151,7 +151,7 @@ class Appointment extends Schema\Entity
     {
         $appointmentDateTime = \DateTimeImmutable::createFromFormat($format, $dateString);
         if ($appointmentDateTime) {
-            $this->date = $appointmentDateTime->format('U');
+            $this->date = (int) $appointmentDateTime->format('U');
         } else {
             throw new Exception\DateStringWrongFormat(
                 "String " . htmlspecialchars($dateString) . " not format " . htmlspecialchars($format)
