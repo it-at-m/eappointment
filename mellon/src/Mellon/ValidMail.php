@@ -56,7 +56,8 @@ class ValidMail extends \BO\Mellon\ValidString
     {
         $this->validated = true;
         if ($this->value && !$this::$disableDnsChecks) {
-            $domain = substr($this->value, strpos($this->value, '@') + 1);
+            $position = strpos((string) $this->value, '@');
+            $domain = substr((string) $this->value, false === $position ? 1 : $position + 1);
             $hasDNS = ($domain) ? $this->checkDnsAny($domain) : false;
             if (false === $hasDNS) {
                 $this->setFailure($message);
@@ -72,7 +73,8 @@ class ValidMail extends \BO\Mellon\ValidString
     {
         $this->validated = true;
         if ($this->value) {
-            $domain = substr($this->value, strpos($this->value, '@') + 1);
+            $position = strpos((string) $this->value, '@');
+            $domain = substr((string) $this->value, false === $position ? 1 : $position + 1);
             $hasMX = checkdnsrr($domain, 'MX');
             if (false === $hasMX) {
                 $this->setFailure($message);
