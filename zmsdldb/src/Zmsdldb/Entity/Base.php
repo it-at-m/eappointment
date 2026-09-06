@@ -121,7 +121,7 @@ class Base extends \ArrayObject
      */
     public static function doubleUnterlineToArray(&$array, string $key, mixed $value): mixed
     {
-        if (is_null($key)) {
+        if ($key === '') {
             return $array = $value;
         }
         $keys = explode('__', $key);
