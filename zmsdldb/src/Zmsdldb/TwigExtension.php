@@ -98,6 +98,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
 
     public function getD115Enabeld(): bool
     {
+        /** @psalm-suppress UndefinedPropertyFetch */
         $settingsRepository = \App::$repository->fromSetting();
         $active = (bool)($settingsRepository->fetchName('d115.active') ?? true);
 
@@ -107,6 +108,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
 
     public function getD115OpeningTimes(): mixed
     {
+        /** @psalm-suppress UndefinedPropertyFetch */
         $settingsRepository = \App::$repository->fromSetting();
         $openinTimes = $settingsRepository->fetchName('d115.openingTime') ?? \App::D115_DEFAULT_OPENINGTIME;
 
@@ -115,6 +117,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
 
     public function getD115Text(): mixed
     {
+        /** @psalm-suppress UndefinedPropertyFetch */
         $settingsRepository = \App::$repository->fromSetting();
         $text = $settingsRepository->fetchName('d115.messageHtml') ?? \App::D115_DEFAULT_TEXT;
 
@@ -123,6 +126,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
 
     public function getBobbiChatButtonEnabeld(): bool
     {
+        /** @psalm-suppress UndefinedPropertyFetch */
         $settingsRepository = \App::$repository->fromSetting();
         $buttonEnabled = (bool)($settingsRepository->fetchName('frontend.bobbi.chatbutton.enabled') ?? false);
 
