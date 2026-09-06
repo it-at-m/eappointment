@@ -41,7 +41,7 @@ class Service extends Base
      */
     public function searchAll(mixed $querystring, bool|string $service_csv = false, bool|string $location_csv = false)
     {
-        $serviceList = $this->fetchList($location_csv);
+        $serviceList = new Collection($this->fetchList($location_csv)->getArrayCopy());
         if ($querystring) {
             $serviceList = new Collection(array_filter((array) $serviceList, function ($item) use ($querystring) {
                 $length = (3 < strlen($querystring)) ? strlen($querystring) : 3;
@@ -50,12 +50,11 @@ class Service extends Base
                 return ($nameMatch || $keywordMatch);
             }));
         }
-        $serviceList = $serviceList->sortByName();
+        $serviceList = new Collection($serviceList->sortByName()->getArrayCopy());
         if (!is_string($location_csv)) {
             return $serviceList;
         }
-        $filtered = new Collection($serviceList->getArrayCopy());
-        return $filtered->containsLocation($location_csv);
+        return $serviceList->containsLocation($location_csv);
     }
 
     /**
