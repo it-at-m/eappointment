@@ -190,9 +190,10 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         $dateTime = new \DateTimeImmutable($dateString, new \DateTimeZone('Europe/Berlin'));
         $formatDate['date']     = Helper\DateTime::getFormatedDates($dateTime, "EE, dd. MMMM yyyy");
         $formatDate['fulldate'] = Helper\DateTime::getFormatedDates($dateTime, "EEEE, 'den' dd. MMMM yyyy");
-        $formatDate['weekday']  = ($dateTime->format('N') == 0) ?
-            $dateTime->format('N') + 6 :
-            $dateTime->format('N') - 1;
+        $weekdayNumber = (int) $dateTime->format('N');
+        $formatDate['weekday']  = ($weekdayNumber == 0) ?
+            $weekdayNumber + 6 :
+            $weekdayNumber - 1;
         $formatDate['weekdayfull'] = Helper\DateTime::getFormatedDates($dateTime, "EEEE");
 
         $time = $dateTime->format('H:i');
