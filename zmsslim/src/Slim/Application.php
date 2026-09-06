@@ -8,9 +8,17 @@ define(
 );
 if (!defined('ZMS_SLIM_TWIG_CACHE')) {
     $value = getenv('ZMS_SLIM_TWIG_CACHE');
-    define('ZMS_SLIM_TWIG_CACHE', ($value === 'false') ? false : ($value ?: false));
+    if ($value === 'false' || $value === false || $value === '' || $value === '0') {
+        define('ZMS_SLIM_TWIG_CACHE', false);
+    } else {
+        define('ZMS_SLIM_TWIG_CACHE', $value);
+    }
 }
-define('ZMS_DEBUGLEVEL', getenv('DEBUGLEVEL') ? getenv('DEBUGLEVEL') : 'INFO');
+$debugLevel = getenv('DEBUGLEVEL');
+define(
+    'ZMS_DEBUGLEVEL',
+    ($debugLevel === false || $debugLevel === '' || $debugLevel === '0') ? 'INFO' : $debugLevel
+);
 
 class Application
 {

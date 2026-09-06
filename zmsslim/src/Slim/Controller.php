@@ -52,7 +52,12 @@ abstract class Controller
             throw $exception;
         }
         $output = ob_get_clean();
-        if ($output && !$renderResponse instanceof ResponseInterface) {
+        if (
+            $output !== false
+            && $output !== ''
+            && $output !== '0'
+            && !$renderResponse instanceof ResponseInterface
+        ) {
             $renderResponse = Render::$response;
             $renderResponse->getBody()->write($output);
         }
