@@ -187,7 +187,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
      */
     public function formatDateTime(mixed $dateString): array
     {
-        $dateTime = new \DateTimeImmutable($dateString, new \DateTimezone('Europe/Berlin'));
+        $dateTime = new \DateTimeImmutable($dateString, new \DateTimeZone('Europe/Berlin'));
         $formatDate['date']     = Helper\DateTime::getFormatedDates($dateTime, "EE, dd. MMMM yyyy");
         $formatDate['fulldate'] = Helper\DateTime::getFormatedDates($dateTime, "EEEE, 'den' dd. MMMM yyyy");
         $formatDate['weekday']  = ($dateTime->format('N') == 0) ?
