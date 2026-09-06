@@ -229,6 +229,8 @@ class Mail extends BaseController
     {
         $message = '';
         $messageId = $entity['id'];
+        $code = 0;
+        $mailer = false;
         try {
             $mailer = $this->readMailer($entity);
         // @codeCoverageIgnoreStart
@@ -271,6 +273,7 @@ class Mail extends BaseController
     {
         $this->testEntity($entity);
         $encoding = 'base64';
+        $icsPart = null;
         foreach ($entity['multipart'] as $part) {
             $mimepart = new Mimepart($part);
             if ($mimepart->isText()) {
