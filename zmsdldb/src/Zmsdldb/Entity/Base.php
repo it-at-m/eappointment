@@ -16,7 +16,7 @@ class Base extends \ArrayObject
      * return an ID for this entity
      *
      */
-    public function getId()
+    public function getId(): mixed
     {
         if (!$this->offsetExists('id')) {
             return false;
@@ -28,7 +28,7 @@ class Base extends \ArrayObject
      * return a name for this entity
      *
      */
-    public function getName()
+    public function getName(): mixed
     {
         return $this['name'];
     }
@@ -38,7 +38,7 @@ class Base extends \ArrayObject
      *
      * @psalm-api
      */
-    public function getPath()
+    public function getPath(): mixed
     {
         if (!$this->offsetExists('path')) {
             return false;
@@ -46,7 +46,7 @@ class Base extends \ArrayObject
         return $this['path'];
     }
 
-    public static function hasValidOffset($item, string $index): bool
+    public static function hasValidOffset(mixed $item, string $index): bool
     {
         return (
             (is_object($item) && $item->offsetExists($index)) ||
@@ -55,7 +55,7 @@ class Base extends \ArrayObject
     }
 
     /** @psalm-api */
-    public function getLocale()
+    public function getLocale(): mixed
     {
         $meta = $this['meta'];
         if (false === static::hasValidOffset($meta, 'locale')) {
@@ -65,7 +65,7 @@ class Base extends \ArrayObject
     }
 
     /** @psalm-api */
-    public function getLink()
+    public function getLink(): mixed
     {
         if (!$this->offsetExists('link')) {
             return false;
@@ -73,7 +73,7 @@ class Base extends \ArrayObject
         return $this['link'];
     }
 
-    public function getType()
+    public function getType(): mixed
     {
         if (!$this->offsetExists('type')) {
             return false;
@@ -81,7 +81,7 @@ class Base extends \ArrayObject
         return $this['type'];
     }
 
-    protected static function subcount($countable): int|null
+    protected static function subcount(mixed $countable): int|null
     {
         if (is_array($countable) || $countable instanceof \Countable) {
             return count($countable);
@@ -89,7 +89,7 @@ class Base extends \ArrayObject
         return null;
     }
 
-    public function __set($name, $value)
+    public function __set(string $name, mixed $value)
     {
         $this->offsetSet($name, $value);
     }
@@ -101,10 +101,12 @@ class Base extends \ArrayObject
             $value = json_decode($value, true);
             $this->exchangeArray($value);
         } else {
+            /** @psalm-suppress RiskyTruthyFalsyComparison */
             if (stripos($index, '_json')) {
                 $value = json_decode($value, true);
                 $index = str_replace('_json', '', $index);
             }
+            /** @psalm-suppress RiskyTruthyFalsyComparison */
             if (stripos($index, '__')) {
                 static::doubleUnterlineToArray($this, $index, $value);
                 return;
@@ -116,10 +118,11 @@ class Base extends \ArrayObject
 
     /**
      * @param static $array
+     * @param-out array|static $array
      */
-    public static function doubleUnterlineToArray(&$array, string $key, $value)
+    public static function doubleUnterlineToArray(&$array, string $key, mixed $value): mixed
     {
-        if (is_null($key)) {
+        if ($key === '') {
             return $array = $value;
         }
         $keys = explode('__', $key);
@@ -128,6 +131,9 @@ class Base extends \ArrayObject
         while ($numKeys > 1) {
             $key = array_shift($keys);
             $numKeys = count($keys);
+            if ($key === null) {
+                break;
+            }
             if (! isset($array[$key]) || ! is_array($array[$key])) {
                 $array[$key] = [];
             }
@@ -135,7 +141,10 @@ class Base extends \ArrayObject
             $array = &$array[$key];
         }
 
-        $array[array_shift($keys)] = $value;
+        $lastKey = array_shift($keys);
+        if ($lastKey !== null) {
+            $array[$lastKey] = $value;
+        }
 
         return $array;
     }

@@ -6,10 +6,10 @@ define('DEBUG', true);
 
 class Timer
 {
-    protected $start;
-    protected $pause;
-    protected $stop;
-    protected $elapsed;# = 0;
+    protected float $start;
+    protected float|null $pause = null;
+    protected float|null $stop = null;
+    protected float $elapsed = 0.0;
 
     public function __construct()
     {
@@ -49,7 +49,7 @@ class Timer
         $this->start = Timer::getMicroTime();
     }
 
-    public function getTime()
+    public function getTime(): string
     {
         if (!isset($this->stop)) {
             $this->stop = Timer::getMicroTime();
@@ -58,7 +58,7 @@ class Timer
     }
 
     /** @psalm-api */
-    protected function getLapTime()
+    protected function getLapTime(): string
     {
         return $this->timeToString();
     }
@@ -71,7 +71,7 @@ class Timer
 
     protected function timeToString(): string
     {
-        $seconds = ($this->stop - $this->start) + $this->elapsed;
+        $seconds = ((float) ($this->stop ?? 0) - $this->start) + (float) ($this->elapsed ?? 0);
         $seconds = Timer::roundMicroTime($seconds);
         $hours = floor($seconds / (60 * 60));
         $divisorForMinutes = $seconds % (60 * 60);
@@ -79,7 +79,7 @@ class Timer
         return $hours . "h:" . $minutes . "m:" . $seconds . "s";
     }
 
-    protected static function roundMicroTime($microTime): float
+    protected static function roundMicroTime(mixed $microTime): float
     {
         return round($microTime, 4, PHP_ROUND_HALF_UP);
     }

@@ -14,11 +14,11 @@ use BO\Zmsdldb\FileAccess;
  */
 class ElasticSearch
 {
-    const string ES_INDEX_PREFIX = 'dldb-';
+    public const string ES_INDEX_PREFIX = 'dldb-';
 
-    const string ES_INDEX_DATE = 'Ymd-His';
+    public const string ES_INDEX_DATE = 'Ymd-His';
 
-    protected $localeList = array(
+    protected mixed $localeList = array(
         'de',
         'en'
     );
@@ -54,16 +54,16 @@ class ElasticSearch
     /**
      * The client used to talk to elastic search.
      *
-     * @var \Elastica\Client
+     * @var \Elastica\Client|null
      */
-    protected $connection;
+    protected $connection = null;
 
     /**
      * Index from elastic search
      *
-     * @var \Elastica\Index $index
+     * @var \Elastica\Index|null $index
      */
-    protected $index;
+    protected $index = null;
 
     /**
      * Due to backward compatibility, the first parameter has two possible meanings
@@ -72,7 +72,7 @@ class ElasticSearch
      * @param String $servicesFile
      *            (optional)
      */
-    public function __construct($importOrLocationFile, $servicesFile = null)
+    public function __construct(mixed $importOrLocationFile, $servicesFile = null)
     {
         if (is_dir($importOrLocationFile)) {
             $this->dldb = new FileAccess();
@@ -99,7 +99,7 @@ class ElasticSearch
 
     /**
      *
-     * @return self
+     * @return array
      */
     protected function readTopics()
     {
@@ -133,7 +133,7 @@ class ElasticSearch
 
     /**
      *
-     * @return self
+     * @return array
      */
     protected function readServices()
     {
@@ -151,7 +151,7 @@ class ElasticSearch
 
     /**
      *
-     * @return self
+     * @return array
      */
     protected function readLocations()
     {
@@ -169,7 +169,7 @@ class ElasticSearch
 
     /**
      *
-     * @return self
+     * @return array
      */
     protected function readAuthorities()
     {
@@ -212,6 +212,10 @@ class ElasticSearch
             $this->index = $connection->getIndex(self::ES_INDEX_PREFIX . date(self::ES_INDEX_DATE));
             if (! $this->index->exists()) {
                 $indexSettings = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'ElasticSearch_Index.json');
+                if ($indexSettings === false) {
+                    $this->index = null;
+                    throw new \RuntimeException('Cannot read ElasticSearch_Index.json');
+                }
                 $indexSettings = json_decode($indexSettings, true);
                 $this->index->create($indexSettings);
             }
@@ -223,7 +227,7 @@ class ElasticSearch
      *
      * @return self
      */
-    public function setHost($host)
+    public function setHost(mixed $host)
     {
         $this->host = $host;
         return $this;
@@ -233,7 +237,7 @@ class ElasticSearch
      *
      * @return self
      */
-    public function setPort($port)
+    public function setPort(mixed $port)
     {
         $this->port = $port;
         return $this;
@@ -243,7 +247,7 @@ class ElasticSearch
      *
      * @return self
      */
-    public function setTransport($transport)
+    public function setTransport(mixed $transport)
     {
         $this->transport = $transport;
         return $this;
@@ -254,7 +258,7 @@ class ElasticSearch
      *
      * @return self
      */
-    public function setAlias($alias)
+    public function setAlias(mixed $alias)
     {
         $this->getIndex()->refresh();
         $this->getIndex()->addAlias($alias, true);

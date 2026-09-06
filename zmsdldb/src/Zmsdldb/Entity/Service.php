@@ -21,10 +21,10 @@ class Service extends Base
      *
      * @return Bool
      */
-    public function containsLocation($location_csv)
+    public function containsLocation(string|null $location_csv)
     {
         $service = $this->getArrayCopy();
-        $locationcompare = explode(',', $location_csv);
+        $locationcompare = explode(',', (string) $location_csv);
         $locationsfound = array();
         foreach ($service['locations'] as $locationinfo) {
             $location_id = $locationinfo['location'];
@@ -38,10 +38,10 @@ class Service extends Base
     /**
      * @psalm-api
      */
-    public function hasLocation($location_csv): bool
+    public function hasLocation(mixed $location_csv): bool
     {
         $service = $this->getArrayCopy();
-        $locationcompare = explode(',', $location_csv);
+        $locationcompare = explode(',', (string) $location_csv);
         foreach ($service['locations'] as $locationinfo) {
             if (in_array($locationinfo['location'], $locationcompare)) {
                 return true;
@@ -53,7 +53,7 @@ class Service extends Base
     /**
      * @psalm-api
      */
-    public function hasAppointments($external = false): bool
+    public function hasAppointments(bool $external = false): bool
     {
         foreach ($this['locations'] as $location) {
             if (isset($location['appointment']['allowed'])) {
@@ -71,7 +71,7 @@ class Service extends Base
 
 
     /** @psalm-api */
-    public function isResponsibleForAll()
+    public function isResponsibleForAll(): mixed
     {
         return $this['responsibility_all'];
     }

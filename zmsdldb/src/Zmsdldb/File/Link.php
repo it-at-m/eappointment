@@ -12,6 +12,8 @@ use BO\Zmsdldb\Collection\Links as Collection;
 
 /**
  * Common methods shared by access classes
+ *
+ * @extends Base<Collection, Entity>
  */
 class Link extends Base
 {
@@ -24,6 +26,7 @@ class Link extends Base
         $data = $this->access()
             ->fromTopic()
             ->fetchList();
+        /** @psalm-suppress InvalidArgument */
         $this->setItemList($this->parseData($data));
     }
 
@@ -31,7 +34,7 @@ class Link extends Base
      * @return Collection
      */
     #[\Override]
-    protected function parseData($data)
+    protected function parseData(mixed $data)
     {
         $itemList = new Collection();
         foreach ($data as $topic) {
@@ -53,10 +56,10 @@ class Link extends Base
 
     /**
      *
-     * @return Entity
+     * @return Entity|false
      * @psalm-api
      */
-    public function fetchPath($topic_path)
+    public function fetchPath(mixed $topic_path)
     {
         $topiclist = $this->fetchList();
         foreach ($topiclist as $topic) {
@@ -72,13 +75,13 @@ class Link extends Base
      *
      * @return Collection
      */
-    public function readSearchResultList($query)
+    public function readSearchResultList(mixed $query)
     {
         $list = $this->getItemList();
         $result = new Collection();
         foreach ($list as $link) {
             if (false !== strpos($link['name'], $query)) {
-                $result[] = $link;
+                $result->append($link);
             }
         }
         return $result;

@@ -10,10 +10,16 @@ namespace BO\Zmsdldb\Collection;
 use BO\Zmsdldb\Helper\Sorter;
 
 /**
- * @extends \ArrayObject<int|string, \BO\Zmsdldb\Entity\Base>
+ * @template T of \BO\Zmsdldb\Entity\Base
+ * @extends \ArrayObject<int|string, T>
  */
 class Base extends \ArrayObject
 {
+    public function offsetSet(mixed $key, mixed $value): void
+    {
+        parent::offsetSet($key, $value);
+    }
+
     public function sortByName(): static
     {
         $itemList = clone $this;
@@ -26,9 +32,12 @@ class Base extends \ArrayObject
     /**
      * @psalm-api
      */
-    public function sortWithCollator($field = 'name', $locale = 'de'): static
+    public function sortWithCollator(string $field = 'name', string $locale = 'de'): static
     {
         $collator = collator_create($locale);
+        if ($collator === null) {
+            throw new \RuntimeException('Could not create collator for locale ' . $locale);
+        }
         $collator->setStrength(\Collator::QUATERNARY);
         $collator->setAttribute(\Collator::QUATERNARY, \Collator::ON);
         $collator->setAttribute(\Collator::CASE_FIRST, \Collator::ON);

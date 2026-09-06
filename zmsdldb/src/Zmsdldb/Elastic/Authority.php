@@ -7,7 +7,6 @@
 
 namespace BO\Zmsdldb\Elastic;
 
-use BO\Zmsdldb\Entity\Authority as Entity;
 use BO\Zmsdldb\Collection\Authorities as Collection;
 use BO\Zmsdldb\File\Authority as Base;
 
@@ -21,15 +20,16 @@ class Authority extends Base
      * @return Collection
      */
     #[\Override]
-    public function fetchList($servicelist = false)
+    public function fetchList(mixed $servicelist = false)
     {
         $boolquery = Helper::boolFilteredQuery();
         $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
         $query = \Elastica\Query::create($boolquery);
         $limit = 1000;
 
-        if ($servicelist && count($servicelist)) {
-            $filter = new \Elastica\Filter\Terms('services.service', (array)$servicelist);
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
+        if (is_array($servicelist) && $servicelist !== []) {
+            $filter = new \Elastica\Filter\Terms('services.service', array_values($servicelist));
             $filter->setExecution('and');
             $query->setPostFilter($filter);
         }
@@ -49,7 +49,7 @@ class Authority extends Base
      * @return Collection
      */
     #[\Override]
-    public function fromLocationResults($resultList)
+    public function fromLocationResults(mixed $resultList)
     {
         $authorityList = new Collection();
         foreach ($resultList as $result) {
