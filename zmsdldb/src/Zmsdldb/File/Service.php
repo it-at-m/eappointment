@@ -52,6 +52,7 @@ class Service extends Base
         }
         $serviceList = $serviceList->sortByName();
         /** @var Collection $serviceList */
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         return ($location_csv) ? $serviceList->containsLocation($location_csv) : $serviceList;
     }
 
