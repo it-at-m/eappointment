@@ -97,7 +97,7 @@ class Service extends Base
                 }
             )
         );
-        return ($relatedList) ? $relatedList : new Collection();
+        return $relatedList;
     }
 
     /**

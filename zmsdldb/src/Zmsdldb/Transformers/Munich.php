@@ -670,6 +670,7 @@ class Munich
     protected function getServiceCombinations(int $serviceId): array
     {
         foreach (self::SERVICE_COMBINATIONS as $combo) {
+            /** @psalm-suppress TypeDoesNotContainType */
             if (empty($combo)) {
                 continue;
             }
