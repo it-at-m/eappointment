@@ -211,7 +211,7 @@ class Availability extends Schema\Entity
     {
         $dateTime = $appointment->toDateTime();
         $isOpenedStart = $this->isOpened($dateTime, false);
-        $duration = $this->slotTimeInMinutes * $appointment->slotCount;
+        $duration = (int) $this->slotTimeInMinutes * $appointment->slotCount;
         $endTime = $dateTime->modify("+" . $duration . "minutes")
             ->modify("-1 second"); // To allow the last slot for an appointment
         $isOpenedEnd = $this->isOpened($endTime, false);
@@ -724,7 +724,7 @@ class Availability extends Schema\Entity
         $start = $this->getStartDateTime()->getSecondsOfDay();
         $end = $this->getEndDateTime()->getSecondsOfDay();
         $minutesPerDay = floor(($end - $start) / 60);
-        if ($minutesPerDay % $this->slotTimeInMinutes > 0) {
+        if ($minutesPerDay % (int) $this->slotTimeInMinutes > 0) {
             $conflict = new Process();
             $conflict->status = 'conflict';
             $appointment = $conflict->getFirstAppointment();

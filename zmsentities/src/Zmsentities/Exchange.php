@@ -175,8 +175,8 @@ class Exchange extends Schema\Entity
                 continue;
             }
 
-            $average[$name . '_sum'] = 0;
-            $average[$name . '_count'] = 0;
+            $sum = 0;
+            $count = 0;
 
             foreach ($entry as $dateItem) {
                 if (!is_array($dateItem) && !($dateItem instanceof \Traversable)) {
@@ -190,13 +190,15 @@ class Exchange extends Schema\Entity
                         continue;
                     }
 
-                    $average[$name . '_sum'] += $value;
-                    $average[$name . '_count']++;
+                    $sum += $value;
+                    $count++;
                 }
             }
 
-            $average[$name] = $average[$name . '_count'] > 0
-                ? round($average[$name . '_sum'] / $average[$name . '_count'], 2)
+            $average[$name . '_sum'] = $sum;
+            $average[$name . '_count'] = $count;
+            $average[$name] = $count > 0
+                ? round($sum / $count, 2)
                 : null;
         }
 
