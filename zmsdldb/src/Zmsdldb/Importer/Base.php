@@ -66,6 +66,7 @@ abstract class Base implements Options
                 array_unshift($args, $this->getPDOAccess());
                 /** @var class-string<\BO\Zmsdldb\Importer\MySQL\Base> $ImporterClass */
                 /** @psalm-suppress UnsafeInstantiation */
+                /** @psalm-suppress InvalidStringClass */
                 $instance = new $ImporterClass(...$args);
                 if (!$instance instanceof \BO\Zmsdldb\Importer\MySQL\Base) {
                     throw new \InvalidArgumentException(
