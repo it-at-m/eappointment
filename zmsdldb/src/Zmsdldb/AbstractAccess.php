@@ -104,8 +104,8 @@ class AbstractAccess
             }
         }
         $accessInstance = $this->getInstanceCompatibilities();
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if (
-            /** @psalm-suppress RiskyTruthyFalsyComparison */
             $instanceName
             && $instanceName != 'Missing'
             && method_exists($accessInstance[$instanceName], $actionType . $actionName)
