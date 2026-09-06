@@ -130,10 +130,14 @@ class Base extends \ArrayObject implements \JsonSerializable
      */
     public function addEntity(\BO\Zmsentities\Schema\Entity $entity): static
     {
-        $this->offsetSet(null, $entity);
+        $this->append($entity);
         return $this;
     }
 
+    /**
+     * @param int|string|null $index
+     * @param T $value
+     */
     #[\Override]
     public function offsetSet(mixed $index, mixed $value): void
     {

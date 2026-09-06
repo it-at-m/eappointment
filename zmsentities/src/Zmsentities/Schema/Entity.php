@@ -73,6 +73,15 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $this->getArrayCopy();
     }
 
+    /**
+     * @param array-key|null $key
+     */
+    #[\Override]
+    public function offsetSet(mixed $key, mixed $value): void
+    {
+        parent::offsetSet($key, $value);
+    }
+
     public function getUnflattenedArray(mixed $input): mixed
     {
         if (!$input instanceof UnflattedArray) {
