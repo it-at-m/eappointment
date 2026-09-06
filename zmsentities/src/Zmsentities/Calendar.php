@@ -137,9 +137,9 @@ class Calendar extends Schema\Entity
     /**
      * Returns a list of associated scope ids
      *
-     * @return array
+     * @return Collection\ScopeList
      */
-    public function getScopeList()
+    public function getScopeList(): Collection\ScopeList
     {
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
         if (isset($this->scopes)) {
@@ -154,9 +154,9 @@ class Calendar extends Schema\Entity
     /**
      * Returns a list of associated request entities
      *
-     * @return array
+     * @return Collection\RequestList
      */
-    public function getRequestList()
+    public function getRequestList(): Collection\RequestList
     {
         $requestList = new \BO\Zmsentities\Collection\RequestList();
         foreach ($this->requests as $request) {
@@ -169,9 +169,9 @@ class Calendar extends Schema\Entity
     /**
      * Returns a list of associated provider ids
      *
-     * @return array
+     * @return Collection\ProviderList
      */
-    public function getProviderList()
+    public function getProviderList(): Collection\ProviderList
     {
         $providerList = new \BO\Zmsentities\Collection\ProviderList();
         foreach ($this->providers as $provider) {

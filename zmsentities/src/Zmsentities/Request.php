@@ -26,7 +26,7 @@ class Request extends Schema\Entity
     }
 
     #[\Override]
-    public function withReference($additionalData = [])
+    public function withReference($additionalData = []): self|array
     {
         $additionalData['id'] = $this->getId();
         $additionalData['name'] = $this->getName();

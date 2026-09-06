@@ -18,10 +18,10 @@ class SlotList extends Base
      * @param array $slotA
      * @param array $slotB
      *
-     * @return array $slotA modified
+     * @return static
      *
      */
-    public function takeLowerSlotValue(int $indexA, int $indexB)
+    public function takeLowerSlotValue(int $indexA, int $indexB): static
     {
         $slotA = $this[$indexA];
         $slotB = $this[$indexB];

@@ -244,30 +244,30 @@ class AvailabilityList extends Base
     }
 
     /**
-     * @return integer
+     * @return array
      */
-    public function getSummerizedSlotCount()
+    public function getSummerizedSlotCount(): array
     {
-        return array_reduce($this->getArrayCopy(), function ($carry, $item) {
+        $slotCounts = [];
+        foreach ($this as $item) {
             $itemId = ($item->id) ? $item->id : $item->tempId;
-            $maxSlots = (int) $item->getSlotList()->getSummerizedSlot()->intern;
-            $carry[$itemId] = $maxSlots;
-            return $carry;
-        }, []);
+            $slotCounts[$itemId] = (int) $item->getSlotList()->getSummerizedSlot()->intern;
+        }
+        return $slotCounts;
     }
 
     /**
-     * @return integer
+     * @return array
      */
-    public function getCalculatedSlotCount(\BO\Zmsentities\Collection\ProcessList $processList)
+    public function getCalculatedSlotCount(\BO\Zmsentities\Collection\ProcessList $processList): array
     {
-        return array_reduce($this->getArrayCopy(), function ($carry, $item) use ($processList) {
+        $slotCounts = [];
+        foreach ($this as $item) {
             $itemId = $item->id;
             $listWithAvailability = $processList->withAvailability($item);
-            $busySlots = $listWithAvailability->getAppointmentList()->getCalculatedSlotCount();
-            $carry[$itemId] = $busySlots;
-            return $carry;
-        }, []);
+            $slotCounts[$itemId] = $listWithAvailability->getAppointmentList()->getCalculatedSlotCount();
+        }
+        return $slotCounts;
     }
 
 
