@@ -50,8 +50,10 @@ class Factory
             throw new \BO\Zmsentities\Exception\SchemaMissingKey('Missing $schema-key on given data.');
         }
         $schema = $this->data['$schema'];
-        $entityName = preg_replace('#^.*/([^/]+)\.json#', '$1', $schema);
-        $entityName = ucfirst($entityName ?? '');
+        $entityName = is_string($schema)
+            ? (preg_replace('#^.*/([^/]+)\.json#', '$1', $schema) ?? '')
+            : '';
+        $entityName = ucfirst($entityName);
 
         // jsonSerialize() lowercases the class short name (AvailabilityHistory →
         // availabilityhistory.json). ucfirst then yields Availabilityhistory, which
