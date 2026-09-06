@@ -72,12 +72,12 @@ class Valid extends \BO\Mellon\Parameter
         }
         if ($message instanceof Failure\MessageList) {
             foreach ($message as $item) {
-                $this->messages[] = $item;
+                $this->messages->append($item);
             }
         } elseif ($message instanceof Failure\Message) {
-            $this->messages[] = $message;
+            $this->messages->append($message);
         } else {
-            $this->messages[] = new Failure\Message($message);
+            $this->messages->append(new Failure\Message($message));
         }
         return $this;
     }
