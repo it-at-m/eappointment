@@ -161,10 +161,10 @@ class BaseController
                         $errorOutput = stream_get_contents($handle['pipes'][2]);  // stderr
                         fclose($handle['pipes'][1]);
                         fclose($handle['pipes'][2]);
-                        if (trim($output)) {
+                        if (is_string($output) && trim($output)) {
                             $this->log("\nProcess stdout: " . trim($output) . "\n");
                         }
-                        if (trim($errorOutput)) {
+                        if (is_string($errorOutput) && trim($errorOutput)) {
                             $this->log("\nProcess stderr: " . trim($errorOutput) . "\n");
                         }
 

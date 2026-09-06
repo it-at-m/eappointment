@@ -90,8 +90,12 @@ class Mail extends BaseController
                     $ids = array_map(function ($message): mixed {
                         return $message['id'];
                     }, $batch);
-                    $encodedIds = base64_encode(json_encode($ids));
-                    $actionStr = is_array($action) ? json_encode($action) : ($action === false ? 'false' : ($action === true ? 'true' : (string)$action));
+                    $idsJson = json_encode($ids);
+                    $encodedIds = base64_encode($idsJson === false ? '[]' : $idsJson);
+                    $actionJson = is_array($action) ? json_encode($action) : false;
+                    $actionStr = is_array($action)
+                        ? ($actionJson === false ? '[]' : $actionJson)
+                        : ($action === false ? 'false' : ($action === true ? 'true' : (string)$action));
 
                     $idsStr = implode(', ', $ids);
                     $command = "php " . escapeshellarg(__DIR__ . '/MailProcessor.php') . " " . escapeshellarg($encodedIds) . " " . escapeshellarg($actionStr);
