@@ -42,9 +42,10 @@ class Location extends Base
     /**
      *
      * @return Collection
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     #[\Override]
-    public function fetchList(bool|string $service_csv = '')
+    public function fetchList(bool|string $service_csv = '', bool $mixLanguages = false)
     {
         $query = Helper::boolFilteredQuery();
         $limit = 10000;
@@ -74,9 +75,10 @@ class Location extends Base
     /**
      *
      * @return Collection
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     #[\Override]
-    public function fetchFromCsv(mixed $location_csv)
+    public function fetchFromCsv(mixed $location_csv, bool $mixLanguages = false)
     {
         $query = Helper::boolFilteredQuery();
         $filter = new \Elastica\Filter\Ids();

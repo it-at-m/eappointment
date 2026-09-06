@@ -36,8 +36,9 @@ class Location extends Base
     /**
      *
      * @return Collection
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function fetchList(bool|string $service_csv = false)
+    public function fetchList(bool|string $service_csv = false, bool $mixLanguages = false)
     {
         $locationlist = $this->getItemList();
         /** @psalm-suppress RiskyTruthyFalsyComparison */
@@ -53,9 +54,11 @@ class Location extends Base
     /**
      *
      * @return Collection
+     * @param bool $mixLanguages unused in file backend, kept for MySQL override compatibility
      * @psalm-api
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function fetchFromCsv(mixed $location_csv)
+    public function fetchFromCsv(mixed $location_csv, bool $mixLanguages = false)
     {
         $locationlist = new Collection();
         foreach (explode(',', $location_csv) as $location_id) {

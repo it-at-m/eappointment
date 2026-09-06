@@ -199,10 +199,10 @@ class AbstractAccess
         return $instance;
     }
 
-    public function fromSetting(): File\Setting
+    public function fromSetting(string $locale = 'de'): File\Setting
     {
         /** @var File\Setting $instance */
-        $instance = $this->from('Setting');
+        $instance = $this->from('Setting', $locale);
         return $instance;
     }
 
