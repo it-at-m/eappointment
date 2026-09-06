@@ -122,8 +122,7 @@ class AbstractAccess
     }
 
     /**
-     * @return string InstanceName
-     *
+     * @return string|null InstanceName
      */
     protected function getInstanceOnName(mixed $name, int $position = 0)
     {
