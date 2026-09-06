@@ -22,4 +22,12 @@ class ValidationException extends \Exception
         $this->validator = $validator;
         return $this;
     }
+
+    /**
+     * @psalm-api
+     */
+    public function getValidator(): ?Valid
+    {
+        return $this->validator;
+    }
 }
