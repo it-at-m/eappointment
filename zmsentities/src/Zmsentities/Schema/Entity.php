@@ -10,6 +10,7 @@ use BO\Zmsentities\Helper\Property;
  * @SuppressWarnings(Complexity)
  *
  * @extends \ArrayObject<array-key, mixed>
+ * @psalm-no-seal-properties
  */
 class Entity extends \ArrayObject implements \JsonSerializable
 {
@@ -206,6 +207,20 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public function __toString()
     {
         return json_encode($this->jsonSerialize(), JSON_HEX_QUOT);
+    }
+
+    /**
+     * Declared so Psalm treats ARRAY_AS_PROPS reads as magic. PHP uses ArrayObject
+     * property handlers at runtime, so these methods are not invoked.
+     */
+    public function __get(string $name): mixed
+    {
+        return $this->offsetGet($name);
+    }
+
+    public function __isset(string $name): bool
+    {
+        return $this->offsetExists($name);
     }
 
     public function __clone()
