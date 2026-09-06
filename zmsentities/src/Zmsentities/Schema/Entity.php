@@ -11,6 +11,7 @@ use BO\Zmsentities\Helper\Property;
  *
  * @extends \ArrayObject<array-key, mixed>
  * @psalm-no-seal-properties
+ * @psalm-consistent-constructor
  */
 class Entity extends \ArrayObject implements \JsonSerializable
 {

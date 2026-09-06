@@ -17,6 +17,7 @@ use BO\Zmsentities\Schema\Entity;
  *
  * @template T of Entity
  * @extends \ArrayObject<int|string, T>
+ * @psalm-consistent-constructor
  */
 class Base extends \ArrayObject implements \JsonSerializable
 {
@@ -27,6 +28,11 @@ class Base extends \ArrayObject implements \JsonSerializable
      * @var Int $resolveLevel indicator on data integrity
      */
     protected $resolveLevel = null;
+
+    public function __construct(object|array $array = [], int $flags = 0, string $iteratorClass = "ArrayIterator")
+    {
+        parent::__construct($array, $flags, $iteratorClass);
+    }
 
     /**
      * @return T|null
