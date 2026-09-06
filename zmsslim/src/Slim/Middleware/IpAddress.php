@@ -121,7 +121,7 @@ class IpAddress
             foreach ($this->headersToInspect as $header) {
                 if ($request->hasHeader($header)) {
                     $headerIp = current(explode(',', $request->getHeaderLine($header)));
-                    $ipString = is_string($headerIp) ? trim($headerIp) : '';
+                    $ipString = trim($headerIp);
                     if ($this->isValidIpAddress($ipString)) {
                         $ipAddress = $ipString;
                         break;

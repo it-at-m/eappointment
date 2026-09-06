@@ -22,6 +22,7 @@ class ServerRequestFactory extends \Slim\Psr7\Factory\ServerRequestFactory
     #[\Override]
     public static function createFromGlobals(): PsrRequest
     {
+        /** @psalm-suppress InternalMethod Wraps Slim's internal factory so apps get BO\Slim\Request. */
         $psrRequest = parent::createFromGlobals();
 
         return new Request(

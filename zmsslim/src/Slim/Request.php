@@ -133,9 +133,6 @@ class Request extends \Slim\Psr7\Request
                 && strncmp($requestUri, $scriptName, strlen($basePath) + 1) === 0
             ) {
                 $nextPath = substr($requestUri, 0, strlen($basePath) + 1);
-                if ($nextPath === false) {
-                    break;
-                }
                 $basePath = $nextPath;
             }
         }

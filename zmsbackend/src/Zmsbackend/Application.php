@@ -75,7 +75,7 @@ class Application extends \BO\Slim\Application
     const string SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
 
     public static $locale = 'de';
-    public static $supportedLanguages = [
+    public static array $supportedLanguages = [
         'de' => [
             'name' => 'Deutsch',
             'locale' => 'de_DE.utf-8',
@@ -84,7 +84,7 @@ class Application extends \BO\Slim\Application
     ];
 
     public static $data = '/data';
-    public static $now = null;
+    public static ?\DateTimeInterface $now = null;
 
     /**
      * @psalm-api
