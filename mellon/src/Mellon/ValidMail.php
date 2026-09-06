@@ -52,7 +52,7 @@ class ValidMail extends \BO\Mellon\ValidString
     /**
      * @psalm-api
      */
-    public function hasDNS($message = 'no valid DNS entry found'): static
+    public function hasDNS(string $message = 'no valid DNS entry found'): static
     {
         $this->validated = true;
         if ($this->value && !$this::$disableDnsChecks) {
@@ -68,7 +68,7 @@ class ValidMail extends \BO\Mellon\ValidString
     /**
      * @psalm-api
      */
-    public function hasMX($message = 'no valid DNS entry of type MX found'): static
+    public function hasMX(string $message = 'no valid DNS entry of type MX found'): static
     {
         $this->validated = true;
         if ($this->value) {

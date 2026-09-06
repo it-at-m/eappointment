@@ -40,7 +40,7 @@ class Validator
      * Always initialize using an array of parameters
      *
      */
-    public function __construct($parameters, $input = null)
+    public function __construct(mixed $parameters, mixed $input = null)
     {
         $this->setParameters($parameters);
         $this->setInput($input);
@@ -49,7 +49,7 @@ class Validator
     /**
      * @return self
      */
-    public function setParameters($parameters)
+    public function setParameters(mixed $parameters)
     {
         if (!is_array($parameters)) {
             throw new Exception("Array argument required for parameters");
@@ -61,7 +61,7 @@ class Validator
     /**
      * @return self
      */
-    public function setInput($input)
+    public function setInput(mixed $input)
     {
         $this->input = $input;
         return $this;
@@ -100,7 +100,7 @@ class Validator
     /**
      * @return Bool
      */
-    public function hasParameter($name)
+    public function hasParameter(string $name)
     {
         return array_key_exists($name, $this->parameters);
     }
