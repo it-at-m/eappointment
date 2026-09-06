@@ -999,11 +999,11 @@ class Availability extends Schema\Entity
      *
      */
     #[\Override]
-    public function offsetSet(mixed $index, mixed $value): void
+    public function offsetSet(mixed $key, mixed $value): void
     {
         $this->startTimeCache = null;
         $this->endTimeCache = null;
-        parent::offsetSet($index, $value);
+        parent::offsetSet($key, $value);
     }
 
     /**
