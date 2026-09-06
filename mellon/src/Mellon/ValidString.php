@@ -19,7 +19,7 @@ class ValidString extends Valid
      *
      * @return self
      */
-    public function isString($message = 'no valid string', $sanitize = true)
+    public function isString(string $message = 'no valid string', bool $sanitize = true)
     {
         $this->isSmallerThan(65536, $message);
         if ($sanitize) {
