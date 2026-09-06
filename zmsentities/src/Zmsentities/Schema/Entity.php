@@ -80,6 +80,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     #[\Override]
     public function offsetSet(mixed $key, mixed $value): void
     {
+        /** @psalm-suppress PossiblyNullArgument */
         parent::offsetSet($key, $value);
     }
 
@@ -185,7 +186,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public function getEntityName(): string
     {
         $entity = get_class($this);
-        $entity = preg_replace('#.*[\\\]#', '', $entity);
+        $entity = preg_replace('#.*[\\\]#', '', $entity) ?? '';
         $entity = strtolower($entity);
         return $entity;
     }
