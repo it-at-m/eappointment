@@ -20,8 +20,8 @@ class Mail extends BaseController
     public function __construct(mixed $verbose = false, mixed $maxRunTime = 50)
     {
         parent::__construct($verbose, $maxRunTime);
-        $this->log("Read Mail QueueList start with limit " . \App::$mails_per_minute . " - " . \App::$now->format('c'));
-        $queueList = \App::$http->readGetResult('/mails/', [
+        $this->log("Read Mail QueueList start with limit " . \App::$mails_per_minute . " - " . $this->getNow()->format('c'));
+        $queueList = $this->getHttp()->readGetResult('/mails/', [
             'resolveReferences' => 0,
             'limit' => \App::$mails_per_minute,
             'onlyIds' => true
@@ -29,7 +29,7 @@ class Mail extends BaseController
         if (null !== $queueList) {
             $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp');
         } else {
-            $this->log("QueueList is null - " . \App::$now->format('c'));
+            $this->log("QueueList is null - " . $this->getNow()->format('c'));
         }
     }
 
@@ -42,7 +42,7 @@ class Mail extends BaseController
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
             if ($this->maxRunTime < $this->getSpendTime()) {
-                $this->log("Max Runtime exceeded before processing started - " . \App::$now->format('c'));
+                $this->log("Max Runtime exceeded before processing started - " . $this->getNow()->format('c'));
                 return $resultList;
             }
             $this->log("Messages queue count - " . count($this->messagesQueue));
@@ -52,7 +52,7 @@ class Mail extends BaseController
                 $itemIds = [];
                 foreach ($this->messagesQueue as $item) {
                     if ($this->maxRunTime < $this->getSpendTime()) {
-                        $this->log("Max Runtime exceeded during message loop - " . \App::$now->format('c'));
+                        $this->log("Max Runtime exceeded during message loop - " . $this->getNow()->format('c'));
                         break;
                     }
                     $itemIds[] = $item['id'];
@@ -83,7 +83,7 @@ class Mail extends BaseController
                 $processHandles = [];
                 foreach ($batches as $batch) {
                     if ($this->maxRunTime < $this->getSpendTime()) {
-                        $this->log("Max Runtime exceeded during batch processing - " . \App::$now->format('c'));
+                        $this->log("Max Runtime exceeded during batch processing - " . $this->getNow()->format('c'));
                         break;
                     }
 
@@ -101,7 +101,7 @@ class Mail extends BaseController
                 if ($this->maxRunTime >= $this->getSpendTime()) {
                     $this->monitorProcesses($processHandles);
                 } else {
-                    $this->log("Max Runtime exceeded before process monitoring started - " . \App::$now->format('c'));
+                    $this->log("Max Runtime exceeded before process monitoring started - " . $this->getNow()->format('c'));
                 }
             }
         } else {
@@ -127,7 +127,7 @@ class Mail extends BaseController
         ];
 
         try {
-            $response = \App::$http->readGetResult($endpoint, $params);
+            $response = $this->getHttp()->readGetResult($endpoint, $params);
             $mailItems = $response->getCollection();
         } catch (\Exception $e) {
             $this->log("Error fetching mail data: " . $e->getMessage() . "\n\n");
@@ -239,11 +239,11 @@ class Mail extends BaseController
         }
         if ($message) {
             if (428 == $code || 422 == $code) {
-                $this->log("Build Mailer Failure " . $code . ": deleteEntityFromQueue() - " . \App::$now->format('c'));
+                $this->log("Build Mailer Failure " . $code . ": deleteEntityFromQueue() - " . $this->getNow()->format('c'));
                 $this->deleteEntityFromQueue($entity);
             } else {
                 $this->log(
-                    "Build Mailer Failure " . $code . ": removeEntityOlderThanOneHour() - " . \App::$now->format('c')
+                    "Build Mailer Failure " . $code . ": removeEntityOlderThanOneHour() - " . $this->getNow()->format('c')
                 );
                 $this->removeEntityOlderThanOneHour($entity);
             }
@@ -251,7 +251,7 @@ class Mail extends BaseController
             $log = new Mimepart(['mime' => 'text/plain']);
             $log['content'] = $message;
             $this->log("Build Mailer Exception log message: " . $message);
-            \App::$http->readPostResult('/log/process/' . $entity['process']['id'] . '/', $log, ['error' => 1]);
+            $this->getHttp()->readPostResult('/log/process/' . $entity['process']['id'] . '/', $log, ['error' => 1]);
             return false;
         }
 
@@ -353,7 +353,7 @@ class Mail extends BaseController
         ];
 
         try {
-            $response = \App::$http->readDeleteResult($endpoint, $params);
+            $response = $this->getHttp()->readDeleteResult($endpoint, $params);
             return $response;
         } catch (\Exception $e) {
             $this->log("Error deleting mail data: " . $e->getMessage() . "\n\n");
