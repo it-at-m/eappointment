@@ -6,7 +6,7 @@ class Month extends Schema\Entity
 {
     public const string PRIMARY = 'month';
 
-    public $calendarDayList;
+    public mixed $calendarDayList = null;
 
     public static $schema = "month.json";
 

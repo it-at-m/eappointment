@@ -11,7 +11,7 @@ class Ticketprinter extends Schema\Entity
 
     public static $schema = "ticketprinter.json";
 
-    protected $allowedButtonTypes = [
+    protected array $allowedButtonTypes = [
         's' => 'scope',
         /*'c' => 'cluster',*/
         'l' => 'link',
