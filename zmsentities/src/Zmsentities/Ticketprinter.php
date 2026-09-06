@@ -104,7 +104,13 @@ class Ticketprinter extends Schema\Entity
             $button = $this->getExternalLinkData($value, $button);
         } else {
             $button['url'] = '/' . $button['type'] . '/' . $value . '/';
-            $button[$button['type']]['id'] = $value;
+            $buttonType = $button['type'];
+            $nested = [];
+            if (isset($button[$buttonType]) && is_array($button[$buttonType])) {
+                $nested = $button[$buttonType];
+            }
+            $nested['id'] = $value;
+            $button[$buttonType] = $nested;
         }
 
         if ('request' == $button['type']) {
