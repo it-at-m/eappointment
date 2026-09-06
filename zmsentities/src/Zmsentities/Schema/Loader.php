@@ -41,7 +41,8 @@ class Loader
         if (!$schemaFilename) {
             throw new \BO\Zmsentities\Exception\SchemaMissingJsonFile("Missing JSON-Schema file");
         }
-        $directory = preg_match('#^/#', $schemaFilename) ? '' : (self::getSchemaPath() ?: '');
+        $schemaPath = preg_match('#^/#', $schemaFilename) ? false : self::getSchemaPath();
+        $directory = $schemaPath !== false ? $schemaPath : '';
         $filename = $directory . DIRECTORY_SEPARATOR . $schemaFilename;
         return file_get_contents($filename);
     }
