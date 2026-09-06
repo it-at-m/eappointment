@@ -223,6 +223,16 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $this->offsetExists($name);
     }
 
+    public function __set(string $name, mixed $value): void
+    {
+        $this->offsetSet($name, $value);
+    }
+
+    public function __unset(string $name): void
+    {
+        $this->offsetUnset($name);
+    }
+
     public function __clone()
     {
         foreach ($this as $key => $property) {
