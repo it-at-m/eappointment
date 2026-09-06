@@ -310,7 +310,7 @@ class Base extends \ArrayObject implements \JsonSerializable
     }
 
     /**
-     * @return Int
+     * @return int|null
      */
     public function getResolveLevel()
     {
