@@ -20,7 +20,7 @@ class ValidDatetime extends Valid
         $this->validated = true;
         $date = $this->value;
         if ($date) {
-            if ($format) {
+            if ($format !== false && $format !== '') {
                 $dateTime = DateTime::createFromFormat($format, $date);
             } else {
                     $dateTime = date_create($date);

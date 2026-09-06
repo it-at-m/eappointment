@@ -19,7 +19,7 @@ class ValidString extends Valid
      *
      * @return self
      */
-    public function isString($message = 'no valid string', $sanitize = true)
+    public function isString(string $message = 'no valid string', bool $sanitize = true)
     {
         $this->isSmallerThan(65536, $message);
         if ($sanitize) {
@@ -40,7 +40,7 @@ class ValidString extends Valid
     public function isFreeOf($regex, $message = 'value contains undesired content')
     {
         $this->validated = true;
-        if (preg_match($regex, $this->value)) {
+        if ($regex !== '' && preg_match($regex, (string) $this->value)) {
             $this->setFailure($message);
         }
         return $this;
