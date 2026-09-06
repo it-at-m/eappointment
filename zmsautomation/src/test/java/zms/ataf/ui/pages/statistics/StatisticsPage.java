@@ -368,7 +368,7 @@ public class StatisticsPage extends BasePage {
                             .filter(path -> path.getFileName().toString().matches(expectedFileNameRegex))
                             .toList();
                     if (!result.isEmpty()) {
-                        ScenarioLogManager.getLogger().info("Matched file(s): " + result.stream().map(Path::toString).collect(Collectors.joining(", ")));
+                        ScenarioLogManager.getLogger().info("Matched file(s): " + result.stream().map(path -> path.toString()).collect(Collectors.joining(", ")));
                         return true;
                     }
                 } catch (IOException e) {
@@ -378,7 +378,7 @@ public class StatisticsPage extends BasePage {
             } else {
                 return !((HasDownloads) waitDriver).getDownloadedFiles()
                         .stream()
-                        .map(HasDownloads.DownloadedFile::getName)
+                        .map(file -> file.getName())
                         .filter(string -> string.matches(expectedFileNameRegex))
                         .toList()
                         .isEmpty();
