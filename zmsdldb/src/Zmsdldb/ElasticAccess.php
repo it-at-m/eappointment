@@ -57,6 +57,9 @@ class ElasticAccess extends FileAccess
      */
     public function getIndex()
     {
+        if (!$this->index instanceof \Elastica\Index) {
+            throw new Exception('ElasticSearch index is not initialized');
+        }
         return $this->index;
     }
 
@@ -66,6 +69,9 @@ class ElasticAccess extends FileAccess
      */
     protected function getConnection()
     {
+        if (!$this->connection instanceof \Elastica\Client) {
+            throw new Exception('ElasticSearch connection is not initialized');
+        }
         return $this->connection;
     }
 
