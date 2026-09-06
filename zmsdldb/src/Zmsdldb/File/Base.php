@@ -134,6 +134,7 @@ abstract class Base
 
     protected function setItemList(\BO\Zmsdldb\Collection\Base $list): static
     {
+        /** @var TCollection $list */
         $this->itemList = $list;
         return $this;
     }
