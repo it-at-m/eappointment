@@ -173,6 +173,7 @@ class FileAccess extends AbstractAccess
     public function fetchTopicServicesList(mixed $topic_path): mixed
     {
         trigger_error("Deprecated function fetchTopicServicesList, use fromService()->fetchTopic()");
+        /** @psalm-suppress UndefinedMethod */
         return $this->fromService()->fetchTopicPath($topic_path);
     }
 
@@ -186,6 +187,7 @@ class FileAccess extends AbstractAccess
     public function fetchLocationListByOffice(bool $officepath = false)
     {
         trigger_error("Deprecated function fetchLocationListByOffice, use fromAuthority()->fetchOffice()");
+        /** @psalm-suppress UndefinedMethod */
         return $this->fromAuthority()->fetchOffice($officepath);
     }
 }

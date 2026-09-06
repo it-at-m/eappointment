@@ -13,6 +13,7 @@ use BO\Zmsdldb\Collection\Boroughs as Collection;
 /**
   * Common methods shared by access classes
   *
+  * @extends Base<Collection, Entity>
   */
 class Borough extends Base
 {

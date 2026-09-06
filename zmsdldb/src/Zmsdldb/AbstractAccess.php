@@ -154,44 +154,60 @@ class AbstractAccess
         throw new Exception("Locale for accessing $instanceName does not exists");
     }
 
-    public function fromAuthority(string $locale = 'de'): \BO\Zmsdldb\File\Base
+    public function fromAuthority(string $locale = 'de'): File\Authority
     {
-        return $this->from('Authority', $locale);
+        /** @var File\Authority $instance */
+        $instance = $this->from('Authority', $locale);
+        return $instance;
     }
 
-    public function fromBorough(): \BO\Zmsdldb\File\Base
+    public function fromBorough(): File\Borough
     {
-        return $this->from('Borough');
+        /** @var File\Borough $instance */
+        $instance = $this->from('Borough');
+        return $instance;
     }
 
     /** @psalm-api */
-    public function fromLink(string $locale = 'de'): \BO\Zmsdldb\File\Base
+    public function fromLink(string $locale = 'de'): File\Link
     {
-        return $this->from('Link', $locale);
+        /** @var File\Link $instance */
+        $instance = $this->from('Link', $locale);
+        return $instance;
     }
 
-    public function fromLocation(string $locale = 'de'): \BO\Zmsdldb\File\Base
+    public function fromLocation(string $locale = 'de'): File\Location
     {
-        return $this->from('Location', $locale);
+        /** @var File\Location $instance */
+        $instance = $this->from('Location', $locale);
+        return $instance;
     }
 
-    public function fromOffice(): \BO\Zmsdldb\File\Base
+    public function fromOffice(): File\Office
     {
-        return $this->from('Office');
+        /** @var File\Office $instance */
+        $instance = $this->from('Office');
+        return $instance;
     }
 
-    public function fromService(string $locale = 'de'): \BO\Zmsdldb\File\Base
+    public function fromService(string $locale = 'de'): File\Service
     {
-        return $this->from('Service', $locale);
+        /** @var File\Service $instance */
+        $instance = $this->from('Service', $locale);
+        return $instance;
     }
 
-    public function fromSetting(): \BO\Zmsdldb\File\Base
+    public function fromSetting(): File\Setting
     {
-        return $this->from('Setting');
+        /** @var File\Setting $instance */
+        $instance = $this->from('Setting');
+        return $instance;
     }
 
-    public function fromTopic(string $locale = 'de'): \BO\Zmsdldb\File\Base
+    public function fromTopic(string $locale = 'de'): File\Topic
     {
-        return $this->from('Topic', $locale);
+        /** @var File\Topic $instance */
+        $instance = $this->from('Topic', $locale);
+        return $instance;
     }
 }

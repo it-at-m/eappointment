@@ -12,6 +12,8 @@ use BO\Zmsdldb\Exception;
 /**
   * Common methods shared by access classes
   *
+  * @template TCollection of \BO\Zmsdldb\Collection\Base
+  * @template TEntity of \BO\Zmsdldb\Entity\Base
   */
 abstract class Base
 {
@@ -19,7 +21,7 @@ abstract class Base
     /**
      * lazy loaded item list, use getItemList() to access this
      *
-     * @var \BO\Zmsdldb\Collection\Base $itemList
+     * @var TCollection|null $itemList
      */
     private $itemList = null;
 
@@ -39,6 +41,9 @@ abstract class Base
      */
     private $accessInstance = null;
 
+    /**
+     * @return TCollection
+     */
     abstract protected function parseData(mixed $data);
 
     public function __construct(mixed $dataFile, string $locale = "de")
@@ -113,7 +118,7 @@ abstract class Base
     }
 
     /**
-     * @return \BO\Zmsdldb\Collection\Base
+     * @return TCollection
      */
     public function getItemList()
     {
@@ -130,7 +135,7 @@ abstract class Base
     }
 
     /**
-     * @return \BO\Zmsdldb\Entity\Base|false
+     * @return TEntity|false
      */
     public function fetchId(string $itemId)
     {

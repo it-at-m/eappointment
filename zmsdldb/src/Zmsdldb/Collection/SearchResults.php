@@ -9,6 +9,9 @@ namespace BO\Zmsdldb\Collection;
 
 use BO\Zmsdldb\Entity\SearchResult as Entity;
 
+/**
+ * @extends Base<\BO\Zmsdldb\Entity\SearchResult>
+ */
 class SearchResults extends Base
 {
     /**
