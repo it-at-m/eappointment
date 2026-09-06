@@ -10,7 +10,7 @@ namespace BO\Mellon\Failure;
 use BO\Mellon\Valid;
 
 /**
- * @extends \ArrayObject<int|null, Message>
+ * @extends \ArrayObject<array-key, Message>
  */
 class MessageList extends \ArrayObject
 {

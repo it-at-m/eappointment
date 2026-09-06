@@ -91,7 +91,7 @@ class Unvalidated extends \BO\Mellon\Parameter
                 if (!$newClass instanceof Valid) {
                     throw new Exception("Validation class $class does not exists");
                 }
-                if ($this->setValid) {
+                if ($this->setValid !== null) {
                     $callback = $this->setValid;
                     $callback($newClass);
                 }
