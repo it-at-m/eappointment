@@ -37,7 +37,7 @@ class Location extends Base
      *
      * @return Collection
      */
-    public function fetchList(bool $service_csv = false)
+    public function fetchList(bool|string $service_csv = false)
     {
         $locationlist = $this->getItemList();
         if ($service_csv) {

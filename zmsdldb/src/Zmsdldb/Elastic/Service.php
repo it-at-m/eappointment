@@ -45,7 +45,7 @@ class Service extends Base
      * @return Collection
      */
     #[\Override]
-    public function fetchList(bool $location_csv = false)
+    public function fetchList(bool|string $location_csv = false)
     {
         $boolquery = Helper::boolFilteredQuery();
         $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
@@ -99,7 +99,7 @@ class Service extends Base
      * @return Collection
      */
     #[\Override]
-    public function searchAll(mixed $querystring, string $service_csv = '', string $location_csv = '')
+    public function searchAll(mixed $querystring, bool|string $service_csv = '', bool|string $location_csv = '')
     {
         $query = new \Elastica\Query();
         $locationsCsvByUser = false;

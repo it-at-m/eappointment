@@ -41,7 +41,7 @@ class Location extends Base
     }
 
     #[\Override]
-    public function fetchList(bool $service_csv = false, bool $mixLanguages = false): Collection
+    public function fetchList(bool|string $service_csv = false, bool $mixLanguages = false): Collection
     {
         # COALESCE(l2.data_json, l.data_json) AS data_json
         # IF(l2.id, l2.data_json, l.data_json) AS data_json

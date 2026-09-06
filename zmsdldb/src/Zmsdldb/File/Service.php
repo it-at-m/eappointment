@@ -39,7 +39,7 @@ class Service extends Base
      * @return Collection
      * @psalm-api
      */
-    public function searchAll(mixed $querystring, bool $service_csv = false, bool $location_csv = false)
+    public function searchAll(mixed $querystring, bool|string $service_csv = false, bool|string $location_csv = false)
     {
         $serviceList = $this->fetchList($location_csv);
         if ($querystring) {
@@ -60,7 +60,7 @@ class Service extends Base
      *
      * @param false|string $location_csv
      */
-    public function fetchList(string|false $location_csv = false)
+    public function fetchList(bool|string $location_csv = false)
     {
         #echo '<pre>' . print_r($this,1) . '</pre>';exit;
         $servicelist = $this->getItemList();
