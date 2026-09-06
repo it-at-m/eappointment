@@ -183,10 +183,12 @@ class Calendar extends Schema\Entity
 
     public function getDayList(): Collection\DayList
     {
-        if (!$this->days instanceof Collection\DayList) {
-            $this->days = new Collection\DayList($this->days);
+        $days = $this->days;
+        if (!$days instanceof Collection\DayList) {
+            $days = new Collection\DayList($days);
+            $this->days = $days;
         }
-        return $this->days->setSortByDate();
+        return $days->setSortByDate();
     }
 
     /**
