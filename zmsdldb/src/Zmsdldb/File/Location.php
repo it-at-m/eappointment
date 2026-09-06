@@ -40,6 +40,7 @@ class Location extends Base
     public function fetchList(bool|string $service_csv = false)
     {
         $locationlist = $this->getItemList();
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if ($service_csv) {
             $locationlist = new Collection(array_filter((array) $locationlist, function ($item) use ($service_csv) {
                 $location = new Entity($item);

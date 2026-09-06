@@ -50,6 +50,7 @@ class Service extends Base
         $boolquery = Helper::boolFilteredQuery();
         $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
         $query = \Elastica\Query::create($boolquery);
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if ($location_csv) {
             $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
             $filter->setExecution('and');
@@ -103,6 +104,7 @@ class Service extends Base
     {
         $query = new \Elastica\Query();
         $locationsCsvByUser = false;
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if (! $location_csv) {
             $location_csv = $this->fetchLocationCsv($service_csv);
         } else {
@@ -124,6 +126,7 @@ class Service extends Base
         $boolquery->addShould($searchquery);
         $filter = new \Elastica\Filter\BoolFilter();
         $filter->addMust(Helper::localeFilter($this->locale));
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if ($location_csv) {
             $filter->addMust(new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv)));
         }

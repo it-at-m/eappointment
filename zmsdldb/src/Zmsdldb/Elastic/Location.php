@@ -49,6 +49,7 @@ class Location extends Base
         $query = Helper::boolFilteredQuery();
         $limit = 10000;
         $query->getFilter()->addMust(Helper::localeFilter($this->locale));
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if ($service_csv) {
             foreach (explode(',', $service_csv) as $service_id) {
                 $filter = new \Elastica\Filter\Term(array(
@@ -138,6 +139,7 @@ class Location extends Base
             'address.postal_code^9'
         ]);
         $query->getQuery()->addShould($searchquery);
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if ($service_csv) {
             foreach (explode(',', $service_csv) as $service_id) {
                 $filter = new \Elastica\Filter\Term(array(
@@ -202,6 +204,7 @@ class Location extends Base
             'address.postal_code^9'
         ]);
         $boolquery->getQuery()->addShould($searchquery);
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if ($service_csv) {
             foreach (explode(',', $service_csv) as $service_id) {
                 $filter = new \Elastica\Filter\Term(array(
