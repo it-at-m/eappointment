@@ -64,7 +64,7 @@ class ProcessList extends Base
 
     public function sortByArrivalTime(): static
     {
-        $this->uasort(function ($a, $b) {
+        $this->uasort(function ($a, $b): mixed {
             return ($a->queue['arrivalTime'] - $b->queue['arrivalTime']);
         });
         return $this;
@@ -72,7 +72,7 @@ class ProcessList extends Base
 
     public function sortByEstimatedWaitingTime(): static
     {
-        $this->uasort(function ($a, $b) {
+        $this->uasort(function ($a, $b): mixed {
             return ($a->queue['waitingTimeEstimate'] - $b->queue['waitingTimeEstimate']);
         });
         return $this;

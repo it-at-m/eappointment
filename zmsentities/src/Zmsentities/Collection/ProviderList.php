@@ -92,7 +92,7 @@ class ProviderList extends Base
     public function sortById(): \BO\Zmsentities\Collection\Base
     {
         $list = clone $this;
-        $list->uasort(function ($a, $b) {
+        $list->uasort(function ($a, $b): mixed {
             return ($a['id'] - $b['id']);
         });
         return (new self())->addList($list);
