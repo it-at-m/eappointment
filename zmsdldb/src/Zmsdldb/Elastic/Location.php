@@ -303,11 +303,11 @@ class Location extends Base
         $boolquery->addMust($localeFilter);
 
         if (!empty($authoritys)) {
-            $authorityFilter = new \Elastica\Query\Terms('authority.id', $authoritys);
+            $authorityFilter = new \Elastica\Query\Terms('authority.id', array_values($authoritys));
             $boolquery->addMust($authorityFilter);
         }
         if (!empty($locations)) {
-            $locationFilter = new \Elastica\Query\Terms('id', $locations);
+            $locationFilter = new \Elastica\Query\Terms('id', array_values($locations));
             $boolquery->addMust($locationFilter);
         }
 

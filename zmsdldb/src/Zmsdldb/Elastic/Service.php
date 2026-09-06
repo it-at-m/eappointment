@@ -202,15 +202,15 @@ class Service extends Base
         $boolquery->addMust($localeFilter);
 
         if (!empty($authoritys)) {
-            $authorityFilter = new \Elastica\Query\Terms('authorities.id', $authoritys);
+            $authorityFilter = new \Elastica\Query\Terms('authorities.id', array_values($authoritys));
             $boolquery->addMust($authorityFilter);
         }
         if (!empty($locations)) {
-            $locationFilter = new \Elastica\Query\Terms('locations.location', $locations);
+            $locationFilter = new \Elastica\Query\Terms('locations.location', array_values($locations));
             $boolquery->addMust($locationFilter);
         }
         if (!empty($services)) {
-            $serviceFilter = new \Elastica\Query\Terms('id', $services);
+            $serviceFilter = new \Elastica\Query\Terms('id', array_values($services));
             $boolquery->addMust($serviceFilter);
         }
 
