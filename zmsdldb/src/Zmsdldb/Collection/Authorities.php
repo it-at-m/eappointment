@@ -40,9 +40,7 @@ class Authorities extends Base
             $authorityId = $location['authority']['id'];
             $this->addAuthority($authorityId, $location['authority']['name']);
             $authority = $this[$authorityId];
-            if ($authority instanceof \BO\Zmsdldb\Entity\Authority) {
-                $authority['locations'][$location['id']] = $location;
-            }
+            $authority['locations'][$location['id']] = $location;
         }
         return $this;
     }
@@ -173,7 +171,9 @@ class Authorities extends Base
                     }
                 }
             } else {
-                $authorityIterator->offsetUnset($key);
+                if ($key !== null) {
+                    $authorityIterator->offsetUnset($key);
+                }
             }
         }
         return $this;

@@ -24,7 +24,7 @@ class Service extends Base
     public function containsLocation(string|null $location_csv)
     {
         $service = $this->getArrayCopy();
-        $locationcompare = explode(',', $location_csv);
+        $locationcompare = explode(',', (string) $location_csv);
         $locationsfound = array();
         foreach ($service['locations'] as $locationinfo) {
             $location_id = $locationinfo['location'];
@@ -41,7 +41,7 @@ class Service extends Base
     public function hasLocation(mixed $location_csv): bool
     {
         $service = $this->getArrayCopy();
-        $locationcompare = explode(',', $location_csv);
+        $locationcompare = explode(',', (string) $location_csv);
         foreach ($service['locations'] as $locationinfo) {
             if (in_array($locationinfo['location'], $locationcompare)) {
                 return true;
