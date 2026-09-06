@@ -689,9 +689,9 @@ class Availability extends Schema\Entity
     /**
      * Creates a list of slots available on a valid day
      *
-     * @return Array of arrays with the keys time, public, intern
+     * @return Collection\SlotList
      */
-    public function getSlotList()
+    public function getSlotList(): Collection\SlotList
     {
         $startTime = Helper\DateTime::create($this['startTime']);
         $stopTime = Helper\DateTime::create($this['endTime']);
@@ -717,9 +717,9 @@ class Availability extends Schema\Entity
     /**
      * Get problems on configuration of this availability
      *
-     * @return Collection\ProcessList with processes in status "conflict"
+     * @return Process|false with processes in status "conflict"
      */
-    public function getConflict()
+    public function getConflict(): Process|false
     {
         $start = $this->getStartDateTime()->getSecondsOfDay();
         $end = $this->getEndDateTime()->getSecondsOfDay();

@@ -379,9 +379,9 @@ class Entity extends \ArrayObject implements \JsonSerializable
      * Set a very strict resolveLevel to reduce data
      *
      * @param Int $resolveLevel
-     * @return self
+     * @return self|array
      */
-    public function withResolveLevel($resolveLevel)
+    public function withResolveLevel($resolveLevel): self|array
     {
         if ($resolveLevel >= 0) {
             $entity = clone $this;
@@ -403,9 +403,9 @@ class Entity extends \ArrayObject implements \JsonSerializable
      * Replace data with a jsonSchema Reference
      *
      * @param Array $additionalData
-     * @return self
+     * @return self|array
      */
-    public function withReference($additionalData = [])
+    public function withReference($additionalData = []): self|array
     {
         if (isset($this[$this::PRIMARY])) {
             $additionalData['$ref'] =

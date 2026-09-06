@@ -268,15 +268,17 @@ class Process extends Schema\Entity
      */
     public function getAppointments()
     {
-        if (!$this['appointments'] instanceof Collection\AppointmentList) {
-            $this['appointments'] = new Collection\AppointmentList($this['appointments']);
-            foreach ($this['appointments'] as $index => $appointment) {
+        $appointments = $this['appointments'];
+        if (!$appointments instanceof Collection\AppointmentList) {
+            $appointments = new Collection\AppointmentList($appointments);
+            foreach ($appointments as $index => $appointment) {
                 if (!$appointment instanceof Appointment) {
-                    $this['appointments'][$index] = new Appointment($appointment);
+                    $appointments[$index] = new Appointment($appointment);
                 }
             }
+            $this['appointments'] = $appointments;
         }
-        return $this['appointments'];
+        return $appointments;
     }
 
     /**
@@ -285,15 +287,17 @@ class Process extends Schema\Entity
      */
     public function getClients()
     {
-        if (!$this['clients'] instanceof Collection\ClientList) {
-            $this['clients'] = new Collection\ClientList($this['clients']);
-            foreach ($this['clients'] as $index => $client) {
+        $clients = $this['clients'];
+        if (!$clients instanceof Collection\ClientList) {
+            $clients = new Collection\ClientList($clients);
+            foreach ($clients as $index => $client) {
                 if (!$client instanceof Client) {
-                    $this['clients'][$index] = new Client($client);
+                    $clients[$index] = new Client($client);
                 }
             }
+            $this['clients'] = $clients;
         }
-        return $this['clients'];
+        return $clients;
     }
 
     public function hasAppointment(mixed $date, mixed $scopeId): bool

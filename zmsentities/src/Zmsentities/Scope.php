@@ -112,15 +112,17 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         if (!isset($this->provider)) {
             throw new Exception\ScopeMissingProvider("Provider is missing", 500);
         }
-        if (!$this->provider instanceof Provider) {
-            $this->provider = new Provider($this->toProperty()->provider->get());
+        $provider = $this->provider;
+        if (!$provider instanceof Provider) {
+            $provider = new Provider($this->toProperty()->provider->get());
+            $this->provider = $provider;
         }
-        if (!isset($this->provider['id']) || !$this->provider->id) {
+        if (!isset($provider['id']) || !$provider->id) {
             $exception = new Exception\ScopeMissingProvider("No reference to a provider found for scope $this->id");
             $exception->data['scope'] = $this->getArrayCopy();
             throw $exception;
         }
-        return $this->provider;
+        return $provider;
     }
 
     public function getProviderId(): mixed
@@ -130,30 +132,34 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
 
     public function getDayoffList(): DayoffList
     {
-        if (!isset($this->dayoff) || !$this->dayoff instanceof Collection\DayoffList) {
-            $this->dayoff = (!isset($this->dayoff) || !is_array($this->dayoff)) ? [] : $this->dayoff;
-            $this->dayoff = new Collection\DayoffList($this->dayoff);
-            foreach ($this->dayoff as $key => $dayoff) {
-                if (!$dayoff instanceof Dayoff) {
-                    $this->dayoff[$key] = new Dayoff($dayoff);
+        $dayoff = $this->dayoff ?? [];
+        if (!$dayoff instanceof Collection\DayoffList) {
+            $dayoff = is_array($dayoff) ? $dayoff : [];
+            $dayoff = new Collection\DayoffList($dayoff);
+            foreach ($dayoff as $key => $entry) {
+                if (!$entry instanceof Dayoff) {
+                    $dayoff[$key] = new Dayoff($entry);
                 }
             }
+            $this->dayoff = $dayoff;
         }
-        return $this->dayoff;
+        return $dayoff;
     }
 
     public function getClosureList(): ClosureList
     {
-        if (!isset($this->closure) || !$this->closure instanceof Collection\ClosureList) {
-            $this->closure = (!isset($this->closure) || !is_array($this->closure)) ? [] : $this->closure;
-            $this->closure = new Collection\ClosureList($this->closure);
-            foreach ($this->closure as $key => $closure) {
-                if (!$closure instanceof Closure) {
-                    $this->closure[$key] = new Closure($closure);
+        $closure = $this->closure ?? [];
+        if (!$closure instanceof Collection\ClosureList) {
+            $closure = is_array($closure) ? $closure : [];
+            $closure = new Collection\ClosureList($closure);
+            foreach ($closure as $key => $entry) {
+                if (!$entry instanceof Closure) {
+                    $closure[$key] = new Closure($entry);
                 }
             }
+            $this->closure = $closure;
         }
-        return $this->closure;
+        return $closure;
     }
 
     public function getRequestList(): \BO\Zmsentities\Collection\RequestList

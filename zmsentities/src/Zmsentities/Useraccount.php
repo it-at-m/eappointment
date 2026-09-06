@@ -91,13 +91,15 @@ class Useraccount extends Schema\Entity
         if (!isset($this['departments'])) {
             return new Collection\DepartmentList();
         }
-        if (!$this->departments instanceof Collection\DepartmentList) {
-            $this->departments = new Collection\DepartmentList($this->departments);
-            foreach ($this->departments as $key => $department) {
-                $this->departments[$key] = new Department($department);
+        $departments = $this->departments;
+        if (!$departments instanceof Collection\DepartmentList) {
+            $departments = new Collection\DepartmentList($departments);
+            foreach ($departments as $key => $department) {
+                $departments[$key] = new Department($department);
             }
+            $this->departments = $departments;
         }
-        return $this->departments;
+        return $departments;
     }
 
     public function addDepartment(Department|array $department): static
@@ -375,9 +377,9 @@ class Useraccount extends Schema\Entity
     /**
      * verify hashed password and create new if needs rehash
      *
-     * @return array $useraccount
+     * @return static $useraccount
     */
-    public function setVerifiedHash(mixed $password)
+    public function setVerifiedHash(mixed $password): static
     {
         // Do you have old, turbo-legacy, non-crypt hashes?
         if (strpos($this->password, '$') !== 0) {
