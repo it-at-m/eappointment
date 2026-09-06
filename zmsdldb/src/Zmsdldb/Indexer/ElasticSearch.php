@@ -54,16 +54,16 @@ class ElasticSearch
     /**
      * The client used to talk to elastic search.
      *
-     * @var \Elastica\Client
+     * @var \Elastica\Client|null
      */
-    protected $connection;
+    protected $connection = null;
 
     /**
      * Index from elastic search
      *
-     * @var \Elastica\Index $index
+     * @var \Elastica\Index|null $index
      */
-    protected $index;
+    protected $index = null;
 
     /**
      * Due to backward compatibility, the first parameter has two possible meanings

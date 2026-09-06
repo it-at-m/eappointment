@@ -7,8 +7,8 @@ define('DEBUG', true);
 class Timer
 {
     protected float $start;
-    protected float|null $pause;
-    protected float|null $stop;
+    protected float|null $pause = null;
+    protected float|null $stop = null;
     protected mixed $elapsed;# = 0;
 
     public function __construct()
