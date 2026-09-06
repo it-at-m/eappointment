@@ -14,7 +14,7 @@ use BO\Zmsdldb\Elastic\Link as Base;
 class Link extends Base
 {
     #[\Override]
-    public function readSearchResultList($query): Collection
+    public function readSearchResultList(mixed $query): Collection
     {
         try {
             #$query = '+' . implode(' +', explode(' ', $query));

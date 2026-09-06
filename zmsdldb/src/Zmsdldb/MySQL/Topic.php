@@ -43,7 +43,7 @@ class Topic extends Base
      * @return Entity|false
      */
     #[\Override]
-    public function fetchPath($topic_path): Entity|false
+    public function fetchPath(mixed $topic_path): Entity|false
     {
         try {
             $sqlArgs = [$this->locale, $topic_path];
@@ -89,7 +89,7 @@ class Topic extends Base
     }
 
     #[\Override]
-    public function readSearchResultList($querystring): Collection
+    public function readSearchResultList(mixed $querystring): Collection
     {
         try {
             #$querystring = '+' . implode(' +', explode(' ', $querystring));
