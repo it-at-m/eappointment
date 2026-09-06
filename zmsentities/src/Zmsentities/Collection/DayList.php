@@ -68,7 +68,7 @@ class DayList extends Base implements JsonUnindexed
         return ($day === null) ? false : true;
     }
 
-    public function withAssociatedDays(\DateTimeInterface $currentDate): \BO\Zmsentities\Collection\Base
+    public function withAssociatedDays(\DateTimeInterface $currentDate): self
     {
         $dayList = new self();
         $lastDay = $currentDate->format('t');
@@ -77,7 +77,8 @@ class DayList extends Base implements JsonUnindexed
             $entity = $this->getDay($currentDate->format('Y'), $currentDate->format('m'), $day);
             $dayList->addEntity($entity);
         }
-        return $dayList->sortByCustomKey('day');
+        $dayList->sortByCustomKey('day');
+        return $dayList;
     }
 
     public function setStatusByType(mixed $slotType, \DateTimeInterface $dateTime): static
