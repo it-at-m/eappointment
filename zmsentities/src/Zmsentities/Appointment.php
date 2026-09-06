@@ -7,7 +7,7 @@ use BO\Zmsentities\Helper\Property;
 /**
  * Schema-backed entity (ArrayObject::ARRAY_AS_PROPS); document dynamic keys for Psalm.
  *
- * @property int $date
+ * @property int|string $date
  */
 class Appointment extends Schema\Entity
 {
@@ -33,7 +33,7 @@ class Appointment extends Schema\Entity
     public function toDate(string $lang = 'de'): string|false
     {
         // Mittwoch 18. November 2015
-        return ($lang == 'en') ? date('l F d, Y', $this->date) : Helper\DateTime::getFormatedDates(
+        return ($lang == 'en') ? date('l F d, Y', (int) $this->date) : Helper\DateTime::getFormatedDates(
             $this->toDateTime(),
             'EEEE dd. MMMM yyyy'
         );
@@ -42,7 +42,7 @@ class Appointment extends Schema\Entity
     public function toTime(string $lang = 'de'): string
     {
         $suffix = ($lang == 'en') ? ' o\'clock' : ' Uhr';
-        return date('H:i', $this->date) . $suffix;
+        return date('H:i', (int) $this->date) . $suffix;
     }
 
     public function hasTime(): bool
@@ -115,7 +115,7 @@ class Appointment extends Schema\Entity
 
     public function toDateTime(string $timezone = 'Europe/Berlin'): \DateTimeImmutable
     {
-        $date = (new \DateTimeImmutable())->setTimestamp($this->date);
+        $date = (new \DateTimeImmutable())->setTimestamp((int) $this->date);
         //$date = \DateTimeImmutable::createFromFormat("U", $this->date);
         if ($timezone === '') {
             $timezone = 'Europe/Berlin';
@@ -151,7 +151,7 @@ class Appointment extends Schema\Entity
     {
         $appointmentDateTime = \DateTimeImmutable::createFromFormat($format, $dateString);
         if ($appointmentDateTime) {
-            $this->date = (int) $appointmentDateTime->format('U');
+            $this->date = $appointmentDateTime->format('U');
         } else {
             throw new Exception\DateStringWrongFormat(
                 "String " . htmlspecialchars($dateString) . " not format " . htmlspecialchars($format)

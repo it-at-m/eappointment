@@ -59,8 +59,8 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
     }
 
     public function withEstimatedWaitingTime(
-        int $processTimeAverage,
-        int $workstationCount,
+        mixed $processTimeAverage,
+        mixed $workstationCount,
         \DateTimeInterface $dateTime,
         bool $createFake = true
     ): \BO\Zmsentities\Collection\QueueList {

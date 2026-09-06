@@ -57,7 +57,7 @@ class ProcessList extends Base
     public function sortByAppointmentDate(): static
     {
         $this->uasort(function ($a, $b) {
-            return ($a->getFirstAppointment()->date - $b->getFirstAppointment()->date);
+            return ((int) $a->getFirstAppointment()->date - (int) $b->getFirstAppointment()->date);
         });
         return $this;
     }
