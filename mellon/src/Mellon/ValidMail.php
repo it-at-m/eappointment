@@ -17,7 +17,7 @@ class ValidMail extends \BO\Mellon\ValidString
      * For unit tests, it might be necessary to disable DNS checks globally
      * Use \BO\Mellon\ValidMail::$disableDnsChecks = true;
      */
-    public static $disableDnsChecks = false;
+    public static bool $disableDnsChecks = false;
 
     /**
      * Allow only valid mails
