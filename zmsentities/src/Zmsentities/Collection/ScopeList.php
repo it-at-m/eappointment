@@ -12,7 +12,7 @@ class ScopeList extends Base
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\Scope';
 
-    protected $slotsByID = [];
+    protected array $slotsByID = [];
 
     /**
     * Get shortest bookable start date of a scope in scopelist

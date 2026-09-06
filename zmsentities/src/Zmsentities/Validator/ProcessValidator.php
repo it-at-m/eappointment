@@ -13,9 +13,9 @@ use BO\Zmsentities\Process;
  */
 class ProcessValidator
 {
-    protected $process;
+    protected Process $process;
 
-    protected $collection = [];
+    protected Collection $collection;
 
     public function __construct(Process $process)
     {

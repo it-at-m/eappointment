@@ -17,7 +17,7 @@ class Mail extends Schema\Entity
 
     public static $schema = "mail.json";
 
-    protected $templateProvider = false;
+    protected mixed $templateProvider = false;
 
     /**
      * @return (Client|Collection\MimepartList|Department|Process)[]

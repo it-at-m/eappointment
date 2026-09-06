@@ -24,12 +24,12 @@ use Twig\Extra\Intl\IntlExtension;
  */
 class Messaging
 {
-    public static $icsRequiredForStatus = [
+    public static array $icsRequiredForStatus = [
         'confirmed',
         'appointment'
     ];
 
-    public static $allowEmptyProcesses = [
+    public static array $allowEmptyProcesses = [
         'overview'
     ];
 
@@ -54,7 +54,7 @@ class Messaging
         return (in_array($status, self::$allowEmptyProcesses));
     }
 
-    protected static $templates = array(
+    protected static array $templates = array(
         'mail' => array(
             'queued' => 'mail_queued.twig',
             'appointment' => 'mail_confirmation.twig',

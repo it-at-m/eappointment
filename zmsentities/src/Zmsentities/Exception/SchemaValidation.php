@@ -9,11 +9,11 @@ class SchemaValidation extends \Exception
 {
     protected $code = 400;
 
-    public $data = [];
+    public array $data = [];
 
-    protected $schemaName = '';
+    protected string $schemaName = '';
 
-    public $template;
+    public string $template = '';
 
     public function setValidationError(array $validationErrorList): static
     {

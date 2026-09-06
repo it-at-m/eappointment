@@ -7,11 +7,11 @@ namespace BO\Zmsentities\Schema;
  */
 class Schema extends \ArrayObject
 {
-    protected $input = null;
+    protected object|array|null $input = null;
 
-    protected $asObject = null;
+    protected ?\stdClass $asObject = null;
 
-    protected $defaults = [];
+    protected array $defaults = [];
 
     /**
      * @var Int $jsonCompressLevel

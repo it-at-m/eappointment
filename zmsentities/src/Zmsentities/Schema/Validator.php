@@ -8,14 +8,14 @@ use Opis\JsonSchema\Errors\ValidationError as OpisValidationError;
 
 class Validator
 {
-    protected $schemaObject;
-    protected $schemaData;
-    protected $locale;
-    protected $validator;
-    protected $validationResult;
+    protected Schema $schemaObject;
+    protected mixed $schemaData;
+    protected mixed $locale;
+    protected OpisValidator $validator;
+    protected ValidationResult $validationResult;
 
-    private static $schemasLoaded = false;
-    private static $validatorInstance = null;
+    private static bool $schemasLoaded = false;
+    private static ?OpisValidator $validatorInstance = null;
 
     public function __construct(mixed $data, Schema $schemaObject, mixed $locale)
     {

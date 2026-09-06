@@ -26,11 +26,11 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public const int DEFAULT_PRIORITY_WITH_APPOINTMENT = 2;
 
-    protected $processTimeAverage;
+    protected mixed $processTimeAverage = null;
 
-    protected $workstationCount;
+    protected mixed $workstationCount = null;
 
-    protected $fromProcessList = false;
+    protected bool $fromProcessList = false;
 
     public function setWaitingTimePreferences(mixed $processTimeAverage, mixed $workstationCount): static
     {
