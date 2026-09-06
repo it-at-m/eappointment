@@ -174,7 +174,9 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     public function getPreference(string $preferenceKey, string $index, string|false|null $isBool = false, mixed $default = null): mixed
     {
         $preference = $this->toProperty()->preferences->$preferenceKey->$index->get($default);
-        return ($isBool) ? ($preference ? 1 : 0) : $preference;
+        return ($isBool !== false && $isBool !== null && $isBool !== '' && $isBool !== '0')
+            ? ($preference ? 1 : 0)
+            : $preference;
     }
 
     public function getStatus(string $statusKey, string $index): mixed

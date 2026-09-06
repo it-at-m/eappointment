@@ -24,7 +24,7 @@ class ProcessList extends Base
         foreach ($this as $process) {
             $appointment = $process->getFirstAppointment();
             $formattedDate = $appointment['date'];
-            if ($format) {
+            if ($format !== null && $format !== '') {
                 $formattedDate = $appointment->toDateTime()->format($format);
             }
             $list[$formattedDate][] = clone $process;
