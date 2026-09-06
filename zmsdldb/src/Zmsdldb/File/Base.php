@@ -59,7 +59,11 @@ abstract class Base
             if (!is_readable($jsonFile)) {
                 throw new Exception("Cannot read $jsonFile");
             }
-            $data = json_decode(file_get_contents($jsonFile), true);
+            $json = file_get_contents($jsonFile);
+            if ($json === false) {
+                throw new Exception("Cannot read $jsonFile");
+            }
+            $data = json_decode($json, true);
             if (!$data) {
                 throw new Exception("Could not decide $jsonFile");
             }
