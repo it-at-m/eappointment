@@ -165,7 +165,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
      * @param false|null|string $isBool
      *
      */
-    public function getPreference(string $preferenceKey, string $index, string|false|null $isBool = false, $default = null)
+    public function getPreference(string $preferenceKey, string $index, string|false|null $isBool = false, mixed $default = null)
     {
         $preference = $this->toProperty()->preferences->$preferenceKey->$index->get($default);
         return ($isBool) ? ($preference ? 1 : 0) : $preference;
@@ -376,7 +376,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this;
     }
 
-    public function setStatusAvailability($key, $value): static
+    public function setStatusAvailability(mixed $key, mixed $value): static
     {
         $this->status['availability'][$key] = $value;
         return $this;

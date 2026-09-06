@@ -33,7 +33,7 @@ class Loader
     /**
      * @return false|string
      */
-    public static function asJson($schemaFilename): string|false
+    public static function asJson(string $schemaFilename): string|false
     {
         if (!$schemaFilename) {
             throw new \BO\Zmsentities\Exception\SchemaMissingJsonFile("Missing JSON-Schema file");

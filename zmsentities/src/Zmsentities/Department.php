@@ -55,7 +55,7 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
         return $this->dayoff;
     }
 
-    public function getClusterByScopeId($scopeId)
+    public function getClusterByScopeId(mixed $scopeId)
     {
         $selectedCluster = false;
         if (isset($this->clusters)) {

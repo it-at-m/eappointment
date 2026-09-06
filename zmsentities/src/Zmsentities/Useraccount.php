@@ -111,7 +111,7 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function getDepartment($departmentId)
+    public function getDepartment(mixed $departmentId)
     {
         foreach ($this->getDepartmentList() as $department) {
             if ($department['id'] == $departmentId) {
@@ -121,12 +121,12 @@ class Useraccount extends Schema\Entity
         return new Department(['name' => 'Not existing']);
     }
 
-    public function hasDepartment($departmentId)
+    public function hasDepartment(mixed $departmentId)
     {
         return $this->getDepartment($departmentId)->hasId();
     }
 
-    public function hasScope($scopeId)
+    public function hasScope(mixed $scopeId)
     {
         return $this->getDepartmentList()->getUniqueScopeList()->hasEntity($scopeId);
     }
@@ -286,7 +286,7 @@ class Useraccount extends Schema\Entity
         return $this->toProperty()->permissions?->superuser?->get() ?? false;
     }
 
-    public function getDepartmentById($departmentId): Department
+    public function getDepartmentById(mixed $departmentId): Department
     {
         foreach ($this->getDepartmentList() as $department) {
             if ($departmentId == $department['id']) {
@@ -306,7 +306,7 @@ class Useraccount extends Schema\Entity
         return new Department();
     }
 
-    public function testDepartmentById($departmentId)
+    public function testDepartmentById(mixed $departmentId)
     {
         $department = $this->getDepartmentById($departmentId);
         if (!$department->hasId()) {
@@ -317,7 +317,7 @@ class Useraccount extends Schema\Entity
         return $department;
     }
 
-    public function setPassword($input): static
+    public function setPassword(mixed $input): static
     {
         if (isset($input['password']) && '' != $input['password']) {
             $this->password = $input['password'];
@@ -352,7 +352,7 @@ class Useraccount extends Schema\Entity
      * @return static
      */
     #[\Override]
-    public function withCleanedUpFormData($keepPassword = false)
+    public function withCleanedUpFormData(bool $keepPassword = false)
     {
         unset($this['save']);
         if (isset($this['password']) && '' == $this['password'] && false === $keepPassword) {
@@ -377,7 +377,7 @@ class Useraccount extends Schema\Entity
      *
      * @return array $useraccount
     */
-    public function setVerifiedHash($password)
+    public function setVerifiedHash(mixed $password)
     {
         // Do you have old, turbo-legacy, non-crypt hashes?
         if (strpos($this->password, '$') !== 0) {
@@ -394,7 +394,7 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function withVerifiedHash($password): static
+    public function withVerifiedHash(mixed $password): static
     {
         $useraccount = clone $this;
         if ($useraccount->isPasswordNeedingRehash()) {
@@ -435,7 +435,7 @@ class Useraccount extends Schema\Entity
      *
      * @return string $entity
     */
-    public function createFromOpenidData($data)
+    public function createFromOpenidData(mixed $data)
     {
         $entity = new self();
         $entity->id = $data['username'];

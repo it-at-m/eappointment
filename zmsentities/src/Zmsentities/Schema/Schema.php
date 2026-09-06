@@ -21,13 +21,13 @@ class Schema extends \ArrayObject
     /**
      * Read the json schema and let array act like an object
      */
-    public function __construct($input = [], $flags = \ArrayObject::ARRAY_AS_PROPS, $iterator_class = "ArrayIterator")
+    public function __construct(object|array $input = [], int $flags = \ArrayObject::ARRAY_AS_PROPS, string $iterator_class = "ArrayIterator")
     {
         $this->input = $input;
         parent::__construct($input, $flags, $iterator_class);
     }
 
-    public function withResolvedReferences($resolveLevel)
+    public function withResolvedReferences(mixed $resolveLevel)
     {
         if ($resolveLevel > 0) {
             $schema = clone $this;
@@ -38,7 +38,12 @@ class Schema extends \ArrayObject
         return $this;
     }
 
-    protected function resolveKey($key, $value, $resolveLevel)
+    /**
+     * @param (int|string) $key
+     *
+     * @psalm-param array-key $key
+     */
+    protected function resolveKey($key, mixed $value, mixed $resolveLevel)
     {
         if (is_array($value)) {
             $value = $this->resolveReferences($value, $resolveLevel);
@@ -48,7 +53,7 @@ class Schema extends \ArrayObject
         return $value;
     }
 
-    protected function resolveReferences(array|self $hash, $resolveLevel)
+    protected function resolveReferences(array|self $hash, mixed $resolveLevel)
     {
         foreach ($hash as $key => $value) {
             $hash[$key] = $this->resolveKey($key, $value, $resolveLevel);
@@ -60,7 +65,7 @@ class Schema extends \ArrayObject
         return $hash;
     }
 
-    public function toJsonObject($keepEmpty = false)
+    public function toJsonObject(bool $keepEmpty = false)
     {
         if (null !== $this->asObject) {
             $data = $this->asObject;
@@ -78,7 +83,7 @@ class Schema extends \ArrayObject
         return $this;
     }
 
-    public function setDefaults($defaults): void
+    public function setDefaults(array $defaults): void
     {
         $this->defaults = $defaults;
     }
@@ -89,7 +94,7 @@ class Schema extends \ArrayObject
         return $this;
     }
 
-    public function toSanitizedArray($keepEmpty = false)
+    public function toSanitizedArray(bool $keepEmpty = false)
     {
         $data = $this->getArrayCopy();
         $data = $this->toSanitizedValue($data, $keepEmpty, $this->defaults);
@@ -100,7 +105,7 @@ class Schema extends \ArrayObject
      * Sanitize value for valid export as JSON
      *
      */
-    protected function toSanitizedValue(mixed $value, $keepEmpty = false, $defaults = [])
+    protected function toSanitizedValue(mixed $value, bool $keepEmpty = false, array $defaults = [])
     {
         if ($value instanceof \BO\Zmsentities\Helper\NoSanitize) {
             return $value;
@@ -122,7 +127,7 @@ class Schema extends \ArrayObject
         return $value;
     }
 
-    protected function toSanitizedList(array $value, $keepEmpty, $defaults = [])
+    protected function toSanitizedList(array $value, mixed $keepEmpty, array $defaults = [])
     {
         foreach ($value as $key => $item) {
             if ($this->jsonCompressLevel > 0 && isset($defaults[$key])) {
@@ -140,7 +145,7 @@ class Schema extends \ArrayObject
         return $value;
     }
 
-    protected static function isItemEmpty($item): bool
+    protected static function isItemEmpty(mixed $item): bool
     {
         return (
             null === $item

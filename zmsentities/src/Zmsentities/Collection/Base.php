@@ -82,7 +82,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
-    public function sortByCustomStringKey($key): static
+    public function sortByCustomStringKey(mixed $key): static
     {
         $this->uasort(function ($a, $b) use ($key) {
             return strcmp(
@@ -100,7 +100,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         }
     }
 
-    public function hasEntity($primary): bool
+    public function hasEntity(mixed $primary): bool
     {
         foreach ($this as $entity) {
             if (isset($entity->{$entity::PRIMARY}) && $primary == $entity->{$entity::PRIMARY}) {
@@ -148,7 +148,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         }
     }
 
-    public function addData($mergeData): static
+    public function addData(mixed $mergeData): static
     {
         foreach ($mergeData as $item) {
             if ($item instanceof Entity) {
@@ -192,7 +192,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         return implode(',', $this->getIds());
     }
 
-    public function getCsvForProperty($propertyName, $csvSeperator = ','): string
+    public function getCsvForProperty(mixed $propertyName, string $csvSeperator = ','): string
     {
         $list = [];
         foreach ($this as $entry) {
@@ -203,7 +203,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         return implode($csvSeperator, $list);
     }
 
-    public function getCsvForPropertyList(array $propertyList, $propertySeperator = '', $csvSeperator = ','): string
+    public function getCsvForPropertyList(array $propertyList, string $propertySeperator = '', string $csvSeperator = ','): string
     {
         $list = [];
         foreach ($this as $entry) {
@@ -227,7 +227,7 @@ class Base extends \ArrayObject implements \JsonSerializable
      * Change a parameter on all entries
      *
      */
-    public function withValueFor($param, $newValue): static
+    public function withValueFor(mixed $param, mixed $newValue): static
     {
         $list = new static();
         foreach ($this as $entry) {
@@ -251,7 +251,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $list;
     }
 
-    public function setJsonCompressLevel($jsonCompressLevel): void
+    public function setJsonCompressLevel(mixed $jsonCompressLevel): void
     {
         foreach ($this as $item) {
             $item->setJsonCompressLevel($jsonCompressLevel);
@@ -325,7 +325,7 @@ class Base extends \ArrayObject implements \JsonSerializable
      * @return static[]
      *
      */
-    public function chunk($length): array
+    public function chunk(mixed $length): array
     {
         $chunks = [new static()];
         $id = 0;

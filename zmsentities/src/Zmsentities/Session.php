@@ -267,7 +267,7 @@ class Session extends Schema\Entity
      *
      * @return boolean
      */
-    public function hasDifferentEntry($newEntryData)
+    public function hasDifferentEntry(mixed $newEntryData)
     {
         return (
             ($this->getProviders() || $this->getScope()) &&

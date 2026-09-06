@@ -32,7 +32,7 @@ class ProcessList extends Base
         return $list;
     }
 
-    public function withRequest($requestId): self
+    public function withRequest(mixed $requestId): self
     {
         $list = new self();
         foreach ($this as $process) {
@@ -175,7 +175,7 @@ class ProcessList extends Base
         return $appointmentList;
     }
 
-    public function setTempAppointmentToProcess($dateTime, $scopeId): static
+    public function setTempAppointmentToProcess(mixed $dateTime, mixed $scopeId): static
     {
         $addedAppointment = false;
         $appointment = (new \BO\Zmsentities\Appointment())->addDate($dateTime->getTimestamp())->addScope($scopeId);
@@ -194,7 +194,7 @@ class ProcessList extends Base
         return $this;
     }
 
-    public function toQueueList($now): QueueList
+    public function toQueueList(mixed $now): QueueList
     {
         $queueList = new QueueList();
         foreach ($this as $process) {
@@ -278,7 +278,7 @@ class ProcessList extends Base
         return $processList;
     }
 
-    public function withUniqueScope($oncePerHour = false): static
+    public function withUniqueScope(bool $oncePerHour = false): static
     {
         $processList = new static();
         $scopeKeyList = [];
@@ -333,7 +333,7 @@ class ProcessList extends Base
         return $processList;
     }
 
-    public function withOutProcessId($processId): static
+    public function withOutProcessId(mixed $processId): static
     {
         $processList = new static();
         foreach ($this as $process) {
@@ -377,7 +377,10 @@ class ProcessList extends Base
         return $collection;
     }
 
-    public function testProcessListLength($processList, bool $isEmptyAllowed = false): ProcessList
+    /**
+     * @param Process|self $processList
+     */
+    public function testProcessListLength(self|Process $processList, bool $isEmptyAllowed = false): ProcessList
     {
         $collection = ($processList instanceof Process) ?
             (new self())->addEntity($processList) :
@@ -389,7 +392,7 @@ class ProcessList extends Base
         return $collection;
     }
 
-    public function withoutProcessByStatus(Process $process, $status)
+    public function withoutProcessByStatus(Process $process, string $status)
     {
         $collection = clone $this;
         $collection = (1 <= $collection->count() && ! Messaging::isEmptyProcessListAllowed($status)) ?

@@ -9,7 +9,7 @@ class OwnerList extends Base
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\Owner';
 
-    public function getOrganisationsByOwnerId($entityId)
+    public function getOrganisationsByOwnerId(mixed $entityId)
     {
         $organisationList = new OrganisationList();
         foreach ($this as $entity) {

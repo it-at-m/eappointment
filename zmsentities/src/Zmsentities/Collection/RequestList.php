@@ -46,7 +46,7 @@ class RequestList extends Base
      *
      * @return RequestList
      */
-    public function withCountList($countList)
+    public function withCountList(mixed $countList)
     {
         $requestList = new self();
         foreach ($countList as $requestId => $counter) {

@@ -33,7 +33,7 @@ class Calldisplay extends Schema\Entity
         ];
     }
 
-    public function withResolvedCollections($input): static
+    public function withResolvedCollections(mixed $input): static
     {
         $input =  (is_object($input)) ? $input->getArrayCopy() : $input;
         if (Property::__keyExists('scopelist', $input)) {
@@ -55,7 +55,7 @@ class Calldisplay extends Schema\Entity
         return (0 < $this->getClusterList()->count());
     }
 
-    public function setServerTime($timestamp): static
+    public function setServerTime(mixed $timestamp): static
     {
         $this->serverTime = $timestamp;
         return $this;
@@ -137,7 +137,7 @@ class Calldisplay extends Schema\Entity
         return $calldisplay;
     }
 
-    protected function getScopeListFromCsv($scopeIds = ''): Collection\ScopeList
+    protected function getScopeListFromCsv(string $scopeIds = ''): Collection\ScopeList
     {
         $scopeList = new Collection\ScopeList();
         $scopeIds = explode(',', $scopeIds);
@@ -150,7 +150,7 @@ class Calldisplay extends Schema\Entity
         return $scopeList;
     }
 
-    protected function getClusterListFromCsv($clusterIds = ''): Collection\ClusterList
+    protected function getClusterListFromCsv(string $clusterIds = ''): Collection\ClusterList
     {
         $clusterList = new Collection\ClusterList();
         $clusterIds = explode(',', $clusterIds);

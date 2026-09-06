@@ -30,7 +30,7 @@ class Appointment extends Schema\Entity
         ];
     }
 
-    public function toDate($lang = 'de')
+    public function toDate(string $lang = 'de')
     {
         // Mittwoch 18. November 2015
         return ($lang == 'en') ? date('l F d, Y', $this->date) : Helper\DateTime::getFormatedDates(
@@ -39,7 +39,7 @@ class Appointment extends Schema\Entity
         );
     }
 
-    public function toTime($lang = 'de'): string
+    public function toTime(string $lang = 'de'): string
     {
         $suffix = ($lang == 'en') ? ' o\'clock' : ' Uhr';
         return date('H:i', $this->date) . $suffix;
@@ -57,7 +57,7 @@ class Appointment extends Schema\Entity
     /**
      * Modify time for appointment
      */
-    public function setTime($timeString): static
+    public function setTime(mixed $timeString): static
     {
         $dateTime = $this->toDateTime();
         $this->date = $dateTime->modify($timeString)->getTimestamp();
@@ -76,7 +76,7 @@ class Appointment extends Schema\Entity
         return $this;
     }
 
-    public function addScope($scopeId): static
+    public function addScope(mixed $scopeId): static
     {
         $this->getScope()->id = $scopeId;
         return $this;
@@ -113,7 +113,7 @@ class Appointment extends Schema\Entity
         return new Availability($data);
     }
 
-    public function toDateTime($timezone = 'Europe/Berlin'): \DateTimeImmutable
+    public function toDateTime(string $timezone = 'Europe/Berlin'): \DateTimeImmutable
     {
         $date = (new \DateTimeImmutable())->setTimestamp($this->date);
         //$date = \DateTimeImmutable::createFromFormat("U", $this->date);
@@ -138,13 +138,13 @@ class Appointment extends Schema\Entity
           : $time;
     }
 
-    public function getEndTimeWithCustomSlotTime($slotTimeInMinutes)
+    public function getEndTimeWithCustomSlotTime(mixed $slotTimeInMinutes)
     {
         $time = $this->getStartTime();
         return $time->modify('+' . ($slotTimeInMinutes * $this->slotCount) . ' minutes');
     }
 
-    public function setDateByString(string $dateString, $format = 'Y-m-d H:i'): static
+    public function setDateByString(string $dateString, string $format = 'Y-m-d H:i'): static
     {
         $appointmentDateTime = \DateTimeImmutable::createFromFormat($format, $dateString);
         if ($appointmentDateTime) {

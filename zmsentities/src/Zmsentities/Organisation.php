@@ -21,7 +21,7 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
         ];
     }
 
-    public function hasDepartment($departmentId)
+    public function hasDepartment(mixed $departmentId)
     {
         return $this->getDepartmentList()->hasEntity($departmentId);
     }
@@ -37,7 +37,7 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
         return $this->departments;
     }
 
-    public function getPreference($index)
+    public function getPreference(mixed $index)
     {
         return $this->toProperty()->preferences->$index->get();
     }

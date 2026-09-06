@@ -44,7 +44,7 @@ class Mail extends Schema\Entity
         return $this->toProperty()->process->authKey->get();
     }
 
-    public function addMultiPart($multiPart): static
+    public function addMultiPart(mixed $multiPart): static
     {
         $this->multipart = $multiPart;
         return $this;
@@ -113,7 +113,7 @@ class Mail extends Schema\Entity
         return $client;
     }
 
-    public function toCustomMessageEntity(Process $process, $collection): static
+    public function toCustomMessageEntity(Process $process, mixed $collection): static
     {
         $entity = clone $this;
         $message = '';
@@ -163,7 +163,7 @@ class Mail extends Schema\Entity
      * @return Mail
      * @throws Exception\TemplateNotFound
      */
-    public function toResolvedEntity($processList, Config $config, $status, $initiator = null)
+    public function toResolvedEntity(mixed $processList, Config $config, mixed $status, mixed $initiator = null)
     {
         $collection = (new ProcessList())->testProcessListLength(
             $processList,
@@ -239,7 +239,7 @@ class Mail extends Schema\Entity
         return $entity;
     }
 
-    public function withDepartment($department): static
+    public function withDepartment(mixed $department): static
     {
         $this->department = $department;
         return $this;
@@ -256,7 +256,7 @@ class Mail extends Schema\Entity
         return $this['client']['email'];
     }
 
-    public function setTemplateProvider($templateProvider): static
+    public function setTemplateProvider(mixed $templateProvider): static
     {
         $this->templateProvider = $templateProvider;
         return $this;

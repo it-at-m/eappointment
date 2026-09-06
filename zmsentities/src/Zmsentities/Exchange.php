@@ -36,7 +36,7 @@ class Exchange extends Schema\Entity
         ];
     }
 
-    public function setPeriod(\DateTimeInterface $firstDay, \DateTimeInterface $lastDay, $period = 'day'): static
+    public function setPeriod(\DateTimeInterface $firstDay, \DateTimeInterface $lastDay, string $period = 'day'): static
     {
         $this->firstDay = (new Day())->setDateTime($firstDay);
         $this->lastDay = (new Day())->setDateTime($lastDay);
@@ -44,7 +44,7 @@ class Exchange extends Schema\Entity
         return $this;
     }
 
-    public function addDictionaryEntry($variable, $type = 'string', $description = '', $reference = ''): static
+    public function addDictionaryEntry(mixed $variable, string $type = 'string', string $description = '', string $reference = ''): static
     {
         $position = count($this['dictionary']);
         $this['dictionary'][$position] = [
@@ -105,7 +105,7 @@ class Exchange extends Schema\Entity
         return false;
     }
 
-    public function withCalculatedTotals(array $keysToCalculate = ['count'], $dateName = 'name'): static
+    public function withCalculatedTotals(array $keysToCalculate = ['count'], string $dateName = 'name'): static
     {
         $entity = clone $this;
         $namePosition = $this->getPositionByName($dateName);
@@ -146,7 +146,7 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
-    public function withRequestsSum($keysToCalculate = ['requestscount']): static
+    public function withRequestsSum(mixed $keysToCalculate = ['requestscount']): static
     {
         $entity = clone $this;
         $sum = [];
@@ -164,7 +164,7 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
-    public function withAverage($keyToCalculate): static
+    public function withAverage(mixed $keyToCalculate): static
     {
         $entity = clone $this;
         $average = [];

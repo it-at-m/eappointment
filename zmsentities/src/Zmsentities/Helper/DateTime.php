@@ -39,7 +39,7 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
         return $weekOfMonth;
     }
 
-    public function isWeekOfMonth($number): bool
+    public function isWeekOfMonth(mixed $number): bool
     {
         return (int)$this->getWeekOfMonth() === (int)$number;
     }
@@ -66,8 +66,8 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
     public static function getFormatedDates(
         \DateTimeInterface $date,
         string $pattern = 'MMMM',
-        $locale = 'de_DE',
-        $timezone = 'Europe/Berlin'
+        string $locale = 'de_DE',
+        string $timezone = 'Europe/Berlin'
     ): string|false {
         $dateFormatter = new \IntlDateFormatter(
             $locale,
@@ -80,7 +80,7 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
         return $dateFormatter->format($date->getTimestamp());
     }
 
-    public static function getSummerTimeStartDateTime($year = null): \DateTime
+    public static function getSummerTimeStartDateTime(mixed $year = null): \DateTime
     {
         $year = ($year) ? $year : date('Y');
         $dateTimeMarch = new \DateTime($year . '-03-01', new \DateTimeZone('Europe/Berlin'));
@@ -88,7 +88,7 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
         return $lastSunday->setTime('02', '00', '00');
     }
 
-    public static function getSummerTimeEndDateTime($year = null): \DateTime
+    public static function getSummerTimeEndDateTime(mixed $year = null): \DateTime
     {
         $year = ($year) ? $year : date('Y');
         $dateTimeOctober = new \DateTime($year . '-10-01', new \DateTimeZone('Europe/Berlin'));

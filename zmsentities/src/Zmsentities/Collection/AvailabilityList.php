@@ -94,7 +94,7 @@ class AvailabilityList extends Base
         return $list->withOutDoubles();
     }
 
-    public function getAvailableSecondsOnDateTime(\DateTimeInterface $dateTime, $type = "intern")
+    public function getAvailableSecondsOnDateTime(\DateTimeInterface $dateTime, string $type = "intern")
     {
         $seconds = 0;
         foreach ($this->withType('appointment')->withDateTime($dateTime) as $availability) {
@@ -106,7 +106,7 @@ class AvailabilityList extends Base
     /*
      * is opened on a day -> not specified by a time
      */
-    public function isOpenedByDate(\DateTimeInterface $dateTime, $type = false): bool
+    public function isOpenedByDate(\DateTimeInterface $dateTime, string|false $type = false): bool
     {
         foreach ($this as $availability) {
             if ($availability->isOpenedOnDate($dateTime, $type)) {
@@ -119,7 +119,7 @@ class AvailabilityList extends Base
     /*
      * is opened on a day with specified time
      */
-    public function isOpened(\DateTimeInterface $dateTime, $type = "openinghours"): bool
+    public function isOpened(\DateTimeInterface $dateTime, string $type = "openinghours"): bool
     {
         foreach ($this as $availability) {
             if ($availability->isOpened($dateTime, $type)) {
@@ -150,7 +150,7 @@ class AvailabilityList extends Base
         return $slotList;
     }
 
-    public function getSlotListByType($type): SlotList
+    public function getSlotListByType(mixed $type): SlotList
     {
         $slotList = new SlotList();
         foreach ($this as $availability) {
@@ -163,7 +163,7 @@ class AvailabilityList extends Base
         return $slotList;
     }
 
-    public function getConflicts($startDate, $endDate): ProcessList
+    public function getConflicts(mixed $startDate, mixed $endDate): ProcessList
     {
         $processList = new ProcessList();
         foreach ($this as $availability) {
@@ -217,8 +217,8 @@ class AvailabilityList extends Base
         \DateTimeImmutable $endDate,
         \DateTimeImmutable $selectedDate,
         string $kind,
-        $startInDays,
-        $endInDays,
+        mixed $startInDays,
+        mixed $endInDays,
         array $weekday
     ): array {
         $errorList = [];

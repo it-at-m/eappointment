@@ -31,7 +31,7 @@ class Ticketprinter extends Schema\Entity
         ];
     }
 
-    public function getHashWith($organisiationId): static
+    public function getHashWith(mixed $organisiationId): static
     {
         $this->hash = $organisiationId . "abcdefghijklmnopqrstuvwxyz";
         //$this->hash = $organisiationId . bin2hex(openssl_random_pseudo_bytes(16));
@@ -97,7 +97,7 @@ class Ticketprinter extends Schema\Entity
         );
     }
 
-    protected function getButtonData(string $string, $button)
+    protected function getButtonData(string $string, array $button)
     {
         $value = $this->getButtonValue($string, $this->getButtonType($string));
         if ('link' == $button['type']) {
@@ -116,7 +116,7 @@ class Ticketprinter extends Schema\Entity
         return $button;
     }
 
-    protected function getButtonValue($string, $type)
+    protected function getButtonValue(string $string, string $type)
     {
         $value = (in_array($type, ['l', 'r'])) ?
             Validator::value(substr($string, 1))->isString() :
@@ -124,12 +124,12 @@ class Ticketprinter extends Schema\Entity
         return $value->getValue();
     }
 
-    protected function getButtonType($string): string
+    protected function getButtonType(string $string): string
     {
         return substr($string, 0, 1);
     }
 
-    protected function getExternalLinkData($value, $button)
+    protected function getExternalLinkData(mixed $value, mixed $button)
     {
         if (preg_match("/\[([^\]]*)\]/", $value, $matches)) {
             $data = explode('|', $matches[1]);
