@@ -30,6 +30,9 @@ class Base extends \ArrayObject
     public function sortWithCollator(string $field = 'name', string $locale = 'de'): static
     {
         $collator = collator_create($locale);
+        if ($collator === null) {
+            throw new \RuntimeException('Could not create collator for locale ' . $locale);
+        }
         $collator->setStrength(\Collator::QUATERNARY);
         $collator->setAttribute(\Collator::QUATERNARY, \Collator::ON);
         $collator->setAttribute(\Collator::CASE_FIRST, \Collator::ON);

@@ -158,6 +158,9 @@ class Authorities extends Base
     {
         $authorityIterator = $this->getIterator();
         foreach ($authorityIterator as $key => $authority) {
+            if (!$authority instanceof \BO\Zmsdldb\Entity\Authority) {
+                continue;
+            }
             if ($authority->hasAppointments($serviceCsv, $external)) {
                 $locationIterator = $authority['locations']->getIterator();
                 foreach ($locationIterator as $subkey => $location) {
