@@ -127,7 +127,7 @@ services:
     restart: unless-stopped
 
   init-keycloak-token:
-    image: curlimages/curl:8.21.0
+    image: curlimages/curl:8.22.0
     container_name: zms-init-keycloak-token
     depends_on:
       keycloak:
