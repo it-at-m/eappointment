@@ -58,7 +58,7 @@ class Exchange extends Schema\Entity
     }
 
     /**
-     * @param (float|int|string)[] $values
+     * @param mixed $values
      *
      *
      * @return void
@@ -68,7 +68,8 @@ class Exchange extends Schema\Entity
         if (!is_array($values) && !$values instanceof \Traversable) {
             throw new \Exception("Values have to be of type array");
         }
-        if (count($this->dictionary) != count($values)) {
+        $valueCount = is_array($values) ? count($values) : iterator_count($values);
+        if (count($this->dictionary) != $valueCount) {
             throw new \Exception("Mismatching dictionary settings for values (count mismatch)");
         }
         $this->data[] = $values;
