@@ -27,6 +27,7 @@ class AppointmentTest extends EntityCommonTests
         $this->assertTrue('12:00 Uhr' == $entity->toTime(), 'German time does not match.');
         $this->assertTrue('12:00 o\'clock' == $entity->toTime('en'), 'English time does not match.');
         $entity->setDateByString('2016-05-27 11:50');
+        $this->assertSame('1464342600', $entity->date);
         $this->assertTrue('Freitag 27. Mai 2016' == $entity->toDate(), 'German date does not match.');
         $this->assertTrue('Friday May 27, 2016' == $entity->toDate('en'), 'English date does not match.');
         $this->assertTrue('11:50 Uhr' == $entity->toTime(), 'German time does not match.');
