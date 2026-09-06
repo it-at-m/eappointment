@@ -281,12 +281,13 @@ class AvailabilityList extends Base
     }
 
     /**
-     * @return self
+     * @return static
      */
     #[\Override]
     public function withLessData(array $keepArray = [])
     {
-        $list = new self();
+        /** @psalm-suppress UnsafeGenericInstantiation */
+        $list = new static();
         foreach ($this as $availability) {
             $list->addEntity(clone $availability->withLessData($keepArray));
         }
