@@ -177,10 +177,6 @@ class BaseController
 
     public function log(string $message): void
     {
-        if (is_array($message)) {
-            $message = print_r($message, true);
-        }
-
         $time = $this->getSpendTime();
         $memory = memory_get_usage() / (1024 * 1024);
         static::$logList[] = $message;
