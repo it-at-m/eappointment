@@ -38,7 +38,7 @@ class Location extends Base
      * @return Collection
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function fetchList(bool|string $service_csv = false, bool $mixLanguages = false)
+    public function fetchList(string|false $service_csv = false, bool $mixLanguages = false)
     {
         $locationlist = $this->getItemList();
         /** @psalm-suppress RiskyTruthyFalsyComparison */
