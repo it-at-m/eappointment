@@ -352,12 +352,13 @@ class Base extends \ArrayObject implements \JsonSerializable
         $chunks = [new static()];
         $id = 0;
         foreach ($this as $entry) {
-            if (! isset($chunks[floor($id / $length)])) {
+            $chunkIndex = (int) floor($id / $length);
+            if (! isset($chunks[$chunkIndex])) {
                 /** @psalm-suppress UnsafeGenericInstantiation */
-                $chunks[floor($id / $length)] = new static();
+                $chunks[$chunkIndex] = new static();
             }
 
-            $chunks[floor($id / $length)][] = $entry;
+            $chunks[$chunkIndex][] = $entry;
 
             $id++;
         }
