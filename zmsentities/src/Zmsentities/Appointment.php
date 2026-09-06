@@ -117,6 +117,9 @@ class Appointment extends Schema\Entity
     {
         $date = (new \DateTimeImmutable())->setTimestamp($this->date);
         //$date = \DateTimeImmutable::createFromFormat("U", $this->date);
+        if ($timezone === '') {
+            $timezone = 'Europe/Berlin';
+        }
         $date = $date->setTimeZone(new \DateTimeZone($timezone));
         return $date;
     }
