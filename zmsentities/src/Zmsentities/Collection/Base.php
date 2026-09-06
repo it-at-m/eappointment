@@ -25,7 +25,7 @@ class Base extends \ArrayObject implements \JsonSerializable
     public const string ENTITY_CLASS = '';
 
     /**
-     * @var Int $resolveLevel indicator on data integrity
+     * @var int|null $resolveLevel indicator on data integrity
      */
     protected $resolveLevel = null;
 

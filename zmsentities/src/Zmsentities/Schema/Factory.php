@@ -10,7 +10,7 @@ use BO\Zmsentities\Helper\Property;
 class Factory
 {
     /**
-     * @var Array $data unserialized entity
+     * @var mixed $data unserialized entity
      */
     protected $data = null;
 
