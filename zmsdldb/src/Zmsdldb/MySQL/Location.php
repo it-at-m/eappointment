@@ -325,11 +325,19 @@ class Location extends Base
             $where = ['l.locale = ?'];
 
             if (!empty($authoritys)) {
-                $where[] = 'l.authority_id IN (' . implode(',', $authoritys) . ')';
+                $placeholders = implode(',', array_fill(0, count($authoritys), '?'));
+                $where[] = 'l.authority_id IN (' . $placeholders . ')';
+                foreach ($authoritys as $authorityId) {
+                    $sqlArgs[] = (int) $authorityId;
+                }
             }
 
             if (!empty($locations)) {
-                $where[] = 'l.id IN (' . implode(',', $locations) . ')';
+                $placeholders = implode(',', array_fill(0, count($locations), '?'));
+                $where[] = 'l.id IN (' . $placeholders . ')';
+                foreach ($locations as $locationId) {
+                    $sqlArgs[] = (int) $locationId;
+                }
             }
 
             $sql .= ' WHERE ' . implode(' AND ', $where);
