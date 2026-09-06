@@ -87,6 +87,15 @@ class AppointmentTest extends EntityCommonTests
         $this->assertFalse($collection->hasAppointment($entity2));
     }
 
+    public function testGetByDateNormalizesArray()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $collection = new $this->collectionclass([$entity->getArrayCopy()]);
+        $item = $collection->getByDate($entity['date']);
+        $this->assertInstanceOf($this->entityclass, $item);
+        $this->assertTrue($collection->hasDateScope($entity['date'], $entity->toProperty()->scope->id->get()));
+    }
+
     public function testHasTime()
     {
         $entity = (new $this->entityclass())->getExample();

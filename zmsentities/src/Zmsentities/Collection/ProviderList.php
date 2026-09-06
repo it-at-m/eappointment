@@ -64,7 +64,8 @@ class ProviderList extends Base
     {
         $list = new self();
         foreach ($this as $provider) {
-            if (! $list->hasEntity($provider->id)) {
+            /** @psalm-suppress RedundantConditionGivenDocblockType Constructor storage can include null. */
+            if ($provider instanceof \BO\Zmsentities\Provider && ! $list->hasEntity($provider->id)) {
                 $list->addEntity($provider);
             }
         }

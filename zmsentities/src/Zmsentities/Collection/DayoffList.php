@@ -14,9 +14,9 @@ class DayoffList extends Base
         return $this->getByDate($date) ? true : false;
     }
 
-    public function getByDate(mixed $date): \BO\Zmsentities\Dayoff|false
+    public function getByDate(string|\DateTimeInterface $date): \BO\Zmsentities\Dayoff|false
     {
-        $date = (new \BO\Zmsentities\Helper\DateTime($date))->format('Y-m-d');
+        $date = \BO\Zmsentities\Helper\DateTime::create($date)->format('Y-m-d');
         foreach ($this as $entity) {
             if ($entity->getDateTime()->format('Y-m-d') == $date) {
                 return $entity;

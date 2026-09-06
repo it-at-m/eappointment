@@ -36,9 +36,9 @@ class Loader
     /**
      * @return false|string
      */
-    public static function asJson(string $schemaFilename): string|false
+    public static function asJson(string|false $schemaFilename): string|false
     {
-        if (!$schemaFilename) {
+        if ($schemaFilename === false || $schemaFilename === '') {
             throw new \BO\Zmsentities\Exception\SchemaMissingJsonFile("Missing JSON-Schema file");
         }
         $schemaPath = preg_match('#^/#', $schemaFilename) ? false : self::getSchemaPath();
