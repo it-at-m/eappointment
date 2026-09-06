@@ -21,7 +21,7 @@ class Service extends Base
      *
      * @return Bool
      */
-    public function containsLocation(string $location_csv)
+    public function containsLocation(string|null $location_csv)
     {
         $service = $this->getArrayCopy();
         $locationcompare = explode(',', $location_csv);
