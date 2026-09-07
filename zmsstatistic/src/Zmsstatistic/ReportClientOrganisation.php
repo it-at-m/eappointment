@@ -53,7 +53,9 @@ class ReportClientOrganisation extends BaseController
             $args['category'] = 'clientorganisation';
             $args['reports'][] = $exchangeClient;
             $args['organisation'] = $this->organisation;
-            return (new Download\ClientReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+            /** @var mixed $container */
+            $container = \App::$slim->getContainer();
+            return (new Download\ClientReport($container))->readResponse($request, $response, $args);
         }
 
         return Render::withHtml(

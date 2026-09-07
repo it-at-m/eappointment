@@ -35,7 +35,9 @@ class WarehouseSubject extends BaseController
             $args['reports'][] = $subjectList;
             $args['department'] = $this->department;
             $args['organisation'] = $this->organisation;
-            return (new Download(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+            /** @var mixed $container */
+            $container = \App::$slim->getContainer();
+            return (new Download($container))->readResponse($request, $response, $args);
         }
         if (count($subjectList['data']) == 1) {
             return Render::redirect("WarehousePeriod", [

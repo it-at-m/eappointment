@@ -88,7 +88,9 @@ class ReportClientIndex extends BaseController
         $args['department'] = $this->department;
         $args['organisation'] = $this->organisation;
 
-        return (new Download\ClientReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+        /** @var mixed $container */
+        $container = \App::$slim->getContainer();
+        return (new Download\ClientReport($container))->readResponse($request, $response, $args);
     }
 
     /**

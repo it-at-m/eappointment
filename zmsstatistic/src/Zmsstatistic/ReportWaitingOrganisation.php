@@ -79,7 +79,9 @@ class ReportWaitingOrganisation extends BaseController
             $args['category'] = 'waitingscope';
             $args['reports'][] = $exchangeWaiting;
             $args['organisation'] = $this->organisation;
-            return (new Download\WaitingReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+            /** @var mixed $container */
+            $container = \App::$slim->getContainer();
+            return (new Download\WaitingReport($container))->readResponse($request, $response, $args);
         }
 
         return Render::withHtml(

@@ -37,7 +37,9 @@ class Logout extends BaseController
                 throw $exception;
             }
         }
-        $sessionHash = hash('sha256', Auth::getKey());
+        /** @var mixed $authKey */
+        $authKey = Auth::getKey();
+        $sessionHash = hash('sha256', $authKey);
         App::$log->info('User logged out', [
             'event' => 'auth_logout',
             'timestamp' => date('c'),
