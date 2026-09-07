@@ -43,7 +43,7 @@ class ReportCapacityService
     public function getScopeDateBoundsByScopeId(): array
     {
         try {
-            $result = \App::$http->readGetResult('/warehouse/capacityscope/');
+            $result = \App::http()->readGetResult('/warehouse/capacityscope/');
             if (!$result) {
                 return [];
             }
@@ -89,7 +89,7 @@ class ReportCapacityService
         }
 
         try {
-            $result = \App::$http->readGetResult('/scope/');
+            $result = \App::http()->readGetResult('/scope/');
             if (!$result) {
                 return [];
             }
@@ -252,7 +252,7 @@ class ReportCapacityService
     public function getCapacityPeriod(string $scopeId): mixed
     {
         try {
-            $result = \App::$http->readGetResult('/warehouse/capacityscope/' . $scopeId . '/');
+            $result = \App::http()->readGetResult('/warehouse/capacityscope/' . $scopeId . '/');
             if (!$result) {
                 return null;
             }
@@ -417,7 +417,7 @@ class ReportCapacityService
             $warehouseFetchParams = $this->buildCapacityFetchParams($dateRange, $period, $useHourlyGrouping);
             $warehouseUrlPeriodSegment = $this->resolveCapacityFetchUrlPeriod($dateRange, $period);
 
-            $result = \App::$http->readGetResult(
+            $result = \App::http()->readGetResult(
                 '/warehouse/capacityscope/' . $scopeId . '/' . $warehouseUrlPeriodSegment . '/',
                 $warehouseFetchParams === [] ? null : $warehouseFetchParams
             );

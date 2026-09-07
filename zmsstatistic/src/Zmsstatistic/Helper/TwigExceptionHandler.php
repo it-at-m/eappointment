@@ -20,7 +20,7 @@ class TwigExceptionHandler extends \BO\Slim\TwigExceptionHandler
         }
         try {
             $exception->templatedata = [
-                'workstation' => \App::$http->readGetResult('/workstation/')->getEntity(),
+                'workstation' => \App::http()->readGetResult('/workstation/')->getEntity(),
             ];
         } catch (\Throwable $workstationexception) {
             \App::$log->warning('Failed to fetch /workstation/ for extendedInfo', [

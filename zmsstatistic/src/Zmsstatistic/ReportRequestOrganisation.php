@@ -33,14 +33,16 @@ class ReportRequestOrganisation extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $requestPeriod = \App::$http
+        $requestPeriod = \App::http()
           ->readGetResult('/warehouse/requestorganisation/' . $this->organisation->id . '/')
           ->getEntity();
         $exchangeRequest = null;
         if (isset($args['period'])) {
-            $exchangeRequest = \App::$http
+            /** @var mixed $entity */
+            $entity = \App::http()
             ->readGetResult('/warehouse/requestorganisation/' . $this->organisation->id . '/' . $args['period'] . '/')
-            ->getEntity()
+            ->getEntity();
+            $exchangeRequest = $entity
             ->toGrouped($this->groupfields, $this->hashset)
             ->withRequestsSum()
             ->withAverage('processingtime')

@@ -82,9 +82,11 @@ class ReportClientService
     public function getExchangeClientForPeriod(string $scopeId, string $period): mixed
     {
         try {
-            return \App::$http
+            $exchangeClient = \App::http()
                 ->readGetResult('/warehouse/clientscope/' . $scopeId . '/' . $period . '/')
-                ->getEntity()
+                ->getEntity();
+            /** @var mixed $exchangeClient */
+            return $exchangeClient
                 ->withCalculatedTotals($this->totals, 'date')
                 ->toHashed();
         } catch (Exception $exception) {
@@ -98,7 +100,7 @@ class ReportClientService
     public function getClientPeriod(string $scopeId): mixed
     {
         try {
-            return \App::$http
+            return \App::http()
                 ->readGetResult('/warehouse/clientscope/' . $scopeId . '/')
                 ->getEntity();
         } catch (Exception $exception) {
@@ -120,7 +122,7 @@ class ReportClientService
                 continue;
             }
             try {
-                $exchangeClient = \App::$http
+                $exchangeClient = \App::http()
                     ->readGetResult(
                         '/warehouse/clientscope/' . $scopeId . '/' . $year . '/',
                         [

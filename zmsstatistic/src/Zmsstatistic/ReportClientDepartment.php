@@ -34,15 +34,17 @@ class ReportClientDepartment extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $clientPeriod = \App::$http
+        $clientPeriod = \App::http()
           ->readGetResult('/warehouse/clientdepartment/' . $this->department->id . '/')
           ->getEntity();
 
         $exchangeClient = null;
         if (isset($args['period'])) {
-            $exchangeClient = \App::$http
+            /** @var mixed $entity */
+            $entity = \App::http()
                 ->readGetResult('/warehouse/clientdepartment/' . $this->department->id . '/' . $args['period'] . '/')
-                ->getEntity()
+                ->getEntity();
+            $exchangeClient = $entity
                 ->withCalculatedTotals($this->totals, 'date')
                 ->toHashed();
         }

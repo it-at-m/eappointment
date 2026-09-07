@@ -23,9 +23,10 @@ class WarehousePeriod extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $periodList = \App::$http
+        $periodList = \App::http()
           ->readGetResult('/warehouse/' . $args['subject'] . '/' . $args['subjectid'] . '/')
           ->getEntity();
+        /** @var mixed $periodList */
         if (count($periodList['data']) == 1) {
             return Render::redirect("WarehouseReport", [
                 'subject' => $args['subject'],

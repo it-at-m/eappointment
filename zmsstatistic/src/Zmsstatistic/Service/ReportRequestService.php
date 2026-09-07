@@ -80,9 +80,11 @@ class ReportRequestService
     public function getExchangeRequestForPeriod(string $scopeId, string $period): mixed
     {
         try {
-            return \App::$http
+            $exchangeRequest = \App::http()
                 ->readGetResult('/warehouse/requestscope/' . $scopeId . '/' . $period . '/')
-                ->getEntity()
+                ->getEntity();
+            /** @var mixed $exchangeRequest */
+            return $exchangeRequest
                 ->toGrouped($this->groupfields, $this->hashset)
                 ->withRequestsSum()
                 ->withAverage('processingtime')
@@ -99,7 +101,7 @@ class ReportRequestService
     public function getRequestPeriod(string $scopeId): mixed
     {
         try {
-            return \App::$http
+            return \App::http()
                 ->readGetResult('/warehouse/requestscope/' . $scopeId . '/')
                 ->getEntity();
         } catch (Exception $exception) {
@@ -121,7 +123,7 @@ class ReportRequestService
                 continue;
             }
             try {
-                $exchangeRequest = \App::$http
+                $exchangeRequest = \App::http()
                     ->readGetResult(
                         '/warehouse/requestscope/' . $scopeId . '/' . $year . '/',
                         [

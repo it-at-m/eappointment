@@ -33,14 +33,16 @@ class ReportClientOrganisation extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $organisationId = $this->organisation->id;
-        $clientPeriod = \App::$http
+        $clientPeriod = \App::http()
           ->readGetResult('/warehouse/clientorganisation/' . $organisationId . '/')
           ->getEntity();
         $exchangeClient = null;
         if (isset($args['period'])) {
-            $exchangeClient = \App::$http
+            /** @var mixed $entity */
+            $entity = \App::http()
             ->readGetResult('/warehouse/clientorganisation/' . $organisationId . '/' . $args['period'] . '/')
-            ->getEntity()
+            ->getEntity();
+            $exchangeClient = $entity
             ->withCalculatedTotals($this->totals, 'date')
             ->toHashed();
         }

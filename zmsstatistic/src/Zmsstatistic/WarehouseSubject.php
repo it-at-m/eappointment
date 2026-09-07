@@ -25,7 +25,8 @@ class WarehouseSubject extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $subjectList = \App::$http->readGetResult('/warehouse/' . $args['subject'] . '/')->getEntity();
+        $subjectList = \App::http()->readGetResult('/warehouse/' . $args['subject'] . '/')->getEntity();
+        /** @var mixed $subjectList */
 
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {

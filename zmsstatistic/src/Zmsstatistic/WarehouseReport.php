@@ -25,7 +25,7 @@ class WarehouseReport extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $report = \App::$http
+        $report = \App::http()
           ->readGetResult('/warehouse/' . $args['subject'] . '/' . $args['subjectid'] . '/' . $args['period'] . '/')
           ->getEntity();
 

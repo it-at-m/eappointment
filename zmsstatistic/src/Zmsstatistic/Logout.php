@@ -30,8 +30,8 @@ class Logout extends BaseController
         array $args
     ): ResponseInterface {
         try {
-            $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
-            \App::$http->readDeleteResult('/workstation/login/' . $workstation->useraccount['id'] . '/')->getEntity();
+            $workstation = \App::http()->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
+            \App::http()->readDeleteResult('/workstation/login/' . $workstation->useraccount['id'] . '/')->getEntity();
         } catch (Exception $exception) {
             if ("BO\Zmsentities\Exception\UseraccountMissingLogin" !== $exception->template) {
                 throw $exception;

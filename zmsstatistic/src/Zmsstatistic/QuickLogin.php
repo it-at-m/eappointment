@@ -38,7 +38,7 @@ class QuickLogin extends BaseController
         ));
 
         try {
-            $workstation = \App::$http
+            $workstation = \App::http()
                 ->readPostResult('/workstation/login/', $userAccount)->getEntity();
         } catch (Exception $exception) {
             //ignore double login exception on quick login
@@ -51,7 +51,7 @@ class QuickLogin extends BaseController
         $workstation->scope = new Scope(array('id' => $loginData['scope']['value']));
         $workstation->hint = $loginData['hint']['value'];
         $workstation->name = $loginData['workstation']['value'];
-        \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
+        \App::http()->readPostResult('/workstation/', $workstation)->getEntity();
         $basePath = $request->getBasePath();
 
         return $response->withRedirect($basePath . '/' . trim($loginData['redirectUrl']['value'], "/"));
