@@ -29,6 +29,7 @@ class Logout extends BaseController
         ResponseInterface $response,
         array $args
     ): ResponseInterface {
+        $workstation = null;
         try {
             $workstation = \App::http()->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
             \App::http()->readDeleteResult('/workstation/login/' . $workstation->useraccount['id'] . '/')->getEntity();
