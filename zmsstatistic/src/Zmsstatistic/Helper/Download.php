@@ -30,7 +30,6 @@ class Download
     {
         $validator = $request->getAttribute('validator');
         $this->type = $validator->getParameter('type')->isString()->setDefault('xlsx')->getValue();
-        return $this;
     }
 
     public function writeDownload(ResponseInterface $response): mixed
