@@ -77,8 +77,9 @@ class RequestReport extends Base
         $reportHeader[] = 'Dienstleistung';
         $reportHeader[] = 'Ø Bearbeitungsdauer';
         $reportHeader[] = 'Summe';
-        /** @var \DateTime $dateTime */
-        $dateTime = clone $this->firstDayDate;
+        /** @var \DateTime $firstDayDate */
+        $firstDayDate = $this->firstDayDate;
+        $dateTime = clone $firstDayDate;
         do {
             $reportHeader[] = $this->getFormatedDates($dateTime, $datePatternCol);
             $dateTime->modify('+1 ' . $report->period);
@@ -118,8 +119,9 @@ class RequestReport extends Base
                     $totalSum += (int)($report->data['sum'][$name] ?? 0);
                 }
 
-                /** @var \DateTime $dateTime */
-                $dateTime = clone $this->firstDayDate;
+                /** @var \DateTime $firstDayDate */
+                $firstDayDate = $this->firstDayDate;
+                $dateTime = clone $firstDayDate;
                 $dateColumn = 0;
                 do {
                     $dateString = $dateTime->format($this->dateFormatter[$report->period]);
