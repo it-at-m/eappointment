@@ -79,7 +79,7 @@ class ReportWaitingIndex extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args,
-        $exchangeWaiting,
+        mixed $exchangeWaiting,
         array|null $dateRange,
         array $selectedScopes = [],
         ReportWaitingService|null $reportWaitingService = null
@@ -103,9 +103,9 @@ class ReportWaitingIndex extends BaseController
     private function renderHtmlResponse(
         ResponseInterface $response,
         array $args,
-        $waitingPeriod,
+        mixed $waitingPeriod,
         array|null $dateRange,
-        $exchangeWaiting,
+        mixed $exchangeWaiting,
         array $selectedScopes = []
     ): ResponseInterface {
         return Render::withHtml(

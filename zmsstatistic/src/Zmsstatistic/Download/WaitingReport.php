@@ -66,7 +66,7 @@ class WaitingReport extends Base
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         $title = 'waitingstatistic_' . $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
         $spreadsheet = $download->getSpreadSheet();

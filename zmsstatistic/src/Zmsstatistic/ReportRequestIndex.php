@@ -79,7 +79,7 @@ class ReportRequestIndex extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args,
-        $exchangeRequest,
+        mixed $exchangeRequest,
         array|null $dateRange,
         array $selectedScopes = [],
         ReportRequestService|null $reportRequestService = null
@@ -103,9 +103,9 @@ class ReportRequestIndex extends BaseController
     private function renderHtmlResponse(
         ResponseInterface $response,
         array $args,
-        $requestPeriod,
+        mixed $requestPeriod,
         array|null $dateRange,
-        $exchangeRequest,
+        mixed $exchangeRequest,
         array $selectedScopes = []
     ): ResponseInterface {
         return Render::withHtml(

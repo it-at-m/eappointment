@@ -41,13 +41,13 @@ class Access extends \BO\Slim\Controller
         $this->validateAccessRights($request);
     }
 
-    protected function readWorkstation()
+    protected function readWorkstation(): mixed
     {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => $this->resolveLevel]);
         return ($workstation) ? $workstation->getEntity() : null;
     }
 
-    protected function readDepartment()
+    protected function readDepartment(): mixed
     {
         if ($this->workstation->getUseraccount()->hasPermissions(['statistic'])) {
             return \App::$http
@@ -56,7 +56,7 @@ class Access extends \BO\Slim\Controller
         }
     }
 
-    protected function readOrganisation()
+    protected function readOrganisation(): mixed
     {
         if ($this->workstation->getUseraccount()->isSuperUser()) {
             return \App::$http
@@ -65,7 +65,7 @@ class Access extends \BO\Slim\Controller
         }
     }
 
-    protected function readOwner()
+    protected function readOwner(): mixed
     {
         if ($this->workstation->getUseraccount()->isSuperUser()) {
             return \App::$http
@@ -116,7 +116,7 @@ class Access extends \BO\Slim\Controller
      * @return (mixed|string|string[][][])[]|Workstation
      *
      */
-    protected function testLogin($input)
+    protected function testLogin(mixed $input)
     {
         $userAccount = new Useraccount(array(
             'id' => $input['loginName'],

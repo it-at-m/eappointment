@@ -156,7 +156,7 @@ class ReportRequestService
      * Create filtered exchange request with updated properties
      */
     private function createFilteredExchangeRequest(
-        $exchangeRequestBasic,
+        mixed $exchangeRequestBasic,
         array $filteredData,
         string $fromDate,
         string $toDate

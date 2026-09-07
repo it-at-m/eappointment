@@ -159,7 +159,7 @@ class ReportClientService
      * Create filtered exchange client with updated properties
      */
     private function createFilteredExchangeClient(
-        $exchangeClientBasic,
+        mixed $exchangeClientBasic,
         array $filteredData,
         string $fromDate,
         string $toDate

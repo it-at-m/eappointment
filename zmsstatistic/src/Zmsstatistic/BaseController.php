@@ -31,7 +31,7 @@ abstract class BaseController extends Helper\Access
      * @codeCoverageIgnore
      *
      */
-    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
+    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): mixed
     {
         return parent::__invoke($request, $response, $args);
     }
