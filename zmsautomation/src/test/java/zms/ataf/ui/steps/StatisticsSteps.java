@@ -1,6 +1,7 @@
 package zms.ataf.ui.steps;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -23,6 +24,8 @@ import zms.ataf.ui.pages.statistics.evaluations.ServiceStatisticsPage;
 
 
 public class StatisticsSteps {
+    private static final ZoneId BERLIN = ZoneId.of("Europe/Berlin");
+
     private final StatisticsPage STATISTICS_PAGE;
     private final CustomerStatisticsPage CUSTOMER_STATISTICS_PAGE;
     private final ServiceStatisticsPage SERVICE_STATISTICS_PAGE;
@@ -92,7 +95,7 @@ public class StatisticsSteps {
 
     @Und("Sie in der Statistik im Zeitraum von {int} Tagen vor heute bis heute filtern.")
     public void sie_in_der_statistik_im_zeitraum_von_tagen_vor_heute_bis_heute_filtern(int daysBack) {
-        LocalDate to = LocalDate.now();
+        LocalDate to = LocalDate.now(BERLIN);
         LocalDate from = to.minusDays(daysBack);
         STATISTICS_PAGE.applyDateRangeFilter(from, to);
     }
@@ -129,7 +132,7 @@ public class StatisticsSteps {
 
     @Und("die folgenden Daten sollten für den vorherigen Tag angezeigt werden:")
     public void zeige_kunden_statistik_fuer_vorherigen_tag(DataTable table) throws Exception {
-        LocalDate gesternDatum = LocalDate.now().minusDays(1);
+        LocalDate gesternDatum = LocalDate.now(BERLIN).minusDays(1);
         String gestern = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY).format(gesternDatum);
         List<Map<String, String>> data = table.asMaps(String.class, String.class);
 
@@ -192,8 +195,8 @@ public class StatisticsSteps {
 
     @Wenn("Sie die Verfügbarkeit statistischer Informationen für den aktuellen Monat und die Dienstleistung {string} überprüfen.")
     public void wenn_sie_die_verfuegbarkeit_statistischer_informationen_fuer_den_aktuellen_monat_fuer_die_dienstleistung_ueberpruefen(String dienstleistung) {
-        int jahr = LocalDate.now().getYear();
-        int monat = LocalDate.now().getMonthValue();
+        int jahr = LocalDate.now(BERLIN).getYear();
+        int monat = LocalDate.now(BERLIN).getMonthValue();
         boolean flag = SERVICE_STATISTICS_PAGE.checkAvailabilityOfStatisticalInformationForDateAndService(jahr, monat, dienstleistung);
         Assert.assertFalse(flag, "Statistical information already available!");
     }
