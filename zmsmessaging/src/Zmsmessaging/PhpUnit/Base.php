@@ -37,7 +37,7 @@ abstract class Base extends TestCase
     {
     }
 
-    protected function getApiMockup(): object
+    protected function getApiMockup(): Http
     {
         $mock = $this->prophesize(Http::class);
         foreach ($this->getApiCalls() as $options) {
