@@ -22,7 +22,7 @@ class OAuthMiddleware
      * @var array<string, class-string<KeycloakInstance>>
      */
     public static array $authInstances = [
-        'keycloak' => '\BO\Slim\Middleware\OAuth\KeycloakInstance'
+        'keycloak' => KeycloakInstance::class
     ];
 
     /**

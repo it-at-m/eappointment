@@ -7,7 +7,7 @@ use BO\Zmsentities\Helper\Property;
 /**
  * Schema-backed entity (ArrayObject::ARRAY_AS_PROPS); document dynamic keys for Psalm.
  *
- * @property int $date
+ * @property int|string $date
  */
 class Appointment extends Schema\Entity
 {
@@ -30,19 +30,19 @@ class Appointment extends Schema\Entity
         ];
     }
 
-    public function toDate($lang = 'de')
+    public function toDate(string $lang = 'de'): string|false
     {
         // Mittwoch 18. November 2015
-        return ($lang == 'en') ? date('l F d, Y', $this->date) : Helper\DateTime::getFormatedDates(
+        return ($lang == 'en') ? date('l F d, Y', (int) $this->date) : Helper\DateTime::getFormatedDates(
             $this->toDateTime(),
             'EEEE dd. MMMM yyyy'
         );
     }
 
-    public function toTime($lang = 'de'): string
+    public function toTime(string $lang = 'de'): string
     {
         $suffix = ($lang == 'en') ? ' o\'clock' : ' Uhr';
-        return date('H:i', $this->date) . $suffix;
+        return date('H:i', (int) $this->date) . $suffix;
     }
 
     public function hasTime(): bool
@@ -57,7 +57,7 @@ class Appointment extends Schema\Entity
     /**
      * Modify time for appointment
      */
-    public function setTime($timeString): static
+    public function setTime(mixed $timeString): static
     {
         $dateTime = $this->toDateTime();
         $this->date = $dateTime->modify($timeString)->getTimestamp();
@@ -76,7 +76,7 @@ class Appointment extends Schema\Entity
         return $this;
     }
 
-    public function addScope($scopeId): static
+    public function addScope(mixed $scopeId): static
     {
         $this->getScope()->id = $scopeId;
         return $this;
@@ -90,7 +90,7 @@ class Appointment extends Schema\Entity
 
     public function addSlotCount(int|null $slotCount = null): static
     {
-        if ($slotCount) {
+        if ($slotCount !== null && $slotCount !== 0) {
             $this->slotCount = $slotCount;
         } else {
             $this->slotCount += 1;
@@ -99,7 +99,7 @@ class Appointment extends Schema\Entity
         return $this;
     }
 
-    public function getSlotCount()
+    public function getSlotCount(): mixed
     {
         return $this->slotCount;
     }
@@ -113,38 +113,41 @@ class Appointment extends Schema\Entity
         return new Availability($data);
     }
 
-    public function toDateTime($timezone = 'Europe/Berlin'): \DateTimeImmutable
+    public function toDateTime(string $timezone = 'Europe/Berlin'): \DateTimeImmutable
     {
-        $date = (new \DateTimeImmutable())->setTimestamp($this->date);
+        $date = (new \DateTimeImmutable())->setTimestamp((int) $this->date);
         //$date = \DateTimeImmutable::createFromFormat("U", $this->date);
-        if ($date) {
-            $date = $date->setTimeZone(new \DateTimeZone($timezone));
+        if ($timezone === '') {
+            $timezone = 'Europe/Berlin';
         }
+        $date = $date->setTimeZone(new \DateTimeZone($timezone));
         return $date;
     }
 
-    public function getStartTime()
+    public function getStartTime(): \DateTimeImmutable
     {
         $time = $this->toDateTime();
         return $time;
     }
 
-    public function getEndTime()
+    public function getEndTime(): mixed
     {
         $time = $this->getStartTime();
         $availability = $this->getAvailability();
-        return ($availability->slotTimeInMinutes)
+        return ($availability->slotTimeInMinutes !== null
+            && $availability->slotTimeInMinutes !== ''
+            && (int) $availability->slotTimeInMinutes !== 0)
           ? $time->modify('+' . ($availability->slotTimeInMinutes * $this->slotCount) . ' minutes')
           : $time;
     }
 
-    public function getEndTimeWithCustomSlotTime($slotTimeInMinutes)
+    public function getEndTimeWithCustomSlotTime(mixed $slotTimeInMinutes): mixed
     {
         $time = $this->getStartTime();
         return $time->modify('+' . ($slotTimeInMinutes * $this->slotCount) . ' minutes');
     }
 
-    public function setDateByString(string $dateString, $format = 'Y-m-d H:i'): static
+    public function setDateByString(string $dateString, string $format = 'Y-m-d H:i'): static
     {
         $appointmentDateTime = \DateTimeImmutable::createFromFormat($format, $dateString);
         if ($appointmentDateTime) {

@@ -9,5 +9,5 @@ class UserAccountMissingRights extends \Exception
 {
     protected $code = 403;
 
-    public $templatedata = null;
+    public mixed $templatedata = null;
 }

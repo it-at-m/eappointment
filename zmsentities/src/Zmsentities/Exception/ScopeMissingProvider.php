@@ -9,5 +9,5 @@ class ScopeMissingProvider extends \Exception
 {
     protected $code = 500;
 
-    public $data = [];
+    public array $data = [];
 }

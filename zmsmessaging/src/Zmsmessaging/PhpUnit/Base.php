@@ -4,6 +4,7 @@ namespace BO\Zmsmessaging\PhpUnit;
 
 use BO\Zmsentities\Schema\Entity;
 use BO\Zmsentities\Collection\Base as BaseCollection;
+use BO\Zmsclient\Http;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Argument;
@@ -25,7 +26,7 @@ abstract class Base extends TestCase
      */
     use ProphecyTrait;
 
-    protected $apiCalls = array();
+    protected mixed $apiCalls = array();
 
     public function setUp(): void
     {
@@ -36,9 +37,9 @@ abstract class Base extends TestCase
     {
     }
 
-    protected function getApiMockup(): object
+    protected function getApiMockup(): Http
     {
-        $mock = $this->prophesize('BO\Zmsclient\Http');
+        $mock = $this->prophesize(Http::class);
         foreach ($this->getApiCalls() as $options) {
             $parameters = isset($options['parameters']) ? $options['parameters'] : null;
             $function = $options['function'];
@@ -55,7 +56,7 @@ abstract class Base extends TestCase
                     $function,
                     [
                         $options['url'],
-                        Argument::that(function ($value) {
+                        Argument::that(function (mixed $value) {
                             return
                                 ($value instanceof Entity) ||
                                 ($value instanceof BaseCollection);
@@ -66,7 +67,7 @@ abstract class Base extends TestCase
             } else {
                 $function = $mock->__call(
                     $function,
-                    $parameters
+                    $parameters ?? []
                 );
             }
             if (isset($options['exception'])) {
@@ -90,12 +91,16 @@ abstract class Base extends TestCase
     /**
      * Overwrite this function if api calls definition needs function calls
      */
-    protected function getApiCalls()
+    protected function getApiCalls(): mixed
     {
         return $this->apiCalls;
     }
 
-    public function setApiCalls($apiCalls): void
+    abstract protected function getResponse(mixed $content = '', mixed $status = 200): mixed;
+
+    abstract protected function getRequest(mixed $method = "GET", mixed $uri = ''): mixed;
+
+    public function setApiCalls(mixed $apiCalls): void
     {
         $this->apiCalls = $apiCalls;
         \App::$http = $this->getApiMockup();

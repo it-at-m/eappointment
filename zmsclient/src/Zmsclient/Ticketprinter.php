@@ -14,17 +14,19 @@ class Ticketprinter
      * @SuppressWarnings(Superglobals)
      *
      * @param string $hash
-     * @param \BO\Zmsclient\Psr7\Request $request
+     * @param \Psr\Http\Message\RequestInterface $request
+     * @psalm-suppress DeprecatedMethod
      */
-    public static function setHash($hash, $request): void
+    public static function setHash(string $hash, \Psr\Http\Message\RequestInterface $request): void
     {
         $_COOKIE[self::HASH_COOKIE_NAME] = $hash;
         if (!headers_sent()) {
+            $basePath = $request instanceof \BO\Slim\Request ? $request->getBasePath() : '';
             setcookie(
                 self::HASH_COOKIE_NAME,
                 $hash,
                 time() + (60 * 60 * 24 * 365 * 10),
-                $request->getBasePath(),
+                $basePath,
                 '',
                 false
             );
@@ -48,16 +50,18 @@ class Ticketprinter
      * @SuppressWarnings(Superglobals)
      *
      * @getBasePath () see https://www.slimframework.com/docs/v3/objects/request.html#the-request-method
+     * @psalm-suppress DeprecatedMethod
      */
-    public static function setHomeUrl($url, $request): void
+    public static function setHomeUrl(string $url, \Psr\Http\Message\RequestInterface $request): void
     {
         $_COOKIE[self::HOME_URL_COOKIE_NAME] = $url;
         if (!headers_sent()) {
+            $basePath = $request instanceof \BO\Slim\Request ? $request->getBasePath() : '';
             setcookie(
                 self::HOME_URL_COOKIE_NAME,
                 $url,
                 time() + (60 * 60 * 24 * 365 * 10),
-                $request->getBasePath(),
+                $basePath,
                 '',
                 false,
                 true
