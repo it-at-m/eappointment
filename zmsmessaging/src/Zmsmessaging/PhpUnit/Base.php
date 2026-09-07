@@ -67,7 +67,7 @@ abstract class Base extends TestCase
             } else {
                 $function = $mock->__call(
                     $function,
-                    $parameters
+                    $parameters ?? []
                 );
             }
             if (isset($options['exception'])) {
