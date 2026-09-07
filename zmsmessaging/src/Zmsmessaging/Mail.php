@@ -301,7 +301,7 @@ class Mail extends BaseController
 
         if (null !== $entity->getIcsPart()) {
             $mailer->AddStringAttachment(
-                $icsPart,
+                $icsPart ?? '',
                 "Termin.ics",
                 $encoding,
                 "text/calendar; charset=utf-8; method=REQUEST"
