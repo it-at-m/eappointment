@@ -37,6 +37,7 @@ class QuickLogin extends BaseController
             'password' => $loginData['password']['value']
         ));
 
+        $workstation = null;
         try {
             $workstation = \App::http()
                 ->readPostResult('/workstation/login/', $userAccount)->getEntity();

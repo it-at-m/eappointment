@@ -182,6 +182,7 @@ class WaitingReport extends Base
 
         $keys = $this->getCustomerTypeKeys($customerType);
 
+        $reportTotal = [];
         $reportTotal['max'][] = 'Stunden-Max (Spaltenmaximum) der Wartezeit in Min.';
         $reportTotal['average'][] = 'Stundendurchschnitt (Spalten) der Wartezeit in Min.';
         $reportTotal['average_waytime'][] = 'Stundendurchschnitt (Spalten) der Wegezeit in Min.';
@@ -207,6 +208,7 @@ class WaitingReport extends Base
         $entity = clone $report;
         $totals = $entity->data['max'];
         unset($entity->data['max']);
+        $reportData = [];
         $reportData['headline'] = ['Zeitabschnitte','Tagesmaximum (Zeilenmaximum)',$headline];
         $formatAsTime = strpos($rangeName, 'waitingcount') === false;
         foreach ($entity->data as $entry) {

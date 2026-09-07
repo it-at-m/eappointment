@@ -85,6 +85,7 @@ class LoginForm
 
     public static function writeWorkstationUpdate(mixed $data, mixed $workstation): bool
     {
+        $result = false;
         if (isset($workstation->useraccount)) {
             $formData = $data->getValues();
             $workstation->setValidatedName($formData);

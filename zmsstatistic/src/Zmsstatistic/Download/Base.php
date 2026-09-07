@@ -138,6 +138,7 @@ class Base extends BaseController
     protected function writeInfoHeader(array $args, Spreadsheet $spreadsheet): Spreadsheet|null
     {
         $sheet = $spreadsheet->getActiveSheet();
+        $infoData = [];
         $infoData[] = static::$subjectTranslations[$args['category']];
         if (isset($args['selectedScopes'])) {
             try {
