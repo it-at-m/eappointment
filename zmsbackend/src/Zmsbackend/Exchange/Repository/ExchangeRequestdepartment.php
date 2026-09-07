@@ -20,8 +20,7 @@ class ExchangeRequestdepartment extends \BO\Zmsbackend\Query\Base
         DATE_FORMAT(statistikJoin.`datum`, :groupby) as date,
         (
             CASE
-              WHEN statistikJoin.anliegenid = -1 THEN \'' . Exchange::REQUEST_STAT_NAME_UNCATEGORIZED . '\'
-              WHEN statistikJoin.anliegenid = 0 THEN \'' . Exchange::REQUEST_STAT_NAME_NONEXISTENT . '\'
+              WHEN statistikJoin.anliegenid IN (-1, 0) THEN \'' . Exchange::REQUEST_STAT_NAME_NONEXISTENT . '\'
               ELSE r.name
             END
         ) as name,
@@ -30,7 +29,7 @@ class ExchangeRequestdepartment extends \BO\Zmsbackend\Query\Base
     FROM ' . \BO\Zmsbackend\Department\Repository\Department::TABLE . ' d
         INNER JOIN (
             SELECT
-                s.anliegenid,
+                CASE WHEN s.anliegenid IN (-1, 0) THEN 0 ELSE s.anliegenid END as anliegenid,
                 s.behoerdenid,
                 s.organisationsid,
                 COUNT(s.anliegenid) as requestscount,
@@ -38,7 +37,7 @@ class ExchangeRequestdepartment extends \BO\Zmsbackend\Query\Base
                 s.`datum`
             FROM ' . self::TABLE . ' s
             WHERE s.behoerdenid = :departmentid AND s.`datum` BETWEEN :datestart AND :dateend
-            GROUP BY s.`datum`, s.anliegenid
+            GROUP BY s.`datum`, s.behoerdenid, s.organisationsid, CASE WHEN s.anliegenid IN (-1, 0) THEN 0 ELSE s.anliegenid END
         ) as statistikJoin ON statistikJoin.`behoerdenid` = d.BehoerdenID
         LEFT JOIN ' . self::REQUESTTABLE . ' r ON r.id = statistikJoin.anliegenid
     WHERE d.`behoerdenid` = :departmentid AND statistikJoin.`datum` BETWEEN :datestart AND :dateend

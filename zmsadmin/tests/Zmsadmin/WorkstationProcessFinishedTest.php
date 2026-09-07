@@ -28,7 +28,11 @@ class WorkstationProcessFinishedTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString('Kundendaten für Statistik', (string)$response->getBody());
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('Kundendaten für Statistik', $body);
+        $this->assertStringContainsString('Dienstleistung konnte nicht erbracht werden', $body);
+        $this->assertStringNotContainsString('ohne Erfassung', $body);
+        $this->assertStringNotContainsString('Dienstleistung wurde nicht erfasst', $body);
         $this->assertEquals(200, $response->getStatusCode());
     }
 

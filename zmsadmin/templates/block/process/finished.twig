@@ -109,14 +109,6 @@
                     [{
                         "type":"checkbox",
                         "parameter": {
-                            "label": "ohne Erfassung",
-                            "name": "ignoreRequests",
-                            "value": "1",
-                            "checked": 0
-                        }
-                    },{
-                        "type":"checkbox",
-                        "parameter": {
                             "label": "Dienstleistung konnte nicht erbracht werden",
                             "name": "noRequestsPerformed",
                             "value": "1",
@@ -206,7 +198,7 @@
             </div>
         </div>
         {% else %}
-            {{ inputfield({ "name":"ignoreRequests", "type":"hidden", "value":1 }) }}
+            {{ inputfield({ "name":"noRequestsPerformed", "type":"hidden", "value":1 }) }}
         {% endif %}
     </form>
 </div>

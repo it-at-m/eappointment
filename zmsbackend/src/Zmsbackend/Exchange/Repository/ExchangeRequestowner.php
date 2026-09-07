@@ -19,8 +19,7 @@ class ExchangeRequestowner extends \BO\Zmsbackend\Query\Base
         DATE_FORMAT(statistikJoin.`datum`, :groupby) as date,
         (
             CASE
-              WHEN statistikJoin.anliegenid = -1 THEN \'' . Exchange::REQUEST_STAT_NAME_UNCATEGORIZED . '\'
-              WHEN statistikJoin.anliegenid = 0 THEN \'' . Exchange::REQUEST_STAT_NAME_NONEXISTENT . '\'
+              WHEN statistikJoin.anliegenid IN (-1, 0) THEN \'' . Exchange::REQUEST_STAT_NAME_NONEXISTENT . '\'
               ELSE r.name
             END
         ) as name,
@@ -29,14 +28,14 @@ class ExchangeRequestowner extends \BO\Zmsbackend\Query\Base
     FROM ' . \BO\Zmsbackend\Organisation\Repository\Organisation::TABLE . ' o
         INNER JOIN (
             SELECT
-                s.anliegenid,
+                CASE WHEN s.anliegenid IN (-1, 0) THEN 0 ELSE s.anliegenid END as anliegenid,
                 s.kundenid,
                 COUNT(s.anliegenid) as requestscount,
                 AVG(s.processing_time) as processingtime,
                 s.`datum`
             FROM ' . self::TABLE . ' s
             WHERE s.kundenid = :ownerid AND s.`datum` BETWEEN :datestart AND :dateend
-            GROUP BY s.`datum`, s.anliegenid
+            GROUP BY s.`datum`, s.kundenid, CASE WHEN s.anliegenid IN (-1, 0) THEN 0 ELSE s.anliegenid END
         ) as statistikJoin ON statistikJoin.`kundenid` = o.KundenID
         LEFT JOIN ' . self::REQUESTTABLE . ' r ON r.id = statistikJoin.anliegenid
     WHERE o.`KundenID` = :ownerid AND statistikJoin.`datum` BETWEEN :datestart AND :dateend

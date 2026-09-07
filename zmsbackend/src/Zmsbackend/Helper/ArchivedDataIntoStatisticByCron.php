@@ -93,7 +93,9 @@ class ArchivedDataIntoStatisticByCron
         if (count($requestIds)) {
             $processingTime = count($requestIds) === 1 ? $process->processingTime : null;
         } else {
-            $requestIds = [-1];
+            // Archives without buergeranliegen used to be "nicht erfasst" (-1).
+            // ZMSKVR-1625 maps that onto "nicht erbracht" (0).
+            $requestIds = [0];
         }
 
         foreach ($requestIds as $requestId) {
