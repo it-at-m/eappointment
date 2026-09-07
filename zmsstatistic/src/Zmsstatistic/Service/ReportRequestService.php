@@ -34,7 +34,7 @@ class ReportRequestService
             return null;
         }
 
-        if ($dateRange) {
+        if (ReportHelper::hasValues($dateRange)) {
             return $this->getExchangeRequestForDateRange($scopeId, $dateRange);
         }
 
@@ -201,7 +201,7 @@ class ReportRequestService
     ): array {
         $args['category'] = 'requestscope';
 
-        if ($dateRange) {
+        if (ReportHelper::hasValues($dateRange)) {
             $args['period'] = $dateRange['from'] . '_' . $dateRange['to'];
         }
 
