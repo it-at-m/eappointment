@@ -156,13 +156,8 @@ class ProcessSearch extends \BO\Zmsbackend\Base
 
         if (isset($parameter['query'])) {
             if (preg_match('#^\d+$#', $parameter['query'])) {
-                $query->addConditionProcessId(
+                $query->addConditionProcessIdOrSearch(
                     $parameter['query']
-                );
-
-                $query->addConditionSearch(
-                    $parameter['query'],
-                    true
                 );
             } else {
                 $query->addConditionSearch(
