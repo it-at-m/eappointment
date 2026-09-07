@@ -22,7 +22,7 @@ class Profiler
     {
         static::$startupMicrotime = microtime(true);
         if (isset($_SERVER["REQUEST_TIME_FLOAT"])) {
-            static::$startupMicrotime = (float) $_SERVER["REQUEST_TIME_FLOAT"];
+            static::$startupMicrotime = $_SERVER["REQUEST_TIME_FLOAT"];
         }
     }
 

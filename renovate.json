@@ -10,5 +10,15 @@
   ],
 
   "timezone": "Europe/Berlin",
-  "schedule": ["* 0-4 * * *"]
+  "schedule": ["* 0-4 * * *"],
+
+  "packageRules": [
+    {
+      "description": "Surefire 3.6.0 dropped surefire-testng; Cucumber TestNG then discovers 0 scenarios.",
+      "matchManagers": ["maven"],
+      "matchPackageNames": ["org.apache.maven.plugins:maven-surefire-plugin"],
+      "matchFileNames": ["zmsautomation/pom.xml"],
+      "allowedVersions": "<3.6.0"
+    }
+  ]
 }
