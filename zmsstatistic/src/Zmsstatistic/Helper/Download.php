@@ -63,7 +63,7 @@ class Download
         return $this->spreadsheet;
     }
 
-    public function getWriter()
+    public function getWriter(): mixed
     {
         if ('xlsx' == $this->type) {
             $this->writer = IOFactory::createWriter($this->spreadsheet, 'Xlsx');
