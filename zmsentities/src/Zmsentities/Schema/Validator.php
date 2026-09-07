@@ -37,8 +37,7 @@ class Validator
 
         // Load schemas only once for each process
         if (!self::$schemasLoaded) {
-            $this->loadSchemas();
-            self::$schemasLoaded = true;
+            self::$schemasLoaded = $this->loadSchemas();
         }
 
         $schemaJson = json_decode((string) json_encode($schemaObject->toJsonObject()));
@@ -46,24 +45,28 @@ class Validator
         $this->validationResult = $this->validator->validate($data, $schemaJson);
     }
 
-    private function loadSchemas(): void
+    private function loadSchemas(): bool
     {
         $schemaDir = realpath(dirname(__FILE__) . '/../../../schema');
         $schemaPath = ($schemaDir !== false ? $schemaDir : '') . '/';
         $resolver = $this->validator->resolver();
         if ($resolver === null) {
-            return;
+            return false;
         }
         $resolver->registerPrefix('schema://', $schemaPath);
         $schemaFiles = glob($schemaPath . '*.json');
+        if ($schemaFiles === false) {
+            return false;
+        }
 
         // TODO: Implement persistent caching for schema file reads to reduce redundant disk I/O and improve application performance. Not just for each process.
 
-        foreach ($schemaFiles !== false ? $schemaFiles : [] as $schemaFile) {
+        foreach ($schemaFiles as $schemaFile) {
             $schemaContent = file_get_contents($schemaFile);
             $schemaName = 'schema://' . basename($schemaFile);
             $resolver->registerRaw($schemaContent, $schemaName);
         }
+        return true;
     }
 
     public function isValid(): mixed

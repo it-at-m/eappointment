@@ -69,7 +69,7 @@ class Exchange extends Schema\Entity
             throw new \Exception("Values have to be of type array");
         }
         if (!is_array($values)) {
-            $values = iterator_to_array($values);
+            $values = iterator_to_array($values, false);
         }
         if (count($this->dictionary) != count($values)) {
             throw new \Exception("Mismatching dictionary settings for values (count mismatch)");
