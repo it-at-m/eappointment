@@ -7,8 +7,6 @@
 
 namespace BO\Zmsdldb\Elastic;
 
-use BO\Zmsdldb\Entity\Setting as Entity;
-use BO\Zmsdldb\Collection\Settings as Collection;
 use BO\Zmsdldb\File\Setting as Base;
 
 /**

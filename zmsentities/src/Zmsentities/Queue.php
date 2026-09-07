@@ -8,7 +8,7 @@ class Queue extends Schema\Entity implements Helper\NoSanitize
 
     public static $schema = "queue.json";
 
-    protected $process;
+    protected ?Process $process = null;
 
     /**
      * @return (int|null)[]
@@ -47,7 +47,7 @@ class Queue extends Schema\Entity implements Helper\NoSanitize
     }
 
     #[\Override]
-    public function withReference($additionalData = [])
+    public function withReference($additionalData = []): self|array
     {
         return clone $this;
     }

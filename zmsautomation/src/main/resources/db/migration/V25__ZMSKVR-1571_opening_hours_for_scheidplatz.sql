@@ -1,5 +1,7 @@
 -- Flyway migration: Opening hours for Scheidplatz test data (ZMSKVR-1571)
 --
+-- CURDATE()/CURTIME() follow zms-db TZ=Europe/Berlin (same calendar day as zms-web).
+--
 -- Mirrors V19__ZMSKVR-1124_opening_hours_for_ruppertstasse for Citizen View
 -- zmskvr-1571_scheidplatz_contact_location_back_login.feature:
 --  - Office 102524 (Bürgerbüro Scheidplatz)

@@ -9,7 +9,7 @@ class ClusterList extends Base
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\Cluster';
 
-    public function hasScope($scopeId): bool
+    public function hasScope(mixed $scopeId): bool
     {
         foreach ($this as $entity) {
             foreach ($entity['scopes'] as $scope) {
@@ -26,7 +26,8 @@ class ClusterList extends Base
     {
         $clusterList = new self();
         foreach ($this as $cluster) {
-            if ($cluster && ! $clusterList->hasEntity($cluster->id)) {
+            /** @psalm-suppress RedundantConditionGivenDocblockType Constructor storage can include null. */
+            if ($cluster instanceof \BO\Zmsentities\Cluster && ! $clusterList->hasEntity($cluster->id)) {
                 $clusterList->addEntity($cluster);
             }
         }

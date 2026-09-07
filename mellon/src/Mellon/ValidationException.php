@@ -10,10 +10,9 @@ namespace BO\Mellon;
 class ValidationException extends \Exception
 {
     /**
-     * @var \BO\Mellon\Valid $validator
-     *
+     * @var \BO\Mellon\Valid|null $validator
      */
-    protected $validator = null;
+    protected ?Valid $validator = null;
 
     /**
      * @psalm-api
@@ -22,5 +21,13 @@ class ValidationException extends \Exception
     {
         $this->validator = $validator;
         return $this;
+    }
+
+    /**
+     * @psalm-api
+     */
+    public function getValidator(): ?Valid
+    {
+        return $this->validator;
     }
 }

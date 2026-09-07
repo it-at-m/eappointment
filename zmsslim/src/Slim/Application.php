@@ -8,9 +8,17 @@ define(
 );
 if (!defined('ZMS_SLIM_TWIG_CACHE')) {
     $value = getenv('ZMS_SLIM_TWIG_CACHE');
-    define('ZMS_SLIM_TWIG_CACHE', ($value === 'false') ? false : ($value ?: false));
+    if ($value === 'false' || $value === false || $value === '' || $value === '0') {
+        define('ZMS_SLIM_TWIG_CACHE', false);
+    } else {
+        define('ZMS_SLIM_TWIG_CACHE', $value);
+    }
 }
-define('ZMS_DEBUGLEVEL', getenv('DEBUGLEVEL') ? getenv('DEBUGLEVEL') : 'INFO');
+$debugLevel = getenv('DEBUGLEVEL');
+define(
+    'ZMS_DEBUGLEVEL',
+    ($debugLevel === false || $debugLevel === '' || $debugLevel === '0') ? 'INFO' : $debugLevel
+);
 
 class Application
 {
@@ -48,13 +56,13 @@ class Application
      */
     const string CHARSET = 'UTF-8';
     const string TIMEZONE = 'Europe/Berlin';
-    public static $includeUrl = null;
+    public static ?string $includeUrl = null;
 /*
      * -----------------------------------------------------------------------
      * current time
      */
 
-    public static $now;
+    public static ?\DateTimeInterface $now = null;
 /*
      * -----------------------------------------------------------------------
      * Slim
@@ -86,30 +94,27 @@ class Application
      * Default parameters for templates
      *
      */
-    public static $templatedefaults = array();
+    public static array $templatedefaults = array();
 /**
      * Default parameters for middleware HttpBasicAuth
      *
      */
-    public static $httpBasicAuth = array();
+    public static array $httpBasicAuth = array();
 /*
      * -----------------------------------------------------------------------
      * Logging PSR3 compatible
      */
-    public static $log = null;
+    public static mixed $log = null;
 /**
      * image preferences
      */
 
-    public static $isImageAllowed = true;
-/**
-     * @var \BO\Slim\Language $language
-     *
-     */
-    const bool MULTILANGUAGE = true;
-    public static $languagesource = 'json';
-    public static $language = null;
-    public static $supportedLanguages = array(
+    public static bool $isImageAllowed = true;
+    public const bool MULTILANGUAGE = true;
+    public static string $languagesource = 'json';
+    /** @var Language|null $language */
+    public static ?Language $language = null;
+    public static array $supportedLanguages = array(
         // Default language
         'de' => array(
             'name'    => 'Deutsch',
@@ -123,5 +128,5 @@ class Application
         )
     );
 // default overwritten with Bootstrap::init()
-    public static $urlSignatureSecret = 'e8dd240a854185c740384d90d771d85c';
+    public static string $urlSignatureSecret = 'e8dd240a854185c740384d90d771d85c';
 }

@@ -18,29 +18,29 @@ class ElasticAccess extends FileAccess
     /**
      * The client used to talk to elastic search.
      *
-     * @var \Elastica\Client
+     * @var \Elastica\Client|null
      */
-    protected $connection;
+    protected $connection = null;
 
     /**
       * Index from elastic search
       *
-      * @var \Elastica\Index $index
+      * @var \Elastica\Index|null $index
       */
-    protected $index;
+    protected $index = null;
 
     /**
      *
      * @return self
      */
-    public function __construct($index = null, $host = 'localhost', $port = '9200', $transport = 'Http')
+    public function __construct(mixed $index = null, string $host = 'localhost', string $port = '9200', string $transport = 'Http')
     {
         if ($index) {
             $this->connectElasticSearch($index, $host, $port, $transport);
         }
     }
 
-    public function connectElasticSearch($index, $host = 'localhost', $port = '9200', $transport = 'Http'): void
+    public function connectElasticSearch(mixed $index, string $host = 'localhost', string $port = '9200', string $transport = 'Http'): void
     {
         $this->connection = new \Elastica\Client(array(
                 'host' => $host,
@@ -57,6 +57,9 @@ class ElasticAccess extends FileAccess
      */
     public function getIndex()
     {
+        if (!$this->index instanceof \Elastica\Index) {
+            throw new Exception('ElasticSearch index is not initialized');
+        }
         return $this->index;
     }
 
@@ -66,6 +69,9 @@ class ElasticAccess extends FileAccess
      */
     protected function getConnection()
     {
+        if (!$this->connection instanceof \Elastica\Client) {
+            throw new Exception('ElasticSearch connection is not initialized');
+        }
         return $this->connection;
     }
 
@@ -74,7 +80,7 @@ class ElasticAccess extends FileAccess
      * @return self
      */
     #[\Override]
-    public function loadLocations($locationJson, $locale = 'de')
+    public function loadLocations(mixed $locationJson, string $locale = 'de')
     {
         $this->accessInstance[$locale]['Location'] = new Elastic\Location($locationJson, $locale);
         $this->accessInstance[$locale]['Location']->setAccessInstance($this);
@@ -86,7 +92,7 @@ class ElasticAccess extends FileAccess
      * @return self
      */
     #[\Override]
-    public function loadServices($serviceJson, $locale = 'de')
+    public function loadServices(mixed $serviceJson, string $locale = 'de')
     {
         $this->accessInstance[$locale]['Service'] = new Elastic\Service($serviceJson, $locale);
         $this->accessInstance[$locale]['Service']->setAccessInstance($this);
@@ -98,7 +104,7 @@ class ElasticAccess extends FileAccess
      * @return self
      */
     #[\Override]
-    public function loadTopics($topicJson, $locale = 'de')
+    public function loadTopics(mixed $topicJson, string $locale = 'de')
     {
         $this->accessInstance[$locale]['Topic'] = new Elastic\Topic($topicJson, $locale);
         $this->accessInstance[$locale]['Topic']->setAccessInstance($this);
@@ -112,7 +118,7 @@ class ElasticAccess extends FileAccess
      * @return self
      */
     #[\Override]
-    public function loadSettings($settingsJson)
+    public function loadSettings(mixed $settingsJson)
     {
         $this->accessInstance['de']['Setting'] = new Elastic\Setting($settingsJson);
         $this->accessInstance['de']['Setting']->setAccessInstance($this);
@@ -129,7 +135,7 @@ class ElasticAccess extends FileAccess
      * @return self
      */
     #[\Override]
-    public function loadAuthorities($authorityJson, $locale = 'de')
+    public function loadAuthorities(mixed $authorityJson, string $locale = 'de')
     {
         $this->accessInstance[$locale]['Authority'] = new Elastic\Authority($authorityJson, $locale);
         $this->accessInstance[$locale]['Authority']->setAccessInstance($this);

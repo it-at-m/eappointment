@@ -11,14 +11,16 @@ use DateTime;
 
 class ValidDatetime extends Valid
 {
-    protected $dateTime;
+    protected DateTimeImmutable|false|null $dateTime = null;
 
-    public function isDatetime($message = 'Please enter a valid date', $format = false): Valid
-    {
+    public function isDatetime(
+        string $message = 'Please enter a valid date',
+        string|false $format = false
+    ): Valid {
         $this->validated = true;
         $date = $this->value;
         if ($date) {
-            if ($format) {
+            if ($format !== false && $format !== '') {
                 $dateTime = DateTime::createFromFormat($format, $date);
             } else {
                     $dateTime = date_create($date);
@@ -34,7 +36,7 @@ class ValidDatetime extends Valid
         return $this;
     }
 
-    public function isOldEnough($years = 18, $message = 'Minimum age of 18 years is required'): Valid
+    public function isOldEnough(int $years = 18, string $message = 'Minimum age of 18 years is required'): Valid
     {
         if ($this->dateTime instanceof \DateTimeInterface) {
             $now = new DateTime();

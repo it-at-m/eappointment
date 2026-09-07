@@ -2,12 +2,15 @@ name: 🛡️ Trivy Security Check
 
 on:
   pull_request:
-  workflow_call:
   workflow_dispatch:
   push:
     branches:
       - main
       - next
+
+concurrency:
+  group: trivy-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:

@@ -10,8 +10,8 @@ class DateTime extends \DateTimeImmutable
     public static function getFormatedDates(
         \DateTimeImmutable $timestamp,
         string $pattern = 'MMMM',
-        $locale = 'de_DE',
-        $timezone = 'Europe/Berlin'
+        string $locale = 'de_DE',
+        string $timezone = 'Europe/Berlin'
     ): string|false {
         $dateFormatter = new \IntlDateFormatter(
             $locale,

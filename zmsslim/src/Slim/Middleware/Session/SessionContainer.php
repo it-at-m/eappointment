@@ -6,12 +6,12 @@ class SessionContainer implements SessionInterface
 {
     private ?SessionData $sessionContainer = null;
 
-    /** @var callable */
+    /** @var callable|null */
     private mixed $sessionLoader = null;
 
-    public static function fromContainer(callable $sessionLoader): static
+    public static function fromContainer(callable $sessionLoader): self
     {
-        $instance = new static();
+        $instance = new self();
         $instance->sessionLoader = $sessionLoader;
         return $instance;
     }
