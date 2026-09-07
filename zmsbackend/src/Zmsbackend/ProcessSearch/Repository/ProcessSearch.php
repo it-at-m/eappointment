@@ -648,7 +648,15 @@ class ProcessSearch extends \BO\Zmsbackend\Process\Repository\Process
         }
 
         if ($status === 'planned') {
-            $this->query->where('process.status', '!=', 'missed');
+            $plannedStatuses = [];
+
+            foreach (self::ACTIVE_SEARCH_STATUSES as $activeStatus) {
+                if ($activeStatus !== 'missed') {
+                    $plannedStatuses[] = $activeStatus;
+                }
+            }
+
+            $this->query->whereIn('process.status', $plannedStatuses);
         }
 
         return $this;

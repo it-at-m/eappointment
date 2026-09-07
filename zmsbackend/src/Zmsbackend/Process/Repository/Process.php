@@ -674,6 +674,50 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    /**
+     * Match an exact process id or a general search hit, without letting the
+     * search OR skip other WHERE clauses such as active-status filters.
+     */
+    public function addConditionProcessIdOrSearch($queryString): static
+    {
+        $queryString = trim((string) $queryString);
+        $processId = (int) $queryString;
+        $terms = $this->parseSearchTerms($queryString);
+
+        $this->query->where(function (
+            \BO\Zmsbackend\Query\Builder\ConditionBuilder $group
+        ) use (
+            $processId,
+            $terms
+        ) {
+            $group->andWith('process.BuergerID', '=', $processId);
+
+            if ($terms === []) {
+                return;
+            }
+
+            $group->orWith(function (
+                \BO\Zmsbackend\Query\Builder\ConditionBuilder $search
+            ) use ($terms) {
+                foreach ($terms as $term) {
+                    $search->andWith(
+                        function (
+                            \BO\Zmsbackend\Query\Builder\ConditionBuilder $inner
+                        ) use ($term) {
+                            $this->appendGeneralSearchTermGroup(
+                                $inner,
+                                $term['value'],
+                                $term['quoted']
+                            );
+                        }
+                    );
+                }
+            });
+        });
+
+        return $this;
+    }
+
     private function appendGeneralSearchTermGroup(\BO\Zmsbackend\Query\Builder\ConditionBuilder $query, string $term, bool $quoted = false): void
     {
         $likeContains = '%' . $this->escapeLikeValue($term) . '%';
