@@ -50,7 +50,8 @@ class Requeststatistic extends Schema\Entity implements Helper\NoSanitize
                 ->addData($mergeData['additionalDepartmentRequests']);
         }
 
-        return parent::addData($mergeData);
+        parent::addData($mergeData);
+        return $this;
     }
 
     #[\Override]

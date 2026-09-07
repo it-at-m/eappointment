@@ -9,11 +9,11 @@ class SchemaValidation extends \Exception
 {
     protected $code = 400;
 
-    public $data = [];
+    public array $data = [];
 
-    protected $schemaName = '';
+    protected string $schemaName = '';
 
-    public $template;
+    public string $template = '';
 
     public function setValidationError(array $validationErrorList): static
     {
@@ -21,7 +21,7 @@ class SchemaValidation extends \Exception
         return $this;
     }
 
-    public function setSchemaName($schemaName): static
+    public function setSchemaName(string $schemaName): static
     {
         $this->schemaName = $schemaName . '.json';
         $this->template = $schemaName;
@@ -37,7 +37,7 @@ class SchemaValidation extends \Exception
 
             $message = $error->message();
             foreach ($error->args() as $key => $value) {
-                $message = str_replace("{" . $key . "}", json_encode($value, JSON_UNESCAPED_SLASHES), $message);
+                $message = str_replace("{" . $key . "}", (string) json_encode($value, JSON_UNESCAPED_SLASHES), $message);
             }
 
             $this->data[$pointer]['messages'][$error->keyword()] = $message;
@@ -45,9 +45,10 @@ class SchemaValidation extends \Exception
             $this->data[$pointer]['failed'] = 1;
             $this->data[$pointer]['data'] = $error->data() !== null ? $error->data()->value() : null;
 
+            $encodedMessages = json_encode($this->data[$pointer]['messages'], JSON_UNESCAPED_SLASHES);
             $this->message .= ($this->message ? " | " : "")
                 . '[property ' . $pointer . '] '
-                . json_encode($this->data[$pointer]['messages'], JSON_UNESCAPED_SLASHES);
+                . ($encodedMessages !== false ? $encodedMessages : '');
         }
         return $this;
     }
