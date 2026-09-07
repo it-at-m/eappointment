@@ -80,8 +80,11 @@ class Index extends BaseController
         }
     }
 
+    /**
+     * @return mixed
+     */
     #[\Override]
-    protected function testLogin(mixed $input)
+    protected function testLogin(mixed $input): mixed
     {
         $userAccount = new Useraccount(array(
             'id' => $input['loginName'],
@@ -89,6 +92,7 @@ class Index extends BaseController
             'departments' => array('id' => 0) // required in schema validation
         ));
         try {
+            /** @var mixed $workstation */
             $workstation = \App::http()->readPostResult('/workstation/login/', $userAccount)->getEntity();
 
             /** @var mixed $authkey */
@@ -157,7 +161,6 @@ class Index extends BaseController
         $oidcproviderlist = [];
         foreach (\BO\Slim\Middleware\OAuthMiddleware::$authInstances as $provider => $authInstance) {
             if (
-                0 < count($allowedProviderList) &&
                 class_exists($authInstance) &&
                 in_array($provider, $allowedProviderList)
             ) {
