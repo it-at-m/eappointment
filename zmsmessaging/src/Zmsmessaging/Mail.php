@@ -75,7 +75,7 @@ class Mail extends BaseController
                     }
                 }
             } else {
-                $batchSize = min(count($this->messagesQueue), max(1, ceil(count($this->messagesQueue) / 12)));
+                $batchSize = min(count($this->messagesQueue), max(1, (int) ceil(count($this->messagesQueue) / 12)));
                 $this->log("More than 50 items, processing in batches of $batchSize.");
                 $batches = array_chunk(iterator_to_array($this->messagesQueue), $batchSize);
                 $this->log("Messages divided into " . count($batches) . " batches.");
