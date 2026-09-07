@@ -515,6 +515,40 @@ class SearchTest extends Base
         $this->assertStringNotContainsString('Log-Ergebnisse', (string) $response->getBody());
     }
 
+    public function testSuperuserStatusOnlySearchDoesNotLoadUnfilteredLogs()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Superuser_Resolved1.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/search/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'page' => 1,
+                        'limit' => 100,
+                        'status' => 'cancelled_citizen',
+                    ],
+                    'response' => $this->readFixture("GET_searchresult_active_history.json")
+                ]
+            ]
+        );
+
+        $response = $this->render(
+            $this->arguments,
+            ['status' => 'cancelled_citizen'],
+            []
+        );
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringNotContainsString('Log-Ergebnisse', (string) $response->getBody());
+    }
+
     public function testStatusFilterIsPassedToProcessSearch()
     {
         $this->setApiCalls(
