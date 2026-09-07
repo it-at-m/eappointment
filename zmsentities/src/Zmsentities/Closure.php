@@ -21,7 +21,7 @@ class Closure extends Schema\Entity
         ];
     }
 
-    public function setTimestampFromDateformat($fromFormat = 'd.m.Y'): static
+    public function setTimestampFromDateformat(string $fromFormat = 'd.m.Y'): static
     {
         $dateTime = \DateTimeImmutable::createFromFormat($fromFormat, $this->date, new \DateTimeZone('UTC'));
         if ($dateTime) {
@@ -40,7 +40,7 @@ class Closure extends Schema\Entity
      *
      * @return bool
      */
-    public function isNewerThan(\DateTimeInterface $dateTime, $filterByAvailability = null, $now = null)
+    public function isNewerThan(\DateTimeInterface $dateTime, mixed $filterByAvailability = null, mixed $now = null)
     {
         if ($filterByAvailability && !$this->isAffectingAvailability($filterByAvailability, $now)) {
             return false;

@@ -20,7 +20,7 @@ class Collection
       */
     protected $validatorList = array();
 
-    public function __construct($validatorList)
+    public function __construct(array $validatorList = [])
     {
         $this->validatorList = $validatorList;
         $flat = $this->getFlatArray();
@@ -61,7 +61,7 @@ class Collection
     /**
      * @return Array
      */
-    public function getStatus($sub = null, $getUnvalidated = false)
+    public function getStatus(?array $sub = null, bool $getUnvalidated = false)
     {
         $messages = array();
         if (null === $sub) {
@@ -95,7 +95,7 @@ class Collection
     }
 
     /** @psalm-api */
-    public function getValid($parameterName): Parameter
+    public function getValid(string $parameterName): Parameter
     {
         if (isset($this->validatorList[$parameterName])) {
             return $this->validatorList[$parameterName];

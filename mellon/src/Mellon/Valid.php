@@ -17,9 +17,9 @@ class Valid extends \BO\Mellon\Parameter
     /**
       * validation errors
       *
-      * @var Array $messages
+      * @var Failure\MessageList|null $messages
       */
-    private $messages = null;
+    private ?Failure\MessageList $messages = null;
 
     /**
       * TRUE if value is validated, at least once
@@ -38,9 +38,9 @@ class Valid extends \BO\Mellon\Parameter
     /**
       * default value to return
       *
-      * @var String $default
+      * @var mixed $default
       */
-    protected $default = null;
+    protected mixed $default = null;
 
     /**
      * validate a value using PHP builtin function filter_var()
@@ -49,9 +49,9 @@ class Valid extends \BO\Mellon\Parameter
      * @param int $filter see documentation for filter_var()
      * @param int|array $options see documentation for filter_var()
      *
-     * @return self
+     * @return static
      */
-    protected function validate($message, $filter, $options = 0)
+    protected function validate($message, $filter, $options = 0): static
     {
         if (null !== $this->value) {
             $this->validated = true;
@@ -72,12 +72,12 @@ class Valid extends \BO\Mellon\Parameter
         }
         if ($message instanceof Failure\MessageList) {
             foreach ($message as $item) {
-                $this->messages[] = $item;
+                $this->messages->append($item);
             }
         } elseif ($message instanceof Failure\Message) {
-            $this->messages[] = $message;
+            $this->messages->append($message);
         } else {
-            $this->messages[] = new Failure\Message($message);
+            $this->messages->append(new Failure\Message($message));
         }
         return $this;
     }
@@ -177,7 +177,7 @@ class Valid extends \BO\Mellon\Parameter
     /**
      * Allow only values equal to the given value
      *
-     * @param Int $value value to compare
+     * @param array $list values to compare
      * @param String $message error message in case of failure
      *
      * @return self
@@ -198,7 +198,7 @@ class Valid extends \BO\Mellon\Parameter
     /**
      * Allow only values equal to the given value
      *
-     * @param Int $value value to compare
+     * @param array $list values to compare
      * @param String $message error message in case of failure
      *
      * @return self
@@ -286,7 +286,7 @@ class Valid extends \BO\Mellon\Parameter
     /**
      * Returns a list of error messages
      *
-     * @return Array
+     * @return Failure\MessageList|null
      */
     public function getMessages()
     {
@@ -327,7 +327,7 @@ class Valid extends \BO\Mellon\Parameter
      *
      * @throws \Exception
      */
-    public function __call($name, $arguments)
+    public function __call(string $name, array $arguments)
     {
         if (0 === strpos($name, 'is')) {
             throw new Exception(

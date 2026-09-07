@@ -8,9 +8,9 @@ on:
         required: false
         default: true
         type: boolean
-  # Scheduled on main only until ~18k Psalm findings are cleared (PR/push would fail every CI).
+  # Scheduled on next only until ~18k Psalm findings are cleared (PR/push would fail every CI).
   # Re-enable pull_request / push when errorLevel is stricter or debt is baselined.
-  # GitHub Actions cron is UTC; schedule runs on the default branch (main) only.
+  # GitHub Actions cron is UTC; schedule runs on the default branch (next) only.
   # workflow_dispatch works from any branch (including next) for manual verification.
   schedule:
     - cron: '0 4 * * *' # 06:00 Europe/Berlin (CEST) / 05:00 (CET)

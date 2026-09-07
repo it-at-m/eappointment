@@ -4,7 +4,7 @@
     "github>it-at-m/.github//renovate-configs/renovate-config.json5"
   ],
   "ignorePaths": ["zmsbase/**"],
-    "baseBranchPatterns": [
+  "baseBranchPatterns": [
     "next",
     "/^release\\/.*/"
   ],
@@ -18,6 +18,13 @@
       "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true
+    },
+    {
+      "description": "Surefire 3.6.0 dropped surefire-testng; Cucumber TestNG then discovers 0 scenarios.",
+      "matchManagers": ["maven"],
+      "matchPackageNames": ["org.apache.maven.plugins:maven-surefire-plugin"],
+      "matchFileNames": ["zmsautomation/pom.xml"],
+      "allowedVersions": "<3.6.0"
     }
   ]
 }

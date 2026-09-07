@@ -17,6 +17,7 @@ use BO\Zmsentities\Schema\Entity;
  *
  * @template T of Entity
  * @extends \ArrayObject<int|string, T>
+ * @psalm-consistent-constructor
  */
 class Base extends \ArrayObject implements \JsonSerializable
 {
@@ -24,9 +25,15 @@ class Base extends \ArrayObject implements \JsonSerializable
     public const string ENTITY_CLASS = '';
 
     /**
-     * @var Int $resolveLevel indicator on data integrity
+     * @var int|null $resolveLevel indicator on data integrity
      */
     protected $resolveLevel = null;
+
+    public function __construct(object|array $array = [], int $flags = 0, string $iteratorClass = "ArrayIterator")
+    {
+        /** @var class-string<\ArrayIterator> $iteratorClass */
+        parent::__construct($array, $flags, $iteratorClass);
+    }
 
     /**
      * @return T|null
@@ -76,13 +83,13 @@ class Base extends \ArrayObject implements \JsonSerializable
 
     public function sortByCustomKey(string $key): static
     {
-        $this->uasort(function ($a, $b) use ($key) {
+        $this->uasort(function ($a, $b) use ($key): mixed {
             return ($a[$key] - $b[$key]);
         });
         return $this;
     }
 
-    public function sortByCustomStringKey($key): static
+    public function sortByCustomStringKey(mixed $key): static
     {
         $this->uasort(function ($a, $b) use ($key) {
             return strcmp(
@@ -100,7 +107,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         }
     }
 
-    public function hasEntity($primary): bool
+    public function hasEntity(mixed $primary): bool
     {
         foreach ($this as $entity) {
             if (isset($entity->{$entity::PRIMARY}) && $primary == $entity->{$entity::PRIMARY}) {
@@ -124,31 +131,38 @@ class Base extends \ArrayObject implements \JsonSerializable
         return null;
     }
 
-    /**
-     * @param T $entity
-     *
-     */
     public function addEntity(\BO\Zmsentities\Schema\Entity $entity): static
     {
-        $this->offsetSet(null, $entity);
+        /** @var T $entity */
+        $this->append($entity);
         return $this;
     }
 
+    /**
+     * @param int|string|null $index
+     * @param Entity|array $value
+     */
     #[\Override]
     public function offsetSet(mixed $index, mixed $value): void
     {
         $className = $this::ENTITY_CLASS;
         if (is_a($value, $className)) {
-            parent::offsetSet($index, $value);
+            /** @var T $entity */
+            $entity = $value;
+            /** @psalm-suppress PossiblyNullArgument */
+            parent::offsetSet($index, $entity);
         } elseif (is_array($value)) {
-            parent::offsetSet($index, new $className($value));
+            /** @var T $entity */
+            $entity = new $className($value);
+            /** @psalm-suppress PossiblyNullArgument */
+            parent::offsetSet($index, $entity);
         } else {
-            $given = is_object($value) ? $value::class : gettype($value);
+            $given = get_debug_type($value);
             throw new \Exception('Invalid entity ' . $given . ' for collection ' . __CLASS__);
         }
     }
 
-    public function addData($mergeData): static
+    public function addData(mixed $mergeData): static
     {
         foreach ($mergeData as $item) {
             if ($item instanceof Entity) {
@@ -159,6 +173,9 @@ class Base extends \ArrayObject implements \JsonSerializable
             } else {
                 $className = $this::ENTITY_CLASS;
                 $entity = new $className($item);
+                if (!$entity instanceof Entity) {
+                    throw new \Exception('Invalid entity ' . get_debug_type($entity) . ' for collection ' . __CLASS__);
+                }
                 $entity->setResolveLevel($this->getResolveLevel());
                 $this->addEntity($entity);
             }
@@ -166,6 +183,9 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @param Base<T> $list
+     */
     public function addList(Base $list): static
     {
         foreach ($list as $item) {
@@ -192,7 +212,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         return implode(',', $this->getIds());
     }
 
-    public function getCsvForProperty($propertyName, $csvSeperator = ','): string
+    public function getCsvForProperty(mixed $propertyName, string $csvSeperator = ','): string
     {
         $list = [];
         foreach ($this as $entry) {
@@ -203,7 +223,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         return implode($csvSeperator, $list);
     }
 
-    public function getCsvForPropertyList(array $propertyList, $propertySeperator = '', $csvSeperator = ','): string
+    public function getCsvForPropertyList(array $propertyList, string $propertySeperator = '', string $csvSeperator = ','): string
     {
         $list = [];
         foreach ($this as $entry) {
@@ -227,8 +247,9 @@ class Base extends \ArrayObject implements \JsonSerializable
      * Change a parameter on all entries
      *
      */
-    public function withValueFor($param, $newValue): static
+    public function withValueFor(mixed $param, mixed $newValue): static
     {
+        /** @psalm-suppress UnsafeGenericInstantiation */
         $list = new static();
         foreach ($this as $entry) {
             $list[] = $entry->withProperty($param, $newValue);
@@ -244,14 +265,16 @@ class Base extends \ArrayObject implements \JsonSerializable
      */
     public function withLessData(array $keepArray = [])
     {
+        /** @psalm-suppress UnsafeGenericInstantiation */
         $list = new static();
         foreach ($this as $key => $item) {
+            /** @psalm-suppress TooManyArguments */
             $list[$key] = $item->withLessData($keepArray);
         }
         return $list;
     }
 
-    public function setJsonCompressLevel($jsonCompressLevel): void
+    public function setJsonCompressLevel(mixed $jsonCompressLevel): void
     {
         foreach ($this as $item) {
             $item->setJsonCompressLevel($jsonCompressLevel);
@@ -288,7 +311,7 @@ class Base extends \ArrayObject implements \JsonSerializable
     }
 
     /**
-     * @return Int
+     * @return int|null
      */
     public function getResolveLevel()
     {
@@ -296,7 +319,7 @@ class Base extends \ArrayObject implements \JsonSerializable
     }
 
     /**
-     * @param Int $resolveLevel
+     * @param int|null $resolveLevel
      * @return self
      */
     public function setResolveLevel($resolveLevel)
@@ -311,12 +334,11 @@ class Base extends \ArrayObject implements \JsonSerializable
      */
     public function withResolveLevel($resolveLevel)
     {
+        /** @psalm-suppress UnsafeGenericInstantiation */
         $collection = new static();
         foreach ($this as $entity) {
             $reduced = $entity->withResolveLevel($resolveLevel);
-            if (null !== $reduced) {
-                $collection[] = $reduced;
-            }
+            $collection[] = $reduced;
         }
         return $collection;
     }
@@ -325,16 +347,19 @@ class Base extends \ArrayObject implements \JsonSerializable
      * @return static[]
      *
      */
-    public function chunk($length): array
+    public function chunk(mixed $length): array
     {
+        /** @psalm-suppress UnsafeGenericInstantiation */
         $chunks = [new static()];
         $id = 0;
         foreach ($this as $entry) {
-            if (! isset($chunks[floor($id / $length)])) {
-                $chunks[floor($id / $length)] = new static();
+            $chunkIndex = (int) floor($id / $length);
+            if (! isset($chunks[$chunkIndex])) {
+                /** @psalm-suppress UnsafeGenericInstantiation */
+                $chunks[$chunkIndex] = new static();
             }
 
-            $chunks[floor($id / $length)][] = $entry;
+            $chunks[$chunkIndex][] = $entry;
 
             $id++;
         }
