@@ -16,15 +16,15 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Download
 {
-    protected $writer = null;
+    protected mixed $writer = null;
 
-    protected $spreadsheet = null;
+    protected mixed $spreadsheet = null;
 
-    protected $period = '';
+    protected string $period = '';
 
-    protected $title = 'statistik';
+    protected string $title = 'statistik';
 
-    protected $type = 'xlsx';
+    protected mixed $type = 'xlsx';
 
     public function __construct(mixed $request)
     {

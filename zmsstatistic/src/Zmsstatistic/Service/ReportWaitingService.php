@@ -14,7 +14,7 @@ use Exception;
 
 class ReportWaitingService
 {
-    protected $hashset = [
+    protected array $hashset = [
         'waitingcount',
         'waitingtime',
         'waitingcalculated',
@@ -28,7 +28,7 @@ class ReportWaitingService
         'waytime_total',
     ];
 
-    protected $groupfields = [
+    protected array $groupfields = [
         'date',
         'hour'
     ];

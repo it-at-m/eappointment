@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class Index extends BaseController
 {
-    protected $withAccess = false;
+    protected bool $withAccess = false;
 
     /**
      * @SuppressWarnings(Param)

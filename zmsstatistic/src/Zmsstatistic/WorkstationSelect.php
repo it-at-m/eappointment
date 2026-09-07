@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class WorkstationSelect extends BaseController
 {
-    protected $resolveLevel = 2;
+    protected int $resolveLevel = 2;
     /**
      * @SuppressWarnings(Parameter)
      * @return ResponseInterface

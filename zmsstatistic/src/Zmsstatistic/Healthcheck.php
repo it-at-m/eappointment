@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class Healthcheck extends BaseController
 {
-    protected $withAccess = false;
+    protected bool $withAccess = false;
 
     /**
      * @SuppressWarnings(UnusedFormalParameter)

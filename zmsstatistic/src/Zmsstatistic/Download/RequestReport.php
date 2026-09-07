@@ -16,11 +16,11 @@ use Psr\Http\Message\ResponseInterface;
 
 class RequestReport extends Base
 {
-    public $firstDayDate = null;
+    public mixed $firstDayDate = null;
 
-    public $lastDayDate = null;
+    public mixed $lastDayDate = null;
 
-    protected $dateFormatter = [
+    protected array $dateFormatter = [
         'day' => 'Y-m-d',
         'month' => 'Y-m'
     ];
