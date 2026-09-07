@@ -27,10 +27,10 @@ class ValidBool extends Valid
      *
      * @param String $message error message in case of failure
      *
-     * @return self
+     * @return static
      * @psalm-api
      */
-    public function isBool($message = 'not a boolean value')
+    public function isBool($message = 'not a boolean value'): static
     {
         return $this->validate($message, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
     }

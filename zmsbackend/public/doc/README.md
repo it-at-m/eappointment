@@ -13,7 +13,7 @@ python3 -m http.server 8001
 Reachable at:
 ```
 http://[::]:8001/public/doc/
-https://zms.ddev.site/terminvereinbarung/api/2/doc/index.html
+http://localhost:8090/terminvereinbarung/api/2/doc/index.html
 https://it-at-m.github.io/eappointment/zmsbackend/public/doc/index.html
 ```
 

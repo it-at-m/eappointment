@@ -12,6 +12,8 @@ use BO\Zmsdldb\Collection\Locations as Collection;
 
 /**
  * Common methods shared by access classes
+ *
+ * @extends Base<Collection, Entity>
  */
 class Location extends Base
 {
@@ -19,7 +21,7 @@ class Location extends Base
      * @return Collection
      */
     #[\Override]
-    protected function parseData($data)
+    protected function parseData(mixed $data)
     {
         $itemList = new Collection();
         foreach ($data['data'] as $item) {
@@ -34,11 +36,12 @@ class Location extends Base
     /**
      *
      * @return Collection
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function fetchList($service_csv = false)
+    public function fetchList(bool|string $service_csv = false, bool $mixLanguages = false)
     {
         $locationlist = $this->getItemList();
-        if ($service_csv) {
+        if (is_string($service_csv) && $service_csv !== '') {
             $locationlist = new Collection(array_filter((array) $locationlist, function ($item) use ($service_csv) {
                 $location = new Entity($item);
                 return $location->containsService($service_csv);
@@ -50,9 +53,11 @@ class Location extends Base
     /**
      *
      * @return Collection
+     * @param bool $mixLanguages unused in file backend, kept for MySQL override compatibility
      * @psalm-api
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function fetchFromCsv($location_csv)
+    public function fetchFromCsv(mixed $location_csv, bool $mixLanguages = false)
     {
         $locationlist = new Collection();
         foreach (explode(',', $location_csv) as $location_id) {
@@ -66,10 +71,10 @@ class Location extends Base
 
     /**
      *
-     * @return Collection
+     * @return \BO\Zmsdldb\Collection\Authorities
      * @psalm-api
      */
-    public function readSearchResultList($query, $service_csv = '')
+    public function readSearchResultList(mixed $query, string $service_csv = '')
     {
         $locationlist = $this->fetchList($service_csv);
         $locationlist = new Collection(array_filter((array) $locationlist, function ($item) use ($query) {
@@ -81,7 +86,7 @@ class Location extends Base
     }
 
     /** @psalm-api */
-    public function fetchListByOffice($office)
+    public function fetchListByOffice(mixed $office): mixed
     {
         return $this->access()->fromAuthority()
         ->readListByOfficePath($office)

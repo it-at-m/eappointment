@@ -8,15 +8,6 @@ Git-Hooks ([Git-Hooks (Husky)](./git-hooks.md)) führen viele dieser Prüfungen 
 
 Wir nutzen PHPCS (gemäß PSR-12) und PHPMD, um die Codequalität zu sichern und potenzielle Probleme früh zu erkennen. Diese Prüfungen laufen automatisch in unserer GitHub-Actions-Pipeline, können aber auch lokal ausgeführt werden.
 
-### Mit DDEV
-
-```bash
-ddev exec "./cli modules loop 'vendor/bin/phpcs --standard=psr12 src/'" && \
-ddev exec "./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src'"
-```
-
-### Mit Podman
-
 ```bash
 podman exec -it zms-web bash -lc "./cli modules loop 'vendor/bin/phpcs --standard=psr12 src/'" && \
 podman exec -it zms-web bash -lc "./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src'"

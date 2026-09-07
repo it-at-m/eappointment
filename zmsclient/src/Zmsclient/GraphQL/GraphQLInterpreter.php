@@ -4,17 +4,18 @@ namespace BO\Zmsclient\GraphQL;
 
 class GraphQLInterpreter implements \JsonSerializable
 {
-    protected $gqlString;
-    protected $data;
+    protected string $gqlString;
+    protected mixed $data = null;
 
-    public function __construct($gqlString)
+    public function __construct(string $gqlString)
     {
         $this->gqlString = $gqlString;
     }
 
     protected function getGraphInterpretation(): GraphQLNode
     {
-        if (!preg_match_all('#\w+|[{}]#', $this->gqlString, $parts)) {
+        $matchCount = preg_match_all('#\w+|[{}]#', $this->gqlString, $parts);
+        if ($matchCount === false || $matchCount === 0) {
             throw new GraphQLException("No content for graph");
         }
         $parts = $parts[0];
@@ -51,7 +52,7 @@ class GraphQLInterpreter implements \JsonSerializable
         return $this;
     }
 
-    public function setJson($json): self
+    public function setJson(string $json): self
     {
         $this->data = json_decode($json, true);
         $this->reduceData();
@@ -64,8 +65,9 @@ class GraphQLInterpreter implements \JsonSerializable
         return $this->data;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return json_encode($this);
+        $encoded = json_encode($this);
+        return $encoded === false ? '' : $encoded;
     }
 }

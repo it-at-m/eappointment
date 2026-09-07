@@ -168,14 +168,11 @@ Für lokale UI-Tests (Statistik, Admin) ist der Standard-SSO-Benutzer der Keyclo
 
 Siehe auch das ATAF-Handbuch: [Standalone-Nutzung (ohne Jira, lokales Keycloak)](https://it-at-m.github.io/agile-test-automation-framework/de/usage/standalone-without-jira.html).
 
-### Docker-Compose-Dienste
+### Compose-Dienste
 
-Keycloak und der Migrations-Sidecar sind definiert in:
+Keycloak und der Migrations-Sidecar sind definiert in [`.devcontainer/docker-compose.yaml`](https://github.com/it-at-m/eappointment/blob/main/.devcontainer/docker-compose.yaml).
 
-- [`.ddev/docker-compose.keycloak.yaml`](https://github.com/it-at-m/eappointment/blob/main/.ddev/docker-compose.keycloak.yaml) (DDEV)
-- [`.devcontainer/docker-compose.yaml`](https://github.com/it-at-m/eappointment/blob/main/.devcontainer/docker-compose.yaml) (devcontainer / Podman)
-
-Beide Stacks starten:
+Der Stack startet:
 
 | Dienst          | Aufgabe                                                                                     |
 | --------------- | ------------------------------------------------------------------------------------------- |
@@ -314,3 +311,11 @@ In Safari musst du außerdem aktivieren:
 Die Slot-Berechnung erzeugt an gesetzlichen Feiertagen absichtlich keine Termine (Datensätze in der Tabelle `feiertage`, befüllt durch Migration V11). Die Testdaten für Öffnungszeiten in zmsautomation (relativ zum aktuellen Datum, z. B. in den Migrationen V10 und V19) können in einen Feiertag fallen. In diesem Fall gibt es am „ersten verfügbaren Tag“ ggf. keine buchbaren Slots und buchungsbezogene Szenarien (Citizen API und CitizenView Flows) können fehlschlagen.
 
 Das ist erwartetes Verhalten. Maßnahme: Pipeline am nächsten arbeitsfreien Nicht‑Feiertag erneut ausführen (oder lokal an einem Nicht‑Feiertag starten).
+
+### Statistik- und Öffnungszeiten-Seeds um Mitternacht
+
+`zms-db` setzt `TZ=Europe/Berlin`, wie `zms-web` (zmsbase). Flyway-`CURDATE()` / `CURTIME()` und Java-`LocalDate` über `BerlinTime` (Admin-, Citizen-API-, ZMS-API-, Statistik- und Bürgeransicht-Steps) nutzen damit denselben **Berliner Kalendertag**, auch zwischen Berliner Mitternacht und UTC-Mitternacht (00:00–02:00 MESZ im Sommer, 00:00–01:00 MEZ im Winter).
+
+Der geplante GitHub-Cron (`0 1 * * *` = 01:00 UTC ≈ 03:00 MESZ / 02:00 MEZ) startet bereits nach dieser früheren UTC/Berlin-Differenz und hängt nicht damit zusammen.
+
+Ein echter Berliner Mitternachtswechsel ändert den Kalendertag weiterhin; das ist erwartet. Die Feiertagsüberschneidung (oben) bleibt eine eigene Einschränkung.
