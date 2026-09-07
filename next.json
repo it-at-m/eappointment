@@ -1,10 +1,10 @@
 {
   "branch": "next",
   "branchSlug": "next",
-  "runId": "34088214231",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34088214231",
-  "runStartedAt": "2026-09-07T05:48:25Z",
-  "publishedAt": "2026-09-07T06:45:47.032Z",
+  "runId": "34098144243",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34098144243",
+  "runStartedAt": "2026-09-07T07:58:32Z",
+  "publishedAt": "2026-09-07T08:13:18.386Z",
   "features": {
     "feature-rest-zmsapi-zmskvr-1328": {
       "status": "passed",
@@ -160,13 +160,13 @@
       "runStartedAt": "2026-09-07T05:48:25Z"
     },
     "feature-ui-zmsadmin-zmskvr-1385": {
-      "status": "failed",
-      "shard": "zmsadmin",
-      "browser": "chrome",
+      "status": "passed",
+      "shard": "custom",
+      "browser": "firefox",
       "rel": "ui/zmsadmin/ZMSKVR-1385.feature",
-      "runId": "34088214231",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34088214231",
-      "runStartedAt": "2026-09-07T05:48:25Z"
+      "runId": "34098144243",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34098144243",
+      "runStartedAt": "2026-09-07T07:58:32Z"
     },
     "feature-rest-zmscitizenapi-zmskvr-1046-booking-ruppertstrasse-shared-booking-ausbildung-citizenapi": {
       "status": "passed",
