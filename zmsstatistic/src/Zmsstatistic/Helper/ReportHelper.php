@@ -115,7 +115,7 @@ class ReportHelper
         if (!is_numeric($value)) {
             return $value;
         }
-        $minutes = floor($value);
+        $minutes = floor((float) $value);
         $seconds = round(($value - $minutes) * 60);
         if ($seconds >= 60) {
             $minutes += 1;
