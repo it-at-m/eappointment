@@ -20,6 +20,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
+import zms.ataf.helpers.BerlinTime;
 import zms.ataf.rest.dto.common.ApiResponse;
 import zms.ataf.rest.dto.zmsapi.StatusResponse;
 
@@ -488,7 +489,7 @@ public class ZmsApiSteps {
     }
 
     private JsonNode fetchFirstFreeProcess(int scopeId, JsonNode request, String authKey) {
-        LocalDate today = LocalDate.now();
+        LocalDate today = BerlinTime.today();
         ObjectNode calendar = MAPPER.createObjectNode();
         ObjectNode firstDay = MAPPER.createObjectNode();
         firstDay.put("year", today.getYear());

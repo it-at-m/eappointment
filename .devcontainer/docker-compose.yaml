@@ -68,6 +68,10 @@ services:
     image: mariadb:10.11
     container_name: zms-db
     restart: unless-stopped
+    environment:
+      # Match zms-web (zmsbase TZ). Without this, CURDATE()/CURTIME() stay UTC
+      # and drift from Java LocalDate between Berlin midnight and UTC midnight.
+      TZ: Europe/Berlin
     env_file:
       - .env
     volumes:

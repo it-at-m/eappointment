@@ -4,9 +4,9 @@ namespace BO\Zmsclient\GraphQL;
 
 class GraphQLNode extends GraphQLElement
 {
-    public $propertyList = [];
+    public array $propertyList = [];
 
-    public $parent;
+    public ?self $parent = null;
 
     public function addElement(string $propertyName): self
     {
@@ -14,10 +14,7 @@ class GraphQLNode extends GraphQLElement
         return $this;
     }
 
-    /**
-     * @return false|key-of<TArray>
-     */
-    protected function getLastKey()
+    protected function getLastKey(): int|string|false
     {
         $keys = array_keys($this->propertyList);
         return end($keys);
@@ -26,7 +23,9 @@ class GraphQLNode extends GraphQLElement
     public function getFirstElement(): GraphQLElement
     {
         $first = reset($this->propertyList);
-        $first = (!$first) ? new GraphQLNode('first') : $first;
+        if ($first === false) {
+            $first = new GraphQLNode('first');
+        }
         return $first;
     }
 
@@ -44,7 +43,7 @@ class GraphQLNode extends GraphQLElement
             // root node
             $node = new self();
         } else {
-            $node = new self($this->getLastElement()->propertyName);
+            $node = new self($this->getLastElement()->getPropertyName());
         }
         $node->setParent($this);
         $this->propertyList[$lastkey] = $node;
@@ -59,12 +58,12 @@ class GraphQLNode extends GraphQLElement
 
     public function hasParent(): bool
     {
-        return ($this->parent) ? true : false;
+        return $this->parent instanceof self;
     }
 
     public function getParent(): self
     {
-        if (!$this->hasParent()) {
+        if (!$this->parent instanceof self) {
             throw new GraphQLException("Curly bracket match problem, too many closing brackets");
         }
         return $this->parent;
@@ -72,14 +71,15 @@ class GraphQLNode extends GraphQLElement
 
     public function getRealRoot(): self
     {
-        if ($this->getFirstElement()->propertyName == '__root') {
-            return $this->getFirstElement()->getRealRoot();
+        $first = $this->getFirstElement();
+        if ($first->getPropertyName() == '__root' && $first instanceof self) {
+            return $first->getRealRoot();
         }
         return $this;
     }
 
     /** @psalm-api */
-    public function getNodesFromIterable($data): array
+    public function getNodesFromIterable(mixed $data): array
     {
         $reduced = [];
         if (is_array($data) && array_values($data) === $data) {
@@ -88,7 +88,7 @@ class GraphQLNode extends GraphQLElement
             }
         } else {
             foreach ($this->propertyList as $element) {
-                $propertyName = $element->propertyName;
+                $propertyName = $element->getPropertyName();
                 if (isset($data[$propertyName])) {
                     if ($element instanceof self) {
                         $reduced[$propertyName] = $element->getNodesFromIterable($data[$propertyName]);

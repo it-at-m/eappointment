@@ -19,8 +19,11 @@ final class CacheBootstrap
      */
     public static function resolveConfig(?string $fallbackCacheDir = null): array
     {
-        $cacheDir = getenv('CACHE_DIR') ?: ($fallbackCacheDir ?? sys_get_temp_dir());
-        $ttl = (int) (getenv('SOURCE_CACHE_TTL') ?: 3600);
+        $cacheDir = getenv('CACHE_DIR');
+        if ($cacheDir === false || $cacheDir === '' || $cacheDir === '0') {
+            $cacheDir = $fallbackCacheDir ?? sys_get_temp_dir();
+        }
+        $ttl = self::getenvInt('SOURCE_CACHE_TTL', 3600);
 
         return [$cacheDir, $ttl];
     }
@@ -54,5 +57,15 @@ final class CacheBootstrap
         if (!is_writable($cacheDir)) {
             throw new \RuntimeException(sprintf('Cache directory "%s" is not writable', $cacheDir));
         }
+    }
+
+    private static function getenvInt(string $name, int $default): int
+    {
+        $value = getenv($name);
+        if ($value === false || $value === '' || $value === '0') {
+            return $default;
+        }
+
+        return (int) $value;
     }
 }

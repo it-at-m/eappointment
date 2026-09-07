@@ -33,6 +33,12 @@ class DayoffTest extends EntityCommonTests
             'Dayoff list should not have entity with date 2015-11-20'
         );
 
+        $existing = $collection->getFirst();
+        $this->assertTrue(
+            $collection->hasEntityByDate($existing->getDateTime()),
+            'Dayoff list should accept DateTimeInterface dates'
+        );
+
         $collection->sortByName();
         $this->assertTrue('Christi Himmelfahrt' == $collection->getIterator()->current()->name, 'Dayoff list sort by name failed');
         $collection->sortByCustomKey('date');

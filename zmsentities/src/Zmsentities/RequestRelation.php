@@ -23,22 +23,22 @@ class RequestRelation extends Schema\Entity
         ];
     }
 
-    public function getRequest()
+    public function getRequest(): mixed
     {
         return $this->toProperty()->request->get();
     }
 
-    public function getProvider()
+    public function getProvider(): mixed
     {
         return $this->toProperty()->provider->get();
     }
 
-    public function getSlotCount()
+    public function getSlotCount(): mixed
     {
         return $this->toProperty()->slots->get();
     }
 
-    public function getMaxQuantity()
+    public function getMaxQuantity(): mixed
     {
         return $this->toProperty()->maxQuantity->get();
     }
@@ -48,7 +48,7 @@ class RequestRelation extends Schema\Entity
         return (bool) $this->toProperty()->public->get();
     }
 
-    public function getSource()
+    public function getSource(): mixed
     {
         return $this->toProperty()->source->get();
     }

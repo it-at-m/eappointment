@@ -15,9 +15,9 @@ namespace BO\Mellon;
 class Unvalidated extends \BO\Mellon\Parameter
 {
     /**
-     * @var callable $setValid
+     * @var callable|null $setValid
      */
-    protected $setValid;
+    protected $setValid = null;
 
     /**
      * Raw value before any validation; safe to use for pre-processing (e.g. trim) before is* methods.
@@ -47,7 +47,7 @@ class Unvalidated extends \BO\Mellon\Parameter
      *
      * @return \BO\Mellon\Valid
      */
-    public function __call($name, $arguments)
+    public function __call(string $name, array $arguments)
     {
         if (0 !== strpos($name, 'is')) {
             throw new Exception("parameters should validate first");
@@ -81,14 +81,17 @@ class Unvalidated extends \BO\Mellon\Parameter
      *
      * @return \BO\Mellon\Valid
      */
-    protected function findTypedValidator($name)
+    protected function findTypedValidator(string $name): Valid
     {
         $partList = preg_split('#([A-Z][a-z]+)#', $name, -1, PREG_SPLIT_DELIM_CAPTURE);
         if (isset($partList[1])) {
             $class = __NAMESPACE__ . '\\Valid' . $partList[1];
             if (class_exists($class)) {
                 $newClass = new $class($this->value, $this->name);
-                if ($this->setValid) {
+                if (!$newClass instanceof Valid) {
+                    throw new Exception("Validation class $class does not exists");
+                }
+                if ($this->setValid !== null) {
                     $callback = $this->setValid;
                     $callback($newClass);
                 }

@@ -17,10 +17,10 @@ class ValidNumber extends Valid
      *
      * @param String $message error message in case of failure
      *
-     * @return self
+     * @return static
      * @psalm-api
      */
-    public function isNumber($message = 'no valid number')
+    public function isNumber($message = 'no valid number'): static
     {
         return $this->validate($message, FILTER_VALIDATE_INT);
     }
