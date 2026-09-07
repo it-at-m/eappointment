@@ -41,7 +41,9 @@ class SessionData implements SessionInterface
         }
 
         $instance = new self();
-        $instance->data = $session;
+        /** @var array<array-key, mixed> $sessionData */
+        $sessionData = $session;
+        $instance->data = $sessionData;
         return $instance;
     }
 

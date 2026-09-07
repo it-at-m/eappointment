@@ -25,22 +25,22 @@ class Validator
     /**
      * Content of STDIN
      *
-     * @var String $input
+     * @var string|false|null $input
      */
-    protected $input = null;
+    protected string|false|null $input = null;
 
     /**
       * Singleton instance
       *
-      * @var self $instance
-      */
-    protected static $instance = null;
+     * @var self|null $instance
+     */
+    protected static ?self $instance = null;
 
     /**
      * Always initialize using an array of parameters
      *
      */
-    public function __construct($parameters, $input = null)
+    public function __construct(mixed $parameters, mixed $input = null)
     {
         $this->setParameters($parameters);
         $this->setInput($input);
@@ -49,7 +49,7 @@ class Validator
     /**
      * @return self
      */
-    public function setParameters($parameters)
+    public function setParameters(mixed $parameters)
     {
         if (!is_array($parameters)) {
             throw new Exception("Array argument required for parameters");
@@ -61,7 +61,7 @@ class Validator
     /**
      * @return self
      */
-    public function setInput($input)
+    public function setInput(mixed $input)
     {
         $this->input = $input;
         return $this;
@@ -81,9 +81,9 @@ class Validator
     }
 
     /**
-     * @return self
+     * @return void
      */
-    public static function resetInstance()
+    public static function resetInstance(): void
     {
         self::$instance = null;
     }
@@ -100,7 +100,7 @@ class Validator
     /**
      * @return Bool
      */
-    public function hasParameter($name)
+    public function hasParameter(string $name)
     {
         return array_key_exists($name, $this->parameters);
     }

@@ -28,7 +28,7 @@ materialize-zmslayout-deps: # copy file:../zmslayout deps (no symlinks; safe for
 	done
 
 live: # init live system
-	composer install --no-dev --prefer-dist --optimize-autoloader
+	bash ../.resources/scripts/composer-with-retry.sh install --no-dev --prefer-dist --optimize-autoloader
 	npm install --legacy-peer-deps
 	$(MAKE) materialize-zmslayout-deps
 	npm run build

@@ -39,8 +39,9 @@ class ModuleAccess
     private static function endSession(Workstation $workstation): void
     {
         try {
-            if (Auth::getKey()) {
-                \App::$http->readDeleteResult('/workstation/login/' . $workstation->getUseraccount()->id . '/');
+            $authKey = Auth::getKey();
+            if ($authKey !== null && $authKey !== '') {
+                \App::$http->readDeleteResult('/workstation/login/' . $workstation->getUseraccount()['id'] . '/');
             }
         } catch (\Exception $exception) {
         }
