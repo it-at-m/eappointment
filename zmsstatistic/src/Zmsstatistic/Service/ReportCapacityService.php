@@ -807,10 +807,10 @@ class ReportCapacityService
             return $baseName;
         }
 
-        return $baseName . '_' . $rangePart;
+        return $baseName . '_' . (string) $rangePart;
     }
 
-    private function buildDownloadDateRangePart(?array $dateRange, ?string $period): string
+    private function buildDownloadDateRangePart(?array $dateRange, ?string $period): ?string
     {
         if ($dateRange !== null && !empty($dateRange['from']) && !empty($dateRange['to'])) {
             return $dateRange['from'] . '-bis-' . $dateRange['to'];
