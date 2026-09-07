@@ -311,3 +311,11 @@ In Safari, you must also enable:
 By design, slot calculation does not create appointments on public holidays (dates in the `feiertage` table seeded by migration V11). The test data for opening hours in zmsautomation (seeded relative to the current date in migrations such as V10 and V19) can overlap with a holiday. When that happens, there may be zero bookable slots on the “first available day,” and booking-related scenarios (Citizen API and CitizenView flows) can fail.
 
 This is expected behavior. Action: re-run the pipeline on the next non‑holiday working day (or run locally on a non‑holiday date).
+
+### Statistic and opening-hours seeds around midnight
+
+`zms-db` sets `TZ=Europe/Berlin`, matching `zms-web` (zmsbase). Flyway `CURDATE()` / `CURTIME()` and Java `LocalDate` in the statistic steps therefore share the **Berlin calendar day**, including between Berlin midnight and UTC midnight (00:00–02:00 CEST in summer, 00:00–01:00 CET in winter).
+
+The scheduled GitHub cron (`0 1 * * *` = 01:00 UTC ≈ 03:00 CEST / 02:00 CET) already starts after that former UTC/Berlin split and is unrelated.
+
+A genuine Berlin midnight still rolls the calendar day; that is expected. Holiday overlap (above) remains a separate limitation.
