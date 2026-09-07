@@ -169,7 +169,10 @@ class ReportHelper
      */
     public function extractDateRange(?string $fromDate, ?string $toDate): ?array
     {
-        if ($fromDate && $toDate && $this->isValidDateFormat($fromDate) && $this->isValidDateFormat($toDate)) {
+        if (
+            self::hasText($fromDate) && self::hasText($toDate)
+            && $this->isValidDateFormat($fromDate) && $this->isValidDateFormat($toDate)
+        ) {
             return [
                 'from' => $fromDate,
                 'to' => $toDate
@@ -225,5 +228,29 @@ class ReportHelper
             'from' => $yearFrom->format('Y-m-d'),
             'to' => $yearTo->format('Y-m-d'),
         ];
+    }
+
+    /**
+     * @psalm-assert-if-true non-empty-array $value
+     */
+    public static function hasValues(?array $value): bool
+    {
+        return $value !== null && $value !== [];
+    }
+
+    /**
+     * @psalm-assert-if-true non-empty-string $value
+     */
+    public static function hasText(?string $value): bool
+    {
+        return $value !== null && $value !== '';
+    }
+
+    /**
+     * @psalm-assert-if-true non-empty-string $period
+     */
+    public static function hasNamedPeriod(?string $period): bool
+    {
+        return $period !== null && $period !== '' && $period !== '_';
     }
 }

@@ -42,7 +42,7 @@ class ReportWaitingService
             return null;
         }
 
-        if ($dateRange) {
+        if (ReportHelper::hasValues($dateRange)) {
             return $this->getExchangeWaitingForDateRange($scopeId, $dateRange);
         }
 
@@ -235,7 +235,7 @@ class ReportWaitingService
     ): array {
         $args['category'] = 'waitingscope';
 
-        if ($dateRange) {
+        if (ReportHelper::hasValues($dateRange)) {
             $args['period'] = $dateRange['from'] . '_' . $dateRange['to'];
         }
 

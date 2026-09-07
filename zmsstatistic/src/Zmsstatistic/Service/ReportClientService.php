@@ -36,7 +36,7 @@ class ReportClientService
             return null;
         }
 
-        if ($dateRange) {
+        if (ReportHelper::hasValues($dateRange)) {
             return $this->getExchangeClientForDateRange($scopeId, $dateRange);
         }
 
@@ -196,7 +196,7 @@ class ReportClientService
     ): array {
         $args['category'] = 'clientscope';
 
-        if ($dateRange) {
+        if (ReportHelper::hasValues($dateRange)) {
             $args['period'] = $dateRange['from'] . '_' . $dateRange['to'];
         }
 
