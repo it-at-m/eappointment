@@ -9,8 +9,10 @@ define(
 );
 define(
     'ZMS_CURL_TIMEOUT',
-    (($value = getenv('ZMS_CURL_TIMEOUT')) !== false && $value !== '')
-        ? intval($value)
+    (($value = getenv('ZMS_CURL_TIMEOUT')) !== false
+        && ($timeout = filter_var($value, FILTER_VALIDATE_INT)) !== false
+        && $timeout > 0)
+        ? $timeout
         : 25
 );
 define(
