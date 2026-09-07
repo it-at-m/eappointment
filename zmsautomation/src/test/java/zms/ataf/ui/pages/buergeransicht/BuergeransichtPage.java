@@ -39,7 +39,6 @@ public class BuergeransichtPage extends BasePage {
     private final String DATE_PICKER_BUTTON_LOCATOR_CSS_SELECTOR = "div.v-date-picker-header__value > div > button";
     private final String APPOINTMENT_DATA_TEXT_LOCATOR_CSS_SELECTOR = "#panel2 > button > div.row.no-gutters > div.text--secondary.col-md-9.col-12 > span > b";
     private SearchContext shadowRootSearchContext = null;
-    private boolean secondClickOnChangeAppointmentButton = false;
 
     public BuergeransichtPage(RemoteWebDriver driver) {
         super(driver);
@@ -190,7 +189,7 @@ public class BuergeransichtPage extends BasePage {
         Assert.assertNotNull(subservicesDiv, "Subservices div is not found.");
 
         List<WebElement> spans = subservicesDiv.findElements(By.cssSelector("span"));
-        List<String> spanTexts = spans.stream().map(WebElement::getText).toList();
+        List<String> spanTexts = spans.stream().map(span -> span.getText()).toList();
 
         for (String service : services) {
             Assert.assertTrue(spanTexts.contains(service), "The service '" + service + "' is not found in any span.");
@@ -339,7 +338,10 @@ public class BuergeransichtPage extends BasePage {
                 }
             }
         }
-        Assert.assertNotNull(officeElement, "Clickable office element \"" + office + "\" was not found!");
+        if (officeElement == null) {
+            Assert.fail("Clickable office element \"" + office + "\" was not found!");
+            return;
+        }
         if (!officeElement.getAttribute("class").contains("v-tab--active")) {
             ScenarioLogManager.getLogger().info("Trying to select office \"" + office + "\"");
             clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, officeElement, false);

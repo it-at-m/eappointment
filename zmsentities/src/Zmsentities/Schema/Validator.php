@@ -8,16 +8,16 @@ use Opis\JsonSchema\Errors\ValidationError as OpisValidationError;
 
 class Validator
 {
-    protected $schemaObject;
-    protected $schemaData;
-    protected $locale;
-    protected $validator;
-    protected $validationResult;
+    protected Schema $schemaObject;
+    protected mixed $schemaData;
+    protected mixed $locale;
+    protected OpisValidator $validator;
+    protected ValidationResult $validationResult;
 
-    private static $schemasLoaded = false;
-    private static $validatorInstance = null;
+    private static bool $schemasLoaded = false;
+    private static ?OpisValidator $validatorInstance = null;
 
-    public function __construct($data, Schema $schemaObject, $locale)
+    public function __construct(mixed $data, Schema $schemaObject, mixed $locale)
     {
         $this->schemaData = $data;
         $this->schemaObject = $schemaObject;
@@ -27,44 +27,54 @@ class Validator
         if (self::$validatorInstance === null) {
             self::$validatorInstance = new OpisValidator();
             $formats = self::$validatorInstance->parser()->getFormatResolver();
-            $formats->registerCallable("array", "sameValues", function (array $data): bool {
-                return count($data) === 2 && $data[0] === $data[1];
-            });
+            if ($formats !== null) {
+                $formats->registerCallable("array", "sameValues", function (array $data): bool {
+                    return count($data) === 2 && $data[0] === $data[1];
+                });
+            }
         }
         $this->validator = self::$validatorInstance;
 
         // Load schemas only once for each process
         if (!self::$schemasLoaded) {
-            $this->loadSchemas();
-            self::$schemasLoaded = true;
+            self::$schemasLoaded = $this->loadSchemas();
         }
 
-        $schemaJson = json_decode(json_encode($schemaObject->toJsonObject()));
-        $data = json_decode(json_encode($data));
+        $schemaJson = json_decode((string) json_encode($schemaObject->toJsonObject()));
+        $data = json_decode((string) json_encode($data));
         $this->validationResult = $this->validator->validate($data, $schemaJson);
     }
 
-    private function loadSchemas(): void
+    private function loadSchemas(): bool
     {
-        $schemaPath = realpath(dirname(__FILE__) . '/../../../schema') . '/';
-        $this->validator->resolver()->registerPrefix('schema://', $schemaPath);
+        $schemaDir = realpath(dirname(__FILE__) . '/../../../schema');
+        $schemaPath = ($schemaDir !== false ? $schemaDir : '') . '/';
+        $resolver = $this->validator->resolver();
+        if ($resolver === null) {
+            return false;
+        }
+        $resolver->registerPrefix('schema://', $schemaPath);
         $schemaFiles = glob($schemaPath . '*.json');
+        if ($schemaFiles === false) {
+            return false;
+        }
 
         // TODO: Implement persistent caching for schema file reads to reduce redundant disk I/O and improve application performance. Not just for each process.
 
         foreach ($schemaFiles as $schemaFile) {
             $schemaContent = file_get_contents($schemaFile);
             $schemaName = 'schema://' . basename($schemaFile);
-            $this->validator->resolver()->registerRaw($schemaContent, $schemaName);
+            $resolver->registerRaw($schemaContent, $schemaName);
         }
+        return true;
     }
 
-    public function isValid()
+    public function isValid(): mixed
     {
         return $this->validationResult->isValid();
     }
 
-    public function getErrors()
+    public function getErrors(): mixed
     {
         if ($this->validationResult->isValid()) {
             return [];
@@ -102,7 +112,7 @@ class Validator
         return $errors;
     }
 
-    public function getCustomMessage(OpisValidationError $error)
+    public function getCustomMessage(OpisValidationError $error): mixed
     {
         $schemaData = $error->schema()->info()->data();
         if (is_object($schemaData)) {
@@ -133,7 +143,7 @@ class Validator
         return $pointer;
     }
 
-    public function getTranslatedPointer(OpisValidationError $error)
+    public function getTranslatedPointer(OpisValidationError $error): mixed
     {
         $schemaData = $error->schema()->info()->data();
         if (is_object($schemaData)) {

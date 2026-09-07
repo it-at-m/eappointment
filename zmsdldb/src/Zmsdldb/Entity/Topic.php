@@ -26,6 +26,7 @@ class Topic extends Base
      */
     public function isLinked(): bool
     {
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         return ($this['relation']['navi'] || static::subcount($this['relation']['navi']));
     }
 
@@ -42,14 +43,14 @@ class Topic extends Base
         );
         foreach ($items as $item) {
             foreach ($item as $entity) {
-                $list[] = $entity;
+                $list->append($entity);
             }
         }
         return $list;
     }
 
     /** @psalm-api */
-    public function getParentId()
+    public function getParentId(): mixed
     {
         if (count($this['relation']['parents']) > 1) {
             foreach ($this['relation']['parents'] as $item) {

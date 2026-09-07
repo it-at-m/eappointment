@@ -16,7 +16,7 @@ class AvailabilityList extends Base
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\Availability';
 
-    public function getMaxWorkstationCount()
+    public function getMaxWorkstationCount(): mixed
     {
         $max = 0;
         foreach ($this as $availability) {
@@ -79,10 +79,10 @@ class AvailabilityList extends Base
         return $list;
     }
 
-    public function withDateTimeInRange(\DateTimeInterface $startDateTime, \DateTimeInterface $endDateTime)
+    public function withDateTimeInRange(\DateTimeInterface $startDateTime, \DateTimeInterface $endDateTime): mixed
     {
         $list = new self();
-        $currentDateTime = clone $startDateTime;
+        $currentDateTime = \BO\Zmsentities\Helper\DateTime::create($startDateTime);
         while ($currentDateTime <= $endDateTime) {
             foreach ($this as $availability) {
                 if ($availability->isOpenedOnDate($currentDateTime)) {
@@ -94,7 +94,7 @@ class AvailabilityList extends Base
         return $list->withOutDoubles();
     }
 
-    public function getAvailableSecondsOnDateTime(\DateTimeInterface $dateTime, $type = "intern")
+    public function getAvailableSecondsOnDateTime(\DateTimeInterface $dateTime, string $type = "intern"): mixed
     {
         $seconds = 0;
         foreach ($this->withType('appointment')->withDateTime($dateTime) as $availability) {
@@ -106,7 +106,7 @@ class AvailabilityList extends Base
     /*
      * is opened on a day -> not specified by a time
      */
-    public function isOpenedByDate(\DateTimeInterface $dateTime, $type = false): bool
+    public function isOpenedByDate(\DateTimeInterface $dateTime, string|false $type = false): bool
     {
         foreach ($this as $availability) {
             if ($availability->isOpenedOnDate($dateTime, $type)) {
@@ -119,7 +119,7 @@ class AvailabilityList extends Base
     /*
      * is opened on a day with specified time
      */
-    public function isOpened(\DateTimeInterface $dateTime, $type = "openinghours"): bool
+    public function isOpened(\DateTimeInterface $dateTime, string $type = "openinghours"): bool
     {
         foreach ($this as $availability) {
             if ($availability->isOpened($dateTime, $type)) {
@@ -150,7 +150,7 @@ class AvailabilityList extends Base
         return $slotList;
     }
 
-    public function getSlotListByType($type): SlotList
+    public function getSlotListByType(mixed $type): SlotList
     {
         $slotList = new SlotList();
         foreach ($this as $availability) {
@@ -163,19 +163,20 @@ class AvailabilityList extends Base
         return $slotList;
     }
 
-    public function getConflicts($startDate, $endDate): ProcessList
+    public function getConflicts(mixed $startDate, mixed $endDate): ProcessList
     {
         $processList = new ProcessList();
         foreach ($this as $availability) {
             $conflict = $availability->getConflict();
-            $currentDate = $startDate;
-            while ($currentDate <= $endDate) {
+            $currentDate = \BO\Zmsentities\Helper\DateTime::create($startDate);
+            $endDateTime = \BO\Zmsentities\Helper\DateTime::create($endDate);
+            while ($currentDate <= $endDateTime) {
                 if ($availability->isOpenedOnDate($currentDate)) {
                     if ($conflict) {
                         $conflictOnDay = clone $conflict;
                         // to avoid overwrite time settings from availability getConflict lets modify
                         $appointmentTime = $conflictOnDay->getFirstAppointment()->getStartTime()->format('H:i');
-                        $newDate = clone $currentDate;
+                        $newDate = \BO\Zmsentities\Helper\DateTime::create($currentDate);
                         $conflictOnDay->getFirstAppointment()->setDateTime($newDate->modify($appointmentTime));
                         $processList->addEntity($conflictOnDay);
                     }
@@ -217,8 +218,8 @@ class AvailabilityList extends Base
         \DateTimeImmutable $endDate,
         \DateTimeImmutable $selectedDate,
         string $kind,
-        $startInDays,
-        $endInDays,
+        mixed $startInDays,
+        mixed $endInDays,
         array $weekday
     ): array {
         $errorList = [];
@@ -246,30 +247,30 @@ class AvailabilityList extends Base
     }
 
     /**
-     * @return integer
+     * @return array
      */
-    public function getSummerizedSlotCount()
+    public function getSummerizedSlotCount(): array
     {
-        return array_reduce($this->getArrayCopy(), function ($carry, $item) {
+        $slotCounts = [];
+        foreach ($this as $item) {
             $itemId = ($item->id) ? $item->id : $item->tempId;
-            $maxSlots = (int) $item->getSlotList()->getSummerizedSlot()->intern;
-            $carry[$itemId] = $maxSlots;
-            return $carry;
-        }, []);
+            $slotCounts[$itemId] = (int) $item->getSlotList()->getSummerizedSlot()->intern;
+        }
+        return $slotCounts;
     }
 
     /**
-     * @return integer
+     * @return array
      */
-    public function getCalculatedSlotCount(\BO\Zmsentities\Collection\ProcessList $processList)
+    public function getCalculatedSlotCount(\BO\Zmsentities\Collection\ProcessList $processList): array
     {
-        return array_reduce($this->getArrayCopy(), function ($carry, $item) use ($processList) {
+        $slotCounts = [];
+        foreach ($this as $item) {
             $itemId = $item->id;
             $listWithAvailability = $processList->withAvailability($item);
-            $busySlots = $listWithAvailability->getAppointmentList()->getCalculatedSlotCount();
-            $carry[$itemId] = $busySlots;
-            return $carry;
-        }, []);
+            $slotCounts[$itemId] = $listWithAvailability->getAppointmentList()->getCalculatedSlotCount();
+        }
+        return $slotCounts;
     }
 
 
@@ -283,12 +284,13 @@ class AvailabilityList extends Base
     }
 
     /**
-     * @return self
+     * @return static
      */
     #[\Override]
     public function withLessData(array $keepArray = [])
     {
-        $list = new self();
+        /** @psalm-suppress UnsafeGenericInstantiation */
+        $list = new static();
         foreach ($this as $availability) {
             $list->addEntity(clone $availability->withLessData($keepArray));
         }

@@ -31,77 +31,77 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         ];
     }
 
-    public function getSource()
+    public function getSource(): mixed
     {
         return $this->toProperty()->source->get();
     }
 
-    public function getShortName()
+    public function getShortName(): mixed
     {
         return $this->toProperty()->shortName->get();
     }
 
-    public function getEmailFrom()
+    public function getEmailFrom(): mixed
     {
         return $this->getPreference('client', 'emailFrom', null);
     }
 
-    public function getEmailRequired()
+    public function getEmailRequired(): mixed
     {
         return $this->getPreference('client', 'emailRequired', null);
     }
 
-    public function getTelephoneActivated()
+    public function getTelephoneActivated(): mixed
     {
         return $this->getPreference('client', 'telephoneActivated', null);
     }
 
-    public function getTelephoneRequired()
+    public function getTelephoneRequired(): mixed
     {
         return $this->getPreference('client', 'telephoneRequired', null);
     }
 
-    public function getCustomTextfieldActivated()
+    public function getCustomTextfieldActivated(): mixed
     {
         return $this->getPreference('client', 'customTextfieldActivated', null);
     }
 
-    public function getCustomTextfieldRequired()
+    public function getCustomTextfieldRequired(): mixed
     {
         return $this->getPreference('client', 'customTextfieldRequired', null);
     }
 
-    public function getCustomTextfieldLabel()
+    public function getCustomTextfieldLabel(): mixed
     {
         return $this->getPreference('client', 'customTextfieldLabel', '');
     }
 
-    public function getCustomTextfield2Activated()
+    public function getCustomTextfield2Activated(): mixed
     {
         return $this->getPreference('client', 'customTextfield2Activated', null);
     }
 
-    public function getCustomTextfield2Required()
+    public function getCustomTextfield2Required(): mixed
     {
         return $this->getPreference('client', 'customTextfield2Required', null);
     }
 
-    public function getCustomTextfield2Label()
+    public function getCustomTextfield2Label(): mixed
     {
         return $this->getPreference('client', 'customTextfield2Label', '');
     }
 
-    public function getCaptchaActivatedRequired()
+    public function getCaptchaActivatedRequired(): mixed
     {
         return $this->getPreference('client', 'captchaActivatedRequired', null);
     }
 
-    public function getInfoForAppointment()
+    public function getInfoForAppointment(): mixed
     {
         return $this->getPreference('appointment', 'infoForAppointment', null);
     }
 
-    public function getInfoForAllAppointments()
+    public function getInfoForAllAppointments(): mixed
     {
         return $this->getPreference('appointment', 'infoForAllAppointments', null);
     }
@@ -112,51 +112,57 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         if (!isset($this->provider)) {
             throw new Exception\ScopeMissingProvider("Provider is missing", 500);
         }
-        if (!$this->provider instanceof Provider) {
-            $this->provider = new Provider($this->toProperty()->provider->get());
+        $provider = $this->provider;
+        if (!$provider instanceof Provider) {
+            $provider = new Provider($this->toProperty()->provider->get());
+            $this->provider = $provider;
         }
-        if (!isset($this->provider['id']) || !$this->provider->id) {
+        if (!isset($provider['id']) || !$provider->id) {
             $exception = new Exception\ScopeMissingProvider("No reference to a provider found for scope $this->id");
             $exception->data['scope'] = $this->getArrayCopy();
             throw $exception;
         }
-        return $this->provider;
+        return $provider;
     }
 
-    public function getProviderId()
+    public function getProviderId(): mixed
     {
         return $this->getProvider()->id;
     }
 
     public function getDayoffList(): DayoffList
     {
-        if (!isset($this->dayoff) || !$this->dayoff instanceof Collection\DayoffList) {
-            $this->dayoff = (!isset($this->dayoff) || !is_array($this->dayoff)) ? [] : $this->dayoff;
-            $this->dayoff = new Collection\DayoffList($this->dayoff);
-            foreach ($this->dayoff as $key => $dayoff) {
-                if (!$dayoff instanceof Dayoff) {
-                    $this->dayoff[$key] = new Dayoff($dayoff);
+        $dayoff = $this->dayoff ?? [];
+        if (!$dayoff instanceof Collection\DayoffList) {
+            $dayoff = is_array($dayoff) ? $dayoff : [];
+            $dayoff = new Collection\DayoffList($dayoff);
+            foreach ($dayoff as $key => $entry) {
+                if (!$entry instanceof Dayoff) {
+                    $dayoff[$key] = new Dayoff($entry);
                 }
             }
+            $this->dayoff = $dayoff;
         }
-        return $this->dayoff;
+        return $dayoff;
     }
 
     public function getClosureList(): ClosureList
     {
-        if (!isset($this->closure) || !$this->closure instanceof Collection\ClosureList) {
-            $this->closure = (!isset($this->closure) || !is_array($this->closure)) ? [] : $this->closure;
-            $this->closure = new Collection\ClosureList($this->closure);
-            foreach ($this->closure as $key => $closure) {
-                if (!$closure instanceof Closure) {
-                    $this->closure[$key] = new Closure($closure);
+        $closure = $this->closure ?? [];
+        if (!$closure instanceof Collection\ClosureList) {
+            $closure = is_array($closure) ? $closure : [];
+            $closure = new Collection\ClosureList($closure);
+            foreach ($closure as $key => $entry) {
+                if (!$entry instanceof Closure) {
+                    $closure[$key] = new Closure($entry);
                 }
             }
+            $this->closure = $closure;
         }
-        return $this->closure;
+        return $closure;
     }
 
-    public function getRequestList()
+    public function getRequestList(): \BO\Zmsentities\Collection\RequestList
     {
         return $this->getProvider()->getRequestList();
     }
@@ -165,76 +171,78 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
      * @param false|null|string $isBool
      *
      */
-    public function getPreference(string $preferenceKey, string $index, string|false|null $isBool = false, $default = null)
+    public function getPreference(string $preferenceKey, string $index, string|false|null $isBool = false, mixed $default = null): mixed
     {
         $preference = $this->toProperty()->preferences->$preferenceKey->$index->get($default);
-        return ($isBool) ? ($preference ? 1 : 0) : $preference;
+        return ($isBool !== false && $isBool !== null && $isBool !== '' && $isBool !== '0')
+            ? ($preference ? 1 : 0)
+            : $preference;
     }
 
-    public function getStatus(string $statusKey, string $index)
+    public function getStatus(string $statusKey, string $index): mixed
     {
         return $this->toProperty()->status->$statusKey->$index->get();
     }
 
-    public function getContactEmail()
+    public function getContactEmail(): mixed
     {
         return $this->toProperty()->contact->email->get();
     }
 
-    public function getName()
+    public function getName(): mixed
     {
         return $this->toProperty()->contact->name->get();
     }
 
-    public function getScopeInfo()
+    public function getScopeInfo(): mixed
     {
         return $this->toProperty()->preferences->ticketprinter->buttonName->get();
     }
 
-    public function getScopeHint()
+    public function getScopeHint(): mixed
     {
         return $this->toProperty()->hint->get();
     }
 
-    public function getDisplayNumberPrefix()
+    public function getDisplayNumberPrefix(): mixed
     {
         return $this->toProperty()->preferences->queue->displayNumberPrefix->get();
     }
 
-    public function getAlternateRedirectUrl()
+    public function getAlternateRedirectUrl(): mixed
     {
         $alternateUrl = $this->toProperty()->preferences->client->alternateAppointmentUrl->get();
 
         return ($alternateUrl) ? $alternateUrl : null;
     }
 
-    public function getAppointmentsPerMail()
+    public function getAppointmentsPerMail(): mixed
     {
         $appointmentsPerMail = $this->toProperty()->preferences->client->appointmentsPerMail->get();
 
         return ($appointmentsPerMail) ? $appointmentsPerMail : null;
     }
 
-    public function getSlotsPerAppointment()
+    public function getSlotsPerAppointment(): mixed
     {
         $slotsPerAppointment = $this->toProperty()->preferences->client->slotsPerAppointment->get();
 
         return ($slotsPerAppointment) ? $slotsPerAppointment : null;
     }
 
-    public function getWhitelistedMails()
+    public function getWhitelistedMails(): mixed
     {
         $emails = $this->toProperty()->preferences->client->whitelistedMails->get();
 
         return ($emails) ? $emails : '';
     }
 
-    public function getReservationDuration()
+    public function getReservationDuration(): mixed
     {
         return $this->toProperty()->preferences->appointment->reservationDuration->get();
     }
 
-    public function getWaitingTimeFromQueueList(Collection\QueueList $queueList, \DateTimeInterface $dateTime)
+    public function getWaitingTimeFromQueueList(Collection\QueueList $queueList, \DateTimeInterface $dateTime): mixed
     {
         return $queueList->getEstimatedWaitingTime(
             $this->getPreference('queue', 'processingTimeAverage'),
@@ -243,12 +251,12 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         );
     }
 
-    public function getCalculatedWorkstationCount()
+    public function getCalculatedWorkstationCount(): mixed
     {
         $workstationCount = null;
         if ($this->getStatus('queue', 'workstationCount') > 0) {
             $workstationCount = $this->getStatus('queue', 'workstationCount');
-        } elseif (! $workstationCount && $this->getStatus('queue', 'ghostWorkstationCount') > 0) {
+        } elseif ($this->getStatus('queue', 'ghostWorkstationCount') > 0) {
             $workstationCount = $this->getStatus('queue', 'ghostWorkstationCount');
         }
         return $workstationCount;
@@ -332,7 +340,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
      * @return bool
      */
     #[\Override]
-    public function hasAccess(Useraccount $useraccount)
+    public function hasAccess(Useraccount $useraccount): bool
     {
         return $useraccount->isSuperUser() ||  $useraccount->hasScope($this->id);
     }
@@ -376,7 +384,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this;
     }
 
-    public function setStatusAvailability($key, $value): static
+    public function setStatusAvailability(mixed $key, mixed $value): static
     {
         $this->status['availability'][$key] = $value;
         return $this;

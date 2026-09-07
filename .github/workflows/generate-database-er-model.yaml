@@ -50,10 +50,10 @@ jobs:
           .venv/bin/pip install pymysql jinja2
 
       - name: Install Composer Dependencies
-        run: |
-          echo "Installing Composer dependencies for zmsbackend"
-          (cd zmsbackend && composer install --no-progress --prefer-dist --optimize-autoloader)
-        shell: bash
+        uses: ./.github/actions/composer-install
+        with:
+          working-directory: zmsbackend
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Database and Import Schema
         env:

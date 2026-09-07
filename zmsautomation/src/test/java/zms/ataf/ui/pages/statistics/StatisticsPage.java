@@ -36,13 +36,14 @@ import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
 import ataf.web.pages.BasePage;
 import ataf.web.utils.DriverUtil;
+import zms.ataf.helpers.BerlinTime;
 
 
 public class StatisticsPage extends BasePage {
     protected final StatisticsPageContext CONTEXT;
 
     //aktueller Monat (auf deutsch)
-    private final String currentMonth = LocalDate.now().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.GERMAN);
+    private final String currentMonth = BerlinTime.today().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.GERMAN);
 
     public StatisticsPage(RemoteWebDriver driver) {
         super(driver);
@@ -307,7 +308,7 @@ public class StatisticsPage extends BasePage {
     public void clickOnCurrentMonthName() {
         ScenarioLogManager.getLogger().info("Trying to click on current month link...");
         try {
-            WebElement row = DRIVER.findElement(By.xpath("//tr[.//a[contains(text(), '" + LocalDate.now().getYear() + "')]]"));
+            WebElement row = DRIVER.findElement(By.xpath("//tr[.//a[contains(text(), '" + BerlinTime.today().getYear() + "')]]"));
             List<WebElement> cells = row.findElements(By.tagName("td"));
 
             boolean monthFound = false;
@@ -323,7 +324,7 @@ public class StatisticsPage extends BasePage {
             Assert.assertTrue(monthFound, "Could not find a clickable link for the current month (" + currentMonth + ").");
 
         } catch (NoSuchElementException e) {
-            Assert.fail("No info statistics, could not find the row element for the current year (" + LocalDate.now().getYear() + ").");
+            Assert.fail("No info statistics, could not find the row element for the current year (" + BerlinTime.today().getYear() + ").");
         }
     }
 
@@ -368,7 +369,7 @@ public class StatisticsPage extends BasePage {
                             .filter(path -> path.getFileName().toString().matches(expectedFileNameRegex))
                             .toList();
                     if (!result.isEmpty()) {
-                        ScenarioLogManager.getLogger().info("Matched file(s): " + result.stream().map(Path::toString).collect(Collectors.joining(", ")));
+                        ScenarioLogManager.getLogger().info("Matched file(s): " + result.stream().map(path -> path.toString()).collect(Collectors.joining(", ")));
                         return true;
                     }
                 } catch (IOException e) {
@@ -378,7 +379,7 @@ public class StatisticsPage extends BasePage {
             } else {
                 return !((HasDownloads) waitDriver).getDownloadedFiles()
                         .stream()
-                        .map(HasDownloads.DownloadedFile::getName)
+                        .map(file -> file.getName())
                         .filter(string -> string.matches(expectedFileNameRegex))
                         .toList()
                         .isEmpty();

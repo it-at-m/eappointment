@@ -1,9 +1,7 @@
 package zms.ataf.ui.steps;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
@@ -34,6 +32,7 @@ import io.cucumber.java.de.Dann;
 import io.cucumber.java.de.Gegebenseien;
 import io.cucumber.java.de.Und;
 import io.cucumber.java.de.Wenn;
+import zms.ataf.helpers.BerlinTime;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
@@ -170,7 +169,7 @@ public class AdminSteps {
     public void wenn_sie_in_feld_string_den_text_string_eingeben(String field, String text) {
         text = TestDataHelper.transformTestData(text);
         if ("Datum bis".equals(field) && "<heute+14_tage>".equals(text)) {
-            text = LocalDate.now().plusDays(14).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+            text = BerlinTime.today().plusDays(14).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         }
         switch (field) {
         case "Platz-Nr. oder Tresen":
@@ -185,7 +184,7 @@ public class AdminSteps {
             // if the feature specifies 17:00, interpret it as "now plus up to 8 hours,
             // but never later than 22:00" in Europe/Berlin.
             if ("17:00".equals(text)) {
-                LocalTime now = LocalTime.now(ZoneId.of("Europe/Berlin")).truncatedTo(ChronoUnit.MINUTES);
+                LocalTime now = BerlinTime.now().truncatedTo(ChronoUnit.MINUTES);
                 LocalTime maxByOffset = now.plusHours(8);
                 LocalTime latestAllowed = LocalTime.of(22, 0);
                 LocalTime effective = maxByOffset.isBefore(latestAllowed) ? maxByOffset : latestAllowed;

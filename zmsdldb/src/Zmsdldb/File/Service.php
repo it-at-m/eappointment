@@ -12,6 +12,8 @@ use BO\Zmsdldb\Collection\Services as Collection;
 
 /**
  * Common methods shared by access classes
+ *
+ * @extends Base<Collection, Entity>
  */
 class Service extends Base
 {
@@ -19,7 +21,7 @@ class Service extends Base
      * @return Collection
      */
     #[\Override]
-    protected function parseData($data)
+    protected function parseData(mixed $data)
     {
         $itemList = new Collection();
         foreach ($data['data'] as $item) {
@@ -37,9 +39,9 @@ class Service extends Base
      * @return Collection
      * @psalm-api
      */
-    public function searchAll($querystring, $service_csv = false, $location_csv = false)
+    public function searchAll(mixed $querystring, bool|string $service_csv = false, bool|string $location_csv = false)
     {
-        $serviceList = $this->fetchList($location_csv);
+        $serviceList = new Collection($this->fetchList($location_csv)->getArrayCopy());
         if ($querystring) {
             $serviceList = new Collection(array_filter((array) $serviceList, function ($item) use ($querystring) {
                 $length = (3 < strlen($querystring)) ? strlen($querystring) : 3;
@@ -48,20 +50,25 @@ class Service extends Base
                 return ($nameMatch || $keywordMatch);
             }));
         }
-        $serviceList = $serviceList->sortByName();
-        return ($location_csv) ? $serviceList->containsLocation($location_csv) : $serviceList;
+        /** @var array<int|string, Entity> $sortedItems */
+        $sortedItems = $serviceList->sortByName()->getArrayCopy();
+        $serviceList = new Collection($sortedItems);
+        if (!is_string($location_csv)) {
+            return $serviceList;
+        }
+        return $serviceList->containsLocation($location_csv);
     }
 
     /**
      * @return Collection
      *
-     * @param false|string $location_csv
+     * @param bool|string $location_csv
      */
-    public function fetchList(string|false $location_csv = false)
+    public function fetchList(bool|string $location_csv = false)
     {
         #echo '<pre>' . print_r($this,1) . '</pre>';exit;
         $servicelist = $this->getItemList();
-        if ($location_csv) {
+        if (is_string($location_csv) && $location_csv !== '') {
             $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use ($location_csv) {
                 $service = new Entity($item);
                 return $service->containsLocation($location_csv);
@@ -75,9 +82,12 @@ class Service extends Base
      * @return Collection
      * @psalm-api
      */
-    public function fetchListRelated($service_id)
+    public function fetchListRelated(mixed $service_id)
     {
         $service = $this->fetchId($service_id);
+        if ($service === false) {
+            return new Collection();
+        }
         $serviceList = $this->getItemList();
 
         $relatedList = new Collection(
@@ -90,14 +100,14 @@ class Service extends Base
                 }
             )
         );
-        return ($relatedList) ? $relatedList : new Collection();
+        return $relatedList;
     }
 
     /**
      *
      * @return Collection
      */
-    public function fetchCombinations($service_csv)
+    public function fetchCombinations(mixed $service_csv)
     {
         return $this->fetchList($this->fetchLocationCsv($service_csv));
     }
@@ -106,7 +116,7 @@ class Service extends Base
      *
      * @return string
      */
-    protected function fetchLocationCsv($service_csv)
+    protected function fetchLocationCsv(mixed $service_csv)
     {
         $locationlist = $this->access()
             ->fromLocation()
@@ -145,17 +155,14 @@ class Service extends Base
     public function fetchListFromTopic(\BO\Zmsdldb\Entity\Topic $topic)
     {
         $itemlist = new Collection();
-        $serviceIds = array();
-        if ($topic) {
-            $serviceIds = $topic->getServiceIds();
-            if ($topic['relation']['navi'] && isset($topic['relation']['childs'])) {
-                foreach ($topic['relation']['childs'] as $child) {
-                    $childtopic = $this->access()
-                        ->fromTopic()
-                        ->fetchPath($child['path']);
-                    if ($childtopic) {
-                        $serviceIds = array_merge($serviceIds, $childtopic->getServiceIds());
-                    }
+        $serviceIds = $topic->getServiceIds();
+        if ($topic['relation']['navi'] && isset($topic['relation']['childs'])) {
+            foreach ($topic['relation']['childs'] as $child) {
+                $childtopic = $this->access()
+                    ->fromTopic()
+                    ->fetchPath($child['path']);
+                if ($childtopic) {
+                    $serviceIds = array_merge($serviceIds, $childtopic->getServiceIds());
                 }
             }
         }
@@ -164,7 +171,9 @@ class Service extends Base
             $servicelist = $this->fetchFromCsv($servicelistCSV);
             return $servicelist;
         }
-        return $itemlist->sortByName();
+        /** @var Collection $sorted */
+        $sorted = $itemlist->sortByName();
+        return $sorted;
     }
 
     /**
@@ -172,7 +181,7 @@ class Service extends Base
      * @return Collection
      * @psalm-api
      */
-    public function readSearchResultList($query, $service_csv = '')
+    public function readSearchResultList(mixed $query, string $service_csv = '')
     {
         $servicelist = $this->fetchCombinations($service_csv);
         $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use ($query) {

@@ -18,7 +18,7 @@ class Link extends Base
      *
      */
     #[\Override]
-    public function getId()
+    public function getId(): mixed
     {
         return $this['link'];
     }

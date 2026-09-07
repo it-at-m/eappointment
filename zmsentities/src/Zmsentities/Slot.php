@@ -61,7 +61,7 @@ class Slot extends Schema\Entity
         return ($this->toProperty()->time->get()) ? true : false;
     }
 
-    public function getTimeString()
+    public function getTimeString(): mixed
     {
         if (null === $this->toProperty()->time->get()) {
             return '0:00';
