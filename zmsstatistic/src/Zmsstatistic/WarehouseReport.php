@@ -34,7 +34,9 @@ class WarehouseReport extends BaseController
         if ($type) {
             $args['category'] = 'raw-' . $args['subject'];
             $args['report'] = $report;
-            return (new Download(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+            /** @var mixed $container */
+            $container = \App::$slim->getContainer();
+            return (new Download($container))->readResponse($request, $response, $args);
         }
 
         return Render::withHtml(

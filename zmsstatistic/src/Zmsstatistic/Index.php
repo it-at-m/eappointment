@@ -91,7 +91,9 @@ class Index extends BaseController
         try {
             $workstation = \App::http()->readPostResult('/workstation/login/', $userAccount)->getEntity();
 
-            $sessionHash = hash('sha256', $workstation->authkey);
+            /** @var mixed $authkey */
+            $authkey = $workstation->authkey;
+            $sessionHash = hash('sha256', $authkey);
             \App::$log->info('Login successful', [
                 'event' => 'auth_login_success',
                 'timestamp' => date('c'),

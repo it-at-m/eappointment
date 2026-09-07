@@ -58,7 +58,9 @@ class ReportRequestDepartment extends BaseController
             $args['scope'] = $this->workstation->scope;
             $args['department'] = $this->department;
             $args['organisation'] = $this->organisation;
-            return (new Download\RequestReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+            /** @var mixed $container */
+            $container = \App::$slim->getContainer();
+            return (new Download\RequestReport($container))->readResponse($request, $response, $args);
         }
 
         return Render::withHtml(

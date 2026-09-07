@@ -139,7 +139,9 @@ class ReportCapacityIndex extends BaseController
             $channelMode
         );
 
-        return (new Download\CapacityReport(\App::$slim->getContainer()))
+        /** @var mixed $container */
+        $container = \App::$slim->getContainer();
+        return (new Download\CapacityReport($container))
             ->readResponse($request, $response, $args);
     }
 
