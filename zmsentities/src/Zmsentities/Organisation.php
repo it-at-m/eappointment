@@ -21,7 +21,7 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
         ];
     }
 
-    public function hasDepartment($departmentId)
+    public function hasDepartment(mixed $departmentId): bool
     {
         return $this->getDepartmentList()->hasEntity($departmentId);
     }
@@ -37,7 +37,7 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
         return $this->departments;
     }
 
-    public function getPreference($index)
+    public function getPreference(mixed $index): mixed
     {
         return $this->toProperty()->preferences->$index->get();
     }
@@ -46,7 +46,7 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
      * @return bool
      */
     #[\Override]
-    public function hasAccess(Useraccount $useraccount)
+    public function hasAccess(Useraccount $useraccount): bool
     {
         return $useraccount->isSuperUser()
             || 0 < $this->getDepartmentList()->withAccess($useraccount)->count();

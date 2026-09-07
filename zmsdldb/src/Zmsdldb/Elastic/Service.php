@@ -18,10 +18,10 @@ class Service extends Base
 {
     /**
      *
-     * @return Entity
+     * @return Entity|false
      */
     #[\Override]
-    public function fetchId($itemId)
+    public function fetchId(mixed $itemId)
     {
         if ($itemId) {
             $query = Helper::boolFilteredQuery();
@@ -45,12 +45,13 @@ class Service extends Base
      * @return Collection
      */
     #[\Override]
-    public function fetchList($location_csv = false)
+    public function fetchList(bool|string $location_csv = false)
     {
         $boolquery = Helper::boolFilteredQuery();
         $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
         $query = \Elastica\Query::create($boolquery);
-        if ($location_csv) {
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
+        if (is_string($location_csv) && $location_csv !== '') {
             $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
             $filter->setExecution('and');
             $query->setPostFilter($filter);
@@ -72,7 +73,7 @@ class Service extends Base
      * @return Collection
      */
     #[\Override]
-    public function fetchFromCsv($service_csv)
+    public function fetchFromCsv(mixed $service_csv)
     {
         $query = Helper::boolFilteredQuery();
         $filter = new \Elastica\Filter\Ids();
@@ -99,10 +100,11 @@ class Service extends Base
      * @return Collection
      */
     #[\Override]
-    public function searchAll($querystring, $service_csv = '', $location_csv = '')
+    public function searchAll(mixed $querystring, bool|string $service_csv = '', bool|string $location_csv = '')
     {
         $query = new \Elastica\Query();
         $locationsCsvByUser = false;
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if (! $location_csv) {
             $location_csv = $this->fetchLocationCsv($service_csv);
         } else {
@@ -124,7 +126,8 @@ class Service extends Base
         $boolquery->addShould($searchquery);
         $filter = new \Elastica\Filter\BoolFilter();
         $filter->addMust(Helper::localeFilter($this->locale));
-        if ($location_csv) {
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
+        if (is_string($location_csv) && $location_csv !== '') {
             $filter->addMust(new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv)));
         }
         $filteredQuery = new \Elastica\Query\Filtered($boolquery, $filter);
@@ -139,7 +142,7 @@ class Service extends Base
             $service = new Entity($result->getData());
             $serviceList[$service['id']] = $service;
         }
-        if ($locationsCsvByUser) {
+        if ($locationsCsvByUser && is_string($location_csv)) {
             $serviceList = $serviceList->containsLocation($location_csv);
         }
         return $serviceList;
@@ -152,7 +155,7 @@ class Service extends Base
      * @return Collection
      */
     #[\Override]
-    public function readSearchResultList($query, $service_csv = '')
+    public function readSearchResultList(mixed $query, string $service_csv = '')
     {
         $boolquery = Helper::boolFilteredQuery();
         $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
@@ -187,7 +190,7 @@ class Service extends Base
     /**
      * @psalm-api
      */
-    public function fetchServicesForCompilation($authoritys = [], $locations = [], $services = []): Collection
+    public function fetchServicesForCompilation(array $authoritys = [], array $locations = [], array $services = []): Collection
     {
         $limit = 1000;
 
@@ -199,15 +202,15 @@ class Service extends Base
         $boolquery->addMust($localeFilter);
 
         if (!empty($authoritys)) {
-            $authorityFilter = new \Elastica\Query\Terms('authorities.id', $authoritys);
+            $authorityFilter = new \Elastica\Query\Terms('authorities.id', array_values($authoritys));
             $boolquery->addMust($authorityFilter);
         }
         if (!empty($locations)) {
-            $locationFilter = new \Elastica\Query\Terms('locations.location', $locations);
+            $locationFilter = new \Elastica\Query\Terms('locations.location', array_values($locations));
             $boolquery->addMust($locationFilter);
         }
         if (!empty($services)) {
-            $serviceFilter = new \Elastica\Query\Terms('id', $services);
+            $serviceFilter = new \Elastica\Query\Terms('id', array_values($services));
             $boolquery->addMust($serviceFilter);
         }
 

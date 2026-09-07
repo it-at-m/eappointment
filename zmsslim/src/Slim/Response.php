@@ -20,7 +20,7 @@ class Response extends \Slim\Psr7\Response
      * @param  string|UriInterface $url    The redirect destination.
      * @param  int|null            $status The redirect HTTP status code.
      *
-     * @return static
+     * @return Response
      */
     public function withRedirect($url, int $status = null): Response
     {
