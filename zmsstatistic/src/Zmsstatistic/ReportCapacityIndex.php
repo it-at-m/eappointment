@@ -144,9 +144,9 @@ class ReportCapacityIndex extends BaseController
     private function renderHtmlResponse(
         ResponseInterface $response,
         array $args,
-        $capacityPeriod,
+        mixed $capacityPeriod,
         array|null $dateRange,
-        $exchangeCapacity,
+        mixed $exchangeCapacity,
         Exchange|null $exchangeCapacityChart,
         Exchange|null $exchangeCapacityChartSparse,
         array $selectedScopes = [],

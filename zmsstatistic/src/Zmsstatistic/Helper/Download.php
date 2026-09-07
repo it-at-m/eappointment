@@ -26,7 +26,7 @@ class Download
 
     protected $type = 'xlsx';
 
-    public function __construct($request)
+    public function __construct(mixed $request)
     {
         $validator = $request->getAttribute('validator');
         $this->type = $validator->getParameter('type')->isString()->setDefault('xlsx')->getValue();
@@ -58,7 +58,7 @@ class Download
             ->withHeader('Content-Disposition', sprintf('attachment; filename="%s.%s"', $this->title, $this->type));
     }
 
-    public function getSpreadSheet()
+    public function getSpreadSheet(): mixed
     {
         return $this->spreadsheet;
     }
@@ -73,10 +73,10 @@ class Download
 
     public function setSpreadSheet(
         string $title = 'statistic',
-        $creator = 'berlinonline',
-        $subject = '',
-        $description = 'statistic document',
-        $keywords = 'statistic zms'
+        mixed $creator = 'berlinonline',
+        mixed $subject = '',
+        mixed $description = 'statistic document',
+        mixed $keywords = 'statistic zms'
     ): static {
         $this->title = $title;
         $this->spreadsheet = new Spreadsheet();

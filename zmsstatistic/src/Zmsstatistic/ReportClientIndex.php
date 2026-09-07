@@ -72,7 +72,7 @@ class ReportClientIndex extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args,
-        $exchangeClient,
+        mixed $exchangeClient,
         array|null $dateRange,
         array $selectedScopes = [],
         ReportClientService|null $reportClientService = null
@@ -96,9 +96,9 @@ class ReportClientIndex extends BaseController
     private function renderHtmlResponse(
         ResponseInterface $response,
         array $args,
-        $clientPeriod,
+        mixed $clientPeriod,
         array|null $dateRange,
-        $exchangeClient,
+        mixed $exchangeClient,
         array $selectedScopes = []
     ): ResponseInterface {
         return Render::withHtml(

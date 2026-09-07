@@ -83,7 +83,7 @@ class LoginForm
         return $collection;
     }
 
-    public static function writeWorkstationUpdate($data, $workstation): bool
+    public static function writeWorkstationUpdate(mixed $data, mixed $workstation): bool
     {
         if (isset($workstation->useraccount)) {
             $formData = $data->getValues();

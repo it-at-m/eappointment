@@ -80,7 +80,7 @@ class Index extends BaseController
     }
 
     #[\Override]
-    protected function testLogin($input)
+    protected function testLogin(mixed $input)
     {
         $userAccount = new Useraccount(array(
             'id' => $input['loginName'],
@@ -148,7 +148,7 @@ class Index extends BaseController
         }
         return $exceptionData;
     }
-    protected function getProviderList($config): array
+    protected function getProviderList(mixed $config): array
     {
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider') ?? '');
         $oidcproviderlist = [];

@@ -182,7 +182,7 @@ class ReportWaitingService
      * Create filtered exchange waiting with updated properties
      */
     private function createFilteredExchangeWaiting(
-        $exchangeWaitingBasic,
+        mixed $exchangeWaitingBasic,
         array $filteredData,
         string $fromDate,
         string $toDate
