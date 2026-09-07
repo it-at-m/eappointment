@@ -23,7 +23,7 @@ class WarehouseSubject extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
         $subjectList = \App::http()->readGetResult('/warehouse/' . $args['subject'] . '/')->getEntity();

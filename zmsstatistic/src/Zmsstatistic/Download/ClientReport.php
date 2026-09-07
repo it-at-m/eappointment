@@ -24,7 +24,7 @@ class ClientReport extends Base
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         $title = 'clientstatistic_' . $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
 

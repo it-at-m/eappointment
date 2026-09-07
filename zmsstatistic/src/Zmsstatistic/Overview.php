@@ -25,7 +25,7 @@ class Overview extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         $waitingPeriod = \App::http()
             ->readGetResult('/warehouse/waitingscope/' . $this->workstation->scope['id'] . '/')
             ->getEntity();

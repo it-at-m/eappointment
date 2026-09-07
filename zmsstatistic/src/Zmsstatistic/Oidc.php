@@ -21,7 +21,7 @@ class Oidc extends BaseController
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         try {
             /** @var \BO\Slim\Request $request */
             $state = $request->getParam('state');

@@ -25,7 +25,7 @@ class DialogHandler extends \BO\Zmsstatistic\BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
         $template = $validator->getParameter('template')->isString()->getValue();
