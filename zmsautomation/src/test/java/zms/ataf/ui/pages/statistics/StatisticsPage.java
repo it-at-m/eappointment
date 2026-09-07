@@ -10,7 +10,6 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Arrays;
@@ -37,13 +36,14 @@ import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
 import ataf.web.pages.BasePage;
 import ataf.web.utils.DriverUtil;
+import zms.ataf.helpers.BerlinTime;
 
 
 public class StatisticsPage extends BasePage {
     protected final StatisticsPageContext CONTEXT;
 
     //aktueller Monat (auf deutsch)
-    private final String currentMonth = LocalDate.now(ZoneId.of("Europe/Berlin")).getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.GERMAN);
+    private final String currentMonth = BerlinTime.today().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.GERMAN);
 
     public StatisticsPage(RemoteWebDriver driver) {
         super(driver);
@@ -308,7 +308,7 @@ public class StatisticsPage extends BasePage {
     public void clickOnCurrentMonthName() {
         ScenarioLogManager.getLogger().info("Trying to click on current month link...");
         try {
-            WebElement row = DRIVER.findElement(By.xpath("//tr[.//a[contains(text(), '" + LocalDate.now(ZoneId.of("Europe/Berlin")).getYear() + "')]]"));
+            WebElement row = DRIVER.findElement(By.xpath("//tr[.//a[contains(text(), '" + BerlinTime.today().getYear() + "')]]"));
             List<WebElement> cells = row.findElements(By.tagName("td"));
 
             boolean monthFound = false;
@@ -324,7 +324,7 @@ public class StatisticsPage extends BasePage {
             Assert.assertTrue(monthFound, "Could not find a clickable link for the current month (" + currentMonth + ").");
 
         } catch (NoSuchElementException e) {
-            Assert.fail("No info statistics, could not find the row element for the current year (" + LocalDate.now(ZoneId.of("Europe/Berlin")).getYear() + ").");
+            Assert.fail("No info statistics, could not find the row element for the current year (" + BerlinTime.today().getYear() + ").");
         }
     }
 
