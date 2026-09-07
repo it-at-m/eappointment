@@ -3,7 +3,6 @@ package zms.ataf.rest.steps;
 import static io.restassured.RestAssured.given;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +23,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
+import zms.ataf.helpers.BerlinTime;
 import zms.ataf.rest.dto.common.ApiResponse;
 import zms.ataf.rest.dto.zmscitizenapi.AvailableAppointmentsResponse;
 import zms.ataf.rest.dto.zmscitizenapi.AvailableCalendarResponse;
@@ -975,8 +975,8 @@ public class CitizenApiSteps {
             serviceIds.stream().map(String::valueOf).collect(Collectors.joining(","));
         String serviceCountsParam =
             serviceCounts.stream().map(String::valueOf).collect(Collectors.joining(","));
-        String startDate = LocalDate.now().format(DATE_FORMAT);
-        String endDate = LocalDate.now().plusMonths(6).format(DATE_FORMAT);
+        String startDate = BerlinTime.today().format(DATE_FORMAT);
+        String endDate = BerlinTime.today().plusMonths(6).format(DATE_FORMAT);
         response = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
             .queryParam("officeIds", officeIdsParam)
