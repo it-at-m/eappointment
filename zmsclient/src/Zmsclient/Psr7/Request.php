@@ -11,28 +11,37 @@ use BO\Slim\Request as SlimRequest;
 /**
  * Layer to change PSR7 implementation if necessary
  * @SuppressWarnings(Superglobals)
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 class Request extends SlimRequest implements \Psr\Http\Message\ServerRequestInterface
 {
-    public function __construct($method = null, $uri = null, $body = 'php://memory', $headers = array())
-    {
+    public function __construct(
+        ?string $method = null,
+        mixed $uri = null,
+        mixed $body = 'php://memory',
+        mixed $headers = array()
+    ) {
         $cookies = [];
         $serverParams = $_SERVER;
         $uploadedFiles = [];
         if (!$uri instanceof UriInterface) {
-            $uri = new Uri($uri);
+            $uri = new Uri(is_string($uri) ? $uri : '');
         }
         if (!$headers instanceof HeadersInterface) {
-            $headers = new Headers($headers);
+            $headers = new Headers(is_array($headers) ? $headers : []);
         }
         if (!$body instanceof StreamInterface) {
             if (!is_resource($body)) {
-                $body = fopen($body, 'w+b');
+                $opened = fopen(is_string($body) ? $body : 'php://memory', 'w+b');
+                if ($opened === false) {
+                    throw new \RuntimeException('Unable to open request body stream');
+                }
+                $body = $opened;
             }
             $body = new Stream($body);
         }
         parent::__construct(
-            $method,
+            $method ?? 'GET',
             $uri,
             $headers,
             $cookies,

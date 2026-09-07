@@ -24,37 +24,37 @@ use Twig\Extra\Intl\IntlExtension;
  */
 class Messaging
 {
-    public static $icsRequiredForStatus = [
+    public static array $icsRequiredForStatus = [
         'confirmed',
         'appointment'
     ];
 
-    public static $allowEmptyProcesses = [
+    public static array $allowEmptyProcesses = [
         'overview'
     ];
 
     public static function isIcsRequired(
         \BO\Zmsentities\Config $config,
         \BO\Zmsentities\Process $process,
-        $status
+        mixed $status
     ): bool {
         $client = $process->getFirstClient();
         $noAttachmentDomains = $config->toProperty()->notifications->noAttachmentDomains->get();
         $noAttachmentDomains = explode(',', (string)$noAttachmentDomains);
         foreach ($noAttachmentDomains as $matching) {
-            if (trim($matching) && strpos($client->email, '@' . trim($matching))) {
+            if (trim($matching) !== '' && strpos($client->email, '@' . trim($matching)) !== false) {
                 return false;
             }
         }
         return (in_array($status, self::$icsRequiredForStatus));
     }
 
-    public static function isEmptyProcessListAllowed($status): bool
+    public static function isEmptyProcessListAllowed(string $status): bool
     {
         return (in_array($status, self::$allowEmptyProcesses));
     }
 
-    protected static $templates = array(
+    protected static array $templates = array(
         'mail' => array(
             'queued' => 'mail_queued.twig',
             'appointment' => 'mail_confirmation.twig',
@@ -81,7 +81,7 @@ class Messaging
         return self::createTwigEnvironment(self::filesystemLoader());
     }
 
-    protected static function dbTwigView($templateProvider): Environment
+    protected static function dbTwigView(mixed $templateProvider): Environment
     {
         $loader = new \Twig\Loader\ChainLoader([
             new \Twig\Loader\ArrayLoader($templateProvider->getTemplates()),
@@ -103,9 +103,10 @@ class Messaging
     {
         $templatePath = TemplateFinder::getTemplatePath();
         $customTemplatesPath = 'custom_templates/';
+        $envPath = getenv("ZMS_CUSTOM_TEMPLATES_PATH");
 
-        if (getenv("ZMS_CUSTOM_TEMPLATES_PATH")) {
-            $customTemplatesPath = getenv("ZMS_CUSTOM_TEMPLATES_PATH");
+        if (is_string($envPath) && $envPath !== '') {
+            $customTemplatesPath = $envPath;
         }
 
         $initialTemplatePaths = [];
@@ -126,7 +127,7 @@ class Messaging
         return $loader;
     }
 
-    public static function getMailContentPreview($templateContent, $process): string
+    public static function getMailContentPreview(mixed $templateContent, mixed $process): string
     {
         $parameters = self::generateMailParameters(
             $process,
@@ -141,10 +142,10 @@ class Messaging
     public static function getMailContent(
         Process|ProcessList $processList,
         Config $config,
-        $initiator = null,
-        $status = 'appointment',
-        $templateProvider = false
-    ) {
+        mixed $initiator = null,
+        string $status = 'appointment',
+        mixed $templateProvider = false
+    ): string {
         $parameters = self::generateMailParameters($processList, $config, $initiator, $status);
 
         (new ProcessList())->testProcessListLength($processList, self::isEmptyProcessListAllowed($status));
@@ -172,7 +173,7 @@ class Messaging
      * @return ((int|mixed)[][]|Client|Process|\DateTimeImmutable|mixed|null|string)[]
      *
      */
-    public static function generateMailParameters(Process|ProcessList $processList, Config $config, $initiator, string $status): array
+    public static function generateMailParameters(Process|ProcessList $processList, Config $config, mixed $initiator, string $status): array
     {
         $collection = (new ProcessList())
             ->testProcessListLength($processList, self::isEmptyProcessListAllowed($status));
@@ -206,7 +207,7 @@ class Messaging
             'processList' => $collection->sortByAppointmentDate(),
             'config' => $config,
             'initiator' => $initiator,
-            'appointmentLink' => base64_encode(json_encode([
+            'appointmentLink' => base64_encode((string) json_encode([
                 'id' => $mainProcess ? $mainProcess->id : '',
                 'authKey' => $mainProcess ? $mainProcess->authKey : ''
             ]))
@@ -229,7 +230,7 @@ class Messaging
         return $message;
     }
 
-    protected static function getTemplate(string $type, $status)
+    protected static function getTemplate(string $type, string $status): mixed
     {
         $template = null;
         if (Property::__keyExists($type, self::$templates)) {
@@ -243,13 +244,13 @@ class Messaging
     public static function getMailSubject(
         Process $process,
         Config $config,
-        $initiator = null,
-        $status = 'appointment',
-        $templateProvider = null
+        mixed $initiator = null,
+        string $status = 'appointment',
+        mixed $templateProvider = null
     ): string {
         $appointment = $process->getFirstAppointment();
         $parameters = [
-            'date' => $appointment ? $appointment->toDateTime()->format('U') : null,
+            'date' => $appointment->toDateTime()->format('U'),
             'client' => $process->getFirstClient(),
             'process' => $process,
             'config' => $config,
@@ -271,10 +272,10 @@ class Messaging
     public static function getMailIcs(
         Process $process,
         Config $config,
-        $status = 'appointment',
-        $initiator = null,
-        $now = false,
-        $templateProvider = false
+        string $status = 'appointment',
+        mixed $initiator = null,
+        mixed $now = false,
+        mixed $templateProvider = false
     ): \BO\Zmsentities\Ics {
         $ics = new \BO\Zmsentities\Ics();
         $message = self::getMailContent($process, $config, $initiator, $status, $templateProvider);
@@ -286,11 +287,11 @@ class Messaging
     protected static function generateIcsContent(
         Process $process,
         Config $config,
-        $status = 'appointment',
-        $now = false,
-        $templateProvider = false,
-        $message = '' // Pass $message from getMailIcs, or query if not set
-    ) {
+        string $status = 'appointment',
+        mixed $now = false,
+        mixed $templateProvider = false,
+        string $message = '' // Pass $message from getMailIcs, or query if not set
+    ): string {
         // If $message is not provided, retrieve it from the getMailContent query
         if (empty($message)) {
             $message = self::getMailContent($process, $config, null, $status, $templateProvider);
@@ -339,7 +340,7 @@ class Messaging
         return self::getTextWithFoldedLines($icsString);
     }
 
-    public static function getPlainText($content, $lineBreak = "\n"): string
+    public static function getPlainText(mixed $content, string $lineBreak = "\n"): string
     {
         $converter = new \League\HTMLToMarkdown\HtmlConverter();
         $converter->getConfig()->setOption('remove_nodes', 'script');

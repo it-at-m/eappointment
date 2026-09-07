@@ -19,7 +19,7 @@ class Http
     /**
      * @var string
      */
-    protected $http_baseurl = '';
+    protected string $http_baseurl = '';
 
     /**
      * @var bool
@@ -47,32 +47,35 @@ class Http
     /**
      * @var string|null
      */
-    protected $apikeyString = null;
+    protected ?string $apikeyString = null;
 
     /**
      * @var string|null
      */
-    protected $workflowkeyString = null;
+    protected ?string $workflowkeyString = null;
 
     /**
      * @var int|null
      */
     public static $jsonCompressLevel = null;
 
-    public function __construct($baseUrl, ?Psr7\Client $client = null)
+    public function __construct(string $baseUrl, ?Psr7\Client $client = null)
     {
-        $this->http_baseurl = parse_url($baseUrl, PHP_URL_PATH) ?? '';
+        $path = parse_url($baseUrl, PHP_URL_PATH);
+        $this->http_baseurl = is_string($path) ? $path : '';
         $this->uri = new Psr7\Uri();
-        $this->uri = $this->uri->withScheme(parse_url($baseUrl, PHP_URL_SCHEME) ?? '');
-        $this->uri = $this->uri->withHost(parse_url($baseUrl, PHP_URL_HOST) ?? '');
+        $scheme = parse_url($baseUrl, PHP_URL_SCHEME);
+        $this->uri = $this->uri->withScheme(is_string($scheme) ? $scheme : '');
+        $host = parse_url($baseUrl, PHP_URL_HOST);
+        $this->uri = $this->uri->withHost(is_string($host) ? $host : '');
         $port = parse_url($baseUrl, PHP_URL_PORT);
-        if ($port) {
+        if (is_int($port) && $port !== 0) {
             $this->uri = $this->uri->withPort($port);
         }
         $user = parse_url($baseUrl, PHP_URL_USER);
         $pass = parse_url($baseUrl, PHP_URL_PASS);
-        if ($user) {
-            $this->setUserInfo($user, $pass);
+        if (is_string($user) && $user !== '') {
+            $this->setUserInfo($user, is_string($pass) ? $pass : null);
         }
         if (null === $client) {
             $client = new Psr7\Client();
@@ -80,7 +83,7 @@ class Http
         $this->client = $client;
     }
 
-    public function setUserInfo(string $user, string|false|null $pass): static
+    public function setUserInfo(string $user, ?string $pass): self
     {
         $this->uri = $this->uri->withUserInfo($user, $pass);
         return $this;
@@ -105,7 +108,7 @@ class Http
             $request = $this->getAuthorizedRequest($request);
         }
         if (null !== static::$jsonCompressLevel) {
-            $request = $request->withHeader('X-JsonCompressLevel', static::$jsonCompressLevel);
+            $request = $request->withHeader('X-JsonCompressLevel', (string) static::$jsonCompressLevel);
         }
         $startTime = microtime(true);
         $response = $this->client->readResponse($request);
@@ -144,13 +147,13 @@ class Http
         return $request;
     }
 
-    public function setApiKey($apikeyString)
+    public function setApiKey(string $apikeyString): self
     {
         $this->apikeyString = $apikeyString;
         return $this;
     }
 
-    public function setWorkflowKey($apikeyString): static
+    public function setWorkflowKey(string $apikeyString): self
     {
         $this->workflowkeyString = $apikeyString;
         return $this;
@@ -185,7 +188,7 @@ class Http
      *
      * @param mixed $entity JSON-encodable payload (entity or collection)
      */
-    public function readPostResult(string $relativeUrl, $entity, array $getParameters = null)
+    public function readPostResult(string $relativeUrl, $entity, array $getParameters = null): Result
     {
         $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
         if (null !== $getParameters) {
@@ -218,9 +221,9 @@ class Http
     }
 
     protected function readResult(
-        RequestInterface $request = null,
-        $try = 0
-    ) {
+        RequestInterface $request,
+        int $try = 0
+    ): Result {
         $response = $this->readResponse($request);
         $result = new Result($response, $request);
         if ($response->getStatuscode() == 500) {
