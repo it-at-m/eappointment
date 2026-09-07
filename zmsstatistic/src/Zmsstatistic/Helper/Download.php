@@ -9,10 +9,10 @@
 
 namespace BO\Zmsstatistic\Helper;
 
-use BO\Slim\Response;
 use Fig\Http\Message\StatusCodeInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Psr\Http\Message\ResponseInterface;
 
 class Download
 {
@@ -33,11 +33,7 @@ class Download
         return $this;
     }
 
-    /**
-     * @param Response $response
-     * @return mixed
-     */
-    public function writeDownload($response)
+    public function writeDownload(ResponseInterface $response): mixed
     {
         $resource = fopen('php://temp', 'x+');
 
