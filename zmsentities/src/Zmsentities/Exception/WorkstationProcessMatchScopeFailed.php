@@ -9,7 +9,7 @@ class WorkstationProcessMatchScopeFailed extends \Exception
 {
     protected $code = 403;
 
-    public $data;
+    public mixed $data = null;
 
     protected $message = "Workstation is not allowed to edit the process,
         process scope does not match with workstation cluster/scope";

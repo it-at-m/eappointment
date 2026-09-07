@@ -114,6 +114,43 @@ class ExchangeTest extends EntityCommonTests
         $this->assertEquals(31, $entity->data['sum']['Personalausweis beantragen']);
     }
 
+    public function testGetDatesWithRequests()
+    {
+        $exchange = new \BO\Zmsentities\Exchange();
+
+        $exchange->data = [
+            'Service A' => [
+                '2016-04-04' => ['requestscount' => 2],
+                '2016-04-02' => ['requestscount' => 0],
+            ],
+            'Service B' => [
+                '2016-04-01' => ['requestscount' => '1'],
+                '2016-04-04' => ['requestscount' => 3],
+            ],
+            \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_UNCATEGORIZED => [
+                '2016-04-03' => ['requestscount' => 1],
+            ],
+            'sum' => [
+                'Service A' => 2,
+                'Service B' => 4,
+            ],
+            'average_processingtime' => [
+                'Service A' => 10,
+                'Service B' => 15,
+            ],
+            'average_processingtime_overall' => 12.5,
+        ];
+
+        $this->assertSame(
+            [
+                '2016-04-01',
+                '2016-04-03',
+                '2016-04-04',
+            ],
+            $exchange->getDatesWithRequests()
+        );
+    }
+
     public function testWithWeightedAverageProcessingTime()
     {
         $exchange = new \BO\Zmsentities\Exchange();
@@ -210,6 +247,42 @@ class ExchangeTest extends EntityCommonTests
         $entity->addDictionaryEntry('name', 'string', 'Naming');
         $entity->addDataSet([1, '2016-04-01', 'Test']);
         $this->assertEquals(1, count($entity->data));
+    }
+
+    public function testAddDataSetWithGenerator()
+    {
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $entity = (new $this->entityclass());
+        $entity->setPeriod($now, $now);
+        $entity->addDictionaryEntry('id', 'number');
+        $entity->addDictionaryEntry('date', 'date');
+        $entity->addDictionaryEntry('name', 'string', 'Naming');
+        $values = (function () {
+            yield 1;
+            yield '2016-04-01';
+            yield 'Test';
+        })();
+        $entity->addDataSet($values);
+        $this->assertEquals([1, '2016-04-01', 'Test'], $entity->data[0]);
+        $this->assertEquals('totals', $entity->withCalculatedTotals(['id'])->getCalculatedTotals()[2]);
+    }
+
+    public function testAddDataSetWithGeneratorReindexesKeys()
+    {
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $entity = (new $this->entityclass());
+        $entity->setPeriod($now, $now);
+        $entity->addDictionaryEntry('id', 'number');
+        $entity->addDictionaryEntry('date', 'date');
+        $entity->addDictionaryEntry('name', 'string', 'Naming');
+        $values = (function () {
+            yield 5 => 1;
+            yield 5 => '2016-04-01';
+            yield 9 => 'Test';
+        })();
+        $entity->addDataSet($values);
+        $this->assertSame([0, 1, 2], array_keys($entity->data[0]));
+        $this->assertEquals([1, '2016-04-01', 'Test'], $entity->data[0]);
     }
 
     public function testDataFormat()

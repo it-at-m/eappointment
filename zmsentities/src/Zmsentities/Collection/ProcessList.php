@@ -24,7 +24,7 @@ class ProcessList extends Base
         foreach ($this as $process) {
             $appointment = $process->getFirstAppointment();
             $formattedDate = $appointment['date'];
-            if ($format) {
+            if ($format !== null && $format !== '') {
                 $formattedDate = $appointment->toDateTime()->format($format);
             }
             $list[$formattedDate][] = clone $process;
@@ -32,7 +32,7 @@ class ProcessList extends Base
         return $list;
     }
 
-    public function withRequest($requestId): self
+    public function withRequest(mixed $requestId): self
     {
         $list = new self();
         foreach ($this as $process) {
@@ -47,8 +47,8 @@ class ProcessList extends Base
     {
         $this->uasort(function ($a, $b) {
             return strcmp(
-                Sorter::toSortableString(ucfirst($a->scope->contact['name'] ?? '')),
-                Sorter::toSortableString(ucfirst($b->scope->contact['name'] ?? ''))
+                Sorter::toSortableString(ucfirst($a->scope['contact']['name'] ?? '')),
+                Sorter::toSortableString(ucfirst($b->scope['contact']['name'] ?? ''))
             );
         });
         return $this;
@@ -57,14 +57,14 @@ class ProcessList extends Base
     public function sortByAppointmentDate(): static
     {
         $this->uasort(function ($a, $b) {
-            return ($a->getFirstAppointment()->date - $b->getFirstAppointment()->date);
+            return ((int) $a->getFirstAppointment()->date - (int) $b->getFirstAppointment()->date);
         });
         return $this;
     }
 
     public function sortByArrivalTime(): static
     {
-        $this->uasort(function ($a, $b) {
+        $this->uasort(function ($a, $b): mixed {
             return ($a->queue['arrivalTime'] - $b->queue['arrivalTime']);
         });
         return $this;
@@ -72,7 +72,7 @@ class ProcessList extends Base
 
     public function sortByEstimatedWaitingTime(): static
     {
-        $this->uasort(function ($a, $b) {
+        $this->uasort(function ($a, $b): mixed {
             return ($a->queue['waitingTimeEstimate'] - $b->queue['waitingTimeEstimate']);
         });
         return $this;
@@ -91,8 +91,8 @@ class ProcessList extends Base
 
     public function sortByTimeKey(): static
     {
-        $this->uksort(function ($a, $b) {
-            return ($a - $b);
+        $this->uksort(function ($a, $b): mixed {
+            return ((int) $a - (int) $b);
         });
         return $this;
     }
@@ -140,7 +140,7 @@ class ProcessList extends Base
         return $list;
     }
 
-    public function getScopeList()
+    public function getScopeList(): \BO\Zmsentities\Collection\ScopeList
     {
         $list = new ScopeList();
         foreach ($this as $process) {
@@ -151,7 +151,7 @@ class ProcessList extends Base
         return $list->withUniqueScopes();
     }
 
-    public function getRequestList()
+    public function getRequestList(): \BO\Zmsentities\Collection\RequestList
     {
         $list = new RequestList();
         foreach ($this as $process) {
@@ -175,7 +175,7 @@ class ProcessList extends Base
         return $appointmentList;
     }
 
-    public function setTempAppointmentToProcess($dateTime, $scopeId): static
+    public function setTempAppointmentToProcess(mixed $dateTime, mixed $scopeId): static
     {
         $addedAppointment = false;
         $appointment = (new \BO\Zmsentities\Appointment())->addDate($dateTime->getTimestamp())->addScope($scopeId);
@@ -194,7 +194,7 @@ class ProcessList extends Base
         return $this;
     }
 
-    public function toQueueList($now): QueueList
+    public function toQueueList(mixed $now): QueueList
     {
         $queueList = new QueueList();
         foreach ($this as $process) {
@@ -232,7 +232,7 @@ class ProcessList extends Base
     {
         $processList = new static();
         foreach ($this as $process) {
-            if ($process->scope->hasEmailFrom()) {
+            if ($process->getCurrentScope()->hasEmailFrom()) {
                 $entity = clone $process;
                 $processList->addEntity($entity);
             }
@@ -263,6 +263,9 @@ class ProcessList extends Base
             $dateTime = $processListByDate[0]->getFirstAppointment()->toDateTime();
             $slotList = $availabilityList->withType('appointment')->withDateTime($dateTime)->getSlotList();
             foreach ($processListByDate as $process) {
+                if (!$process instanceof Process) {
+                    continue;
+                }
                 try {
                     $slotList->withSlotsForAppointment($process->getFirstAppointment());
                     if (!$slotList->removeAppointment($process->getFirstAppointment())) {
@@ -278,12 +281,12 @@ class ProcessList extends Base
         return $processList;
     }
 
-    public function withUniqueScope($oncePerHour = false): static
+    public function withUniqueScope(bool $oncePerHour = false): static
     {
         $processList = new static();
         $scopeKeyList = [];
         foreach ($this as $process) {
-            $scopeKey = $process->scope->id . '-';
+            $scopeKey = $process->scope['id'] . '-';
             if ($oncePerHour) {
                 $scopeKey .= $process->getFirstAppointment()->toDateTime()->format('H');
             } else {
@@ -333,7 +336,7 @@ class ProcessList extends Base
         return $processList;
     }
 
-    public function withOutProcessId($processId): static
+    public function withOutProcessId(mixed $processId): static
     {
         $processList = new static();
         foreach ($this as $process) {
@@ -377,11 +380,17 @@ class ProcessList extends Base
         return $collection;
     }
 
-    public function testProcessListLength($processList, bool $isEmptyAllowed = false): ProcessList
+    /**
+     * @param Process|self $processList
+     */
+    public function testProcessListLength(self|Process $processList, bool $isEmptyAllowed = false): ProcessList
     {
-        $collection = ($processList instanceof Process) ?
-            (new self())->addEntity($processList) :
-            $processList;
+        if ($processList instanceof Process) {
+            $collection = new self();
+            $collection->addEntity($processList);
+        } else {
+            $collection = $processList;
+        }
 
         if (0 === $collection->count() && ! $isEmptyAllowed) {
             throw new \BO\Zmsentities\Exception\ProcessListEmpty();
@@ -389,7 +398,7 @@ class ProcessList extends Base
         return $collection;
     }
 
-    public function withoutProcessByStatus(Process $process, $status)
+    public function withoutProcessByStatus(Process $process, string $status): static
     {
         $collection = clone $this;
         $collection = (1 <= $collection->count() && ! Messaging::isEmptyProcessListAllowed($status)) ?
