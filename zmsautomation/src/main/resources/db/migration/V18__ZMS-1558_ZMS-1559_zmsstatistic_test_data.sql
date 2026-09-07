@@ -12,7 +12,7 @@
 --  - We only touch rows for standortid = 2 and the synthetic test date (yesterday).
 --  - Existing data for other standorte or dates is left untouched.
 
--- Use previous calendar day as statistics date
+-- Use previous calendar day as statistics date (MariaDB TZ=Europe/Berlin, same as zms-web).
 SET @stats_date := DATE_SUB(CURDATE(), INTERVAL 1 DAY);
 
 -- Clean up potential leftovers for deterministic test runs

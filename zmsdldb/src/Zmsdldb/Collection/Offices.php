@@ -7,6 +7,9 @@
 
 namespace BO\Zmsdldb\Collection;
 
+/**
+ * @extends Base<\BO\Zmsdldb\Entity\Office>
+ */
 class Offices extends Base
 {
 }
