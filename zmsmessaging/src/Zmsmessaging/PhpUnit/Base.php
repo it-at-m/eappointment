@@ -4,6 +4,7 @@ namespace BO\Zmsmessaging\PhpUnit;
 
 use BO\Zmsentities\Schema\Entity;
 use BO\Zmsentities\Collection\Base as BaseCollection;
+use BO\Zmsclient\Http;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Argument;
@@ -38,7 +39,7 @@ abstract class Base extends TestCase
 
     protected function getApiMockup(): object
     {
-        $mock = $this->prophesize('BO\Zmsclient\Http');
+        $mock = $this->prophesize(Http::class);
         foreach ($this->getApiCalls() as $options) {
             $parameters = isset($options['parameters']) ? $options['parameters'] : null;
             $function = $options['function'];
