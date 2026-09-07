@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-07T10:19:23.390Z",
+  "publishedAt": "2026-09-07T13:43:06.263Z",
   "branches": [
     {
       "name": "next",
@@ -70,8 +70,8 @@
     {
       "name": "fix-zmskvr-1573-include-special-rows-in-request-report-sum",
       "slug": "fix-zmskvr-1573-include-special-rows-in-request-report-sum",
-      "runId": "33871668851",
-      "runStartedAt": "2026-09-04T12:13:09Z"
+      "runId": "34127480535",
+      "runStartedAt": "2026-09-07T13:27:20Z"
     },
     {
       "name": "fix-zmskvr-833-zmskvr-1025-rebooking-from-1571",
