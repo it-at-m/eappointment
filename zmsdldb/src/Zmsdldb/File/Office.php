@@ -13,6 +13,7 @@ use BO\Zmsdldb\Collection\Offices as Collection;
 /**
   * Common methods shared by access classes
   *
+  * @extends Base<Collection, Entity>
   */
 class Office extends Base
 {
@@ -20,7 +21,7 @@ class Office extends Base
      * @return Collection
      */
     #[\Override]
-    protected function parseData($data)
+    protected function parseData(mixed $data)
     {
         $itemList = new Collection();
         foreach ($data['data']['office'] as $item) {
@@ -30,13 +31,13 @@ class Office extends Base
         return $itemList;
     }
 
-    public function fetchList()
+    public function fetchList(): \BO\Zmsdldb\Collection\Base
     {
         return $this->getItemList();
     }
 
     /** @psalm-api */
-    public function fetchPath($itemId)
+    public function fetchPath(string $itemId): \BO\Zmsdldb\Entity\Base|false
     {
         return $this->fetchId($itemId);
     }

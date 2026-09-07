@@ -1,5 +1,5 @@
 {
-  "$schema": "https://zms.ddev.site/terminvereinbarung/api/2/",
+  "$schema": "http://localhost:8090/terminvereinbarung/api/2/",
   "meta": {
     "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
     "error": false,

@@ -16,21 +16,18 @@ abstract class Parameter
     /**
       * value of parameter
       *
-      * @var string|null $value
+      * @var mixed $value
      */
-    protected $value = '';
+    protected mixed $value = '';
 
     /**
       * name of parameter
       *
-      * @var String $name
+      * @var string $name
       */
-    protected $name = '';
+    protected string $name = '';
 
-    /**
-      *
-      */
-    public function __construct($value, $name = '')
+    public function __construct(mixed $value, ?string $name = '')
     {
         $this->setValue($value);
         $this->setName($name);
@@ -39,7 +36,7 @@ abstract class Parameter
     /**
      * @return self
      */
-    protected function setValue($value)
+    protected function setValue(mixed $value): self
     {
         $this->value = $value;
         return $this;
@@ -48,9 +45,9 @@ abstract class Parameter
     /**
      * @return self
      */
-    public function setName($name)
+    public function setName(?string $name): self
     {
-        $this->name = $name;
+        $this->name = $name ?? '';
         return $this;
     }
 

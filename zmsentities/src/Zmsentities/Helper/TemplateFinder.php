@@ -12,6 +12,7 @@ class TemplateFinder
      */
     public static function getTemplatePath(): string
     {
-        return realpath(__DIR__) . '/../../../templates';
+        $templatePath = realpath(__DIR__);
+        return ($templatePath !== false ? $templatePath : __DIR__) . '/../../../templates';
     }
 }

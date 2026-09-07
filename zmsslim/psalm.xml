@@ -20,5 +20,7 @@
         <!-- Psalm narrows typed string/bool consts to their literal values; module App overrides are valid PHP. -->
         <InvalidClassConstantType errorLevel="suppress" />
         <LessSpecificClassConstantType errorLevel="suppress" />
+        <!-- SESSION_DURATION and TWIG_CACHE stay untyped so module App subclasses can override them. -->
+        <MissingClassConstType errorLevel="suppress" />
     </issueHandlers>
 </psalm>

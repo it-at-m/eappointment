@@ -3,7 +3,6 @@ package zms.ataf.rest.steps;
 import static io.restassured.RestAssured.given;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +23,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
+import zms.ataf.helpers.BerlinTime;
 import zms.ataf.rest.dto.common.ApiResponse;
 import zms.ataf.rest.dto.zmscitizenapi.AvailableAppointmentsResponse;
 import zms.ataf.rest.dto.zmscitizenapi.AvailableCalendarResponse;
@@ -210,7 +210,7 @@ public class CitizenApiSteps {
         Assertions.assertThat(lastAvailableCalendarResponse)
             .as("Request available days first")
             .isNotNull();
-        int[] officeIds = parseOfficeIdsCsv(officeIdsCsv).stream().mapToInt(Integer::intValue).toArray();
+        int[] officeIds = parseOfficeIdsCsv(officeIdsCsv).stream().mapToInt(id -> id.intValue()).toArray();
         Assertions.assertThat(lastAvailableCalendarResponse.hasAppointmentsForAllOffices(officeIds))
             .as(
                 "Expected available-calendar to include appointment buckets for offices %s (shared booking)",
@@ -1085,8 +1085,8 @@ public class CitizenApiSteps {
             serviceIds.stream().map(String::valueOf).collect(Collectors.joining(","));
         String serviceCountsParam =
             serviceCounts.stream().map(String::valueOf).collect(Collectors.joining(","));
-        String startDate = LocalDate.now().format(DATE_FORMAT);
-        String endDate = LocalDate.now().plusMonths(6).format(DATE_FORMAT);
+        String startDate = BerlinTime.today().format(DATE_FORMAT);
+        String endDate = BerlinTime.today().plusMonths(6).format(DATE_FORMAT);
         response = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
             .queryParam("officeIds", officeIdsParam)
@@ -1150,10 +1150,6 @@ public class CitizenApiSteps {
             }
         }
         return null;
-    }
-
-    private AvailableCalendarResponse fetchAvailableCalendar(int officeId, int serviceId, int serviceCount) {
-        return fetchAvailableCalendar(List.of(officeId), serviceId, serviceCount);
     }
 
     private <T> T parseDataResponse(Response response, Class<T> dataClass) {

@@ -6,8 +6,6 @@
 
 namespace BO\Zmsdldb;
 
-use Error;
-
 /**
  * Extension for Twig
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
@@ -18,7 +16,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
 {
     private $container;
 
-    public function __construct($container = null)
+    public function __construct(mixed $container = null)
     {
         $this->container = $container;
     }
@@ -28,6 +26,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return 'dldb';
     }
 
+    /** @psalm-suppress InvalidArgument */
     #[\Override]
     public function getFunctions()
     {
@@ -60,16 +59,16 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         );
     }
 
-    public function dump($item): string
+    public function dump(mixed $item): string
     {
-        return '<pre>' . print_r($item, 1) . '</pre>';
+        return '<pre>' . print_r($item, true) . '</pre>';
     }
 
     /**
      * @return (array|mixed|string)[]
      *
      */
-    public function currentRoute($lang = null): array
+    public function currentRoute(mixed $lang = null): array
     {
         if ($this->container->has('currentRoute')) {
             $routeParams = $this->container->get('currentRouteParams');
@@ -98,6 +97,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
 
     public function getD115Enabeld(): bool
     {
+        /** @psalm-suppress UndefinedPropertyFetch */
         $settingsRepository = \App::$repository->fromSetting();
         $active = (bool)($settingsRepository->fetchName('d115.active') ?? true);
 
@@ -105,16 +105,18 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $active;
     }
 
-    public function getD115OpeningTimes()
+    public function getD115OpeningTimes(): mixed
     {
+        /** @psalm-suppress UndefinedPropertyFetch */
         $settingsRepository = \App::$repository->fromSetting();
         $openinTimes = $settingsRepository->fetchName('d115.openingTime') ?? \App::D115_DEFAULT_OPENINGTIME;
 
         return $openinTimes;
     }
 
-    public function getD115Text()
+    public function getD115Text(): mixed
     {
+        /** @psalm-suppress UndefinedPropertyFetch */
         $settingsRepository = \App::$repository->fromSetting();
         $text = $settingsRepository->fetchName('d115.messageHtml') ?? \App::D115_DEFAULT_TEXT;
 
@@ -123,6 +125,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
 
     public function getBobbiChatButtonEnabeld(): bool
     {
+        /** @psalm-suppress UndefinedPropertyFetch */
         $settingsRepository = \App::$repository->fromSetting();
         $buttonEnabled = (bool)($settingsRepository->fetchName('frontend.bobbi.chatbutton.enabled') ?? false);
 
@@ -139,7 +142,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return 'gestureHandling: ' . \App::OSM_GESTURE_HANDLING;
     }
 
-    public function formatPhoneNumber($phoneNumber): string|null
+    public function formatPhoneNumber(mixed $phoneNumber): string|null
     {
         preg_match_all('/(^\+)?[\d]+/', $phoneNumber, $matches);
         $number = implode($matches[0]);
@@ -147,7 +150,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $phonenumber;
     }
 
-    public function convertOpeningTimes($name): string
+    public function convertOpeningTimes(mixed $name): string
     {
         $days = array(
             'monday' => 'Montag',
@@ -165,13 +168,13 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
     /**
      * @return false|int
      */
-    public function dateToTS($datetime): int|false
+    public function dateToTS(mixed $datetime): int|false
     {
         $timestamp = ($datetime === (int)$datetime) ? $datetime : strtotime($datetime);
         return $timestamp;
     }
 
-    public function tsToDate($timestamp): string
+    public function tsToDate(mixed $timestamp): string
     {
         $date =  date('Y-m-d', $timestamp);
         return $date;
@@ -181,14 +184,16 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
      * @return (false|float|int|mixed|string)[]
      *
      */
-    public function formatDateTime($dateString): array
+    public function formatDateTime(mixed $dateString): array
     {
-        $dateTime = new \DateTimeImmutable($dateString, new \DateTimezone('Europe/Berlin'));
+        $dateTime = new \DateTimeImmutable($dateString, new \DateTimeZone('Europe/Berlin'));
+        $formatDate = [];
         $formatDate['date']     = Helper\DateTime::getFormatedDates($dateTime, "EE, dd. MMMM yyyy");
         $formatDate['fulldate'] = Helper\DateTime::getFormatedDates($dateTime, "EEEE, 'den' dd. MMMM yyyy");
-        $formatDate['weekday']  = ($dateTime->format('N') == 0) ?
-            $dateTime->format('N') + 6 :
-            $dateTime->format('N') - 1;
+        $weekdayNumber = (int) $dateTime->format('N');
+        $formatDate['weekday']  = ($weekdayNumber == 0) ?
+            $weekdayNumber + 6 :
+            $weekdayNumber - 1;
         $formatDate['weekdayfull'] = Helper\DateTime::getFormatedDates($dateTime, "EEEE");
 
         $time = $dateTime->format('H:i');
@@ -203,7 +208,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $formatDate;
     }
 
-    public function kindOfPayment($code): string
+    public function kindOfPayment(mixed $code): string
     {
         $result = '';
         if ($code == 0) {
@@ -224,7 +229,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
      * @return (array|mixed)[][]
      *
      */
-    public function azPrefixList($list, $property): array
+    public function azPrefixList(mixed $list, mixed $property): array
     {
         $azList = array();
         foreach ((array)$list as $item) {
@@ -244,7 +249,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $azList;
     }
 
-    protected static function sortFirstChar($string): string
+    protected static function sortFirstChar(mixed $string): string
     {
         $firstChar = mb_substr($string, 0, 1);
         $firstChar = mb_strtoupper($firstChar);
@@ -252,7 +257,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $firstChar;
     }
 
-    protected static function sortByName($left, $right): int
+    protected static function sortByName(mixed $left, mixed $right): int
     {
         return strcmp(
             self::toSortableString(strtolower($left['name'])),
@@ -275,7 +280,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $string;
     }
 
-    public function csvProperty($list, $property): string
+    public function csvProperty(mixed $list, mixed $property): string
     {
         $propertylist = array();
         foreach ($list as $item) {
@@ -286,7 +291,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return implode(',', array_unique($propertylist));
     }
 
-    public function csvAppointmentLocations($list, $service_id = ''): string
+    public function csvAppointmentLocations(mixed $list, string $service_id = ''): string
     {
         $propertylist = array();
         foreach ($list as $item) {
@@ -308,8 +313,8 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
      */
     public function getAppointmentForLocationFromServiceAppointmentLocations(
         array $serviceAppointmentLocationList,
-        $locationId
-    ) {
+        mixed $locationId
+    ): mixed {
         if (isset($serviceAppointmentLocationList[$locationId])) {
             $appointment = $serviceAppointmentLocationList[$locationId]['appointment'];
             $appointment['responsibility_hint'] = $serviceAppointmentLocationList[$locationId]['responsibility_hint'];
@@ -319,7 +324,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return false;
     }
 
-    public function getAppointmentForService($location, $service_id)
+    public function getAppointmentForService(mixed $location, mixed $service_id): mixed
     {
         $servicecompare = explode(',', $service_id);
         foreach ($location['services'] as $service) {
@@ -333,7 +338,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return false;
     }
 
-    public function getLocationHintByServiceId($location, $service_id)
+    public function getLocationHintByServiceId(mixed $location, mixed $service_id): mixed
     {
         if (isset($location['services'])) {
             foreach ($location['services'] as $service) {
@@ -345,7 +350,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return false;
     }
 
-    public function dayIsBookable($dateList, $day)
+    public function dayIsBookable(mixed $dateList, mixed $day): mixed
     {
         $result = false;
         if (count($dateList)) {

@@ -24,7 +24,6 @@ jobs:
         package: [
           "zmsbase",
           "zmsmessaging",
-          "zmsapi", # TODO: remove after all packages are deleted
           "zmsbackend",
           "zmscalldisplay",
           "zmsadmin",
@@ -117,6 +116,6 @@ jobs:
       - name: Summary
         run: |
           echo "Package cleanup completed."
-          echo "Processed packages: zmsbase, zmsmessaging, zmsapi, zmsbackend, zmscalldisplay, zmsadmin, zmsstatistic, zmsticketprinter, zmscitizenapi, zmscitizenview"
+          echo "Processed packages: zmsbase, zmsmessaging, zmsbackend, zmscalldisplay, zmsadmin, zmsstatistic, zmsticketprinter, zmscitizenapi, zmscitizenview"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

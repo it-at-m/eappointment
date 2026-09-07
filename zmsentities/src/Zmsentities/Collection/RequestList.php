@@ -42,11 +42,11 @@ class RequestList extends Base
     /**
      * Filter the request list and return a new list with appropriate numbers of requests
      *
-     * @param array $countlist - a list with the request.id as number and a count as value
+     * @param array $countList - a list with the request.id as number and a count as value
      *
      * @return RequestList
      */
-    public function withCountList($countList)
+    public function withCountList(mixed $countList)
     {
         $requestList = new self();
         foreach ($countList as $requestId => $counter) {
@@ -56,7 +56,10 @@ class RequestList extends Base
                 );
             }
             while ($counter-- > 0) {
-                $requestList[] = $this->getEntity($requestId);
+                $entity = $this->getEntity($requestId);
+                if ($entity !== null) {
+                    $requestList[] = $entity;
+                }
             }
         }
         return $requestList;
@@ -91,7 +94,7 @@ class RequestList extends Base
                 if (is_string($request->data)) {
                     $request->data = json_decode($request->data);
                 } elseif (is_array($request->data)) {
-                    $request->data = json_decode(json_encode($request->data, JSON_FORCE_OBJECT));
+                    $request->data = json_decode((string) json_encode($request->data, JSON_FORCE_OBJECT));
                 }
             } else {
                 unset($request['data']);

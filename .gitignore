@@ -13,8 +13,7 @@ zms-deployment
 
 zmsautomation/lib
 
-# =============== ddev =================
-.ddev/.env
+# =============== local env =================
 .devcontainer/.env
 .devcontainer/php/xdebug.ini
 
