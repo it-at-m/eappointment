@@ -36,6 +36,10 @@ class Download
     {
         $resource = fopen('php://temp', 'x+');
         if ($resource === false) {
+            \App::$log->error('Failed to open temporary stream for spreadsheet download', [
+                'event' => 'statistic_download_failed',
+                'reason' => 'fopen',
+            ]);
             return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
         }
 
@@ -45,11 +49,20 @@ class Download
             $contents = stream_get_contents($resource);
             if ($contents === false) {
                 fclose($resource);
+                \App::$log->error('Failed to read spreadsheet download stream', [
+                    'event' => 'statistic_download_failed',
+                    'reason' => 'stream_get_contents',
+                ]);
                 return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
             }
             $response->getBody()->write($contents);
         } catch (\Exception $e) {
             fclose($resource);
+            \App::$log->error('Failed to write spreadsheet download', [
+                'event' => 'statistic_download_failed',
+                'reason' => 'exception',
+                'exception' => $e,
+            ]);
 
             return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
         }

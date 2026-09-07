@@ -46,6 +46,8 @@ class QuickLogin extends BaseController
             //ignore double login exception on quick login
             if ($exception->template == 'BO\Zmsbackend\Useraccount\Exception\UserAlreadyLoggedIn') {
                 $workstation = new Workstation($exception->data);
+            } else {
+                throw $exception;
             }
         }
 

@@ -43,10 +43,14 @@ class Logout extends BaseController
         /** @var mixed $authKey */
         $authKey = Auth::getKey();
         $sessionHash = hash('sha256', $authKey);
+        $username = null;
+        if ($workstation !== null) {
+            $username = $workstation->useraccount['id'];
+        }
         App::$log->info('User logged out', [
             'event' => 'auth_logout',
             'timestamp' => date('c'),
-            'username' => $workstation->useraccount['id'],
+            'username' => $username,
             'hashed_session_token' => $sessionHash,
             'logout_type' => 'manual',
             'application' => 'zmsstatistic'

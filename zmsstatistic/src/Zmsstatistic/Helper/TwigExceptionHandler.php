@@ -19,10 +19,12 @@ class TwigExceptionHandler extends \BO\Slim\TwigExceptionHandler
             return \BO\Slim\Render::withHtml($response, 'page/404.twig');
         }
         try {
-            /** @var mixed $exception */
-            $exception->templatedata = [
-                'workstation' => \App::http()->readGetResult('/workstation/')->getEntity(),
-            ];
+            $workstation = \App::http()->readGetResult('/workstation/')->getEntity();
+            if ($exception instanceof \BO\Zmsclient\Exception) {
+                $exception->templatedata = [
+                    'workstation' => $workstation,
+                ];
+            }
         } catch (\Throwable $workstationexception) {
             \App::$log->warning('Failed to fetch /workstation/ for extendedInfo', [
                 'exception' => $workstationexception,
