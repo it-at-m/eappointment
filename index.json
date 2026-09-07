@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-07T08:45:43.295Z",
+  "publishedAt": "2026-09-07T10:19:23.390Z",
   "branches": [
     {
       "name": "next",
@@ -84,6 +84,12 @@
       "slug": "fix-zmsmessaging-psalm-alerts",
       "runId": "34070650667",
       "runStartedAt": "2026-09-07T00:42:21Z"
+    },
+    {
+      "name": "fix-zmsstatistic-psalm-alerts",
+      "slug": "fix-zmsstatistic-psalm-alerts",
+      "runId": "34109819115",
+      "runStartedAt": "2026-09-07T10:08:06Z"
     },
     {
       "name": "renovate/next-ghcr.io-it-at-m-refarch-refarch-gateway-1.x",
