@@ -71,6 +71,9 @@ class ProviderTest extends EntityCommonTests
         $this->assertEquals(2, $collection->count());
         $uniqueCollection = $collection->withUniqueProvider();
         $this->assertEquals(1, $uniqueCollection->count());
+
+        $collectionWithNull = new $this->collectionclass([null, $entity, $entity]);
+        $this->assertEquals(1, $collectionWithNull->withUniqueProvider()->count());
     }
 
     public function testSource()

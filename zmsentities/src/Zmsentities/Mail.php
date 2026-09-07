@@ -17,7 +17,7 @@ class Mail extends Schema\Entity
 
     public static $schema = "mail.json";
 
-    protected $templateProvider = false;
+    protected mixed $templateProvider = false;
 
     /**
      * @return (Client|Collection\MimepartList|Department|Process)[]
@@ -34,17 +34,17 @@ class Mail extends Schema\Entity
         ];
     }
 
-    public function getProcessId()
+    public function getProcessId(): mixed
     {
         return $this->toProperty()->process->id->get();
     }
 
-    public function getProcessAuthKey()
+    public function getProcessAuthKey(): mixed
     {
         return $this->toProperty()->process->authKey->get();
     }
 
-    public function addMultiPart($multiPart): static
+    public function addMultiPart(mixed $multiPart): static
     {
         $this->multipart = $multiPart;
         return $this;
@@ -60,7 +60,7 @@ class Mail extends Schema\Entity
         return (null != $this->getIcsPart());
     }
 
-    public function getHtmlPart()
+    public function getHtmlPart(): mixed
     {
         $multiPart = $this->toProperty()->multipart->get();
         foreach ($multiPart as $part) {
@@ -72,7 +72,7 @@ class Mail extends Schema\Entity
         return null;
     }
 
-    public function getPlainPart()
+    public function getPlainPart(): mixed
     {
         foreach ($this->multipart as $part) {
             $mimepart = new Mimepart($part);
@@ -83,7 +83,7 @@ class Mail extends Schema\Entity
         return null;
     }
 
-    public function getIcsPart()
+    public function getIcsPart(): mixed
     {
         foreach ($this->multipart as $part) {
             $mimepart = new Mimepart($part);
@@ -103,7 +103,7 @@ class Mail extends Schema\Entity
         return $this->getFirstClient();
     }
 
-    public function getFirstClient()
+    public function getFirstClient(): \BO\Zmsentities\Client|null
     {
         $client = null;
         if ($this->toProperty()->process->isAvailable()) {
@@ -113,7 +113,7 @@ class Mail extends Schema\Entity
         return $client;
     }
 
-    public function toCustomMessageEntity(Process $process, $collection): static
+    public function toCustomMessageEntity(Process $process, mixed $collection): static
     {
         $entity = clone $this;
         $message = '';
@@ -163,7 +163,7 @@ class Mail extends Schema\Entity
      * @return Mail
      * @throws Exception\TemplateNotFound
      */
-    public function toResolvedEntity($processList, Config $config, $status, $initiator = null)
+    public function toResolvedEntity(mixed $processList, Config $config, mixed $status, mixed $initiator = null)
     {
         $collection = (new ProcessList())->testProcessListLength(
             $processList,
@@ -191,8 +191,9 @@ class Mail extends Schema\Entity
             'base64' => false
         ));
 
+        $firstAppointment = $mainProcess ? $mainProcess->getAppointments()->getFirst() : null;
         if (
-            $mainProcess && $mainProcess->getAppointments()->getFirst()->hasTime() &&
+            $mainProcess && $firstAppointment && $firstAppointment->hasTime() &&
             Messaging::isIcsRequired($config, $mainProcess, $status)
         ) {
             $entity->multipart[] = new Mimepart(array(
@@ -239,13 +240,13 @@ class Mail extends Schema\Entity
         return $entity;
     }
 
-    public function withDepartment($department): static
+    public function withDepartment(mixed $department): static
     {
         $this->department = $department;
         return $this;
     }
 
-    public function getRecipient()
+    public function getRecipient(): mixed
     {
         if (! isset($this['client'])) {
             $this['client'] = $this->getFirstClient();
@@ -256,7 +257,7 @@ class Mail extends Schema\Entity
         return $this['client']['email'];
     }
 
-    public function setTemplateProvider($templateProvider): static
+    public function setTemplateProvider(mixed $templateProvider): static
     {
         $this->templateProvider = $templateProvider;
         return $this;

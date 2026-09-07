@@ -8,22 +8,22 @@
 namespace BO\Zmsclient;
 
 use BO\Mellon\Validator;
-use Psr\Container\ContainerInterface;
 
 /**
   * Extension for Twig and Slim
   *
-  *  @SuppressWarnings(PublicMethod)
-  *  @SuppressWarnings(TooManyMethods)
+ *  @SuppressWarnings(PublicMethod)
+ *  @SuppressWarnings(TooManyMethods)
+ *  @SuppressWarnings(UnusedPrivateField)
   */
 class TwigExtension extends \Twig\Extension\AbstractExtension
 {
     /**
-     * @var ContainerInterface
+     * @var mixed
      */
-    private $container;
+    private mixed $container;
 
-    public function __construct($container)
+    public function __construct(mixed $container)
     {
         $this->container = $container;
     }
@@ -58,12 +58,12 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $output;
     }
 
-    protected function parseBody(\Psr\Http\Message\StreamInterface $body, bool $allowEmpty = false)
+    protected function parseBody(\Psr\Http\Message\StreamInterface $body, bool $allowEmpty = false): mixed
     {
         $content = Validator::value((string)$body)->isJson();
         if ($content->hasFailed() && !$allowEmpty) {
             $output =
-                'API-Call failed, JSON parsing with error: ' . $content->getMessages()
+                'API-Call failed, JSON parsing with error: ' . (string) ($content->getMessages() ?? '')
                     . ' - Snippet: ' . substr(\strip_tags((string)$body), 0, 2000) . '...'
             ;
         } else {

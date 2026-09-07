@@ -47,6 +47,24 @@ class CalldisplayTest extends EntityCommonTests
         $this->assertEquals(1, $entity->getClusterList()->count());
     }
 
+    public function testEmptyCsvListsAreIgnored()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $resolvedEntity = $entity->withResolvedCollections(array(
+            'scopelist' => '',
+            'clusterlist' => '',
+        ));
+        $this->assertFalse($resolvedEntity->hasScopeList());
+        $this->assertFalse($resolvedEntity->hasClusterList());
+
+        $resolvedEntity = $entity->withResolvedCollections(array(
+            'scopelist' => '141,,142',
+            'clusterlist' => ',110,',
+        ));
+        $this->assertEquals(2, $resolvedEntity->getScopeList()->count());
+        $this->assertEquals(1, $resolvedEntity->getClusterList()->count());
+    }
+
     public function testGetImageName()
     {
         $entity = (new $this->entityclass())->getExample();

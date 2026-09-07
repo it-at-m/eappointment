@@ -9,6 +9,9 @@ class Loader
     public static function asArray(string $schemaFilename): Schema
     {
         $jsonString = self::asJson($schemaFilename);
+        if (!is_string($jsonString)) {
+            throw new \BO\Zmsentities\Exception\SchemaMissingJsonFile("Missing JSON-Schema file $schemaFilename");
+        }
         $array = json_decode($jsonString, true);
         $object = json_decode($jsonString);
         if (null === $array && $jsonString) {
@@ -33,12 +36,13 @@ class Loader
     /**
      * @return false|string
      */
-    public static function asJson($schemaFilename): string|false
+    public static function asJson(string|false $schemaFilename): string|false
     {
-        if (!$schemaFilename) {
+        if ($schemaFilename === false || $schemaFilename === '') {
             throw new \BO\Zmsentities\Exception\SchemaMissingJsonFile("Missing JSON-Schema file");
         }
-        $directory = preg_match('#^/#', $schemaFilename) ? '' : self::getSchemaPath();
+        $schemaPath = preg_match('#^/#', $schemaFilename) ? false : self::getSchemaPath();
+        $directory = $schemaPath !== false ? $schemaPath : '';
         $filename = $directory . DIRECTORY_SEPARATOR . $schemaFilename;
         return file_get_contents($filename);
     }

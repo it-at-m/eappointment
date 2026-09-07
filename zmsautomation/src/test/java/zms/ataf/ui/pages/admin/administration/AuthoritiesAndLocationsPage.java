@@ -1,8 +1,6 @@
 package zms.ataf.ui.pages.admin.administration;
 
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -25,6 +23,7 @@ import org.testng.Assert;
 import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.model.LocatorType;
+import zms.ataf.helpers.BerlinTime;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
@@ -144,7 +143,7 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
         return DRIVER.findElements(By.id("AvDaySlottime")).stream()
                 .map(e -> e.getAttribute("value"))
                 .filter(v -> v != null && !v.isBlank())
-                .map(String::trim)
+                .map(v -> v.trim())
                 .mapToInt(v -> {
                     try {
                         return Integer.parseInt(v);
@@ -177,7 +176,10 @@ public void saveLocationChanges() {
             break;
         } catch (TimeoutException ignored) {}
     }
-    Assert.assertNotNull(save, "Could not find an enabled 'Speichern' button.");
+    if (save == null) {
+        Assert.fail("Could not find an enabled 'Speichern' button.");
+        return;
+    }
     scrollToCenterByVisibleElement(save);
     save.click();
 
@@ -343,7 +345,7 @@ public void saveLocationChanges() {
 
     private WebElement findVisibleInputById(String id) {
         return DRIVER.findElements(By.id(id)).stream()
-                .filter(WebElement::isDisplayed)
+                .filter(element -> element.isDisplayed())
                 .filter(element -> element.getRect().getHeight() > 0 && element.getRect().getWidth() > 0)
                 .findFirst()
                 .orElseGet(() -> findElementByLocatorType("//input[@id='" + id + "']", LocatorType.XPATH, true));
@@ -433,7 +435,7 @@ public void saveLocationChanges() {
             CONTEXT
         ).replaceAll("\\n", "").trim();
     
-        String today = LocalDate.now(ZoneId.of("Europe/Berlin"))
+        String today = BerlinTime.today()
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY));
     
         Assert.assertTrue(

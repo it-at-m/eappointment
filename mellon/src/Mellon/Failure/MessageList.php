@@ -7,13 +7,16 @@
 
 namespace BO\Mellon\Failure;
 
-use BO\Mellon\Valid;
-
 /**
- * @extends \ArrayObject<int, Message>
+ * @extends \ArrayObject<array-key, Message>
  */
 class MessageList extends \ArrayObject
 {
+    public function offsetSet(mixed $key, mixed $value): void
+    {
+        parent::offsetSet($key, $value);
+    }
+
     public function __toString()
     {
         $string = "Validation failed: ";

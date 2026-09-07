@@ -49,13 +49,13 @@ class Availability extends Schema\Entity
 
     /**
      * Performance costs for modifying time are high, cache the calculated value
-     * @var \DateTimeImmutable $startTimeCache
+     * @var Helper\DateTime|null $startTimeCache
      */
     protected $startTimeCache;
 
     /**
      * Performance costs for modifying time are high, cache the calculated value
-     * @var \DateTimeImmutable $endTimeCache
+     * @var Helper\DateTime|null $endTimeCache
      */
     protected $endTimeCache;
 
@@ -216,7 +216,7 @@ class Availability extends Schema\Entity
     {
         $dateTime = $appointment->toDateTime();
         $isOpenedStart = $this->isOpened($dateTime, false);
-        $duration = $this->slotTimeInMinutes * $appointment->slotCount;
+        $duration = (int) $this->slotTimeInMinutes * $appointment->slotCount;
         $endTime = $dateTime->modify("+" . $duration . "minutes")
             ->modify("-1 second"); // To allow the last slot for an appointment
         $isOpenedEnd = $this->isOpened($endTime, false);
@@ -242,7 +242,7 @@ class Availability extends Schema\Entity
         return true;
     }
 
-    public function getAvailableSecondsPerDay($type = "intern")
+    public function getAvailableSecondsPerDay(string $type = "intern"): mixed
     {
         $start = $this->getStartDateTime()->getSecondsOfDay();
         $end = $this->getEndDateTime()->getSecondsOfDay();
@@ -330,7 +330,7 @@ class Availability extends Schema\Entity
     /**
      * Get DateTimeInterface for start time of availability
      *
-     * @return \DateTimeInterface
+     * @return Helper\DateTime
      */
     public function getStartDateTime()
     {
@@ -345,7 +345,7 @@ class Availability extends Schema\Entity
     /**
      * Get DateTimeInterface for end time of availability
      *
-     * @return \DateTimeInterface
+     * @return Helper\DateTime
      */
     public function getEndDateTime()
     {
@@ -374,7 +374,7 @@ class Availability extends Schema\Entity
      *
      * @param \DateTimeInterface $now relative time to compare booking settings
      *
-     * @return \DateTimeInterface
+     * @return Helper\DateTime
      */
     public function getBookableStart(\DateTimeInterface $now)
     {
@@ -398,7 +398,7 @@ class Availability extends Schema\Entity
      *
      * @param \DateTimeInterface $now relative time to compare booking settings
      *
-     * @return \DateTimeInterface
+     * @return Helper\DateTime
      */
     public function getBookableEnd(\DateTimeInterface $now)
     {
@@ -431,7 +431,7 @@ class Availability extends Schema\Entity
         if (!$this->hasDay($bookableDate)) {
             return false;
         }
-        $bookableCurrentTime = $bookableDate->modify($now->format('H:i:s'));
+        $bookableCurrentTime = Helper\DateTime::create($bookableDate)->modify($now->format('H:i:s'));
         Helper\DateTime::create($bookableDate)->getTimestamp() + Helper\DateTime::create($now)->getSecondsOfDay();
         $startDate = $this->getBookableStart($now)->modify('00:00:00');
 
@@ -468,6 +468,7 @@ class Availability extends Schema\Entity
         if ($stopTime->getTimestamp() < $now->getTimestamp()) {
             return false;
         }
+        $startTime = Helper\DateTime::create($startTime);
         do {
             if ($this->hasDate($startTime, $now)) {
                 return true;
@@ -481,13 +482,13 @@ class Availability extends Schema\Entity
     {
         $errorList = [];
 
-        $startTime = (clone $startDate)->setTime(0, 0);
+        $startTime = Helper\DateTime::create($startDate)->setTime(0, 0);
         $isFuture = ($kind && $kind === 'future');
 
         if (
             !$isFuture &&
             $selectedDate->getTimestamp() > $today->getTimestamp() &&
-            $startTime->getTimestamp() > (clone $selectedDate)->setTime(0, 0)->getTimestamp()
+            $startTime->getTimestamp() > Helper\DateTime::create($selectedDate)->setTime(0, 0)->getTimestamp()
         ) {
             $errorList[] = [
                 'type' => 'startTimeFuture',
@@ -542,7 +543,7 @@ class Availability extends Schema\Entity
         });
         $foundWeekdays = [];
 
-        $currentDate = clone $startDate;
+        $currentDate = Helper\DateTime::create($startDate);
         while ($currentDate <= $endDate) {
             $weekDayName = self::$weekdayNameList[$currentDate->format('w')];
             if (in_array($weekDayName, $selectedWeekdays)) {
@@ -605,13 +606,17 @@ class Availability extends Schema\Entity
         $startDate = $this->getStartDateTime();
         $startHour = (int) $startDate->format('H');
         $startMinute = (int) $startDate->format('i');
-        $endDateTime = (clone $endDate)->setTime($endHour, $endMinute);
-        $startDateTime = (clone $startDate)->setTime($startHour, $startMinute);
+        $endDateTime = Helper\DateTime::create($endDate)->setTime($endHour, $endMinute);
+        $startDateTime = Helper\DateTime::create($startDate)->setTime($startHour, $startMinute);
         $endTimestamp = $endDateTime->getTimestamp();
         $startTimestamp = $startDateTime->getTimestamp();
         $isOrigin = ($kind && $kind === 'origin');
 
-        if (!$isOrigin && $selectedDate->getTimestamp() > $today->getTimestamp() && $endDate < (clone $selectedDate)->setTime(0, 0)) {
+        if (
+            !$isOrigin
+            && $selectedDate->getTimestamp() > $today->getTimestamp()
+            && $endDate < Helper\DateTime::create($selectedDate)->setTime(0, 0)
+        ) {
             $errorList[] = [
                 'type' => 'endTimeFuture',
                 'message' => "Das Enddatum der Öffnungszeit muss nach dem " . $yesterday->format('d.m.Y') . " liegen."
@@ -709,9 +714,9 @@ class Availability extends Schema\Entity
     /**
      * Creates a list of slots available on a valid day
      *
-     * @return Array of arrays with the keys time, public, intern
+     * @return Collection\SlotList
      */
-    public function getSlotList()
+    public function getSlotList(): Collection\SlotList
     {
         $startTime = Helper\DateTime::create($this['startTime']);
         $stopTime = Helper\DateTime::create($this['endTime']);
@@ -729,7 +734,7 @@ class Availability extends Schema\Entity
         return $slotList;
     }
 
-    public function getSlotTimeInMinutes()
+    public function getSlotTimeInMinutes(): mixed
     {
         return $this['slotTimeInMinutes'];
     }
@@ -737,14 +742,14 @@ class Availability extends Schema\Entity
     /**
      * Get problems on configuration of this availability
      *
-     * @return Collection\ProcessList with processes in status "conflict"
+     * @return Process|false with processes in status "conflict"
      */
-    public function getConflict()
+    public function getConflict(): Process|false
     {
         $start = $this->getStartDateTime()->getSecondsOfDay();
         $end = $this->getEndDateTime()->getSecondsOfDay();
         $minutesPerDay = floor(($end - $start) / 60);
-        if ($minutesPerDay % $this->slotTimeInMinutes > 0) {
+        if ($minutesPerDay % (int) $this->slotTimeInMinutes > 0) {
             $conflict = new Process();
             $conflict->status = 'conflict';
             $appointment = $conflict->getFirstAppointment();
@@ -1000,7 +1005,7 @@ class Availability extends Schema\Entity
             $info .= " each " . $this['repeat']['weekOfMonth'] . ". weekOfMonth";
         }
         $info .= " on ";
-        $weekdays = array_filter($this['weekday'], function ($value) {
+        $weekdays = array_filter($this['weekday'], function (mixed $value) {
             return $value > 0;
         });
         $info .= implode(',', array_keys($weekdays));
@@ -1019,11 +1024,11 @@ class Availability extends Schema\Entity
      *
      */
     #[\Override]
-    public function offsetSet(mixed $index, mixed $value): void
+    public function offsetSet(mixed $key, mixed $value): void
     {
         $this->startTimeCache = null;
         $this->endTimeCache = null;
-        parent::offsetSet($index, $value);
+        parent::offsetSet($key, $value);
     }
 
     /**

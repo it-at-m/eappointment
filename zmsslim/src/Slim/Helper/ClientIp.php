@@ -23,7 +23,12 @@ class ClientIp
                 continue;
             }
 
-            $ips = array_map('trim', explode(',', (string) $_SERVER[$header]));
+            $headerValue = $_SERVER[$header];
+            if (!is_string($headerValue) || $headerValue === '') {
+                continue;
+            }
+
+            $ips = array_map('trim', explode(',', $headerValue));
             foreach ($ips as $ip) {
                 if (filter_var($ip, FILTER_VALIDATE_IP)) {
                     return $ip;

@@ -44,4 +44,12 @@ class ValidationTest extends \PHPUnit\Framework\TestCase
         $this->expectException("\BO\Mellon\Exception");
         Validator::value("test")->isString()->aninvalidfunction();
     }
+
+    public function testValidationExceptionKeepsValidator()
+    {
+        $valid = Validator::value("test")->isString();
+        $exception = new \BO\Mellon\ValidationException();
+        $exception->setValidator($valid);
+        $this->assertSame($valid, $exception->getValidator());
+    }
 }

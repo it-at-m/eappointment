@@ -26,12 +26,15 @@ class TemplateUrls
             return '/';
         }
 
+        /** @psalm-suppress DeprecatedMethod Template URL helpers still wrap Request base-path helpers. */
         $uri = $request->getBasePath();
         if ($withUri) {
+            /** @psalm-suppress DeprecatedMethod Template URL helpers still wrap Request base-url helpers. */
             $uri = $request->getBaseUrl();
-            $uri = preg_replace('#^https?://[^/]+#', '', $uri);
+            $uri = preg_replace('#^https?://[^/]+#', '', $uri) ?? $uri;
         }
 
-        return \BO\Slim\Helper::proxySanitizeUri($uri);
+        $resolved = \BO\Slim\Helper::proxySanitizeUri($uri);
+        return is_array($resolved) ? implode('', $resolved) : $resolved;
     }
 }

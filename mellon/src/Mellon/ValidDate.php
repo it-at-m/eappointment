@@ -21,7 +21,7 @@ class ValidDate extends Valid
      * @return self
      * @psalm-api
      */
-    public function isDate($format = 'U', $message = 'no valid date')
+    public function isDate(string $format = 'U', string $message = 'no valid date')
     {
         $this->validated = true;
         if ($this->value) {
