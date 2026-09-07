@@ -19,6 +19,7 @@ class TwigExceptionHandler extends \BO\Slim\TwigExceptionHandler
             return \BO\Slim\Render::withHtml($response, 'page/404.twig');
         }
         try {
+            /** @var mixed $exception */
             $exception->templatedata = [
                 'workstation' => \App::http()->readGetResult('/workstation/')->getEntity(),
             ];
