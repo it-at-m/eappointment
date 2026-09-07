@@ -52,6 +52,9 @@ jobs:
         with:
           swap-size-gb: 10
       - name: Build Image
+        env:
+          DOCKER_BUILDKIT: "1"
+          COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ secrets.GITHUB_TOKEN }}"}}'
         run: |
           tag="${{ github.ref_name }}"
           if [ "${{ github.ref_type }}" = "branch" ]; then
@@ -63,8 +66,12 @@ jobs:
             # Show the release tag for tag builds (prod releases)
             app_version="$(git describe --tags --always)"
           fi
+          auth_file="$(mktemp)"
+          trap 'rm -f "$auth_file"' EXIT
+          printf '%s' "$COMPOSER_AUTH" > "$auth_file"
           docker build . \
             --file ".resources/Containerfile" \
+            --secret id=composer_auth,src="$auth_file" \
             --tag "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
             --build-arg "MODULE=${{ matrix.module }}" \
             --build-arg "PHP_VERSION=${{ matrix.php_version }}" \

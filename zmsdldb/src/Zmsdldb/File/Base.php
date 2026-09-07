@@ -12,14 +12,16 @@ use BO\Zmsdldb\Exception;
 /**
   * Common methods shared by access classes
   *
+  * @template TCollection of \BO\Zmsdldb\Collection\Base
+  * @template TEntity of \BO\Zmsdldb\Entity\Base
   */
 abstract class Base
 {
-    protected $data = [];
+    protected mixed $data = [];
     /**
      * lazy loaded item list, use getItemList() to access this
      *
-     * @var \BO\Zmsdldb\Collection\Base $itemList
+     * @var TCollection|null $itemList
      */
     private $itemList = null;
 
@@ -35,26 +37,33 @@ abstract class Base
     protected $locale = 'de';
 
     /**
-     * @var \BO\Zmsdldb\AbstractAccess $accessInstance
+     * @var \BO\Zmsdldb\AbstractAccess|null $accessInstance
      */
     private $accessInstance = null;
 
-    abstract protected function parseData($data);
+    /**
+     * @return TCollection
+     */
+    abstract protected function parseData(mixed $data);
 
-    public function __construct($dataFile, $locale = "de")
+    public function __construct(mixed $dataFile, string $locale = "de")
     {
         $this->dataFile = $dataFile;
         $this->locale = $locale;
     }
 
-    public function readDataFile()
+    public function readDataFile(): mixed
     {
         if (empty($this->data)) {
             $jsonFile = $this->dataFile;
             if (!is_readable($jsonFile)) {
                 throw new Exception("Cannot read $jsonFile");
             }
-            $data = json_decode(file_get_contents($jsonFile), true);
+            $json = file_get_contents($jsonFile);
+            if ($json === false) {
+                throw new Exception("Cannot read $jsonFile");
+            }
+            $data = json_decode($json, true);
             if (!$data) {
                 throw new Exception("Could not decide $jsonFile");
             }
@@ -64,7 +73,7 @@ abstract class Base
     }
 
     /** @psalm-api */
-    public function getDataAsArray()
+    public function getDataAsArray(): mixed
     {
         try {
             $data = $this->readDataFile();
@@ -76,7 +85,7 @@ abstract class Base
     }
 
     /** @psalm-api */
-    public function getHash()
+    public function getHash(): mixed
     {
         try {
             $data = $this->readDataFile();
@@ -88,7 +97,7 @@ abstract class Base
     }
 
     /** @psalm-api */
-    public function getData()
+    public function getData(): mixed
     {
         try {
             $data = $this->readDataFile();
@@ -113,7 +122,7 @@ abstract class Base
     }
 
     /**
-     * @return \BO\Zmsdldb\Collection\Base
+     * @return TCollection
      */
     public function getItemList()
     {
@@ -123,24 +132,27 @@ abstract class Base
         return $this->itemList;
     }
 
-    protected function setItemList($list): static
+    protected function setItemList(\BO\Zmsdldb\Collection\Base $list): static
     {
+        /** @var TCollection $list */
         $this->itemList = $list;
         return $this;
     }
 
     /**
-     * @return \BO\Zmsdldb\Entity\Base|false
+     * @return TEntity|false
      */
     public function fetchId(string $itemId)
     {
         $itemList = $this->getItemList();
 
-        if (! $itemId || !$itemList instanceof \BO\Zmsdldb\Collection\Base || !$itemList->offsetExists($itemId)) {
+        if (! $itemId || !$itemList->offsetExists($itemId)) {
             return false;
         }
 
-        return $itemList[$itemId];
+        /** @var TEntity $item */
+        $item = $itemList[$itemId];
+        return $item;
     }
 
     public function setAccessInstance(\BO\Zmsdldb\AbstractAccess $accessInstance): void
@@ -150,6 +162,9 @@ abstract class Base
 
     public function access(): \BO\Zmsdldb\AbstractAccess
     {
+        if (!$this->accessInstance instanceof \BO\Zmsdldb\AbstractAccess) {
+            throw new Exception('Access instance is not initialized');
+        }
         return $this->accessInstance;
     }
 }

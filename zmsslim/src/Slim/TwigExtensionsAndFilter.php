@@ -60,10 +60,13 @@ class TwigExtensionsAndFilter extends TwigExtension
 
     public function getObjectName(mixed $object): string
     {
-        if (!is_object($object) && !is_string($object)) {
-            return '';
+        if (is_object($object)) {
+            return (new \ReflectionClass($object))->getShortName();
         }
-        return (new \ReflectionClass($object))->getShortName();
+        if (is_string($object) && (class_exists($object) || interface_exists($object) || trait_exists($object))) {
+            return (new \ReflectionClass($object))->getShortName();
+        }
+        return '';
     }
 
     public function sanitizeHtml(mixed $html): string

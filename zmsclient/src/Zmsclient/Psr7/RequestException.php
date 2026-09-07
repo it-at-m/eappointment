@@ -5,9 +5,9 @@ namespace BO\Zmsclient\Psr7;
 class RequestException extends \Exception
 {
     /**
-     * @var \Psr\Http\Message\RequestInterface $request
+     * @var \Psr\Http\Message\RequestInterface|null $request
      */
-    public $request;
+    public ?\Psr\Http\Message\RequestInterface $request = null;
 
     /**
      * @param string $message

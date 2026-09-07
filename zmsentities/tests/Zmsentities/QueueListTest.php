@@ -71,6 +71,14 @@ class QueueListTest extends EntityCommonTests
         $collection->withEstimatedWaitingTime(0, 1, $now);
     }
 
+    public function testWithEstimatedWaitingTimeAllowsNullWorkstationCount(): void
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $collection = new $this->collectionclass();
+        $withWaitingTime = $collection->withEstimatedWaitingTime(10, null, $now);
+        $this->assertGreaterThan(0, $withWaitingTime->count());
+    }
+
     public function testGetNextProcess()
     {
         $now = new \DateTimeImmutable(self::DEFAULT_TIME);

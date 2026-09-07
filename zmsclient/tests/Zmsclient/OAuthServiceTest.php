@@ -62,9 +62,7 @@ class OAuthServiceTest extends TestCase
             ->with('/config/', [], 'secure-token')
             ->willReturn($resultMock);
 
-        // The method expects to return Config, so we should test the actual behavior
-        // If it returns null, that's an error condition that should throw an exception
-        $this->expectException(\TypeError::class);
+        $this->expectException(\RuntimeException::class);
         $this->oauthService->readConfig();
     }
 

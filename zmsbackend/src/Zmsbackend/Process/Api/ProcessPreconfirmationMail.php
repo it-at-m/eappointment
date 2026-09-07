@@ -34,8 +34,9 @@ class ProcessPreconfirmationMail extends \BO\Zmsbackend\Api\BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new Process($input);
         $process->testValid();
-        $this->testProcessData($process);
+        $this->testProcessAccess($process);
         $process = (new ProcessRepository())->readEntity($process->id, $process->authKey);
+        $this->testEmailRequired($process);
         $mail = $this->writeMail($process);
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
         $message->data = ($mail->hasId()) ? $mail : null;
@@ -67,14 +68,23 @@ class ProcessPreconfirmationMail extends \BO\Zmsbackend\Api\BaseController
     /**
      * @return void
      */
-    protected function testProcessData(Process $process)
+    protected function testProcessAccess(Process $process)
     {
         $authCheck = (new ProcessRepository())->readAuthKeyByProcessId($process->id);
         if (! $authCheck) {
             throw new \BO\Zmsbackend\Process\Exception\ProcessNotFound();
-        } elseif ($authCheck['authKey'] !== $process->authKey) {
+        }
+        if ($authCheck['authKey'] !== $process->authKey) {
             throw new \BO\Zmsbackend\Process\Exception\AuthKeyMatchFailed();
-        } elseif (
+        }
+    }
+
+    /**
+     * @return void
+     */
+    protected function testEmailRequired(Process $process)
+    {
+        if (
             $process->toProperty()->scope->preferences->client->emailRequired->get() &&
             ! $process->getFirstClient()->hasEmail()
         ) {
