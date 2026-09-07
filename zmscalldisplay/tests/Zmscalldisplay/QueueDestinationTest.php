@@ -10,7 +10,7 @@ class QueueDestinationTest extends Base
 
     protected $parameters = [ ];
 
-    protected function getApiCalls()
+    protected function getApiCalls(): array
     {
         return [
             [

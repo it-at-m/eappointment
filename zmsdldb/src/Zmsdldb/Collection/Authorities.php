@@ -10,6 +10,8 @@ namespace BO\Zmsdldb\Collection;
 /**
  * @SuppressWarnings(TooManyPublicMethods)
  * Methods to apply on this collection
+ *
+ * @extends Base<\BO\Zmsdldb\Entity\Authority>
  */
 class Authorities extends Base
 {
@@ -35,13 +37,15 @@ class Authorities extends Base
             )
             && $location['authority']['id']
         ) {
-            $this->addAuthority($location['authority']['id'], $location['authority']['name']);
-            $this[$location['authority']['id']]['locations'][$location['id']] = $location;
+            $authorityId = $location['authority']['id'];
+            $this->addAuthority($authorityId, $location['authority']['name']);
+            $authority = $this[$authorityId];
+            $authority['locations'][$location['id']] = $location;
         }
         return $this;
     }
 
-    public function addAuthority($authority_id, $name): static
+    public function addAuthority(mixed $authority_id, mixed $name): static
     {
         if (! $this->hasAuthority($authority_id)) {
             $authority = \BO\Zmsdldb\Entity\Authority::create($name);
@@ -50,7 +54,7 @@ class Authorities extends Base
         return $this;
     }
 
-    public function hasAuthority($authority_id): bool
+    public function hasAuthority(mixed $authority_id): bool
     {
         return $this->offsetExists($authority_id);
     }
@@ -58,7 +62,7 @@ class Authorities extends Base
     /**
      * @psalm-api
      */
-    public function readByExtendedService($service): static
+    public function readByExtendedService(mixed $service): static
     {
         foreach ($service['authorities'] as $authority) {
             if (! $this->hasAuthority($authority['id'])) {
@@ -156,6 +160,9 @@ class Authorities extends Base
     {
         $authorityIterator = $this->getIterator();
         foreach ($authorityIterator as $key => $authority) {
+            if (!$authority instanceof \BO\Zmsdldb\Entity\Authority) {
+                continue;
+            }
             if ($authority->hasAppointments($serviceCsv, $external)) {
                 $locationIterator = $authority['locations']->getIterator();
                 foreach ($locationIterator as $subkey => $location) {
@@ -164,7 +171,9 @@ class Authorities extends Base
                     }
                 }
             } else {
-                $authorityIterator->offsetUnset($key);
+                if ($key !== null) {
+                    $authorityIterator->offsetUnset($key);
+                }
             }
         }
         return $this;
@@ -190,7 +199,7 @@ class Authorities extends Base
         return $authoritylist;
     }
 
-    public function toListWithOfficePath($officepath)
+    public function toListWithOfficePath(mixed $officepath): \BO\Zmsdldb\Collection\Authorities
     {
         $authoritylist = clone $this;
         foreach ($authoritylist as $key => $authority) {
@@ -206,7 +215,7 @@ class Authorities extends Base
      * @psalm-api
      */
 
-    public function toListWithAssociatedLocations($locationlist)
+    public function toListWithAssociatedLocations(mixed $locationlist)
     {
         $authoritylist = $this->removeLocations();
         foreach ($locationlist as $location) {

@@ -10,16 +10,16 @@ use BO\Zmsentities\Helper\Property;
 class Factory
 {
     /**
-     * @var Array $data unserialized entity
+     * @var mixed $data unserialized entity
      */
     protected $data = null;
 
-    public function __construct($data)
+    public function __construct(mixed $data)
     {
         $this->data = $data;
     }
 
-    public static function create($data): self
+    public static function create(mixed $data): self
     {
         return new self($data);
     }
@@ -32,8 +32,11 @@ class Factory
     public function getEntity()
     {
         $entityName = $this->getEntityName();
+        /** @var class-string<Entity> $class */
         $class = "\\BO\\Zmsentities\\$entityName";
-        return new $class(new UnflattedArray($this->data));
+        /** @var Entity $entity */
+        $entity = new $class(new UnflattedArray($this->data));
+        return $entity;
     }
 
     /**
@@ -47,8 +50,10 @@ class Factory
             throw new \BO\Zmsentities\Exception\SchemaMissingKey('Missing $schema-key on given data.');
         }
         $schema = $this->data['$schema'];
-        $entityName = preg_replace('#^.*/([^/]+)\.json#', '$1', $schema);
-        $entityName = ucfirst($entityName ?? '');
+        $entityName = is_string($schema)
+            ? (preg_replace('#^.*/([^/]+)\.json#', '$1', $schema) ?? '')
+            : '';
+        $entityName = ucfirst($entityName);
 
         // jsonSerialize() lowercases the class short name (AvailabilityHistory →
         // availabilityhistory.json). ucfirst then yields Availabilityhistory, which
