@@ -32,6 +32,7 @@ class ScopeUpdate extends \BO\Zmsbackend\Api\BaseController
         $scope->addData($input);
         $scope->id = $existingScope->id;
         $scope->testValid('de_DE', 1);
+        $scope->assertBookableHorizon();
         $user = new \BO\Zmsbackend\Helper\User($request, 2);
 
         $user->checkAnyPermission(

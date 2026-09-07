@@ -4,6 +4,7 @@ import * as Inputs from '../../../lib/inputs'
 import AvailabilityDatePicker from './datepicker'
 const { Label, FormGroup, Controls, Description } = Inputs
 import { range } from '../../../lib/utils'
+import { getMaxBookableInDays } from '../maxBookableInDays'
 import { weekDayList, availabilitySeries, availabilityTypes, getDataValuesFromForm } from '../helpers'
 import ErrorBar from '../errorBar'
 
@@ -209,7 +210,7 @@ const FormContent = (props) => {
                                 <Inputs.Text name="open_from"
                                     width="3"
                                     value={data.open_from}
-                                    attributes={{ placeholder: data.scope.preferences.appointment.startInDaysDefault, "id": "AvDayOpenfrom", "aria-describedby": "help_AvDayOpenfromto", "disabled": inputDisabled }}
+                                    attributes={{ placeholder: data.scope.preferences.appointment.startInDaysDefault, "id": "AvDayOpenfrom", "aria-describedby": "help_AvDayOpenfromto", "disabled": inputDisabled, maxLength: 3 }}
                                     {...{ onChange }}
                                 />
                             </Controls>
@@ -218,12 +219,12 @@ const FormContent = (props) => {
                                 <Inputs.Text name="open_to"
                                     width="3"
                                     value={data.open_to}
-                                    attributes={{ placeholder: data.scope.preferences.appointment.endInDaysDefault, "id": "AvDayOpento", "aria-describedby": "help_AvDayOpenfromto", "disabled": inputDisabled }}
+                                    attributes={{ placeholder: data.scope.preferences.appointment.endInDaysDefault, "id": "AvDayOpento", "aria-describedby": "help_AvDayOpenfromto", "disabled": inputDisabled, maxLength: 3 }}
                                     {...{ onChange }}
                                 />
                                 <span aria-hidden="true"> Tage im voraus</span>
                             </Controls>
-                            <Description attributes={{ "id": "help_AvDayOpenfromto" }}>Tage im voraus (Keine Eingabe bedeutet die Einstellungen vom Standort zu übernehmen).</Description>
+                            <Description attributes={{ "id": "help_AvDayOpenfromto" }}>Tage im voraus, höchstens {getMaxBookableInDays()}. Keine Eingabe bedeutet die Einstellungen vom Standort zu übernehmen.</Description>
                         </FormGroup>
                     </div>
                 </fieldset>
