@@ -31,6 +31,7 @@ class Logout extends BaseController
     ): ResponseInterface {
         $workstation = null;
         try {
+            /** @var mixed $workstation */
             $workstation = \App::http()->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
             \App::http()->readDeleteResult('/workstation/login/' . $workstation->useraccount['id'] . '/')->getEntity();
         } catch (Exception $exception) {
@@ -38,6 +39,7 @@ class Logout extends BaseController
                 throw $exception;
             }
         }
+        /** @var mixed $workstation */
         /** @var mixed $authKey */
         $authKey = Auth::getKey();
         $sessionHash = hash('sha256', $authKey);

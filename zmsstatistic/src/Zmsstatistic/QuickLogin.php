@@ -39,6 +39,7 @@ class QuickLogin extends BaseController
 
         $workstation = null;
         try {
+            /** @var mixed $workstation */
             $workstation = \App::http()
                 ->readPostResult('/workstation/login/', $userAccount)->getEntity();
         } catch (Exception $exception) {
@@ -48,6 +49,8 @@ class QuickLogin extends BaseController
             }
         }
 
+        /** @var mixed $workstation */
+        $workstation = $workstation;
         /** @var mixed $authkey */
         $authkey = $workstation->authkey;
         \BO\Zmsclient\Auth::setKey($authkey, time() + \App::SESSION_DURATION);
