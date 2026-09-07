@@ -157,11 +157,12 @@ class Search extends BaseController
             return false;
         }
 
-        if ($workstation->getUseraccount()->isSuperUser()) {
+        if ($this->hasLogSearchFilters($parameters)) {
             return true;
         }
 
-        return $this->hasLogSearchFilters($parameters);
+        return $workstation->getUseraccount()->isSuperUser()
+            && !$parameters['isSearchRequested'];
     }
 
     private function hasLogSearchFilters(array $parameters): bool
