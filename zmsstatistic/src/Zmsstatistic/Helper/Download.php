@@ -36,11 +36,19 @@ class Download
     public function writeDownload(ResponseInterface $response): mixed
     {
         $resource = fopen('php://temp', 'x+');
+        if ($resource === false) {
+            return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
+        }
 
         try {
             $this->getWriter()->save($resource);
             rewind($resource);
-            $response->getBody()->write(stream_get_contents($resource));
+            $contents = stream_get_contents($resource);
+            if ($contents === false) {
+                fclose($resource);
+                return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
+            }
+            $response->getBody()->write($contents);
         } catch (\Exception $e) {
             fclose($resource);
 
