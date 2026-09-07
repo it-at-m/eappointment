@@ -15,7 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class ReportClientIndex extends BaseController
 {
-    protected $resolveLevel = 2;
+    protected int $resolveLevel = 2;
 
     /**
      * @SuppressWarnings(Param)

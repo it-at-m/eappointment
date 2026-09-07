@@ -18,17 +18,17 @@ use Psr\Http\Message\RequestInterface;
 
 class Access extends \BO\Slim\Controller
 {
-    protected $workstation = null;
+    protected mixed $workstation = null;
 
-    protected $organisation = null;
+    protected mixed $organisation = null;
 
-    protected $department = null;
+    protected mixed $department = null;
 
-    protected $resolveLevel = 2;
+    protected int $resolveLevel = 2;
 
-    protected $withAccess = true;
+    protected bool $withAccess = true;
 
-    protected $owner = null;
+    protected mixed $owner = null;
 
     protected function initAccessRights(RequestInterface $request): void
     {

@@ -14,7 +14,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class Base extends BaseController
 {
-    public static $ignoreColumns = [
+    public static array $ignoreColumns = [
         'subjectid',
         'scopeids',
         'max',
@@ -22,7 +22,7 @@ class Base extends BaseController
         'ticketprinter',
         'ticketprintermissed'
     ];
-    public static $subjectTranslations = [
+    public static array $subjectTranslations = [
         'waitingscope' => 'Wartesituation',
         'waitingdepartment' => 'Wartesituation',
         'waitingorganisation' => 'Wartesituation',
@@ -45,7 +45,7 @@ class Base extends BaseController
         'raw-capacityscope' => 'Rohdaten Terminkapazität'
     ];
 
-    public static $headlines = [
+    public static array $headlines = [
         'subjectid' => 'ID',
         'scopeids' => 'Standort IDs',
         'date' => 'Datum',

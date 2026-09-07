@@ -21,19 +21,19 @@ class WaitingReport extends Base
     private const string CUSTOMER_TYPE_TERMIN = 'termin';
     private const string CUSTOMER_TYPE_SPONTAN = 'spontan';
 
-    protected $reportPartsGesamt = [
+    protected array $reportPartsGesamt = [
         'waitingtime_total' => 'Durchschnittliche Wartezeit in Min. (Gesamt)',
         'waitingcount_total' => 'Wartende Gesamtkunden',
         'waytime_total' => 'Durchschnittliche Wegezeit in Min. (Gesamt)',
     ];
 
-    protected $reportPartsTermin = [
+    protected array $reportPartsTermin = [
         'waitingtime_termin' => 'Durchschnittliche Wartezeit in Min. (Terminkunden)',
         'waitingcount_termin' => 'Wartende Terminkunden',
         'waytime_termin' => 'Durchschnittliche Wegezeit in Min. (Terminkunden)',
     ];
 
-    protected $reportPartsSpontan = [
+    protected array $reportPartsSpontan = [
         'waitingtime' => 'Durchschnittliche Wartezeit in Min. (Spontankunden)',
         'waitingcount' => 'Wartende Spontankunden',
         'waytime' => 'Durchschnittliche Wegezeit in Min. (Spontankunden)',

@@ -13,7 +13,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class ReportClientDepartment extends BaseController
 {
-    protected $totals = [
+    protected array $totals = [
         'clientscount',
         'missed',
         'withappointment',

@@ -15,7 +15,7 @@ use Exception;
 
 class ReportClientService
 {
-    protected $totals = [
+    protected array $totals = [
         'clientscount',
         'missed',
         'withappointment',

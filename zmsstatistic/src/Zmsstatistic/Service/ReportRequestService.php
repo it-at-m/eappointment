@@ -14,13 +14,13 @@ use Exception;
 
 class ReportRequestService
 {
-    protected $totals = ['requestscount'];
+    protected array $totals = ['requestscount'];
 
-    protected $hashset = [
+    protected array $hashset = [
         'requestscount'
     ];
 
-    protected $groupfields = [
+    protected array $groupfields = [
         'name',
         'date'
     ];

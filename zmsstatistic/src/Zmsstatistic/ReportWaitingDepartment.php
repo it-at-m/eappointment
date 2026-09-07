@@ -14,7 +14,7 @@ use BO\Zmsstatistic\Helper\ReportHelper;
 
 class ReportWaitingDepartment extends BaseController
 {
-    protected $hashset = [
+    protected array $hashset = [
         'waitingcount',
         'waitingtime',
         'waitingcalculated',
@@ -28,7 +28,7 @@ class ReportWaitingDepartment extends BaseController
         'waytime_total',
     ];
 
-    protected $groupfields = [
+    protected array $groupfields = [
         'date',
         'hour'
     ];

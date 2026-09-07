@@ -18,7 +18,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 class Status extends BaseController
 {
-    protected $withAccess = false;
+    protected bool $withAccess = false;
 
     private const array MISSING_LOGIN_TEMPLATES = [
         'BO\\Zmsentities\\Exception\\UserAccountMissingLogin',

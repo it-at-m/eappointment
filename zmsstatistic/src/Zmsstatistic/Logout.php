@@ -16,8 +16,8 @@ use Psr\Http\Message\ResponseInterface;
 
 class Logout extends BaseController
 {
-    protected $resolveLevel = 0;
-    protected $withAccess = false;
+    protected int $resolveLevel = 0;
+    protected bool $withAccess = false;
 
     /**
      * @SuppressWarnings(Param)

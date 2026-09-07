@@ -13,11 +13,11 @@ use Psr\Http\Message\ResponseInterface;
 
 class ReportRequestOrganisation extends BaseController
 {
-    protected $hashset = [
+    protected array $hashset = [
         'requestscount'
     ];
 
-    protected $groupfields = [
+    protected array $groupfields = [
         'name',
         'date'
     ];
