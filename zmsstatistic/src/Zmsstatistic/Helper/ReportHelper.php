@@ -7,7 +7,7 @@ use DateTimeImmutable;
 
 class ReportHelper
 {
-    public static function withMaxAndAverage(mixed $entity, string $targetKey)
+    public static function withMaxAndAverage(mixed $entity, string $targetKey): mixed
     {
         foreach ($entity->data as $date => $dateItems) {
             $maxima = 0;
@@ -30,7 +30,7 @@ class ReportHelper
         return $entity;
     }
 
-    public static function withTotalCustomers(mixed $entity)
+    public static function withTotalCustomers(mixed $entity): mixed
     {
         foreach ($entity->data as $dateKey => $dateItems) {
             if (!is_array($dateItems)) {
@@ -67,7 +67,7 @@ class ReportHelper
         return $entity;
     }
 
-    public static function withGlobalMaxAndAverage(mixed $entity, string $targetKey)
+    public static function withGlobalMaxAndAverage(mixed $entity, string $targetKey): mixed
     {
         $maxima = 0;
         $total  = 0;
@@ -110,7 +110,7 @@ class ReportHelper
         return $entity;
     }
 
-    public static function formatTimeValue(mixed $value)
+    public static function formatTimeValue(mixed $value): mixed
     {
         if (!is_numeric($value)) {
             return $value;
