@@ -33,6 +33,7 @@ class ReportClientDepartment extends BaseController
         ResponseInterface $response,
         array $args
     ) {
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
         $clientPeriod = \App::http()
           ->readGetResult('/warehouse/clientdepartment/' . $this->department->id . '/')

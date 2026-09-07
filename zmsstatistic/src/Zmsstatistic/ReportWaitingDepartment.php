@@ -43,6 +43,7 @@ class ReportWaitingDepartment extends BaseController
         ResponseInterface $response,
         array $args
     ) {
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
         $waitingPeriod = \App::http()
           ->readGetResult('/warehouse/waitingdepartment/' . $this->department->id . '/')

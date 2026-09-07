@@ -30,6 +30,7 @@ class ReportCapacityIndex extends BaseController
     ) {
         $this->workstation->getUseraccount()->testPermissions(['statistic', 'capacityreport']);
 
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
         $reportCapacityService = new ReportCapacityService();
         $reportHelper = new ReportHelper();
@@ -119,6 +120,7 @@ class ReportCapacityIndex extends BaseController
             $reportCapacityService = new ReportCapacityService();
         }
 
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
         $valueMode = $validator->getParameter('valueMode')->isString()->getValue();
         $valueMode = $valueMode === 'minutes' ? 'minutes' : 'slots';

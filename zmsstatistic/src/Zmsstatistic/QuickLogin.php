@@ -52,8 +52,10 @@ class QuickLogin extends BaseController
         $workstation->hint = $loginData['hint']['value'];
         $workstation->name = $loginData['workstation']['value'];
         \App::http()->readPostResult('/workstation/', $workstation)->getEntity();
+        /** @var mixed $request */
         $basePath = $request->getBasePath();
 
+        /** @var \BO\Slim\Response $response */
         return $response->withRedirect($basePath . '/' . trim($loginData['redirectUrl']['value'], "/"));
     }
 }
