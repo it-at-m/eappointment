@@ -44,14 +44,16 @@ class ReportWaitingOrganisation extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $waitingPeriod = \App::$http
+        $waitingPeriod = \App::http()
           ->readGetResult('/warehouse/waitingorganisation/' . $this->organisation->id . '/')
           ->getEntity();
         $exchangeWaiting = null;
         if (isset($args['period'])) {
-            $exchangeWaiting = \App::$http
+            /** @var mixed $entity */
+            $entity = \App::http()
                 ->readGetResult('/warehouse/waitingorganisation/' . $this->organisation->id . '/' . $args['period'] . '/')
-                ->getEntity()
+                ->getEntity();
+            $exchangeWaiting = $entity
                 ->toGrouped($this->groupfields, $this->hashset);
 
             $exchangeWaiting = ReportHelper::withTotalCustomers($exchangeWaiting);

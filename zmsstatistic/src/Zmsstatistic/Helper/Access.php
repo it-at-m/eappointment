@@ -43,14 +43,14 @@ class Access extends \BO\Slim\Controller
 
     protected function readWorkstation(): mixed
     {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => $this->resolveLevel]);
+        $workstation = \App::http()->readGetResult('/workstation/', ['resolveReferences' => $this->resolveLevel]);
         return ($workstation) ? $workstation->getEntity() : null;
     }
 
     protected function readDepartment(): mixed
     {
         if ($this->workstation->getUseraccount()->hasPermissions(['statistic'])) {
-            return \App::$http
+            return \App::http()
                 ->readGetResult('/scope/' . $this->workstation->scope['id'] . '/department/')
                 ->getEntity();
         }
@@ -59,7 +59,7 @@ class Access extends \BO\Slim\Controller
     protected function readOrganisation(): mixed
     {
         if ($this->workstation->getUseraccount()->isSuperUser()) {
-            return \App::$http
+            return \App::http()
                 ->readGetResult('/department/' . $this->department->getId() . '/organisation/')
                 ->getEntity();
         }
@@ -68,7 +68,7 @@ class Access extends \BO\Slim\Controller
     protected function readOwner(): mixed
     {
         if ($this->workstation->getUseraccount()->isSuperUser()) {
-            return \App::$http
+            return \App::http()
                 ->readGetResult('/organisation/' . $this->organisation->getId() . '/owner/')
                 ->getEntity();
         }
@@ -125,7 +125,7 @@ class Access extends \BO\Slim\Controller
         ));
         try {
             /** @var Workstation $workstation */
-            $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
+            $workstation = \App::http()->readPostResult('/workstation/login/', $userAccount)->getEntity();
             return $workstation;
         } catch (\BO\Zmsclient\Exception $exception) {
             $template = TwigExceptionHandler::getExceptionTemplate($exception);
@@ -141,7 +141,7 @@ class Access extends \BO\Slim\Controller
                 throw $exception;
             } elseif (
                 '' != $exception->template
-                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
+                && $this->exceptionTemplateExists($template)
             ) {
                 $exceptionData = [
                   'template' => $template,
@@ -152,5 +152,12 @@ class Access extends \BO\Slim\Controller
             }
         }
         return $exceptionData;
+    }
+
+    protected function exceptionTemplateExists(string $template): bool
+    {
+        /** @var mixed $container */
+        $container = \App::$slim->getContainer();
+        return $container->get('view')->getLoader()->exists($template);
     }
 }

@@ -36,15 +36,16 @@ class Status extends BaseController
         array $args
     ) {
         try {
-            $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+            $workstation = \App::http()->readGetResult('/workstation/')->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             if (in_array($exception->template, self::MISSING_LOGIN_TEMPLATES, true)) {
                 throw new UserAccountMissingLogin();
             }
             throw $exception;
         }
+        /** @var mixed $workstation */
 
-        $result = \App::$http->readGetResult('/status/');
+        $result = \App::http()->readGetResult('/status/');
         return Render::withHtml(
             $response,
             'page/status.twig',

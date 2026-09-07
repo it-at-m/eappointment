@@ -89,9 +89,11 @@ class ReportWaitingService
     public function getExchangeWaitingForPeriod(string $scopeId, string $period): mixed
     {
         try {
-            $exchangeWaiting = \App::$http
+            /** @var mixed $entity */
+            $entity = \App::http()
                 ->readGetResult('/warehouse/waitingscope/' . $scopeId . '/' . $period . '/')
-                ->getEntity()
+                ->getEntity();
+            $exchangeWaiting = $entity
                 ->toGrouped($this->groupfields, $this->hashset);
 
             $exchangeWaiting = ReportHelper::withTotalCustomers($exchangeWaiting);
@@ -126,7 +128,7 @@ class ReportWaitingService
     public function getWaitingPeriod(string $scopeId): mixed
     {
         try {
-            return \App::$http
+            return \App::http()
                 ->readGetResult('/warehouse/waitingscope/' . $scopeId . '/')
                 ->getEntity();
         } catch (Exception $exception) {
@@ -148,7 +150,7 @@ class ReportWaitingService
                 continue;
             }
             try {
-                $exchangeWaiting = \App::$http
+                $exchangeWaiting = \App::http()
                     ->readGetResult(
                         '/warehouse/waitingscope/' . $scopeId . '/' . $year . '/',
                         [

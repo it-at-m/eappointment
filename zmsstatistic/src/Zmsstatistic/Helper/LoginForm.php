@@ -92,7 +92,7 @@ class LoginForm
             $workstation->setValidatedScope($formData);
             $workstation->setValidatedAppointmentsOnly($formData);
             unset($workstation->useraccount['departments']);
-            $result = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
+            $result = \App::http()->readPostResult('/workstation/', $workstation)->getEntity();
         }
         return ($result) ? true : false;
     }

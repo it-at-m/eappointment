@@ -29,12 +29,12 @@ class Index extends BaseController
         array $args
     ): ResponseInterface {
         try {
-            $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+            $workstation = \App::http()->readGetResult('/workstation/')->getEntity();
         } catch (\Exception $workstationexception) {
             $workstation = null;
         }
 
-        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+        $config = \App::http()->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
         $input = $request->getParsedBody();
         $oidclogin = $request->getAttribute('validator')->getParameter('oidclogin')->isString()->getValue();
         if ($request->getMethod() === 'POST') {
@@ -88,7 +88,7 @@ class Index extends BaseController
             'departments' => array('id' => 0) // required in schema validation
         ));
         try {
-            $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
+            $workstation = \App::http()->readPostResult('/workstation/login/', $userAccount)->getEntity();
 
             $sessionHash = hash('sha256', $workstation->authkey);
             \App::$log->info('Login successful', [
@@ -128,7 +128,7 @@ class Index extends BaseController
                 throw $exception;
             } elseif (
                 '' != $exception->template
-                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
+                && $this->exceptionTemplateExists($template)
             ) {
                 $exceptionData = [
                   'template' => $template,

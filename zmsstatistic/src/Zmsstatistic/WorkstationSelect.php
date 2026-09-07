@@ -27,7 +27,8 @@ class WorkstationSelect extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::http()->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        /** @var mixed $workstation */
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect('index', array('error' => 'login_failed'));
         }
@@ -51,6 +52,9 @@ class WorkstationSelect extends BaseController
             }
         }
 
+        /** @var \DateTimeInterface $now */
+        $now = \App::$now;
+
         return Render::withHtml(
             $response,
             'page/workstationSelect.twig',
@@ -59,7 +63,7 @@ class WorkstationSelect extends BaseController
                 'advancedData' => $formData,
                 'workstation' => $this->workstation,
                 'menuActive' => 'select',
-                'today' => \App::$now->format('Y-m-d')
+                'today' => $now->format('Y-m-d')
             )
         );
     }

@@ -141,7 +141,7 @@ class Base extends BaseController
         $infoData[] = static::$subjectTranslations[$args['category']];
         if (isset($args['selectedScopes'])) {
             try {
-                $scopesResult = \App::$http->readGetResult('/scope/')->getData();
+                $scopesResult = \App::http()->readGetResult('/scope/')->getData();
                 $scopeMap = [];
                 foreach ($scopesResult as $scope) {
                     $scopeMap[$scope->id] = $scope;

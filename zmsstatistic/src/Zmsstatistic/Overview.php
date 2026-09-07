@@ -26,13 +26,13 @@ class Overview extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $waitingPeriod = \App::$http
+        $waitingPeriod = \App::http()
             ->readGetResult('/warehouse/waitingscope/' . $this->workstation->scope['id'] . '/')
             ->getEntity();
-        $clientPeriod = \App::$http
+        $clientPeriod = \App::http()
             ->readGetResult('/warehouse/clientscope/' . $this->workstation->scope['id'] . '/')
             ->getEntity();
-        $requestPeriod = \App::$http
+        $requestPeriod = \App::http()
             ->readGetResult('/warehouse/requestscope/' . $this->workstation->scope['id'] . '/')
             ->getEntity();
         $useraccount = $this->workstation->getUseraccount();
