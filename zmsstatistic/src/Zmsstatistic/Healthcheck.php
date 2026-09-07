@@ -27,7 +27,7 @@ class Healthcheck extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $response = \BO\Zmsclient\Status::testStatus($response, function (): Entity|false|null {
+        $response = \BO\Zmsclient\Status::testStatus($response, function (): Entity|null {
             return \App::http()->readGetResult('/status/', ['includeProcessStats' => 0])->getEntity();
         });
 
