@@ -19,7 +19,7 @@ class Authority extends Base
         }
     }
 
-    public static function create($name): self
+    public static function create(mixed $name): self
     {
         $data = array(
             'name' => $name,
@@ -108,12 +108,12 @@ class Authority extends Base
     /**
      * Check if Authority is part of ServiceList
      *
-     * @param String $serviceCsv
-     *            only check for this serviceCsv
+     * @param mixed $servicelist
+     *            only check for this service list
      *
-     * @return self
+     * @return bool
      */
-    public function isInServiceList($servicelist = array())
+    public function isInServiceList(mixed $servicelist = array())
     {
         foreach ($servicelist as $service) {
             if ($service->offsetExists('authorities')) {

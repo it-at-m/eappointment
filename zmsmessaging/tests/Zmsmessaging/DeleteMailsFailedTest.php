@@ -6,7 +6,7 @@ use \BO\Mellon\Validator;
 
 class DeleteMailsFailedTest extends Base
 {
-    protected function getApiCalls()
+    protected function getApiCalls(): mixed
     {
         return [
             [
