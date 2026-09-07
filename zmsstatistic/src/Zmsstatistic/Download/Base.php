@@ -144,7 +144,7 @@ class Base extends BaseController
             try {
                 $scopesResult = \App::http()->readGetResult('/scope/')->getData();
                 $scopeMap = [];
-                foreach ($scopesResult as $scope) {
+                foreach ($scopesResult ?? [] as $scope) {
                     $scopeMap[$scope->id] = $scope;
                 }
                 foreach ($args['selectedScopes'] as $scopeId) {
