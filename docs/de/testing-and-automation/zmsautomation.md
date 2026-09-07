@@ -314,7 +314,7 @@ Das ist erwartetes Verhalten. Maßnahme: Pipeline am nächsten arbeitsfreien Nic
 
 ### Statistik- und Öffnungszeiten-Seeds um Mitternacht
 
-`zms-db` setzt `TZ=Europe/Berlin`, wie `zms-web` (zmsbase). Flyway-`CURDATE()` / `CURTIME()` und Java-`LocalDate` in den Statistik-Steps nutzen damit denselben **Berliner Kalendertag**, auch zwischen Berliner Mitternacht und UTC-Mitternacht (00:00–02:00 MESZ im Sommer, 00:00–01:00 MEZ im Winter).
+`zms-db` setzt `TZ=Europe/Berlin`, wie `zms-web` (zmsbase). Flyway-`CURDATE()` / `CURTIME()` und Java-`LocalDate` über `BerlinTime` (Admin-, Citizen-API-, ZMS-API-, Statistik- und Bürgeransicht-Steps) nutzen damit denselben **Berliner Kalendertag**, auch zwischen Berliner Mitternacht und UTC-Mitternacht (00:00–02:00 MESZ im Sommer, 00:00–01:00 MEZ im Winter).
 
 Der geplante GitHub-Cron (`0 1 * * *` = 01:00 UTC ≈ 03:00 MESZ / 02:00 MEZ) startet bereits nach dieser früheren UTC/Berlin-Differenz und hängt nicht damit zusammen.
 
