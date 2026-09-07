@@ -45,9 +45,6 @@ class ReportCapacityService
     {
         try {
             $result = \App::http()->readGetResult('/warehouse/capacityscope/');
-            if (!$result) {
-                return [];
-            }
 
             $subjectList = $result->getEntity();
 
@@ -91,9 +88,6 @@ class ReportCapacityService
 
         try {
             $result = \App::http()->readGetResult('/scope/');
-            if (!$result) {
-                return [];
-            }
 
             $scopeList = $result->getData();
             if (!is_array($scopeList) && !($scopeList instanceof \Traversable)) {
@@ -254,9 +248,6 @@ class ReportCapacityService
     {
         try {
             $result = \App::http()->readGetResult('/warehouse/capacityscope/' . $scopeId . '/');
-            if (!$result) {
-                return null;
-            }
 
             $periodList = $result->getEntity();
 
@@ -422,9 +413,6 @@ class ReportCapacityService
                 '/warehouse/capacityscope/' . $scopeId . '/' . $warehouseUrlPeriodSegment . '/',
                 $warehouseFetchParams === [] ? null : $warehouseFetchParams
             );
-            if (!$result) {
-                return null;
-            }
 
             $exchange = $result->getEntity();
             if (!$exchange instanceof Exchange) {
