@@ -1,8 +1,6 @@
 package zms.ataf.ui.pages.admin.administration;
 
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -25,6 +23,7 @@ import org.testng.Assert;
 import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.model.LocatorType;
+import zms.ataf.helpers.BerlinTime;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
@@ -436,7 +435,7 @@ public void saveLocationChanges() {
             CONTEXT
         ).replaceAll("\\n", "").trim();
     
-        String today = LocalDate.now(ZoneId.of("Europe/Berlin"))
+        String today = BerlinTime.today()
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY));
     
         Assert.assertTrue(

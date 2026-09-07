@@ -10,6 +10,7 @@ use BO\Zmsentities\Useraccount;
 
 /**
  * @SuppressWarnings(PHPMD)
+ * @psalm-suppress PropertyNotSetInConstructor Parent Keycloak options are assigned in the parent constructor.
  */
 class Provider extends Keycloak
 {

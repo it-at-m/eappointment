@@ -21,7 +21,7 @@ class Location extends Base
      * @return Entity|false
      */
     #[\Override]
-    public function fetchId($itemId)
+    public function fetchId(mixed $itemId)
     {
         if ($itemId) {
             $query = Helper::boolFilteredQuery();
@@ -42,14 +42,16 @@ class Location extends Base
     /**
      *
      * @return Collection
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     #[\Override]
-    public function fetchList($service_csv = '')
+    public function fetchList(bool|string $service_csv = '', bool $mixLanguages = false)
     {
         $query = Helper::boolFilteredQuery();
         $limit = 10000;
         $query->getFilter()->addMust(Helper::localeFilter($this->locale));
-        if ($service_csv) {
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
+        if (is_string($service_csv) && $service_csv !== '') {
             foreach (explode(',', $service_csv) as $service_id) {
                 $filter = new \Elastica\Filter\Term(array(
                     'services.service' => $service_id
@@ -73,9 +75,10 @@ class Location extends Base
     /**
      *
      * @return Collection
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     #[\Override]
-    public function fetchFromCsv($location_csv)
+    public function fetchFromCsv(mixed $location_csv, bool $mixLanguages = false)
     {
         $query = Helper::boolFilteredQuery();
         $filter = new \Elastica\Filter\Ids();
@@ -102,7 +105,7 @@ class Location extends Base
      * @return \BO\Zmsdldb\Collection\Authorities
      * @psalm-api
      */
-    public function searchAll($querystring, $service_csv = '')
+    public function searchAll(mixed $querystring, string $service_csv = '')
     {
         $query = Helper::boolFilteredQuery();
         $mainquery = new \Elastica\Query();
@@ -138,6 +141,7 @@ class Location extends Base
             'address.postal_code^9'
         ]);
         $query->getQuery()->addShould($searchquery);
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if ($service_csv) {
             foreach (explode(',', $service_csv) as $service_id) {
                 $filter = new \Elastica\Filter\Term(array(
@@ -160,10 +164,10 @@ class Location extends Base
      * search locations
      * this function is similar to self::searchAll() but it might get different boosts in the future
      *
-     * @return Collection
+     * @return \BO\Zmsdldb\Collection\Authorities
      */
     #[\Override]
-    public function readSearchResultList($query, $service_csv = '')
+    public function readSearchResultList(mixed $query, string $service_csv = '')
     {
         $boolquery = Helper::boolFilteredQuery();
         $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
@@ -202,6 +206,7 @@ class Location extends Base
             'address.postal_code^9'
         ]);
         $boolquery->getQuery()->addShould($searchquery);
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if ($service_csv) {
             foreach (explode(',', $service_csv) as $service_id) {
                 $filter = new \Elastica\Filter\Term(array(
@@ -220,7 +225,7 @@ class Location extends Base
             ->fromLocationResults($resultList);
     }
 
-    protected function fetchGeoJsonLocations($category, $getAll)
+    protected function fetchGeoJsonLocations(mixed $category, mixed $getAll): mixed
     {
         $query = new \Elastica\Query();
         $query->setSource(['id', 'name', 'address.*', 'geo.*', 'meta.*', 'category.*']);
@@ -251,7 +256,7 @@ class Location extends Base
      * @return ((string|string[])[]|bool|mixed|string)[][]
      *
      */
-    public function fetchGeoJson($category = null, $getAll = false)
+    public function fetchGeoJson(mixed $category = null, bool $getAll = false)
     {
         $resultList = $this->fetchGeoJsonLocations($category, $getAll);
         $geoJson = [];
@@ -288,7 +293,7 @@ class Location extends Base
      *
      * @return Collection
      */
-    public function fetchLocationsForCompilation($authoritys = [], $locations = [])
+    public function fetchLocationsForCompilation(array $authoritys = [], array $locations = [])
     {
         $limit = 1000;
 
@@ -300,11 +305,11 @@ class Location extends Base
         $boolquery->addMust($localeFilter);
 
         if (!empty($authoritys)) {
-            $authorityFilter = new \Elastica\Query\Terms('authority.id', $authoritys);
+            $authorityFilter = new \Elastica\Query\Terms('authority.id', array_values($authoritys));
             $boolquery->addMust($authorityFilter);
         }
         if (!empty($locations)) {
-            $locationFilter = new \Elastica\Query\Terms('id', $locations);
+            $locationFilter = new \Elastica\Query\Terms('id', array_values($locations));
             $boolquery->addMust($locationFilter);
         }
 

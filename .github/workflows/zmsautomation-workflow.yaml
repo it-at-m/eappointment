@@ -110,6 +110,7 @@ on:
         default: ""
   schedule:
     # GitHub Actions cron uses UTC. 01:00 UTC ≈ 03:00 Europe/Berlin (CEST) / 02:00 (CET).
+    # That is after the former UTC vs Berlin CURDATE split; zms-db TZ is Europe/Berlin (GH-3257).
     - cron: "0 1 * * *"
 
 permissions:

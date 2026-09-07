@@ -41,37 +41,38 @@ class WorkstationRequests
 
     public function readDepartment(): Department
     {
-        if (!$this->department) {
-            $this->department = $this->http->readGetResult('/scope/' . $this->scope['id'] . '/department/')
+        if (!$this->department instanceof Department) {
+            $entity = $this->http->readGetResult('/scope/' . $this->scope['id'] . '/department/')
                 ->getEntity();
+            $this->department = $entity instanceof Department ? $entity : new Department();
         }
-        return $this->department ? $this->department : new Department();
+        return $this->department;
     }
 
     public function readCluster(): Cluster
     {
-        if (!$this->cluster) {
-            $this->cluster = $this->http->readGetResult('/scope/' . $this->scope['id'] . '/cluster/')
+        if (!$this->cluster instanceof Cluster) {
+            $entity = $this->http->readGetResult('/scope/' . $this->scope['id'] . '/cluster/')
                 ->getEntity();
+            $this->cluster = $entity instanceof Cluster ? $entity : new Cluster();
         }
-        return $this->cluster ? $this->cluster : new Cluster();
+        return $this->cluster;
     }
 
     public function readProcessListByDate(
         DateTimeInterface $selectedDate,
-        $gql = ""
+        string $gql = ""
     ): ProcessList {
-        if ($this->workstation->isClusterEnabled()) {
-            $processList = $this->http
+        $processList = $this->workstation->isClusterEnabled()
+            ? $this->http
                 ->readGetResult(
-                    '/cluster/' . $this->readCluster()->id . '/process/' . $selectedDate->format('Y-m-d') . '/',
+                    '/cluster/' . $this->readCluster()['id'] . '/process/' . $selectedDate->format('Y-m-d') . '/',
                     [
                         'gql' => $gql
                     ]
                 )
-                ->getCollection();
-        } else {
-            $processList = $this->http
+                ->getCollection()
+            : $this->http
                 ->readGetResult(
                     '/scope/' . $this->scope['id'] . '/process/' . $selectedDate->format('Y-m-d') . '/',
                     [
@@ -79,20 +80,25 @@ class WorkstationRequests
                     ]
                 )
                 ->getCollection();
+        if ($processList instanceof ProcessList) {
+            return $processList;
         }
-        return ($processList) ? $processList : new ProcessList();
+        return new ProcessList();
     }
 
 
     /**
      * @psalm-api
      */
-    public function readNextProcess($excludedIds): \BO\Zmsentities\Schema\Entity|false|null
+    public function readNextProcess(mixed $excludedIds): \BO\Zmsentities\Schema\Entity|false|null
     {
         $exclude = is_array($excludedIds) ? implode(',', $excludedIds) : $excludedIds;
         if ($this->workstation->isClusterEnabled()) {
             $process = $this->http
-                ->readGetResult('/cluster/' . $this->cluster['id'] . '/queue/next/', ['exclude' => $exclude])
+                ->readGetResult(
+                    '/cluster/' . $this->readCluster()['id'] . '/queue/next/',
+                    ['exclude' => $exclude]
+                )
                 ->getEntity();
         } else {
             $process = $this->http
