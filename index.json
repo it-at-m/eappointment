@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-07T00:48:30.528Z",
+  "publishedAt": "2026-09-07T01:34:51.889Z",
   "branches": [
     {
       "name": "next",
@@ -78,6 +78,12 @@
       "slug": "fix-zmskvr-833-zmskvr-1025-rebooking-from-1571",
       "runId": "33165825149",
       "runStartedAt": "2026-08-28T11:05:21Z"
+    },
+    {
+      "name": "fix-zmsmessaging-psalm-alerts",
+      "slug": "fix-zmsmessaging-psalm-alerts",
+      "runId": "34070650667",
+      "runStartedAt": "2026-09-07T00:42:21Z"
     },
     {
       "name": "renovate/next-ghcr.io-it-at-m-refarch-refarch-gateway-1.x",
