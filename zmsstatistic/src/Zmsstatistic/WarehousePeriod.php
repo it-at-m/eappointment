@@ -22,7 +22,7 @@ class WarehousePeriod extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         $periodList = \App::http()
           ->readGetResult('/warehouse/' . $args['subject'] . '/' . $args['subjectid'] . '/')
           ->getEntity();

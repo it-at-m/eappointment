@@ -34,7 +34,7 @@ class Status extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         try {
             $workstation = \App::http()->readGetResult('/workstation/')->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {

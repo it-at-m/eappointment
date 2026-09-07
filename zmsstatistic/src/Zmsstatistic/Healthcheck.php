@@ -26,7 +26,7 @@ class Healthcheck extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         $response = \BO\Zmsclient\Status::testStatus($response, function (): Entity|null {
             return \App::http()->readGetResult('/status/', ['includeProcessStats' => 0])->getEntity();
         });

@@ -27,7 +27,7 @@ class ReportCapacityIndex extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         $this->workstation->getUseraccount()->testPermissions(['statistic', 'capacityreport']);
 
         /** @var \Psr\Http\Message\ServerRequestInterface $request */

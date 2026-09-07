@@ -26,7 +26,7 @@ class WorkstationSelect extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         $workstation = \App::http()->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         /** @var mixed $workstation */
         if (!$workstation->hasId()) {
