@@ -23,6 +23,7 @@ class Oidc extends BaseController
         array $args
     ) {
         try {
+            /** @var \BO\Slim\Request $request */
             $state = $request->getParam('state');
             $handler = new OidcHandler(\App::$http);
             $result = $handler->handleCallback($state, 'zmsstatistic');

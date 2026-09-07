@@ -31,6 +31,7 @@ class ReportClientOrganisation extends BaseController
         ResponseInterface $response,
         array $args
     ) {
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
         $organisationId = $this->organisation->id;
         $clientPeriod = \App::http()

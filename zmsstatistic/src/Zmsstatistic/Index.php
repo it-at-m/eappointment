@@ -35,6 +35,7 @@ class Index extends BaseController
         }
 
         $config = \App::http()->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $input = $request->getParsedBody();
         $oidclogin = $request->getAttribute('validator')->getParameter('oidclogin')->isString()->getValue();
         if ($request->getMethod() === 'POST') {

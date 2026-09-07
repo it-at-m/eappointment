@@ -35,6 +35,7 @@ class WorkstationSelect extends BaseController
         if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_STATISTIC, $workstation, $response)) {
             return $wrongModuleResponse;
         }
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $input = $request->getParsedBody();
         $formData = [];
         if (is_array($input) && (array_key_exists('scope', $input))) {

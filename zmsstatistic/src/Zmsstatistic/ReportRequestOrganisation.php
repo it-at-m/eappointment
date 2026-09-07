@@ -32,6 +32,7 @@ class ReportRequestOrganisation extends BaseController
         ResponseInterface $response,
         array $args
     ) {
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
         $requestPeriod = \App::http()
           ->readGetResult('/warehouse/requestorganisation/' . $this->organisation->id . '/')

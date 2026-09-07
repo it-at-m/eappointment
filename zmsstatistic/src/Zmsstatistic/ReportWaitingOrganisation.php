@@ -43,6 +43,7 @@ class ReportWaitingOrganisation extends BaseController
         ResponseInterface $response,
         array $args
     ) {
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
         $waitingPeriod = \App::http()
           ->readGetResult('/warehouse/waitingorganisation/' . $this->organisation->id . '/')

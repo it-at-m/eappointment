@@ -27,6 +27,7 @@ class ReportClientIndex extends BaseController
         ResponseInterface $response,
         array $args
     ) {
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
         $reportClientService = new ReportClientService();
         $reportHelper = new ReportHelper();
