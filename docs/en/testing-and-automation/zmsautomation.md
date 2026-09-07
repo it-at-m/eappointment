@@ -314,7 +314,7 @@ This is expected behavior. Action: re-run the pipeline on the next non‑holiday
 
 ### Statistic and opening-hours seeds around midnight
 
-`zms-db` sets `TZ=Europe/Berlin`, matching `zms-web` (zmsbase). Flyway `CURDATE()` / `CURTIME()` and Java `LocalDate` in the statistic steps therefore share the **Berlin calendar day**, including between Berlin midnight and UTC midnight (00:00–02:00 CEST in summer, 00:00–01:00 CET in winter).
+`zms-db` sets `TZ=Europe/Berlin`, matching `zms-web` (zmsbase). Flyway `CURDATE()` / `CURTIME()` and Java `LocalDate` via `BerlinTime` (admin, citizen API, ZMS API, statistic, and Bürgeransicht steps) therefore share the **Berlin calendar day**, including between Berlin midnight and UTC midnight (00:00–02:00 CEST in summer, 00:00–01:00 CET in winter).
 
 The scheduled GitHub cron (`0 1 * * *` = 01:00 UTC ≈ 03:00 CEST / 02:00 CET) already starts after that former UTC/Berlin split and is unrelated.
 
