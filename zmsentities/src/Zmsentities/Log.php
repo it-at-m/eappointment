@@ -91,7 +91,7 @@ class Log extends Schema\Entity
         return $display;
     }
 
-    private static function formatAppointmentAtDisplay($appointmentAt): ?string
+    private static function formatAppointmentAtDisplay(mixed $appointmentAt): ?string
     {
         if (empty($appointmentAt)) {
             return null;

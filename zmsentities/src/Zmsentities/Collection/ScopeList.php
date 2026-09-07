@@ -12,14 +12,14 @@ class ScopeList extends Base
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\Scope';
 
-    protected $slotsByID = [];
+    protected array $slotsByID = [];
 
     /**
     * Get shortest bookable start date of a scope in scopelist
     *
     * @return \DateTimeImmutable $date
     */
-    public function getShortestBookableStart($now)
+    public function getShortestBookableStart(mixed $now)
     {
         $date = $now;
         foreach ($this as $scope) {
@@ -34,7 +34,7 @@ class ScopeList extends Base
     *
     * @return \DateTimeImmutable $date
     */
-    public function getGreatestBookableEnd($now)
+    public function getGreatestBookableEnd(mixed $now)
     {
         $date = $now;
         foreach ($this as $scope) {
@@ -47,9 +47,9 @@ class ScopeList extends Base
     /**
     * Get shortest bookable start date of a opened scope in scopelist
     *
-    * @return \DateTimeImmutable $date, null
+    * @return \DateTimeInterface|null
     */
-    public function getShortestBookableStartOnOpenedScope($now)
+    public function getShortestBookableStartOnOpenedScope(mixed $now)
     {
         $date = null;
         foreach ($this as $scope) {
@@ -65,9 +65,9 @@ class ScopeList extends Base
     /**
     * Get longest bookable end date of a opened scope in scopelist
     *
-    * @return \DateTimeImmutable $date
+    * @return \DateTimeInterface|null
     */
-    public function getGreatestBookableEndOnOpenedScope($now)
+    public function getGreatestBookableEndOnOpenedScope(mixed $now)
     {
         $date = null;
         foreach ($this as $scope) {
@@ -80,7 +80,7 @@ class ScopeList extends Base
         return $date;
     }
 
-    public function withoutDublicates($scopeList = null): self
+    public function withoutDublicates(mixed $scopeList = null): self
     {
         $collection = new self();
         foreach ($this as $scope) {
@@ -102,7 +102,7 @@ class ScopeList extends Base
         return $scopeList;
     }
 
-    public function addScopeList($scopeList): static
+    public function addScopeList(mixed $scopeList): static
     {
         foreach ($scopeList as $scope) {
             $this->addEntity($scope);
@@ -111,12 +111,13 @@ class ScopeList extends Base
     }
 
     /**
-     * @return self
+     * @return static
      */
     #[\Override]
     public function withLessData(array $keepArray = [])
     {
-        $scopeList = new self();
+        /** @psalm-suppress UnsafeGenericInstantiation */
+        $scopeList = new static();
         foreach ($this as $scope) {
             $scopeList->addEntity(clone $scope->withLessData($keepArray));
         }
@@ -140,7 +141,7 @@ class ScopeList extends Base
         return $this;
     }
 
-    public function withProviderID($source, $providerID): self
+    public function withProviderID(mixed $source, mixed $providerID): self
     {
         $list = new ScopeList();
         foreach ($this as $scope) {
@@ -151,7 +152,7 @@ class ScopeList extends Base
         return $list;
     }
 
-    public function addRequiredSlots($source, $providerID, $slotsRequired): static
+    public function addRequiredSlots(mixed $source, mixed $providerID, mixed $slotsRequired): static
     {
         $scopeList = $this->withProviderID($source, $providerID);
         foreach ($scopeList as $scope) {
@@ -163,7 +164,7 @@ class ScopeList extends Base
         return $this;
     }
 
-    public function getRequiredSlotsByScope(Scope $scope)
+    public function getRequiredSlotsByScope(Scope $scope): mixed
     {
         if (isset($this->slotsByID[$scope->id])) {
             return $this->slotsByID[$scope->id];
@@ -182,7 +183,7 @@ class ScopeList extends Base
         return $isOpened;
     }
 
-    public function getProviderList()
+    public function getProviderList(): \BO\Zmsentities\Collection\ProviderList
     {
         $list = new ProviderList();
         foreach ($this as $scope) {

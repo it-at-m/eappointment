@@ -11,5 +11,5 @@ class UserAccountAccessRightsFailed extends \Exception
 
     protected $message = 'Level of user rights are low, access rejected';
 
-    public $templatedata = null;
+    public mixed $templatedata = null;
 }

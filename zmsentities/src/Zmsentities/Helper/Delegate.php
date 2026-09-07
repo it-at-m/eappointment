@@ -18,11 +18,11 @@ class Delegate
         return $this->entity;
     }
 
-    public function setter(...$propertyPath): callable
+    public function setter(mixed ...$propertyPath): callable
     {
         $entity = $this->getEntity();
 
-        return function ($newValue) use ($propertyPath, $entity): Entity {
+        return function (mixed $newValue) use ($propertyPath, $entity): Entity {
             self::setValueAtPath($entity, $propertyPath, $newValue);
 
             return $entity;
@@ -32,6 +32,9 @@ class Delegate
     private static function setValueAtPath(mixed &$container, array $propertyPath, mixed $newValue): void
     {
         $property = array_shift($propertyPath);
+        if ($property === null) {
+            return;
+        }
         if ($propertyPath === []) {
             $container[$property] = $newValue;
 

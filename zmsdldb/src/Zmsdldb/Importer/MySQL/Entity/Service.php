@@ -2,8 +2,6 @@
 
 namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
-use Error;
-
 class Service extends Base
 {
     protected array $fieldMapping = [
