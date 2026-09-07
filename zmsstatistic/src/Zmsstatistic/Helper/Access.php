@@ -54,6 +54,7 @@ class Access extends \BO\Slim\Controller
                 ->readGetResult('/scope/' . $this->workstation->scope['id'] . '/department/')
                 ->getEntity();
         }
+        return null;
     }
 
     protected function readOrganisation(): mixed
@@ -63,6 +64,7 @@ class Access extends \BO\Slim\Controller
                 ->readGetResult('/department/' . $this->department->getId() . '/organisation/')
                 ->getEntity();
         }
+        return null;
     }
 
     protected function readOwner(): mixed
@@ -72,6 +74,7 @@ class Access extends \BO\Slim\Controller
                 ->readGetResult('/organisation/' . $this->organisation->getId() . '/owner/')
                 ->getEntity();
         }
+        return null;
     }
 
     protected function validateAccessRights(RequestInterface $request): void
@@ -113,10 +116,9 @@ class Access extends \BO\Slim\Controller
     }
 
     /**
-     * @return (mixed|string|string[][][])[]|Workstation
-     *
+     * @return mixed
      */
-    protected function testLogin(mixed $input)
+    protected function testLogin(mixed $input): mixed
     {
         $userAccount = new Useraccount(array(
             'id' => $input['loginName'],
