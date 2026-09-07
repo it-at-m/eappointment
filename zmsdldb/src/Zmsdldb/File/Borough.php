@@ -13,6 +13,7 @@ use BO\Zmsdldb\Collection\Boroughs as Collection;
 /**
   * Common methods shared by access classes
   *
+  * @extends Base<Collection, Entity>
   */
 class Borough extends Base
 {
@@ -20,7 +21,7 @@ class Borough extends Base
      * @return Collection
      */
     #[\Override]
-    protected function parseData($data)
+    protected function parseData(mixed $data)
     {
         $itemList = new Collection();
         foreach ($data['data']['boroughs'] as $item) {

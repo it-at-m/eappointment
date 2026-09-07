@@ -9,7 +9,7 @@ class TicketprinterList extends Base
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\Ticketprinter';
 
-    public function getEntityByHash($hash): \BO\Zmsentities\Ticketprinter|null
+    public function getEntityByHash(mixed $hash): \BO\Zmsentities\Ticketprinter|null
     {
         $result = null;
         foreach ($this as $entity) {
