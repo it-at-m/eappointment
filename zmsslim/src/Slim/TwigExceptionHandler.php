@@ -148,8 +148,9 @@ class TwigExceptionHandler implements ErrorHandlerInterface
         $queryParams = [];
         $parsedBody = [];
         if ($request instanceof ServerRequestInterface) {
-            $queryParams = (array) $request->getQueryParams();
-            $parsedBody = (array) $request->getParsedBody();
+            $queryParams = $request->getQueryParams();
+            $parsedBody = $request->getParsedBody();
+            $parsedBody = is_array($parsedBody) ? $parsedBody : [];
         } else {
             parse_str($request->getUri()->getQuery(), $queryParams);
         }

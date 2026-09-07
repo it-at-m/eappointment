@@ -12,6 +12,8 @@ use BO\Zmsdldb\Collection\Authorities as Collection;
 
 /**
  * Common methods shared by access classes
+ *
+ * @extends Base<Collection, Entity>
  */
 class Authority extends Base
 {
@@ -19,7 +21,7 @@ class Authority extends Base
      * @return Collection
      */
     #[\Override]
-    protected function parseData($data)
+    protected function parseData(mixed $data)
     {
         $itemList = new Collection();
         foreach ($data['data'] as $item) {
@@ -33,7 +35,7 @@ class Authority extends Base
      *
      * @return Collection
      */
-    public function fetchList($servicelist = false)
+    public function fetchList(mixed $servicelist = false)
     {
         $service_csv = implode(',', (array)$servicelist);
         $authoritylist = $this->getItemList()->removeLocations();
@@ -64,7 +66,7 @@ class Authority extends Base
      *
      * @return Collection
      */
-    public function fromLocationResults($resultList)
+    public function fromLocationResults(mixed $resultList)
     {
         $authorityList = new Collection();
         foreach ($resultList as $result) {
@@ -79,7 +81,7 @@ class Authority extends Base
      * @return Collection
      * @psalm-api
      */
-    public function readListByOfficePath($officepath)
+    public function readListByOfficePath(mixed $officepath)
     {
         $authoritylist = $this->fetchList();
         if ($officepath) {
@@ -89,7 +91,7 @@ class Authority extends Base
     }
 
     /** @psalm-api */
-    public function fetchSource()
+    public function fetchSource(): \BO\Zmsdldb\Collection\Base
     {
         return $this->getItemList();
     }

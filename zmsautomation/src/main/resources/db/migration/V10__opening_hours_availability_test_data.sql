@@ -1,5 +1,7 @@
 -- Flyway migration: Opening hours availability test data
 --
+-- CURDATE()/CURTIME() follow zms-db TZ=Europe/Berlin (same calendar day as zms-web).
+--
 -- Ruppertstraße Standorte 160, 181, 172, 184 (offices 10489 / 10502) live in
 -- V19__ZMSKVR-1124_zmscitizenapi_opening_hours_for_ruppertstasse.sql — not duplicated here.
 
