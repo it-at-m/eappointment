@@ -44,7 +44,7 @@ class Access extends \BO\Slim\Controller
     protected function readWorkstation(): mixed
     {
         $workstation = \App::http()->readGetResult('/workstation/', ['resolveReferences' => $this->resolveLevel]);
-        return ($workstation) ? $workstation->getEntity() : null;
+        return $workstation->getEntity();
     }
 
     protected function readDepartment(): mixed
