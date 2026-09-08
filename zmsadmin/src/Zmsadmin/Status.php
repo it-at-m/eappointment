@@ -9,6 +9,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Exception\UserAccountMissingLogin;
+use BO\Zmsentities\Workstation;
 
 /**
  * Handle requests concerning services
@@ -37,6 +38,10 @@ class Status extends BaseController
                 throw new UserAccountMissingLogin();
             }
             throw $exception;
+        }
+
+        if (!$workstation instanceof Workstation) {
+            throw new UserAccountMissingLogin();
         }
 
         $result = \App::$http->readGetResult('/status/');
