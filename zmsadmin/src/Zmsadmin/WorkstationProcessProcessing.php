@@ -9,6 +9,7 @@ namespace BO\Zmsadmin;
 
 use BO\Slim\Render;
 use BO\Zmsentities\Exception\WorkstationMissingAssignedProcess;
+use BO\Zmsentities\Process;
 use BO\Zmsentities\Workstation;
 
 class WorkstationProcessProcessing extends BaseController
@@ -36,11 +37,15 @@ class WorkstationProcessProcessing extends BaseController
         if ($workstation->process->getStatus() !== 'processing') {
             $workstation->process->status = 'processing';
             $workstation->process->parkedBy = null;
-            $workstation->process = \App::$http->readPostResult(
+            $savedProcess = \App::$http->readPostResult(
                 '/process/' . $workstation->process->id . '/' . $workstation->process->authKey . '/',
                 $workstation->process,
                 ['initiator' => 'admin']
             )->getEntity();
+            if (!$savedProcess instanceof Process) {
+                throw new WorkstationMissingAssignedProcess();
+            }
+            $workstation->process = $savedProcess;
         }
 
         $validator = $request->getAttribute('validator');
