@@ -102,14 +102,41 @@ class ReportRequestScopeTest extends Base
         );
         $response = $this->render(['period' => '2016-04'], [], []);
         $this->assertStringContainsString(
+            '<th class="statistik">01.04.</th>',
+            (string) $response->getBody(),
+            'Ein Tag mit vorhandener Nutzung muss angezeigt werden.'
+        );
+        $this->assertStringNotContainsString(
+            '<th class="statistik">02.04.</th>',
+            (string) $response->getBody(),
+            'Ein Tag ohne Nutzung darf nicht angezeigt werden.'
+        );
+        $this->assertStringContainsString(
             '<th class="statistik">Summe</th>',
             (string) $response->getBody()
         );
+        $this->assertStringContainsString(
+            'Ø Bearbeitungsdauer (unabhängig von DL)',
+            (string) $response->getBody()
+        );
+        $this->assertStringNotContainsString(
+            'average_processingtime_overall',
+            (string) $response->getBody()
+    );
         $this->assertStringContainsString(
             'Auswertung für Bürgeramt Heerstraße im Zeitraum April 2016',
             (string) $response->getBody()
         );
         $this->assertStringContainsString('Reisepass beantragen', (string) $response->getBody());
+        $this->assertStringContainsString('Dienstleistung wurde nicht erfasst', (string) $response->getBody());
+        $this->assertStringContainsString(
+            'Dienstleistung konnte nicht erbracht werden',
+            (string) $response->getBody()
+        );
+        $this->assertMatchesRegularExpression(
+            '/Ø Bearbeitungsdauer \(unabhängig von DL\) \/ Summe[\s\S]*?>\s*98\s*</',
+            (string) $response->getBody()
+        );
     }
 
     public function testWithPeriodYear()
@@ -150,6 +177,10 @@ class ReportRequestScopeTest extends Base
             ]
         );
         $response = $this->render(['period' => '2016'], [ ], [ ]);
+        $this->assertStringContainsString(
+            'Ø Bearbeitungsdauer (unabhängig von DL) / Summe',
+            (string) $response->getBody()
+);
         $this->assertStringContainsString(
             '<th class="statistik">2016</th>',
             (string) $response->getBody()
@@ -219,7 +250,15 @@ class ReportRequestScopeTest extends Base
             'Auswertung für die ausgewählten Standorte im Zeitraum 01.04.2016 bis 30.04.2016',
             (string) $response->getBody()
         );
-    }
+        $this->assertStringContainsString(
+            'Ø Bearbeitungsdauer (unabhängig von DL)',
+            (string) $response->getBody()
+        );
+            $this->assertStringNotContainsString(
+            'average_processingtime_overall',
+            (string) $response->getBody()
+        );
+     }
 
     public function testWithDateRangeAcrossYears()
     {
@@ -536,8 +575,78 @@ class ReportRequestScopeTest extends Base
             [ ]
         );
         $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
-        
-        // Clean up output buffer (discard any captured output)
-        ob_end_clean();
+        $tempfile = tempnam(sys_get_temp_dir(), 'request-report-');
+        file_put_contents($tempfile, (string) $response->getBody());
+        try {
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($tempfile);
+            $sheet = $spreadsheet->getActiveSheet();
+            $headerRowIndex = null;
+            $serviceRowIndex = null;
+
+            foreach ($sheet->getRowIterator() as $row) {
+                $rowIndex = $row->getRowIndex();
+                $firstCellValue = $sheet->getCell('A' . $rowIndex)->getValue();
+
+                if ($firstCellValue === 'Dienstleistung') {
+                    $headerRowIndex = $rowIndex;
+                }
+
+                if ($firstCellValue === 'Reisepass beantragen') {
+                    $serviceRowIndex = $rowIndex;
+                }
+            }
+
+            $this->assertNotNull(
+                $headerRowIndex,
+                'The XLSX export must contain the report header.'
+            );
+
+            $this->assertSame(
+                '01.04.2016',
+                $sheet->getCell('D' . $headerRowIndex)->getValue(),
+                'A day with recorded usage must be exported.'
+            );
+
+            $this->assertSame(
+                'D',
+                $sheet->getHighestColumn(),
+                'Days without usage must not create additional XLSX columns.'
+            );
+
+            $this->assertNotNull(
+                $serviceRowIndex,
+                'The XLSX export must contain services with recorded usage.'
+            );
+
+            $this->assertEquals(
+                23,
+                $sheet->getCell('D' . $serviceRowIndex)->getValue(),
+                'The request count for a day with usage must be exported.'
+            );
+
+            $foundSumRow = false;
+
+            foreach ($sheet->getRowIterator() as $row) {
+                $rowIndex = $row->getRowIndex();
+                if ($sheet->getCell('A' . $rowIndex)->getValue() === 'Ø Bearbeitungsdauer (unabhängig von DL) / Summe') {
+                    $foundSumRow = true;
+                    $this->assertNotNull(
+                        $sheet->getCell('B' . $rowIndex)->getValue(),
+                        'The overall average processing time must be exported.'
+                    );
+                    $this->assertSame(98, (int) $sheet->getCell('C' . $rowIndex)->getValue());
+
+                    break;
+                }
+            }
+            $this->assertTrue($foundSumRow, 'The XLSX export must contain a Summe row');
+            $this->assertSame(
+                'Ø Bearbeitungsdauer (unabhängig von DL) / Summe',
+                $sheet->getCell('A' . $rowIndex)->getValue()
+            );
+        } finally {
+            unlink($tempfile);
+            ob_end_clean();
+        }
     }
 }

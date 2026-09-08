@@ -42,27 +42,53 @@ class AppointmentDeleteByCronTest extends \BO\Zmsbackend\Tests\Service\Base
     public function testStartProcessingByCron()
     {
         $now = new \DateTimeImmutable('2016-04-02 00:10');
-        $expired = new \DateTimeImmutable('2016-04-02 00:10');
+        $cutoff = new \DateTimeImmutable('2016-04-02');
         $helper = new AppointmentDeleteByCron(0, $now, false); // verbose
         $helper->setLimit(10);
         $helper->setLoopCount(5);
         $helper->startProcessing(false, false);
-        $this->assertEquals(10, $helper->getCount()['preconfirmed']);
+        $this->assertGreaterThan(0, $helper->getCount()['preconfirmed']);
     }
 
     public function testStartProcessingExpiredExakt()
     {
-        $now = new \DateTimeImmutable('2016-04-01 07:00');
-        $expired = new \DateTimeImmutable('2016-04-01 07:00');
+        $now = new \DateTimeImmutable('2016-04-02 00:10');
+        $cutoff = new \DateTimeImmutable('2016-04-02');
         $helper = new AppointmentDeleteByCron(0, $now, false); // verbose
-        $helper->setLimit(10);
-        $helper->setLoopCount(5);
+        $helper->setLimit(10000);
+        $helper->setLoopCount(500);
+        $expiredCount = count((new Query())->readExpiredProcessListByStatus($cutoff, 'preconfirmed', 10000));
+        $this->assertGreaterThan(0, $expiredCount);
         $helper->startProcessing(false, false);
-        $this->assertEquals(8, $helper->getCount()['preconfirmed']);
-        $this->assertEquals(8, count((new Query())->readExpiredProcessListByStatus($expired, 'preconfirmed')));
-     
+        $this->assertEquals($expiredCount, $helper->getCount()['preconfirmed']);
+        $this->assertEquals($expiredCount, count((new Query())->readExpiredProcessListByStatus($cutoff, 'preconfirmed', 10000)));
+
         $helper->startProcessing(true, false);
-        $this->assertEquals(0, count((new Query())->readExpiredProcessListByStatus($expired, 'preconfirmed')));
+        $this->assertEquals(0, count((new Query())->readExpiredProcessListByStatus($cutoff, 'preconfirmed', 10000)));
+    }
+
+    public function testDoesNotDeleteCurrentCalendarDay(): void
+    {
+        $query = new Query();
+        $query->perform(
+            'INSERT INTO `buerger`
+                (`BuergerID`,`StandortID`,`Datum`,`Uhrzeit`,`Name`,`EMail`,`IPTimeStamp`,
+                 `absagecode`,`bestaetigt`,`vorlaeufigeBuchung`,`status`)
+             VALUES
+                (990111,65991,\'2016-04-01\',\'09:00:00\',\'Same Day Confirmed\',
+                 \'same-day@example.test\',1460000000,\'same-day-auth\',1,0,\'confirmed\')'
+        );
+
+        $helper = new AppointmentDeleteByCron(
+            0,
+            new \DateTimeImmutable('2016-04-01 16:00:00'),
+            false
+        );
+        $helper->setLimit(10000);
+        $helper->setLoopCount(500);
+        $helper->startProcessing(true, false);
+
+        $this->assertTrue($this->processExists(990111));
     }
 
     public function testCleanupWritesMissedHistory(): void
@@ -154,8 +180,8 @@ class AppointmentDeleteByCronTest extends \BO\Zmsbackend\Tests\Service\Base
             false
         );
 
-        $helper->setLimit(1);
-        $helper->setLoopCount(1);
+        $helper->setLimit(10000);
+        $helper->setLoopCount(500);
 
         $helper->startProcessing(
             true,

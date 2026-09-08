@@ -1,7 +1,6 @@
 package zms.ataf.ui.steps;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,11 +10,11 @@ import java.util.function.Predicate;
 import org.testng.Assert;
 
 import ataf.core.helpers.TestDataHelper;
-import ataf.core.utils.DateUtils;
 import ataf.web.utils.DriverUtil;
 import io.cucumber.java.de.Dann;
 import io.cucumber.java.de.Und;
 import io.cucumber.java.de.Wenn;
+import zms.ataf.helpers.BerlinTime;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.ui.base.services.ServicesUtil;
 import zms.ataf.ui.base.services.pojo.Service;
@@ -98,7 +97,7 @@ public class BuergeransichtSteps {
     @Wenn("Sie auf der " + BuergeransichtPageContext.NAME + " das Jahr {string} auswählen.")
     public void wenn_sie_auf_der_buergeransicht_das_jahr_string_auswaehlen(String year) {
         year = TestDataHelper.transformTestData(year);
-        LocalDate currentDate = DateUtils.getDateWithOffset(0, ChronoUnit.YEARS);
+        LocalDate currentDate = BerlinTime.today();
         Assert.assertTrue(parseIntOrFail(year, "year") >= currentDate.getYear(),
                 "Given year \"" + year + "\" cannot be in the past!");
         if (year.length() == 2 && !year.startsWith("20")) {

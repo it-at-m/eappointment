@@ -36,7 +36,7 @@ class Workstation extends Schema\Entity
         ];
     }
 
-    public function getQueuePreference($key, $isBoolean = false)
+    public function getQueuePreference(mixed $key, bool $isBoolean = false): mixed
     {
         $result = null;
         if (isset($this['queue']) && Property::__keyExists($key, $this['queue'])) {
@@ -57,7 +57,7 @@ class Workstation extends Schema\Entity
         return $this->useraccount;
     }
 
-    public function getDepartmentById($departmentId)
+    public function getDepartmentById(mixed $departmentId): \BO\Zmsentities\Department
     {
         return $this->getUseraccount()->getDepartmentById($departmentId);
     }
@@ -65,7 +65,7 @@ class Workstation extends Schema\Entity
     public function getDepartmentList(): Collection\DepartmentList
     {
         $departmentList = new Collection\DepartmentList();
-        foreach ($this->getUseraccount()->departments as $department) {
+        foreach ($this->getUseraccount()->getDepartmentList() as $department) {
             $departmentList->addEntity(new Department($department));
         }
         return $departmentList;
@@ -81,17 +81,17 @@ class Workstation extends Schema\Entity
         }
     }
 
-    public function getProviderOfGivenScope()
+    public function getProviderOfGivenScope(): mixed
     {
         return $this->toProperty()->scope->provider->id->get();
     }
 
-    public function hasSuperUseraccount()
+    public function hasSuperUseraccount(): bool
     {
         return $this->getUseraccount()->isSuperUser();
     }
 
-    public function hasAuditAccount()
+    public function hasAuditAccount(): bool
     {
         return $this->getUseraccount()->hasPermissions(['logs']);
     }
@@ -111,7 +111,7 @@ class Workstation extends Schema\Entity
         return (! trim($this->name)) ? 'counter' : 'workstation';
     }
 
-    public function getName()
+    public function getName(): mixed
     {
         return ($this->name) ? $this->name : "Tresen";
     }
@@ -136,7 +136,7 @@ class Workstation extends Schema\Entity
         return $process;
     }
 
-    public function getScopeList($cluster = null): Collection\ScopeList
+    public function getScopeList(mixed $cluster = null): Collection\ScopeList
     {
         $scopeList = new Collection\ScopeList();
         $scopeList->addEntity(new Scope($this->getScope()));
@@ -154,7 +154,7 @@ class Workstation extends Schema\Entity
             $scopeList->addList($department->getScopeList());
         }
         foreach ($this->getScopeList() as $scope) {
-            if (! $scopeList->hasEntity($scope->id) && $scope instanceof Scope) {
+            if (! $scopeList->hasEntity($scope->id)) {
                 $scopeList->addEntity($scope);
             }
         }
@@ -164,7 +164,7 @@ class Workstation extends Schema\Entity
     /**
      * @return void
      */
-    public function validateProcessScopeAccess($scopeList, $process = null)
+    public function validateProcessScopeAccess(mixed $scopeList, mixed $process = null)
     {
         if (null === $process) {
             $process = $this->process;
@@ -173,7 +173,7 @@ class Workstation extends Schema\Entity
             $exception = new Exception\WorkstationProcessMatchScopeFailed();
             $scopeContactName = null;
             $currentScope = $process->getCurrentScope();
-            if ($currentScope && isset($currentScope['contact']['name'])) {
+            if ($currentScope instanceof Scope && isset($currentScope['contact']['name'])) {
                 $scopeContactName = $currentScope['contact']['name'];
             }
 
@@ -236,7 +236,7 @@ class Workstation extends Schema\Entity
         return $this->queue['clusterEnabled'] ? true : false;
     }
 
-    public function hasAccessToUseraccount($useraccount): bool
+    public function hasAccessToUseraccount(mixed $useraccount): bool
     {
         $departmentList = $this->getDepartmentList();
         $accessedList = $departmentList->withAccess($useraccount);

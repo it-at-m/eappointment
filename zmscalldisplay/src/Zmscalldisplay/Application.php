@@ -16,7 +16,7 @@ if (($token = getenv('ZMS_CONFIG_SECURE_TOKEN')) === false || $token === '') {
     throw new \RuntimeException('ZMS_CONFIG_SECURE_TOKEN environment variable must be set');
 }
 
-define('ZMS_CONFIG_SECURE_TOKEN', getenv('ZMS_CONFIG_SECURE_TOKEN'));
+define('ZMS_CONFIG_SECURE_TOKEN', $token);
 
 if (!defined('ZMS_CALLDISPLAY_TWIG_CACHE')) {
     $value = getenv('ZMS_CALLDISPLAY_TWIG_CACHE');
@@ -44,9 +44,9 @@ class Application extends \BO\Slim\Application
     /**
      * Base path for static assets (_css, _js). Must match routing and js/settings.js.
      */
-    public static $includeUrl = '/terminvereinbarung/calldisplay';
+    public static ?string $includeUrl = '/terminvereinbarung/calldisplay';
 
-    public static $supportedLanguages = array(
+    public static array $supportedLanguages = array(
         // Default language
         'de' => array(
             'name'    => 'Deutsch',
@@ -60,7 +60,7 @@ class Application extends \BO\Slim\Application
         )
     );
 
-    public static $now = '';
+    public static ?\DateTimeInterface $now = null;
 
     /*
      * -----------------------------------------------------------------------
@@ -82,7 +82,7 @@ class Application extends \BO\Slim\Application
      /**
      * signature key for url signature to save query paramter with hash
      */
-    public static $urlSignatureSecret = ZMS_CONFIG_SECURE_TOKEN;
+    public static string $urlSignatureSecret = ZMS_CONFIG_SECURE_TOKEN;
 
     public static function initialize(): void
     {

@@ -16,11 +16,11 @@ use Psr\Http\Message\ResponseInterface;
 
 class RequestReport extends Base
 {
-    public $firstDayDate = null;
+    public ?\DateTime $firstDayDate = null;
 
-    public $lastDayDate = null;
+    public ?\DateTime $lastDayDate = null;
 
-    protected $dateFormatter = [
+    protected array $dateFormatter = [
         'day' => 'Y-m-d',
         'month' => 'Y-m'
     ];
@@ -34,7 +34,7 @@ class RequestReport extends Base
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         $title = 'requeststatistic_' . $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
 
@@ -68,6 +68,26 @@ class RequestReport extends Base
         return $spreadsheet;
     }
 
+    private function getReportDates(ReportEntity $report): array
+    {
+        if ($report->period === 'day') {
+            return $report->getDatesWithRequests();
+        }
+
+        $dates = [];
+        if (!$this->firstDayDate instanceof \DateTime || !$this->lastDayDate instanceof \DateTime) {
+            throw new \RuntimeException('Report date range is not initialized');
+        }
+        $dateTime = clone $this->firstDayDate;
+
+        do {
+            $dates[] = $dateTime->format($this->dateFormatter[$report->period]);
+            $dateTime->modify('+1 ' . $report->period);
+        } while ($dateTime <= $this->lastDayDate);
+
+        return $dates;
+    }
+
     public function writeHeader(
         ReportEntity $report,
         \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet,
@@ -77,11 +97,12 @@ class RequestReport extends Base
         $reportHeader[] = 'Dienstleistung';
         $reportHeader[] = 'Ø Bearbeitungsdauer';
         $reportHeader[] = 'Summe';
-        $dateTime = clone $this->firstDayDate;
-        do {
-            $reportHeader[] = $this->getFormatedDates($dateTime, $datePatternCol);
-            $dateTime->modify('+1 ' . $report->period);
-        } while ($dateTime <= $this->lastDayDate);
+        foreach ($this->getReportDates($report) as $date) {
+            $reportHeader[] = $this->getFormatedDates(
+                $this->setDateTime($date),
+                $datePatternCol
+            );
+        }
         $sheet->fromArray($reportHeader, null, 'A' . ($sheet->getHighestRow() + 2));
     }
 
@@ -93,10 +114,11 @@ class RequestReport extends Base
         $reportData = [];
         $firstDataRow = $sheet->getHighestRow() + 1;
         $totalSum = 0;
-        $dateSums = [];
+        $reportDates = $this->getReportDates($report);
+        $dateSums = array_fill(0, count($reportDates), 0);
 
         foreach ($report->data as $name => $entry) {
-            if ($name !== 'sum' && $name !== 'average_processingtime') {
+            if ($name !== 'sum' && $name !== 'average_processingtime' && $name !== 'average_processingtime_overall') {
                 $rowData = [];
                 if ($name === ReportEntity::REQUEST_STAT_NAME_UNCATEGORIZED) {
                     $rowData[] = 'Dienstleistung wurde nicht erfasst';
@@ -110,33 +132,37 @@ class RequestReport extends Base
                     ? ReportHelper::formatTimeValue($report->data['average_processingtime'][$name])
                     : "0";
                 $rowData[] = $report->data['sum'][$name];
+                $totalSum += (int)($report->data['sum'][$name] ?? 0);
 
-                $includeInTotal = $name !== ReportEntity::REQUEST_STAT_NAME_UNCATEGORIZED
-                    && $name !== ReportEntity::REQUEST_STAT_NAME_NONEXISTENT;
-                if ($includeInTotal) {
-                    $totalSum += (int)($report->data['sum'][$name] ?? 0);
-                }
+                foreach ($reportDates as $dateColumn => $dateString) {
+                    $requestCount = isset($entry[$dateString])
+                        ? (int) $entry[$dateString]['requestscount']
+                        : 0;
 
-                $dateTime = clone $this->firstDayDate;
-                $dateColumn = 0;
-                do {
-                    $dateString = $dateTime->format($this->dateFormatter[$report->period]);
-                    $requestCount = isset($entry[$dateString]) ? (int)$entry[$dateString]['requestscount'] : 0;
                     $rowData[] = $requestCount;
-                    if ($includeInTotal) {
-                        $dateSums[$dateColumn] = ($dateSums[$dateColumn] ?? 0) + $requestCount;
-                    }
-                    $dateColumn++;
-                    $dateTime->modify('+1 ' . $report->period);
-                } while ($dateTime <= $this->lastDayDate);
+                    $dateSums[$dateColumn] += $requestCount;
+                }
 
                 $reportData[] = $rowData;
             }
         }
 
         $sheet->fromArray($reportData, null, 'A' . $firstDataRow);
+        $overallProcessingTime =
+        isset(
+            $report->data['average_processingtime_overall']
+        )
+             && is_numeric($report->data['average_processingtime_overall'])
+             ? ReportHelper::formatTimeValue($report->data['average_processingtime_overall']) : '0';
         $sumRowIndex = $sheet->getHighestRow() + 2;
-        $sumRow = array_merge(['Summe', '', $totalSum], $dateSums);
+        $sumRow = array_merge(
+            [
+                'Ø Bearbeitungsdauer (unabhängig von DL) / Summe',
+                $overallProcessingTime,
+                $totalSum
+            ],
+            $dateSums
+        );
 
         $sheet->fromArray($sumRow, null, 'A' . $sumRowIndex);
     }

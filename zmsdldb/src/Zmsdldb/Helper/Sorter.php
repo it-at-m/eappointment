@@ -10,7 +10,7 @@ class Sorter
     /**
      * @todo check against ISO definition
      */
-    public static function toSortableString($string): string
+    public static function toSortableString(mixed $string): string
     {
         $string = strtr($string, array(
             'Ä' => 'Ae',

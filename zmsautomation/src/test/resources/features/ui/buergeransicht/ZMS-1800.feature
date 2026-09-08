@@ -5,7 +5,7 @@
 # which is likely not running in local development environments.
 # To enable these tests, ensure the old buergeransicht frontend is running at http://localhost:8082
 # and remove the @ignore tag from the scenario tags.
-Funktionalität: Default
+Funktionalität: Bürger bucht einen Termin über das Internet (zms-test)
    
    	#Bürger bucht einen Termin, bestätigt ihn. SB öffnet seinen Arbeitsplatz und prüft die anstehende Termine. Bürger nimmt den Termin wahr, die Aufgabe ist beim SB als erledigt markiert und fließt in die Statistik. 
    	#

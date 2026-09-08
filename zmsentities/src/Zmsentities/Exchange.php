@@ -6,6 +6,11 @@ namespace BO\Zmsentities;
  * @SuppressWarnings(Complexity)
  * @SuppressWarnings(PublicMethod)
  *
+ * @property array $data
+ * @property array $dictionary
+ * @property Day $firstDay
+ * @property Day $lastDay
+ * @property string $period
  */
 class Exchange extends Schema\Entity
 {
@@ -36,7 +41,7 @@ class Exchange extends Schema\Entity
         ];
     }
 
-    public function setPeriod(\DateTimeInterface $firstDay, \DateTimeInterface $lastDay, $period = 'day'): static
+    public function setPeriod(\DateTimeInterface $firstDay, \DateTimeInterface $lastDay, string $period = 'day'): static
     {
         $this->firstDay = (new Day())->setDateTime($firstDay);
         $this->lastDay = (new Day())->setDateTime($lastDay);
@@ -44,7 +49,7 @@ class Exchange extends Schema\Entity
         return $this;
     }
 
-    public function addDictionaryEntry($variable, $type = 'string', $description = '', $reference = ''): static
+    public function addDictionaryEntry(mixed $variable, string $type = 'string', string $description = '', string $reference = ''): static
     {
         $position = count($this['dictionary']);
         $this['dictionary'][$position] = [
@@ -58,7 +63,7 @@ class Exchange extends Schema\Entity
     }
 
     /**
-     * @param (float|int|string)[] $values
+     * @param mixed $values
      *
      *
      * @return void
@@ -67,6 +72,9 @@ class Exchange extends Schema\Entity
     {
         if (!is_array($values) && !$values instanceof \Traversable) {
             throw new \Exception("Values have to be of type array");
+        }
+        if (!is_array($values)) {
+            $values = iterator_to_array($values, false);
         }
         if (count($this->dictionary) != count($values)) {
             throw new \Exception("Mismatching dictionary settings for values (count mismatch)");
@@ -93,7 +101,7 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
-    public function getPositionByName(string $name)
+    public function getPositionByName(string $name): mixed
     {
         if (isset($this->dictionary)) {
             foreach ($this->dictionary as $entry) {
@@ -105,7 +113,7 @@ class Exchange extends Schema\Entity
         return false;
     }
 
-    public function withCalculatedTotals(array $keysToCalculate = ['count'], $dateName = 'name'): static
+    public function withCalculatedTotals(array $keysToCalculate = ['count'], string $dateName = 'name'): static
     {
         $entity = clone $this;
         $namePosition = $this->getPositionByName($dateName);
@@ -116,7 +124,7 @@ class Exchange extends Schema\Entity
                 $calculatePosition = $this->getPositionByName($name);
                 foreach ($this->data as $item) {
                     foreach ($item as $position => $data) {
-                        if (is_numeric($data) && $calculatePosition == $position) {
+                        if (is_numeric($data) && $calculatePosition == $position && is_numeric($totals[$position])) {
                             $totals[$position] += $data;
                         }
                     }
@@ -146,7 +154,7 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
-    public function withRequestsSum($keysToCalculate = ['requestscount']): static
+    public function withRequestsSum(mixed $keysToCalculate = ['requestscount']): static
     {
         $entity = clone $this;
         $sum = [];
@@ -164,7 +172,43 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
-    public function withAverage($keyToCalculate): static
+    /**
+     * Returns all dates containing at least one recorded request.
+     *
+     * @return string[]
+     */
+    public function getDatesWithRequests(): array
+    {
+        $dates = [];
+        $reservedKeys = [
+            'sum',
+            'average_processingtime',
+            'average_processingtime_overall',
+        ];
+
+        foreach ($this->data as $name => $entries) {
+            if (in_array($name, $reservedKeys, true) || !is_iterable($entries)) {
+                continue;
+            }
+
+            foreach ($entries as $date => $entry) {
+                if (
+                    is_array($entry)
+                    && is_numeric($entry['requestscount'] ?? null)
+                    && (int) $entry['requestscount'] > 0
+                ) {
+                    $dates[(string) $date] = true;
+                }
+            }
+        }
+
+        $dates = array_keys($dates);
+        sort($dates);
+
+        return $dates;
+    }
+
+    public function withAverage(mixed $keyToCalculate): static
     {
         $entity = clone $this;
         $average = [];
@@ -175,8 +219,8 @@ class Exchange extends Schema\Entity
                 continue;
             }
 
-            $average[$name . '_sum'] = 0;
-            $average[$name . '_count'] = 0;
+            $sum = 0;
+            $count = 0;
 
             foreach ($entry as $dateItem) {
                 if (!is_array($dateItem) && !($dateItem instanceof \Traversable)) {
@@ -190,13 +234,15 @@ class Exchange extends Schema\Entity
                         continue;
                     }
 
-                    $average[$name . '_sum'] += $value;
-                    $average[$name . '_count']++;
+                    $sum += $value;
+                    $count++;
                 }
             }
 
-            $average[$name] = $average[$name . '_count'] > 0
-                ? round($average[$name . '_sum'] / $average[$name . '_count'], 2)
+            $average[$name . '_sum'] = $sum;
+            $average[$name . '_count'] = $count;
+            $average[$name] = $count > 0
+                ? $sum / $count
                 : null;
         }
 
@@ -215,7 +261,7 @@ class Exchange extends Schema\Entity
             return $entity;
         }
 
-        $reserved = ['sum', 'average_processingtime'];
+        $reserved = ['sum', 'average_processingtime', 'average_processingtime_overall'];
         $tailStatNames = [
             self::REQUEST_STAT_NAME_UNCATEGORIZED,
             self::REQUEST_STAT_NAME_NONEXISTENT,
@@ -269,7 +315,39 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
-    public function getCalculatedTotals()
+    public function withWeightedAverageProcessingTime(): static
+    {
+        $entity = clone $this;
+        $weightedSum = 0.0;
+        $totalCount = 0;
+        $excludedNames = [
+            'sum',
+            'average_processingtime',
+            'average_processingtime_overall',
+        ];
+
+        foreach ($entity->data as $name => $dateItems) {
+            if (in_array($name, $excludedNames, true) || !is_iterable($dateItems)) {
+                continue;
+            }
+
+            foreach ($dateItems as $dateItem) {
+                $processingTime = $dateItem['processingtime'] ?? null;
+                $requestCount = $dateItem['requestscount'] ?? null;
+                if (!is_numeric($processingTime) || !is_numeric($requestCount) || $requestCount <= 0) {
+                    continue;
+                }
+
+                $weightedSum += (float) $processingTime * (int) $requestCount;
+                $totalCount += (int) $requestCount;
+            }
+        }
+        $entity->data['average_processingtime_overall'] = $totalCount > 0 ? $weightedSum / $totalCount : null;
+
+        return $entity;
+    }
+
+    public function getCalculatedTotals(): mixed
     {
         foreach (array_reverse($this->data) as $item) {
             foreach ($item as $data) {
@@ -320,7 +398,7 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
-    public function getGroupedHashSet(array $fields, array $hashfields)
+    public function getGroupedHashSet(array $fields, array $hashfields): mixed
     {
         $list = [];
         if (count($fields)) {
@@ -345,9 +423,7 @@ class Exchange extends Schema\Entity
             }
 
             foreach ($list as $key => $row) {
-                if ($row instanceof Exchange) {
-                    $list[$key] = $row->getGroupedHashSet($fields, $hashfields);
-                }
+                $list[$key] = $row->getGroupedHashSet($fields, $hashfields);
             }
         } else {
             return $this->getHashData($hashfields, true);

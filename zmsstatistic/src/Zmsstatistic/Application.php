@@ -52,13 +52,13 @@ class Application extends \BO\Slim\Application
     const int SESSION_DURATION = ZMS_STATISTIC_SESSION_DURATION;
 
     /** @var string */
-    public static $includeUrl = '/terminvereinbarung/statistic';
+    public static ?string $includeUrl = '/terminvereinbarung/statistic';
     /**
      * language preferences
      */
     public static string $locale = 'de';
     /** @var array */
-    public static $supportedLanguages = array(
+    public static array $supportedLanguages = array(
         // Default language
         'de' => array(
             'name'    => 'Deutsch',
@@ -77,13 +77,21 @@ class Application extends \BO\Slim\Application
      */
 
     /** @var bool */
-    public static $isImageAllowed = false;
+    public static bool $isImageAllowed = false;
 
     /*
      * -----------------------------------------------------------------------
      * ZMS API access
      */
     public static ?Http $http = null;
+
+    public static function http(): Http
+    {
+        if (self::$http instanceof Http) {
+            return self::$http;
+        }
+        throw new \RuntimeException('HTTP client is not initialized');
+    }
 
     public static array $http_curl_config = array();
 

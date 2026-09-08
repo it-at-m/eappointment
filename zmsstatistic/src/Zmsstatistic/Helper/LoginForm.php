@@ -83,8 +83,9 @@ class LoginForm
         return $collection;
     }
 
-    public static function writeWorkstationUpdate($data, $workstation): bool
+    public static function writeWorkstationUpdate(mixed $data, mixed $workstation): bool
     {
+        $result = false;
         if (isset($workstation->useraccount)) {
             $formData = $data->getValues();
             $workstation->setValidatedName($formData);
@@ -92,7 +93,7 @@ class LoginForm
             $workstation->setValidatedScope($formData);
             $workstation->setValidatedAppointmentsOnly($formData);
             unset($workstation->useraccount['departments']);
-            $result = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
+            $result = \App::http()->readPostResult('/workstation/', $workstation)->getEntity();
         }
         return ($result) ? true : false;
     }

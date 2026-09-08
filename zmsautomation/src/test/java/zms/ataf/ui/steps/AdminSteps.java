@@ -1,9 +1,7 @@
 package zms.ataf.ui.steps;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
@@ -34,6 +32,7 @@ import io.cucumber.java.de.Dann;
 import io.cucumber.java.de.Gegebenseien;
 import io.cucumber.java.de.Und;
 import io.cucumber.java.de.Wenn;
+import zms.ataf.helpers.BerlinTime;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
@@ -115,6 +114,12 @@ public class AdminSteps {
         case "Ok":
             COUNTER_PROCESSING_STATION_PAGE.clickOnOkButton();
             break;
+        case "Zurück zum aktuellen Vorgang":
+            PROCESSING_STATION_SECTION.clickStayOnCurrentProcessInConfirmDialog();
+            break;
+        case "Aktuellen Termin fertig stellen und Kunden aufrufen":
+            PROCESSING_STATION_SECTION.clickFinishAndCallSelectedInConfirmDialog();
+            break;
         default:
             throw new IllegalArgumentException("For button \"" + button + "\" no action is implemented yet!");
         }
@@ -164,7 +169,7 @@ public class AdminSteps {
     public void wenn_sie_in_feld_string_den_text_string_eingeben(String field, String text) {
         text = TestDataHelper.transformTestData(text);
         if ("Datum bis".equals(field) && "<heute+14_tage>".equals(text)) {
-            text = LocalDate.now().plusDays(14).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+            text = BerlinTime.today().plusDays(14).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         }
         switch (field) {
         case "Platz-Nr. oder Tresen":
@@ -179,7 +184,7 @@ public class AdminSteps {
             // if the feature specifies 17:00, interpret it as "now plus up to 8 hours,
             // but never later than 22:00" in Europe/Berlin.
             if ("17:00".equals(text)) {
-                LocalTime now = LocalTime.now(ZoneId.of("Europe/Berlin")).truncatedTo(ChronoUnit.MINUTES);
+                LocalTime now = BerlinTime.now().truncatedTo(ChronoUnit.MINUTES);
                 LocalTime maxByOffset = now.plusHours(8);
                 LocalTime latestAllowed = LocalTime.of(22, 0);
                 LocalTime effective = maxByOffset.isBefore(latestAllowed) ? maxByOffset : latestAllowed;
@@ -947,6 +952,35 @@ public class AdminSteps {
     @Und("wird die Zeit seit Kundenaufruf unter Kundeninformation angezeigt.")
     public void wird_die_zeit_seit_kundenaufruf_unter_kundeninformation_angezeigt() {
         PROCESSING_STATION_SECTION.checkForTimeSinceCustomerCallUnderCustomerInformation();
+    }
+
+    @Dann("erscheint das Bestätigungsfenster zum Wechsel des Warteschlangen-Kunden.")
+    public void erscheint_das_bestaetigungsfenster_zum_wechsel_des_warteschlangen_kunden() {
+        PROCESSING_STATION_SECTION.assertCallOtherProcessConfirmDialogVisible();
+    }
+
+    @Dann("erscheint kein Bestätigungsfenster zum Wechsel des Warteschlangen-Kunden.")
+    public void erscheint_kein_bestaetigungsfenster_zum_wechsel_des_warteschlangen_kunden() {
+        PROCESSING_STATION_SECTION.assertCallOtherProcessConfirmDialogNotVisible();
+    }
+
+    @Dann("erscheint die Fehlermeldung, dass bereits ein Vorgang aufgerufen ist.")
+    public void erscheint_die_fehlermeldung_dass_bereits_ein_vorgang_aufgerufen_ist() {
+        PROCESSING_STATION_SECTION.assertAlreadyCalledProcessErrorVisible();
+    }
+
+    @Und("ist die Schaltfläche {string} sichtbar.")
+    public void ist_die_schaltflaeche_sichtbar(String button) {
+        if ("Ja, Kunde erschienen".equals(button)) {
+            PROCESSING_STATION_SECTION.assertCustomerAppearedButtonVisible();
+            return;
+        }
+        throw new IllegalArgumentException("For button \"" + button + "\" no visibility check is implemented yet!");
+    }
+
+    @Und("Sie ggf. die Statistikbearbeitung abschließen.")
+    public void sie_ggf_die_statistikbearbeitung_abschliessen() {
+        PROCESSING_STATION_SECTION.completeStatisticsFinishIfPresent();
     }
 
     @Wenn("Sie unter der Standortkonfiguration auf die Schaltfläche {string} klicken.")

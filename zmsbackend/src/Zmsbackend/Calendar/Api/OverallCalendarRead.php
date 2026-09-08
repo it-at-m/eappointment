@@ -86,7 +86,8 @@ class OverallCalendarRead extends \BO\Zmsbackend\Api\BaseController
         $avail = new \BO\Zmsbackend\Availability\Service\Availability();
 
         foreach ($scopeIds as $scopeId) {
-            $list = $avail->readList($scopeId, 2, $from, $until);
+            $scope = new \BO\Zmsentities\Scope(['id' => $scopeId]);
+            $list = $avail->readAvailabilityListByScope($scope, 0, $from, $until);
 
             for ($day = $from; $day <= $until; $day = $day->modify('+1 day')) {
                 $dateKey = $day->format('Y-m-d');

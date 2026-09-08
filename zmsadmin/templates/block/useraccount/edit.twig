@@ -152,7 +152,6 @@
             {{ formgroup(
                 {
                     "label": "Behörde:",
-                    "description": metadata.departments.description,
                     "errors": (exception and exception.data.departments.messages is defined) ? exception.data.departments.messages : []
                 },
                 [{

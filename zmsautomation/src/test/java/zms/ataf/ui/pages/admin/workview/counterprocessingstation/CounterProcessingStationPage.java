@@ -940,7 +940,8 @@ public class CounterProcessingStationPage extends AdminPage {
 
     public Duration getFinishedAppointmentProcessingTime(String customer) {
         ScenarioLogManager.getLogger().info("Trying to get processing time for " + customer + " under the finished appointments table...");
-        String xpath = "//table[@id='table-finished-appointments']//tr[td[position() = 3 and contains(., '" + customer + "')]]/td[7]";
+        // Columns: 6=Wartezeit, 7=Wegezeit, 8=Bearbeitungszeit (Wegezeit added in ZMSKVR-1250)
+        String xpath = "//table[@id='table-finished-appointments']//tr[td[position() = 3 and contains(., '" + customer + "')]]/td[8]";
         WebElement processingTimeElement = DRIVER.findElement(By.xpath(xpath));
         Assert.assertTrue(processingTimeElement.isDisplayed(), "Customer '" + customer + "' not found in finished appointments!");
         String processingTimeText = processingTimeElement.getText();

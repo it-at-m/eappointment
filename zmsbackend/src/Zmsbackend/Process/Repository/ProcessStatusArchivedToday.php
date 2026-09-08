@@ -14,5 +14,5 @@ class ProcessStatusArchivedToday extends ProcessStatusArchived
      * @var String TABLE mysql table reference
      */
     public const string TABLE = 'buergerarchivtoday';
-    const string DELETE_ALL = 'DELETE FROM buergerarchivtoday';
+    const string DELETE_BEFORE_DATE = 'DELETE FROM buergerarchivtoday WHERE Datum < :theDay';
 }

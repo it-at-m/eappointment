@@ -78,8 +78,8 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
         $result = $this->middleware->process($request, $handler);
 
         $this->assertSame($response->getStatusCode(), $result->getStatusCode());
-        $this->assertSame('58', $result->getHeaderLine('X-RateLimit-Remaining'));
-        $this->assertSame('60', $result->getHeaderLine('X-RateLimit-Limit'));
+        $this->assertSame('598', $result->getHeaderLine('X-RateLimit-Remaining'));
+        $this->assertSame('600', $result->getHeaderLine('X-RateLimit-Limit'));
         $this->assertNotEmpty($result->getHeaderLine('X-RateLimit-Reset'));
     }
 
@@ -104,7 +104,7 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
 
         $currentTime = time();
         $requestData = [
-            'count' => 60,
+            'count' => 600,
             'timestamp' => $currentTime
         ];
         
@@ -169,8 +169,8 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
         $result = $this->middleware->process($request, $handler);
 
         $this->assertSame($response->getStatusCode(), $result->getStatusCode());
-        $this->assertSame('59', $result->getHeaderLine('X-RateLimit-Remaining'));
-        $this->assertSame('60', $result->getHeaderLine('X-RateLimit-Limit'));
+        $this->assertSame('599', $result->getHeaderLine('X-RateLimit-Remaining'));
+        $this->assertSame('600', $result->getHeaderLine('X-RateLimit-Limit'));
         $this->assertNotEmpty($result->getHeaderLine('X-RateLimit-Reset'));
     }
 
@@ -206,8 +206,8 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
         $result = $this->middleware->process($request, $handler);
 
         $this->assertSame($response->getStatusCode(), $result->getStatusCode());
-        $this->assertSame('59', $result->getHeaderLine('X-RateLimit-Remaining'));
-        $this->assertSame('60', $result->getHeaderLine('X-RateLimit-Limit'));
+        $this->assertSame('599', $result->getHeaderLine('X-RateLimit-Remaining'));
+        $this->assertSame('600', $result->getHeaderLine('X-RateLimit-Limit'));
     }
     
     public function testBackoffExponentialGrowth(): void

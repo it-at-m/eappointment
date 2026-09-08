@@ -8,9 +8,9 @@ on:
         required: false
         default: true
         type: boolean
-  # Scheduled on main only until ~18k Psalm findings are cleared (PR/push would fail every CI).
+  # Scheduled on next only until ~18k Psalm findings are cleared (PR/push would fail every CI).
   # Re-enable pull_request / push when errorLevel is stricter or debt is baselined.
-  # GitHub Actions cron is UTC; schedule runs on the default branch (main) only.
+  # GitHub Actions cron is UTC; schedule runs on the default branch (next) only.
   # workflow_dispatch works from any branch (including next) for manual verification.
   schedule:
     - cron: '0 4 * * *' # 06:00 Europe/Berlin (CEST) / 05:00 (CET)
@@ -137,7 +137,7 @@ jobs:
 
       - name: Upload SARIF results
         if: always() && steps.sarif.outputs.exists == 'true'
-        uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4.37.7
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
         with:
           sarif_file: results-${{ matrix.project }}.sarif
           checkout_path: ${{ matrix.project }}
@@ -257,7 +257,7 @@ jobs:
 
       - name: Upload monorepo SARIF results
         if: always() && steps.sarif_monorepo.outputs.exists == 'true'
-        uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4.37.7
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
         with:
           sarif_file: results-monorepo.sarif
           category: .github/workflows/psalm.yml:psalm-dead-code

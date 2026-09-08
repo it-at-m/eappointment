@@ -36,6 +36,7 @@ class Workstation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
             `SessionID`=SHA2(?, 256),
             `sessionExpiry`=?,
             `Datum`=?,
+            `lastUpdate`=?,
             `Arbeitsplatznr`="",
             `aufrufzusatz`="",
             `StandortID`=0

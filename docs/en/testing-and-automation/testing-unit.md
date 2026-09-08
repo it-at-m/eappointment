@@ -1,24 +1,10 @@
 # Unit Testing
 
-To run unit tests locally refer to the [Github Workflows](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/unit-tests.yaml) and in your local docker container run:
+To run unit tests locally refer to the [Github Workflows](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/unit-tests.yaml) and in your local container run:
 
 ## Unit Testing the PHP Modules
 
-### Using DDEV
-
-```bash
-ddev ssh
-```
-
-```bash
-cd {zmsadmin, zmscalldisplay, zmsdldb, zmsentities, zmsmessaging, zmsslim, zmsstatistic, zmsticketprinter}
-```
-
-```bash
-./vendor/bin/phpunit
-```
-
-### Using Podman
+Interactive:
 
 ```bash
 podman exec -it zms-web bash
@@ -31,6 +17,14 @@ cd {zmsadmin, zmscalldisplay, zmsdldb, zmsentities, zmsmessaging, zmsslim, zmsst
 ```bash
 ./vendor/bin/phpunit
 ```
+
+Local `zms-web` mounts `.devcontainer/php/xdebug.ini` with `xdebug.mode=debug,develop` and `xdebug.start_with_request=yes`. That makes PHPUnit (especially **zmsadmin** and other Slim apps) hang or run very slowly on macOS Podman. Turn Xdebug off for the PHPUnit process:
+
+```bash
+podman exec -it zms-web bash -lc 'export XDEBUG_MODE=off; cd zmsadmin && ./vendor/bin/phpunit --no-coverage'
+```
+
+Swap `zmsadmin` for the module you need. Use `export XDEBUG_MODE=off;` before `cd`. `XDEBUG_MODE=off cd zmsadmin && ./vendor/bin/phpunit` only applies the variable to `cd`, so PHPUnit still runs with the debugger enabled.
 
 Useful flags for `./vendor/bin/phpunit`:
 
@@ -49,22 +43,13 @@ Useful flags for `./vendor/bin/phpunit`:
 
 For `zmsclient` you need the php base image which starts a local mock server. This json in the mocks must match the signature the entity returned in the requests (usually this is the issue whenever tests fail in `zmsclient`).
 
-**Using Docker:**
-
-```bash
-cd zmsclient
-docker compose down && docker compose up -d && docker exec zmsclient-test-1 ./vendor/bin/phpunit
-```
-
-**Using Podman:**
-
 ```bash
 cd zmsclient
 ./zmsclient-test
 ./zmsclient-test --filter "testSetKeyBasic"
 ```
 
-The `zmsclient-test` script automatically detects and uses Docker or Podman, restarts containers for clean state, and runs PHPUnit tests.
+The `zmsclient-test` script starts the mock and test containers and runs PHPUnit.
 
 #### Traditional Method (overwrites local DB)
 
@@ -72,13 +57,11 @@ For **zmsbackend**, test data must be imported. Please note that this will overw
 
 **zmsbackend** (unified REST API and database module for `/terminvereinbarung/api/2`):
 
-Using DDEV or Podman:
-
 ```bash
 ./zmsbackend/zmsbackend-test
 ```
 
-Or manually (inside `zms-web` / `ddev ssh`):
+Or manually (inside `zms-web`):
 
 ```bash
 cd zmsbackend && bin/importTestData --commit
@@ -91,8 +74,7 @@ Run your tests in clean, disposable containers to ensure they don’t affect you
 
 ```bash
 # Enter your web container
-podman exec -it zms-web bash  # Podman
-ddev ssh                      # DDEV
+podman exec -it zms-web bash
 
 # Run zmsbackend tests
 ./zmsbackend/zmsbackend-test                    # Run all tests

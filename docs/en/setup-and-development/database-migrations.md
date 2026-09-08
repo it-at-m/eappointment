@@ -10,34 +10,6 @@ For a full local database reset (base schema, test data, migrations, cron jobs),
 
 ## Running migrations locally
 
-### DDEV
-
-Check which migrations are pending (dry run):
-
-```bash
-ddev exec "cd zmsbackend && bin/migrate"
-```
-
-Apply all pending migrations:
-
-```bash
-ddev exec "cd zmsbackend && bin/migrate --update"
-```
-
-Apply only expand-phase migrations (see below):
-
-```bash
-ddev exec "cd zmsbackend && bin/migrate --update --phase=expand"
-```
-
-Apply only contract-phase migrations:
-
-```bash
-ddev exec "cd zmsbackend && bin/migrate --update --phase=contract"
-```
-
-### Podman
-
 Check which migrations are pending (dry run):
 
 ```bash

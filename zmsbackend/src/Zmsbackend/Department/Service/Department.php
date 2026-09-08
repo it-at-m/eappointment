@@ -196,9 +196,6 @@ class Department extends \BO\Zmsbackend\Base
         if ($entity->toProperty()->links->isAvailable()) {
             $this->writeDepartmentLinks($lastInsertId, $entity->links);
         }
-        if ($entity->toProperty()->dayoff->isAvailable()) {
-            $this->writeDepartmentDayoffs($lastInsertId, $entity->dayoff);
-        }
         if ($entity->toProperty()->email->isAvailable()) {
             $this->updateDepartmentMail(
                 $lastInsertId,
@@ -224,9 +221,6 @@ class Department extends \BO\Zmsbackend\Base
         if ($entity->toProperty()->links->isAvailable()) {
             $this->writeDepartmentLinks($departmentId, $entity->links);
         }
-        if ($entity->toProperty()->dayoff->isAvailable()) {
-            $this->writeDepartmentDayoffs($departmentId, $entity->dayoff);
-        }
         if ($entity->toProperty()->email->isAvailable()) {
             $this->updateDepartmentMail(
                 $departmentId,
@@ -239,36 +233,6 @@ class Department extends \BO\Zmsbackend\Base
         return $this->readEntity($departmentId, 0, true);
     }
 
-    /**
-     * @param false|string $departmentId
-     *
-     * @return void
-     */
-    protected function writeDepartmentDayoffs(string|false $departmentId, $dayoffList)
-    {
-        if (!$departmentId) {
-            throw new \BO\Zmsbackend\Department\Exception\InvalidId();
-        }
-        $existingDayoffs = (new \BO\Zmsbackend\Dayoff\Service\DayOff())->readOnlyByDepartmentId($departmentId);
-        if ($existingDayoffs->count()) {
-            foreach ($existingDayoffs as $item) {
-                $query = new \BO\Zmsbackend\Dayoff\Service\DayOff();
-                $query->deleteEntity($item->getId());
-            }
-        }
-
-        foreach ($dayoffList as $dayoff) {
-            $query = new \BO\Zmsbackend\Dayoff\Repository\DayOff(\BO\Zmsbackend\Query\Base::INSERT);
-            $query->addValues(
-                [
-                    'behoerdenid' => $departmentId,
-                    'Feiertag' => $dayoff['name'],
-                    'Datum' => (new \DateTimeImmutable('@' . $dayoff['date']))->format('Y-m-d')
-                ]
-            );
-            $this->writeItem($query);
-        }
-    }
 
     /**
      * @param false|string $departmentId

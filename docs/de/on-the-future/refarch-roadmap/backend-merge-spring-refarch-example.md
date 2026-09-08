@@ -56,7 +56,7 @@ PHP **`zmsbackend`** hat die **`zmsdb`- vs. `zmsapi`-Trennung** bereits entfernt
 
 7. **Betrieb und Sicherheit out of the box** — Spring Boot Actuator, Micrometer-Metriken, strukturiertes Logging und RefArch-Sicherheitsmuster (Keycloak, API-Gateway) entsprechen dem Betrieb anderer Münchner IT-Produkte — kein Einzelstück-PHP-Stack.
 
-8. **Schnellere, sicherere Auslieferung** — JUnit und Spring Boot Test für Unit-/Integrationstests; ATAF und REST Assured in `zmsautomation` bereits im Einsatz. Kleinere, reproduzierbare Container-Images verkürzen Deploy-Zeiten und reduzieren „läuft nur in meinem DDEV“-Drift.
+8. **Schnellere, sicherere Auslieferung** — JUnit und Spring Boot Test für Unit-/Integrationstests; ATAF und REST Assured in `zmsautomation` bereits im Einsatz. Kleinere, reproduzierbare Container-Images verkürzen Deploy-Zeiten und reduzieren „läuft nur auf meinem Rechner“-Drift.
 
 9. **Einfachere Wiederverwendung und Einarbeitung** — Gleicher Stack wie bürgerorientierte RefArch-Komponenten (`refarch-gateway`, `zmscitizenview`). Neue Teammitglieder und andere Städte folgen dokumentierten RefArch-Konventionen statt ZMS-spezifischer PHP-Paketgrenzen.
 

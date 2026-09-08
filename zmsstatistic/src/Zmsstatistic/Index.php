@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class Index extends BaseController
 {
-    protected $withAccess = false;
+    protected bool $withAccess = false;
 
     /**
      * @SuppressWarnings(Param)
@@ -29,12 +29,13 @@ class Index extends BaseController
         array $args
     ): ResponseInterface {
         try {
-            $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+            $workstation = \App::http()->readGetResult('/workstation/')->getEntity();
         } catch (\Exception $workstationexception) {
             $workstation = null;
         }
 
-        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+        $config = \App::http()->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $input = $request->getParsedBody();
         $oidclogin = $request->getAttribute('validator')->getParameter('oidclogin')->isString()->getValue();
         if ($request->getMethod() === 'POST') {
@@ -79,8 +80,11 @@ class Index extends BaseController
         }
     }
 
+    /**
+     * @return mixed
+     */
     #[\Override]
-    protected function testLogin($input)
+    protected function testLogin(mixed $input): mixed
     {
         $userAccount = new Useraccount(array(
             'id' => $input['loginName'],
@@ -88,9 +92,12 @@ class Index extends BaseController
             'departments' => array('id' => 0) // required in schema validation
         ));
         try {
-            $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
+            /** @var mixed $workstation */
+            $workstation = \App::http()->readPostResult('/workstation/login/', $userAccount)->getEntity();
 
-            $sessionHash = hash('sha256', $workstation->authkey);
+            /** @var mixed $authkey */
+            $authkey = $workstation->authkey;
+            $sessionHash = hash('sha256', $authkey);
             \App::$log->info('Login successful', [
                 'event' => 'auth_login_success',
                 'timestamp' => date('c'),
@@ -128,7 +135,7 @@ class Index extends BaseController
                 throw $exception;
             } elseif (
                 '' != $exception->template
-                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
+                && $this->exceptionTemplateExists($template)
             ) {
                 $exceptionData = [
                   'template' => $template,
@@ -148,13 +155,12 @@ class Index extends BaseController
         }
         return $exceptionData;
     }
-    protected function getProviderList($config): array
+    protected function getProviderList(mixed $config): array
     {
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider') ?? '');
         $oidcproviderlist = [];
         foreach (\BO\Slim\Middleware\OAuthMiddleware::$authInstances as $provider => $authInstance) {
             if (
-                0 < count($allowedProviderList) &&
                 class_exists($authInstance) &&
                 in_array($provider, $allowedProviderList)
             ) {

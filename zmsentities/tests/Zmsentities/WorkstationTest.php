@@ -75,6 +75,13 @@ class WorkstationTest extends EntityCommonTests
         $entity->testDepartmentList();
     }
 
+    public function testGetDepartmentListWhenUseraccountHasNoDepartments()
+    {
+        $entity = $this->getExample();
+        unset($entity->getUseraccount()['departments']);
+        $this->assertEquals(0, $entity->getDepartmentList()->count());
+    }
+
     public function testGetVariantName()
     {
         $entity = $this->getExample();

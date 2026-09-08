@@ -5,7 +5,7 @@
 # which is likely not running in local development environments.
 # To enable these tests, ensure the old buergeransicht frontend is running at http://localhost:8082
 # and remove the @ignore tag from the scenario tags.
-Funktionalität: Default
+Funktionalität: Terminverschiebung über das Servicetelefon
    
    	#Kund*in ruft an und bittet um Terminverschiebung oder ein Terminschreiben kommt unzustellbar zurück. Der Sachbearbeiter ändert im Terminvereinbarungssystem den Terminzeitpunkt für den Kunden.
    	@ignore @web @buergeransicht @ZMS-1542 @ZMS-1538 @ZMS-2228 @ZMS-1825 @ZMS-2290 @ZMS-2202 @ZMS-2385 @E2E @automatisiert @executeLocally
