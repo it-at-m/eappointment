@@ -78,37 +78,117 @@ class Ticketprinter extends \BO\Zmsbackend\Base
             throw new \BO\Zmsbackend\Ticketprinter\Exception\TooManyButtons();
         }
 
-        foreach ($ticketprinter->buttons as $key => $button) {
-            if ('scope' == $button['type']) {
-                $query = new \BO\Zmsbackend\Scope\Service\Scope();
-                $scope = $query->readWithWorkstationCount($button['scope']['id'], $now);
-                if (! $scope) {
-                    throw new \BO\Zmsbackend\Ticketprinter\Exception\UnvalidButtonList();
-                }
-                $ticketprinter->buttons[$key]['scope'] = $scope;
-                $ticketprinter->buttons[$key]['enabled'] = $query->readIsEnabled($scope->id, $now);
-                $ticketprinter->buttons[$key]['name'] = $scope->getPreference('ticketprinter', 'buttonName');
-            }
+        $ticketprinter->buttons = $this->keepExistingButtons($ticketprinter->buttons, $now);
+        if (! $this->hasLocationButton($ticketprinter)) {
+            throw new \BO\Zmsbackend\Ticketprinter\Exception\UnvalidButtonList();
+        }
 
-            if ('request' == $button['type']) {
-                $scopeId = explode('-', $button['request']['id'])[0];
-                $requestId = explode('-', $button['request']['id'])[1];
-                $request = (new \BO\Zmsbackend\Request\Service\Request())->readEntity('dldb', $requestId);
-                $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readWithWorkstationCount($scopeId, $now);
+        $this->readExceptions($ticketprinter);
+        return $this->readWithContactData($ticketprinter);
+    }
 
-                if (! $request || ! $scope) {
-                    throw new \BO\Zmsbackend\Ticketprinter\Exception\UnvalidButtonList();
-                }
-                $ticketprinter->buttons[$key]['scope'] = $scope;
-
-                $ticketprinter->buttons[$key]['requestId'] = $requestId;
-                $ticketprinter->buttons[$key]['enabled'] = (new \BO\Zmsbackend\Scope\Service\Scope())->readIsEnabled($scope->id, $now);
-                $ticketprinter->buttons[$key]['name'] = $request->getProperty('name');
+    /**
+     * Drop missing scope/request buttons so one stale Standort-ID cannot take
+     * down the whole ticketprinter. Fail only when no location button remains.
+     *
+     * @param iterable<int, array<string, mixed>> $buttons
+     * @return array<int, array<string, mixed>>
+     */
+    private function keepExistingButtons(iterable $buttons, \DateTimeImmutable $now): array
+    {
+        $kept = [];
+        foreach ($buttons as $button) {
+            $resolved = $this->resolveButton($button, $now);
+            if ($resolved !== null) {
+                $kept[] = $resolved;
             }
         }
-        $this->readExceptions($ticketprinter);
-        $ticketprinter = $this->readWithContactData($ticketprinter);
-        return $ticketprinter;
+        return $kept;
+    }
+
+    /**
+     * @param array<string, mixed> $button
+     * @return array<string, mixed>|null
+     */
+    private function resolveButton(array $button, \DateTimeImmutable $now): ?array
+    {
+        if (($button['type'] ?? '') === 'scope') {
+            return $this->resolveScopeButton($button, $now);
+        }
+        if (($button['type'] ?? '') === 'request') {
+            return $this->resolveRequestButton($button, $now);
+        }
+        return $button;
+    }
+
+    /**
+     * @param array<string, mixed> $button
+     * @return array<string, mixed>|null
+     */
+    private function resolveScopeButton(array $button, \DateTimeImmutable $now): ?array
+    {
+        $scopeId = $button['scope']['id'];
+        $query = new \BO\Zmsbackend\Scope\Service\Scope();
+        $scope = $query->readWithWorkstationCount($scopeId, $now);
+        if (! $scope) {
+            \App::$log->warning('Ticketprinter: skip missing scope id', [
+                'scopeId' => $scopeId,
+            ]);
+            return null;
+        }
+        $button['scope'] = $scope;
+        $button['enabled'] = $query->readIsEnabled($scope->id, $now);
+        $button['name'] = $scope->getPreference('ticketprinter', 'buttonName');
+        return $button;
+    }
+
+    /**
+     * @param array<string, mixed> $button
+     * @return array<string, mixed>|null
+     */
+    private function resolveRequestButton(array $button, \DateTimeImmutable $now): ?array
+    {
+        $parts = explode('-', (string) $button['request']['id']);
+        $scopeId = $parts[0];
+        $requestId = $parts[1] ?? '';
+        $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readWithWorkstationCount($scopeId, $now);
+        if (! $scope) {
+            \App::$log->warning('Ticketprinter: skip missing scope id', [
+                'scopeId' => $scopeId,
+            ]);
+            return null;
+        }
+        $request = $this->readRequestOrNull($requestId);
+        if (! $request) {
+            \App::$log->warning('Ticketprinter: skip missing request id', [
+                'requestId' => $requestId,
+            ]);
+            return null;
+        }
+        $button['scope'] = $scope;
+        $button['requestId'] = $requestId;
+        $button['enabled'] = (new \BO\Zmsbackend\Scope\Service\Scope())->readIsEnabled($scope->id, $now);
+        $button['name'] = $request->getProperty('name');
+        return $button;
+    }
+
+    private function readRequestOrNull(string $requestId): ?\BO\Zmsentities\Request
+    {
+        try {
+            return (new \BO\Zmsbackend\Request\Service\Request())->readEntity('dldb', $requestId);
+        } catch (\BO\Zmsbackend\Request\Exception\RequestNotFound) {
+            return null;
+        }
+    }
+
+    private function hasLocationButton(Entity $ticketprinter): bool
+    {
+        foreach ($ticketprinter->buttons as $button) {
+            if (in_array($button['type'] ?? '', ['scope', 'request'], true)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
