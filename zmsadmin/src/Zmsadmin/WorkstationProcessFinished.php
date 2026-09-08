@@ -112,7 +112,7 @@ class WorkstationProcessFinished extends BaseController
         $process['status'] = ('pending' != $process['status']) ? 'finished' : $process['status'];
         \App::$http->readPostResult('/process/status/finished/', new Process($process))->getEntity();
         $redirectParams = [];
-        if ($nextProcessId) {
+        if ($nextProcessId !== null) {
             $redirectParams['calledprocess'] = $nextProcessId;
         }
         return Render::redirect(
