@@ -9,7 +9,6 @@ namespace BO\Zmsadmin;
 
 use BO\Slim\Render;
 use BO\Zmsentities\Exception\WorkstationMissingAssignedProcess;
-use BO\Zmsentities\Process;
 use BO\Zmsentities\Workstation;
 
 class WorkstationProcessProcessing extends BaseController
@@ -28,7 +27,7 @@ class WorkstationProcessProcessing extends BaseController
         if (!$workstation instanceof Workstation) {
             throw new WorkstationMissingAssignedProcess();
         }
-        if (!$workstation->process instanceof Process || ! $workstation->process->hasId()) {
+        if (! $workstation->process->hasId()) {
             throw new WorkstationMissingAssignedProcess();
         }
 
