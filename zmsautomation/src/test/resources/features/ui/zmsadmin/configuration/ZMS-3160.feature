@@ -2,7 +2,7 @@
 Funktionalität: Behörde und Standort nur mit Bestätigung löschen
 
 	
-	@web @zmsadmin @ZMS-3160 @ZMS-3162 @automatisiert @executeLocally
+	@web @zmsadmin @configuration @technical-admin @ZMS-3160 @ZMS-3162 @automatisiert @executeLocally
 	Szenario: [AUT] Löschen von Behörden und Standorte mit Bestätigung hinterlegen
 		Wenn Sie zur Webseite der Administration navigieren.
 		Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.

@@ -1,4 +1,4 @@
-@rest @zmscitizenapi @ZMSKVR-1124
+@rest @zmscitizenapi @dldb-special-cases @citizen @ZMSKVR-1124
 Feature: Citizen API: Ruppertstraße Passkalender, Hauptkalender and Abholung (jump-in)
   As a citizen
   I want to complete a full appointment booking from offices-and-services through confirm

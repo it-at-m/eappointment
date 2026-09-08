@@ -1,4 +1,4 @@
-@rest @zmscitizenapi @ZMSKVR-1046
+@rest @zmscitizenapi @dldb-special-cases @citizen @ZMSKVR-1046
 Feature: Citizen API: Ruppertstraße shared booking (Haupt 10489 + Ausbildung 10503)
   As a citizen API client
   I want available-calendar with both shared-booking peers to return office buckets for Haupt and Ausbildung

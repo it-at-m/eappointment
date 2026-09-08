@@ -2,7 +2,7 @@
 Funktionalität: Während der Bearbeitung auf einen anderen Warteschlangen-Kunden wechseln
 
 
-	@web @zmsadmin @ZMSKVR-1385 @automatisiert @executeLocally
+	@web @zmsadmin @queue @clerk @ZMSKVR-1385 @automatisiert @executeLocally
 	Szenario: [AUT] Im Status aufgerufen bleibt der aktuelle Vorgang mit Fehlermeldung bestehen
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
@@ -23,7 +23,7 @@ Funktionalität: Während der Bearbeitung auf einen anderen Warteschlangen-Kunde
 		Und  ist die Schaltfläche "Ja, Kunde erschienen" sichtbar.
 
 
-	@web @zmsadmin @ZMSKVR-1385 @automatisiert @executeLocally
+	@web @zmsadmin @queue @clerk @ZMSKVR-1385 @automatisiert @executeLocally
 	Szenario: [AUT] Option 2 - Zurück zum aktuellen Vorgang lässt Bearbeitungszeit unverändert
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
@@ -49,7 +49,7 @@ Funktionalität: Während der Bearbeitung auf einen anderen Warteschlangen-Kunde
 		Dann Die Bearbeitungszeit-H:mm:ss für "<TestData.Kunde1>" sollte zwischen "00:00:30" und "00:02:00" liegen.
 
 
-	@web @zmsadmin @ZMSKVR-1385 @automatisiert @executeLocally
+	@web @zmsadmin @queue @clerk @ZMSKVR-1385 @automatisiert @executeLocally
 	Szenario: [AUT] Option 1 - Aktuellen Termin fertig stellen und ausgewählten Kunden aufrufen
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.

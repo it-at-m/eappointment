@@ -2,7 +2,7 @@
 Funktionalität: Kundenstatistik mit Testdaten initialisieren
 
 	
-	@web @zmsadmin @ZMS-2389 @ZMS-1738 @ZMS-1557 @E2E @automatisiert @executeLocally
+	@web @zmsadmin @queue @clerk @ZMS-2389 @ZMS-1738 @ZMS-1557 @E2E @automatisiert @executeLocally
 	Szenario: Kundenstatistik -Dateninitialisierung
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.

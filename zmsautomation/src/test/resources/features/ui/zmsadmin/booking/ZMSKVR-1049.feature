@@ -2,7 +2,7 @@
 Funktionalität: Interner Terminkunde für zms-Variante ohne Eintrag in provider.data.services
 
 
-    @web @zmsadmin @ZMSKVR-1049 @automatisiert @executeLocally
+    @web @zmsadmin @booking @clerk @ZMSKVR-1049 @automatisiert @executeLocally
     Szenario: Terminkunde Gewerbeanmeldung Telefon über Tresen trotz fehlender JSON-services
         Wenn Sie zur Webseite der Administration navigieren.
         Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
@@ -14,7 +14,7 @@ Funktionalität: Interner Terminkunde für zms-Variante ohne Eintrag in provider
         Wenn Sie einen Terminkunden mit der Dienstleistung "Gewerbeanmeldung Telefon", Uhrzeit, name, gültige E-Mail-Adresse und die Anmerkung "TerminkundeTelefon" buchen.
         Dann Es erscheint ein Pop-Up-Fenster "Termin erfolgreich eingetragen" und der Termin ist auch in der Warteschlange sichtbar.
 
-    @web @zmsadmin @ZMSKVR-1049 @automatisiert @executeLocally
+    @web @zmsadmin @booking @clerk @ZMSKVR-1049 @automatisiert @executeLocally
     Szenario: Terminkunde Gewerbeanmeldung Video über Tresen trotz fehlender JSON-services
         Wenn Sie zur Webseite der Administration navigieren.
         Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.

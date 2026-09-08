@@ -2,7 +2,7 @@
 Funktionalität: Test-Tresen-Kundin zur Warteschlange hinzufügen
 
 	
-	@web @zmsadmin @ZMS-1549 @ZMS-1547 @E2E @automatisiert @executeLocally
+	@web @zmsadmin @queue @clerk @ZMS-1549 @ZMS-1547 @E2E @automatisiert @executeLocally
 	Szenario: Test-Tresen-Kund*in hinzufügen
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
