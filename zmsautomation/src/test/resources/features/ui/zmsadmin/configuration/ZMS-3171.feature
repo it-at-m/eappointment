@@ -1,7 +1,8 @@
 #language: de
 Funktionalität: Vorbelegung „Mit E-Mail-Bestätigung“ ist konfigurierbar
 
-	
+	Die Vorbelegung „Mit E-Mail-Bestätigung“ ist je Standort konfigurierbar.
+
 	@web @zmsadmin @configuration @technical-admin @ZMS-3171 @ZMS-3162 @automatisiert @executeLocally
 	Szenario: [AUT] Vorbelegung von "Mit E-Mail Bestätigung" ist konfigurierbar
 		Wenn Sie zur Webseite der Administration navigieren.

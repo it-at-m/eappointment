@@ -1,6 +1,7 @@
 #language: de
 Funktionalität: Termin nach Aufruf weiterleiten
 
+	Ein aufgerufener Termin kann danach an einen anderen Standort weitergeleitet werden.
 	#Termin-Weiterleitung
 
 	@web @zmsadmin @rebooking @clerk @ZMS-2702 @ZMS-1808 @executeLocally

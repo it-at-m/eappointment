@@ -1,7 +1,8 @@
 #language: de
 Funktionalität: Test-Tresen-Kundin zur Warteschlange hinzufügen
 
-	
+	Spontan- und Terminkunden können zur Warteschlange hinzugefügt werden.
+
 	@web @zmsadmin @queue @clerk @ZMS-1549 @ZMS-1547 @E2E @automatisiert @executeLocally
 	Szenario: Test-Tresen-Kund*in hinzufügen
 		Wenn Sie zur Webseite der Administration navigieren.

@@ -1,6 +1,8 @@
 #language: de
 Funktionalität: Clusterstandorte auch für Sachbearbeitung anzeigen
 
+	Auch für die Sachbearbeitung sind die Standorte eines Clusters anzeig- und aufrufbar.
+
 	@web @zmsadmin @queue @clerk @ZMS-2577 @automatisiert @executeLocally
 		Szenario: [AUT] Test zu "Alle Clusterstandorte" auch für Sachbearbeitung ermöglichen
 		Wenn Sie zur Webseite der Administration navigieren.

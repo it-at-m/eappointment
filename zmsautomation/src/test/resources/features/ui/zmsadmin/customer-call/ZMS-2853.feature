@@ -1,7 +1,8 @@
 #language: de
 Funktionalität: Kundeninformation direkt nach Aufruf anzeigen
 
-	
+	Die Kundeninformationen werden direkt nach dem Aufruf eines Kunden angezeigt.
+
 	@web @zmsadmin @customer-call @clerk @ZMS-2853 @ZMS-1499 @ZMS-3162 @executeLocally
 	Szenario: [AUT] Kundeninformation direkt nach Aufruf anzeigen
 		Wenn Sie zur Webseite der Administration navigieren.
