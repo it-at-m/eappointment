@@ -1,11 +1,8 @@
 #language: de
 Funktionalität: Arbeitszeiten am Standort konfigurieren
 
-	Als Terminadministrator lassen sich Arbeitszeiten und deren Gültigkeitszeiträume definieren.
+	Der Terminadministrator kann Arbeitszeiten und deren Gültigkeitszeiträume frei definieren.
 
-	#Testschwerpunkt: Der Terminadministrator kann Arbeitszeiten und deren Gültigkeitszeiträume frei definieren
-	#
-	# 
 	@web @zmsadmin @opening-hours @appointment-admin @ZMS-878 @ZMS-811 @ZMS-1910 @ZMS-2228 @ZMS-2561 @ZMS-2385 @ZMS-2479 @ZMS-2290 @ZMS-2202 @automatisiert @executeLocally
 	Szenario: [AUT] Arbeitszeiten konfigurierbar
 		Wenn Sie zur Webseite der Administration navigieren.
