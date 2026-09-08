@@ -24,7 +24,7 @@ if (($token = getenv('ZMS_CONFIG_SECURE_TOKEN')) === false || $token === '') {
     throw new \RuntimeException('ZMS_CONFIG_SECURE_TOKEN environment variable must be set');
 }
 
-define('ZMS_CONFIG_SECURE_TOKEN', getenv('ZMS_CONFIG_SECURE_TOKEN'));
+define('ZMS_CONFIG_SECURE_TOKEN', $token);
 
 if (!defined('ZMS_ADMIN_TWIG_CACHE')) {
     $value = getenv('ZMS_ADMIN_TWIG_CACHE');
@@ -57,7 +57,7 @@ class Application extends \BO\Slim\Application
      * allow cluster wide process calls
      */
 
-    public static $allowClusterWideCall = true;
+    public static bool $allowClusterWideCall = true;
 
     /**
      * image preferences
