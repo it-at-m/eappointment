@@ -73,6 +73,7 @@ const cucumberStrings = {
     accordionHint:
       "Click a feature to view its Gherkin. Only one feature is expanded at a time. Pick a branch below the search to load that branch's `.feature` files, status, and run command. The play icon copies a command to start the test on the selected branch and opens [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). Status icons are pass/fail from the latest published zmsautomation run on the selected branch.",
     noFiles: "No `.feature` files found.",
+    uncategorized: "Uncategorized",
   },
   de: {
     title: "Aktuelle Cucumber-Tests in zmsautomation",
@@ -89,6 +90,7 @@ const cucumberStrings = {
     accordionHint:
       "Klicke auf ein Feature, um das Gherkin anzuzeigen. Es ist immer nur ein Feature aufgeklappt. Wähle unter der Suche einen Branch, um dessen `.feature`-Dateien, Status und Startbefehl zu laden. Das Play-Symbol kopiert einen Befehl, um den Test auf dem gewählten Branch zu starten, und öffnet [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). Status-Icons zeigen Bestanden/Fehlgeschlagen vom letzten veröffentlichten zmsautomation-Lauf auf dem gewählten Branch.",
     noFiles: "Keine `.feature`-Dateien gefunden.",
+    uncategorized: "Unkategorisiert",
   },
 };
 
@@ -114,6 +116,7 @@ const collectCucumberFeatures = () => {
     const parts = rel.split("/");
     const testType = parts[0] ?? "other";
     const module = parts[1] ?? "misc";
+    const category = parts.length > 3 ? (parts[2] ?? "") : "";
     if (!grouped.has(testType)) {
       grouped.set(testType, new Map());
     }
@@ -141,8 +144,9 @@ const collectCucumberFeatures = () => {
       sourceUrl: `${FEATURE_SOURCE_BASE}/${rel}`,
       testType,
       module,
+      category,
     };
-    moduleMap.get(module).push({ abs: file, rel, id });
+    moduleMap.get(module).push({ abs: file, rel, id, category });
   }
 
   return { featureFiles, grouped, meta };
@@ -155,7 +159,7 @@ const renderCucumberDocFor = (locale, catalog) => {
   const lines = [
     "---",
     "outline:",
-    "  level: [2, 3]",
+    "  level: [2, 4]",
     "---",
     "",
     `# ${t.title}`,
@@ -191,7 +195,11 @@ const renderCucumberDocFor = (locale, catalog) => {
     for (const [testType, modules] of grouped) {
       lines.push(`<CucumberFeatureGroup test-type="${testType}">`);
       lines.push("");
-      lines.push(`## ${testType.toUpperCase()}`);
+      const testTypeCount = [...modules.values()].reduce(
+        (sum, moduleFiles) => sum + moduleFiles.length,
+        0
+      );
+      lines.push(`## ${testType.toUpperCase()} (${testTypeCount})`);
       lines.push("");
       for (const [module, files] of sortModuleEntries(modules)) {
         const moduleTitle =
@@ -202,13 +210,25 @@ const renderCucumberDocFor = (locale, catalog) => {
           `<CucumberFeatureGroup test-type="${testType}" module="${module}">`
         );
         lines.push("");
-        lines.push(`### ${moduleTitle}`);
+        lines.push(`### ${moduleTitle} (${files.length})`);
         lines.push("");
         if (testType === "ui" && module === "buergeransicht") {
           lines.push(t.deprecated);
           lines.push("");
         }
+        const byCategory = new Map();
+        const uncategorized = [];
         for (const item of files) {
+          if (item.category) {
+            if (!byCategory.has(item.category)) {
+              byCategory.set(item.category, []);
+            }
+            byCategory.get(item.category).push(item);
+          } else {
+            uncategorized.push(item);
+          }
+        }
+        const renderFeatureRow = (item) => {
           const raw = fs
             .readFileSync(item.abs, "utf8")
             .replaceAll("```", "\\`\\`\\`")
@@ -221,6 +241,23 @@ const renderCucumberDocFor = (locale, catalog) => {
           lines.push("");
           lines.push("</CucumberFeatureRow>");
           lines.push("");
+        };
+        const sortedCategories = [...byCategory.entries()].sort(([a], [b]) =>
+          a.localeCompare(b)
+        );
+        for (const [category, items] of sortedCategories) {
+          lines.push(`#### ${category} (${items.length})`);
+          lines.push("");
+          for (const item of items) {
+            renderFeatureRow(item);
+          }
+        }
+        if (uncategorized.length) {
+          lines.push(`#### ${t.uncategorized} (${uncategorized.length})`);
+          lines.push("");
+          for (const item of uncategorized) {
+            renderFeatureRow(item);
+          }
         }
         lines.push("</CucumberFeatureGroup>");
         lines.push("");
