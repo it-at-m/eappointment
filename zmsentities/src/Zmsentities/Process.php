@@ -13,9 +13,14 @@ use BO\Zmsentities\Helper\Property;
  *
  * Schema-backed entity (ArrayObject::ARRAY_AS_PROPS); document dynamic keys for Psalm.
  *
+ * @property int|string $id
+ * @property string $authKey
  * @property int $createTimestamp
  * @property Scope|array $scope
  * @property string $status
+ * @property string $displayNumber
+ * @property string|null $showUpTime
+ * @property string|null $parkedBy
  */
 class Process extends Schema\Entity
 {
