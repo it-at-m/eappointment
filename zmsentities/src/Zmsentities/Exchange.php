@@ -6,6 +6,11 @@ namespace BO\Zmsentities;
  * @SuppressWarnings(Complexity)
  * @SuppressWarnings(PublicMethod)
  *
+ * @property array $data
+ * @property array $dictionary
+ * @property Day $firstDay
+ * @property Day $lastDay
+ * @property string $period
  */
 class Exchange extends Schema\Entity
 {
