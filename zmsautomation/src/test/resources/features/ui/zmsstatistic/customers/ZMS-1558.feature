@@ -1,7 +1,5 @@
 #language: de
-Funktionalität: Kundenstatistik in der Statistik-Oberfläche öffnen
-
-	Das Controlling kann die Kundenstatistik in der Statistik-Oberfläche öffnen und prüfen.
+Funktionalität: Das Controlling kann die Kundenstatistik in der Statistik-Oberfläche öffnen und prüfen.
 
 	@web @zmsstatistic @customers @controlling @ZMS-1558 @ZMS-1738 @ZMS-1557 @E2E @automatisiert @executeLocally
 	Szenario: Kundenstatistik

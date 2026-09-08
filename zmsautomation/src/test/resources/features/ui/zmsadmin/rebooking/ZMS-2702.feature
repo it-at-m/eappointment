@@ -1,7 +1,5 @@
 #language: de
-Funktionalität: Termin nach Aufruf weiterleiten
-
-	Nach dem Aufruf kann der Termin an einen anderen Standort weitergegeben werden, sodass der Terminkunde dort bedient wird.
+Funktionalität: Nach dem Aufruf kann der Termin an einen anderen Standort weitergegeben werden, sodass der Terminkunde dort bedient wird.
 
 	@web @zmsadmin @rebooking @clerk @ZMS-2702 @ZMS-1808 @executeLocally
 	Szenario: [AUT] Termin-Weiterleitung [zms-test]

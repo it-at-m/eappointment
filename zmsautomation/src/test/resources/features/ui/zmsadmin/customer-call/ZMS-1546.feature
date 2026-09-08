@@ -1,7 +1,5 @@
 #language: de
-Funktionalität: Sachbearbeitung signalisiert Bereitschaft und ruft die nächste Wartenummer
-
-	Ein Sachbearbeiter signalisiert seine Bereitschaft und das Terminvereinbarungssystem findet die nächste Wartenummer (in diesem Fall die für den  fälligen Terminkunden) und zeigt diese auf der Aufrufanlage an.
+Funktionalität: Ein Sachbearbeiter signalisiert seine Bereitschaft und das Terminvereinbarungssystem findet die nächste Wartenummer (in diesem Fall die für den fälligen Terminkunden) und zeigt diese auf der Aufrufanlage an.
 
 	@web @zmsadmin @customer-call @clerk @ZMS-1546 @ZMS-1545 @E2E @automatisiert @executeLocally
 	Szenario: Ein Sachbearbeiter signalisiert seine Bereitschaft und das Terminvereinbarungssystem findet die nächste Wartenummer
