@@ -26,6 +26,10 @@ const CUCUMBER_FEATURES_JSON = path.resolve(
   import.meta.dirname,
   "data/cucumber-features.json"
 );
+const CUCUMBER_NAVIGATION_JSON = path.resolve(
+  import.meta.dirname,
+  "data/cucumber-navigation.json"
+);
 
 const toPosix = (p) => p.split(path.sep).join("/");
 
@@ -38,23 +42,26 @@ const writeJsonIfChanged = (target, value) => {
   }
 };
 
-const listFeatureFiles = (dir) => {
-  const out = [];
+const listSubdirs = (dir) => {
   if (!fs.existsSync(dir)) {
-    return out;
+    return [];
   }
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-  for (const entry of entries) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      out.push(...listFeatureFiles(full));
-      continue;
-    }
-    if (entry.isFile() && entry.name.endsWith(".feature")) {
-      out.push(full);
-    }
+  return fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort((a, b) => a.localeCompare(b));
+};
+
+const listFeatureFilesInDir = (dir) => {
+  if (!fs.existsSync(dir)) {
+    return [];
   }
-  return out.sort((a, b) => a.localeCompare(b));
+  return fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".feature"))
+    .map((entry) => path.join(dir, entry.name))
+    .sort((a, b) => a.localeCompare(b));
 };
 
 const cucumberStrings = {
@@ -74,6 +81,8 @@ const cucumberStrings = {
       "Click a feature to view its Gherkin. Only one feature is expanded at a time. Pick a branch below the search to load that branch's `.feature` files, status, and run command. The play icon copies a command to start the test on the selected branch and opens [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). Status icons are pass/fail from the latest published zmsautomation run on the selected branch.",
     noFiles: "No `.feature` files found.",
     uncategorized: "Uncategorized",
+    emptyCategory:
+      "> No scenarios yet for this category — add the first `.feature` file here.",
   },
   de: {
     title: "Aktuelle Cucumber-Tests in zmsautomation",
@@ -91,6 +100,8 @@ const cucumberStrings = {
       "Klicke auf ein Feature, um das Gherkin anzuzeigen. Es ist immer nur ein Feature aufgeklappt. Wähle unter der Suche einen Branch, um dessen `.feature`-Dateien, Status und Startbefehl zu laden. Das Play-Symbol kopiert einen Befehl, um den Test auf dem gewählten Branch zu starten, und öffnet [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). Status-Icons zeigen Bestanden/Fehlgeschlagen vom letzten veröffentlichten zmsautomation-Lauf auf dem gewählten Branch.",
     noFiles: "Keine `.feature`-Dateien gefunden.",
     uncategorized: "Unkategorisiert",
+    emptyCategory:
+      "> Noch keine Szenarien für diese Kategorie – lege hier die erste `.feature`-Datei an.",
   },
 };
 
@@ -106,24 +117,15 @@ const sortModuleEntries = (moduleMap) =>
   });
 
 const collectCucumberFeatures = () => {
-  const featureFiles = listFeatureFiles(FEATURES_ROOT);
   const grouped = new Map();
   const meta = {};
   const usedIds = new Set();
+  const featureFiles = [];
+  const navigation = [];
 
-  for (const file of featureFiles) {
+  const registerFeature = (file, { testType, module, category }) => {
+    featureFiles.push(file);
     const rel = toPosix(path.relative(FEATURES_ROOT, file));
-    const parts = rel.split("/");
-    const testType = parts[0] ?? "other";
-    const module = parts[1] ?? "misc";
-    const category = parts.length > 3 ? (parts[2] ?? "") : "";
-    if (!grouped.has(testType)) {
-      grouped.set(testType, new Map());
-    }
-    const moduleMap = grouped.get(testType);
-    if (!moduleMap.has(module)) {
-      moduleMap.set(module, []);
-    }
     const raw = fs.readFileSync(file, "utf8");
     const parsed = parseFeatureMeta(raw);
     let id = toFeatureAnchorId(rel);
@@ -146,10 +148,39 @@ const collectCucumberFeatures = () => {
       module,
       category,
     };
-    moduleMap.get(module).push({ abs: file, rel, id, category });
+    return { abs: file, rel, id, category };
+  };
+
+  for (const testType of listSubdirs(FEATURES_ROOT)) {
+    const modules = new Map();
+    grouped.set(testType, modules);
+    const testTypeDir = path.join(FEATURES_ROOT, testType);
+    for (const module of listSubdirs(testTypeDir)) {
+      const moduleDir = path.join(testTypeDir, module);
+      const categories = new Map();
+      modules.set(module, categories);
+      for (const category of listSubdirs(moduleDir)) {
+        const categoryDir = path.join(moduleDir, category);
+        const items = listFeatureFilesInDir(categoryDir).map((file) =>
+          registerFeature(file, { testType, module, category })
+        );
+        categories.set(category, items);
+        navigation.push({ testType, module, category, count: items.length });
+      }
+      const rootItems = listFeatureFilesInDir(moduleDir).map((file) =>
+        registerFeature(file, { testType, module, category: "" })
+      );
+      categories.set("", rootItems);
+      navigation.push({
+        testType,
+        module,
+        category: "",
+        count: rootItems.length,
+      });
+    }
   }
 
-  return { featureFiles, grouped, meta };
+  return { featureFiles, grouped, meta, navigation };
 };
 
 const renderCucumberDocFor = (locale, catalog) => {
@@ -196,37 +227,31 @@ const renderCucumberDocFor = (locale, catalog) => {
       lines.push(`<CucumberFeatureGroup test-type="${testType}">`);
       lines.push("");
       const testTypeCount = [...modules.values()].reduce(
-        (sum, moduleFiles) => sum + moduleFiles.length,
+        (sum, categories) =>
+          sum +
+          [...categories.values()].reduce((n, items) => n + items.length, 0),
         0
       );
       lines.push(`## ${testType.toUpperCase()} (${testTypeCount})`);
       lines.push("");
-      for (const [module, files] of sortModuleEntries(modules)) {
+      for (const [module, categories] of sortModuleEntries(modules)) {
         const moduleTitle =
           testType === "ui" && module === "buergeransicht"
             ? `${module} ${t.deprecatedSuffix}`
             : module;
+        const moduleCount = [...categories.values()].reduce(
+          (sum, items) => sum + items.length,
+          0
+        );
         lines.push(
           `<CucumberFeatureGroup test-type="${testType}" module="${module}">`
         );
         lines.push("");
-        lines.push(`### ${moduleTitle} (${files.length})`);
+        lines.push(`### ${moduleTitle} (${moduleCount})`);
         lines.push("");
         if (testType === "ui" && module === "buergeransicht") {
           lines.push(t.deprecated);
           lines.push("");
-        }
-        const byCategory = new Map();
-        const uncategorized = [];
-        for (const item of files) {
-          if (item.category) {
-            if (!byCategory.has(item.category)) {
-              byCategory.set(item.category, []);
-            }
-            byCategory.get(item.category).push(item);
-          } else {
-            uncategorized.push(item);
-          }
         }
         const renderFeatureRow = (item) => {
           const raw = fs
@@ -242,12 +267,20 @@ const renderCucumberDocFor = (locale, catalog) => {
           lines.push("</CucumberFeatureRow>");
           lines.push("");
         };
-        const sortedCategories = [...byCategory.entries()].sort(([a], [b]) =>
+        const uncategorized = categories.get("") ?? [];
+        const sortedCategories = [...categories.entries()].sort(([a], [b]) =>
           a.localeCompare(b)
         );
         for (const [category, items] of sortedCategories) {
+          if (!category) {
+            continue;
+          }
           lines.push(`#### ${category} (${items.length})`);
           lines.push("");
+          if (!items.length) {
+            lines.push(t.emptyCategory);
+            lines.push("");
+          }
           for (const item of items) {
             renderFeatureRow(item);
           }
@@ -273,6 +306,7 @@ const renderCucumberDocFor = (locale, catalog) => {
 const renderCucumberDoc = () => {
   const catalog = collectCucumberFeatures();
   writeJsonIfChanged(CUCUMBER_FEATURES_JSON, catalog.meta);
+  writeJsonIfChanged(CUCUMBER_NAVIGATION_JSON, catalog.navigation);
   for (const [target, locale] of CUCUMBER_DOC_TARGETS) {
     const next = renderCucumberDocFor(locale, catalog);
     fs.mkdirSync(path.dirname(target), { recursive: true });
