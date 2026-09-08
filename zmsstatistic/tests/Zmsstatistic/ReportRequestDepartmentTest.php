@@ -111,6 +111,15 @@ class ReportRequestDepartmentTest extends Base
             (string) $response->getBody()
         );
         $this->assertStringContainsString('Reisepass beantragen', (string) $response->getBody());
+        $this->assertStringContainsString('Dienstleistung wurde nicht erfasst', (string) $response->getBody());
+        $this->assertStringContainsString(
+            'Dienstleistung konnte nicht erbracht werden',
+            (string) $response->getBody()
+        );
+        $this->assertMatchesRegularExpression(
+            '/Ø Bearbeitungsdauer \(unabhängig von DL\) \/ Summe[\s\S]*?>\s*98\s*</',
+            (string) $response->getBody()
+        );
     }
 
     public function testWithDownloadXLSX()
@@ -163,9 +172,26 @@ class ReportRequestDepartmentTest extends Base
             [ ]
         );
         $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
-        
-        // Clean up output buffer (discard any captured output)
-        ob_end_clean();
+        $tempfile = tempnam(sys_get_temp_dir(), 'request-report-department-');
+        file_put_contents($tempfile, (string) $response->getBody());
+        try {
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($tempfile);
+            $sheet = $spreadsheet->getActiveSheet();
+            $foundSumRow = false;
+            foreach ($sheet->getRowIterator() as $row) {
+                $rowIndex = $row->getRowIndex();
+                if ($sheet->getCell('A' . $rowIndex)->getValue() === 'Ø Bearbeitungsdauer (unabhängig von DL) / Summe') {
+                    $foundSumRow = true;
+                    $this->assertSame(98, (int) $sheet->getCell('C' . $rowIndex)->getValue());
+                    $this->assertSame(98, (int) $sheet->getCell('D' . $rowIndex)->getValue());
+                    break;
+                }
+            }
+            $this->assertTrue($foundSumRow, 'The XLSX export must contain a Summe row');
+        } finally {
+            unlink($tempfile);
+            ob_end_clean();
+        }
     }
 
     public function testWithoutAccess()
