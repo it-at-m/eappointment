@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-08T06:30:36.854Z",
+  "publishedAt": "2026-09-08T09:23:16.534Z",
   "branches": [
     {
       "name": "next",
@@ -96,6 +96,12 @@
       "slug": "renovate-next-ghcr.io-it-at-m-refarch-refarch-gateway-1.x",
       "runId": "34037729850",
       "runStartedAt": "2026-09-06T13:58:56Z"
+    },
+    {
+      "name": "zmskvr-1631-fix-previous-step-button",
+      "slug": "zmskvr-1631-fix-previous-step-button",
+      "runId": "34206731815",
+      "runStartedAt": "2026-09-08T08:50:52Z"
     }
   ]
 }
