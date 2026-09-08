@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-08T17:36:49.600Z",
+  "publishedAt": "2026-09-08T17:37:06.927Z",
   "branches": [
     {
       "name": "next",
@@ -10,8 +10,8 @@
     {
       "name": "main",
       "slug": "main",
-      "runId": "34247326585",
-      "runStartedAt": "2026-09-08T15:50:25Z"
+      "runId": "34253046898",
+      "runStartedAt": "2026-09-08T16:45:54Z"
     },
     {
       "name": "feature-zmskvr-1049-internal-booking-request-provider",
