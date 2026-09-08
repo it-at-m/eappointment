@@ -1,7 +1,8 @@
 #language: de
 Funktionalität: Kundenstatistik in der Statistik-Oberfläche öffnen
 
-	
+	Die Kundenstatistik lässt sich in der Statistik-Oberfläche öffnen.
+
 	@web @zmsstatistic @customers @controlling @ZMS-1558 @ZMS-1738 @ZMS-1557 @E2E @automatisiert @executeLocally
 	Szenario: Kundenstatistik
 		Wenn Sie zur Webseite der Statistik navigieren.

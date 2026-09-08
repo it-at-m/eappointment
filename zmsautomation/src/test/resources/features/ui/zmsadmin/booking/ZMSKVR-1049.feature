@@ -1,6 +1,7 @@
 #language: de
 Funktionalität: Interner Terminkunde für zms-Variante ohne Eintrag in provider.data.services
 
+	Ein Terminkunde für eine zms-Variante ohne Eintrag in provider.data.services kann über den Tresen gebucht werden.
 
     @web @zmsadmin @booking @clerk @ZMSKVR-1049 @automatisiert @executeLocally
     Szenario: Terminkunde Gewerbeanmeldung Telefon über Tresen trotz fehlender JSON-services

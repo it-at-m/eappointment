@@ -1,6 +1,7 @@
 #language: de
 Funktionalität: Während der Bearbeitung auf einen anderen Warteschlangen-Kunden wechseln
 
+	Während der Bearbeitung kann zwischen Warteschlangen-Kunden gewechselt werden, ohne den laufenden Vorgang zu verlieren.
 
 	@web @zmsadmin @queue @clerk @ZMSKVR-1385 @automatisiert @executeLocally
 	Szenario: [AUT] Im Status aufgerufen bleibt der aktuelle Vorgang mit Fehlermeldung bestehen

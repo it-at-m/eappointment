@@ -1,6 +1,8 @@
 #language: de
 Funktionalität: Arbeitszeiten am Standort konfigurieren
 
+	Als Terminadministrator lassen sich Arbeitszeiten und deren Gültigkeitszeiträume definieren.
+
 	#Testschwerpunkt: Der Terminadministrator kann Arbeitszeiten und deren Gültigkeitszeiträume frei definieren
 	#
 	# 

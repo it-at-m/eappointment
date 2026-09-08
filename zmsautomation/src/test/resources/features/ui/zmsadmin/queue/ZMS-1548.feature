@@ -1,7 +1,8 @@
 #language: de
 Funktionalität: Tresen zeigt die aktuelle Warteschlange
 
-	
+	Die aktuelle Warteschlange ist am Tresen einsehbar.
+
 	@web @zmsadmin @queue @clerk @ZMS-1548 @ZMS-1547 @E2E @automatisiert @executeLocally
 	Szenario: Tresen Übersicht der aktuellen Warteschlange
 		Wenn Sie zur Webseite der Administration navigieren.
