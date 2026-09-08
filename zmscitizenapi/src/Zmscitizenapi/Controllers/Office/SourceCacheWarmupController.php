@@ -15,7 +15,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 class SourceCacheWarmupController extends BaseController
 {
-    private const WARMUP_TOKEN_HEADER = 'X-Source-Cache-Warmup-Token';
+    private const string WARMUP_TOKEN_HEADER = 'X-Source-Cache-Warmup-Token';
 
     private OfficesServicesRelationsService $service;
 

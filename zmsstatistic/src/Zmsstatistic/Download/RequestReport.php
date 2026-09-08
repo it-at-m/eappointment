@@ -16,9 +16,9 @@ use Psr\Http\Message\ResponseInterface;
 
 class RequestReport extends Base
 {
-    public mixed $firstDayDate = null;
+    public ?\DateTime $firstDayDate = null;
 
-    public mixed $lastDayDate = null;
+    public ?\DateTime $lastDayDate = null;
 
     protected array $dateFormatter = [
         'day' => 'Y-m-d',
@@ -75,6 +75,9 @@ class RequestReport extends Base
         }
 
         $dates = [];
+        if (!$this->firstDayDate instanceof \DateTime || !$this->lastDayDate instanceof \DateTime) {
+            throw new \RuntimeException('Report date range is not initialized');
+        }
         $dateTime = clone $this->firstDayDate;
 
         do {

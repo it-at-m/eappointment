@@ -10,6 +10,7 @@ namespace BO\Zmsstatistic;
 
 use BO\Slim\Render;
 use BO\Zmsentities\Exception\UserAccountMissingLogin;
+use BO\Zmsentities\Workstation;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -43,7 +44,10 @@ class Status extends BaseController
             }
             throw $exception;
         }
-        /** @var mixed $workstation */
+
+        if (!$workstation instanceof Workstation) {
+            throw new UserAccountMissingLogin();
+        }
 
         $result = \App::http()->readGetResult('/status/');
         return Render::withHtml(
