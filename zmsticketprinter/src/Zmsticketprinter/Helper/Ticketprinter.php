@@ -11,6 +11,7 @@ namespace BO\Zmsticketprinter\Helper;
 
 use BO\Zmsentities\Ticketprinter as Entity;
 use BO\Zmsentities\Organisation;
+use BO\Zmsclient\Exception as ClientException;
 use BO\Zmsclient\Ticketprinter as TicketprinterClient;
 use BO\Zmsticketprinter\Exception\OrganisationNotFound as OrganisationNotFoundException;
 use Psr\Http\Message\RequestInterface;
@@ -30,6 +31,9 @@ class Ticketprinter
         $this->setRequestParameters($request);
         $this->scopeId = $this->setScopeId($args, $request);
         $this->organisation = $this->readOrganisation();
+        if (null === $this->organisation) {
+            throw new OrganisationNotFoundException();
+        }
         $entity = $this->getAssembledEntity();
 
         //$hash = static::getHashFromRequest($request);
@@ -124,26 +128,48 @@ class Ticketprinter
         return $entity;
     }
 
-    protected function readOrganisation(): Organisation
+    protected function readOrganisation(): ?Organisation
     {
         $organisation = null;
         $ticketprinter = $this->getAssembledEntity();
         if ($this->scopeId) {
-            $organisation = \App::$http->readGetResult(
-                '/scope/' . $this->scopeId . '/organisation/',
-                ['resolveReferences' => 2]
-            )->getEntity();
+            $organisation = $this->readOrganisationByScopeId($this->scopeId);
         }
         $nextButton = array_shift($ticketprinter->buttons);
         while (! $organisation && $nextButton) {
             if (in_array($nextButton['type'], ['scope', 'request'])) {
-                $organisation = \App::$http->readGetResult(
-                    '/scope/' . $nextButton['scope']['id'] . '/organisation/',
-                    ['resolveReferences' => 2]
-                )->getEntity();
+                $organisation = $this->readOrganisationByScopeId($nextButton['scope']['id']);
             }
             $nextButton = array_shift($ticketprinter->buttons);
         }
         return $organisation;
+    }
+
+    protected function readOrganisationByScopeId(mixed $scopeId): ?Organisation
+    {
+        try {
+            return \App::$http->readGetResult(
+                '/scope/' . $scopeId . '/organisation/',
+                ['resolveReferences' => 2]
+            )->getEntity();
+        } catch (ClientException $exception) {
+            if (! $this->isMissingScope($exception)) {
+                throw $exception;
+            }
+            \App::$log->warning('Ticketprinter: skip missing scope id', [
+                'scopeId' => $scopeId,
+            ]);
+            return null;
+        }
+    }
+
+    protected function isMissingScope(ClientException $exception): bool
+    {
+        if ((int) $exception->getCode() === 404) {
+            return true;
+        }
+        $template = (string) $exception->template;
+        return str_contains($template, 'ScopeNotFound')
+            || str_contains($template, 'OrganisationNotFound');
     }
 }

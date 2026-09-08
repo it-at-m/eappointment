@@ -54,6 +54,30 @@ class TicketprinterTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertEquals('https://service.berlin.de', $entity->buttons[1]['url']);
     }
 
+    public function testSkipsMissingScopeWhenOthersExist()
+    {
+        $now = static::$now;
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $input['buttonlist'] = 's999,s141';
+        $entity = $query->readByButtonList($input->toStructuredButtonList(), $now);
+        $this->assertCount(1, $entity->buttons);
+        $this->assertEquals(141, $entity->buttons[0]['scope']['id']);
+        $this->assertEquals('scope', $entity->buttons[0]['type']);
+    }
+
+    public function testSkipsMissingScopeAndKeepsValidLink()
+    {
+        $now = static::$now;
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $input['buttonlist'] = 's999,s141,l[https://service.berlin.de|Service Berlin]';
+        $entity = $query->readByButtonList($input->toStructuredButtonList(), $now);
+        $this->assertCount(2, $entity->buttons);
+        $this->assertEquals(141, $entity->buttons[0]['scope']['id']);
+        $this->assertEquals('link', $entity->buttons[1]['type']);
+    }
+
     public function testUnvalidButtonListNoCluster()
     {
         $this->expectException('\BO\Zmsbackend\Ticketprinter\Exception\UnvalidButtonList');
