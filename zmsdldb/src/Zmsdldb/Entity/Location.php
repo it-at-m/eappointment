@@ -59,7 +59,7 @@ class Location extends Base
     }
 
     /**
-     * @param String $serviceCsv only check for this serviceCsv
+     * @param string|int|float|null $serviceCsv only check for this serviceCsv
      *
      * @return Array
      */
@@ -87,7 +87,7 @@ class Location extends Base
     /**
      * Check if appointments are available
      *
-     * @param String $serviceCsv only check for this serviceCsv
+     * @param string|int|float|null $serviceCsv only check for this serviceCsv
      * @param Bool $external allow external links, default false
      *
      * @return Bool
