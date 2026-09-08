@@ -2,7 +2,7 @@
 Funktionalität: Button „nicht erschienen“ nach Kundenaufruf
 
 
-  @web @zmsadmin @ZMS-2851 @ZMS-1795 @executeLocally
+  @web @zmsadmin @customer-call @clerk @ZMS-2851 @ZMS-1795 @executeLocally
   Szenario: [AUT] Kunde nach Aufruf nicht erschienen - Button umbenennen
     Wenn Sie zur Webseite der Administration navigieren.
     Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.

@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @ZMSKVR-1571 @executeLocally
+@web @zmscitizenview @booking @citizen @ZMSKVR-1571 @executeLocally
 Feature: CitizenView: Scheidplatz behält Ort; Kontaktfelder nach Login und Zurück
   As a citizen booking at Bürgerbüro Scheidplatz (showAlternativeLocations)
   I want Ort on the Übersicht and phone/Zusatzfelder on Kontakt after Bürger-Login and Zurück

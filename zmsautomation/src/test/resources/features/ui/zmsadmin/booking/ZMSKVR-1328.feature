@@ -2,7 +2,7 @@
 Funktionalität: Terminkunde über Tresen anlegen, aufrufen und abschließen
 
 
-    @web @zmsadmin @ZMSKVR-1328 @automatisiert @executeLocally
+    @web @zmsadmin @booking @clerk @ZMSKVR-1328 @automatisiert @executeLocally
     Szenario: Terminkunde wird über Tresen angelegt, aufgerufen und abgeschlossen
         Wenn Sie zur Webseite der Administration navigieren.
         Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.

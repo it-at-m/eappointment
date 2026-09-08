@@ -1,7 +1,7 @@
 #language: de
 Funktionalität: Aufgerufenen Termin parken
 
-	@web @zmsadmin @ZMS-2578 @automatisiert @executeLocally
+	@web @zmsadmin @queue @clerk @ZMS-2578 @automatisiert @executeLocally
 	Szenario: [AUT] Test Parken aufgerufener Termine
 		#überprüfen, ob bereits für den Standort und den Monat dienstleistungen gebucht wurden.
 		Wenn Sie zur Webseite der Administration navigieren.

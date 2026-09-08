@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @ZMSKVR-1046 @executeLocally
+@web @zmscitizenview @dldb-special-cases @citizen @ZMSKVR-1046 @executeLocally
 Feature: CitizenView: Ruppertstraße shared booking (Ort 10489, Slots 10489 + 10503)
   As a citizen
   I want Wohnsitzanmeldung slots from Haupt and Ausbildung to appear under one Ort

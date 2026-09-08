@@ -3,7 +3,7 @@ Funktionalität: Termin nach Aufruf weiterleiten
 
 	#Termin-Weiterleitung
 
-	@web @zmsadmin @ZMS-2702 @ZMS-1808 @executeLocally
+	@web @zmsadmin @rebooking @clerk @ZMS-2702 @ZMS-1808 @executeLocally
 	Szenario: [AUT] Termin-Weiterleitung [zms-test]
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.

@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @ZMSKVR-1500 @executeLocally @jumpin @pickupCalendar
+@web @zmscitizenview @dldb-special-cases @citizen @ZMSKVR-1500 @executeLocally @jumpin @pickupCalendar
 Feature: CitizenView: bereits aktivierter Confirm-Link zeigt MucBanner
   As a citizen
   I want to reopen an already used confirmation deep link
