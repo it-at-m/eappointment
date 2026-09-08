@@ -22,7 +22,7 @@ class WarehouseReport extends Base
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         if (!empty($args['downloadTitle'])) {
             $title = (string) $args['downloadTitle'];
         } else {

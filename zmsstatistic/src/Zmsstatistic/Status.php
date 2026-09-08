@@ -18,7 +18,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 class Status extends BaseController
 {
-    protected $withAccess = false;
+    protected bool $withAccess = false;
 
     private const array MISSING_LOGIN_TEMPLATES = [
         'BO\\Zmsentities\\Exception\\UserAccountMissingLogin',
@@ -34,17 +34,18 @@ class Status extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         try {
-            $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+            $workstation = \App::http()->readGetResult('/workstation/')->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             if (in_array($exception->template, self::MISSING_LOGIN_TEMPLATES, true)) {
                 throw new UserAccountMissingLogin();
             }
             throw $exception;
         }
+        /** @var mixed $workstation */
 
-        $result = \App::$http->readGetResult('/status/');
+        $result = \App::http()->readGetResult('/status/');
         return Render::withHtml(
             $response,
             'page/status.twig',

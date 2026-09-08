@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class WorkstationSelect extends BaseController
 {
-    protected $resolveLevel = 2;
+    protected int $resolveLevel = 2;
     /**
      * @SuppressWarnings(Parameter)
      * @return ResponseInterface
@@ -26,14 +26,16 @@ class WorkstationSelect extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+    ): mixed {
+        $workstation = \App::http()->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        /** @var mixed $workstation */
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect('index', array('error' => 'login_failed'));
         }
         if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_STATISTIC, $workstation, $response)) {
             return $wrongModuleResponse;
         }
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $input = $request->getParsedBody();
         $formData = [];
         if (is_array($input) && (array_key_exists('scope', $input))) {
@@ -51,6 +53,9 @@ class WorkstationSelect extends BaseController
             }
         }
 
+        /** @var \DateTimeInterface $now */
+        $now = \App::$now;
+
         return Render::withHtml(
             $response,
             'page/workstationSelect.twig',
@@ -59,7 +64,7 @@ class WorkstationSelect extends BaseController
                 'advancedData' => $formData,
                 'workstation' => $this->workstation,
                 'menuActive' => 'select',
-                'today' => \App::$now->format('Y-m-d')
+                'today' => $now->format('Y-m-d')
             )
         );
     }
