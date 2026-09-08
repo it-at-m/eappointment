@@ -1,7 +1,5 @@
 #language: de
-Funktionalität: Tresen zeigt die aktuelle Warteschlange
-
-	Am Tresen ist jederzeit sichtbar, welche Kunden sich aktuell in der Warteschlange befinden.
+Funktionalität: Am Tresen ist jederzeit sichtbar, welche Kunden sich aktuell in der Warteschlange befinden.
 
 	@web @zmsadmin @queue @clerk @ZMS-1548 @ZMS-1547 @E2E @automatisiert @executeLocally
 	Szenario: Tresen Übersicht der aktuellen Warteschlange

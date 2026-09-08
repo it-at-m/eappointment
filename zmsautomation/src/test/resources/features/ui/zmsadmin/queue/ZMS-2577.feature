@@ -1,7 +1,5 @@
 #language: de
-Funktionalität: Clusterstandorte auch für Sachbearbeitung anzeigen
-
-	Auch die Sachbearbeitung kann Cluster-Standorte anzeigen und aufrufen, um Kunden aus dem Cluster zu bedienen.
+Funktionalität: Auch die Sachbearbeitung kann Cluster-Standorte anzeigen und aufrufen, um Kunden aus dem Cluster zu bedienen.
 
 	@web @zmsadmin @queue @clerk @ZMS-2577 @automatisiert @executeLocally
 		Szenario: [AUT] Test zu "Alle Clusterstandorte" auch für Sachbearbeitung ermöglichen

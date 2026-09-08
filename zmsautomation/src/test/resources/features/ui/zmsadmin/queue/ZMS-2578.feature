@@ -1,7 +1,5 @@
 #language: de
-Funktionalität: Aufgerufenen Termin parken
-
-	Ein aufgerufener Termin kann geparkt werden, damit er den Ablauf der Warteschlange nicht blockiert, und später fortgesetzt werden.
+Funktionalität: Ein aufgerufener Termin kann geparkt werden, damit er den Ablauf der Warteschlange nicht blockiert, und später fortgesetzt werden.
 
 	@web @zmsadmin @queue @clerk @ZMS-2578 @automatisiert @executeLocally
 	Szenario: [AUT] Test Parken aufgerufener Termine
