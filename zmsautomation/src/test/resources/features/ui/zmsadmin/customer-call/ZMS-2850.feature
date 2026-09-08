@@ -1,7 +1,7 @@
 #language: de
 Funktionalität: Aufrufhinweis, wenn keine Kunden warten
 
-	Ein Aufrufhinweis erscheint, wenn keine Kunden warten.
+	Wenn niemand in der Warteschlange wartet, erhält der Sachbearbeiter beim Aufrufen einen entsprechenden Hinweis.
 
 	@web @zmsadmin @customer-call @clerk @ZMS-2850 @ZMS-1566 @executeLocally
 	Szenario: [AUT] Aufrufhinweis bei 0 wartenden Kunden

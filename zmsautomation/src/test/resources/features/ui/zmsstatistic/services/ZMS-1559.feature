@@ -1,7 +1,7 @@
 #language: de
 Funktionalität: Dienstleistungsstatistik in der Statistik-Oberfläche öffnen
 
-	Die Dienstleistungsstatistik lässt sich in der Statistik-Oberfläche öffnen.
+	Das Controlling kann die Dienstleistungsstatistik in der Statistik-Oberfläche öffnen und auswerten.
 
 	@web @zmsstatistic @services @controlling @ZMS-1559 @ZMS-1557 @E2E @automatisiert @executeLocally
 	Szenario: Dienstleistungsstatistik
