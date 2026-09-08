@@ -129,12 +129,7 @@ class RequestReport extends Base
                     ? ReportHelper::formatTimeValue($report->data['average_processingtime'][$name])
                     : "0";
                 $rowData[] = $report->data['sum'][$name];
-
-                $includeInTotal = $name !== ReportEntity::REQUEST_STAT_NAME_UNCATEGORIZED
-                    && $name !== ReportEntity::REQUEST_STAT_NAME_NONEXISTENT;
-                if ($includeInTotal) {
-                    $totalSum += (int)($report->data['sum'][$name] ?? 0);
-                }
+                $totalSum += (int)($report->data['sum'][$name] ?? 0);
 
                 foreach ($reportDates as $dateColumn => $dateString) {
                     $requestCount = isset($entry[$dateString])
@@ -142,10 +137,7 @@ class RequestReport extends Base
                         : 0;
 
                     $rowData[] = $requestCount;
-
-                    if ($includeInTotal) {
-                        $dateSums[$dateColumn] += $requestCount;
-                    }
+                    $dateSums[$dateColumn] += $requestCount;
                 }
 
                 $reportData[] = $rowData;
