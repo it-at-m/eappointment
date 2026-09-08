@@ -24,7 +24,7 @@ class ClientReport extends Base
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         $title = 'clientstatistic_' . $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
 
@@ -64,10 +64,13 @@ class ClientReport extends Base
             $reportHeader[] = null;
         }
 
-        foreach (array_keys($report->data[0]) as $headline) {
-            if (!in_array($headline, static::$ignoreColumns)) {
-                if (isset(static::$headlines[$headline])) {
-                    $reportHeader[] = static::$headlines[$headline];
+        $row = $report->data[0];
+        if (is_array($row)) {
+            foreach (array_keys($row) as $headline) {
+                if (!in_array($headline, static::$ignoreColumns)) {
+                    if (isset(static::$headlines[$headline])) {
+                        $reportHeader[] = static::$headlines[$headline];
+                    }
                 }
             }
         }

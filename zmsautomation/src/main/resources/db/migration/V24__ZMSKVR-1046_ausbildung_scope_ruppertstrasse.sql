@@ -5,6 +5,7 @@
 -- (Bürgerbüro Ruppertstraße), mirroring Pass scope 172.
 --
 -- Email for Behörde 58 already exists in V7__standort_email_address_test_data.
+-- CURDATE()/CURTIME() follow zms-db TZ=Europe/Berlin (same calendar day as zms-web).
 --
 -- TODO ZMSKVR-1046: Update later with prod ids (StandortID / scope, InfoDienstleisterID /
 -- officeId, OeffnungszeitID) once the real Ausbildung office and scope exist on prod.

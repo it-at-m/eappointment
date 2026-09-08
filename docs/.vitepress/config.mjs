@@ -2,6 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { writeLogInventory } from "../scripts/generate-log-inventory.mjs";
+import {
+  parseFeatureMeta,
+  toFeatureAnchorId,
+} from "./lib/cucumberFeatureParse.mjs";
 
 const FEATURES_ROOT = path.resolve(
   import.meta.dirname,
@@ -18,26 +22,46 @@ const CUCUMBER_DOC_TARGETS = [
 ];
 const FEATURE_SOURCE_BASE =
   "https://github.com/it-at-m/eappointment/blob/main/zmsautomation/src/test/resources/features";
+const CUCUMBER_FEATURES_JSON = path.resolve(
+  import.meta.dirname,
+  "data/cucumber-features.json"
+);
+const CUCUMBER_NAVIGATION_JSON = path.resolve(
+  import.meta.dirname,
+  "data/cucumber-navigation.json"
+);
 
 const toPosix = (p) => p.split(path.sep).join("/");
 
-const listFeatureFiles = (dir) => {
-  const out = [];
+const writeJsonIfChanged = (target, value) => {
+  const next = `${JSON.stringify(value, null, 2)}\n`;
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  const prev = fs.existsSync(target) ? fs.readFileSync(target, "utf8") : "";
+  if (prev !== next) {
+    fs.writeFileSync(target, next, "utf8");
+  }
+};
+
+const listSubdirs = (dir) => {
   if (!fs.existsSync(dir)) {
-    return out;
+    return [];
   }
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-  for (const entry of entries) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      out.push(...listFeatureFiles(full));
-      continue;
-    }
-    if (entry.isFile() && entry.name.endsWith(".feature")) {
-      out.push(full);
-    }
+  return fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort((a, b) => a.localeCompare(b));
+};
+
+const listFeatureFilesInDir = (dir) => {
+  if (!fs.existsSync(dir)) {
+    return [];
   }
-  return out.sort((a, b) => a.localeCompare(b));
+  return fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".feature"))
+    .map((entry) => path.join(dir, entry.name))
+    .sort((a, b) => a.localeCompare(b));
 };
 
 const cucumberStrings = {
@@ -53,8 +77,12 @@ const cucumberStrings = {
     deprecated:
       "> Deprecated: These scenarios target the legacy buergeransicht frontend from `it-at-m/eappointment-buergeransicht` and are not used for `zmscitizenview`.",
     deprecatedSuffix: "(deprecated)",
-    sourceLabel: "Source",
+    accordionHint:
+      "Click a feature to view its Gherkin. Only one feature is expanded at a time. Pick a branch below the search to load that branch's `.feature` files, status, and run command. The play icon copies a command to start the test on the selected branch and opens [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). Status icons are pass/fail from the latest published zmsautomation run on the selected branch.",
     noFiles: "No `.feature` files found.",
+    uncategorized: "Uncategorized",
+    emptyCategory:
+      "> No scenarios yet for this category — add the first `.feature` file here.",
   },
   de: {
     title: "Aktuelle Cucumber-Tests in zmsautomation",
@@ -68,40 +96,110 @@ const cucumberStrings = {
     deprecated:
       "> Veraltet: Diese Szenarien adressieren das alte buergeransicht-Frontend aus `it-at-m/eappointment-buergeransicht` und werden für `zmscitizenview` nicht mehr verwendet.",
     deprecatedSuffix: "(veraltet)",
-    sourceLabel: "Quelle",
+    accordionHint:
+      "Klicke auf ein Feature, um das Gherkin anzuzeigen. Es ist immer nur ein Feature aufgeklappt. Wähle unter der Suche einen Branch, um dessen `.feature`-Dateien, Status und Startbefehl zu laden. Das Play-Symbol kopiert einen Befehl, um den Test auf dem gewählten Branch zu starten, und öffnet [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). Status-Icons zeigen Bestanden/Fehlgeschlagen vom letzten veröffentlichten zmsautomation-Lauf auf dem gewählten Branch.",
     noFiles: "Keine `.feature`-Dateien gefunden.",
+    uncategorized: "Unkategorisiert",
+    emptyCategory:
+      "> Noch keine Szenarien für diese Kategorie – lege hier die erste `.feature`-Datei an.",
   },
 };
 
-const renderCucumberDocFor = (locale) => {
-  const t = cucumberStrings[locale];
-  const featureFiles = listFeatureFiles(FEATURES_ROOT);
-  const grouped = new Map();
+const sortModuleEntries = (moduleMap) =>
+  [...moduleMap.entries()].sort(([a], [b]) => {
+    if (a === "buergeransicht") {
+      return 1;
+    }
+    if (b === "buergeransicht") {
+      return -1;
+    }
+    return a.localeCompare(b);
+  });
 
-  for (const file of featureFiles) {
+const collectCucumberFeatures = () => {
+  const grouped = new Map();
+  const meta = {};
+  const usedIds = new Set();
+  const featureFiles = [];
+  const navigation = [];
+
+  const registerFeature = (file, { testType, module, category }) => {
+    featureFiles.push(file);
     const rel = toPosix(path.relative(FEATURES_ROOT, file));
-    const parts = rel.split("/");
-    const testType = parts[0] ?? "other";
-    const module = parts[1] ?? "misc";
-    if (!grouped.has(testType)) {
-      grouped.set(testType, new Map());
+    const raw = fs.readFileSync(file, "utf8");
+    const parsed = parseFeatureMeta(raw);
+    let id = toFeatureAnchorId(rel);
+    if (usedIds.has(id)) {
+      let suffix = 2;
+      while (usedIds.has(`${id}-${suffix}`)) {
+        suffix += 1;
+      }
+      id = `${id}-${suffix}`;
     }
-    const moduleMap = grouped.get(testType);
-    if (!moduleMap.has(module)) {
-      moduleMap.set(module, []);
+    usedIds.add(id);
+    meta[id] = {
+      rel,
+      fileName: path.basename(rel),
+      title: parsed.title || path.basename(rel),
+      tags: parsed.tags,
+      scenarioCount: parsed.scenarioCount,
+      sourceUrl: `${FEATURE_SOURCE_BASE}/${rel}`,
+      testType,
+      module,
+      category,
+    };
+    return { abs: file, rel, id, category };
+  };
+
+  for (const testType of listSubdirs(FEATURES_ROOT)) {
+    const modules = new Map();
+    grouped.set(testType, modules);
+    const testTypeDir = path.join(FEATURES_ROOT, testType);
+    for (const module of listSubdirs(testTypeDir)) {
+      const moduleDir = path.join(testTypeDir, module);
+      const categories = new Map();
+      modules.set(module, categories);
+      for (const category of listSubdirs(moduleDir)) {
+        const categoryDir = path.join(moduleDir, category);
+        const items = listFeatureFilesInDir(categoryDir).map((file) =>
+          registerFeature(file, { testType, module, category })
+        );
+        categories.set(category, items);
+        navigation.push({ testType, module, category, count: items.length });
+      }
+      const rootItems = listFeatureFilesInDir(moduleDir).map((file) =>
+        registerFeature(file, { testType, module, category: "" })
+      );
+      categories.set("", rootItems);
+      navigation.push({
+        testType,
+        module,
+        category: "",
+        count: rootItems.length,
+      });
     }
-    moduleMap.get(module).push({ abs: file, rel });
   }
+
+  return { featureFiles, grouped, meta, navigation };
+};
+
+const renderCucumberDocFor = (locale, catalog) => {
+  const t = cucumberStrings[locale];
+  const { featureFiles, grouped } = catalog;
 
   const lines = [
     "---",
     "outline:",
-    "  level: [2, 3]",
+    "  level: [2, 4]",
     "---",
     "",
     `# ${t.title}`,
     "",
     ...t.intro,
+    "",
+    "<CucumberWorkflowStatus />",
+    "",
+    t.accordionHint,
     "",
     `## ${t.patternHeading}`,
     "",
@@ -116,42 +214,89 @@ const renderCucumberDocFor = (locale) => {
     "    Then the response status code should be 200",
     "```",
     "",
+    "<CucumberFeatureSearch />",
+    "",
+    "<CucumberRemoteCatalog />",
+    "",
   ];
 
   if (!featureFiles.length) {
     lines.push(t.noFiles);
   } else {
     for (const [testType, modules] of grouped) {
-      lines.push(`## ${testType.toUpperCase()}`);
+      lines.push(`<CucumberFeatureGroup test-type="${testType}">`);
       lines.push("");
-      for (const [module, files] of modules) {
+      const testTypeCount = [...modules.values()].reduce(
+        (sum, categories) =>
+          sum +
+          [...categories.values()].reduce((n, items) => n + items.length, 0),
+        0
+      );
+      lines.push(`## ${testType.toUpperCase()} (${testTypeCount})`);
+      lines.push("");
+      for (const [module, categories] of sortModuleEntries(modules)) {
         const moduleTitle =
           testType === "ui" && module === "buergeransicht"
             ? `${module} ${t.deprecatedSuffix}`
             : module;
-        lines.push(`### ${moduleTitle}`);
+        const moduleCount = [...categories.values()].reduce(
+          (sum, items) => sum + items.length,
+          0
+        );
+        lines.push(
+          `<CucumberFeatureGroup test-type="${testType}" module="${module}">`
+        );
+        lines.push("");
+        lines.push(`### ${moduleTitle} (${moduleCount})`);
         lines.push("");
         if (testType === "ui" && module === "buergeransicht") {
           lines.push(t.deprecated);
           lines.push("");
         }
-        for (const item of files) {
-          const fileName = path.basename(item.rel);
-          const sourceUrl = `${FEATURE_SOURCE_BASE}/${item.rel}`;
+        const renderFeatureRow = (item) => {
           const raw = fs
             .readFileSync(item.abs, "utf8")
             .replaceAll("```", "\\`\\`\\`")
             .trimEnd();
-          lines.push(`#### \`${fileName}\``);
-          lines.push("");
-          lines.push(`${t.sourceLabel}: [${fileName}](${sourceUrl})`);
+          lines.push(`<CucumberFeatureRow id="${item.id}">`);
           lines.push("");
           lines.push("```gherkin");
           lines.push(raw);
           lines.push("```");
           lines.push("");
+          lines.push("</CucumberFeatureRow>");
+          lines.push("");
+        };
+        const uncategorized = categories.get("") ?? [];
+        const sortedCategories = [...categories.entries()].sort(([a], [b]) =>
+          a.localeCompare(b)
+        );
+        for (const [category, items] of sortedCategories) {
+          if (!category) {
+            continue;
+          }
+          lines.push(`#### ${category} (${items.length})`);
+          lines.push("");
+          if (!items.length) {
+            lines.push(t.emptyCategory);
+            lines.push("");
+          }
+          for (const item of items) {
+            renderFeatureRow(item);
+          }
         }
+        if (uncategorized.length) {
+          lines.push(`#### ${t.uncategorized} (${uncategorized.length})`);
+          lines.push("");
+          for (const item of uncategorized) {
+            renderFeatureRow(item);
+          }
+        }
+        lines.push("</CucumberFeatureGroup>");
+        lines.push("");
       }
+      lines.push("</CucumberFeatureGroup>");
+      lines.push("");
     }
   }
 
@@ -159,8 +304,11 @@ const renderCucumberDocFor = (locale) => {
 };
 
 const renderCucumberDoc = () => {
+  const catalog = collectCucumberFeatures();
+  writeJsonIfChanged(CUCUMBER_FEATURES_JSON, catalog.meta);
+  writeJsonIfChanged(CUCUMBER_NAVIGATION_JSON, catalog.navigation);
   for (const [target, locale] of CUCUMBER_DOC_TARGETS) {
-    const next = renderCucumberDocFor(locale);
+    const next = renderCucumberDocFor(locale, catalog);
     fs.mkdirSync(path.dirname(target), { recursive: true });
     const prev = fs.existsSync(target) ? fs.readFileSync(target, "utf8") : "";
     if (prev !== next) {
@@ -251,7 +399,7 @@ const sidebarLabels = {
     security: "Security",
     license: "License (EUPL)",
     gettingStarted: "Getting Started",
-    ddevAndDevcontainer: "DDEV and Devcontainer",
+    devcontainer: "Devcontainer and Podman",
     quickReset: "Quick reset of the local environment",
     githubCodespaces: "Getting Started with GitHub Codespaces",
     docsGettingStarted: "Getting Started with docs",
@@ -259,7 +407,6 @@ const sidebarLabels = {
     macosLocalConfig: "macOS local configuration",
     podmanDevContainers: "Podman and Dev Containers (6.x)",
     podmanDevContainersLegacy: "Podman and Dev Containers (5.8, legacy)",
-    localHttpsDdev: "Local HTTPS SSL (DDEV)",
     implementUserStory: "How do I implement a user story in ZMS?",
     keycloakLocal: "Local Keycloak Setup",
     codeFormatting: "Code Formatting",
@@ -274,6 +421,7 @@ const sidebarLabels = {
     zmsautomation: "zmsautomation Documentation",
     cucumberCurrent: "Current Cucumber Tests",
     operations: "Operations",
+    cicd: "CI/CD",
     apiReference: "API reference",
     dldb: "DLDB Interface Documentation",
     ruppertstrasseBookingVariants: "Ruppertstraße booking variants",
@@ -305,7 +453,7 @@ const sidebarLabels = {
     security: "Sicherheit",
     license: "Lizenz (EUPL)",
     gettingStarted: "Erste Schritte",
-    ddevAndDevcontainer: "DDEV und Devcontainer",
+    devcontainer: "Devcontainer und Podman",
     quickReset: "Schnelles Zurücksetzen der lokalen Umgebung",
     githubCodespaces: "Erste Schritte mit GitHub Codespaces",
     docsGettingStarted: "Erste Schritte mit der Dokumentation",
@@ -313,7 +461,6 @@ const sidebarLabels = {
     macosLocalConfig: "macOS lokale Konfiguration",
     podmanDevContainers: "Podman und Dev Containers (6.x)",
     podmanDevContainersLegacy: "Podman und Dev Containers (5.8, Legacy)",
-    localHttpsDdev: "Lokales HTTPS-SSL (DDEV)",
     implementUserStory: "Wie setze ich eine User Story in ZMS um?",
     keycloakLocal: "Lokale Keycloak-Einrichtung",
     codeFormatting: "Code-Formatierung",
@@ -328,6 +475,7 @@ const sidebarLabels = {
     zmsautomation: "zmsautomation-Dokumentation",
     cucumberCurrent: "Aktuelle Cucumber-Tests",
     operations: "Betrieb",
+    cicd: "CI/CD",
     apiReference: "API-Referenz",
     dldb: "DLDB-Schnittstellendokumentation",
     ruppertstrasseBookingVariants: "Terminvarianten Ruppertstraße",
@@ -397,8 +545,8 @@ const buildSidebar = (prefix, lang) => {
           collapsed: false,
           items: [
             {
-              text: t.ddevAndDevcontainer,
-              link: `${prefix}/setup-and-development/getting-started/ddev-and-devcontainer`,
+              text: t.devcontainer,
+              link: `${prefix}/setup-and-development/getting-started/devcontainer`,
             },
             {
               text: t.codeFormatting,
@@ -435,10 +583,6 @@ const buildSidebar = (prefix, lang) => {
                 {
                   text: t.podmanDevContainersLegacy,
                   link: `${prefix}/setup-and-development/getting-started/macos-local-configuration/podman-and-dev-containers-legacy`,
-                },
-                {
-                  text: t.localHttpsDdev,
-                  link: `${prefix}/setup-and-development/getting-started/macos-local-configuration/local-https-ddev`,
                 },
               ],
             },
@@ -494,6 +638,10 @@ const buildSidebar = (prefix, lang) => {
     {
       text: t.operations,
       items: [
+        {
+          text: t.cicd,
+          link: `${prefix}/operations/ci-cd`,
+        },
         {
           text: t.apiReference,
           link: `${prefix}/operations/api-reference`,
@@ -737,7 +885,7 @@ export default {
       {
         name: "keywords",
         content:
-          "eAppointment, ZMS, Zeitmanagementsystem, Termin, Munich, München, it-at-m, open source, government, docker, php, vuejs, twig, keycloak, sso, city, municipalities, appointment scheduling, sso authentication, sso login, appointment booking, ddev, government app, appointments manager, eappointments, appointment management system, municipal software, county level",
+          "eAppointment, ZMS, Zeitmanagementsystem, Termin, Munich, München, it-at-m, open source, government, podman, php, vuejs, twig, keycloak, sso, city, municipalities, appointment scheduling, sso authentication, sso login, appointment booking, government app, appointments manager, eappointments, appointment management system, municipal software, county level",
       },
     ],
   ],

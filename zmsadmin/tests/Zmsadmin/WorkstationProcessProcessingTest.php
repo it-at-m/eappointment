@@ -18,7 +18,7 @@ class WorkstationProcessProcessingTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_workstation_with_process.json")
+                    'response' => $this->readFixture("GET_workstation_with_process_called.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -33,6 +33,24 @@ class WorkstationProcessProcessingTest extends Base
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString('H52452625', (string)$response->getBody());
         $this->assertStringContainsString('Wartenr. 82252', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testAlreadyProcessingDoesNotResave()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_with_process_processing.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertStringContainsString('H52452625', (string)$response->getBody());
+        $this->assertStringContainsString('data-process-id="82252"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

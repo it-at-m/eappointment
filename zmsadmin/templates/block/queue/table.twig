@@ -35,9 +35,9 @@
 		</form>
 		{% endif %}
 		{% if showAnyQueues %}
-		<a href="#" title="Liste neu laden" class="button button--diamond reload">
+		<a href="#" title="Listen neu laden" class="button button--diamond reload">
 			<i class="fas fa-sync" aria-hidden="true"></i>
-			<span class="aural">Liste neu laden</span>
+			<span class="aural">Listen neu laden</span>
 		</a>
 		{% endif %}
 		{% if permissions.waitingqueue %}
@@ -355,8 +355,16 @@
 										{% else %}
 											{{ item.queue.arrivalTime|date("H:i") }}
 										{% endif %}
-										{% if item.queue.waitingTime and isToday %}
-											<p class="queue-table-amendment-time">+{{ item.queue.waitingTime}}&nbsp;Min.</p>
+										{% set waitingTime = item.queue.waitingTime %}
+										{% set waitingTimeParts = (waitingTime ~ '')|split(':') %}
+										{% if waitingTimeParts|length == 3 %}
+											{% set waitingTimeMinutes = waitingTimeParts[0] * 60 + waitingTimeParts[1] %}
+										{% else %}
+											{% set waitingTimeMinutes = waitingTime %}
+										{% endif %}
+										{% set waitingTimeMinutes = waitingTimeMinutes|round(0, 'floor') %}
+										{% if waitingTimeMinutes > 0 and isToday %}
+											<p class="queue-table-amendment-time">+{{ waitingTimeMinutes }}&nbsp;Min.</p>
 										{% endif %}
 									</td>
 									<td title="{{ item.amendment|default('')|replace({'\r': ''})|e('html_attr') }}">
@@ -719,7 +727,7 @@ content.addClass('hidden')
 			</style>
 		</div>
 		{% endif %}
-		{% if showAnyQueues %}
+		{% if showAnyQueues and permissions.waitingqueue %}
 		<div class="form-actions">
 			<div class="right">
 				<button title="{% trans %}Warteschlange neu laden{% endtrans %}" class="button button-reload reload">

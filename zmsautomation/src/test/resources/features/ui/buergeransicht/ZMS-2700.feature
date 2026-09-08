@@ -5,7 +5,7 @@
 # which is likely not running in local development environments.
 # To enable these tests, ensure the old buergeransicht frontend is running at http://localhost:8082
 # and remove the @ignore tag from the scenario tags.
-Funktionalität: Frontend Design UX/UI anpassen
+Funktionalität: Umbuchung wählt die vorherige Behörde nicht automatisch
    
    	#Tests {panel:title=Problembeschreibung|borderStyle=solid|borderColor=#a01441|titleBGColor=#f092ad|bgColor=#ffffff}
    	#*Ist:* Beim Umbuchen eines Termins in einer bestimmten Behörde (z. B. BB Pasing) wird auf der Bürgeransicht nicht auf diese Behörde verlinkt, sondern auf den Anfang der Behördenliste. 

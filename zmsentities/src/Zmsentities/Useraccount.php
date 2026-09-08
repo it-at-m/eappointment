@@ -8,6 +8,9 @@ use BO\Zmsentities\Helper\Property;
  * @SuppressWarnings(Complexity)
  * @SuppressWarnings(PublicMethod)
  *
+ * @property string $id
+ * @property Collection\DepartmentList|array $departments
+ * @property array $permissions
  */
 class Useraccount extends Schema\Entity
 {
@@ -16,8 +19,7 @@ class Useraccount extends Schema\Entity
     public static $schema = "useraccount.json";
 
     /**
-     * @return (Collection\DepartmentList|false[])[]
-     *
+     * @return array<string, mixed>
      */
     #[\Override]
     public function getDefaults()
@@ -55,8 +57,23 @@ class Useraccount extends Schema\Entity
                 "waitingqueue" => false,
                 "superuser" => false
             ],
-            'departments' => new Collection\DepartmentList(),
         ];
+    }
+
+    /**
+     * @return static
+     */
+    #[\Override]
+    public function addData(array|object $mergeData): static
+    {
+        $hasDepartments = is_array($mergeData) || $mergeData instanceof \ArrayAccess
+            ? isset($mergeData['departments'])
+            : isset($mergeData->departments);
+        if ($hasDepartments && !($this['departments'] ?? null) instanceof Collection\DepartmentList) {
+            $this->departments = new Collection\DepartmentList();
+        }
+        parent::addData($mergeData);
+        return $this;
     }
 
     /**
@@ -75,39 +92,47 @@ class Useraccount extends Schema\Entity
 
     public function getDepartmentList(): Collection\DepartmentList
     {
-        if (!$this->departments instanceof Collection\DepartmentList) {
-            $this->departments = new Collection\DepartmentList($this->departments);
-            foreach ($this->departments as $key => $department) {
-                $this->departments[$key] = new Department($department);
-            }
+        if (!isset($this['departments'])) {
+            return new Collection\DepartmentList();
         }
-        return $this->departments;
+        $departments = $this->departments;
+        if (!$departments instanceof Collection\DepartmentList) {
+            $departments = new Collection\DepartmentList($departments);
+            foreach ($departments as $key => $department) {
+                $departments[$key] = new Department($department);
+            }
+            $this->departments = $departments;
+        }
+        return $departments;
     }
 
     public function addDepartment(Department|array $department): static
     {
+        if (!isset($this['departments'])) {
+            $this->departments = new Collection\DepartmentList();
+        } elseif (!$this->departments instanceof Collection\DepartmentList) {
+            $this->getDepartmentList();
+        }
         $this->departments[] = $department;
         return $this;
     }
 
-    public function getDepartment($departmentId)
+    public function getDepartment(mixed $departmentId): \BO\Zmsentities\Department
     {
-        if (count($this->departments)) {
-            foreach ($this->getDepartmentList() as $department) {
-                if ($department['id'] == $departmentId) {
-                    return $department;
-                }
+        foreach ($this->getDepartmentList() as $department) {
+            if ($department['id'] == $departmentId) {
+                return $department;
             }
         }
         return new Department(['name' => 'Not existing']);
     }
 
-    public function hasDepartment($departmentId)
+    public function hasDepartment(mixed $departmentId): mixed
     {
         return $this->getDepartment($departmentId)->hasId();
     }
 
-    public function hasScope($scopeId)
+    public function hasScope(mixed $scopeId): mixed
     {
         return $this->getDepartmentList()->getUniqueScopeList()->hasEntity($scopeId);
     }
@@ -143,7 +168,8 @@ class Useraccount extends Schema\Entity
                 continue;
             }
 
-            if (! ($permissions?->$required?->get() ?? false)) {
+            $granted = $permissions?->$required?->get() ?? false;
+            if ($granted === false || $granted === null || $granted === 0 || $granted === '0' || $granted === '') {
                 return false;
             }
         }
@@ -170,7 +196,8 @@ class Useraccount extends Schema\Entity
                 continue;
             }
 
-            if ($permissions?->$required?->get() ?? false) {
+            $granted = $permissions?->$required?->get() ?? false;
+            if ($granted !== false && $granted !== null && $granted !== 0 && $granted !== '0' && $granted !== '') {
                 return true;
             }
         }
@@ -189,7 +216,14 @@ class Useraccount extends Schema\Entity
 
         $permissions = $this['permissions'] ?? [];
         $requiredPermission = $permissions[$permission] ?? false;
-        if (!is_array($permissions) || !$requiredPermission || '0' === $requiredPermission) {
+        if (
+            !is_array($permissions)
+            || $requiredPermission === false
+            || $requiredPermission === null
+            || $requiredPermission === 0
+            || $requiredPermission === '0'
+            || $requiredPermission === ''
+        ) {
             return false;
         }
 
@@ -267,9 +301,9 @@ class Useraccount extends Schema\Entity
         return $this->toProperty()->permissions?->superuser?->get() ?? false;
     }
 
-    public function getDepartmentById($departmentId): Department
+    public function getDepartmentById(mixed $departmentId): Department
     {
-        foreach ($this->departments as $department) {
+        foreach ($this->getDepartmentList() as $department) {
             if ($departmentId == $department['id']) {
                 return new Department($department);
             }
@@ -279,7 +313,7 @@ class Useraccount extends Schema\Entity
 
     public function getDepartmentByIds(array $departmentIds): Department
     {
-        foreach ($this->departments as $department) {
+        foreach ($this->getDepartmentList() as $department) {
             if (in_array($department['id'], $departmentIds)) {
                 return new Department($department);
             }
@@ -287,7 +321,7 @@ class Useraccount extends Schema\Entity
         return new Department();
     }
 
-    public function testDepartmentById($departmentId)
+    public function testDepartmentById(mixed $departmentId): \BO\Zmsentities\Department
     {
         $department = $this->getDepartmentById($departmentId);
         if (!$department->hasId()) {
@@ -298,7 +332,7 @@ class Useraccount extends Schema\Entity
         return $department;
     }
 
-    public function setPassword($input): static
+    public function setPassword(mixed $input): static
     {
         if (isset($input['password']) && '' != $input['password']) {
             $this->password = $input['password'];
@@ -316,11 +350,14 @@ class Useraccount extends Schema\Entity
     {
         $departmentList = new Collection\DepartmentList();
         $entity = clone $this;
-        foreach ($this->departments as $department) {
-            if (! is_array($department) && ! $department instanceof Department) {
-                $department = new Department(array('id' => $department));
+        foreach ($this['departments'] ?? [] as $department) {
+            if ($department instanceof Department) {
+                $departmentList->addEntity($department);
+            } else {
+                $departmentList->addEntity(new Department(
+                    is_array($department) ? $department : ['id' => $department]
+                ));
             }
-            $departmentList->addEntity($department);
         }
         $entity->departments = $departmentList;
         return $entity;
@@ -330,7 +367,7 @@ class Useraccount extends Schema\Entity
      * @return static
      */
     #[\Override]
-    public function withCleanedUpFormData($keepPassword = false)
+    public function withCleanedUpFormData(bool $keepPassword = false)
     {
         unset($this['save']);
         if (isset($this['password']) && '' == $this['password'] && false === $keepPassword) {
@@ -353,9 +390,9 @@ class Useraccount extends Schema\Entity
     /**
      * verify hashed password and create new if needs rehash
      *
-     * @return array $useraccount
+     * @return static $useraccount
     */
-    public function setVerifiedHash($password)
+    public function setVerifiedHash(mixed $password): static
     {
         // Do you have old, turbo-legacy, non-crypt hashes?
         if (strpos($this->password, '$') !== 0) {
@@ -372,7 +409,7 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function withVerifiedHash($password): static
+    public function withVerifiedHash(mixed $password): static
     {
         $useraccount = clone $this;
         if ($useraccount->isPasswordNeedingRehash()) {
@@ -411,9 +448,9 @@ class Useraccount extends Schema\Entity
     /**
      * create useraccount from open id input data with random password
      *
-     * @return string $entity
+     * @return self
     */
-    public function createFromOpenidData($data)
+    public function createFromOpenidData(mixed $data)
     {
         $entity = new self();
         $entity->id = $data['username'];
@@ -427,7 +464,7 @@ class Useraccount extends Schema\Entity
     /**
      * get oidc provider from $entity id if it exists
      *
-     * @return string $entity
+     * @return string|null $entity
     */
     public function getOidcProviderFromName()
     {

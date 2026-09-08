@@ -36,6 +36,19 @@ class WorkstationLoginTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testLoginWithCredentialsOnly()
+    {
+        $response = $this->render([], [
+            '__body' => json_encode([
+                'id' => static::$loginName,
+                'password' => static::$authKey,
+            ]),
+            'nocommit' => 1
+        ], []);
+        $this->assertStringContainsString('workstation.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
     public function testAuthKeyFound()
     {
         $this->expectException('\BO\Zmsbackend\Useraccount\Exception\AuthKeyFound');

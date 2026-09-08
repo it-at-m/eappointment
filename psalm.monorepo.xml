@@ -48,8 +48,8 @@
         <file name="zmsbackend/bin/resetApiQuota" />
         <file name="zmsbackend/bin/resetGhostWorkstationCount" />
         <file name="zmsbackend/bin/resetWorkstations" />
-        <file name="zmsbackend/bin/sendMailReminder" />
-        <file name="zmsbackend/bin/sendProcessListToScopeAdmin" />
+        <file name="zmsbackend/bin/queueMailReminder" />
+        <file name="zmsbackend/bin/queueProcessListToScopeAdmin" />
         <file name="zmsbackend/bin/updateDldbData" />
         <directory name="zmsbackend/cron" />
         <directory name="zmsbackend/tests" />

@@ -15,10 +15,10 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev@sha256:2bdb1a63ccd59c1ce9422133892800b64972f96bfc4e23e9347beac7a09499b9"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev@sha256:d9cd4aa052563e62ee33f611950016daadaf05055f39a09000aabf8e492e56c3"
     services:
       mariadb:
-        image: mariadb:10.11@sha256:de61fed4a40d3842f3ee09944ba52792156cfd9adf489b2cc670fc6ded28df8d
+        image: mariadb:10.11@sha256:ce66c7be32a03aabe7241d0a10993a2db827ef652a35d25727d92a832ac8ef73
         env:
           MYSQL_ROOT_PASSWORD: zmsbackend
           MYSQL_DATABASE: zmsbo
@@ -50,10 +50,10 @@ jobs:
           .venv/bin/pip install pymysql jinja2
 
       - name: Install Composer Dependencies
-        run: |
-          echo "Installing Composer dependencies for zmsbackend"
-          (cd zmsbackend && composer install --no-progress --prefer-dist --optimize-autoloader)
-        shell: bash
+        uses: ./.github/actions/composer-install
+        with:
+          working-directory: zmsbackend
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Database and Import Schema
         env:

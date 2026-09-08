@@ -13,14 +13,14 @@ zms-deployment
 
 zmsautomation/lib
 
-# =============== ddev =================
-.ddev/.env
+# =============== local env =================
 .devcontainer/.env
 .devcontainer/php/xdebug.ini
 
 # =============== Local =================
 /local/
 coverage/
+*.pptx
 
 # Python
 __pycache__/

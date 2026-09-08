@@ -19,12 +19,12 @@ class ConfigUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
             ),
             '__body' => '{
                   "cron": {
-                    "sendMailReminder":"dev,stage"
+                    "queueMailReminder":"dev,stage"
                   }
               }'
         ], []);
 
-        $this->assertStringContainsString('"sendMailReminder":"dev,stage"', (string)$response->getBody());
+        $this->assertStringContainsString('"queueMailReminder":"dev,stage"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -34,12 +34,12 @@ class ConfigUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
         $response = $this->render([], [
             '__body' => '{
                   "cron": {
-                    "sendMailReminder":"dev,stage"
+                    "queueMailReminder":"dev,stage"
                   }
               }'
         ], []);
 
-        $this->assertStringContainsString('"sendMailReminder":"dev,stage"', (string)$response->getBody());
+        $this->assertStringContainsString('"queueMailReminder":"dev,stage"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -51,7 +51,7 @@ class ConfigUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
         $response = $this->render([], [
             '__body' => '{
                   "cron": {
-                    "sendMailReminder":"dev,stage"
+                    "queueMailReminder":"dev,stage"
                   }
               }'
         ], []);

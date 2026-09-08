@@ -5,7 +5,7 @@
 # which is likely not running in local development environments.
 # To enable these tests, ensure the old buergeransicht frontend is running at http://localhost:8082
 # and remove the @ignore tag from the scenario tags.
-Funktionalität: Beschränkung der Buchung auf eine Mailadresse
+Funktionalität: Buchung auf eine E-Mail-Adresse beschränken
    
      @ignore @web @buergeransicht @ZMS-2701 @automatisiert @executeLocally
       Szenario: [AUT] Beschränkung der Buchung auf eine Mailadresse [zms-test]

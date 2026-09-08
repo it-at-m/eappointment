@@ -78,6 +78,16 @@ If the curl+CORS check shows no `Access-Control-Allow-Origin`, fix the gateway f
 
 ## Unit Testing
 
+Local `zms-web` enables Xdebug (`start_with_request=yes`). For PHPUnit, turn it off or tests (especially zmsadmin) are very slow on macOS:
+
+```bash
+podman exec -it zms-web bash -lc 'export XDEBUG_MODE=off; cd zmsadmin && ./vendor/bin/phpunit --no-coverage'
+```
+
+Swap `zmsadmin` for the module. Do not use `XDEBUG_MODE=off cd … && ./vendor/bin/phpunit` — that only applies the variable to `cd`.
+
+Interactive (debugger stays on):
+
 - `podman exec -it zms-web bash`
 - `cd {zmsadmin, zmscalldisplay, zmsdldb, zmsentities, zmsmessaging, zmsslim, zmsstatistic, zmsticketprinter}`
 - `./vendor/bin/phpunit`

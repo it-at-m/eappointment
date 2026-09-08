@@ -68,9 +68,14 @@ class ProcessStatusArchived extends Process
         return $this->readResolvedList($query, $resolveReferences);
     }
 
-    public function deleteAllToday(): bool
+    public function deleteBeforeDate(\DateTimeInterface $now): bool
     {
-        return (bool)$this->perform(\BO\Zmsbackend\Process\Repository\ProcessStatusArchivedToday::DELETE_ALL);
+        return (bool)$this->perform(
+            \BO\Zmsbackend\Process\Repository\ProcessStatusArchivedToday::DELETE_BEFORE_DATE,
+            [
+                'theDay' => $now->format('Y-m-d'),
+            ]
+        );
     }
 
     /** @psalm-api */

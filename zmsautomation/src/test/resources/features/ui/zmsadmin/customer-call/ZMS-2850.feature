@@ -1,0 +1,23 @@
+#language: de
+Funktionalität: Wenn niemand in der Warteschlange wartet, erhält der Sachbearbeiter beim Aufrufen einen entsprechenden Hinweis.
+
+	@web @zmsadmin @customer-call @clerk @ZMS-2850 @ZMS-1566 @executeLocally
+	Szenario: [AUT] Aufrufhinweis bei 0 wartenden Kunden
+		Wenn Sie zur Webseite der Administration navigieren.
+		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
+		Und  Sie für "Standort" den Wert "Erstaufnahmeeinrichtung S-III-U" auswählen.
+		Und  Sie in Feld "Platz-Nr. oder Tresen" den Text "13" eingeben.
+		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
+		Dann wird die Seite Sachbearbeiterplatz angezeigt.
+		Gegeben seien Für den Standort sind keine Termine in der Warteschlange vorhanden.
+		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Aufruf nächster Kunde" klicken.
+		Dann erscheint die Meldung, dass keine wartenden Kunden vorhanden sind.
+		Wenn Sie im Zeitmanagementsystem unter Termin erstellen auf die Schaltfläche "Spontankunden hinzufügen" klicken.
+		Und Sie im Zeitmanagementsystem auf die Schaltfläche "Schließen" klicken.
+		Und Sie im Zeitmanagementsystem auf die Schaltfläche "Aufruf nächster Kunde" klicken.
+		Und Sie im Zeitmanagementsystem auf die Schaltfläche "Nein, nächster Kunde bitte" klicken.
+		Dann erscheint die Meldung, dass keine wartenden Kunden vorhanden sind.
+
+
+
+		

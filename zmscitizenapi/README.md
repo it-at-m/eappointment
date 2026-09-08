@@ -43,7 +43,6 @@ sequenceDiagram
 
 | File | Change Summary |
 |------|----------------|
-| `.ddev/config.yaml` | Updated host HTTPS and web server ports from `59002`/`59001` to `8091`/`8090` |
 | `.github/workflows/build-images.yaml` | Added `zmscitizenapi` module with PHP 8.0 |
 | `.github/workflows/unit-tests.yaml` | Added `zmscitizenapi` module to matrix configuration |
 | `.htaccess` | Added routing rules for `zmscitizenapi` module |
@@ -80,7 +79,7 @@ sequenceDiagram
 | ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE | Altcha challenge endpoint | https://captcha.muenchen.de/api/v1/captcha/challenge |
 | ALTCHA_CAPTCHA_ENDPOINT_VERIFY | Altcha verification endpoint | https://captcha.muenchen.de/api/v1/captcha/verify |
 | **Rate Limiting** |
-| RATE_LIMIT_MAX_REQUESTS | Maximum requests per window | 60 |
+| RATE_LIMIT_MAX_REQUESTS | Maximum requests per window | 600 |
 | RATE_LIMIT_CACHE_TTL | Rate limit cache TTL in seconds | 60 |
 | RATE_LIMIT_MAX_RETRIES | Maximum retry attempts | 3 |
 | RATE_LIMIT_BACKOFF_MIN | Minimum backoff time in milliseconds | 10 |
@@ -554,7 +553,7 @@ sequenceDiagram
         API-->>C: 200 OK + Headers
     else Over Limit
         API-->>C: 429 Too Many Requests
-        Note over C,API: X-RateLimit-Limit: 60<br>X-RateLimit-Remaining: 0<br>X-RateLimit-Reset: timestamp
+        Note over C,API: X-RateLimit-Limit: 600<br>X-RateLimit-Remaining: 0<br>X-RateLimit-Reset: timestamp
     end
 ```
 
@@ -591,19 +590,24 @@ Here's how it works:
      - Key pattern: `rate_limit_{md5(ip)}`
      - TTL: 60 seconds
      - Stores request counts per IP
-     - The rate limit cache tracks request counts per IP address using a distributed locking mechanism to prevent race conditions. Each IP is allowed 60 requests per minute, with the counter auto-resetting after the TTL expires.
+     - The rate limit cache tracks request counts per IP address using a distributed locking mechanism to prevent race conditions. Each IP is allowed 600 requests per minute, with the counter auto-resetting after the TTL expires.
    
    - **Logger Cache**:
      - Key pattern: Uses counter key
      - TTL: 60 seconds
      - Tracks log rate limiting
-     - The rate limit cache tracks request counts per IP address using a distributed locking mechanism to prevent race conditions. Each IP is allowed 60 requests per minute, with the counter auto-resetting after the TTL expires.
+     - The rate limit cache tracks request counts per IP address using a distributed locking mechanism to prevent race conditions. Each IP is allowed 600 requests per minute, with the counter auto-resetting after the TTL expires.
    
    - **DLDB Source Cache**:
      - Key pattern: `source_{source_name}`
      - TTL: 3600 seconds (1 hour)
      - Caches API responses
-     - The DLDB source cache stores API responses for source data with a 1-hour TTL. 
+     - The DLDB source cache stores API responses for source data with a 1-hour TTL.
+   - **Proactive warmup (ZMSKVR-1191)**:
+     - `POST /source-cache/warmup/` fetches fresh source data and overwrites the offices-and-services cache in place (old entries stay readable until the new values are written)
+     - `GET /offices-and-services/` remains cache-aside: cache hit is served as-is; a miss still rebuilds and writes the cache (fallback if warmup is stuck or cache is empty)
+     - Requires header `X-Source-Cache-Warmup-Token` matching env `SOURCE_CACHE_WARMUP_TOKEN` (disabled when unset)
+     - Triggered after DLDB import (`cronjob.hourly` → `bin/warmupCitizenapiSourceCache` via `ZMS_CITIZENAPI_WARMUP_URL`)
 
 Each "cache" is really just a different usage pattern of the same PSR-16 interface, with its own key namespace and TTL, but all data is stored in the same filesystem backend.
 

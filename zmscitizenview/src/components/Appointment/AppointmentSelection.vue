@@ -2174,6 +2174,19 @@ onMounted(() => {
       ])
     );
 
+    // Keep a reserved/hash office (e.g. Ausbildung 10503) instead of replacing
+    // it with the collapsed display Ort when the calendar remounts.
+    const reservedProvider = selectedProvider.value;
+    const reservedTimeslot = selectedTimeslot.value;
+    if (reservedProvider) {
+      selectedProvider.value = reservedProvider;
+      selectedTimeslot.value = reservedTimeslot;
+      void fetchAvailableDaysForSelection().finally(() => {
+        initialCalendarLoadPending = false;
+      });
+      return;
+    }
+
     void showSelectionForProvider(firstOfficeToShow ?? offices[0]).finally(
       () => {
         initialCalendarLoadPending = false;
@@ -2249,17 +2262,29 @@ watch(
     if (captchaSessionExpired.value) {
       return;
     }
-    // Sync single-selection provider immediately
+    // Keep the reserved office when several Orte stay checked. Clearing it here
+    // hid telephone/custom fields on Kontakt and Ort on Übersicht (ZMSKVR-1571).
     const selectedIds = Object.keys(selectedProviders.value).filter(
       (id) => selectedProviders.value[id]
     );
-    if (selectedIds.length === 1 && selectableProviders.value) {
+    if (selectedIds.length === 0) {
+      selectedProvider.value = undefined;
+    } else if (selectedIds.length === 1 && selectableProviders.value) {
       const provider = selectableProviders.value.find(
         (p) => p.id.toString() === selectedIds[0]
       );
-      selectedProvider.value = provider ?? undefined;
-    } else if (selectedIds.length !== 1) {
-      selectedProvider.value = undefined;
+      if (provider) {
+        const currentId = Number(selectedProvider.value?.id);
+        const checkedId = Number(provider.id);
+        const currentIsSharedPeer =
+          Number.isFinite(currentId) &&
+          currentId !== checkedId &&
+          Array.isArray(provider.sharedBookingOfficeIds) &&
+          provider.sharedBookingOfficeIds.map(Number).includes(currentId);
+        if (!currentIsSharedPeer) {
+          selectedProvider.value = provider;
+        }
+      }
     }
 
     const hasAvailableDays =

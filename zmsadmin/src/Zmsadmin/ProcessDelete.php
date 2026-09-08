@@ -11,6 +11,7 @@ namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
 use BO\Slim\Render;
+use BO\Zmsentities\Process;
 
 /**
  * Delete a process
@@ -31,11 +32,14 @@ class ProcessDelete extends BaseController
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $initiator = Validator::param('initiator')->isString()->getValue();
         $process = \App::$http->readGetResult('/process/' . $processId . '/')->getEntity();
+        if (!$process instanceof Process) {
+            throw new \BO\Zmsclient\Exception('Process not found');
+        }
         $process->status = 'deleted';
         $workstation->validateProcessScopeAccess((new Helper\ClusterHelper($workstation))->getScopeList(), $process);
 
-        \App::$http->readDeleteResult('/process/' . $process->getId() . '/', ['initiator' => $initiator]);
         static::writeDeleteMailNotifications($process);
+        \App::$http->readDeleteResult('/process/' . $process->getId() . '/', ['initiator' => $initiator]);
 
         return \BO\Slim\Render::withHtml(
             $response,

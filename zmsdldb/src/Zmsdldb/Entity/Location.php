@@ -16,10 +16,13 @@ class Location extends Base
     /**
      * @return Bool
      */
-    public function containsService($service_csv)
+    public function containsService(mixed $service_csv)
     {
+        if (!is_string($service_csv) && !is_int($service_csv) && !is_float($service_csv)) {
+            return false;
+        }
         $location = $this->getArrayCopy();
-        $servicecompare = explode(',', $service_csv);
+        $servicecompare = explode(',', (string) $service_csv);
         $servicecount = array();
         foreach ($location['services'] as $serviceinfo) {
             $service_id = $serviceinfo['service'];
@@ -40,12 +43,12 @@ class Location extends Base
     }
 
     /**
-     * @var Int $service_id
+     * @param int $service_id
      *
      * @return FALSE or Array
      * @psalm-api
      */
-    public function getServiceInfo($service_id)
+    public function getServiceInfo(mixed $service_id)
     {
         foreach ($this['services'] as $service) {
             if ($service['service'] == $service_id) {
@@ -56,7 +59,7 @@ class Location extends Base
     }
 
     /**
-     * @param String $serviceCsv only check for this serviceCsv
+     * @param string|int|float|null $serviceCsv only check for this serviceCsv
      *
      * @return Array
      */
@@ -66,7 +69,7 @@ class Location extends Base
             return $this['services'];
         }
         $location = $this->getArrayCopy();
-        $servicecompare = explode(',', $serviceCsv);
+        $servicecompare = explode(',', (string) $serviceCsv);
 
         $serviceList = array();
         foreach ($location['services'] as $serviceinfo) {
@@ -81,7 +84,7 @@ class Location extends Base
     /**
      * Check if appointments are available
      *
-     * @param String $serviceCsv only check for this serviceCsv
+     * @param string|int|float|null $serviceCsv only check for this serviceCsv
      * @param Bool $external allow external links, default false
      *
      * @return Bool
@@ -112,7 +115,7 @@ class Location extends Base
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @psalm-api
      */
-    public function getAppointmentForService($service_id, $external = false)
+    public function getAppointmentForService(mixed $service_id, bool $external = false): mixed
     {
         $serviceList = $this->getServiceInfoList($service_id);
 
@@ -127,7 +130,7 @@ class Location extends Base
      * return geoJson
      *
      *
-     * @return string
+     * @return array
      */
     public function getGeoJson()
     {

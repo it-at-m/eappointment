@@ -195,4 +195,103 @@ class UseraccountAddTest extends Base
         $this->expectException(UserAccountMissingRights::class);
         $this->render($this->arguments, $this->parameters, []);
     }
+
+    public function testMissingDepartmentValidation()
+    {
+        $message = 'Bitte wählen Sie (mindestens) eine Behörde aus.';
+
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template =
+            'BO\Zmsentities\Exception\SchemaValidation';
+        $exception->data['/departments']['messages'] = [
+            'minItems' => $message,
+        ];
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture(
+                        'GET_Workstation_Resolved2.json'
+                    )
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/owner/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture(
+                        'GET_ownerlist.json'
+                    )
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/useraccount/',
+                    'exception' => $exception
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'secure-token',
+                    'response' => $this->readFixture(
+                        'GET_config.json'
+                    ),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture(
+                        'GET_rolelist.json'
+                    )
+                ]
+            ]
+        );
+
+        $parameters = $this->parameters;
+        unset($parameters['departments']);
+
+        $response = $this->render(
+            $this->arguments,
+            $parameters,
+            [],
+            'POST'
+        );
+        $body = (string) $response->getBody();
+
+        $this->assertSame(200, $response->getStatusCode());
+
+        $this->assertStringContainsString(
+            'Bei der Eingabe der Daten scheint Ihnen ein Fehler '
+            . 'unterlaufen zu sein. Bitte prüfen Sie die Daten.',
+            $body
+        );
+
+        $escapedMessage = preg_quote($message, '~');
+
+        $this->assertMatchesRegularExpression(
+            '~<li>\s*' . $escapedMessage . '\s*</li>~s',
+            $body,
+            'Die Standortmeldung fehlt im allgemeinen Fehlerbereich.'
+        );
+
+        $this->assertMatchesRegularExpression(
+            '~</i>\s*Fehler:\s*' . $escapedMessage . '\s*</li>~s',
+            $body,
+            'Die Standortmeldung fehlt unterhalb des Feldes „Behörde“.'
+        );
+
+        $this->assertStringContainsString(
+            'has-error is-invalid',
+            $body
+        );
+
+        $this->assertStringNotContainsString(
+            'Um diesen Benutzer zu bearbeiten fehlen Ihnen '
+            . 'die notwendigen Rechte.',
+            $body
+        );
+    }
 }

@@ -67,7 +67,7 @@ class EventLog extends Schema\Entity
      * {@inheritDoc}
      */
     #[\Override]
-    public function addData($mergeData): static
+    public function addData(mixed $mergeData): static
     {
         if (isset($mergeData['creationDateTime']) && is_string($mergeData['creationDateTime'])) {
             $mergeData['creationDateTime'] = new DateTime($mergeData['creationDateTime']);
@@ -76,7 +76,8 @@ class EventLog extends Schema\Entity
             $mergeData['expirationDateTime'] = new DateTime($mergeData['expirationDateTime']);
         }
 
-        return parent::addData($mergeData);
+        parent::addData($mergeData);
+        return $this;
     }
 
     #[\Override]

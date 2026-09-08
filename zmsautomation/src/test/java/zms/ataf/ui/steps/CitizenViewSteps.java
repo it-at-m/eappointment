@@ -314,7 +314,7 @@ public class CitizenViewSteps {
             }
             ids.add(parseIntOrFail(trimmed, "officeId"));
         }
-        int[] officeIds = ids.stream().mapToInt(Integer::intValue).toArray();
+        int[] officeIds = ids.stream().mapToInt(id -> id.intValue()).toArray();
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert timeslots present for providers {}", ids);
         page.assertTimeslotsPresentForProviders(officeIds);
@@ -331,7 +331,7 @@ public class CitizenViewSteps {
             }
             ids.add(parseIntOrFail(trimmed, "officeId"));
         }
-        int[] officeIds = ids.stream().mapToInt(Integer::intValue).toArray();
+        int[] officeIds = ids.stream().mapToInt(id -> id.intValue()).toArray();
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert timeslots absent for providers {}", ids);
         page.assertTimeslotsAbsentForProviders(officeIds);
@@ -386,5 +386,51 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert only Pass calendar services offered on combination step");
         page.assertPassOnlyCombinationServicesVisible();
+    }
+
+    @When("I fill contact details without continuing in the citizen view")
+    public void iFillContactDetailsWithoutContinuing() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: fill Kontakt form without Weiter (phone/Zusatzfelder)");
+        page.fillContactDetailsRandomWithoutContinue();
+    }
+
+    @When("I continue from the contact form in the citizen view")
+    public void iContinueFromTheContactFormInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Kontakt Weiter → Übersicht");
+        page.continueFromContactFormToSummary();
+    }
+
+    @Then("the telephone and custom text fields should remain visible with entered values in the citizen view")
+    public void theTelephoneAndCustomTextFieldsShouldRemainVisibleWithEnteredValues() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert phone + Zusatzfelder still visible with values");
+        page.assertContactPhoneAndCustomFieldsVisibleWithValues();
+    }
+
+    @When("I log in via Bürger-Login with Keycloak in the citizen view")
+    public void iLogInViaBuergerLoginWithKeycloak() throws Exception {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Bürger-Login → Keycloak citizen user (dbs-fragments)");
+        page.loginViaBuergerLoginWithKeycloak();
+    }
+
+    @Then("I should be logged in on the contact form in the citizen view")
+    public void iShouldBeLoggedInOnTheContactForm() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Sie sind angemeldet on Kontakt");
+        page.assertCitizenLoggedInOnContactForm();
+    }
+
+    @Then("the booking summary should show Scheidplatz location for provider {int} in the citizen view")
+    public void theBookingSummaryShouldShowScheidplatzLocation(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Übersicht Ort for Scheidplatz provider {}", officeId);
+        page.assertScheidplatzLocationOnSummary(officeId);
+    }
+
+    @When("I go back from the booking summary to the contact form in the citizen view")
+    public void iGoBackFromTheBookingSummaryToTheContactForm() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Zurück Übersicht → Kontakt");
+        page.goBackFromBookingSummaryToContact();
     }
 }
