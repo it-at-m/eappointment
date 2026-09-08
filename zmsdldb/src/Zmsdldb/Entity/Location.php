@@ -68,9 +68,6 @@ class Location extends Base
         if (null === $serviceCsv) {
             return $this['services'];
         }
-        if (!is_string($serviceCsv) && !is_int($serviceCsv) && !is_float($serviceCsv)) {
-            return array();
-        }
         $location = $this->getArrayCopy();
         $servicecompare = explode(',', (string) $serviceCsv);
 
