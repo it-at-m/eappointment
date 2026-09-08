@@ -192,7 +192,6 @@
     class="m-button-group"
   >
     <muc-button
-      v-if="!isRebooking"
       icon="arrow-left"
       icon-shown-left
       variant="secondary"
