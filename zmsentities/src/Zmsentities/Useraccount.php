@@ -8,6 +8,9 @@ use BO\Zmsentities\Helper\Property;
  * @SuppressWarnings(Complexity)
  * @SuppressWarnings(PublicMethod)
  *
+ * @property string $id
+ * @property Collection\DepartmentList|array $departments
+ * @property array $permissions
  */
 class Useraccount extends Schema\Entity
 {
