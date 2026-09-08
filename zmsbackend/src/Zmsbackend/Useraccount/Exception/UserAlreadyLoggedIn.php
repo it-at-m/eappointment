@@ -13,8 +13,11 @@ class UserAlreadyLoggedIn extends \Exception
 
     /**
      * Payload for exception templates (assigned by WorkstationLogin).
-     *
-     * @psalm-api
      */
     public mixed $data = null;
+
+    public function getData(): mixed
+    {
+        return $this->data;
+    }
 }
