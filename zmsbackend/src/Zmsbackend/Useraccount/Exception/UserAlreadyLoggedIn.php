@@ -11,5 +11,10 @@ class UserAlreadyLoggedIn extends \Exception
 
     protected $message = 'useraccount was already loggedin and is replaced by new login';
 
+    /**
+     * Payload for exception templates (assigned by WorkstationLogin).
+     *
+     * @psalm-api
+     */
     public mixed $data = null;
 }
