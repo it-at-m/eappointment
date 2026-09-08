@@ -1,7 +1,7 @@
 #language: de
 Funktionalität: Behörde und Standort nur mit Bestätigung löschen
 
-	Behörden und Standorte werden nur nach einer Bestätigung gelöscht.
+	Vor dem Löschen einer Behörde oder eines Standorts verlangt das System eine abschließende Bestätigung.
 
 	@web @zmsadmin @configuration @technical-admin @ZMS-3160 @ZMS-3162 @automatisiert @executeLocally
 	Szenario: [AUT] Löschen von Behörden und Standorte mit Bestätigung hinterlegen

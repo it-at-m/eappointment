@@ -1,7 +1,7 @@
 #language: de
 Funktionalität: Kundenstatistik mit Testdaten initialisieren
 
-	Testdaten für die Kundenstatistik werden über die Warteschlange initialisiert.
+	Über die Warteschlange werden Testdaten angelegt, aus denen sich die Kundenstatistik speist.
 
 	@web @zmsadmin @queue @clerk @ZMS-2389 @ZMS-1738 @ZMS-1557 @E2E @automatisiert @executeLocally
 	Szenario: Kundenstatistik -Dateninitialisierung

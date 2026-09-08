@@ -1,7 +1,7 @@
 #language: de
 Funktionalität: Terminkunde über Tresen anlegen, aufrufen und abschließen
 
-	Ein Terminkunde wird über den Tresen angelegt, aufgerufen und abgeschlossen.
+	Der Sachbearbeiter führt den Tresen-Vorgang für Terminkunden vom Anlegen bis zum Abschließen vollständig durch.
 
     @web @zmsadmin @booking @clerk @ZMSKVR-1328 @automatisiert @executeLocally
     Szenario: Terminkunde wird über Tresen angelegt, aufgerufen und abgeschlossen

@@ -1,7 +1,7 @@
 #language: de
 Funktionalität: Button „nicht erschienen“ nach Kundenaufruf
 
-	Ein aufgerufener Kunde kann als „nicht erschienen“ markiert werden.
+	Ein nicht erschienener Kunde kann nach dem Aufruf entsprechend markiert werden, damit der Vorgang weiterverarbeitet werden kann.
 
   @web @zmsadmin @customer-call @clerk @ZMS-2851 @ZMS-1795 @executeLocally
   Szenario: [AUT] Kunde nach Aufruf nicht erschienen - Button umbenennen
