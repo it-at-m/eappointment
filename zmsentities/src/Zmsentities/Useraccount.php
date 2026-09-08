@@ -60,20 +60,23 @@ class Useraccount extends Schema\Entity
         ];
     }
 
+    /**
+     * @return static
+     */
     #[\Override]
     public function addData(array|object $mergeData): static
     {
-        $hasDepartments = false;
-        if (is_array($mergeData) || $mergeData instanceof \ArrayAccess) {
-            $hasDepartments = isset($mergeData['departments']);
-        } else {
-            $hasDepartments = isset($mergeData->departments);
-        }
+        $hasDepartments = is_array($mergeData) || $mergeData instanceof \ArrayAccess
+            ? isset($mergeData['departments'])
+            : isset($mergeData->departments);
         if ($hasDepartments && !($this['departments'] ?? null) instanceof Collection\DepartmentList) {
             $this->departments = new Collection\DepartmentList();
         }
-        parent::addData($mergeData);
-        return $this;
+        $merged = parent::addData($mergeData);
+        if (!$merged instanceof self) {
+            return $this;
+        }
+        return $merged;
     }
 
     /**
