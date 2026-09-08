@@ -9,44 +9,60 @@
 
 namespace BO\Zmsstatistic\Helper;
 
-use BO\Slim\Response;
 use Fig\Http\Message\StatusCodeInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Psr\Http\Message\ResponseInterface;
 
 class Download
 {
-    protected $writer = null;
+    protected mixed $writer = null;
 
-    protected $spreadsheet = null;
+    protected mixed $spreadsheet = null;
 
-    protected $period = '';
+    protected string $period = '';
 
-    protected $title = 'statistik';
+    protected string $title = 'statistik';
 
-    protected $type = 'xlsx';
+    protected mixed $type = 'xlsx';
 
-    public function __construct($request)
+    public function __construct(mixed $request)
     {
         $validator = $request->getAttribute('validator');
         $this->type = $validator->getParameter('type')->isString()->setDefault('xlsx')->getValue();
-        return $this;
     }
 
-    /**
-     * @param Response $response
-     * @return mixed
-     */
-    public function writeDownload($response)
+    public function writeDownload(ResponseInterface $response): mixed
     {
         $resource = fopen('php://temp', 'x+');
+        if ($resource === false) {
+            \App::$log->error('Failed to open temporary stream for spreadsheet download', [
+                'event' => 'statistic_download_failed',
+                'reason' => 'fopen',
+            ]);
+            return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
+        }
 
         try {
             $this->getWriter()->save($resource);
             rewind($resource);
-            $response->getBody()->write(stream_get_contents($resource));
+            $contents = stream_get_contents($resource);
+            if ($contents === false) {
+                fclose($resource);
+                \App::$log->error('Failed to read spreadsheet download stream', [
+                    'event' => 'statistic_download_failed',
+                    'reason' => 'stream_get_contents',
+                ]);
+                return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
+            }
+            $response->getBody()->write($contents);
         } catch (\Exception $e) {
             fclose($resource);
+            \App::$log->error('Failed to write spreadsheet download', [
+                'event' => 'statistic_download_failed',
+                'reason' => 'exception',
+                'exception' => $e,
+            ]);
 
             return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
         }
@@ -58,12 +74,12 @@ class Download
             ->withHeader('Content-Disposition', sprintf('attachment; filename="%s.%s"', $this->title, $this->type));
     }
 
-    public function getSpreadSheet()
+    public function getSpreadSheet(): mixed
     {
         return $this->spreadsheet;
     }
 
-    public function getWriter()
+    public function getWriter(): mixed
     {
         if ('xlsx' == $this->type) {
             $this->writer = IOFactory::createWriter($this->spreadsheet, 'Xlsx');
@@ -73,10 +89,10 @@ class Download
 
     public function setSpreadSheet(
         string $title = 'statistic',
-        $creator = 'berlinonline',
-        $subject = '',
-        $description = 'statistic document',
-        $keywords = 'statistic zms'
+        mixed $creator = 'berlinonline',
+        mixed $subject = '',
+        mixed $description = 'statistic document',
+        mixed $keywords = 'statistic zms'
     ): static {
         $this->title = $title;
         $this->spreadsheet = new Spreadsheet();

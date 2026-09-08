@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class Healthcheck extends BaseController
 {
-    protected $withAccess = false;
+    protected bool $withAccess = false;
 
     /**
      * @SuppressWarnings(UnusedFormalParameter)
@@ -26,9 +26,9 @@ class Healthcheck extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
-        $response = \BO\Zmsclient\Status::testStatus($response, function (): Entity|false|null {
-            return \App::$http->readGetResult('/status/', ['includeProcessStats' => 0])->getEntity();
+    ): mixed {
+        $response = \BO\Zmsclient\Status::testStatus($response, function (): Entity|null {
+            return \App::http()->readGetResult('/status/', ['includeProcessStats' => 0])->getEntity();
         });
 
         return Render::withLastModified($response, time(), '0');

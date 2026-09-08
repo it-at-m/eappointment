@@ -16,11 +16,11 @@ use Psr\Http\Message\ResponseInterface;
 
 class RequestReport extends Base
 {
-    public $firstDayDate = null;
+    public mixed $firstDayDate = null;
 
-    public $lastDayDate = null;
+    public mixed $lastDayDate = null;
 
-    protected $dateFormatter = [
+    protected array $dateFormatter = [
         'day' => 'Y-m-d',
         'month' => 'Y-m'
     ];
@@ -34,7 +34,7 @@ class RequestReport extends Base
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         $title = 'requeststatistic_' . $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
 
