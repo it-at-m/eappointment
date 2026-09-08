@@ -167,6 +167,42 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
+    /**
+     * Returns all dates containing at least one recorded request.
+     *
+     * @return string[]
+     */
+    public function getDatesWithRequests(): array
+    {
+        $dates = [];
+        $reservedKeys = [
+            'sum',
+            'average_processingtime',
+            'average_processingtime_overall',
+        ];
+
+        foreach ($this->data as $name => $entries) {
+            if (in_array($name, $reservedKeys, true) || !is_iterable($entries)) {
+                continue;
+            }
+
+            foreach ($entries as $date => $entry) {
+                if (
+                    is_array($entry)
+                    && is_numeric($entry['requestscount'] ?? null)
+                    && (int) $entry['requestscount'] > 0
+                ) {
+                    $dates[(string) $date] = true;
+                }
+            }
+        }
+
+        $dates = array_keys($dates);
+        sort($dates);
+
+        return $dates;
+    }
+
     public function withAverage(mixed $keyToCalculate): static
     {
         $entity = clone $this;
@@ -201,7 +237,7 @@ class Exchange extends Schema\Entity
             $average[$name . '_sum'] = $sum;
             $average[$name . '_count'] = $count;
             $average[$name] = $count > 0
-                ? round($sum / $count, 2)
+                ? $sum / $count
                 : null;
         }
 
@@ -280,8 +316,6 @@ class Exchange extends Schema\Entity
         $weightedSum = 0.0;
         $totalCount = 0;
         $excludedNames = [
-            self::REQUEST_STAT_NAME_UNCATEGORIZED,
-            self::REQUEST_STAT_NAME_NONEXISTENT,
             'sum',
             'average_processingtime',
             'average_processingtime_overall',
@@ -303,7 +337,7 @@ class Exchange extends Schema\Entity
                 $totalCount += (int) $requestCount;
             }
         }
-        $entity->data['average_processingtime_overall'] = $totalCount > 0 ? round($weightedSum / $totalCount, 2) : null;
+        $entity->data['average_processingtime_overall'] = $totalCount > 0 ? $weightedSum / $totalCount : null;
 
         return $entity;
     }

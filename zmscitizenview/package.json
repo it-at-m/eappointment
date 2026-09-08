@@ -18,7 +18,7 @@
   "dependencies": {
     "@muenchen/muc-patternlab-vue": "^11.0.0",
     "altcha": "^3.2.2",
-    "dompurify": "^3.4.14",
+    "dompurify": "^3.4.15",
     "jsdom": "^30.0.0",
     "vue": "^3.5.41",
     "vue-i18n": "11.4.10",
