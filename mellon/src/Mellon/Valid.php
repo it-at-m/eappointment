@@ -329,11 +329,13 @@ class Valid extends \BO\Mellon\Parameter
      */
     public function __call(string $name, array $arguments)
     {
+        $argumentHint = $arguments === [] ? '' : ' (called with ' . count($arguments) . ' argument(s))';
         if (0 === strpos($name, 'is')) {
             throw new Exception(
                 "the validation $name() is not defined in class " . get_class($this) . ". Read the manual."
+                . $argumentHint
             );
         }
-        throw new Exception("function $name is not defined in " . get_class($this));
+        throw new Exception("function $name is not defined in " . get_class($this) . $argumentHint);
     }
 }
