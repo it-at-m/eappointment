@@ -61,10 +61,10 @@ class Useraccount extends Schema\Entity
     }
 
     /**
-     * @return static
+     * @return Useraccount
      */
     #[\Override]
-    public function addData(array|object $mergeData): static
+    public function addData(array|object $mergeData): Useraccount
     {
         $hasDepartments = is_array($mergeData) || $mergeData instanceof \ArrayAccess
             ? isset($mergeData['departments'])
@@ -72,11 +72,8 @@ class Useraccount extends Schema\Entity
         if ($hasDepartments && !($this['departments'] ?? null) instanceof Collection\DepartmentList) {
             $this->departments = new Collection\DepartmentList();
         }
-        $merged = parent::addData($mergeData);
-        if (!$merged instanceof self) {
-            return $this;
-        }
-        return $merged;
+        parent::addData($mergeData);
+        return $this;
     }
 
     /**
