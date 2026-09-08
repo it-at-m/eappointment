@@ -34,8 +34,8 @@ class ProcessDelete extends BaseController
         $process->status = 'deleted';
         $workstation->validateProcessScopeAccess((new Helper\ClusterHelper($workstation))->getScopeList(), $process);
 
-        \App::$http->readDeleteResult('/process/' . $process->getId() . '/', ['initiator' => $initiator]);
         static::writeDeleteMailNotifications($process);
+        \App::$http->readDeleteResult('/process/' . $process->getId() . '/', ['initiator' => $initiator]);
 
         return \BO\Slim\Render::withHtml(
             $response,

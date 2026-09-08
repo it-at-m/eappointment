@@ -68,6 +68,23 @@ class RequestReport extends Base
         return $spreadsheet;
     }
 
+    private function getReportDates(ReportEntity $report): array
+    {
+        if ($report->period === 'day') {
+            return $report->getDatesWithRequests();
+        }
+
+        $dates = [];
+        $dateTime = clone $this->firstDayDate;
+
+        do {
+            $dates[] = $dateTime->format($this->dateFormatter[$report->period]);
+            $dateTime->modify('+1 ' . $report->period);
+        } while ($dateTime <= $this->lastDayDate);
+
+        return $dates;
+    }
+
     public function writeHeader(
         ReportEntity $report,
         \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet,
@@ -77,11 +94,12 @@ class RequestReport extends Base
         $reportHeader[] = 'Dienstleistung';
         $reportHeader[] = 'Ø Bearbeitungsdauer';
         $reportHeader[] = 'Summe';
-        $dateTime = clone $this->firstDayDate;
-        do {
-            $reportHeader[] = $this->getFormatedDates($dateTime, $datePatternCol);
-            $dateTime->modify('+1 ' . $report->period);
-        } while ($dateTime <= $this->lastDayDate);
+        foreach ($this->getReportDates($report) as $date) {
+            $reportHeader[] = $this->getFormatedDates(
+                $this->setDateTime($date),
+                $datePatternCol
+            );
+        }
         $sheet->fromArray($reportHeader, null, 'A' . ($sheet->getHighestRow() + 2));
     }
 
@@ -93,7 +111,8 @@ class RequestReport extends Base
         $reportData = [];
         $firstDataRow = $sheet->getHighestRow() + 1;
         $totalSum = 0;
-        $dateSums = [];
+        $reportDates = $this->getReportDates($report);
+        $dateSums = array_fill(0, count($reportDates), 0);
 
         foreach ($report->data as $name => $entry) {
             if ($name !== 'sum' && $name !== 'average_processingtime' && $name !== 'average_processingtime_overall') {
@@ -117,18 +136,17 @@ class RequestReport extends Base
                     $totalSum += (int)($report->data['sum'][$name] ?? 0);
                 }
 
-                $dateTime = clone $this->firstDayDate;
-                $dateColumn = 0;
-                do {
-                    $dateString = $dateTime->format($this->dateFormatter[$report->period]);
-                    $requestCount = isset($entry[$dateString]) ? (int)$entry[$dateString]['requestscount'] : 0;
+                foreach ($reportDates as $dateColumn => $dateString) {
+                    $requestCount = isset($entry[$dateString])
+                        ? (int) $entry[$dateString]['requestscount']
+                        : 0;
+
                     $rowData[] = $requestCount;
+
                     if ($includeInTotal) {
-                        $dateSums[$dateColumn] = ($dateSums[$dateColumn] ?? 0) + $requestCount;
+                        $dateSums[$dateColumn] += $requestCount;
                     }
-                    $dateColumn++;
-                    $dateTime->modify('+1 ' . $report->period);
-                } while ($dateTime <= $this->lastDayDate);
+                }
 
                 $reportData[] = $rowData;
             }
