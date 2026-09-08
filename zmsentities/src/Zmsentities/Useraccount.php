@@ -61,10 +61,10 @@ class Useraccount extends Schema\Entity
     }
 
     /**
-     * @return Useraccount
+     * @return static
      */
     #[\Override]
-    public function addData(array|object $mergeData): Useraccount
+    public function addData(array|object $mergeData): static
     {
         $hasDepartments = is_array($mergeData) || $mergeData instanceof \ArrayAccess
             ? isset($mergeData['departments'])
