@@ -38,6 +38,8 @@
 </li>
 <li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1249'>ZMSKVR-1249</a>] -         Änderungsverlauf der Öffnungszeiten im Standort anzeigen
 </li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1334'>ZMSKVR-1334</a>] -         LOGIN - Termin-Detailseite – ICS-Datei zum Download
+</li>
 <li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1418'>ZMSKVR-1418</a>] -         Vergangene Termine über die Kundensuche für Terminadministrator*innen einsehbar machen
 </li>
 <li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1426'>ZMSKVR-1426</a>] -         Gesamtübersicht: Tage ohne Öffnungszeiten ausblenden
