@@ -1,5 +1,7 @@
 package zms.ataf.ui.pages.ticketprinter;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 
@@ -39,7 +41,13 @@ public class TicketprinterPageContext extends Context {
     }
 
     public void navigateToRequest(String scopeId, String requestId) {
-        navigateTo(joinUrl(resolveBaseUrl(), "") + "?ticketprinter[buttonlist]=r" + scopeId + "-" + requestId);
+        navigateToButtonList("r" + scopeId + "-" + requestId);
+    }
+
+    public void navigateToButtonList(String buttonList) {
+        String query = "ticketprinter%5Bbuttonlist%5D="
+                + URLEncoder.encode(buttonList, StandardCharsets.UTF_8);
+        navigateTo(joinUrl(resolveBaseUrl(), "") + "?" + query);
     }
 
     private void navigateTo(String url) {

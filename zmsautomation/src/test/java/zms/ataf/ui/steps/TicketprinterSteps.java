@@ -30,6 +30,25 @@ public class TicketprinterSteps {
         page.openRequest(scopeId, requestId);
     }
 
+    @Wenn("Sie die Ticketausgabe mit der Buttonliste {string} öffnen.")
+    public void sie_die_ticketausgabe_mit_der_buttonliste_oeffnen(String buttonList) {
+        buttonList = TestDataHelper.transformTestData(buttonList);
+        ScenarioLogManager.getLogger().info("Ticketprinter: open button list {}", buttonList);
+        page.openButtonList(buttonList);
+    }
+
+    @Dann("sollte die Ticketausgabe keine Fehlerseite anzeigen.")
+    public void sollte_die_ticketausgabe_keine_fehlerseite_anzeigen() {
+        ScenarioLogManager.getLogger().info("Ticketprinter: assert no error page");
+        page.assertNotErrorPage();
+    }
+
+    @Dann("sollte die Ticketausgabe anzeigen, dass der Kundenservice geschlossen ist.")
+    public void sollte_die_ticketausgabe_anzeigen_dass_der_kundenservice_geschlossen_ist() {
+        ScenarioLogManager.getLogger().info("Ticketprinter: assert closed");
+        page.assertClosed();
+    }
+
     @Dann("sollte die Schaltfläche {string} auf der Ticketausgabe sichtbar sein.")
     public void sollte_die_schaltflaeche_auf_der_ticketausgabe_sichtbar_sein(String label) {
         label = TestDataHelper.transformTestData(label);

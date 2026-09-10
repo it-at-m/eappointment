@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -477,6 +478,48 @@ public void saveLocationChanges() {
         CONTEXT.set();
         String trashXpath = "//table[contains(@class,'table--base')]//tr[.//td[contains(., '" + note + "')]]//a[.//i[contains(@class,'fa-trash-alt')]]";
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, trashXpath, LocatorType.XPATH, false);
+        confirmOpeningHoursDeleteLightbox();
+    }
+
+    /**
+     * Deletes every saved opening-hours row whose Typ column matches {@code type}
+     * (e.g. {@code Spontankunden}). The lightbox DELETE is persisted immediately.
+     */
+    public void deleteOpeningHoursOfType(String type) {
+        CONTEXT.set();
+        CONTEXT.waitForSpinners();
+        ScenarioLogManager.getLogger().info("Trying to delete opening hours of type \"" + type + "\"...");
+        By trash = By.xpath("//table[contains(@class,'table--base')]//tr[td[normalize-space()='" + type
+                + "']]//a[.//i[contains(@class,'fa-trash-alt')]]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(trash));
+        } catch (TimeoutException e) {
+            Assert.fail("No opening-hours row of type \"" + type + "\" to delete", e);
+        }
+        int deleted = 0;
+        while (true) {
+            List<WebElement> icons = DRIVER.findElements(trash);
+            if (icons.isEmpty()) {
+                break;
+            }
+            int remaining = icons.size();
+            wait.until(ExpectedConditions.elementToBeClickable(trash)).click();
+            confirmOpeningHoursDeleteLightbox();
+            CONTEXT.waitForSpinners();
+            wait.until(driver -> {
+                try {
+                    return driver.findElements(trash).size() < remaining;
+                } catch (StaleElementReferenceException e) {
+                    return false;
+                }
+            });
+            deleted++;
+        }
+        Assert.assertTrue(deleted > 0, "No opening-hours row of type \"" + type + "\" to delete");
+    }
+
+    private void confirmOpeningHoursDeleteLightbox() {
         By confirmButton = By.xpath("//div[contains(@class,'lightbox__content')]//a[@data-action-ok]");
         WebElement confirmBtn = new WebDriverWait(DRIVER, Duration.ofSeconds(10))
                 .until(ExpectedConditions.visibilityOfElementLocated(confirmButton));

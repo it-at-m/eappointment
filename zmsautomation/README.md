@@ -17,7 +17,7 @@ This module contains **API and UI tests** for ZMS using the ATAF (Test Automatio
   - `zms/ataf/ui/steps/` - UI step definitions (Selenium/ATAF web)  
   - `zms/ataf/ui/pages/**` - Page objects for Admin, Statistik, Bürgeransicht, Mailinator  
 - `src/test/resources/features/` - Cucumber feature files  
-  - `rest/zmsapi/` - ZMS REST API features (legacy folder/tag name; targets `zmsbackend` at `/terminvereinbarung/api/2`)  
+  - `rest/zmsapi/` - ZMS REST API features (legacy folder/tag name; targets `zmsbackend` at `/terminvereinbarung/api/2`). Categories use frontend subfolders (`booking/zmsadmin/`, `booking/zmsticketprinter/`, …) because zmsbackend is shared by the admin, ticketprinter, calldisplay and statistic frontends.  
   - `rest/zmscitizenapi/` - Citizen REST API features  
   - `ui/zmsadmin/` - Admin UI features  
   - `ui/buergeransicht/` - Legacy eappointment citizen view UI features  
@@ -46,6 +46,7 @@ The `zmsautomation-test` script handles database setup, migrations, and test exe
 ./zmsautomation/zmsautomation-test -Pataf-ui -Dcucumber.filter.tags="@ZMSKVR-1328"
 ./zmsautomation/zmsautomation-test -Pataf-ui -Dcucumber.filter.tags="@ZMSKVR-167"
 ./zmsautomation/zmsautomation-test -Pataf-api -Dcucumber.filter.tags="@ZMSKVR-1328"
+./zmsautomation/zmsautomation-test -Pataf-api -Dcucumber.filter.tags="@ZMSKVR-167"
 
 # Run specific API feature file
 ./zmsautomation/zmsautomation-test -Pataf-api -Dcucumber.features="src/test/resources/features/rest/zmsapi/status.feature"
@@ -191,12 +192,12 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
   - `@zmscitizenapi` - Citizen API tests (`features/rest/zmscitizenapi/**`)
 - **UI tags**
   - `@web` - All web UI tests
-  - `@zmsadmin` - Admin UI features (`features/ui/zmsadmin/**`)
+  - `@zmsadmin` - Admin UI (`features/ui/zmsadmin/**`) and matching zmsbackend REST (`rest/zmsapi/**/zmsadmin/`)
   - `@buergeransicht` - Legacy eappointment citizen view UI features (`features/ui/buergeransicht/**`)
   - `@zmsstatistic` - Statistik UI features (`features/ui/zmsstatistic/**`)
   - `@zmscitizenview` - Citizen view webcomponent UI (`features/ui/zmscitizenview/**`)
-  - `@zmsticketprinter` - Ticketprinter / kiosk UI (`features/ui/zmsticketprinter/**`)
-  - `@booking` - Booking / waiting-number flows (`zmsadmin/booking`, `zmscitizenview/booking`, `zmsticketprinter/booking`)
+  - `@zmsticketprinter` - Ticketprinter / kiosk UI (`features/ui/zmsticketprinter/**`) and matching zmsbackend REST (`rest/zmsapi/**/zmsticketprinter/`)
+  - `@booking` - Booking / waiting-number flows (UI: `zmsadmin/booking`, `zmscitizenview/booking`, `zmsticketprinter/booking`; REST: `rest/zmsapi/booking/{frontend}/`)
   - `@jumpin` - Booking scenarios that open jump-in URL (combination step first)
   - `@ruppertstrasse` - Ruppertstraße Passkalender (10502) style flows
   - `@passkalender` - Passkalender 10502 (three Pass services only); invalid jump-in if non-Pass + 10502
@@ -214,7 +215,10 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 ### API Features (`src/test/resources/features/rest/`)
 
 #### REST API (`rest/zmsapi/`, served by `zmsbackend`)
-- `status.feature` - Status endpoint tests (converted from `StatusEndpointTest`)
+- `status.feature` / `workstation-login.feature` - health and login
+- `booking/zmsadmin/ZMSKVR-1049.feature` - intern counter booking of a Mandanten variant missing from `provider.data.services`
+- `booking/zmsticketprinter/ZMSKVR-167.feature` - Orleansplatz KP Abholung (scope 127): Spontankunden hours, `POST /ticketprinter/` (`s127` and `s999,s127`), waiting numbers, then disabled buttons after hours are deleted
+- `customer-call/zmsadmin/ZMSKVR-1328.feature` - book, call and finish a scheduled appointment at the counter
 
 #### Citizen API (`rest/zmscitizenapi/`)
 - `zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature` - Ruppertstraße Citizen API booking (10502 / 10489 / 10492, jump-in)
@@ -236,7 +240,7 @@ Additional REST features (availability, offices-and-services, etc.) may be added
 - Features for the Statistik web UI (Dienstleistungsstatistik, Kundenstatistik, CSV export, etc.)
 
 #### Ticketprinter UI (`ui/zmsticketprinter/booking/`)
-- `ZMSKVR-167.feature` - Orleansplatz KP Abholung (scope 127): Spontankunden opening hours, then Standort (`s127`) and Dienstleistung (`r127-10295182`) waiting-number buttons
+- `ZMSKVR-167.feature` - Orleansplatz KP Abholung (scope 127): Spontankunden opening hours, then Standort (`s127`), Dienstleistung (`r127-10295182`), mixed button list (`s999,s127` skips the missing scope), then delete Spontankunden hours so the kiosk shows closed
 
 ## CI/CD
 

@@ -21,6 +21,12 @@ public class TicketprinterPage extends BasePage {
     private static final String CLOSED_TEXT = "Kundenservice ist geschlossen";
     private static final By WAITING_NUMBER = By.cssSelector(".noprint .nummernanzeige");
     private static final By WAITING_NUMBER_FALLBACK = By.cssSelector(".nummernanzeige");
+    private static final String[] ERROR_PAGE_MARKERS = {
+        "Ein Fehler ist aufgetreten",
+        "Organisation nicht gefunden",
+        "Zu dieser Auswahl konnte keine Organisation gefunden werden",
+        "Ein oder mehrere Standorte oder Cluster können nicht zusammen verwendet werden"
+    };
 
     private final TicketprinterPageContext CONTEXT;
 
@@ -32,13 +38,43 @@ public class TicketprinterPage extends BasePage {
     public void openScope(String scopeId) {
         ScenarioLogManager.getLogger().info("Opening ticketprinter for scope {}", scopeId);
         CONTEXT.navigateToScope(scopeId);
-        failIfClosed();
     }
 
     public void openRequest(String scopeId, String requestId) {
         ScenarioLogManager.getLogger().info("Opening ticketprinter for request {} at scope {}", requestId, scopeId);
         CONTEXT.navigateToRequest(scopeId, requestId);
-        failIfClosed();
+    }
+
+    public void openButtonList(String buttonList) {
+        ScenarioLogManager.getLogger().info("Opening ticketprinter button list {}", buttonList);
+        CONTEXT.navigateToButtonList(buttonList);
+    }
+
+    public void assertNotErrorPage() {
+        String source = DRIVER.getPageSource();
+        String url = DRIVER.getCurrentUrl();
+        for (String marker : ERROR_PAGE_MARKERS) {
+            Assert.assertFalse(
+                    source.contains(marker),
+                    "Ticketprinter showed an error page containing \"" + marker + "\". currentUrl=" + url);
+        }
+    }
+
+    public void assertClosed() {
+        boolean closed = isWebElementVisible(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//*[contains(text(),'" + CLOSED_TEXT + "')]",
+                LocatorType.XPATH,
+                false);
+        Assert.assertTrue(
+                closed,
+                "Ticketprinter did not show \"" + CLOSED_TEXT + "\". currentUrl=" + DRIVER.getCurrentUrl());
+        boolean waitingNumberButtonVisible = DRIVER.findElements(By.cssSelector("button.eintragen")).stream()
+                .anyMatch(WebElement::isDisplayed);
+        Assert.assertFalse(
+                waitingNumberButtonVisible,
+                "Waiting-number button still visible though the kiosk should be closed. currentUrl="
+                        + DRIVER.getCurrentUrl());
     }
 
     public void assertWaitingNumberButtonVisible(String label) {
