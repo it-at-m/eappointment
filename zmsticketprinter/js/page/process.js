@@ -22,7 +22,11 @@ class View extends BaseView {
 
     printDialog () {
         document.title = "Anmeldung an Warteschlange";
-        window.print();
+        // Selenium sets navigator.webdriver; skip the print dialog so UI tests
+        // are not blocked by Chrome's print preview.
+        if (!navigator.webdriver) {
+            window.print();
+        }
 
         var beforePrint = () => {};
         var afterPrint = () => {
