@@ -9,7 +9,6 @@ namespace BO\Zmsbackend\Workstation\Api;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
-use BO\Zmsbackend\Scope\Service\Scope;
 use BO\Zmsentities\Scope as Entity;
 
 class CounterGhostWorkstation extends \BO\Zmsbackend\Api\BaseController
