@@ -9,19 +9,14 @@
 {% block pagetype %}customized{% endblock %}
 {% block content %}
 
-    {% set scopes = [] %}
     {% set allButtonsDisabled = true %}
     {% for button in ticketprinter.buttons %}
-        {% if button.scope.id not in scopes %}
-            {% set scopes = scopes|merge([button.scope.id]) %}
-        {% endif %}
         {% if button.enabled %}
             {% set allButtonsDisabled = false %}
         {% endif %}
     {% endfor %}
-    {% set number_of_scopes = scopes|length %}
 
-    {% if (enabled and not hasDisabledButton) or (number_of_scopes > 1 and not allButtonsDisabled) %}
+    {% if not allButtonsDisabled %}
         {% if buttonDisplay == "button_single" %}
             {{ block("IntroMultiButtonText") }}
         <div class="werbeblock_oben">
