@@ -174,15 +174,6 @@ class Ticketprinter extends \BO\Zmsbackend\Base
     {
         $contact = new \BO\Zmsentities\Contact();
 
-        /* cluster not allowed anymore as button (2018-01-30, Abnahme mit TE)
-        if (1 == $entity->getClusterList()->count() && 0 == $entity->getScopeList()->count()) {
-            $contact->name = $entity->getClusterList()->getFirst()->name;
-        } elseif (0 == $entity->getClusterList()->count() && 1 == $entity->getScopeList()->count()) {
-            $department = (new \BO\Zmsbackend\Department\Service\Department())->readByScopeId($entity->getScopeList()->getFirst()->id);
-            $contact->name = $department->name;
-        }
-        */
-
         if (1 == $entity->getScopeList()->count()) {
             $department = (new \BO\Zmsbackend\Department\Service\Department())->readByScopeId($entity->getScopeList()->getFirst()->id);
             $contact->name = $department->name;
@@ -199,15 +190,6 @@ class Ticketprinter extends \BO\Zmsbackend\Base
             $scope = $ticketprinter->getScopeList()->getFirst();
             $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($scope['id']);
         }
-        /* cluster not allowed anymore as button (2018-01-30, Abnahme mit TE)
-        elseif (1 == $ticketprinter->getClusterList()->count()) {
-            $scopeList = $ticketprinter->getClusterList()->getFirst()->scopes;
-            $scopeList = new \BO\Zmsentities\Collection\ScopeList($scopeList);
-            if (1 == $scopeList->count()) {
-                $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($scopeList->getFirst()['id']);
-            }
-        }
-        */
         return $scope;
     }
 
