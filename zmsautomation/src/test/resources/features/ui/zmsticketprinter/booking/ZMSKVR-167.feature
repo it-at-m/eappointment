@@ -15,8 +15,8 @@ Funktionalität: Spontankunden können am Ticketdrucker eine Wartenummer ziehen,
 		Und Sie im Zeitmanagementsystem auf die Schaltfläche "neue Öffnungszeit" klicken.
 		Und Sie die Öffnungszeit-Accordion "Neue Öffnungszeit" öffnen.
 		Und Sie für "Öffnungszeiten Typ" den Wert "Spontankunden" auswählen.
-		Und Sie in Feld "Uhrzeit von" den Text "01:00" eingeben.
-		Und Sie in Feld "Uhrzeit bis" den Text "23:00" eingeben.
+		Und Sie in Feld "Uhrzeit von" den Text "00:00" eingeben.
+		Und Sie in Feld "Uhrzeit bis" den Text "23:59" eingeben.
 		Und Sie im Zeitmanagementsystem auf die Schaltfläche "Alle Änderungen aktivieren" klicken.
 		Wenn Sie die Ticketausgabe für den Standort "127" öffnen.
 		Dann sollte die Schaltfläche "Wartenummer für Bürgerbüro Orleansplatz (KVR-II/231 KP)" auf der Ticketausgabe sichtbar sein.

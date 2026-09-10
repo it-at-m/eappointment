@@ -2,12 +2,14 @@ package zms.ataf.ui.pages.ticketprinter;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.chromium.HasCdp;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import ataf.core.context.TestExecutionContext;
 import ataf.core.data.Environment;
@@ -56,11 +58,39 @@ public class TicketprinterPageContext extends Context {
         try {
             DRIVER.navigate().to(url);
         } catch (TimeoutException e) {
-            ScenarioLogManager.getLogger().warn("Navigation to zmsticketprinter timed out, continuing.", e);
+            ScenarioLogManager.getLogger().warn(
+                    "Navigation to zmsticketprinter timed out, waiting for kiosk content.", e);
         }
+        waitForTicketprinterDocument(url);
         WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
         FrameControls.setCurrentFrame(FrameControls.DEFAULT_CONTENT);
         ScenarioLogManager.getLogger().info("Ticketprinter loaded: {}", url);
+    }
+
+    private void waitForTicketprinterDocument(String url) {
+        String marker = distinctiveUrlPart(url);
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(10)).until(driver -> {
+                String current = driver.getCurrentUrl();
+                return current != null && current.contains(marker);
+            });
+        } catch (TimeoutException e) {
+            throw new TimeoutException(
+                    "Ticketprinter did not load. requested=" + url + " currentUrl=" + DRIVER.getCurrentUrl(),
+                    e);
+        }
+    }
+
+    private static String distinctiveUrlPart(String url) {
+        int query = url.indexOf("ticketprinter%5Bbuttonlist%5D=");
+        if (query >= 0) {
+            return url.substring(query);
+        }
+        int scope = url.indexOf("/scope/");
+        if (scope >= 0) {
+            return url.substring(scope);
+        }
+        return url;
     }
 
     /**

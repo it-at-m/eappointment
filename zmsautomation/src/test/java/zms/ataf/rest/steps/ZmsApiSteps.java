@@ -376,7 +376,7 @@ public class ZmsApiSteps {
         Assertions.assertThat(ticketprinterHash)
             .as("organisation hash for ticketprinter")
             .isNotBlank();
-        ScenarioLogManager.getLogger().info("Ticketprinter hash for scope {}: {}", scopeId, ticketprinterHash);
+        ScenarioLogManager.getLogger().info("Ticketprinter session established for scope {}", scopeId);
     }
 
     @Given("Spontankunden opening hours exist for scope {int} from {string} to {string}")
