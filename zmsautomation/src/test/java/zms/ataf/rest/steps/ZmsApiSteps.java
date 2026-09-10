@@ -492,6 +492,10 @@ public class ZmsApiSteps {
     }
 
     private void createSpontankundenOpeningHours(int scopeId, String from, String to) {
+        if (from != null && from.startsWith("00:00")) {
+            throw new IllegalArgumentException(
+                "Spontankunden startTime cannot be 00:00:00; the API ignores midnight as empty opening hours");
+        }
         String authKey = getOrLoginXAuthKey();
         LocalDate today = BerlinTime.today();
         long startEpoch = today.atStartOfDay(BerlinTime.ZONE).toEpochSecond();

@@ -8,7 +8,7 @@ Feature: ZMS API ticketprinter waiting numbers when a scope is open
     Given the ZMS API is available
     And I am logged in to the ZMS API as "ataf"
     And I have a ticketprinter session for scope 127
-    And Spontankunden opening hours exist for scope 127 from "00:00" to "23:00"
+    And Spontankunden opening hours exist for scope 127 from "01:00" to "23:00"
 
   Scenario: Scope button list is enabled and a waiting number can be issued
     When I request a ticketprinter button list "s127"
