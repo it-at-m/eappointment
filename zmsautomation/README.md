@@ -240,7 +240,7 @@ Additional REST features (availability, offices-and-services, etc.) may be added
 - Features for the Statistik web UI (Dienstleistungsstatistik, Kundenstatistik, CSV export, etc.)
 
 #### Ticketprinter UI (`ui/zmsticketprinter/booking/`)
-- `ZMSKVR-167.feature` - Orleansplatz KP Abholung (scope 127): Spontankunden opening hours, then Standort (`s127`), Dienstleistung (`r127-10295182`), mixed button list (`s999,s127` skips the missing scope), then delete Spontankunden hours so the kiosk shows closed
+- `ZMSKVR-167.feature` - one local Chrome session for Orleansplatz KP Abholung (scope 127): Spontankunden hours, Standort (`s127`), Dienstleistung (`r127-10295182`), mixed button list (`s999,s127` skips the missing scope), then delete hours so the kiosk shows closed
 
 ## CI/CD
 
