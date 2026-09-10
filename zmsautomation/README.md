@@ -23,6 +23,7 @@ This module contains **API and UI tests** for ZMS using the ATAF (Test Automatio
   - `ui/buergeransicht/` - Legacy eappointment citizen view UI features  
   - `ui/zmsstatistic/` - Statistik UI features  
   - `ui/zmscitizenview/` - Citizen view UI (Service Finder + full booking E2E)  
+  - `ui/zmsticketprinter/` - Ticketprinter / kiosk UI features (`booking/`, …)  
 - `src/main/resources/db/migration/` - Flyway database migrations
 
 ## Running Tests
@@ -43,6 +44,7 @@ The `zmsautomation-test` script handles database setup, migrations, and test exe
 
 # Filter by tag (pass the Maven profile for the layer you want)
 ./zmsautomation/zmsautomation-test -Pataf-ui -Dcucumber.filter.tags="@ZMSKVR-1328"
+./zmsautomation/zmsautomation-test -Pataf-ui -Dcucumber.filter.tags="@ZMSKVR-167"
 ./zmsautomation/zmsautomation-test -Pataf-api -Dcucumber.filter.tags="@ZMSKVR-1328"
 
 # Run specific API feature file
@@ -117,6 +119,7 @@ mvn test -Pataf-ui
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@buergeransicht"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsstatistic"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmscitizenview"
+# mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsticketprinter"
 ```
 
 ### macOS host (CLI)
@@ -140,6 +143,7 @@ Required environment variables for ATAF tests:
 - `CITIZEN_API_BASE_URI` - Citizen API base (default: `http://web/terminvereinbarung/api/citizen`) — **direct** to zms-web. REST steps use this; **refarch-gateway is not used** for those pings.
 - `ZMS_CONFIG_SECURE_TOKEN` - Token for `X-Token` on protected API calls such as `GET /status/` (default: `hash`, same as local `.env`). Required for zmsbackend health checks after ZMSKVR-1349.
 - `ADMIN_BASE_URI` / `STATISTIC_BASE_URI` - Defaults use `http://localhost/terminvereinbarung/.../` (typical when tests run inside the `web` container).
+- `TICKETPRINTER_BASE_URI` - Ticketprinter / kiosk base (default: `http://localhost/terminvereinbarung/ticketprinter/`).
 - `CITIZEN_VIEW_BASE_URI` / `CITIZENVIEW_PORT` - CitizenView / Vite dev server (defaults: port `8082`, base `http://citizenview:8082/`). Override if your stack uses another port (e.g. prebuilt nginx image on `8080`).
 - `REFARCH_GATEWAY_OFFICES_URL` - Optional override for the extra health ping that hits the gateway (default: `http://refarch-gateway:8080/buergeransicht/api/citizen/offices-and-services/`). Same URL path the browser uses; produces lines in gateway logs.
 - `SKIP_REFARCH_GATEWAY_HEALTH=1` - Skip gateway ping (e.g. no refarch-gateway container).
@@ -191,6 +195,8 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
   - `@buergeransicht` - Legacy eappointment citizen view UI features (`features/ui/buergeransicht/**`)
   - `@zmsstatistic` - Statistik UI features (`features/ui/zmsstatistic/**`)
   - `@zmscitizenview` - Citizen view webcomponent UI (`features/ui/zmscitizenview/**`)
+  - `@zmsticketprinter` - Ticketprinter / kiosk UI (`features/ui/zmsticketprinter/**`)
+  - `@booking` - Booking / waiting-number flows (`zmsadmin/booking`, `zmscitizenview/booking`, `zmsticketprinter/booking`)
   - `@jumpin` - Booking scenarios that open jump-in URL (combination step first)
   - `@ruppertstrasse` - Ruppertstraße Passkalender (10502) style flows
   - `@passkalender` - Passkalender 10502 (three Pass services only); invalid jump-in if non-Pass + 10502
@@ -228,6 +234,9 @@ Additional REST features (availability, offices-and-services, etc.) may be added
 
 #### Statistik UI (`ui/zmsstatistic/`)
 - Features for the Statistik web UI (Dienstleistungsstatistik, Kundenstatistik, CSV export, etc.)
+
+#### Ticketprinter UI (`ui/zmsticketprinter/booking/`)
+- `ZMSKVR-167.feature` - Orleansplatz KP Abholung (scope 127): Spontankunden opening hours, then Standort (`s127`) and Dienstleistung (`r127-10295182`) waiting-number buttons
 
 ## CI/CD
 

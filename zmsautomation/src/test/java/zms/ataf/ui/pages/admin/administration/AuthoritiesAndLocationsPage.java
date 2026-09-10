@@ -285,13 +285,31 @@ public void saveLocationChanges() {
     public void selectOpeningHoursType(String type) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to select opening hours type \"" + type + "\"");
-        selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "//select[@id='AvDayType']", LocatorType.XPATH, type);
+        selectInOpenedAccordion("AvDayType", type);
     }
 
     public void selectSeries(String series) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to select series \"" + series + "\"");
-        selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "//select[@id='AvDaySeries']", LocatorType.XPATH, series);
+        selectInOpenedAccordion("AvDaySeries", series);
+    }
+
+    /**
+     * Several accordions reuse the same select ids ({@code AvDayType}, {@code AvDaySeries}).
+     * Always target the expanded panel so we do not rewrite an existing Terminkunden row.
+     */
+    private void selectInOpenedAccordion(String selectId, String visibleText) {
+        String xpath = "(//div[contains(@class,'accordion__panel') and contains(@class,'opened')]"
+                + "//select[@id='" + selectId + "'])[last()]";
+        WebElement selectEl = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(By.xpath(xpath)));
+        Select select = new Select(selectEl);
+        String current = select.getFirstSelectedOption().getText().trim();
+        if (current.equals(visibleText)) {
+            ScenarioLogManager.getLogger().info("Select #" + selectId + " is already \"" + visibleText + "\"");
+            return;
+        }
+        select.selectByVisibleText(visibleText);
     }
 
     public void selectWeekDay(String weekDay) {
@@ -344,6 +362,12 @@ public void saveLocationChanges() {
     }
 
     private WebElement findVisibleInputById(String id) {
+        String inOpenedAccordion = "(//div[contains(@class,'accordion__panel') and contains(@class,'opened')]"
+                + "//input[@id='" + id + "'])[last()]";
+        List<WebElement> opened = DRIVER.findElements(By.xpath(inOpenedAccordion));
+        if (!opened.isEmpty() && opened.get(0).isDisplayed()) {
+            return opened.get(0);
+        }
         return DRIVER.findElements(By.id(id)).stream()
                 .filter(element -> element.isDisplayed())
                 .filter(element -> element.getRect().getHeight() > 0 && element.getRect().getWidth() > 0)
