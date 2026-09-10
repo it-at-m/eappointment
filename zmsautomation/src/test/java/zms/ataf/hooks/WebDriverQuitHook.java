@@ -6,7 +6,6 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
-import io.cucumber.java.Scenario;
 
 /**
  * ATAF {@code DriverUtil.closeDriver()} only calls {@code quit()} on Selenium Grid.
@@ -18,16 +17,16 @@ public class WebDriverQuitHook {
     private static final ThreadLocal<RemoteWebDriver> LOCAL_DRIVER = new ThreadLocal<>();
 
     @Before(value = "@web", order = 10001)
-    public void captureDriver(Scenario scenario) {
+    public void captureDriver() {
         try {
             LOCAL_DRIVER.set(DriverUtil.getDriver());
         } catch (RuntimeException e) {
-            ScenarioLogManager.getLogger().warn("Could not capture WebDriver for local quit: {}", e.toString());
+            ScenarioLogManager.getLogger().warn("Could not capture WebDriver for local quit", e);
         }
     }
 
     @After(value = "@web", order = 9999)
-    public void quitLocalDriver(Scenario scenario) {
+    public void quitLocalDriver() {
         RemoteWebDriver driver = LOCAL_DRIVER.get();
         LOCAL_DRIVER.remove();
         if (driver == null || !DriverUtil.isLocalExecution()) {
@@ -36,7 +35,7 @@ public class WebDriverQuitHook {
         try {
             driver.quit();
         } catch (RuntimeException e) {
-            ScenarioLogManager.getLogger().warn("WebDriver quit failed: {}", e.toString());
+            ScenarioLogManager.getLogger().warn("WebDriver quit failed", e);
         }
     }
 }
