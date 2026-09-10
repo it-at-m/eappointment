@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class Overview extends BaseController
 {
-    protected $resolveLevel = 2;
+    protected int $resolveLevel = 2;
 
     /**
      * @SuppressWarnings(Param)
@@ -25,14 +25,14 @@ class Overview extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
-        $waitingPeriod = \App::$http
+    ): mixed {
+        $waitingPeriod = \App::http()
             ->readGetResult('/warehouse/waitingscope/' . $this->workstation->scope['id'] . '/')
             ->getEntity();
-        $clientPeriod = \App::$http
+        $clientPeriod = \App::http()
             ->readGetResult('/warehouse/clientscope/' . $this->workstation->scope['id'] . '/')
             ->getEntity();
-        $requestPeriod = \App::$http
+        $requestPeriod = \App::http()
             ->readGetResult('/warehouse/requestscope/' . $this->workstation->scope['id'] . '/')
             ->getEntity();
         $useraccount = $this->workstation->getUseraccount();

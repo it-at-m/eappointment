@@ -35,16 +35,16 @@ class ProcessDeleteTest extends Base
                     'response' => $this->readFixture("GET_cluster_109.json")
                 ],
                 [
-                    'function' => 'readDeleteResult',
-                    'url' => '/process/82252/',
-                    'parameters' => ['initiator' => 'admin'],
-                    'response' => $this->readFixture("GET_process_82252_12a2.json")
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/process/82252/12a2/delete/mail/',
                     'parameters' => ['initiator' => 'admin'],
                     'response' => $this->readFixture("POST_mail.json")
+                ],
+                [
+                    'function' => 'readDeleteResult',
+                    'url' => '/process/82252/',
+                    'parameters' => ['initiator' => 'admin'],
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ]
             ]
         );
@@ -114,6 +114,12 @@ class ProcessDeleteTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/cluster/',
                     'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/100044/57c2/delete/mail/',
+                    'parameters' => ['initiator' => 'admin'],
+                    'response' => $this->readFixture("POST_mail.json")
                 ],
                 [
                     'function' => 'readDeleteResult',

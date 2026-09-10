@@ -15,7 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class ReportWaitingIndex extends BaseController
 {
-    protected $resolveLevel = 2;
+    protected int $resolveLevel = 2;
 
     /**
      * @SuppressWarnings(Param)
@@ -26,7 +26,8 @@ class ReportWaitingIndex extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
         $reportWaitingService = new ReportWaitingService();
         $reportHelper = new ReportHelper();
@@ -79,7 +80,7 @@ class ReportWaitingIndex extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args,
-        $exchangeWaiting,
+        mixed $exchangeWaiting,
         array|null $dateRange,
         array $selectedScopes = [],
         ReportWaitingService|null $reportWaitingService = null
@@ -94,7 +95,9 @@ class ReportWaitingIndex extends BaseController
         $args['department'] = $this->department;
         $args['organisation'] = $this->organisation;
 
-        return (new Download\WaitingReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+        /** @var mixed $container */
+        $container = \App::$slim->getContainer();
+        return (new Download\WaitingReport($container))->readResponse($request, $response, $args);
     }
 
     /**
@@ -103,9 +106,9 @@ class ReportWaitingIndex extends BaseController
     private function renderHtmlResponse(
         ResponseInterface $response,
         array $args,
-        $waitingPeriod,
+        mixed $waitingPeriod,
         array|null $dateRange,
-        $exchangeWaiting,
+        mixed $exchangeWaiting,
         array $selectedScopes = []
     ): ResponseInterface {
         return Render::withHtml(
