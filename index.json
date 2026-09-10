@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-10T06:31:44.986Z",
+  "publishedAt": "2026-09-10T08:12:50.325Z",
   "branches": [
     {
       "name": "next",
@@ -12,6 +12,12 @@
       "slug": "main",
       "runId": "34442092609",
       "runStartedAt": "2026-09-10T05:41:38Z"
+    },
+    {
+      "name": "dependabot/npm_and_yarn/zmsadmin/next/eslint-10.10.0",
+      "slug": "dependabot-npm_and_yarn-zmsadmin-next-eslint-10.10.0",
+      "runId": "34449545921",
+      "runStartedAt": "2026-09-10T07:21:27Z"
     },
     {
       "name": "feature-zmskvr-1049-internal-booking-request-provider",
