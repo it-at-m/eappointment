@@ -1,10 +1,10 @@
 {
   "branch": "bugfix-zmskvr-167-ticketprinter-missing-scope-ids",
   "branchSlug": "bugfix-zmskvr-167-ticketprinter-missing-scope-ids",
-  "runId": "34523718423",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34523718423",
-  "runStartedAt": "2026-09-10T20:00:15Z",
-  "publishedAt": "2026-09-10T20:10:23.012Z",
+  "runId": "34524994393",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34524994393",
+  "runStartedAt": "2026-09-10T20:12:39Z",
+  "publishedAt": "2026-09-10T20:21:19.173Z",
   "features": {
     "feature-rest-zmsapi-booking-zmsadmin-zmskvr-1049": {
       "status": "passed",
@@ -70,13 +70,13 @@
       "runStartedAt": "2026-09-10T19:13:48Z"
     },
     "feature-ui-zmsticketprinter-booking-zmskvr-167": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "rel": "ui/zmsticketprinter/booking/ZMSKVR-167.feature",
-      "runId": "34523718423",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34523718423",
-      "runStartedAt": "2026-09-10T20:00:15Z"
+      "runId": "34524994393",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34524994393",
+      "runStartedAt": "2026-09-10T20:12:39Z"
     }
   }
 }
