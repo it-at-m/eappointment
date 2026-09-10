@@ -11,13 +11,6 @@ use BO\Zmsentities\Collection\TicketprinterList as Collection;
  */
 class Ticketprinter extends \BO\Zmsbackend\Base
 {
-    /**
-     * read entity
-     *
-     * @param int|string $itemId
-     *
-     * @return Entity
-     */
     public function readEntity($itemId)
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT);
@@ -30,11 +23,6 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $ticketprinter;
     }
 
-    /**
-     * read list of ticketprinters
-     *
-     * @return Collection
-     */
     protected function readList($statement)
     {
         $ticketprinterList = new Collection();
@@ -45,13 +33,6 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $ticketprinterList;
     }
 
-    /**
-     * read Ticketprinter by Hash
-     *
-     * @param string $hash
-     *
-     * @return Entity
-     */
     public function readByHash($hash)
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT);
@@ -64,14 +45,6 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $ticketprinter;
     }
 
-    /**
-     * read Ticketprinter by comma separated buttonlist
-     *
-     * @param \BO\Zmsentities\Ticketprinter $ticketprinter
-     * @param \DateTimeInterface $now
-     *
-     * @return Entity
-     */
     public function readByButtonList(Entity $ticketprinter, \DateTimeImmutable $now)
     {
         if (count($ticketprinter->buttons) > 6) {
@@ -191,9 +164,6 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return false;
     }
 
-    /**
-     * @return void
-     */
     protected function readExceptions(Entity $ticketprinter)
     {
         $query = new \BO\Zmsbackend\Scope\Service\Scope();
@@ -244,14 +214,6 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $scope;
     }
 
-    /**
-     * write a cookie for ticketprinter
-     *
-     * @param int $organisationId
-     * @param string $ticketprinterName
-     *
-     * @return Entity
-     */
     public function writeEntityWithHash($organisationId, $ticketprinterName = '')
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::INSERT);
@@ -261,7 +223,6 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         $organisation = (new \BO\Zmsbackend\Organisation\Service\Organisation())->readEntity($organisationId);
 
         $values = $query->reverseEntityMapping($ticketprinter, $organisation->id);
-        //get owner by organisation
         $owner = (new \BO\Zmsbackend\Owner\Service\Owner())->readByOrganisationId($organisationId);
         $values['kundenid'] = $owner->id;
         $query->addValues($values);
@@ -270,20 +231,11 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $this->readEntity($lastInsertId);
     }
 
-    /**
-     * write a ticketprinter
-     *
-     * @param \BO\Zmsentities\Ticketprinter $entity
-     * @param int $organisationId
-     *
-     * @return Entity
-     */
     public function writeEntity(Entity $entity, $organisationId)
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity, $organisationId);
 
-        //get owner by organisation
         $owner = (new \BO\Zmsbackend\Owner\Service\Owner())->readByOrganisationId($organisationId);
         $values['kundenid'] = $owner->id;
 
@@ -293,13 +245,6 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $this->readEntity($lastInsertId);
     }
 
-    /**
-     * read list of ticketprinter by organisation
-     *
-     * @param int $organisationId
-     *
-     * @return Collection
-     */
     public function readByOrganisationId($organisationId)
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT);
@@ -310,13 +255,6 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $this->readList($statement);
     }
 
-    /**
-    * remove an ticketprinter
-    *
-     * @param int|string $itemId
-     *
-     * @return Entity|null
-    */
     public function deleteEntity($itemId)
     {
         $query =  new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::DELETE);
