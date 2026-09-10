@@ -28,27 +28,45 @@ class HomeUrl
         } elseif (!$homeUrl) {
             $homeUrl = $request->getRequestTarget();
         }
-        // Clean up accumulated /& patterns from URL (bug in redirect chain)
         $homeUrl = static::sanitizeUrl($homeUrl);
-        //\App::$log->debug("HOMEURL", [$homeUrl, $request->getRequestTarget()]);
         \BO\Zmsclient\Ticketprinter::setHomeUrl($homeUrl, $request);
         return $homeUrl;
     }
 
     /**
-     * Remove accumulated /& patterns from URL that occur due to redirect chain issues
-     *
-     * @return null|string|string[]
-     *
+     * Drop rewrite PATH_INFO stuffed into the query string (no "="), e.g.
+     * /ticketprinter/scope/127/?/scope/127/&/scope/127/
      */
-    public static function sanitizeUrl($url): array|string|null
+    public static function sanitizeUrl(mixed $url): string
     {
-        // Remove repeated /& patterns (e.g., ?/&/&/& becomes ?)
-        $url = preg_replace('#\?(/&)+#', '?', $url);
-        // Remove any remaining leading /& after ?
-        $url = preg_replace('#\?/&#', '?', $url);
-        // Clean up empty query string marker
-        $url = preg_replace('#\?$#', '', $url);
-        return $url;
+        if (! is_string($url) || $url === '') {
+            return is_string($url) ? $url : '';
+        }
+
+        $parts = parse_url($url);
+        if ($parts === false) {
+            return $url;
+        }
+
+        $kept = [];
+        foreach (explode('&', $parts['query'] ?? '') as $pair) {
+            if ($pair !== '' && str_contains($pair, '=')) {
+                $kept[] = $pair;
+            }
+        }
+
+        $sanitized = '';
+        if (isset($parts['scheme'], $parts['host'])) {
+            $sanitized = $parts['scheme'] . '://' . $parts['host'];
+            if (isset($parts['port'])) {
+                $sanitized .= ':' . $parts['port'];
+            }
+        }
+        $sanitized .= $parts['path'] ?? '';
+        if ($kept !== []) {
+            $sanitized .= '?' . implode('&', $kept);
+        }
+
+        return $sanitized;
     }
 }
