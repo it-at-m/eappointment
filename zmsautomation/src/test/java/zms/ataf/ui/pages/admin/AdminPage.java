@@ -50,6 +50,10 @@ public class AdminPage extends BasePage {
     }
 
     public void clickOnLoginButton() throws Exception {
+        if (isAlreadyLoggedIn()) {
+            ScenarioLogManager.getLogger().info("Already logged in, skipping SSO login.");
+            return;
+        }
         ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[@type='submit' and @value='keycloak']", LocatorType.XPATH, false);
         ScenarioLogManager.getLogger().info("SSO-Login page detected!");
@@ -93,6 +97,11 @@ public class AdminPage extends BasePage {
                 throw exception;
             }
         }
+    }
+
+    private boolean isAlreadyLoggedIn() {
+        return isWebElementVisible(2, "//*[contains(text(),'Sie sind bereits angemeldet')]", LocatorType.XPATH, false)
+                || isWebElementVisible(1, HEADER_CHANGE_SELECTION_LOCATOR, LocatorType.CSSSELECTOR, false);
     }
 
     public void selectLocation(String location) {
