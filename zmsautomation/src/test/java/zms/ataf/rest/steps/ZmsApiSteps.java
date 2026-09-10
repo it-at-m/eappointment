@@ -2,7 +2,9 @@ package zms.ataf.rest.steps;
 
 import static io.restassured.RestAssured.given;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.Locale;
 
 import org.assertj.core.api.Assertions;
 
@@ -34,6 +36,7 @@ public class ZmsApiSteps {
     private String scenarioLoginUsername;
     private String scenarioLoginPassword;
     private JsonNode lastProcess;
+    private String ticketprinterHash;
 
     @Before
     public void resetProcessContext() {
@@ -41,6 +44,7 @@ public class ZmsApiSteps {
         cachedXAuthKey = null;
         scenarioLoginUsername = null;
         scenarioLoginPassword = null;
+        ticketprinterHash = null;
     }
     
     @Given("the ZMS API is available")
@@ -346,6 +350,247 @@ public class ZmsApiSteps {
         StatusResponse statusData = apiResponse.getData();
         Assertions.assertThat(statusData).isNotNull();
         Assertions.assertThat(statusData.getVersion()).isNotNull();
+    }
+
+    @Given("I have a ticketprinter session for scope {int}")
+    public void iHaveATicketprinterSessionForScope(int scopeId) {
+        Response orgResponse = given()
+            .baseUri(apiBaseUri())
+            .queryParam("resolveReferences", 0)
+        .when()
+            .get("/scope/" + scopeId + "/organisation/");
+        Assertions.assertThat(orgResponse.getStatusCode())
+            .as("GET /scope/%d/organisation/", scopeId)
+            .isEqualTo(200);
+        int organisationId = parseDataNode(orgResponse).path("id").asInt();
+        Assertions.assertThat(organisationId).isPositive();
+
+        Response hashResponse = given()
+            .baseUri(apiBaseUri())
+        .when()
+            .get("/organisation/" + organisationId + "/hash/");
+        Assertions.assertThat(hashResponse.getStatusCode())
+            .as("GET /organisation/%d/hash/", organisationId)
+            .isEqualTo(200);
+        ticketprinterHash = parseDataNode(hashResponse).path("hash").asText();
+        Assertions.assertThat(ticketprinterHash)
+            .as("organisation hash for ticketprinter")
+            .isNotBlank();
+        ScenarioLogManager.getLogger().info("Ticketprinter hash for scope {}: {}", scopeId, ticketprinterHash);
+    }
+
+    @Given("Spontankunden opening hours exist for scope {int} from {string} to {string}")
+    public void spontankundenOpeningHoursExistForScope(int scopeId, String from, String to) {
+        if (findOpeningHoursIds(scopeId, "ATAF-ZMSKVR-167").isEmpty()) {
+            createSpontankundenOpeningHours(scopeId, from, to);
+        }
+    }
+
+    @When("I delete Spontankunden opening hours for scope {int} with the X-AuthKey")
+    public void iDeleteSpontankundenOpeningHoursForScope(int scopeId) {
+        String authKey = getOrLoginXAuthKey();
+        java.util.List<Integer> ids = findOpeningHoursIds(scopeId, null);
+        Assertions.assertThat(ids)
+            .as("scope %d should have Spontankunden opening hours to delete", scopeId)
+            .isNotEmpty();
+        for (int id : ids) {
+            response = given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", authKey)
+            .when()
+                .delete("/availability/" + id + "/");
+            CommonApiSteps.setResponse(response);
+            Assertions.assertThat(response.getStatusCode())
+                .as("DELETE /availability/%d/", id)
+                .isEqualTo(200);
+        }
+    }
+
+    @When("I request a ticketprinter button list {string}")
+    public void iRequestATicketprinterButtonList(String buttonList) {
+        Assertions.assertThat(ticketprinterHash)
+            .as("Call 'I have a ticketprinter session for scope …' first")
+            .isNotBlank();
+        ObjectNode body = MAPPER.createObjectNode();
+        body.put("buttonlist", buttonList);
+        body.put("hash", ticketprinterHash);
+        response = given()
+            .baseUri(apiBaseUri())
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/ticketprinter/");
+        CommonApiSteps.setResponse(response);
+        if (response.getStatusCode() != 200) {
+            ScenarioLogManager.getLogger().error(
+                "POST /ticketprinter/ failed with {}: {}",
+                response.getStatusCode(),
+                truncate(response.asString(), 1000));
+        }
+    }
+
+    @When("I request a waiting number for scope {int}")
+    public void iRequestAWaitingNumberForScope(int scopeId) {
+        requestWaitingNumber(scopeId, null);
+    }
+
+    @When("I request a waiting number for scope {int} and request {int}")
+    public void iRequestAWaitingNumberForScopeAndRequest(int scopeId, int requestId) {
+        requestWaitingNumber(scopeId, requestId);
+    }
+
+    @Then("the ticketprinter button for scope {int} should be enabled")
+    public void theTicketprinterButtonForScopeShouldBeEnabled(int scopeId) {
+        JsonNode button = findScopeButton(scopeId);
+        Assertions.assertThat(button)
+            .as("scope button %d in POST /ticketprinter/ response", scopeId)
+            .isNotNull();
+        Assertions.assertThat(button.path("enabled").asBoolean()).isTrue();
+    }
+
+    @Then("the ticketprinter button for scope {int} should be disabled")
+    public void theTicketprinterButtonForScopeShouldBeDisabled(int scopeId) {
+        JsonNode button = findScopeButton(scopeId);
+        Assertions.assertThat(button)
+            .as("scope button %d in POST /ticketprinter/ response", scopeId)
+            .isNotNull();
+        Assertions.assertThat(button.path("enabled").asBoolean()).isFalse();
+    }
+
+    @Then("the ticketprinter response should not contain scope {int}")
+    public void theTicketprinterResponseShouldNotContainScope(int scopeId) {
+        Assertions.assertThat(findScopeButton(scopeId))
+            .as("missing scope %d should be omitted from the button list", scopeId)
+            .isNull();
+    }
+
+    @Then("the process should have a waiting number")
+    public void theProcessShouldHaveAWaitingNumber() {
+        JsonNode process = lastProcess != null ? lastProcess : parseDataNode(response);
+        Assertions.assertThat(process).isNotNull();
+        int number = process.path("queue").path("number").asInt();
+        Assertions.assertThat(number)
+            .as("process.queue.number")
+            .isPositive();
+        ScenarioLogManager.getLogger().info("Ticketprinter waiting number: {}", number);
+    }
+
+    private void requestWaitingNumber(int scopeId, Integer requestId) {
+        Assertions.assertThat(ticketprinterHash)
+            .as("Call 'I have a ticketprinter session for scope …' first")
+            .isNotBlank();
+        var request = given()
+            .baseUri(apiBaseUri());
+        if (requestId != null) {
+            request = request.queryParam("requestId", requestId);
+        }
+        response = request
+        .when()
+            .get("/scope/" + scopeId + "/waitingnumber/" + ticketprinterHash + "/");
+        CommonApiSteps.setResponse(response);
+        rememberProcess(parseDataNode(response));
+    }
+
+    private void createSpontankundenOpeningHours(int scopeId, String from, String to) {
+        String authKey = getOrLoginXAuthKey();
+        LocalDate today = BerlinTime.today();
+        long startEpoch = today.atStartOfDay(BerlinTime.ZONE).toEpochSecond();
+        DayOfWeek todayWeekday = today.getDayOfWeek();
+
+        ObjectNode weekday = MAPPER.createObjectNode();
+        for (DayOfWeek day : DayOfWeek.values()) {
+            weekday.put(day.name().toLowerCase(Locale.ROOT), day == todayWeekday ? 1 : 0);
+        }
+
+        ObjectNode availability = MAPPER.createObjectNode();
+        availability.put("type", "openinghours");
+        availability.put("kind", "default");
+        availability.put("description", "ATAF-ZMSKVR-167");
+        availability.put("startDate", startEpoch);
+        availability.put("endDate", startEpoch);
+        availability.put("startTime", normalizeClock(from));
+        availability.put("endTime", normalizeClock(to));
+        ObjectNode scope = MAPPER.createObjectNode();
+        scope.put("id", scopeId);
+        availability.set("scope", scope);
+        availability.set("weekday", weekday);
+        ObjectNode workstationCount = MAPPER.createObjectNode();
+        workstationCount.put("intern", 0);
+        workstationCount.put("public", 0);
+        availability.set("workstationCount", workstationCount);
+
+        ObjectNode body = MAPPER.createObjectNode();
+        body.set("availabilityList", MAPPER.createArrayNode().add(availability));
+        body.put("selectedDate", today.toString());
+
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/availability/");
+        CommonApiSteps.setResponse(response);
+        if (response.getStatusCode() != 200) {
+            throw new IllegalStateException(
+                "POST /availability/ for Spontankunden hours on scope " + scopeId
+                    + " failed with " + response.getStatusCode() + ": "
+                    + truncate(response.asString(), 1000));
+        }
+    }
+
+    private java.util.List<Integer> findOpeningHoursIds(int scopeId, String description) {
+        String authKey = getOrLoginXAuthKey();
+        LocalDate today = BerlinTime.today();
+        Response listResponse = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("startDate", today.toString())
+            .queryParam("endDate", today.toString())
+        .when()
+            .get("/scope/" + scopeId + "/availability/");
+        if (listResponse.getStatusCode() != 200) {
+            return java.util.List.of();
+        }
+        ArrayNode list = parseDataArray(listResponse);
+        if (list == null) {
+            return java.util.List.of();
+        }
+        java.util.List<Integer> ids = new java.util.ArrayList<>();
+        for (JsonNode item : list) {
+            if (!"openinghours".equals(item.path("type").asText()) || item.path("id").asInt() <= 0) {
+                continue;
+            }
+            if (description != null && !description.equals(item.path("description").asText())) {
+                continue;
+            }
+            ids.add(item.path("id").asInt());
+        }
+        return ids;
+    }
+
+    private JsonNode findScopeButton(int scopeId) {
+        JsonNode data = parseDataNode(response);
+        Assertions.assertThat(data).isNotNull();
+        JsonNode buttons = data.path("buttons");
+        if (!buttons.isArray()) {
+            return null;
+        }
+        for (JsonNode button : buttons) {
+            if ("scope".equals(button.path("type").asText())
+                    && button.path("scope").path("id").asInt() == scopeId) {
+                return button;
+            }
+        }
+        return null;
+    }
+
+    private static String normalizeClock(String time) {
+        return time != null && time.length() == 5 ? time + ":00" : time;
+    }
+
+    private String apiBaseUri() {
+        return baseUri != null ? baseUri : TestConfig.getBaseUri();
     }
     
     private <T> T as(Response response, TypeReference<T> typeReference) {
