@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-10T19:55:17.660Z",
+  "publishedAt": "2026-09-10T20:10:23.012Z",
   "branches": [
     {
       "name": "next",
@@ -16,8 +16,8 @@
     {
       "name": "bugfix-zmskvr-167-ticketprinter-missing-scope-ids",
       "slug": "bugfix-zmskvr-167-ticketprinter-missing-scope-ids",
-      "runId": "34522461418",
-      "runStartedAt": "2026-09-10T19:47:16Z"
+      "runId": "34523718423",
+      "runStartedAt": "2026-09-10T20:00:15Z"
     },
     {
       "name": "dependabot/npm_and_yarn/zmsadmin/next/eslint-10.10.0",
