@@ -1,4 +1,4 @@
-@rest @zmsapi @booking @system @ZMSKVR-1049
+@rest @zmsapi @booking @zmsadmin @system @ZMSKVR-1049
 Feature: ZMS API intern booking of a zms variant that is only in request_provider
   As a client application
   I want to reserve an intern appointment for a Mandanten variant
