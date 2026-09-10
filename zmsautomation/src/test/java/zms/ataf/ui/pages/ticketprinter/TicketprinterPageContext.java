@@ -1,5 +1,6 @@
 package zms.ataf.ui.pages.ticketprinter;
 
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -68,11 +69,10 @@ public class TicketprinterPageContext extends Context {
     }
 
     private void waitForTicketprinterDocument(String url) {
-        String marker = distinctiveUrlPart(url);
         try {
             new WebDriverWait(DRIVER, Duration.ofSeconds(10)).until(driver -> {
                 String current = driver.getCurrentUrl();
-                return current != null && current.contains(marker);
+                return current != null && ticketprinterUrlLoaded(url, current);
             });
         } catch (TimeoutException e) {
             throw new TimeoutException(
@@ -81,10 +81,34 @@ public class TicketprinterPageContext extends Context {
         }
     }
 
+    /**
+     * A buttonlist with one remaining valid Standort is redirected to {@code /scope/{id}/}.
+     */
+    private static boolean ticketprinterUrlLoaded(String requested, String current) {
+        String marker = distinctiveUrlPart(urlEncodedOrPlain(requested));
+        if (current.contains(marker) || current.contains(urlEncodedOrPlain(marker))) {
+            return true;
+        }
+        return requested.contains("ticketprinter%5Bbuttonlist%5D=")
+                && current.contains("/ticketprinter/scope/");
+    }
+
+    private static String urlEncodedOrPlain(String value) {
+        try {
+            return URLDecoder.decode(value, StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException e) {
+            return value;
+        }
+    }
+
     private static String distinctiveUrlPart(String url) {
-        int query = url.indexOf("ticketprinter%5Bbuttonlist%5D=");
+        int query = url.indexOf("ticketprinter[buttonlist]=");
         if (query >= 0) {
             return url.substring(query);
+        }
+        int encodedQuery = url.indexOf("ticketprinter%5Bbuttonlist%5D=");
+        if (encodedQuery >= 0) {
+            return url.substring(encodedQuery);
         }
         int scope = url.indexOf("/scope/");
         if (scope >= 0) {
