@@ -81,19 +81,16 @@ public class TicketprinterPageContext extends Context {
         }
     }
 
-    /**
-     * A buttonlist with one remaining valid Standort is redirected to {@code /scope/{id}/}.
-     */
     private static boolean ticketprinterUrlLoaded(String requested, String current) {
-        String marker = distinctiveUrlPart(urlEncodedOrPlain(requested));
-        if (current.contains(marker) || current.contains(urlEncodedOrPlain(marker))) {
+        String decodedRequested = decodeUrl(requested);
+        String decodedCurrent = decodeUrl(current);
+        if (decodedCurrent.equals(decodedRequested) || decodedCurrent.contains(distinctiveUrlPart(decodedRequested))) {
             return true;
         }
-        return requested.contains("ticketprinter%5Bbuttonlist%5D=")
-                && current.contains("/ticketprinter/scope/");
+        return requested.contains("buttonlist") && current.contains("/ticketprinter/scope/");
     }
 
-    private static String urlEncodedOrPlain(String value) {
+    private static String decodeUrl(String value) {
         try {
             return URLDecoder.decode(value, StandardCharsets.UTF_8);
         } catch (IllegalArgumentException e) {
@@ -105,10 +102,6 @@ public class TicketprinterPageContext extends Context {
         int query = url.indexOf("ticketprinter[buttonlist]=");
         if (query >= 0) {
             return url.substring(query);
-        }
-        int encodedQuery = url.indexOf("ticketprinter%5Bbuttonlist%5D=");
-        if (encodedQuery >= 0) {
-            return url.substring(encodedQuery);
         }
         int scope = url.indexOf("/scope/");
         if (scope >= 0) {
