@@ -9,6 +9,7 @@ namespace BO\Zmsstatistic\Service;
 
 use BO\Zmsentities\Day;
 use BO\Zmsentities\Exchange;
+use BO\Zmsstatistic\Helper\ReportHelper;
 use DateTimeImmutable;
 
 /**
@@ -28,7 +29,7 @@ class ReportCapacityService
             return null;
         }
 
-        if ($dateRange) {
+        if (ReportHelper::hasValues($dateRange)) {
             return $this->getExchangeCapacityForDateRange($scopeId, $dateRange);
         }
 
@@ -43,10 +44,7 @@ class ReportCapacityService
     public function getScopeDateBoundsByScopeId(): array
     {
         try {
-            $result = \App::$http->readGetResult('/warehouse/capacityscope/');
-            if (!$result) {
-                return [];
-            }
+            $result = \App::http()->readGetResult('/warehouse/capacityscope/');
 
             $subjectList = $result->getEntity();
 
@@ -89,10 +87,7 @@ class ReportCapacityService
         }
 
         try {
-            $result = \App::$http->readGetResult('/scope/');
-            if (!$result) {
-                return [];
-            }
+            $result = \App::http()->readGetResult('/scope/');
 
             $scopeList = $result->getData();
             if (!is_array($scopeList) && !($scopeList instanceof \Traversable)) {
@@ -252,10 +247,7 @@ class ReportCapacityService
     public function getCapacityPeriod(string $scopeId): mixed
     {
         try {
-            $result = \App::$http->readGetResult('/warehouse/capacityscope/' . $scopeId . '/');
-            if (!$result) {
-                return null;
-            }
+            $result = \App::http()->readGetResult('/warehouse/capacityscope/' . $scopeId . '/');
 
             $periodList = $result->getEntity();
 
@@ -289,7 +281,7 @@ class ReportCapacityService
         }
 
         $timelineBounds = $this->resolveTimelineBounds(null, $period);
-        if ($timelineBounds) {
+        if (ReportHelper::hasValues($timelineBounds)) {
             $exchange->data = $this->filterRowsByBounds($exchange->data, $timelineBounds);
         }
 
@@ -297,7 +289,7 @@ class ReportCapacityService
             return null;
         }
 
-        if ($timelineBounds) {
+        if (ReportHelper::hasValues($timelineBounds)) {
             return $this->finalizeExchange(
                 $exchange,
                 $timelineBounds['from'],
@@ -389,7 +381,7 @@ class ReportCapacityService
             return $rangeDurationHours <= self::MAX_HOURLY_FETCH_HOURS;
         }
 
-        if ($period && $period !== '_' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $period)) {
+        if (ReportHelper::hasNamedPeriod($period) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $period)) {
             return true;
         }
 
@@ -400,7 +392,7 @@ class ReportCapacityService
     public function resolveRangeDurationHours(?array $dateRange, ?string $period): ?float
     {
         $bounds = $this->resolveTimelineBounds($dateRange, $period);
-        if (!$bounds) {
+        if (!ReportHelper::hasValues($bounds)) {
             return null;
         }
 
@@ -417,13 +409,10 @@ class ReportCapacityService
             $warehouseFetchParams = $this->buildCapacityFetchParams($dateRange, $period, $useHourlyGrouping);
             $warehouseUrlPeriodSegment = $this->resolveCapacityFetchUrlPeriod($dateRange, $period);
 
-            $result = \App::$http->readGetResult(
+            $result = \App::http()->readGetResult(
                 '/warehouse/capacityscope/' . $scopeId . '/' . $warehouseUrlPeriodSegment . '/',
                 $warehouseFetchParams === [] ? null : $warehouseFetchParams
             );
-            if (!$result) {
-                return null;
-            }
 
             $exchange = $result->getEntity();
             if (!$exchange instanceof Exchange) {
@@ -440,14 +429,14 @@ class ReportCapacityService
     {
         $warehouseFetchParams = [];
 
-        if ($dateRange) {
+        if (ReportHelper::hasValues($dateRange)) {
             $warehouseFetchParams['fromDate'] = $dateRange['from'];
             $warehouseFetchParams['toDate'] = $dateRange['to'];
         }
 
         if ($useHourlyGrouping) {
             $warehouseFetchParams['groupby'] = 'hour';
-        } elseif ($dateRange !== null || ($period !== null && $period !== '_')) {
+        } elseif (ReportHelper::hasValues($dateRange) || ReportHelper::hasNamedPeriod($period)) {
             $warehouseFetchParams['groupby'] = 'day';
         }
 
@@ -456,11 +445,11 @@ class ReportCapacityService
 
     private function resolveCapacityFetchUrlPeriod(?array $dateRange, ?string $period): string
     {
-        if ($period && $period !== '_') {
+        if (ReportHelper::hasNamedPeriod($period)) {
             return $period;
         }
 
-        if ($dateRange) {
+        if (ReportHelper::hasValues($dateRange)) {
             return $dateRange['from'];
         }
 
@@ -525,7 +514,7 @@ class ReportCapacityService
         bool $useHourlyTimeline
     ): array {
         $timelineBounds = $this->resolveTimelineBounds($dateRange, $period);
-        if (!$timelineBounds) {
+        if (!ReportHelper::hasValues($timelineBounds)) {
             return $rows;
         }
 
@@ -680,14 +669,14 @@ class ReportCapacityService
 
     private function resolveTimelineBounds(?array $dateRange, ?string $period): ?array
     {
-        if ($dateRange && isset($dateRange['from'], $dateRange['to'])) {
+        if (ReportHelper::hasValues($dateRange) && isset($dateRange['from'], $dateRange['to'])) {
             return [
                 'from' => $dateRange['from'],
                 'to' => $dateRange['to'],
             ];
         }
 
-        if (!$period || $period === '_') {
+        if (!ReportHelper::hasNamedPeriod($period)) {
             return null;
         }
 
@@ -734,7 +723,7 @@ class ReportCapacityService
 
     private function finalizeExchange(Exchange $exchange, ?string $fromDate = null, ?string $toDate = null): Exchange
     {
-        if ($fromDate && $toDate) {
+        if (ReportHelper::hasText($fromDate) && ReportHelper::hasText($toDate)) {
             $exchange->firstDay = $this->dayFromString($fromDate);
             $exchange->lastDay = $this->dayFromString($toDate);
         } elseif (!empty($exchange->data)) {
@@ -818,16 +807,16 @@ class ReportCapacityService
             return $baseName;
         }
 
-        return $baseName . '_' . $rangePart;
+        return $baseName . '_' . (string) $rangePart;
     }
 
-    private function buildDownloadDateRangePart(?array $dateRange, ?string $period): string
+    private function buildDownloadDateRangePart(?array $dateRange, ?string $period): ?string
     {
         if ($dateRange !== null && !empty($dateRange['from']) && !empty($dateRange['to'])) {
             return $dateRange['from'] . '-bis-' . $dateRange['to'];
         }
 
-        if ($period === null || $period === '' || $period === '_') {
+        if (!ReportHelper::hasNamedPeriod($period)) {
             return '';
         }
 
@@ -996,7 +985,7 @@ class ReportCapacityService
         $args['subject'] = 'capacityscope';
         $args['subjectid'] = $scopeId;
 
-        if ($dateRange) {
+        if (ReportHelper::hasValues($dateRange)) {
             $args['period'] = $dateRange['from'] . '_' . $dateRange['to'];
         } elseif (!isset($args['period']) || $args['period'] === null || $args['period'] === '') {
             $args['period'] = '_';

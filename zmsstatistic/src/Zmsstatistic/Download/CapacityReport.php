@@ -22,7 +22,7 @@ class CapacityReport extends Base
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         $title = !empty($args['downloadTitle'])
             ? (string) $args['downloadTitle']
             : 'terminkapazitaet';
