@@ -51,8 +51,8 @@ class Ticketprinter extends \BO\Zmsbackend\Base
             throw new \BO\Zmsbackend\Ticketprinter\Exception\TooManyButtons();
         }
 
-        $ticketprinter->buttons = $this->keepExistingButtons($ticketprinter->buttons, $now);
-        if (! $this->hasLocationButton($ticketprinter)) {
+        $ticketprinter->buttons = $this->omitButtonsWithMissingScopeOrRequest($ticketprinter->buttons, $now);
+        if (! $this->hasScopeOrRequestButton($ticketprinter)) {
             throw new \BO\Zmsbackend\Ticketprinter\Exception\UnvalidButtonList();
         }
 
@@ -61,19 +61,16 @@ class Ticketprinter extends \BO\Zmsbackend\Base
     }
 
     /**
-     * Drop missing scope/request buttons so one stale Standort-ID cannot take
-     * down the whole ticketprinter. Fail only when no location button remains.
-     *
      * @param iterable<int, array<string, mixed>> $buttons
      * @return array<int, array<string, mixed>>
      */
-    private function keepExistingButtons(iterable $buttons, \DateTimeImmutable $now): array
+    private function omitButtonsWithMissingScopeOrRequest(iterable $buttons, \DateTimeImmutable $now): array
     {
         $kept = [];
         foreach ($buttons as $button) {
-            $resolved = $this->resolveButton($button, $now);
-            if ($resolved !== null) {
-                $kept[] = $resolved;
+            $button = $this->validateButton($button, $now);
+            if ($button !== null) {
+                $kept[] = $button;
             }
         }
         return $kept;
@@ -83,13 +80,13 @@ class Ticketprinter extends \BO\Zmsbackend\Base
      * @param array<string, mixed> $button
      * @return array<string, mixed>|null
      */
-    private function resolveButton(array $button, \DateTimeImmutable $now): ?array
+    private function validateButton(array $button, \DateTimeImmutable $now): ?array
     {
         if (($button['type'] ?? '') === 'scope') {
-            return $this->resolveScopeButton($button, $now);
+            return $this->validateScopeButton($button, $now);
         }
         if (($button['type'] ?? '') === 'request') {
-            return $this->resolveRequestButton($button, $now);
+            return $this->validateRequestButton($button, $now);
         }
         return $button;
     }
@@ -98,7 +95,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
      * @param array<string, mixed> $button
      * @return array<string, mixed>|null
      */
-    private function resolveScopeButton(array $button, \DateTimeImmutable $now): ?array
+    private function validateScopeButton(array $button, \DateTimeImmutable $now): ?array
     {
         $scopeId = $button['scope']['id'];
         $query = new \BO\Zmsbackend\Scope\Service\Scope();
@@ -119,7 +116,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
      * @param array<string, mixed> $button
      * @return array<string, mixed>|null
      */
-    private function resolveRequestButton(array $button, \DateTimeImmutable $now): ?array
+    private function validateRequestButton(array $button, \DateTimeImmutable $now): ?array
     {
         $parts = explode('-', (string) $button['request']['id']);
         $scopeId = $parts[0];
@@ -131,7 +128,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
             ]);
             return null;
         }
-        $request = $this->readRequestOrNull($requestId);
+        $request = $this->findRequest($requestId);
         if (! $request) {
             \App::$log->warning('Ticketprinter: skip missing request id', [
                 'requestId' => $requestId,
@@ -145,7 +142,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $button;
     }
 
-    private function readRequestOrNull(string $requestId): ?\BO\Zmsentities\Request
+    private function findRequest(string $requestId): ?\BO\Zmsentities\Request
     {
         try {
             return (new \BO\Zmsbackend\Request\Service\Request())->readEntity('dldb', $requestId);
@@ -154,7 +151,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         }
     }
 
-    private function hasLocationButton(Entity $ticketprinter): bool
+    private function hasScopeOrRequestButton(Entity $ticketprinter): bool
     {
         foreach ($ticketprinter->buttons as $button) {
             if (in_array($button['type'] ?? '', ['scope', 'request'], true)) {
