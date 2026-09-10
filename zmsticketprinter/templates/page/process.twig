@@ -47,6 +47,7 @@
 
 			<script>
 				window.setTimeout(function(){
+					if (navigator.webdriver) { return; }
 					window.location.href = "{{ urlGet('Home', {}, {}) }}";
 				}, 1500);
 			</script>
