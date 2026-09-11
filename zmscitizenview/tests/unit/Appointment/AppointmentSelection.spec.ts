@@ -2677,6 +2677,33 @@ describe("AppointmentSelection", () => {
       );
     });
 
+    it("shows back but not cancel-reschedule button when not rebooking", () => {
+      const wrapper = createWrapper();
+      const labels = wrapper
+        .findAllComponents({ name: "MucButton" })
+        .map((btn) => btn.text());
+
+      expect(labels).toContain("back");
+      expect(labels).not.toContain("cancelReschedule");
+    });
+
+    it("replaces back with cancel-reschedule button when rebooking", async () => {
+      const wrapper = createWrapper({ props: { isRebooking: true } });
+      const buttons = wrapper.findAllComponents({ name: "MucButton" });
+      const labels = buttons.map((btn) => btn.text());
+
+      expect(labels).not.toContain("back");
+      const cancelButton = buttons.find(
+        (btn) => btn.text() === "cancelReschedule"
+      );
+      expect(cancelButton).toBeDefined();
+
+      await cancelButton!.trigger("click");
+
+      expect(wrapper.emitted("cancelReschedule")).toHaveLength(1);
+      expect(wrapper.emitted("back")).toBeUndefined();
+    });
+
     it("does not show any callout when bookingError is false", async () => {
       const wrapper = createWrapper({
         props: {
