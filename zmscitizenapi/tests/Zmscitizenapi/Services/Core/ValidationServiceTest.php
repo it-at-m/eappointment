@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Tests\Services\Core;
 
 use BO\Zmscitizenapi\Utils\ErrorMessages;
+use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmsentities\Collection\ScopeList;
@@ -208,6 +209,19 @@ class ValidationServiceTest extends TestCase
             ErrorMessages::get('invalidEmail'),
             $result['errors']
         );
+
+        $result = ValidationService::validateAppointmentUpdateFields(
+            'John Doe',
+            'test@muenchen.de',
+            '+1234567890',
+            'Custom text',
+            'Another Custom text',
+            $scope
+        );
+        $this->assertContains(
+            ErrorMessages::get('invalidEmail'),
+            $result['errors']
+        );
     
         $result = ValidationService::validateAppointmentUpdateFields(
             'John Doe',
@@ -285,6 +299,140 @@ class ValidationServiceTest extends TestCase
             ErrorMessages::get('invalidCustomTextfield2'),
             $result['errors']
         );
+    }
+
+    public function testValidateUnchangedStoredContactRejectsChangedRealValues(): void
+    {
+        $stored = new ThinnedProcess();
+        $stored->familyName = 'Jane Doe';
+        $stored->email = 'jane@example.com';
+        $stored->telephone = '+491234567890';
+        $stored->customTextfield = 'Existing note';
+        $stored->customTextfield2 = '';
+
+        $result = ValidationService::validateUnchangedStoredContact(
+            $stored,
+            'Attacker',
+            'attacker@example.com',
+            '+499999999999',
+            'Hacked',
+            'New required field'
+        );
+        $this->assertContains(ErrorMessages::get('familyNameCannotBeChanged'), $result['errors']);
+        $this->assertContains(ErrorMessages::get('emailCannotBeChanged'), $result['errors']);
+        $this->assertContains(ErrorMessages::get('telephoneCannotBeChanged'), $result['errors']);
+        $this->assertContains(ErrorMessages::get('customTextfieldCannotBeChanged'), $result['errors']);
+        $this->assertNotContains(ErrorMessages::get('customTextfield2CannotBeChanged'), $result['errors']);
+    }
+
+    public function testValidateUnchangedStoredContactAllowsCompletingSingleWordFamilyName(): void
+    {
+        $stored = new ThinnedProcess();
+        $stored->familyName = 'Max';
+        $stored->email = 'max@example.com';
+        $stored->telephone = '';
+        $stored->customTextfield = '';
+        $stored->customTextfield2 = null;
+
+        $result = ValidationService::validateUnchangedStoredContact(
+            $stored,
+            'Max Mustermann',
+            'max@example.com',
+            '+491234567890',
+            'New note',
+            'Second note'
+        );
+        $this->assertEmpty($result['errors']);
+
+        $replaced = ValidationService::validateUnchangedStoredContact(
+            $stored,
+            'Anna',
+            'max@example.com',
+            null,
+            null,
+            null
+        );
+        $this->assertContains(ErrorMessages::get('familyNameCannotBeChanged'), $replaced['errors']);
+    }
+
+    public function testValidateUnchangedStoredContactRejectsCompletingMultiWordFamilyName(): void
+    {
+        $stored = new ThinnedProcess();
+        $stored->familyName = 'Jane Doe';
+        $stored->email = 'jane@example.com';
+        $stored->telephone = '';
+        $stored->customTextfield = '';
+        $stored->customTextfield2 = null;
+
+        $result = ValidationService::validateUnchangedStoredContact(
+            $stored,
+            'Jane Doe Smith',
+            'jane@example.com',
+            null,
+            null,
+            null
+        );
+        $this->assertContains(ErrorMessages::get('familyNameCannotBeChanged'), $result['errors']);
+    }
+
+    public function testValidateUnchangedStoredContactAllowsFillingEmptyAndPlaceholderValues(): void
+    {
+        $stored = new ThinnedProcess();
+        $stored->familyName = 'Jane Doe';
+        $stored->email = 'test@muenchen.de';
+        $stored->telephone = '';
+        $stored->customTextfield = '';
+        $stored->customTextfield2 = null;
+
+        $result = ValidationService::validateUnchangedStoredContact(
+            $stored,
+            'Jane Doe',
+            'jane@example.com',
+            '+491234567890',
+            'New note',
+            'Second note'
+        );
+        $this->assertEmpty($result['errors']);
+    }
+
+    public function testValidateUnchangedStoredContactKeepsPlaceholderLikeCustomText(): void
+    {
+        $stored = new ThinnedProcess();
+        $stored->familyName = 'Jane Doe';
+        $stored->email = 'jane@example.com';
+        $stored->telephone = '';
+        $stored->customTextfield = 'test@muenchen.de';
+        $stored->customTextfield2 = null;
+
+        $result = ValidationService::validateUnchangedStoredContact(
+            $stored,
+            'Jane Doe',
+            'jane@example.com',
+            null,
+            'Replaced note',
+            null
+        );
+        $this->assertContains(ErrorMessages::get('customTextfieldCannotBeChanged'), $result['errors']);
+    }
+
+    public function testValidateUnchangedStoredContactIgnoresBlankIncomingValues(): void
+    {
+        $stored = new ThinnedProcess();
+        $stored->familyName = 'Jane Doe';
+        $stored->email = 'jane@example.com';
+        $stored->telephone = '+491234567890';
+        $stored->customTextfield = 'Existing note';
+        $stored->customTextfield2 = 'Second note';
+
+        $result = ValidationService::validateUnchangedStoredContact(
+            $stored,
+            '',
+            '  ',
+            null,
+            '',
+            null
+        );
+        $this->assertEmpty($result['errors']);
     }
 
     public function testValidateGetProcessNotFound(): void
