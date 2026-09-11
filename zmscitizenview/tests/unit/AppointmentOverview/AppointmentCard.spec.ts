@@ -1,10 +1,24 @@
 import { mount } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { nextTick } from "vue";
 import de from '@/utils/de-DE.json';
 import AppointmentCard from "@/components/AppointmentOverview/AppointmentCard.vue";
+import { trackCitizenEvent } from "@/utils/etracker";
+
+vi.mock("@/utils/etracker", async () => {
+  const actual = await vi.importActual<typeof import("@/utils/etracker")>(
+    "@/utils/etracker"
+  );
+  return {
+    ...actual,
+    trackCitizenEvent: vi.fn(),
+  };
+});
 
 describe("AppointmentCard", () => {
+  beforeEach(() => {
+    vi.mocked(trackCitizenEvent).mockClear();
+  });
   const translate = (key: string): string => {
     const value = key.split(".").reduce<unknown>((current, part) => {
       if (typeof current !== "object" || current === null) {
@@ -93,7 +107,7 @@ describe("AppointmentCard", () => {
           },
           'muc-card': {
             template: `
-              <div data-test='muc-card' :tagline="tagline" :title="title">
+              <div data-test='muc-card' :tagline="tagline" :title="title" @click="$emit('click', $event)">
                 <slot name="headerPrefix"></slot>
                 <slot name="content"></slot>
               </div>`,
@@ -233,4 +247,15 @@ describe("AppointmentCard", () => {
       );
     }
   );
+
+  it("tracks a card click without personal data", async () => {
+    const wrapper = createWrapper({offices: [mockProvider]}, mockAppointment);
+    await wrapper.find("[data-test='muc-card']").trigger("click");
+
+    expect(trackCitizenEvent).toHaveBeenCalledWith({
+      object: "Termin-Karte",
+      action: "click",
+      type: "zms-appointment-overview",
+    });
+  });
 });

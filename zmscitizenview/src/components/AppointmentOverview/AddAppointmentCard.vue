@@ -1,6 +1,9 @@
 <template>
   <div class="add-card">
-    <a :href="newAppointmentUrl">
+    <a
+      :href="newAppointmentUrl"
+      @click="trackNewAppointmentClick"
+    >
       <div class="add-card-content">
         <div class="add-card-header">
           <h3>{{ title }}</h3>
@@ -21,13 +24,26 @@
 </template>
 
 <script setup lang="ts">
+import type { EtrackerComponent } from "@/utils/etracker";
+
 import { MucButton } from "@muenchen/muc-patternlab-vue";
 
-defineProps<{
+import { ETRACKER_COMPONENT, trackCitizenEvent } from "@/utils/etracker";
+
+const props = defineProps<{
   title: string;
   newAppointmentUrl: string;
   t: (key: string) => string;
+  etrackerType?: EtrackerComponent;
 }>();
+
+const trackNewAppointmentClick = () => {
+  trackCitizenEvent({
+    object: "Neuer-Termin",
+    action: "click",
+    type: props.etrackerType ?? ETRACKER_COMPONENT.overview,
+  });
+};
 
 defineSlots<{
   /**

@@ -96,6 +96,7 @@
             target="_self"
             no-underline
             :href="appointmentOverviewUrl"
+            @click="trackShowAllClick"
           />
         </div>
         <error-alert
@@ -127,6 +128,7 @@
             target="_self"
             no-underline
             :href="appointmentOverviewUrl"
+            @click="trackShowAllClick"
           />
         </div>
       </div>
@@ -157,6 +159,7 @@ import {
   getApiErrorTranslation,
   handleApiResponse as handleErrorApiResponse,
 } from "@/utils/errorHandler";
+import { ETRACKER_COMPONENT, trackCitizenEvent } from "@/utils/etracker";
 import AppointmentCardViewer from "./AppointmentCardViewer.vue";
 
 const props = defineProps<{
@@ -193,7 +196,20 @@ const checksMobile = () => {
   resizeSliderContent.value = window.matchMedia("(min-width: 1200px)").matches;
 };
 
+const trackShowAllClick = () => {
+  trackCitizenEvent({
+    object: "Alle-Termine",
+    action: "click",
+    type: ETRACKER_COMPONENT.slider,
+  });
+};
+
 onMounted(() => {
+  trackCitizenEvent({
+    object: "Slider",
+    action: "view",
+    type: ETRACKER_COMPONENT.slider,
+  });
   loading.value = true;
   checksMobile();
   window.addEventListener("resize", checksMobile);

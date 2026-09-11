@@ -422,6 +422,7 @@ import {
   getApiErrorTranslation,
   handleApiResponse as handleErrorApiResponse,
 } from "@/utils/errorHandler";
+import { ETRACKER_COMPONENT, trackCitizenEvent } from "@/utils/etracker";
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { getProviders } from "@/utils/getProviders";
 import { resolveOfficeById } from "@/utils/resolveOfficeById";
@@ -504,11 +505,22 @@ const openRescheduleModal = () => (rescheduleModalOpen.value = true);
 const openCancelModal = () => (cancelModalOpen.value = true);
 
 const rescheduleAppointment = () => {
-  if (appointment.value)
+  if (appointment.value) {
+    trackCitizenEvent({
+      object: "Verschieben",
+      action: "start",
+      type: ETRACKER_COMPONENT.detail,
+    });
     location.href = `${props.rescheduleAppointmentUrl}#/appointment/${getEncodedString(APPOINTMENT_ACTION_TYPE.RESCHEDULE)}`;
+  }
 };
 
 const cancelAppointment = () => {
+  trackCitizenEvent({
+    object: "Storno",
+    action: "start",
+    type: ETRACKER_COMPONENT.detail,
+  });
   location.href = `${props.rescheduleAppointmentUrl}#/appointment/${getEncodedString(APPOINTMENT_ACTION_TYPE.CANCEL)}`;
 };
 

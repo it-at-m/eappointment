@@ -79,6 +79,7 @@ import {
   VARIANT_ID_VIDEO,
 } from "@/utils/Constants";
 import { downloadIcsFile } from "@/utils/downloadIcsFile";
+import { ETRACKER_COMPONENT, trackCitizenEvent } from "@/utils/etracker";
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { formatMultilineTitle } from "@/utils/formatMultilineTitle";
 
@@ -157,6 +158,11 @@ const emit =
   >();
 
 const downloadIcsAppointment = () => {
+  trackCitizenEvent({
+    object: "ICS-Download",
+    action: "click",
+    type: ETRACKER_COMPONENT.detail,
+  });
   downloadIcsFile(props.appointment?.icsContent);
 };
 
