@@ -44,6 +44,11 @@ class AppointmentUpdateService
             return ['errors' => $errors];
         }
 
+        $statusErrors = ValidationService::validateAppointmentReservedStatus($reservedProcess);
+        if ($statusErrors['errors'] !== []) {
+            return ['errors' => $statusErrors['errors']];
+        }
+
         $fieldErrors = ValidationService::validateAppointmentUpdateFields(
             $data->familyName,
             $data->email,

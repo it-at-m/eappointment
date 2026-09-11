@@ -31,7 +31,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
-                    'response' => $this->readFixture("GET_process.json")
+                    'response' => $this->readFixture("GET_process_reserved.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -154,7 +154,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -199,7 +199,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -242,7 +242,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -285,7 +285,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -326,7 +326,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -369,7 +369,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -410,7 +410,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -451,7 +451,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -490,7 +490,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -533,7 +533,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -574,7 +574,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -615,7 +615,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -654,7 +654,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -695,7 +695,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -734,7 +734,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -778,7 +778,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
-                    'response' => $this->readFixture("GET_process.json")
+                    'response' => $this->readFixture("GET_process_reserved.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -942,7 +942,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
-                    'response' => $this->readFixture("GET_process.json")
+                    'response' => $this->readFixture("GET_process_reserved.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -991,7 +991,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
-                    'response' => $this->readFixture("GET_process.json")
+                    'response' => $this->readFixture("GET_process_reserved.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -1041,7 +1041,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
-                    'response' => $this->readFixture("GET_process.json")
+                    'response' => $this->readFixture("GET_process_reserved.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -1075,6 +1075,78 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
 
         $this->assertEquals(ErrorMessages::get('telephoneIsRequired')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
+    public function testRejectsUpdateWhenNotReserved()
+    {
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_process.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
+            ]
+        ]);
+
+        $response = $this->render([], [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'familyName' => 'TEST_USER',
+            'email' => 'max.mustermann@example.com',
+            'telephone' => '123456789',
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
+        ], [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(ErrorMessages::get('processNotReservedAnymore')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing(
+            ['errors' => [ErrorMessages::get('processNotReservedAnymore')]],
+            $responseBody
+        );
+    }
+
+    public function testRejectsPlaceholderEmailOnUpdate()
+    {
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_process_reserved.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
+            ]
+        ]);
+
+        $response = $this->render([], [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'familyName' => 'TEST_USER',
+            'email' => \App::getPlaceholderEmail(),
+            'telephone' => '123456789',
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
+        ], [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(ErrorMessages::get('invalidEmail')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing(
+            ['errors' => [ErrorMessages::get('invalidEmail')]],
+            $responseBody
+        );
     }
 
 }

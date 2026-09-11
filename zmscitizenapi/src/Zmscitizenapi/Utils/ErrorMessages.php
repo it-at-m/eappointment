@@ -396,6 +396,12 @@ class ErrorMessages
             'errorMessage' => 'Unfortunately, the time for activating your appointment has expired. Please schedule the appointment again.',
             'errorType' => 'error'
         ],
+        'placeholderEmailNotAllowed' => [
+            'errorCode' => 'placeholderEmailNotAllowed',
+            'statusCode' => self::HTTP_CONFLICT,
+            'errorMessage' => 'The appointment cannot be confirmed until a real email address has been provided.',
+            'errorType' => 'error'
+        ],
 
         //Middleware exceptions
         'ipBlacklisted' => [
