@@ -218,10 +218,29 @@ class ValidationServiceTest extends TestCase
             'Another Custom text',
             $scope
         );
-        $this->assertContains(
-            ErrorMessages::get('invalidEmail'),
-            $result['errors']
+        $this->assertEquals([ErrorMessages::get('invalidEmail')], $result['errors']);
+
+        $result = ValidationService::validateAppointmentUpdateFields(
+            'John Doe',
+            \App::getPlaceholderEmail(),
+            '+1234567890',
+            'Custom text',
+            'Another Custom text',
+            $scope
         );
+        $this->assertEquals([ErrorMessages::get('invalidEmail')], $result['errors']);
+
+        $optionalEmailScope = clone $scope;
+        $optionalEmailScope->emailRequired = false;
+        $result = ValidationService::validateAppointmentUpdateFields(
+            'John Doe',
+            \App::getPlaceholderEmail(),
+            '+1234567890',
+            'Custom text',
+            'Another Custom text',
+            $optionalEmailScope
+        );
+        $this->assertEquals([ErrorMessages::get('invalidEmail')], $result['errors']);
     
         $result = ValidationService::validateAppointmentUpdateFields(
             'John Doe',

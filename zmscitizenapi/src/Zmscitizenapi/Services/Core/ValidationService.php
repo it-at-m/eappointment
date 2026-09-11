@@ -245,9 +245,6 @@ class ValidationService
 
         self::validateFamilyNameField($familyName, $errors);
         self::validateEmailField($email, $scope, $errors);
-        if (self::isPlaceholderEmail($email)) {
-            $errors[] = self::getError('invalidEmail');
-        }
         self::validateTelephoneField($telephone, $scope, $errors);
         self::validateCustomTextField($customTextfield, $scope?->customTextfieldActivated, $scope?->customTextfieldRequired, 'invalidCustomTextfield', $errors);
         self::validateCustomTextField($customTextfield2, $scope?->customTextfield2Activated, $scope?->customTextfield2Required, 'invalidCustomTextfield2', $errors);
@@ -362,13 +359,14 @@ class ValidationService
 
     private static function validateEmailField(?string $email, ?ThinnedScope $scope, array &$errors): void
     {
+        if (self::isPlaceholderReserveEmail($email)) {
+            $errors[] = self::getError('invalidEmail');
+            return;
+        }
+
         if (
             $scope && $scope->emailRequired
-            && (
-                $email === ""
-                || self::isPlaceholderReserveEmail($email)
-                || !self::isValidEmail($email)
-            )
+            && ($email === "" || !self::isValidEmail($email))
         ) {
             $errors[] = self::getError('invalidEmail');
         }
