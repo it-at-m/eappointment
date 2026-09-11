@@ -85,9 +85,12 @@ describe("AppointmentView", () => {
     );
   };
 
-  const createWrapperWithAppointmentHash = (hash = buildAppointmentHash()) => {
+  const createWrapperWithAppointmentHash = (
+    hash = buildAppointmentHash(),
+    extraProps: Record<string, unknown> = {}
+  ) => {
     mockPendingAppointmentRoute();
-    return createWrapper({ appointmentHash: hash });
+    return createWrapper({ appointmentHash: hash, ...extraProps });
   };
 
   const mockSelectedService = ref({
@@ -2105,8 +2108,7 @@ describe("AppointmentView", () => {
     });
 
     it("calls confirmAppointment directly when logged in with processId+authKey", async () => {
-      const wrapper = createWrapper({
-        appointmentHash: buildAppointmentHash(),
+      const wrapper = createWrapperWithAppointmentHash(buildAppointmentHash(), {
         globalState: { baseUrl: mockBaseUrl, isLoggedIn: true },
       });
 
@@ -2161,8 +2163,7 @@ describe("AppointmentView", () => {
     });
 
     it("cancels old appointment after successful rebooking confirm", async () => {
-      const wrapper = createWrapper({
-        appointmentHash: buildAppointmentHash(),
+      const wrapper = createWrapperWithAppointmentHash(buildAppointmentHash(), {
         globalState: { baseUrl: mockBaseUrl, isLoggedIn: true },
       });
 
