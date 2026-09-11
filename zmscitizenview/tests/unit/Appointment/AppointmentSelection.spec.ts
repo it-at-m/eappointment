@@ -2677,28 +2677,27 @@ describe("AppointmentSelection", () => {
       );
     });
 
-    it("shows back but not cancel-reschedule button when not rebooking", () => {
+    it("shows back button that emits back when not rebooking", async () => {
       const wrapper = createWrapper();
-      const labels = wrapper
-        .findAllComponents({ name: "MucButton" })
-        .map((btn) => btn.text());
+      const backButton = wrapper.findAllComponents({ name: "MucButton" })[0];
 
-      expect(labels).toContain("back");
-      expect(labels).not.toContain("cancelReschedule");
+      expect(backButton.text()).toBe("back");
+      expect(backButton.props("icon")).toBe("arrow-left");
+
+      await backButton.trigger("click");
+
+      expect(wrapper.emitted("back")).toHaveLength(1);
+      expect(wrapper.emitted("cancelReschedule")).toBeUndefined();
     });
 
-    it("replaces back with cancel-reschedule button when rebooking", async () => {
+    it("shows back button that emits cancelReschedule when rebooking", async () => {
       const wrapper = createWrapper({ props: { isRebooking: true } });
-      const buttons = wrapper.findAllComponents({ name: "MucButton" });
-      const labels = buttons.map((btn) => btn.text());
+      const backButton = wrapper.findAllComponents({ name: "MucButton" })[0];
 
-      expect(labels).not.toContain("back");
-      const cancelButton = buttons.find(
-        (btn) => btn.text() === "cancelReschedule"
-      );
-      expect(cancelButton).toBeDefined();
+      expect(backButton.text()).toBe("back");
+      expect(backButton.props("icon")).toBe("close");
 
-      await cancelButton!.trigger("click");
+      await backButton.trigger("click");
 
       expect(wrapper.emitted("cancelReschedule")).toHaveLength(1);
       expect(wrapper.emitted("back")).toBeUndefined();

@@ -206,7 +206,7 @@
       variant="secondary"
       @click="cancelReschedule"
     >
-      <template #default>{{ t("cancelReschedule") }}</template>
+      <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
       :disabled="
