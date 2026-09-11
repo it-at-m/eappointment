@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Tests\Services\Core;
 
 use BO\Zmscitizenapi\Utils\ErrorMessages;
+use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmsentities\Collection\ScopeList;
@@ -419,5 +420,53 @@ class ValidationServiceTest extends TestCase
 
         // Test maximum allowed service count
         $this->assertEmpty(ValidationService::validateServiceArrays([1], [25]));
+    }
+
+    public function testValidateAppointmentConfirm(): void
+    {
+        $preconfirmed = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'preconfirmed');
+        $this->assertEmpty(ValidationService::validateAppointmentConfirm($preconfirmed, null)['errors']);
+
+        $reservedLoggedIn = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'reserved');
+        $this->assertEmpty(ValidationService::validateAppointmentConfirm($reservedLoggedIn, 'ext-1')['errors']);
+
+        $reservedGuest = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'reserved');
+        $this->assertContains(
+            ErrorMessages::get('processNotPreconfirmedAnymore'),
+            ValidationService::validateAppointmentConfirm($reservedGuest, null)['errors']
+        );
+
+        $placeholder = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: \App::getPlaceholderEmail(), status: 'preconfirmed');
+        $this->assertContains(
+            ErrorMessages::get('placeholderEmailNotAllowed'),
+            ValidationService::validateAppointmentConfirm($placeholder, null)['errors']
+        );
+    }
+
+    public function testValidateAppointmentReservedStatusAndPreconfirm(): void
+    {
+        $reserved = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'reserved');
+        $this->assertEmpty(ValidationService::validateAppointmentReservedStatus($reserved)['errors']);
+        $this->assertEmpty(ValidationService::validateAppointmentPreconfirm($reserved)['errors']);
+
+        $confirmed = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'confirmed');
+        $this->assertContains(
+            ErrorMessages::get('processNotReservedAnymore'),
+            ValidationService::validateAppointmentReservedStatus($confirmed)['errors']
+        );
+
+        $placeholder = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: \App::getPlaceholderEmail(), status: 'reserved');
+        $this->assertContains(
+            ErrorMessages::get('placeholderEmailNotAllowed'),
+            ValidationService::validateAppointmentPreconfirm($placeholder)['errors']
+        );
+    }
+
+    public function testIsPlaceholderEmail(): void
+    {
+        $this->assertTrue(ValidationService::isPlaceholderEmail(\App::getPlaceholderEmail()));
+        $this->assertFalse(ValidationService::isPlaceholderEmail(null));
+        $this->assertFalse(ValidationService::isPlaceholderEmail(''));
+        $this->assertFalse(ValidationService::isPlaceholderEmail('max.mustermann@example.com'));
     }
 }
