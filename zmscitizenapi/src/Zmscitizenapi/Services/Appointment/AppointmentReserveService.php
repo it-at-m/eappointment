@@ -118,7 +118,7 @@ class AppointmentReserveService
     {
         $process->clients = [
             [
-                'email' => 'test@muenchen.de'
+                'email' => \App::getPlaceholderEmail()
             ]
         ];
         $reservedProcess = ZmsApiFacadeService::reserveTimeslot($process, $serviceIds, $serviceCounts);
