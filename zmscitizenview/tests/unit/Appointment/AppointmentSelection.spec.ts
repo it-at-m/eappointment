@@ -2677,6 +2677,32 @@ describe("AppointmentSelection", () => {
       );
     });
 
+    it("shows back button that emits back when not rebooking", async () => {
+      const wrapper = createWrapper();
+      const backButton = wrapper.findAllComponents({ name: "MucButton" })[0];
+
+      expect(backButton.text()).toBe("back");
+      expect(backButton.props("icon")).toBe("arrow-left");
+
+      await backButton.trigger("click");
+
+      expect(wrapper.emitted("back")).toHaveLength(1);
+      expect(wrapper.emitted("cancelReschedule")).toBeUndefined();
+    });
+
+    it("shows back button that emits cancelReschedule when rebooking", async () => {
+      const wrapper = createWrapper({ props: { isRebooking: true } });
+      const backButton = wrapper.findAllComponents({ name: "MucButton" })[0];
+
+      expect(backButton.text()).toBe("back");
+      expect(backButton.props("icon")).toBe("close");
+
+      await backButton.trigger("click");
+
+      expect(wrapper.emitted("cancelReschedule")).toHaveLength(1);
+      expect(wrapper.emitted("back")).toBeUndefined();
+    });
+
     it("does not show any callout when bookingError is false", async () => {
       const wrapper = createWrapper({
         props: {

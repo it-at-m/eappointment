@@ -195,7 +195,7 @@ describe("AppointmentView", () => {
               "bookingError",
               "bookingErrorKey",
             ],
-            emits: ["back", "next", "clearBookingError"],
+            emits: ["back", "next", "cancelReschedule", "clearBookingError"],
           },
           "customer-info": {
             template: "<div data-test='customer-info'></div>",
@@ -1629,6 +1629,22 @@ describe("AppointmentView", () => {
       await nextTick();
       expect(wrapper.vm.isRebooking).toBe(false);
       expect(wrapper.html()).toContain(de.appointmentAlreadyActivatedHeader);
+    });
+
+    it("returns to the summary when rebooking is cancelled from the slot selection", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.nextRescheduleAppointment();
+      await nextTick();
+      expect(wrapper.vm.isRebooking).toBe(true);
+      expect(wrapper.vm.currentView).toBe(1);
+
+      wrapper
+        .findComponent({ name: "AppointmentSelection" })
+        .vm.$emit("cancelReschedule");
+      await nextTick();
+      expect(wrapper.vm.isRebooking).toBe(false);
+      expect(wrapper.vm.rebookOrCancelDialog).toBe(true);
+      expect(wrapper.vm.currentView).toBe(3);
     });
 
     it("should display activation expired error when API returns appointmentNotFound", async () => {

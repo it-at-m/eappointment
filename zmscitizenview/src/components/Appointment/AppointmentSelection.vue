@@ -201,6 +201,14 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
+      v-else
+      icon="close"
+      variant="secondary"
+      @click="cancelReschedule"
+    >
+      <template #default>{{ t("back") }}</template>
+    </muc-button>
+    <muc-button
       :disabled="
         selectedTimeslot === 0 ||
         !selectedDay ||
@@ -284,7 +292,10 @@ const props = defineProps<{
   t: (key: string) => string;
 }>();
 
-const emit = defineEmits<(e: "next" | "back" | "clearBookingError") => void>();
+const emit =
+  defineEmits<
+    (e: "next" | "back" | "cancelReschedule" | "clearBookingError") => void
+  >();
 
 const { selectedService } = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
@@ -1202,6 +1213,11 @@ const previousStep = () => {
   captchaSessionExpired.value = false;
   clearVisibleErrors();
   emit("back");
+};
+const cancelReschedule = () => {
+  captchaSessionExpired.value = false;
+  clearVisibleErrors();
+  emit("cancelReschedule");
 };
 
 // API error handling
