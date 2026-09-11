@@ -1,4 +1,4 @@
-@rest @zmsapi @customer-call @system @ZMSKVR-1328
+@rest @zmsapi @customer-call @zmsadmin @system @ZMSKVR-1328
 Feature: ZMS API: book, call and finish a scheduled appointment at the counter
   As a client application
   I want to use the ZMS API workstation endpoints

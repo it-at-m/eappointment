@@ -95,4 +95,30 @@ class HomeUrlTest extends Base
         $queryString = urlencode('ticketprinter[home]') . '=' . urlencode($homeUrl);
         $this->assertRedirect($response, '/scope/141/?'. $queryString);
     }
+
+    public function testSanitizeUrlDropsScopePathInfoQuery(): void
+    {
+        $this->assertEquals(
+            '/terminvereinbarung/ticketprinter/scope/127/',
+            \BO\Zmsticketprinter\Helper\HomeUrl::sanitizeUrl(
+                '/terminvereinbarung/ticketprinter/scope/127/?/scope/127/&/scope/127/&/scope/127/'
+            )
+        );
+    }
+
+    public function testSanitizeUrlKeepsRealQueryParams(): void
+    {
+        $url = '/terminvereinbarung/ticketprinter/?ticketprinter[buttonlist]=s127&lang=de';
+        $this->assertEquals($url, \BO\Zmsticketprinter\Helper\HomeUrl::sanitizeUrl($url));
+    }
+
+    public function testSanitizeUrlDropsRewriteSlashQuery(): void
+    {
+        $this->assertEquals(
+            '/terminvereinbarung/ticketprinter/?ticketprinter[buttonlist]=s127&lang=de',
+            \BO\Zmsticketprinter\Helper\HomeUrl::sanitizeUrl(
+                '/terminvereinbarung/ticketprinter/?/&ticketprinter[buttonlist]=s127&lang=de'
+            )
+        );
+    }
 }

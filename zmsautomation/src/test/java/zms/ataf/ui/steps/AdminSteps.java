@@ -441,6 +441,11 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.clickDeleteOpeningHoursWithNote(note);
     }
 
+    @Wenn("Sie die Öffnungszeit vom Typ {string} löschen.")
+    public void wenn_sie_die_oeffnungszeit_vom_typ_loeschen(String type) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.deleteOpeningHoursOfType(TestDataHelper.transformTestData(type));
+    }
+
     @Wenn("Der Sachbearbeiter den wartenden Kunden aufruft.")
     public void wenn_der_sachbearbeiter_den_wartenden_kunden_aufruft() {
         PROCESSING_STATION_SECTION.callNextCustomer();
