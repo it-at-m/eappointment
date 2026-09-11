@@ -85,6 +85,14 @@ class Application extends \BO\Slim\Application
      */
     public static ?Http $http = null;
 
+    public static function http(): Http
+    {
+        if (self::$http instanceof Http) {
+            return self::$http;
+        }
+        throw new \RuntimeException('HTTP client is not initialized');
+    }
+
     public static array $http_curl_config = array();
 
     const int JSON_COMPRESS_LEVEL = 1;

@@ -15,7 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class ReportClientIndex extends BaseController
 {
-    protected $resolveLevel = 2;
+    protected int $resolveLevel = 2;
 
     /**
      * @SuppressWarnings(Param)
@@ -26,7 +26,8 @@ class ReportClientIndex extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
         $reportClientService = new ReportClientService();
         $reportHelper = new ReportHelper();
@@ -72,7 +73,7 @@ class ReportClientIndex extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args,
-        $exchangeClient,
+        mixed $exchangeClient,
         array|null $dateRange,
         array $selectedScopes = [],
         ReportClientService|null $reportClientService = null
@@ -87,7 +88,9 @@ class ReportClientIndex extends BaseController
         $args['department'] = $this->department;
         $args['organisation'] = $this->organisation;
 
-        return (new Download\ClientReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+        /** @var mixed $container */
+        $container = \App::$slim->getContainer();
+        return (new Download\ClientReport($container))->readResponse($request, $response, $args);
     }
 
     /**
@@ -96,9 +99,9 @@ class ReportClientIndex extends BaseController
     private function renderHtmlResponse(
         ResponseInterface $response,
         array $args,
-        $clientPeriod,
+        mixed $clientPeriod,
         array|null $dateRange,
-        $exchangeClient,
+        mixed $exchangeClient,
         array $selectedScopes = []
     ): ResponseInterface {
         return Render::withHtml(

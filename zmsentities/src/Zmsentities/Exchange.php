@@ -6,6 +6,11 @@ namespace BO\Zmsentities;
  * @SuppressWarnings(Complexity)
  * @SuppressWarnings(PublicMethod)
  *
+ * @property array $data
+ * @property array $dictionary
+ * @property Day $firstDay
+ * @property Day $lastDay
+ * @property string $period
  */
 class Exchange extends Schema\Entity
 {
@@ -237,7 +242,7 @@ class Exchange extends Schema\Entity
             $average[$name . '_sum'] = $sum;
             $average[$name . '_count'] = $count;
             $average[$name] = $count > 0
-                ? round($sum / $count, 2)
+                ? $sum / $count
                 : null;
         }
 
@@ -316,8 +321,6 @@ class Exchange extends Schema\Entity
         $weightedSum = 0.0;
         $totalCount = 0;
         $excludedNames = [
-            self::REQUEST_STAT_NAME_UNCATEGORIZED,
-            self::REQUEST_STAT_NAME_NONEXISTENT,
             'sum',
             'average_processingtime',
             'average_processingtime_overall',
@@ -339,7 +342,7 @@ class Exchange extends Schema\Entity
                 $totalCount += (int) $requestCount;
             }
         }
-        $entity->data['average_processingtime_overall'] = $totalCount > 0 ? round($weightedSum / $totalCount, 2) : null;
+        $entity->data['average_processingtime_overall'] = $totalCount > 0 ? $weightedSum / $totalCount : null;
 
         return $entity;
     }

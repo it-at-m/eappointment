@@ -11,5 +11,13 @@ class UserAlreadyLoggedIn extends \Exception
 
     protected $message = 'useraccount was already loggedin and is replaced by new login';
 
+    /**
+     * Payload for exception templates (assigned by WorkstationLogin).
+     */
     public mixed $data = null;
+
+    public function getData(): mixed
+    {
+        return $this->data;
+    }
 }

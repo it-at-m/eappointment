@@ -14,7 +14,7 @@ use BO\Zmsstatistic\Helper\ReportHelper;
 
 class ReportWaitingOrganisation extends BaseController
 {
-    protected $hashset = [
+    protected array $hashset = [
         'waitingcount',
         'waitingtime',
         'waitingcalculated',
@@ -28,7 +28,7 @@ class ReportWaitingOrganisation extends BaseController
         'waytime_total',
     ];
 
-    protected $groupfields = [
+    protected array $groupfields = [
         'date',
         'hour'
     ];
@@ -42,16 +42,19 @@ class ReportWaitingOrganisation extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
-        $waitingPeriod = \App::$http
+        $waitingPeriod = \App::http()
           ->readGetResult('/warehouse/waitingorganisation/' . $this->organisation->id . '/')
           ->getEntity();
         $exchangeWaiting = null;
         if (isset($args['period'])) {
-            $exchangeWaiting = \App::$http
+            /** @var mixed $entity */
+            $entity = \App::http()
                 ->readGetResult('/warehouse/waitingorganisation/' . $this->organisation->id . '/' . $args['period'] . '/')
-                ->getEntity()
+                ->getEntity();
+            $exchangeWaiting = $entity
                 ->toGrouped($this->groupfields, $this->hashset);
 
             $exchangeWaiting = ReportHelper::withTotalCustomers($exchangeWaiting);
@@ -76,7 +79,9 @@ class ReportWaitingOrganisation extends BaseController
             $args['category'] = 'waitingscope';
             $args['reports'][] = $exchangeWaiting;
             $args['organisation'] = $this->organisation;
-            return (new Download\WaitingReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+            /** @var mixed $container */
+            $container = \App::$slim->getContainer();
+            return (new Download\WaitingReport($container))->readResponse($request, $response, $args);
         }
 
         return Render::withHtml(

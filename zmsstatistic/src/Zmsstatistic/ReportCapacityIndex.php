@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class ReportCapacityIndex extends BaseController
 {
-    protected $resolveLevel = 2;
+    protected int $resolveLevel = 2;
 
     /**
      * @SuppressWarnings(Param)
@@ -27,9 +27,10 @@ class ReportCapacityIndex extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         $this->workstation->getUseraccount()->testPermissions(['statistic', 'capacityreport']);
 
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
         $reportCapacityService = new ReportCapacityService();
         $reportHelper = new ReportHelper();
@@ -119,6 +120,7 @@ class ReportCapacityIndex extends BaseController
             $reportCapacityService = new ReportCapacityService();
         }
 
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
         $valueMode = $validator->getParameter('valueMode')->isString()->getValue();
         $valueMode = $valueMode === 'minutes' ? 'minutes' : 'slots';
@@ -137,16 +139,18 @@ class ReportCapacityIndex extends BaseController
             $channelMode
         );
 
-        return (new Download\CapacityReport(\App::$slim->getContainer()))
+        /** @var mixed $container */
+        $container = \App::$slim->getContainer();
+        return (new Download\CapacityReport($container))
             ->readResponse($request, $response, $args);
     }
 
     private function renderHtmlResponse(
         ResponseInterface $response,
         array $args,
-        $capacityPeriod,
+        mixed $capacityPeriod,
         array|null $dateRange,
-        $exchangeCapacity,
+        mixed $exchangeCapacity,
         Exchange|null $exchangeCapacityChart,
         Exchange|null $exchangeCapacityChartSparse,
         array $selectedScopes = [],

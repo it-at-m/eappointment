@@ -71,7 +71,7 @@ class Timer
 
     protected function timeToString(): string
     {
-        $seconds = ((float) ($this->stop ?? 0) - $this->start) + (float) ($this->elapsed ?? 0);
+        $seconds = ((float) ($this->stop ?? 0) - $this->start) + $this->elapsed;
         $seconds = Timer::roundMicroTime($seconds);
         $hours = floor($seconds / (60 * 60));
         $divisorForMinutes = $seconds % (60 * 60);
