@@ -112,14 +112,16 @@ class ReportHelper
 
     /**
      * Format minutes as mm:ss, rounding the full duration to the nearest second.
-     * Same rule as the Twig formatMinutesToTime macro.
+     * Same rule as the Twig formatMinutesToTime macro, including its string cast
+     * via |replace, which changes some .5-second floats (e.g. 3:27 vs 3:28).
      */
     public static function formatTimeValue(mixed $value): mixed
     {
         if (!is_numeric($value)) {
             return $value;
         }
-        $totalSeconds = (int) round((float) $value * 60);
+        $totalMinutes = (float) str_replace(',', '.', (string) $value);
+        $totalSeconds = (int) round($totalMinutes * 60);
         if ($totalSeconds <= 0) {
             return '00:00';
         }
