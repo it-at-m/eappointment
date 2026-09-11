@@ -2104,10 +2104,12 @@ describe("AppointmentView", () => {
       mockCancel.mockReset();
     });
 
-    it("calls confirmAppointment directly when rebooking with processId+authKey", async () => {
-      const wrapper = createWrapperWithAppointmentHash();
+    it("calls confirmAppointment directly when logged in with processId+authKey", async () => {
+      const wrapper = createWrapper({
+        appointmentHash: buildAppointmentHash(),
+        globalState: { baseUrl: mockBaseUrl, isLoggedIn: true },
+      });
 
-      wrapper.vm.isRebooking = true;
       wrapper.vm.appointment = {
         processId: "p1",
         authKey: "k1",
@@ -2122,7 +2124,7 @@ describe("AppointmentView", () => {
       await nextTick();
 
       expect(mockConfirm).toHaveBeenCalledWith(
-        { baseUrl: "https://www.muenchen.de" },
+        { baseUrl: "https://www.muenchen.de", isLoggedIn: true },
         { id: "p1", authKey: "k1" }
       );
       expect(mockPreconfirm).not.toHaveBeenCalled();
@@ -2138,8 +2140,31 @@ describe("AppointmentView", () => {
       ).toBe("success");
     });
 
-    it("cancels old appointment after successful rebooking confirm", async () => {
+    it("uses preconfirm when rebooking while logged out", async () => {
       const wrapper = createWrapperWithAppointmentHash();
+
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.appointment = {
+        processId: "p1",
+        authKey: "k1",
+      } as any;
+
+      mockPreconfirm.mockResolvedValueOnce({
+        processId: "p1",
+      } as any);
+
+      await wrapper.vm.nextBookAppointment();
+      await nextTick();
+
+      expect(mockConfirm).not.toHaveBeenCalled();
+      expect(mockPreconfirm).toHaveBeenCalled();
+    });
+
+    it("cancels old appointment after successful rebooking confirm", async () => {
+      const wrapper = createWrapper({
+        appointmentHash: buildAppointmentHash(),
+        globalState: { baseUrl: mockBaseUrl, isLoggedIn: true },
+      });
 
       wrapper.vm.isRebooking = true;
       wrapper.vm.rebookedAppointment = {
@@ -2162,7 +2187,7 @@ describe("AppointmentView", () => {
 
       expect(mockConfirm).toHaveBeenCalled();
       expect(mockCancel).toHaveBeenCalledWith(
-        { baseUrl: "https://www.muenchen.de" },
+        { baseUrl: "https://www.muenchen.de", isLoggedIn: true },
         expect.objectContaining({ processId: "old" })
       );
     });
