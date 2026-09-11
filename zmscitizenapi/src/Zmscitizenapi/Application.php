@@ -62,7 +62,7 @@ class Application extends \BO\Slim\Application
 
     public static string $ACCESS_UNPUBLISHED_ON_DOMAIN;
 
-    public const string DEFAULT_PLACEHOLDER_EMAIL = 'zms-reserved@placeholder.invalid';
+    public const string DEFAULT_PLACEHOLDER_EMAIL = 'noreply-terminvereinbarung@muenchen.de';
     public static string $PLACEHOLDER_EMAIL = self::DEFAULT_PLACEHOLDER_EMAIL;
 
     public static function initialize(): void

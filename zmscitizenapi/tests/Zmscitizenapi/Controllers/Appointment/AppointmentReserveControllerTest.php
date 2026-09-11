@@ -74,7 +74,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             "familyName" => "TEST_USER",
             "customTextfield" => "",
             "customTextfield2" => "",
-            "email" => "zms-reserved@placeholder.invalid",
+            "email" => "noreply-terminvereinbarung@muenchen.de",
             "telephone" => "123456789",
             "officeName" => null,
             "officeId" => 10546,
