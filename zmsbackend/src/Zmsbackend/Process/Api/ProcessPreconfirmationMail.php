@@ -36,6 +36,9 @@ class ProcessPreconfirmationMail extends \BO\Zmsbackend\Api\BaseController
         $process->testValid();
         $this->testProcessAccess($process);
         $process = (new ProcessRepository())->readEntity($process->id, $process->authKey);
+        if (!$process instanceof Process) {
+            throw new \BO\Zmsbackend\Process\Exception\ProcessNotFound();
+        }
         $this->testEmailRequired($process);
         $mail = $this->writeMail($process);
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);

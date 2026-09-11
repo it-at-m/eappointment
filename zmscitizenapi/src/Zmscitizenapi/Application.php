@@ -91,57 +91,73 @@ class Application extends \BO\Slim\Application
      */
     private static function initializeLogger(): void
     {
-        self::$LOGGER_MAX_REQUESTS = (int) (getenv('ZMS_CITIZENAPI_LOGGER_MAX_REQUESTS') ?: 1000);
-        self::$LOGGER_MAX_ERROR_REQUESTS = (int) (getenv('ZMS_CITIZENAPI_LOGGER_MAX_ERROR_REQUESTS') ?: 0);
-        self::$LOGGER_RESPONSE_LENGTH = (int) (getenv('ZMS_CITIZENAPI_LOGGER_RESPONSE_LENGTH') ?: 1048576);
+        self::$LOGGER_MAX_REQUESTS = self::getenvInt('ZMS_CITIZENAPI_LOGGER_MAX_REQUESTS', 1000);
+        self::$LOGGER_MAX_ERROR_REQUESTS = self::getenvInt('ZMS_CITIZENAPI_LOGGER_MAX_ERROR_REQUESTS', 0);
+        self::$LOGGER_RESPONSE_LENGTH = self::getenvInt('ZMS_CITIZENAPI_LOGGER_RESPONSE_LENGTH', 1048576);
         // 1MB
-        self::$LOGGER_STACK_LINES = (int) (getenv('ZMS_CITIZENAPI_LOGGER_STACK_LINES') ?: 20);
-        self::$LOGGER_MESSAGE_SIZE = (int) (getenv('ZMS_CITIZENAPI_LOGGER_MESSAGE_SIZE') ?: 8192);
+        self::$LOGGER_STACK_LINES = self::getenvInt('ZMS_CITIZENAPI_LOGGER_STACK_LINES', 20);
+        self::$LOGGER_MESSAGE_SIZE = self::getenvInt('ZMS_CITIZENAPI_LOGGER_MESSAGE_SIZE', 8192);
         // 8KB
-        self::$LOGGER_CACHE_TTL = (int) (getenv('ZMS_CITIZENAPI_LOGGER_CACHE_TTL') ?: 60);
-        self::$LOGGER_MAX_RETRIES = (int) (getenv('ZMS_CITIZENAPI_LOGGER_MAX_RETRIES') ?: 3);
-        self::$LOGGER_BACKOFF_MIN = (int) (getenv('ZMS_CITIZENAPI_LOGGER_BACKOFF_MIN') ?: 100);
-        self::$LOGGER_BACKOFF_MAX = (int) (getenv('ZMS_CITIZENAPI_LOGGER_BACKOFF_MAX') ?: 1000);
-        self::$LOGGER_LOCK_TIMEOUT = (int) (getenv('ZMS_CITIZENAPI_LOGGER_LOCK_TIMEOUT') ?: 5);
+        self::$LOGGER_CACHE_TTL = self::getenvInt('ZMS_CITIZENAPI_LOGGER_CACHE_TTL', 60);
+        self::$LOGGER_MAX_RETRIES = self::getenvInt('ZMS_CITIZENAPI_LOGGER_MAX_RETRIES', 3);
+        self::$LOGGER_BACKOFF_MIN = self::getenvInt('ZMS_CITIZENAPI_LOGGER_BACKOFF_MIN', 100);
+        self::$LOGGER_BACKOFF_MAX = self::getenvInt('ZMS_CITIZENAPI_LOGGER_BACKOFF_MAX', 1000);
+        self::$LOGGER_LOCK_TIMEOUT = self::getenvInt('ZMS_CITIZENAPI_LOGGER_LOCK_TIMEOUT', 5);
         \BO\Slim\LoggerService::configure(self::getLoggerConfig());
     }
 
     private static function initializeCaptcha(): void
     {
         self::$CAPTCHA_ENABLED = filter_var(getenv('CAPTCHA_ENABLED'), FILTER_VALIDATE_BOOLEAN);
-        self::$CAPTCHA_TOKEN_SECRET = getenv('CAPTCHA_TOKEN_SECRET') ?: '';
-        self::$CAPTCHA_TOKEN_TTL = (int) getenv('CAPTCHA_TOKEN_TTL') ?: 300;
-        self::$ALTCHA_CAPTCHA_SITE_KEY = getenv('ALTCHA_CAPTCHA_SITE_KEY') ?: '';
-        self::$ALTCHA_CAPTCHA_SITE_SECRET = getenv('ALTCHA_CAPTCHA_SITE_SECRET') ?: '';
-        self::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE = getenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE')
-            ?: 'https://captcha.muenchen.de/api/v1/captcha/challenge';
-        self::$ALTCHA_CAPTCHA_ENDPOINT_VERIFY = getenv('ALTCHA_CAPTCHA_ENDPOINT_VERIFY')
-            ?: 'https://captcha.muenchen.de/api/v1/captcha/verify';
+        self::$CAPTCHA_TOKEN_SECRET = self::getenvString('CAPTCHA_TOKEN_SECRET', '');
+        $captchaTtl = self::getenvInt('CAPTCHA_TOKEN_TTL', 0);
+        self::$CAPTCHA_TOKEN_TTL = $captchaTtl === 0 ? 300 : $captchaTtl;
+        self::$ALTCHA_CAPTCHA_SITE_KEY = self::getenvString('ALTCHA_CAPTCHA_SITE_KEY', '');
+        self::$ALTCHA_CAPTCHA_SITE_SECRET = self::getenvString('ALTCHA_CAPTCHA_SITE_SECRET', '');
+        self::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE = self::getenvString(
+            'ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE',
+            'https://captcha.muenchen.de/api/v1/captcha/challenge'
+        );
+        self::$ALTCHA_CAPTCHA_ENDPOINT_VERIFY = self::getenvString(
+            'ALTCHA_CAPTCHA_ENDPOINT_VERIFY',
+            'https://captcha.muenchen.de/api/v1/captcha/verify'
+        );
     }
 
     /**
-     * @SuppressWarnings(PHPMD.NPathComplexity)
      * @TODO: Extract middleware initialization logic into a dedicated MiddlewareInitializer class
      */
     private static function initializeMiddleware(): void
     {
         // Rate limiting
-        self::$RATE_LIMIT_MAX_REQUESTS = (int) (getenv('RATE_LIMIT_MAX_REQUESTS') ?: 600);
-        self::$RATE_LIMIT_CACHE_TTL = (int) (getenv('RATE_LIMIT_CACHE_TTL') ?: 60);
-        self::$RATE_LIMIT_MAX_RETRIES = (int) (getenv('RATE_LIMIT_MAX_RETRIES') ?: 3);
-        self::$RATE_LIMIT_BACKOFF_MIN = (int) (getenv('RATE_LIMIT_BACKOFF_MIN') ?: 10);
-        self::$RATE_LIMIT_BACKOFF_MAX = (int) (getenv('RATE_LIMIT_BACKOFF_MAX') ?: 50);
-        self::$RATE_LIMIT_LOCK_TIMEOUT = (int) (getenv('RATE_LIMIT_LOCK_TIMEOUT') ?: 1);
+        self::$RATE_LIMIT_MAX_REQUESTS = self::getenvInt('RATE_LIMIT_MAX_REQUESTS', 600);
+        self::$RATE_LIMIT_CACHE_TTL = self::getenvInt('RATE_LIMIT_CACHE_TTL', 60);
+        self::$RATE_LIMIT_MAX_RETRIES = self::getenvInt('RATE_LIMIT_MAX_RETRIES', 3);
+        self::$RATE_LIMIT_BACKOFF_MIN = self::getenvInt('RATE_LIMIT_BACKOFF_MIN', 10);
+        self::$RATE_LIMIT_BACKOFF_MAX = self::getenvInt('RATE_LIMIT_BACKOFF_MAX', 50);
+        self::$RATE_LIMIT_LOCK_TIMEOUT = self::getenvInt('RATE_LIMIT_LOCK_TIMEOUT', 1);
         // Request limits
-        self::$MAX_REQUEST_SIZE = (int) (getenv('MAX_REQUEST_SIZE') ?: 10485760);
+        self::$MAX_REQUEST_SIZE = self::getenvInt('MAX_REQUEST_SIZE', 10485760);
         // 10MB
-        self::$MAX_STRING_LENGTH = (int) (getenv('MAX_STRING_LENGTH') ?: 32768);
+        self::$MAX_STRING_LENGTH = self::getenvInt('MAX_STRING_LENGTH', 32768);
         // 32KB
-        self::$MAX_RECURSION_DEPTH = (int) (getenv('MAX_RECURSION_DEPTH') ?: 10);
+        self::$MAX_RECURSION_DEPTH = self::getenvInt('MAX_RECURSION_DEPTH', 10);
         // IP Filter
-        self::$IP_BLACKLIST = getenv('IP_BLACKLIST') ?: '';
+        self::$IP_BLACKLIST = self::getenvString('IP_BLACKLIST', '');
 
-        self::$ACCESS_UNPUBLISHED_ON_DOMAIN = getenv('ACCESS_UNPUBLISHED_ON_DOMAIN') ?: '';
+        self::$ACCESS_UNPUBLISHED_ON_DOMAIN = self::getenvString('ACCESS_UNPUBLISHED_ON_DOMAIN', '');
+    }
+
+    private static function getenvInt(string $name, int $default): int
+    {
+        $value = getenv($name);
+        return ($value === false || $value === '') ? $default : (int) $value;
+    }
+
+    private static function getenvString(string $name, string $default): string
+    {
+        $value = getenv($name);
+        return ($value === false || $value === '') ? $default : $value;
     }
 
     /** @psalm-api */

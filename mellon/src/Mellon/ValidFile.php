@@ -35,6 +35,7 @@ class ValidFile extends Valid
         'png' => 'image/png'
     );
 
+    /** @psalm-api */
     public function isFile(string $name = 'fileupload', string $message = 'No valid file found.'): static
     {
         $this->fileName = $name;
@@ -50,6 +51,7 @@ class ValidFile extends Valid
         return $this;
     }
 
+    /** @psalm-api */
     public function hasType(string $type = 'jpeg', string $message = 'Invalid file type.'): static
     {
         if (isset($_FILES[$this->fileName])) {
@@ -64,6 +66,7 @@ class ValidFile extends Valid
         return $this;
     }
 
+    /** @psalm-api */
     public function hasMaxSize(int $maxSize = 50, string $message = 'File size not valid.'): static
     {
         $maxByteSize = $maxSize * 1000 * 1024;

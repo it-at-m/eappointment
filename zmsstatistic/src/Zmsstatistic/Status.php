@@ -10,6 +10,7 @@ namespace BO\Zmsstatistic;
 
 use BO\Slim\Render;
 use BO\Zmsentities\Exception\UserAccountMissingLogin;
+use BO\Zmsentities\Workstation;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -18,7 +19,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 class Status extends BaseController
 {
-    protected $withAccess = false;
+    protected bool $withAccess = false;
 
     private const array MISSING_LOGIN_TEMPLATES = [
         'BO\\Zmsentities\\Exception\\UserAccountMissingLogin',
@@ -34,9 +35,9 @@ class Status extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         try {
-            $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+            $workstation = \App::http()->readGetResult('/workstation/')->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             if (in_array($exception->template, self::MISSING_LOGIN_TEMPLATES, true)) {
                 throw new UserAccountMissingLogin();
@@ -44,7 +45,11 @@ class Status extends BaseController
             throw $exception;
         }
 
-        $result = \App::$http->readGetResult('/status/');
+        if (!$workstation instanceof Workstation) {
+            throw new UserAccountMissingLogin();
+        }
+
+        $result = \App::http()->readGetResult('/status/');
         return Render::withHtml(
             $response,
             'page/status.twig',
