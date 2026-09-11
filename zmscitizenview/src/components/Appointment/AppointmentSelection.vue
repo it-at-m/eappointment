@@ -192,12 +192,21 @@
     class="m-button-group"
   >
     <muc-button
+      v-if="!isRebooking"
       icon="arrow-left"
       icon-shown-left
       variant="secondary"
       @click="previousStep"
     >
       <template #default>{{ t("back") }}</template>
+    </muc-button>
+    <muc-button
+      v-else
+      icon="close"
+      variant="secondary"
+      @click="cancelReschedule"
+    >
+      <template #default>{{ t("cancelReschedule") }}</template>
     </muc-button>
     <muc-button
       :disabled="
@@ -283,7 +292,10 @@ const props = defineProps<{
   t: (key: string) => string;
 }>();
 
-const emit = defineEmits<(e: "next" | "back" | "clearBookingError") => void>();
+const emit =
+  defineEmits<
+    (e: "next" | "back" | "cancelReschedule" | "clearBookingError") => void
+  >();
 
 const { selectedService } = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
@@ -1201,6 +1213,11 @@ const previousStep = () => {
   captchaSessionExpired.value = false;
   clearVisibleErrors();
   emit("back");
+};
+const cancelReschedule = () => {
+  captchaSessionExpired.value = false;
+  clearVisibleErrors();
+  emit("cancelReschedule");
 };
 
 // API error handling
