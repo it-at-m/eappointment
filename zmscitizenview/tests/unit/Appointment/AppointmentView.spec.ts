@@ -195,7 +195,7 @@ describe("AppointmentView", () => {
               "bookingError",
               "bookingErrorKey",
             ],
-            emits: ["back", "next", "clearBookingError"],
+            emits: ["back", "next", "cancelReschedule", "clearBookingError"],
           },
           "customer-info": {
             template: "<div data-test='customer-info'></div>",
@@ -1638,7 +1638,9 @@ describe("AppointmentView", () => {
       expect(wrapper.vm.isRebooking).toBe(true);
       expect(wrapper.vm.currentView).toBe(1);
 
-      wrapper.vm.nextCancelReschedule();
+      wrapper
+        .findComponent({ name: "AppointmentSelection" })
+        .vm.$emit("cancelReschedule");
       await nextTick();
       expect(wrapper.vm.isRebooking).toBe(false);
       expect(wrapper.vm.rebookOrCancelDialog).toBe(true);
