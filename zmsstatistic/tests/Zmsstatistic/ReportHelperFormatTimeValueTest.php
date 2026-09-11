@@ -20,6 +20,7 @@ class ReportHelperFormatTimeValueTest extends \PHPUnit\Framework\TestCase
             'zero' => [0, '00:00'],
             'nearest second' => [1.11, '01:07'],
             'half-second float trap' => [3.425, '03:26'],
+            'archived average half-second' => [((200 / 60) + (215 / 60)) / 2, '03:27'],
             'unrounded overall average' => [(62 + 132 + 32) / 3 / 60, '01:15'],
         ];
     }
