@@ -31,6 +31,8 @@ class HelperSnippetsTest extends \PHPUnit\Framework\TestCase
             'nearest second' => [1.11, '1:07', '01:07'],
             // 3.425 min = 205.5s; leftover-seconds rounding used to yield 3:25 in XLSX
             'half-second float trap' => [3.425, '3:26', '03:26'],
+            // 3:20 + 3:35 = 207.5s. Raw float rounds to 3:28; Twig |replace stringifies first → 3:27
+            'archived average half-second' => [((200 / 60) + (215 / 60)) / 2, '3:27', '03:27'],
             'unrounded overall average' => [(62 + 132 + 32) / 3 / 60, '1:15', '01:15'],
             'zero' => [0.0, '0:00', '00:00'],
         ];
