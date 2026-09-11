@@ -55,6 +55,7 @@ sequenceDiagram
 |----------|-------------|---------|
 | **Core Configuration** |
 | ZMS_API_URL | Backend API URL | https://localhost/terminvereinbarung/api/2 |
+| ZMS_CITIZENAPI_PLACEHOLDER_EMAIL | Undeliverable placeholder set on reserve before the citizen submits real contact data | zms-reserved@placeholder.invalid |
 | **Cache & Maintenance** |
 | CACHE_DIR | Cache storage directory | /cache |
 | SOURCE_CACHE_TTL | Cache lifetime in seconds | 3600 |
