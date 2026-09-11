@@ -33,6 +33,7 @@
               </p>
               <muc-button
                 :icon="'sign-in'"
+                data-etracker="Login"
                 @click="login"
               >
                 <template #default>

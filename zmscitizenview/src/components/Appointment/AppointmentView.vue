@@ -283,6 +283,7 @@
                 <muc-button
                   v-if="!globalState.isLoggedIn && appointment?.icsContent"
                   icon="download"
+                  data-etracker="ICS-Download"
                   @click="downloadIcsAppointment"
                 >
                   {{ t("downloadAppointment") }}
@@ -443,6 +444,11 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
+import {
+  ETRACKER_COMPONENT,
+  trackBookingView,
+  trackCitizenEvent,
+} from "@/utils/etracker";
 import { resolveOfficeById, toOfficeImpl } from "@/utils/resolveOfficeById";
 import { isExpired } from "@/utils/timestampInPast";
 
@@ -917,6 +923,11 @@ const nextBookAppointment = () => {
             currentContext.value = "cancel";
             cancelAppointment(props.globalState, rebookedAppointment.value);
           }
+          trackCitizenEvent({
+            object: "Buchung",
+            action: "preconfirm",
+            type: ETRACKER_COMPONENT.appointment,
+          });
           increaseCurrentView();
         }
       })
@@ -989,6 +1000,34 @@ watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
   goToTop();
   focusActiveStepperItem();
+});
+
+watch(
+  [currentView, cancelAppointmentSuccess],
+  ([view, canceled]) => {
+    trackBookingView(view, canceled);
+  },
+  { immediate: true }
+);
+
+watch(confirmAppointmentSuccess, (success) => {
+  if (success) {
+    trackCitizenEvent({
+      object: "Buchung",
+      action: "success",
+      type: ETRACKER_COMPONENT.appointment,
+    });
+  }
+});
+
+watch(cancelAppointmentSuccess, (success) => {
+  if (success) {
+    trackCitizenEvent({
+      object: "Storno",
+      action: "success",
+      type: ETRACKER_COMPONENT.appointment,
+    });
+  }
 });
 
 /**

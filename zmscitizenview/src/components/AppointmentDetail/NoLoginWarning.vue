@@ -13,6 +13,7 @@
     </p>
     <muc-button
       icon="sign-in"
+      data-etracker="Login"
       @click="requestLogin"
     >
       {{ t("login") }}
