@@ -16,6 +16,11 @@ public class ThinnedProcess {
     private Integer id;
     private String authKey;
     private String status;
+    private String familyName;
+    private String email;
+    private String telephone;
+    private String customTextfield;
+    private String customTextfield2;
     private Integer officeId;
     private Long timestamp;
     private Integer serviceId;

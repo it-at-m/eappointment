@@ -134,7 +134,11 @@
             <div v-if="currentView === 2">
               <customer-info
                 :global-state="globalState"
-                :show-login-option="showLoginOption"
+                :show-login-option="showLoginOption && !isRebooking"
+                :is-rebooking="isRebooking"
+                :source-appointment="
+                  isRebooking ? rebookedAppointment : undefined
+                "
                 :login-failed="loginFailed"
                 :t="t"
                 @back="decreaseCurrentView"
@@ -443,6 +447,11 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
+import {
+  applyAppointmentContactToCustomerData,
+  hasMissingRequiredContact,
+  joinFamilyName,
+} from "@/utils/rebookingContact";
 import { resolveOfficeById, toOfficeImpl } from "@/utils/resolveOfficeById";
 import { isExpired } from "@/utils/timestampInPast";
 
@@ -732,6 +741,9 @@ const decreaseCurrentView = (): void => {
  * Adjusts the current view to the active step in the stepper
  */
 const changeStep = (step: string) => {
+  if (rebookOrCancelDialog.value && !isRebooking.value) {
+    return;
+  }
   if (parseInt(step) < parseInt(activeStep.value)) {
     clearAllErrors();
     currentView.value = parseInt(step);
@@ -766,28 +778,68 @@ const setServices = () => {
   }
 };
 
+const copyRebookedContactOntoAppointment = () => {
+  if (!appointment.value || !rebookedAppointment.value) {
+    return;
+  }
+  appointment.value.familyName = rebookedAppointment.value.familyName;
+  appointment.value.email = rebookedAppointment.value.email;
+  appointment.value.telephone = rebookedAppointment.value.telephone;
+  appointment.value.customTextfield = rebookedAppointment.value.customTextfield;
+  appointment.value.customTextfield2 =
+    rebookedAppointment.value.customTextfield2;
+};
+
+const fillCustomerDataFromRebookedAppointment = () => {
+  if (!rebookedAppointment.value) {
+    return;
+  }
+  applyAppointmentContactToCustomerData(
+    customerData.value,
+    rebookedAppointment.value
+  );
+};
+
+const targetScopeForRebooking = () =>
+  selectedProvider.value?.scope ?? appointment.value?.scope;
+
+const continueRebookingAfterReserve = () => {
+  fillCustomerDataFromRebookedAppointment();
+  copyRebookedContactOntoAppointment();
+  if (
+    rebookedAppointment.value &&
+    hasMissingRequiredContact(
+      rebookedAppointment.value,
+      targetScopeForRebooking()
+    )
+  ) {
+    currentView.value = 2;
+    return;
+  }
+  return setRebookData();
+};
+
 const setRebookData = () => {
   if (appointment.value && rebookedAppointment.value) {
-    appointment.value.familyName = rebookedAppointment.value.familyName;
-    appointment.value.email = rebookedAppointment.value.email;
-    appointment.value.telephone = rebookedAppointment.value.telephone;
-    appointment.value.customTextfield =
-      rebookedAppointment.value.customTextfield;
-    appointment.value.customTextfield2 =
-      rebookedAppointment.value.customTextfield2;
+    copyRebookedContactOntoAppointment();
     clearContextErrors(errorStateMap.value);
     currentContext.value = "update";
-    updateAppointment(props.globalState, appointment.value).then((data) => {
+    return updateAppointment(
+      props.globalState,
+      appointment.value,
+      rebookedAppointment.value
+    ).then((data) => {
       if ((data as AppointmentDTO).processId != undefined) {
         appointment.value = data as AppointmentDTO;
+        currentView.value = 3;
       } else {
         handleErrorApiResponse(
           data,
           errorStates.errorStateMap,
           currentErrorData.value
         );
+        currentView.value = 2;
       }
-      currentView.value = 3;
     });
   }
 };
@@ -807,7 +859,8 @@ const nextReserveAppointment = () => {
     Array.from(selectedServiceMap.value.keys()),
     Array.from(selectedServiceMap.value.values()),
     selectedProvider.value?.id ?? "",
-    captchaToken.value ?? undefined
+    captchaToken.value ?? undefined,
+    isRebooking.value ? rebookedAppointment.value : undefined
   )
     .then((data) => {
       if ((data as AppointmentDTO).processId !== undefined) {
@@ -818,7 +871,7 @@ const nextReserveAppointment = () => {
         appointment.value = data as AppointmentDTO;
         reservationStartMs.value = Date.now();
         if (isRebooking.value) {
-          setRebookData();
+          continueRebookingAfterReserve();
         } else {
           increaseCurrentView();
         }
@@ -843,8 +896,17 @@ const nextUpdateAppointment = () => {
   if (appointment.value) {
     isUpdatingAppointment.value = true;
     clearContextErrors(errorStateMap.value);
+    if (isRebooking.value && rebookedAppointment.value) {
+      applyAppointmentContactToCustomerData(
+        customerData.value,
+        rebookedAppointment.value
+      );
+    }
     appointment.value.familyName =
-      customerData.value.firstName + " " + customerData.value.lastName;
+      joinFamilyName(
+        customerData.value.firstName,
+        customerData.value.lastName
+      ) || appointment.value.familyName;
     appointment.value.email = customerData.value.mailAddress;
     appointment.value.telephone = customerData.value.telephoneNumber
       ? customerData.value.telephoneNumber
@@ -857,10 +919,15 @@ const nextUpdateAppointment = () => {
       : undefined;
 
     currentContext.value = "update";
-    updateAppointment(props.globalState, appointment.value)
+    return updateAppointment(
+      props.globalState,
+      appointment.value,
+      isRebooking.value ? rebookedAppointment.value : undefined
+    )
       .then((data) => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
+          increaseCurrentView();
         } else {
           handleErrorApiResponse(
             data,
@@ -868,7 +935,6 @@ const nextUpdateAppointment = () => {
             currentErrorData.value
           );
         }
-        increaseCurrentView();
       })
       .finally(() => {
         isUpdatingAppointment.value = false;
@@ -1318,7 +1384,7 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
               appointment.value.subRequestCounts.forEach((subRequestCount) => {
                 const subRequest = (services.value ?? []).find(
                   (service) => String(service.id) === String(subRequestCount.id)
-                );
+                ) as Service | undefined;
                 if (!subRequest) {
                   return;
                 }
@@ -1338,14 +1404,14 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
           }
 
           preselectedLocationId.value = String(appointment.value.officeId);
-          selectedProvider.value = resolveOfficeById(
-            appointment.value.officeId,
-            {
-              offices: offices.value,
-              providers: selectedService.value?.providers,
-              appointment: appointment.value,
-            }
-          );
+          const resolvedOffice = resolveOfficeById(appointment.value.officeId, {
+            offices: offices.value,
+            providers: selectedService.value?.providers,
+            appointment: appointment.value,
+          });
+          if (resolvedOffice) {
+            selectedProvider.value = resolvedOffice;
+          }
 
           if (!appointmentData.action || isAppointmentInPast.value) {
             currentView.value = 3;
