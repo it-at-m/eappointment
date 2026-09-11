@@ -119,6 +119,7 @@
         <template #buttons>
           <muc-button
             icon="arrow-right"
+            data-etracker="Verschieben"
             @click="rescheduleAppointment"
           >
             {{ t("reschedule") }}
@@ -158,6 +159,7 @@
         <template #buttons>
           <muc-button
             icon="trash"
+            data-etracker="Storno"
             @click="cancelAppointment"
           >
             {{ t("cancel") }}
@@ -422,7 +424,6 @@ import {
   getApiErrorTranslation,
   handleApiResponse as handleErrorApiResponse,
 } from "@/utils/errorHandler";
-import { ETRACKER_COMPONENT, trackCitizenEvent } from "@/utils/etracker";
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { getProviders } from "@/utils/getProviders";
 import { resolveOfficeById } from "@/utils/resolveOfficeById";
@@ -506,21 +507,11 @@ const openCancelModal = () => (cancelModalOpen.value = true);
 
 const rescheduleAppointment = () => {
   if (appointment.value) {
-    trackCitizenEvent({
-      object: "Verschieben",
-      action: "start",
-      type: ETRACKER_COMPONENT.detail,
-    });
     location.href = `${props.rescheduleAppointmentUrl}#/appointment/${getEncodedString(APPOINTMENT_ACTION_TYPE.RESCHEDULE)}`;
   }
 };
 
 const cancelAppointment = () => {
-  trackCitizenEvent({
-    object: "Storno",
-    action: "start",
-    type: ETRACKER_COMPONENT.detail,
-  });
   location.href = `${props.rescheduleAppointmentUrl}#/appointment/${getEncodedString(APPOINTMENT_ACTION_TYPE.CANCEL)}`;
 };
 

@@ -2,11 +2,15 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   bookingPageName,
+  ETRACKER_ACTION_ATTR,
   ETRACKER_AREAS,
+  ETRACKER_ATTR,
   ETRACKER_CATEGORY,
   ETRACKER_LOADER_ID,
   ETRACKER_PAGES,
   getEtrackerAccountKey,
+  installEtrackerClickTracking,
+  resetEtrackerClickTrackingForTests,
   trackAppointmentPage,
   trackCitizenEvent,
 } from "@/utils/etracker";
@@ -38,6 +42,7 @@ function clearEtrackerGlobals(): void {
   delete w.et_eC_Wrapper;
   delete w.et_UserDefinedEvent;
   document.getElementById(ETRACKER_LOADER_ID)?.remove();
+  resetEtrackerClickTrackingForTests();
 }
 
 describe("etracker", () => {
@@ -159,6 +164,65 @@ describe("etracker", () => {
       });
 
       expect(sendEvent).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("data-etracker click tracking", () => {
+    function mockReadyTracker() {
+      const sendEvent = vi.fn();
+      testWindow()._etracker = { sendEvent };
+      testWindow().et_UserDefinedEvent = FakeUserDefinedEvent;
+      installEtrackerClickTracking();
+      return sendEvent;
+    }
+
+    it("tracks a click via composedPath across an open shadow root", () => {
+      const sendEvent = mockReadyTracker();
+      const host = document.createElement("zms-appointment");
+      const shadow = host.attachShadow({ mode: "open" });
+      const button = document.createElement("button");
+      button.setAttribute(ETRACKER_ATTR, "Login");
+      shadow.appendChild(button);
+      document.body.appendChild(host);
+
+      button.click();
+
+      expect(sendEvent).toHaveBeenCalledTimes(1);
+      expect(sendEvent.mock.calls[0][0]).toMatchObject({
+        objectName: "Login",
+        category: ETRACKER_CATEGORY,
+        action: "click",
+        type: "zms-appointment",
+      });
+      host.remove();
+    });
+
+    it("uses data-etracker-action and the wrapping component tag", () => {
+      const sendEvent = mockReadyTracker();
+      const host = document.createElement("zms-appointment-slider-wrapped");
+      const link = document.createElement("a");
+      link.setAttribute(ETRACKER_ATTR, "Alle-Termine");
+      link.setAttribute(ETRACKER_ACTION_ATTR, "click");
+      host.appendChild(link);
+      document.body.appendChild(host);
+
+      link.click();
+
+      expect(sendEvent.mock.calls[0][0]).toMatchObject({
+        objectName: "Alle-Termine",
+        action: "click",
+        type: "zms-appointment-slider",
+      });
+      host.remove();
+    });
+
+    it("does not track clicks without data-etracker", () => {
+      const sendEvent = mockReadyTracker();
+      const button = document.createElement("button");
+      document.body.appendChild(button);
+      button.click();
+      expect(sendEvent).not.toHaveBeenCalled();
+      button.remove();
     });
   });
 });

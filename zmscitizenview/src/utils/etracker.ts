@@ -1,15 +1,19 @@
 /**
  * Push tracking to the host-page etracker snippet (Magnolia).
  *
- * CSS selectors in the etracker tag manager cannot see into the webcomponent
- * shadow trees, so the components call etracker's JS API instead.
- * No-ops when etracker is not on the page (local, tests, ATAF).
- * Never send personal data (name, mail, phone, auth hash, process id).
+ * Tag-manager CSS cannot see into shadow trees. Clicks are declared with
+ * `data-etracker` on the control; a capture listener uses composedPath()
+ * so nested open shadows still match. Outcomes that are not clicks (wizard
+ * steps, booking success) still call the API.
+ *
+ * No-ops when etracker is not on the page. Never send personal data.
  */
 
 export const ETRACKER_AREAS = "Buergerservice/Terminvereinbarung";
 export const ETRACKER_CATEGORY = "Terminvereinbarung";
 export const ETRACKER_LOADER_ID = "_etLoader";
+export const ETRACKER_ATTR = "data-etracker";
+export const ETRACKER_ACTION_ATTR = "data-etracker-action";
 
 export const ETRACKER_COMPONENT = {
   appointment: "zms-appointment",
@@ -30,6 +34,21 @@ export const ETRACKER_PAGES = {
 
 export type EtrackerComponent =
   (typeof ETRACKER_COMPONENT)[keyof typeof ETRACKER_COMPONENT];
+
+const COMPONENT_BY_TAG: Record<string, EtrackerComponent> = {
+  "zms-appointment": ETRACKER_COMPONENT.appointment,
+  "zms-appointment-wrapped": ETRACKER_COMPONENT.appointment,
+  "zms-appointment-i18n-host": ETRACKER_COMPONENT.appointment,
+  "zms-appointment-detail": ETRACKER_COMPONENT.detail,
+  "zms-appointment-detail-wrapped": ETRACKER_COMPONENT.detail,
+  "zms-appointment-detail-i18n-host": ETRACKER_COMPONENT.detail,
+  "zms-appointment-overview": ETRACKER_COMPONENT.overview,
+  "zms-appointment-overview-wrapped": ETRACKER_COMPONENT.overview,
+  "zms-appointment-overview-i18n-host": ETRACKER_COMPONENT.overview,
+  "zms-appointment-slider": ETRACKER_COMPONENT.slider,
+  "zms-appointment-slider-wrapped": ETRACKER_COMPONENT.slider,
+  "zms-appointment-slider-i18n-host": ETRACKER_COMPONENT.slider,
+};
 
 type EtrackerUserDefinedEventCtor = new (
   objectName: string,
@@ -130,6 +149,13 @@ export function trackAppointmentPage(pagename: string): void {
   });
 }
 
+export function trackBookingView(view: number, canceled: boolean): void {
+  const pagename = bookingPageName(view, canceled);
+  if (pagename) {
+    trackAppointmentPage(pagename);
+  }
+}
+
 export function trackCitizenEvent(options: {
   object: string;
   action: string;
@@ -154,3 +180,55 @@ export function trackCitizenEvent(options: {
     );
   });
 }
+
+function componentTypeFromPath(path: EventTarget[]): string {
+  for (const node of path) {
+    if (!(node instanceof Element)) {
+      continue;
+    }
+    const mapped = COMPONENT_BY_TAG[node.localName];
+    if (mapped) {
+      return mapped;
+    }
+  }
+  return "zms-citizenview";
+}
+
+function onTrackedClick(event: Event): void {
+  const path = event.composedPath();
+  for (const node of path) {
+    if (!(node instanceof Element)) {
+      continue;
+    }
+    const object = node.getAttribute(ETRACKER_ATTR);
+    if (!object) {
+      continue;
+    }
+    trackCitizenEvent({
+      object,
+      action: node.getAttribute(ETRACKER_ACTION_ATTR) ?? "click",
+      type: componentTypeFromPath(path),
+    });
+    return;
+  }
+}
+
+let clickTrackingInstalled = false;
+
+export function installEtrackerClickTracking(): void {
+  if (clickTrackingInstalled || typeof document === "undefined") {
+    return;
+  }
+  clickTrackingInstalled = true;
+  document.addEventListener("click", onTrackedClick, true);
+}
+
+export function resetEtrackerClickTrackingForTests(): void {
+  if (!clickTrackingInstalled || typeof document === "undefined") {
+    return;
+  }
+  document.removeEventListener("click", onTrackedClick, true);
+  clickTrackingInstalled = false;
+}
+
+installEtrackerClickTracking();

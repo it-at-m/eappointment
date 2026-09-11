@@ -283,6 +283,7 @@
                 <muc-button
                   v-if="!globalState.isLoggedIn && appointment?.icsContent"
                   icon="download"
+                  data-etracker="ICS-Download"
                   @click="downloadIcsAppointment"
                 >
                   {{ t("downloadAppointment") }}
@@ -444,9 +445,8 @@ import {
   hasUpdateContextError,
 } from "@/utils/errorHandler";
 import {
-  bookingPageName,
   ETRACKER_COMPONENT,
-  trackAppointmentPage,
+  trackBookingView,
   trackCitizenEvent,
 } from "@/utils/etracker";
 import { resolveOfficeById, toOfficeImpl } from "@/utils/resolveOfficeById";
@@ -984,11 +984,6 @@ const nextRescheduleAppointment = () => {
   isRebooking.value = true;
   rebookedAppointment.value = appointment.value;
   setServices();
-  trackCitizenEvent({
-    object: "Verschieben",
-    action: "start",
-    type: ETRACKER_COMPONENT.appointment,
-  });
   currentView.value = 1;
 };
 
@@ -1010,10 +1005,7 @@ watch(currentView, (newCurrentView) => {
 watch(
   [currentView, cancelAppointmentSuccess],
   ([view, canceled]) => {
-    const pagename = bookingPageName(view, canceled);
-    if (pagename) {
-      trackAppointmentPage(pagename);
-    }
+    trackBookingView(view, canceled);
   },
   { immediate: true }
 );
@@ -1061,11 +1053,6 @@ const requestLogin = () => {
     appointment.value?.processId,
     appointment.value?.authKey
   );
-  trackCitizenEvent({
-    object: "Login",
-    action: "click",
-    type: ETRACKER_COMPONENT.appointment,
-  });
   document.dispatchEvent(
     new CustomEvent("authorization-request", {
       detail: {
@@ -1285,11 +1272,6 @@ const redirectToAppointmentStart = () => {
 };
 
 const downloadIcsAppointment = () => {
-  trackCitizenEvent({
-    object: "ICS-Download",
-    action: "click",
-    type: ETRACKER_COMPONENT.appointment,
-  });
   downloadIcsFile(appointment.value?.icsContent);
 };
 

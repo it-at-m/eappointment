@@ -4,7 +4,7 @@
     :tagline="appointmentTypeLabel"
     :title="formatMultilineTitle(appointment)"
     :href="getAppointmentLink()"
-    @click="trackCardClick"
+    data-etracker="Termin-Karte"
   >
     <template #headerPrefix>
       <calendar-icon
@@ -32,8 +32,6 @@
 </template>
 
 <script setup lang="ts">
-import type { EtrackerComponent } from "@/utils/etracker";
-
 import { MucCard, MucIcon } from "@muenchen/muc-patternlab-vue";
 import { computed } from "vue";
 
@@ -49,7 +47,6 @@ import {
   VARIANT_ID_TELEPHONE,
   VARIANT_ID_VIDEO,
 } from "@/utils/Constants";
-import { ETRACKER_COMPONENT, trackCitizenEvent } from "@/utils/etracker";
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { formatMultilineTitle } from "@/utils/formatMultilineTitle";
 
@@ -59,7 +56,6 @@ const props = defineProps<{
   offices: Office[];
   services: Service[];
   t: (key: string) => string;
-  etrackerType?: EtrackerComponent;
 }>();
 
 const selectedProvider = computed<Office | undefined>(() =>
@@ -132,14 +128,6 @@ const getAppointmentLink = () => {
     );
   }
   return url.toString();
-};
-
-const trackCardClick = () => {
-  trackCitizenEvent({
-    object: "Termin-Karte",
-    action: "click",
-    type: props.etrackerType ?? ETRACKER_COMPONENT.overview,
-  });
 };
 </script>
 

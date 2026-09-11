@@ -13,6 +13,7 @@
     </p>
     <muc-button
       icon="sign-in"
+      data-etracker="Login"
       @click="requestLogin"
     >
       {{ t("login") }}
@@ -23,19 +24,12 @@
 <script lang="ts" setup>
 import { MucButton, MucIntro } from "@muenchen/muc-patternlab-vue";
 
-import { ETRACKER_COMPONENT, trackCitizenEvent } from "@/utils/etracker";
-
 defineProps<{
   appointmentId: string | null | undefined;
   t: (key: string) => string;
 }>();
 
 const requestLogin = () => {
-  trackCitizenEvent({
-    object: "Login",
-    action: "click",
-    type: ETRACKER_COMPONENT.detail,
-  });
   document.dispatchEvent(
     new CustomEvent("authorization-request", {
       detail: {

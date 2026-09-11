@@ -5,21 +5,10 @@ import { nextTick } from "vue";
 
 import AppointmentDetailHeader from "@/components/AppointmentDetail/AppointmentDetailHeader.vue";
 import { downloadIcsFile } from "@/utils/downloadIcsFile";
-import { trackCitizenEvent } from "@/utils/etracker";
 
 vi.mock("@/utils/downloadIcsFile", () => ({
   downloadIcsFile: vi.fn(),
 }));
-
-vi.mock("@/utils/etracker", async () => {
-  const actual = await vi.importActual<typeof import("@/utils/etracker")>(
-    "@/utils/etracker"
-  );
-  return {
-    ...actual,
-    trackCitizenEvent: vi.fn(),
-  };
-});
 
 describe("AppointmentDetailHeader", () => {
   const translate = (key: string): string => {
@@ -36,7 +25,6 @@ describe("AppointmentDetailHeader", () => {
 
   beforeEach(() => {
     vi.mocked(downloadIcsFile).mockClear();
-    vi.mocked(trackCitizenEvent).mockClear();
   });
 
   const mockAppointment =
@@ -224,11 +212,6 @@ describe("AppointmentDetailHeader", () => {
 
       expect(downloadIcsFile).toHaveBeenCalledOnce();
       expect(downloadIcsFile).toHaveBeenCalledWith(icsContent);
-      expect(trackCitizenEvent).toHaveBeenCalledWith({
-        object: "ICS-Download",
-        action: "click",
-        type: "zms-appointment-detail",
-      });
     }
   );
 });

@@ -3,7 +3,6 @@
     <add-appointment-card
       :title="t('newAppointmentTitle')"
       :new-appointment-url="newAppointmentUrl"
-      :etracker-type="sliderEtrackerType"
       :t="t"
     >
       <template #content>
@@ -27,7 +26,6 @@
           :services="services"
           :class="{ 'card-color': displayedOnDetailScreen }"
           class="mobile-card-height"
-          :etracker-type="sliderEtrackerType"
           :t="t"
         />
       </muc-slider-item>
@@ -36,7 +34,6 @@
           class="mobile-card-height"
           :title="t('newAppointmentTitle')"
           :new-appointment-url="newAppointmentUrl"
-          :etracker-type="sliderEtrackerType"
           :t="t"
         >
           <template #content>
@@ -60,7 +57,6 @@
           :services="services"
           :class="{ 'card-color': displayedOnDetailScreen }"
           class="mobile-card-height"
-          :etracker-type="sliderEtrackerType"
           :t="t"
         />
       </muc-slider-item>
@@ -76,14 +72,12 @@
         :offices="offices"
         :services="services"
         :class="{ 'card-color': displayedOnDetailScreen }"
-        :etracker-type="sliderEtrackerType"
         :t="t"
       />
       <add-appointment-card
         v-if="!displayedOnDetailScreen"
         :title="t('newAppointmentTitle')"
         :new-appointment-url="newAppointmentUrl"
-        :etracker-type="sliderEtrackerType"
         :t="t"
       >
         <template #content>
@@ -100,7 +94,6 @@
         :offices="offices"
         :services="services"
         :class="{ 'card-color': displayedOnDetailScreen }"
-        :etracker-type="sliderEtrackerType"
         :t="t"
       />
     </muc-card-container>
@@ -120,7 +113,6 @@ import { Service } from "@/api/models/Service";
 import AddAppointmentCard from "@/components/AppointmentOverview/AddAppointmentCard.vue";
 import AddAppointmentSvg from "@/components/AppointmentOverview/AddAppointmentSvg.vue";
 import AppointmentCard from "@/components/AppointmentOverview/AppointmentCard.vue";
-import { ETRACKER_COMPONENT } from "@/utils/etracker";
 
 defineProps<{
   allAppointments: AppointmentDTO[];
@@ -133,8 +125,6 @@ defineProps<{
   services: Service[];
   t: (key: string) => string;
 }>();
-
-const sliderEtrackerType = ETRACKER_COMPONENT.slider;
 </script>
 
 <style scoped>

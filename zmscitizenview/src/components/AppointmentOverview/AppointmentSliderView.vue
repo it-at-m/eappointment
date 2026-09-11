@@ -96,7 +96,7 @@
             target="_self"
             no-underline
             :href="appointmentOverviewUrl"
-            @click="trackShowAllClick"
+            data-etracker="Alle-Termine"
           />
         </div>
         <error-alert
@@ -128,7 +128,7 @@
             target="_self"
             no-underline
             :href="appointmentOverviewUrl"
-            @click="trackShowAllClick"
+            data-etracker="Alle-Termine"
           />
         </div>
       </div>
@@ -194,14 +194,6 @@ const apiErrorTranslation = computed(() =>
 const checksMobile = () => {
   isMobile.value = window.matchMedia("(max-width: 1399px)").matches;
   resizeSliderContent.value = window.matchMedia("(min-width: 1200px)").matches;
-};
-
-const trackShowAllClick = () => {
-  trackCitizenEvent({
-    object: "Alle-Termine",
-    action: "click",
-    type: ETRACKER_COMPONENT.slider,
-  });
 };
 
 onMounted(() => {
