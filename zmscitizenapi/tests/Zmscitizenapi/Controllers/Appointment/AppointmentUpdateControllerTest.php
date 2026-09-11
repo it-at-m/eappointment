@@ -132,7 +132,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
-                    'response' => $this->readFixture("GET_process.json")
+                    'response' => $this->readFixture("GET_process_reserved.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -171,7 +171,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
-                    'response' => $this->readFixture("GET_process.json")
+                    'response' => $this->readFixture("GET_process_reserved.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -204,7 +204,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
 
     public function testRebookingRejectsCompletingMultiWordFamilyName(): void
     {
-        $process = json_decode($this->readFixture('GET_process.json'), true, 512, JSON_THROW_ON_ERROR);
+        $process = json_decode($this->readFixture('GET_process_reserved.json'), true, 512, JSON_THROW_ON_ERROR);
         $process['data']['clients'][0]['familyName'] = 'Jane Doe';
 
         $this->setApiCalls(
@@ -253,7 +253,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
-                    'response' => $this->readFixture("GET_process.json")
+                    'response' => $this->readFixture("GET_process_reserved.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -1237,15 +1237,87 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
+    public function testRejectsUpdateWhenNotReserved()
+    {
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_process.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
+            ]
+        ]);
+
+        $response = $this->render([], [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'familyName' => 'TEST_USER',
+            'email' => 'max.mustermann@example.com',
+            'telephone' => '123456789',
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
+        ], [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(ErrorMessages::get('processNotReservedAnymore')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing(
+            ['errors' => [ErrorMessages::get('processNotReservedAnymore')]],
+            $responseBody
+        );
+    }
+
+    public function testRejectsPlaceholderEmailOnUpdate()
+    {
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_process_reserved.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
+            ]
+        ]);
+
+        $response = $this->render([], [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'familyName' => 'TEST_USER',
+            'email' => \App::getPlaceholderEmail(),
+            'telephone' => '123456789',
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
+        ], [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(ErrorMessages::get('invalidEmail')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing(
+            ['errors' => [ErrorMessages::get('invalidEmail')]],
+            $responseBody
+        );
+    }
+
     /**
-     * These update tests still fill contact on a reserved process.
+     * First-booking update tests fill contact on a reserved process.
      * Empty/placeholder stored contact so the rebooking lock does not fire.
      */
     private function reservedProcessWithoutStoredContact(): string
     {
-        $process = json_decode($this->readFixture('GET_process.json'), true, 512, JSON_THROW_ON_ERROR);
+        $process = json_decode($this->readFixture('GET_process_reserved.json'), true, 512, JSON_THROW_ON_ERROR);
         $process['data']['clients'][0]['familyName'] = '';
-        $process['data']['clients'][0]['email'] = 'test@muenchen.de';
+        $process['data']['clients'][0]['email'] = \App::getPlaceholderEmail();
         $process['data']['clients'][0]['telephone'] = '';
         $process['data']['customTextfield'] = '';
         $process['data']['customTextfield2'] = '';

@@ -359,13 +359,14 @@ class ValidationService
 
     private static function validateEmailField(?string $email, ?ThinnedScope $scope, array &$errors): void
     {
+        if (self::isPlaceholderReserveEmail($email)) {
+            $errors[] = self::getError('invalidEmail');
+            return;
+        }
+
         if (
             $scope && $scope->emailRequired
-            && (
-                $email === ""
-                || self::isPlaceholderReserveEmail($email)
-                || !self::isValidEmail($email)
-            )
+            && ($email === "" || !self::isValidEmail($email))
         ) {
             $errors[] = self::getError('invalidEmail');
         }
@@ -541,7 +542,11 @@ class ValidationService
 
     private static function isPlaceholderReserveEmail(?string $email): bool
     {
-        return is_string($email) && strcasecmp($email, 'test@muenchen.de') === 0;
+        if (self::isPlaceholderEmail($email)) {
+            return true;
+        }
+
+        return is_string($email) && strcasecmp(trim($email), 'test@muenchen.de') === 0;
     }
 
     private static function isValidEmail(?string $email): bool
@@ -561,6 +566,62 @@ class ValidationService
         return !empty($familyName) && is_string($familyName) && strlen(trim($familyName)) > 0;
     }
 
+    public static function isPlaceholderEmail(?string $email): bool
+    {
+        if ($email === null || trim($email) === '') {
+            return false;
+        }
+
+        return strcasecmp(trim($email), \App::getPlaceholderEmail()) === 0;
+    }
+
+    private static function isMissingClientContactData(ThinnedProcess $process): bool
+    {
+        return self::isPlaceholderEmail($process->email)
+            || !self::isValidFamilyName($process->familyName)
+            || !self::isValidEmail($process->email);
+    }
+
+    public static function validateAppointmentReservedStatus(?ThinnedProcess $process): array
+    {
+        if ($process === null || $process->status !== 'reserved') {
+            return ['errors' => [self::getError('processNotReservedAnymore')]];
+        }
+
+        return ['errors' => []];
+    }
+
+    public static function validateAppointmentPreconfirm(ThinnedProcess $process): array
+    {
+        $reservedErrors = self::validateAppointmentReservedStatus($process);
+        if ($reservedErrors['errors'] !== []) {
+            return $reservedErrors;
+        }
+
+        if (self::isMissingClientContactData($process)) {
+            return ['errors' => [self::getError('placeholderEmailNotAllowed')]];
+        }
+
+        return ['errors' => []];
+    }
+
+    public static function validateAppointmentConfirm(ThinnedProcess $process, mixed $externalUserId): array
+    {
+        if (self::isMissingClientContactData($process)) {
+            return ['errors' => [self::getError('placeholderEmailNotAllowed')]];
+        }
+
+        if ($process->status === 'preconfirmed') {
+            return ['errors' => []];
+        }
+
+        $hasExternalUserId = is_string($externalUserId) && trim($externalUserId) !== '';
+        if ($process->status === 'reserved' && $hasExternalUserId) {
+            return ['errors' => []];
+        }
+
+        return ['errors' => [self::getError('processNotPreconfirmedAnymore')]];
+    }
 
     private static function isValidOfficeId(?int $officeId): bool
     {

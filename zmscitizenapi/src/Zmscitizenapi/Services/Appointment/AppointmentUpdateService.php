@@ -48,6 +48,11 @@ class AppointmentUpdateService
             return ['errors' => $errors];
         }
 
+        $statusErrors = ValidationService::validateAppointmentReservedStatus($reservedProcess);
+        if ($statusErrors['errors'] !== []) {
+            return ['errors' => $statusErrors['errors']];
+        }
+
         if ($this->isRebookingUpdate($data)) {
             $lockErrors = ValidationService::validateUnchangedStoredContact(
                 $reservedProcess,
