@@ -27,6 +27,18 @@
                     <input type="date" id="search-date" name="date" value="{{ date }}" class="form-control">
                 </div>
 
+                <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
+                    <label for="search-status" class="form-label">Terminstatus</label><br>
+                    <select id="search-status" name="status" style="width: 100%;height: 30px;">
+                        <option value="" {% if not status %}selected="selected"{% endif %}>Alle</option>
+                        <option value="planned" {% if status == "planned" %}selected="selected"{% endif %}>Geplant</option>
+                        <option value="completed" {% if status == "completed" %}selected="selected"{% endif %}>Abgeschlossen</option>
+                        <option value="missed" {% if status == "missed" %}selected="selected"{% endif %}>Nicht erschienen</option>
+                        <option value="cancelled_citizen" {% if status == "cancelled_citizen" %}selected="selected"{% endif %}>Abgesagt durch Kunden</option>
+                        <option value="cancelled_staff" {% if status == "cancelled_staff" %}selected="selected"{% endif %}>Abgesagt durch Sachbearbeitung</option>
+                    </select>
+                </div>
+
                 {% if workstation.useraccount.permissions.logs|default(false) %}
                     <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
                         <label class="form-label">Sachbearbeiter</label><br>
@@ -47,7 +59,7 @@
             </div>
         </form>
 
-        {% if processSearchTotal is defined and (searchProcessQuery or service or provider or date) %}
+        {% if processSearchTotal is defined and (searchProcessQuery or service or provider or date or status) %}
             <p class="m-5" style="margin-top: 0;">
                 {% set shownCount = processList.count() %}
                 {% if processSearchTotal > shownCount %}
@@ -104,6 +116,10 @@
                                 <div>Status: Abgeschlossen</div>
                             {% elseif process.appointmentStatus == "missed" %}
                                 <div>Status: Nicht erschienen</div>
+                            {% elseif process.appointmentStatus == "cancelled_citizen" %}
+                                <div>Status: Abgesagt durch Kunden</div>
+                            {% elseif process.appointmentStatus == "cancelled_staff" %}
+                                <div>Status: Abgesagt durch Sachbearbeitung</div>
                             {% endif %}
 
                             {% if process.createTimestamp|default(0) > 0 %}
@@ -112,6 +128,10 @@
 
                             {% if process.queue.callTime|default(0) > 0 %}
                                 <div>Terminaufruf: {{ process.queue.callTime|date('d.m.Y, H:i') }}&nbsp;Uhr</div>
+                            {% endif %}
+
+                            {% if process.appointmentStatus in ["cancelled_citizen", "cancelled_staff"] and process.finalizedAt|default(0) > 0 %}
+                                <div>Stornierung: {{ process.finalizedAt|date('d.m.Y, H:i') }}&nbsp;Uhr</div>
                             {% endif %}
                         </td>
                     </tr>
@@ -153,6 +173,7 @@
                 <input type="hidden" name="query" value="{{ searchProcessQuery }}">
                 <input type="hidden" name="service" value="{{ service }}">
                 <input type="hidden" name="provider" value="{{ provider }}">
+                <input type="hidden" name="status" value="{{ status }}">
                 <input type="hidden" name="user" value="{{ userAction }}">
                 <input type="hidden" name="date" value="{{ date }}">
                 {% if hideNavigation %}
@@ -177,6 +198,7 @@
                     'perPage': currentPerPage,
                     'service': service,
                     'provider': provider,
+                    'status': status,
                     'user': userAction,
                     'date': date,
                     'hideNavigation': hideNavigation ? 1 : null
@@ -188,6 +210,7 @@
                     'perPage': currentPerPage,
                     'service': service,
                     'provider': provider,
+                    'status': status,
                     'user': userAction,
                     'date': date,
                     'hideNavigation': hideNavigation ? 1 : null

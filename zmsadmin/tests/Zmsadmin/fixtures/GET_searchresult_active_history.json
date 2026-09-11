@@ -3,7 +3,7 @@
     "meta": {
         "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
         "error": false,
-        "totalCount": 4
+        "totalCount": 6
     },
     "data": {
         "0": {
@@ -121,6 +121,72 @@
                     "familyName": "History Missed",
                     "telephone": "44444",
                     "email": "history-missed@example.test"
+                }
+            ],
+            "scope": {
+                "id": 141,
+                "contact": {
+                    "name": "Teststandort"
+                },
+                "shortName": "TST"
+            },
+            "queue": {
+                "callTime": 0
+            }
+        },
+        "4": {
+            "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+            "id": 201003,
+            "displayNumber": "H201003",
+            "source": "history",
+            "status": "deleted",
+            "appointmentStatus": "cancelled_citizen",
+            "amendment": "History cancelled by citizen",
+            "createTimestamp": 1785662400,
+            "finalizedAt": 1785666000,
+            "appointments": [
+                {
+                    "date": 1786264200
+                }
+            ],
+            "clients": [
+                {
+                    "familyName": "History Cancelled Citizen",
+                    "telephone": "55555",
+                    "email": "history-cancelled-citizen@example.test"
+                }
+            ],
+            "scope": {
+                "id": 141,
+                "contact": {
+                    "name": "Teststandort"
+                },
+                "shortName": "TST"
+            },
+            "queue": {
+                "callTime": 0
+            }
+        },
+        "5": {
+            "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+            "id": 201004,
+            "displayNumber": "H201004",
+            "source": "history",
+            "status": "blocked",
+            "appointmentStatus": "cancelled_staff",
+            "amendment": "History cancelled by staff",
+            "createTimestamp": 1785662400,
+            "finalizedAt": 1785669600,
+            "appointments": [
+                {
+                    "date": 1786264200
+                }
+            ],
+            "clients": [
+                {
+                    "familyName": "History Cancelled Staff",
+                    "telephone": "66666",
+                    "email": "history-cancelled-staff@example.test"
                 }
             ],
             "scope": {
