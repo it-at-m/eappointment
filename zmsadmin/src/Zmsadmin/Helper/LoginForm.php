@@ -85,15 +85,13 @@ class LoginForm
 
     public static function writeWorkstationUpdate($data, \BO\Zmsentities\Workstation $workstation): bool
     {
-        if (isset($workstation->useraccount)) {
-            $formData = $data->getValues();
-            $workstation->setValidatedName($formData);
-            $workstation->setValidatedHint($formData);
-            $workstation->setValidatedScope($formData);
-            $workstation->setValidatedAppointmentsOnly($formData);
-            unset($workstation->useraccount['departments']);
-            $result = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
-        }
+        $formData = $data->getValues();
+        $workstation->setValidatedName($formData);
+        $workstation->setValidatedHint($formData);
+        $workstation->setValidatedScope($formData);
+        $workstation->setValidatedAppointmentsOnly($formData);
+        unset($workstation->useraccount['departments']);
+        $result = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
         return ($result) ? true : false;
     }
 }

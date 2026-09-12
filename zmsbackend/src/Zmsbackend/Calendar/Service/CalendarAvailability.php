@@ -403,7 +403,7 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
 
         $bookableDays = new DayList();
         foreach ($dayList as $day) {
-            $status = is_array($day) ? ($day['status'] ?? null) : ($day['status'] ?? null);
+            $status = $day['status'] ?? null;
             if ($status === 'bookable') {
                 $bookableDays->addEntity($day);
             }

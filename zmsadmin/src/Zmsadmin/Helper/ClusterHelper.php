@@ -50,7 +50,7 @@ class ClusterHelper
                     ['gql' => GraphDefaults::getProcess()]
                 );
         }
-        return ($processList) ? $processList->getCollection() : new ProcessList();
+        return $processList->getCollection() ?? new ProcessList();
     }
 
     public static function getNextProcess(array $excludedIds)
@@ -63,12 +63,12 @@ class ClusterHelper
                     'exclude' => $exclude,
                     'allowClusterWideCall' => \App::$allowClusterWideCall
                 ]
-            )?->getEntity();
+            )->getEntity();
         } else {
             $nextProcess = \App::$http->readGetResult(
                 '/scope/' . static::$workstation->scope['id'] . '/queue/next/',
                 ['exclude' => $exclude]
-            )?->getEntity();
+            )->getEntity();
         }
 
         return $nextProcess;

@@ -137,7 +137,7 @@ class Calendar
             0,
             true
         );
-        $freeProcessListByDate = $freeProcessList ? $this->splitByDate($freeProcessList) : [];
+        $freeProcessListByDate = $this->splitByDate($freeProcessList);
 
         while ($currentDate <= $endDate) {
             $day = (new Day())->setDateTime($currentDate);
