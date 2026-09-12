@@ -358,10 +358,22 @@ jobs:
             set -euo pipefail
             apt-get update
 
-            CHROMIUM_APT_VERSION="150.0.7871.100-1~deb13u1"
-            if ! apt-cache show "chromium=${CHROMIUM_APT_VERSION}" >/dev/null 2>&1; then
+            # Pin for reproducibility. apt-cache show can still list a version the
+            # mirror no longer ships (image lists / just-replaced security .deb).
+            # Simulate install so we fall back before apt exit 100.
+            CHROMIUM_APT_VERSION="150.0.7871.181-1~deb13u1"
+            if ! apt-get install -s -y --allow-downgrades \
+              "chromium-common=${CHROMIUM_APT_VERSION}" \
+              "chromium=${CHROMIUM_APT_VERSION}" \
+              "chromium-driver=${CHROMIUM_APT_VERSION}" \
+              >/dev/null 2>&1; then
               CHROMIUM_APT_VERSION="$(apt-cache policy chromium 2>/dev/null | grep "^  Candidate:" | head -1 | sed "s/^  Candidate: //" | tr -d " ")"
               echo "Pinned Chromium unavailable; using mirror candidate ${CHROMIUM_APT_VERSION}"
+              if [[ -z "${CHROMIUM_APT_VERSION}" || "${CHROMIUM_APT_VERSION}" == "(none)" ]]; then
+                echo "No installable Chromium candidate after apt-get update."
+                apt-cache policy chromium || true
+                exit 1
+              fi
             fi
             apt-get install -y --no-install-recommends --allow-downgrades \
               curl wget unzip ca-certificates gnupg \
