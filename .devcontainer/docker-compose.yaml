@@ -165,7 +165,9 @@ services:
   init-keycloak:
     image: eclipse-temurin:25-jre-alpine@sha256:3137541deb3cac6626b5d9a4a2187bc0d6a34312f858bd2c67dd01e732e6b682
     container_name: zms-init-keycloak
-    working_dir: /opt/keycloakmigration
+    # Jar volume is :ro. keycloakmigration Log4j writes logs/logfile.log under cwd,
+    # so run from /tmp (entrypoint.sh uses java -jar keycloakmigration.jar).
+    working_dir: /tmp
     depends_on:
       init-keycloak-token:
         condition: service_completed_successfully
@@ -182,7 +184,10 @@ services:
     volumes:
       - keycloakmigration-jar:/opt/keycloakmigration:ro,z
       - ../.resources/keycloak/migration:/migration:z
-    entrypoint: ["/bin/sh", "./entrypoint.sh"]
+    entrypoint:
+      - /bin/sh
+      - -c
+      - cp /opt/keycloakmigration/keycloakmigration.jar /opt/keycloakmigration/entrypoint.sh /tmp/ && exec /bin/sh /tmp/entrypoint.sh
     networks:
       - default
     restart: "no"
