@@ -36,7 +36,7 @@ class UseraccountListByDepartment extends BaseController
         $department = \App::$http->readGetResult("/department/$departmentId/", ['resolveReferences' => 0])->getEntity();
 
         $result = \App::$http->readGetResult("/department/$departmentId/useraccount/", ['resolveReferences' => 0]);
-        $useraccountList = $result ? $result->getCollection() : new UseraccountList();
+        $useraccountList = $result->getCollection() ?? new UseraccountList();
 
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
 
@@ -44,15 +44,13 @@ class UseraccountListByDepartment extends BaseController
         $roleMap = [];
 
         $roleResult = \App::$http->readGetResult('/roles/', []);
-        if ($roleResult) {
-            $loadedRoleList = $roleResult->getCollection();
+        $loadedRoleList = $roleResult->getCollection();
 
-            if ($loadedRoleList !== null) {
-                $roleList = $loadedRoleList;
+        if ($loadedRoleList !== null) {
+            $roleList = $loadedRoleList;
 
-                foreach ($roleList as $role) {
-                    $roleMap[$role->name] = $role->description ?: $role->name;
-                }
+            foreach ($roleList as $role) {
+                $roleMap[$role->name] = $role->description ?: $role->name;
             }
         }
         return Render::withHtml(

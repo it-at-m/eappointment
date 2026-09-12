@@ -27,7 +27,7 @@ class Mail extends \BO\Zmsbackend\Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionItemId($itemId);
         $mail = $this->fetchOne($query, new Entity());
-        if ($mail && $mail->hasId()) {
+        if ($mail->hasId()) {
             $mail = $this->readResolvedReferences($mail, $resolveReferences);
         }
         return $mail;
@@ -47,9 +47,7 @@ class Mail extends \BO\Zmsbackend\Base
         foreach ($result as $item) {
             $entity = new Entity($item);
             $entity = $this->readResolvedReferences($entity, $resolveReferences);
-            if ($entity instanceof Entity) {
-                $mailList->addEntity($entity);
-            }
+            $mailList->addEntity($entity);
         }
 
         return $mailList;
@@ -83,9 +81,7 @@ class Mail extends \BO\Zmsbackend\Base
         foreach ($result as $item) {
             $entity = new Entity($item);
             $entity = $this->readResolvedReferences($entity, $resolveReferences);
-            if ($entity instanceof Entity) {
-                $mailList->addEntity($entity);
-            }
+            $mailList->addEntity($entity);
         }
 
         return $mailList;

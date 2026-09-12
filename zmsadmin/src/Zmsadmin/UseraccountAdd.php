@@ -60,11 +60,9 @@ class UseraccountAdd extends BaseController
 
         $roleList = new RoleList();
         $roleResult = \App::$http->readGetResult('/roles/', []);
-        if ($roleResult) {
-            $loaded = $roleResult->getCollection();
-            if ($loaded !== null) {
-                $roleList = $loaded;
-            }
+        $loaded = $roleResult->getCollection();
+        if ($loaded !== null) {
+            $roleList = $loaded;
         }
 
         return Render::withHtml(

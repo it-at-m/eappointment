@@ -71,8 +71,9 @@ class UseraccountListByRole extends BaseController
         $roleLabel = $roleName;
 
         $roleResult = \App::$http->readGetResult('/roles/', []);
-        if ($roleResult && $roleResult->getCollection() !== null) {
-            $roleList = $roleResult->getCollection();
+        $loadedRoleList = $roleResult->getCollection();
+        if ($loadedRoleList !== null) {
+            $roleList = $loadedRoleList;
 
             foreach ($roleList as $role) {
                 if ($role->name === $roleName) {

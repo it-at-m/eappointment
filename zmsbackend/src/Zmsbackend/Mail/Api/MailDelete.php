@@ -49,7 +49,7 @@ class MailDelete extends \BO\Zmsbackend\Api\BaseController
         }
 
         $mail = $query->readEntity($args['id']);
-        if ($mail && !$mail->hasId()) {
+        if (!$mail->hasId()) {
             throw new \BO\Zmsbackend\Mail\Exception\MailNotFound();
         }
 
