@@ -63,6 +63,11 @@ class Application
      */
 
     public static ?\DateTimeInterface $now = null;
+
+    /**
+     * allow cluster wide process calls
+     */
+    public static bool $allowClusterWideCall = true;
 /*
      * -----------------------------------------------------------------------
      * Slim

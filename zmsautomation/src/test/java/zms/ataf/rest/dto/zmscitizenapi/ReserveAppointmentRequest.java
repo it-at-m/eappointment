@@ -19,4 +19,7 @@ public class ReserveAppointmentRequest {
     private List<Integer> serviceId;
     private List<Integer> serviceCount;
     private String captchaToken;
+    /** Confirmed process to copy contact from when rebooking. */
+    private Integer sourceProcessId;
+    private String sourceAuthKey;
 }

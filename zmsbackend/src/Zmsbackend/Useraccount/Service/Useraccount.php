@@ -288,7 +288,7 @@ class Useraccount extends \BO\Zmsbackend\Base
                         'cache_key' => $cacheKey,
                         'loginname' => $loginname,
                         'resolveReferences' => $resolveReferences,
-                        'useraccount_id' => $useraccount->id ?? null
+                        'useraccount_id' => $useraccount->id
                     ]);
                 }
             }
@@ -1057,7 +1057,7 @@ class Useraccount extends \BO\Zmsbackend\Base
     /**
      * @SuppressWarnings(NPathComplexity)
      *
-     * @param false $disableCache
+     * @param bool $disableCache
      *
      */
     public function readListByRoleAndDepartmentIds($roleName, array $departmentIds, int $resolveReferences = 0, bool $disableCache = false, $workstation = null)
@@ -1166,7 +1166,7 @@ class Useraccount extends \BO\Zmsbackend\Base
 
         if (App::$log) {
             App::$log->info('Useraccount caches invalidated after mutation', [
-                'useraccount_id' => $useraccount->id ?? null,
+                'useraccount_id' => $useraccount->id,
                 'identifiers' => $identifiers,
                 'removed_entity_cache_keys' => $removedEntityKeys,
                 'department_ids' => $departmentIds,

@@ -51,7 +51,7 @@ class AvailabilityListUpdate extends \BO\Zmsbackend\Api\BaseController
         if (count($validationErrors) > 0) {
             $availabilityIds = array_map(
                 function ($availability) {
-                    return $availability->id ?? null;
+                    return $availability->id;
                 },
                 $newAvailabilities->getArrayCopy()
             );

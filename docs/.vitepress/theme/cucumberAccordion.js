@@ -1,6 +1,7 @@
 import { ref } from "vue";
 
 import featureMeta from "../data/cucumber-features.json";
+import cucumberNavigation from "../data/cucumber-navigation.json";
 import {
   parseFeatureMeta,
   toFeatureAnchorId,
@@ -206,8 +207,14 @@ export function cucumberIsLegacyBuergeransicht(testType, module = "") {
   return testType === "ui" && module === "buergeransicht";
 }
 
+export function cucumberDeclaredModule(testType, module = "") {
+  return cucumberNavigation.some(
+    (item) => item.testType === testType && (!module || item.module === module)
+  );
+}
+
 export function cucumberGroupHasMatch(testType, module = "") {
-  return cucumberCatalogEntries().some((entry) => {
+  const hasMatch = cucumberCatalogEntries().some((entry) => {
     if (entry.testType !== testType) {
       return false;
     }
@@ -216,6 +223,13 @@ export function cucumberGroupHasMatch(testType, module = "") {
     }
     return cucumberFeatureVisible(entry);
   });
+  if (hasMatch) {
+    return true;
+  }
+  if (cucumberUsesRemoteCatalog()) {
+    return false;
+  }
+  return cucumberDeclaredModule(testType, module);
 }
 
 const sortModuleNames = (names) =>

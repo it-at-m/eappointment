@@ -16,11 +16,11 @@ use Psr\Http\Message\ResponseInterface;
 
 class RequestReport extends Base
 {
-    public $firstDayDate = null;
+    public ?\DateTime $firstDayDate = null;
 
-    public $lastDayDate = null;
+    public ?\DateTime $lastDayDate = null;
 
-    protected $dateFormatter = [
+    protected array $dateFormatter = [
         'day' => 'Y-m-d',
         'month' => 'Y-m'
     ];
@@ -34,7 +34,7 @@ class RequestReport extends Base
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         $title = 'requeststatistic_' . $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
 
@@ -75,6 +75,9 @@ class RequestReport extends Base
         }
 
         $dates = [];
+        if (!$this->firstDayDate instanceof \DateTime || !$this->lastDayDate instanceof \DateTime) {
+            throw new \RuntimeException('Report date range is not initialized');
+        }
         $dateTime = clone $this->firstDayDate;
 
         do {
@@ -129,12 +132,7 @@ class RequestReport extends Base
                     ? ReportHelper::formatTimeValue($report->data['average_processingtime'][$name])
                     : "0";
                 $rowData[] = $report->data['sum'][$name];
-
-                $includeInTotal = $name !== ReportEntity::REQUEST_STAT_NAME_UNCATEGORIZED
-                    && $name !== ReportEntity::REQUEST_STAT_NAME_NONEXISTENT;
-                if ($includeInTotal) {
-                    $totalSum += (int)($report->data['sum'][$name] ?? 0);
-                }
+                $totalSum += (int)($report->data['sum'][$name] ?? 0);
 
                 foreach ($reportDates as $dateColumn => $dateString) {
                     $requestCount = isset($entry[$dateString])
@@ -142,10 +140,7 @@ class RequestReport extends Base
                         : 0;
 
                     $rowData[] = $requestCount;
-
-                    if ($includeInTotal) {
-                        $dateSums[$dateColumn] += $requestCount;
-                    }
+                    $dateSums[$dateColumn] += $requestCount;
                 }
 
                 $reportData[] = $rowData;
