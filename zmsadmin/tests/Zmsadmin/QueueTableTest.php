@@ -426,6 +426,17 @@ class QueueTableTest extends Base
         $this->assertStringNotContainsString('+00:05:00', $body);
     }
 
+    public function testDoesNotRenderWaitingTimeForReservedOrPreconfirmed()
+    {
+        foreach (['reserved', 'preconfirmed'] as $status) {
+            $response = $this->renderQueueTableWithWaitingTime('00:05:00', $status);
+            $body = (string) $response->getBody();
+
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertStringNotContainsString('+5&nbsp;Min.', $body);
+        }
+    }
+
     public function testHeaderReloadButtonUsesPluralListenLabel()
     {
         $this->setQueueTableApiCalls($this->readFixture("GET_Workstation_Resolved2.json"));
@@ -464,10 +475,12 @@ class QueueTableTest extends Base
         $this->assertStringContainsString('Listen neu laden', $body);
     }
 
-    private function renderQueueTableWithWaitingTime(int|float|string $waitingTime)
+    private function renderQueueTableWithWaitingTime(int|float|string $waitingTime, string $status = 'confirmed')
     {
         $processFixture = json_decode($this->readFixture("GET_processList_141_20160401.json"), true);
         $processFixture['data']['0']['queue']['waitingTime'] = $waitingTime;
+        $processFixture['data']['0']['queue']['status'] = $status;
+        $processFixture['data']['0']['status'] = $status;
         $this->setApiCalls(
             [
                 [
