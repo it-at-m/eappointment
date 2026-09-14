@@ -331,7 +331,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
         $nowDate = $now->format('Y-m-d');
         foreach ($this->slots as $date => $slotList) {
             if ($nowDate == $date) {
-                $slotList = ('intern' != $slotType) ? $slotList->withTimeGreaterThan($now, $slotType) : $slotList;
+                $slotList = ('intern' != $slotType) ? $slotList->withTimeGreaterThan($now) : $slotList;
                 $this->slots[$date] = $slotList;
             }
             $this->addFreeProcessesToCalendar($calendar, $freeProcessesDate, $date, $slotType, $slotsRequired);

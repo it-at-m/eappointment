@@ -93,8 +93,9 @@ class Day extends Schema\Entity
         } elseif (null === $hasAppointments) {
             $this->status = self::NOTBOOKABLE;
         }
-        // if dayend < todays time + half an hour, it is restricted
-        if ($this->toDateTime()->getTimestamp() + 86400 <= $now->getTimestamp() + 1800) {
+        // if dayend < now plus the public booking lead time, it is restricted
+        $leadTimeSeconds = Helper\PublicBookingLeadTime::seconds();
+        if ($this->toDateTime()->getTimestamp() + 86400 <= $now->getTimestamp() + $leadTimeSeconds) {
             $this->status =  self::RESTRICTED;
         }
         return $this;

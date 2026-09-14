@@ -182,12 +182,13 @@ class SlotList extends Base
     }
 
     /*
-     * reduce slotlist from slots smaller than reference time (today) + 1800 seconds
+     * Empty public slots that start before now plus ZMS_PUBLIC_BOOKING_LEAD_TIME_MINUTES.
      */
-    public function withTimeGreaterThan(\DateTimeInterface $dateTime): static
+    public function withTimeGreaterThan(\DateTimeInterface $dateTime, ?int $leadTimeMinutes = null): static
     {
         $slotList = clone $this;
-        $referenceTime = $dateTime->getTimestamp() + 1800;
+        $leadTimeSeconds = ($leadTimeMinutes ?? \BO\Zmsentities\Helper\PublicBookingLeadTime::minutes()) * 60;
+        $referenceTime = $dateTime->getTimestamp() + $leadTimeSeconds;
         foreach ($this as $index => $slot) {
             $slotTime = \BO\Zmsentities\Helper\DateTime::create(
                 $dateTime->format('Y-m-d') . ' ' . $slot->time

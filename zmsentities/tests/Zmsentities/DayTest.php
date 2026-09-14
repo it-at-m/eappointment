@@ -112,4 +112,27 @@ class DayTest extends EntityCommonTests
         $entity->getWithStatus('public', $time->modify('+ 3 day'));
         $this->assertEquals('restricted', $entity->status);
     }
+
+    public function testGetWithStatusUsesLeadTimeFromEnvironment()
+    {
+        $previous = getenv(\BO\Zmsentities\Helper\PublicBookingLeadTime::ENV_NAME);
+        $entity = $this->getExample();
+        $now = (new \DateTimeImmutable())->setTimestamp($entity->toDateTime()->getTimestamp() + 86400 - 60);
+
+        try {
+            putenv('ZMS_PUBLIC_BOOKING_LEAD_TIME_MINUTES=0');
+            $entity->getWithStatus('public', $now);
+            $this->assertEquals('full', $entity->status);
+
+            putenv('ZMS_PUBLIC_BOOKING_LEAD_TIME_MINUTES=2');
+            $entity->getWithStatus('public', $now);
+            $this->assertEquals('restricted', $entity->status);
+        } finally {
+            if ($previous === false) {
+                putenv('ZMS_PUBLIC_BOOKING_LEAD_TIME_MINUTES');
+            } else {
+                putenv('ZMS_PUBLIC_BOOKING_LEAD_TIME_MINUTES=' . $previous);
+            }
+        }
+    }
 }
