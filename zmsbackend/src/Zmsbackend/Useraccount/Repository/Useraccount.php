@@ -247,8 +247,9 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         $data['Name'] = $entity->id;
         $data['Passworthash'] = (isset($entity->password)) ? $entity->password : null;
         $data['BehoerdenID'] = 0;
-        if (!$entity->isSuperUser() && isset($entity->departments) && 0 < $entity->departments->count()) {
-            $data['BehoerdenID'] = $entity->departments->getFirst()->id;
+        $department = $entity->getDepartmentList()->getFirst();
+        if (!$entity->isSuperUser() && $department !== null) {
+            $data['BehoerdenID'] = $department->id;
         }
         //default values because of strict mode
         $data['notrufinitiierung'] = 0;
