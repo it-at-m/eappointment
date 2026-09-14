@@ -1,5 +1,5 @@
 ## Release Muc-48 (14.09.2026)
-                            
+                         
 <h2>        Bug
 </h2>
 <ul>
@@ -38,6 +38,8 @@
 </li>
 <li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1559'>ZMSKVR-1559</a>] -         Rolle &quot;Sachbearbeitung Basis&quot;: &quot;Warteschlange aktualisieren&quot; ausblenden
 </li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1573'>ZMSKVR-1573</a>] -         Ø Termindauer unabhängig von Dienstleistung in der Dienstleistungsstatistik (Ticket von Fabian B.)
+</li>
 <li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1575'>ZMSKVR-1575</a>] -         „Mein Profil“ auf relevante Benutzerinformationen reduzieren und Fehlermeldung beheben
 </li>
 <li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1588'>ZMSKVR-1588</a>] -         Kompaktere Gesamtübersicht
@@ -47,6 +49,7 @@
 <li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1617'>ZMSKVR-1617</a>] -         Dienstleistungsstatistik: Tage ohne Nutzung ausblenden
 </li>
 </ul>
+                                                            
                                                             
 
 
