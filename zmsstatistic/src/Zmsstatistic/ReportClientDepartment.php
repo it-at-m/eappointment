@@ -13,7 +13,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class ReportClientDepartment extends BaseController
 {
-    protected $totals = [
+    protected array $totals = [
         'clientscount',
         'missed',
         'withappointment',
@@ -32,17 +32,20 @@ class ReportClientDepartment extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
-        $clientPeriod = \App::$http
+        $clientPeriod = \App::http()
           ->readGetResult('/warehouse/clientdepartment/' . $this->department->id . '/')
           ->getEntity();
 
         $exchangeClient = null;
         if (isset($args['period'])) {
-            $exchangeClient = \App::$http
+            /** @var mixed $entity */
+            $entity = \App::http()
                 ->readGetResult('/warehouse/clientdepartment/' . $this->department->id . '/' . $args['period'] . '/')
-                ->getEntity()
+                ->getEntity();
+            $exchangeClient = $entity
                 ->withCalculatedTotals($this->totals, 'date')
                 ->toHashed();
         }
@@ -54,7 +57,9 @@ class ReportClientDepartment extends BaseController
             $args['department'] = $this->department;
             $args['organisation'] = $this->organisation;
 
-            return (new Download\ClientReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+            /** @var mixed $container */
+            $container = \App::$slim->getContainer();
+            return (new Download\ClientReport($container))->readResponse($request, $response, $args);
         }
 
         return Render::withHtml(

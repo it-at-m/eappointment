@@ -114,6 +114,43 @@ class ExchangeTest extends EntityCommonTests
         $this->assertEquals(31, $entity->data['sum']['Personalausweis beantragen']);
     }
 
+    public function testGetDatesWithRequests()
+    {
+        $exchange = new \BO\Zmsentities\Exchange();
+
+        $exchange->data = [
+            'Service A' => [
+                '2016-04-04' => ['requestscount' => 2],
+                '2016-04-02' => ['requestscount' => 0],
+            ],
+            'Service B' => [
+                '2016-04-01' => ['requestscount' => '1'],
+                '2016-04-04' => ['requestscount' => 3],
+            ],
+            \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_UNCATEGORIZED => [
+                '2016-04-03' => ['requestscount' => 1],
+            ],
+            'sum' => [
+                'Service A' => 2,
+                'Service B' => 4,
+            ],
+            'average_processingtime' => [
+                'Service A' => 10,
+                'Service B' => 15,
+            ],
+            'average_processingtime_overall' => 12.5,
+        ];
+
+        $this->assertSame(
+            [
+                '2016-04-01',
+                '2016-04-03',
+                '2016-04-04',
+            ],
+            $exchange->getDatesWithRequests()
+        );
+    }
+
     public function testWithWeightedAverageProcessingTime()
     {
         $exchange = new \BO\Zmsentities\Exchange();
@@ -129,13 +166,11 @@ class ExchangeTest extends EntityCommonTests
         ];
 
         $result = $exchange->withWeightedAverageProcessingTime();
-        $this->assertSame(
-            19.52,
-            $result->data['average_processingtime_overall']
-        );
+        // (10*10 + 20*90 + 30*5) / (10 + 90 + 5) = 2050 / 105
+        $this->assertEqualsWithDelta(2050 / 105, $result->data['average_processingtime_overall'], 1e-12);
     }
 
-    public function testWithWeightedAverageProcessingTimeExcludesUncapturedRequests()
+    public function testWithWeightedAverageProcessingTimeIncludesUncapturedRequests()
     {
         $exchange = new \BO\Zmsentities\Exchange();
 
@@ -154,7 +189,7 @@ class ExchangeTest extends EntityCommonTests
         $result = $exchange->withWeightedAverageProcessingTime();
 
         $this->assertSame(
-            10.0,
+            27.5,
             $result->data['average_processingtime_overall']
         );
     }

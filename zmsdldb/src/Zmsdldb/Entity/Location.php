@@ -59,7 +59,7 @@ class Location extends Base
     }
 
     /**
-     * @param String $serviceCsv only check for this serviceCsv
+     * @param string|int|float|null $serviceCsv only check for this serviceCsv
      *
      * @return Array
      */
@@ -67,9 +67,6 @@ class Location extends Base
     {
         if (null === $serviceCsv) {
             return $this['services'];
-        }
-        if (!is_string($serviceCsv) && !is_int($serviceCsv) && !is_float($serviceCsv)) {
-            return array();
         }
         $location = $this->getArrayCopy();
         $servicecompare = explode(',', (string) $serviceCsv);
@@ -87,7 +84,7 @@ class Location extends Base
     /**
      * Check if appointments are available
      *
-     * @param String $serviceCsv only check for this serviceCsv
+     * @param string|int|float|null $serviceCsv only check for this serviceCsv
      * @param Bool $external allow external links, default false
      *
      * @return Bool

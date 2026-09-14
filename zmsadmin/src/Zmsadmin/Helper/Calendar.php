@@ -72,7 +72,7 @@ class Calendar
         string $slotType = 'intern',
         int $slotsRequired = 0,
         bool $forWeek = false
-    ) {
+    ): ?ProcessList {
         $this->calendar->scopes = $scopeList;
 
         $this->calendar->firstDay->setDateTime($this->dateTime);
@@ -85,8 +85,9 @@ class Calendar
             $this->calendar->lastDay->setDateTime($endDate);
         }
 
+        $slots = null;
         try {
-            $slots = \App::$http->readPostResult(
+            $collection = \App::$http->readPostResult(
                 '/process/status/free/',
                 $this->calendar,
                 [
@@ -95,6 +96,7 @@ class Calendar
                     'gql' => GraphDefaults::getFreeProcessList()
                 ]
             )->getCollection();
+            $slots = $collection instanceof ProcessList ? $collection : null;
         } catch (\BO\Zmsclient\Exception $exception) {
             if ($exception->template != 'BO\Zmsbackend\Process\Exception\FreeProcessListEmpty') {
                 throw $exception;
@@ -130,14 +132,15 @@ class Calendar
         $endDate = clone $this->dateTime->modify('Sunday this week');
         $currentDate = $startDate;
 
-        /** @var ProcessList $freeProcessList */
         $freeProcessList = $this->readAvailableSlotsFromDayAndScopeList(
             $scopeList,
             'intern',
             0,
             true
         );
-        $freeProcessListByDate = $freeProcessList ? $this->splitByDate($freeProcessList) : [];
+        $freeProcessListByDate = $freeProcessList instanceof ProcessList
+            ? $this->splitByDate($freeProcessList)
+            : [];
 
         while ($currentDate <= $endDate) {
             $day = (new Day())->setDateTime($currentDate);

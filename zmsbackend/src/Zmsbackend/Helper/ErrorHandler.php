@@ -53,7 +53,9 @@ class ErrorHandler implements ErrorHandlerInterface
         $message->meta['trace'] = $trace;
 
         $exceptionVars = get_object_vars($exception);
-        if (array_key_exists('data', $exceptionVars)) {
+        if ($exception instanceof \BO\Zmsbackend\Useraccount\Exception\UserAlreadyLoggedIn) {
+            $message->data = $exception->getData();
+        } elseif (array_key_exists('data', $exceptionVars)) {
             $message->data = $exceptionVars['data'];
         }
         $response = \BO\Slim\Render::withLastModified($response, time(), '0');

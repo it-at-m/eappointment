@@ -15,7 +15,7 @@ use Exception;
 
 class ReportClientService
 {
-    protected $totals = [
+    protected array $totals = [
         'clientscount',
         'missed',
         'withappointment',
@@ -36,7 +36,7 @@ class ReportClientService
             return null;
         }
 
-        if ($dateRange) {
+        if (ReportHelper::hasValues($dateRange)) {
             return $this->getExchangeClientForDateRange($scopeId, $dateRange);
         }
 
@@ -82,9 +82,11 @@ class ReportClientService
     public function getExchangeClientForPeriod(string $scopeId, string $period): mixed
     {
         try {
-            return \App::$http
+            $exchangeClient = \App::http()
                 ->readGetResult('/warehouse/clientscope/' . $scopeId . '/' . $period . '/')
-                ->getEntity()
+                ->getEntity();
+            /** @var mixed $exchangeClient */
+            return $exchangeClient
                 ->withCalculatedTotals($this->totals, 'date')
                 ->toHashed();
         } catch (Exception $exception) {
@@ -98,7 +100,7 @@ class ReportClientService
     public function getClientPeriod(string $scopeId): mixed
     {
         try {
-            return \App::$http
+            return \App::http()
                 ->readGetResult('/warehouse/clientscope/' . $scopeId . '/')
                 ->getEntity();
         } catch (Exception $exception) {
@@ -120,7 +122,7 @@ class ReportClientService
                 continue;
             }
             try {
-                $exchangeClient = \App::$http
+                $exchangeClient = \App::http()
                     ->readGetResult(
                         '/warehouse/clientscope/' . $scopeId . '/' . $year . '/',
                         [
@@ -159,7 +161,7 @@ class ReportClientService
      * Create filtered exchange client with updated properties
      */
     private function createFilteredExchangeClient(
-        $exchangeClientBasic,
+        mixed $exchangeClientBasic,
         array $filteredData,
         string $fromDate,
         string $toDate
@@ -194,7 +196,7 @@ class ReportClientService
     ): array {
         $args['category'] = 'clientscope';
 
-        if ($dateRange) {
+        if (ReportHelper::hasValues($dateRange)) {
             $args['period'] = $dateRange['from'] . '_' . $dateRange['to'];
         }
 
