@@ -113,6 +113,51 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return $this->readTemplate($templateName);
     }
 
+    public function copyCustomizationToProviders(
+        int $sourceTemplateId,
+        string $sourceProviderId,
+        array $targetProviderIds
+    ): Mailtemplate {
+        $sourceTemplate = $this->readTemplateById($sourceTemplateId);
+
+        if (
+            !isset($sourceTemplate->id)
+            || !$sourceTemplate->id
+            || empty($sourceTemplate->provider)
+            || (string) $sourceTemplate->provider !== $sourceProviderId
+        ) {
+            throw new \BO\Zmsbackend\Mail\Exception\MailTemplateCustomizationNotFound();
+        }
+
+        $targetProviderIds = array_values(
+            array_unique(array_map('strval', $targetProviderIds))
+        );
+
+        if (
+            empty($targetProviderIds)
+            || in_array($sourceProviderId, $targetProviderIds, true)
+        ) {
+            throw new \BO\Zmsbackend\Mail\Exception\MailTemplateCopyInvalidInput();
+        }
+
+        foreach ($targetProviderIds as $targetProviderId) {
+            if ($targetProviderId === '') {
+                throw new \BO\Zmsbackend\Mail\Exception\MailTemplateCopyInvalidInput();
+            }
+
+            $this->perform(
+                \BO\Zmsbackend\Mail\Repository\Mailtemplate::QUERY_UPSERT_CUSTOMIZATION,
+                [
+                    'name' => (string) $sourceTemplate->name,
+                    'value' => (string) $sourceTemplate->value,
+                    'provider' => $targetProviderId,
+                ]
+            );
+        }
+
+        return $sourceTemplate;
+    }
+
     /**
      * @psalm-api
      */

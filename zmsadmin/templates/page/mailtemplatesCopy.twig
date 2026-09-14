@@ -1,0 +1,239 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block headline %}
+    {{ headline1(pageTitle) }}
+{% endblock %}
+
+{% block content %}
+    {% set timeString =
+        'am '
+        ~ 'now'|date('d.m.Y')
+        ~ ' um '
+        ~ 'now'|date('H:i')
+        ~ ' Uhr'
+    %}
+
+    {% include "element/helper/exceptionHandler.twig" %}
+    {% include "element/helper/messageHandler.twig" %}
+
+    {% if formError %}
+        <div class="message message--error" role="alert">
+            <h2 class="message__heading title">
+                Kopieren nicht möglich
+            </h2>
+            <div class="message__body">
+                {{ formError }}
+            </div>
+        </div>
+    {% endif %}
+
+    {% embed "block/scaffholding/board.twig" with {
+        'class': 'board--spaceless config-view',
+        'messages': 'hide'
+    } %}
+        {% from 'element/helper/form.twig' import providername %}
+        
+        {% block board_title %}
+            Quellstandort auswählen
+        {% endblock %}
+
+        {% block board_body %}
+            <form
+                method="get"
+                action="{{ urlGet('mailtemplatesCopy', {}, {}) }}"
+                class="form--base"
+            >
+                <div class="formgroup">
+                    <label
+                        class="formgroup__label"
+                        for="sourceScopeId"
+                    >
+                        Quellstandort
+                    </label>
+
+                    <select
+                        id="sourceScopeId"
+                        name="sourceScopeId"
+                        required
+                    >
+                        <option value="">
+                            Bitte auswählen
+                        </option>
+
+                        {% for scope in scopeList %}
+                            <option
+                                value="{{ scope.id }}"
+                                {% if scope.id == sourceScopeId %}
+                                    selected="selected"
+                                {% endif %}
+                            >
+                                {{ providername(scope) }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button
+                        type="submit"
+                        class="button button-submit"
+                    >
+                        Angepasste Templates anzeigen
+                    </button>
+                </div>
+            </form>
+        {% endblock %}
+    {% endembed %}
+
+    {% if selectedSourceScope %}
+        {% embed "block/scaffholding/board.twig" with {
+            'class': 'board--spaceless config-view',
+            'messages': 'hide'
+        } %}
+            {% from 'element/helper/form.twig' import providername %}
+
+            {% block board_title %}
+                Template und Zielstandorte auswählen
+            {% endblock %}
+
+            {% block board_body %}
+                {% if customTemplates|length > 0 %}
+                    <form
+                        method="post"
+                        action="{{ urlGet(
+                            'mailtemplatesCopy',
+                            {},
+                            {}
+                        ) }}"
+                        class="form--base"
+                    >
+                        <input
+                            type="hidden"
+                            name="sourceScopeId"
+                            value="{{ selectedSourceScope.id }}"
+                        >
+
+                        <div class="formgroup">
+                            <label
+                                class="formgroup__label"
+                                for="sourceTemplateId"
+                            >
+                                Angepasstes E-Mail-Template
+                            </label>
+
+                            <select
+                                id="sourceTemplateId"
+                                name="sourceTemplateId"
+                                required
+                            >
+                                <option value="">
+                                    Bitte auswählen
+                                </option>
+
+                                {% for template in customTemplates %}
+                                    <option
+                                        value="{{ template.id }}"
+                                        {% if
+                                            template.id
+                                            == selectedSourceTemplateId
+                                        %}
+                                            selected="selected"
+                                        {% endif %}
+                                    >
+                                        {{ template.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <fieldset class="fieldset">
+                            <legend>Zielstandorte</legend>
+
+                            <p class="formgroup__help">
+                                Wählen Sie mindestens einen Zielstandort
+                                aus. Eine bereits vorhandene Anpassung
+                                desselben Templates wird überschrieben.
+                            </p>
+
+                            {% for scope in scopeList %}
+                                {% if
+                                    scope.id != selectedSourceScope.id
+                                    and scope.provider.id
+                                        != selectedSourceScope.provider.id
+                                %}
+                                    <div class="form-check">
+                                        <input
+                                            type="checkbox"
+                                            id="targetScope_{{ scope.id }}"
+                                            name="targetScopeIds[]"
+                                            value="{{ scope.id }}"
+                                            {% if
+                                                scope.id
+                                                in selectedTargetScopeIds
+                                            %}
+                                                checked="checked"
+                                            {% endif %}
+                                        >
+
+                                        <label
+                                            for="targetScope_{{ scope.id }}"
+                                        >
+                                            {{ providername(scope) }}
+                                        </label>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </fieldset>
+
+                        <div class="form-actions">
+                            <button
+                                type="submit"
+                                name="copy"
+                                value="1"
+                                class="button button--positive"
+                            >
+                                Template kopieren
+                            </button>
+
+                            <a
+                                class="button"
+                                href="{{ urlGet(
+                                    'mailtemplatesScope',
+                                    {
+                                        'scopeId':
+                                            selectedSourceScope.id
+                                    },
+                                    {}
+                                ) }}"
+                            >
+                                Zurück zu den E-Mail-Templates
+                            </a>
+                        </div>
+                    </form>
+                {% else %}
+                    <p>
+                        Für den ausgewählten Standort sind keine
+                        angepassten E-Mail-Templates vorhanden.
+                    </p>
+
+                    <div class="form-actions">
+                        <a
+                            class="button"
+                            href="{{ urlGet(
+                                'mailtemplatesScope',
+                                {
+                                    'scopeId':
+                                        selectedSourceScope.id
+                                },
+                                {}
+                            ) }}"
+                        >
+                            Zurück zu den E-Mail-Templates
+                        </a>
+                    </div>
+                {% endif %}
+            {% endblock %}
+        {% endembed %}
+    {% endif %}
+{% endblock %}
