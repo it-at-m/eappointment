@@ -28,11 +28,11 @@
       },
       "phone": "089 233-96000",
       "fax": "089 233-45371",
-      "email": "buergerbuero221.kvr@muenchen.de",
+      "email": "noreply-terminvereinbarung@muenchen.de",
       "communication": {
         "phone": {"record": [{"number": "089 233-96000"}]},
         "fax": {"record": [{"number": "089 233-45371"}]},
-        "label": "buergerbuero221.kvr@muenchen.de"
+        "label": "noreply-terminvereinbarung@muenchen.de"
       },
       "extendedServiceReferences": [
         {
@@ -103,11 +103,11 @@
       },
       "phone": "089 233-96000",
       "fax": "089 233-45371",
-      "email": "buergerbuero.kvr@muenchen.de",
+      "email": "noreply-terminvereinbarung@muenchen.de",
       "communication": {
         "phone": {"record": [{"number": "089 233-96000"}]},
         "fax": {"record": [{"number": "089 233-45371"}]},
-        "label": "buergerbuero.kvr@muenchen.de"
+        "label": "noreply-terminvereinbarung@muenchen.de"
       },
       "extendedServiceReferences": [
         {
