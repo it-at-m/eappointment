@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-14T07:25:33.261Z",
+  "publishedAt": "2026-09-14T09:17:40.831Z",
   "branches": [
     {
       "name": "next",
@@ -30,6 +30,12 @@
       "slug": "dependabot-npm_and_yarn-zmsadmin-next-react-19.3.0",
       "runId": "34815440792",
       "runStartedAt": "2026-09-14T06:54:43Z"
+    },
+    {
+      "name": "dependabot/npm_and_yarn/zmsadmin/next/react-dom-19.3.0",
+      "slug": "dependabot-npm_and_yarn-zmsadmin-next-react-dom-19.3.0",
+      "runId": "34823042334",
+      "runStartedAt": "2026-09-14T08:30:09Z"
     },
     {
       "name": "dependabot/npm_and_yarn/zmsstatistic/next/eslint-10.10.0",
