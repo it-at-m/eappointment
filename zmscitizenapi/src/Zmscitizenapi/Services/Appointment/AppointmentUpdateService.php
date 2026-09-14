@@ -22,7 +22,11 @@ class AppointmentUpdateService
             return $validated;
         }
 
-        $updatedProcess = $this->updateProcessWithClientData($validated, $clientData);
+        $updatedProcess = $this->updateProcessWithClientData(
+            $validated,
+            $clientData,
+            $this->isRebookingUpdate($clientData)
+        );
         return $this->saveProcessUpdate($updatedProcess, $authenticatedUser);
     }
 
@@ -42,6 +46,20 @@ class AppointmentUpdateService
                 ? $reservedProcess['errors']
                 : [];
             return ['errors' => $errors];
+        }
+
+        if ($this->isRebookingUpdate($data)) {
+            $lockErrors = ValidationService::validateUnchangedStoredContact(
+                $reservedProcess,
+                $data->familyName,
+                $data->email,
+                $data->telephone,
+                $data->customTextfield,
+                $data->customTextfield2
+            );
+            if ($lockErrors['errors'] !== []) {
+                return ['errors' => $lockErrors['errors']];
+            }
         }
 
         $fieldErrors = ValidationService::validateAppointmentUpdateFields(
@@ -73,7 +91,20 @@ class AppointmentUpdateService
             'telephone' => isset($body['telephone']) && is_string($body['telephone']) ? $body['telephone'] : null,
             'customTextfield' => isset($body['customTextfield']) && is_string($body['customTextfield']) ? $body['customTextfield'] : null,
             'customTextfield2' => isset($body['customTextfield2']) && is_string($body['customTextfield2']) ? $body['customTextfield2'] : null,
+            'sourceProcessId' => isset($body['sourceProcessId']) && is_numeric($body['sourceProcessId'])
+                ? (int) $body['sourceProcessId']
+                : null,
+            'sourceAuthKey' => isset($body['sourceAuthKey']) && is_string($body['sourceAuthKey'])
+                && trim($body['sourceAuthKey']) !== ''
+                ? htmlspecialchars(trim($body['sourceAuthKey']), ENT_QUOTES, 'UTF-8')
+                : null,
         ];
+    }
+
+    private function isRebookingUpdate(object $data): bool
+    {
+        return ($data->sourceProcessId ?? null) !== null
+            && ($data->sourceAuthKey ?? null) !== null;
     }
 
     private function getReservedProcess(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
@@ -81,18 +112,45 @@ class AppointmentUpdateService
         return ZmsApiFacadeService::getThinnedProcessById($processId, $authKey, $user);
     }
 
-    private function updateProcessWithClientData(ThinnedProcess $process, object $data): ThinnedProcess
-    {
-        $process->familyName = $data->familyName ?? $process->familyName ?? null;
-        $process->email = $data->email ?? $process->email ?? null;
-        $process->telephone = $data->telephone ?? $process->telephone ?? null;
-        if ($data->customTextfield !== null) {
+    private function updateProcessWithClientData(
+        ThinnedProcess $process,
+        object $data,
+        bool $lockStoredContact = false
+    ): ThinnedProcess {
+        $this->writeFamilyNameIfAllowed($process, $data, $lockStoredContact);
+        if (!$lockStoredContact || !ValidationService::isFilledEmail($process->email)) {
+            $process->email = $data->email ?? $process->email ?? null;
+        }
+        if (!$lockStoredContact || !ValidationService::isFilledContactValue($process->telephone)) {
+            $process->telephone = $data->telephone ?? $process->telephone ?? null;
+        }
+        if (
+            $data->customTextfield !== null
+            && (!$lockStoredContact || !ValidationService::isFilledContactValue($process->customTextfield))
+        ) {
             $process->customTextfield = ProcessPlainText::normalize($data->customTextfield);
         }
-        if ($data->customTextfield2 !== null) {
+        if (
+            $data->customTextfield2 !== null
+            && (!$lockStoredContact || !ValidationService::isFilledContactValue($process->customTextfield2))
+        ) {
             $process->customTextfield2 = ProcessPlainText::normalize($data->customTextfield2);
         }
         return $process;
+    }
+
+    private function writeFamilyNameIfAllowed(
+        ThinnedProcess $process,
+        object $data,
+        bool $lockStoredContact
+    ): void {
+        if (
+            !$lockStoredContact
+            || !ValidationService::isFilledContactValue($process->familyName)
+            || ValidationService::isSameOrCompletedFamilyName($process->familyName, $data->familyName ?? null)
+        ) {
+            $process->familyName = $data->familyName ?? $process->familyName ?? null;
+        }
     }
 
     private function saveProcessUpdate(ThinnedProcess $process, ?AuthenticatedUser $authenticatedUser): ThinnedProcess|array

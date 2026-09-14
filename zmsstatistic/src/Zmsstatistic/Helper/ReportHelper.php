@@ -7,7 +7,7 @@ use DateTimeImmutable;
 
 class ReportHelper
 {
-    public static function withMaxAndAverage($entity, string $targetKey)
+    public static function withMaxAndAverage(mixed $entity, string $targetKey): mixed
     {
         foreach ($entity->data as $date => $dateItems) {
             $maxima = 0;
@@ -30,7 +30,7 @@ class ReportHelper
         return $entity;
     }
 
-    public static function withTotalCustomers($entity)
+    public static function withTotalCustomers(mixed $entity): mixed
     {
         foreach ($entity->data as $dateKey => $dateItems) {
             if (!is_array($dateItems)) {
@@ -67,7 +67,7 @@ class ReportHelper
         return $entity;
     }
 
-    public static function withGlobalMaxAndAverage($entity, string $targetKey)
+    public static function withGlobalMaxAndAverage(mixed $entity, string $targetKey): mixed
     {
         $maxima = 0;
         $total  = 0;
@@ -110,18 +110,23 @@ class ReportHelper
         return $entity;
     }
 
-    public static function formatTimeValue($value)
+    /**
+     * Format minutes as mm:ss, rounding the full duration to the nearest second.
+     * Same rule as the Twig formatMinutesToTime macro, including its string cast
+     * via |replace, which changes some .5-second floats (e.g. 3:27 vs 3:28).
+     */
+    public static function formatTimeValue(mixed $value): mixed
     {
         if (!is_numeric($value)) {
             return $value;
         }
-        $minutes = floor($value);
-        $seconds = round(($value - $minutes) * 60);
-        if ($seconds >= 60) {
-            $minutes += 1;
-            $seconds = 0;
+        $totalMinutes = (float) str_replace(',', '.', (string) $value);
+        $totalSeconds = (int) round($totalMinutes * 60);
+        if ($totalSeconds <= 0) {
+            return '00:00';
         }
-        return sprintf('%02d:%02d', $minutes, $seconds);
+
+        return sprintf('%02d:%02d', intdiv($totalSeconds, 60), $totalSeconds % 60);
     }
 
     /**
@@ -145,7 +150,7 @@ class ReportHelper
     /**
      * Workstation scope id when the user has selected a default location, otherwise null.
      */
-    public function getWorkstationScopeId($workstation): ?int
+    public function getWorkstationScopeId(mixed $workstation): ?int
     {
         $scopeId = (int) ($workstation->scope['id'] ?? 0);
 
@@ -169,7 +174,10 @@ class ReportHelper
      */
     public function extractDateRange(?string $fromDate, ?string $toDate): ?array
     {
-        if ($fromDate && $toDate && $this->isValidDateFormat($fromDate) && $this->isValidDateFormat($toDate)) {
+        if (
+            self::hasText($fromDate) && self::hasText($toDate)
+            && $this->isValidDateFormat($fromDate) && $this->isValidDateFormat($toDate)
+        ) {
             return [
                 'from' => $fromDate,
                 'to' => $toDate
@@ -225,5 +233,29 @@ class ReportHelper
             'from' => $yearFrom->format('Y-m-d'),
             'to' => $yearTo->format('Y-m-d'),
         ];
+    }
+
+    /**
+     * @psalm-assert-if-true non-empty-array $value
+     */
+    public static function hasValues(?array $value): bool
+    {
+        return $value !== null && $value !== [];
+    }
+
+    /**
+     * @psalm-assert-if-true non-empty-string $value
+     */
+    public static function hasText(?string $value): bool
+    {
+        return $value !== null && $value !== '';
+    }
+
+    /**
+     * @psalm-assert-if-true non-empty-string $period
+     */
+    public static function hasNamedPeriod(?string $period): bool
+    {
+        return $period !== null && $period !== '' && $period !== '_';
     }
 }

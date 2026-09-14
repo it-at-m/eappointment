@@ -27,12 +27,12 @@ class ConditionBuilder
     /**
      * Adds an AND condition into the builder
      *
-     * @param   string|\Closure     $field              Fieldname|callback for group
+     * @param   string|\Closure|ExpressionInterface     $field              Fieldname|callback for group
      * @param   string              $operator           Operator (=, !=, <>, <= etc)
      * @param   mixed               $value              Value to test against
      * @return  $this
      */
-    public function andWith($field, $operator = null, $value = null)
+    public function andWith(string|\Closure|ExpressionInterface $field, $operator = null, $value = null)
     {
         $this->addCondition('AND', $field, $operator, $value);
         return $this;
@@ -41,12 +41,12 @@ class ConditionBuilder
     /**
      * Adds an OR condition into the builder
      *
-     * @param   string|\Closure     $field              Fieldname|callback for group
+     * @param   string|\Closure|ExpressionInterface     $field              Fieldname|callback for group
      * @param   string              $operator           Operator (=, !=, <>, <= etc)
      * @param   mixed               $value              Value to test against
      * @return  $this
      */
-    public function orWith($field, $operator = null, $value = null)
+    public function orWith(string|\Closure|ExpressionInterface $field, $operator = null, $value = null)
     {
         $this->addCondition('OR', $field, $operator, $value);
         return $this;
@@ -56,12 +56,12 @@ class ConditionBuilder
      * Adds the condition into the family we're building.
      *
      * @param   string              $join               AND or OR
-     * @param   string|\Closure     $field              Fieldname|callback for group
+     * @param   string|\Closure|ExpressionInterface     $field              Fieldname|callback for group
      * @param   string              $operator           Operator (=, !=, <>, <= etc)
      * @param   mixed               $value              Value to test against
      * @return  $this               $this on set, array on get
      */
-    protected function addCondition($join, $field, $operator, $value)
+    protected function addCondition($join, string|\Closure|ExpressionInterface $field, $operator, $value)
     {
         if ($field instanceof \Closure) {
             // Return and merge the result of these queries
