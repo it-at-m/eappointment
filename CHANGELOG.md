@@ -1,3 +1,55 @@
+## Release Muc-48 (14.09.2026)
+                            
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1397'>ZMSKVR-1397</a>] -         UI Bug Wartezeit Broken Render bei Abbrechen und Wiederaufnahme von Terminen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1424'>ZMSKVR-1424</a>] -         Offene Aufrufe werden nach erneutem Aufruf manchmal nicht mehr geladen (Tabelle / „Aufgerufene Termine&quot;)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1427'>ZMSKVR-1427</a>] -         E-Kiosk friert ein – manueller Neustart erforderlich
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1571'>ZMSKVR-1571</a>] -         Fehlende Ortsangaben im Bürgerfrontend auf der Übersichtsseite bei Bürgerlogin und bei Zurück zum Kontaktformular
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1596'>ZMSKVR-1596</a>] -         Eine Ergebniszeile statt Slot-Ergebniszeilen bei Suche nach Terminnummer (Display Number)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1597'>ZMSKVR-1597</a>] -         Dienstleistungslink in Absagemail nicht korrekt
+</li>
+</ul>
+                                                                                                                                                                                                                                    
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-889'>ZMSKVR-889</a>] -         Betriebstabilität für die Wartezeitstatistik verbessern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1049'>ZMSKVR-1049</a>] -         Terminvarianten: Richtige Validierung bei interne Terminbuchung 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1191'>ZMSKVR-1191</a>] -         Proaktive Cache-Aufwärmung für SOURCE_CACHE_TTL implementieren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1385'>ZMSKVR-1385</a>] -         Bearbeitungszeit wird zurückgesetzt bei Klick auf anderen Warteschlangen-Kunden während laufender Bearbeitung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1393'>ZMSKVR-1393</a>] -         Freie Tage auf Behörden-Ebene entfernen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1497'>ZMSKVR-1497</a>] -         Rolle &quot;Benutzerverwaltung&quot;: Fehlermeldung beim Speichern eines Accounts ohne Standortauswahl
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1532'>ZMSKVR-1532</a>] -         Rolle Sachbearbeitung (Basis) &gt; Termine suchen und bearbeiten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1555'>ZMSKVR-1555</a>] -         Graph-Ansicht: Verbesserung der zeitlichen Orientierung z.B. durch Hervorhebung der Stunden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1559'>ZMSKVR-1559</a>] -         Rolle &quot;Sachbearbeitung Basis&quot;: &quot;Warteschlange aktualisieren&quot; ausblenden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1575'>ZMSKVR-1575</a>] -         „Mein Profil“ auf relevante Benutzerinformationen reduzieren und Fehlermeldung beheben
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1588'>ZMSKVR-1588</a>] -         Kompaktere Gesamtübersicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1589'>ZMSKVR-1589</a>] -         Zeiten ohne Öffnungszeiten deutlicher darstellen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1617'>ZMSKVR-1617</a>] -         Dienstleistungsstatistik: Tage ohne Nutzung ausblenden
+</li>
+</ul>
+                                                            
+
+
 ## Release Muc-47 (21.08.2026)
 
 <h2>        Bug
