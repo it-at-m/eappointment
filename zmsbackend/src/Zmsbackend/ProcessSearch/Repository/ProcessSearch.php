@@ -119,13 +119,18 @@ class ProcessSearch extends \BO\Zmsbackend\Process\Repository\Process
                 CASE
                     WHEN history.status = "completed" THEN "finished"
                     WHEN history.status = "missed" THEN "missed"
+                    WHEN history.status = "cancelled_citizen" THEN "deleted"
+                    WHEN history.status = "cancelled_staff" THEN "blocked"
                     ELSE NULL
                 END AS technical_status,
                 CASE
                     WHEN history.status = "completed" THEN "completed"
                     WHEN history.status = "missed" THEN "missed"
+                    WHEN history.status = "cancelled_citizen" THEN "cancelled_citizen"
+                    WHEN history.status = "cancelled_staff" THEN "cancelled_staff"
                     ELSE NULL
                 END AS appointment_status,
+                history.finalized_at AS finalized_at,
                 "history" AS source,
                 history.id AS source_record_id
             FROM process_search_history history
@@ -650,6 +655,8 @@ class ProcessSearch extends \BO\Zmsbackend\Process\Repository\Process
             'technical_status' => $mapping['status'],
 
             'appointment_status' => $mapping['appointmentStatus'],
+
+            'finalized_at' => self::expression('NULL'),
 
             'source' => $mapping['source'],
 
