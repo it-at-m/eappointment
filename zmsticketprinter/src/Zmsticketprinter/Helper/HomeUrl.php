@@ -13,11 +13,6 @@ use BO\Mellon\Validator;
 
 class HomeUrl
 {
-    /**
-     * check if new home url is requested, if not check if url exists in cookie,
-     * otherwise set current uri from request as new home url
-     *
-     **/
     public static function create(\Psr\Http\Message\RequestInterface $request)
     {
         $homeUrl = null;
@@ -33,10 +28,6 @@ class HomeUrl
         return $homeUrl;
     }
 
-    /**
-     * Drop rewrite PATH_INFO stuffed into the query string (no "="), e.g.
-     * /ticketprinter/scope/127/?/scope/127/&/scope/127/
-     */
     public static function sanitizeUrl(mixed $url): string
     {
         if (! is_string($url) || $url === '') {
