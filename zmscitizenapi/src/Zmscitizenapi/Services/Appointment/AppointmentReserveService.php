@@ -153,7 +153,7 @@ class AppointmentReserveService
     ): ThinnedProcess|array {
         $process->clients = [
             [
-                'email' => 'test@muenchen.de'
+                'email' => \App::getPlaceholderEmail()
             ]
         ];
         $reservedProcess = ZmsApiFacadeService::reserveTimeslot($process, $serviceIds, $serviceCounts);
