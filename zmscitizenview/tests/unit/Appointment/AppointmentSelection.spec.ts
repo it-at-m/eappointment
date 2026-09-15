@@ -2690,14 +2690,15 @@ describe("AppointmentSelection", () => {
       expect(wrapper.emitted("cancelReschedule")).toBeUndefined();
     });
 
-    it("shows back button that emits cancelReschedule when rebooking", async () => {
+    it("shows cancel button that emits cancelReschedule when rebooking", async () => {
       const wrapper = createWrapper({ props: { isRebooking: true } });
-      const backButton = wrapper.findAllComponents({ name: "MucButton" })[0];
+      const buttons = wrapper.findAllComponents({ name: "MucButton" });
+      const cancelButton = buttons[buttons.length - 1];
 
-      expect(backButton.text()).toBe("back");
-      expect(backButton.props("icon")).toBe("close");
+      expect(cancelButton.text()).toBe("cancelReschedule");
+      expect(cancelButton.props("icon")).toBe("close");
 
-      await backButton.trigger("click");
+      await cancelButton.trigger("click");
 
       expect(wrapper.emitted("cancelReschedule")).toHaveLength(1);
       expect(wrapper.emitted("back")).toBeUndefined();
