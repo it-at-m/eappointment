@@ -143,7 +143,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
             if ($scopeId < 1) {
                 App::$log->warning('availability_history skipped: missing scope_id', [
                     'action' => $action,
-                    'availability_id' => $availability->id ?? null,
+                    'availability_id' => $availability->id,
                 ]);
                 return;
             }
@@ -161,7 +161,7 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         } catch (\Throwable $exception) {
             App::$log->error('availability_history write failed', [
                 'action' => $action,
-                'availability_id' => $availability->id ?? null,
+                'availability_id' => $availability->id,
                 'exception' => $exception->getMessage(),
             ]);
         }

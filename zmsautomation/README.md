@@ -15,12 +15,12 @@ This module contains **API and UI tests** for ZMS using the ATAF (Test Automatio
 - `src/test/java/zms/ataf/`  
   - `zms/ataf/rest/steps/` - REST step definitions (REST Assured)  
   - `zms/ataf/ui/steps/` - UI step definitions (Selenium/ATAF web)  
-  - `zms/ataf/ui/pages/**` - Page objects for Admin, Statistik, Bürgeransicht, Mailinator  
+  - `zms/ataf/ui/pages/**` - Page objects for Admin, Statistik, zmscitizenview, Mailinator  
 - `src/test/resources/features/` - Cucumber feature files  
   - `rest/zmsapi/` - ZMS REST API features (legacy folder/tag name; targets `zmsbackend` at `/terminvereinbarung/api/2`). Categories use frontend subfolders (`booking/zmsadmin/`, `booking/zmsticketprinter/`, …) because zmsbackend is shared by the admin, ticketprinter, calldisplay and statistic frontends.  
   - `rest/zmscitizenapi/` - Citizen REST API features  
   - `ui/zmsadmin/` - Admin UI features  
-  - `ui/buergeransicht/` - Legacy eappointment citizen view UI features  
+  - `ui/buergeransicht/` - Archived Vue2 Bürgeransicht feature files (`@ignore`; no step definitions)  
   - `ui/zmsstatistic/` - Statistik UI features  
   - `ui/zmscitizenview/` - Citizen view UI (Service Finder + full booking E2E)  
   - `ui/zmsticketprinter/` - Ticketprinter / kiosk UI features (`booking/`, …)  
@@ -117,7 +117,6 @@ mvn test -Pataf-ui
 # optionally filter:
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@web"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsadmin"
-# mvn test -Pataf-ui -Dcucumber.filter.tags="@buergeransicht"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsstatistic"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmscitizenview"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsticketprinter"
@@ -192,8 +191,8 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
   - `@zmscitizenapi` - Citizen API tests (`features/rest/zmscitizenapi/**`)
 - **UI tags**
   - `@web` - All web UI tests
-  - `@zmsadmin` - Admin UI (`features/ui/zmsadmin/**`) and matching zmsbackend REST (`rest/zmsapi/**/zmsadmin/`)
-  - `@buergeransicht` - Legacy eappointment citizen view UI features (`features/ui/buergeransicht/**`)
+  - `@zmsadmin` - Admin UI features (`features/ui/zmsadmin/**`)
+  - `@buergeransicht` - Archived Vue2 Bürgeransicht features (`features/ui/buergeransicht/**`; `@ignore`, no glue)
   - `@zmsstatistic` - Statistik UI features (`features/ui/zmsstatistic/**`)
   - `@zmscitizenview` - Citizen view webcomponent UI (`features/ui/zmscitizenview/**`)
   - `@zmsticketprinter` - Ticketprinter / kiosk UI (`features/ui/zmsticketprinter/**`) and matching zmsbackend REST (`rest/zmsapi/**/zmsticketprinter/`)
@@ -230,8 +229,8 @@ Additional REST features (availability, offices-and-services, etc.) may be added
 #### Admin UI (`ui/zmsadmin/`)
 - Cucumber features for the Admin web UI (Terminadministration, Behörden & Standorte, Workview, etc.)
 
-#### Legacy Bürgeransicht UI (`ui/buergeransicht/`)
-- Features that automate the legacy eappointment Bürgeransicht frontend.
+#### Archived Bürgeransicht UI (`ui/buergeransicht/`)
+- Feature files for the retired Vue2 eappointment Bürgeransicht frontend. They remain as reference only (`@ignore`); page objects and step definitions have been removed.
 
 #### zmscitizenview UI (`ui/zmscitizenview/`)
 - `zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature` - zmscitizenview Ruppertstraße UI booking (Kalenderansicht); Ort = checkbox list or single-provider teaser; slot wait until **MucSpinner** (`.m-spinner-container`) cleared after day load + timeslot in DOM; `#provider-*` on reserve, preconfirm, confirm
