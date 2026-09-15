@@ -1,10 +1,8 @@
 #language: de
    
-# DISABLED: Legacy eappointment-buergeransicht frontend tests
-# These tests target the archived Vue2 citizen frontend (https://github.com/it-at-m/eappointment-buergeransicht)
-# which is likely not running in local development environments.
-# To enable these tests, ensure the old buergeransicht frontend is running at http://localhost:8082
-# and remove the @ignore tag from the scenario tags.
+# ARCHIVED: Legacy eappointment-buergeransicht frontend tests
+# These scenarios target the retired Vue2 citizen frontend (https://github.com/it-at-m/eappointment-buergeransicht).
+# Page objects and step definitions have been removed; kept as reference only.
 Funktionalität: Sachbearbeitung stellt den Terminbedarf fest
    
    	#Bürger bucht einen Termin, bestätigt ihn. SB öffnet seinen Arbeitsplatz und prüft die anstehende Termine. Die Sachbearbeitung sieht weiteren Terminbedarf beim Kunden und eröffnet deshalb für diesen Intern einen Termin im Terminvereinbarungssystem.
