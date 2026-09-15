@@ -212,16 +212,6 @@ class ValidationServiceTest extends TestCase
 
         $result = ValidationService::validateAppointmentUpdateFields(
             'John Doe',
-            'test@muenchen.de',
-            '+1234567890',
-            'Custom text',
-            'Another Custom text',
-            $scope
-        );
-        $this->assertEquals([ErrorMessages::get('invalidEmail')], $result['errors']);
-
-        $result = ValidationService::validateAppointmentUpdateFields(
-            'John Doe',
             \App::getPlaceholderEmail(),
             '+1234567890',
             'Custom text',
@@ -398,7 +388,7 @@ class ValidationServiceTest extends TestCase
     {
         $stored = new ThinnedProcess();
         $stored->familyName = 'Jane Doe';
-        $stored->email = 'test@muenchen.de';
+        $stored->email = \App::getPlaceholderEmail();
         $stored->telephone = '';
         $stored->customTextfield = '';
         $stored->customTextfield2 = null;
@@ -635,6 +625,6 @@ class ValidationServiceTest extends TestCase
         $this->assertFalse(ValidationService::isPlaceholderEmail(''));
         $this->assertFalse(ValidationService::isPlaceholderEmail('max.mustermann@example.com'));
         $this->assertFalse(ValidationService::isFilledEmail(\App::getPlaceholderEmail()));
-        $this->assertFalse(ValidationService::isFilledEmail('test@muenchen.de'));
+        $this->assertTrue(ValidationService::isFilledEmail('max.mustermann@example.com'));
     }
 }
