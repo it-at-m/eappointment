@@ -10,6 +10,7 @@ namespace BO\Zmsadmin;
 use BO\Mellon\Validator;
 use BO\Slim\Render;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use BO\Zmsadmin\Helper\ProcessFinishedHelper;
 use BO\Zmsentities\Exception\WorkstationMissingAssignedProcess;
 use BO\Zmsentities\Process;
@@ -34,6 +35,9 @@ class WorkstationProcessFinished extends BaseController
             throw new WorkstationMissingAssignedProcess();
         }
         $this->testProcess($workstation);
+        if (!$request instanceof ServerRequestInterface) {
+            throw new \LogicException('Expected a server request.');
+        }
         $input = $request->getParsedBody();
         $validator = $request->getAttribute('validator');
         $nextProcessId = $validator->getParameter('nextprocess')->isNumber()->getValue();
@@ -112,7 +116,7 @@ class WorkstationProcessFinished extends BaseController
         $process['status'] = ('pending' != $process['status']) ? 'finished' : $process['status'];
         \App::$http->readPostResult('/process/status/finished/', new Process($process))->getEntity();
         $redirectParams = [];
-        if ($nextProcessId) {
+        if ($nextProcessId !== null) {
             $redirectParams['calledprocess'] = $nextProcessId;
         }
         return Render::redirect(

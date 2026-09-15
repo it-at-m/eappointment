@@ -184,6 +184,36 @@ class ErrorMessages
             'errorType' => 'warning',
             'errorMessage' => 'customTextfield2 must be non-empty when required and at most 250 characters after normalization.'
         ],
+        'familyNameCannotBeChanged' => [
+            'errorCode' => 'familyNameCannotBeChanged',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorType' => 'warning',
+            'errorMessage' => 'familyName is already stored on this appointment and cannot be changed.'
+        ],
+        'emailCannotBeChanged' => [
+            'errorCode' => 'emailCannotBeChanged',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorType' => 'warning',
+            'errorMessage' => 'email is already stored on this appointment and cannot be changed.'
+        ],
+        'telephoneCannotBeChanged' => [
+            'errorCode' => 'telephoneCannotBeChanged',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorType' => 'warning',
+            'errorMessage' => 'telephone is already stored on this appointment and cannot be changed.'
+        ],
+        'customTextfieldCannotBeChanged' => [
+            'errorCode' => 'customTextfieldCannotBeChanged',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorType' => 'warning',
+            'errorMessage' => 'customTextfield is already stored on this appointment and cannot be changed.'
+        ],
+        'customTextfield2CannotBeChanged' => [
+            'errorCode' => 'customTextfield2CannotBeChanged',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorType' => 'warning',
+            'errorMessage' => 'customTextfield2 is already stored on this appointment and cannot be changed.'
+        ],
         'appointmentCanNotBeCanceled' => [
             'errorCode' => 'appointmentCanNotBeCanceled',
             'statusCode' => self::HTTP_NOT_ACCEPTABLE,
@@ -394,6 +424,12 @@ class ErrorMessages
             'errorCode' => 'preconfirmationExpired',
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorMessage' => 'Unfortunately, the time for activating your appointment has expired. Please schedule the appointment again.',
+            'errorType' => 'error'
+        ],
+        'placeholderEmailNotAllowed' => [
+            'errorCode' => 'placeholderEmailNotAllowed',
+            'statusCode' => self::HTTP_CONFLICT,
+            'errorMessage' => 'The appointment cannot be confirmed until a real email address has been provided.',
             'errorType' => 'error'
         ],
 

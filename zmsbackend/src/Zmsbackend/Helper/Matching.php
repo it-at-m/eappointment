@@ -58,6 +58,9 @@ class Matching
         }
 
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($process->getScopeId(), 1);
+        if (!$scope instanceof \BO\Zmsentities\Scope) {
+            throw new \BO\Zmsbackend\Scope\Exception\ScopeNotFound();
+        }
         $requestRelationList = (new \BO\Zmsbackend\RequestRelation\Service\RequestRelation())
             ->readListByProviderId($scope->getProviderId(), $scope->getSource());
 

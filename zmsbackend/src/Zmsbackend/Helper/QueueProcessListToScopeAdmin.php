@@ -55,8 +55,10 @@ class QueueProcessListToScopeAdmin
         }
     }
 
-    protected function writeListToQueue($scope, \BO\Zmsentities\Collection\ProcessList $processList): void
-    {
+    protected function writeListToQueue(
+        \BO\Zmsentities\Scope $scope,
+        \BO\Zmsentities\Collection\ProcessList $processList
+    ): void {
         $entity = (new \BO\Zmsentities\Mail())->toScopeAdminProcessList($processList, $scope, $this->dateTime);
         if (! (new \BO\Zmsbackend\Mail\Service\Mail())->writeInQueueWithDailyProcessList($scope, $entity)) {
             \App::$log->warning('Mail writing in queue not successful');

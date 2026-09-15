@@ -14,7 +14,7 @@ use Exception;
 
 class ReportWaitingService
 {
-    protected $hashset = [
+    protected array $hashset = [
         'waitingcount',
         'waitingtime',
         'waitingcalculated',
@@ -28,7 +28,7 @@ class ReportWaitingService
         'waytime_total',
     ];
 
-    protected $groupfields = [
+    protected array $groupfields = [
         'date',
         'hour'
     ];
@@ -42,7 +42,7 @@ class ReportWaitingService
             return null;
         }
 
-        if ($dateRange) {
+        if (ReportHelper::hasValues($dateRange)) {
             return $this->getExchangeWaitingForDateRange($scopeId, $dateRange);
         }
 
@@ -89,9 +89,11 @@ class ReportWaitingService
     public function getExchangeWaitingForPeriod(string $scopeId, string $period): mixed
     {
         try {
-            $exchangeWaiting = \App::$http
+            /** @var mixed $entity */
+            $entity = \App::http()
                 ->readGetResult('/warehouse/waitingscope/' . $scopeId . '/' . $period . '/')
-                ->getEntity()
+                ->getEntity();
+            $exchangeWaiting = $entity
                 ->toGrouped($this->groupfields, $this->hashset);
 
             $exchangeWaiting = ReportHelper::withTotalCustomers($exchangeWaiting);
@@ -126,7 +128,7 @@ class ReportWaitingService
     public function getWaitingPeriod(string $scopeId): mixed
     {
         try {
-            return \App::$http
+            return \App::http()
                 ->readGetResult('/warehouse/waitingscope/' . $scopeId . '/')
                 ->getEntity();
         } catch (Exception $exception) {
@@ -148,7 +150,7 @@ class ReportWaitingService
                 continue;
             }
             try {
-                $exchangeWaiting = \App::$http
+                $exchangeWaiting = \App::http()
                     ->readGetResult(
                         '/warehouse/waitingscope/' . $scopeId . '/' . $year . '/',
                         [
@@ -182,7 +184,7 @@ class ReportWaitingService
      * Create filtered exchange waiting with updated properties
      */
     private function createFilteredExchangeWaiting(
-        $exchangeWaitingBasic,
+        mixed $exchangeWaitingBasic,
         array $filteredData,
         string $fromDate,
         string $toDate
@@ -233,7 +235,7 @@ class ReportWaitingService
     ): array {
         $args['category'] = 'waitingscope';
 
-        if ($dateRange) {
+        if (ReportHelper::hasValues($dateRange)) {
             $args['period'] = $dateRange['from'] . '_' . $dateRange['to'];
         }
 

@@ -28,4 +28,10 @@ class Exception extends \Exception
             . ")";
         return $this;
     }
+
+    /** @psalm-api */
+    public function getValidator(): ?Valid
+    {
+        return $this->validator;
+    }
 }

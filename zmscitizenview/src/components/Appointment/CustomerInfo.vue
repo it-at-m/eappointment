@@ -77,80 +77,122 @@
   </h2>
   <form
     v-if="!isExpired"
+    ref="contactForm"
     class="m-form m-form--default"
   >
-    <muc-input
-      id="firstname"
-      v-model="customerData.firstName"
-      autocomplete="given-name"
-      :error-msg="errorDisplayFirstName"
-      :label="t('firstName')"
-      max="50"
-      required
-    />
-    <muc-input
-      id="lastname"
-      v-model="customerData.lastName"
-      autocomplete="family-name"
-      :error-msg="errorDisplayLastName"
-      :label="t('lastName')"
-      max="50"
-      required
-    />
-    <muc-input
-      id="mailaddress"
-      v-model="customerData.mailAddress"
-      autocomplete="email"
-      :error-msg="errorDisplayMailAddress"
-      :label="t('mailAddress')"
-      max="50"
-      required
-    />
-    <muc-input
+    <!--
+      TODO: use muc-input / muc-text-area disabled prop when muc-patternlab-vue
+      supports it. Today they have no disabled prop (fallthrough lands on a
+      wrapper div). A fieldset plus native disable actually locks the control.
+    -->
+    <fieldset
+      class="contact-lock"
+      data-contact-lock="firstname"
+      :disabled="lockFirstName"
+    >
+      <muc-input
+        id="firstname"
+        v-model="customerData.firstName"
+        autocomplete="given-name"
+        :error-msg="errorDisplayFirstName"
+        :label="t('firstName')"
+        max="50"
+        required
+      />
+    </fieldset>
+    <fieldset
+      class="contact-lock"
+      data-contact-lock="lastname"
+      :disabled="lockLastName"
+    >
+      <muc-input
+        id="lastname"
+        v-model="customerData.lastName"
+        autocomplete="family-name"
+        :error-msg="errorDisplayLastName"
+        :label="t('lastName')"
+        max="50"
+        required
+      />
+    </fieldset>
+    <fieldset
+      class="contact-lock"
+      data-contact-lock="mailaddress"
+      :disabled="lockMailAddress"
+    >
+      <muc-input
+        id="mailaddress"
+        v-model="customerData.mailAddress"
+        autocomplete="email"
+        :error-msg="errorDisplayMailAddress"
+        :label="t('mailAddress')"
+        max="50"
+        required
+      />
+    </fieldset>
+    <fieldset
       v-if="
         selectedProvider &&
         selectedProvider.scope &&
         selectedProvider.scope.telephoneActivated
       "
-      id="telephonenumber"
-      v-model="customerData.telephoneNumber"
-      autocomplete="tel"
-      :error-msg="errorDisplayTelephoneNumber"
-      :label="t('telephoneNumber')"
-      :required="selectedProvider.scope.telephoneRequired"
-      max="50"
-      placeholder="+491511234567"
-    />
-    <muc-text-area
+      class="contact-lock"
+      data-contact-lock="telephonenumber"
+      :disabled="lockTelephoneNumber"
+    >
+      <muc-input
+        id="telephonenumber"
+        v-model="customerData.telephoneNumber"
+        autocomplete="tel"
+        :error-msg="errorDisplayTelephoneNumber"
+        :label="t('telephoneNumber')"
+        :required="selectedProvider.scope.telephoneRequired"
+        max="50"
+        placeholder="+491511234567"
+      />
+    </fieldset>
+    <fieldset
       v-if="
         selectedProvider &&
         selectedProvider.scope &&
         selectedProvider.scope.customTextfieldActivated
       "
-      id="remarks"
-      v-model="customerData.customTextfield"
-      :error-msg="errorDisplayCustomTextfield"
-      :label="selectedProvider.scope.customTextfieldLabel ?? undefined"
-      :required="selectedProvider.scope.customTextfieldRequired ?? undefined"
-      :maxlength="MAX_CUSTOM_TEXT_CHARS"
-      :rows="textfieldRows1"
-      @input="handleInput1"
-    />
-    <muc-text-area
+      class="contact-lock"
+      data-contact-lock="remarks"
+      :disabled="lockCustomTextfield"
+    >
+      <muc-text-area
+        id="remarks"
+        v-model="customerData.customTextfield"
+        :error-msg="errorDisplayCustomTextfield"
+        :label="selectedProvider.scope.customTextfieldLabel ?? undefined"
+        :required="selectedProvider.scope.customTextfieldRequired ?? undefined"
+        :maxlength="MAX_CUSTOM_TEXT_CHARS"
+        :rows="textfieldRows1"
+        @input="handleInput1"
+      />
+    </fieldset>
+    <fieldset
       v-if="
         selectedProvider &&
         selectedProvider.scope &&
         selectedProvider.scope.customTextfield2Activated
       "
-      id="remarks2"
-      v-model="customerData.customTextfield2"
-      :error-msg="errorDisplayCustomTextfield2"
-      :label="selectedProvider.scope.customTextfield2Label ?? undefined"
-      :required="selectedProvider.scope.customTextfield2Required ?? undefined"
-      :maxlength="MAX_CUSTOM_TEXT_CHARS"
-      :rows="textfieldRows2"
-      @input="handleInput2"
-    />
+      class="contact-lock"
+      data-contact-lock="remarks2"
+      :disabled="lockCustomTextfield2"
+    >
+      <muc-text-area
+        id="remarks2"
+        v-model="customerData.customTextfield2"
+        :error-msg="errorDisplayCustomTextfield2"
+        :label="selectedProvider.scope.customTextfield2Label ?? undefined"
+        :required="selectedProvider.scope.customTextfield2Required ?? undefined"
+        :maxlength="MAX_CUSTOM_TEXT_CHARS"
+        :rows="textfieldRows2"
+        @input="handleInput2"
+      />
+    </fieldset>
   </form>
   <div class="m-button-group">
     <muc-button
@@ -175,6 +217,7 @@
 </template>
 
 <script setup lang="ts">
+import type { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import type { SelectedTimeslotProvider } from "@/types/ProvideInjectTypes";
 import type { Ref } from "vue";
 
@@ -194,6 +237,10 @@ import {
   normalizePlainText,
   plainTextCharCount,
 } from "@/utils/processPlainText";
+import {
+  getContactFieldLocks,
+  useNativeContactLocks,
+} from "@/utils/rebookingContact";
 import { countLines, handleInput } from "@/utils/textfieldRows";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
@@ -217,6 +264,8 @@ const handleInput2 = (event: Event) => {
 const props = defineProps<{
   globalState: GlobalState;
   showLoginOption: boolean;
+  isRebooking?: boolean;
+  sourceAppointment?: AppointmentDTO | null;
   loginFailed?: boolean;
   t: (key: string, params?: Record<string, unknown>) => string;
 }>();
@@ -230,6 +279,28 @@ const { customerData } = inject<CustomerDataProvider>(
 const { selectedProvider } = inject<SelectedTimeslotProvider>(
   "selectedTimeslot"
 ) as SelectedTimeslotProvider;
+
+const contactLocks = computed(() =>
+  getContactFieldLocks(props.isRebooking, props.sourceAppointment)
+);
+const lockFirstName = computed(() => contactLocks.value.firstName);
+const lockLastName = computed(() => contactLocks.value.lastName);
+const lockMailAddress = computed(() => contactLocks.value.mailAddress);
+const lockTelephoneNumber = computed(() => contactLocks.value.telephoneNumber);
+const lockCustomTextfield = computed(() => contactLocks.value.customTextfield);
+const lockCustomTextfield2 = computed(
+  () => contactLocks.value.customTextfield2
+);
+
+const contactForm = ref<HTMLFormElement | null>(null);
+useNativeContactLocks(contactForm, [
+  lockFirstName,
+  lockLastName,
+  lockMailAddress,
+  lockTelephoneNumber,
+  lockCustomTextfield,
+  lockCustomTextfield2,
+]);
 
 const loadingStates = inject("loadingStates", {
   isReservingAppointment: ref(false),
@@ -422,6 +493,26 @@ const previousStep = () => emit("back");
 
 .m-button-group {
   margin-top: 48px;
+}
+
+.contact-lock {
+  border: 0;
+  margin: 0;
+  min-inline-size: 0;
+  padding: 0;
+}
+
+.contact-lock:disabled {
+  pointer-events: none;
+
+  :deep(.m-input),
+  :deep(.m-textarea),
+  :deep(input),
+  :deep(textarea) {
+    background-color: var(--color-neutral-100, #f2f2f2) !important;
+    color: var(--color-neutral-600, #6d6d6d) !important;
+    cursor: not-allowed !important;
+  }
 }
 
 .login-option-block--with-error {

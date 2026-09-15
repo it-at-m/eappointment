@@ -37,23 +37,33 @@ class QuickLogin extends BaseController
             'password' => $loginData['password']['value']
         ));
 
+        $workstation = null;
         try {
-            $workstation = \App::$http
+            /** @var mixed $workstation */
+            $workstation = \App::http()
                 ->readPostResult('/workstation/login/', $userAccount)->getEntity();
         } catch (Exception $exception) {
             //ignore double login exception on quick login
             if ($exception->template == 'BO\Zmsbackend\Useraccount\Exception\UserAlreadyLoggedIn') {
                 $workstation = new Workstation($exception->data);
+            } else {
+                throw $exception;
             }
         }
 
-        \BO\Zmsclient\Auth::setKey($workstation->authkey, time() + \App::SESSION_DURATION);
+        /** @var mixed $workstation */
+        $workstation = $workstation;
+        /** @var mixed $authkey */
+        $authkey = $workstation->authkey;
+        \BO\Zmsclient\Auth::setKey($authkey, time() + \App::SESSION_DURATION);
         $workstation->scope = new Scope(array('id' => $loginData['scope']['value']));
         $workstation->hint = $loginData['hint']['value'];
         $workstation->name = $loginData['workstation']['value'];
-        \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
+        \App::http()->readPostResult('/workstation/', $workstation)->getEntity();
+        /** @var mixed $request */
         $basePath = $request->getBasePath();
 
+        /** @var \BO\Slim\Response $response */
         return $response->withRedirect($basePath . '/' . trim($loginData['redirectUrl']['value'], "/"));
     }
 }
