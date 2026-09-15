@@ -97,7 +97,7 @@ class AppointmentUpdateServiceTest extends TestCase
                 '$schema' => 'https://schema.berlin.de/queuemanagement/process.json',
                 'id' => 101002,
                 'authKey' => 'fb43',
-                'status' => 'confirmed',
+                'status' => 'reserved',
                 'appointments' => [
                     [
                         'date' => 1724907600,
@@ -128,6 +128,9 @@ class AppointmentUpdateServiceTest extends TestCase
                             'telephoneRequired' => true
                         ]
                     ]
+                ],
+                'queue' => [
+                    'status' => 'reserved'
                 ],
                 'clients' => [
                     [
@@ -295,7 +298,7 @@ class AppointmentUpdateServiceTest extends TestCase
     {
         $process = new ThinnedProcess();
         $process->familyName = '';
-        $process->email = 'test@muenchen.de';
+        $process->email = \App::getPlaceholderEmail();
         $process->customTextfield = '';
 
         $data = (object)[
@@ -319,7 +322,7 @@ class AppointmentUpdateServiceTest extends TestCase
     {
         $process = new ThinnedProcess();
         $process->familyName = 'Jane Doe';
-        $process->email = 'test@muenchen.de';
+        $process->email = \App::getPlaceholderEmail();
         $process->customTextfield = 'test@muenchen.de';
 
         $data = (object)[

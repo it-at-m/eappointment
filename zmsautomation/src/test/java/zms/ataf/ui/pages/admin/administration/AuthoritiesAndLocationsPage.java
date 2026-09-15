@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -285,13 +286,31 @@ public void saveLocationChanges() {
     public void selectOpeningHoursType(String type) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to select opening hours type \"" + type + "\"");
-        selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "//select[@id='AvDayType']", LocatorType.XPATH, type);
+        selectInOpenedAccordion("AvDayType", type);
     }
 
     public void selectSeries(String series) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to select series \"" + series + "\"");
-        selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "//select[@id='AvDaySeries']", LocatorType.XPATH, series);
+        selectInOpenedAccordion("AvDaySeries", series);
+    }
+
+    /**
+     * Several accordions reuse the same select ids ({@code AvDayType}, {@code AvDaySeries}).
+     * Always target the expanded panel so we do not rewrite an existing Terminkunden row.
+     */
+    private void selectInOpenedAccordion(String selectId, String visibleText) {
+        String xpath = "(//div[contains(@class,'accordion__panel') and contains(@class,'opened')]"
+                + "//select[@id='" + selectId + "'])[last()]";
+        WebElement selectEl = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(By.xpath(xpath)));
+        Select select = new Select(selectEl);
+        String current = select.getFirstSelectedOption().getText().trim();
+        if (current.equals(visibleText)) {
+            ScenarioLogManager.getLogger().info("Select #" + selectId + " is already \"" + visibleText + "\"");
+            return;
+        }
+        select.selectByVisibleText(visibleText);
     }
 
     public void selectWeekDay(String weekDay) {
@@ -344,6 +363,12 @@ public void saveLocationChanges() {
     }
 
     private WebElement findVisibleInputById(String id) {
+        String inOpenedAccordion = "(//div[contains(@class,'accordion__panel') and contains(@class,'opened')]"
+                + "//input[@id='" + id + "'])[last()]";
+        List<WebElement> opened = DRIVER.findElements(By.xpath(inOpenedAccordion));
+        if (!opened.isEmpty() && opened.get(0).isDisplayed()) {
+            return opened.get(0);
+        }
         return DRIVER.findElements(By.id(id)).stream()
                 .filter(element -> element.isDisplayed())
                 .filter(element -> element.getRect().getHeight() > 0 && element.getRect().getWidth() > 0)
@@ -453,6 +478,48 @@ public void saveLocationChanges() {
         CONTEXT.set();
         String trashXpath = "//table[contains(@class,'table--base')]//tr[.//td[contains(., '" + note + "')]]//a[.//i[contains(@class,'fa-trash-alt')]]";
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, trashXpath, LocatorType.XPATH, false);
+        confirmOpeningHoursDeleteLightbox();
+    }
+
+    /**
+     * Deletes every saved opening-hours row whose Typ column matches {@code type}
+     * (e.g. {@code Spontankunden}). The lightbox DELETE is persisted immediately.
+     */
+    public void deleteOpeningHoursOfType(String type) {
+        CONTEXT.set();
+        CONTEXT.waitForSpinners();
+        ScenarioLogManager.getLogger().info("Trying to delete opening hours of type \"" + type + "\"...");
+        By trash = By.xpath("//table[contains(@class,'table--base')]//tr[td[normalize-space()='" + type
+                + "']]//a[.//i[contains(@class,'fa-trash-alt')]]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(trash));
+        } catch (TimeoutException e) {
+            Assert.fail("No opening-hours row of type \"" + type + "\" to delete", e);
+        }
+        int deleted = 0;
+        while (true) {
+            List<WebElement> icons = DRIVER.findElements(trash);
+            if (icons.isEmpty()) {
+                break;
+            }
+            int remaining = icons.size();
+            wait.until(ExpectedConditions.elementToBeClickable(trash)).click();
+            confirmOpeningHoursDeleteLightbox();
+            CONTEXT.waitForSpinners();
+            wait.until(driver -> {
+                try {
+                    return driver.findElements(trash).size() < remaining;
+                } catch (StaleElementReferenceException e) {
+                    return false;
+                }
+            });
+            deleted++;
+        }
+        Assert.assertTrue(deleted > 0, "No opening-hours row of type \"" + type + "\" to delete");
+    }
+
+    private void confirmOpeningHoursDeleteLightbox() {
         By confirmButton = By.xpath("//div[contains(@class,'lightbox__content')]//a[@data-action-ok]");
         WebElement confirmBtn = new WebDriverWait(DRIVER, Duration.ofSeconds(10))
                 .until(ExpectedConditions.visibilityOfElementLocated(confirmButton));

@@ -212,16 +212,25 @@ class ValidationServiceTest extends TestCase
 
         $result = ValidationService::validateAppointmentUpdateFields(
             'John Doe',
-            'test@muenchen.de',
+            \App::getPlaceholderEmail(),
             '+1234567890',
             'Custom text',
             'Another Custom text',
             $scope
         );
-        $this->assertContains(
-            ErrorMessages::get('invalidEmail'),
-            $result['errors']
+        $this->assertEquals([ErrorMessages::get('invalidEmail')], $result['errors']);
+
+        $optionalEmailScope = clone $scope;
+        $optionalEmailScope->emailRequired = false;
+        $result = ValidationService::validateAppointmentUpdateFields(
+            'John Doe',
+            \App::getPlaceholderEmail(),
+            '+1234567890',
+            'Custom text',
+            'Another Custom text',
+            $optionalEmailScope
         );
+        $this->assertEquals([ErrorMessages::get('invalidEmail')], $result['errors']);
     
         $result = ValidationService::validateAppointmentUpdateFields(
             'John Doe',
@@ -379,7 +388,7 @@ class ValidationServiceTest extends TestCase
     {
         $stored = new ThinnedProcess();
         $stored->familyName = 'Jane Doe';
-        $stored->email = 'test@muenchen.de';
+        $stored->email = \App::getPlaceholderEmail();
         $stored->telephone = '';
         $stored->customTextfield = '';
         $stored->customTextfield2 = null;
@@ -567,5 +576,55 @@ class ValidationServiceTest extends TestCase
 
         // Test maximum allowed service count
         $this->assertEmpty(ValidationService::validateServiceArrays([1], [25]));
+    }
+
+    public function testValidateAppointmentConfirm(): void
+    {
+        $preconfirmed = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'preconfirmed');
+        $this->assertEmpty(ValidationService::validateAppointmentConfirm($preconfirmed, null)['errors']);
+
+        $reservedLoggedIn = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'reserved');
+        $this->assertEmpty(ValidationService::validateAppointmentConfirm($reservedLoggedIn, 'ext-1')['errors']);
+
+        $reservedGuest = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'reserved');
+        $this->assertContains(
+            ErrorMessages::get('processNotPreconfirmedAnymore'),
+            ValidationService::validateAppointmentConfirm($reservedGuest, null)['errors']
+        );
+
+        $placeholder = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: \App::getPlaceholderEmail(), status: 'preconfirmed');
+        $this->assertContains(
+            ErrorMessages::get('placeholderEmailNotAllowed'),
+            ValidationService::validateAppointmentConfirm($placeholder, null)['errors']
+        );
+    }
+
+    public function testValidateAppointmentReservedStatusAndPreconfirm(): void
+    {
+        $reserved = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'reserved');
+        $this->assertEmpty(ValidationService::validateAppointmentReservedStatus($reserved)['errors']);
+        $this->assertEmpty(ValidationService::validateAppointmentPreconfirm($reserved)['errors']);
+
+        $confirmed = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'confirmed');
+        $this->assertContains(
+            ErrorMessages::get('processNotReservedAnymore'),
+            ValidationService::validateAppointmentReservedStatus($confirmed)['errors']
+        );
+
+        $placeholder = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: \App::getPlaceholderEmail(), status: 'reserved');
+        $this->assertContains(
+            ErrorMessages::get('placeholderEmailNotAllowed'),
+            ValidationService::validateAppointmentPreconfirm($placeholder)['errors']
+        );
+    }
+
+    public function testIsPlaceholderEmail(): void
+    {
+        $this->assertTrue(ValidationService::isPlaceholderEmail(\App::getPlaceholderEmail()));
+        $this->assertFalse(ValidationService::isPlaceholderEmail(null));
+        $this->assertFalse(ValidationService::isPlaceholderEmail(''));
+        $this->assertFalse(ValidationService::isPlaceholderEmail('max.mustermann@example.com'));
+        $this->assertFalse(ValidationService::isFilledEmail(\App::getPlaceholderEmail()));
+        $this->assertTrue(ValidationService::isFilledEmail('max.mustermann@example.com'));
     }
 }

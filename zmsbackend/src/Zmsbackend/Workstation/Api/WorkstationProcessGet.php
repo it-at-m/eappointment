@@ -8,7 +8,6 @@
 namespace BO\Zmsbackend\Workstation\Api;
 
 use BO\Slim\Render;
-use BO\Zmsbackend\Process\Service\Process;
 
 class WorkstationProcessGet extends \BO\Zmsbackend\Api\BaseController
 {
