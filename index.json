@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-15T14:35:05.690Z",
+  "publishedAt": "2026-09-15T14:55:19.686Z",
   "branches": [
     {
       "name": "next",
@@ -18,6 +18,12 @@
       "slug": "bugfix-zmskvr-167-ticketprinter-missing-scope-ids",
       "runId": "34524994393",
       "runStartedAt": "2026-09-10T20:12:39Z"
+    },
+    {
+      "name": "check-surfire-dependency",
+      "slug": "check-surfire-dependency",
+      "runId": "34983906121",
+      "runStartedAt": "2026-09-15T14:46:25Z"
     },
     {
       "name": "chore-replace-10503-with-10313237",
