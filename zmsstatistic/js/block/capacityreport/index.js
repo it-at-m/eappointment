@@ -11,6 +11,7 @@ class View extends BaseView {
         this.chart = null;
         this.chartValueMode = 'slots';
         this.chartChannelMode = 'total';
+        this.chartGranularity = 'day';
         this.chartHideEmptySlots = true;
         this.autoRefreshIntervalMs = 0;
         this.autoRefreshTimer = null;
@@ -60,6 +61,10 @@ class View extends BaseView {
         this.$main.on('click', '.report-board--chart-sparse', (ev) => {
             ev.preventDefault();
             this.chartController.toggleSparseTimeline();
+        });
+        this.$main.on('click', '.report-board--chart-hourly', (ev) => {
+            ev.preventDefault();
+            this.chartController.toggleGranularity();
         });
     }
 }

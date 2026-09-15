@@ -55,29 +55,38 @@ class ReportCapacityIndex extends BaseController
         $exchangeCapacity = $reportCapacityService->getExchangeCapacityData($scopeId, $dateRange, $args);
         $exchangeCapacityChart = null;
         $exchangeCapacityChartSparse = null;
+        $exchangeCapacityHourly = null;
+        $exchangeCapacityChartHourly = null;
+        $exchangeCapacityChartSparseHourly = null;
 
         if ($exchangeCapacity instanceof Exchange) {
             $period = $args['period'] ?? null;
-            $exchangeCapacityChartSparse = $reportCapacityService->buildSparseChartExchange(
+            $displayExchanges = $reportCapacityService->buildCapacityDisplayExchanges(
                 $exchangeCapacity,
                 $dateRange,
                 $period
             );
-            $exchangeCapacityChart = $reportCapacityService->buildChartExchange(
-                $exchangeCapacity,
-                $dateRange,
-                $period
-            );
+            $exchangeCapacity = $displayExchanges['table'];
+            $exchangeCapacityChartSparse = $displayExchanges['chartSparse'];
+            $exchangeCapacityChart = $displayExchanges['chartFull'];
+            $exchangeCapacityHourly = $displayExchanges['hourlyTable'];
+            $exchangeCapacityChartSparseHourly = $displayExchanges['hourlyChartSparse'];
+            $exchangeCapacityChartHourly = $displayExchanges['hourlyChartFull'];
         }
 
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
+            $granularity = $validator->getParameter('granularity')->isString()->getValue();
+            $downloadExchange = $exchangeCapacityHourly !== null && $granularity === 'hour'
+                ? $exchangeCapacityHourly
+                : $exchangeCapacity;
+
             return $this->handleDownloadRequest(
                 $request,
                 $response,
                 $args,
                 $scopeId,
-                $exchangeCapacity,
+                $downloadExchange,
                 $dateRange,
                 $selectedScopes,
                 $reportCapacityService
@@ -102,7 +111,10 @@ class ReportCapacityIndex extends BaseController
             $exchangeCapacityChartSparse,
             $selectedScopes,
             $scopeDateBounds,
-            $scopeSlotTimeHint
+            $scopeSlotTimeHint,
+            $exchangeCapacityHourly,
+            $exchangeCapacityChartHourly,
+            $exchangeCapacityChartSparseHourly
         );
     }
 
@@ -155,7 +167,10 @@ class ReportCapacityIndex extends BaseController
         Exchange|null $exchangeCapacityChartSparse,
         array $selectedScopes = [],
         array $scopeDateBounds = [],
-        ?string $scopeSlotTimeHint = null
+        ?string $scopeSlotTimeHint = null,
+        Exchange|null $exchangeCapacityHourly = null,
+        Exchange|null $exchangeCapacityChartHourly = null,
+        Exchange|null $exchangeCapacityChartSparseHourly = null
     ): ResponseInterface {
         return Render::withHtml(
             $response,
@@ -174,6 +189,9 @@ class ReportCapacityIndex extends BaseController
                 'exchangeCapacity' => $exchangeCapacity,
                 'exchangeCapacityChart' => $exchangeCapacityChart,
                 'exchangeCapacityChartSparse' => $exchangeCapacityChartSparse,
+                'exchangeCapacityHourly' => $exchangeCapacityHourly,
+                'exchangeCapacityChartHourly' => $exchangeCapacityChartHourly,
+                'exchangeCapacityChartSparseHourly' => $exchangeCapacityChartSparseHourly,
                 'source' => ['entity' => 'CapacityIndex'],
                 'selectedScopeIds' => $selectedScopes,
                 'scopeSlotTimeHint' => $scopeSlotTimeHint,
