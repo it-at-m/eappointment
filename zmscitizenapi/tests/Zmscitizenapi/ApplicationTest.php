@@ -174,6 +174,17 @@ class ApplicationTest extends TestCase
         $this->assertEquals('', Application::getIpBlacklist());
     }
 
+    public function testInitializePlaceholderEmail(): void
+    {
+        putenv('ZMS_CITIZENAPI_PLACEHOLDER_EMAIL=noreply@placeholder.invalid');
+        Application::initialize();
+        $this->assertEquals('noreply@placeholder.invalid', Application::getPlaceholderEmail());
+
+        putenv('ZMS_CITIZENAPI_PLACEHOLDER_EMAIL');
+        Application::initialize();
+        $this->assertEquals(Application::DEFAULT_PLACEHOLDER_EMAIL, Application::getPlaceholderEmail());
+    }
+
     protected function tearDown(): void
     {
         parent::tearDown();
@@ -214,6 +225,7 @@ class ApplicationTest extends TestCase
         putenv('MAX_STRING_LENGTH');
         putenv('MAX_RECURSION_DEPTH');
         putenv('IP_BLACKLIST');
+        putenv('ZMS_CITIZENAPI_PLACEHOLDER_EMAIL');
     }
 
     private function removeDirectory(string $dir): void

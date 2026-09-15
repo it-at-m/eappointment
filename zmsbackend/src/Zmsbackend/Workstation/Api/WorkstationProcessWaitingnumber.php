@@ -9,7 +9,6 @@ namespace BO\Zmsbackend\Workstation\Api;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
-use BO\Zmsbackend\Process\Service\ProcessStatusQueued;
 
 /**
  * @SuppressWarnings(Coupling)
