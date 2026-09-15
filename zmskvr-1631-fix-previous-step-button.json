@@ -1,10 +1,10 @@
 {
   "branch": "zmskvr-1631-fix-previous-step-button",
   "branchSlug": "zmskvr-1631-fix-previous-step-button",
-  "runId": "34581151887",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34581151887",
-  "runStartedAt": "2026-09-11T08:50:19Z",
-  "publishedAt": "2026-09-11T09:23:02.528Z",
+  "runId": "34966543004",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34966543004",
+  "runStartedAt": "2026-09-15T12:02:05Z",
+  "publishedAt": "2026-09-15T12:29:57.881Z",
   "features": {
     "feature-ui-zmscitizenview-zmskvr-1046-booking-ruppertstrasse-shared-booking-ausbildung": {
       "status": "passed",
@@ -47,36 +47,45 @@
       "shard": "zmscitizenview",
       "browser": "chrome",
       "rel": "ui/zmscitizenview/booking/zmskvr-1571_scheidplatz_contact_location_back_login.feature",
-      "runId": "34581151887",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34581151887",
-      "runStartedAt": "2026-09-11T08:50:19Z"
+      "runId": "34966543004",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34966543004",
+      "runStartedAt": "2026-09-15T12:02:05Z"
     },
     "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-1046-booking-ruppertstrasse-shared-booking-ausbildung": {
       "status": "passed",
       "shard": "zmscitizenview",
       "browser": "chrome",
       "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-1046_booking_ruppertstrasse_shared_booking_ausbildung.feature",
-      "runId": "34581151887",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34581151887",
-      "runStartedAt": "2026-09-11T08:50:19Z"
+      "runId": "34966543004",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34966543004",
+      "runStartedAt": "2026-09-15T12:02:05Z"
     },
     "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-1124-booking-ruppertstrasse-pass-calendar-jumpin-links": {
       "status": "passed",
       "shard": "zmscitizenview",
       "browser": "chrome",
       "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature",
-      "runId": "34581151887",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34581151887",
-      "runStartedAt": "2026-09-11T08:50:19Z"
+      "runId": "34966543004",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34966543004",
+      "runStartedAt": "2026-09-15T12:02:05Z"
     },
     "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-1500-already-activated-confirm-banner": {
       "status": "passed",
       "shard": "zmscitizenview",
       "browser": "chrome",
       "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-1500_already_activated_confirm_banner.feature",
-      "runId": "34581151887",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34581151887",
-      "runStartedAt": "2026-09-11T08:50:19Z"
+      "runId": "34966543004",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34966543004",
+      "runStartedAt": "2026-09-15T12:02:05Z"
+    },
+    "feature-ui-zmscitizenview-zmskvr-833-zmskvr-1025-rebooking-required-fields": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/zmskvr-833_zmskvr-1025_rebooking_required_fields.feature",
+      "runId": "34966543004",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34966543004",
+      "runStartedAt": "2026-09-15T12:02:05Z"
     }
   }
 }
