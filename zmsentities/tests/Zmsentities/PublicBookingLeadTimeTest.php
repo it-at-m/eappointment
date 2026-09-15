@@ -26,4 +26,26 @@ class PublicBookingLeadTimeTest extends Base
             }
         }
     }
+
+    public function testMinutesPrefersScopeActivationDurationOverEnvironment()
+    {
+        $previous = getenv(PublicBookingLeadTime::ENV_NAME);
+        $scope = (new \BO\Zmsentities\Scope())->getExample();
+        $scope->preferences['appointment']['activationDuration'] = '45';
+
+        try {
+            putenv('ZMS_PUBLIC_BOOKING_LEAD_TIME_MINUTES=15');
+            $this->assertEquals(45, PublicBookingLeadTime::minutes($scope));
+            $this->assertEquals(2700, PublicBookingLeadTime::seconds($scope));
+
+            unset($scope->preferences['appointment']['activationDuration']);
+            $this->assertEquals(15, PublicBookingLeadTime::minutes($scope));
+        } finally {
+            if ($previous === false) {
+                putenv('ZMS_PUBLIC_BOOKING_LEAD_TIME_MINUTES');
+            } else {
+                putenv('ZMS_PUBLIC_BOOKING_LEAD_TIME_MINUTES=' . $previous);
+            }
+        }
+    }
 }

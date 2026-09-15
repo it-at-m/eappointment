@@ -182,7 +182,8 @@ class SlotList extends Base
     }
 
     /*
-     * Empty public slots that start before now plus ZMS_PUBLIC_BOOKING_LEAD_TIME_MINUTES.
+     * Empty public slots that start before now plus the scope activation duration,
+     * or ZMS_PUBLIC_BOOKING_LEAD_TIME_MINUTES when that is not set.
      */
     public function withTimeGreaterThan(\DateTimeInterface $dateTime, ?int $leadTimeMinutes = null): static
     {
