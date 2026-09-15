@@ -2,9 +2,7 @@
 
 namespace BO\Zmsclient;
 
-use BO\Zmsclient\Auth;
-use BO\Zmsclient\Http;
-use BO\Zmsentities\Schema\Entity;
+use BO\Zmsentities\Workstation;
 
 /**
  * Shared OIDC callback handler used by zmsadmin and zmsstatistic.
@@ -80,11 +78,11 @@ class OidcHandler
                 ->readGetResult('/workstation/', ['resolveReferences' => 2])
                 ->getEntity();
 
-            if (!$workstation instanceof Entity) {
+            if (!$workstation instanceof Workstation) {
                 throw new \RuntimeException('OIDC workstation lookup returned no entity');
             }
 
-            $username = $workstation->getUseraccount()->id;
+            $username = $workstation->getUseraccount()['id'];
             $workstationAuthKey = $workstation['authkey'] ?? Auth::getKey() ?? '';
             $workstationHash = hash('sha256', (string) $workstationAuthKey);
 
@@ -94,7 +92,7 @@ class OidcHandler
                 'provider' => Auth::getOidcProvider(),
                 'application' => $application,
                 'username' => $username,
-                'workstation_id' => $workstation->id ?? 'unknown',
+                'workstation_id' => $workstation['id'] ?? 'unknown',
                 'hashed_workstation_key' => $workstationHash,
             ]);
 

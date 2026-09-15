@@ -377,11 +377,14 @@ class SearchTest extends Base
 
         $this->assertEquals(200, $response->getStatusCode());
 
+        $this->assertStringNotContainsString('id="search-status"', $body);
         $this->assertStringContainsString('Terminstatus', $body);
 
         $this->assertStringContainsString('Status: Geplant', $body);
         $this->assertStringContainsString('Status: Abgeschlossen', $body);
         $this->assertStringContainsString('Status: Nicht erschienen', $body);
+        $this->assertStringContainsString('Status: Abgesagt durch Kunden', $body);
+        $this->assertStringContainsString('Status: Abgesagt durch Sachbearbeitung', $body);
 
         $this->assertStringContainsString('selectedprocess=100504', $body);
         $this->assertStringContainsString('selectedprocess=101002', $body);
@@ -425,9 +428,11 @@ class SearchTest extends Base
 
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertSame(4, substr_count($body, 'Buchung:'));
+        $this->assertSame(6, substr_count($body, 'Buchung:'));
 
         $this->assertSame(1, substr_count($body, 'Terminaufruf:'));
+
+        $this->assertSame(2, substr_count($body, 'Stornierung:'));
 
         $this->assertMatchesRegularExpression(
             '/Buchung: \d{2}\.\d{2}\.\d{4}, \d{2}:\d{2}&nbsp;Uhr/',

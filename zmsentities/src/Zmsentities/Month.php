@@ -6,7 +6,7 @@ class Month extends Schema\Entity
 {
     public const string PRIMARY = 'month';
 
-    public $calendarDayList;
+    public mixed $calendarDayList = null;
 
     public static $schema = "month.json";
 
@@ -22,7 +22,7 @@ class Month extends Schema\Entity
         ];
     }
 
-    public function getFirstDay()
+    public function getFirstDay(): \BO\Zmsentities\Helper\DateTime
     {
         $dateTime = Helper\DateTime::create($this['year'] . '-' . $this['month'] . '-1');
         return $dateTime->modify('00:00:00');
@@ -30,10 +30,12 @@ class Month extends Schema\Entity
 
     public function getDayList(): Collection\DayList
     {
-        if (!$this->days instanceof Collection\DayList) {
-            $this->days = new Collection\DayList($this->days);
+        $days = $this->days;
+        if (!$days instanceof Collection\DayList) {
+            $days = new Collection\DayList($days);
+            $this->days = $days;
         }
-        return $this->days;
+        return $days;
     }
 
     public function setDays(Collection\DayList $dayList): static
@@ -51,7 +53,7 @@ class Month extends Schema\Entity
         \DateTimeInterface $currentDate,
         \BO\Zmsentities\Collection\DayList $dayList
     ): self {
-        $startDow = date('w', mktime(0, 0, 0, $currentDate->format('m'), 1, $currentDate->format('Y')));
+        $startDow = date('w', mktime(0, 0, 0, (int) $currentDate->format('m'), 1, (int) $currentDate->format('Y')));
         $monthDayList = $dayList->withAssociatedDays($currentDate);
         $month = (new self(
             array(

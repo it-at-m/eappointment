@@ -11,7 +11,7 @@ run-name: >-
          'zmsautomation | ▶️ manual | {0} | {1}{2}{3}',
          github.ref_name,
          inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'),
-         inputs.use_custom_tags && format(' | {0}', inputs.cucumber_tag_expressions) || '',
+         inputs.cucumber_tag_expressions != '' && format(' | {0}', inputs.cucumber_tag_expressions) || (inputs.use_custom_tags && ' | custom tags' || ''),
          inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || ''
        )
   }}
@@ -62,14 +62,15 @@ on:
         default: true
       use_custom_tags:
         description: |
-          Run a single job with custom Cucumber tag expressions (ignores module
-          checkboxes and run_all_in_one_job). Use test layer and tag fields below.
+          Run a single job (ignores module checkboxes and run_all_in_one_job).
+          Implied automatically when cucumber_tag_expressions is non-empty.
         required: true
         type: boolean
         default: false
       test_layer:
         description: |
-          Only when use_custom_tags is enabled. API = REST, UI = Selenium, both = full suite in one job.
+          Used when cucumber_tag_expressions is set or use_custom_tags is enabled.
+          API = REST, UI = Selenium, both = full suite in one job.
         required: true
         type: choice
         options:
@@ -79,9 +80,10 @@ on:
         default: both
       cucumber_tag_expressions:
         description: |
-          Only when use_custom_tags is enabled. Newline-separated Cucumber tag expressions; each line
-          runs sequentially. @ignore is excluded automatically.
-          Examples: @ZMSKVR-1328, @smoke
+          Optional. Newline-separated Cucumber tag expressions; each line runs sequentially.
+          If this field is set, only those tags run (module checkboxes are ignored).
+          @ignore is excluded automatically.
+          Examples: @ZMSKVR-833, @smoke
         required: false
         default: ""
       browser:
@@ -108,6 +110,7 @@ on:
         default: ""
   schedule:
     # GitHub Actions cron uses UTC. 01:00 UTC ≈ 03:00 Europe/Berlin (CEST) / 02:00 (CET).
+    # That is after the former UTC vs Berlin CURDATE split; zms-db TZ is Europe/Berlin (GH-3257).
     - cron: "0 1 * * *"
 
 permissions:
@@ -178,13 +181,17 @@ jobs:
             BRANCH="${{ github.ref_name }}"
             BROWSER="${{ inputs.browser }}"
             TEST_LAYER="${{ inputs.test_layer }}"
+            TAG_INPUT="${{ inputs.cucumber_tag_expressions }}"
+            TAG_INPUT_TRIMMED="$(printf '%s' "$TAG_INPUT" | tr -d '[:space:]')"
 
-            if [[ "${{ inputs.use_custom_tags }}" == "true" ]]; then
+            # Filling the tag field is enough; the checkbox is optional.
+            if [[ "${{ inputs.use_custom_tags }}" == "true" || -n "$TAG_INPUT_TRIMMED" ]]; then
               jq -n \
                 --arg branch "$BRANCH" \
                 --arg browser "$BROWSER" \
                 --arg test_layer "$TEST_LAYER" \
-                '{include: [{branch: $branch, browser: $browser, shard: "custom", test_layer: $test_layer, tag_filter: "", use_custom_tags: true}]}' \
+                --arg tag_filter "$TAG_INPUT" \
+                '{include: [{branch: $branch, browser: $browser, shard: "custom", test_layer: $test_layer, tag_filter: $tag_filter, use_custom_tags: "true"}]}' \
                 > matrix.json
               echo "max_parallel=1" >> "$GITHUB_OUTPUT"
             elif [[ "${{ inputs.run_all_in_one_job }}" == "true" ]]; then
@@ -351,10 +358,22 @@ jobs:
             set -euo pipefail
             apt-get update
 
-            CHROMIUM_APT_VERSION="150.0.7871.100-1~deb13u1"
-            if ! apt-cache show "chromium=${CHROMIUM_APT_VERSION}" >/dev/null 2>&1; then
+            # Pin for reproducibility. apt-cache show can still list a version the
+            # mirror no longer ships (image lists / just-replaced security .deb).
+            # Simulate install so we fall back before apt exit 100.
+            CHROMIUM_APT_VERSION="150.0.7871.181-1~deb13u1"
+            if ! apt-get install -s -y --allow-downgrades \
+              "chromium-common=${CHROMIUM_APT_VERSION}" \
+              "chromium=${CHROMIUM_APT_VERSION}" \
+              "chromium-driver=${CHROMIUM_APT_VERSION}" \
+              >/dev/null 2>&1; then
               CHROMIUM_APT_VERSION="$(apt-cache policy chromium 2>/dev/null | grep "^  Candidate:" | head -1 | sed "s/^  Candidate: //" | tr -d " ")"
               echo "Pinned Chromium unavailable; using mirror candidate ${CHROMIUM_APT_VERSION}"
+              if [[ -z "${CHROMIUM_APT_VERSION}" || "${CHROMIUM_APT_VERSION}" == "(none)" ]]; then
+                echo "No installable Chromium candidate after apt-get update."
+                apt-cache policy chromium || true
+                exit 1
+              fi
             fi
             apt-get install -y --no-install-recommends --allow-downgrades \
               curl wget unzip ca-certificates gnupg \
@@ -563,14 +582,26 @@ jobs:
           }
 
           TAG_LINES=()
+          USE_CUSTOM_TAGS=false
           if [[ "$MATRIX_USE_CUSTOM_TAGS" == "true" ]]; then
-            if [[ -z "$(printf '%s' "$CUSTOM_TAG_INPUT" | tr -d '[:space:]')" ]]; then
+            USE_CUSTOM_TAGS=true
+          elif [[ -n "$(printf '%s' "$CUSTOM_TAG_INPUT" | tr -d '[:space:]')" ]]; then
+            USE_CUSTOM_TAGS=true
+          fi
+
+          CUSTOM_SOURCE="$CUSTOM_TAG_INPUT"
+          if [[ -z "$(printf '%s' "$CUSTOM_SOURCE" | tr -d '[:space:]')" ]]; then
+            CUSTOM_SOURCE="$MATRIX_TAG_FILTER"
+          fi
+
+          if [[ "$USE_CUSTOM_TAGS" == "true" ]]; then
+            if [[ -z "$(printf '%s' "$CUSTOM_SOURCE" | tr -d '[:space:]')" ]]; then
               TAG_LINES=("")
             else
               while IFS= read -r line; do
                 line="$(printf '%s' "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
                 [[ -n "$line" ]] && TAG_LINES+=("$line")
-              done <<< "$CUSTOM_TAG_INPUT"
+              done <<< "$CUSTOM_SOURCE"
               [[ ${#TAG_LINES[@]} -eq 0 ]] && TAG_LINES=("")
             fi
           else
@@ -581,7 +612,7 @@ jobs:
           for expr in "${TAG_LINES[@]}"; do
             expr="$(printf '%s' "$expr" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
 
-            if [[ "$MATRIX_USE_CUSTOM_TAGS" == "true" ]]; then
+            if [[ "$USE_CUSTOM_TAGS" == "true" ]]; then
               if [[ -n "$expr" ]]; then
                 if [[ "$expr" == *"@ignore"* ]]; then
                   final_expr="$expr"
@@ -633,6 +664,19 @@ jobs:
             exit 1
           fi
 
+      - name: Write branch meta for status publish
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq -n \
+            --arg branch "${{ steps.tags.outputs.branch_name }}" \
+            --arg slug "${{ steps.tags.outputs.branch_slug }}" \
+            --arg shard "${{ matrix.shard }}" \
+            --arg browser "${{ matrix.browser }}" \
+            '{branch: $branch, branchSlug: $slug, shard: $shard, browser: $browser}' \
+            > branch-meta.json
+
       - name: Upload test reports (best effort)
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -640,6 +684,7 @@ jobs:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
             zmsautomation/target/cucumber.json
+            branch-meta.json
             zmsautomation/target/site/cucumber-pretty/**
             zmsautomation/target/surefire-reports/**
             zmsautomation/target/screenshots/**
@@ -677,3 +722,89 @@ jobs:
           name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: artifacts/container-logs/**
           if-no-files-found: warn
+
+  publish-cucumber-status:
+    name: Publish cucumber status JSON
+    needs: zms-automation
+    if: ${{ always() && !cancelled() }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Download cucumber reports
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          pattern: zmsautomation-ataf-reports-*
+          path: cucumber-reports
+          merge-multiple: false
+
+      - name: Build public cucumber status JSON
+        id: status
+        env:
+          RUN_ID: ${{ github.run_id }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          RUN_STARTED_AT="$(curl -fsSL \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            | jq -r '.run_started_at // empty')"
+          export RUN_STARTED_AT
+          mkdir -p "${RUNNER_TEMP}/previous-status" "${RUNNER_TEMP}/cucumber-status"
+          if git fetch origin zmsautomation-status:zmsautomation-status 2>/dev/null; then
+            while read -r file; do
+              git show "zmsautomation-status:${file}" \
+                > "${RUNNER_TEMP}/previous-status/$(basename "${file}")"
+            done < <(git ls-tree -r --name-only zmsautomation-status | grep -E '\.json$' || true)
+          fi
+          export PREVIOUS_STATUS_DIR="${RUNNER_TEMP}/previous-status"
+          if node docs/.vitepress/scripts/build-cucumber-run-status.mjs \
+            cucumber-reports \
+            "${RUNNER_TEMP}/cucumber-status"; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "No cucumber.json reports to publish"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish status JSON to zmsautomation-status
+        if: steps.status.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin zmsautomation-status:zmsautomation-status 2>/dev/null || true
+
+          if git show-ref --verify --quiet refs/heads/zmsautomation-status; then
+            git switch zmsautomation-status
+          else
+            git switch --orphan zmsautomation-status
+            git rm -rf --ignore-unmatch . >/dev/null 2>&1 || true
+          fi
+
+          cp "${RUNNER_TEMP}/cucumber-status"/*.json .
+          cat > README.md <<'EOF'
+          # zmsautomation cucumber status
+
+          Public JSON for the docs catalog. One file per tested branch
+          slug (`next.json`, `main.json`, …). `index.json` lists branches
+          that have a published zmsautomation run. `cucumber-run-status.json`
+          is a copy of `next.json`. Generated from zmsautomation runs.
+          Do not edit by hand.
+          EOF
+
+          git add README.md ./*.json
+          if git diff --staged --quiet; then
+            echo "Status JSON unchanged"
+            exit 0
+          fi
+          git commit -m "docs(ZMS): publish cucumber status from run ${GITHUB_RUN_ID}"
+          git push origin HEAD:zmsautomation-status

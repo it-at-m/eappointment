@@ -7,9 +7,9 @@ abstract class PDOAccess extends AbstractAccess
     /**
      * @SuppressWarnings(PHPMD.LongVariable)
      */
-    protected $accessorClassName = [];
+    protected mixed $accessorClassName = [];
 
-    protected $accessorNamesPlural = [
+    protected array $accessorNamesPlural = [
         'Authority' => 'Authorities',
         'Borough' => 'Boroughs',
         'Link' => 'Links',
@@ -20,7 +20,7 @@ abstract class PDOAccess extends AbstractAccess
         'Topic' => 'Topics'
     ];
 
-    protected $pdo;
+    protected ?\PDO $pdo = null;
 
     protected string $engine = 'SQLite';
 
@@ -48,7 +48,7 @@ abstract class PDOAccess extends AbstractAccess
             } else {
                 $this->connect($options);
             }
-            $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            $this->requirePdo()->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             $this->postConnect();
         } catch (\Exception $e) {
             throw $e;
@@ -56,7 +56,7 @@ abstract class PDOAccess extends AbstractAccess
     }
 
     #[\Override]
-    public function __call($method, $args = [])
+    public function __call(mixed $method, array $args = [])
     {
         try {
             return parent::__call($method, $args);
@@ -77,12 +77,13 @@ abstract class PDOAccess extends AbstractAccess
     {
     }
 
-    public function loadAccessor(string $name, string $locale = 'de')
+    public function loadAccessor(string $name, string $locale = 'de'): mixed
     {
         if (isset($this->accessorClassName[$name])) {
             if (null === $this->accessInstance[$locale][$this->accessorClassName[$name]]) {
                 $accessorClass = __NAMESPACE__ . '\\' . $this->engine . '\\' . $this->accessorClassName[$name];
 
+                /** @var class-string $accessorClass */
                 $instance = new $accessorClass($this, $locale);
                 $this->accessInstance[$locale][$name] = $instance;
                 $this->accessInstance[$locale][$this->accessorNamesPlural[$name]] = $instance;
@@ -94,8 +95,16 @@ abstract class PDOAccess extends AbstractAccess
 
     abstract protected function connect(array $options): void;
 
+    protected function requirePdo(): \PDO
+    {
+        if (!$this->pdo instanceof \PDO) {
+            throw new \RuntimeException('PDO connection is not initialized');
+        }
+        return $this->pdo;
+    }
+
     /** @psalm-api */
-    public function getConnection()
+    public function getConnection(): mixed
     {
         return $this->pdo;
     }
@@ -104,10 +113,10 @@ abstract class PDOAccess extends AbstractAccess
      * parameters see https://www.php.net/manual/de/pdo.query.php
      */
 
-    public function query(...$args)
+    public function query(mixed ...$args): mixed
     {
         try {
-            return $this->pdo->query(...$args);
+            return $this->requirePdo()->query(...$args);
         } catch (\Exception $e) {
             throw $e;
         }
@@ -116,10 +125,10 @@ abstract class PDOAccess extends AbstractAccess
     /**
      * parameters see https://www.php.net/manual/de/pdo.exec.php
      */
-    public function exec(string ...$args)
+    public function exec(string ...$args): mixed
     {
         try {
-            return $this->pdo->exec(...$args);
+            return $this->requirePdo()->exec(...$args);
         } catch (\Exception $e) {
             throw $e;
         }
@@ -128,36 +137,36 @@ abstract class PDOAccess extends AbstractAccess
     /**
      * parameters see https://www.php.net/manual/de/pdo.prepare.php
      */
-    public function prepare(string ...$args)
+    public function prepare(mixed ...$args): mixed
     {
         try {
-            return $this->pdo->prepare(...$args);
+            return $this->requirePdo()->prepare(...$args);
         } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    protected $transactionCount = 0;
+    protected int $transactionCount = 0;
 
-    public function beginTransaction()
+    public function beginTransaction(): mixed
     {
         try {
             $this->transactionCount++;
             if ($this->inTransaction()) {
                 return true;
             }
-            return $this->pdo->beginTransaction();
+            return $this->requirePdo()->beginTransaction();
         } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function commit()
+    public function commit(): mixed
     {
         try {
             $this->transactionCount--;
             if ($this->transactionCount == 0 && $this->inTransaction()) {
-                return $this->pdo->commit();
+                return $this->requirePdo()->commit();
             } elseif (!$this->inTransaction()) {
                 trigger_error(__METHOD__ . ' no transaction started');
             }
@@ -167,12 +176,12 @@ abstract class PDOAccess extends AbstractAccess
         }
     }
 
-    public function rollBack()
+    public function rollBack(): mixed
     {
         try {
             $this->transactionCount--;
             if ($this->transactionCount == 0 && $this->inTransaction()) {
-                return $this->pdo->rollBack();
+                return $this->requirePdo()->rollBack();
             } elseif (!$this->inTransaction()) {
                 trigger_error(__METHOD__ . ' no transaction started');
             }
@@ -182,10 +191,10 @@ abstract class PDOAccess extends AbstractAccess
         }
     }
 
-    public function inTransaction()
+    public function inTransaction(): mixed
     {
         try {
-            return $this->pdo->inTransaction();
+            return $this->requirePdo()->inTransaction();
         } catch (\Exception $e) {
             throw $e;
         }

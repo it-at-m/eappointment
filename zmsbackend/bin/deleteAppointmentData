@@ -29,7 +29,7 @@ if ($timeInterval !== null) {
     } else {
         $now = new \DateTimeImmutable('now');
     }
-    $job = new \BO\Zmsbackend\Helper\AppointmentDeleteByCron($timeInterval, $now, $verbose);
+    $job = new \BO\Zmsbackend\Helper\AppointmentDeleteByCron((int) $timeInterval, $now, $verbose);
     $job->startProcessing($commit, $pending);
 } else {
     \App::$log->error('Missing time interval argument', ['usage' => trim($usage)]);

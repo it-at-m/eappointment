@@ -161,7 +161,6 @@ class Index extends BaseController
         $oidcproviderlist = [];
         foreach (\BO\Slim\Middleware\OAuthMiddleware::$authInstances as $provider => $authInstance) {
             if (
-                0 < count($allowedProviderList) &&
                 class_exists($authInstance) &&
                 in_array($provider, $allowedProviderList)
             ) {

@@ -23,9 +23,10 @@ class WarehouseReport extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
-        $report = \App::$http
+        $report = \App::http()
           ->readGetResult('/warehouse/' . $args['subject'] . '/' . $args['subjectid'] . '/' . $args['period'] . '/')
           ->getEntity();
 
@@ -33,7 +34,9 @@ class WarehouseReport extends BaseController
         if ($type) {
             $args['category'] = 'raw-' . $args['subject'];
             $args['report'] = $report;
-            return (new Download(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+            /** @var mixed $container */
+            $container = \App::$slim->getContainer();
+            return (new Download($container))->readResponse($request, $response, $args);
         }
 
         return Render::withHtml(

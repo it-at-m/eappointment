@@ -15,8 +15,8 @@ namespace BO\Mellon;
   */
 class ValidJson extends Valid
 {
-    protected $originalJsonString = null;
-    protected $defaultJsonString = '{}';
+    protected ?string $originalJsonString = null;
+    protected string $defaultJsonString = '{}';
 
     /**
      * Allow only valid json
@@ -28,13 +28,13 @@ class ValidJson extends Valid
      */
     public function isJson($message = null)
     {
-        $this->originalJsonString = $this->value;
-        $undeclaredMessage = $message;
-        if (null === $message) {
-            $undeclaredMessage = "Json: Empty";
-        }
+        $this->originalJsonString = is_string($this->value) ? $this->value : null;
+        $undeclaredMessage = $message ?? 'Json: Empty';
         $this->isDeclared($undeclaredMessage);
         $jsonString = $this->value;
+        if (!is_string($jsonString)) {
+            return $this;
+        }
         $array = json_decode($jsonString, true);
         if (null === $array && $jsonString) {
             if (null === $message) {
@@ -64,12 +64,12 @@ class ValidJson extends Valid
      * Set a default string value if a string does not validate
      * The parsed value like an array or an object should be set by setDefault()
      *
-     * @param String $value
+     * @param string $defaultJsonString
      *
      * @return self
      * @psalm-api
      */
-    public function setDefaultJson($defaultJsonString)
+    public function setDefaultJson(string $defaultJsonString)
     {
             $this->defaultJsonString = $defaultJsonString;
             return $this;
@@ -85,6 +85,6 @@ class ValidJson extends Valid
         if ($this->hasFailed() || !$this->validated) {
             return $this->defaultJsonString;
         }
-        return $this->originalJsonString;
+        return $this->originalJsonString ?? '';
     }
 }

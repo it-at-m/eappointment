@@ -18,14 +18,14 @@ class SlotList extends Base
      * @param array $slotA
      * @param array $slotB
      *
-     * @return array $slotA modified
+     * @return static
      *
      */
-    public function takeLowerSlotValue(int $indexA, int $indexB)
+    public function takeLowerSlotValue(int $indexA, int $indexB): static
     {
-        $slotA = $this[$indexA];
-        $slotB = $this[$indexB];
-        if (null !== $slotA && null !== $slotB) {
+        if ($this->offsetExists($indexA) && $this->offsetExists($indexB)) {
+            $slotA = $this[$indexA];
+            $slotB = $this[$indexB];
             $slotA->type = Slot::REDUCED;
             foreach (['public', 'intern'] as $type) {
                 $slotA[$type] = $slotA[$type] < $slotB[$type] ? $slotA[$type] : $slotB[$type];
@@ -45,7 +45,7 @@ class SlotList extends Base
         return $this;
     }
 
-    public function isAvailableForAll($slotType): bool
+    public function isAvailableForAll(mixed $slotType): bool
     {
         foreach ($this as $slot) {
             if ($slot[$slotType] < 1) {
@@ -72,7 +72,7 @@ class SlotList extends Base
      * Get all slots for an appointment
      *
      */
-    public function withSlotsForAppointment(\BO\Zmsentities\Appointment $appointment, $extendSlotList = false)
+    public function withSlotsForAppointment(\BO\Zmsentities\Appointment $appointment, bool $extendSlotList = false): mixed
     {
         $slotList = new SlotList();
         $takeFollowingSlot = 0;
@@ -94,23 +94,27 @@ class SlotList extends Base
                 "$appointment does not fit in $this"
             );
         }
-        if (0 < $takeFollowingSlot && $extendSlotList) {
+        if (0 < $takeFollowingSlot) {
             $slotList = $this->extendList($slotList, $currentSlot, $appointment);
         }
         return $slotList;
     }
 
-    public function extendList(self $slotList, Slot|null $prevSlot, \BO\Zmsentities\Appointment $appointment)
+    public function extendList(self $slotList, Slot|null $prevSlot, \BO\Zmsentities\Appointment $appointment): \BO\Zmsentities\Collection\SlotList
     {
+        if ($prevSlot === null) {
+            return $slotList;
+        }
+        $slotMinutes = (string) (int) $appointment->getAvailability()->slotTimeInMinutes;
         $startTime = \BO\Zmsentities\Helper\DateTime::create(
             $appointment->toDateTime()->format('Y-m-d') . ' ' . $prevSlot->time
-        )->modify('+' . $appointment->getAvailability()->slotTimeInMinutes . 'minute');
+        )->modify('+' . $slotMinutes . 'minute');
         $stopTime = $appointment->getEndTime();
         do {
             $slot = clone $prevSlot;
             $slot->setTime($startTime);
             $slotList[] = $slot;
-            $startTime = $startTime->modify('+' . $appointment->getAvailability()->slotTimeInMinutes . 'minute');
+            $startTime = $startTime->modify('+' . $slotMinutes . 'minute');
             // Only add a slot, if at least a minute is left, otherwise do not ("<" instead "<=")
         } while ($startTime->getTimestamp() < $stopTime->getTimestamp());
         return $slotList;
@@ -154,7 +158,10 @@ class SlotList extends Base
         return $containsAppointment;
     }
 
-    public function getSlot($index): Slot|null
+    /**
+     * @param int|string $index
+     */
+    public function getSlot(string|int $index): Slot|null
     {
         $index = intval($index);
         if (!isset($this[$index])) {
@@ -163,7 +170,7 @@ class SlotList extends Base
         return $this[$index];
     }
 
-    public function getSummerizedSlot($slot = null): Slot
+    public function getSummerizedSlot(mixed $slot = null): Slot
     {
         $sum = ($slot instanceof Slot) ? $slot : new Slot();
         $sum->type = Slot::SUM;
@@ -193,12 +200,12 @@ class SlotList extends Base
     }
 
     public function getFreeProcesses(
-        $selectedDate,
+        mixed $selectedDate,
         \BO\Zmsentities\Scope $scope,
         \BO\Zmsentities\Availability $availability,
-        $slotType,
-        $requests,
-        $slotsRequired
+        mixed $slotType,
+        mixed $requests,
+        mixed $slotsRequired
     ): ProcessList {
         $processList = new ProcessList();
         foreach ($this as $slot) {
@@ -231,7 +238,7 @@ class SlotList extends Base
         return $processList;
     }
 
-    public function withReducedSlots($slotsRequired): static
+    public function withReducedSlots(mixed $slotsRequired): static
     {
         $slotList = clone $this;
         if ($slotsRequired > 1) {

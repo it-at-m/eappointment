@@ -9,6 +9,8 @@ namespace BO\Zmsadmin;
 
 use BO\Slim\Render;
 use BO\Zmsentities\Exception\WorkstationMissingAssignedProcess;
+use BO\Zmsentities\Process;
+use BO\Zmsentities\Workstation;
 
 class WorkstationProcessProcessing extends BaseController
 {
@@ -23,16 +25,28 @@ class WorkstationProcessProcessing extends BaseController
         array $args
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $workstation->process->status = 'processing';
-        $workstation->process->parkedBy = null;
+        if (!$workstation instanceof Workstation) {
+            throw new WorkstationMissingAssignedProcess();
+        }
         if (! $workstation->process->hasId()) {
             throw new WorkstationMissingAssignedProcess();
         }
-        $workstation->process = \App::$http->readPostResult(
-            '/process/' . $workstation->process->id . '/' . $workstation->process->authKey . '/',
-            $workstation->process,
-            ['initiator' => 'admin']
-        )->getEntity();
+
+        // Re-saving an already processing process resets showUpTime (Bearbeitungszeit).
+        // Only transition called → processing here; otherwise just render the current view.
+        if ($workstation->process->getStatus() !== 'processing') {
+            $workstation->process->status = 'processing';
+            $workstation->process->parkedBy = null;
+            $savedProcess = \App::$http->readPostResult(
+                '/process/' . $workstation->process->id . '/' . $workstation->process->authKey . '/',
+                $workstation->process,
+                ['initiator' => 'admin']
+            )->getEntity();
+            if (!$savedProcess instanceof Process) {
+                throw new WorkstationMissingAssignedProcess();
+            }
+            $workstation->process = $savedProcess;
+        }
 
         $validator = $request->getAttribute('validator');
         $error = $validator->getParameter('error')->isString()->getValue();

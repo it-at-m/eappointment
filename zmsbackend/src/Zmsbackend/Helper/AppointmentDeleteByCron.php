@@ -40,18 +40,19 @@ class AppointmentDeleteByCron
         "pending"
     ];
 
-    protected $count = [];
+    /** @var array<string, int> */
+    protected array $count = [];
 
-    protected $now;
+    protected \DateTimeInterface $now;
 
-    public function __construct($timeIntervalDays, \DateTimeInterface $now, $verbose = false)
+    public function __construct(int $timeIntervalDays, \DateTimeInterface $now, bool $verbose = false)
     {
         $this->now = $now;
-        $deleteInSeconds = (24 * 60 * 60) * $timeIntervalDays;
-        $time = new \DateTimeImmutable();
-        $this->time = $time->setTimestamp($now->getTimestamp() - $deleteInSeconds);
+        $this->time = \DateTimeImmutable::createFromInterface($now)
+            ->setTime(0, 0, 0)
+            ->modify(sprintf('-%d days', $timeIntervalDays));
         if ($verbose) {
-            $this->log("INFO: Deleting appointments older than " . $this->time->format('c'));
+            $this->log("INFO: Deleting appointments with date before " . $this->time->format('Y-m-d'));
             $this->verbose = true;
         }
     }
@@ -168,15 +169,15 @@ class AppointmentDeleteByCron
 
     protected function updateProcessStatus(\BO\Zmsentities\Process $process): \BO\Zmsentities\Process
     {
-        if (in_array($process->status, ["confirmed", "queued", "called"])) {
-            $process->status = 'missed';
+        if (in_array($process->getStatus(), ["confirmed", "queued", "called"])) {
+            $process->setStatus('missed');
         }
         return $process;
     }
 
     protected function determineHistoryStatus(\BO\Zmsentities\Process $process): ?string
     {
-        return match ($process->status) {
+        return match ($process->getStatus()) {
             'missed' =>
                 \BO\Zmsbackend\ProcessSearchHistory\Service\ProcessSearchHistory::STATUS_MISSED,
 

@@ -2,12 +2,15 @@ name: 🛡️ Trivy Security Check
 
 on:
   pull_request:
-  workflow_call:
   workflow_dispatch:
   push:
     branches:
       - main
       - next
+
+concurrency:
+  group: trivy-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -21,6 +24,6 @@ jobs:
       actions: read
     steps:
       - name: Run Trivy Security check on Repository
-        uses: it-at-m/lhm_actions/action-templates/actions/action-trivy@7bed7092684c0bcc176811016aed27b532aa5f51 # v1.4.0
+        uses: it-at-m/lhm_actions/action-templates/actions/action-trivy@54b32c7d11363cad45838c9a3d8a8560b93f0e8c # v1.5.4
         env:
           TRIVY_SKIP_VERSION_CHECK: "true"

@@ -9,7 +9,6 @@ namespace BO\Zmsbackend\Workstation\Api;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
-use BO\Zmsbackend\Workstation\Service\Workstation;
 use BO\Zmsbackend\Process\Service\Process as Query;
 
 /**
@@ -100,14 +99,13 @@ class WorkstationProcess extends \BO\Zmsbackend\Api\BaseController
         }
 
         $appointment = $process->getFirstAppointment();
-        if (!$appointment || !$appointment->date) {
+        if (!$appointment || !$appointment['date']) {
             return;
         }
 
         $now = \App::getNow();
         $today = $now->setTime(0, 0, 0);
-        $appointmentDateTime = new \DateTimeImmutable();
-        $appointmentDateTime = $appointmentDateTime->setTimestamp($appointment->date);
+        $appointmentDateTime = $appointment->toDateTime();
         $appointmentDate = $appointmentDateTime->setTime(0, 0, 0);
 
         if ($appointmentDate != $today) {

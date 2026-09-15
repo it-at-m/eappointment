@@ -114,6 +114,100 @@ class ExchangeTest extends EntityCommonTests
         $this->assertEquals(31, $entity->data['sum']['Personalausweis beantragen']);
     }
 
+    public function testGetDatesWithRequests()
+    {
+        $exchange = new \BO\Zmsentities\Exchange();
+
+        $exchange->data = [
+            'Service A' => [
+                '2016-04-04' => ['requestscount' => 2],
+                '2016-04-02' => ['requestscount' => 0],
+            ],
+            'Service B' => [
+                '2016-04-01' => ['requestscount' => '1'],
+                '2016-04-04' => ['requestscount' => 3],
+            ],
+            \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_UNCATEGORIZED => [
+                '2016-04-03' => ['requestscount' => 1],
+            ],
+            'sum' => [
+                'Service A' => 2,
+                'Service B' => 4,
+            ],
+            'average_processingtime' => [
+                'Service A' => 10,
+                'Service B' => 15,
+            ],
+            'average_processingtime_overall' => 12.5,
+        ];
+
+        $this->assertSame(
+            [
+                '2016-04-01',
+                '2016-04-03',
+                '2016-04-04',
+            ],
+            $exchange->getDatesWithRequests()
+        );
+    }
+
+    public function testWithWeightedAverageProcessingTime()
+    {
+        $exchange = new \BO\Zmsentities\Exchange();
+
+        $exchange->data = [
+            'ServiceA' => [
+                '2016-04-01' => ['requestscount' => 10, 'processingtime' => 10],
+                '2016-04-02' => ['requestscount' => 90, 'processingtime' => 20],
+            ],
+            'ServiceB' => [
+                '2016-04-01' => ['requestscount' => 5, 'processingtime' => 30],
+            ],
+        ];
+
+        $result = $exchange->withWeightedAverageProcessingTime();
+        // (10*10 + 20*90 + 30*5) / (10 + 90 + 5) = 2050 / 105
+        $this->assertEqualsWithDelta(2050 / 105, $result->data['average_processingtime_overall'], 1e-12);
+    }
+
+    public function testWithWeightedAverageProcessingTimeIncludesUncapturedRequests()
+    {
+        $exchange = new \BO\Zmsentities\Exchange();
+
+        $exchange->data = [
+            'Personalausweis' => [
+                '2016-04-01' => ['requestscount' => 2, 'processingtime' => 10],
+            ],
+            \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_UNCATEGORIZED => [
+                '2016-04-01' => ['requestscount' => 1, 'processingtime' => 40],
+            ],
+            \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_NONEXISTENT => [
+                '2016-04-01' => ['requestscount' => 1, 'processingtime' => 50],
+            ],
+        ];
+
+        $result = $exchange->withWeightedAverageProcessingTime();
+
+        $this->assertSame(
+            27.5,
+            $result->data['average_processingtime_overall']
+        );
+    }
+
+    public function testWithWeightedAverageProcessingTimeWithoutRequest()
+    {
+        $exchange = new \BO\Zmsentities\Exchange();
+
+        $exchange->data = [
+            'sum' =>[],
+            'average_processingtime' => [],
+        ];
+        $result = $exchange->withWeightedAverageProcessingTime();
+        $this->assertNull(
+            $result->data['average_processingtime_overall']
+        );
+    }
+
     public function testPeriod()
     {
         $now = new \DateTimeImmutable('2016-04-01 11:55:00');
@@ -153,6 +247,42 @@ class ExchangeTest extends EntityCommonTests
         $entity->addDictionaryEntry('name', 'string', 'Naming');
         $entity->addDataSet([1, '2016-04-01', 'Test']);
         $this->assertEquals(1, count($entity->data));
+    }
+
+    public function testAddDataSetWithGenerator()
+    {
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $entity = (new $this->entityclass());
+        $entity->setPeriod($now, $now);
+        $entity->addDictionaryEntry('id', 'number');
+        $entity->addDictionaryEntry('date', 'date');
+        $entity->addDictionaryEntry('name', 'string', 'Naming');
+        $values = (function () {
+            yield 1;
+            yield '2016-04-01';
+            yield 'Test';
+        })();
+        $entity->addDataSet($values);
+        $this->assertEquals([1, '2016-04-01', 'Test'], $entity->data[0]);
+        $this->assertEquals('totals', $entity->withCalculatedTotals(['id'])->getCalculatedTotals()[2]);
+    }
+
+    public function testAddDataSetWithGeneratorReindexesKeys()
+    {
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $entity = (new $this->entityclass());
+        $entity->setPeriod($now, $now);
+        $entity->addDictionaryEntry('id', 'number');
+        $entity->addDictionaryEntry('date', 'date');
+        $entity->addDictionaryEntry('name', 'string', 'Naming');
+        $values = (function () {
+            yield 5 => 1;
+            yield 5 => '2016-04-01';
+            yield 9 => 'Test';
+        })();
+        $entity->addDataSet($values);
+        $this->assertSame([0, 1, 2], array_keys($entity->data[0]));
+        $this->assertEquals([1, '2016-04-01', 'Test'], $entity->data[0]);
     }
 
     public function testDataFormat()
@@ -231,6 +361,7 @@ class ExchangeTest extends EntityCommonTests
             'Alpha' => ['x' => 3],
             'sum' => ['Alpha' => 10, 'Zebra' => 20],
             'average_processingtime' => ['Alpha' => 1, 'Zebra' => 2],
+            'average_processingtime_overall' => 1.5,
         ];
         $sorted = $exchange->withUncapturedRequestRowSortedLast();
         $this->assertSame(
@@ -241,6 +372,7 @@ class ExchangeTest extends EntityCommonTests
                 \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_NONEXISTENT,
                 'sum',
                 'average_processingtime',
+                'average_processingtime_overall',
             ],
             array_keys($sorted->data)
         );
@@ -254,10 +386,11 @@ class ExchangeTest extends EntityCommonTests
             'Alpha' => ['x' => 2],
             'sum' => [],
             'average_processingtime' => [],
+            'average_processingtime_overall' => []
         ];
         $sorted = $exchange->withUncapturedRequestRowSortedLast();
         $this->assertSame(
-            ['Alpha', 'Zebra', 'sum', 'average_processingtime'],
+            ['Alpha', 'Zebra', 'sum', 'average_processingtime', 'average_processingtime_overall'],
             array_keys($sorted->data)
         );
     }

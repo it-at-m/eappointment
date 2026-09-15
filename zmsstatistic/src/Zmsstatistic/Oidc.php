@@ -21,10 +21,11 @@ class Oidc extends BaseController
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         try {
+            /** @var \BO\Slim\Request $request */
             $state = $request->getParam('state');
-            $handler = new OidcHandler(\App::$http);
+            $handler = new OidcHandler(\App::http());
             $result = $handler->handleCallback($state, 'zmsstatistic');
 
             if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_STATISTIC, $result['workstation'], $response)) {

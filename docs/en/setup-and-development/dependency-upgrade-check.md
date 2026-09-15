@@ -3,14 +3,6 @@
 Pass the PHP version that you would want to upgrade to and recieve information about dependency changes patch, minor, or major for each module.
 e.g.
 
-### DDEV
-
-```bash
-ddev exec ./cli modules check-upgrade 8.4
-```
-
-### Podman
-
 ```bash
 podman exec -it zms-web bash -lc "./cli modules check-upgrade 8.4"
 ```

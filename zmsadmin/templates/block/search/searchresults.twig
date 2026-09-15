@@ -83,7 +83,7 @@
                                     {{ process.clients.0.familyName }} ({{ process.displayNumber }})
                                 </a>
                             {% else %}
-                                <a tabindex="1" href="{{ urlGet("counter", {}, {
+                                <a tabindex="1" href="{{ urlGet("workstation", {}, {
                                     'selectedprocess': process.id,
                                     'date': process.appointments.0.date|date('Y-m-d'),
                                     'selectedscope': process.scope.id
@@ -104,6 +104,10 @@
                                 <div>Status: Abgeschlossen</div>
                             {% elseif process.appointmentStatus == "missed" %}
                                 <div>Status: Nicht erschienen</div>
+                            {% elseif process.appointmentStatus == "cancelled_citizen" %}
+                                <div>Status: Abgesagt durch Kunden</div>
+                            {% elseif process.appointmentStatus == "cancelled_staff" %}
+                                <div>Status: Abgesagt durch Sachbearbeitung</div>
                             {% endif %}
 
                             {% if process.createTimestamp|default(0) > 0 %}
@@ -112,6 +116,10 @@
 
                             {% if process.queue.callTime|default(0) > 0 %}
                                 <div>Terminaufruf: {{ process.queue.callTime|date('d.m.Y, H:i') }}&nbsp;Uhr</div>
+                            {% endif %}
+
+                            {% if process.appointmentStatus in ["cancelled_citizen", "cancelled_staff"] and process.finalizedAt|default(0) > 0 %}
+                                <div>Stornierung: {{ process.finalizedAt|date('d.m.Y, H:i') }}&nbsp;Uhr</div>
                             {% endif %}
                         </td>
                     </tr>

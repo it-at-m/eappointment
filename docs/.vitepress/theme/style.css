@@ -316,3 +316,17 @@ footer.VPFooter {
   color: #fff3e0;
   background: color-mix(in srgb, #ffb74d 22%, var(--vp-c-bg));
 }
+
+/* Cucumber feature accordion: keep VP heading styles from inflating the row */
+.vp-doc .cucumber-feature {
+  margin: 0 0 0.5rem;
+}
+
+.vp-doc h4.cucumber-feature__heading {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}

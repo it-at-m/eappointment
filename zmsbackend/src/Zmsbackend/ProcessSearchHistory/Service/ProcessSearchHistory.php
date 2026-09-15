@@ -11,11 +11,20 @@ use BO\Zmsentities\Scope as ScopeEntity;
 
 class ProcessSearchHistory extends \BO\Zmsbackend\Base
 {
-    public const STATUS_COMPLETED = 'completed';
-    public const STATUS_MISSED = 'missed';
+    public const string STATUS_COMPLETED = 'completed';
+    public const string STATUS_MISSED = 'missed';
+    public const string STATUS_CANCELLED_BY_CITIZEN = 'cancelled_citizen';
+    public const string STATUS_CANCELLED_BY_STAFF = 'cancelled_staff';
 
-    private const RESOLVE_REFERENCES = 2;
-    private const DUPLICATE_KEY_ERROR_CODE = 1062;
+    private const array SUPPORTED_STATUSES = [
+        self::STATUS_COMPLETED,
+        self::STATUS_MISSED,
+        self::STATUS_CANCELLED_BY_CITIZEN,
+        self::STATUS_CANCELLED_BY_STAFF,
+    ];
+
+    private const int RESOLVE_REFERENCES = 2;
+    private const int DUPLICATE_KEY_ERROR_CODE = 1062;
 
     /**
      * Bei einem bereits vorhandenen history_key wird kein zweiter
@@ -122,7 +131,7 @@ class ProcessSearchHistory extends \BO\Zmsbackend\Base
 
             'appointmentAt' => $this->getAppointmentAt($process),
             'bookedAt' => $this->dateTimeFromTimestamp(
-                (int) $process->createTimestamp
+                (int) $process['createTimestamp']
             ),
             'calledAt' => $this->dateTimeFromTimestamp(
                 (int) $process
@@ -170,7 +179,7 @@ class ProcessSearchHistory extends \BO\Zmsbackend\Base
         ProcessEntity $process
     ): string {
         $processId = (int) $process->getId();
-        $createTimestamp = (int) $process->createTimestamp;
+        $createTimestamp = (int) $process['createTimestamp'];
         $authKey = (string) $process->getAuthKey();
 
         if (
@@ -222,11 +231,7 @@ class ProcessSearchHistory extends \BO\Zmsbackend\Base
     private function getScope(
         ProcessEntity $process
     ): ScopeEntity {
-        if ($process->scope instanceof ScopeEntity) {
-            return $process->scope;
-        }
-
-        return new ScopeEntity($process->scope);
+        return $process->getCurrentScope();
     }
 
     private function dateTimeFromTimestamp(
@@ -253,10 +258,7 @@ class ProcessSearchHistory extends \BO\Zmsbackend\Base
         if (
             !in_array(
                 $status,
-                [
-                    self::STATUS_COMPLETED,
-                    self::STATUS_MISSED,
-                ],
+                self::SUPPORTED_STATUSES,
                 true
             )
         ) {
@@ -286,7 +288,7 @@ class ProcessSearchHistory extends \BO\Zmsbackend\Base
         ProcessEntity $process
     ): \DateTimeImmutable {
         $appointment = $process->getFirstAppointment();
-        $timestamp = (int) $appointment->date;
+        $timestamp = $appointment->toDateTime()->getTimestamp();
 
         if ($timestamp <= 0) {
             throw new \InvalidArgumentException(

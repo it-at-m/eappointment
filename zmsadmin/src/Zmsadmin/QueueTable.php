@@ -186,15 +186,22 @@ class QueueTable extends BaseController
             return [];
         }
 
-        $queueListCalled = \App::$http
-            ->readGetResult(
-                '/useraccount/queue/',
-                [
-                    'resolveReferences' => 2,
-                    'status' => 'called,processing',
-                ]
-            )
-            ->getCollection() ?? [];
+        try {
+            $queueListCalled = \App::$http
+                ->readGetResult(
+                    '/useraccount/queue/',
+                    [
+                        'resolveReferences' => 2,
+                        'status' => 'called,processing',
+                    ]
+                )
+                ->getCollection() ?? [];
+        } catch (\BO\Zmsclient\Exception $exception) {
+            \App::$log->error('Failed to load called queue list', [
+                'error' => $exception->getMessage(),
+            ]);
+            return [];
+        }
 
         if (! ($queueListCalled instanceof QueueList)) {
             return [];

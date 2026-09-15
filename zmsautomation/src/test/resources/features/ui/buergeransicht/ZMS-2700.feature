@@ -1,11 +1,9 @@
 #language: de
    
-# DISABLED: Legacy eappointment-buergeransicht frontend tests
-# These tests target the archived Vue2 citizen frontend (https://github.com/it-at-m/eappointment-buergeransicht)
-# which is likely not running in local development environments.
-# To enable these tests, ensure the old buergeransicht frontend is running at http://localhost:8082
-# and remove the @ignore tag from the scenario tags.
-Funktionalität: Frontend Design UX/UI anpassen
+# ARCHIVED: Legacy eappointment-buergeransicht frontend tests
+# These scenarios target the retired Vue2 citizen frontend (https://github.com/it-at-m/eappointment-buergeransicht).
+# Page objects and step definitions have been removed; kept as reference only.
+Funktionalität: Umbuchung wählt die vorherige Behörde nicht automatisch
    
    	#Tests {panel:title=Problembeschreibung|borderStyle=solid|borderColor=#a01441|titleBGColor=#f092ad|bgColor=#ffffff}
    	#*Ist:* Beim Umbuchen eines Termins in einer bestimmten Behörde (z. B. BB Pasing) wird auf der Bürgeransicht nicht auf diese Behörde verlinkt, sondern auf den Anfang der Behördenliste. 

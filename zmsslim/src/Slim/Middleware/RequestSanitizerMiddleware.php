@@ -118,7 +118,8 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
         $value = trim($value);
         if (!mb_check_encoding($value, 'UTF-8')) {
             $this->logger->logWarning('Invalid string encoding detected.', ['value' => $value]);
-            $value = mb_convert_encoding($value, 'UTF-8', 'auto');
+            $encoded = mb_convert_encoding($value, 'UTF-8', 'auto');
+            $value = is_string($encoded) ? $encoded : $value;
         }
         return $value;
     }

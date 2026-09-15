@@ -69,7 +69,19 @@ class AppointmentConfirmService
 
     private function getReservedProcess(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
     {
-        return ZmsApiFacadeService::getThinnedProcessById($processId, $authKey, $user);
+        $process = ZmsApiFacadeService::getProcessById($processId, $authKey, $user);
+        $notFound = ValidationService::validateGetProcessNotFound($process);
+        if (!empty($notFound['errors'])) {
+            return $notFound;
+        }
+
+        $thinned = MapperService::processToThinnedProcess($process);
+        $confirmErrors = ValidationService::validateAppointmentConfirm($thinned, $process->getExternalUserId());
+        if ($confirmErrors['errors'] !== []) {
+            return $confirmErrors;
+        }
+
+        return $thinned;
     }
 
     private function confirmProcess(ThinnedProcess $process): ThinnedProcess|array

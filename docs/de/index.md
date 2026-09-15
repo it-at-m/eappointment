@@ -9,12 +9,14 @@ Dieses Handbuch ist die Hauptanlaufstelle auf [GitHub Pages](https://it-at-m.git
 ## Schnellzugriffe
 
 - [Projektgeschichte](./overview/project-history.md)
-- [DDEV und Devcontainer](./setup-and-development/getting-started/ddev-and-devcontainer.md)
+- [Devcontainer und Podman](./setup-and-development/getting-started/devcontainer.md)
 - [Lokale Datenbank- und Cache-Operationen](./setup-and-development/local-database-and-cache-operations.md)
 - [Abhängigkeits-Aktualisierungsprüfung](./setup-and-development/dependency-upgrade-check.md)
 - [PHP-Basis-Images](./setup-and-development/php-base-images.md)
 - [Unit-Tests in ZMS](./testing-and-automation/testing-unit.md)
 - [Unit-Test-Abdeckung](./testing-and-automation/testing-coverage.md)
+- [Aktuelle Cucumber-Tests in zmsautomation](./testing-and-automation/zmsautomation-cucumber-current.md)
+- [CI/CD (GitHub nach OpenShift)](./operations/ci-cd.md) — GHCR, Quay, GitLab-Helm, OpenShift
 - [API-Referenz](./operations/api-reference.md) — ReDoc und Diagramme
 - [Modul-READMEs](./reference/module-readmes.md)
 - [DLDB-Schnittstellendokumentation](./operations/dldb-interface-documentation.md)
