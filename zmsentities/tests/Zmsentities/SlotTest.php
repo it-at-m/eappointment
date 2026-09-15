@@ -54,6 +54,57 @@ class SlotTest extends EntityCommonTests
         $this->assertStringContainsString('slotlist#', (string)$collection);
     }
 
+    public function testWithTimeGreaterThanUsesLeadTimeFromEnvironment()
+    {
+        $previous = getenv(\BO\Zmsentities\Helper\PublicBookingLeadTime::ENV_NAME);
+        $collection = new $this->collectionclass();
+        $collection->addEntity((new $this->entityclass())->getExample());
+        $collection->addEntity(new $this->entityclass([
+            'public' => 2,
+            'intern' => 9,
+            'time' => '12:50'
+        ]));
+        $time = new \DateTimeImmutable(self::DEFAULT_TIME);
+
+        try {
+            putenv('ZMS_PUBLIC_BOOKING_LEAD_TIME_MINUTES=0');
+            $filtered = $collection->withTimeGreaterThan($time);
+            $this->assertEquals(0, $filtered->getSlot(0)['public']);
+            $this->assertEquals(2, $filtered->getSlot(1)['public']);
+
+            putenv('ZMS_PUBLIC_BOOKING_LEAD_TIME_MINUTES=30');
+            $filtered = $collection->withTimeGreaterThan($time);
+            $this->assertEquals(0, $filtered->getSlot(0)['public']);
+            $this->assertEquals(0, $filtered->getSlot(1)['public']);
+        } finally {
+            if ($previous === false) {
+                putenv('ZMS_PUBLIC_BOOKING_LEAD_TIME_MINUTES');
+            } else {
+                putenv('ZMS_PUBLIC_BOOKING_LEAD_TIME_MINUTES=' . $previous);
+            }
+        }
+    }
+
+    public function testWithTimeGreaterThanClampsNegativeLeadTimeOverride()
+    {
+        $collection = new $this->collectionclass();
+        $collection->addEntity(new $this->entityclass([
+            'public' => 2,
+            'intern' => 9,
+            'time' => '12:40'
+        ]));
+        $collection->addEntity(new $this->entityclass([
+            'public' => 2,
+            'intern' => 9,
+            'time' => '12:50'
+        ]));
+        $time = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $filtered = $collection->withTimeGreaterThan($time, -30);
+
+        $this->assertEquals(0, $filtered->getSlot(0)['public']);
+        $this->assertEquals(2, $filtered->getSlot(1)['public']);
+    }
+
     public function testReducedSlots()
     {
         $collection = new $this->collectionclass();
