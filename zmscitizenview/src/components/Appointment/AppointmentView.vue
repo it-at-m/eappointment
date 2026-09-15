@@ -954,10 +954,7 @@ const nextBookAppointment = () => {
     const canDirectConfirm =
       !!appointment.value?.processId && !!appointment.value?.authKey;
 
-    if (
-      canDirectConfirm &&
-      (isRebooking.value || props.globalState.isLoggedIn)
-    ) {
+    if (canDirectConfirm && props.globalState.isLoggedIn) {
       nextConfirmAppointment({
         id: appointment.value.processId,
         authKey: appointment.value.authKey,
