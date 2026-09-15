@@ -10,6 +10,7 @@ import {
     getChannelCapacityMetric,
 } from './capacityMetrics';
 import {
+    formatCapacityTableDate,
     getChartDateRangeLabel,
     getChartDownloadFilename,
     syncCapacityTableDownloadHref,
@@ -196,6 +197,7 @@ export default class CapacityChart {
         const useHourly = this.view.chartGranularity === 'hour' && this.supportsHourlyGranularity();
         this.view.chartGranularity = useHourly ? 'hour' : 'day';
         this.view.tableIsHourly = useHourly;
+        this.view.chartPlotsHourly = useHourly;
 
         this.view.chartDataSparse = useHourly
             ? this.view.hourlyChartDataSparse
@@ -397,6 +399,39 @@ export default class CapacityChart {
         }
     }
 
+    getRawChartLabels() {
+        return getListByLabel(this.view.data, this.view.data.visualization.xlabel[0]);
+    }
+
+    getChartDisplayLabels(rawLabels) {
+        if (this.view.chartPlotsHourly) {
+            return rawLabels;
+        }
+
+        return rawLabels.map((label) => formatCapacityTableDate(label, false));
+    }
+
+    shouldCenterSingleDailyPoint(labels) {
+        return !this.view.chartPlotsHourly && labels.length === 1;
+    }
+
+    withCenteredSinglePoint(labels, datasets) {
+        if (!this.shouldCenterSingleDailyPoint(labels)) {
+            return { labels, datasets };
+        }
+
+        return {
+            labels: ['', ...labels, ''],
+            datasets: datasets.map((dataset) => ({
+                ...dataset,
+                data: [null, ...dataset.data, null],
+                spanGaps: false,
+                pointRadius: 5,
+                hoverRadius: 7,
+            })),
+        };
+    }
+
     buildChartDatasets() {
         const colorlist = [
             '#008cca',
@@ -569,8 +604,13 @@ export default class CapacityChart {
             return;
         }
 
-        const labels = getListByLabel(this.view.data, this.view.data.visualization.xlabel[0]);
-        const datasets = this.buildChartDatasets();
+        const rawLabels = this.getRawChartLabels();
+        const padded = this.withCenteredSinglePoint(
+            this.getChartDisplayLabels(rawLabels),
+            this.buildChartDatasets()
+        );
+        const labels = padded.labels;
+        const datasets = padded.datasets;
 
         if (!this.hasChartDataChanged(labels, datasets)) {
             return;
@@ -629,6 +669,10 @@ export default class CapacityChart {
     }
 
     shouldShowXTickLabel(label, index, labels) {
+        if (label === '') {
+            return false;
+        }
+
         const intervalHours = this.getChartLabelIntervalHours();
 
         if (this.usesSparseChartData() || intervalHours === null) {
@@ -652,7 +696,8 @@ export default class CapacityChart {
         const labelIntervalHours = this.getChartLabelIntervalHours();
         const useTickCallback = this.usesSparseChartData()
             || labelIntervalHours !== null
-            || labels.length > 31;
+            || labels.length > 31
+            || labels.some((label) => label === '');
 
         if (!useTickCallback) {
             return {
@@ -708,6 +753,7 @@ export default class CapacityChart {
             },
             scales: {
                 x: {
+                    offset: true,
                     ticks: this.getXAxisTickOptions(labels),
                 },
                 y: {
@@ -731,6 +777,9 @@ export default class CapacityChart {
                 },
                 tooltip: {
                     mode: 'index',
+                    filter(item) {
+                        return item.parsed.y !== null && item.parsed.y !== undefined;
+                    },
                 },
             },
         };
@@ -743,8 +792,13 @@ export default class CapacityChart {
 
         this.destroy();
 
-        const labels = getListByLabel(this.view.data, this.view.data.visualization.xlabel[0]);
-        const datasets = this.buildChartDatasets();
+        const rawLabels = this.getRawChartLabels();
+        const padded = this.withCenteredSinglePoint(
+            this.getChartDisplayLabels(rawLabels),
+            this.buildChartDatasets()
+        );
+        const labels = padded.labels;
+        const datasets = padded.datasets;
         const maxY = this.getMaxYValue(datasets);
         this.view.$.find('.chartist').html('<canvas></canvas>&nbsp;');
         this.view.$.find('.chartist').css({
