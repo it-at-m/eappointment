@@ -1,18 +1,24 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
-
+  "extends": [
+    "github>it-at-m/.github//renovate-configs/renovate-config.json5"
+  ],
   "ignorePaths": ["zmsbase/**"],
-
   "baseBranchPatterns": [
     "next",
     "/^release\\/.*/"
   ],
-
-  "timezone": "Europe/Berlin",
+  "automergeSchedule": ["* * * * *"],
   "schedule": ["* 0-4 * * *"],
-
+  "timezone": "Europe/Berlin",
   "packageRules": [
+    {
+      "description": "Automerge non-major updates once CI is green (Renovate-side; platform automerge is unsafe without required status checks on dev)",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    },
     {
       "description": "Surefire 3.6.0 dropped surefire-testng; Cucumber TestNG then discovers 0 scenarios.",
       "matchManagers": ["maven"],
