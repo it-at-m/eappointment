@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-15T12:29:57.881Z",
+  "publishedAt": "2026-09-15T13:49:34.459Z",
   "branches": [
     {
       "name": "next",
@@ -102,6 +102,12 @@
       "slug": "fix-zmskvr-1573-include-special-rows-in-request-report-sum",
       "runId": "34127480535",
       "runStartedAt": "2026-09-07T13:27:20Z"
+    },
+    {
+      "name": "fix-zmskvr-1654-rename-wohnsitzanmeldung",
+      "slug": "fix-zmskvr-1654-rename-wohnsitzanmeldung",
+      "runId": "34974252590",
+      "runStartedAt": "2026-09-15T13:19:24Z"
     },
     {
       "name": "fix-zmskvr-833-zmskvr-1025-rebooking-from-1571",
