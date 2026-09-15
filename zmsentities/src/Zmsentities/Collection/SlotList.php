@@ -2,6 +2,7 @@
 
 namespace BO\Zmsentities\Collection;
 
+use BO\Zmsentities\Helper\PublicBookingLeadTime;
 use BO\Zmsentities\Slot;
 
 /**
@@ -188,7 +189,8 @@ class SlotList extends Base
     public function withTimeGreaterThan(\DateTimeInterface $dateTime, ?int $leadTimeMinutes = null): static
     {
         $slotList = clone $this;
-        $leadTimeSeconds = ($leadTimeMinutes ?? \BO\Zmsentities\Helper\PublicBookingLeadTime::minutes()) * 60;
+        $leadTimeMinutes = $leadTimeMinutes ?? PublicBookingLeadTime::minutes();
+        $leadTimeSeconds = max(0, $leadTimeMinutes) * 60;
         $referenceTime = $dateTime->getTimestamp() + $leadTimeSeconds;
         foreach ($this as $index => $slot) {
             $slotTime = \BO\Zmsentities\Helper\DateTime::create(

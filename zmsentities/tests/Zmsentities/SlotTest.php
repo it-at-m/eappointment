@@ -85,6 +85,26 @@ class SlotTest extends EntityCommonTests
         }
     }
 
+    public function testWithTimeGreaterThanClampsNegativeLeadTimeOverride()
+    {
+        $collection = new $this->collectionclass();
+        $collection->addEntity(new $this->entityclass([
+            'public' => 2,
+            'intern' => 9,
+            'time' => '12:40'
+        ]));
+        $collection->addEntity(new $this->entityclass([
+            'public' => 2,
+            'intern' => 9,
+            'time' => '12:50'
+        ]));
+        $time = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $filtered = $collection->withTimeGreaterThan($time, -30);
+
+        $this->assertEquals(0, $filtered->getSlot(0)['public']);
+        $this->assertEquals(2, $filtered->getSlot(1)['public']);
+    }
+
     public function testReducedSlots()
     {
         $collection = new $this->collectionclass();
