@@ -675,8 +675,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     }
 
     /**
-     * Match an exact process id or a general search hit, without letting the
-     * search OR skip other WHERE clauses such as active-status filters.
+     * Match an exact process id or a general search hit in one parenthesized OR group.
      */
     public function addConditionProcessIdOrSearch($queryString): static
     {
