@@ -7,6 +7,9 @@
 
 namespace BO\Zmsdldb\Collection;
 
+/**
+ * @extends Base<\BO\Zmsdldb\Entity\Link>
+ */
 class Links extends Base
 {
 }

@@ -8,7 +8,7 @@ class Ics extends Schema\Entity
 
     public static $schema = "ics.json";
 
-    public function getContent()
+    public function getContent(): mixed
     {
         return $this->content;
     }

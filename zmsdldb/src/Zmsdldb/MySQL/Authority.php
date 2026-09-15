@@ -22,14 +22,15 @@ class Authority extends Base
      * @return Collection
      */
     #[\Override]
-    public function fetchList($servicelist = []): Collection
+    public function fetchList(mixed $servicelist = []): Collection
     {
         try {
             $authorityList = new Collection();
 
             $sqlArgs = [];
 
-            if (!empty($servicelist)) {
+            /** @psalm-suppress RiskyTruthyFalsyComparison */
+            if (is_array($servicelist) && $servicelist !== []) {
                 $sqlArgs = ['de',$this->locale];
                 $questionMarks = array_fill(0, count($servicelist), '?');
 
@@ -145,7 +146,7 @@ class Authority extends Base
      * @return Collection
      */
     #[\Override]
-    public function readListByOfficePath($officepath): Collection
+    public function readListByOfficePath(mixed $officepath): Collection
     {
         $authorityList = new Collection();
 

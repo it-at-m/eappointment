@@ -114,6 +114,46 @@ describe("AppointmentSelection", () => {
       expect(wrapper.html()).not.toContain("location");
     });
 
+    it("keeps an already reserved office and timeslot instead of resetting the calendar", async () => {
+      const reservedTimeslot = 1735689600;
+      const wrapper = createWrapper({
+        selectedTimeslot: reservedTimeslot,
+        selectedProvider: {
+          name: "Office BBB",
+          id: 2,
+          priority: 1,
+          address: { street: "Elm", house_number: "99" },
+          scope: { id: "2" },
+        },
+        selectedService: {
+          id: "service1",
+          providers: [
+            {
+              name: "Office AAA",
+              id: 1,
+              priority: 10,
+              address: { street: "Elm", house_number: "99" },
+              scope: { id: "1" },
+              showAlternativeLocations: true,
+            },
+            {
+              name: "Office BBB",
+              id: 2,
+              priority: 1,
+              address: { street: "Elm", house_number: "99" },
+              scope: { id: "2" },
+              showAlternativeLocations: true,
+            },
+          ],
+        },
+      });
+
+      await flushPromises();
+
+      expect(wrapper.vm.selectedProvider?.id).toBe(2);
+      expect(wrapper.vm.selectedTimeslot).toBe(reservedTimeslot);
+    });
+
     it("shows only one appointment for one provider in the morning", async () => {
       // Mock availableDays to include only Office AAA
       (fetchAvailableCalendar as Mock).mockResolvedValue(
@@ -3378,6 +3418,87 @@ describe("AppointmentSelection", () => {
 
       expect(wrapper.vm.isSwitchingProvider).toBe(false);
       expect(wrapper.find(".m-spinner-container").exists()).toBe(false);
+    });
+  });
+
+  describe("ZMSKVR-1571 selectedProvider retention", () => {
+    it("does not clear the reserved office when multiple locations stay checked", async () => {
+      const reservedOffice = {
+        id: 1,
+        name: "Bürgerbüro A",
+        address: {
+          street: "Main",
+          house_number: "1",
+          postal_code: "80331",
+          city: "München",
+        },
+        scope: { telephoneActivated: true, customTextfieldActivated: true },
+        showAlternativeLocations: true,
+      };
+      const otherOffice = {
+        id: 2,
+        name: "Bürgerbüro B",
+        address: {
+          street: "Other",
+          house_number: "2",
+          postal_code: "80331",
+          city: "München",
+        },
+        scope: { id: "2" },
+        showAlternativeLocations: true,
+      };
+
+      const wrapper = createWrapper({
+        selectedProvider: reservedOffice,
+        selectedService: {
+          id: "service1",
+          providers: [reservedOffice, otherOffice],
+        },
+      });
+
+      wrapper.vm.selectableProviders = [reservedOffice, otherOffice];
+      wrapper.vm.selectedProviders = { "1": true, "2": true };
+      await nextTick();
+      await flushPromises();
+
+      expect(wrapper.vm.selectedProvider?.id).toBe(1);
+    });
+
+    it("keeps a shared-booking peer office when only the display Ort stays checked", async () => {
+      const displayOrt = {
+        id: 10489,
+        name: "Bürgerbüro Ruppertstraße",
+        address: {
+          street: "Ruppertstraße",
+          house_number: "19",
+          postal_code: "80337",
+          city: "München",
+        },
+        sharedBookingOfficeIds: [10489, 10503],
+        showAlternativeLocations: false,
+      };
+      const ausbildung = {
+        id: 10503,
+        name: "Bürgerbüro Ruppertstraße (Ausbildung)",
+        address: displayOrt.address,
+        sharedBookingOfficeIds: [10489, 10503],
+        showAlternativeLocations: false,
+      };
+
+      const wrapper = createWrapper({
+        selectedProvider: ausbildung,
+        selectedService: {
+          id: "1063475",
+          providers: [displayOrt, ausbildung],
+        },
+      });
+
+      wrapper.vm.selectableProviders = [displayOrt];
+      wrapper.vm.selectedProviders = { "10489": true };
+      await nextTick();
+      await flushPromises();
+
+      expect(wrapper.vm.selectedProvider?.id).toBe(10503);
     });
   });
 });

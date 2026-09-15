@@ -41,7 +41,6 @@ class WorkstationOAuthTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertSame(200, $response->getStatusCode());
     }
 
-
     public function testInvalidStateHeaderMismatch()
     {
         $this->expectException(\BO\Zmsbackend\Workstation\Exception\WorkstationAuthFailed::class);

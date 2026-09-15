@@ -5,11 +5,11 @@ namespace BO\Zmsbackend\ProcessSearchHistory\Repository;
 class ProcessSearchHistory extends \BO\Zmsbackend\Query\Base implements
     \BO\Zmsbackend\Query\MappingInterface
 {
-    public const TABLE = 'process_search_history';
-    public const ALIAS = 'psh';
+    public const string TABLE = 'process_search_history';
+    public const string ALIAS = 'psh';
 
     #[\Override]
-    public function getEntityMapping()
+    public function getEntityMapping(): array
     {
         return [
             'id' => self::ALIAS . '.id',

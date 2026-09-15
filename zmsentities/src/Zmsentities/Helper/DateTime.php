@@ -20,7 +20,7 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
             }
             $dateTime = $dateTime->setTimestamp($time->getTimestamp());
         } else {
-            $dateTime = new self($time, $timezone);
+            $dateTime = new self($time === false ? 'now' : $time, $timezone);
         }
         return $dateTime;
     }
@@ -34,12 +34,12 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
         return 1 + ($week < $firstWeekOfMonth ? $week : $week - $firstWeekOfMonth);
         */
 
-        $dayOfMonth = $this->format('j');
+        $dayOfMonth = (int) $this->format('j');
         $weekOfMonth = ceil($dayOfMonth / 7);
         return $weekOfMonth;
     }
 
-    public function isWeekOfMonth($number): bool
+    public function isWeekOfMonth(mixed $number): bool
     {
         return (int)$this->getWeekOfMonth() === (int)$number;
     }
@@ -53,9 +53,9 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
 
     public function getSecondsOfDay(): int|float
     {
-        $hours = $this->format('G');
-        $minutes = $this->format('i');
-        $seconds = $this->format('s');
+        $hours = (int) $this->format('G');
+        $minutes = (int) $this->format('i');
+        $seconds = (int) $this->format('s');
         return $hours * 3600 + $minutes * 60 + $seconds;
     }
 
@@ -66,8 +66,8 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
     public static function getFormatedDates(
         \DateTimeInterface $date,
         string $pattern = 'MMMM',
-        $locale = 'de_DE',
-        $timezone = 'Europe/Berlin'
+        string $locale = 'de_DE',
+        string $timezone = 'Europe/Berlin'
     ): string|false {
         $dateFormatter = new \IntlDateFormatter(
             $locale,
@@ -80,20 +80,20 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
         return $dateFormatter->format($date->getTimestamp());
     }
 
-    public static function getSummerTimeStartDateTime($year = null): \DateTime
+    public static function getSummerTimeStartDateTime(mixed $year = null): \DateTime
     {
         $year = ($year) ? $year : date('Y');
         $dateTimeMarch = new \DateTime($year . '-03-01', new \DateTimeZone('Europe/Berlin'));
         $lastSunday = $dateTimeMarch->modify('Last Sunday of March');
-        return $lastSunday->setTime('02', '00', '00');
+        return $lastSunday->setTime(2, 0, 0);
     }
 
-    public static function getSummerTimeEndDateTime($year = null): \DateTime
+    public static function getSummerTimeEndDateTime(mixed $year = null): \DateTime
     {
         $year = ($year) ? $year : date('Y');
         $dateTimeOctober = new \DateTime($year . '-10-01', new \DateTimeZone('Europe/Berlin'));
         $lastSunday = $dateTimeOctober->modify('Last Sunday of October');
-        return $lastSunday->setTime('03', '00', '00');
+        return $lastSunday->setTime(3, 0, 0);
     }
 
     public function __toString(): string

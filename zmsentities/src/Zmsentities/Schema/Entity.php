@@ -10,6 +10,8 @@ use BO\Zmsentities\Helper\Property;
  * @SuppressWarnings(Complexity)
  *
  * @extends \ArrayObject<array-key, mixed>
+ * @psalm-no-seal-properties
+ * @psalm-consistent-constructor
  */
 class Entity extends \ArrayObject implements \JsonSerializable
 {
@@ -21,7 +23,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public const string PRIMARY = 'id';
 
     /**
-     * @var String $schema Filename of JSON-Schema file
+     * @var string|null $schema Filename of JSON-Schema file
      */
     public static $schema = null;
 
@@ -31,7 +33,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public static $schemaRefPrefix = '';
 
     /**
-     * @var \ArrayObject $jsonSchema JSON-Schema definition to validate data
+     * @var \ArrayObject|null $jsonSchema JSON-Schema definition to validate data
      */
     protected $jsonSchema = null;
 
@@ -47,15 +49,16 @@ class Entity extends \ArrayObject implements \JsonSerializable
     protected static $schemaCache = [];
 
     /**
-     * @var Int $resolveLevel indicator on data integrity
+     * @var int|null $resolveLevel indicator on data integrity
      */
     protected $resolveLevel = null;
 
     /**
      * Read the json schema and let array act like an object
      */
-    public function __construct($input = null, $flags = \ArrayObject::ARRAY_AS_PROPS, $iterator_class = "ArrayIterator")
+    public function __construct(mixed $input = null, int $flags = \ArrayObject::ARRAY_AS_PROPS, string $iterator_class = "ArrayIterator")
     {
+        /** @var class-string<\ArrayIterator> $iterator_class */
         parent::__construct($this->getDefaults(), $flags, $iterator_class);
         if ($input) {
             $input = $this->getUnflattenedArray($input);
@@ -72,7 +75,17 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $this->getArrayCopy();
     }
 
-    public function getUnflattenedArray($input)
+    /**
+     * @param array-key|null $key
+     */
+    #[\Override]
+    public function offsetSet(mixed $key, mixed $value): void
+    {
+        /** @psalm-suppress PossiblyNullArgument */
+        parent::offsetSet($key, $value);
+    }
+
+    public function getUnflattenedArray(mixed $input): mixed
     {
         if (!$input instanceof UnflattedArray) {
             $input = new UnflattedArray($input);
@@ -112,7 +125,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
      *
      * @return bool
      */
-    public function isValid($resolveLevel = 0): bool
+    public function isValid(int $resolveLevel = 0): bool
     {
         $validator = $this->getValidator('de_DE', $resolveLevel = 0);
         return $validator->isValid();
@@ -124,7 +137,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
      * @throws \BO\Zmsentities\Exception\SchemaValidation
      * @return bool
      */
-    public function testValid($locale = 'de_DE', $resolveLevel = 0): bool
+    public function testValid(string $locale = 'de_DE', int $resolveLevel = 0): bool
     {
         $validator = $this->getValidator($locale, $resolveLevel);
         if (!$validator->isValid()) {
@@ -162,11 +175,17 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return new $class();
     }
 
-    protected static function readJsonSchema()
+    protected static function readJsonSchema(): mixed
     {
         $class = get_called_class();
         if (!array_key_exists($class, self::$schemaCache)) {
-            self::$schemaCache[$class] = Loader::asArray($class::$schema);
+            $schemaFile = $class::$schema;
+            if (!is_string($schemaFile)) {
+                throw new \BO\Zmsentities\Exception\SchemaMissingJsonFile(
+                    'Missing JSON-Schema file for ' . $class
+                );
+            }
+            self::$schemaCache[$class] = Loader::asArray($schemaFile);
         }
         return self::$schemaCache[$class];
     }
@@ -174,12 +193,12 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public function getEntityName(): string
     {
         $entity = get_class($this);
-        $entity = preg_replace('#.*[\\\]#', '', $entity);
+        $entity = preg_replace('#.*[\\\]#', '', $entity) ?? '';
         $entity = strtolower($entity);
         return $entity;
     }
 
-    public function setJsonCompressLevel($jsonCompressLevel): static
+    public function setJsonCompressLevel(mixed $jsonCompressLevel): static
     {
         $this->jsonCompressLevel = $jsonCompressLevel;
         return $this;
@@ -205,7 +224,32 @@ class Entity extends \ArrayObject implements \JsonSerializable
 
     public function __toString()
     {
-        return json_encode($this->jsonSerialize(), JSON_HEX_QUOT);
+        $encoded = json_encode($this->jsonSerialize(), JSON_HEX_QUOT);
+        return $encoded !== false ? $encoded : '';
+    }
+
+    /**
+     * Declared so Psalm treats ARRAY_AS_PROPS reads as magic. PHP uses ArrayObject
+     * property handlers at runtime, so these methods are not invoked.
+     */
+    public function __get(string $name): mixed
+    {
+        return $this->offsetGet($name);
+    }
+
+    public function __isset(string $name): bool
+    {
+        return $this->offsetExists($name);
+    }
+
+    public function __set(string $name, mixed $value): void
+    {
+        $this->offsetSet($name, $value);
+    }
+
+    public function __unset(string $name): void
+    {
+        $this->offsetUnset($name);
     }
 
     public function __clone()
@@ -226,11 +270,11 @@ class Entity extends \ArrayObject implements \JsonSerializable
         foreach ($mergeData as $key => $item) {
             if (isset($this[$key])) {
                 if ($this[$key] instanceof Entity) {
-                    $this[$key]->setResolveLevel($this->getResolveLevel() - 1);
+                    $this[$key]->setResolveLevel(($this->getResolveLevel() ?? 0) - 1);
                     $this[$key]->addData($item);
                 } elseif ($this[$key] instanceof \BO\Zmsentities\Collection\Base) {
                     $this[$key]->exchangeArray([]);
-                    $this[$key]->setResolveLevel($this->getResolveLevel() - 1);
+                    $this[$key]->setResolveLevel(($this->getResolveLevel() ?? 0) - 1);
                     $this[$key]->addData($item);
                 } elseif (is_array($this[$key])) {
                     $this[$key] = array_replace_recursive($this[$key], $item);
@@ -247,7 +291,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Performs addData on a cloned entity
      */
-    public function withData($mergeData): static
+    public function withData(mixed $mergeData): static
     {
         $entity = clone $this;
         $entity->addData($mergeData);
@@ -259,7 +303,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return (false !== $this->getId()) ? true : false;
     }
 
-    public function getId()
+    public function getId(): mixed
     {
         $idName = $this::PRIMARY;
         return ($this->offsetExists($idName) && $this[$idName]) ? $this[$idName] : false;
@@ -275,12 +319,12 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return new \BO\Zmsentities\Helper\Property($this);
     }
 
-    public function hasProperty($propertyName)
+    public function hasProperty(mixed $propertyName): mixed
     {
         return $this->toProperty()->{$propertyName}->isAvailable();
     }
 
-    public function getProperty(string $propertyName, $default = '')
+    public function getProperty(string $propertyName, mixed $default = ''): mixed
     {
         return $this->toProperty()->{$propertyName}->get($default);
     }
@@ -288,7 +332,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Change property without changing original
      */
-    public function withProperty($propertyName, $newValue): static
+    public function withProperty(mixed $propertyName, mixed $newValue): static
     {
         $entity = clone $this;
         $entity[$propertyName] = $newValue;
@@ -323,7 +367,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     }
 
     /**
-     * @return Int
+     * @return int|null
      */
     public function getResolveLevel()
     {
@@ -331,7 +375,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     }
 
     /**
-     * @param Int $resolveLevel
+     * @param int|null $resolveLevel
      * @return self
      */
     public function setResolveLevel($resolveLevel)
@@ -344,9 +388,9 @@ class Entity extends \ArrayObject implements \JsonSerializable
      * Set a very strict resolveLevel to reduce data
      *
      * @param Int $resolveLevel
-     * @return self
+     * @return self|array
      */
-    public function withResolveLevel($resolveLevel)
+    public function withResolveLevel($resolveLevel): self|array
     {
         if ($resolveLevel >= 0) {
             $entity = clone $this;
@@ -368,9 +412,9 @@ class Entity extends \ArrayObject implements \JsonSerializable
      * Replace data with a jsonSchema Reference
      *
      * @param Array $additionalData
-     * @return self
+     * @return self|array
      */
-    public function withReference($additionalData = [])
+    public function withReference($additionalData = []): self|array
     {
         if (isset($this[$this::PRIMARY])) {
             $additionalData['$ref'] =

@@ -52,6 +52,15 @@ class SchemaTest extends Base
         $this->assertTrue($jsonSerialize == $entity->jsonSerialize(), "Schema Helper jsonSerialize does not match");
     }
 
+    public function testJsonSerializeWithCompressLevelAndScalarDefaults()
+    {
+        $entity = new \BO\Zmsentities\Workstation();
+        $entity->setJsonCompressLevel(1);
+        $encoded = json_encode($entity);
+        $this->assertNotFalse($encoded);
+        $this->assertStringContainsString('$schema', $encoded);
+    }
+
     public function testResolveLevel()
     {
         $entity = new \BO\Zmsentities\Process([

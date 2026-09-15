@@ -400,6 +400,21 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    public function addConditionProcessDeleteBeforeDate(\DateTimeInterface $date): static
+    {
+        $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($date) {
+            $query->andWith(
+                self::expression(
+                    'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)'
+                ),
+                '<',
+                $date->format('Y-m-d') . ' 00:00:00'
+            );
+        });
+        $this->query->orderBy('appointments__0__date', 'ASC');
+        return $this;
+    }
+
     /**
      * @psalm-api
      */
@@ -659,6 +674,49 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    /**
+     * Match an exact process id or a general search hit in one parenthesized OR group.
+     */
+    public function addConditionProcessIdOrSearch($queryString): static
+    {
+        $queryString = trim((string) $queryString);
+        $processId = (int) $queryString;
+        $terms = $this->parseSearchTerms($queryString);
+
+        $this->query->where(function (
+            \BO\Zmsbackend\Query\Builder\ConditionBuilder $group
+        ) use (
+            $processId,
+            $terms
+        ) {
+            $group->andWith('process.BuergerID', '=', $processId);
+
+            if ($terms === []) {
+                return;
+            }
+
+            $group->orWith(function (
+                \BO\Zmsbackend\Query\Builder\ConditionBuilder $search
+            ) use ($terms) {
+                foreach ($terms as $term) {
+                    $search->andWith(
+                        function (
+                            \BO\Zmsbackend\Query\Builder\ConditionBuilder $inner
+                        ) use ($term) {
+                            $this->appendGeneralSearchTermGroup(
+                                $inner,
+                                $term['value'],
+                                $term['quoted']
+                            );
+                        }
+                    );
+                }
+            });
+        });
+
+        return $this;
+    }
+
     private function appendGeneralSearchTermGroup(\BO\Zmsbackend\Query\Builder\ConditionBuilder $query, string $term, bool $quoted = false): void
     {
         $likeContains = '%' . $this->escapeLikeValue($term) . '%';
@@ -702,6 +760,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    /** @psalm-api */
     public function addOrderByAppointmentDate(): static
     {
         $this->query->orderBy('process.Datum', 'ASC');
@@ -710,6 +769,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    /** @psalm-api */
     public function addOrderBySearchRelevance(string $queryString): static
     {
         $queryString = trim($queryString);
@@ -1188,17 +1248,20 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         ) {
             $timeoutTime = $dateTime->format('Y-m-d H:i:s');
             $data['timeoutTime'] = $timeoutTime;
-        } elseif ($process->status == 'processing') {
+        } elseif ($process->status == 'processing' && ($process->showUpTime === null || $process->showUpTime === '')) {
+            // Do not reset showUpTime on re-save (preserves Bearbeitungszeit)
             $showUpTime = $dateTime->format('Y-m-d H:i:s');
             $data['showUpTime'] = $showUpTime;
         } elseif ($process->status == 'finished') {
             $finishTime = $dateTime->format('Y-m-d H:i:s');
             $data['finishTime'] = $finishTime;
         } elseif (
-            $process->status == 'queued'
-            && isset($previousStatus)
+            isset($previousStatus)
             && in_array($previousStatus, ['called', 'processing'], true)
+            && in_array($process->status, ['queued', 'parked'], true)
         ) {
+            // Drop open processing segment when leaving to queue/park so a later
+            // resume starts a fresh showUpTime (park-and-resume ATAF expectation).
             $data['showUpTime'] = null;
             $data['timeoutTime'] = null;
         }

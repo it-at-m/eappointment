@@ -10,7 +10,7 @@ Diese Anleitung galt für **Podman 5.8.x** mit dem Tap `slp/krunkit` (krunkit 1.
 **Aktuelle Anleitung:** [Podman und Dev Containers (Podman 6.x)](./podman-and-dev-containers.md)
 :::
 
-Diese Schritte ergänzen [DDEV und Devcontainer — Devcontainer (Podman)](https://it-at-m.github.io/eappointment/de/setup-and-development/getting-started/ddev-and-devcontainer.html#devcontainer-podman), wenn du auf **macOS** mit Podman und Dev Containers arbeitest.
+Diese Schritte ergänzen [Devcontainer und Podman](https://it-at-m.github.io/eappointment/de/setup-and-development/getting-started/devcontainer.html), wenn du auf **macOS** mit Podman und Dev Containers arbeitest.
 
 Möglicherweise musst du das fehlende Paket `krunkit` vor der Podman-Installation installieren und in deiner `~/.zshrc` oder `~/.bashrc` `export DOCKER_HOST=unix:///var/run/docker.sock` setzen (oder in der Shell exportieren), bevor du `devcontainer`-Befehle nutzt.
 

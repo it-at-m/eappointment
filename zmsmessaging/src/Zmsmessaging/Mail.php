@@ -15,14 +15,13 @@ use PHPMailer\PHPMailer\Exception as PHPMailerException;
 
 class Mail extends BaseController
 {
-    protected $messagesQueue = null;
-    protected $startTime;
+    protected mixed $messagesQueue = null;
 
-    public function __construct($verbose = false, $maxRunTime = 50)
+    public function __construct(mixed $verbose = false, mixed $maxRunTime = 50)
     {
         parent::__construct($verbose, $maxRunTime);
-        $this->log("Read Mail QueueList start with limit " . \App::$mails_per_minute . " - " . \App::$now->format('c'));
-        $queueList = \App::$http->readGetResult('/mails/', [
+        $this->log("Read Mail QueueList start with limit " . \App::$mails_per_minute . " - " . $this->getNow()->format('c'));
+        $queueList = $this->getHttp()->readGetResult('/mails/', [
             'resolveReferences' => 0,
             'limit' => \App::$mails_per_minute,
             'onlyIds' => true
@@ -30,7 +29,7 @@ class Mail extends BaseController
         if (null !== $queueList) {
             $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp');
         } else {
-            $this->log("QueueList is null - " . \App::$now->format('c'));
+            $this->log("QueueList is null - " . $this->getNow()->format('c'));
         }
     }
 
@@ -38,12 +37,12 @@ class Mail extends BaseController
      * @return (mixed|string[])[]
      *
      */
-    public function initQueueTransmission($action = false): array
+    public function initQueueTransmission(mixed $action = false): array
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
             if ($this->maxRunTime < $this->getSpendTime()) {
-                $this->log("Max Runtime exceeded before processing started - " . \App::$now->format('c'));
+                $this->log("Max Runtime exceeded before processing started - " . $this->getNow()->format('c'));
                 return $resultList;
             }
             $this->log("Messages queue count - " . count($this->messagesQueue));
@@ -53,7 +52,7 @@ class Mail extends BaseController
                 $itemIds = [];
                 foreach ($this->messagesQueue as $item) {
                     if ($this->maxRunTime < $this->getSpendTime()) {
-                        $this->log("Max Runtime exceeded during message loop - " . \App::$now->format('c'));
+                        $this->log("Max Runtime exceeded during message loop - " . $this->getNow()->format('c'));
                         break;
                     }
                     $itemIds[] = $item['id'];
@@ -76,7 +75,7 @@ class Mail extends BaseController
                     }
                 }
             } else {
-                $batchSize = min(count($this->messagesQueue), max(1, ceil(count($this->messagesQueue) / 12)));
+                $batchSize = min(count($this->messagesQueue), max(1, (int) ceil(count($this->messagesQueue) / 12)));
                 $this->log("More than 50 items, processing in batches of $batchSize.");
                 $batches = array_chunk(iterator_to_array($this->messagesQueue), $batchSize);
                 $this->log("Messages divided into " . count($batches) . " batches.");
@@ -84,15 +83,19 @@ class Mail extends BaseController
                 $processHandles = [];
                 foreach ($batches as $batch) {
                     if ($this->maxRunTime < $this->getSpendTime()) {
-                        $this->log("Max Runtime exceeded during batch processing - " . \App::$now->format('c'));
+                        $this->log("Max Runtime exceeded during batch processing - " . $this->getNow()->format('c'));
                         break;
                     }
 
-                    $ids = array_map(function ($message) {
+                    $ids = array_map(function ($message): mixed {
                         return $message['id'];
                     }, $batch);
-                    $encodedIds = base64_encode(json_encode($ids));
-                    $actionStr = is_array($action) ? json_encode($action) : ($action === false ? 'false' : ($action === true ? 'true' : (string)$action));
+                    $idsJson = json_encode($ids);
+                    $encodedIds = base64_encode($idsJson === false ? '[]' : $idsJson);
+                    $actionJson = is_array($action) ? json_encode($action) : false;
+                    $actionStr = is_array($action)
+                        ? ($actionJson === false ? '[]' : $actionJson)
+                        : ($action === false ? 'false' : ($action === true ? 'true' : (string)$action));
 
                     $idsStr = implode(', ', $ids);
                     $command = "php " . escapeshellarg(__DIR__ . '/MailProcessor.php') . " " . escapeshellarg($encodedIds) . " " . escapeshellarg($actionStr);
@@ -102,7 +105,7 @@ class Mail extends BaseController
                 if ($this->maxRunTime >= $this->getSpendTime()) {
                     $this->monitorProcesses($processHandles);
                 } else {
-                    $this->log("Max Runtime exceeded before process monitoring started - " . \App::$now->format('c'));
+                    $this->log("Max Runtime exceeded before process monitoring started - " . $this->getNow()->format('c'));
                 }
             }
         } else {
@@ -119,7 +122,7 @@ class Mail extends BaseController
      * @return ((array|mixed|null|string)[]|string)[]
      *
      */
-    public function sendQueueItems($action, array $itemIds): array
+    public function sendQueueItems(mixed $action, array $itemIds): array
     {
         $endpoint = '/mails/';
         $params = [
@@ -128,7 +131,7 @@ class Mail extends BaseController
         ];
 
         try {
-            $response = \App::$http->readGetResult($endpoint, $params);
+            $response = $this->getHttp()->readGetResult($endpoint, $params);
             $mailItems = $response->getCollection();
         } catch (\Exception $e) {
             $this->log("Error fetching mail data: " . $e->getMessage() . "\n\n");
@@ -149,7 +152,7 @@ class Mail extends BaseController
             $processId = $entity['process']['id'] ?? null;
             $mailer = $this->getValidMailer($entity);
             if (!$mailer) {
-                $this->log("No valid mailer for mail ID: " . $entity->id);
+                $this->log("No valid mailer for mail ID: " . $entity['id']);
                 continue;
             }
 
@@ -157,10 +160,10 @@ class Mail extends BaseController
                 $result = $this->sendMailer($entity, $mailer, $action);
                 if ($result instanceof PHPMailer) {
                     $mailResult = [
-                        'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
-                        'mailId' => $entity->id,
+                        'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity['id'],
+                        'mailId' => $entity['id'],
                         'processId' => $processId,
-                        'createTimestamp' => $entity->createTimestamp,
+                        'createTimestamp' => $entity['createTimestamp'],
                         'recipients' => $result->getAllRecipientAddresses(),
                         'mime' => $result->getMailMIME(),
                         'attachments' => $result->getAttachments(),
@@ -168,30 +171,30 @@ class Mail extends BaseController
                     ];
                     $results[] = $mailResult;
                     $processedMails[] = [
-                        'mailId' => $entity->id,
+                        'mailId' => $entity['id'],
                         'processId' => $processId,
-                        'createTimestamp' => $entity->createTimestamp,
+                        'createTimestamp' => $entity['createTimestamp'],
                     ];
                     \App::$log->info('Mail processed from queue', [
-                        'mailId' => $entity->id,
+                        'mailId' => $entity['id'],
                         'processId' => $processId,
-                        'createTimestamp' => $entity->createTimestamp,
+                        'createTimestamp' => $entity['createTimestamp'],
                     ]);
-                    $successfullySentIds[] = $entity->id;
+                    $successfullySentIds[] = $entity['id'];
                 } else {
                     $errorInfo = $result->ErrorInfo ?? 'Unknown mailer error';
                     $results[] = [
                         'errorInfo' => $errorInfo,
-                        'mailId' => $entity->id,
+                        'mailId' => $entity['id'],
                         'processId' => $processId,
                     ];
                     $this->log('Mail send failed with error: ' . $errorInfo);
                 }
             } catch (\Exception $e) {
-                $this->log("Exception while sending mail ID " . $entity->id . ": " . $e->getMessage());
+                $this->log("Exception while sending mail ID " . $entity['id'] . ": " . $e->getMessage());
                 $results[] = [
                     'errorInfo' => $e->getMessage(),
-                    'mailId' => $entity->id,
+                    'mailId' => $entity['id'],
                     'processId' => $processId,
                 ];
             }
@@ -222,10 +225,12 @@ class Mail extends BaseController
         return $results;
     }
 
-    protected function getValidMailer(MailEntity $entity)
+    protected function getValidMailer(MailEntity $entity): PHPMailer|false
     {
         $message = '';
         $messageId = $entity['id'];
+        $code = 0;
+        $mailer = false;
         try {
             $mailer = $this->readMailer($entity);
         // @codeCoverageIgnoreStart
@@ -240,19 +245,19 @@ class Mail extends BaseController
         }
         if ($message) {
             if (428 == $code || 422 == $code) {
-                $this->log("Build Mailer Failure " . $code . ": deleteEntityFromQueue() - " . \App::$now->format('c'));
+                $this->log("Build Mailer Failure " . $code . ": deleteEntityFromQueue() - " . $this->getNow()->format('c'));
                 $this->deleteEntityFromQueue($entity);
             } else {
                 $this->log(
-                    "Build Mailer Failure " . $code . ": removeEntityOlderThanOneHour() - " . \App::$now->format('c')
+                    "Build Mailer Failure " . $code . ": removeEntityOlderThanOneHour() - " . $this->getNow()->format('c')
                 );
                 $this->removeEntityOlderThanOneHour($entity);
             }
 
             $log = new Mimepart(['mime' => 'text/plain']);
-            $log->content = $message;
+            $log['content'] = $message;
             $this->log("Build Mailer Exception log message: " . $message);
-            \App::$http->readPostResult('/log/process/' . $entity->process['id'] . '/', $log, ['error' => 1]);
+            $this->getHttp()->readPostResult('/log/process/' . $entity['process']['id'] . '/', $log, ['error' => 1]);
             return false;
         }
 
@@ -268,7 +273,8 @@ class Mail extends BaseController
     {
         $this->testEntity($entity);
         $encoding = 'base64';
-        foreach ($entity->multipart as $part) {
+        $icsPart = null;
+        foreach ($entity['multipart'] as $part) {
             $mimepart = new Mimepart($part);
             if ($mimepart->isText()) {
                 $textPart = $mimepart->getContent();
@@ -291,11 +297,11 @@ class Mail extends BaseController
         $mailer->AltBody = (isset($textPart)) ? $textPart : '';
         $mailer->Body = (isset($htmlPart)) ? $htmlPart : '';
         $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
-        $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
+        $mailer->AddAddress($entity->getRecipient(), $entity['client']['familyName']);
 
         if (null !== $entity->getIcsPart()) {
             $mailer->AddStringAttachment(
-                $icsPart,
+                $icsPart ?? '',
                 "Termin.ics",
                 $encoding,
                 "text/calendar; charset=utf-8; method=REQUEST"
@@ -346,7 +352,7 @@ class Mail extends BaseController
         }
     }
 
-    private function deleteEntitiesFromQueue(array $itemIds)
+    private function deleteEntitiesFromQueue(array $itemIds): mixed
     {
         $endpoint = '/mails/';
         $params = [
@@ -354,7 +360,7 @@ class Mail extends BaseController
         ];
 
         try {
-            $response = \App::$http->readDeleteResult($endpoint, $params);
+            $response = $this->getHttp()->readDeleteResult($endpoint, $params);
             return $response;
         } catch (\Exception $e) {
             $this->log("Error deleting mail data: " . $e->getMessage() . "\n\n");

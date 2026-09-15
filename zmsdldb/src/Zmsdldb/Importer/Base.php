@@ -23,14 +23,14 @@ abstract class Base implements Options
     use PDOTrait;
     use OptionsTrait;
 
-    protected $fileAccess;
+    protected \BO\Zmsdldb\FileAccess $fileAccess;
 
-    protected $localeList = [
+    protected array $localeList = [
         'de',
         'en'
     ];
 
-    protected $importTypes = [
+    protected mixed $importTypes = [
         'Services' => 'Service',
         'Locations' => 'Location',
         'Authorities' => 'Authority',
@@ -64,13 +64,17 @@ abstract class Base implements Options
             if (preg_match('/get(?P<importer>[A-Za-z]+)Importer/', $method, $matches)) {
                 $ImporterClass = static::class . '\\' . $matches['importer'];
                 array_unshift($args, $this->getPDOAccess());
-                /** @psalm-suppress UnsafeInstantiation */
-                $instance = new $ImporterClass(...$args);
-                if (!$instance instanceof \BO\Zmsdldb\Importer\MySQL\Base) {
+                if (
+                    !class_exists($ImporterClass)
+                    || !is_a($ImporterClass, \BO\Zmsdldb\Importer\MySQL\Base::class, true)
+                ) {
                     throw new \InvalidArgumentException(
                         $ImporterClass . ' must extend \\BO\\Zmsdldb\\Importer\\MySQL\\Base'
                     );
                 }
+                /** @var class-string<\BO\Zmsdldb\Importer\MySQL\Base> $ImporterClass */
+                /** @psalm-suppress UnsafeInstantiation */
+                $instance = new $ImporterClass(...$args);
                 return $instance;
             }
             throw new \BadMethodCallException('Method ' . $method . ' not found!');
@@ -164,14 +168,14 @@ abstract class Base implements Options
 
     /**
      *
-     * @return self
+     * @return void
      * @psalm-api
      */
     protected function importSettings()
     {
         try {
             $importer = $this->getSettingsImporter(
-                $this->fileAccess->fromSetting('de')->getData(),
+                $this->fileAccess->fromSetting()->getData(),
                 'de',
                 $this->getOptions()
             );
@@ -185,7 +189,7 @@ abstract class Base implements Options
 
     /**
      *
-     * @return self
+     * @return void
      * @psalm-api
      */
     protected function importTopics()
@@ -207,7 +211,7 @@ abstract class Base implements Options
 
     /**
      *
-     * @return self
+     * @return void
      * @psalm-api
      */
     protected function importAuthorities()

@@ -159,6 +159,45 @@ public class CitizenViewSteps {
         page.waitForPreconfirmPageAfterUpdate();
     }
 
+    /**
+     * ZMSKVR-833: first booking at a scope where custom text is optional — fill Kontakt but stay on
+     * the form (no Weiter) so the missing Pflichtfeld is still empty for later rebooking.
+     */
+    @When("I enter contact details without optional remarks in the citizen view")
+    public void iEnterContactDetailsWithoutOptionalRemarks() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: fill contact details without optional Bemerkung (stay on Kontakt)");
+        page.fillContactDetailsRandomWithoutOptionalRemarks();
+    }
+
+    /** ZMSKVR-833: rebooking reserve must land on Kontakt, not skip to Übersicht. */
+    @Then("the contact form should be visible in the citizen view")
+    public void theContactFormShouldBeVisibleInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Kontakt form (Kontaktdaten) visible");
+        page.assertContactFormVisible();
+    }
+
+    @Then("the filled name and email fields should be locked on the contact form in the citizen view")
+    public void theFilledNameAndEmailFieldsShouldBeLockedOnTheContactForm() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Vorname/Nachname/E-Mail locked on rebooking Kontakt");
+        page.assertFilledNameAndEmailLockedOnContactForm();
+    }
+
+    @Then("the required custom text field should be editable on the contact form in the citizen view")
+    public void theRequiredCustomTextFieldShouldBeEditableOnTheContactForm() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert required Bemerkung editable on rebooking Kontakt");
+        page.assertRequiredCustomTextFieldEditableOnContactForm();
+    }
+
+    @When("I fill required custom text fields on the contact form in the citizen view")
+    public void iFillRequiredCustomTextFieldsOnTheContactForm() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: fill required Bemerkung on rebooking Kontakt");
+        page.fillRequiredCustomTextFieldsOnContactForm();
+    }
+
     @When("I accept communication in the citizen view")
     public void iAcceptCommunication() {
         ScenarioLogManager.getLogger().info("zmscitizenview: accept electronic communication");
@@ -314,7 +353,7 @@ public class CitizenViewSteps {
             }
             ids.add(parseIntOrFail(trimmed, "officeId"));
         }
-        int[] officeIds = ids.stream().mapToInt(Integer::intValue).toArray();
+        int[] officeIds = ids.stream().mapToInt(id -> id.intValue()).toArray();
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert timeslots present for providers {}", ids);
         page.assertTimeslotsPresentForProviders(officeIds);
@@ -331,7 +370,7 @@ public class CitizenViewSteps {
             }
             ids.add(parseIntOrFail(trimmed, "officeId"));
         }
-        int[] officeIds = ids.stream().mapToInt(Integer::intValue).toArray();
+        int[] officeIds = ids.stream().mapToInt(id -> id.intValue()).toArray();
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert timeslots absent for providers {}", ids);
         page.assertTimeslotsAbsentForProviders(officeIds);
@@ -386,5 +425,51 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert only Pass calendar services offered on combination step");
         page.assertPassOnlyCombinationServicesVisible();
+    }
+
+    @When("I fill contact details without continuing in the citizen view")
+    public void iFillContactDetailsWithoutContinuing() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: fill Kontakt form without Weiter (phone/Zusatzfelder)");
+        page.fillContactDetailsRandomWithoutContinue();
+    }
+
+    @When("I continue from the contact form in the citizen view")
+    public void iContinueFromTheContactFormInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Kontakt Weiter → Übersicht");
+        page.continueFromContactFormToSummary();
+    }
+
+    @Then("the telephone and custom text fields should remain visible with entered values in the citizen view")
+    public void theTelephoneAndCustomTextFieldsShouldRemainVisibleWithEnteredValues() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert phone + Zusatzfelder still visible with values");
+        page.assertContactPhoneAndCustomFieldsVisibleWithValues();
+    }
+
+    @When("I log in via Bürger-Login with Keycloak in the citizen view")
+    public void iLogInViaBuergerLoginWithKeycloak() throws Exception {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Bürger-Login → Keycloak citizen user (dbs-fragments)");
+        page.loginViaBuergerLoginWithKeycloak();
+    }
+
+    @Then("I should be logged in on the contact form in the citizen view")
+    public void iShouldBeLoggedInOnTheContactForm() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Sie sind angemeldet on Kontakt");
+        page.assertCitizenLoggedInOnContactForm();
+    }
+
+    @Then("the booking summary should show Scheidplatz location for provider {int} in the citizen view")
+    public void theBookingSummaryShouldShowScheidplatzLocation(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Übersicht Ort for Scheidplatz provider {}", officeId);
+        page.assertScheidplatzLocationOnSummary(officeId);
+    }
+
+    @When("I go back from the booking summary to the contact form in the citizen view")
+    public void iGoBackFromTheBookingSummaryToTheContactForm() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Zurück Übersicht → Kontakt");
+        page.goBackFromBookingSummaryToContact();
     }
 }

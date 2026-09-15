@@ -9,7 +9,7 @@ class OrganisationList extends Base
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\Organisation';
 
-    public function getByDepartmentId($departmentId): self
+    public function getByDepartmentId(mixed $departmentId): self
     {
         $organisationList = new self();
         foreach ($this as $entity) {

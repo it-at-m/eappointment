@@ -12,5 +12,6 @@ class ContactTest extends EntityCommonTests
         $this->assertTrue($entity->hasProperty('city'));
         $this->assertEquals('Schönefeld', $entity->getProperty('city'));
         $this->assertEquals('no value', $entity->getProperty('test', 'no value'));
+        $this->assertSame(0, $entity->getProperty('missingNumeric', 0));
     }
 }

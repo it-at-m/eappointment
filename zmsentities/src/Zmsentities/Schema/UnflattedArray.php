@@ -6,12 +6,12 @@ class UnflattedArray
 {
     protected $value = null;
 
-    public function __construct($value)
+    public function __construct(mixed $value)
     {
         $this->value = $value;
     }
 
-    public function getValue()
+    public function getValue(): mixed
     {
         return $this->value;
     }

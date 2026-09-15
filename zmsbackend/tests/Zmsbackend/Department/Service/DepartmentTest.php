@@ -19,7 +19,6 @@ class DepartmentTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertEquals('service@berlinonline.de', $entity->email);
 
         $this->assertEquals(1, count($entity->links));
-        $this->assertFalse(null === $entity->dayoff->getEntityByName('Test Feiertag'));
 
         $entity->email = "max@berlinonline.de";
         $entity = $query->updateEntity($entity->id, $entity);
@@ -37,15 +36,6 @@ class DepartmentTest extends \BO\Zmsbackend\Tests\Service\Base
     {
         $query = new Query();
         $this->assertStringContainsString('Test Department', $query->deleteEntity(999)); //Test Department
-    }
-
-    public function testReadWithDayOff()
-    {
-        $query = new Query();
-        $input = $this->getTestEntity();
-        $entity = $query->writeEntity($input, 75);
-        $entity = $query->readEntity($entity->id, 2, true);
-        $this->assertEquals(1, count($entity->dayoff));
     }
 
     public function testReadList()
@@ -87,12 +77,6 @@ class DepartmentTest extends \BO\Zmsbackend\Tests\Service\Base
                     'name' => 'Test Link',
                     'url' => 'https://service.berlin.de',
                     'target' => 1
-                ]
-            ],
-            'dayoff' => [
-                0 => [
-                  "date" => 1459511700,
-                  "name" => "Test Feiertag"
                 ]
             ]
         ));

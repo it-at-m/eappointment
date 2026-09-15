@@ -23,7 +23,11 @@ class OAuthService
      */
     public function readConfig(): Config
     {
-        return $this->http->readGetResult('/config/', [], $this->configSecureToken)->getEntity();
+        $entity = $this->http->readGetResult('/config/', [], $this->configSecureToken)->getEntity();
+        if (!$entity instanceof Config) {
+            throw new \RuntimeException('Config lookup returned no config entity');
+        }
+        return $entity;
     }
 
     /**
@@ -37,7 +41,7 @@ class OAuthService
     public function authenticateWorkstation(Useraccount $ownerInputData, ?string $state = null)
     {
         $headers = [];
-        if ($state) {
+        if ($state !== null && $state !== '') {
             $headers['state'] = $state;
         }
 

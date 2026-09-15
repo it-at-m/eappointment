@@ -94,7 +94,7 @@ class MapperService
         if ($scope instanceof ThinnedScope) {
             return $scope->getReservationDuration();
         }
-        $reservationDuration = $scope->toProperty()?->preferences?->appointment?->reservationDuration?->get();
+        $reservationDuration = $scope->toProperty()->preferences?->appointment?->reservationDuration?->get();
         return $reservationDuration !== null ? (int) $reservationDuration : null;
     }
 
@@ -112,7 +112,7 @@ class MapperService
             return $activationDuration;
         }
 
-        $activationDuration = $scope->toProperty()?->preferences?->appointment?->activationDuration?->get();
+        $activationDuration = $scope->toProperty()->preferences?->appointment?->activationDuration?->get();
         if ($activationDuration === null || $activationDuration === '') {
             return null;
         }
@@ -384,10 +384,6 @@ class MapperService
      */
     public static function processToThinnedProcess(Process $myProcess): ThinnedProcess
     {
-        if (!$myProcess || !isset($myProcess->id)) {
-            return new ThinnedProcess();
-        }
-
         $subRequestCounts = [];
         $mainServiceId = null;
         $mainServiceName = null;
@@ -416,20 +412,23 @@ class MapperService
 
         // Generate ICS content if process has appointments with time
         $icsContent = self::generateIcsContent($myProcess);
+        $scope = $myProcess->getCurrentScope();
+        $contactName = $scope['contact']['name'] ?? null;
+        $providerId = $scope['provider']['id'] ?? 0;
 
         return new ThinnedProcess(
-            processId: isset($myProcess->id) ? (int) $myProcess->id : 0,
+            processId: (int) $myProcess->id,
             timestamp: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->date)) ? strval($myProcess->appointments[0]->date) : null,
-            authKey: isset($myProcess->authKey) ? $myProcess->authKey : null,
+            authKey: $myProcess->authKey,
             captchaToken: isset($myProcess->captchaToken) ? $myProcess->captchaToken : null,
             familyName: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->familyName)) ? $myProcess->clients[0]->familyName : null,
             customTextfield: isset($myProcess->customTextfield) ? $myProcess->customTextfield : null,
             customTextfield2: isset($myProcess->customTextfield2) ? $myProcess->customTextfield2 : null,
             email: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->email)) ? $myProcess->clients[0]->email : null,
             telephone: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->telephone)) ? $myProcess->clients[0]->telephone : null,
-            officeName: (isset($myProcess->scope->contact) && isset($myProcess->scope->contact->name)) ? $myProcess->scope->contact->name : null,
-            officeId: (isset($myProcess->scope->provider) && isset($myProcess->scope->provider->id)) ? (int) $myProcess->scope->provider->id : 0,
-            scope: isset($myProcess->scope) ? self::scopeToThinnedScope($myProcess->scope) : null,
+            officeName: $contactName !== null && $contactName !== '' ? $contactName : null,
+            officeId: (int) $providerId,
+            scope: isset($myProcess['scope']) ? self::scopeToThinnedScope($scope) : null,
             subRequestCounts: array_values($subRequestCounts),
             serviceId: isset($mainServiceId) ? (int) $mainServiceId : 0,
             serviceName: isset($mainServiceName) ? $mainServiceName : null,

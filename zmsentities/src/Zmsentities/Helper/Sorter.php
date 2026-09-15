@@ -25,7 +25,7 @@ class Sorter
         return $string;
     }
 
-    public static function toSortedCsv($csvString): string
+    public static function toSortedCsv(mixed $csvString): string
     {
         $csvElements = explode(',', $csvString ?? '');
         sort($csvElements);

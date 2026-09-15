@@ -18,4 +18,12 @@ class OfficesServicesRelationsService
     {
         return ZmsApiFacadeService::getServicesAndOffices($showUnpublished);
     }
+
+    /**
+     * @return array{result: OfficeServiceAndRelationList|array, refreshedKeys: list<string>}
+     */
+    public function warmOfficesAndServicesCache(): array
+    {
+        return ZmsApiFacadeService::warmOfficesAndServicesCache();
+    }
 }

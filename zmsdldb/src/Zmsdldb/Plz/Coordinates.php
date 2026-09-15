@@ -16,7 +16,7 @@ class Coordinates
     /**
      * @param Int $plz
      */
-    public function getLatLon($plz)
+    public function getLatLon($plz): mixed
     {
         if (array_key_exists($plz, $this->data)) {
             return $this->data[$plz];
@@ -24,7 +24,7 @@ class Coordinates
         return false;
     }
 
-    public static function zip2LatLon($plz)
+    public static function zip2LatLon(mixed $plz): mixed
     {
         $coordinates = new self();
         return $coordinates->getLatLon($plz);
@@ -43,7 +43,19 @@ class Coordinates
         if (!is_readable($file) || !is_file($file)) {
             throw new \Exception("Cannot read file $file");
         }
-        $this->data = json_decode(file_get_contents($file), 1);
+        $json = file_get_contents($file);
+        if ($json === false) {
+            throw new \Exception("Cannot read file $file");
+        }
+        try {
+            $decoded = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $exception) {
+            throw new \Exception("Cannot parse file $file", 0, $exception);
+        }
+        if (!is_array($decoded)) {
+            throw new \Exception("Invalid coordinate data in $file");
+        }
+        $this->data = $decoded;
     }
 
     /**

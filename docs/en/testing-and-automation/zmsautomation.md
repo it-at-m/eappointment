@@ -168,14 +168,11 @@ For local UI tests (Statistik, Admin), the default SSO user is Keycloak `ataf` (
 
 See also the ATAF handbook: [Standalone Usage (No Jira, Local Keycloak)](https://it-at-m.github.io/agile-test-automation-framework/usage/standalone-without-jira.html).
 
-### Docker Compose services
+### Compose services
 
-Keycloak and the migration sidecar are defined in:
+Keycloak and the migration sidecar are defined in [`.devcontainer/docker-compose.yaml`](https://github.com/it-at-m/eappointment/blob/main/.devcontainer/docker-compose.yaml).
 
-- [`.ddev/docker-compose.keycloak.yaml`](https://github.com/it-at-m/eappointment/blob/main/.ddev/docker-compose.keycloak.yaml) (DDEV)
-- [`.devcontainer/docker-compose.yaml`](https://github.com/it-at-m/eappointment/blob/main/.devcontainer/docker-compose.yaml) (devcontainer / Podman)
-
-Both stacks run:
+The stack runs:
 
 | Service         | Role                                                                                        |
 | --------------- | ------------------------------------------------------------------------------------------- |
@@ -314,3 +311,11 @@ In Safari, you must also enable:
 By design, slot calculation does not create appointments on public holidays (dates in the `feiertage` table seeded by migration V11). The test data for opening hours in zmsautomation (seeded relative to the current date in migrations such as V10 and V19) can overlap with a holiday. When that happens, there may be zero bookable slots on the “first available day,” and booking-related scenarios (Citizen API and CitizenView flows) can fail.
 
 This is expected behavior. Action: re-run the pipeline on the next non‑holiday working day (or run locally on a non‑holiday date).
+
+### Statistic and opening-hours seeds around midnight
+
+`zms-db` sets `TZ=Europe/Berlin`, matching `zms-web` (zmsbase). Flyway `CURDATE()` / `CURTIME()` and Java `LocalDate` via `BerlinTime` (admin, citizen API, ZMS API, statistic, and Bürgeransicht steps) therefore share the **Berlin calendar day**, including between Berlin midnight and UTC midnight (00:00–02:00 CEST in summer, 00:00–01:00 CET in winter).
+
+The scheduled GitHub cron (`0 1 * * *` = 01:00 UTC ≈ 03:00 CEST / 02:00 CET) already starts after that former UTC/Berlin split and is unrelated.
+
+A genuine Berlin midnight still rolls the calendar day; that is expected. Holiday overlap (above) remains a separate limitation.

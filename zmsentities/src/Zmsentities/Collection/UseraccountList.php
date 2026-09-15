@@ -20,7 +20,7 @@ class UseraccountList extends Base
         return $collection;
     }
 
-    public function withAccessByWorkstation($workstation): self
+    public function withAccessByWorkstation(mixed $workstation): self
     {
         $collection = new self();
         $departmentList = $workstation->getDepartmentList();

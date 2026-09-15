@@ -9,7 +9,7 @@ The **minimum log level** is also centralized in zmsslim: you set **`DEBUGLEVEL`
 | Topic                   | Detail                                                                                |
 | ----------------------- | ------------------------------------------------------------------------------------- |
 | Logger property         | `App::$log` (`Monolog\Logger`, `null` before bootstrap)                               |
-| Env variable            | `DEBUGLEVEL` (e.g. in `.env`, DDEV, deployment) — default `INFO`                      |
+| Env variable            | `DEBUGLEVEL` (e.g. in `.env` or deployment) — default `INFO`                          |
 | zmsslim define          | `ZMS_DEBUGLEVEL` — set in `Application.php` from `getenv('DEBUGLEVEL')`               |
 | App constant            | `App::DEBUGLEVEL` — each module inherits `ZMS_DEBUGLEVEL` from `\BO\Slim\Application` |
 | Effective minimum level | Whichever of the above applies after bootstrap (`App::DEBUGLEVEL` at runtime)         |
@@ -33,7 +33,7 @@ flowchart LR
   env --> zms --> app --> boot --> mono
 ```
 
-1. **Operations** set `DEBUGLEVEL` (for example `INFO` or `WARNING`) in `.env`, DDEV, or deployment config.
+1. **Operations** set `DEBUGLEVEL` (for example `INFO` or `WARNING`) in `.env` or deployment config.
 2. When `zmsslim/src/Slim/Application.php` is loaded, it defines **`ZMS_DEBUGLEVEL`** from that env var (default `INFO` if unset).
 3. `\BO\Slim\Application` declares **`const DEBUGLEVEL = ZMS_DEBUGLEVEL`**. Each module’s `class App extends \BO\Zmsbackend\Application` (etc.) inherits the same constant unless you override it locally.
 4. On bootstrap, **`Bootstrap::init()`** / **`ensureLogger()`** / **`initForCli()`** call **`configureLogger(App::DEBUGLEVEL, App::IDENTIFIER)`**. The level is shared; only **`App::IDENTIFIER`** and **`App::MODULE_NAME`** differ per module in the JSON output.
@@ -68,7 +68,7 @@ Implementation mapping lives in `zmsslim/src/Slim/Bootstrap.php` (`$debuglevels`
 ### Example configuration
 
 ```bash
-# .env / deployment / DDEV — applies to all Slim modules via zmsslim
+# .env / deployment — applies to all Slim modules via zmsslim
 DEBUGLEVEL=INFO
 ```
 
@@ -126,7 +126,7 @@ Successful and failed request logs use **separate counters** and the same window
 | `…_LOGGER_BACKOFF_MIN` / `…_LOGGER_BACKOFF_MAX` | `100` / `1000` | Backoff between retries (ms)                                                              |
 | `…_LOGGER_LOCK_TIMEOUT`                         | `5`            | Cache lock timeout (seconds)                                                              |
 
-See `.ddev/.env.template` / `.devcontainer/.env.template` for full examples per module.
+See `.devcontainer/.env.template` for full examples per module.
 
 ### Tuning high-frequency modules
 

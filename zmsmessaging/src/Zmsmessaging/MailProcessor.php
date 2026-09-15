@@ -15,7 +15,7 @@ require __DIR__ . '/../../bootstrap.php';
 
 class MailProcessor extends Mail
 {
-    public function __construct($verbose = false, $maxRunTime = 50)
+    public function __construct(mixed $verbose = false, mixed $maxRunTime = 50)
     {
         parent::__construct($verbose, $maxRunTime);
     }

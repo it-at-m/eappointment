@@ -48,7 +48,7 @@ class UserQueue extends \BO\Zmsbackend\Api\BaseController
         $departmentService = new Department();
         $queueList = new QueueList();
 
-        foreach ($useraccount['departments'] as $department) {
+        foreach ($useraccount->getDepartmentList() as $department) {
             $queueList->addList(
                 $departmentService->readQueueList(
                     $department->id,

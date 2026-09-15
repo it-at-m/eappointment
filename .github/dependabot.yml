@@ -188,3 +188,6 @@ updates:
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
+    ignore:
+      - dependency-name: "org.apache.maven.plugins:maven-surefire-plugin"
+        versions: [">=3.6.0"]

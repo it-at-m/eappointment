@@ -11,5 +11,5 @@ class TemplateNotFound extends \Exception
 
     protected $message = 'The requested template does not exist';
 
-    public $data;
+    public mixed $data = null;
 }

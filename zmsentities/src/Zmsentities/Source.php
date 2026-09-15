@@ -29,17 +29,17 @@ class Source extends Schema\Entity
         ];
     }
 
-    public function getSource()
+    public function getSource(): mixed
     {
         return $this->toProperty()->source->get();
     }
 
-    public function getLabel()
+    public function getLabel(): mixed
     {
         return $this->toProperty()->label->get();
     }
 
-    public function getContact()
+    public function getContact(): mixed
     {
         return $this->toProperty()->contact->get();
     }
@@ -86,7 +86,7 @@ class Source extends Schema\Entity
         return $requestList;
     }
 
-    public function hasProvider($providerIdCsv): bool
+    public function hasProvider(mixed $providerIdCsv): bool
     {
         $providerIds = explode(',', $providerIdCsv);
         foreach ($providerIds as $providerId) {
@@ -111,7 +111,7 @@ class Source extends Schema\Entity
         return $requestRelationList;
     }
 
-    public function hasRequest($requestIdCsv): bool
+    public function hasRequest(mixed $requestIdCsv): bool
     {
         $requestIds = explode(',', $requestIdCsv);
         foreach ($requestIds as $requestId) {

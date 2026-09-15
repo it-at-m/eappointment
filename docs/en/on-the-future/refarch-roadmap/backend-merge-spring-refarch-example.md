@@ -56,7 +56,7 @@ PHP **`zmsbackend`** already removed the **`zmsdb` vs `zmsapi`** split ([GH-2604
 
 7. **Operations and security by default** — Spring Boot Actuator, Micrometer metrics, structured logging, and RefArch security patterns (Keycloak, API gateway) match how other Munich IT products are run — not a one-off PHP stack.
 
-8. **Faster, safer delivery** — JUnit and Spring Boot Test for unit/integration tests; ATAF and REST Assured already used in `zmsautomation`. Smaller, reproducible container images improve deploy times and reduce “works on my DDEV” drift.
+8. **Faster, safer delivery** — JUnit and Spring Boot Test for unit/integration tests; ATAF and REST Assured already used in `zmsautomation`. Smaller, reproducible container images improve deploy times and reduce “works on my machine” drift.
 
 9. **Easier reuse and onboarding** — Same stack as citizen-facing RefArch components (`refarch-gateway`, `zmscitizenview`). New team members and other cities can follow documented RefArch conventions instead of learning ZMS-specific PHP package boundaries.
 

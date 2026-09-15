@@ -8,4 +8,5 @@ namespace BO\Zmsentities\Collection;
  */
 interface JsonUnindexed
 {
+    public function getArrayCopy(): array;
 }

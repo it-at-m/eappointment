@@ -9,7 +9,7 @@ outline: deep
 Legacy-Anleitung für Podman 5.8: [Podman und Dev Containers (Legacy)](./podman-and-dev-containers-legacy.md)
 :::
 
-Diese Schritte ergänzen [DDEV und Devcontainer — Devcontainer (Podman)](https://it-at-m.github.io/eappointment/de/setup-and-development/getting-started/ddev-and-devcontainer.html#devcontainer-podman), wenn du auf **macOS** (Apple Silicon) mit Podman und Dev Containers arbeitest.
+Diese Schritte ergänzen [Devcontainer und Podman](https://it-at-m.github.io/eappointment/de/setup-and-development/getting-started/devcontainer.html), wenn du auf **macOS** (Apple Silicon) mit Podman und Dev Containers arbeitest.
 
 Podman 6.x (Homebrew) nutzt standardmäßig **libkrun** über **krunkit**. Dafür brauchst du krunkit **1.2.x** aus dem Tap `slp/krun`. Der ältere Tap `slp/krunkit` (krunkit 1.1.x) ist veraltet und führt bei Podman 6.0 zu `Error: krunkit exited unexpectedly with exit code 2`.
 

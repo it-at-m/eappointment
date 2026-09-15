@@ -1,3 +1,122 @@
+## Release Muc-48 (14.09.2026)
+                         
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1397'>ZMSKVR-1397</a>] -         UI Bug Wartezeit Broken Render bei Abbrechen und Wiederaufnahme von Terminen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1424'>ZMSKVR-1424</a>] -         Offene Aufrufe werden nach erneutem Aufruf manchmal nicht mehr geladen (Tabelle / „Aufgerufene Termine&quot;)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1427'>ZMSKVR-1427</a>] -         E-Kiosk friert ein – manueller Neustart erforderlich
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1571'>ZMSKVR-1571</a>] -         Fehlende Ortsangaben im Bürgerfrontend auf der Übersichtsseite bei Bürgerlogin und bei Zurück zum Kontaktformular
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1596'>ZMSKVR-1596</a>] -         Eine Ergebniszeile statt Slot-Ergebniszeilen bei Suche nach Terminnummer (Display Number)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1597'>ZMSKVR-1597</a>] -         Dienstleistungslink in Absagemail nicht korrekt
+</li>
+</ul>
+                                                                                                                                                                                                                                    
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-889'>ZMSKVR-889</a>] -         Betriebstabilität für die Wartezeitstatistik verbessern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1049'>ZMSKVR-1049</a>] -         Terminvarianten: Richtige Validierung bei interne Terminbuchung 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1191'>ZMSKVR-1191</a>] -         Proaktive Cache-Aufwärmung für SOURCE_CACHE_TTL implementieren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1385'>ZMSKVR-1385</a>] -         Bearbeitungszeit wird zurückgesetzt bei Klick auf anderen Warteschlangen-Kunden während laufender Bearbeitung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1393'>ZMSKVR-1393</a>] -         Freie Tage auf Behörden-Ebene entfernen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1497'>ZMSKVR-1497</a>] -         Rolle &quot;Benutzerverwaltung&quot;: Fehlermeldung beim Speichern eines Accounts ohne Standortauswahl
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1532'>ZMSKVR-1532</a>] -         Rolle Sachbearbeitung (Basis) &gt; Termine suchen und bearbeiten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1555'>ZMSKVR-1555</a>] -         Graph-Ansicht: Verbesserung der zeitlichen Orientierung z.B. durch Hervorhebung der Stunden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1559'>ZMSKVR-1559</a>] -         Rolle &quot;Sachbearbeitung Basis&quot;: &quot;Warteschlange aktualisieren&quot; ausblenden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1573'>ZMSKVR-1573</a>] -         Ø Termindauer unabhängig von Dienstleistung in der Dienstleistungsstatistik (Ticket von Fabian B.)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1575'>ZMSKVR-1575</a>] -         „Mein Profil“ auf relevante Benutzerinformationen reduzieren und Fehlermeldung beheben
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1588'>ZMSKVR-1588</a>] -         Kompaktere Gesamtübersicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1589'>ZMSKVR-1589</a>] -         Zeiten ohne Öffnungszeiten deutlicher darstellen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1617'>ZMSKVR-1617</a>] -         Dienstleistungsstatistik: Tage ohne Nutzung ausblenden
+</li>
+</ul>
+                                                            
+                                                            
+
+
+## Release Muc-47 (21.08.2026)
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-69'>ZMSKVR-69</a>] -         Anzahl DL wird nach wieder einfügen nicht geleert
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-997'>ZMSKVR-997</a>] -         Sessiondata Serverseitig Nach 10 Stunden Löschen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1002'>ZMSKVR-1002</a>] -         authKey in zmscitizenview localStorage ermöglicht XSS-basierte Termin-Übernahme
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1201'>ZMSKVR-1201</a>] -         Deadlock in ProcessReserve Query
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1350'>ZMSKVR-1350</a>] -         Komma zu viel in Terminbestätigungs- und Erinnerungsmails nach PLZ
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1447'>ZMSKVR-1447</a>] -         Umsetzung components-form-steps korrigieren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1530'>ZMSKVR-1530</a>] -         Bürger Login: UI Fehler bei termin-detail Callout Render
+</li>
+</ul>
+                                                                                                                                                                                                                                    
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-166'>ZMSKVR-166</a>] -         Calldisplay - Betriebsstabilität Standort Ids
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-916'>ZMSKVR-916</a>] -         Pfennigparade #17: Beschriftungen sind nicht aussagekräftig
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-993'>ZMSKVR-993</a>] -         Status Request weg nehmen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1046'>ZMSKVR-1046</a>] -         Konfigurierbare Zusammenführung von Kalendern für die Terminvergabe
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1203'>ZMSKVR-1203</a>] -         update-appointment Doppelten API-Aufruf für Prozessabfrage in zmscitizenapi entfernen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1204'>ZMSKVR-1204</a>] -         my-appointments: Index auf external_user_id hinzufügen und N+1 Queries beheben
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1213'>ZMSKVR-1213</a>] -         Migration der Wegezeiten in der Statistik vom 23.04.2025 bis heute
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1249'>ZMSKVR-1249</a>] -         Änderungsverlauf der Öffnungszeiten im Standort anzeigen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1334'>ZMSKVR-1334</a>] -         LOGIN - Termin-Detailseite – ICS-Datei zum Download
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1418'>ZMSKVR-1418</a>] -         Vergangene Termine über die Kundensuche für Terminadministrator*innen einsehbar machen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1426'>ZMSKVR-1426</a>] -         Gesamtübersicht: Tage ohne Öffnungszeiten ausblenden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1431'>ZMSKVR-1431</a>] -         Behördenweite Auswahl von Dienstleistungen beim Abschluss einer Terminbearbeitung ermöglichen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1474'>ZMSKVR-1474</a>] -         Kundensuche um Freitextfelder (z.B. Seriennummern) erweitern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1496'>ZMSKVR-1496</a>] -         Dienstleistungsstatistik: Nicht erfasste bzw. nicht erbrachte Dienstleistungen aus der Gesamtsumme ausschließen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1500'>ZMSKVR-1500</a>] -         Verbesserung der Muc Callout bei ein Schon Aktiverter Termin
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1529'>ZMSKVR-1529</a>] -         MUC-Banner bei fehlgeschlagener Bürgeranmeldung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1536'>ZMSKVR-1536</a>] -         Bürgerlogin: Terminübersicht (&quot;Teaser&quot;)  Telefon + Videoberatungs-Termin
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1538'>ZMSKVR-1538</a>] -         Bürgerlogin Video und Telefon beratungs-Termin: Intro Termin-Detail-Seite 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1557'>ZMSKVR-1557</a>] -         Estimated Dauer in den Templates einbauen
+</li>
+</ul>
+
 ## Release Muc-46 (31.07.2026)
 <h2>        Bug
 </h2>

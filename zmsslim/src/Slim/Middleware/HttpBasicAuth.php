@@ -30,15 +30,17 @@ class HttpBasicAuth
      */
     protected $isAuthorized;
 
-    public function __construct(callable $isAuthorized, $realm = null)
+    public function __construct(callable $isAuthorized, ?string $realm = null)
     {
         $this->isAuthorized = $isAuthorized;
-        $this->realm = $realm ?: "Password " . \App::IDENTIFIER;
+        $this->realm = ($realm !== null && $realm !== '' && $realm !== '0')
+            ? $realm
+            : "Password " . \App::IDENTIFIER;
     }
 
     public static function useAppConfig(): callable
     {
-        return function ($authUser, $authPass) {
+        return function (string $authUser, string $authPass) {
             if (!count(\App::$httpBasicAuth)) {
                 return true;
             }
@@ -55,7 +57,12 @@ class HttpBasicAuth
         $authUser = $serverParams['PHP_AUTH_USER'] ?? '';
         $authPass = $serverParams['PHP_AUTH_PW'] ?? '';
 
-        if ($this->isAuthorized->call($this, $authUser, $authPass)) {
+        if ($this->isAuthorized instanceof \Closure) {
+            $authorized = $this->isAuthorized->call($this, $authUser, $authPass);
+        } else {
+            $authorized = ($this->isAuthorized)($authUser, $authPass);
+        }
+        if ($authorized) {
             $response = $next->handle($request);
         } else {
             $response = (new ResponseFactory())->createResponse(401, 'Unauthorized');

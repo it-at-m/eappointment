@@ -21,12 +21,12 @@ class Cluster extends Schema\Entity implements Useraccount\AccessInterface
         ];
     }
 
-    public function getName()
+    public function getName(): mixed
     {
         return $this->toProperty()->name->get();
     }
 
-    public function getScopesWorkstationCount()
+    public function getScopesWorkstationCount(): mixed
     {
         $workstationCount = 0;
         if ($this->toProperty()->scopes->get()) {
@@ -41,7 +41,7 @@ class Cluster extends Schema\Entity implements Useraccount\AccessInterface
     /**
      * @return bool
      */
-    public function hasAccess(Useraccount $useraccount)
+    public function hasAccess(Useraccount $useraccount): bool
     {
         if ($useraccount->hasPermissions(['superuser'])) {
             return true;

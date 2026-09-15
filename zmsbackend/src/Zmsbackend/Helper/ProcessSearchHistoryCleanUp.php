@@ -7,7 +7,7 @@ use BO\Zmsbackend\ProcessSearchHistory\Service\ProcessSearchHistory as HistorySe
 
 class ProcessSearchHistoryCleanUp
 {
-    private const DEFAULT_RETENTION_DAYS = 90;
+    private const int DEFAULT_RETENTION_DAYS = 90;
 
     public function startProcessing(
         \DateTimeInterface $now,

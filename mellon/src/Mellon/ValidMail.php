@@ -17,7 +17,7 @@ class ValidMail extends \BO\Mellon\ValidString
      * For unit tests, it might be necessary to disable DNS checks globally
      * Use \BO\Mellon\ValidMail::$disableDnsChecks = true;
      */
-    public static $disableDnsChecks = false;
+    public static bool $disableDnsChecks = false;
 
     /**
      * Allow only valid mails
@@ -52,11 +52,12 @@ class ValidMail extends \BO\Mellon\ValidString
     /**
      * @psalm-api
      */
-    public function hasDNS($message = 'no valid DNS entry found'): static
+    public function hasDNS(string $message = 'no valid DNS entry found'): static
     {
         $this->validated = true;
         if ($this->value && !$this::$disableDnsChecks) {
-            $domain = substr($this->value, strpos($this->value, '@') + 1);
+            $position = strpos((string) $this->value, '@');
+            $domain = substr((string) $this->value, false === $position ? 1 : $position + 1);
             $hasDNS = ($domain) ? $this->checkDnsAny($domain) : false;
             if (false === $hasDNS) {
                 $this->setFailure($message);
@@ -68,11 +69,12 @@ class ValidMail extends \BO\Mellon\ValidString
     /**
      * @psalm-api
      */
-    public function hasMX($message = 'no valid DNS entry of type MX found'): static
+    public function hasMX(string $message = 'no valid DNS entry of type MX found'): static
     {
         $this->validated = true;
         if ($this->value) {
-            $domain = substr($this->value, strpos($this->value, '@') + 1);
+            $position = strpos((string) $this->value, '@');
+            $domain = substr((string) $this->value, false === $position ? 1 : $position + 1);
             $hasMX = checkdnsrr($domain, 'MX');
             if (false === $hasMX) {
                 $this->setFailure($message);

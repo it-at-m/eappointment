@@ -9,6 +9,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -409,6 +410,87 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
     public void checkForTimeSinceCustomerCallUnderCustomerInformation() {
         ScenarioLogManager.getLogger().info("Checking if time since customer call is visible under 'Kundeninformation'...");
         Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "clock", LocatorType.ID, false));
+    }
+
+    public void assertCallOtherProcessConfirmDialogVisible() {
+        ScenarioLogManager.getLogger().info("Checking confirm dialog for switching queue customer...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("Confirm dialog for switching queue customer is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector("section.board.dialog a.button-abort")));
+        Assert.assertFalse(findElementsByLocatorType(
+                TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME),
+                "//section[contains(@class,'dialog')]//*[contains(text(),'Aktuell ist ein Kundenkontakt aktiv')]",
+                LocatorType.XPATH).isEmpty(),
+                "Expected confirm dialog text about a customer already in progress.");
+    }
+
+    public void assertCallOtherProcessConfirmDialogNotVisible() {
+        ScenarioLogManager.getLogger().info("Checking confirm dialog for switching queue customer is not visible...");
+        Assert.assertTrue(findElementsByLocatorType(
+                TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME),
+                "section.board.dialog a.button-abort",
+                LocatorType.CSSSELECTOR).isEmpty(),
+                "Confirm dialog for switching queue customer should not be visible.");
+        Assert.assertTrue(findElementsByLocatorType(
+                TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME),
+                "//section[contains(@class,'board') and contains(@class,'dialog')]//*[contains(text(),'Aktuell ist ein Kundenkontakt aktiv')]",
+                LocatorType.XPATH).isEmpty(),
+                "Confirm dialog text for switching queue customer should not be visible.");
+    }
+
+    public void assertAlreadyCalledProcessErrorVisible() {
+        ScenarioLogManager.getLogger().info("Checking error that a process is already called...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("Already-called process error message is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//section[contains(@class,'message--error')]//*[contains(text(),"
+                        + "'Bitte schließen Sie den aktuellen Vorgang zuerst ab.')]"
+        )));
+    }
+
+    public void assertCustomerAppearedButtonVisible() {
+        ScenarioLogManager.getLogger().info("Checking that \"Ja, Kunde erschienen\" is visible...");
+        Assert.assertTrue(isWebElementVisible(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//button[contains(normalize-space(.),'Ja, Kunde erschienen')]",
+                LocatorType.XPATH,
+                false,
+                CONTEXT),
+                "Expected button \"Ja, Kunde erschienen\" to be visible (called status).");
+    }
+
+    public void clickStayOnCurrentProcessInConfirmDialog() {
+        ScenarioLogManager.getLogger().info("Clicking \"Zurück zum aktuellen Vorgang\"...");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "section.board.dialog a.button-abort", LocatorType.CSSSELECTOR, false, CONTEXT);
+    }
+
+    public void clickFinishAndCallSelectedInConfirmDialog() {
+        ScenarioLogManager.getLogger().info("Clicking \"Aktuellen Termin fertig stellen und Kunden aufrufen\"...");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "section.board.dialog a.button-ok", LocatorType.CSSSELECTOR, false, CONTEXT);
+    }
+
+    public void completeStatisticsFinishIfPresent() {
+        ScenarioLogManager.getLogger().info("Completing statistics finish form if present...");
+        final String submitLocator = "//button[contains(text(),'Bearbeitung abschließen') or @value='submit']"
+                + " | //input[@type='submit' and contains(@value,'Bearbeitung abschließen')]";
+        if (!isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, submitLocator, LocatorType.XPATH, true, CONTEXT)
+                && !isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "form.form--base button[type='submit']", LocatorType.CSSSELECTOR, true, CONTEXT)) {
+            return;
+        }
+        if (isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "input[name='noRequestsPerformed']", LocatorType.CSSSELECTOR, true, CONTEXT)) {
+            WebElement noRequestsPerformed = DRIVER.findElement(By.cssSelector("input[name='noRequestsPerformed']"));
+            // Ensure checked so submit can proceed without selecting services (default is unchecked).
+            if (!noRequestsPerformed.isSelected()) {
+                noRequestsPerformed.click();
+            }
+        }
+        if (isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "form.form--base button[type='submit']", LocatorType.CSSSELECTOR, true, CONTEXT)) {
+            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "form.form--base button[type='submit']", LocatorType.CSSSELECTOR, false, CONTEXT);
+        } else {
+            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, submitLocator, LocatorType.XPATH, false, CONTEXT);
+        }
+        CONTEXT.waitForSpinners();
     }
 
 }

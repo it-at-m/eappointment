@@ -11,7 +11,7 @@ dev: # init development system
 	npm install
 
 live: # init live system, delete unnecessary libs
-	composer install --no-dev --prefer-dist --optimize-autoloader
+	bash ../.resources/scripts/composer-with-retry.sh install --no-dev --prefer-dist --optimize-autoloader
 	bin/configure
 	npm install
 	npm run build

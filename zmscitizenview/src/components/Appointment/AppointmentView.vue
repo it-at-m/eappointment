@@ -99,10 +99,17 @@
               />
             </div>
 
-            <!-- Keep mounted across customer-info (view 2) so back does not remount/refetch. -->
+            <!-- Keep mounted through overview so Zurück does not remount and wipe selectedProvider.
+                 Skip appointmentHash (mail deep link and Bürger-Login return): leftover
+                 selectedServiceMap would remount the calendar and overwrite the real officeId. -->
             <div v-show="currentView === 1">
               <AppointmentSelection
-                v-if="currentView === 1 || currentView === 2"
+                v-if="
+                  currentView === 1 ||
+                  ((currentView === 2 || currentView === 3) &&
+                    selectedServiceMap.size > 0 &&
+                    !appointmentHash)
+                "
                 :key="appointmentSelectionKey"
                 :global-state="globalState"
                 :is-rebooking="isRebooking"
@@ -127,7 +134,11 @@
             <div v-if="currentView === 2">
               <customer-info
                 :global-state="globalState"
-                :show-login-option="showLoginOption"
+                :show-login-option="showLoginOption && !isRebooking"
+                :is-rebooking="isRebooking"
+                :source-appointment="
+                  isRebooking ? rebookedAppointment : undefined
+                "
                 :login-failed="loginFailed"
                 :t="t"
                 @back="decreaseCurrentView"
@@ -436,6 +447,12 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
+import {
+  applyAppointmentContactToCustomerData,
+  hasMissingRequiredContact,
+  joinFamilyName,
+} from "@/utils/rebookingContact";
+import { resolveOfficeById, toOfficeImpl } from "@/utils/resolveOfficeById";
 import { isExpired } from "@/utils/timestampInPast";
 
 const props = defineProps<{
@@ -724,6 +741,9 @@ const decreaseCurrentView = (): void => {
  * Adjusts the current view to the active step in the stepper
  */
 const changeStep = (step: string) => {
+  if (rebookOrCancelDialog.value && !isRebooking.value) {
+    return;
+  }
   if (parseInt(step) < parseInt(activeStep.value)) {
     clearAllErrors();
     currentView.value = parseInt(step);
@@ -758,28 +778,68 @@ const setServices = () => {
   }
 };
 
+const copyRebookedContactOntoAppointment = () => {
+  if (!appointment.value || !rebookedAppointment.value) {
+    return;
+  }
+  appointment.value.familyName = rebookedAppointment.value.familyName;
+  appointment.value.email = rebookedAppointment.value.email;
+  appointment.value.telephone = rebookedAppointment.value.telephone;
+  appointment.value.customTextfield = rebookedAppointment.value.customTextfield;
+  appointment.value.customTextfield2 =
+    rebookedAppointment.value.customTextfield2;
+};
+
+const fillCustomerDataFromRebookedAppointment = () => {
+  if (!rebookedAppointment.value) {
+    return;
+  }
+  applyAppointmentContactToCustomerData(
+    customerData.value,
+    rebookedAppointment.value
+  );
+};
+
+const targetScopeForRebooking = () =>
+  selectedProvider.value?.scope ?? appointment.value?.scope;
+
+const continueRebookingAfterReserve = () => {
+  fillCustomerDataFromRebookedAppointment();
+  copyRebookedContactOntoAppointment();
+  if (
+    rebookedAppointment.value &&
+    hasMissingRequiredContact(
+      rebookedAppointment.value,
+      targetScopeForRebooking()
+    )
+  ) {
+    currentView.value = 2;
+    return;
+  }
+  return setRebookData();
+};
+
 const setRebookData = () => {
   if (appointment.value && rebookedAppointment.value) {
-    appointment.value.familyName = rebookedAppointment.value.familyName;
-    appointment.value.email = rebookedAppointment.value.email;
-    appointment.value.telephone = rebookedAppointment.value.telephone;
-    appointment.value.customTextfield =
-      rebookedAppointment.value.customTextfield;
-    appointment.value.customTextfield2 =
-      rebookedAppointment.value.customTextfield2;
+    copyRebookedContactOntoAppointment();
     clearContextErrors(errorStateMap.value);
     currentContext.value = "update";
-    updateAppointment(props.globalState, appointment.value).then((data) => {
+    return updateAppointment(
+      props.globalState,
+      appointment.value,
+      rebookedAppointment.value
+    ).then((data) => {
       if ((data as AppointmentDTO).processId != undefined) {
         appointment.value = data as AppointmentDTO;
+        currentView.value = 3;
       } else {
         handleErrorApiResponse(
           data,
           errorStates.errorStateMap,
           currentErrorData.value
         );
+        currentView.value = 2;
       }
-      currentView.value = 3;
     });
   }
 };
@@ -799,7 +859,8 @@ const nextReserveAppointment = () => {
     Array.from(selectedServiceMap.value.keys()),
     Array.from(selectedServiceMap.value.values()),
     selectedProvider.value?.id ?? "",
-    captchaToken.value ?? undefined
+    captchaToken.value ?? undefined,
+    isRebooking.value ? rebookedAppointment.value : undefined
   )
     .then((data) => {
       if ((data as AppointmentDTO).processId !== undefined) {
@@ -810,7 +871,7 @@ const nextReserveAppointment = () => {
         appointment.value = data as AppointmentDTO;
         reservationStartMs.value = Date.now();
         if (isRebooking.value) {
-          setRebookData();
+          continueRebookingAfterReserve();
         } else {
           increaseCurrentView();
         }
@@ -835,8 +896,17 @@ const nextUpdateAppointment = () => {
   if (appointment.value) {
     isUpdatingAppointment.value = true;
     clearContextErrors(errorStateMap.value);
+    if (isRebooking.value && rebookedAppointment.value) {
+      applyAppointmentContactToCustomerData(
+        customerData.value,
+        rebookedAppointment.value
+      );
+    }
     appointment.value.familyName =
-      customerData.value.firstName + " " + customerData.value.lastName;
+      joinFamilyName(
+        customerData.value.firstName,
+        customerData.value.lastName
+      ) || appointment.value.familyName;
     appointment.value.email = customerData.value.mailAddress;
     appointment.value.telephone = customerData.value.telephoneNumber
       ? customerData.value.telephoneNumber
@@ -849,10 +919,15 @@ const nextUpdateAppointment = () => {
       : undefined;
 
     currentContext.value = "update";
-    updateAppointment(props.globalState, appointment.value)
+    return updateAppointment(
+      props.globalState,
+      appointment.value,
+      isRebooking.value ? rebookedAppointment.value : undefined
+    )
       .then((data) => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
+          increaseCurrentView();
         } else {
           handleErrorApiResponse(
             data,
@@ -860,7 +935,6 @@ const nextUpdateAppointment = () => {
             currentErrorData.value
           );
         }
-        increaseCurrentView();
       })
       .finally(() => {
         isUpdatingAppointment.value = false;
@@ -880,10 +954,7 @@ const nextBookAppointment = () => {
     const canDirectConfirm =
       !!appointment.value?.processId && !!appointment.value?.authKey;
 
-    if (
-      canDirectConfirm &&
-      (isRebooking.value || props.globalState.isLoggedIn)
-    ) {
+    if (canDirectConfirm && props.globalState.isLoggedIn) {
       nextConfirmAppointment({
         id: appointment.value.processId,
         authKey: appointment.value.authKey,
@@ -1036,34 +1107,18 @@ const viewAppointment = () => {
 const getProviders = (serviceId: string, providers: string[] | null) => {
   const officesAtService = new Array<OfficeImpl>();
   relations.value.forEach((relation) => {
-    if (relation.serviceId == serviceId) {
-      const office = offices.value.find(
-        (office) => office.id == relation.officeId
-      );
-      if (office) {
-        const foundOffice: OfficeImpl = new OfficeImpl(
-          office.id,
-          office.name,
-          office.address,
-          office.showAlternativeLocations,
-          office.displayNameAlternatives,
-          office.organization,
-          office.organizationUnit,
-          office.slotTimeInMinutes,
-          office.disabledByServices,
-          office.allowDisabledServicesMix,
-          office.scope,
-          office.slotsPerAppointment,
-          office.slots,
-          office.priority || 1,
-          office.parentId,
-          office.sharedBookingOfficeIds
-        );
+    if (String(relation.serviceId) !== String(serviceId)) {
+      return;
+    }
+    const office = offices.value.find(
+      (candidate) => String(candidate.id) === String(relation.officeId)
+    );
+    if (office) {
+      const foundOffice: OfficeImpl = toOfficeImpl(office);
 
-        if (!providers || providers.includes(foundOffice.id.toString())) {
-          foundOffice.slots = relation.slots;
-          officesAtService.push(foundOffice);
-        }
+      if (!providers || providers.includes(foundOffice.id.toString())) {
+        foundOffice.slots = relation.slots;
+        officesAtService.push(foundOffice);
       }
     }
   });
@@ -1091,28 +1146,13 @@ const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
     );
   }
 
-  const foundOffice = offices.value.find(
-    (office) => String(office.id) === String(uiData.selectedProviderId)
-  );
-  if (foundOffice) {
-    selectedProvider.value = new OfficeImpl(
-      foundOffice.id,
-      foundOffice.name,
-      foundOffice.address,
-      foundOffice.showAlternativeLocations,
-      foundOffice.displayNameAlternatives,
-      foundOffice.organization,
-      foundOffice.organizationUnit,
-      foundOffice.slotTimeInMinutes,
-      foundOffice.disabledByServices,
-      foundOffice.allowDisabledServicesMix,
-      foundOffice.scope,
-      foundOffice.slotsPerAppointment,
-      foundOffice.slots,
-      foundOffice.priority || 1,
-      foundOffice.parentId,
-      foundOffice.sharedBookingOfficeIds
-    );
+  preselectedLocationId.value = uiData.selectedProviderId;
+  const restoredProvider = resolveOfficeById(uiData.selectedProviderId, {
+    offices: offices.value,
+    providers: selectedService.value?.providers,
+  });
+  if (restoredProvider) {
+    selectedProvider.value = restoredProvider;
   }
 
   selectedTimeslot.value = uiData.selectedTimeslot;
@@ -1172,6 +1212,18 @@ const runLoginResumeFromHashAndLocalStorage = (
               captchaToken.value =
                 captchaToken.value ||
                 ((response as any).captchaToken as string);
+            }
+            const appointmentOffice = resolveOfficeById(
+              appointment.value.officeId,
+              {
+                offices: offices.value,
+                providers: selectedService.value?.providers,
+                appointment: appointment.value,
+              }
+            );
+            if (appointmentOffice) {
+              selectedProvider.value = appointmentOffice;
+              preselectedLocationId.value = String(appointmentOffice.id);
             }
             // Keep stepper step from UI localStorage (do not open reschedule/cancel dialog).
             currentView.value = isAppointmentInPast.value
@@ -1305,8 +1357,10 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
             captchaToken.value = data.captchaToken as string;
           }
           appointment.value = data as AppointmentDTO;
-          selectedService.value = services.value.find(
-            (service) => service.id == appointment.value?.serviceId
+          selectedServiceMap.value = new Map();
+          selectedService.value = (services.value ?? []).find(
+            (service) =>
+              String(service.id) === String(appointment.value?.serviceId)
           );
           if (selectedService.value) {
             selectedService.value.count = appointment.value.serviceCount;
@@ -1323,36 +1377,14 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
               )
             );
 
-            preselectedLocationId.value = appointment.value.officeId;
-            const foundOffice = offices.value.find(
-              (office) => office.id == appointment.value?.officeId
-            );
-            if (foundOffice) {
-              selectedProvider.value = new OfficeImpl(
-                foundOffice.id,
-                foundOffice.name,
-                foundOffice.address,
-                foundOffice.showAlternativeLocations,
-                foundOffice.displayNameAlternatives,
-                foundOffice.organization,
-                foundOffice.organizationUnit,
-                foundOffice.slotTimeInMinutes,
-                undefined,
-                foundOffice.allowDisabledServicesMix,
-                foundOffice.scope,
-                foundOffice.slotsPerAppointment,
-                undefined,
-                foundOffice.priority || 1,
-                foundOffice.parentId,
-                foundOffice.sharedBookingOfficeIds
-              );
-            }
-
-            if (appointment.value.subRequestCounts.length > 0) {
+            if ((appointment.value.subRequestCounts ?? []).length > 0) {
               appointment.value.subRequestCounts.forEach((subRequestCount) => {
-                const subRequest = services.value.find(
-                  (service) => service.id == subRequestCount.id
-                ) as Service;
+                const subRequest = (services.value ?? []).find(
+                  (service) => String(service.id) === String(subRequestCount.id)
+                ) as Service | undefined;
+                if (!subRequest) {
+                  return;
+                }
                 const subService = new SubService(
                   subRequest.id,
                   subRequest.name,
@@ -1360,24 +1392,32 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
                   getProviders(subRequest.id, null),
                   subRequestCount.count
                 );
-                if (
-                  selectedService.value &&
-                  !selectedService.value.subServices
-                ) {
+                if (!selectedService.value.subServices) {
                   selectedService.value.subServices = [];
                 }
-                selectedService.value?.subServices?.push(subService);
+                selectedService.value.subServices.push(subService);
               });
             }
-            if (!appointmentData.action || isAppointmentInPast.value) {
-              currentView.value = 3;
-            } else if (
-              appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
-            ) {
-              nextRescheduleAppointment();
-            } else {
-              nextCancelAppointment();
-            }
+          }
+
+          preselectedLocationId.value = String(appointment.value.officeId);
+          const resolvedOffice = resolveOfficeById(appointment.value.officeId, {
+            offices: offices.value,
+            providers: selectedService.value?.providers,
+            appointment: appointment.value,
+          });
+          if (resolvedOffice) {
+            selectedProvider.value = resolvedOffice;
+          }
+
+          if (!appointmentData.action || isAppointmentInPast.value) {
+            currentView.value = 3;
+          } else if (
+            appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
+          ) {
+            nextRescheduleAppointment();
+          } else {
+            nextCancelAppointment();
           }
         } else {
           handleApiError(

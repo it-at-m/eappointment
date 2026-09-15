@@ -9,7 +9,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Exception\UserAccountMissingLogin;
-use BO\Zmsentities\Exception\UserAccountMissingRights;
+use BO\Zmsentities\Workstation;
 
 /**
  * Handle requests concerning services
@@ -40,8 +40,8 @@ class Status extends BaseController
             throw $exception;
         }
 
-        if (!$workstation->getUseraccount()->hasPermissions(['superuser'])) {
-            throw new UserAccountMissingRights();
+        if (!$workstation instanceof Workstation) {
+            throw new UserAccountMissingLogin();
         }
 
         $result = \App::$http->readGetResult('/status/');
@@ -51,7 +51,8 @@ class Status extends BaseController
             array(
                 'title' => 'Status der Terminvereinbarung',
                 'status' => $result->getEntity(),
-                'workstation' => $workstation
+                'workstation' => $workstation,
+                'isSuperuser' => $workstation->getUseraccount()->isSuperUser(),
             )
         );
     }

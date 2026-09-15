@@ -9,8 +9,8 @@ namespace BO\Zmsdldb;
 
 class SQLiteAccess extends PDOAccess
 {
-    const string DEFAULT_DATABASE_NAME = 'dldb_frontend_dev';
-    const string DEFAULT_DATABASE_PATH = __DIR__;
+    public const string DEFAULT_DATABASE_NAME = 'dldb_frontend_dev';
+    public const string DEFAULT_DATABASE_PATH = __DIR__;
 
     #[\Override]
     protected function connect(array $options): void

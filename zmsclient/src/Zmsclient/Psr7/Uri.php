@@ -10,27 +10,38 @@ use Slim\Psr7\Factory\UriFactory;
 class Uri extends \Slim\Psr7\Uri implements \Psr\Http\Message\UriInterface
 {
     public function __construct(
-        $schemeOrUri = '',
-        $host = null,
-        $port = null,
-        $path = '/',
-        $query = '',
-        $fragment = '',
-        $user = '',
-        $password = ''
+        string $schemeOrUri = '',
+        ?string $host = null,
+        ?int $port = null,
+        string $path = '/',
+        string $query = '',
+        string $fragment = '',
+        string $user = '',
+        string $password = ''
     ) {
         if ($host !== null) {
             parent::__construct($schemeOrUri, $host, $port, $path, $query, $fragment, $user, $password);
-        } else {
-            $temp = (new UriFactory())->createUri($schemeOrUri);
-            $this->scheme = $temp->scheme;
-            $this->host = $temp->host;
-            $this->port = $temp->port;
-            $this->path = $temp->path;
-            $this->query = $temp->query;
-            $this->fragment = $temp->fragment;
-            $this->user = $temp->user;
-            $this->password = $temp->password;
+            return;
         }
+
+        $temp = (new UriFactory())->createUri($schemeOrUri);
+        $userInfo = $temp->getUserInfo();
+        $parsedUser = '';
+        $parsedPassword = '';
+        if ($userInfo !== '') {
+            $parts = explode(':', $userInfo, 2);
+            $parsedUser = $parts[0];
+            $parsedPassword = $parts[1] ?? '';
+        }
+        parent::__construct(
+            $temp->getScheme(),
+            $temp->getHost(),
+            $temp->getPort(),
+            $temp->getPath(),
+            $temp->getQuery(),
+            $temp->getFragment(),
+            $parsedUser,
+            $parsedPassword
+        );
     }
 }

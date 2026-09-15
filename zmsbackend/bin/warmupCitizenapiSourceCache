@@ -1,0 +1,49 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+if (!isset($argv[1]) || $argv[1] !== '--commit') {
+    \App::$log->notice('warmupCitizenapiSourceCache usage', [
+        'usage' => "Usage: {$argv[0]} --commit",
+    ]);
+    exit(0);
+}
+
+$url = getenv('ZMS_CITIZENAPI_WARMUP_URL') ?: '';
+if ($url === '') {
+    \App::$log->info('Skipping citizenapi source cache warmup (ZMS_CITIZENAPI_WARMUP_URL unset)');
+    exit(0);
+}
+
+$token = getenv('SOURCE_CACHE_WARMUP_TOKEN') ?: '';
+\App::$log->info('Warming citizenapi source cache', ['url' => $url]);
+
+$headers = ['Accept: application/json'];
+if ($token !== '') {
+    $headers[] = 'X-Source-Cache-Warmup-Token: ' . $token;
+}
+
+$handle = curl_init($url);
+curl_setopt_array($handle, [
+    CURLOPT_POST => true,
+    CURLOPT_HTTPHEADER => $headers,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_TIMEOUT => 180,
+    CURLOPT_FAILONERROR => true,
+]);
+$body = curl_exec($handle);
+$error = curl_error($handle);
+$status = (int) curl_getinfo($handle, CURLINFO_RESPONSE_CODE);
+curl_close($handle);
+
+if ($body !== false && $status >= 200 && $status < 300) {
+    \App::$log->info('Citizenapi source cache warmup succeeded');
+    exit(0);
+}
+
+\App::$log->warning('Citizenapi source cache warmup failed', [
+    'url' => $url,
+    'status' => $status,
+    'error' => $error,
+]);
+exit(0);

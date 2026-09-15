@@ -11,8 +11,16 @@ class DayList extends Base implements JsonUnindexed
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\Day';
 
+    #[\Override]
+    public function getArrayCopy(): array
+    {
+        return parent::getArrayCopy();
+    }
+
     /**
      * ATTENTION: Performance critical, keep highly optimized
+     *
+     * @return ($createDay is true ? Day : Day|null)
      */
     public function getDay(string $year, string $month, string $dayNumber, bool $createDay = true): Day|null
     {
@@ -43,36 +51,37 @@ class DayList extends Base implements JsonUnindexed
         return null;
     }
 
-    public function getDayByDateTime(\DateTimeInterface $datetime)
+    public function getDayByDateTime(\DateTimeInterface $datetime): \BO\Zmsentities\Day
     {
         return $this->getDay($datetime->format('Y'), $datetime->format('m'), $datetime->format('d'));
     }
 
-    public function getDayByDay(\BO\Zmsentities\Day $day)
+    public function getDayByDay(\BO\Zmsentities\Day $day): \BO\Zmsentities\Day
     {
         return $this->getDay($day->year, $day->month, $day->day);
     }
 
 
-    public function hasDay($year, $month, $dayNumber): bool
+    public function hasDay(mixed $year, mixed $month, mixed $dayNumber): bool
     {
         $day = $this->getDay($year, $month, $dayNumber, false);
         return ($day === null) ? false : true;
     }
 
-    public function withAssociatedDays(\DateTimeInterface $currentDate)
+    public function withAssociatedDays(\DateTimeInterface $currentDate): self
     {
         $dayList = new self();
         $lastDay = $currentDate->format('t');
         for ($dayNumber = 1; $dayNumber <= $lastDay; $dayNumber++) {
-            $day = str_pad($dayNumber, 2, '0', STR_PAD_LEFT);
+            $day = str_pad((string) $dayNumber, 2, '0', STR_PAD_LEFT);
             $entity = $this->getDay($currentDate->format('Y'), $currentDate->format('m'), $day);
             $dayList->addEntity($entity);
         }
-        return $dayList->sortByCustomKey('day');
+        $dayList->sortByCustomKey('day');
+        return $dayList;
     }
 
-    public function setStatusByType($slotType, \DateTimeInterface $dateTime): static
+    public function setStatusByType(mixed $slotType, \DateTimeInterface $dateTime): static
     {
         foreach ($this as $day) {
             $day->getWithStatus($slotType, $dateTime);
@@ -105,7 +114,7 @@ class DayList extends Base implements JsonUnindexed
         return $this;
     }
 
-    public function setSort($property = 'day'): static
+    public function setSort(string $property = 'day'): static
     {
         $this->uasort(function ($dayA, $dayB) use ($property) {
             return strnatcmp($dayA[$property], $dayB[$property]);
@@ -124,7 +133,7 @@ class DayList extends Base implements JsonUnindexed
         return false;
     }
 
-    public function getFirstBookableDay()
+    public function getFirstBookableDay(): mixed
     {
         foreach ($this as $day) {
             $day = new Day($day);
@@ -138,10 +147,12 @@ class DayList extends Base implements JsonUnindexed
     public function withDaysInDateRange(\DateTimeInterface $startDate, \DateTimeInterface $endDate): self
     {
         $list = new self();
+        $rangeStart = \BO\Zmsentities\Helper\DateTime::create($startDate)->modify('00:00:00');
+        $rangeEnd = \BO\Zmsentities\Helper\DateTime::create($endDate)->modify('23:59:59');
         foreach ($this as $day) {
             if (
-                $day->toDateTime() >= $startDate->modify('00:00:00') &&
-                $day->toDateTime() <= $endDate->modify('23:59:59')
+                $day->toDateTime() >= $rangeStart &&
+                $day->toDateTime() <= $rangeEnd
             ) {
                 $list->addEntity($day);
             }
@@ -152,6 +163,7 @@ class DayList extends Base implements JsonUnindexed
     public function withDaysFromPeriod(\DateTimeInterface $startDate, \DateTimeInterface $endDate): self
     {
         $list = new self();
+        $startDate = \BO\Zmsentities\Helper\DateTime::create($startDate);
         do {
             $day = (new Day())->setDateTime($startDate);
             $list->addEntity($day);

@@ -17,6 +17,9 @@ class Helper
      */
     public static function proxySanitizeUri(array|string|null $uri): array|string
     {
+        if ($uri === null) {
+            return '';
+        }
         $uri = str_replace(':80/', '/', $uri);
         return $uri;
     }
@@ -29,8 +32,8 @@ class Helper
     public static function getFormatedDates(
         int|\DateTimeImmutable $timestamp,
         string $pattern = 'MMMM',
-        $locale = 'de_DE',
-        $timezone = 'Europe/Berlin'
+        string $locale = 'de_DE',
+        string $timezone = 'Europe/Berlin'
     ): string|false {
         $dateFormatter = new \IntlDateFormatter(
             $locale,
@@ -52,13 +55,15 @@ class Helper
     ): string {
         $content = $section . self::getContentForHash($queryVariables, $parameters);
         $hashString = $hashFunction($content . \App::$urlSignatureSecret);
-        $firstHalf  = substr($hashString, 0, floor(strlen($hashString) / 2));
+        $halfLength = (int) floor(strlen($hashString) / 2);
+        $firstHalf  = substr($hashString, 0, $halfLength);
         $secondHalf = substr($hashString, strlen($firstHalf));
         $alphabet   = '0123456789' . implode(range('A', 'Z')) . implode(range('a', 'z'));
         $rotation   = 31;
         // reducing the hash to half its length by combining first half and second half
         for ($i = 0; $i < strlen($firstHalf); $i++) {
-            $rotation = (strpos($alphabet, $firstHalf[$i]) + ord($secondHalf[$i]) + $rotation) % strlen($alphabet);
+            $position = strpos($alphabet, $firstHalf[$i]);
+            $rotation = (($position === false ? 0 : $position) + ord($secondHalf[$i]) + $rotation) % strlen($alphabet);
             $firstHalf[$i] = $alphabet[$rotation];
         }
         return $firstHalf;
@@ -69,13 +74,13 @@ class Helper
         $content = '';
         foreach ($parameters as $parameter) {
             if (isset($queryVariables[$parameter])) {
-                if (is_iterable($queryVariables[$parameter])) {
+                if (is_array($queryVariables[$parameter])) {
                     $parameterArray = $queryVariables[$parameter];
                     ksort($parameterArray);
                     $flat = [];
                     array_walk_recursive(
                         $parameterArray,
-                        function ($value) use (&$flat) {
+                        function (mixed $value) use (&$flat) {
                             $flat[] = strval($value);
                         }
                     );

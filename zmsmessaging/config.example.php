@@ -1,15 +1,33 @@
 <?php
 // @codingStandardsIgnoreFile
 
-define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'https://localhost/terminvereinbarung/api/2');
+define(
+    'ZMS_API_URL',
+    (($value = getenv('ZMS_API_URL')) !== false && $value !== '')
+        ? $value
+        : 'https://localhost/terminvereinbarung/api/2'
+);
 
-define('ZMS_API_PASSWORD_MESSAGING', getenv('ZMS_API_PASSWORD_MESSAGING')
-    ? getenv('ZMS_API_PASSWORD_MESSAGING')
-    : 'examplepassword');
+define(
+    'ZMS_API_PASSWORD_MESSAGING',
+    (($value = getenv('ZMS_API_PASSWORD_MESSAGING')) !== false && $value !== '')
+        ? $value
+        : 'examplepassword'
+);
 
-define('ZMS_API_PROXY', getenv('ZMS_API_PROXY') ? getenv('ZMS_API_PROXY') : NULL);
+define(
+    'ZMS_API_PROXY',
+    (($value = getenv('ZMS_API_PROXY')) !== false && $value !== '')
+        ? $value
+        : null
+);
 
-define('ZMS_IDENTIFIER', getenv('ZMS_IDENTIFIER') ? getenv('ZMS_IDENTIFIER') : 'zms');
+define(
+    'ZMS_IDENTIFIER',
+    (($value = getenv('ZMS_IDENTIFIER')) !== false && $value !== '')
+        ? $value
+        : 'zms'
+);
 define('ZMS_MODULE_NAME', 'zmsmessaging');
 
 define('ZMS_MESSAGING_SMTP_ENABLED', getenv('ZMS_MESSAGING_SMTP_ENABLED') !== false);
@@ -40,12 +58,12 @@ class App extends \BO\Zmsmessaging\Application
      */
     const string MODULE_NAME = ZMS_MODULE_NAME;
 
-    public static $httpUser = '_system_messenger';
+    public static string $httpUser = '_system_messenger';
 
-    public static $httpPassword = ZMS_API_PASSWORD_MESSAGING;
+    public static string $httpPassword = ZMS_API_PASSWORD_MESSAGING;
 
     // http curl options
-    public static $http_curl_config = array(
+    public static array $http_curl_config = array(
         CURLOPT_SSL_VERIFYPEER => false, // Internal certificates are self-signed
         CURLOPT_TIMEOUT => 10,
         CURLOPT_PROXY => ZMS_API_PROXY,
@@ -56,15 +74,15 @@ class App extends \BO\Zmsmessaging\Application
      * -----------------------------------------------------------------------
      * SMTP settings
      */
-    public static $smtp_enabled = ZMS_MESSAGING_SMTP_ENABLED;
-    public static $smtp_host = ZMS_MESSAGING_SMTP_HOST;
-    public static $smtp_port = ZMS_MESSAGING_SMTP_PORT;
-    public static $smtp_auth_enabled = ZMS_MESSAGING_SMTP_AUTH_ENABLED;
-    public static $smtp_auth_method = ZMS_MESSAGING_SMTP_AUTH_METHOD;
-    public static $smtp_username = ZMS_MESSAGING_SMTP_USERNAME;
-    public static $smtp_password = ZMS_MESSAGING_SMTP_PASSWORD;
-    public static $smtp_skip_tls_verify = ZMS_MESSAGING_SMTP_SKIP_TLS_VERIFY;
-    public static $smtp_debug = ZMS_MESSAGING_SMTP_DEBUG;
+    public static bool $smtp_enabled = ZMS_MESSAGING_SMTP_ENABLED;
+    public static mixed $smtp_host = ZMS_MESSAGING_SMTP_HOST;
+    public static mixed $smtp_port = ZMS_MESSAGING_SMTP_PORT;
+    public static bool $smtp_auth_enabled = ZMS_MESSAGING_SMTP_AUTH_ENABLED;
+    public static mixed $smtp_auth_method = ZMS_MESSAGING_SMTP_AUTH_METHOD;
+    public static mixed $smtp_username = ZMS_MESSAGING_SMTP_USERNAME;
+    public static mixed $smtp_password = ZMS_MESSAGING_SMTP_PASSWORD;
+    public static bool $smtp_skip_tls_verify = ZMS_MESSAGING_SMTP_SKIP_TLS_VERIFY;
+    public static mixed $smtp_debug = ZMS_MESSAGING_SMTP_DEBUG;
 }
 
 // uncomment for testing

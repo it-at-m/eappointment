@@ -33,7 +33,7 @@ class Calldisplay extends Schema\Entity
         ];
     }
 
-    public function withResolvedCollections($input): static
+    public function withResolvedCollections(mixed $input): static
     {
         $input =  (is_object($input)) ? $input->getArrayCopy() : $input;
         if (Property::__keyExists('scopelist', $input)) {
@@ -55,13 +55,13 @@ class Calldisplay extends Schema\Entity
         return (0 < $this->getClusterList()->count());
     }
 
-    public function setServerTime($timestamp): static
+    public function setServerTime(mixed $timestamp): static
     {
         $this->serverTime = $timestamp;
         return $this;
     }
 
-    public function getFullScopeList()
+    public function getFullScopeList(): \BO\Zmsentities\Collection\ScopeList
     {
         $scopeList = $this->getScopeList();
         foreach ($this->clusters as $cluster) {
@@ -105,9 +105,15 @@ class Calldisplay extends Schema\Entity
     {
         $name = '';
         if (1 == $this->getScopeList()->count()) {
-            $name = "s_" . $this->getScopeList()->getFirst()->id . "_bild";
+            $scope = $this->getScopeList()->getFirst();
+            if ($scope !== null) {
+                $name = "s_" . $scope->id . "_bild";
+            }
         } elseif (1 == $this->getClusterList()->count()) {
-            $name = "c_" . $this->getClusterList()->getFirst()->id . "_bild";
+            $cluster = $this->getClusterList()->getFirst();
+            if ($cluster !== null) {
+                $name = "c_" . $cluster->id . "_bild";
+            }
         }
         return $name;
     }
@@ -137,28 +143,30 @@ class Calldisplay extends Schema\Entity
         return $calldisplay;
     }
 
-    protected function getScopeListFromCsv($scopeIds = ''): Collection\ScopeList
+    protected function getScopeListFromCsv(string $scopeIds = ''): Collection\ScopeList
     {
         $scopeList = new Collection\ScopeList();
         $scopeIds = explode(',', $scopeIds);
-        if ($scopeIds) {
-            foreach ($scopeIds as $scopeId) {
-                $scope = new Scope(array('id' => $scopeId));
-                $scopeList->addEntity($scope);
+        foreach ($scopeIds as $scopeId) {
+            if ($scopeId === '') {
+                continue;
             }
+            $scope = new Scope(array('id' => $scopeId));
+            $scopeList->addEntity($scope);
         }
         return $scopeList;
     }
 
-    protected function getClusterListFromCsv($clusterIds = ''): Collection\ClusterList
+    protected function getClusterListFromCsv(string $clusterIds = ''): Collection\ClusterList
     {
         $clusterList = new Collection\ClusterList();
         $clusterIds = explode(',', $clusterIds);
-        if ($clusterIds) {
-            foreach ($clusterIds as $clusterId) {
-                $cluster = new Cluster(array('id' => $clusterId));
-                $clusterList->addEntity($cluster);
+        foreach ($clusterIds as $clusterId) {
+            if ($clusterId === '') {
+                continue;
             }
+            $cluster = new Cluster(array('id' => $clusterId));
+            $clusterList->addEntity($cluster);
         }
         return $clusterList;
     }

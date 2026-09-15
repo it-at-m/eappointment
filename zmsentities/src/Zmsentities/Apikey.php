@@ -34,14 +34,14 @@ class Apikey extends Schema\Entity
      * @return false|int
      *
      */
-    public function getQuotaPositionByRoute($route): int|false
+    public function getQuotaPositionByRoute(mixed $route): int|false
     {
         return (isset($this->quota) && is_array($this->quota)) ?
             array_search($route, array_column($this->quota, 'route'))
             : false;
     }
 
-    public function addQuota($route, $period): static
+    public function addQuota(mixed $route, mixed $period): static
     {
         $this->quota[] = [
             'route' => $route,
@@ -51,7 +51,7 @@ class Apikey extends Schema\Entity
         return $this;
     }
 
-    public function updateQuota($position): static
+    public function updateQuota(mixed $position): static
     {
         $this->quota[$position]['requests']++;
         return $this;

@@ -53,13 +53,18 @@ class Matching
      */
     public static function testCurrentScopeHasRequest(\BO\Zmsentities\Process $process)
     {
-        $testProcess = clone $process;
-        $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($testProcess->getScopeId(), 2);
-        $testProcess->scope = $scope;
-        if (
-            0 < count($testProcess->getRequestIds()) &&
-            !$testProcess->getCurrentScope()->getRequestList()->hasRequests($testProcess->getRequestCSV())
-        ) {
+        if (0 === count($process->getRequestIds())) {
+            return;
+        }
+
+        $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($process->getScopeId(), 1);
+        if (!$scope instanceof \BO\Zmsentities\Scope) {
+            throw new \BO\Zmsbackend\Scope\Exception\ScopeNotFound();
+        }
+        $requestRelationList = (new \BO\Zmsbackend\RequestRelation\Service\RequestRelation())
+            ->readListByProviderId($scope->getProviderId(), $scope->getSource());
+
+        if (!$requestRelationList->hasRequest($process->getRequestCSV())) {
             throw new \BO\Zmsbackend\Matching\Exception\RequestNotFound();
         }
     }

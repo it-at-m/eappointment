@@ -7,11 +7,11 @@ namespace BO\Zmsentities\Schema;
  */
 class Schema extends \ArrayObject
 {
-    protected $input = null;
+    protected object|array|null $input = null;
 
-    protected $asObject = null;
+    protected ?\stdClass $asObject = null;
 
-    protected $defaults = [];
+    protected array $defaults = [];
 
     /**
      * @var Int $jsonCompressLevel
@@ -21,24 +21,30 @@ class Schema extends \ArrayObject
     /**
      * Read the json schema and let array act like an object
      */
-    public function __construct($input = [], $flags = \ArrayObject::ARRAY_AS_PROPS, $iterator_class = "ArrayIterator")
+    public function __construct(object|array $input = [], int $flags = \ArrayObject::ARRAY_AS_PROPS, string $iterator_class = "ArrayIterator")
     {
         $this->input = $input;
+        /** @var class-string<\ArrayIterator> $iterator_class */
         parent::__construct($input, $flags, $iterator_class);
     }
 
-    public function withResolvedReferences($resolveLevel)
+    public function withResolvedReferences(mixed $resolveLevel): mixed
     {
         if ($resolveLevel > 0) {
             $schema = clone $this;
             $schema = $this->resolveReferences($schema, $resolveLevel);
-            $schema->setJsonObject(json_decode(json_encode($schema->toSanitizedArray(true))));
+            $schema->setJsonObject(json_decode((string) json_encode($schema->toSanitizedArray(true))));
             return $schema;
         }
         return $this;
     }
 
-    protected function resolveKey($key, $value, $resolveLevel)
+    /**
+     * @param (int|string) $key
+     *
+     * @psalm-param array-key $key
+     */
+    protected function resolveKey($key, mixed $value, mixed $resolveLevel): mixed
     {
         if (is_array($value)) {
             $value = $this->resolveReferences($value, $resolveLevel);
@@ -48,7 +54,7 @@ class Schema extends \ArrayObject
         return $value;
     }
 
-    protected function resolveReferences(array|self $hash, $resolveLevel)
+    protected function resolveReferences(array|self $hash, mixed $resolveLevel): mixed
     {
         foreach ($hash as $key => $value) {
             $hash[$key] = $this->resolveKey($key, $value, $resolveLevel);
@@ -60,14 +66,14 @@ class Schema extends \ArrayObject
         return $hash;
     }
 
-    public function toJsonObject($keepEmpty = false)
+    public function toJsonObject(bool $keepEmpty = false): mixed
     {
         if (null !== $this->asObject) {
             $data = $this->asObject;
         } elseif (! $keepEmpty) {
-            $data = json_decode(json_encode($this->toSanitizedArray($keepEmpty)));
+            $data = json_decode((string) json_encode($this->toSanitizedArray($keepEmpty)));
         } else {
-            $data = json_decode(json_encode($this->toSanitizedArray($keepEmpty)));
+            $data = json_decode((string) json_encode($this->toSanitizedArray($keepEmpty)));
         }
         return $data;
     }
@@ -78,7 +84,7 @@ class Schema extends \ArrayObject
         return $this;
     }
 
-    public function setDefaults($defaults): void
+    public function setDefaults(array $defaults): void
     {
         $this->defaults = $defaults;
     }
@@ -89,7 +95,7 @@ class Schema extends \ArrayObject
         return $this;
     }
 
-    public function toSanitizedArray($keepEmpty = false)
+    public function toSanitizedArray(bool $keepEmpty = false): mixed
     {
         $data = $this->getArrayCopy();
         $data = $this->toSanitizedValue($data, $keepEmpty, $this->defaults);
@@ -100,7 +106,7 @@ class Schema extends \ArrayObject
      * Sanitize value for valid export as JSON
      *
      */
-    protected function toSanitizedValue(mixed $value, $keepEmpty = false, $defaults = [])
+    protected function toSanitizedValue(mixed $value, bool $keepEmpty = false, mixed $defaults = []): mixed
     {
         if ($value instanceof \BO\Zmsentities\Helper\NoSanitize) {
             return $value;
@@ -122,7 +128,7 @@ class Schema extends \ArrayObject
         return $value;
     }
 
-    protected function toSanitizedList(array $value, $keepEmpty, $defaults = [])
+    protected function toSanitizedList(array $value, mixed $keepEmpty, mixed $defaults = []): mixed
     {
         foreach ($value as $key => $item) {
             if ($this->jsonCompressLevel > 0 && isset($defaults[$key])) {
@@ -140,7 +146,7 @@ class Schema extends \ArrayObject
         return $value;
     }
 
-    protected static function isItemEmpty($item): bool
+    protected static function isItemEmpty(mixed $item): bool
     {
         return (
             null === $item
@@ -177,12 +183,12 @@ class Schema extends \ArrayObject
     }
     */
 
-    public function withoutRefs()
+    public function withoutRefs(): mixed
     {
         return $this->getWithoutRefs(clone $this);
     }
 
-    protected function getWithoutRefs(array|self $data)
+    protected function getWithoutRefs(array|self $data): mixed
     {
         foreach ($data as $key => $value) {
             if (is_array($value)) {

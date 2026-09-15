@@ -134,6 +134,51 @@ class CalendarAvailabilityGetTest extends \BO\Zmsbackend\Tests\Api\Base
         }
     }
 
+    public function testSlotsWindowBeforeStartDateSnapsToStart()
+    {
+        $now = \App::$now;
+        $end = (clone $now)->modify('+1 month');
+        $yesterday = (clone $now)->modify('-1 day')->format('Y-m-d');
+        $response = $this->render([], [
+            'startDate' => $now->format('Y-m-d'),
+            'endDate' => $end->format('Y-m-t'),
+            'slotsStartDate' => $yesterday,
+            'slotsEndDate' => $yesterday,
+            'officeIds' => '122217',
+            'serviceIds' => '120703',
+            'serviceCounts' => '1',
+        ], []);
+        $body = json_decode((string) $response->getBody(), true);
+
+        $this->assertTrue(200 == $response->getStatusCode());
+        $this->assertGreaterThanOrEqual($now->format('Y-m-d'), $body['data']['slotsStartDate']);
+        $this->assertLessThanOrEqual($end->format('Y-m-t'), $body['data']['slotsEndDate']);
+        $this->assertSame($body['data']['slotsStartDate'], $body['data']['slotsEndDate']);
+    }
+
+    public function testSlotsWindowAfterEndDateSnapsToEnd()
+    {
+        $now = \App::$now;
+        $end = (clone $now)->modify('+1 month');
+        $afterHorizon = (clone $end)->modify('last day of this month')->modify('+1 day')->format('Y-m-d');
+        $horizonEnd = $end->format('Y-m-t');
+        $response = $this->render([], [
+            'startDate' => $now->format('Y-m-d'),
+            'endDate' => $horizonEnd,
+            'slotsStartDate' => $afterHorizon,
+            'slotsEndDate' => $afterHorizon,
+            'officeIds' => '122217',
+            'serviceIds' => '120703',
+            'serviceCounts' => '1',
+        ], []);
+        $body = json_decode((string) $response->getBody(), true);
+
+        $this->assertTrue(200 == $response->getStatusCode());
+        $this->assertGreaterThanOrEqual($now->format('Y-m-d'), $body['data']['slotsStartDate']);
+        $this->assertLessThanOrEqual($horizonEnd, $body['data']['slotsEndDate']);
+        $this->assertSame($body['data']['slotsStartDate'], $body['data']['slotsEndDate']);
+    }
+
     public function testServiceCountExceedsMaximum()
     {
         $this->expectException(\BO\Zmsbackend\Calendar\Exception\InvalidFirstDay::class);

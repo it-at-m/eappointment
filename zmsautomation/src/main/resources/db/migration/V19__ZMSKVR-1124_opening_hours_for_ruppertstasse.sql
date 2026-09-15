@@ -1,5 +1,7 @@
 -- Flyway migration: Opening hours for Ruppertstraße test data (ZMSKVR-1124)
 --
+-- CURDATE()/CURTIME() follow zms-db TZ=Europe/Berlin (same calendar day as zms-web).
+--
 -- Mirrors V10__opening_hours_availability_test_data but focuses on
 -- Ruppertstraße offices used in Citizen API zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature:
 --  - Office 10489 (Bürgerbüro Ruppertstraße (KVR-II/22))

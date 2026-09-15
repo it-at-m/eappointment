@@ -9,9 +9,6 @@ namespace BO\Zmsbackend\Workstation\Api;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
-use BO\Zmsbackend\Log\Service\Log;
-use BO\Zmsbackend\Workstation\Service\Workstation;
-use BO\Zmsbackend\Useraccount\Service\Useraccount;
 
 class WorkstationDelete extends \BO\Zmsbackend\Api\BaseController
 {

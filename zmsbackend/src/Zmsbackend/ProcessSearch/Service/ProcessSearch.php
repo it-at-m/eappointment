@@ -10,7 +10,7 @@ use BO\Zmsbackend\Config\Service\Config as ConfigService;
 
 class ProcessSearch extends \BO\Zmsbackend\Base
 {
-    private const DEFAULT_HISTORY_DAYS = 90;
+    private const int DEFAULT_HISTORY_DAYS = 90;
 
     public function mapSearchRowToProcess(array $row): Entity
     {
@@ -47,14 +47,17 @@ class ProcessSearch extends \BO\Zmsbackend\Base
             'status' => (string) $row['technical_status'],
             'source' => (string) $row['source'],
             'appointmentStatus' => (string) $row['appointment_status'],
+            'finalizedAt' => !empty($row['finalized_at'])
+                ? strtotime((string) $row['finalized_at'])
+                : 0,
         ]);
     }
 
     public function readSearch(
         array $parameter,
-        $resolveReferences = 0,
-        $limit = 100,
-        $offset = 0
+        int $resolveReferences = 0,
+        int $limit = 100,
+        int $offset = 0
     ): Collection {
         $combined = $this->buildCombinedSearchSql(
             $parameter,
@@ -135,13 +138,8 @@ class ProcessSearch extends \BO\Zmsbackend\Base
 
         if (isset($parameter['query'])) {
             if (preg_match('#^\d+$#', $parameter['query'])) {
-                $query->addConditionProcessId(
+                $query->addConditionProcessIdOrSearch(
                     $parameter['query']
-                );
-
-                $query->addConditionSearch(
-                    $parameter['query'],
-                    true
                 );
             } else {
                 $query->addConditionSearch(
@@ -161,6 +159,7 @@ class ProcessSearch extends \BO\Zmsbackend\Base
                     'limit',
                     'offset',
                     'includePast',
+                    'denyHistory',
                 ] as $reservedKey
             ) {
                 unset($parameter[$reservedKey]);
@@ -274,7 +273,7 @@ class ProcessSearch extends \BO\Zmsbackend\Base
 
     protected function resolveSearchReferences(
         Entity $entity,
-        $resolveReferences
+        int $resolveReferences
     ): Entity {
         if (($entity->source ?? 'active') === 'history') {
             return $entity;
@@ -295,47 +294,14 @@ class ProcessSearch extends \BO\Zmsbackend\Base
         ?int $limit = null,
         int $offset = 0
     ): array {
-        $searchRepository = $this->buildSearchQuery(
-            $parameter
-        );
-
+        $searchRepository = $this->buildSearchQuery($parameter);
         $searchRepository->addCombinedActiveProjection();
 
-        $scopeIds = null;
-
-        if (array_key_exists('scopeIds', $parameter)) {
-            $scopeIds = is_array($parameter['scopeIds'])
-                ? $parameter['scopeIds']
-                : explode(
-                    ',',
-                    (string) $parameter['scopeIds']
-                );
-
-            $scopeIds = array_values(
-                array_filter(
-                    array_map(
-                        'intval',
-                        $scopeIds
-                    )
-                )
-            );
-        }
-
-        $searchQuery = $this->extractSearchQuery(
-            $parameter
-        );
-
-        $denyHistory =
-            !empty($parameter['authKey'])
-            || !empty($parameter['requestId'])
-            || !empty($parameter['upcomingOnly']);
-
         $historyParameters = [];
-
         $historySql = $searchRepository->getHistorySelectSql(
-            $scopeIds,
+            $this->readScopeIdsParameter($parameter),
             $appointmentFrom,
-            $searchQuery,
+            $this->extractSearchQuery($parameter),
             $historyParameters,
             $parameter['date'] ?? null,
             $parameter['provider'] ?? null,
@@ -346,14 +312,53 @@ class ProcessSearch extends \BO\Zmsbackend\Base
                 'amendment' => $parameter['amendment'] ?? null,
                 'processId' => $parameter['processId'] ?? null,
                 'scopeId' => $parameter['scopeId'] ?? null,
-                'denyHistory' => $denyHistory,
+                'denyHistory' => $this->shouldDenyHistory($parameter),
             ]
         );
 
-        $combinedSql = $searchRepository->getCombinedSelectSql(
-            $historySql
-        );
+        return [
+            'sql' => $this->wrapCombinedSearchSql(
+                $searchRepository->getCombinedSelectSql($historySql),
+                $limit,
+                $offset
+            ),
+            'parameters' => array_merge(
+                $searchRepository->getParameters(),
+                $historyParameters
+            ),
+        ];
+    }
 
+    private function shouldDenyHistory(array $parameter): bool
+    {
+        return !empty($parameter['denyHistory'])
+            || !empty($parameter['authKey'])
+            || !empty($parameter['requestId'])
+            || !empty($parameter['upcomingOnly']);
+    }
+
+    private function readScopeIdsParameter(array $parameter): ?array
+    {
+        if (!array_key_exists('scopeIds', $parameter)) {
+            return null;
+        }
+
+        $scopeIds = is_array($parameter['scopeIds'])
+            ? $parameter['scopeIds']
+            : explode(',', (string) $parameter['scopeIds']);
+
+        return array_values(
+            array_filter(
+                array_map('intval', $scopeIds)
+            )
+        );
+    }
+
+    private function wrapCombinedSearchSql(
+        string $combinedSql,
+        ?int $limit,
+        int $offset
+    ): string {
         $sql = '
             SELECT *
             FROM (
@@ -365,26 +370,17 @@ class ProcessSearch extends \BO\Zmsbackend\Base
                 combined.source ASC
         ';
 
-        if ($limit !== null) {
-            $limit = max(0, $limit);
-            $offset = max(0, $offset);
-
-            $sql .= ' LIMIT ' . $limit;
-
-            if ($offset > 0) {
-                $sql .= ' OFFSET ' . $offset;
-            }
+        if ($limit === null) {
+            return $sql;
         }
 
-        $parameters = array_merge(
-            $searchRepository->getParameters(),
-            $historyParameters
-        );
+        $sql .= ' LIMIT ' . max(0, $limit);
 
-        return [
-            'sql' => $sql,
-            'parameters' => $parameters,
-        ];
+        if ($offset > 0) {
+            $sql .= ' OFFSET ' . max(0, $offset);
+        }
+
+        return $sql;
     }
 
     protected function buildCombinedSearchCountSql(

@@ -1,11 +1,9 @@
 #language: de
    
-# DISABLED: Legacy eappointment-buergeransicht frontend tests
-# These tests target the archived Vue2 citizen frontend (https://github.com/it-at-m/eappointment-buergeransicht)
-# which is likely not running in local development environments.
-# To enable these tests, ensure the old buergeransicht frontend is running at http://localhost:8082
-# and remove the @ignore tag from the scenario tags.
-Funktionalität: Default
+# ARCHIVED: Legacy eappointment-buergeransicht frontend tests
+# These scenarios target the retired Vue2 citizen frontend (https://github.com/it-at-m/eappointment-buergeransicht).
+# Page objects and step definitions have been removed; kept as reference only.
+Funktionalität: Bürger bucht über das Internet mit Freitextfeld (zms-dev)
    
    	#Bürger bucht einen Termin, bestätigt ihn. SB öffnet seinen Arbeitsplatz und prüft die anstehende Termine. Bürger nimmt den Termin wahr, die Aufgabe ist beim SB als erledigt markiert und fließt in die Statistik. 
    	@ignore @web @buergeransicht @ZMS-2659 @ZMS-2819 @ZMS-2561 @E2E @automatisiert @executeLocally

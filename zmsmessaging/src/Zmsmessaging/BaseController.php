@@ -12,23 +12,24 @@ use BO\Zmsentities\Mail;
 use BO\Zmsentities\Mimepart;
 use BO\Zmsentities\Schema\Entity;
 use BO\Mellon\Validator;
+use BO\Zmsclient\Http;
 
 class BaseController
 {
-    protected $verbose = false;
-    protected static $logList = [];
-    protected $workstation = null;
-    protected $startTime;
-    protected $maxRunTime = 50;
+    protected mixed $verbose = false;
+    protected static array $logList = [];
+    protected mixed $workstation = null;
+    protected float $startTime;
+    protected mixed $maxRunTime = 50;
 
-    public function __construct($verbose = false, $maxRunTime = 50)
+    public function __construct(mixed $verbose = false, mixed $maxRunTime = 50)
     {
         $this->verbose = $verbose;
         $this->startTime = microtime(true);
         $this->maxRunTime = $maxRunTime;
     }
 
-    public static function getLogList()
+    public static function getLogList(): array
     {
         return static::$logList;
     }
@@ -44,18 +45,36 @@ class BaseController
         return $time;
     }
 
-    protected function sendMailer(Entity $entity, $mailer = null, $action = false)
+    protected function getNow(): \DateTimeInterface
+    {
+        $now = \App::$now;
+        if ($now instanceof \DateTimeInterface) {
+            return $now;
+        }
+        throw new \RuntimeException('Current time is not initialized');
+    }
+
+    protected function getHttp(): Http
+    {
+        $http = \App::$http;
+        if ($http instanceof Http) {
+            return $http;
+        }
+        throw new \RuntimeException('HTTP client is not initialized');
+    }
+
+    protected function sendMailer(Entity $entity, mixed $mailer = null, mixed $action = false): mixed
     {
         // @codeCoverageIgnoreStart
         $hasSendSuccess = ($action) ? $mailer->Send() : $action;
         if (false !== $action && null !== $mailer && ! $hasSendSuccess) {
-            $this->log("Exception: SendingFailed  - " . \App::$now->format('c'));
+            $this->log("Exception: SendingFailed  - " . $this->getNow()->format('c'));
             throw new Exception\SendingFailed();
         }
         // @codeCoverageIgnoreEnd
         $log = new Mimepart(['mime' => 'text/plain']);
-        $log->content = ($entity instanceof Mail) ? $entity->subject : $entity->message;
-        \App::$http->readPostResult('/log/process/' . $entity->process['id'] . '/', $log);
+        $log['content'] = ($entity instanceof Mail) ? $entity['subject'] : $entity['message'];
+        $this->getHttp()->readPostResult('/log/process/' . $entity['process']['id'] . '/', $log);
         return $mailer;
     }
 
@@ -64,24 +83,21 @@ class BaseController
      */
     protected function removeEntityOlderThanOneHour(Mail $entity)
     {
-        if (3600 < \App::$now->getTimestamp() - $entity->createTimestamp) {
+        if (3600 < $this->getNow()->getTimestamp() - $entity['createTimestamp']) {
             $this->deleteEntityFromQueue($entity);
             $log = new Mimepart(['mime' => 'text/plain']);
-            $log->content = 'Zmsmessaging Failure: Queue entry older than 1 hour has been removed';
-            \App::$http->readPostResult('/log/process/' . $entity->process['id'] . '/', $log, ['error' => 1]);
-            \App::$log->warning($log->content);
+            $log['content'] = 'Zmsmessaging Failure: Queue entry older than 1 hour has been removed';
+            $this->getHttp()->readPostResult('/log/process/' . $entity['process']['id'] . '/', $log, ['error' => 1]);
+            \App::$log->warning($log['content']);
             return false;
         }
     }
 
     public function deleteEntityFromQueue(Mail $entity): bool
     {
-        if (!($entity instanceof Mail)) {
-            return false;
-        }
         try {
-            $entity = \App::$http
-                ->readDeleteResult('/mails/' . $entity->id . '/')
+            $entity = $this->getHttp()
+                ->readDeleteResult('/mails/' . $entity['id'] . '/')
                 ->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             throw $exception;
@@ -113,16 +129,14 @@ class BaseController
         if (! $entity->hasContent()) {
             throw new \BO\Zmsmessaging\Exception\MailWithoutContent();
         }
-        if ($entity instanceof Mail) {
-            $isMail = Validator::value($entity->getRecipient())->isMail()->getValue();
-            if (!$isMail) {
+        $isMail = Validator::value($entity->getRecipient())->isMail()->getValue();
+        if (!$isMail) {
+            throw new \BO\Zmsmessaging\Exception\InvalidMailAddress();
+        }
+        if (\App::$verify_dns_enabled) {
+            $hasDns = Validator::value($entity->getRecipient())->isMail()->hasDNS()->getValue();
+            if (!$hasDns) {
                 throw new \BO\Zmsmessaging\Exception\InvalidMailAddress();
-            }
-            if (\App::$verify_dns_enabled) {
-                $hasDns = Validator::value($entity->getRecipient())->isMail()->hasDNS()->getValue();
-                if (!$hasDns) {
-                    throw new \BO\Zmsmessaging\Exception\InvalidMailAddress();
-                }
             }
         }
     }
@@ -142,10 +156,10 @@ class BaseController
                         $errorOutput = stream_get_contents($handle['pipes'][2]);  // stderr
                         fclose($handle['pipes'][1]);
                         fclose($handle['pipes'][2]);
-                        if (trim($output)) {
+                        if (is_string($output) && trim($output)) {
                             $this->log("\nProcess stdout: " . trim($output) . "\n");
                         }
-                        if (trim($errorOutput)) {
+                        if (is_string($errorOutput) && trim($errorOutput)) {
                             $this->log("\nProcess stderr: " . trim($errorOutput) . "\n");
                         }
 
@@ -163,10 +177,6 @@ class BaseController
 
     public function log(string $message): void
     {
-        if (is_array($message)) {
-            $message = print_r($message, true);
-        }
-
         $time = $this->getSpendTime();
         $memory = memory_get_usage() / (1024 * 1024);
         static::$logList[] = $message;
@@ -183,7 +193,7 @@ class BaseController
         }
     }
 
-    protected function convertCollectionToArray($collection): array
+    protected function convertCollectionToArray(mixed $collection): array
     {
         $this->log("Converting collection to array");
         $array = [];

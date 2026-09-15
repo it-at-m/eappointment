@@ -50,16 +50,16 @@ class Day extends Schema\Entity
         return $this;
     }
 
-    public function toDateTime()
+    public function toDateTime(): \BO\Zmsentities\Helper\DateTime
     {
         $date = Helper\DateTime::createFromFormat('Y-m-d', $this['year'] . '-' . $this['month'] . '-' . $this['day']);
         return Helper\DateTime::create($date);
     }
 
     /**
-     * @return bool TRUE or FALSE if one or more appointments, if no appointments for $slotType were defined, than NULL
+     * @return bool|null TRUE or FALSE if one or more appointments, if no appointments for $slotType were defined, than NULL
      */
-    public function hasAppointmentsByType($slotType)
+    public function hasAppointmentsByType(mixed $slotType): bool|null
     {
         $freeAppointmentCount = $this->toProperty()->freeAppointments->{$slotType}->get();
         $allAppointmentCount = $this->toProperty()->allAppointments->{$slotType}->get();
@@ -85,7 +85,7 @@ class Day extends Schema\Entity
      *
      * @return \ArrayObject or String
      */
-    public function getWithStatus($slotType, \DateTimeInterface $now)
+    public function getWithStatus(mixed $slotType, \DateTimeInterface $now)
     {
         $hasAppointments = $this->hasAppointmentsByType($slotType);
         if ($this->status != self::RESTRICTED && $hasAppointments !== null) {
@@ -113,16 +113,16 @@ class Day extends Schema\Entity
     /**
      * Returns an unique string hash per day optimized for b-trees
      */
-    public function getDayHash()
+    public function getDayHash(): string
     {
         return $this::getCalculatedDayHash($this->day, $this->month, $this->year);
     }
 
-    public static function getCalculatedDayHash($dayNumber, $month, $year): string
+    public static function getCalculatedDayHash(string|int $dayNumber, string|int $month, string|int $year): string
     {
-        $dateHash = str_pad($dayNumber, 2, '0', STR_PAD_LEFT)
+        $dateHash = str_pad((string) $dayNumber, 2, '0', STR_PAD_LEFT)
             . "-"
-            . str_pad($month, 2, '0', STR_PAD_LEFT)
+            . str_pad((string) $month, 2, '0', STR_PAD_LEFT)
             . "-$year";
         return $dateHash;
     }

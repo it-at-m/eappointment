@@ -11,6 +11,12 @@ class DepartmentList extends Base implements JsonUnindexed
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\Department';
 
+    #[\Override]
+    public function getArrayCopy(): array
+    {
+        return parent::getArrayCopy();
+    }
+
     public function withOutClusterDuplicates(): self
     {
         $departmentList = new self();
@@ -21,7 +27,7 @@ class DepartmentList extends Base implements JsonUnindexed
         return $departmentList;
     }
 
-    public function getUniqueScopeList()
+    public function getUniqueScopeList(): \BO\Zmsentities\Collection\ScopeList
     {
         $scopeList = new ScopeList();
         $clusterList = $this->getUniqueClusterList();
@@ -41,7 +47,7 @@ class DepartmentList extends Base implements JsonUnindexed
         return $scopeList->withUniqueScopes();
     }
 
-    public function getUniqueClusterList()
+    public function getUniqueClusterList(): \BO\Zmsentities\Collection\ClusterList
     {
         $clusterList = new ClusterList();
         foreach ($this as $department) {

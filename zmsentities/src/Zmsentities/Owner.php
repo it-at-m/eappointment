@@ -21,20 +21,22 @@ class Owner extends Schema\Entity implements Useraccount\AccessInterface
             ];
     }
 
-    public function hasOrganisation($organisationId)
+    public function hasOrganisation(mixed $organisationId): bool
     {
         return $this->getOrganisationList()->hasEntity($organisationId);
     }
 
     public function getOrganisationList(): Collection\OrganisationList
     {
-        if (!$this->organisations instanceof Collection\OrganisationList) {
-            $this->organisations = new Collection\OrganisationList($this->organisations);
-            foreach ($this->organisations as $key => $organisation) {
-                $this->organisations[$key] = new Organisation($organisation);
+        $organisations = $this->organisations;
+        if (!$organisations instanceof Collection\OrganisationList) {
+            $organisations = new Collection\OrganisationList($organisations);
+            foreach ($organisations as $key => $organisation) {
+                $organisations[$key] = new Organisation($organisation);
             }
+            $this->organisations = $organisations;
         }
-        return $this->organisations;
+        return $organisations;
     }
 
 
@@ -42,7 +44,7 @@ class Owner extends Schema\Entity implements Useraccount\AccessInterface
      * @return bool
      */
     #[\Override]
-    public function hasAccess(Useraccount $useraccount)
+    public function hasAccess(Useraccount $useraccount): bool
     {
         return $useraccount->isSuperUser()
             || 0 < $this->getOrganisationList()->withAccess($useraccount)->count();

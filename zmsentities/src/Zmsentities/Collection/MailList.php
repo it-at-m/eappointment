@@ -9,7 +9,7 @@ class MailList extends Base
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\Mail';
 
-    public function withProcess($processId): self
+    public function withProcess(mixed $processId): self
     {
         $list = new self();
         foreach ($this as $mail) {

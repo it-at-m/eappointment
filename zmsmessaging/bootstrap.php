@@ -14,9 +14,11 @@ if (file_exists(APP_PATH . '/vendor/autoload.php')) {
     define('VENDOR_PATH', APP_PATH . '/../..');
 }
 }
+/** @psalm-suppress UnresolvableInclude */
 require_once(VENDOR_PATH . '/autoload.php');
 
 // initialize the static \App singleton
+/** @psalm-suppress UnresolvableInclude */
 require(APP_PATH . '/config.php');
 
 \BO\Slim\Bootstrap::ensureLogger();

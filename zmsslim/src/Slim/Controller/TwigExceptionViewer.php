@@ -15,7 +15,9 @@ class TwigExceptionViewer extends \BO\Slim\Controller
     {
         $request = $this->initRequest($request);
         $exception = new \Exception($args['message']);
+        /** @psalm-suppress UndefinedPropertyAssignment Exception viewer passes template data to the HTML handler. */
         $exception->template = $args['template'];
+        /** @psalm-suppress UndefinedPropertyAssignment Exception viewer passes request data to the HTML handler. */
         $exception->data = $_REQUEST;
         return \BO\Slim\TwigExceptionHandler::withHtml($request, $response, $exception);
     }

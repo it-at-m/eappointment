@@ -12,7 +12,7 @@ class EntityAccess implements RightsInterface
     }
 
     #[\Override]
-    public function validateUseraccount(\BO\Zmsentities\Useraccount $useraccount)
+    public function validateUseraccount(\BO\Zmsentities\Useraccount $useraccount): bool
     {
         return $this->entity->hasAccess($useraccount);
     }

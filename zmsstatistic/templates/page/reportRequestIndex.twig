@@ -22,14 +22,7 @@
         {% block board_body %}
         {% if selected or dateRange %}
             {% if exchangeRequest.period == "day" %}
-                {% set start = date("%s-%s-%s"|format(exchangeRequest.firstDay.year, exchangeRequest.firstDay.month, exchangeRequest.firstDay.day)) %}
-                {% set end = date("%s-%s-%s"|format(exchangeRequest.lastDay.year, exchangeRequest.lastDay.month, exchangeRequest.lastDay.day)) %}
-                {% set days = start.diff(end).days %}
-                {% set dateRange = [] %}
-                {% for i in range(0, days) %}
-                    {% set fullDate = start | date_modify("+" ~ i ~ " day") | date('Y-m-d') %}
-                    {% set dateRange = dateRange|merge([fullDate]) %}
-                {% endfor %}
+                {% set dateRange = exchangeRequest.getDatesWithRequests() %}
             {% elseif exchangeRequest.period == "month" %}
                 {% set startDate = "%s-%s"|format(exchangeRequest.firstDay.year, exchangeRequest.firstDay.month) %}
                 {% set endDate = "%s-%s"|format(exchangeRequest.lastDay.year, exchangeRequest.lastDay.month) %}
@@ -48,6 +41,7 @@
                         <th class="statistik">Ø Bearbeitungsdauer</th>
                         <th class="statistik">Summe</th>
                     {% elseif exchangeRequest.period == "month" %}
+                        <th class="statistik">Ø Bearbeitungsdauer</th>
                         <th class="statistik">{{ startDate|date('Y') }}</th>
                     {% endif %}
                     {% for date in dateRange %}
@@ -66,7 +60,9 @@
                     {% set serviceNotProvidedKey = 'nonexistent' %}
                     {% for name, entry in exchangeRequest.data %}
 
-                        {% if name != "average_processingtime" and name != "sum" %}
+                        {% if name != "average_processingtime"
+                        and name !="average_processingtime_overall"
+                         and name != "sum" %}
                         <tr{% if name == uncategorizedRequestKey or name == serviceNotProvidedKey %} class="report-board--request-stat-special"{% endif %}>
                             <th class="report-board--long-text">
                                 {% if name == uncategorizedRequestKey %}
@@ -78,7 +74,7 @@
                                 {% endif %}
                             </th>
 
-                            {% if exchangeRequest.period == "day" %}
+                            {% if exchangeRequest.period == "day" or exchangeRequest.period == "month" %}
                                 <td class="report-board--summary">
                                     {{ timeutils.formatMinutesToTime(exchangeRequest.data.average_processingtime[name]) }}
                                 </td>
@@ -88,9 +84,7 @@
                                 {{ exchangeRequest.data.sum[name] }}
                             </td>
 
-                            {% if name != uncategorizedRequestKey and name != serviceNotProvidedKey %}
-                                {% set totalSum = totalSum + (exchangeRequest.data.sum[name]|default(0)) %}
-                            {% endif %}
+                            {% set totalSum = totalSum + (exchangeRequest.data.sum[name]|default(0)) %}
 
                             {% for date in dateRange %}
                                 {% if exchangeRequest.period == "day" %}
@@ -113,10 +107,14 @@
                     {% endfor %}
 
                     <tr>
-                        <th class="report-board--long-text">Summe</th>
+                        <th class="report-board--long-text">
+                            Ø Bearbeitungsdauer (unabhängig von DL) / Summe
+                        </th>
 
-                        {% if exchangeRequest.period == "day" %}
-                            <td class="report-board--summary">-</td>
+                        {% if exchangeRequest.period == "day" or exchangeRequest.period == "month" %}
+                            <td class="report-board--summary">
+                                {{ timeutils.formatMinutesToTime(exchangeRequest.data.average_processingtime_overall)}}
+                            </td>
                         {% endif %}
 
                         <td class="report-board--summary">
@@ -127,16 +125,14 @@
                             {% set dateSum = 0 %}
                             {% if exchangeRequest.period == "day" %}
                                 {% for name, entry in exchangeRequest.data %}
-                                    {% if name != "average_processingtime" and name != "sum"
-                                        and name != uncategorizedRequestKey and name != serviceNotProvidedKey %}
+                                    {% if name != "average_processingtime" and name != "average_processingtime_overall" and name != "sum" %}
                                         {% set dateSum = dateSum + (entry[date].requestscount|default(0)) %}
                                     {% endif %}
                                 {% endfor %}
                             {% elseif exchangeRequest.period == "month" %}
                                 {% set formattedDate = startDate|date('Y') ~"-"~ "%02d"|format(date) %}
                                 {% for name, entry in exchangeRequest.data %}
-                                    {% if name != "average_processingtime" and name != "sum"
-                                        and name != uncategorizedRequestKey and name != serviceNotProvidedKey %}
+                                    {% if name != "average_processingtime" and name != "average_processingtime_overall" and name != "sum" %}
                                         {% set dateSum = dateSum + (entry[formattedDate].requestscount|default(0)) %}
                                     {% endif %}
                                 {% endfor %}

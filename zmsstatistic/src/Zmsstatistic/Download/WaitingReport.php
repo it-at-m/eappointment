@@ -21,19 +21,19 @@ class WaitingReport extends Base
     private const string CUSTOMER_TYPE_TERMIN = 'termin';
     private const string CUSTOMER_TYPE_SPONTAN = 'spontan';
 
-    protected $reportPartsGesamt = [
+    protected array $reportPartsGesamt = [
         'waitingtime_total' => 'Durchschnittliche Wartezeit in Min. (Gesamt)',
         'waitingcount_total' => 'Wartende Gesamtkunden',
         'waytime_total' => 'Durchschnittliche Wegezeit in Min. (Gesamt)',
     ];
 
-    protected $reportPartsTermin = [
+    protected array $reportPartsTermin = [
         'waitingtime_termin' => 'Durchschnittliche Wartezeit in Min. (Terminkunden)',
         'waitingcount_termin' => 'Wartende Terminkunden',
         'waytime_termin' => 'Durchschnittliche Wegezeit in Min. (Terminkunden)',
     ];
 
-    protected $reportPartsSpontan = [
+    protected array $reportPartsSpontan = [
         'waitingtime' => 'Durchschnittliche Wartezeit in Min. (Spontankunden)',
         'waitingcount' => 'Wartende Spontankunden',
         'waytime' => 'Durchschnittliche Wegezeit in Min. (Spontankunden)',
@@ -66,7 +66,7 @@ class WaitingReport extends Base
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
         $title = 'waitingstatistic_' . $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
         $spreadsheet = $download->getSpreadSheet();
@@ -121,8 +121,11 @@ class WaitingReport extends Base
         return $spreadsheet;
     }
 
-    public function writeHeader(ReportEntity $report, \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet, $datePatternCol): void
-    {
+    public function writeHeader(
+        ReportEntity $report,
+        \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet,
+        string $datePatternCol
+    ): void {
         $reportHeader = [];
         $reportHeader[] = null;
         $reportHeader[] = 'Max.';
@@ -179,6 +182,7 @@ class WaitingReport extends Base
 
         $keys = $this->getCustomerTypeKeys($customerType);
 
+        $reportTotal = [];
         $reportTotal['max'][] = 'Stunden-Max (Spaltenmaximum) der Wartezeit in Min.';
         $reportTotal['average'][] = 'Stundendurchschnitt (Spalten) der Wartezeit in Min.';
         $reportTotal['average_waytime'][] = 'Stundendurchschnitt (Spalten) der Wegezeit in Min.';
@@ -195,11 +199,16 @@ class WaitingReport extends Base
         $sheet->fromArray($reportTotal, null, 'A' . ($sheet->getHighestRow() + 1));
     }
 
-    public function writeReportPart(ReportEntity $report, \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet, $rangeName, $headline): void
-    {
+    public function writeReportPart(
+        ReportEntity $report,
+        \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet,
+        string $rangeName,
+        string $headline
+    ): void {
         $entity = clone $report;
         $totals = $entity->data['max'];
         unset($entity->data['max']);
+        $reportData = [];
         $reportData['headline'] = ['Zeitabschnitte','Tagesmaximum (Zeilenmaximum)',$headline];
         $formatAsTime = strpos($rangeName, 'waitingcount') === false;
         foreach ($entity->data as $entry) {

@@ -9,7 +9,7 @@ class ProviderList extends Base
 {
     public const string ENTITY_CLASS = '\BO\Zmsentities\Provider';
 
-    public function hasProvider($providerIdCsv): bool
+    public function hasProvider(mixed $providerIdCsv): bool
     {
         $providerFound = false;
         $providerIds = explode(',', $providerIdCsv);
@@ -21,7 +21,7 @@ class ProviderList extends Base
         return $providerFound;
     }
 
-    public function hasProviderStrict($providerIdCsv): bool
+    public function hasProviderStrict(mixed $providerIdCsv): bool
     {
         $providerIds = explode(',', $providerIdCsv);
         foreach ($providerIds as $providerId) {
@@ -32,7 +32,7 @@ class ProviderList extends Base
         return true;
     }
 
-    public function hasRequest($requestIdCsv): bool
+    public function hasRequest(mixed $requestIdCsv): bool
     {
         $requestIds = explode(',', $requestIdCsv);
         foreach ($this as $entity) {
@@ -45,13 +45,16 @@ class ProviderList extends Base
         return false;
     }
 
-    public function withMatchingByList($providerIdCsv): self
+    public function withMatchingByList(mixed $providerIdCsv): self
     {
         $collection = new self();
         $providerIds = explode(',', $providerIdCsv);
         foreach ($providerIds as $providerId) {
             if (in_array($providerId, $this->getIds())) {
-                $collection->addEntity($this->getEntity($providerId));
+                $entity = $this->getEntity($providerId);
+                if ($entity !== null) {
+                    $collection->addEntity($entity);
+                }
             }
         }
         return $collection;
@@ -61,7 +64,8 @@ class ProviderList extends Base
     {
         $list = new self();
         foreach ($this as $provider) {
-            if ($provider && ! $list->hasEntity($provider->id)) {
+            /** @psalm-suppress RedundantConditionGivenDocblockType Constructor storage can include null. */
+            if ($provider instanceof \BO\Zmsentities\Provider && ! $list->hasEntity($provider->id)) {
                 $list->addEntity($provider);
             }
         }
@@ -76,7 +80,7 @@ class ProviderList extends Base
                 if (is_string($provider->data)) {
                     $provider->data = json_decode($provider->data);
                 } elseif (is_array($provider->data)) {
-                    $provider->data = json_decode(json_encode($provider->data, JSON_FORCE_OBJECT));
+                    $provider->data = json_decode((string) json_encode($provider->data, JSON_FORCE_OBJECT));
                 }
             } else {
                 unset($provider['data']);
@@ -86,10 +90,10 @@ class ProviderList extends Base
         return $list;
     }
 
-    public function sortById()
+    public function sortById(): \BO\Zmsentities\Collection\Base
     {
         $list = clone $this;
-        $list->uasort(function ($a, $b) {
+        $list->uasort(function ($a, $b): mixed {
             return ($a['id'] - $b['id']);
         });
         return (new self())->addList($list);

@@ -2,5 +2,7 @@ node_modules/
 .vitepress/cache/
 .vitepress/dist/
 .vitepress/data/log-inventory.json
+.vitepress/data/cucumber-features.json
+.vitepress/data/cucumber-navigation.json
 de/testing-and-automation/zmsautomation-cucumber-current.md
 en/testing-and-automation/zmsautomation-cucumber-current.md

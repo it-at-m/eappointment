@@ -1,25 +1,6 @@
 # Running Cronjobs Locally
 
-Run ZMS cronjobs locally with either DDEV or Podman. Local dev uses **zmsbackend** (same as `./cli db full-setup` and root `.htaccess` for `/terminvereinbarung/api/2`).
-
-## DDEV
-
-Hourly cronjob (default and city-specific):
-
-```bash
-ddev exec zmsbackend/cron/cronjob.hourly
-ddev exec zmsbackend/cron/cronjob.hourly --city=berlin
-ddev exec zmsbackend/cron/cronjob.hourly --city=munich
-```
-
-Other cronjobs:
-
-```bash
-ddev exec zmsbackend/cron/cronjob.minutly
-ddev exec zmsbackend/cron/cronjob.daily
-```
-
-## Podman
+Run ZMS cronjobs locally with Podman. Local dev uses **zmsbackend** (same as `./cli db full-setup` and root `.htaccess` for `/terminvereinbarung/api/2`).
 
 Hourly cronjob (default and city-specific):
 

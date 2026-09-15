@@ -14,22 +14,23 @@ use BO\Zmsentities\Exception\UserAccountAccessRightsFailed;
 use BO\Zmsentities\Exception\WorkstationMissingScope;
 use BO\Zmsentities\Useraccount;
 use BO\Zmsentities\Workstation;
+use Psr\Http\Message\RequestInterface;
 
 class Access extends \BO\Slim\Controller
 {
-    protected $workstation = null;
+    protected mixed $workstation = null;
 
-    protected $organisation = null;
+    protected mixed $organisation = null;
 
-    protected $department = null;
+    protected mixed $department = null;
 
-    protected $resolveLevel = 2;
+    protected int $resolveLevel = 2;
 
-    protected $withAccess = true;
+    protected bool $withAccess = true;
 
-    protected $owner = null;
+    protected mixed $owner = null;
 
-    protected function initAccessRights($request): void
+    protected function initAccessRights(RequestInterface $request): void
     {
         $this->workstation = $this->readWorkstation();
         if ($this->workstation && isset($this->workstation->scope['id']) && $this->workstation->scope['id'] > 0) {
@@ -40,50 +41,50 @@ class Access extends \BO\Slim\Controller
         $this->validateAccessRights($request);
     }
 
-    protected function readWorkstation()
+    protected function readWorkstation(): mixed
     {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => $this->resolveLevel]);
-        return ($workstation) ? $workstation->getEntity() : null;
+        $workstation = \App::http()->readGetResult('/workstation/', ['resolveReferences' => $this->resolveLevel]);
+        return $workstation->getEntity();
     }
 
-    protected function readDepartment()
+    protected function readDepartment(): mixed
     {
         if ($this->workstation->getUseraccount()->hasPermissions(['statistic'])) {
-            return \App::$http
+            return \App::http()
                 ->readGetResult('/scope/' . $this->workstation->scope['id'] . '/department/')
                 ->getEntity();
         }
+        return null;
     }
 
-    protected function readOrganisation()
+    protected function readOrganisation(): mixed
     {
         if ($this->workstation->getUseraccount()->isSuperUser()) {
-            return \App::$http
+            return \App::http()
                 ->readGetResult('/department/' . $this->department->getId() . '/organisation/')
                 ->getEntity();
         }
+        return null;
     }
 
-    protected function readOwner()
+    protected function readOwner(): mixed
     {
         if ($this->workstation->getUseraccount()->isSuperUser()) {
-            return \App::$http
+            return \App::http()
                 ->readGetResult('/organisation/' . $this->organisation->getId() . '/owner/')
                 ->getEntity();
         }
+        return null;
     }
 
-    protected function validateAccessRights($request): void
+    protected function validateAccessRights(RequestInterface $request): void
     {
         $path = $request->getUri()->getPath();
         $this->validateAccess($path);
         $this->validateScope($path);
     }
 
-    /**
-     * @return void
-     */
-    protected function validateAccess($path)
+    protected function validateAccess(string $path): void
     {
         if (
             (false !== strpos($path, 'owner') && ! $this->owner) ||
@@ -94,10 +95,7 @@ class Access extends \BO\Slim\Controller
         }
     }
 
-    /**
-     * @return void
-     */
-    protected function validateScope($path)
+    protected function validateScope(string $path): void
     {
         if (
             $this->isPathWithoutScope($path)
@@ -107,7 +105,7 @@ class Access extends \BO\Slim\Controller
         }
     }
 
-    protected function isPathWithoutScope($path): bool
+    protected function isPathWithoutScope(string $path): bool
     {
         // TODO: refactor to integrate these access rules in the controller to make them visible
         return (false === strpos($path, 'select')
@@ -118,10 +116,9 @@ class Access extends \BO\Slim\Controller
     }
 
     /**
-     * @return (mixed|string|string[][][])[]|Workstation
-     *
+     * @return mixed
      */
-    protected function testLogin($input)
+    protected function testLogin(mixed $input): mixed
     {
         $userAccount = new Useraccount(array(
             'id' => $input['loginName'],
@@ -130,7 +127,7 @@ class Access extends \BO\Slim\Controller
         ));
         try {
             /** @var Workstation $workstation */
-            $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
+            $workstation = \App::http()->readPostResult('/workstation/login/', $userAccount)->getEntity();
             return $workstation;
         } catch (\BO\Zmsclient\Exception $exception) {
             $template = TwigExceptionHandler::getExceptionTemplate($exception);
@@ -146,7 +143,7 @@ class Access extends \BO\Slim\Controller
                 throw $exception;
             } elseif (
                 '' != $exception->template
-                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
+                && $this->exceptionTemplateExists($template)
             ) {
                 $exceptionData = [
                   'template' => $template,
@@ -157,5 +154,12 @@ class Access extends \BO\Slim\Controller
             }
         }
         return $exceptionData;
+    }
+
+    protected function exceptionTemplateExists(string $template): bool
+    {
+        /** @var mixed $container */
+        $container = \App::$slim->getContainer();
+        return $container->get('view')->getLoader()->exists($template);
     }
 }

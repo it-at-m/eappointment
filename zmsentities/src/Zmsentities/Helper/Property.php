@@ -71,7 +71,7 @@ class Property implements \ArrayAccess
         throw new \BO\Zmsentities\Exception\PropertyOffsetReadOnly(__CLASS__ . "[$offset] is readonly");
     }
 
-    public function __get($property)
+    public function __get(mixed $property)
     {
         if (
             (is_array($this->access) && array_key_exists($property, $this->access)) ||
@@ -94,7 +94,7 @@ class Property implements \ArrayAccess
         return $string;
     }
 
-    public static function __keyExists($key, $data)
+    public static function __keyExists(mixed $key, mixed $data)
     {
         if (is_array($data)) {
             return array_key_exists($key, $data);

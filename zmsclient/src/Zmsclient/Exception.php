@@ -5,14 +5,14 @@ namespace BO\Zmsclient;
 class Exception extends \Exception
 {
     /**
-     * @var \Psr\Http\Message\ResponseInterface $response
+     * @var \Psr\Http\Message\ResponseInterface|null $response
      */
-    public $response;
+    public ?\Psr\Http\Message\ResponseInterface $response = null;
 
     /**
      * @var \Psr\Http\Message\RequestInterface|null $request
      */
-    public $request;
+    public ?\Psr\Http\Message\RequestInterface $request = null;
 
     /**
      * @var String $template for rendering exception
@@ -56,7 +56,7 @@ class Exception extends \Exception
     ) {
         $this->response = $response;
         $this->request = $request;
-        $code = $this->code ?? null;
+        $code = $this->code;
         if (null !== $response) {
             $code = $response->getStatusCode();
         }

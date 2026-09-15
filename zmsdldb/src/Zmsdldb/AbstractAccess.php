@@ -12,9 +12,9 @@ namespace BO\Zmsdldb;
  */
 class AbstractAccess
 {
-    protected static $showDeprecated = false;
+    protected static bool $showDeprecated = false;
 
-    protected $accessInstance = array(
+    protected mixed $accessInstance = array(
         'de' => array(
             'Authority' => null,
             'Borough' => null,
@@ -37,7 +37,7 @@ class AbstractAccess
         )
     );
 
-    protected static $accessInstanceTypes = [
+    protected static mixed $accessInstanceTypes = [
         'Authority' => null,
         'Borough' => null,
         'Link' => null,
@@ -51,7 +51,7 @@ class AbstractAccess
     /**
      * @psalm-api
      */
-    public function addAccessInstanceLocale($locale = 'de'): void
+    public function addAccessInstanceLocale(string $locale = 'de'): void
     {
         if (!isset($this->accessInstance[$locale])) {
             $this->accessInstance[$locale] = static::$accessInstanceTypes;
@@ -59,7 +59,7 @@ class AbstractAccess
     }
 
 
-    private function getInstanceCompatibilities()
+    private function getInstanceCompatibilities(): mixed
     {
         $accessInstance = $this->accessInstance['de'];
         $accessInstance['Authorities'] = $accessInstance['Authority'];
@@ -77,7 +77,7 @@ class AbstractAccess
      *
      * @return Mixed
      */
-    public function __call($functionName, $functionArguments)
+    public function __call(string $functionName, array $functionArguments)
     {
         if (self::$showDeprecated) {
             trigger_error("Deprecated access function: $functionName");
@@ -87,6 +87,7 @@ class AbstractAccess
         $actionName = 'Nothing';
         if (0 === strpos($functionName, 'fetch')) {
             $actionType = 'fetch';
+            /** @var string|null $instanceName */
             $instanceName = $this->getInstanceOnName($functionName, 5);
             $actionName = substr($functionName, 5 + strlen($instanceName ?? ''));
             if (! $actionName) {
@@ -94,6 +95,7 @@ class AbstractAccess
             }
         } elseif (0 === strpos($functionName, 'search')) {
             $actionType = 'search';
+            /** @var string|null $instanceName */
             $instanceName = $this->getInstanceOnName($functionName, 6);
             $actionName = substr($functionName, 6 + strlen($instanceName ?? ''));
             if (! $actionName) {
@@ -102,6 +104,7 @@ class AbstractAccess
             }
         }
         $accessInstance = $this->getInstanceCompatibilities();
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if (
             $instanceName
             && $instanceName != 'Missing'
@@ -120,10 +123,9 @@ class AbstractAccess
     }
 
     /**
-     * @return string InstanceName
-     *
+     * @return string|null InstanceName
      */
-    protected function getInstanceOnName($name, int $position = 0)
+    protected function getInstanceOnName(mixed $name, int $position = 0)
     {
         foreach (array_keys($this->getInstanceCompatibilities()) as $instanceName) {
             if ($position === strpos($name, $instanceName)) {
@@ -133,7 +135,7 @@ class AbstractAccess
         return null;
     }
 
-    protected function from(string $instanceName, $locale = 'de'): File\Base
+    protected function from(string $instanceName, string $locale = 'de'): File\Base
     {
         if (array_key_exists($instanceName, $this->accessInstance[$locale])) {
             $instance = $this->accessInstance[$locale][$instanceName];
@@ -154,44 +156,60 @@ class AbstractAccess
         throw new Exception("Locale for accessing $instanceName does not exists");
     }
 
-    public function fromAuthority($locale = 'de')
+    public function fromAuthority(string $locale = 'de'): File\Authority
     {
-        return $this->from('Authority', $locale);
+        /** @var File\Authority $instance */
+        $instance = $this->from('Authority', $locale);
+        return $instance;
     }
 
-    public function fromBorough()
+    public function fromBorough(): File\Borough
     {
-        return $this->from('Borough');
+        /** @var File\Borough $instance */
+        $instance = $this->from('Borough');
+        return $instance;
     }
 
     /** @psalm-api */
-    public function fromLink($locale = 'de')
+    public function fromLink(string $locale = 'de'): File\Link
     {
-        return $this->from('Link', $locale);
+        /** @var File\Link $instance */
+        $instance = $this->from('Link', $locale);
+        return $instance;
     }
 
-    public function fromLocation($locale = 'de')
+    public function fromLocation(string $locale = 'de'): File\Location
     {
-        return $this->from('Location', $locale);
+        /** @var File\Location $instance */
+        $instance = $this->from('Location', $locale);
+        return $instance;
     }
 
-    public function fromOffice()
+    public function fromOffice(): File\Office
     {
-        return $this->from('Office');
+        /** @var File\Office $instance */
+        $instance = $this->from('Office');
+        return $instance;
     }
 
-    public function fromService($locale = 'de')
+    public function fromService(string $locale = 'de'): File\Service
     {
-        return $this->from('Service', $locale);
+        /** @var File\Service $instance */
+        $instance = $this->from('Service', $locale);
+        return $instance;
     }
 
-    public function fromSetting()
+    public function fromSetting(): File\Setting
     {
-        return $this->from('Setting');
+        /** @var File\Setting $instance */
+        $instance = $this->from('Setting');
+        return $instance;
     }
 
-    public function fromTopic($locale = 'de')
+    public function fromTopic(string $locale = 'de'): File\Topic
     {
-        return $this->from('Topic', $locale);
+        /** @var File\Topic $instance */
+        $instance = $this->from('Topic', $locale);
+        return $instance;
     }
 }

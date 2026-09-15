@@ -1,11 +1,9 @@
 #language: de
    
-# DISABLED: Legacy eappointment-buergeransicht frontend tests
-# These tests target the archived Vue2 citizen frontend (https://github.com/it-at-m/eappointment-buergeransicht)
-# which is likely not running in local development environments.
-# To enable these tests, ensure the old buergeransicht frontend is running at http://localhost:8082
-# and remove the @ignore tag from the scenario tags.
-Funktionalität: Default
+# ARCHIVED: Legacy eappointment-buergeransicht frontend tests
+# These scenarios target the retired Vue2 citizen frontend (https://github.com/it-at-m/eappointment-buergeransicht).
+# Page objects and step definitions have been removed; kept as reference only.
+Funktionalität: Info-Hinweis zur Terminbuchung im Bürgerfrontend
    
 	   
    	@ignore @web @buergeransicht @ZMS-3177 @ZMS-3162 @automatisiert @executeLocally

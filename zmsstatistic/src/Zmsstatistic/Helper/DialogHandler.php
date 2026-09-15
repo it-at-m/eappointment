@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class DialogHandler extends \BO\Zmsstatistic\BaseController
 {
-    protected $withAccess = false;
+    protected bool $withAccess = false;
 
     /**
      * @SuppressWarnings(UnusedFormalParameter)
@@ -25,7 +25,8 @@ class DialogHandler extends \BO\Zmsstatistic\BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
         $template = $validator->getParameter('template')->isString()->getValue();
         $parameter = $validator->getParameter('parameter')->isArray()->getValue();

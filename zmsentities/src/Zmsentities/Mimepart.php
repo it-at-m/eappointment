@@ -41,7 +41,7 @@ class Mimepart extends Schema\Entity
         return ($this->mime == 'text/calendar') ? true : false;
     }
 
-    public function getContent()
+    public function getContent(): mixed
     {
         return ($this->isBase64Encoded()) ? \base64_decode($this->content) : $this->content;
     }

@@ -1,31 +1,90 @@
 {% extends "layout/main.twig" %}
+{% block title %}Status Terminvereinbarung{% endblock %}
 {% from 'element/helper/snippets.twig' import headline1 %}
-{% block title %}{{ title }}{% endblock %}
 
 {% block headline %}
-    {{ headline1(title) }}
+    {{ headline1("Betriebsstatus des Systems") }}
 {% endblock %}
 
 {% block content %}
     <p>
-        Im folgenden findet sich ein Status der Terminvereinbarung, dem Sie entnehmen können, ob die Anwendung einwandfrei funktioniert.
+        Im Folgenden findet sich ein Status der Terminvereinbarung, dem Sie entnehmen können, ob die Anwendung einwandfrei funktioniert:
     </p>
-    <table class="table--base">
+    <table class="status--table clean">
         <tr class="status-process-confirmed">
             <th>Anzahl der gebuchten Termine</th>
             <td>{{ status.processes.confirmed }}</td>
+        </tr>
+        <tr class="status-process-confirmed">
+            <th>Anzahl der Abholer für Dokumente</th>
+            <td>{{ status.processes.pending }}</td>
         </tr>
         <tr class="status-process-reserved">
             <th>Anzahl der reservierten Termine</th>
             <td>{{ status.processes.reserved }}</td>
         </tr>
-        <tr class="status-process-deleted">
-            <th>Anzahl der abgesagten Termine<br/><small>(Werden in wenigen Minuten freigegeben)</small></th>
-            <td>{{ status.processes.deleted }}</td>
+        <tr class="status-process-called">
+            <th>Anzahl der aktuell aufgerufenen Termine</th>
+            <td>{{ status.processes.called }}</td>
+        </tr>
+        <tr class="status-process-parked">
+            <th>Anzahl der aktuell geparkten Termine</th>
+            <td>{{ status.processes.parked }}</td>
         </tr>
         <tr class="status-process-missed">
             <th>Anzahl der nicht wahrgenommenen Termine heute</th>
             <td>{{ status.processes.missed }}</td>
+        </tr>
+        <tr class="status-process-deleted">
+            <th>Anzahl der abgesagten Termine<br/><small>(Werden in wenigen Minuten freigegeben)</small></th>
+            <td>{{ status.processes.deleted }}</td>
+        </tr>
+        <tr class="status-database-nodeconnections">
+            <th>Letzte Berechnung Termine</th>
+            <td>{{ status.processes.lastCalculate }}</td>
+        </tr>
+        <tr class="status-database-nodeconnections">
+            <th>Älteste Änderung einer noch nicht neu berechneten Öffnungszeit</th>
+            <td>{{ status.processes.outdatedOldest }}</td>
+        </tr>
+        <tr class="status-database-nodeconnections">
+            <th>Anzahl neu zu berechnender Zeit-Slots</th>
+            <td>{{ status.processes.outdated }}</td>
+        </tr>
+        <tr class="status-database-nodeconnections">
+            <th>Verfügbare freie Zeit-Slots insgesamt</th>
+            <td>{{ status.processes.freeSlots }}</td>
+        </tr>
+        <tr class="status-api-version">
+            <th>Version</th>
+            <td>{{ status.version.major }}.{{ status.version.minor }}.{{ status.version.patch }}</td>
+        </tr>
+        {% if isSuperuser %}
+        <tr>
+            <th colspan="2">
+                <h2>Technische Administration</h2>
+                <small>(Nur für technische Administration sichtbar)</small>
+            </th>
+        </tr>
+        <tr class="status-process-confirmed-external">
+            <th>Anzahl der gebuchten Termine mit Bürgerlogin</th>
+            <td>{{ status.processes.confirmedWithExternalUserId|default(0) }}</td>
+        </tr>
+        <tr class="status-dldb-last">
+            <th>Letzter Import Dienstleistungsdatenbank</th>
+            <td>{{ status.sources.dldb.last }}</td>
+        </tr>
+        <tr class="status-mail-queue">
+            <th>Anzahl noch nicht versendeter Mails</th>
+            <td>{{ status.mail.queueCount|default(0) }}</td>
+        </tr>
+        <tr class="status-mail-age">
+            <th>Alter noch nicht versendeter Mails</th>
+            <td class="alert alert-{% if status.mail.oldestSeconds < 300 %}success{% else %}error{% endif %}">{{ status.mail.oldestSeconds|default(0) }}&nbsp;Sekunden</td>
+        </tr>
+        <tr class="status-sessions">
+            <th>Aktive Sitzungen der Mitarbeitenden</th>
+            <td>{{ status.useraccounts.activeSessions|default(0) }}</td>
         </tr>
         <tr class="status-database-nodeconnections">
             <th>Auslastung der Datenbankverbindungen</th>
@@ -35,13 +94,24 @@
             <th>Status des Datenbank-Clusters</th>
             <td class="alert alert-{% if status.database.clusterStatus != 'OFF' %}success{% else %}error{% endif %}">{{ status.database.clusterStatus }}</td>
         </tr>
-        <tr class="status-database-clusterstatus">
+        <tr class="status-database-logbin">
             <th>Sekundengenaues Backup</th>
             <td class="alert alert-{% if status.database.logbin == 'ON' %}success{% else %}error{% endif %}">{{ status.database.logbin }}</td>
         </tr>
-        <tr class="status-api-version">
-            <th>API Version</th>
-            <td>{{ status.version.major }}.{{ status.version.minor }}.{{ status.version.patch }}</td>
+        <tr>
+            <th colspan="2">
+                <h2>Automatische Tests</h2>
+                <small>(Nur für technische Administration sichtbar)</small>
+            </th>
         </tr>
+        <tr class="status-api-version">
+            <th>zmsautomation</th>
+            <td>
+                <a href="https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml?query=branch%3Anext">
+                    <img src="https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml/badge.svg?branch=next" alt="zmsautomation CI status" />
+                </a>
+            </td>
+        </tr>
+        {% endif %}
     </table>
 {% endblock %}

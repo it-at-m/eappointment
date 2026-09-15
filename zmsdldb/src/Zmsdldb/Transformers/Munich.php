@@ -10,7 +10,7 @@ use Psr\Log\LoggerInterface;
  */
 class Munich
 {
-    const array EXCLUSIVE_LOCATIONS = [
+    public const array EXCLUSIVE_LOCATIONS = [
         //SZE
         54285,
         // Standesamt München - registry office locations (exclusive, don't show alternatives)
@@ -22,7 +22,7 @@ class Munich
         103666, 103633, 101905,
     ];
 
-    const array LOCATION_PRIO_BY_DISPLAY_NAME = [
+    public const array LOCATION_PRIO_BY_DISPLAY_NAME = [
         'Bürgerbüro Ruppertstraße' => 100,
         'Bürgerbüro Orleansplatz' => 90,
         'Bürgerbüro Pasing' => 80,
@@ -41,7 +41,7 @@ class Munich
         'Feuerwache 10 - Riem / Neue Messe' => 1
     ];
 
-    const array DONT_SHOW_LOCATION_BY_SERVICES = [
+    public const array DONT_SHOW_LOCATION_BY_SERVICES = [
         [
             "locations" => [10489], // Bürgerbüro Ruppertstraße
             "services" => [1063453, 1063441, 1080582] // Reisepass, Personalausweis, Vorläufiger Reisepass
@@ -54,12 +54,12 @@ class Munich
 
     // Offices where disabledByServices/DONT_SHOW_LOCATION_BY_SERVICES are interpreted with special
     // "exclusive vs mixed" semantics in the frontend (allowDisabledServicesMix=true).
-    const array LOCATIONS_ALLOW_DISABLED_MIX = [
+    public const array LOCATIONS_ALLOW_DISABLED_MIX = [
         [10489, 10491, 10500, 10502] // Bürgerbüro Ruppertstraße (KVR-II/22) // Bürgerbüro Ruppertstraße (KVR-II/221)
     ];
 
     // Offices that share one Ort but keep pooled calendar capacity (ZMSKVR-1046 Ausbildung).
-    const array LOCATIONS_SHARED_BOOKING = [
+    public const array LOCATIONS_SHARED_BOOKING = [
         [10489, 10503, 10500, 10491] // 10491 now has some of the same services as 10489 10502 10503 which means if it exposes external appointments it must mix them otherwise shows up double.
     ];
 
@@ -76,7 +76,7 @@ class Munich
         1080716
     ];
 
-    const array SERVICE_COMBINATIONS = [
+    public const array SERVICE_COMBINATIONS = [
         //BB
         [10295182],
         [10242339, 1063475, 1063441, 1063453, 10308996, 10224136, 10225205, 10225181, 1063426, 1063428, 10306925, 10225119, 1080843, 1076889, 1078273, 1080582, 10225197, 10224132],
@@ -137,8 +137,8 @@ class Munich
         [10383549, 1064361],
     ];
 
-    protected $publicUrl;
-    protected $logger;
+    protected string $publicUrl;
+    protected ?LoggerInterface $logger;
 
     public function __construct(string $publicUrl = '', ?LoggerInterface $logger = null)
     {
@@ -156,10 +156,12 @@ class Munich
     private function requestWithOptionalProxy(string $url): Request
     {
         $req = Request::get($url);
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         $proxy = getenv('HTTPS_PROXY') ?: getenv('https_proxy')
             ?: getenv('HTTP_PROXY') ?: getenv('http_proxy');
         if ($proxy !== false && $proxy !== '') {
             $parts = parse_url($proxy);
+            /** @psalm-suppress RiskyTruthyFalsyComparison */
             if (!empty($parts['host'])) {
                 $port = isset($parts['port']) ? $parts['port'] : 80;
                 $req->useProxy($parts['host'], $port);
@@ -181,6 +183,7 @@ class Munich
             $content = $response->raw_body;
 
             // Extract JSON export URLs using regex and pick the last one (latest)
+            /** @psalm-suppress RiskyTruthyFalsyComparison */
             if (!preg_match_all('#https://[^"\'\'\s<>]+\\.json#i', $content, $matches) || empty($matches[0])) {
                 throw new \RuntimeException('No JSON export links found on index page');
             }
@@ -201,7 +204,7 @@ class Munich
                 throw new \RuntimeException(
                     'Export JSON parse failed (' . $e->getMessage() . '). '
                     . 'Often means the HTTP response was not JSON (e.g. block page or missing HTTPS_PROXY in cron). '
-                    . 'Body preview: ' . $snippet,
+                    . 'Body preview: ' . (string) $snippet,
                     0,
                     $e
                 );
@@ -232,6 +235,7 @@ class Munich
      */
     public function applySadbOverwrite(array $data, ?string $overwritePath = null): array
     {
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         $path = $overwritePath ?: self::defaultSadbOverwritePath();
         if (!is_readable($path)) {
             $this->logger?->warning('Munich SADB overwrite not readable, skipping merge', ['path' => $path]);
@@ -396,7 +400,7 @@ class Munich
             'meta' => [
                 'generated' => $timestamp,
                 'datacount' => count($mappedServices),
-                'hash' => md5(json_encode($mappedServices))
+                'hash' => md5((string) json_encode($mappedServices))
             ]
         ];
     }
@@ -415,6 +419,7 @@ class Munich
 
         foreach ($data['locations'] ?? [] as $location) {
             $processed = $this->processLocation($location, $mappedServices);
+            /** @psalm-suppress RiskyTruthyFalsyComparison */
             if ($processed) {
                 $mappedLocations[] = $processed;
             }
@@ -435,7 +440,7 @@ class Munich
                 'meta' => [
                     'generated' => $timestamp,
                     'datacount' => count($servicesList),
-                    'hash' => md5(json_encode($servicesList)),
+                    'hash' => md5((string) json_encode($servicesList)),
                 ],
             ];
         }
@@ -449,6 +454,7 @@ class Munich
     protected function indexServicesByIds(?array $servicesData): array
     {
         $mappedServices = [];
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if ($servicesData) {
             foreach ($servicesData['data'] ?? [] as $service) {
                 $mappedServices[$service['id']] = $service;
@@ -634,6 +640,7 @@ class Munich
     private function calculateSlotTimes(array &$mappedLocation, ?int $durationCommonDivisor): void
     {
         foreach ($mappedLocation['services'] as $key => $service) {
+            /** @psalm-suppress RiskyTruthyFalsyComparison */
             if ($durationCommonDivisor && isset($service['duration'])) {
                 $mappedLocation['services'][$key]['appointment']['slots'] = (string) ((int)($service['duration'] / $durationCommonDivisor));
             }
@@ -650,7 +657,7 @@ class Munich
             'meta' => [
                 'generated' => date('Y-m-d\TH:i:s'),
                 'datacount' => count($mappedLocations),
-                'hash' => md5(json_encode($mappedLocations))
+                'hash' => md5((string) json_encode($mappedLocations))
             ]
         ];
     }
@@ -663,6 +670,7 @@ class Munich
     protected function getServiceCombinations(int $serviceId): array
     {
         foreach (self::SERVICE_COMBINATIONS as $combo) {
+            /** @psalm-suppress TypeDoesNotContainType */
             if (empty($combo)) {
                 continue;
             }

@@ -6,7 +6,7 @@ use BO\Zmsdldb\PDOAccess;
 
 trait PDOTrait
 {
-    protected $pdoAccess;
+    protected mixed $pdoAccess;
 
     public function setPDOAccess(PDOAccess $pdoAccess): self
     {
@@ -23,7 +23,7 @@ trait PDOTrait
      * parameters see https://www.php.net/manual/de/pdo.query.php
      * @psalm-api
      */
-    public function query(...$args)
+    public function query(mixed ...$args): mixed
     {
         try {
             return $this->getPDOAccess()->query(...$args);
@@ -37,7 +37,7 @@ trait PDOTrait
      * @psalm-api
      */
 
-    public function exec(...$args)
+    public function exec(mixed ...$args): mixed
     {
         try {
             return $this->getPDOAccess()->exec(...$args);
@@ -50,7 +50,7 @@ trait PDOTrait
      * parameters see https://www.php.net/manual/de/pdo.prepare.php
      * @psalm-api
      */
-    public function prepare(...$args)
+    public function prepare(mixed ...$args): mixed
     {
         try {
             return $this->getPDOAccess()->prepare(...$args);
@@ -59,7 +59,7 @@ trait PDOTrait
         }
     }
 
-    public function beginTransaction()
+    public function beginTransaction(): mixed
     {
         try {
             return $this->getPDOAccess()->beginTransaction();
@@ -68,7 +68,7 @@ trait PDOTrait
         }
     }
 
-    public function commit()
+    public function commit(): mixed
     {
         try {
             return $this->getPDOAccess()->commit();
@@ -77,7 +77,7 @@ trait PDOTrait
         }
     }
 
-    public function rollBack()
+    public function rollBack(): mixed
     {
         try {
             return $this->getPDOAccess()->rollBack();
@@ -87,7 +87,7 @@ trait PDOTrait
     }
 
     /** @psalm-api */
-    public function inTransaction()
+    public function inTransaction(): mixed
     {
         try {
             return $this->getPDOAccess()->inTransaction();

@@ -1,11 +1,9 @@
 #language: de
    
-# DISABLED: Legacy eappointment-buergeransicht frontend tests
-# These tests target the archived Vue2 citizen frontend (https://github.com/it-at-m/eappointment-buergeransicht)
-# which is likely not running in local development environments.
-# To enable these tests, ensure the old buergeransicht frontend is running at http://localhost:8082
-# and remove the @ignore tag from the scenario tags.
-Funktionalität: Default
+# ARCHIVED: Legacy eappointment-buergeransicht frontend tests
+# These scenarios target the retired Vue2 citizen frontend (https://github.com/it-at-m/eappointment-buergeransicht).
+# Page objects and step definitions have been removed; kept as reference only.
+Funktionalität: Bürger bucht, ändert und löscht einen Termin mit Freitextfeld (zms-dev)
    
    	#Das Terminvereinbarungssystem ermöglicht es den Kunden, die Ihren Termin über das Internet vereinbart haben, dass diese Ihren Termin selbständig ändern oder löschen können.
    	@ignore @web @buergeransicht @ZMS-2661 @ZMS-1538 @ZMS-2819 @ZMS-2561 @E2E @automatisiert @executeLocally

@@ -22,9 +22,11 @@ class WarehouseIndex extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
-        $warehouse = \App::$http->readGetResult('/warehouse/')
-          ->getEntity()
+    ): mixed {
+        /** @var mixed $warehouse */
+        $warehouse = \App::http()->readGetResult('/warehouse/')
+          ->getEntity();
+        $warehouse = $warehouse
           ->toHashed();
 
         return Render::withHtml(

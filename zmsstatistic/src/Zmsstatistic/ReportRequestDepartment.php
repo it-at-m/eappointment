@@ -13,11 +13,11 @@ use Psr\Http\Message\ResponseInterface;
 
 class ReportRequestDepartment extends BaseController
 {
-    protected $hashset = [
+    protected array $hashset = [
         'requestscount'
     ];
 
-    protected $groupfields = [
+    protected array $groupfields = [
         'name',
         'date'
     ];
@@ -31,19 +31,23 @@ class ReportRequestDepartment extends BaseController
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): mixed {
+        /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $validator = $request->getAttribute('validator');
-        $requestPeriod = \App::$http
+        $requestPeriod = \App::http()
           ->readGetResult('/warehouse/requestdepartment/' . $this->department->id . '/')
           ->getEntity();
         $exchangeRequest = null;
         if (isset($args['period'])) {
-            $exchangeRequest = \App::$http
+            /** @var mixed $entity */
+            $entity = \App::http()
             ->readGetResult('/warehouse/requestdepartment/' . $this->department->id . '/' . $args['period'] . '/')
-            ->getEntity()
+            ->getEntity();
+            $exchangeRequest = $entity
             ->toGrouped($this->groupfields, $this->hashset)
             ->withRequestsSum()
             ->withAverage('processingtime')
+            ->withWeightedAverageProcessingTime()
             ->withUncapturedRequestRowSortedLast();
         }
 
@@ -54,7 +58,9 @@ class ReportRequestDepartment extends BaseController
             $args['scope'] = $this->workstation->scope;
             $args['department'] = $this->department;
             $args['organisation'] = $this->organisation;
-            return (new Download\RequestReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+            /** @var mixed $container */
+            $container = \App::$slim->getContainer();
+            return (new Download\RequestReport($container))->readResponse($request, $response, $args);
         }
 
         return Render::withHtml(

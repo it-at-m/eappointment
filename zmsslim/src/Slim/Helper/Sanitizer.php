@@ -57,11 +57,12 @@ final class Sanitizer
             $trace = self::replaceQuoted(\App::DB_NAME, $trace);
         }
         if (defined('\App::DB_PORT')) {
-            $port = \App::DB_PORT;
-            if (is_int($port)) {
-                $port = (string) $port;
+            $port = constant('App::DB_PORT');
+            if (!is_string($port) && !is_int($port) && !is_float($port)) {
+                return $trace;
             }
-            if (is_string($port) && $port !== '') {
+            $port = (string) $port;
+            if ($port !== '') {
                 $encodedPort = preg_quote($port, '/');
                 $trace = self::replace('/' . $encodedPort . '/', '***', $trace);
                 $trace = self::replace('/' . preg_quote(urlencode($port), '/') . '/', '***', $trace);

@@ -56,6 +56,15 @@ class ClusterTest extends EntityCommonTests
         $this->assertEquals('A-Test Name', $collection->getFirst()->scopes->getFirst()->provider['name']);
     }
 
+    public function testWithUniqueClustersSkipsNullEntries()
+    {
+        $entity = $this->getExample();
+        $collection = new $this->collectionclass([null, $entity, $entity]);
+        $uniqueCollection = $collection->withUniqueClusters();
+        $this->assertEquals(1, $uniqueCollection->count());
+        $this->assertEquals($entity->id, $uniqueCollection->getFirst()->id);
+    }
+
     public function testCollectionAddEntityFailed()
     {
         $this->expectException('\Exception');

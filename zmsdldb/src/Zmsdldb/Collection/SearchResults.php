@@ -9,6 +9,9 @@ namespace BO\Zmsdldb\Collection;
 
 use BO\Zmsdldb\Entity\SearchResult as Entity;
 
+/**
+ * @extends Base<\BO\Zmsdldb\Entity\SearchResult>
+ */
 class SearchResults extends Base
 {
     /**
@@ -33,7 +36,7 @@ class SearchResults extends Base
             foreach ($results as $data) {
                 if (count($data)) {
                     $item = Entity::create($data);
-                    $list[] = $item;
+                    $list->append($item);
                 }
             }
             $list;
@@ -46,10 +49,10 @@ class SearchResults extends Base
      *
      * @return null|static
      */
-    public function addSearchResultsData($data): static|null
+    public function addSearchResultsData(mixed $data): static|null
     {
         if ($data) {
-            $this[] = $data;
+            $this->append($data);
             return $this;
         }
         return null;
@@ -64,7 +67,7 @@ class SearchResults extends Base
         foreach ($order as $type) {
             foreach ($this as $item) {
                 if ($item->getType() == $type) {
-                    $list[] = $item;
+                    $list->append($item);
                 }
             }
         }

@@ -37,7 +37,7 @@ class Client extends Schema\Entity
         return ($this->toProperty()->telephone->get()) ? true : false;
     }
 
-    public function getEmailSendCount()
+    public function getEmailSendCount(): mixed
     {
         return $this->toProperty()->emailSendCount->get();
     }

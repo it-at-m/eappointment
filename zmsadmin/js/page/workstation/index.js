@@ -57,7 +57,8 @@ class View extends BaseView {
             'onReloadQueueTable',
             'onChangeTableView',
             'onChangeSlotCount',
-            'onGhostWorkstationChange'
+            'onGhostWorkstationChange',
+            'onCallOtherProcess'
         );
         $(() => {
             this.setLastReload();
@@ -348,21 +349,46 @@ class View extends BaseView {
         });
     }
 
-    onConfirm(event, template, callback, abortCallback) {
+    onConfirm(event, template, callback, abortCallback, returnTarget) {
         stopEvent(event);
         this.selectedProcess = null;
-        const processId = $(event.currentTarget).data('id');
+        const processId = $(event.currentTarget).data('id') || $(event.currentTarget).data('process');
         const name = $(event.currentTarget).data('name');
         var url = `${this.includeUrl}/dialog/?template=${template}`;
         if (processId || name) {
-            url = url + `& parameter[id]=${processId}& parameter[name]=${name}`;
+            url = url + `&parameter[id]=${processId}&parameter[name]=${encodeURIComponent(name || '')}`;
         }
         this.loadCall(url).then((response) => {
-            this.loadDialog(response, callback, abortCallback, event.currentTarget);
+            // Prefer explicit returnTarget; defaulting to the click source can scroll the page
+            // (e.g. queue row far below) when the dialog is aborted.
+            this.loadDialog(response, callback, abortCallback, returnTarget || event.currentTarget);
 
             const dialog = document.getElementsByClassName('dialog')[0]
             dialog.focus();
         })
+    }
+
+    onCallOtherProcess(event) {
+        const selectedProcessId = $(event.currentTarget).data('process');
+        // Only while actively processing (client-info). During "called", allow normal call flow.
+        const $activeProcess = $('.client-info[data-process-id]').filter(':visible').first();
+        const activeProcessId = $activeProcess.attr('data-process-id');
+        if (
+            !selectedProcessId ||
+            !activeProcessId ||
+            String(selectedProcessId) === String(activeProcessId)
+        ) {
+            return false;
+        }
+
+        stopEvent(event);
+        const name = $(event.currentTarget).data('name') || $(event.currentTarget).text().trim();
+        $(event.currentTarget).data('name', name);
+        // Return focus to the current process panel, not the queue link that opened the dialog.
+        this.onConfirm(event, 'confirm_call_other_process', () => {
+            window.location.href = `${this.includeUrl}/workstation/process/finished/?nextprocess=${selectedProcessId}`;
+        }, null, $activeProcess.get(0));
+        return true;
     }
 
     onResetProcess(event) {
@@ -594,6 +620,7 @@ class View extends BaseView {
             onChangeTableView: this.onChangeTableView,
             onConfirm: this.onConfirm,
             onReloadQueueTable: this.onReloadQueueTable,
+            onCallOtherProcess: this.onCallOtherProcess,
             showLoader: showLoader
         })
     }
