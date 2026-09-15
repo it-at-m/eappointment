@@ -187,10 +187,7 @@
       </template>
     </muc-callout>
   </div>
-  <div
-    ref="buttons"
-    class="m-button-group"
-  >
+  <div class="m-button-group">
     <muc-button
       v-if="!isRebooking"
       icon="arrow-left"
@@ -201,14 +198,7 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
-      v-else
-      icon="close"
-      variant="secondary"
-      @click="cancelReschedule"
-    >
-      <template #default>{{ t("back") }}</template>
-    </muc-button>
-    <muc-button
+      ref="nextButton"
       :disabled="
         selectedTimeslot === 0 ||
         !selectedDay ||
@@ -220,6 +210,14 @@
       <template #default>
         <span>{{ t("next") }}</span>
       </template>
+    </muc-button>
+    <muc-button
+      v-if="isRebooking"
+      icon="close"
+      variant="secondary"
+      @click="cancelReschedule"
+    >
+      <template #default>{{ t("cancelReschedule") }}</template>
     </muc-button>
   </div>
   <AvailabilityInfoModal
@@ -526,7 +524,7 @@ const getFreeSlotsWindow = (): {
  * After selecting a time slot, the view is placed on the appointment summary, the focus on the 'next' button.
  */
 const summary = ref<HTMLElement | null>(null);
-const buttons = ref<HTMLElement | null>(null);
+const nextButton = ref<InstanceType<typeof MucButton> | null>(null);
 
 const getOfficeById = (id: number | string): OfficeImpl | undefined => {
   const idStr = String(id);
@@ -958,7 +956,7 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   if (summary.value) {
     await nextTick();
     summary.value.scrollIntoView({ behavior: "smooth", block: "center" });
-    (buttons.value?.lastChild as HTMLElement | null)?.focus({
+    (nextButton.value?.$el as HTMLElement | null)?.focus({
       preventScroll: true,
     });
   }
