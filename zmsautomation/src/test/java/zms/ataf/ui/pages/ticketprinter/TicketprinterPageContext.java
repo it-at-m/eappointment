@@ -29,9 +29,12 @@ public class TicketprinterPageContext extends Context {
     public static final String NAME = "Ticketausgabe";
     public static final String TITLE = "ZMS Ticketprinter";
 
+    private static final int PROCESS_PAGE_HOME_REDIRECT_MS = 1500;
+
     private static final String PRINT_STUB = "window.print = function(){};"
             + "(function(orig){window.setTimeout=function(fn,delay){"
-            + "if(delay===1500){return 0;}return orig.apply(this,arguments);};})(window.setTimeout);";
+            + "if(delay===" + PROCESS_PAGE_HOME_REDIRECT_MS + "){return 0;}"
+            + "return orig.apply(this,arguments);};})(window.setTimeout);";
 
     private WindowType windowType;
 
@@ -111,8 +114,8 @@ public class TicketprinterPageContext extends Context {
     }
 
     /**
-     * process.js calls {@code window.print()} on load, which blocks Chrome on the print dialog.
-     * Stub it on every new document in this Chromium session.
+     * Kiosk pages always print and return home after 1.5s. Stub both on every new
+     * document so Chrome's print preview cannot block the UI suite.
      */
     void stubWindowPrint() {
         if (DRIVER instanceof HasCdp cdp) {
