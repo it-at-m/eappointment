@@ -298,7 +298,7 @@ class AppointmentUpdateServiceTest extends TestCase
     {
         $process = new ThinnedProcess();
         $process->familyName = '';
-        $process->email = 'test@muenchen.de';
+        $process->email = \App::getPlaceholderEmail();
         $process->customTextfield = '';
 
         $data = (object)[
@@ -322,7 +322,7 @@ class AppointmentUpdateServiceTest extends TestCase
     {
         $process = new ThinnedProcess();
         $process->familyName = 'Jane Doe';
-        $process->email = 'test@muenchen.de';
+        $process->email = \App::getPlaceholderEmail();
         $process->customTextfield = 'test@muenchen.de';
 
         $data = (object)[

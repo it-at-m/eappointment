@@ -259,7 +259,7 @@ class ValidationService
 
     public static function isFilledEmail(?string $email): bool
     {
-        return self::isFilledContactValue($email) && !self::isPlaceholderReserveEmail($email);
+        return self::isFilledContactValue($email) && !self::isPlaceholderEmail($email);
     }
 
     /**
@@ -359,7 +359,7 @@ class ValidationService
 
     private static function validateEmailField(?string $email, ?ThinnedScope $scope, array &$errors): void
     {
-        if (self::isPlaceholderReserveEmail($email)) {
+        if (self::isPlaceholderEmail($email)) {
             $errors[] = self::getError('invalidEmail');
             return;
         }
@@ -540,19 +540,10 @@ class ValidationService
         return !empty($timestamp) && is_numeric($timestamp) && $timestamp > time();
     }
 
-    private static function isPlaceholderReserveEmail(?string $email): bool
-    {
-        if (self::isPlaceholderEmail($email)) {
-            return true;
-        }
-
-        return is_string($email) && strcasecmp(trim($email), 'test@muenchen.de') === 0;
-    }
-
     private static function isValidEmail(?string $email): bool
     {
         return !empty($email)
-            && !self::isPlaceholderReserveEmail($email)
+            && !self::isPlaceholderEmail($email)
             && preg_match(self::EMAIL_PATTERN, $email) === 1;
     }
 

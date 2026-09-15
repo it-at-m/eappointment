@@ -6,7 +6,8 @@ import type { ComputedRef, Ref } from "vue";
 import { nextTick, onUpdated, watch } from "vue";
 
 /** Placeholder set by reserve before real contact data is written. */
-export const PLACEHOLDER_RESERVE_EMAIL = "test@muenchen.de";
+export const PLACEHOLDER_RESERVE_EMAIL =
+  "noreply-terminvereinbarung@muenchen.de";
 
 export function isPlaceholderEmail(email?: string | null): boolean {
   return (email ?? "").trim().toLowerCase() === PLACEHOLDER_RESERVE_EMAIL;
