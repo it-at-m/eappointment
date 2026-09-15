@@ -1156,7 +1156,7 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Service\Base
         );
     }
 
-    public function testReadSearchFiltersCancelledHistoryStatuses(): void
+    public function testReadSearchReturnsCancelledHistoryStatuses(): void
     {
         $historyService = new HistoryService();
 
@@ -1211,35 +1211,52 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Service\Base
             $historyService->getReader()
         );
 
-        $cancelledCitizen = $searchService->readSearch([
+        $results = $searchService->readSearch([
             'processId' => 990029,
-            'status' => 'cancelled_citizen',
         ]);
 
-        $this->assertCount(1, $cancelledCitizen);
+        $cancelledProcess = null;
 
-        $cancelledProcess = $cancelledCitizen->getFirst();
+        foreach ($results as $result) {
+            if ($result->source === 'history') {
+                $cancelledProcess = $result;
+                break;
+            }
+        }
 
-        $this->assertSame('history', $cancelledProcess->source);
+        $this->assertNotNull($cancelledProcess);
         $this->assertSame('cancelled_citizen', $cancelledProcess->appointmentStatus);
         $this->assertSame('deleted', $cancelledProcess->status);
         $this->assertSame($finalizedAt->getTimestamp(), (int) $cancelledProcess->finalizedAt);
 
-        $cancelledStaff = $searchService->readSearch([
+        $historyService->perform(
+            '
+                UPDATE process_search_history
+                SET status = :status
+                WHERE process_id = :processId
+            ',
+            [
+                'status' => HistoryService::STATUS_CANCELLED_BY_STAFF,
+                'processId' => 990029,
+            ]
+        );
+
+        $results = $searchService->readSearch([
             'processId' => 990029,
-            'status' => 'cancelled_staff',
         ]);
 
-        $this->assertCount(0, $cancelledStaff);
+        $cancelledProcess = null;
 
-        $planned = $searchService->readSearch([
-            'processId' => 990029,
-            'status' => 'planned',
-        ]);
+        foreach ($results as $result) {
+            if ($result->source === 'history') {
+                $cancelledProcess = $result;
+                break;
+            }
+        }
 
-        $this->assertCount(1, $planned);
-        $this->assertSame('active', $planned->getFirst()->source);
-        $this->assertSame('planned', $planned->getFirst()->appointmentStatus);
+        $this->assertNotNull($cancelledProcess);
+        $this->assertSame('cancelled_staff', $cancelledProcess->appointmentStatus);
+        $this->assertSame('blocked', $cancelledProcess->status);
     }
 
     public function testNumericQueryDoesNotReturnDeletedCancelledStub(): void
@@ -1319,24 +1336,5 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Service\Base
             'cancelled_citizen',
             $allResults->getFirst()->appointmentStatus
         );
-
-        $cancelled = $searchService->readSearch([
-            'query' => '990029',
-            'status' => 'cancelled_citizen',
-        ]);
-
-        $this->assertCount(1, $cancelled);
-        $this->assertSame('history', $cancelled->getFirst()->source);
-        $this->assertSame(
-            'cancelled_citizen',
-            $cancelled->getFirst()->appointmentStatus
-        );
-
-        $planned = $searchService->readSearch([
-            'query' => '990029',
-            'status' => 'planned',
-        ]);
-
-        $this->assertCount(0, $planned);
     }
 }
