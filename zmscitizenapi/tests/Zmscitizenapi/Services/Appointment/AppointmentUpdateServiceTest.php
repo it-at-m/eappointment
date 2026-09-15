@@ -48,6 +48,8 @@ class AppointmentUpdateServiceTest extends TestCase
         $this->assertEquals('1234567890', $result->telephone);
         $this->assertEquals('Custom Info', $result->customTextfield);
         $this->assertEquals('Custom Info 2', $result->customTextfield2);
+        $this->assertNull($result->sourceProcessId);
+        $this->assertNull($result->sourceAuthKey);
     }
 
     public function testExtractClientDataWithInvalidProcessId(): void
@@ -218,12 +220,122 @@ class AppointmentUpdateServiceTest extends TestCase
             'customTextfield2' => null
         ];
 
-        $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data]);
+        $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data, true]);
+
+        $this->assertEquals('Old Name', $result->familyName);
+        $this->assertEquals('old@example.com', $result->email);
+        $this->assertNull($result->telephone);
+        $this->assertNull($result->customTextfield);
+        $this->assertNull($result->customTextfield2);
+    }
+
+    public function testUpdateProcessWithClientDataCompletesSingleWordFamilyNameWhenRebooking(): void
+    {
+        $process = new ThinnedProcess();
+        $process->familyName = 'Max';
+        $process->email = 'max@example.com';
+
+        $data = (object)[
+            'familyName' => 'Max Mustermann',
+            'email' => 'max@example.com',
+            'telephone' => null,
+            'customTextfield' => null,
+            'customTextfield2' => null
+        ];
+
+        $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data, true]);
+
+        $this->assertEquals('Max Mustermann', $result->familyName);
+        $this->assertEquals('max@example.com', $result->email);
+    }
+
+    public function testUpdateProcessWithClientDataKeepsMultiWordFamilyNameWhenRebooking(): void
+    {
+        $process = new ThinnedProcess();
+        $process->familyName = 'Jane Doe';
+        $process->email = 'jane@example.com';
+
+        $data = (object)[
+            'familyName' => 'Jane Doe Smith',
+            'email' => 'jane@example.com',
+            'telephone' => null,
+            'customTextfield' => null,
+            'customTextfield2' => null
+        ];
+
+        $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data, true]);
+
+        $this->assertEquals('Jane Doe', $result->familyName);
+    }
+
+    public function testUpdateProcessWithClientDataOverwritesWhenNotRebooking(): void
+    {
+        $process = new ThinnedProcess();
+        $process->familyName = 'Old Name';
+        $process->email = 'old@example.com';
+
+        $data = (object)[
+            'familyName' => 'New Name',
+            'email' => 'new@example.com',
+            'telephone' => '+491234567890',
+            'customTextfield' => 'Note',
+            'customTextfield2' => null
+        ];
+
+        $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data, false]);
 
         $this->assertEquals('New Name', $result->familyName);
         $this->assertEquals('new@example.com', $result->email);
-        $this->assertNull($result->telephone);
-        $this->assertNull($result->customTextfield);
+        $this->assertEquals('+491234567890', $result->telephone);
+        $this->assertEquals('Note', $result->customTextfield);
+        $this->assertNull($result->customTextfield2);
+    }
+
+    public function testUpdateProcessWithClientDataFillsEmptyStoredFields(): void
+    {
+        $process = new ThinnedProcess();
+        $process->familyName = '';
+        $process->email = 'test@muenchen.de';
+        $process->customTextfield = '';
+
+        $data = (object)[
+            'familyName' => 'Jane Doe',
+            'email' => 'jane@example.com',
+            'telephone' => '+491234567890',
+            'customTextfield' => 'Required note',
+            'customTextfield2' => null
+        ];
+
+        $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data, false]);
+
+        $this->assertEquals('Jane Doe', $result->familyName);
+        $this->assertEquals('jane@example.com', $result->email);
+        $this->assertEquals('+491234567890', $result->telephone);
+        $this->assertEquals('Required note', $result->customTextfield);
+        $this->assertNull($result->customTextfield2);
+    }
+
+    public function testUpdateProcessWithClientDataAllowsPlaceholderEmailButLocksCustomText(): void
+    {
+        $process = new ThinnedProcess();
+        $process->familyName = 'Jane Doe';
+        $process->email = 'test@muenchen.de';
+        $process->customTextfield = 'test@muenchen.de';
+
+        $data = (object)[
+            'familyName' => 'Jane Doe',
+            'email' => 'jane@example.com',
+            'telephone' => '+491234567890',
+            'customTextfield' => 'Replaced note',
+            'customTextfield2' => null
+        ];
+
+        $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data, true]);
+
+        $this->assertEquals('Jane Doe', $result->familyName);
+        $this->assertEquals('jane@example.com', $result->email);
+        $this->assertEquals('+491234567890', $result->telephone);
+        $this->assertEquals('test@muenchen.de', $result->customTextfield);
         $this->assertNull($result->customTextfield2);
     }
 

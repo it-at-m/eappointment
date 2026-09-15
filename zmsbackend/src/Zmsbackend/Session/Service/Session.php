@@ -19,7 +19,7 @@ class Session extends \BO\Zmsbackend\Base
             ->addConditionSessionId($sessionId)
             ->addConditionSessionName($sessionName);
         $session = $this->fetchOne($query, new Entity());
-        if ($session && ! $session->hasId()) {
+        if (!$session->hasId()) {
             return null;
         }
         return $session;

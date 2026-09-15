@@ -465,7 +465,7 @@ class ReportCapacityService
                 $exchange->data = $this->aggregateRowsByDate($exchange->data, false);
             }
             $exchange->period = 'day';
-        } elseif (($exchange->period ?? 'day') === 'hour') {
+        } elseif ($exchange->period === 'hour') {
             $exchange->period = 'hour';
         }
 
@@ -622,7 +622,7 @@ class ReportCapacityService
 
     public function exchangeSupportsCapacityChannel(Exchange $exchange): bool
     {
-        foreach ($exchange->dictionary ?? [] as $entry) {
+        foreach ($exchange->dictionary as $entry) {
             if (($entry['variable'] ?? null) === 'bookedcount_public') {
                 return true;
             }
@@ -836,7 +836,7 @@ class ReportCapacityService
             ? $channelMode
             : 'total';
         $useMinutes = $valueMode === 'minutes' && $this->exchangeSupportsMinutes($exchange);
-        $isHourly = ($exchange->period ?? '') === 'hour';
+        $isHourly = $exchange->period === 'hour';
 
         $download = new Exchange();
         $download->addDictionaryEntry(
@@ -894,7 +894,7 @@ class ReportCapacityService
 
     private function exchangeSupportsMinutes(Exchange $exchange): bool
     {
-        foreach ($exchange->dictionary ?? [] as $entry) {
+        foreach ($exchange->dictionary as $entry) {
             if (($entry['variable'] ?? null) === 'bookedminutes') {
                 return true;
             }

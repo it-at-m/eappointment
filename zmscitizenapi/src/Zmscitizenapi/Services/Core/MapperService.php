@@ -94,7 +94,7 @@ class MapperService
         if ($scope instanceof ThinnedScope) {
             return $scope->getReservationDuration();
         }
-        $reservationDuration = $scope->toProperty()?->preferences?->appointment?->reservationDuration?->get();
+        $reservationDuration = $scope->toProperty()->preferences?->appointment?->reservationDuration?->get();
         return $reservationDuration !== null ? (int) $reservationDuration : null;
     }
 
@@ -112,7 +112,7 @@ class MapperService
             return $activationDuration;
         }
 
-        $activationDuration = $scope->toProperty()?->preferences?->appointment?->activationDuration?->get();
+        $activationDuration = $scope->toProperty()->preferences?->appointment?->activationDuration?->get();
         if ($activationDuration === null || $activationDuration === '') {
             return null;
         }
@@ -384,10 +384,6 @@ class MapperService
      */
     public static function processToThinnedProcess(Process $myProcess): ThinnedProcess
     {
-        if (!$myProcess || !isset($myProcess->id)) {
-            return new ThinnedProcess();
-        }
-
         $subRequestCounts = [];
         $mainServiceId = null;
         $mainServiceName = null;
@@ -421,9 +417,9 @@ class MapperService
         $providerId = $scope['provider']['id'] ?? 0;
 
         return new ThinnedProcess(
-            processId: isset($myProcess->id) ? (int) $myProcess->id : 0,
+            processId: (int) $myProcess->id,
             timestamp: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->date)) ? strval($myProcess->appointments[0]->date) : null,
-            authKey: isset($myProcess->authKey) ? $myProcess->authKey : null,
+            authKey: $myProcess->authKey,
             captchaToken: isset($myProcess->captchaToken) ? $myProcess->captchaToken : null,
             familyName: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->familyName)) ? $myProcess->clients[0]->familyName : null,
             customTextfield: isset($myProcess->customTextfield) ? $myProcess->customTextfield : null,

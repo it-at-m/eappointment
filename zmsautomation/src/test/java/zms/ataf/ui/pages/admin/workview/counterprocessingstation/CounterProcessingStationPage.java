@@ -34,9 +34,9 @@ import ataf.core.helpers.TestPropertiesHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
+import zms.ataf.helpers.AppointmentCountHelper;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
-import zms.ataf.ui.pages.buergeransicht.BuergeransichtPageContext;
 
 public class CounterProcessingStationPage extends AdminPage {
     private final String FINISH_BUTTON_LOCATOR_XPATH = "//a[contains(@class,'button-finish')]";
@@ -359,8 +359,8 @@ public class CounterProcessingStationPage extends AdminPage {
         wait.withMessage("Click on \"change appointment\" button has failed! Appointment time slot was not updated!");
         wait.until(ExpectedConditions.textToBePresentInElementLocated(
                 By.xpath("//a[@data-process='" + TestDataHelper.getTestData("appointment_number") + "']/../../td[2]"), TestDataHelper.getTestData("time")));
-        BuergeransichtPageContext.incrementAppointmentCount();
-        BuergeransichtPageContext.incrementAppointmentCanceledCount();
+        AppointmentCountHelper.incrementAppointmentCount();
+        AppointmentCountHelper.incrementAppointmentCanceledCount();
     }
 
     public void clickOnDeleteAppointmentLink(String appointmentNumber) {
@@ -388,7 +388,7 @@ public class CounterProcessingStationPage extends AdminPage {
         Assert.assertTrue(isWebElementInvisible(DEFAULT_EXPLICIT_WAIT_TIME,
                         "//a[@data-process='" + appointmentNumber + "' and contains(text(),'" + appointmentNumber + "')]", LocatorType.XPATH, CONTEXT),
                 "Click on \"delete appointment\" link has failed! Appointment with number \"" + appointmentNumber + "\" is still visible!");
-        BuergeransichtPageContext.incrementAppointmentCanceledCount();
+        AppointmentCountHelper.incrementAppointmentCanceledCount();
     }
 
     public void enterDateInNewAppointmentTextField(String date) {
