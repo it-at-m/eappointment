@@ -586,6 +586,9 @@ export default class CapacityChart {
             target.pointBackgroundColor = source.pointBackgroundColor;
             target.pointBorderColor = source.pointBorderColor;
             target.fill = source.fill;
+            target.spanGaps = source.spanGaps ?? false;
+            target.pointRadius = source.pointRadius ?? 3;
+            target.hoverRadius = source.hoverRadius ?? 4;
 
             if (!Array.isArray(target.data)) {
                 target.data = source.data.slice();
