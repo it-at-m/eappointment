@@ -252,6 +252,7 @@ import {
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 import { toCalloutType } from "@/utils/callout";
+import { MAX_BOOKABLE_IN_DAYS } from "@/utils/Constants";
 import {
   createErrorStates,
   getApiErrorTranslation,
@@ -462,11 +463,8 @@ const toDayKey = (value: Date | string): string => {
 };
 
 const TODAY = new Date();
-const MAXDATE = new Date(
-  TODAY.getFullYear(),
-  TODAY.getMonth() + 6,
-  TODAY.getDate()
-);
+const MAXDATE = new Date(TODAY);
+MAXDATE.setDate(TODAY.getDate() + MAX_BOOKABLE_IN_DAYS);
 
 const normalizeCalendarOffices = (
   offices: Array<{ officeId: number | string; appointments?: number[] }>
