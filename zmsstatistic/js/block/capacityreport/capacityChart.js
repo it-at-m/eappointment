@@ -64,11 +64,11 @@ export default class CapacityChart {
         this.view.chartDateTo = $chartist.attr('data-chart-date-to') || '';
 
         if (sparseData && fullData) {
-            this.view.chartDataSparse = sparseData;
-            this.view.chartDataFull = fullData;
+            this.view.dailyChartDataSparse = sparseData;
+            this.view.dailyChartDataFull = fullData;
         } else if (chartData) {
-            this.view.chartDataSparse = null;
-            this.view.chartDataFull = chartData;
+            this.view.dailyChartDataSparse = null;
+            this.view.dailyChartDataFull = chartData;
         } else {
             $chartist.text('Diagrammdaten konnten nicht geladen werden.');
             console.error('Capacity report: incomplete chart payload', {
@@ -79,9 +79,29 @@ export default class CapacityChart {
             return;
         }
 
-        this.applyDataSelection();
+        const hourlySparseData = readJsonPayload(
+            this.view.$main,
+            'script.report-board--chart-data-sparse-hourly',
+            'data-chartist-sparse-hourly',
+            'chart-sparse-hourly'
+        );
+        const hourlyFullData = readJsonPayload(
+            this.view.$main,
+            'script.report-board--chart-data-full-hourly',
+            'data-chartist-full-hourly',
+            'chart-full-hourly'
+        );
+        this.view.hourlyChartDataSparse = hourlySparseData || null;
+        this.view.hourlyChartDataFull = hourlyFullData || null;
+
+        if (this.view.chartGranularity === 'hour' && !this.supportsHourlyGranularity()) {
+            this.view.chartGranularity = 'day';
+        }
+
+        this.applyGranularity();
         this.syncModeButton();
         this.syncSparseTimelineButton();
+        this.syncGranularityButton();
         this.syncDownloadButton();
         this.syncTableDownloadLink();
         this.render();
@@ -163,6 +183,52 @@ export default class CapacityChart {
         return this.view.chartHideEmptySlots && this.supportsSparseChartTimeline();
     }
 
+    supportsHourlyGranularity() {
+        return Boolean(
+            this.view.hourlyChartDataSparse
+            && this.view.hourlyChartDataFull
+            && this.view.hourlyTableDataSparse
+            && this.view.hourlyTableDataFull
+        );
+    }
+
+    applyGranularity() {
+        const useHourly = this.view.chartGranularity === 'hour' && this.supportsHourlyGranularity();
+        this.view.chartGranularity = useHourly ? 'hour' : 'day';
+        this.view.tableIsHourly = useHourly;
+
+        this.view.chartDataSparse = useHourly
+            ? this.view.hourlyChartDataSparse
+            : this.view.dailyChartDataSparse;
+        this.view.chartDataFull = useHourly
+            ? this.view.hourlyChartDataFull
+            : this.view.dailyChartDataFull;
+
+        if (this.view.dailyTableDataSparse && this.view.dailyTableDataFull) {
+            this.view.tableDataSparse = useHourly
+                ? this.view.hourlyTableDataSparse
+                : this.view.dailyTableDataSparse;
+            this.view.tableDataFull = useHourly
+                ? this.view.hourlyTableDataFull
+                : this.view.dailyTableDataFull;
+        }
+
+        this.applyDataSelection();
+    }
+
+    toggleGranularity() {
+        if (!this.supportsHourlyGranularity()) {
+            return;
+        }
+        this.view.chartGranularity = this.view.chartGranularity === 'hour' ? 'day' : 'hour';
+        this.applyGranularity();
+        this.syncGranularityButton();
+        this.syncTableDownloadLink();
+        this.view.tableController.syncHeaders();
+        this.render();
+        this.view.tableController.render();
+    }
+
     applyDataSelection() {
         if (this.view.chartDataSparse && this.view.chartDataFull) {
             this.view.data = this.shouldHideEmptyChartSlots()
@@ -220,6 +286,29 @@ export default class CapacityChart {
         );
     }
 
+    syncGranularityButton() {
+        const $button = this.view.$main.find('.report-board--chart-hourly');
+        if (!$button.length) {
+            return;
+        }
+        if (!this.supportsHourlyGranularity()) {
+            $button.hide();
+            return;
+        }
+        $button.show();
+        const showHourly = this.view.chartGranularity === 'hour';
+        $button.attr('aria-pressed', showHourly ? 'true' : 'false');
+        $button.toggleClass('is-active', showHourly);
+        $button.attr(
+            'title',
+            showHourly ? 'Tagessumme anzeigen' : 'Stundenansicht anzeigen'
+        );
+        $button.attr(
+            'aria-label',
+            showHourly ? 'Tagessumme anzeigen' : 'Stundenansicht anzeigen'
+        );
+    }
+
     syncModeButton() {
         const $button = this.view.$main.find('.report-board--chart-minutes');
         if (!$button.length) {
@@ -248,7 +337,8 @@ export default class CapacityChart {
         syncCapacityTableDownloadHref(
             this.view.$main.find('.report-board--table-download').first(),
             this.view.chartValueMode,
-            this.view.chartChannelMode
+            this.view.chartChannelMode,
+            this.view.chartGranularity
         );
     }
 

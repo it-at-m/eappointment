@@ -64,8 +64,44 @@ export default class ReportRefresh {
             'refresh-table-full'
         );
         if (tableSparseData && tableFullData) {
+            payload.dailyTableDataSparse = tableSparseData;
+            payload.dailyTableDataFull = tableFullData;
             payload.tableDataSparse = tableSparseData;
             payload.tableDataFull = tableFullData;
+        }
+
+        const hourlyChartSparse = readJsonPayload(
+            $newBoard,
+            'script.report-board--chart-data-sparse-hourly',
+            'data-chartist-sparse-hourly',
+            'refresh-chart-sparse-hourly'
+        );
+        const hourlyChartFull = readJsonPayload(
+            $newBoard,
+            'script.report-board--chart-data-full-hourly',
+            'data-chartist-full-hourly',
+            'refresh-chart-full-hourly'
+        );
+        if (hourlyChartSparse && hourlyChartFull) {
+            payload.hourlyChartDataSparse = hourlyChartSparse;
+            payload.hourlyChartDataFull = hourlyChartFull;
+        }
+
+        const hourlyTableSparse = readJsonPayload(
+            $newBoard,
+            'script.report-board--table-data-sparse-hourly',
+            'data-table-sparse-hourly',
+            'refresh-table-sparse-hourly'
+        );
+        const hourlyTableFull = readJsonPayload(
+            $newBoard,
+            'script.report-board--table-data-full-hourly',
+            'data-table-full-hourly',
+            'refresh-table-full-hourly'
+        );
+        if (hourlyTableSparse && hourlyTableFull) {
+            payload.hourlyTableDataSparse = hourlyTableSparse;
+            payload.hourlyTableDataFull = hourlyTableFull;
         }
 
         const summaryLabel = $table.attr('data-label-summary');
@@ -87,20 +123,50 @@ export default class ReportRefresh {
         }
 
         try {
+            this.view.dailyChartDataSparse = payload.chartDataSparse ?? null;
+            this.view.dailyChartDataFull = payload.chartDataFull;
             this.view.chartDataSparse = payload.chartDataSparse ?? null;
             this.view.chartDataFull = payload.chartDataFull;
 
-            if (payload.tableDataSparse && payload.tableDataFull) {
+            if (payload.hourlyChartDataSparse && payload.hourlyChartDataFull) {
+                this.view.hourlyChartDataSparse = payload.hourlyChartDataSparse;
+                this.view.hourlyChartDataFull = payload.hourlyChartDataFull;
+            } else {
+                this.view.hourlyChartDataSparse = null;
+                this.view.hourlyChartDataFull = null;
+            }
+
+            if (payload.dailyTableDataSparse && payload.dailyTableDataFull) {
+                this.view.dailyTableDataSparse = payload.dailyTableDataSparse;
+                this.view.dailyTableDataFull = payload.dailyTableDataFull;
                 this.view.tableDataSparse = payload.tableDataSparse;
                 this.view.tableDataFull = payload.tableDataFull;
+            } else if (payload.tableDataSparse && payload.tableDataFull) {
+                this.view.tableDataSparse = payload.tableDataSparse;
+                this.view.tableDataFull = payload.tableDataFull;
+            }
+
+            if (payload.hourlyTableDataSparse && payload.hourlyTableDataFull) {
+                this.view.hourlyTableDataSparse = payload.hourlyTableDataSparse;
+                this.view.hourlyTableDataFull = payload.hourlyTableDataFull;
+            } else {
+                this.view.hourlyTableDataSparse = null;
+                this.view.hourlyTableDataFull = null;
             }
 
             if (payload.tableLabelSummary) {
                 this.view.tableLabelSummary = payload.tableLabelSummary;
             }
 
-            this.view.chartController.applyDataSelection();
-            this.view.chartController.updateInPlace();
+            const previousGranularity = this.view.chartGranularity;
+            this.view.chartController.applyGranularity();
+            this.view.chartController.syncGranularityButton();
+            this.view.chartController.syncTableDownloadLink();
+            if (previousGranularity !== this.view.chartGranularity) {
+                this.view.chartController.render();
+            } else {
+                this.view.chartController.updateInPlace();
+            }
             this.view.tableController.syncHeaders();
             this.view.tableController.render();
 
