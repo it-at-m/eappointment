@@ -30,7 +30,7 @@ public class Office {
     private Object scope;
     private List<Integer> disabledByServices;
     private String slotsPerAppointment;
-    /** Shared-booking peers (e.g. Haupt 10489 + Ausbildung 10503). */
+    /** Shared-booking peers (e.g. Haupt 10489 + KVR-II/2252 10313237). */
     private List<Integer> sharedBookingOfficeIds;
     private List<Integer> allowDisabledServicesMix;
 
