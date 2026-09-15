@@ -1,10 +1,8 @@
 #language: de
    
-# DISABLED: Legacy eappointment-buergeransicht frontend tests
-# These tests target the archived Vue2 citizen frontend (https://github.com/it-at-m/eappointment-buergeransicht)
-# which is likely not running in local development environments.
-# To enable these tests, ensure the old buergeransicht frontend is running at http://localhost:8082
-# and remove the @ignore tag from the scenario tags.
+# ARCHIVED: Legacy eappointment-buergeransicht frontend tests
+# These scenarios target the retired Vue2 citizen frontend (https://github.com/it-at-m/eappointment-buergeransicht).
+# Page objects and step definitions have been removed; kept as reference only.
 Funktionalität: Terminverschiebung über das Servicetelefon
    
    	#Kund*in ruft an und bittet um Terminverschiebung oder ein Terminschreiben kommt unzustellbar zurück. Der Sachbearbeiter ändert im Terminvereinbarungssystem den Terminzeitpunkt für den Kunden.
