@@ -85,6 +85,28 @@ class ProcessQueueTest extends Base
             'headsUpTime' => 3600,
             'requests' => [120703]
         ], [], 'POST');
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('Spontankunde wurde erfolgreich eingetragen', $body);
+        $this->assertStringContainsString('Termin bearbeiten', $body);
+        $this->assertStringContainsString('Wartenummer drucken', $body);
+        $this->assertStringContainsString('Schließen', $body);
+        
+        $copyButtonPosition = strpos($body,'id="copy-popuo-content"');
+        $editButtonPosition = strpos($body,'Termin bearbeiten');
+        $printButtonPosition = strpos($body,'Wartenummer drucken');
+        $closeButtonPosition = strpos($body,'Schließen');
+
+        $this->assertNotFalse($copyButtonPosition);
+        $this->assertNotFalse($editButtonPosition);
+        $this->assertNotFalse($printButtonPosition);
+        $this->assertNotFalse($closeButtonPosition);
+
+        $this->assertLessThan($editButtonPosition, $copyButtonPosition);
+        $this->assertLessThan($printButtonPosition, $editButtonPosition);
+        $this->assertLessThan($closeButtonPosition, $printButtonPosition);
+
+        $this->assertStringContainsString('01.04.2016', $body);
+        $this->assertStringNotContainsString('01.04.2016 um 00:00 Uhr', $body);
         $this->assertEquals(200, $response->getStatusCode());
     }
 
