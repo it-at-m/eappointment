@@ -62,7 +62,25 @@ class ProcessReserveTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertStringContainsString('Termin erfolgreich eingetragen', (string)$response->getBody());
+        $body = (string) $response->getBody();
+        $this->assertStringContainsString('Termin wurde erfolgreich eingetragen', $body);
+        $this->assertStringContainsString('Termin bearbeiten', $body);
+        $this->assertStringContainsString('Wartenummer drucken', $body);
+        $this->assertStringContainsString('Schließen', $body);
+
+        $copyButtonPosition = strpos($body,'id="copy-popup-content"');
+        $editButtonPosition = strpos($body,'Termin bearbeiten');
+        $printButtonPosition = strpos($body,'Wartenummer drucken');
+        $closeButtonPosition = strpos($body,'Schließen');
+
+        $this->assertNotFalse($copyButtonPosition);
+        $this->assertNotFalse($editButtonPosition);
+        $this->assertNotFalse($printButtonPosition);
+        $this->assertNotFalse($closeButtonPosition);
+
+        $this->assertLessThan($editButtonPosition, $copyButtonPosition);
+        $this->assertLessThan($printButtonPosition, $editButtonPosition);
+        $this->assertLessThan($closeButtonPosition, $printButtonPosition);
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -167,7 +185,7 @@ class ProcessReserveTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertStringContainsString('Termin erfolgreich eingetragen', (string)$response->getBody());
+        $this->assertStringContainsString('Termin wurde erfolgreich eingetragen', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -225,7 +243,7 @@ class ProcessReserveTest extends Base
             array('sendConfirmation' => 1, 'sendMailConfirmation' => 1)
         );
         $response = $this->render($this->arguments, $parameters, [], 'POST');
-        $this->assertStringContainsString('Termin erfolgreich eingetragen', (string)$response->getBody());
+        $this->assertStringContainsString('Termin wurde erfolgreich eingetragen', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -275,7 +293,7 @@ class ProcessReserveTest extends Base
         );
         $parameters = array_merge($this->parameters, ['slotCount' => 3]);
         $response = $this->render($this->arguments, $parameters, [], 'POST');
-        $this->assertStringContainsString('Termin erfolgreich eingetragen', (string)$response->getBody());
+        $this->assertStringContainsString('Termin wurde erfolgreich eingetragen', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
