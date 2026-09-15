@@ -1,0 +1,82 @@
+{
+  "branch": "chore-replace-10503-with-10313237",
+  "branchSlug": "chore-replace-10503-with-10313237",
+  "runId": "34979562384",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34979562384",
+  "runStartedAt": "2026-09-15T14:07:53Z",
+  "publishedAt": "2026-09-15T14:35:05.690Z",
+  "features": {
+    "feature-rest-zmscitizenapi-dldb-special-cases-zmskvr-1046-booking-ruppertstrasse-shared-booking-ausbildung-citizenapi": {
+      "status": "passed",
+      "shard": "zmscitizenapi",
+      "browser": "chrome",
+      "rel": "rest/zmscitizenapi/dldb-special-cases/zmskvr-1046_booking_ruppertstrasse_shared_booking_ausbildung_citizenapi.feature",
+      "runId": "34979562384",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34979562384",
+      "runStartedAt": "2026-09-15T14:07:53Z"
+    },
+    "feature-rest-zmscitizenapi-dldb-special-cases-zmskvr-1124-booking-ruppertstrasse-pass-calendar-jumpin-links-citizenapi": {
+      "status": "passed",
+      "shard": "zmscitizenapi",
+      "browser": "chrome",
+      "rel": "rest/zmscitizenapi/dldb-special-cases/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature",
+      "runId": "34979562384",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34979562384",
+      "runStartedAt": "2026-09-15T14:07:53Z"
+    },
+    "feature-rest-zmscitizenapi-zmskvr-833-zmskvr-1025-rebooking-required-fields-citizenapi": {
+      "status": "passed",
+      "shard": "zmscitizenapi",
+      "browser": "chrome",
+      "rel": "rest/zmscitizenapi/zmskvr-833_zmskvr-1025_rebooking_required_fields_citizenapi.feature",
+      "runId": "34979562384",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34979562384",
+      "runStartedAt": "2026-09-15T14:07:53Z"
+    },
+    "feature-ui-zmscitizenview-booking-zmskvr-1571-scheidplatz-contact-location-back-login": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/booking/zmskvr-1571_scheidplatz_contact_location_back_login.feature",
+      "runId": "34979562384",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34979562384",
+      "runStartedAt": "2026-09-15T14:07:53Z"
+    },
+    "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-1046-booking-ruppertstrasse-shared-booking-ausbildung": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-1046_booking_ruppertstrasse_shared_booking_ausbildung.feature",
+      "runId": "34979562384",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34979562384",
+      "runStartedAt": "2026-09-15T14:07:53Z"
+    },
+    "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-1124-booking-ruppertstrasse-pass-calendar-jumpin-links": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature",
+      "runId": "34979562384",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34979562384",
+      "runStartedAt": "2026-09-15T14:07:53Z"
+    },
+    "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-1500-already-activated-confirm-banner": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-1500_already_activated_confirm_banner.feature",
+      "runId": "34979562384",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34979562384",
+      "runStartedAt": "2026-09-15T14:07:53Z"
+    },
+    "feature-ui-zmscitizenview-zmskvr-833-zmskvr-1025-rebooking-required-fields": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/zmskvr-833_zmskvr-1025_rebooking_required_fields.feature",
+      "runId": "34979562384",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/34979562384",
+      "runStartedAt": "2026-09-15T14:07:53Z"
+    }
+  }
+}
