@@ -299,46 +299,6 @@ class ProcessSearch extends \BO\Zmsbackend\Process\Repository\Process
             $parameters,
             $filters
         );
-
-        $this->addHistoryAppointmentStatusFilter(
-            $conditions,
-            $parameters,
-            $filters
-        );
-    }
-
-    private function addHistoryAppointmentStatusFilter(
-        array &$conditions,
-        array &$parameters,
-        array $filters
-    ): void {
-        $status = isset($filters['appointmentStatus'])
-            ? trim((string) $filters['appointmentStatus'])
-            : '';
-
-        if ($status === '') {
-            return;
-        }
-
-        if ($status === 'planned') {
-            $conditions[] = '1 = 0';
-            return;
-        }
-
-        $historyStatus = match ($status) {
-            'completed' => 'completed',
-            'missed' => 'missed',
-            'cancelled_citizen' => 'cancelled_citizen',
-            'cancelled_staff' => 'cancelled_staff',
-            default => null,
-        };
-
-        if ($historyStatus === null) {
-            return;
-        }
-
-        $conditions[] = 'history.status = ?';
-        $parameters[] = $historyStatus;
     }
 
     private function addHistoryNameFilter(
@@ -619,45 +579,6 @@ class ProcessSearch extends \BO\Zmsbackend\Process\Repository\Process
             'process.status',
             self::ACTIVE_SEARCH_STATUSES
         );
-
-        return $this;
-    }
-
-    public function addConditionAppointmentStatusFilter(string $status): self
-    {
-        $status = trim($status);
-
-        if ($status === '') {
-            return $this;
-        }
-
-        if (
-            in_array(
-                $status,
-                ['completed', 'cancelled_citizen', 'cancelled_staff'],
-                true
-            )
-        ) {
-            $this->query->where('process.status', '=', $status);
-            return $this;
-        }
-
-        if ($status === 'missed') {
-            $this->query->where('process.status', '=', 'missed');
-            return $this;
-        }
-
-        if ($status === 'planned') {
-            $plannedStatuses = [];
-
-            foreach (self::ACTIVE_SEARCH_STATUSES as $activeStatus) {
-                if ($activeStatus !== 'missed') {
-                    $plannedStatuses[] = $activeStatus;
-                }
-            }
-
-            $this->query->whereIn('process.status', $plannedStatuses);
-        }
 
         return $this;
     }
