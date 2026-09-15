@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services\Core;
 
 use BO\Zmscitizenapi\Utils\ErrorMessages;
+use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmsentities\Helper\ProcessPlainText;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
@@ -251,6 +252,104 @@ class ValidationService
         return ['errors' => $errors];
     }
 
+    public static function isFilledContactValue(?string $value): bool
+    {
+        return trim((string) $value) !== '';
+    }
+
+    public static function isFilledEmail(?string $email): bool
+    {
+        return self::isFilledContactValue($email) && !self::isPlaceholderEmail($email);
+    }
+
+    /**
+     * True when incoming equals stored, or completes it with further name parts
+     * ("Max" -> "Max Mustermann"). The citizen form splits familyName on the first
+     * space and can leave lastName editable when the stored value is a single word.
+     */
+    public static function isSameOrCompletedFamilyName(?string $stored, ?string $incoming): bool
+    {
+        $storedTrimmed = trim((string) $stored);
+        $incomingTrimmed = trim((string) $incoming);
+        if ($storedTrimmed === '' || $incomingTrimmed === '') {
+            return false;
+        }
+        return $incomingTrimmed === $storedTrimmed
+            || (
+                !str_contains($storedTrimmed, ' ')
+                && str_starts_with($incomingTrimmed, $storedTrimmed . ' ')
+            );
+    }
+
+    public static function validateUnchangedStoredContact(
+        ThinnedProcess $stored,
+        ?string $familyName,
+        ?string $email,
+        ?string $telephone,
+        ?string $customTextfield,
+        ?string $customTextfield2
+    ): array {
+        $errors = [];
+        self::rejectChangedStoredFamilyName($stored->familyName, $familyName, $errors);
+        self::rejectChangedStoredField($stored->email, $email, 'emailCannotBeChanged', $errors, true);
+        self::rejectChangedStoredField($stored->telephone, $telephone, 'telephoneCannotBeChanged', $errors);
+        self::rejectChangedStoredField(
+            self::normalizedCustomText($stored->customTextfield),
+            self::normalizedCustomText($customTextfield),
+            'customTextfieldCannotBeChanged',
+            $errors
+        );
+        self::rejectChangedStoredField(
+            self::normalizedCustomText($stored->customTextfield2),
+            self::normalizedCustomText($customTextfield2),
+            'customTextfield2CannotBeChanged',
+            $errors
+        );
+
+        return ['errors' => $errors];
+    }
+
+    private static function normalizedCustomText(?string $value): ?string
+    {
+        return $value === null ? null : ProcessPlainText::normalize($value);
+    }
+
+    private static function rejectChangedStoredFamilyName(?string $stored, ?string $incoming, array &$errors): void
+    {
+        if (!self::isFilledContactValue($stored) || !self::isFilledContactValue($incoming)) {
+            return;
+        }
+        if (!self::isSameOrCompletedFamilyName($stored, $incoming)) {
+            $errors[] = self::getError('familyNameCannotBeChanged');
+        }
+    }
+
+    private static function rejectChangedStoredField(
+        ?string $stored,
+        ?string $incoming,
+        string $errorKey,
+        array &$errors,
+        bool $email = false
+    ): void {
+        $storedFilled = $email
+            ? self::isFilledEmail($stored)
+            : self::isFilledContactValue($stored);
+        $incomingFilled = $email
+            ? self::isFilledEmail($incoming)
+            : self::isFilledContactValue($incoming);
+        if (!$storedFilled || !$incomingFilled) {
+            return;
+        }
+        $storedTrimmed = trim($stored);
+        $incomingTrimmed = trim($incoming);
+        $same = $email
+            ? strcasecmp($storedTrimmed, $incomingTrimmed) === 0
+            : $storedTrimmed === $incomingTrimmed;
+        if (!$same) {
+            $errors[] = self::getError($errorKey);
+        }
+    }
+
     private static function validateFamilyNameField(?string $familyName, array &$errors): void
     {
         if (!self::isValidFamilyName($familyName)) {
@@ -260,7 +359,15 @@ class ValidationService
 
     private static function validateEmailField(?string $email, ?ThinnedScope $scope, array &$errors): void
     {
-        if ($scope && $scope->emailRequired && ($email === "" || !self::isValidEmail($email))) {
+        if (self::isPlaceholderEmail($email)) {
+            $errors[] = self::getError('invalidEmail');
+            return;
+        }
+
+        if (
+            $scope && $scope->emailRequired
+            && ($email === "" || !self::isValidEmail($email))
+        ) {
             $errors[] = self::getError('invalidEmail');
         }
     }
@@ -435,7 +542,9 @@ class ValidationService
 
     private static function isValidEmail(?string $email): bool
     {
-        return !empty($email) && preg_match(self::EMAIL_PATTERN, $email) === 1;
+        return !empty($email)
+            && !self::isPlaceholderEmail($email)
+            && preg_match(self::EMAIL_PATTERN, $email) === 1;
     }
 
     private static function isValidTelephone(?string $telephone): bool
@@ -448,6 +557,62 @@ class ValidationService
         return !empty($familyName) && is_string($familyName) && strlen(trim($familyName)) > 0;
     }
 
+    public static function isPlaceholderEmail(?string $email): bool
+    {
+        if ($email === null || trim($email) === '') {
+            return false;
+        }
+
+        return strcasecmp(trim($email), \App::getPlaceholderEmail()) === 0;
+    }
+
+    private static function isMissingClientContactData(ThinnedProcess $process): bool
+    {
+        return self::isPlaceholderEmail($process->email)
+            || !self::isValidFamilyName($process->familyName)
+            || !self::isValidEmail($process->email);
+    }
+
+    public static function validateAppointmentReservedStatus(?ThinnedProcess $process): array
+    {
+        if ($process === null || $process->status !== 'reserved') {
+            return ['errors' => [self::getError('processNotReservedAnymore')]];
+        }
+
+        return ['errors' => []];
+    }
+
+    public static function validateAppointmentPreconfirm(ThinnedProcess $process): array
+    {
+        $reservedErrors = self::validateAppointmentReservedStatus($process);
+        if ($reservedErrors['errors'] !== []) {
+            return $reservedErrors;
+        }
+
+        if (self::isMissingClientContactData($process)) {
+            return ['errors' => [self::getError('placeholderEmailNotAllowed')]];
+        }
+
+        return ['errors' => []];
+    }
+
+    public static function validateAppointmentConfirm(ThinnedProcess $process, mixed $externalUserId): array
+    {
+        if (self::isMissingClientContactData($process)) {
+            return ['errors' => [self::getError('placeholderEmailNotAllowed')]];
+        }
+
+        if ($process->status === 'preconfirmed') {
+            return ['errors' => []];
+        }
+
+        $hasExternalUserId = is_string($externalUserId) && trim($externalUserId) !== '';
+        if ($process->status === 'reserved' && $hasExternalUserId) {
+            return ['errors' => []];
+        }
+
+        return ['errors' => [self::getError('processNotPreconfirmedAnymore')]];
+    }
 
     private static function isValidOfficeId(?int $officeId): bool
     {

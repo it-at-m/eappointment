@@ -13,6 +13,15 @@ class ProcessSearchHistory extends \BO\Zmsbackend\Base
 {
     public const string STATUS_COMPLETED = 'completed';
     public const string STATUS_MISSED = 'missed';
+    public const string STATUS_CANCELLED_BY_CITIZEN = 'cancelled_citizen';
+    public const string STATUS_CANCELLED_BY_STAFF = 'cancelled_staff';
+
+    private const array SUPPORTED_STATUSES = [
+        self::STATUS_COMPLETED,
+        self::STATUS_MISSED,
+        self::STATUS_CANCELLED_BY_CITIZEN,
+        self::STATUS_CANCELLED_BY_STAFF,
+    ];
 
     private const int RESOLVE_REFERENCES = 2;
     private const int DUPLICATE_KEY_ERROR_CODE = 1062;
@@ -249,10 +258,7 @@ class ProcessSearchHistory extends \BO\Zmsbackend\Base
         if (
             !in_array(
                 $status,
-                [
-                    self::STATUS_COMPLETED,
-                    self::STATUS_MISSED,
-                ],
+                self::SUPPORTED_STATUSES,
                 true
             )
         ) {

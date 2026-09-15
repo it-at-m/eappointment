@@ -146,6 +146,29 @@ class Search extends BaseController
             || $parameters['date'] !== null;
     }
 
+    private function shouldRunLogSearch($workstation, array $parameters): bool
+    {
+        if (!$workstation->getUseraccount()->hasPermissions(['logs'])) {
+            return false;
+        }
+
+        if ($this->hasLogSearchFilters($parameters)) {
+            return true;
+        }
+
+        return $workstation->getUseraccount()->isSuperUser()
+            && !$parameters['isSearchRequested'];
+    }
+
+    private function hasLogSearchFilters(array $parameters): bool
+    {
+        return trim((string) $parameters['queryString']) !== ''
+            || $parameters['service'] !== null
+            || $parameters['provider'] !== null
+            || $parameters['date'] !== null
+            || $parameters['userAction'] !== 0;
+    }
+
     private function buildProcessSearchParameters($workstation, array $parameters, array $scopeIds): array
     {
         $queryString = trim((string) $parameters['queryString']);
@@ -175,11 +198,7 @@ class Search extends BaseController
 
     private function readLogSearchResults($workstation, array $parameters, array $scopeIds): ?LogList
     {
-        if (!$workstation->getUseraccount()->hasPermissions(['logs'])) {
-            return null;
-        }
-
-        if (!$parameters['isSearchRequested'] && !$workstation->getUseraccount()->isSuperUser()) {
+        if (!$this->shouldRunLogSearch($workstation, $parameters)) {
             return null;
         }
 
