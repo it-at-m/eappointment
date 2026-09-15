@@ -26,8 +26,8 @@ class Home extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $homeUrl = static::getHomeUrl($request);
-        if (! $homeUrl) {
+        $homeUrl = Helper\HomeUrl::sanitizeUrl(static::getHomeUrl($request));
+        if ($homeUrl === '') {
             throw new Exception\HomeNotFound();
         }
 
