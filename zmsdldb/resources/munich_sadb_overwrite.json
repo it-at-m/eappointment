@@ -28,11 +28,11 @@
       },
       "phone": "089 233-96000",
       "fax": "089 233-45371",
-      "email": "noreply-terminvereinbarung@muenchen.de",
+      "email": "buergerbuero221.kvr@muenchen.de",
       "communication": {
         "phone": {"record": [{"number": "089 233-96000"}]},
         "fax": {"record": [{"number": "089 233-45371"}]},
-        "label": "noreply-terminvereinbarung@muenchen.de"
+        "label": "buergerbuero221.kvr@muenchen.de"
       },
       "extendedServiceReferences": [
         {
@@ -73,20 +73,17 @@
       "public": true
     },
     {
-      "_comment": "TODO ZMSKVR-1046: Remove this local Ausbildung office (10503) once a real office exists in SADB.",
-      "names": [
-        "Hauptabteilung II Bürgerangelegenheiten",
-        "Bürgerbüro Ruppertstraße (Ausbildung)"
-      ],
-      "displayName": "Bürgerbüro Ruppertstraße (Ausbildung)",
-      "altname1": "KVR-II/22 Ausbildung",
-      "altname2": "Bürgerbüro Ruppertstraße (Ausbildung)",
+      "_comment": "KVR-II/2252: SADB publishes extra Bürgerbüro refs as website-internal. Flip the bookable services for Terminvereinbarung; leave Wohnsitz abmelden 1063486 internal.",
+      "names": ["Hauptabteilung II Bürgerangelegenheiten", "Bürgerbüro Ruppertstraße"],
+      "displayName": "Bürgerbüro Ruppertstraße",
+      "altname1": "KVR-II/2252",
+      "altname2": "Bürgerbüro Ruppertstraße",
       "coordinate": {
         "lat": "48.124681688670854",
         "lon": "11.549865797138638",
         "system": "wgs84"
       },
-      "id": "10503",
+      "id": "10313237",
       "organisation": "Landeshauptstadt München",
       "orgUnit": "Kreisverwaltungsreferat",
       "address": {
@@ -103,45 +100,97 @@
       },
       "phone": "089 233-96000",
       "fax": "089 233-45371",
-      "email": "noreply-terminvereinbarung@muenchen.de",
+      "email": "buergerbuero225.kvr@muenchen.de",
       "communication": {
         "phone": {"record": [{"number": "089 233-96000"}]},
         "fax": {"record": [{"number": "089 233-45371"}]},
-        "label": "noreply-terminvereinbarung@muenchen.de"
+        "label": "buergerbuero225.kvr@muenchen.de"
       },
       "extendedServiceReferences": [
         {
-          "fields": [{
-            "label": "ZMS intern",
-            "id": "sf33",
-            "name": "ZMS_INTERN",
-            "type": "BOOLEAN",
-            "value": false
-          }],
+          "fields": [
+            {
+              "label": "ZMS Dauer",
+              "id": "sf31",
+              "name": "ZMS_DAUER",
+              "type": "INTEGER",
+              "value": 5
+            },
+            {
+              "label": "ZMS max. Anzahl",
+              "id": "sf32",
+              "name": "ZMS_MAX_ANZAHL",
+              "type": "INTEGER",
+              "value": 5
+            },
+            {
+              "label": "ZMS intern",
+              "id": "sf33",
+              "name": "ZMS_INTERN",
+              "type": "BOOLEAN",
+              "value": false
+            }
+          ],
           "refId": "1080843",
           "public": true
         },
         {
-          "fields": [{
-            "label": "ZMS intern",
-            "id": "sf33",
-            "name": "ZMS_INTERN",
-            "type": "BOOLEAN",
-            "value": false
-          }],
+          "fields": [
+            {
+              "label": "ZMS Dauer",
+              "id": "sf31",
+              "name": "ZMS_DAUER",
+              "type": "INTEGER",
+              "value": 15
+            },
+            {
+              "label": "ZMS max. Anzahl",
+              "id": "sf32",
+              "name": "ZMS_MAX_ANZAHL",
+              "type": "INTEGER",
+              "value": 3
+            },
+            {
+              "label": "ZMS intern",
+              "id": "sf33",
+              "name": "ZMS_INTERN",
+              "type": "BOOLEAN",
+              "value": false
+            }
+          ],
           "refId": "1063475",
           "public": true
         },
         {
-          "fields": [{
-            "label": "ZMS intern",
-            "id": "sf33",
-            "name": "ZMS_INTERN",
-            "type": "BOOLEAN",
-            "value": false
-          }],
+          "fields": [
+            {
+              "label": "ZMS Dauer",
+              "id": "sf31",
+              "name": "ZMS_DAUER",
+              "type": "INTEGER",
+              "value": 20
+            },
+            {
+              "label": "ZMS max. Anzahl",
+              "id": "sf32",
+              "name": "ZMS_MAX_ANZAHL",
+              "type": "INTEGER",
+              "value": 3
+            },
+            {
+              "label": "ZMS intern",
+              "id": "sf33",
+              "name": "ZMS_INTERN",
+              "type": "BOOLEAN",
+              "value": false
+            }
+          ],
           "refId": "10224132",
           "public": true
+        },
+        {
+          "refId": "1063486",
+          "public": false
         }
       ],
       "extendedLocationType": true,
