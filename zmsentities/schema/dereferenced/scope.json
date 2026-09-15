@@ -419,9 +419,29 @@
                     "additionalProperties": false,
                     "properties": {
                         "appointmentsPerMail": {
-                            "type": ["string", "null", "integer"],
-                            "description": "allowed appointments per e-mail address",
-                            "default": ""
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "integer",
+                                    "minimum": 2
+                                },
+                                {
+                                    "type": "string",
+                                    "pattern": "^(|[2-9]|[1-9][0-9]+)$"
+                                }
+                            ],
+                            "description": "allowed appointments per e-mail address; empty/null = unlimited, otherwise must be >= 2 so citizens can reschedule",
+                            "default": "",
+                            "x-locale": {
+                                "de_DE": {
+                                    "pointer": "Maximale Anzahl an Terminen pro E-Mail-Adresse",
+                                    "messages": {
+                                        "oneOf": "Bitte geben Sie für die maximale Anzahl an Terminen pro E-Mail-Adresse eine Zahl größer oder gleich zwei ein."
+                                    }
+                                }
+                            }
                         },
                         "slotsPerAppointment": {
                             "type": ["string", "null", "integer"],

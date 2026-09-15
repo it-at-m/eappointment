@@ -67,6 +67,26 @@ class ScopeUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
         ], []);
     }
 
+    public function testUnvalidAppointmentsPerMailOne()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
+        $this->expectExceptionCode(400);
+        $body = json_decode($this->readFixture('GetScope_lessData.json'), true);
+        $body['preferences']['client']['appointmentsPerMail'] = '1';
+        try {
+            $this->render(['id' => 141], [
+                '__body' => json_encode($body)
+            ], []);
+        } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
+            $this->assertSame(
+                ['oneOf' => 'Bitte geben Sie für die maximale Anzahl an Terminen pro E-Mail-Adresse eine Zahl größer oder gleich zwei ein.'],
+                $exception->data['/preferences/client/appointmentsPerMail']['messages']
+            );
+            throw $exception;
+        }
+    }
+
     public function testRouteIdNotOverriddenByBody()
     {
         $department = (new \BO\Zmsentities\Department());
