@@ -34,6 +34,7 @@
         v-if="appointment.icsContent"
         :label="t('downloadAppointment')"
         prepend-icon="calendar-down"
+        data-etracker="ICS-Download"
         @click.prevent="downloadIcsAppointment"
       />
       <!--      Used after the content of hint has been checked-->

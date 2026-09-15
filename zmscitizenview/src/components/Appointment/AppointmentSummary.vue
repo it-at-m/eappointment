@@ -299,6 +299,7 @@
   >
     <muc-button
       icon="arrow-right"
+      data-etracker="Verschieben"
       @click="rescheduleAppointment"
     >
       <template #default>{{ t("rescheduleAppointment") }}</template>
@@ -307,6 +308,7 @@
       :disabled="loadingStates.isCancelingAppointment.value"
       :icon="'close'"
       variant="secondary"
+      data-etracker="Storno"
       @click="cancelAppointment"
     >
       <template #default>

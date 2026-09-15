@@ -1,6 +1,9 @@
 <template>
   <div class="add-card">
-    <a :href="newAppointmentUrl">
+    <a
+      :href="newAppointmentUrl"
+      data-etracker="Neuer-Termin"
+    >
       <div class="add-card-content">
         <div class="add-card-header">
           <h3>{{ title }}</h3>

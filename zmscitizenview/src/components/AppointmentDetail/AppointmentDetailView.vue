@@ -119,6 +119,7 @@
         <template #buttons>
           <muc-button
             icon="arrow-right"
+            data-etracker="Verschieben"
             @click="rescheduleAppointment"
           >
             {{ t("reschedule") }}
@@ -158,6 +159,7 @@
         <template #buttons>
           <muc-button
             icon="trash"
+            data-etracker="Storno"
             @click="cancelAppointment"
           >
             {{ t("cancel") }}
@@ -504,8 +506,9 @@ const openRescheduleModal = () => (rescheduleModalOpen.value = true);
 const openCancelModal = () => (cancelModalOpen.value = true);
 
 const rescheduleAppointment = () => {
-  if (appointment.value)
+  if (appointment.value) {
     location.href = `${props.rescheduleAppointmentUrl}#/appointment/${getEncodedString(APPOINTMENT_ACTION_TYPE.RESCHEDULE)}`;
+  }
 };
 
 const cancelAppointment = () => {

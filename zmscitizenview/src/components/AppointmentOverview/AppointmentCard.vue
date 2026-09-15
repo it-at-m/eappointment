@@ -4,6 +4,7 @@
     :tagline="appointmentTypeLabel"
     :title="formatMultilineTitle(appointment)"
     :href="getAppointmentLink()"
+    data-etracker="Termin-Karte"
   >
     <template #headerPrefix>
       <calendar-icon

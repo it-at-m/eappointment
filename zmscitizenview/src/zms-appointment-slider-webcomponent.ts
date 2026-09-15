@@ -7,6 +7,9 @@
 import { defineCustomElement } from "vue";
 
 import I18nHost from "@/i18n-host.ce.vue";
+
+import "@/utils/etracker";
+
 import ZMSAppointmentSliderElement from "@/zms-appointment-slider.ce.vue";
 
 const I18nHostElement = defineCustomElement(I18nHost);
