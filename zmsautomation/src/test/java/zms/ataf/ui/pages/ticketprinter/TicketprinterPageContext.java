@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.bidi.HasBiDi;
-import org.openqa.selenium.bidi.module.Script;
 import org.openqa.selenium.chromium.HasCdp;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -39,7 +37,6 @@ public class TicketprinterPageContext extends Context {
             + "return orig.apply(this,arguments);};})(window.setTimeout);";
 
     private WindowType windowType;
-    private boolean bidiPrintStubInstalled;
 
     TicketprinterPageContext(RemoteWebDriver driver) {
         super(driver);
@@ -117,30 +114,17 @@ public class TicketprinterPageContext extends Context {
     }
 
     /**
-     * Kiosk pages always print and return home after 1.5s. Stub both on every new
-     * document so the print dialog cannot block the UI suite (Chrome CDP, Firefox BiDi).
+     * Kiosk pages always print and return home after 1.5s. Chrome gets a CDP preload
+     * stub. Firefox has no BiDi in this ATAF session; print is stubbed by the
+     * zms-stub-print.xpi content script instead.
      */
     void stubWindowPrint() {
         if (DRIVER instanceof HasCdp cdp) {
             try {
                 cdp.executeCdpCommand("Page.addScriptToEvaluateOnNewDocument", Map.of("source", PRINT_STUB));
-                return;
             } catch (RuntimeException e) {
                 ScenarioLogManager.getLogger().warn("Could not stub window.print via CDP: {}", e.toString());
             }
-        }
-        stubWindowPrintWithBidi();
-    }
-
-    private void stubWindowPrintWithBidi() {
-        if (bidiPrintStubInstalled || !(DRIVER instanceof HasBiDi)) {
-            return;
-        }
-        try {
-            new Script(DRIVER).addPreloadScript(PRINT_STUB);
-            bidiPrintStubInstalled = true;
-        } catch (RuntimeException e) {
-            ScenarioLogManager.getLogger().warn("Could not stub window.print via BiDi: {}", e.toString());
         }
     }
 
