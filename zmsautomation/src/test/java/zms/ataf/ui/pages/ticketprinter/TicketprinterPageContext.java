@@ -7,6 +7,8 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.chromium.HasCdp;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -59,16 +61,46 @@ public class TicketprinterPageContext extends Context {
     private void navigateTo(String url) {
         stubWindowPrint();
         windowType = new WindowType("zmsticketprinter", new System("zmsticketprinter", resolveBaseUrl()));
-        try {
-            DRIVER.navigate().to(url);
-        } catch (TimeoutException e) {
-            ScenarioLogManager.getLogger().warn(
-                    "Navigation to zmsticketprinter timed out, waiting for kiosk content.", e);
-        }
+        leaveCurrentDocument(url);
         waitForTicketprinterDocument(url);
         WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
         FrameControls.setCurrentFrame(FrameControls.DEFAULT_CONTENT);
         ScenarioLogManager.getLogger().info("Ticketprinter loaded: {}", url);
+    }
+
+    /**
+     * Firefox keeps {@code /process/} in a pending load while the print UI is open, so
+     * {@code WebDriver.get()} never starts the next kiosk URL. The process page is
+     * already scriptable (the waiting number is readable), so replace the location
+     * instead of waiting for that load to finish.
+     */
+    private void leaveCurrentDocument(String url) {
+        dismissPrintUi();
+        try {
+            ((JavascriptExecutor) DRIVER).executeScript(
+                    "window.print = function () {};"
+                            + "try { window.stop(); } catch (e) {}"
+                            + "window.location.replace(arguments[0]);",
+                    url);
+        } catch (RuntimeException e) {
+            ScenarioLogManager.getLogger().warn(
+                    "Could not leave the current page via JavaScript, falling back to WebDriver navigation: {}",
+                    e.toString());
+            try {
+                DRIVER.navigate().to(url);
+            } catch (TimeoutException te) {
+                ScenarioLogManager.getLogger().warn(
+                        "Navigation to zmsticketprinter timed out, waiting for kiosk content.", te);
+            }
+        }
+    }
+
+    void dismissPrintUi() {
+        try {
+            DRIVER.switchTo().activeElement().sendKeys(Keys.ESCAPE);
+        } catch (RuntimeException ignored) {
+            // Print UI is browser chrome; the page may not accept keys.
+        }
     }
 
     private void waitForTicketprinterDocument(String url) {
@@ -114,9 +146,9 @@ public class TicketprinterPageContext extends Context {
     }
 
     /**
-     * Kiosk pages always print and return home after 1.5s. Chrome gets a CDP preload
-     * stub. Firefox has no BiDi in this ATAF session; print is stubbed by the
-     * zms-stub-print.xpi content script instead.
+     * Chrome can stub {@code window.print} and the 1.5s home redirect on every new
+     * document via CDP. Firefox has no CDP/BiDi in this ATAF session; it leaves
+     * {@code /process/} with {@link #leaveCurrentDocument(String)} instead.
      */
     void stubWindowPrint() {
         if (DRIVER instanceof HasCdp cdp) {

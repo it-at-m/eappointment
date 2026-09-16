@@ -107,6 +107,7 @@ public class TicketprinterPage extends BasePage {
                 DRIVER.getPageSource().contains("Ihre Wartenummer lautet")
                         || DRIVER.getPageSource().contains("Ihre Wartenummer:"),
                 "Process page did not show the waiting-number confirmation");
+        CONTEXT.dismissPrintUi();
     }
 
     private WebElement waitForWaitingNumberButton(String label) {
