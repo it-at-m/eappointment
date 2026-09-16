@@ -21,6 +21,10 @@ export function isFilledEmail(email?: string | null): boolean {
   return isFilledContactValue(email) && !isPlaceholderEmail(email);
 }
 
+export function isReservedProcessStatus(status?: string | null): boolean {
+  return (status ?? "").trim().toLowerCase() === "reserved";
+}
+
 export function getContactFieldLocks(
   isRebooking: boolean | undefined,
   sourceAppointment?: AppointmentDTO | null
