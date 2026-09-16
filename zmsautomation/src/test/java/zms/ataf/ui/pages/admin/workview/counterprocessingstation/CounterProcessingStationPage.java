@@ -742,7 +742,7 @@ public class CounterProcessingStationPage extends AdminPage {
 
         Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//input[@id='process_date']", LocatorType.XPATH, false ), "Process edit form is not visible!");
 
-        WebDriverWait wait new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.withMessage("The expected walk-in customer was not loaded into the edit form!");
 
         wait.until(ExpectedConditions.textToBePresentInElementValue(By.xpath("//input[@name='familyName']"), TestDataHelper.getTestData("customer_name")));
