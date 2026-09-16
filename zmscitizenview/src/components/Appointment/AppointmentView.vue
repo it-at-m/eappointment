@@ -450,6 +450,7 @@ import {
 import {
   applyAppointmentContactToCustomerData,
   hasMissingRequiredContact,
+  isReservedProcessStatus,
   joinFamilyName,
 } from "@/utils/rebookingContact";
 import { resolveOfficeById, toOfficeImpl } from "@/utils/resolveOfficeById";
@@ -660,11 +661,11 @@ const activeContext = computed<string>(() => {
   if (props.confirmAppointmentHash) {
     return "confirm";
   }
-  // During rebooking, use the current context instead of initialization
-  if (props.appointmentHash && isRebooking.value) {
-    return currentContext.value;
-  }
-  if (props.appointmentHash) {
+  if (
+    props.appointmentHash &&
+    rebookOrCancelDialog.value &&
+    !isRebooking.value
+  ) {
     return "initialization";
   }
   return currentContext.value;
@@ -788,6 +789,45 @@ const copyRebookedContactOntoAppointment = () => {
   appointment.value.customTextfield = rebookedAppointment.value.customTextfield;
   appointment.value.customTextfield2 =
     rebookedAppointment.value.customTextfield2;
+};
+
+const rebuildSelectedServiceMapFromAppointment = (): void => {
+  selectedServiceMap.value = new Map();
+  const loaded = appointment.value;
+  if (!loaded) {
+    return;
+  }
+  if (loaded.serviceId && loaded.serviceCount) {
+    selectedServiceMap.value.set(String(loaded.serviceId), loaded.serviceCount);
+  }
+  (loaded.subRequestCounts ?? []).forEach((subRequestCount) => {
+    if (subRequestCount.count > 0) {
+      selectedServiceMap.value.set(
+        String(subRequestCount.id),
+        subRequestCount.count
+      );
+    }
+  });
+};
+
+const resumeReservedBookingFromHash = (): void => {
+  rebookOrCancelDialog.value = false;
+  currentContext.value = "update";
+  if (!appointment.value) {
+    currentView.value = 2;
+    return;
+  }
+  applyAppointmentContactToCustomerData(customerData.value, appointment.value);
+  selectedTimeslot.value = Number(appointment.value.timestamp) || 0;
+  rebuildSelectedServiceMapFromAppointment();
+  if (isAppointmentInPast.value) {
+    currentView.value = 3;
+    return;
+  }
+  const scope = selectedProvider.value?.scope ?? appointment.value.scope;
+  currentView.value = hasMissingRequiredContact(appointment.value, scope)
+    ? 2
+    : 3;
 };
 
 const fillCustomerDataFromRebookedAppointment = () => {
@@ -1225,10 +1265,14 @@ const runLoginResumeFromHashAndLocalStorage = (
               selectedProvider.value = appointmentOffice;
               preselectedLocationId.value = String(appointmentOffice.id);
             }
-            // Keep stepper step from UI localStorage (do not open reschedule/cancel dialog).
-            currentView.value = isAppointmentInPast.value
-              ? 3
-              : uiData.currentView;
+            if (isReservedProcessStatus(appointment.value.status)) {
+              resumeReservedBookingFromHash();
+            } else {
+              // Keep stepper step from UI localStorage (do not open reschedule/cancel dialog).
+              currentView.value = isAppointmentInPast.value
+                ? 3
+                : uiData.currentView;
+            }
             clearAppointmentLocalStorage();
             clearAppointmentAuthHashSession();
           } else {
@@ -1410,7 +1454,12 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
             selectedProvider.value = resolvedOffice;
           }
 
-          if (!appointmentData.action || isAppointmentInPast.value) {
+          if (
+            isReservedProcessStatus(appointment.value.status) &&
+            !props.confirmAppointmentHash
+          ) {
+            resumeReservedBookingFromHash();
+          } else if (!appointmentData.action || isAppointmentInPast.value) {
             currentView.value = 3;
           } else if (
             appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
