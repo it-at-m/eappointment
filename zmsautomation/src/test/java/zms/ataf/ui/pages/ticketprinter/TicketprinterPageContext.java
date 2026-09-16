@@ -7,8 +7,6 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.chromium.HasCdp;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -61,7 +59,13 @@ public class TicketprinterPageContext extends Context {
     private void navigateTo(String url) {
         stubWindowPrint();
         windowType = new WindowType("zmsticketprinter", new System("zmsticketprinter", resolveBaseUrl()));
-        leaveCurrentDocument(url);
+        abandonProcessPage();
+        try {
+            DRIVER.navigate().to(url);
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger().warn(
+                    "Navigation to zmsticketprinter timed out, waiting for kiosk content.", e);
+        }
         waitForTicketprinterDocument(url);
         WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
         FrameControls.setCurrentFrame(FrameControls.DEFAULT_CONTENT);
@@ -69,38 +73,34 @@ public class TicketprinterPageContext extends Context {
     }
 
     /**
-     * Firefox keeps {@code /process/} in a pending load while the print UI is open, so
-     * {@code WebDriver.get()} never starts the next kiosk URL. The process page is
-     * already scriptable (the waiting number is readable), so replace the location
-     * instead of waiting for that load to finish.
+     * Firefox keeps the ticketprinter process tab in a pending load while print UI is
+     * open, so same-tab navigation never starts. Open a fresh tab via WebDriver and
+     * close the hung one.
      */
-    private void leaveCurrentDocument(String url) {
-        dismissPrintUi();
+    void abandonProcessPage() {
+        String current;
         try {
-            ((JavascriptExecutor) DRIVER).executeScript(
-                    "window.print = function () {};"
-                            + "try { window.stop(); } catch (e) {}"
-                            + "window.location.replace(arguments[0]);",
-                    url);
+            current = DRIVER.getCurrentUrl();
         } catch (RuntimeException e) {
-            ScenarioLogManager.getLogger().warn(
-                    "Could not leave the current page via JavaScript, falling back to WebDriver navigation: {}",
-                    e.toString());
-            try {
-                DRIVER.navigate().to(url);
-            } catch (TimeoutException te) {
-                ScenarioLogManager.getLogger().warn(
-                        "Navigation to zmsticketprinter timed out, waiting for kiosk content.", te);
-            }
+            return;
         }
-    }
-
-    void dismissPrintUi() {
+        if (current == null || !current.contains("/ticketprinter/process")) {
+            return;
+        }
+        String stuck = DRIVER.getWindowHandle();
+        DRIVER.switchTo().newWindow(org.openqa.selenium.WindowType.TAB);
+        String fresh = DRIVER.getWindowHandle();
         try {
-            DRIVER.switchTo().activeElement().sendKeys(Keys.ESCAPE);
-        } catch (RuntimeException ignored) {
-            // Print UI is browser chrome; the page may not accept keys.
+            DRIVER.switchTo().window(stuck);
+            DRIVER.close();
+        } catch (RuntimeException e) {
+            ScenarioLogManager.getLogger().warn("Could not close hung ticketprinter process tab: {}", e.toString());
         }
+        DRIVER.switchTo().window(fresh);
+        if (windowType != null) {
+            WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
+        }
+        ScenarioLogManager.getLogger().info("Left hung ticketprinter process tab");
     }
 
     private void waitForTicketprinterDocument(String url) {
@@ -147,8 +147,8 @@ public class TicketprinterPageContext extends Context {
 
     /**
      * Chrome can stub {@code window.print} and the 1.5s home redirect on every new
-     * document via CDP. Firefox has no CDP/BiDi in this ATAF session; it leaves
-     * {@code /process/} with {@link #leaveCurrentDocument(String)} instead.
+     * document via CDP. Firefox has no CDP/BiDi here; hung process tabs are left
+     * with {@link #abandonProcessPage()} instead.
      */
     void stubWindowPrint() {
         if (DRIVER instanceof HasCdp cdp) {
