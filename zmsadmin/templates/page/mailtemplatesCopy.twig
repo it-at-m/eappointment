@@ -6,16 +6,38 @@
 {% endblock %}
 
 {% block content %}
-    {% set timeString =
-        'am '
-        ~ 'now'|date('d.m.Y')
-        ~ ' um '
-        ~ 'now'|date('H:i')
-        ~ ' Uhr'
-    %}
+    {{ parent() }}
 
-    {% include "element/helper/exceptionHandler.twig" %}
-    {% include "element/helper/messageHandler.twig" %}
+    <style>
+        .mailtemplates-copy-location-selector {
+            max-width: 95rem;
+        }
+
+        .mailtemplates-copy-location-selector .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .mailtemplates-copy-location-selector .header label {
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .mailtemplates-copy-location-selector .btn-icon {
+            background: transparent;
+            border: 1px solid #000;
+            border-radius: 0.25rem;
+            padding: 0.25rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .mailtemplates-copy-location-selector .btn-icon:hover {
+            background: rgba(0, 123, 255, 0.1);
+        }
+    </style>
 
     {% if formError %}
         <div class="message message--error" role="alert">
@@ -98,6 +120,60 @@
             {% endblock %}
 
             {% block board_body %}
+                {% set targetScopeOptions = [] %}
+
+                {% for department in workstation.useraccount.departments %}
+                    {% set departmentScopeOptions = [] %}
+
+                    {% for scope in department.scopes %}
+                        {% if
+                            scope.id != selectedSourceScope.id
+                            and scope.provider.id
+                                != selectedSourceScope.provider.id
+                        %}
+                            {% set departmentScopeOptions =
+                                departmentScopeOptions|merge([
+                                    {
+                                        'value': scope.id,
+                                        'name': providername(scope)
+                                    }
+                                ])
+                            %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% for cluster in department.clusters %}
+                        {% for scope in cluster.scopes %}
+                            {% if
+                                scope.id != selectedSourceScope.id
+                                and scope.provider.id
+                                    != selectedSourceScope.provider.id
+                            %}
+                                {% set departmentScopeOptions =
+                                    departmentScopeOptions|merge([
+                                        {
+                                            'value': scope.id,
+                                            'name': providername(scope)
+                                        }
+                                    ])
+                                %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+
+                    {% if departmentScopeOptions|length > 0 %}
+                        {% set targetScopeOptions =
+                            targetScopeOptions|merge([
+                                {
+                                    'name': department.name,
+                                    'options':
+                                        departmentScopeOptions|msort('name')
+                                }
+                            ])
+                        %}
+                    {% endif %}
+                {% endfor %}
+
                 {% if customTemplates|length > 0 %}
                     <form
                         method="post"
@@ -147,44 +223,103 @@
                             </select>
                         </div>
 
-                        <fieldset class="fieldset">
-                            <legend>Zielstandorte</legend>
+                        <fieldset class="mailtemplates-copy-location-selector">
+                            <div class="header">
+                                <label for="targetScopeIds">
+                                    Zielstandorte
+                                </label>
 
-                            <p class="formgroup__help">
-                                Wählen Sie mindestens einen Zielstandort
-                                aus. Eine bereits vorhandene Anpassung
-                                desselben Templates wird überschrieben.
+                                <button
+                                    type="button"
+                                    id="select-all-target-scopes"
+                                    class="btn-icon"
+                                    aria-label="Alle auswählen"
+                                    title="Alle Standorte auswählen"
+                                >
+                                    <i
+                                        class="fas fa-check-double"
+                                        aria-hidden="true"
+                                    ></i>
+                                </button>
+                            </div>
+
+                            <p
+                                id="targetScopeIdsHelp"
+                                class="formgroup__help"
+                            >
+                                Wählen Sie mindestens einen Zielstandort aus.
+                                Halten Sie die Strg-Taste gedrückt, um einzelne
+                                Standorte auszuwählen oder abzuwählen. Mit der
+                                Shift-Taste können Sie einen zusammenhängenden
+                                Bereich auswählen.<br>
+                                Eine bereits vorhandene Anpassung desselben
+                                Templates wird überschrieben.
                             </p>
 
-                            {% for scope in scopeList %}
-                                {% if
-                                    scope.id != selectedSourceScope.id
-                                    and scope.provider.id
-                                        != selectedSourceScope.provider.id
-                                %}
-                                    <div class="form-check">
-                                        <input
-                                            type="checkbox"
-                                            id="targetScope_{{ scope.id }}"
-                                            name="targetScopeIds[]"
-                                            value="{{ scope.id }}"
-                                            {% if
-                                                scope.id
-                                                in selectedTargetScopeIds
-                                            %}
-                                                checked="checked"
-                                            {% endif %}
-                                        >
-
-                                        <label
-                                            for="targetScope_{{ scope.id }}"
-                                        >
-                                            {{ providername(scope) }}
-                                        </label>
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
+                            <select
+                                id="targetScopeIds"
+                                name="targetScopeIds[]"
+                                class="form-control"
+                                multiple="multiple"
+                                size="8"
+                                required
+                                aria-required="true"
+                                aria-describedby="targetScopeIdsHelp"
+                                style="width: 100%;"
+                            >
+                                {% for departmentGroup in targetScopeOptions %}
+                                    <optgroup label="{{ departmentGroup.name }}">
+                                        {% for scopeOption in departmentGroup.options %}
+                                            <option
+                                                value="{{ scopeOption.value }}"
+                                                {% if
+                                                    scopeOption.value
+                                                    in selectedTargetScopeIds
+                                                %}
+                                                    selected="selected"
+                                                {% endif %}
+                                            >
+                                                {{ scopeOption.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </optgroup>
+                                {% endfor %}
+                            </select>
                         </fieldset>
+
+                        <script>
+                            const selectAllTargetScopesButton =
+                                document.getElementById(
+                                    'select-all-target-scopes'
+                                );
+
+                            const targetScopeSelect =
+                                document.getElementById('targetScopeIds');
+
+                            if (
+                                selectAllTargetScopesButton
+                                && targetScopeSelect
+                            ) {
+                                selectAllTargetScopesButton.addEventListener(
+                                    'click',
+                                    function () {
+                                        const options = Array.from(
+                                            targetScopeSelect.options
+                                        );
+
+                                        const allSelected = options.every(
+                                            function (option) {
+                                                return option.selected;
+                                            }
+                                        );
+
+                                        options.forEach(function (option) {
+                                            option.selected = !allSelected;
+                                        });
+                                    }
+                                );
+                            }
+                        </script>
 
                         <div class="form-actions">
                             <button

@@ -29,7 +29,7 @@ class MailTemplatesCopy extends BaseController
         $workstation = \App::$http
             ->readGetResult(
                 '/workstation/',
-                ['resolveReferences' => 1]
+                ['resolveReferences' => 3]
             )
             ->getEntity();
 
