@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @package ZMS API
- * @copyright BerlinOnline Stadtportal GmbH & Co. KG
- **/
-
 namespace BO\Zmsbackend\Mail\Api;
 
 use BO\Mellon\Validator;
@@ -159,9 +154,6 @@ class MailTemplatesCopy extends \BO\Zmsbackend\Api\BaseController
         return (int) $validatedValue;
     }
 
-    /**
-     * @return int[]|null
-     */
     private function readTargetScopeIds(mixed $value): ?array
     {
         if (!is_array($value)) {
