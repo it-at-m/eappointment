@@ -384,27 +384,31 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Service\Base
         ];
 
         foreach ($allowedProcessIds as $processId) {
-            $result = $query->readSearch([
-                'processId' => $processId,
-            ]);
+            foreach (['processId', 'query'] as $parameterName) {
+                $result = $query->readSearch([
+                    $parameterName => $processId,
+                ]);
 
-            $this->assertSame(
-                1,
-                $result->count(),
-                "Process $processId should be searchable"
-            );
+                $this->assertSame(
+                    1,
+                    $result->count(),
+                    "Process $processId should be searchable via $parameterName"
+                );
+            }
         }
 
         foreach ($excludedProcessIds as $processId) {
-            $result = $query->readSearch([
-                'processId' => $processId,
-            ]);
+            foreach (['processId', 'query'] as $parameterName) {
+                $result = $query->readSearch([
+                    $parameterName => $processId,
+                ]);
 
-            $this->assertSame(
-                0,
-                $result->count(),
-                "Process $processId should not be searchable"
-            );
+                $this->assertSame(
+                    0,
+                    $result->count(),
+                    "Process $processId should not be searchable via $parameterName"
+                );
+            }
         }
     }
 
@@ -1149,6 +1153,188 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Service\Base
             $searchService->readSearchCount(
                 $parameters
             )
+        );
+    }
+
+    public function testReadSearchReturnsCancelledHistoryStatuses(): void
+    {
+        $historyService = new HistoryService();
+
+        $processService = new Query(
+            $historyService->getWriter(),
+            $historyService->getReader()
+        );
+
+        $process = $processService->readEntity(
+            990029,
+            'history-test-auth',
+            2
+        );
+
+        $finalizedAt = new \DateTimeImmutable('2016-04-18 12:00:00');
+
+        $historyService->writeHistoryEntry(
+            $process,
+            HistoryService::STATUS_CANCELLED_BY_CITIZEN,
+            $finalizedAt
+        );
+
+        $now = class_exists('\App') && isset(\App::$now)
+            ? \App::$now
+            : new \DateTimeImmutable(
+                'now',
+                new \DateTimeZone('Europe/Berlin')
+            );
+
+        $appointmentAt =
+            \DateTimeImmutable::createFromInterface($now)
+                ->modify('-1 day');
+
+        $historyService->perform(
+            '
+                UPDATE process_search_history
+                SET
+                    appointment_at = :appointmentAt,
+                    status = :status
+                WHERE process_id = :processId
+            ',
+            [
+                'appointmentAt' => $appointmentAt
+                    ->format('Y-m-d H:i:s'),
+                'status' => HistoryService::STATUS_CANCELLED_BY_CITIZEN,
+                'processId' => 990029,
+            ]
+        );
+
+        $searchService = new ProcessSearchService(
+            $historyService->getWriter(),
+            $historyService->getReader()
+        );
+
+        $results = $searchService->readSearch([
+            'processId' => 990029,
+        ]);
+
+        $cancelledProcess = null;
+
+        foreach ($results as $result) {
+            if ($result->source === 'history') {
+                $cancelledProcess = $result;
+                break;
+            }
+        }
+
+        $this->assertNotNull($cancelledProcess);
+        $this->assertSame('cancelled_citizen', $cancelledProcess->appointmentStatus);
+        $this->assertSame('deleted', $cancelledProcess->status);
+        $this->assertSame($finalizedAt->getTimestamp(), (int) $cancelledProcess->finalizedAt);
+
+        $historyService->perform(
+            '
+                UPDATE process_search_history
+                SET status = :status
+                WHERE process_id = :processId
+            ',
+            [
+                'status' => HistoryService::STATUS_CANCELLED_BY_STAFF,
+                'processId' => 990029,
+            ]
+        );
+
+        $results = $searchService->readSearch([
+            'processId' => 990029,
+        ]);
+
+        $cancelledProcess = null;
+
+        foreach ($results as $result) {
+            if ($result->source === 'history') {
+                $cancelledProcess = $result;
+                break;
+            }
+        }
+
+        $this->assertNotNull($cancelledProcess);
+        $this->assertSame('cancelled_staff', $cancelledProcess->appointmentStatus);
+        $this->assertSame('blocked', $cancelledProcess->status);
+    }
+
+    public function testNumericQueryDoesNotReturnDeletedCancelledStub(): void
+    {
+        $historyService = new HistoryService();
+
+        $processService = new Query(
+            $historyService->getWriter(),
+            $historyService->getReader()
+        );
+
+        $process = $processService->readEntity(
+            990029,
+            'history-test-auth',
+            2
+        );
+
+        $finalizedAt = new \DateTimeImmutable('2016-04-18 12:00:00');
+
+        $historyService->writeHistoryEntry(
+            $process,
+            HistoryService::STATUS_CANCELLED_BY_CITIZEN,
+            $finalizedAt
+        );
+
+        $now = class_exists('\App') && isset(\App::$now)
+            ? \App::$now
+            : new \DateTimeImmutable(
+                'now',
+                new \DateTimeZone('Europe/Berlin')
+            );
+
+        $appointmentAt =
+            \DateTimeImmutable::createFromInterface($now)
+                ->modify('-1 day');
+
+        $historyService->perform(
+            '
+                UPDATE process_search_history
+                SET
+                    appointment_at = :appointmentAt,
+                    status = :status
+                WHERE process_id = :processId
+            ',
+            [
+                'appointmentAt' => $appointmentAt
+                    ->format('Y-m-d H:i:s'),
+                'status' => HistoryService::STATUS_CANCELLED_BY_CITIZEN,
+                'processId' => 990029,
+            ]
+        );
+
+        $processService->perform(
+            '
+                UPDATE buerger
+                SET status = :status
+                WHERE BuergerID = :processId
+            ',
+            [
+                'status' => 'deleted',
+                'processId' => 990029,
+            ]
+        );
+
+        $searchService = new ProcessSearchService(
+            $historyService->getWriter(),
+            $historyService->getReader()
+        );
+
+        $allResults = $searchService->readSearch([
+            'query' => '990029',
+        ]);
+
+        $this->assertCount(1, $allResults);
+        $this->assertSame('history', $allResults->getFirst()->source);
+        $this->assertSame(
+            'cancelled_citizen',
+            $allResults->getFirst()->appointmentStatus
         );
     }
 }

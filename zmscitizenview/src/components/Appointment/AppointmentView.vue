@@ -72,7 +72,7 @@
         :step-items="STEPPER_ITEMS"
         :active-item="activeStep"
         :disable-previous-steps="
-          !!appointmentHash || appointmentAlreadyActivated
+          isExistingAppointmentDeepLink || appointmentAlreadyActivated
         "
         @change-step="changeStep"
       />
@@ -82,7 +82,7 @@
             <div
               v-if="
                 currentView === 0 &&
-                !appointmentHash &&
+                !isExistingAppointmentDeepLink &&
                 !appointmentAlreadyActivated
               "
             >
@@ -100,7 +100,7 @@
             </div>
 
             <!-- Keep mounted through overview so Zurück does not remount and wipe selectedProvider.
-                 Skip appointmentHash (mail deep link and Bürger-Login return): leftover
+                 Skip existing-appointment deep links and reserved login resume: leftover
                  selectedServiceMap would remount the calendar and overwrite the real officeId. -->
             <div v-show="currentView === 1">
               <AppointmentSelection
@@ -108,7 +108,8 @@
                   currentView === 1 ||
                   ((currentView === 2 || currentView === 3) &&
                     selectedServiceMap.size > 0 &&
-                    !appointmentHash)
+                    !appointmentHash &&
+                    !isReservedBookingInProgress)
                 "
                 :key="appointmentSelectionKey"
                 :global-state="globalState"
@@ -127,6 +128,7 @@
                 "
                 :booking-error-key="bookingErrorKey"
                 @back="decreaseCurrentView"
+                @cancel-reschedule="nextCancelReschedule"
                 @clearBookingError="clearBookingError"
                 @next="nextReserveAppointment"
               />
@@ -450,6 +452,7 @@ import {
 import {
   applyAppointmentContactToCustomerData,
   hasMissingRequiredContact,
+  isReservedProcessStatus,
   joinFamilyName,
 } from "@/utils/rebookingContact";
 import { resolveOfficeById, toOfficeImpl } from "@/utils/resolveOfficeById";
@@ -556,6 +559,17 @@ const offices = ref<Office[]>([]);
 
 const rebookOrCancelDialog = ref<boolean>(false);
 const isRebooking = ref<boolean>(false);
+const reservedHashResumeApplied = ref<boolean>(false);
+
+const isReservedBookingInProgress = computed(
+  () =>
+    isReservedProcessStatus(appointment.value?.status) &&
+    !rebookOrCancelDialog.value
+);
+
+const isExistingAppointmentDeepLink = computed(
+  () => !!props.appointmentHash && !isReservedBookingInProgress.value
+);
 const captchaToken = ref<string | undefined>(undefined);
 const captchaError = ref<boolean>(false);
 const forcedPast = ref(false);
@@ -660,11 +674,11 @@ const activeContext = computed<string>(() => {
   if (props.confirmAppointmentHash) {
     return "confirm";
   }
-  // During rebooking, use the current context instead of initialization
-  if (props.appointmentHash && isRebooking.value) {
-    return currentContext.value;
-  }
-  if (props.appointmentHash) {
+  if (
+    props.appointmentHash &&
+    !isReservedBookingInProgress.value &&
+    !isRebooking.value
+  ) {
     return "initialization";
   }
   return currentContext.value;
@@ -788,6 +802,52 @@ const copyRebookedContactOntoAppointment = () => {
   appointment.value.customTextfield = rebookedAppointment.value.customTextfield;
   appointment.value.customTextfield2 =
     rebookedAppointment.value.customTextfield2;
+};
+
+const rebuildSelectedServiceMapFromAppointment = (): void => {
+  selectedServiceMap.value = new Map();
+  const loaded = appointment.value;
+  if (!loaded) {
+    return;
+  }
+  if (loaded.serviceId && loaded.serviceCount) {
+    selectedServiceMap.value.set(String(loaded.serviceId), loaded.serviceCount);
+  }
+  (loaded.subRequestCounts ?? []).forEach((subRequestCount) => {
+    if (subRequestCount.count > 0) {
+      selectedServiceMap.value.set(
+        String(subRequestCount.id),
+        subRequestCount.count
+      );
+    }
+  });
+};
+
+const resumeReservedBookingFromHash = (): void => {
+  rebookOrCancelDialog.value = false;
+  currentContext.value = "update";
+  if (!appointment.value) {
+    if (!reservedHashResumeApplied.value) {
+      currentView.value = 2;
+      reservedHashResumeApplied.value = true;
+    }
+    return;
+  }
+  applyAppointmentContactToCustomerData(customerData.value, appointment.value);
+  selectedTimeslot.value = Number(appointment.value.timestamp) || 0;
+  rebuildSelectedServiceMapFromAppointment();
+  if (reservedHashResumeApplied.value) {
+    return;
+  }
+  reservedHashResumeApplied.value = true;
+  if (isAppointmentInPast.value) {
+    currentView.value = 3;
+    return;
+  }
+  const scope = selectedProvider.value?.scope ?? appointment.value.scope;
+  currentView.value = hasMissingRequiredContact(appointment.value, scope)
+    ? 2
+    : 3;
 };
 
 const fillCustomerDataFromRebookedAppointment = () => {
@@ -926,7 +986,11 @@ const nextUpdateAppointment = () => {
     )
       .then((data) => {
         if ((data as AppointmentDTO).processId != undefined) {
-          appointment.value = data as AppointmentDTO;
+          const updated = data as AppointmentDTO;
+          appointment.value = {
+            ...updated,
+            status: updated.status ?? appointment.value?.status,
+          };
           increaseCurrentView();
         } else {
           handleErrorApiResponse(
@@ -954,10 +1018,7 @@ const nextBookAppointment = () => {
     const canDirectConfirm =
       !!appointment.value?.processId && !!appointment.value?.authKey;
 
-    if (
-      canDirectConfirm &&
-      (isRebooking.value || props.globalState.isLoggedIn)
-    ) {
+    if (canDirectConfirm && props.globalState.isLoggedIn) {
       nextConfirmAppointment({
         id: appointment.value.processId,
         authKey: appointment.value.authKey,
@@ -1046,6 +1107,7 @@ const nextCancelReschedule = () => {
   clearContextErrors(errorStateMap.value);
   isRebooking.value = false;
   rebookOrCancelDialog.value = true;
+  currentView.value = 3;
 };
 
 /**
@@ -1228,10 +1290,14 @@ const runLoginResumeFromHashAndLocalStorage = (
               selectedProvider.value = appointmentOffice;
               preselectedLocationId.value = String(appointmentOffice.id);
             }
-            // Keep stepper step from UI localStorage (do not open reschedule/cancel dialog).
-            currentView.value = isAppointmentInPast.value
-              ? 3
-              : uiData.currentView;
+            if (isReservedProcessStatus(appointment.value.status)) {
+              resumeReservedBookingFromHash();
+            } else {
+              // Keep stepper step from UI localStorage (do not open reschedule/cancel dialog).
+              currentView.value = isAppointmentInPast.value
+                ? 3
+                : uiData.currentView;
+            }
             clearAppointmentLocalStorage();
             clearAppointmentAuthHashSession();
           } else {
@@ -1329,10 +1395,10 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
   }
 
   resetConfirmRouteState();
+  reservedHashResumeApplied.value = false;
   loadedAppointmentHash.value = hash;
   isLoadingAppointmentFromHash.value = true;
   clearContextErrors(errorStateMap.value);
-  rebookOrCancelDialog.value = true;
 
   fetchServicesAndProviders(
     props.serviceId ?? undefined,
@@ -1413,14 +1479,22 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
             selectedProvider.value = resolvedOffice;
           }
 
-          if (!appointmentData.action || isAppointmentInPast.value) {
-            currentView.value = 3;
-          } else if (
-            appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
+          if (
+            isReservedProcessStatus(appointment.value.status) &&
+            !props.confirmAppointmentHash
           ) {
-            nextRescheduleAppointment();
+            resumeReservedBookingFromHash();
           } else {
-            nextCancelAppointment();
+            rebookOrCancelDialog.value = true;
+            if (!appointmentData.action || isAppointmentInPast.value) {
+              currentView.value = 3;
+            } else if (
+              appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
+            ) {
+              nextRescheduleAppointment();
+            } else {
+              nextCancelAppointment();
+            }
           }
         } else {
           handleApiError(
@@ -1554,7 +1628,12 @@ watch(
   () => props.appointmentHash,
   (hash) => {
     if (!hash) {
-      loadedAppointmentHash.value = null;
+      if (!isReservedBookingInProgress.value) {
+        loadedAppointmentHash.value = null;
+      }
+      return;
+    }
+    if (hash === loadedAppointmentHash.value) {
       return;
     }
     const uiData = getFreshLocalStorageUiData();

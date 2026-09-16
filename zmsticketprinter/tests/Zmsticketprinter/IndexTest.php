@@ -10,7 +10,80 @@ class IndexTest extends Base
 
     protected $parameters = [ ];
 
-    protected function getApiCalls(): array
+    public function testRendering()
+    {
+        $this->setApiCalls($this->getValidButtonListApiCalls());
+        $response = $this->render([ ], [
+            '__cookie' => [
+                'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
+            ],
+            'ticketprinter' => [
+                'buttonlist' => 's141,l[http://www.berlin.de/|Portal berlin.de]'
+            ]
+        ], [ ]);
+        $this->assertStringContainsString('Bürgeramt Hohenzollerndamm', (string) $response->getBody());
+        $this->assertStringContainsString('Portal berlin.de', (string) $response->getBody());
+    }
+
+    public function testSkipsMissingScopeWhenOthersExist()
+    {
+        $exception = new \BO\Zmsclient\Exception(
+            'API-Error: Zu den angegebenen Daten konnte kein Standort gefunden werden.'
+        );
+        $exception->template = 'BO\\Zmsbackend\\Scope\\Exception\\ScopeNotFound';
+        $this->setApiCalls(
+            array_merge(
+                [
+                    [
+                        'function' => 'readGetResult',
+                        'url' => '/scope/999/organisation/',
+                        'parameters' => ['resolveReferences' => 2],
+                        'exception' => $exception,
+                    ],
+                ],
+                $this->getValidButtonListApiCalls()
+            )
+        );
+        $response = $this->render([ ], [
+            '__cookie' => [
+                'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
+            ],
+            'ticketprinter' => [
+                'buttonlist' => 's999,s141,l[http://www.berlin.de/|Portal berlin.de]'
+            ]
+        ], [ ]);
+        $this->assertStringContainsString('Bürgeramt Hohenzollerndamm', (string) $response->getBody());
+        $this->assertStringContainsString('Portal berlin.de', (string) $response->getBody());
+    }
+
+    public function testMissingScopeOnlyStillFails()
+    {
+        $exception = new \BO\Zmsclient\Exception(
+            'API-Error: Zu den angegebenen Daten konnte kein Standort gefunden werden.'
+        );
+        $exception->template = 'BO\\Zmsbackend\\Scope\\Exception\\ScopeNotFound';
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/999/organisation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'exception' => $exception,
+                ],
+            ]
+        );
+        $this->expectException('\BO\Zmsticketprinter\Exception\OrganisationNotFound');
+        $this->render([ ], [
+            '__cookie' => [
+                'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
+            ],
+            'ticketprinter' => [
+                'buttonlist' => 's999'
+            ]
+        ], [ ]);
+    }
+
+    protected function getValidButtonListApiCalls(): array
     {
         return [
             [
@@ -35,19 +108,5 @@ class IndexTest extends Base
                 'response' => $this->readFixture("GET_department_74.json"),
             ]
         ];
-    }
-
-    public function testRendering()
-    {
-        $response = $this->render([ ], [
-            '__cookie' => [
-                'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
-            ],
-            'ticketprinter' => [
-                'buttonlist' => 's141,l[http://www.berlin.de/|Portal berlin.de]'
-            ]
-        ], [ ]);
-        $this->assertStringContainsString('Bürgeramt Hohenzollerndamm', (string) $response->getBody());
-        $this->assertStringContainsString('Portal berlin.de', (string) $response->getBody());
     }
 }
