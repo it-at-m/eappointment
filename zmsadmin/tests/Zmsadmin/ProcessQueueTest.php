@@ -91,7 +91,7 @@ class ProcessQueueTest extends Base
         $this->assertStringContainsString('Wartenummer drucken', $body);
         $this->assertStringContainsString('Schließen', $body);
         
-        $copyButtonPosition = strpos($body,'id="copy-popuo-content"');
+        $copyButtonPosition = strpos($body,'id="copy-popup-content"');
         $editButtonPosition = strpos($body,'Termin bearbeiten');
         $printButtonPosition = strpos($body,'Wartenummer drucken');
         $closeButtonPosition = strpos($body,'Schließen');
