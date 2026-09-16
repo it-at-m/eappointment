@@ -2684,6 +2684,48 @@ describe("AppointmentView", () => {
       ).toBeNull();
     });
 
+    it("login resume of a reserved appointment without contact stays on the form", async () => {
+      localStorage.setItem(
+        LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
+        JSON.stringify({
+          ...uiStoragePayload,
+          currentView: 3,
+        })
+      );
+
+      const hash = buildAppointmentHash({
+        id: "hash-proc",
+        authKey: "hash-auth-key",
+      });
+
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "hash-proc",
+        authKey: "hash-auth-key",
+        timestamp: Math.floor(Date.now() / 1000) + 3600,
+        familyName: "",
+        email: "noreply-terminvereinbarung@muenchen.de",
+        officeId: "789",
+        scope: {},
+        subRequestCounts: [],
+        serviceId: "123",
+        serviceName: "Test Service",
+        serviceCount: 1,
+        status: "reserved",
+      } as any);
+
+      const wrapper = createWrapper({
+        showLoginOption: true,
+        appointmentHash: hash,
+      });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointment?.processId).toBe("hash-proc");
+      });
+
+      expect(wrapper.vm.currentView).toBe(2);
+      expect(wrapper.vm.rebookOrCancelDialog).toBe(false);
+    });
+
     it("does not restore authKey or PII from legacy localStorage when hash is missing", async () => {
       localStorage.setItem(
         LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
@@ -2716,6 +2758,168 @@ describe("AppointmentView", () => {
       expect(
         localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)
       ).toBeNull();
+    });
+  });
+
+  describe("Reserved appointment hash resume", () => {
+    const catalogResponse = {
+      offices: [
+        {
+          id: "789",
+          name: "Test Provider",
+          address: {
+            street: "Test Street",
+            house_number: "123",
+            postal_code: "12345",
+            city: "Test City",
+          },
+          showAlternativeLocations: false,
+          displayNameAlternatives: [],
+          organization: "Org",
+          slotTimeInMinutes: 15,
+          priority: 1,
+        },
+      ],
+      services: [{ id: "123", name: "Test Service", maxQuantity: 1 }],
+      relations: [{ serviceId: "123", officeId: "789", slots: 1 }],
+    };
+
+    const futureTimestamp = nowUnixSeconds() + 3600;
+    const validHash = btoa(
+      JSON.stringify({
+        id: "100318",
+        authKey: "test-auth-key",
+      })
+    );
+
+    beforeEach(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockReset();
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => catalogResponse,
+        })
+      );
+    });
+
+    it("opens the contact form for a reserved appointment without real contact data", async () => {
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "100318",
+        authKey: "test-auth-key",
+        timestamp: futureTimestamp,
+        familyName: "",
+        email: "noreply-terminvereinbarung@muenchen.de",
+        officeId: "789",
+        scope: {},
+        subRequestCounts: [],
+        serviceId: "123",
+        serviceName: "Test Service",
+        serviceCount: 1,
+        status: "reserved",
+      } as any);
+
+      const wrapper = createWrapper({ appointmentHash: validHash });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointment?.processId).toBe("100318");
+      });
+
+      expect(wrapper.vm.currentView).toBe(2);
+      expect(wrapper.vm.rebookOrCancelDialog).toBe(false);
+      expect(wrapper.vm.customerData.mailAddress).toBe("");
+      expect(wrapper.find('[data-test="customer-info"]').exists()).toBe(true);
+      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
+        false
+      );
+    });
+
+    it("opens the booking summary for a reserved appointment that already has contact data", async () => {
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "100318",
+        authKey: "test-auth-key",
+        timestamp: futureTimestamp,
+        familyName: "Max Mustermann",
+        email: "max@example.com",
+        officeId: "789",
+        scope: {},
+        subRequestCounts: [],
+        serviceId: "123",
+        serviceName: "Test Service",
+        serviceCount: 1,
+        status: "reserved",
+      } as any);
+
+      const wrapper = createWrapper({ appointmentHash: validHash });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointment?.processId).toBe("100318");
+      });
+
+      expect(wrapper.vm.currentView).toBe(3);
+      expect(wrapper.vm.rebookOrCancelDialog).toBe(false);
+      expect(wrapper.vm.customerData.firstName).toBe("Max");
+      expect(wrapper.vm.customerData.mailAddress).toBe("max@example.com");
+      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
+        true
+      );
+    });
+
+    it("keeps confirmed appointments on the management screen", async () => {
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "100318",
+        authKey: "test-auth-key",
+        timestamp: futureTimestamp,
+        familyName: "Max Mustermann",
+        email: "max@example.com",
+        officeId: "789",
+        scope: {},
+        subRequestCounts: [],
+        serviceId: "123",
+        serviceName: "Test Service",
+        serviceCount: 1,
+        status: "confirmed",
+      } as any);
+
+      const wrapper = createWrapper({ appointmentHash: validHash });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointment?.processId).toBe("100318");
+      });
+
+      expect(wrapper.vm.currentView).toBe(3);
+      expect(wrapper.vm.rebookOrCancelDialog).toBe(true);
+    });
+
+    it("opens the contact form when a reserved appointment is missing a required phone number", async () => {
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "100318",
+        authKey: "test-auth-key",
+        timestamp: futureTimestamp,
+        familyName: "Max Mustermann",
+        email: "max@example.com",
+        officeId: "789",
+        scope: {
+          telephoneActivated: true,
+          telephoneRequired: true,
+        },
+        subRequestCounts: [],
+        serviceId: "123",
+        serviceName: "Test Service",
+        serviceCount: 1,
+        status: "reserved",
+      } as any);
+
+      const wrapper = createWrapper({ appointmentHash: validHash });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointment?.processId).toBe("100318");
+      });
+
+      expect(wrapper.vm.currentView).toBe(2);
+      expect(wrapper.vm.rebookOrCancelDialog).toBe(false);
     });
   });
 });
