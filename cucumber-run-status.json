@@ -1,10 +1,10 @@
 {
   "branch": "next",
   "branchSlug": "next",
-  "runId": "35109855893",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35109855893",
-  "runStartedAt": "2026-09-16T14:38:00Z",
-  "publishedAt": "2026-09-16T15:26:17.296Z",
+  "runId": "35124334271",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35124334271",
+  "runStartedAt": "2026-09-16T16:49:29Z",
+  "publishedAt": "2026-09-16T17:00:12.006Z",
   "features": {
     "feature-rest-zmsapi-zmskvr-1328": {
       "status": "passed",
@@ -542,9 +542,9 @@
       "shard": "zmsticketprinter",
       "browser": "chrome",
       "rel": "ui/zmsticketprinter/booking/ZMSKVR-167.feature",
-      "runId": "35109855893",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35109855893",
-      "runStartedAt": "2026-09-16T14:38:00Z"
+      "runId": "35124334271",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35124334271",
+      "runStartedAt": "2026-09-16T16:49:29Z"
     }
   }
 }
