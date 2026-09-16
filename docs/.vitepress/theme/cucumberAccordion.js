@@ -787,6 +787,7 @@ export function cucumberGhRunCommand(entry) {
     ["module_admin", "false"],
     ["module_citizenview", "false"],
     ["module_statistic", "false"],
+    ["module_ticketprinter", "false"],
     ["module_zmsapi", "false"],
     ["module_zmscitizenapi", "false"],
     ["use_custom_tags", "true"],

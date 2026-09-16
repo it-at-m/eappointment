@@ -4,7 +4,7 @@ import { pathToFileURL } from "node:url";
 
 const FEATURES_MARKER = "src/test/resources/features/";
 const ARTIFACT_SHARDS =
-  "zmsadmin|zmscitizenview|zmsstatistic|zmsapi|zmscitizenapi|custom";
+  "zmsadmin|zmscitizenview|zmsstatistic|zmsticketprinter|zmsapi|zmscitizenapi|custom";
 const ARTIFACT_BROWSERS = "chrome|firefox|edge";
 const ARTIFACT_DIR = new RegExp(
   `^zmsautomation-ataf-reports-\\d+-\\d+-(.+)-(${ARTIFACT_SHARDS})-(${ARTIFACT_BROWSERS})$`,
