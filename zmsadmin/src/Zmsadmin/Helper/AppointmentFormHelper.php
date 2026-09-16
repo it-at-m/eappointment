@@ -212,10 +212,6 @@ class AppointmentFormHelper
             }
         }
 
-        if (! $slotTimeInMinutes) {
-            $slotTimeInMinutes = static::readAvailabilitySlotTimeInMinutes($availability);
-        }
-
         return $slotTimeInMinutes;
     }
 
