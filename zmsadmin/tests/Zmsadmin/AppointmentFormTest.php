@@ -546,4 +546,77 @@ class AppointmentFormTest extends Base
             (string)$response->getBody()
         );
     }
+
+    public function testWalkInUsesProviderSlotTimeWhenAvailabilityHasNoId()
+    {
+        $processFixture = json_decode($this->readFixture("GET_process_spontankunde.json"), true);
+        $processFixture['data']['scope']['provider']['data']['slotTimeInMinutes'] = 5;
+
+        $requestList = json_decode($this->readFixture("GET_scope_141_requestlist.json"), true);
+        foreach ($requestList['data'] as &$request) {
+            if ($request['id'] === '120703') {
+                $request['timeSlotCount'] = '3';
+            }
+        }
+        unset($request);
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstationWithProvider()
+                    ],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getDepartment()
+                    ],
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/request/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getRequest()
+                    ],
+                    'response' => json_encode($requestList)
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/free/',
+                    'parameters' => [
+                        'slotType' => 'intern',
+                        'slotsRequired' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
+                    'response' => $this->readFixture("GET_freeprocesslist_empty.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/100632/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
+                    'response' => json_encode($processFixture)
+                ]
+            ]
+        );
+        $response = $this->render([], ['selectedprocess' => 100632], []);
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('Personalausweis beantragen (15 min)', $body);
+        $this->assertStringNotContainsString('Personalausweis beantragen (30 min)', $body);
+        $this->assertStringContainsString('title="5" selected="selected"', $body);
+        $this->assertStringContainsString('Termin aktualisieren', $body);
+    }
 }

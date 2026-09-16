@@ -723,7 +723,10 @@ public class CitizenViewPage extends BasePage {
         return Boolean.TRUE.equals(o);
     }
 
-    /** Click first button whose visible text includes label (shadow-safe). Includes BUTTON, A, and MUC-BUTTON (modal confirm/cancel). */
+    /**
+     * Click first button whose visible text includes label (shadow-safe). Includes BUTTON, A, and MUC-BUTTON (modal confirm/cancel).
+     * Skips muc-stepper items ("Zurück zu Schritt: …"); those are not the form Zurück.
+     */
     public boolean clickButtonContaining(String text) {
         CONTEXT.set();
         String esc = text.replace("\\", "\\\\").replace("'", "\\'");
@@ -737,6 +740,7 @@ public class CitizenViewPage extends BasePage {
                         + "function walkClick(n){if(!n)return false;if(n.shadowRoot&&walkClick(n.shadowRoot))return true;"
                         + "var tag=(n.tagName||'').toUpperCase();var isBtn=(tag==='BUTTON'||tag==='A'||tag==='MUC-BUTTON');"
                         + "if(isBtn){var t=(n.textContent||'').trim();"
+                        + "if(t.indexOf('Zurück zu Schritt')>=0)return false;"
                         + "if(t.indexOf(label)>=0&&!n.disabled&&visible(n)){n.scrollIntoView({block:'center'});n.click();return true;}}"
                         + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walkClick(c[i]))return true;return false;}"
                         + "return walkClick(document.body);";
@@ -1321,7 +1325,7 @@ public class CitizenViewPage extends BasePage {
      * JS fragment: pick target slot + highlight + store in {@code window.__zmsCitizenViewSlotTarget} (no click).
      * <p>
      * Matches the <strong>real booking OfficeID</strong> via {@code provider-{oid}-timeslot-*} id or
-     * {@code data-provider-id} (shared booking: slots for peer 10503 live under display grid 10489).
+     * {@code data-provider-id} (shared booking: slots for peer 10313237 live under display grid 10489).
      */
     private static String buildScrollSlotHighlightScript() {
         return "var oid=String(arguments[0]);"

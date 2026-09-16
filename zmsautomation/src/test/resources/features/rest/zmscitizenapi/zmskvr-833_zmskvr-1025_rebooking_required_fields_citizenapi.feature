@@ -4,7 +4,7 @@ Feature: ZMSKVR-833 / ZMSKVR-1025 Rebooking onto a Bürgerbüro that requires cu
   I want rebooking from Ausbildung (optional remarks) onto Haupt (required remarks) to copy stored contact and reject changes to filled fields
   So that only the missing Pflichtfeld can be added on update
 
-  # Ausbildung 10503 (scope 372): custom text activated, not required (V26).
+  # Ausbildung 10313237 (scope 372): custom text activated, not required (V26).
   # Haupt 10489 (scope 160): custom text activated and required (V26).
   # The UI journey is covered by zmskvr-833_zmskvr-1025_rebooking_required_fields.feature.
   # This scenario hits the HTTP contract the UI cannot: changing an already stored familyName.
@@ -16,14 +16,14 @@ Feature: ZMSKVR-833 / ZMSKVR-1025 Rebooking onto a Bürgerbüro that requires cu
     And the response should contain offices and services
 
   @sharedBooking @ausbildungCalendar @mainCalendar
-  Scenario: Rebooking 10503 to 10489 rejects a changed familyName and accepts the missing Pflichtfeld
-    When I request available days for offices "10489,10503" and service 1063475
-    Then the available calendar should include appointments for offices "10489,10503"
-    When I request available appointments for the first available day for office 10503
+  Scenario: Rebooking 10313237 to 10489 rejects a changed familyName and accepts the missing Pflichtfeld
+    When I request available days for offices "10489,10313237" and service 1063475
+    Then the available calendar should include appointments for offices "10489,10313237"
+    When I request available appointments for the first available day for office 10313237
     And I reserve an appointment with the first available slot
     Then the reserve endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
     And the appointment status should be "reserved"
-    And the appointment should be at office 10503
+    And the appointment should be at office 10313237
     And the appointment should be for service 1063475
     When I update the appointment with contact details without custom text
     Then the update endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
@@ -36,9 +36,9 @@ Feature: ZMSKVR-833 / ZMSKVR-1025 Rebooking onto a Bürgerbüro that requires cu
     And I confirm the appointment
     And the confirm endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
     And the appointment status should be "confirmed"
-    And the appointment should be at office 10503
-    When I request available days for offices "10489,10503" and service 1063475
-    Then the available calendar should include appointments for offices "10489,10503"
+    And the appointment should be at office 10313237
+    When I request available days for offices "10489,10313237" and service 1063475
+    Then the available calendar should include appointments for offices "10489,10313237"
     When I request available appointments for the first available day for office 10489
     And I reserve an appointment with the first available slot using the current appointment as source
     Then the reserve endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
