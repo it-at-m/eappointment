@@ -1321,7 +1321,7 @@ public class CitizenViewPage extends BasePage {
      * JS fragment: pick target slot + highlight + store in {@code window.__zmsCitizenViewSlotTarget} (no click).
      * <p>
      * Matches the <strong>real booking OfficeID</strong> via {@code provider-{oid}-timeslot-*} id or
-     * {@code data-provider-id} (shared booking: slots for peer 10503 live under display grid 10489).
+     * {@code data-provider-id} (shared booking: slots for peer 10313237 live under display grid 10489).
      */
     private static String buildScrollSlotHighlightScript() {
         return "var oid=String(arguments[0]);"
