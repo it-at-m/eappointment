@@ -431,12 +431,10 @@ class MailTemplatesCopy extends BaseController
 
         foreach ($ownerList as $owner) {
             foreach (
-                $owner->getOrganisationList()
-                as $organisation
+                $owner->getOrganisationList() as $organisation
             ) {
                 foreach (
-                    $organisation->getDepartmentList()
-                    as $department
+                    $organisation->getDepartmentList() as $department
                 ) {
                     $scopeList->addScopeList(
                         $department->getScopeList()
