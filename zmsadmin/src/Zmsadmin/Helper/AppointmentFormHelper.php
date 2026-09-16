@@ -9,6 +9,7 @@
 
 namespace BO\Zmsadmin\Helper;
 
+use BO\Zmsentities\Availability;
 use BO\Zmsentities\Collection\ScopeList;
 use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Collection\ProcessList;
@@ -185,38 +186,54 @@ class AppointmentFormHelper
         ?Process $selectedProcess,
         ?Scope $selectedScope,
         ?Workstation $workstation = null
-    ): mixed {
+    ): int|string|null {
         $availability = null;
         if ($selectedProcess && $selectedProcess->hasId()) {
             $availability = $selectedProcess->getAppointments()->getFirst()->getAvailability();
-            if ($availability->hasId()) {
-                return $availability->getSlotTimeInMinutes();
+        }
+
+        $slotTimeInMinutes = null;
+        if ($availability && $availability->hasId()) {
+            $slotTimeInMinutes = static::readAvailabilitySlotTimeInMinutes($availability);
+        }
+
+        if (! $slotTimeInMinutes) {
+            $scopes = [$selectedScope];
+            if ($selectedProcess && $selectedProcess->hasId()) {
+                $scopes[] = $selectedProcess->getCurrentScope();
+            }
+            $scopes[] = $workstation?->getScope();
+
+            foreach ($scopes as $scope) {
+                $slotTimeInMinutes = static::readProviderSlotTimeInMinutes($scope);
+                if ($slotTimeInMinutes) {
+                    break;
+                }
             }
         }
 
-        $scopes = [$selectedScope];
-        if ($selectedProcess && $selectedProcess->hasId()) {
-            $scopes[] = $selectedProcess->getCurrentScope();
-        }
-        $scopes[] = $workstation?->getScope();
-
-        foreach ($scopes as $scope) {
-            $slotTimeInMinutes = static::readProviderSlotTimeInMinutes($scope);
-            if ($slotTimeInMinutes) {
-                return $slotTimeInMinutes;
-            }
+        if (! $slotTimeInMinutes) {
+            $slotTimeInMinutes = static::readAvailabilitySlotTimeInMinutes($availability);
         }
 
-        return $availability ? $availability->getSlotTimeInMinutes() : null;
+        return $slotTimeInMinutes;
     }
 
-    protected static function readProviderSlotTimeInMinutes(?Scope $scope): mixed
+    protected static function readAvailabilitySlotTimeInMinutes(?Availability $availability): int|string|null
     {
-        if ($scope === null || !isset($scope['provider'])) {
+        if (! $availability) {
+            return null;
+        }
+        return $availability->getSlotTimeInMinutes();
+    }
+
+    protected static function readProviderSlotTimeInMinutes(?Scope $scope): int|string|null
+    {
+        if ($scope === null || ! isset($scope['provider'])) {
             return null;
         }
         $provider = $scope['provider'];
-        if (!$provider instanceof Provider) {
+        if (! $provider instanceof Provider) {
             $provider = new Provider($provider);
         }
         return $provider->getSlotTimeInMinutes();
