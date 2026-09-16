@@ -5,9 +5,9 @@ Feature: ZMSKVR-833 / ZMSKVR-1025 Rebooking onto a Bürgerbüro that requires cu
   I want to rebook from a Bürgerbüro where custom text is optional onto one where it is required
   So that Kontakt opens for the missing Pflichtfeld instead of skipping to Übersicht
 
-  # Ausbildung 10503 (scope 372): custom text activated, not required (V26).
+  # Ausbildung 10313237 (scope 372): custom text activated, not required (V26).
   # Haupt 10489 (scope 160): custom text activated and required (V26).
-  # Shared booking: one Ort checkbox (10489); timeslots expose the real owner (10503 vs 10489).
+  # Shared booking: one Ort checkbox (10489); timeslots expose the real owner (10313237 vs 10489).
   # Same-scope rebooking is already covered by ZMSKVR-1500 and is not tested here.
 
   Background:
@@ -17,7 +17,7 @@ Feature: ZMSKVR-833 / ZMSKVR-1025 Rebooking onto a Bürgerbüro that requires cu
     And the response should contain offices and services
 
   @mainCalendar @ausbildungCalendar
-  Scenario: Rebooking Ausbildung 10503 to Haupt 10489 asks for required custom text
+  Scenario: Rebooking Ausbildung 10313237 to Haupt 10489 asks for required custom text
     Given I open zmscitizenview with jump-in service "1063475" and location "10489"
     Then the service combination step should be visible
     When I continue from the service combination step
@@ -25,14 +25,14 @@ Feature: ZMSKVR-833 / ZMSKVR-1025 Rebooking onto a Bürgerbüro that requires cu
     When I select office 10489 in the citizen view
     And I wait for appointment slots to be ready in the citizen view
     And I click Später in the time slot grid if available in the citizen view
-    And I scroll to and highlight the preferred timeslot for office 10503 in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10313237 in the citizen view
     And I click the highlighted timeslot in the citizen view
-    And I continue after slot selection with Weiter for office 10503 in the citizen view
+    And I continue after slot selection with Weiter for office 10313237 in the citizen view
     Then the contact form should be visible in the citizen view
     When I enter contact details without optional remarks in the citizen view
     Then the contact form should be visible in the citizen view
     When I continue from the contact form in the citizen view
-    Then the booking summary should show provider 10503 in the citizen view
+    Then the booking summary should show provider 10313237 in the citizen view
     When I accept communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
