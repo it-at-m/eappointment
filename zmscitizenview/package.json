@@ -25,7 +25,7 @@
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
-    "@babel/types": "^8.0.4",
+    "@babel/types": "^8.0.5",
     "@muenchen/prettier-codeformat": "^1.0.2",
     "@types/node": "^26.5.1",
     "@types/webfontloader": "^1.6.35",
