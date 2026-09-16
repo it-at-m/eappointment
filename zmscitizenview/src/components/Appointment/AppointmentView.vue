@@ -82,7 +82,7 @@
             <div
               v-if="
                 currentView === 0 &&
-                !appointmentHash &&
+                !isExistingAppointmentDeepLink &&
                 !appointmentAlreadyActivated
               "
             >

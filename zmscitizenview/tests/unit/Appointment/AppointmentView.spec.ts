@@ -2877,6 +2877,36 @@ describe("AppointmentView", () => {
       ).toBe("false");
     });
 
+    it("shows ServiceFinder when going back to Leistung with a reserved login hash", async () => {
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "100318",
+        authKey: "test-auth-key",
+        timestamp: futureTimestamp,
+        familyName: "Max Mustermann",
+        email: "max@example.com",
+        officeId: "789",
+        scope: {},
+        subRequestCounts: [],
+        serviceId: "123",
+        serviceName: "Test Service",
+        serviceCount: 1,
+        status: "reserved",
+      } as any);
+
+      const wrapper = createWrapper({ appointmentHash: validHash });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointment?.processId).toBe("100318");
+      });
+      expect(wrapper.find('[data-test="service-finder"]').exists()).toBe(false);
+
+      wrapper.vm.currentView = 0;
+      await nextTick();
+
+      expect(wrapper.find('[data-test="service-finder"]').exists()).toBe(true);
+      expect(wrapper.find('[data-test="customer-info"]').exists()).toBe(false);
+    });
+
     it("stays on Kontakt after Zurück when the reserved hash flickers", async () => {
       vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
         processId: "100318",
