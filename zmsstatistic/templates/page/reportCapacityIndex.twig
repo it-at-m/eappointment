@@ -53,9 +53,6 @@
                         {% if selectedScopeIds is defined and selectedScopeIds %}
                             {% set downloadParams = downloadParams|merge({'scopes': selectedScopeIds}) %}
                         {% endif %}
-                        <a href="{{ urlGet(currentRoute().name, currentRoute().params, downloadParams) }}" class="button button--diamond report-board--table-download" title="Tabelle als Excel-Datei herunterladen" aria-label="Tabelle als Excel-Datei herunterladen">
-                            <i class="fas fa-file-excel" aria-hidden="true"></i>
-                        </a>
                         <button type="button" class="button button--diamond report-board--chart-download" title="Diagramm als Bild herunterladen" aria-label="Diagramm als Bild herunterladen">
                             <i class="fas fa-image" aria-hidden="true"></i>
                         </button>
@@ -89,6 +86,9 @@
                                 <option value="60">60 s</option>
                             </select>
                         </label>
+                        <a href="{{ urlGet(currentRoute().name, currentRoute().params, downloadParams) }}" class="button button--diamond report-board--table-download" title="Download" aria-label="Download">
+                            <i class="fas fa-download" aria-hidden="true"></i>
+                        </a>
                     {% endif %}
                 {% endblock %}
                 {% block board_body %}
