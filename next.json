@@ -1,10 +1,10 @@
 {
   "branch": "next",
   "branchSlug": "next",
-  "runId": "35095312472",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35095312472",
-  "runStartedAt": "2026-09-16T12:21:08Z",
-  "publishedAt": "2026-09-16T12:50:23.765Z",
+  "runId": "35097469116",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35097469116",
+  "runStartedAt": "2026-09-16T12:43:13Z",
+  "publishedAt": "2026-09-16T12:51:38.487Z",
   "features": {
     "feature-rest-zmsapi-zmskvr-1328": {
       "status": "passed",
@@ -439,13 +439,13 @@
       "runStartedAt": "2026-09-16T11:44:09Z"
     },
     "feature-ui-zmscitizenview-booking-zmskvr-1571-scheidplatz-contact-location-back-login": {
-      "status": "failed",
-      "shard": "zmscitizenview",
+      "status": "passed",
+      "shard": "custom",
       "browser": "chrome",
       "rel": "ui/zmscitizenview/booking/zmskvr-1571_scheidplatz_contact_location_back_login.feature",
-      "runId": "35095312472",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35095312472",
-      "runStartedAt": "2026-09-16T12:21:08Z"
+      "runId": "35097469116",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35097469116",
+      "runStartedAt": "2026-09-16T12:43:13Z"
     },
     "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-1046-booking-ruppertstrasse-shared-booking-ausbildung": {
       "status": "passed",
