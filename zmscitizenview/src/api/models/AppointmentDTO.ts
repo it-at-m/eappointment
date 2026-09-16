@@ -102,5 +102,11 @@ export interface AppointmentDTO {
    * @type {string}
    * @memberof AppointmentDTO
    */
+  status?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof AppointmentDTO
+   */
   icsContent?: string;
 }

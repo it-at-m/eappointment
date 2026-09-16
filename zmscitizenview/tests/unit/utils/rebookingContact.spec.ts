@@ -10,6 +10,7 @@ import {
   isFilledContactValue,
   isFilledEmail,
   isPlaceholderEmail,
+  isReservedProcessStatus,
   joinFamilyName,
   PLACEHOLDER_RESERVE_EMAIL,
   splitFamilyName,
@@ -42,6 +43,10 @@ describe("rebookingContact", () => {
     expect(isFilledContactValue(PLACEHOLDER_RESERVE_EMAIL)).toBe(true);
     expect(isFilledContactValue("  ")).toBe(false);
     expect(isFilledContactValue("max@example.com")).toBe(true);
+    expect(isReservedProcessStatus("reserved")).toBe(true);
+    expect(isReservedProcessStatus("RESERVED")).toBe(true);
+    expect(isReservedProcessStatus("confirmed")).toBe(false);
+    expect(isReservedProcessStatus(undefined)).toBe(false);
   });
 
   it("locks filled rebooking fields and leaves empty or placeholder ones editable", () => {
