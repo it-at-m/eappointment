@@ -311,6 +311,7 @@ EOS;
         date
         slotCount
         availability{
+            id
             slotTimeInMinutes
         }
     }
@@ -350,6 +351,7 @@ EOS;
         source
         contact
         provider{
+            id
             contact 
             name 
             data { 

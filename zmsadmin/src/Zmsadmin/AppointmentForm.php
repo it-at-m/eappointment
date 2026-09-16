@@ -49,13 +49,11 @@ class AppointmentForm extends BaseController
             ? Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation, 2)
             : null;
 
-        $slotTimeInMinutes = null;
-        if ($selectedProcess && $selectedProcess->hasId()) {
-            $slotTimeInMinutes = $selectedProcess->getAppointments()->getFirst()->getAvailability()['slotTimeInMinutes'];
-        } elseif ($selectedScope) {
-            $provider = $selectedScope->getProvider();
-            $slotTimeInMinutes = $provider->getSlotTimeInMinutes();
-        }
+        $slotTimeInMinutes = Helper\AppointmentFormHelper::resolveSlotTimeInMinutes(
+            $selectedProcess,
+            $selectedScope,
+            $workstation
+        );
 
         $selectedRequestCounts = [];
 
