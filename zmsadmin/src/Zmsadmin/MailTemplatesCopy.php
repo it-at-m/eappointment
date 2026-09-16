@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @package Zmsadmin
- * @copyright BerlinOnline Stadtportal GmbH & Co. KG
- **/
-
 namespace BO\Zmsadmin;
 
 use BO\Slim\Render;
@@ -12,6 +7,8 @@ use BO\Zmsclient\Exception;
 use BO\Zmsentities\Collection\MailtemplateList;
 use BO\Zmsentities\Collection\ScopeList;
 use BO\Zmsentities\Exception\UserAccountMissingRights;
+use BO\Zmsentities\Scope;
+use BO\Zmsentities\Workstation;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -26,233 +23,58 @@ class MailTemplatesCopy extends BaseController
         ResponseInterface $response,
         array $args
     ): ResponseInterface {
-        $workstation = \App::$http
-            ->readGetResult(
-                '/workstation/',
-                ['resolveReferences' => 3]
-            )
-            ->getEntity();
-
-        if (
-            !$workstation
-                ->getUseraccount()
-                ->hasPermissions(['mailtemplates'])
-        ) {
-            throw new UserAccountMissingRights();
-        }
-
-        $validator = $request->getAttribute('validator');
-
-        $success = $validator
-            ->getParameter('success')
-            ->isString()
-            ->getValue();
-
-        $copiedCount = $validator
-            ->getParameter('copiedCount')
-            ->isNumber()
-            ->setDefault(0)
-            ->getValue();
-
-        $requestedSourceScopeId = $validator
-            ->getParameter('sourceScopeId')
-            ->isNumber()
-            ->getValue();
-
-        /*
-         * Die Owner-Liste wird mit allen untergeordneten Referenzen geladen.
-         * Das Backend filtert die Liste bereits anhand der Zugriffsrechte.
-         */
-        $ownerList = \App::$http
-            ->readGetResult(
-                '/owner/',
-                ['resolveReferences' => 4]
-            )
-            ->getCollection();
-
-        $scopeList = $this->buildScopeList($ownerList);
+        $workstation = $this->readAuthorizedWorkstation();
+        $queryParameters = $this->readQueryParameters($request);
+        $scopeList = $this->readScopeList();
 
         $input = (array) ($request->getParsedBody() ?? []);
         $isPostRequest = strtoupper($request->getMethod()) === 'POST';
 
-        if ($isPostRequest) {
-            $sourceScopeId = $this->readPositiveInt(
-                $input['sourceScopeId'] ?? null
-            );
-        } else {
-            $sourceScopeId = $this->readPositiveInt(
-                $requestedSourceScopeId
-            );
-        }
+        $sourceScopeId = $this->resolveSourceScopeId(
+            $input,
+            $queryParameters['sourceScopeId'],
+            $isPostRequest,
+            $workstation,
+            $scopeList
+        );
 
-        /*
-         * Wird die Seite ohne sourceScopeId aufgerufen, wird der aktuell
-         * ausgewählte Arbeitsplatzstandort als Quelle vorausgewählt.
-         */
-        if ($sourceScopeId === null && !$isPostRequest) {
-            $currentScopeId = $this->readPositiveInt(
-                $workstation->getScope()->getId()
-            );
+        [
+            $selectedSourceScope,
+            $formError,
+        ] = $this->resolveSourceScope(
+            $sourceScopeId,
+            $isPostRequest,
+            $scopeList
+        );
 
-            if (
-                $currentScopeId !== null
-                && $scopeList->hasEntity($currentScopeId)
-            ) {
-                $sourceScopeId = $currentScopeId;
-            }
-        }
+        $customTemplates = $this->readCustomTemplates(
+            $selectedSourceScope
+        );
 
-        $formError = null;
-        $selectedSourceScope = null;
         $sourceTemplateId = null;
         $selectedTargetScopeIds = [];
-        $customTemplates = new MailtemplateList();
-
-        if ($sourceScopeId !== null) {
-            $selectedSourceScope = $scopeList->getEntity(
-                $sourceScopeId
-            );
-
-            if ($selectedSourceScope === null) {
-                $formError =
-                    'Der ausgewählte Quellstandort wurde nicht gefunden '
-                    . 'oder darf nicht verwendet werden.';
-            }
-        } elseif ($isPostRequest) {
-            $formError =
-                'Bitte wählen Sie einen gültigen Quellstandort aus.';
-        }
-
-        /*
-         * Es werden bewusst nur angepasste Templates geladen.
-         * Standard-Templates dürfen nicht als Standortanpassung kopiert werden.
-         */
-        if ($selectedSourceScope !== null) {
-            $providerId = (string) $selectedSourceScope->getProviderId();
-
-            $loadedTemplates = \App::$http
-                ->readGetResult(
-                    '/custom-mailtemplates/' . $providerId . '/'
-                )
-                ->getCollection();
-
-            if ($loadedTemplates !== null) {
-                $customTemplates = $loadedTemplates;
-
-                $customTemplates->prioritizeByName([
-                    'mail_preconfirmed.twig',
-                    'mail_confirmation.twig',
-                    'mail_reminder.twig',
-                    'mail_delete.twig',
-                ]);
-            }
-        }
 
         if ($isPostRequest) {
-            $sourceTemplateId = $this->readPositiveInt(
-                $input['sourceTemplateId'] ?? null
+            $postResult = $this->processPostRequest(
+                $input,
+                $sourceScopeId,
+                $selectedSourceScope,
+                $scopeList,
+                $customTemplates,
+                $formError
             );
 
-            $normalizedTargetScopeIds = $this->readTargetScopeIds(
-                $input['targetScopeIds'] ?? null
-            );
-
-            if ($normalizedTargetScopeIds !== null) {
-                $selectedTargetScopeIds = $normalizedTargetScopeIds;
+            if ($postResult['response'] instanceof ResponseInterface) {
+                return $postResult['response'];
             }
 
-            if (
-                $formError === null
-                && (
-                    $sourceTemplateId === null
-                    || !$customTemplates->hasEntity($sourceTemplateId)
-                )
-            ) {
-                $formError =
-                    'Bitte wählen Sie ein angepasstes E-Mail-Template '
-                    . 'des Quellstandorts aus.';
-            }
+            $sourceTemplateId =
+                $postResult['sourceTemplateId'];
 
-            if (
-                $formError === null
-                && (
-                    $normalizedTargetScopeIds === null
-                    || count($selectedTargetScopeIds) === 0
-                )
-            ) {
-                $formError =
-                    'Bitte wählen Sie mindestens einen Zielstandort aus.';
-            }
+            $selectedTargetScopeIds =
+                $postResult['selectedTargetScopeIds'];
 
-            if ($formError === null) {
-                foreach ($selectedTargetScopeIds as $targetScopeId) {
-                    $targetScope = $scopeList->getEntity($targetScopeId);
-
-                    if ($targetScope === null) {
-                        $formError =
-                            'Mindestens ein ausgewählter Zielstandort '
-                            . 'wurde nicht gefunden oder darf nicht '
-                            . 'verwendet werden.';
-                        break;
-                    }
-
-                    if (
-                        $selectedSourceScope === null
-                        || $targetScopeId === $selectedSourceScope->getId()
-                        || (
-                            (string) $targetScope->getProviderId()
-                            ===
-                            (string) $selectedSourceScope->getProviderId()
-                        )
-                    ) {
-                        $formError =
-                            'Der Quellstandort darf nicht gleichzeitig '
-                            . 'als Zielstandort ausgewählt werden.';
-                        break;
-                    }
-                }
-            }
-
-            if ($formError === null) {
-                try {
-                    /*
-                     * Die gesamte Batch-Verarbeitung erfolgt mit genau
-                     * einem Backend-Aufruf.
-                     */
-                    $copiedTemplate = \App::$http
-                        ->readPostResult(
-                            '/mailtemplates/copy/',
-                            [
-                                'sourceScopeId' => $sourceScopeId,
-                                'sourceTemplateId' => $sourceTemplateId,
-                                'targetScopeIds' => $selectedTargetScopeIds,
-                            ]
-                        )
-                        ->getEntity();
-
-                    if ($copiedTemplate === null) {
-                        $formError =
-                            'Das E-Mail-Template konnte nicht kopiert werden.';
-                    } else {
-                        return Render::redirect(
-                            'mailtemplatesCopy',
-                            [],
-                            [
-                                'sourceScopeId' => $sourceScopeId,
-                                'success' => 'mailtemplates_copied',
-                                'copiedCount' => count(
-                                    $selectedTargetScopeIds
-                                ),
-                            ]
-                        );
-                    }
-                } catch (Exception $exception) {
-                    $formError =
-                        'Beim Kopieren des E-Mail-Templates ist ein Fehler '
-                        . 'aufgetreten. Es wurden keine Änderungen '
-                        . 'übernommen.';
-                }
-            }
+            $formError = $postResult['formError'];
         }
 
         return Render::withHtml(
@@ -268,22 +90,353 @@ class MailTemplatesCopy extends BaseController
                 'selectedSourceScope' => $selectedSourceScope,
                 'customTemplates' => $customTemplates,
                 'selectedSourceTemplateId' => $sourceTemplateId,
-                'selectedTargetScopeIds' => $selectedTargetScopeIds,
+                'selectedTargetScopeIds' =>
+                    $selectedTargetScopeIds,
                 'formError' => $formError,
-                'success' => $success,
-                'copiedCount' => (int) $copiedCount,
+                'success' => $queryParameters['success'],
+                'copiedCount' =>
+                    $queryParameters['copiedCount'],
             ]
         );
     }
 
-    private function buildScopeList(iterable $ownerList): ScopeList
+    private function readAuthorizedWorkstation(): Workstation
     {
+        $workstation = \App::$http
+            ->readGetResult(
+                '/workstation/',
+                ['resolveReferences' => 3]
+            )
+            ->getEntity();
+
+        if (
+            !$workstation
+                ->getUseraccount()
+                ->hasPermissions(['mailtemplates'])
+        ) {
+            throw new UserAccountMissingRights();
+        }
+
+        return $workstation;
+    }
+
+    private function readQueryParameters(
+        RequestInterface $request
+    ): array {
+        $validator = $request->getAttribute('validator');
+
+        return [
+            'success' => $validator
+                ->getParameter('success')
+                ->isString()
+                ->getValue(),
+            'copiedCount' => (int) $validator
+                ->getParameter('copiedCount')
+                ->isNumber()
+                ->setDefault(0)
+                ->getValue(),
+            'sourceScopeId' => $validator
+                ->getParameter('sourceScopeId')
+                ->isNumber()
+                ->getValue(),
+        ];
+    }
+
+    private function readScopeList(): ScopeList
+    {
+        /*
+         * Das Backend filtert die Owner-Liste bereits anhand
+         * der Zugriffsrechte.
+         */
+        $ownerList = \App::$http
+            ->readGetResult(
+                '/owner/',
+                ['resolveReferences' => 4]
+            )
+            ->getCollection();
+
+        return $this->buildScopeList($ownerList);
+    }
+
+    private function resolveSourceScopeId(
+        array $input,
+        mixed $requestedSourceScopeId,
+        bool $isPostRequest,
+        Workstation $workstation,
+        ScopeList $scopeList
+    ): ?int {
+        $sourceScopeValue = $isPostRequest
+            ? ($input['sourceScopeId'] ?? null)
+            : $requestedSourceScopeId;
+
+        $sourceScopeId = $this->readPositiveInt(
+            $sourceScopeValue
+        );
+
+        if ($sourceScopeId !== null || $isPostRequest) {
+            return $sourceScopeId;
+        }
+
+        /*
+         * Beim ersten Seitenaufruf wird der aktuell ausgewählte
+         * Arbeitsplatzstandort als Quelle vorausgewählt.
+         */
+        $currentScopeId = $this->readPositiveInt(
+            $workstation->getScope()->getId()
+        );
+
+        if (
+            $currentScopeId !== null
+            && $scopeList->hasEntity($currentScopeId)
+        ) {
+            return $currentScopeId;
+        }
+
+        return null;
+    }
+
+    private function resolveSourceScope(
+        ?int $sourceScopeId,
+        bool $isPostRequest,
+        ScopeList $scopeList
+    ): array {
+        if ($sourceScopeId === null) {
+            $formError = $isPostRequest
+                ? 'Bitte wählen Sie einen gültigen '
+                    . 'Quellstandort aus.'
+                : null;
+
+            return [null, $formError];
+        }
+
+        $selectedSourceScope = $scopeList->getEntity(
+            $sourceScopeId
+        );
+
+        if ($selectedSourceScope === null) {
+            return [
+                null,
+                'Der ausgewählte Quellstandort wurde nicht '
+                    . 'gefunden oder darf nicht verwendet werden.',
+            ];
+        }
+
+        return [$selectedSourceScope, null];
+    }
+
+    private function readCustomTemplates(
+        ?Scope $selectedSourceScope
+    ): MailtemplateList {
+        $customTemplates = new MailtemplateList();
+
+        if ($selectedSourceScope === null) {
+            return $customTemplates;
+        }
+
+        $providerId = (string)
+            $selectedSourceScope->getProviderId();
+
+        $loadedTemplates = \App::$http
+            ->readGetResult(
+                '/custom-mailtemplates/' . $providerId . '/'
+            )
+            ->getCollection();
+
+        if ($loadedTemplates === null) {
+            return $customTemplates;
+        }
+
+        $loadedTemplates->prioritizeByName([
+            'mail_preconfirmed.twig',
+            'mail_confirmation.twig',
+            'mail_reminder.twig',
+            'mail_delete.twig',
+        ]);
+
+        return $loadedTemplates;
+    }
+
+    private function processPostRequest(
+        array $input,
+        ?int $sourceScopeId,
+        ?Scope $selectedSourceScope,
+        ScopeList $scopeList,
+        MailtemplateList $customTemplates,
+        ?string $formError
+    ): array {
+        $sourceTemplateId = $this->readPositiveInt(
+            $input['sourceTemplateId'] ?? null
+        );
+
+        $normalizedTargetScopeIds =
+            $this->readTargetScopeIds(
+                $input['targetScopeIds'] ?? null
+            );
+
+        $result = [
+            'sourceTemplateId' => $sourceTemplateId,
+            'selectedTargetScopeIds' =>
+                $normalizedTargetScopeIds ?? [],
+            'formError' => $formError,
+            'response' => null,
+        ];
+
+        if ($result['formError'] !== null) {
+            return $result;
+        }
+
+        if (
+            $sourceScopeId === null
+            || $selectedSourceScope === null
+        ) {
+            $result['formError'] =
+                'Bitte wählen Sie einen gültigen '
+                . 'Quellstandort aus.';
+
+            return $result;
+        }
+
+        if (
+            $sourceTemplateId === null
+            || !$customTemplates->hasEntity(
+                $sourceTemplateId
+            )
+        ) {
+            $result['formError'] =
+                'Bitte wählen Sie ein angepasstes '
+                . 'E-Mail-Template des Quellstandorts aus.';
+
+            return $result;
+        }
+
+        if (
+            $normalizedTargetScopeIds === null
+            || $normalizedTargetScopeIds === []
+        ) {
+            $result['formError'] =
+                'Bitte wählen Sie mindestens einen '
+                . 'Zielstandort aus.';
+
+            return $result;
+        }
+
+        $targetScopeError = $this->validateTargetScopes(
+            $normalizedTargetScopeIds,
+            $selectedSourceScope,
+            $scopeList
+        );
+
+        if ($targetScopeError !== null) {
+            $result['formError'] = $targetScopeError;
+
+            return $result;
+        }
+
+        $copyResult = $this->copyTemplate(
+            $sourceScopeId,
+            $sourceTemplateId,
+            $normalizedTargetScopeIds
+        );
+
+        if ($copyResult instanceof ResponseInterface) {
+            $result['response'] = $copyResult;
+        } else {
+            $result['formError'] = $copyResult;
+        }
+
+        return $result;
+    }
+
+    private function validateTargetScopes(
+        array $targetScopeIds,
+        Scope $selectedSourceScope,
+        ScopeList $scopeList
+    ): ?string {
+        foreach ($targetScopeIds as $targetScopeId) {
+            $targetScope = $scopeList->getEntity(
+                $targetScopeId
+            );
+
+            if ($targetScope === null) {
+                return
+                    'Mindestens ein ausgewählter Zielstandort '
+                    . 'wurde nicht gefunden oder darf nicht '
+                    . 'verwendet werden.';
+            }
+
+            $isSourceScope =
+                $targetScopeId
+                === $selectedSourceScope->getId();
+
+            $hasSameProvider =
+                (string) $targetScope->getProviderId()
+                ===
+                (string) $selectedSourceScope->getProviderId();
+
+            if ($isSourceScope || $hasSameProvider) {
+                return
+                    'Der Quellstandort darf nicht gleichzeitig '
+                    . 'als Zielstandort ausgewählt werden.';
+            }
+        }
+
+        return null;
+    }
+
+    private function copyTemplate(
+        int $sourceScopeId,
+        int $sourceTemplateId,
+        array $targetScopeIds
+    ): ResponseInterface|string {
+        try {
+            $copiedTemplate = \App::$http
+                ->readPostResult(
+                    '/mailtemplates/copy/',
+                    [
+                        'sourceScopeId' => $sourceScopeId,
+                        'sourceTemplateId' =>
+                            $sourceTemplateId,
+                        'targetScopeIds' => $targetScopeIds,
+                    ]
+                )
+                ->getEntity();
+        } catch (Exception) {
+            return
+                'Beim Kopieren des E-Mail-Templates ist ein '
+                . 'Fehler aufgetreten. Es wurden keine '
+                . 'Änderungen übernommen.';
+        }
+
+        if ($copiedTemplate === null) {
+            return
+                'Das E-Mail-Template konnte nicht kopiert '
+                . 'werden.';
+        }
+
+        return Render::redirect(
+            'mailtemplatesCopy',
+            [],
+            [
+                'sourceScopeId' => $sourceScopeId,
+                'success' => 'mailtemplates_copied',
+                'copiedCount' => count($targetScopeIds),
+            ]
+        );
+    }
+
+    private function buildScopeList(
+        iterable $ownerList
+    ): ScopeList {
         $scopeList = new ScopeList();
 
         foreach ($ownerList as $owner) {
-            foreach ($owner->getOrganisationList() as $organisation) {
+            foreach (
+                $owner->getOrganisationList()
+                as $organisation
+            ) {
                 foreach (
-                    $organisation->getDepartmentList() as $department
+                    $organisation->getDepartmentList()
+                    as $department
                 ) {
                     $scopeList->addScopeList(
                         $department->getScopeList()
@@ -321,11 +474,9 @@ class MailTemplatesCopy extends BaseController
         return (int) $validatedValue;
     }
 
-    /**
-     * @return int[]|null
-     */
-    private function readTargetScopeIds(mixed $value): ?array
-    {
+    private function readTargetScopeIds(
+        mixed $value
+    ): ?array {
         if (!is_array($value)) {
             return null;
         }
@@ -333,7 +484,9 @@ class MailTemplatesCopy extends BaseController
         $scopeIds = [];
 
         foreach ($value as $scopeId) {
-            $validatedScopeId = $this->readPositiveInt($scopeId);
+            $validatedScopeId = $this->readPositiveInt(
+                $scopeId
+            );
 
             if ($validatedScopeId === null) {
                 return null;

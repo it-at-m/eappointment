@@ -62,6 +62,7 @@
 
         {% block board_body %}
             <form
+                id="mailtemplates-copy-source-form"
                 method="get"
                 action="{{ urlGet('mailtemplatesCopy', {}, {}) }}"
                 class="form--base"
@@ -78,6 +79,8 @@
                         id="sourceScopeId"
                         name="sourceScopeId"
                         required
+                        aria-required="true"
+                        aria-describedby="sourceScopeIdHelp"
                     >
                         <option value="">
                             Bitte auswählen
@@ -94,17 +97,50 @@
                             </option>
                         {% endfor %}
                     </select>
+
+                    <p
+                        id="sourceScopeIdHelp"
+                        class="formgroup__help"
+                    >
+                        Nach der Auswahl eines Quellstandorts werden
+                        dessen angepasste E-Mail-Templates automatisch
+                        geladen.
+                    </p>
                 </div>
 
-                <div class="form-actions">
-                    <button
-                        type="submit"
-                        class="button button-submit"
-                    >
-                        Angepasste Templates anzeigen
-                    </button>
-                </div>
+                <noscript>
+                    <div class="form-actions">
+                        <button
+                            type="submit"
+                            class="button button-submit"
+                        >
+                            Angepasste Templates anzeigen
+                        </button>
+                    </div>
+                </noscript>
             </form>
+
+            <script>
+                (function () {
+                    const sourceScopeSelect =
+                        document.getElementById('sourceScopeId');
+
+                    if (!sourceScopeSelect) {
+                        return;
+                    }
+
+                    sourceScopeSelect.addEventListener(
+                        'change',
+                        function () {
+                            if (sourceScopeSelect.value === '') {
+                                return;
+                            }
+
+                            sourceScopeSelect.form.requestSubmit();
+                        }
+                    );
+                }());
+            </script>
         {% endblock %}
     {% endembed %}
 
