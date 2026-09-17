@@ -1,0 +1,46 @@
+{
+  "branch": "test-zmskvr-1630-zmskvr-1030-reserved-hash-resume",
+  "branchSlug": "test-zmskvr-1630-zmskvr-1030-reserved-hash-resume",
+  "runId": "35192194712",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35192194712",
+  "runStartedAt": "2026-09-17T06:57:34Z",
+  "publishedAt": "2026-09-17T07:10:42.396Z",
+  "features": {
+    "feature-rest-zmscitizenapi-zmskvr-1630-zmskvr-1030-placeholder-email-citizenapi": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "rest/zmscitizenapi/zmskvr-1630_zmskvr-1030_placeholder_email_citizenapi.feature",
+      "runId": "35192194712",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35192194712",
+      "runStartedAt": "2026-09-17T06:57:34Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "35192194712",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35192194712",
+          "runStartedAt": "2026-09-17T06:57:34Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-booking-zmskvr-1630-zmskvr-1030-reserved-hash-resume": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/booking/zmskvr-1630_zmskvr-1030_reserved_hash_resume.feature",
+      "runId": "35192194712",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35192194712",
+      "runStartedAt": "2026-09-17T06:57:34Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "35192194712",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35192194712",
+          "runStartedAt": "2026-09-17T06:57:34Z"
+        }
+      }
+    }
+  }
+}
