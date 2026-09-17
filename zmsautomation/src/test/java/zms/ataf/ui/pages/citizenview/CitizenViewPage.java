@@ -2532,4 +2532,83 @@ public class CitizenViewPage extends BasePage {
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "kc-login", LocatorType.ID, false);
         ScenarioLogManager.getLogger().info("zmscitizenview: Keycloak login submitted");
     }
+
+    /**
+     * ZMSKVR-1630 / ZMSKVR-1030: full reload of {@code #/appointment/{id+authKey}} so resume uses
+     * the reserved process instead of leftover localStorage view state.
+     */
+    public void reloadReservedAppointmentHash() {
+        CONTEXT.set();
+        trySetBookingProcessFromLocalStorage();
+        String url = resolveReservedAppointmentHashUrl();
+        String current = DriverUtil.getDriver().getCurrentUrl();
+        boolean alreadyOnReservedHash = current != null
+                && current.contains("#/appointment/")
+                && !current.contains("#/appointment/confirm/");
+        ScenarioLogManager.getLogger().info("zmscitizenview: reload reserved appointment hash {}", url);
+        try {
+            if (!alreadyOnReservedHash) {
+                DriverUtil.getDriver().navigate().to(url);
+            }
+            DriverUtil.getDriver().navigate().refresh();
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Reload reserved appointment hash", e);
+        }
+        waitWithThreeWindows(
+                () -> shadowDomContainsText("Kontaktdaten")
+                        || deepElementExists("#checkbox-electronic-communication")
+                        || shadowDomContainsText("Sie sind angemeldet"),
+                "Reserved hash resume after reload");
+    }
+
+    public void assertAppointmentManagementActionsNotVisible() {
+        CONTEXT.set();
+        Assert.assertFalse(
+                shadowDomContainsText(RESCHEDULE_APPOINTMENT_BUTTON),
+                "Reserved hash resume must not show Termin verschieben (confirmed-appointment management).");
+        Assert.assertFalse(
+                shadowDomContainsText(CANCEL_RESCHEDULE_BUTTON),
+                "Reserved hash resume must not show Verschieben abbrechen (rebooking).");
+    }
+
+    public void assertElectronicCommunicationCheckboxVisible() {
+        CONTEXT.set();
+        waitWithThreeWindows(
+                () -> deepElementExists("#checkbox-electronic-communication"),
+                "Electronic communication checkbox on book overview");
+        Assert.assertTrue(
+                deepElementExists("#checkbox-electronic-communication"),
+                "Expected #checkbox-electronic-communication on the book/overview after reserved hash resume.");
+    }
+
+    private String resolveReservedAppointmentHashUrl() {
+        String current = DriverUtil.getDriver().getCurrentUrl();
+        if (current != null) {
+            int hashIdx = current.indexOf("#/appointment/");
+            if (hashIdx >= 0 && !current.contains("#/appointment/confirm/")) {
+                return current;
+            }
+        }
+        ThinnedProcess process = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+        Assert.assertNotNull(process, "No booking process for reserved hash; login or reserve first.");
+        Assert.assertNotNull(process.getProcessId(), "Booking process has no processId for reserved hash.");
+        Assert.assertNotNull(process.getAuthKey(), "Booking process has no authKey for reserved hash.");
+        String payload =
+                "{\"id\":"
+                        + process.getProcessId()
+                        + ",\"authKey\":"
+                        + mapperQuote(process.getAuthKey())
+                        + "}";
+        String b64 = Base64.getEncoder().encodeToString(payload.getBytes(StandardCharsets.UTF_8));
+        String base = CONTEXT.lastCitizenViewUrl != null ? CONTEXT.lastCitizenViewUrl : "";
+        int hashIdx = base.indexOf('#');
+        if (hashIdx >= 0) {
+            base = base.substring(0, hashIdx);
+        }
+        if (current != null && (base == null || base.isBlank())) {
+            int currentHash = current.indexOf('#');
+            base = currentHash >= 0 ? current.substring(0, currentHash) : current;
+        }
+        return ensureAbsoluteCitizenViewUrl(base + "#/appointment/" + b64);
+    }
 }

@@ -472,4 +472,24 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger().info("zmscitizenview: Zurück Übersicht → Kontakt");
         page.goBackFromBookingSummaryToContact();
     }
+
+    @When("I reload the reserved appointment hash in the citizen view")
+    public void iReloadTheReservedAppointmentHash() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: reload reserved #/appointment hash");
+        page.reloadReservedAppointmentHash();
+    }
+
+    @Then("the appointment management actions should not be visible in the citizen view")
+    public void theAppointmentManagementActionsShouldNotBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Termin verschieben / Verschieben abbrechen are absent");
+        page.assertAppointmentManagementActionsNotVisible();
+    }
+
+    @Then("the electronic communication checkbox should be visible in the citizen view")
+    public void theElectronicCommunicationCheckboxShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert electronic communication checkbox on book overview");
+        page.assertElectronicCommunicationCheckboxVisible();
+    }
 }
