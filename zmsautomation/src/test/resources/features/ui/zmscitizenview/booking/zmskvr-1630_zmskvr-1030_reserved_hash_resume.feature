@@ -32,6 +32,7 @@ Feature: CitizenView: reserved appointment hash resumes an unfinished booking
     Then the contact form should be visible in the citizen view
     And I should be logged in on the contact form in the citizen view
     And the appointment management actions should not be visible in the citizen view
+    When I cancel the appointment
 
   @jumpin @pickupCalendar
   Scenario: Refresh after appointment-update lands on the book overview
@@ -54,3 +55,4 @@ Feature: CitizenView: reserved appointment hash resumes an unfinished booking
     Then the booking summary should show provider 10492 in the citizen view
     And the electronic communication checkbox should be visible in the citizen view
     And the appointment management actions should not be visible in the citizen view
+    When I cancel the appointment
