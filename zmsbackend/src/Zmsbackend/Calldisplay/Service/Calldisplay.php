@@ -18,7 +18,7 @@ class Calldisplay extends \BO\Zmsbackend\Base
      *
      * @return Entity
      */
-    public function readResolvedEntity(Entity $calldisplay, \DateTimeImmutable $dateTime, $resolveReferences = 0)
+    public function readResolvedEntity(Entity $calldisplay, \DateTimeImmutable $dateTime, int $resolveReferences = 0)
     {
         if ($calldisplay->hasScopeList()) {
             $scopeList = new \BO\Zmsentities\Collection\ScopeList();

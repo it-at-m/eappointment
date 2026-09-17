@@ -22,7 +22,7 @@ class Source extends \BO\Zmsbackend\Base
      *
      * @return \BO\Zmsentities\Source
      */
-    public function readEntity($sourceName, $resolveReferences = 0, bool $disableCache = false)
+    public function readEntity($sourceName, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "source-$sourceName-$resolveReferences";
 
@@ -54,7 +54,7 @@ class Source extends \BO\Zmsbackend\Base
      *
      * @return \BO\Zmsentities\Collection\SourceList
      */
-    public function readList($resolveReferences = 0)
+    public function readList(int $resolveReferences = 0)
     {
         $collection = new Collection();
         $query = new \BO\Zmsbackend\Source\Repository\Source(\BO\Zmsbackend\Query\Base::SELECT);
@@ -80,8 +80,8 @@ class Source extends \BO\Zmsbackend\Base
     #[\Override]
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $entity,
-        $resolveReferences,
-        $disableCache = false
+        int $resolveReferences,
+        bool $disableCache = false
     ) {
         if (0 < $resolveReferences) {
             $entity['providers'] = (new ProviderList())
@@ -106,7 +106,7 @@ class Source extends \BO\Zmsbackend\Base
      *
      * @return \BO\Zmsentities\Source
      */
-    public function writeEntity(Entity $entity, $resolveReferences = 0)
+    public function writeEntity(Entity $entity, int $resolveReferences = 0)
     {
         if (! $entity->isCompleteAndEditable()) {
             throw new \BO\Zmsbackend\Source\Exception\SourceInvalidInput();

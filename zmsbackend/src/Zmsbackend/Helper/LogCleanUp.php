@@ -15,7 +15,7 @@ class LogCleanUp
 {
     protected $verbose = false;
 
-    public function __construct($verbose = false)
+    public function __construct(bool $verbose = false)
     {
         if ($verbose) {
             $this->verbose = true;
@@ -30,7 +30,7 @@ class LogCleanUp
         }
     }
 
-    public static function startProcessing($commit = false): void
+    public static function startProcessing(bool $commit = false): void
     {
         \App::$log->info('Starting log cleanup process');
 

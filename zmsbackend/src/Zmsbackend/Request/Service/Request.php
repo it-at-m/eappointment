@@ -44,7 +44,7 @@ class Request extends \BO\Zmsbackend\Base
     }
 
     /** @psalm-api */
-    public function readEntityById($requestId, $resolveReferences = 0, $disableCache = false)
+    public function readEntityById($requestId, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "request-byid-$requestId-$resolveReferences";
 
@@ -203,7 +203,7 @@ class Request extends \BO\Zmsbackend\Base
         return $request->getSource() . ':' . $request->getId();
     }
 
-    public function readRequestByProcessId($processId, $resolveReferences = 0)
+    public function readRequestByProcessId($processId, int $resolveReferences = 0)
     {
         $collection = new Collection();
         if ($processId) {
@@ -254,7 +254,7 @@ class Request extends \BO\Zmsbackend\Base
         return $requestsByProcessId;
     }
 
-    public function readRequestsByIds($ids, $resolveReferences = 0)
+    public function readRequestsByIds($ids, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
         $query->setResolveLevel($resolveReferences);
@@ -264,7 +264,7 @@ class Request extends \BO\Zmsbackend\Base
         return $this->readCollection($query);
     }
 
-    public function readRequestByArchiveId($archiveId, $resolveReferences = 0)
+    public function readRequestByArchiveId($archiveId, int $resolveReferences = 0)
     {
         $collection = new Collection();
         if ($archiveId) {
@@ -428,7 +428,7 @@ class Request extends \BO\Zmsbackend\Base
         return $additionalDepartmentRequestList;
     }
 
-    public function readListBySource($source, $resolveReferences = 0, $disableCache = false)
+    public function readListBySource($source, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "requestReadListBySource-$source-$resolveReferences";
 
@@ -451,7 +451,7 @@ class Request extends \BO\Zmsbackend\Base
         return $requestList;
     }
 
-    public function readListByCluster(\BO\Zmsentities\Cluster $cluster, $resolveReferences = 0): Collection
+    public function readListByCluster(\BO\Zmsentities\Cluster $cluster, int $resolveReferences = 0): Collection
     {
         $intersectList = array();
         if ($cluster->scopes->count()) {

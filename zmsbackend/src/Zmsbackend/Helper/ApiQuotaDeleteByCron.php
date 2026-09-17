@@ -10,7 +10,7 @@ class ApiQuotaDeleteByCron
     protected $quotaList;
     protected $verbose = false;
 
-    public function __construct(\DateTimeInterface $dateTime, $verbose = false)
+    public function __construct(\DateTimeInterface $dateTime, bool $verbose = false)
     {
         $query = new \BO\Zmsbackend\Apikey\Service\Apikey();
         if ($verbose) {
@@ -20,7 +20,7 @@ class ApiQuotaDeleteByCron
         $this->quotaList = $query->readExpiredQuotaListByPeriod($dateTime);
     }
 
-    public function startProcessing($commit): void
+    public function startProcessing(bool $commit): void
     {
         $verbose = $this->verbose;
         if ($this->quotaList) {
