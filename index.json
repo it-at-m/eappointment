@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-17T07:10:42.396Z",
+  "publishedAt": "2026-09-17T10:09:51.586Z",
   "branches": [
     {
       "name": "next",
@@ -78,6 +78,12 @@
       "slug": "feature-zmskvr-1617-service-statistics-hide-days-without-usage",
       "runId": "33762107707",
       "runStartedAt": "2026-09-03T13:36:45Z"
+    },
+    {
+      "name": "feature-zmskvr-343-unify-secuess-callout-for-appointments",
+      "slug": "feature-zmskvr-343-unify-secuess-callout-for-appointments",
+      "runId": "35204523412",
+      "runStartedAt": "2026-09-17T09:19:54Z"
     },
     {
       "name": "fix-zmsclient-psalm-alerts",
