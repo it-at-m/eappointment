@@ -8,7 +8,7 @@ class Day extends \BO\Zmsbackend\Base
 {
     protected $tempScopeListExists = false;
 
-    public function writeTemporaryScopeList(\BO\Zmsentities\Calendar $calendar, $slotsRequiredForce = null): void
+    public function writeTemporaryScopeList(\BO\Zmsentities\Calendar $calendar, ?int $slotsRequiredForce = null): void
     {
         $this->getReader()->exec(\BO\Zmsbackend\Day\Repository\Day::QUERY_CREATE_TEMPORARY_SCOPELIST);
         $monthList = $calendar->getMonthList();
@@ -34,7 +34,7 @@ class Day extends \BO\Zmsbackend\Base
      * Drop and rebuild calendarscope for the calendar's current firstDay/lastDay months.
      * Used to shrink the daylist window (painted month) or scan one neighbor month at a time.
      */
-    public function rewriteTemporaryScopeList(\BO\Zmsentities\Calendar $calendar, $slotsRequiredForce = null): void
+    public function rewriteTemporaryScopeList(\BO\Zmsentities\Calendar $calendar, ?int $slotsRequiredForce = null): void
     {
         if ($this->tempScopeListExists) {
             $this->getReader()->exec(\BO\Zmsbackend\Day\Repository\Day::QUERY_DROP_TEMPORARY_SCOPELIST);
@@ -43,7 +43,7 @@ class Day extends \BO\Zmsbackend\Base
         $this->writeTemporaryScopeList($calendar, $slotsRequiredForce);
     }
 
-    public function readByCalendar(\BO\Zmsentities\Calendar $calendar, $slotsRequiredForce = null)
+    public function readByCalendar(\BO\Zmsentities\Calendar $calendar, ?int $slotsRequiredForce = null)
     {
         // We use a temporary table, so we can use create and insert on a readonly connection
         $this->writeTemporaryScopeList($calendar, $slotsRequiredForce);
@@ -51,7 +51,7 @@ class Day extends \BO\Zmsbackend\Base
         return $this->readListFromPreparedTemporaryScopeList($slotsRequiredForce);
     }
 
-    public function readListFromPreparedTemporaryScopeList($slotsRequiredForce = null, ?string $daylistQuery = null): \BO\Zmsentities\Collection\DayList
+    public function readListFromPreparedTemporaryScopeList(?int $slotsRequiredForce = null, ?string $daylistQuery = null): \BO\Zmsentities\Collection\DayList
     {
         $dayList = new \BO\Zmsentities\Collection\DayList();
         $dayData = $this->getReader()->fetchAll(

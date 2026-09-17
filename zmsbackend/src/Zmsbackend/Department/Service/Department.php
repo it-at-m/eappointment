@@ -55,8 +55,8 @@ class Department extends \BO\Zmsbackend\Base
     #[\Override]
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $entity,
-        $resolveReferences,
-        $disableCache = false
+        int $resolveReferences,
+        bool $disableCache = false
     ): Entity {
         if (!$entity instanceof Entity) {
             throw new \InvalidArgumentException('Expected ' . Entity::class);
@@ -76,7 +76,7 @@ class Department extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readList($resolveReferences = 0): Collection
+    public function readList(int $resolveReferences = 0): Collection
     {
         $departmentList = new Collection();
         $query = new \BO\Zmsbackend\Department\Repository\Department(\BO\Zmsbackend\Query\Base::SELECT);
@@ -265,8 +265,8 @@ class Department extends \BO\Zmsbackend\Base
     protected function updateDepartmentMail(
         string|false $departmentId,
         $email,
-        $sendEmailReminderEnabled,
-        $sendEmailReminderMinutesBefore
+        bool $sendEmailReminderEnabled,
+        int $sendEmailReminderMinutesBefore
     ) {
         self::$departmentCache = [];
         $query = \BO\Zmsbackend\Department\Repository\Department::QUERY_MAIL_UPDATE;
@@ -281,7 +281,7 @@ class Department extends \BO\Zmsbackend\Base
     public function readQueueList(
         $departmentId,
         \DateTimeInterface $dateTime,
-        $resolveReferences = 0
+        int $resolveReferences = 0
     ): \BO\Zmsentities\Collection\QueueList {
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         $department = $this->readEntity($departmentId, 2);

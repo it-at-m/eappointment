@@ -15,7 +15,7 @@ class EventLog extends \BO\Zmsbackend\Query\Base
 
     protected $resolveLevel = 0;
 
-    public function __construct($queryType, $prefix = '', $name = false, $resolveLevel = null)
+    public function __construct($queryType, $prefix = '', $name = false, mixed $resolveLevel = null)
     {
         parent::__construct($queryType, $prefix, $name, $resolveLevel);
 

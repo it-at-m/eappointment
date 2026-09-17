@@ -29,7 +29,7 @@ class DayOff extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\M
         ];
     }
 
-    public function addConditionYear($year): static
+    public function addConditionYear(int $year): static
     {
         $this->query->where(self::expression('YEAR(`dayOff`.`Datum`)'), '=', $year);
         return $this;
@@ -80,7 +80,7 @@ class DayOff extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\M
         return $this;
     }
 
-    public function addConditionDayoffDeleteInterval($deleteInSeconds): static
+    public function addConditionDayoffDeleteInterval(int $deleteInSeconds): static
     {
         $this->query->where(
             self::expression(

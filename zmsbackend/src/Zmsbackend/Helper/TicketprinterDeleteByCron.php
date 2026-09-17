@@ -11,7 +11,7 @@ class TicketprinterDeleteByCron
 
     protected $deleteDateTime = 0;
 
-    public function __construct($verbose = false)
+    public function __construct(bool $verbose = false)
     {
         $dateTime = new \DateTimeImmutable();
         $this->deleteDateTime = $dateTime->setTimestamp($dateTime->getTimestamp() - (30 * 24 * 3600));
@@ -23,7 +23,7 @@ class TicketprinterDeleteByCron
         $this->scopeList = (new \BO\Zmsbackend\Scope\Service\Scope())->readList();
     }
 
-    public function startProcessing($commit): void
+    public function startProcessing(bool $commit): void
     {
         $ticketprinterList = (new \BO\Zmsbackend\Ticketprinter\Service\Ticketprinter())->readExpiredTicketprinterList($this->deleteDateTime);
         foreach ($ticketprinterList as $entity) {
