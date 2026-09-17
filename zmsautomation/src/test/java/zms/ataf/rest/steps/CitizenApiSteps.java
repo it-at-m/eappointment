@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import ataf.core.logging.ScenarioLogManager;
 import config.TestConfig;
+import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -82,6 +83,15 @@ public class CitizenApiSteps {
         rebookingSourceProcessId = null;
         rebookingSourceAuthKey = null;
         citizenAccessToken = null;
+    }
+
+    /**
+     * Best-effort cancel so a failed scenario does not leave a reserved slot in shared test calendars.
+     * Runs before {@code WebDriverQuitHook} ({@code @After} order 9999). Skips already-deleted processes.
+     */
+    @After(order = 10000)
+    public void cancelLeftoverAppointmentAfterScenario() {
+        cancelLeftoverAppointmentQuietly();
     }
 
     /** Clear shared booking/confirm state (process, credentials, URLs). Call before each scenario to avoid cross-scenario leakage. */
@@ -951,6 +961,51 @@ public class CitizenApiSteps {
         // and captcha is disabled in our test data.
         lastReserveProcess = cancelled;
         setLastReserveProcess(cancelled);
+    }
+
+    /**
+     * Cancel the current process if one exists and is not already deleted. Never fails the scenario:
+     * used from {@link #cancelLeftoverAppointmentAfterScenario()} after both passing and failing runs.
+     */
+    public void cancelLeftoverAppointmentQuietly() {
+        ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : getBookingProcess();
+        if (process == null || process.getProcessId() == null || process.getAuthKey() == null) {
+            return;
+        }
+        if ("deleted".equalsIgnoreCase(process.getStatus())) {
+            return;
+        }
+        Integer pid = process.getProcessId();
+        String auth = process.getAuthKey();
+        try {
+            Response cancelResponse = given()
+                .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+                .contentType("application/json")
+                .body(Map.of("processId", pid, "authKey", auth))
+            .when()
+                .post("/cancel-appointment/");
+            ScenarioLogManager.getLogger().info(String.format(
+                "Best-effort /cancel-appointment/ processId=%d http=%d",
+                pid,
+                cancelResponse.getStatusCode()
+            ));
+            if (cancelResponse.getStatusCode() == 200) {
+                ThinnedProcess cancelled;
+                try {
+                    cancelled = cancelResponse.as(ThinnedProcess.class);
+                } catch (Exception e) {
+                    cancelled = parseDataResponse(cancelResponse, ThinnedProcess.class);
+                }
+                if (cancelled != null) {
+                    lastReserveProcess = cancelled;
+                    setLastReserveProcess(cancelled);
+                }
+            }
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn(
+                String.format("Best-effort cancel failed for processId=%d: %s", pid, e)
+            );
+        }
     }
 
     @When("I cancel the rebooking source appointment")

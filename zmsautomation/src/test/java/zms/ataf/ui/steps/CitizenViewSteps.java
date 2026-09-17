@@ -8,6 +8,7 @@ import java.util.Set;
 import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
+import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -25,6 +26,16 @@ public class CitizenViewSteps {
 
     public CitizenViewSteps() {
         page = new CitizenViewPage(DriverUtil.getDriver());
+    }
+
+    /** Capture credentials while the browser is still open, before {@link zms.ataf.rest.steps.CitizenApiSteps} After-cancel. */
+    @After(order = 10001)
+    public void captureBookingProcessBeforeCleanup() {
+        try {
+            page.captureBookingProcessForCleanup();
+        } catch (RuntimeException e) {
+            ScenarioLogManager.getLogger().debug("zmscitizenview: no booking process to capture for cleanup", e);
+        }
     }
 
     @Given("I open the zmscitizenview booking page")
