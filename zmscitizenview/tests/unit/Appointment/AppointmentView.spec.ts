@@ -2834,6 +2834,11 @@ describe("AppointmentView", () => {
       expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
         false
       );
+      expect(
+        wrapper
+          .find('[data-test="muc-stepper"]')
+          .attributes("data-disable-previous-steps")
+      ).toBe("false");
     });
 
     it("opens the booking summary for a reserved appointment that already has contact data", async () => {
@@ -2864,6 +2869,88 @@ describe("AppointmentView", () => {
       expect(wrapper.vm.customerData.mailAddress).toBe("max@example.com");
       expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
         true
+      );
+      expect(
+        wrapper
+          .find('[data-test="muc-stepper"]')
+          .attributes("data-disable-previous-steps")
+      ).toBe("false");
+    });
+
+    it("shows ServiceFinder when going back to Leistung with a reserved login hash", async () => {
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "100318",
+        authKey: "test-auth-key",
+        timestamp: futureTimestamp,
+        familyName: "Max Mustermann",
+        email: "max@example.com",
+        officeId: "789",
+        scope: {},
+        subRequestCounts: [],
+        serviceId: "123",
+        serviceName: "Test Service",
+        serviceCount: 1,
+        status: "reserved",
+      } as any);
+
+      const wrapper = createWrapper({ appointmentHash: validHash });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointment?.processId).toBe("100318");
+      });
+      expect(wrapper.find('[data-test="service-finder"]').exists()).toBe(false);
+
+      wrapper.vm.currentView = 0;
+      await nextTick();
+
+      expect(wrapper.find('[data-test="service-finder"]').exists()).toBe(true);
+      expect(wrapper.find('[data-test="customer-info"]').exists()).toBe(false);
+    });
+
+    it("stays on Kontakt after Zurück when the reserved hash flickers", async () => {
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "100318",
+        authKey: "test-auth-key",
+        timestamp: futureTimestamp,
+        familyName: "Max Mustermann",
+        email: "max@example.com",
+        officeId: "789",
+        scope: {},
+        subRequestCounts: [],
+        serviceId: "123",
+        serviceName: "Test Service",
+        serviceCount: 1,
+        status: "reserved",
+      } as any);
+
+      const wrapper = createWrapper({ appointmentHash: validHash });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointment?.processId).toBe("100318");
+      });
+      expect(wrapper.vm.currentView).toBe(3);
+
+      const fetchCount =
+        vi.mocked(ZMSAppointmentAPI.fetchAppointment).mock.calls.length;
+
+      wrapper.vm.decreaseCurrentView();
+      await nextTick();
+      expect(wrapper.vm.currentView).toBe(2);
+      expect(wrapper.find('[data-test="customer-info"]').exists()).toBe(true);
+
+      await wrapper.setProps({ appointmentHash: undefined });
+      await nextTick();
+      await wrapper.setProps({ appointmentHash: validHash });
+      await nextTick();
+
+      expect(
+        vi.mocked(ZMSAppointmentAPI.fetchAppointment).mock.calls.length
+      ).toBe(fetchCount);
+      expect(wrapper.vm.currentView).toBe(2);
+      expect(wrapper.vm.rebookOrCancelDialog).toBe(false);
+      expect(wrapper.find('[data-test="customer-info"]').exists()).toBe(true);
+      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
+        false
       );
     });
 

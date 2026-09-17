@@ -723,7 +723,10 @@ public class CitizenViewPage extends BasePage {
         return Boolean.TRUE.equals(o);
     }
 
-    /** Click first button whose visible text includes label (shadow-safe). Includes BUTTON, A, and MUC-BUTTON (modal confirm/cancel). */
+    /**
+     * Click first button whose visible text includes label (shadow-safe). Includes BUTTON, A, and MUC-BUTTON (modal confirm/cancel).
+     * Skips muc-stepper items ("Zurück zu Schritt: …"); those are not the form Zurück.
+     */
     public boolean clickButtonContaining(String text) {
         CONTEXT.set();
         String esc = text.replace("\\", "\\\\").replace("'", "\\'");
@@ -737,6 +740,7 @@ public class CitizenViewPage extends BasePage {
                         + "function walkClick(n){if(!n)return false;if(n.shadowRoot&&walkClick(n.shadowRoot))return true;"
                         + "var tag=(n.tagName||'').toUpperCase();var isBtn=(tag==='BUTTON'||tag==='A'||tag==='MUC-BUTTON');"
                         + "if(isBtn){var t=(n.textContent||'').trim();"
+                        + "if(t.indexOf('Zurück zu Schritt')>=0)return false;"
                         + "if(t.indexOf(label)>=0&&!n.disabled&&visible(n)){n.scrollIntoView({block:'center'});n.click();return true;}}"
                         + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walkClick(c[i]))return true;return false;}"
                         + "return walkClick(document.body);";
@@ -1619,6 +1623,7 @@ public class CitizenViewPage extends BasePage {
                 .info("zmscitizenview: Weiter after slot callout → reserve appointment (then Kontakt form)");
         clickWeiter();
         waitForReserveToSettle();
+        trySetBookingProcessFromPage();
     }
 
     /**
@@ -2467,6 +2472,7 @@ public class CitizenViewPage extends BasePage {
                 shadowDomContainsText("Sie sind angemeldet.") || shadowDomContainsText("Kontaktdaten"),
                 "Expected return to Kontakt form after Bürger-Login (logged-in callout or Kontaktdaten).");
         ScenarioLogManager.getLogger().info("zmscitizenview: Bürger-Login completed");
+        trySetBookingProcessFromPage();
     }
 
     /**
@@ -2527,5 +2533,159 @@ public class CitizenViewPage extends BasePage {
         enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, password, "password", LocatorType.ID);
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "kc-login", LocatorType.ID, false);
         ScenarioLogManager.getLogger().info("zmscitizenview: Keycloak login submitted");
+    }
+
+    /**
+     * ZMSKVR-1630 / ZMSKVR-1030: full reload of {@code #/appointment/{id+authKey}} so resume uses
+     * the reserved process instead of leftover localStorage view state.
+     */
+    public void reloadReservedAppointmentHash() {
+        CONTEXT.set();
+        trySetBookingProcessFromPage();
+        String url = resolveReservedAppointmentHashUrl();
+        String current = DriverUtil.getDriver().getCurrentUrl();
+        boolean alreadyOnReservedHash = current != null
+                && current.contains("#/appointment/")
+                && !current.contains("#/appointment/confirm/");
+        ScenarioLogManager.getLogger().info("zmscitizenview: reload reserved appointment hash {}", url);
+        try {
+            if (!alreadyOnReservedHash) {
+                DriverUtil.getDriver().navigate().to(url);
+            }
+            DriverUtil.getDriver().navigate().refresh();
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Reload reserved appointment hash", e);
+        }
+        waitWithThreeWindows(
+                () -> shadowDomContainsText("Kontaktdaten")
+                        || deepElementExists("#checkbox-electronic-communication")
+                        || shadowDomContainsText("Sie sind angemeldet"),
+                "Reserved hash resume after reload");
+    }
+
+    public void assertAppointmentManagementActionsNotVisible() {
+        CONTEXT.set();
+        Assert.assertFalse(
+                shadowDomContainsText(RESCHEDULE_APPOINTMENT_BUTTON),
+                "Reserved hash resume must not show Termin verschieben (confirmed-appointment management).");
+        Assert.assertFalse(
+                shadowDomContainsText(CANCEL_RESCHEDULE_BUTTON),
+                "Reserved hash resume must not show Verschieben abbrechen (rebooking).");
+    }
+
+    public void assertElectronicCommunicationCheckboxVisible() {
+        CONTEXT.set();
+        waitWithThreeWindows(
+                () -> deepElementExists("#checkbox-electronic-communication"),
+                "Electronic communication checkbox on book overview");
+        Assert.assertTrue(
+                deepElementExists("#checkbox-electronic-communication"),
+                "Expected #checkbox-electronic-communication on the book/overview after reserved hash resume.");
+    }
+
+    private String resolveReservedAppointmentHashUrl() {
+        String current = DriverUtil.getDriver().getCurrentUrl();
+        if (current != null) {
+            int hashIdx = current.indexOf("#/appointment/");
+            if (hashIdx >= 0 && !current.contains("#/appointment/confirm/")) {
+                return current;
+            }
+        }
+        ThinnedProcess process = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+        Assert.assertNotNull(process, "No booking process for reserved hash; login or reserve first.");
+        Assert.assertNotNull(process.getProcessId(), "Booking process has no processId for reserved hash.");
+        Assert.assertNotNull(process.getAuthKey(), "Booking process has no authKey for reserved hash.");
+        String payload =
+                "{\"id\":"
+                        + process.getProcessId()
+                        + ",\"authKey\":"
+                        + mapperQuote(process.getAuthKey())
+                        + "}";
+        String b64 = Base64.getEncoder().encodeToString(payload.getBytes(StandardCharsets.UTF_8));
+        String base = CONTEXT.lastCitizenViewUrl != null ? CONTEXT.lastCitizenViewUrl : "";
+        int hashIdx = base.indexOf('#');
+        if (hashIdx >= 0) {
+            base = base.substring(0, hashIdx);
+        }
+        if (current != null && (base == null || base.isBlank())) {
+            int currentHash = current.indexOf('#');
+            base = currentHash >= 0 ? current.substring(0, currentHash) : current;
+        }
+        return ensureAbsoluteCitizenViewUrl(base + "#/appointment/" + b64);
+    }
+
+    /**
+     * Capture processId/authKey from localStorage, sessionStorage, or {@code #/appointment/{hash}}
+     * so After-hook cancellation can free the reserved slot.
+     */
+    public void captureBookingProcessForCleanup() {
+        CONTEXT.set();
+        trySetBookingProcessFromPage();
+    }
+
+    private void trySetBookingProcessFromPage() {
+        if (trySetBookingProcessFromLocalStorage()) {
+            return;
+        }
+        if (trySetBookingProcessFromSessionAuthHash()) {
+            return;
+        }
+        trySetBookingProcessFromCurrentReservedHash();
+    }
+
+    private boolean trySetBookingProcessFromSessionAuthHash() {
+        CONTEXT.set();
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript("return sessionStorage.getItem('lhm-appointment-auth-hash');");
+        return raw instanceof String && setBookingProcessFromAppointmentHash((String) raw);
+    }
+
+    private boolean trySetBookingProcessFromCurrentReservedHash() {
+        CONTEXT.set();
+        String current = DriverUtil.getDriver().getCurrentUrl();
+        if (current == null) {
+            return false;
+        }
+        int idx = current.indexOf("#/appointment/");
+        if (idx < 0 || current.contains("#/appointment/confirm/")) {
+            return false;
+        }
+        String rest = current.substring(idx + "#/appointment/".length());
+        int end = rest.indexOf('?');
+        if (end >= 0) {
+            rest = rest.substring(0, end);
+        }
+        return setBookingProcessFromAppointmentHash(rest);
+    }
+
+    private boolean setBookingProcessFromAppointmentHash(String hash) {
+        if (hash == null || hash.isBlank()) {
+            return false;
+        }
+        String b64 = hash.trim();
+        int padding = (4 - (b64.length() % 4)) % 4;
+        if (padding > 0) {
+            b64 = b64 + "=".repeat(padding);
+        }
+        try {
+            String decoded = new String(Base64.getDecoder().decode(b64), StandardCharsets.UTF_8);
+            JsonNode node = new ObjectMapper().readTree(decoded);
+            JsonNode idNode = node.path("id");
+            JsonNode keyNode = node.path("authKey");
+            if (idNode.isMissingNode() || keyNode.isMissingNode() || idNode.isNull() || keyNode.isNull()) {
+                return false;
+            }
+            ThinnedProcess p = new ThinnedProcess();
+            p.setProcessId(idNode.asInt());
+            p.setAuthKey(keyNode.asText());
+            zms.ataf.rest.steps.CitizenApiSteps.setBookingProcess(p);
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: captured booking process from appointment hash (processId={})", p.getProcessId());
+            return true;
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().debug("zmscitizenview: could not parse appointment hash", e);
+            return false;
+        }
     }
 }

@@ -14,6 +14,8 @@ import LogInventory from "./LogInventory.vue";
 import ThinnedProcessCodeExplorerTarget from "./ThinnedProcessCodeExplorerTarget.vue";
 import ThinnedProcessCodeExplorerToday from "./ThinnedProcessCodeExplorerToday.vue";
 
+import "@fortawesome/fontawesome-free/css/fontawesome.css";
+import "@fortawesome/fontawesome-free/css/brands.css";
 import "./style.css";
 
 export default {
