@@ -368,15 +368,23 @@ class MailTemplatesCopy extends BaseController
                 $targetScopeId
                 === $selectedSourceScope->getId();
 
+            if ($isSourceScope) {
+                return
+                    'Der Quellstandort darf nicht gleichzeitig '
+                    . 'als Zielstandort ausgewählt werden.';
+            }
+
             $hasSameProvider =
                 (string) $targetScope->getProviderId()
                 ===
                 (string) $selectedSourceScope->getProviderId();
 
-            if ($isSourceScope || $hasSameProvider) {
+            if ($hasSameProvider) {
                 return
-                    'Der Quellstandort darf nicht gleichzeitig '
-                    . 'als Zielstandort ausgewählt werden.';
+                    'Der ausgewählte Zielstandort verwendet '
+                    . 'denselben Provider wie der Quellstandort '
+                    . 'und kann daher nicht als Zielstandort '
+                    . 'verwendet werden.';
             }
         }
 

@@ -59,7 +59,9 @@ class MailTemplatesCopy extends \BO\Zmsbackend\Api\BaseController
             )
         );
 
-        $scopeList = (new Scope())->readEntitiesByIds(
+        $scopeReader = new Scope();
+
+        $scopeList = $scopeReader->readEntitiesByIds(
             $scopeIds,
             1
         );
@@ -107,6 +109,12 @@ class MailTemplatesCopy extends \BO\Zmsbackend\Api\BaseController
             throw new MailTemplateCopyInvalidInput();
         }
 
+        $this->assertTargetProviderAccess(
+            $targetProviderIds,
+            $scopeReader,
+            $userAccess
+        );
+
         $template = (new MailTemplates())
             ->copyCustomizationToProviders(
                 $sourceTemplateId,
@@ -128,6 +136,29 @@ class MailTemplatesCopy extends \BO\Zmsbackend\Api\BaseController
             $message,
             $message->getStatuscode()
         );
+    }
+
+    private function assertTargetProviderAccess(
+        array $targetProviderIds,
+        Scope $scopeReader,
+        User $userAccess
+    ): void {
+        foreach ($targetProviderIds as $targetProviderId) {
+            $providerScopes = $scopeReader->readByProviderId(
+                $targetProviderId,
+                1
+            );
+
+            if ($providerScopes->count() === 0) {
+                throw new ScopeNotFound();
+            }
+
+            foreach ($providerScopes as $providerScope) {
+                $userAccess->checkPermissions(
+                    new EntityAccess($providerScope)
+                );
+            }
+        }
     }
 
     private function readPositiveInt(mixed $value): ?int
