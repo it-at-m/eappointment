@@ -137,6 +137,7 @@ class ReportCapacityScopeTest extends Base
         $this->assertStringContainsString('Summe ·', (string) $response->getBody());
         $this->assertStringContainsString('report-board--capacity-summary', (string) $response->getBody());
         $this->assertStringContainsString('50 %', (string) $response->getBody());
+        $this->assertStringNotContainsString('report-board--chart-hourly', (string) $response->getBody());
         $this->assertStringContainsString('report-board--chart-data-sparse', (string) $response->getBody());
         $this->assertStringContainsString('report-board--chart-data-full', (string) $response->getBody());
         $this->assertStringContainsString('report-board--chart-minutes', (string) $response->getBody());
@@ -569,12 +570,18 @@ class ReportCapacityScopeTest extends Base
             []
         );
         $body = (string) $response->getBody();
-        $this->assertStringContainsString('Zeitpunkt', $body);
+        $this->assertStringContainsString('report-board--capacity-date', $body);
+        $this->assertStringContainsString('Datum', $body);
+        $this->assertStringContainsString('01.04.2016', $body);
         $this->assertStringContainsString('2016-04-01 08:00', $body);
         $this->assertStringContainsString('2016-04-01 09:00', $body);
+        $this->assertStringContainsString('report-board--chart-hourly', $body);
+        $this->assertStringContainsString('report-board--table-data-sparse-hourly', $body);
+        $this->assertStringContainsString('report-board--chart-data-sparse-hourly', $body);
         $this->assertStringContainsString('report-board--chart-data-sparse', $body);
         $this->assertStringContainsString('report-board--chart-data-full', $body);
-        $this->assertStringContainsString('50 %', $body);
+        $this->assertStringContainsString('59.1 %', $body);
+        $this->assertStringNotContainsString('>Zeitpunkt<', $body);
     }
 
     public function testWithoutCapacityReportPermission()
