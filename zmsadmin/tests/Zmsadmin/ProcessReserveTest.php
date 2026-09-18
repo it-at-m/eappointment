@@ -81,6 +81,10 @@ class ProcessReserveTest extends Base
         $this->assertLessThan($editButtonPosition, $copyButtonPosition);
         $this->assertLessThan($printButtonPosition, $editButtonPosition);
         $this->assertLessThan($closeButtonPosition, $printButtonPosition);
+
+        $this->assertMatchesRegularExpression('/data-callback="onEditProcess"[^>]*data-id="100005"[^>]*data-scope-id="141"/', $body);
+        $this->assertDoesNotMatchRegularExpression('/data-callback="onEditProcess"[^>]*data-scope-id="100005"/', $body);
+
         $this->assertEquals(200, $response->getStatusCode());
     }
 
