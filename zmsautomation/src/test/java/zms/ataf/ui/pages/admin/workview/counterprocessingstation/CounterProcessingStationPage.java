@@ -630,7 +630,7 @@ public class CounterProcessingStationPage extends AdminPage {
                     }
     
                     List<WebElement> successHeader = driver.findElements(
-                            By.xpath("//h2[normalize-space()='Termin erfolgreich eingetragen']")
+                            By.xpath("//h2[normalize-space()='Termin wurde erfolgreich eingetragen']")
                     );
     
                     if (!successHeader.isEmpty()) {
@@ -722,7 +722,7 @@ public class CounterProcessingStationPage extends AdminPage {
         ScenarioLogManager.getLogger().info("Trying to click on \"Add spontaneous customer\"  button...");
         fillCustomTextfieldsForSpontaneousCustomerIfNeeded();
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME * 2, "//button[text()='Spontankunden hinzufügen']", LocatorType.XPATH, false, CONTEXT);
-        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME * 2, "//h2[text()='Wartenummer wurde hinzugefügt']", LocatorType.XPATH, false, CONTEXT),
+        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME * 2, "//h2[text()='Spontankunde wurde erfolgreich eingetragen']", LocatorType.XPATH, false, CONTEXT),
                 "Click on \"Add spontaneous customer\"  button has failed! Success message is not displayed!");
         Pattern appointmentNumberPattern = Pattern.compile("^Termin-Nr\\.\\s*([0-9]+).*");
         Matcher appointmentNumberMatcher = appointmentNumberPattern.matcher(
@@ -730,6 +730,35 @@ public class CounterProcessingStationPage extends AdminPage {
         Assert.assertTrue(appointmentNumberMatcher.find(), "Click on \"Add spontaneous customer\"  button has failed! Waiting number is not displayed!");
         TestDataHelper.setTestData("new_waiting_number", appointmentNumberMatcher.group(1));
         return appointmentNumberMatcher.group(1);
+    }
+
+    public void clickOnEditProcessButton() {
+        ScenarioLogManager.getLogger().info("Trying to click on \"edit process\" button...");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(text(),'Termin bearbeiten')]", LocatorType.XPATH, false, CONTEXT);
+    }
+
+    public void checkProcessEditFormIsVisible() {
+        ScenarioLogManager.getLogger().info("Checking if process edit form is visible...");
+        CONTEXT.waitForSpinners();
+
+        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//input[@id='process_date']", LocatorType.XPATH, false, CONTEXT), "Process edit form is not visible!");
+
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("The expected walk-in customer was not loaded into the edit form!");
+
+        wait.until(ExpectedConditions.textToBePresentInElementValue(By.xpath("//input[@name='familyName']"), TestDataHelper.getTestData("customer_name")));
+    }
+
+    public void checkAppointmentEditFormIsVisible() {
+        ScenarioLogManager.getLogger().info("Checking if appointment edit form is visible...");
+        CONTEXT.waitForSpinners();
+
+        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//input[@id='process_date']", LocatorType.XPATH, false, CONTEXT), "Appointment edit form is not visible!");
+
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("The expected appointment customer was not loaded into the edit form!");
+
+        wait.until(ExpectedConditions.textToBePresentInElementValue(By.xpath("//input[@name='familyName']"), TestDataHelper.getTestData("new_appointment_customer_name"))); 
     }
 
     public void clickOnCloseButton() {

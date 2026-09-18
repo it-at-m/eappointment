@@ -105,6 +105,9 @@ public class AdminSteps {
         case "Termin ändern":
             COUNTER_PROCESSING_STATION_PAGE.clickOnChangeAppointmentButton();
             break;
+        case "Termin bearbeiten":
+            COUNTER_PROCESSING_STATION_PAGE.clickOnEditProcessButton();
+            break;
         case "Vorgangsnummer drucken":
             COUNTER_PROCESSING_STATION_PAGE.clickOnPrintAppointmentNumberButton();
             break;
@@ -504,6 +507,16 @@ public class AdminSteps {
         PROCESSING_STATION_SECTION.checkCustomerCallVisible();
         //TODO Die Spalten werden nicht mehr angezeigt, erst wenn termin vorhanden sind
         //COUNTER_PROCESSING_STATION_PAGE.checkQueueElementsVisibleWithoutSMS();
+    }
+
+    @Dann("wird das Bearbeitungsformular für den Spontankunden angezeigt.")
+    public void wird_das_bearbeitungsformular_fuer_den_spontankunden_angezeigt() {
+        COUNTER_PROCESSING_STATION_PAGE.checkProcessEditFormIsVisible();
+    }
+
+    @Dann("wird das Bearbeitungsformular für den Terminkunden angezeigt.")
+    public void wird_das_bearbeitungsformular_fuer_den_terminkunden_angezeigt() {
+        COUNTER_PROCESSING_STATION_PAGE.checkAppointmentEditFormIsVisible();
     }
 
     @Wenn("Sie einen Spontankunden für die Dienstleistung {string} buchen.")
