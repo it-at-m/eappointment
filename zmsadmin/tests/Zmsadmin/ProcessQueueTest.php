@@ -105,6 +105,9 @@ class ProcessQueueTest extends Base
         $this->assertLessThan($printButtonPosition, $editButtonPosition);
         $this->assertLessThan($closeButtonPosition, $printButtonPosition);
 
+        $this->assertMatchesRegularExpression('/data-callback="onEditProcess"[^>]*data-id="100011"[^>]*data-scope-id="141"/', $body);
+        $this->assertDoesNotMatchRegularExpression('/data-callback="onEditProcess"[^>]*data-scope-id="100011"/', $body);
+
         $this->assertStringContainsString('01.04.2016', $body);
         $this->assertStringNotContainsString('01.04.2016 um 00:00 Uhr', $body);
         $this->assertEquals(200, $response->getStatusCode());

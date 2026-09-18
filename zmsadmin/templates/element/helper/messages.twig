@@ -251,7 +251,7 @@
 				 <div class="form-actions">
 					<div class="right">
 						<button type="button" class="button btn button-submit button-callback" data-callback="onCopyButton" id="copy-popup-content" title="Inhalt kopieren"><i class="fas fa-copy" aria-hidden="true"></i></button>
-						<button type="button" class="button btn button-submit button-callback" data-callback="onEditProcess" name="editProcess" data-id="{{selectedprocess.id }}">Termin bearbeiten</button>
+						<button type="button" class="button btn button-submit button-callback" data-callback="onEditProcess" name="editProcess" data-id="{{selectedprocess.id }}" data-scope-id="{{selectedprocess.scope.id}}">Termin bearbeiten</button>
 						<button type="button" class="button btn button-submit button-callback" data-callback="onPrintWaitingNumber" name="printWaitingNumber" data-id="{{ selectedprocess.id }}" autofocus accesskey="u"> Wartenummer drucken</button>
 						<button type="button" class="button btn button-submit button-ok" accesskey="q">Schließen</button>
 						
@@ -314,7 +314,7 @@
 				<div class="form-actions">
 					<div class="right">
 						<button type="button" class="button btn button-submit button-callback" data-callback="onCopyButton" id="copy-popup-content" title="Inhalt kopieren"><i class="fas fa-copy" aria-hidden="true"></i></button>
-						<button type="button" class="button btn button-submit button-callback" data-callback="onEditProcess" name="editProcess" data-id="{{ selectedprocess.id }}" data-scope-id="{{ selectedprocess.id }}">Termin bearbeiten</button>
+						<button type="button" class="button btn button-submit button-callback" data-callback="onEditProcess" name="editProcess" data-id="{{ selectedprocess.id }}" data-scope-id="{{ selectedprocess.scope.id }}">Termin bearbeiten</button>
 		                <button type="button" class="button btn button-submit button-callback" data-callback="onPrintWaitingNumber" name="printWaitingNumber" data-id="{{ selectedprocess.id }}" accesskey="u">Wartenummer drucken</button>
 						<button type="button" class="button btn button-submit button-ok" accesskey="q">Schließen</button>
 		            </div>
