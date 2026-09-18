@@ -80,18 +80,22 @@ class MailTemplatesCopyTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testRejectsDifferentScopeWithSameProvider(): void
     {
-        $sourceTemplateId = $this->insertCustomization(
-            'mail_copy_same_provider_api_test.twig',
-            '122251'
-        );
-        $this->setAuthorizedWorkstation([146, 456]);
+        $scenario = $this->readProviderAccessScenario();
+
+        $this->setAuthorizedWorkstation([
+            $scenario['firstProviderScopeId'],
+            $scenario['secondProviderScopeId'],
+        ]);
 
         $this->expectException(MailTemplateCopyInvalidInput::class);
 
         $this->renderJson([
-            'sourceScopeId' => 146,
-            'sourceTemplateId' => $sourceTemplateId,
-            'targetScopeIds' => [456],
+            'sourceScopeId' =>
+                $scenario['firstProviderScopeId'],
+            'sourceTemplateId' => 1,
+            'targetScopeIds' => [
+                $scenario['secondProviderScopeId'],
+            ],
         ]);
     }
 
@@ -126,23 +130,110 @@ class MailTemplatesCopyTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testRejectsProviderWhenAnotherProviderScopeIsInaccessible(): void
     {
-        $sourceTemplateId = $this->insertSourceCustomization(
-            'mail_copy_provider_access_api_test.twig'
-        );
+        $scenario = $this->readProviderAccessScenario();
 
         /*
-         * Scopes 169 and 441 use provider 122291. The account may access
-         * scope 169, but not scope 441, so a provider-level write must fail.
-         */
-        $this->setAuthorizedWorkstation([141, 169]);
+        * The account may access the selected target scope, but not another
+        * scope using the same provider. A provider-level write must fail.
+        */
+        $this->setAuthorizedWorkstation([
+            $scenario['sourceScopeId'],
+            $scenario['firstProviderScopeId'],
+        ]);
 
         $this->expectException(UserAccountMissingRights::class);
 
         $this->renderJson([
-            'sourceScopeId' => 141,
-            'sourceTemplateId' => $sourceTemplateId,
-            'targetScopeIds' => [169],
+            'sourceScopeId' => $scenario['sourceScopeId'],
+            'sourceTemplateId' => 1,
+            'targetScopeIds' => [
+                $scenario['firstProviderScopeId'],
+            ],
         ]);
+    }
+
+    /**
+     * @return array{
+     *     sourceScopeId: int,
+     *     firstProviderScopeId: int,
+     *     secondProviderScopeId: int
+     * }
+     */
+    private function readProviderAccessScenario(): array
+    {
+        $service = new MailTemplates();
+
+        $targetProviderRow = $service->fetchRow(
+            'SELECT InfoDienstleisterID AS providerId '
+            . 'FROM standort '
+            . 'WHERE InfoDienstleisterID > 0 '
+            . 'GROUP BY InfoDienstleisterID '
+            . 'HAVING COUNT(*) > 1 '
+            . 'ORDER BY InfoDienstleisterID '
+            . 'LIMIT 1'
+        );
+
+        if (!is_array($targetProviderRow)) {
+            self::fail(
+                'No provider with at least two scopes was found.'
+            );
+        }
+
+        $targetProviderId = (string) (
+            $targetProviderRow['providerId'] ?? ''
+        );
+
+        self::assertNotSame('', $targetProviderId);
+
+        $providerScopeRows = $service->fetchAll(
+            'SELECT StandortID AS scopeId '
+            . 'FROM standort '
+            . 'WHERE InfoDienstleisterID = :providerId '
+            . 'ORDER BY StandortID '
+            . 'LIMIT 2',
+            [
+                'providerId' => $targetProviderId,
+            ]
+        );
+
+        self::assertCount(
+            2,
+            $providerScopeRows,
+            'The selected provider must have at least two scopes.'
+        );
+
+        $firstProviderScopeId = (int) (
+            $providerScopeRows[0]['scopeId'] ?? 0
+        );
+        $secondProviderScopeId = (int) (
+            $providerScopeRows[1]['scopeId'] ?? 0
+        );
+
+        $sourceScopeId = (int) $service->fetchValue(
+            'SELECT StandortID '
+            . 'FROM standort '
+            . 'WHERE InfoDienstleisterID > 0 '
+            . 'AND InfoDienstleisterID <> :providerId '
+            . 'ORDER BY StandortID '
+            . 'LIMIT 1',
+            [
+                'providerId' => $targetProviderId,
+            ]
+        );
+
+        self::assertGreaterThan(0, $sourceScopeId);
+        self::assertGreaterThan(0, $firstProviderScopeId);
+        self::assertGreaterThan(0, $secondProviderScopeId);
+        self::assertNotSame(
+            $firstProviderScopeId,
+            $secondProviderScopeId
+        );
+
+        return [
+            'sourceScopeId' => $sourceScopeId,
+            'firstProviderScopeId' => $firstProviderScopeId,
+            'secondProviderScopeId' => $secondProviderScopeId,
+        ];
     }
 
     private function renderJson(array $input): \Psr\Http\Message\ResponseInterface
@@ -198,7 +289,17 @@ class MailTemplatesCopyTest extends \BO\Zmsbackend\Tests\Api\Base
             ]
         );
 
-        return (int) $service->getWriter()->lastInsertId();
+        $templateId = (int) $service
+            ->getWriter()
+            ->lastInsertId();
+
+        self::assertGreaterThan(
+            0,
+            $templateId,
+            'The inserted mail-template ID must be greater than zero.'
+        );
+
+        return $templateId;
     }
 
     private function readCustomizationValue(
