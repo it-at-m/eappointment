@@ -457,6 +457,10 @@ import {
 } from "@/utils/rebookingContact";
 import { resolveOfficeById, toOfficeImpl } from "@/utils/resolveOfficeById";
 import { isExpired } from "@/utils/timestampInPast";
+import {
+  trackAppointmentEvent,
+  trackAppointmentStepFromView,
+} from "@/utils/trackAppointmentEvent";
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -1044,6 +1048,7 @@ const nextBookAppointment = () => {
             currentContext.value = "cancel";
             cancelAppointment(props.globalState, rebookedAppointment.value);
           }
+          trackAppointmentEvent({ event: "appointment_booked" });
           increaseCurrentView();
         }
       })
@@ -1075,6 +1080,7 @@ const nextCancelAppointment = () => {
 
         if ((data as AppointmentDTO).processId != undefined) {
           cancelAppointmentSuccess.value = true;
+          trackAppointmentEvent({ event: "appointment_cancelled" });
         } else {
           cancelAppointmentError.value = true;
         }
@@ -1117,6 +1123,7 @@ watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
   goToTop();
   focusActiveStepperItem();
+  trackAppointmentStepFromView(newCurrentView);
 });
 
 /**
@@ -1575,6 +1582,7 @@ function nextConfirmAppointment(
       if ((data as AppointmentDTO).processId != undefined) {
         confirmAppointmentSuccess.value = true;
         appointment.value = data as AppointmentDTO;
+        trackAppointmentEvent({ event: "appointment_confirmed" });
         clearContextErrors(errorStateMap.value);
         if (isRebooking.value && rebookedAppointment.value) {
           currentContext.value = "cancel";
