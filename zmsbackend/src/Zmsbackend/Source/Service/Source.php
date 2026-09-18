@@ -95,7 +95,7 @@ class Source extends \BO\Zmsbackend\Base
             $entity['requestrelation'] = (new RequestRelationList())
                 ->addList((new \BO\Zmsbackend\RequestRelation\Service\RequestRelation())->readListBySource($entity->source));
             $entity['scopes'] = (new ScopeList())
-                ->addList((new \BO\Zmsbackend\Scope\Service\Scope())->readList($disableCache));
+                ->addList((new \BO\Zmsbackend\Scope\Service\Scope())->readList($resolveReferences - 1, $disableCache));
         }
 
         return $entity;

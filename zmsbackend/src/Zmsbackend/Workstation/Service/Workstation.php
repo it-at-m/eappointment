@@ -276,7 +276,8 @@ class Workstation extends \BO\Zmsbackend\Base
     /**
      * update a workstation
      *
-     * @param int|string $useraccountId
+     * @param \BO\Zmsentities\Workstation $entity
+     * @param int $resolveReferences
      *
      * @return Entity
      */
@@ -296,7 +297,11 @@ class Workstation extends \BO\Zmsbackend\Base
     /**
      * update a workstations authkey - is needed for openid login
      *
-     * @param int|string $useraccountId
+     * @param string $loginName
+     * @param string $password
+     * @param string $authKey
+     * @param \DateTimeInterface $sessionExpiry
+     * @param int $resolveReferences
      *
      * @return Entity
      * @psalm-api

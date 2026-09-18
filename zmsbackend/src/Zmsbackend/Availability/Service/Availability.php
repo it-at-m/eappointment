@@ -231,7 +231,8 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
     /**
      * write an availability
      *
-     * @param int|string $entityId
+     * @param \BO\Zmsentities\Availability $entity
+     * @param int $resolveReferences
      *
      * @return Entity
      */

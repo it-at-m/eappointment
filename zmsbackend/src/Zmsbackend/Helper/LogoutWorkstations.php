@@ -13,7 +13,7 @@ class LogoutWorkstations
      * @return void
      */
 
-    public static function init(bool $verbose)
+    public static function init(bool $verbose): void
     {
         $query = new \BO\Zmsbackend\Workstation\Repository\Workstation(\BO\Zmsbackend\Query\Base::SELECT);
         $query

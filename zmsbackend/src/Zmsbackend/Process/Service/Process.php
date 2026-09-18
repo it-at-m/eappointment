@@ -430,10 +430,13 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
     }
 
     /**
-     * Read conflictList by scopeId and DateTime
+     * Read conflictList by scope and date range
      *
-     * @param array|int $scopeIds
-     * @param \DateTimeInterface $dateTime
+     * @param \BO\Zmsentities\Scope $scope
+     * @param \DateTimeInterface|null $startDate
+     * @param \DateTimeInterface|null $endDate
+     * @param \DateTimeInterface|null $now
+     * @param int $resolveReferences
      *
      * @return Collection
      */
