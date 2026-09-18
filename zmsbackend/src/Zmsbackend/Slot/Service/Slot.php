@@ -20,7 +20,11 @@ class Slot extends \BO\Zmsbackend\Base
      */
     const int MAX_SLOTS = 25;
 
-    const int MAX_DAYS_OF_SLOT_CALCULATION = 180;
+    /**
+     * Default cap when ZMS_MAX_BOOKABLE_IN_DAYS is unset.
+     * Runtime generation uses Availability::getMaxBookableInDays().
+     */
+    const int MAX_DAYS_OF_SLOT_CALCULATION = AvailabilityEntity::DEFAULT_MAX_BOOKABLE_IN_DAYS;
 
     /**
      * @return \BO\Zmsentities\Collection\SlotList
@@ -231,7 +235,8 @@ class Slot extends \BO\Zmsbackend\Base
         \DateTimeInterface $slotLastChange = null
     ) {
         $now = \BO\Zmsentities\Helper\DateTime::create($now);
-        $calculateSlotsUntilDate = \BO\Zmsentities\Helper\DateTime::create($now)->modify('+' . self::MAX_DAYS_OF_SLOT_CALCULATION . ' days');
+        $calculateSlotsUntilDate = \BO\Zmsentities\Helper\DateTime::create($now)
+            ->modify('+' . AvailabilityEntity::getMaxBookableInDays() . ' days');
         if (!$slotLastChange) {
             $slotLastChange = $this->readLastChangedTimeByAvailability($availability);
         }
