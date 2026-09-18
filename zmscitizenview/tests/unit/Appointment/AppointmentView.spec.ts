@@ -20,6 +20,10 @@ import {
 import de from "@/utils/de-DE.json";
 // beforeEach is already imported from vitest on line 2
 import { nowUnixSeconds } from "@/utils/timestampInPast";
+import {
+  trackAppointmentEvent,
+  trackAppointmentStepFromView,
+} from "@/utils/trackAppointmentEvent";
 
 globalThis.scrollTo = vi.fn();
 
@@ -45,6 +49,11 @@ vi.mock("@/utils/auth", () => ({
   })),
 }));
 
+vi.mock("@/utils/trackAppointmentEvent", () => ({
+  trackAppointmentEvent: vi.fn(),
+  trackAppointmentStepFromView: vi.fn(),
+}));
+
 describe("AppointmentView", () => {
   beforeAll(() => {
     vi.stubGlobal(
@@ -66,6 +75,8 @@ describe("AppointmentView", () => {
 
   beforeEach(() => {
     vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockReset();
+    vi.mocked(trackAppointmentEvent).mockReset();
+    vi.mocked(trackAppointmentStepFromView).mockReset();
   });
 
   const mockBaseUrl = "https://www.muenchen.de";
@@ -466,6 +477,36 @@ describe("AppointmentView", () => {
       wrapper.vm.currentView = 0; // Simulate stepper navigation
       await nextTick();
       expect(wrapper.find('[data-test="service-finder"]').exists()).toBe(true);
+    });
+  });
+
+  describe("appointment tracking", () => {
+    it("tracks English stepper steps when the view changes", async () => {
+      const wrapper = createWrapper({ appointmentHash: undefined });
+      vi.mocked(trackAppointmentStepFromView).mockClear();
+
+      wrapper.vm.currentView = 1;
+      await nextTick();
+
+      expect(trackAppointmentStepFromView).toHaveBeenCalledWith(1);
+    });
+
+    it("tracks appointment_booked after a successful preconfirm", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.appointment = {
+        processId: "p1",
+        authKey: "k1",
+      } as any;
+      vi.mocked(ZMSAppointmentAPI.preconfirmAppointment).mockResolvedValueOnce({
+        processId: "p1",
+      } as any);
+
+      await wrapper.vm.nextBookAppointment();
+      await nextTick();
+
+      expect(trackAppointmentEvent).toHaveBeenCalledWith({
+        event: "appointment_booked",
+      });
     });
   });
 
@@ -2930,8 +2971,8 @@ describe("AppointmentView", () => {
       });
       expect(wrapper.vm.currentView).toBe(3);
 
-      const fetchCount =
-        vi.mocked(ZMSAppointmentAPI.fetchAppointment).mock.calls.length;
+      const fetchCount = vi.mocked(ZMSAppointmentAPI.fetchAppointment).mock
+        .calls.length;
 
       wrapper.vm.decreaseCurrentView();
       await nextTick();
