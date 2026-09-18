@@ -12,7 +12,7 @@ class MailTemplatesCopyTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = 'MailTemplatesCopy';
 
-    public function testCopiesCustomizationToMultipleScopes(): void
+    public function testRendering(): void
     {
         $sourceTemplateId = $this->insertSourceCustomization(
             'mail_copy_api_test.twig'
@@ -149,8 +149,14 @@ class MailTemplatesCopyTest extends \BO\Zmsbackend\Tests\Api\Base
     {
         return $this->render(
             [],
-            ['__body' => json_encode($input, JSON_THROW_ON_ERROR)],
-            []
+            [
+                '__body' => json_encode(
+                    $input,
+                    JSON_THROW_ON_ERROR
+                ),
+            ],
+            [],
+            'POST'
         );
     }
 

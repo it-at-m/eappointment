@@ -138,6 +138,9 @@ class MailTemplatesCopy extends \BO\Zmsbackend\Api\BaseController
         );
     }
 
+    /**
+     * @param string[] $targetProviderIds
+     */
     private function assertTargetProviderAccess(
         array $targetProviderIds,
         Scope $scopeReader,
@@ -146,7 +149,7 @@ class MailTemplatesCopy extends \BO\Zmsbackend\Api\BaseController
         foreach ($targetProviderIds as $targetProviderId) {
             $providerScopes = $scopeReader->readByProviderId(
                 $targetProviderId,
-                1
+                0
             );
 
             if ($providerScopes->count() === 0) {
