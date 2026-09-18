@@ -734,18 +734,31 @@ public class CounterProcessingStationPage extends AdminPage {
 
     public void clickOnEditProcessButton() {
         ScenarioLogManager.getLogger().info("Trying to click on \"edit process\" button...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(text(),'Termin bearbeiten')]", LocatorType.XPATH, false);
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(text(),'Termin bearbeiten')]", LocatorType.XPATH, false, CONTEXT);
     }
 
     public void checkProcessEditFormIsVisible() {
         ScenarioLogManager.getLogger().info("Checking if process edit form is visible...");
+        CONTEXT.waitForSpinners();
 
-        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//input[@id='process_date']", LocatorType.XPATH, false ), "Process edit form is not visible!");
+        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//input[@id='process_date']", LocatorType.XPATH, false, CONTEXT), "Process edit form is not visible!");
 
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.withMessage("The expected walk-in customer was not loaded into the edit form!");
 
         wait.until(ExpectedConditions.textToBePresentInElementValue(By.xpath("//input[@name='familyName']"), TestDataHelper.getTestData("customer_name")));
+    }
+
+    public void checkAppointmentEditFormIsVisible() {
+        ScenarioLogManager.getLogger().info("Checking if appointment edit form is visible...");
+        CONTEXT.waitForSpinners();
+
+        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//input[@id='process_date']", LocatorType.XPATH, false, CONTEXT), "Appointment edit form is not visible!");
+
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("The expected appointment customer was not loaded into the edit form!");
+
+        wait.until(ExpectedConditions.textToBePresentInElementValue(By.xpath("//input[@name='familyName']"), TestDataHelper.getTestData("new_appointment_customer_name"))); 
     }
 
     public void clickOnCloseButton() {
