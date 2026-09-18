@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-18T13:17:50.327Z",
+  "publishedAt": "2026-09-18T17:53:50.390Z",
   "branches": [
     {
       "name": "next",
@@ -34,8 +34,8 @@
     {
       "name": "cursor/psalm-missing-param-type-low-risk",
       "slug": "cursor-psalm-missing-param-type-low-risk",
-      "runId": "35340147009",
-      "runStartedAt": "2026-09-18T11:32:35Z"
+      "runId": "35366549582",
+      "runStartedAt": "2026-09-18T16:07:13Z"
     },
     {
       "name": "dependabot/npm_and_yarn/zmsadmin/next/eslint-10.10.0",
