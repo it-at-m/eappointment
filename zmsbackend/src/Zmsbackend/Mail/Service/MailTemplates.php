@@ -144,7 +144,9 @@ class MailTemplates extends \BO\Zmsbackend\Base
             if ($targetProviderId === '') {
                 throw new \BO\Zmsbackend\Mail\Exception\MailTemplateCopyInvalidInput();
             }
+        }
 
+        foreach ($targetProviderIds as $targetProviderId) {
             $this->perform(
                 \BO\Zmsbackend\Mail\Repository\Mailtemplate::QUERY_UPSERT_CUSTOMIZATION,
                 [
