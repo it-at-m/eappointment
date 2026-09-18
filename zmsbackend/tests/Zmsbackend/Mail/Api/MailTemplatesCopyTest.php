@@ -48,32 +48,26 @@ class MailTemplatesCopyTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testRejectsEmptyTargetScopeList(): void
     {
-        $sourceTemplateId = $this->insertSourceCustomization(
-            'mail_copy_empty_api_test.twig'
-        );
         $this->setAuthorizedWorkstation([141]);
 
         $this->expectException(MailTemplateCopyInvalidInput::class);
 
         $this->renderJson([
             'sourceScopeId' => 141,
-            'sourceTemplateId' => $sourceTemplateId,
+            'sourceTemplateId' => 1,
             'targetScopeIds' => [],
         ]);
     }
 
     public function testRejectsSourceScopeAsTargetScope(): void
     {
-        $sourceTemplateId = $this->insertSourceCustomization(
-            'mail_copy_source_target_api_test.twig'
-        );
         $this->setAuthorizedWorkstation([141]);
 
         $this->expectException(MailTemplateCopyInvalidInput::class);
 
         $this->renderJson([
             'sourceScopeId' => 141,
-            'sourceTemplateId' => $sourceTemplateId,
+            'sourceTemplateId' => 1,
             'targetScopeIds' => [141],
         ]);
     }
@@ -114,16 +108,13 @@ class MailTemplatesCopyTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testRejectsInaccessibleTargetScope(): void
     {
-        $sourceTemplateId = $this->insertSourceCustomization(
-            'mail_copy_scope_access_api_test.twig'
-        );
         $this->setAuthorizedWorkstation([141]);
 
         $this->expectException(UserAccountMissingRights::class);
 
         $this->renderJson([
             'sourceScopeId' => 141,
-            'sourceTemplateId' => $sourceTemplateId,
+            'sourceTemplateId' => 1,
             'targetScopeIds' => [143],
         ]);
     }
