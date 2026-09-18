@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-18T07:22:40.104Z",
+  "publishedAt": "2026-09-18T13:17:50.327Z",
   "branches": [
     {
       "name": "next",
@@ -30,6 +30,12 @@
       "slug": "chore-replace-10503-with-10313237",
       "runId": "34979562384",
       "runStartedAt": "2026-09-15T14:07:53Z"
+    },
+    {
+      "name": "cursor/psalm-missing-param-type-low-risk",
+      "slug": "cursor-psalm-missing-param-type-low-risk",
+      "runId": "35340147009",
+      "runStartedAt": "2026-09-18T11:32:35Z"
     },
     {
       "name": "dependabot/npm_and_yarn/zmsadmin/next/eslint-10.10.0",
