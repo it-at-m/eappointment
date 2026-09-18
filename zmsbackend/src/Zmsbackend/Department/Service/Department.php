@@ -265,8 +265,8 @@ class Department extends \BO\Zmsbackend\Base
     protected function updateDepartmentMail(
         string|false $departmentId,
         $email,
-        bool $sendEmailReminderEnabled,
-        int $sendEmailReminderMinutesBefore
+        bool|int|string|null $sendEmailReminderEnabled,
+        int|string|null $sendEmailReminderMinutesBefore
     ) {
         self::$departmentCache = [];
         $query = \BO\Zmsbackend\Department\Repository\Department::QUERY_MAIL_UPDATE;
