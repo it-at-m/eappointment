@@ -514,6 +514,11 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.checkProcessEditFormIsVisible();
     }
 
+    @Dann("wird das Bearbeitungsformular für den Terminkunden angezeigt.")
+    public void wird_das_bearbeitungsformular_fuer_den_terminkunden_angezeigt() {
+        COUNTER_PROCESSING_STATION_PAGE.checkAppointmentEditFormIsVisible();
+    }
+
     @Wenn("Sie einen Spontankunden für die Dienstleistung {string} buchen.")
     public void wenn_sie_einen_spontan_kunden_fuer_die_dienstleistung_buchen(String dienstleistung) {
         List<String> services = Arrays.asList(dienstleistung.split(",\\s*"));
