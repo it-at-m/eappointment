@@ -326,7 +326,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
         \DateTimeInterface $now,
         $freeProcessesDate,
         $slotType = 'public',
-        $slotsRequired = 1
+        int $slotsRequired = 1
     ): \BO\Zmsentities\Calendar {
         $nowDate = $now->format('Y-m-d');
         foreach ($this->slots as $date => $slotList) {
@@ -348,7 +348,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
         $freeProcessesDate,
         $date,
         $slotType = 'public',
-        $slotsRequired = 1
+        int $slotsRequired = 1
     ): void {
         if (null !== $freeProcessesDate && $date == $freeProcessesDate->format('Y-m-d')) {
             $freeProcesses = $this->getFreeProcesses($calendar, $freeProcessesDate, $slotType, $slotsRequired);
@@ -367,7 +367,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeImmutable $freeProcessesDate = null,
         $slotType = 'public',
-        $slotsRequired = 1
+        int $slotsRequired = 1
     ) {
         $selectedDate = $freeProcessesDate->format('Y-m-d');
         $slotList = $this->slots[$selectedDate];
