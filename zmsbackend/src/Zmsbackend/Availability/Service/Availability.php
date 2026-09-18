@@ -16,7 +16,7 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
      * @param false|int|string $availabilityId
      *
      */
-    public function readEntity(string|int|false $availabilityId, int $resolveReferences = 0, $preferCache = false)
+    public function readEntity(string|int|false $availabilityId, int $resolveReferences = 0, bool $preferCache = false)
     {
         $cacheKey = "$availabilityId-$resolveReferences";
         if (!$preferCache || !array_key_exists($cacheKey, self::$cache)) {
@@ -38,8 +38,8 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
     #[\Override]
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $entity,
-        $resolveReferences,
-        $preferCache = false
+        int $resolveReferences,
+        bool $preferCache = false
     ) {
         if (1 <= $resolveReferences && $entity->hasId()) {
             if (isset($entity->scope['id'])) {
@@ -58,7 +58,7 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
         return $this->perform(\BO\Zmsbackend\Availability\Repository\Availability::QUERY_GET_LOCK, ['availabilityId' => $availabilityId]);
     }
 
-    public function readEntityDoubleTypes($availabilityId, $resolveReferences = 0)
+    public function readEntityDoubleTypes($availabilityId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Availability\Repository\Availability(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -170,7 +170,7 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
     /*
     ** Returns a list of availabilities with end date older than 4 weeks
     */
-    public function readAvailabilityListBefore(\DateTimeImmutable $datetime, $resolveReferences = 0): Collection
+    public function readAvailabilityListBefore(\DateTimeImmutable $datetime, int $resolveReferences = 0): Collection
     {
         $collection = new Collection();
         $query = new \BO\Zmsbackend\Availability\Repository\Availability(\BO\Zmsbackend\Query\Base::SELECT);
@@ -214,7 +214,7 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
         return $collection;
     }
 
-    public function readByAppointment(\BO\Zmsentities\Appointment $appointment, $resolveReferences = 0)
+    public function readByAppointment(\BO\Zmsentities\Appointment $appointment, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Availability\Repository\Availability(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping();
@@ -231,11 +231,12 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
     /**
      * write an availability
      *
-     * @param int|string $entityId
+     * @param \BO\Zmsentities\Availability $entity
+     * @param int $resolveReferences
      *
      * @return Entity
      */
-    public function writeEntity(\BO\Zmsentities\Availability $entity, $resolveReferences = 0)
+    public function writeEntity(\BO\Zmsentities\Availability $entity, int $resolveReferences = 0)
     {
         self::$cache = [];
         $entity->testValid();

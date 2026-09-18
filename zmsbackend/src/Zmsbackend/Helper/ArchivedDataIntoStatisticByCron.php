@@ -19,7 +19,7 @@ class ArchivedDataIntoStatisticByCron
 
     protected $archivedList = [];
 
-    public function __construct($limit = null, $verbose = false)
+    public function __construct(?int $limit = null, bool $verbose = false)
     {
         if ($verbose) {
             $this->verbose = true;

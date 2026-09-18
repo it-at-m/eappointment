@@ -11,7 +11,7 @@ class CleanProcessArchivedToday
 {
     protected $verbose = false;
 
-    public function __construct($verbose = false)
+    public function __construct(bool $verbose = false)
     {
         if ($verbose) {
             $this->verbose = true;

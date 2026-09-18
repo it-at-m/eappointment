@@ -20,7 +20,7 @@ class RequestRelation extends \BO\Zmsbackend\Base
         return $this->fetchOne($query, new Entity());
     }
 
-    public function readListBySource($source, $resolveReferences = 0)
+    public function readListBySource($source, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\RequestRelation\Repository\RequestRelation(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -33,7 +33,7 @@ class RequestRelation extends \BO\Zmsbackend\Base
         return $this->readList($statement);
     }
 
-    public function readListByRequestId($requestId, $source, $resolveReferences = 0)
+    public function readListByRequestId($requestId, $source, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\RequestRelation\Repository\RequestRelation(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -47,7 +47,7 @@ class RequestRelation extends \BO\Zmsbackend\Base
         return $this->readList($statement);
     }
 
-    public function readListByProviderId($providerId, $source, $resolveReferences = 0)
+    public function readListByProviderId($providerId, $source, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\RequestRelation\Repository\RequestRelation(\BO\Zmsbackend\Query\Base::SELECT);
         $query

@@ -32,6 +32,8 @@ class CalendarGet extends \BO\Zmsbackend\Api\BaseController
             $slotsRequired = 0;
             $slotType = 'public';
         }
+        $slotType = $slotType ?? 'public';
+        $slotsRequired = $slotsRequired ?? 0;
 
         $query = new Query();
         $fillWithEmptyDays = Validator::param('fillWithEmptyDays')->isNumber()->setDefault(0)->getValue();
@@ -44,7 +46,7 @@ class CalendarGet extends \BO\Zmsbackend\Api\BaseController
             throw new \BO\Zmsbackend\Calendar\Exception\InvalidFirstDay('First and last day are required');
         } else {
             $calendar = $query
-              ->readResolvedEntity($calendar, \App::getNow(), null, $slotType, $slotsRequired);
+              ->readResolvedEntity($calendar, \App::getNow(), false, $slotType, $slotsRequired);
               $calendar = ($hasGQL) ? $calendar : $calendar->withLessData();
             if ($fillWithEmptyDays) {
                 $calendar = $calendar->withFilledEmptyDays();

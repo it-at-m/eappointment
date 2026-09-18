@@ -444,7 +444,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     public function addConditionProcessMailReminder(
         \DateTimeInterface $now,
         \DateTimeInterface $lastRun,
-        $defaultReminderInMinutes
+        int $defaultReminderInMinutes
     ): static {
         $this->query
             ->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($now, $lastRun, $defaultReminderInMinutes) {
@@ -559,7 +559,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * @psalm-api
      */
-    public function addConditionQueueNumber($queueNumber, $queueLimit = 10000): static
+    public function addConditionQueueNumber(int $queueNumber, int $queueLimit = 10000): static
     {
         ($queueLimit > $queueNumber)
             ? $this->query->where('process.wartenummer', '=', $queueNumber)
@@ -891,7 +891,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return str_replace("'", "''", $value);
     }
 
-    public function addConditionName($name, $exactMatching = false): static
+    public function addConditionName($name, bool $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($name) {
@@ -922,7 +922,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * @psalm-api
      */
-    public function addConditionCustomTextfield($customText, $exactMatching = false): static
+    public function addConditionCustomTextfield($customText, bool $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($customText) {
@@ -939,7 +939,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * @psalm-api
      */
-    public function addConditionCustomTextfield2($customText2, $exactMatching = false): static
+    public function addConditionCustomTextfield2($customText2, bool $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($customText2) {
@@ -1039,7 +1039,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addValuesNewProcess(ProcessEntity $process, $parentProcess = 0, $childProcessCount = 0): void
+    public function addValuesNewProcess(ProcessEntity $process, $parentProcess = 0, int $childProcessCount = 0): void
     {
         $values = [
             'BuergerID' => $process->id,

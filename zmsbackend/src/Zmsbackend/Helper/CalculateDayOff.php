@@ -30,14 +30,14 @@ class CalculateDayOff
 
     protected $targetYear;
 
-    public function __construct($targetYear, $verbose = false)
+    public function __construct(int $targetYear, bool $verbose = false)
     {
         $this->dateTime = new \DateTime('now', new \DateTimeZone('Europe/Berlin'));
         $this->targetYear = $targetYear;
         $this->verbose = $verbose;
     }
 
-    protected function calculateDayOffByYear($year): \BO\Zmsentities\Collection\DayoffList
+    protected function calculateDayOffByYear(int $year): \BO\Zmsentities\Collection\DayoffList
     {
         $collection = new \BO\Zmsentities\Collection\DayoffList();
         $dateEaster = $this->calculateEaster($year);
@@ -62,7 +62,7 @@ class CalculateDayOff
         return $collection;
     }
 
-    protected function calculateEaster($year): \DateTime
+    protected function calculateEaster(int $year): \DateTime
     {
         $date = clone $this->dateTime;
         if ($year) {
@@ -73,7 +73,7 @@ class CalculateDayOff
         return $date->setTimestamp($easterDate);
     }
 
-    public function writeDayOffListUntilYear($commit = false, $fromnow = false)
+    public function writeDayOffListUntilYear(bool $commit = false, bool $fromnow = false)
     {
         $query = new \BO\Zmsbackend\Dayoff\Service\DayOff();
         $list = $this->readDayoffList($query, $this->targetYear);

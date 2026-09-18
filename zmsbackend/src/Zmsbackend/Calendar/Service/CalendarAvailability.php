@@ -15,7 +15,7 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
     public function readFromQuery(
         \DateTimeInterface $now,
         string $slotType,
-        $slotsRequired,
+        int $slotsRequired,
         ?string $startDate,
         ?string $endDate,
         ?string $officeIds,
@@ -78,7 +78,7 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         Entity $calendar,
         \DateTimeInterface $now,
         string $slotType = 'public',
-        $slotsRequired = 0,
+        int $slotsRequired = 0,
         ?string $slotsStartDate = null,
         ?string $slotsEndDate = null
     ): array {
@@ -229,7 +229,7 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
      * Shared Day::writeTemporaryScopeList still defaults those to 1 for zmsadmin;
      * citizen availability must not invent bookable offices that way.
      */
-    private function withoutUnrelatedScopes(Entity $calendar, $slotsRequiredForce): Entity
+    private function withoutUnrelatedScopes(Entity $calendar, int $slotsRequiredForce): Entity
     {
         if ($slotsRequiredForce) {
             return $calendar;
@@ -372,7 +372,7 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
     private function readBookableDaysForRange(
         Entity $calendar,
         \BO\Zmsbackend\Day\Service\Day $dayQuery,
-        $slotsRequired,
+        int $slotsRequired,
         string $slotType,
         \DateTimeInterface $now,
         string $rangeStartDate,
@@ -418,7 +418,7 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
     private function findAdjacentBookableDatesByScan(
         Entity $calendar,
         \BO\Zmsbackend\Day\Service\Day $dayQuery,
-        $slotsRequired,
+        int $slotsRequired,
         string $slotType,
         \DateTimeInterface $now,
         string $responseStartDate,
@@ -451,7 +451,7 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
     private function findFirstBookableDateAfter(
         Entity $calendar,
         \BO\Zmsbackend\Day\Service\Day $dayQuery,
-        $slotsRequired,
+        int $slotsRequired,
         string $slotType,
         \DateTimeInterface $now,
         string $afterDate,
@@ -504,7 +504,7 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
     private function findFirstBookableDateBefore(
         Entity $calendar,
         \BO\Zmsbackend\Day\Service\Day $dayQuery,
-        $slotsRequired,
+        int $slotsRequired,
         string $slotType,
         \DateTimeInterface $now,
         string $beforeDate,
