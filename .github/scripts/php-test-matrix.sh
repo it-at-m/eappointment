@@ -11,8 +11,10 @@
 #   FORCE_FULL=true .github/scripts/php-test-matrix.sh
 #   .github/scripts/php-test-matrix.sh zmsadmin/src/foo.php
 #
-# Writes quality_matrix, unit_matrix, run_quality, run_unit, run_backend,
-# run_client to $GITHUB_OUTPUT when that file is set.
+# Writes selected_modules (JSON array of modules that should actually run
+# phpcs/phpunit) plus quality/unit matrices and run_* flags to $GITHUB_OUTPUT
+# when that file is set. Combined PHP Build always instantiates the full
+# default job names (required checks) and no-ops modules not in selected.
 set -euo pipefail
 
 PHP_VERSION="${PHP_VERSION:-8.3}"
@@ -261,6 +263,12 @@ filter_present UNIT_STANDARD unit_modules
 quality_matrix="$(modules_to_matrix "${quality_modules[@]+"${quality_modules[@]}"}")"
 unit_matrix="$(modules_to_matrix "${unit_modules[@]+"${unit_modules[@]}"}")"
 
+if [[ "${#quality_modules[@]}" -eq 0 ]]; then
+  selected_modules='[]'
+else
+  selected_modules="$(printf '%s\n' "${quality_modules[@]}" | jq -R . | jq -s -c .)"
+fi
+
 run_quality=false
 run_unit=false
 run_backend=false
@@ -280,6 +288,7 @@ fi
 
 {
   echo "PHP test matrix (force_full=${force_full})"
+  echo "  selected: ${selected_modules}"
   echo "  quality: ${quality_modules[*]:-(none)}"
   echo "  unit:    ${unit_modules[*]:-(none)}"
   echo "  backend: ${run_backend}"
@@ -294,6 +303,9 @@ if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
     echo "unit_matrix<<EOF"
     echo "$unit_matrix"
     echo "EOF"
+    echo "selected_modules<<EOF"
+    echo "$selected_modules"
+    echo "EOF"
     echo "run_quality=${run_quality}"
     echo "run_unit=${run_unit}"
     echo "run_backend=${run_backend}"
@@ -303,6 +315,7 @@ fi
 
 printf 'quality_matrix=%s\n' "$quality_matrix"
 printf 'unit_matrix=%s\n' "$unit_matrix"
+printf 'selected_modules=%s\n' "$selected_modules"
 printf 'run_quality=%s\n' "$run_quality"
 printf 'run_unit=%s\n' "$run_unit"
 printf 'run_backend=%s\n' "$run_backend"
