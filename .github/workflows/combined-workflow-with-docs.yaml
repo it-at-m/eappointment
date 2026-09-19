@@ -22,17 +22,11 @@ jobs:
   call-php-unit-tests:
     uses: ./.github/workflows/php-unit-tests.yaml
 
-  call-php-backend-test:
-    uses: ./.github/workflows/php-backend-unit-tests.yaml
-
-  call-php-client-test:
-    uses: ./.github/workflows/php-client-unit-tests.yaml
-
   call-zmscitizenview-coverage:
     uses: ./.github/workflows/zmscitizenview-coverage.yaml
 
   aggregate-reports:
-    needs: [call-php-unit-tests, call-php-backend-test, call-php-client-test, call-zmscitizenview-coverage]
+    needs: [call-php-unit-tests, call-zmscitizenview-coverage]
     runs-on: ubuntu-latest
     steps:
       - name: Create directories
@@ -94,11 +88,9 @@ jobs:
       git_branch: ${{ github.ref_name }}
 
   call-php-build-images:
-    needs: [call-php-code-quality, call-php-unit-tests, call-php-backend-test, call-php-client-test]
+    needs: [call-php-code-quality, call-php-unit-tests]
     if: |
       always() &&
       needs.call-php-code-quality.result == 'success' &&
-      needs.call-php-unit-tests.result == 'success' &&
-      needs.call-php-backend-test.result == 'success' &&
-      needs.call-php-client-test.result == 'success'
+      needs.call-php-unit-tests.result == 'success'
     uses: ./.github/workflows/php-build-images.yaml

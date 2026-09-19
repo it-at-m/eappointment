@@ -20,12 +20,7 @@ jobs:
     name: Generate PHP test matrix
     runs-on: ubuntu-latest
     outputs:
-      quality_matrix: ${{ steps.set-matrix.outputs.quality_matrix }}
-      unit_matrix: ${{ steps.set-matrix.outputs.unit_matrix }}
-      run_quality: ${{ steps.set-matrix.outputs.run_quality }}
-      run_unit: ${{ steps.set-matrix.outputs.run_unit }}
-      run_backend: ${{ steps.set-matrix.outputs.run_backend }}
-      run_client: ${{ steps.set-matrix.outputs.run_client }}
+      selected_modules: ${{ steps.set-matrix.outputs.selected_modules }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -43,41 +38,25 @@ jobs:
 
   call-php-code-quality:
     needs: generate-matrix
-    if: needs.generate-matrix.outputs.run_quality == 'true'
     uses: ./.github/workflows/php-code-quality.yaml
     with:
-      matrix: ${{ needs.generate-matrix.outputs.quality_matrix }}
+      selected: ${{ needs.generate-matrix.outputs.selected_modules }}
 
   call-php-unit-tests:
     needs: generate-matrix
-    if: needs.generate-matrix.outputs.run_unit == 'true'
     uses: ./.github/workflows/php-unit-tests.yaml
     with:
-      matrix: ${{ needs.generate-matrix.outputs.unit_matrix }}
-
-  call-php-backend-test:
-    needs: generate-matrix
-    if: needs.generate-matrix.outputs.run_backend == 'true'
-    uses: ./.github/workflows/php-backend-unit-tests.yaml
-
-  call-php-client-test:
-    needs: generate-matrix
-    if: needs.generate-matrix.outputs.run_client == 'true'
-    uses: ./.github/workflows/php-client-unit-tests.yaml
+      selected: ${{ needs.generate-matrix.outputs.selected_modules }}
 
   call-php-build-images:
     needs:
       - generate-matrix
       - call-php-code-quality
       - call-php-unit-tests
-      - call-php-backend-test
-      - call-php-client-test
     if: |
       always() &&
       !cancelled() &&
       needs.generate-matrix.result == 'success' &&
-      (needs.call-php-code-quality.result == 'success' || needs.call-php-code-quality.result == 'skipped') &&
-      (needs.call-php-unit-tests.result == 'success' || needs.call-php-unit-tests.result == 'skipped') &&
-      (needs.call-php-backend-test.result == 'success' || needs.call-php-backend-test.result == 'skipped') &&
-      (needs.call-php-client-test.result == 'success' || needs.call-php-client-test.result == 'skipped')
+      needs.call-php-code-quality.result == 'success' &&
+      needs.call-php-unit-tests.result == 'success'
     uses: ./.github/workflows/php-build-images.yaml
