@@ -74,6 +74,22 @@ class DayoffTest extends EntityCommonTests
         $collection->testDatesInYear(2017);
     }
 
+    public function testUniqueDates()
+    {
+        $collection = $this->getDayOffExampleList();
+        $this->assertTrue($collection->testUniqueDates());
+    }
+
+    public function testUniqueDatesFailed()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\DayoffDuplicateDate');
+        $collection = $this->getDayOffExampleList();
+        $duplicate = clone $collection->getFirst();
+        $duplicate->name = 'Noch ein Karfreitag';
+        $collection->addEntity($duplicate);
+        $collection->testUniqueDates();
+    }
+
     public function testDateFormat()
     {
         $list = new $this->collectionclass([
