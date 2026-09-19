@@ -150,12 +150,27 @@ collect_changed_files() {
     printf '%s\n' "$@"
     return
   fi
-  git -C "$REPO_ROOT" fetch --no-tags --prune origin next:refs/remotes/origin/next >/dev/null
-  if ! git -C "$REPO_ROOT" merge-base "$DIFF_BASE" HEAD >/dev/null; then
-    echo "Could not compute merge-base with ${DIFF_BASE}; forcing full PHP test set." >&2
+
+  echo "HEAD=$(git -C "$REPO_ROOT" rev-parse --short HEAD) $(git -C "$REPO_ROOT" rev-parse HEAD)" >&2
+
+  # Do not use --prune: actions/checkout limits remote.origin.fetch to the
+  # current branch, and prune then drops refs we just need (including next).
+  # Fetch next into FETCH_HEAD even when origin/next is not a tracking ref.
+  if ! git -C "$REPO_ROOT" fetch --no-tags origin refs/heads/next; then
+    echo "git fetch origin refs/heads/next failed" >&2
     return 2
   fi
-  git -C "$REPO_ROOT" diff --name-only "${DIFF_BASE}...HEAD"
+
+  local base
+  base="$(git -C "$REPO_ROOT" rev-parse FETCH_HEAD)"
+  echo "next=$(git -C "$REPO_ROOT" rev-parse --short FETCH_HEAD) ${base}" >&2
+
+  if ! git -C "$REPO_ROOT" merge-base "$base" HEAD >/dev/null; then
+    echo "No merge-base between next (${base}) and HEAD" >&2
+    return 2
+  fi
+
+  git -C "$REPO_ROOT" diff --name-only "${base}...HEAD"
 }
 
 selected_has() {
@@ -196,6 +211,15 @@ if [[ "$force_full" != true ]]; then
   else
     echo "Falling back to the full PHP test set." >&2
     force_full=true
+  fi
+fi
+
+if [[ "$force_full" != true ]]; then
+  echo "Changed files vs next:" >&2
+  if [[ "${#changed_files[@]}" -eq 0 ]]; then
+    echo "  (none)" >&2
+  else
+    printf '  %s\n' "${changed_files[@]}" >&2
   fi
 fi
 
