@@ -23,3 +23,5 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# CI matrix probe #3339 — delete this branch after checking Combined PHP Build.
