@@ -2,8 +2,10 @@
 # Build GitHub Actions matrices for Combined PHP Build tests.
 #
 # Diffs the current HEAD against origin/next (three-dot) and expands a
-# consumer graph so library changes test dependents, while app-only changes
-# test that app. Shared CI paths and tags/main force the full set.
+# consumer graph from each module's composer.json require (internal packages
+# only, including cycles). App-only changes test that app; dropping a
+# composer require drops that consumer from later library diffs. Shared CI
+# paths and tags/main force the full set.
 #
 # Usage:
 #   FORCE_FULL=true .github/scripts/php-test-matrix.sh
@@ -16,6 +18,8 @@ set -euo pipefail
 PHP_VERSION="${PHP_VERSION:-8.3}"
 DIFF_BASE="${DIFF_BASE:-origin/next}"
 FORCE_FULL="${FORCE_FULL:-false}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 ALL_PHP=(
   mellon
@@ -41,14 +45,6 @@ UNIT_STANDARD=(
   zmsentities
   zmsmessaging
   zmsslim
-  zmsstatistic
-  zmsticketprinter
-)
-
-FRONTEND_PHP=(
-  zmsadmin
-  zmscalldisplay
-  zmscitizenapi
   zmsstatistic
   zmsticketprinter
 )
@@ -100,31 +96,37 @@ is_ignored_path() {
   return 1
 }
 
+build_direct_consumers_json() {
+  local module
+  for module in "${ALL_PHP[@]}"; do
+    jq -c --arg dir "$module" '{
+        dir: $dir,
+        name: (.name // ""),
+        requires: ((.require // {}) | keys)
+      }' "$REPO_ROOT/$module/composer.json"
+  done | jq -s -c '
+    (map(select(.name != "") | {(.name): .dir}) | add // {}) as $name2dir
+    | reduce .[] as $mod ({};
+        reduce ($mod.requires[] | select($name2dir[.] != null) | $name2dir[.]) as $dep (.;
+          .[$dep] = ((.[$dep] // []) + [$mod.dir] | unique)
+        )
+      )
+  '
+}
+
+DIRECT_CONSUMERS_JSON="$(build_direct_consumers_json)"
+
 consumers_of() {
   local module="$1"
-  case "$module" in
-    mellon)
-      printf '%s\n' "${ALL_PHP[@]}"
-      ;;
-    zmsentities)
-      printf '%s\n' zmsentities zmsclient zmsdldb zmsbackend zmsmessaging "${FRONTEND_PHP[@]}"
-      ;;
-    zmsslim)
-      printf '%s\n' zmsslim zmsclient zmsdldb zmsbackend zmsmessaging "${FRONTEND_PHP[@]}"
-      ;;
-    zmsclient)
-      printf '%s\n' zmsclient zmsbackend zmsdldb zmsmessaging "${FRONTEND_PHP[@]}"
-      ;;
-    zmsdldb)
-      printf '%s\n' zmsdldb zmsbackend
-      ;;
-    zmsbackend)
-      printf '%s\n' zmsbackend zmsdldb
-      ;;
-    zmsadmin|zmscalldisplay|zmscitizenapi|zmsstatistic|zmsticketprinter|zmsmessaging)
-      printf '%s\n' "$module"
-      ;;
-  esac
+  jq -n -r --arg start "$module" --argjson graph "$DIRECT_CONSUMERS_JSON" '
+    def closure:
+      . as $in
+      | ($in | map($graph[.] // []) | add // [] | unique) as $more
+      | if ($more - $in | length) == 0 then $in
+        else ($in + $more | unique | closure)
+        end;
+    [$start] | closure | unique[]
+  '
 }
 
 modules_to_matrix() {
@@ -148,12 +150,12 @@ collect_changed_files() {
     printf '%s\n' "$@"
     return
   fi
-  git fetch --no-tags --prune origin next:refs/remotes/origin/next >/dev/null
-  if ! git merge-base "$DIFF_BASE" HEAD >/dev/null; then
+  git -C "$REPO_ROOT" fetch --no-tags --prune origin next:refs/remotes/origin/next >/dev/null
+  if ! git -C "$REPO_ROOT" merge-base "$DIFF_BASE" HEAD >/dev/null; then
     echo "Could not compute merge-base with ${DIFF_BASE}; forcing full PHP test set." >&2
     return 2
   fi
-  git diff --name-only "${DIFF_BASE}...HEAD"
+  git -C "$REPO_ROOT" diff --name-only "${DIFF_BASE}...HEAD"
 }
 
 selected_has() {
