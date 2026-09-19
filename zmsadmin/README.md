@@ -78,3 +78,5 @@ For a detailed project description, see https://github.com/it-at-m/eappointment
 
 
 
+
+<!-- CI matrix probe #3339 — delete this branch after checking Combined PHP Build. -->
