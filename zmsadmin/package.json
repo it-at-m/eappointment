@@ -83,7 +83,7 @@
   "// overrides.js-yaml@4": "Force nested js-yaml 4.x to 4.3.2 for CVE-2026-84375 (empty merge-key DoS) and CVE-2026-59870.",
   "overrides": {
     "dompurify": "^3.4.15",
-    "brace-expansion": "5.0.9",
+    "brace-expansion": "5.0.12",
     "js-yaml@4": "4.3.2"
   }
 }
