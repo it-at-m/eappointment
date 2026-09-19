@@ -3,6 +3,12 @@ import PropTypes from 'prop-types'
 import * as Inputs from '../../../lib/inputs'
 import Datepicker from '../../../lib/inputs/date'
 
+const dateInYear = (year) => {
+    const date = new Date()
+    date.setFullYear(Number(year) || date.getFullYear())
+    return date.getTime() / 1000
+}
+
 const emptyDayOff = (date) => ({
     name: '',
     date
@@ -60,7 +66,7 @@ class DaysOffView extends Component {
 
     componentDidMount() {
         this.setState((prevState, props) => ({
-            days: props.days.length > 0 ? props.days : [emptyDayOff(Date.now() / 1000)]
+            days: props.days.length > 0 ? props.days : [emptyDayOff(dateInYear(props.year))]
         }))
     }
 
@@ -74,12 +80,9 @@ class DaysOffView extends Component {
     }
 
     addNewItem() {
-        this.setState((prevState, props) => {
-            const newDate = (new Date()).setFullYear(props.year)
-            return {
-                days: prevState.days.concat([emptyDayOff(newDate / 1000)])
-            }
-        })
+        this.setState((prevState, props) => ({
+            days: prevState.days.concat([emptyDayOff(dateInYear(props.year))])
+        }))
     }
 
     deleteItem(deleteIndex) {
@@ -105,7 +108,7 @@ class DaysOffView extends Component {
         return (
             <div className="daysoff table-responsive-wrapper">
                 <div className="table-action-link">
-                    <button className="link button-default" onClick={onNewClick} >
+                    <button type="button" className="link button-default" onClick={onNewClick} >
                         <i className="fas fa-plus-square color-positive"></i> Neuer freier Tag
                     </button>
                 </div>
@@ -122,7 +125,7 @@ class DaysOffView extends Component {
                     </tbody>
                 </table>
                 <div className="table-action-link">
-                    <button className="link button-default" onClick={onNewClick} >
+                    <button type="button" className="link button-default" onClick={onNewClick} >
                         <i className="fas fa-plus-square color-positive"></i> Neuer freier Tag
                     </button>
                 </div>
