@@ -73,8 +73,12 @@ class Datepicker extends React.Component {
     }
 
     render () {
+        const submitValue = this.state.startDate && !isNaN(this.state.startDate.getTime())
+            ? moment(this.state.startDate).format('DD.MM.YYYY')
+            : ''
         return (
             <div className="add-date-picker" {...this.props.attributes}>
+                <input type="hidden" name={this.props.name} value={submitValue} />
                 <DatePicker 
                     locale="de" 
                     id={this.props.id}
@@ -82,7 +86,7 @@ class Datepicker extends React.Component {
                     className="form-control form-input" 
                     dateFormat="dd.MM.yyyy"
                     selected={this.state.startDate}
-                    onChange={this.handleChange} {...this.props.name } 
+                    onChange={this.handleChange}
                     onInputClick={this.openDatePicker}
                     onKeyDown={this.keyDownHandler}
                     onClickOutside={this.closeDatePicker}
