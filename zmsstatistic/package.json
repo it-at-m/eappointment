@@ -46,7 +46,6 @@
   "dependencies": {
     "bo-zms-layout-js": "file:../zmslayout/js",
     "bo-zms-layout-scss": "file:../zmslayout/scss",
-    "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities/-/archive/2.24.14/zmsentities-2.24.14.tar.gz",
     "moment": "^2.31.0"
   },
   "// overrides.brace-expansion": "Force 5.0.8 for CVE-2026-14257 (DoS via unbounded expansion length); no 1.x/2.x backport.",
