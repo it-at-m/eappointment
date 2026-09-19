@@ -32,6 +32,8 @@ jobs:
           fetch-depth: 0
       - name: Configure Git Safe Directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Fetch next for three-dot path filter
+        run: git fetch --no-tags origin refs/heads/next
       - name: Detect affected PHP test modules
         id: set-matrix
         env:
