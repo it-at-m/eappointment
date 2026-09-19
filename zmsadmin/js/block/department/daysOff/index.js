@@ -5,6 +5,7 @@ import * as Inputs from '../../../lib/inputs'
 import Datepicker from '../../../lib/inputs/date'
 
 const DUPLICATE_DATE_MESSAGE = 'Ein Datum darf nur einmal als freier Tag gespeichert werden.'
+const WRONG_YEAR_MESSAGE = 'Freie Tage müssen in dem ausgewählten Jahr liegen.'
 
 const dateInYear = (year) => {
     const date = new Date()
@@ -70,6 +71,22 @@ const nextFreeDateInYear = (year, days) => {
     return date.getTime() / 1000
 }
 
+const yearBounds = (year) => {
+    const selectedYear = Number(year) || new Date().getFullYear()
+    return {
+        minDate: new Date(selectedYear, 0, 1),
+        maxDate: new Date(selectedYear, 11, 31)
+    }
+}
+
+const hasDateOutsideYear = (days, year) => {
+    const prefix = `${Number(year)}-`
+    return days.some((day) => {
+        const key = toDateKey(day.date)
+        return key && !key.startsWith(prefix)
+    })
+}
+
 const excludeDatesForIndex = (days, index) => {
     return days
         .map((day, dayIndex) => (dayIndex === index ? null : toDateKey(day.date)))
@@ -77,7 +94,7 @@ const excludeDatesForIndex = (days, index) => {
         .map((key) => moment(key, 'YYYY-MM-DD').toDate())
 }
 
-const renderDay = (day, index, onChange, onDeleteClick, isDuplicate, excludeDates) => {
+const renderDay = (day, index, onChange, onDeleteClick, isDuplicate, excludeDates, minDate, maxDate) => {
     const formName = `dayoff[${index}]`
     const onChangeName = (_, value) => onChange(index, 'name', value)
     const onChangeDate = (value) => onChange(index, 'date', value)
@@ -108,6 +125,8 @@ const renderDay = (day, index, onChange, onDeleteClick, isDuplicate, excludeDate
                     value={day.date}
                     onChange={onChangeDate}
                     excludeDates={excludeDates}
+                    minDate={minDate}
+                    maxDate={maxDate}
                     attributes={{ "aria-label": "Datum" }}
                 />
             </td>
@@ -164,6 +183,13 @@ class DaysOffView extends Component {
                 duplicateDates,
                 error: DUPLICATE_DATE_MESSAGE
             })
+            return
+        }
+        if (hasDateOutsideYear(this.state.days, this.props.year)) {
+            event.preventDefault()
+            this.setState({
+                error: WRONG_YEAR_MESSAGE
+            })
         }
     }
 
@@ -219,6 +245,8 @@ class DaysOffView extends Component {
             this.changeItemField(index, field, value)
         }
 
+        const { minDate, maxDate } = yearBounds(this.props.year)
+
         return (
             <div className="daysoff table-responsive-wrapper" ref={this.setContainerRef}>
                 {this.state.error ? (
@@ -246,7 +274,9 @@ class DaysOffView extends Component {
                             onChange,
                             onDeleteClick,
                             this.state.duplicateDates.has(toDateKey(day.date)),
-                            excludeDatesForIndex(this.state.days, index)
+                            excludeDatesForIndex(this.state.days, index),
+                            minDate,
+                            maxDate
                         ))}
                     </tbody>
                 </table>
