@@ -74,7 +74,7 @@
   "dependencies": {
     "bo-zms-layout-js": "file:../zmslayout/js",
     "bo-zms-layout-scss": "file:../zmslayout/scss",
-    "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities/-/archive/2.24.14/zmsentities-2.24.14.tar.gz",
+    "bo-zmsentities": "file:../zmsentities",
     "chart.js": "^4.4.2",
     "react-chartjs-2": "^5.3.1"
   },
