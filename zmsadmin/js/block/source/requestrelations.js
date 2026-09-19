@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import * as Inputs from '../../lib/inputs'
-import { getEntity } from '../../lib/schema'
 
 function getGcdOfTwoNumbers(a, b) {
     if (!Number.isInteger(a) || !Number.isInteger(b)) return 0;
@@ -185,20 +184,18 @@ class RequestRelationView extends Component {
 
         const onNewClick = ev => {
             ev.preventDefault()
-            getEntity('requestrelation').then((entity) => {
-                const { requests = [], providers = [], source } = this.props.source;
+            const { requests = [], providers = [], source } = this.props.source
+            const req = requests.find(r => r.parent_id != null) || requests[0]
+            const prv = providers.find(p => p.parent_id != null) || providers[0]
 
-                const req = requests.find(r => r.parent_id != null) || requests[0];
-                const prv = providers.find(p => p.parent_id != null) || providers[0];
-
-                entity.request  = { id: req ? String(req.id) : '',  source, name: req?.name || '' };
-                entity.provider = { id: prv ? String(prv.id) : '', source, name: prv?.name || '' };
-                entity.source = source;
-                entity.__isNew = true;
-
-                this.props.addNewHandler('requestrelation', [entity]);
-                this.calculateSlotsByProviderGcd();
-            })
+            this.props.addNewHandler('requestrelation', [{
+                request: { id: req ? String(req.id) : '', source, name: req?.name || '' },
+                provider: { id: prv ? String(prv.id) : '', source, name: prv?.name || '' },
+                slots: 1,
+                source,
+                __isNew: true
+            }])
+            this.calculateSlotsByProviderGcd()
         }
 
         const onDeleteClick = (index) => {

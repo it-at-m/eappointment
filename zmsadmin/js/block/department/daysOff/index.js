@@ -1,8 +1,12 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { getEntity } from '../../../lib/schema'
 import * as Inputs from '../../../lib/inputs'
 import Datepicker from '../../../lib/inputs/date'
+
+const emptyDayOff = (date) => ({
+    name: '',
+    date
+})
 
 const renderDay = (day, index, onChange, onDeleteClick) => {
     const formName = `dayoff[${index}]`
@@ -55,12 +59,9 @@ class DaysOffView extends Component {
     }
 
     componentDidMount() {
-        getEntity('dayoff').then((entity) => {
-            entity.date = Date.now() / 1000
-            this.setState((prevState, props) => ({
-                days: props.days.length > 0 ? props.days : [entity]
-            }))
-        })
+        this.setState((prevState, props) => ({
+            days: props.days.length > 0 ? props.days : [emptyDayOff(Date.now() / 1000)]
+        }))
     }
 
     changeItemField(index, field, value) {
@@ -76,7 +77,7 @@ class DaysOffView extends Component {
         this.setState((prevState, props) => {
             const newDate = (new Date()).setFullYear(props.year)
             return {
-                days: prevState.days.concat([{ name: '', date: newDate / 1000 }])
+                days: prevState.days.concat([emptyDayOff(newDate / 1000)])
             }
         })
     }
