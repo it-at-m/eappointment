@@ -146,3 +146,5 @@ npm test -- -t "AppointmentView"
 ## zmsautomation
 
 `zmsautomation` is not a unit-test module. Its API/UI test suites are documented in [zmsautomation Documentation](./zmsautomation.md).
+
+<!-- CI matrix probe #3339 — delete this branch after checking Combined PHP Build. -->
