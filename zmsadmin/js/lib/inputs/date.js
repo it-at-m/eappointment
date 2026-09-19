@@ -52,10 +52,19 @@ class Datepicker extends React.Component {
     }
 
     handleChange(date) {
+        if (!date) {
+            return
+        }
+        if (this.props.minDate && moment(date).isBefore(this.props.minDate, 'day')) {
+            return
+        }
+        if (this.props.maxDate && moment(date).isAfter(this.props.maxDate, 'day')) {
+            return
+        }
         this.setState({
             startDate: date
         });
-        this.props.onChange(moment(date, 'X').format('YYYY-MM-DD'))
+        this.props.onChange(moment(date).format('YYYY-MM-DD'))
         this.closeDatePicker();
     }
     
@@ -88,6 +97,10 @@ class Datepicker extends React.Component {
                     selected={this.state.startDate}
                     onChange={this.handleChange}
                     excludeDates={this.props.excludeDates}
+                    minDate={this.props.minDate}
+                    maxDate={this.props.maxDate}
+                    showYearDropdown={false}
+                    showMonthDropdown={false}
                     onInputClick={this.openDatePicker}
                     onKeyDown={this.keyDownHandler}
                     onClickOutside={this.closeDatePicker}
