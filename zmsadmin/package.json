@@ -47,8 +47,6 @@
     "jquery": "^4.0.0",
     "js-cookie": "^3.0.8",
     "js-yaml": "^5.4.2",
-    "json-schema-defaults": "^0.4.0",
-    "json-schema-ref-parser": "^9.0.9",
     "minimatch": "^10.2.5",
     "moment": "^2.31.0",
     "monaco-editor": "^0.56.0",
@@ -74,7 +72,6 @@
   "dependencies": {
     "bo-zms-layout-js": "file:../zmslayout/js",
     "bo-zms-layout-scss": "file:../zmslayout/scss",
-    "bo-zmsentities": "file:../zmsentities",
     "chart.js": "^4.4.2",
     "react-chartjs-2": "^5.3.1"
   },
