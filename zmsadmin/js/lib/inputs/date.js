@@ -87,6 +87,7 @@ class Datepicker extends React.Component {
                     dateFormat="dd.MM.yyyy"
                     selected={this.state.startDate}
                     onChange={this.handleChange}
+                    excludeDates={this.props.excludeDates}
                     onInputClick={this.openDatePicker}
                     onKeyDown={this.keyDownHandler}
                     onClickOutside={this.closeDatePicker}
