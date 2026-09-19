@@ -29,6 +29,7 @@ class DayoffUpdate extends \BO\Zmsbackend\Api\BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $collection = new \BO\Zmsentities\Collection\DayoffList($input);
         $collection->testDatesInYear($args['year']);
+        $collection->testUniqueDates();
         $collection = $query->writeCommonDayoffsByYear($input, $args['year']);
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
