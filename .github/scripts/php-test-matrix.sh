@@ -1,0 +1,283 @@
+#!/usr/bin/env bash
+# Build GitHub Actions matrices for Combined PHP Build tests.
+#
+# Diffs the current HEAD against origin/next (three-dot) and expands a
+# consumer graph so library changes test dependents, while app-only changes
+# test that app. Shared CI paths and tags/main force the full set.
+#
+# Usage:
+#   FORCE_FULL=true .github/scripts/php-test-matrix.sh
+#   .github/scripts/php-test-matrix.sh zmsadmin/src/foo.php
+#
+# Writes quality_matrix, unit_matrix, run_quality, run_unit, run_backend,
+# run_client to $GITHUB_OUTPUT when that file is set.
+set -euo pipefail
+
+PHP_VERSION="${PHP_VERSION:-8.3}"
+DIFF_BASE="${DIFF_BASE:-origin/next}"
+FORCE_FULL="${FORCE_FULL:-false}"
+
+ALL_PHP=(
+  mellon
+  zmsadmin
+  zmsbackend
+  zmscalldisplay
+  zmscitizenapi
+  zmsclient
+  zmsdldb
+  zmsentities
+  zmsmessaging
+  zmsslim
+  zmsstatistic
+  zmsticketprinter
+)
+
+UNIT_STANDARD=(
+  mellon
+  zmsadmin
+  zmscalldisplay
+  zmscitizenapi
+  zmsdldb
+  zmsentities
+  zmsmessaging
+  zmsslim
+  zmsstatistic
+  zmsticketprinter
+)
+
+FRONTEND_PHP=(
+  zmsadmin
+  zmscalldisplay
+  zmscitizenapi
+  zmsstatistic
+  zmsticketprinter
+)
+
+is_true() {
+  case "${1:-}" in
+    true|TRUE|yes|YES|1) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+is_php_module() {
+  local name="$1"
+  local module
+  for module in "${ALL_PHP[@]}"; do
+    if [[ "$module" == "$name" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+is_force_full_path() {
+  local path="$1"
+  case "$path" in
+    .github/*|.github|.resources/*|.resources)
+      return 0
+      ;;
+    phpmd.rules.xml|cli|cli_base.py|cli_test.py)
+      return 0
+      ;;
+  esac
+  return 1
+}
+
+is_ignored_path() {
+  local path="$1"
+  case "$path" in
+    docs|docs/*|zmscitizenview|zmscitizenview/*|zmsautomation|zmsautomation/*|zmslayout|zmslayout/*|zmsbase|zmsbase/*)
+      return 0
+      ;;
+    .vscode|.vscode/*|.devcontainer|.devcontainer/*|.husky|.husky/*)
+      return 0
+      ;;
+    README.md|CHANGELOG.md|CONTRIBUTING.md|CODE_OF_CONDUCT.md|LICENSE|SECURITY.md|.gitignore|.gitattributes|.editorconfig)
+      return 0
+      ;;
+  esac
+  return 1
+}
+
+consumers_of() {
+  local module="$1"
+  case "$module" in
+    mellon)
+      printf '%s\n' "${ALL_PHP[@]}"
+      ;;
+    zmsentities)
+      printf '%s\n' zmsentities zmsclient zmsdldb zmsbackend zmsmessaging "${FRONTEND_PHP[@]}"
+      ;;
+    zmsslim)
+      printf '%s\n' zmsslim zmsclient zmsdldb zmsbackend zmsmessaging "${FRONTEND_PHP[@]}"
+      ;;
+    zmsclient)
+      printf '%s\n' zmsclient zmsbackend zmsdldb zmsmessaging "${FRONTEND_PHP[@]}"
+      ;;
+    zmsdldb)
+      printf '%s\n' zmsdldb zmsbackend
+      ;;
+    zmsbackend)
+      printf '%s\n' zmsbackend zmsdldb
+      ;;
+    zmsadmin|zmscalldisplay|zmscitizenapi|zmsstatistic|zmsticketprinter|zmsmessaging)
+      printf '%s\n' "$module"
+      ;;
+  esac
+}
+
+modules_to_matrix() {
+  local -a modules=("$@")
+  if [[ "${#modules[@]}" -eq 0 ]]; then
+    printf '%s' '{"include":[]}'
+    return
+  fi
+  printf '%s\n' "${modules[@]}" \
+    | jq -R -s -c --arg php "$PHP_VERSION" '
+        split("\n")
+        | map(select(length > 0))
+        | unique
+        | sort
+        | {include: map({module: ., php_version: $php})}
+      '
+}
+
+collect_changed_files() {
+  if [[ $# -gt 0 ]]; then
+    printf '%s\n' "$@"
+    return
+  fi
+  git fetch --no-tags --prune origin next:refs/remotes/origin/next >/dev/null
+  if ! git merge-base "$DIFF_BASE" HEAD >/dev/null; then
+    echo "Could not compute merge-base with ${DIFF_BASE}; forcing full PHP test set." >&2
+    return 2
+  fi
+  git diff --name-only "${DIFF_BASE}...HEAD"
+}
+
+selected_has() {
+  local needle="$1"
+  local item
+  for item in "${selected[@]+"${selected[@]}"}"; do
+    if [[ "$item" == "$needle" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+filter_present() {
+  local -n _src=$1
+  local -n _out=$2
+  _out=()
+  local item
+  for item in "${_src[@]}"; do
+    if selected_has "$item"; then
+      _out+=("$item")
+    fi
+  done
+}
+
+force_full=false
+if is_true "$FORCE_FULL"; then
+  force_full=true
+fi
+
+changed_files=()
+if [[ "$force_full" != true ]]; then
+  changed_list=""
+  if changed_list="$(collect_changed_files "$@")"; then
+    if [[ -n "$changed_list" ]]; then
+      mapfile -t changed_files <<< "$changed_list"
+    fi
+  else
+    echo "Falling back to the full PHP test set." >&2
+    force_full=true
+  fi
+fi
+
+declare -a selected=()
+
+if [[ "$force_full" == true ]]; then
+  selected=("${ALL_PHP[@]}")
+else
+  for path in "${changed_files[@]}"; do
+    [[ -z "$path" ]] && continue
+    if is_ignored_path "$path"; then
+      continue
+    fi
+    if is_force_full_path "$path"; then
+      selected=("${ALL_PHP[@]}")
+      break
+    fi
+    root="${path%%/*}"
+    if [[ "$root" == "$path" ]]; then
+      # Unknown repo-root file: keep the suite conservative.
+      selected=("${ALL_PHP[@]}")
+      break
+    fi
+    if is_php_module "$root"; then
+      mapfile -t extra < <(consumers_of "$root")
+      selected+=("${extra[@]}")
+    fi
+  done
+  if [[ "${#selected[@]}" -gt 0 ]]; then
+    mapfile -t selected < <(printf '%s\n' "${selected[@]}" | awk 'NF' | sort -u)
+  fi
+fi
+
+quality_modules=()
+unit_modules=()
+filter_present ALL_PHP quality_modules
+filter_present UNIT_STANDARD unit_modules
+
+quality_matrix="$(modules_to_matrix "${quality_modules[@]+"${quality_modules[@]}"}")"
+unit_matrix="$(modules_to_matrix "${unit_modules[@]+"${unit_modules[@]}"}")"
+
+run_quality=false
+run_unit=false
+run_backend=false
+run_client=false
+if [[ "${#quality_modules[@]}" -gt 0 ]]; then
+  run_quality=true
+fi
+if [[ "${#unit_modules[@]}" -gt 0 ]]; then
+  run_unit=true
+fi
+if selected_has zmsbackend; then
+  run_backend=true
+fi
+if selected_has zmsclient; then
+  run_client=true
+fi
+
+{
+  echo "PHP test matrix (force_full=${force_full})"
+  echo "  quality: ${quality_modules[*]:-(none)}"
+  echo "  unit:    ${unit_modules[*]:-(none)}"
+  echo "  backend: ${run_backend}"
+  echo "  client:  ${run_client}"
+} >&2
+
+if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
+  {
+    echo "quality_matrix<<EOF"
+    echo "$quality_matrix"
+    echo "EOF"
+    echo "unit_matrix<<EOF"
+    echo "$unit_matrix"
+    echo "EOF"
+    echo "run_quality=${run_quality}"
+    echo "run_unit=${run_unit}"
+    echo "run_backend=${run_backend}"
+    echo "run_client=${run_client}"
+  } >> "$GITHUB_OUTPUT"
+fi
+
+printf 'quality_matrix=%s\n' "$quality_matrix"
+printf 'unit_matrix=%s\n' "$unit_matrix"
+printf 'run_quality=%s\n' "$run_quality"
+printf 'run_unit=%s\n' "$run_unit"
+printf 'run_backend=%s\n' "$run_backend"
+printf 'run_client=%s\n' "$run_client"
