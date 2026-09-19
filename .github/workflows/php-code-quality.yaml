@@ -2,6 +2,12 @@ name: 🔍 code quality
 
 on:
   workflow_call:
+    inputs:
+      matrix:
+        description: JSON object with include[] of {module, php_version}
+        type: string
+        required: false
+        default: '{"include":[{"module":"mellon","php_version":"8.3"},{"module":"zmsadmin","php_version":"8.3"},{"module":"zmsbackend","php_version":"8.3"},{"module":"zmscalldisplay","php_version":"8.3"},{"module":"zmscitizenapi","php_version":"8.3"},{"module":"zmsclient","php_version":"8.3"},{"module":"zmsdldb","php_version":"8.3"},{"module":"zmsentities","php_version":"8.3"},{"module":"zmsmessaging","php_version":"8.3"},{"module":"zmsslim","php_version":"8.3"},{"module":"zmsstatistic","php_version":"8.3"},{"module":"zmsticketprinter","php_version":"8.3"}]}'
 
 permissions:
   contents: read
@@ -9,6 +15,9 @@ permissions:
 jobs:
   module-code-quality:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(inputs.matrix) }}
     container:
       image: "ghcr.io/it-at-m/eappointment/zmsbase:${{ matrix.php_version }}-dev@sha256:cdf964fa2e02d11b1309f1006d0d71d0afef6a550d5722c7634860e5c594d4cb"
     steps:
@@ -35,32 +44,3 @@ jobs:
           cd "${{ matrix.module }}"
           echo "Running phpmd..."
           vendor/bin/phpmd src/ text ../phpmd.rules.xml
-
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - module: mellon
-            php_version: "8.3"
-          - module: zmsadmin
-            php_version: "8.3"
-          - module: zmsbackend
-            php_version: "8.3"
-          - module: zmscalldisplay
-            php_version: "8.3"
-          - module: zmscitizenapi
-            php_version: "8.3"
-          - module: zmsclient
-            php_version: "8.3"
-          - module: zmsdldb
-            php_version: "8.3"
-          - module: zmsentities
-            php_version: "8.3"
-          - module: zmsmessaging
-            php_version: "8.3"
-          - module: zmsslim
-            php_version: "8.3"
-          - module: zmsstatistic
-            php_version: "8.3"
-          - module: zmsticketprinter
-            php_version: "8.3"
