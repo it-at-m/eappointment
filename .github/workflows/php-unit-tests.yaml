@@ -2,6 +2,12 @@ name: 🧪 unit tests
 
 on:
   workflow_call:
+    inputs:
+      selected:
+        description: JSON array of module names that should actually run phpunit
+        type: string
+        required: false
+        default: '["mellon","zmsadmin","zmsbackend","zmscalldisplay","zmscitizenapi","zmsclient","zmsdldb","zmsentities","zmsmessaging","zmsslim","zmsstatistic","zmsticketprinter"]'
     outputs:
       module-test-result:
         description: "Module test result"
@@ -20,6 +26,30 @@ permissions:
 jobs:
   module-test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: mellon
+            php_version: "8.3"
+          - module: zmsadmin
+            php_version: "8.3"
+          - module: zmscalldisplay
+            php_version: "8.3"
+          - module: zmscitizenapi
+            php_version: "8.3"
+          - module: zmsdldb
+            php_version: "8.3"
+          - module: zmsentities
+            php_version: "8.3"
+          - module: zmsmessaging
+            php_version: "8.3"
+          - module: zmsslim
+            php_version: "8.3"
+          - module: zmsstatistic
+            php_version: "8.3"
+          - module: zmsticketprinter
+            php_version: "8.3"
     container:
       image: "ghcr.io/it-at-m/eappointment/zmsbase:${{ matrix.php_version }}-dev@sha256:cdf964fa2e02d11b1309f1006d0d71d0afef6a550d5722c7634860e5c594d4cb"
     env:
@@ -28,12 +58,19 @@ jobs:
     outputs:
       result: ${{ steps.set-result.outputs.result }}
     steps:
+      - name: Unchanged vs next
+        if: ${{ !contains(fromJSON(inputs.selected), matrix.module) }}
+        run: echo "Skipping phpunit for ${{ matrix.module }} (unchanged). Job succeeds so required checks complete."
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: ${{ contains(fromJSON(inputs.selected), matrix.module) }}
         with:
           persist-credentials: false
       - name: Configure Git Safe Directory
+        if: ${{ contains(fromJSON(inputs.selected), matrix.module) }}
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Configure PHP
+        if: ${{ contains(fromJSON(inputs.selected), matrix.module) }}
         run: |
           mkdir -p /tmp/php/conf.d
           echo "zend_extension=xdebug.so" > /tmp/php/conf.d/xdebug.ini
@@ -41,12 +78,14 @@ jobs:
           echo "xdebug.start_with_request=yes" >> /tmp/php/conf.d/xdebug.ini
 
       - name: Install Composer Dependencies
+        if: ${{ contains(fromJSON(inputs.selected), matrix.module) }}
         uses: ./.github/actions/composer-install
         with:
           working-directory: ${{ matrix.module }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Unit Tests with Coverage
+        if: ${{ contains(fromJSON(inputs.selected), matrix.module) }}
         env:
           XDEBUG_MODE: coverage
         run: |
@@ -74,6 +113,7 @@ jobs:
             --display-deprecations --display-warnings --fail-on-deprecation
 
       - name: Upload Coverage
+        if: ${{ contains(fromJSON(inputs.selected), matrix.module) }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: coverage-${{ matrix.module }}
@@ -84,31 +124,6 @@ jobs:
         id: set-result
         if: always()
         run: echo "result=${{ job.status }}" >> "$GITHUB_OUTPUT"
-
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - module: mellon
-            php_version: "8.3"      
-          - module: zmsadmin
-            php_version: "8.3"
-          - module: zmscalldisplay
-            php_version: "8.3"
-          - module: zmscitizenapi
-            php_version: "8.3"
-          - module: zmsdldb
-            php_version: "8.3"
-          - module: zmsentities
-            php_version: "8.3"
-          - module: zmsmessaging
-            php_version: "8.3"
-          - module: zmsslim
-            php_version: "8.3"
-          - module: zmsstatistic
-            php_version: "8.3"
-          - module: zmsticketprinter
-            php_version: "8.3"
 
   zmsbackend-test:
     runs-on: ubuntu-latest
@@ -134,19 +149,27 @@ jobs:
     outputs:
       result: ${{ steps.set-result.outputs.result }}
     steps:
+      - name: Unchanged vs next
+        if: ${{ !contains(fromJSON(inputs.selected), 'zmsbackend') }}
+        run: echo "Skipping zmsbackend phpunit (unchanged). Job succeeds so required checks complete."
+
       - name: Checkout GitHub Action
+        if: ${{ contains(fromJSON(inputs.selected), 'zmsbackend') }}
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Configure Git Safe Directory
+        if: ${{ contains(fromJSON(inputs.selected), 'zmsbackend') }}
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Install Composer Dependencies
+        if: ${{ contains(fromJSON(inputs.selected), 'zmsbackend') }}
         uses: ./.github/actions/composer-install
         with:
           working-directory: zmsbackend
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Import Test Data and Run Unit Tests
+        if: ${{ contains(fromJSON(inputs.selected), 'zmsbackend') }}
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
           MYSQL_DATABASE: zmsbo
@@ -173,6 +196,7 @@ jobs:
             --log-junit coverage/junit.xml \
             --display-deprecations --display-warnings
       - name: Upload Coverage
+        if: ${{ contains(fromJSON(inputs.selected), 'zmsbackend') }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: coverage-zmsbackend
@@ -188,11 +212,17 @@ jobs:
     outputs:
       result: ${{ steps.set-result.outputs.result }}
     steps:
+      - name: Unchanged vs next
+        if: ${{ !contains(fromJSON(inputs.selected), 'zmsclient') }}
+        run: echo "Skipping zmsclient phpunit (unchanged). Job succeeds so required checks complete."
+
       - name: Checkout GitHub Action
+        if: ${{ contains(fromJSON(inputs.selected), 'zmsclient') }}
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Set up PHP
+        if: ${{ contains(fromJSON(inputs.selected), 'zmsclient') }}
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
           php-version: "8.3"
@@ -200,12 +230,14 @@ jobs:
           coverage: xdebug
 
       - name: Install Composer Dependencies
+        if: ${{ contains(fromJSON(inputs.selected), 'zmsclient') }}
         uses: ./.github/actions/composer-install
         with:
           working-directory: zmsclient
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Unit Tests
+        if: ${{ contains(fromJSON(inputs.selected), 'zmsclient') }}
         env:
           XDEBUG_MODE: coverage
         run: |
@@ -222,6 +254,7 @@ jobs:
             --log-junit coverage/junit.xml \
             --display-deprecations --display-warnings --fail-on-deprecation
       - name: Upload Coverage
+        if: ${{ contains(fromJSON(inputs.selected), 'zmsclient') }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: coverage-zmsclient

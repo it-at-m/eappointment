@@ -16,16 +16,47 @@ permissions:
   actions: write
 
 jobs:
+  generate-matrix:
+    name: Generate PHP test matrix
+    runs-on: ubuntu-latest
+    outputs:
+      selected_modules: ${{ steps.set-matrix.outputs.selected_modules }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Configure Git Safe Directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Fetch next for three-dot path filter
+        run: git fetch --no-tags origin refs/heads/next
+      - name: Detect affected PHP test modules
+        id: set-matrix
+        env:
+          FORCE_FULL: ${{ github.event_name == 'workflow_call' || github.ref_type == 'tag' || github.ref_name == 'main' }}
+          DIFF_BASE: origin/next
+        run: bash .github/scripts/php-test-matrix.sh
+
   call-php-code-quality:
+    needs: generate-matrix
     uses: ./.github/workflows/php-code-quality.yaml
+    with:
+      selected: ${{ needs.generate-matrix.outputs.selected_modules }}
 
   call-php-unit-tests:
+    needs: generate-matrix
     uses: ./.github/workflows/php-unit-tests.yaml
+    with:
+      selected: ${{ needs.generate-matrix.outputs.selected_modules }}
 
   call-php-build-images:
-    needs: [call-php-code-quality, call-php-unit-tests]
+    needs:
+      - generate-matrix
+      - call-php-code-quality
+      - call-php-unit-tests
     if: |
       always() &&
+      !cancelled() &&
+      needs.generate-matrix.result == 'success' &&
       needs.call-php-code-quality.result == 'success' &&
       needs.call-php-unit-tests.result == 'success'
     uses: ./.github/workflows/php-build-images.yaml

@@ -2,6 +2,12 @@ name: 🔍 code quality
 
 on:
   workflow_call:
+    inputs:
+      selected:
+        description: JSON array of module names that should actually run phpcs/phpmd
+        type: string
+        required: false
+        default: '["mellon","zmsadmin","zmsbackend","zmscalldisplay","zmscitizenapi","zmsclient","zmsdldb","zmsentities","zmsmessaging","zmsslim","zmsstatistic","zmsticketprinter"]'
 
 permissions:
   contents: read
@@ -9,33 +15,6 @@ permissions:
 jobs:
   module-code-quality:
     runs-on: ubuntu-latest
-    container:
-      image: "ghcr.io/it-at-m/eappointment/zmsbase:${{ matrix.php_version }}-dev@sha256:cdf964fa2e02d11b1309f1006d0d71d0afef6a550d5722c7634860e5c594d4cb"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Configure Git Safe Directory
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-      - name: Install Composer Dependencies
-        uses: ./.github/actions/composer-install
-        with:
-          working-directory: ${{ matrix.module }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: PHPCS / PSR-12
-        run: |
-          cd "${{ matrix.module }}"
-          echo "Running phpcs (ignoring warnings)..."
-          vendor/bin/phpcs --standard=psr12 --warning-severity=0 src/
-
-      - name: PHPMD
-        run: |
-          cd "${{ matrix.module }}"
-          echo "Running phpmd..."
-          vendor/bin/phpmd src/ text ../phpmd.rules.xml
-
     strategy:
       fail-fast: false
       matrix:
@@ -64,3 +43,38 @@ jobs:
             php_version: "8.3"
           - module: zmsticketprinter
             php_version: "8.3"
+    container:
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:${{ matrix.php_version }}-dev@sha256:cdf964fa2e02d11b1309f1006d0d71d0afef6a550d5722c7634860e5c594d4cb"
+    steps:
+      - name: Unchanged vs next
+        if: ${{ !contains(fromJSON(inputs.selected), matrix.module) }}
+        run: echo "Skipping phpcs/phpmd for ${{ matrix.module }} (unchanged). Job succeeds so required checks complete."
+
+      - name: Checkout
+        if: ${{ contains(fromJSON(inputs.selected), matrix.module) }}
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Configure Git Safe Directory
+        if: ${{ contains(fromJSON(inputs.selected), matrix.module) }}
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Install Composer Dependencies
+        if: ${{ contains(fromJSON(inputs.selected), matrix.module) }}
+        uses: ./.github/actions/composer-install
+        with:
+          working-directory: ${{ matrix.module }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: PHPCS / PSR-12
+        if: ${{ contains(fromJSON(inputs.selected), matrix.module) }}
+        run: |
+          cd "${{ matrix.module }}"
+          echo "Running phpcs (ignoring warnings)..."
+          vendor/bin/phpcs --standard=psr12 --warning-severity=0 src/
+
+      - name: PHPMD
+        if: ${{ contains(fromJSON(inputs.selected), matrix.module) }}
+        run: |
+          cd "${{ matrix.module }}"
+          echo "Running phpmd..."
+          vendor/bin/phpmd src/ text ../phpmd.rules.xml
