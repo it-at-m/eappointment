@@ -53,7 +53,7 @@ onMounted(async () => {
 .build-info {
   position: relative;
   float: right;
-  margin: 0;
+  margin: 0 24px 0 0;
   font-size: 11px;
   line-height: 1.2;
   color: #c4c4c4;
