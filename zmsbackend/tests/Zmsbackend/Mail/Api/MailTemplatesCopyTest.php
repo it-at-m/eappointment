@@ -119,35 +119,49 @@ class MailTemplatesCopyTest extends \BO\Zmsbackend\Tests\Api\Base
         ]);
     }
 
-    public function testRejectsProviderWhenAnotherProviderScopeIsInaccessible(): void
+    public function testCopiesWhenSiblingProviderScopeIsInaccessible(): void
     {
         $scenario = $this->readProviderAccessScenario();
+        $sourceTemplateId = $this->insertCustomization(
+            'mail_copy_partial_provider.twig',
+            $scenario['sourceProviderId']
+        );
 
         /*
-        * The account may access the selected target scope, but not another
-        * scope using the same provider. A provider-level write must fail.
-        */
+         * Like the mail-template editor, copy only requires access
+         * to the selected scopes, not to every sibling location of
+         * the target provider.
+         */
         $this->setAuthorizedWorkstation([
             $scenario['sourceScopeId'],
             $scenario['firstProviderScopeId'],
         ]);
 
-        $this->expectException(UserAccountMissingRights::class);
-
-        $this->renderJson([
+        $response = $this->renderJson([
             'sourceScopeId' => $scenario['sourceScopeId'],
-            'sourceTemplateId' => 1,
+            'sourceTemplateId' => $sourceTemplateId,
             'targetScopeIds' => [
                 $scenario['firstProviderScopeId'],
             ],
         ]);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(
+            'copied content',
+            $this->readCustomizationValue(
+                'mail_copy_partial_provider.twig',
+                $scenario['targetProviderId']
+            )
+        );
     }
 
     /**
      * @return array{
      *     sourceScopeId: int,
+     *     sourceProviderId: string,
      *     firstProviderScopeId: int,
-     *     secondProviderScopeId: int
+     *     secondProviderScopeId: int,
+     *     targetProviderId: string
      * }
      */
     private function readProviderAccessScenario(): array
@@ -220,10 +234,23 @@ class MailTemplatesCopyTest extends \BO\Zmsbackend\Tests\Api\Base
             $secondProviderScopeId
         );
 
+        $sourceProviderId = (string) $service->fetchValue(
+            'SELECT InfoDienstleisterID '
+            . 'FROM standort '
+            . 'WHERE StandortID = :scopeId',
+            [
+                'scopeId' => $sourceScopeId,
+            ]
+        );
+
+        self::assertNotSame('', $sourceProviderId);
+
         return [
             'sourceScopeId' => $sourceScopeId,
+            'sourceProviderId' => $sourceProviderId,
             'firstProviderScopeId' => $firstProviderScopeId,
             'secondProviderScopeId' => $secondProviderScopeId,
+            'targetProviderId' => $targetProviderId,
         ];
     }
 
