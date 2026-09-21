@@ -1,10 +1,30 @@
 /**
  * Git commit / ref baked in at Vite build time.
- * Shown when VITE_NODE_ENV is not production (.env.development vs .env.production).
+ *
+ * Visibility is env-based, never host-based:
+ * - local `npm run dev` uses VITE_NODE_ENV=development
+ * - deployed images read ZMS_ENV from the same runtime-config.json
+ *   as SHOW_CITIZEN_LOGIN
  */
 
 export function isProductionBuild(nodeEnv: string | undefined): boolean {
   return (nodeEnv ?? "").trim().toLowerCase() === "production";
+}
+
+export function isProductionZmsEnv(zmsEnv: string | undefined): boolean {
+  const env = (zmsEnv ?? "").trim().toLowerCase();
+  return env === "prod" || env === "production";
+}
+
+export function shouldShowBuildInfo(
+  viteNodeEnv: string | undefined,
+  zmsEnv: string | undefined
+): boolean {
+  const runtimeEnv = (zmsEnv ?? "").trim();
+  if (runtimeEnv) {
+    return !isProductionZmsEnv(runtimeEnv);
+  }
+  return !isProductionBuild(viteNodeEnv);
 }
 
 export function formatBuildInfoLabel(
@@ -25,9 +45,10 @@ export function formatBuildInfoLabel(
 export function resolveBuildInfoLabel(
   commit: string | undefined,
   ref: string | undefined,
-  nodeEnv: string | undefined
+  viteNodeEnv: string | undefined,
+  zmsEnv: string | undefined
 ): string | null {
-  if (isProductionBuild(nodeEnv)) {
+  if (!shouldShowBuildInfo(viteNodeEnv, zmsEnv)) {
     return null;
   }
   return formatBuildInfoLabel(commit, ref);
