@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import * as Inputs from '../../lib/inputs'
-import {getEntity} from '../../lib/schema'
+import {emptyProvider} from './emptyProvider'
 
 const renderProvider = (provider, index, onChange, onDeleteClick, labels, descriptions, source, parentProviders, onParentChange) => {
     const formName = `providers[${index}]`
@@ -204,12 +204,12 @@ class ProvidersView extends Component {
     render() {
         const onNewClick = ev => {
             ev.preventDefault()
-            getEntity('provider').then((entity) => {
-                entity.id = this.getNextId()
-                entity.source = this.props.source.source
-                entity.__isNew = true
-                this.props.addNewHandler('providers', [entity])
-            })
+            this.props.addNewHandler('providers', [{
+                ...emptyProvider(),
+                id: this.getNextId(),
+                source: this.props.source.source,
+                __isNew: true
+            }])
         }
 
         const onDeleteClick = index => {
