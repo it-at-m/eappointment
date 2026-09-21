@@ -21,6 +21,7 @@
         :t="t"
       />
     </div>
+    <build-info-badge />
   </main>
 </template>
 
@@ -31,6 +32,7 @@ import { onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
+import BuildInfoBadge from "@/components/Common/BuildInfoBadge.vue";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { trackWidgetView } from "@/utils/trackAppointmentEvent";
 import { useGlobalState } from "./utils/useGlobalState";
