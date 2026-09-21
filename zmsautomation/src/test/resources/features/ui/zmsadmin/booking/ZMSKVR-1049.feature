@@ -23,4 +23,4 @@ Funktionalität: Ein interner Terminkunde einer zms-Variante, die in provider.da
         Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
         Dann wird die Seite Sachbearbeiterplatz angezeigt.
         Wenn Sie einen Terminkunden mit der Dienstleistung "Gewerbeanmeldung Video", Uhrzeit, name, gültige E-Mail-Adresse und die Anmerkung "TerminkundeVideo" buchen.
-        Dann Es erscheint ein Pop-Up-Fenster "Termin erfolgreich eingetragen" und der Termin ist auch in der Warteschlange sichtbar.
+        Dann Es erscheint ein Pop-Up-Fenster "Termin wurde erfolgreich eingetragen" und der Termin ist auch in der Warteschlange sichtbar.
