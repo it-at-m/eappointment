@@ -181,6 +181,7 @@ export default class ReportRefresh {
         }
     }
 
+    // eslint-disable-next-line complexity
     async refresh(options = {}) {
         const silent = options.silent === true;
         const $board = this.view.$main.find('.board').first();
