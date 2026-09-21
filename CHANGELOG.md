@@ -3,6 +3,8 @@
 <h2>        Bug
 </h2>
 <ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1245'>ZMSKVR-1245</a>] -         Bürgeransicht-Webkomponente lädt wrapper.js unter dem falschen Pfad (503 / CORS)
+</li>
 <li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1397'>ZMSKVR-1397</a>] -         UI Bug Wartezeit Broken Render bei Abbrechen und Wiederaufnahme von Terminen
 </li>
 <li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1424'>ZMSKVR-1424</a>] -         Offene Aufrufe werden nach erneutem Aufruf manchmal nicht mehr geladen (Tabelle / „Aufgerufene Termine&quot;)
