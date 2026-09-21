@@ -1940,13 +1940,13 @@ public class CitizenViewPage extends BasePage {
 
     /**
      * ZMSKVR-353: guest rebooking summary books via Termin verschieben and must land on success,
-     * not the activation callout.
+     * not the activation callout. Communication is accepted in the previous Gherkin step so the
+     * ATAF 250ms AfterStep delay can enable the button, same as first-booking preconfirm.
      */
     public void confirmRebookingFromSummary() {
         CONTEXT.set();
         ScenarioLogManager.getLogger()
-                .info("zmscitizenview: rebooking summary → accept communication and confirm (Termin verschieben)");
-        acceptCommunication();
+                .info("zmscitizenview: rebooking summary → confirm (Termin verschieben)");
         waitForAndClickButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON, DEFAULT_EXPLICIT_WAIT_TIME);
         waitWithThreeWindows(
                 () -> shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING), "Rebooking confirmation success");

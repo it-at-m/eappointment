@@ -45,6 +45,7 @@ Feature: CitizenView: guest rebooking confirms without a second activation
     And I click the highlighted timeslot in the citizen view
     And I continue after slot selection with Weiter for office 10492 in the citizen view
     Then the cancel reschedule button should be visible in the citizen view
-    When I confirm the rebooking from the summary in the citizen view
+    When I accept communication in the citizen view
+    And I confirm the rebooking from the summary in the citizen view
     Then the confirmation success callout should be visible in the citizen view
     And the preconfirmation callout should not be visible in the citizen view
