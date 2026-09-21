@@ -71,15 +71,13 @@ class UseraccountList extends BaseController
         $roleMap = [];
 
         $roleResult = \App::$http->readGetResult('/roles/', []);
-        if ($roleResult) {
-            $loadedRoleList = $roleResult->getCollection();
+        $loadedRoleList = $roleResult->getCollection();
 
-            if ($loadedRoleList !== null) {
-                $roleList = $loadedRoleList;
+        if ($loadedRoleList !== null) {
+            $roleList = $loadedRoleList;
 
-                foreach ($roleList as $role) {
-                    $roleMap[$role->name] = $role->description ?: $role->name;
-                }
+            foreach ($roleList as $role) {
+                $roleMap[$role->name] = $role->description ?: $role->name;
             }
         }
 

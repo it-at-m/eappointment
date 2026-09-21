@@ -114,6 +114,46 @@ describe("AppointmentSelection", () => {
       expect(wrapper.html()).not.toContain("location");
     });
 
+    it("keeps an already reserved office and timeslot instead of resetting the calendar", async () => {
+      const reservedTimeslot = 1735689600;
+      const wrapper = createWrapper({
+        selectedTimeslot: reservedTimeslot,
+        selectedProvider: {
+          name: "Office BBB",
+          id: 2,
+          priority: 1,
+          address: { street: "Elm", house_number: "99" },
+          scope: { id: "2" },
+        },
+        selectedService: {
+          id: "service1",
+          providers: [
+            {
+              name: "Office AAA",
+              id: 1,
+              priority: 10,
+              address: { street: "Elm", house_number: "99" },
+              scope: { id: "1" },
+              showAlternativeLocations: true,
+            },
+            {
+              name: "Office BBB",
+              id: 2,
+              priority: 1,
+              address: { street: "Elm", house_number: "99" },
+              scope: { id: "2" },
+              showAlternativeLocations: true,
+            },
+          ],
+        },
+      });
+
+      await flushPromises();
+
+      expect(wrapper.vm.selectedProvider?.id).toBe(2);
+      expect(wrapper.vm.selectedTimeslot).toBe(reservedTimeslot);
+    });
+
     it("shows only one appointment for one provider in the morning", async () => {
       // Mock availableDays to include only Office AAA
       (fetchAvailableCalendar as Mock).mockResolvedValue(
