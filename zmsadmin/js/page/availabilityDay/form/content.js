@@ -185,7 +185,7 @@ const FormContent = (props) => {
                         <AvailabilityDatePicker attributes={{
                             "id": "AvDatesStart",
                             "availabilitylist": availabilityList,
-                            "availability": getDataValuesFromForm(data, data.scope),
+                            "availability": getDataValuesFromForm(data),
                             "today": today,
                             "kind": data.kind,
                             "disabled": inputDisabled
@@ -193,7 +193,7 @@ const FormContent = (props) => {
                         <AvailabilityDatePicker attributes={{
                             "id": "AvDatesEnd",
                             "availabilitylist": availabilityList,
-                            "availability": getDataValuesFromForm(data, data.scope),
+                            "availability": getDataValuesFromForm(data),
                             "today": today,
                             "kind": data.kind,
                             "disabled": inputDisabled
