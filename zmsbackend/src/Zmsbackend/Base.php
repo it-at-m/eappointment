@@ -35,13 +35,13 @@ abstract class Base
      * @param Connection\Pdo|null $writeConnection
      * @param Connection\Pdo|null $readConnection
      */
-    public function __construct(Connection\Pdo $writeConnection = null, Connection\Pdo $readConnection = null)
+    public function __construct(?Connection\Pdo $writeConnection = null, ?Connection\Pdo $readConnection = null)
     {
         $this->writeDb = $writeConnection;
         $this->readDb = $readConnection;
     }
 
-    public static function init(Connection\Pdo $writeConnection = null, Connection\Pdo $readConnection = null): static
+    public static function init(?Connection\Pdo $writeConnection = null, ?Connection\Pdo $readConnection = null): static
     {
         $instance = new static($writeConnection, $readConnection);
         return $instance;
@@ -265,7 +265,7 @@ abstract class Base
      * @param callable|null $callable function to be used for hashing
      * @return string
      */
-    public function hashStringValue(string $value, callable $callable = null): string
+    public function hashStringValue(string $value, ?callable $callable = null): string
     {
         if ($callable === null) {
             $callable = 'sha1';
