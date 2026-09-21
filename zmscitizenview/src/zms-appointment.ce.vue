@@ -179,6 +179,8 @@ onMounted(() => {
 @import "altcha/altcha.css";
 
 :host {
+  display: block;
+  position: relative;
   font-family:
     Open Sans,
     sans-serif;
