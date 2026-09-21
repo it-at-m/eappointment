@@ -109,6 +109,7 @@ public class AdminSteps {
             COUNTER_PROCESSING_STATION_PAGE.clickOnEditProcessButton();
             break;
         case "Vorgangsnummer drucken":
+        case "Wartenummer drucken":
             COUNTER_PROCESSING_STATION_PAGE.clickOnPrintAppointmentNumberButton();
             break;
         case "Schließen":
