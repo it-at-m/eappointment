@@ -43,6 +43,8 @@ public class CitizenViewPage extends BasePage {
             "Sie haben Ihren Termin bereits aktiviert.";
     private static final String RESCHEDULE_APPOINTMENT_BUTTON = "Termin verschieben";
     private static final String CANCEL_RESCHEDULE_BUTTON = "Verschieben abbrechen";
+    private static final String ACTIVATION_CALLOUT_HEADING = "Aktivieren Sie Ihren Termin.";
+    private static final String CONFIRMATION_SUCCESS_HEADING = "Ihr Termin wurde gebucht.";
 
     /** German invalid jump-in callout ({@code de-DE.json}). */
     public static final String DE_INVALID_JUMPIN_HEADER = "Diese Ansicht kann nicht geladen werden.";
@@ -723,7 +725,10 @@ public class CitizenViewPage extends BasePage {
         return Boolean.TRUE.equals(o);
     }
 
-    /** Click first button whose visible text includes label (shadow-safe). Includes BUTTON, A, and MUC-BUTTON (modal confirm/cancel). */
+    /**
+     * Click first button whose visible text includes label (shadow-safe). Includes BUTTON, A, and MUC-BUTTON (modal confirm/cancel).
+     * Skips muc-stepper items ("Zurück zu Schritt: …"); those are not the form Zurück.
+     */
     public boolean clickButtonContaining(String text) {
         CONTEXT.set();
         String esc = text.replace("\\", "\\\\").replace("'", "\\'");
@@ -737,7 +742,10 @@ public class CitizenViewPage extends BasePage {
                         + "function walkClick(n){if(!n)return false;if(n.shadowRoot&&walkClick(n.shadowRoot))return true;"
                         + "var tag=(n.tagName||'').toUpperCase();var isBtn=(tag==='BUTTON'||tag==='A'||tag==='MUC-BUTTON');"
                         + "if(isBtn){var t=(n.textContent||'').trim();"
-                        + "if(t.indexOf(label)>=0&&!n.disabled&&visible(n)){n.scrollIntoView({block:'center'});n.click();return true;}}"
+                        + "if(t.indexOf('Zurück zu Schritt')>=0)return false;"
+                        + "if(t.indexOf(label)>=0&&!n.disabled&&!(n.hasAttribute&&n.hasAttribute('disabled'))"
+                        + "&&n.getAttribute&&n.getAttribute('aria-disabled')!=='true'&&visible(n))"
+                        + "{n.scrollIntoView({block:'center'});n.click();return true;}}"
                         + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walkClick(c[i]))return true;return false;}"
                         + "return walkClick(document.body);";
         Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
@@ -1619,6 +1627,7 @@ public class CitizenViewPage extends BasePage {
                 .info("zmscitizenview: Weiter after slot callout → reserve appointment (then Kontakt form)");
         clickWeiter();
         waitForReserveToSettle();
+        trySetBookingProcessFromPage();
     }
 
     /**
@@ -1869,9 +1878,59 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: Kontakt — required Bemerkung filled for rebooking");
     }
 
+    /**
+     * Pattern Lab hides {@code #checkbox-electronic-communication} ({@code opacity: 0}); the visible
+     * target is {@code label[for=...]}. {@link #deepClick} can hit a non-visible match and leave
+     * {@code electronicCommunication} false, so Termin verschieben stays disabled.
+     */
     public void acceptCommunication() {
         CONTEXT.set();
-        deepClick("#checkbox-electronic-communication");
+        ScenarioLogManager.getLogger().info("zmscitizenview: accept electronic communication (visible label)");
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> clickVisibleElectronicCommunicationLabel());
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> isElectronicCommunicationChecked());
+        Assert.assertTrue(
+                isElectronicCommunicationChecked(),
+                "Electronic communication checkbox was not checked (visible label click).");
+    }
+
+    private boolean clickVisibleElectronicCommunicationLabel() {
+        String script =
+                "function vis(el){if(!el||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
+                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function walk(root){if(!root)return null;"
+                        + "var labels=root.querySelectorAll?root.querySelectorAll('label[for=\"checkbox-electronic-communication\"]'):[];"
+                        + "for(var i=0;i<labels.length;i++)if(vis(labels[i]))return labels[i];"
+                        + "var all=root.querySelectorAll?root.querySelectorAll('*'):[];"
+                        + "for(var j=0;j<all.length;j++)if(all[j].shadowRoot){var f=walk(all[j].shadowRoot);if(f)return f;}"
+                        + "return null;}"
+                        + "var lab=walk(document.body);if(!lab)return false;"
+                        + "var root=lab.getRootNode?lab.getRootNode():document;"
+                        + "var input=root.querySelector?root.querySelector('#checkbox-electronic-communication'):null;"
+                        + "if(input&&input.checked)return true;"
+                        + "lab.scrollIntoView({block:'center'});lab.click();return true;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
+    }
+
+    private boolean isElectronicCommunicationChecked() {
+        String script =
+                "function vis(el){if(!el||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
+                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function walk(root){if(!root)return null;"
+                        + "var labels=root.querySelectorAll?root.querySelectorAll('label[for=\"checkbox-electronic-communication\"]'):[];"
+                        + "for(var i=0;i<labels.length;i++)if(vis(labels[i])){"
+                        + "var rn=labels[i].getRootNode?labels[i].getRootNode():document;"
+                        + "return rn.querySelector?rn.querySelector('#checkbox-electronic-communication'):null;}"
+                        + "var all=root.querySelectorAll?root.querySelectorAll('*'):[];"
+                        + "for(var j=0;j<all.length;j++)if(all[j].shadowRoot){var f=walk(all[j].shadowRoot);if(f)return f;}"
+                        + "return null;}"
+                        + "var input=walk(document.body);return !!(input&&input.checked);";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
     }
 
     /**
@@ -1897,10 +1956,9 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm → Termin reservieren (activation callout)");
         waitForAndClickButtonContaining(DE_RESERVE, DEFAULT_EXPLICIT_WAIT_TIME);
-        String marker = "Aktivieren Sie Ihren Termin.";
-        waitWithThreeWindows(() -> shadowDomContainsText(marker), "Activation callout");
+        waitWithThreeWindows(() -> shadowDomContainsText(ACTIVATION_CALLOUT_HEADING), "Activation callout");
         Assert.assertTrue(
-                shadowDomContainsText(marker),
+                shadowDomContainsText(ACTIVATION_CALLOUT_HEADING),
                 "Activation callout (Aktivieren Sie Ihren Termin.) not visible after Termin reservieren with retries.");
         ScenarioLogManager.getLogger().info("zmscitizenview: activation callout appeared");
         trySyncBookingProcessFromLocalStorageOnce();
@@ -1913,10 +1971,10 @@ public class CitizenViewPage extends BasePage {
                 .info(
                         "zmscitizenview: waiting in 5s + 10s + 15s windows (30s total) for activation callout (Aktivieren Sie Ihren Termin., {} Minuten)",
                         activationMinutes);
-        String heading = "Aktivieren Sie Ihren Termin.";
-        waitWithThreeWindows(() -> shadowDomContainsText(heading), "Preconfirmation callout heading");
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(ACTIVATION_CALLOUT_HEADING), "Preconfirmation callout heading");
         Assert.assertTrue(
-                shadowDomContainsText(heading),
+                shadowDomContainsText(ACTIVATION_CALLOUT_HEADING),
                 "Preconfirmation warning callout (Aktivieren Sie Ihren Termin.) not found after reserve with retries.");
         String timeText = activationMinutes + " Minuten";
         Assert.assertTrue(shadowDomContainsText(timeText),
@@ -1927,9 +1985,39 @@ public class CitizenViewPage extends BasePage {
     public void assertConfirmationSuccessCalloutVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: checking for confirmation success callout (Ihr Termin wurde gebucht.)");
         assertShadowContains(
-                "Ihr Termin wurde gebucht.",
+                CONFIRMATION_SUCCESS_HEADING,
                 "Confirmation success callout not found after opening confirm link.");
         ScenarioLogManager.getLogger().info("zmscitizenview: confirmation success callout found");
+    }
+
+    /**
+     * ZMSKVR-353: guest rebooking summary books via Termin verschieben and must land on success,
+     * not the activation callout. Communication is accepted in the previous Gherkin step so the
+     * ATAF 250ms AfterStep delay can enable the button, same as first-booking preconfirm.
+     */
+    public void confirmRebookingFromSummary() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: rebooking summary → confirm (Termin verschieben)");
+        waitForAndClickButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON, DEFAULT_EXPLICIT_WAIT_TIME);
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING), "Rebooking confirmation success");
+        Assert.assertTrue(
+                shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING),
+                "Confirmation success callout (Ihr Termin wurde gebucht.) not visible after guest rebooking.");
+        Assert.assertFalse(
+                shadowDomContainsText(ACTIVATION_CALLOUT_HEADING),
+                "Guest rebooking must not show the activation callout (Aktivieren Sie Ihren Termin.).");
+        trySyncBookingProcessFromLocalStorageOnce();
+    }
+
+    public void assertPreconfirmationCalloutNotVisible() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: asserting activation callout is hidden ({})", ACTIVATION_CALLOUT_HEADING);
+        Assert.assertFalse(
+                shadowDomContainsText(ACTIVATION_CALLOUT_HEADING),
+                "Activation callout (Aktivieren Sie Ihren Termin.) must not be visible after guest rebooking confirm.");
     }
 
     /** ZMSKVR-1500: MucBanner success after reopening an already-used confirm deep link. */
@@ -2467,6 +2555,7 @@ public class CitizenViewPage extends BasePage {
                 shadowDomContainsText("Sie sind angemeldet.") || shadowDomContainsText("Kontaktdaten"),
                 "Expected return to Kontakt form after Bürger-Login (logged-in callout or Kontaktdaten).");
         ScenarioLogManager.getLogger().info("zmscitizenview: Bürger-Login completed");
+        trySetBookingProcessFromPage();
     }
 
     /**
@@ -2527,5 +2616,159 @@ public class CitizenViewPage extends BasePage {
         enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, password, "password", LocatorType.ID);
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "kc-login", LocatorType.ID, false);
         ScenarioLogManager.getLogger().info("zmscitizenview: Keycloak login submitted");
+    }
+
+    /**
+     * ZMSKVR-1630 / ZMSKVR-1030: full reload of {@code #/appointment/{id+authKey}} so resume uses
+     * the reserved process instead of leftover localStorage view state.
+     */
+    public void reloadReservedAppointmentHash() {
+        CONTEXT.set();
+        trySetBookingProcessFromPage();
+        String url = resolveReservedAppointmentHashUrl();
+        String current = DriverUtil.getDriver().getCurrentUrl();
+        boolean alreadyOnReservedHash = current != null
+                && current.contains("#/appointment/")
+                && !current.contains("#/appointment/confirm/");
+        ScenarioLogManager.getLogger().info("zmscitizenview: reload reserved appointment hash {}", url);
+        try {
+            if (!alreadyOnReservedHash) {
+                DriverUtil.getDriver().navigate().to(url);
+            }
+            DriverUtil.getDriver().navigate().refresh();
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Reload reserved appointment hash", e);
+        }
+        waitWithThreeWindows(
+                () -> shadowDomContainsText("Kontaktdaten")
+                        || deepElementExists("#checkbox-electronic-communication")
+                        || shadowDomContainsText("Sie sind angemeldet"),
+                "Reserved hash resume after reload");
+    }
+
+    public void assertAppointmentManagementActionsNotVisible() {
+        CONTEXT.set();
+        Assert.assertFalse(
+                shadowDomContainsText(RESCHEDULE_APPOINTMENT_BUTTON),
+                "Reserved hash resume must not show Termin verschieben (confirmed-appointment management).");
+        Assert.assertFalse(
+                shadowDomContainsText(CANCEL_RESCHEDULE_BUTTON),
+                "Reserved hash resume must not show Verschieben abbrechen (rebooking).");
+    }
+
+    public void assertElectronicCommunicationCheckboxVisible() {
+        CONTEXT.set();
+        waitWithThreeWindows(
+                () -> deepElementExists("#checkbox-electronic-communication"),
+                "Electronic communication checkbox on book overview");
+        Assert.assertTrue(
+                deepElementExists("#checkbox-electronic-communication"),
+                "Expected #checkbox-electronic-communication on the book/overview after reserved hash resume.");
+    }
+
+    private String resolveReservedAppointmentHashUrl() {
+        String current = DriverUtil.getDriver().getCurrentUrl();
+        if (current != null) {
+            int hashIdx = current.indexOf("#/appointment/");
+            if (hashIdx >= 0 && !current.contains("#/appointment/confirm/")) {
+                return current;
+            }
+        }
+        ThinnedProcess process = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+        Assert.assertNotNull(process, "No booking process for reserved hash; login or reserve first.");
+        Assert.assertNotNull(process.getProcessId(), "Booking process has no processId for reserved hash.");
+        Assert.assertNotNull(process.getAuthKey(), "Booking process has no authKey for reserved hash.");
+        String payload =
+                "{\"id\":"
+                        + process.getProcessId()
+                        + ",\"authKey\":"
+                        + mapperQuote(process.getAuthKey())
+                        + "}";
+        String b64 = Base64.getEncoder().encodeToString(payload.getBytes(StandardCharsets.UTF_8));
+        String base = CONTEXT.lastCitizenViewUrl != null ? CONTEXT.lastCitizenViewUrl : "";
+        int hashIdx = base.indexOf('#');
+        if (hashIdx >= 0) {
+            base = base.substring(0, hashIdx);
+        }
+        if (current != null && (base == null || base.isBlank())) {
+            int currentHash = current.indexOf('#');
+            base = currentHash >= 0 ? current.substring(0, currentHash) : current;
+        }
+        return ensureAbsoluteCitizenViewUrl(base + "#/appointment/" + b64);
+    }
+
+    /**
+     * Capture processId/authKey from localStorage, sessionStorage, or {@code #/appointment/{hash}}
+     * so After-hook cancellation can free the reserved slot.
+     */
+    public void captureBookingProcessForCleanup() {
+        CONTEXT.set();
+        trySetBookingProcessFromPage();
+    }
+
+    private void trySetBookingProcessFromPage() {
+        if (trySetBookingProcessFromLocalStorage()) {
+            return;
+        }
+        if (trySetBookingProcessFromSessionAuthHash()) {
+            return;
+        }
+        trySetBookingProcessFromCurrentReservedHash();
+    }
+
+    private boolean trySetBookingProcessFromSessionAuthHash() {
+        CONTEXT.set();
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript("return sessionStorage.getItem('lhm-appointment-auth-hash');");
+        return raw instanceof String && setBookingProcessFromAppointmentHash((String) raw);
+    }
+
+    private boolean trySetBookingProcessFromCurrentReservedHash() {
+        CONTEXT.set();
+        String current = DriverUtil.getDriver().getCurrentUrl();
+        if (current == null) {
+            return false;
+        }
+        int idx = current.indexOf("#/appointment/");
+        if (idx < 0 || current.contains("#/appointment/confirm/")) {
+            return false;
+        }
+        String rest = current.substring(idx + "#/appointment/".length());
+        int end = rest.indexOf('?');
+        if (end >= 0) {
+            rest = rest.substring(0, end);
+        }
+        return setBookingProcessFromAppointmentHash(rest);
+    }
+
+    private boolean setBookingProcessFromAppointmentHash(String hash) {
+        if (hash == null || hash.isBlank()) {
+            return false;
+        }
+        String b64 = hash.trim();
+        int padding = (4 - (b64.length() % 4)) % 4;
+        if (padding > 0) {
+            b64 = b64 + "=".repeat(padding);
+        }
+        try {
+            String decoded = new String(Base64.getDecoder().decode(b64), StandardCharsets.UTF_8);
+            JsonNode node = new ObjectMapper().readTree(decoded);
+            JsonNode idNode = node.path("id");
+            JsonNode keyNode = node.path("authKey");
+            if (idNode.isMissingNode() || keyNode.isMissingNode() || idNode.isNull() || keyNode.isNull()) {
+                return false;
+            }
+            ThinnedProcess p = new ThinnedProcess();
+            p.setProcessId(idNode.asInt());
+            p.setAuthKey(keyNode.asText());
+            zms.ataf.rest.steps.CitizenApiSteps.setBookingProcess(p);
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: captured booking process from appointment hash (processId={})", p.getProcessId());
+            return true;
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().debug("zmscitizenview: could not parse appointment hash", e);
+            return false;
+        }
     }
 }

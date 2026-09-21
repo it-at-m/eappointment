@@ -59,6 +59,7 @@ public class TicketprinterPageContext extends Context {
     private void navigateTo(String url) {
         stubWindowPrint();
         windowType = new WindowType("zmsticketprinter", new System("zmsticketprinter", resolveBaseUrl()));
+        abandonProcessPage();
         try {
             DRIVER.navigate().to(url);
         } catch (TimeoutException e) {
@@ -69,6 +70,37 @@ public class TicketprinterPageContext extends Context {
         WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
         FrameControls.setCurrentFrame(FrameControls.DEFAULT_CONTENT);
         ScenarioLogManager.getLogger().info("Ticketprinter loaded: {}", url);
+    }
+
+    /**
+     * Firefox keeps the ticketprinter process tab in a pending load while print UI is
+     * open, so same-tab navigation never starts. Open a fresh tab via WebDriver and
+     * close the hung one.
+     */
+    void abandonProcessPage() {
+        String current;
+        try {
+            current = DRIVER.getCurrentUrl();
+        } catch (RuntimeException e) {
+            return;
+        }
+        if (current == null || !current.contains("/ticketprinter/process")) {
+            return;
+        }
+        String stuck = DRIVER.getWindowHandle();
+        DRIVER.switchTo().newWindow(org.openqa.selenium.WindowType.TAB);
+        String fresh = DRIVER.getWindowHandle();
+        try {
+            DRIVER.switchTo().window(stuck);
+            DRIVER.close();
+        } catch (RuntimeException e) {
+            ScenarioLogManager.getLogger().warn("Could not close hung ticketprinter process tab: {}", e.toString());
+        }
+        DRIVER.switchTo().window(fresh);
+        if (windowType != null) {
+            WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
+        }
+        ScenarioLogManager.getLogger().info("Left hung ticketprinter process tab");
     }
 
     private void waitForTicketprinterDocument(String url) {
@@ -114,8 +146,9 @@ public class TicketprinterPageContext extends Context {
     }
 
     /**
-     * Kiosk pages always print and return home after 1.5s. Stub both on every new
-     * document so Chrome's print preview cannot block the UI suite.
+     * Chrome can stub {@code window.print} and the 1.5s home redirect on every new
+     * document via CDP. Firefox has no CDP/BiDi here; hung process tabs are left
+     * with {@link #abandonProcessPage()} instead.
      */
     void stubWindowPrint() {
         if (DRIVER instanceof HasCdp cdp) {

@@ -78,7 +78,7 @@ const cucumberStrings = {
       "> Deprecated: These scenarios target the legacy buergeransicht frontend from `it-at-m/eappointment-buergeransicht` and are not used for `zmscitizenview`.",
     deprecatedSuffix: "(deprecated)",
     accordionHint:
-      "Click a feature to view its Gherkin. Only one feature is expanded at a time. Pick a branch below the search to load that branch's `.feature` files, status, and run command. The play icon copies a command to start the test on the selected branch and opens [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). Status icons are pass/fail from the latest published zmsautomation run on the selected branch.",
+      "Click a feature to view its Gherkin. Only one feature is expanded at a time. Pick a branch below the search to load that branch's `.feature` files, status, and run command. The play icon copies a command to start the test on the selected branch and opens [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). The title status is green only when every browser in the latest published run passed, and red if any browser failed. Expand a feature to see each browser result.",
     noFiles: "No `.feature` files found.",
     uncategorized: "Uncategorized",
     emptyCategory:
@@ -97,7 +97,7 @@ const cucumberStrings = {
       "> Veraltet: Diese Szenarien adressieren das alte buergeransicht-Frontend aus `it-at-m/eappointment-buergeransicht` und werden für `zmscitizenview` nicht mehr verwendet.",
     deprecatedSuffix: "(veraltet)",
     accordionHint:
-      "Klicke auf ein Feature, um das Gherkin anzuzeigen. Es ist immer nur ein Feature aufgeklappt. Wähle unter der Suche einen Branch, um dessen `.feature`-Dateien, Status und Startbefehl zu laden. Das Play-Symbol kopiert einen Befehl, um den Test auf dem gewählten Branch zu starten, und öffnet [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). Status-Icons zeigen Bestanden/Fehlgeschlagen vom letzten veröffentlichten zmsautomation-Lauf auf dem gewählten Branch.",
+      "Klicke auf ein Feature, um das Gherkin anzuzeigen. Es ist immer nur ein Feature aufgeklappt. Wähle unter der Suche einen Branch, um dessen `.feature`-Dateien, Status und Startbefehl zu laden. Das Play-Symbol kopiert einen Befehl, um den Test auf dem gewählten Branch zu starten, und öffnet [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). Das Status-Icon in der Titelzeile ist grün nur wenn jeder Browser im letzten veröffentlichten Lauf bestanden hat, und rot wenn ein Browser fehlgeschlagen ist. Im aufgeklappten Feature stehen die einzelnen Browser-Ergebnisse.",
     noFiles: "Keine `.feature`-Dateien gefunden.",
     uncategorized: "Unkategorisiert",
     emptyCategory:

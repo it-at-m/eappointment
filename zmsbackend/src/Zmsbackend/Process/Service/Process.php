@@ -39,7 +39,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $process;
     }
 
-    public function readById($processId, $resolveReferences = 1): Entity
+    public function readById($processId, int $resolveReferences = 1): Entity
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -122,7 +122,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      *        If slotsRequired = 0, readFreeProcesses() uses the slotsRequired based on request-provider relation
      * @psalm-api
      */
-    public function updateEntityWithSlots(\BO\Zmsentities\Process $process, \DateTimeInterface $now, $slotType = "intern", $slotsRequired = 0, $resolveReferences = 0, $userAccount = null)
+    public function updateEntityWithSlots(\BO\Zmsentities\Process $process, \DateTimeInterface $now, $slotType = "intern", $slotsRequired = 0, int $resolveReferences = 0, $userAccount = null)
     {
         if ('intern' != $slotType) {
             return $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
@@ -194,7 +194,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
     /**
      * write a new process with appointment and keep id and authkey from original process
      */
-    public function writeEntityWithNewAppointment(\BO\Zmsentities\Process $process, \BO\Zmsentities\Appointment $appointment, \DateTimeInterface $now, $slotType = 'public', $slotsRequired = 0, $resolveReferences = 0, $keepReserved = false): Entity|null
+    public function writeEntityWithNewAppointment(\BO\Zmsentities\Process $process, \BO\Zmsentities\Appointment $appointment, \DateTimeInterface $now, $slotType = 'public', int $slotsRequired = 0, int $resolveReferences = 0, bool $keepReserved = false): Entity|null
     {
         // clone to new process with id = 0 and new appointment to reserve
         $processNew = clone $process;
@@ -327,7 +327,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         ) : null;
     }
 
-    protected function readList($statement, $resolveReferences): Collection
+    protected function readList($statement, int $resolveReferences): Collection
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $processList = new Collection();
@@ -379,7 +379,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
     /**
      * Read list with following processes in DB
      */
-    public function readEntityList($processId, $resolveReferences = 0)
+    public function readEntityList($processId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -390,7 +390,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $this->readList($statement, $resolveReferences)->sortByAppointmentDate();
     }
 
-    public function readByWorkstation(\BO\Zmsentities\Workstation $workstation, $resolveReferences = 0)
+    public function readByWorkstation(\BO\Zmsentities\Workstation $workstation, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -430,14 +430,17 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
     }
 
     /**
-     * Read conflictList by scopeId and DateTime
+     * Read conflictList by scope and date range
      *
-     * @param array|int $scopeIds
-     * @param \DateTimeInterface $dateTime
+     * @param \BO\Zmsentities\Scope $scope
+     * @param \DateTimeInterface|null $startDate
+     * @param \DateTimeInterface|null $endDate
+     * @param \DateTimeInterface|null $now
+     * @param int $resolveReferences
      *
      * @return Collection
      */
-    public function readConflictListByScopeAndTime(\BO\Zmsentities\Scope $scope, \DateTimeInterface $startDate = null, \DateTimeInterface $endDate = null, \DateTimeInterface $now = null, $resolveReferences = 1)
+    public function readConflictListByScopeAndTime(\BO\Zmsentities\Scope $scope, \DateTimeInterface $startDate = null, \DateTimeInterface $endDate = null, \DateTimeInterface $now = null, int $resolveReferences = 1)
     {
         $availabilityList = (new \BO\Zmsbackend\Availability\Service\Availability())
             ->readAvailabilityListByScope($scope, 0, $startDate, $endDate)
@@ -474,7 +477,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      * @return Collection
      *
      */
-    public function readProcessListByScopeAndStatus(int $scopeId, string $status, int $resolveReferences = 0, $limit = 1000, $offset = null)
+    public function readProcessListByScopeAndStatus(int $scopeId, string $status, int $resolveReferences = 0, int $limit = 1000, ?int $offset = null)
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -533,7 +536,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      *
      * @return Collection
      */
-    public function readProcessListByMailAddress(string $mailAddress, int $scopeId = null, $resolveReferences = 0, $limit = 2000): Collection
+    public function readProcessListByMailAddress(string $mailAddress, int $scopeId = null, int $resolveReferences = 0, int $limit = 2000): Collection
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -579,7 +582,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      * @return Entity|null
      *
      */
-    public function updateProcessStatus(Entity $process, string $status, \DateTimeInterface $dateTime, $resolveReferences = 0, $userAccount = null)
+    public function updateProcessStatus(Entity $process, string $status, \DateTimeInterface $dateTime, int $resolveReferences = 0, $userAccount = null)
     {
         $process = (new ProcessStatus())
             ->writeUpdatedStatus($process, $status, $dateTime, $resolveReferences, $userAccount);
@@ -753,7 +756,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $status;
     }
 
-    public function readExpiredProcessList(\DateTimeInterface $expirationDate, $limit = 500, $resolveReferences = 0, $offset = null)
+    public function readExpiredProcessList(\DateTimeInterface $expirationDate, int $limit = 500, int $resolveReferences = 0, ?int $offset = null)
     {
         $selectQuery = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $selectQuery
@@ -765,7 +768,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         $statement = $this->fetchStatement($selectQuery);
         return $this->readList($statement, $resolveReferences);
     }
-    public function readUnconfirmedProcessList(\DateTimeInterface $expirationDate, $scopeId = 0, $limit = 500, $offset = null, $resolveReferences = 0)
+    public function readUnconfirmedProcessList(\DateTimeInterface $expirationDate, $scopeId = 0, int $limit = 500, ?int $offset = null, int $resolveReferences = 0)
     {
 
         $selectQuery = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
@@ -781,7 +784,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $this->readList($statement, $resolveReferences);
     }
 
-    public function readExpiredProcessListByStatus(\DateTimeInterface $expirationDate, $status, $limit = 500, $offset = null, $resolveReferences = 0)
+    public function readExpiredProcessListByStatus(\DateTimeInterface $expirationDate, $status, int $limit = 500, ?int $offset = null, int $resolveReferences = 0)
     {
         $selectQuery = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $selectQuery
@@ -795,7 +798,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $this->readList($statement, $resolveReferences);
     }
 
-    public function readExpiredReservationsList(\DateTimeInterface $expirationDate, $scopeId, $limit = 500, $offset = null, $resolveReferences = 0)
+    public function readExpiredReservationsList(\DateTimeInterface $expirationDate, $scopeId, int $limit = 500, ?int $offset = null, int $resolveReferences = 0)
     {
         $selectQuery = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $selectQuery
@@ -810,7 +813,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $this->readList($statement, $resolveReferences);
     }
 
-    public function readEmailReminderProcessListByInterval(\DateTimeInterface $now, \DateTimeInterface $lastRun, $defaultReminderInMinutes, $limit = 500, $offset = null, int $resolveReferences = 0)
+    public function readEmailReminderProcessListByInterval(\DateTimeInterface $now, \DateTimeInterface $lastRun, int $defaultReminderInMinutes, int $limit = 500, ?int $offset = null, int $resolveReferences = 0)
     {
         $selectQuery = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $selectQuery
@@ -825,7 +828,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $this->readList($statement, $resolveReferences)->withDepartmentHasMailFrom();
     }
 
-    public function readDeallocateProcessList(\DateTimeInterface $now, $limit = 500, $offset = null, $resolveReferences = 0)
+    public function readDeallocateProcessList(\DateTimeInterface $now, int $limit = 500, ?int $offset = null, int $resolveReferences = 0)
     {
         $selectQuery = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $selectQuery
@@ -971,7 +974,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $this->readResolvedReferences($process, 1);
     }
 
-    public function readProcessListByExternalUserId(string $externalUserId, ?int $filterId = null, ?string $status = null, $resolveReferences = 0, $limit = 1000): Collection
+    public function readProcessListByExternalUserId(string $externalUserId, ?int $filterId = null, ?string $status = null, int $resolveReferences = 0, int $limit = 1000): Collection
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $query

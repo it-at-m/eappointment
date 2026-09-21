@@ -10,7 +10,7 @@ class ProcessStatusArchived extends Process
     /**
      * @param false|string $archiveId
      */
-    public function readArchivedEntity(string|false $archiveId, $resolveReferences = 0)
+    public function readArchivedEntity(string|false $archiveId, int $resolveReferences = 0)
     {
         if (!$archiveId) {
             return null;
@@ -24,7 +24,7 @@ class ProcessStatusArchived extends Process
         return $archive;
     }
 
-    public function readListByScopeId($scopeId, $resolveReferences = 0)
+    public function readListByScopeId($scopeId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -33,7 +33,7 @@ class ProcessStatusArchived extends Process
         return $this->readResolvedList($query, $resolveReferences);
     }
 
-    public function readListByDate($dateTime, $resolveReferences = 0)
+    public function readListByDate($dateTime, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -43,7 +43,7 @@ class ProcessStatusArchived extends Process
     }
 
     /** @psalm-api */
-    public function readListByScopeAndDate($scopeId, $dateTime, $resolveReferences = 0)
+    public function readListByScopeAndDate($scopeId, $dateTime, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -57,7 +57,7 @@ class ProcessStatusArchived extends Process
      * @param (\BO\Zmsentities\Helper\DateTime|false)[] $dateTimes
      *
      */
-    public function readListByScopesAndDates(array $scopeIds, array $dateTimes, $resolveReferences = 0)
+    public function readListByScopesAndDates(array $scopeIds, array $dateTimes, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchivedToday(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -79,7 +79,7 @@ class ProcessStatusArchived extends Process
     }
 
     /** @psalm-api */
-    public function readListForStatistic($dateTime, \BO\Zmsentities\Scope $scope, $limit = 500, $resolveReferences = 0)
+    public function readListForStatistic($dateTime, \BO\Zmsentities\Scope $scope, int $limit = 500, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -89,7 +89,7 @@ class ProcessStatusArchived extends Process
         return $this->readResolvedList($query, $resolveReferences);
     }
 
-    public function readListIsMissed($isMissed = 1, $resolveReferences = 0)
+    public function readListIsMissed(int $isMissed = 1, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -98,7 +98,7 @@ class ProcessStatusArchived extends Process
         return $this->readResolvedList($query, $resolveReferences);
     }
 
-    public function readListWithAppointment($withAppointment = 1, $resolveReferences = 0)
+    public function readListWithAppointment(int $withAppointment = 1, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -107,7 +107,7 @@ class ProcessStatusArchived extends Process
         return $this->readResolvedList($query, $resolveReferences);
     }
 
-    protected function readResolvedList(\BO\Zmsbackend\Process\Repository\ProcessStatusArchived $query, $resolveReferences): Collection
+    protected function readResolvedList(\BO\Zmsbackend\Process\Repository\ProcessStatusArchived $query, int $resolveReferences): Collection
     {
         $processList = new Collection();
         $resultList = $this->fetchList($query, new Entity());
@@ -182,7 +182,7 @@ class ProcessStatusArchived extends Process
         $organisationId,
         $ownerId,
         $dateTime,
-        $processingTime
+        ?int $processingTime
     ) {
         return $this->perform(
             \BO\Zmsbackend\Process\Repository\ProcessStatusArchived::QUERY_INSERT_IN_STATISTIC,

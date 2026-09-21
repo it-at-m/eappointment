@@ -8,6 +8,7 @@ import java.util.Set;
 import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
+import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -25,6 +26,16 @@ public class CitizenViewSteps {
 
     public CitizenViewSteps() {
         page = new CitizenViewPage(DriverUtil.getDriver());
+    }
+
+    /** Capture credentials while the browser is still open, before {@link zms.ataf.rest.steps.CitizenApiSteps} After-cancel. */
+    @After(order = 10001)
+    public void captureBookingProcessBeforeCleanup() {
+        try {
+            page.captureBookingProcessForCleanup();
+        } catch (RuntimeException e) {
+            ScenarioLogManager.getLogger().debug("zmscitizenview: no booking process to capture for cleanup", e);
+        }
     }
 
     @Given("I open the zmscitizenview booking page")
@@ -294,6 +305,20 @@ public class CitizenViewSteps {
         page.assertCancelRescheduleButtonVisible();
     }
 
+    /** ZMSKVR-353: confirm guest rebooking from the summary without an activation mail. */
+    @When("I confirm the rebooking from the summary in the citizen view")
+    public void iConfirmTheRebookingFromTheSummaryInTheCitizenView() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: confirm rebooking from summary (Termin verschieben)");
+        page.confirmRebookingFromSummary();
+    }
+
+    @Then("the preconfirmation callout should not be visible in the citizen view")
+    public void thePreconfirmationCalloutShouldNotBeVisibleInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert activation callout is hidden");
+        page.assertPreconfirmationCalloutNotVisible();
+    }
+
     /** ZMSKVR-1500: Verschieben abbrechen → back to overview with already-activated banner. */
     @When("I cancel the reschedule in the citizen view")
     public void iCancelTheRescheduleInTheCitizenView() {
@@ -471,5 +496,25 @@ public class CitizenViewSteps {
     public void iGoBackFromTheBookingSummaryToTheContactForm() {
         ScenarioLogManager.getLogger().info("zmscitizenview: Zurück Übersicht → Kontakt");
         page.goBackFromBookingSummaryToContact();
+    }
+
+    @When("I reload the reserved appointment hash in the citizen view")
+    public void iReloadTheReservedAppointmentHash() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: reload reserved #/appointment hash");
+        page.reloadReservedAppointmentHash();
+    }
+
+    @Then("the appointment management actions should not be visible in the citizen view")
+    public void theAppointmentManagementActionsShouldNotBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Termin verschieben / Verschieben abbrechen are absent");
+        page.assertAppointmentManagementActionsNotVisible();
+    }
+
+    @Then("the electronic communication checkbox should be visible in the citizen view")
+    public void theElectronicCommunicationCheckboxShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert electronic communication checkbox on book overview");
+        page.assertElectronicCommunicationCheckboxVisible();
     }
 }
