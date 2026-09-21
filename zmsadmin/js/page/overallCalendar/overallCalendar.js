@@ -1,3 +1,5 @@
+import settings from '../../settings'
+
 let calendarCache = [];
 let calendarMeta = null;
 let lastUpdateAfter = null;
@@ -547,13 +549,27 @@ function renderMultiDayCalendar(days) {
             const meta = calendarMeta.scopes?.[scope.id] || {};
             const lanes = getLanes(day.date, scope.id);
             const headerCell = addCell({
-                text: meta.shortName || meta.name || `Scope ${scope.id}`,
                 className: 'overall-calendar-head overall-calendar-scope-header overall-calendar-stick-top',
                 row: 2, col: columnCursor, colSpan: lanes
             });
             headerCell.style.background = SCOPE_COLORS[scope.id];
             headerCell.title = meta.shortName || meta.name || `Scope ${scope.id}`;
             if (isScopeClosed(dateIso, scope.id)) headerCell.classList.add('is-closed');
+
+            const nameElement = document.createElement('span');
+            nameElement.textContent = meta.shortName || meta.name || `Scope ${scope.id}`;
+            nameElement.className = 'overall-calendar-scope-name';
+            headerCell.appendChild(nameElement);
+            const linkElement = document.createElement('a');
+            linkElement.title = 'Öffnungszeiten bearbeiten';
+            linkElement.href = `${settings.includeUrl}/scope/${scope.id}/availability/day/${dateIso}/`;
+            linkElement.target = '_blank';
+            linkElement.rel = 'noopener';
+            headerCell.appendChild(linkElement);
+
+            const iconElement = document.createElement('i');
+            iconElement.className = 'overall-calendar-scope-icon far fa-clock';
+            linkElement.appendChild(iconElement);
 
             columnCursor += lanes;
             if (scopeIndex < day.scopes.length - 1) {
