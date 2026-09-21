@@ -145,8 +145,18 @@ class MailTemplatesCopyTest extends Base
         $response = $this->render([], ['sourceScopeId' => 380]);
         $body = (string) $response->getBody();
 
-        $hasScope141 = str_contains($body, 'value="141"');
-        $hasScope1 = str_contains($body, 'value="1"');
+        self::assertSame(
+            1,
+            preg_match(
+                '/<select[^>]+id="targetScopeIds".*?<\/select>/s',
+                $body,
+                $matches
+            )
+        );
+
+        $targetSelect = $matches[0];
+        $hasScope141 = str_contains($targetSelect, 'value="141"');
+        $hasScope1 = str_contains($targetSelect, 'value="1"');
 
         self::assertTrue(
             $hasScope141 xor $hasScope1,
@@ -429,52 +439,80 @@ class MailTemplatesCopyTest extends Base
             380 => '122210',
         ];
 
-        $setProvider = static function (
-            array &$scope
-        ) use ($providers): void {
-            $scopeId = (int) $scope['id'];
-
-            $scope['provider'] = [
-                'id' => $providers[$scopeId],
-                'source' => 'dldb',
-            ];
-        };
-
         foreach (
             $response['data']['useraccount']['departments']
-            as &$department
+            as $departmentIndex => $department
         ) {
             foreach (
                 $department['scopes'] ?? []
-                as &$scope
+                as $scopeIndex => $scope
             ) {
-                $setProvider($scope);
+                $this->assignTestProvider(
+                    $response['data']['useraccount']
+                        ['departments']
+                        [$departmentIndex]
+                        ['scopes']
+                        [$scopeIndex],
+                    $providers
+                );
             }
-            unset($scope);
 
             foreach (
                 $department['clusters'] ?? []
-                as &$cluster
+                as $clusterIndex => $cluster
             ) {
                 foreach (
                     $cluster['scopes'] ?? []
-                    as &$scope
+                    as $scopeIndex => $scope
                 ) {
-                    $setProvider($scope);
+                    $this->assignTestProvider(
+                        $response['data']['useraccount']
+                            ['departments']
+                            [$departmentIndex]
+                            ['clusters']
+                            [$clusterIndex]
+                            ['scopes']
+                            [$scopeIndex],
+                        $providers
+                    );
 
-                    $scope['contact']['name'] ??=
-                        $cluster['name'];
+                    $response['data']['useraccount']
+                        ['departments']
+                        [$departmentIndex]
+                        ['clusters']
+                        [$clusterIndex]
+                        ['scopes']
+                        [$scopeIndex]
+                        ['contact']
+                        ['name']
+                        ??= $cluster['name'] ?? '';
                 }
-                unset($scope);
             }
-            unset($cluster);
         }
-        unset($department);
 
         return json_encode(
             $response,
             JSON_THROW_ON_ERROR
         );
+    }
+
+    /**
+     * @param array<int, string> $providers
+     */
+    private function assignTestProvider(
+        array &$scope,
+        array $providers
+    ): void {
+        $scopeId = (int) ($scope['id'] ?? 0);
+
+        if (!isset($providers[$scopeId])) {
+            return;
+        }
+
+        $scope['provider'] = [
+            'id' => $providers[$scopeId],
+            'source' => 'dldb',
+        ];
     }
 
     private function mailtemplateResponse(
