@@ -1,4 +1,4 @@
-@rest @zmscitizenapi @citizen @ZMSKVR-353 @pickupCalendar
+@rest @zmscitizenapi @citizen @ZMSKVR-353 @ZMSKVR-951 @pickupCalendar
 Feature: ZMSKVR-353 Guest rebooking confirms without a second activation — Citizen API
   As a citizen API client
   I want confirm of a reserved rebooking slot to succeed when I prove the original appointment
