@@ -236,6 +236,7 @@ import {
   getEffectiveMinSlotsPerAppointment,
   getMaxSlotOfProvider,
 } from "@/utils/slotCalculations";
+import { trackAppointmentEvent } from "@/utils/trackAppointmentEvent";
 
 const isCaptchaValid = ref<boolean>(false);
 const servicesRef = ref(null);
@@ -286,6 +287,17 @@ const { serviceLinkId, updateServiceLinkId } = inject<ServiceLinkProvider>(
 const service = ref<ServiceImpl | undefined>(selectedService.value);
 const getServiceInfoId = (selectedService: Service | ServiceImpl | undefined) =>
   String(selectedService?.rootParentId ?? selectedService?.id ?? "");
+
+watch(
+  () => Boolean(service.value),
+  (hasService) => {
+    trackAppointmentEvent({
+      object: hasService ? "service_combination" : "service_finder",
+      action: "view",
+    });
+  },
+  { immediate: true }
+);
 
 const serviceInfoLink = computed(() => {
   const serviceInfoId = getServiceInfoId(service.value);

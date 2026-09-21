@@ -22,7 +22,7 @@ import de from "@/utils/de-DE.json";
 import { nowUnixSeconds } from "@/utils/timestampInPast";
 import {
   trackAppointmentEvent,
-  trackAppointmentStepFromView,
+  trackAppointmentScreenFromView,
 } from "@/utils/trackAppointmentEvent";
 
 globalThis.scrollTo = vi.fn();
@@ -51,7 +51,9 @@ vi.mock("@/utils/auth", () => ({
 
 vi.mock("@/utils/trackAppointmentEvent", () => ({
   trackAppointmentEvent: vi.fn(),
-  trackAppointmentStepFromView: vi.fn(),
+  trackAppointmentScreenFromView: vi.fn(),
+  trackWidgetView: vi.fn(),
+  bookingFlow: (isRebooking: boolean) => (isRebooking ? "rebooking" : "new"),
 }));
 
 describe("AppointmentView", () => {
@@ -76,7 +78,7 @@ describe("AppointmentView", () => {
   beforeEach(() => {
     vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockReset();
     vi.mocked(trackAppointmentEvent).mockReset();
-    vi.mocked(trackAppointmentStepFromView).mockReset();
+    vi.mocked(trackAppointmentScreenFromView).mockReset();
   });
 
   const mockBaseUrl = "https://www.muenchen.de";
@@ -481,17 +483,17 @@ describe("AppointmentView", () => {
   });
 
   describe("appointment tracking", () => {
-    it("tracks English stepper steps when the view changes", async () => {
+    it("tracks appointment_selection when the view changes to Termin", async () => {
       const wrapper = createWrapper({ appointmentHash: undefined });
-      vi.mocked(trackAppointmentStepFromView).mockClear();
+      vi.mocked(trackAppointmentScreenFromView).mockClear();
 
       wrapper.vm.currentView = 1;
       await nextTick();
 
-      expect(trackAppointmentStepFromView).toHaveBeenCalledWith(1);
+      expect(trackAppointmentScreenFromView).toHaveBeenCalledWith(1);
     });
 
-    it("tracks appointment_booked after a successful preconfirm", async () => {
+    it("tracks preconfirmed after a successful preconfirm", async () => {
       const wrapper = createWrapper();
       wrapper.vm.appointment = {
         processId: "p1",
@@ -505,7 +507,9 @@ describe("AppointmentView", () => {
       await nextTick();
 
       expect(trackAppointmentEvent).toHaveBeenCalledWith({
-        event: "appointment_booked",
+        object: "preconfirmed",
+        action: "success",
+        flow: "new",
       });
     });
   });

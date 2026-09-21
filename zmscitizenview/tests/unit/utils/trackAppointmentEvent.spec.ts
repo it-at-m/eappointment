@@ -3,8 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   APPOINTMENT_TRACK_CATEGORY,
   APPOINTMENT_TRACK_EVENT,
+  bookingFlow,
   trackAppointmentEvent,
-  trackAppointmentStepFromView,
+  trackAppointmentScreenFromView,
+  trackWidgetView,
 } from "@/utils/trackAppointmentEvent";
 
 describe("trackAppointmentEvent", () => {
@@ -23,21 +25,28 @@ describe("trackAppointmentEvent", () => {
     const handler = vi.fn();
     document.addEventListener(APPOINTMENT_TRACK_EVENT, handler);
 
-    trackAppointmentEvent({ event: "appointment_step", step: "service" });
+    trackAppointmentEvent({
+      object: "reserved",
+      action: "success",
+      flow: "new",
+      slot_ui: "calendar",
+    });
 
     expect(handler).toHaveBeenCalledTimes(1);
     const event = handler.mock.calls[0][0] as CustomEvent;
     expect(event.bubbles).toBe(true);
     expect(event.composed).toBe(true);
     expect(event.detail).toEqual({
-      event: "appointment_step",
-      step: "service",
+      object: "reserved",
+      action: "success",
+      flow: "new",
+      slot_ui: "calendar",
     });
 
     document.removeEventListener(APPOINTMENT_TRACK_EVENT, handler);
   });
 
-  it("forwards to etracker when the host API is present", () => {
+  it("forwards object, category, and action to etracker", () => {
     const sendEvent = vi.fn();
     class FakeUserDefinedEvent {
       objectName: string;
@@ -52,19 +61,23 @@ describe("trackAppointmentEvent", () => {
     window._etracker = { sendEvent };
     window.et_UserDefinedEvent = FakeUserDefinedEvent;
 
-    trackAppointmentEvent({ event: "appointment_booked" });
+    trackAppointmentEvent({
+      object: "preconfirmed",
+      action: "success",
+      flow: "rebooking",
+    });
 
     expect(sendEvent).toHaveBeenCalledTimes(1);
     const forwarded = sendEvent.mock.calls[0][0] as FakeUserDefinedEvent;
     expect(forwarded).toBeInstanceOf(FakeUserDefinedEvent);
-    expect(forwarded.objectName).toBe("appointment");
+    expect(forwarded.objectName).toBe("preconfirmed");
     expect(forwarded.category).toBe(APPOINTMENT_TRACK_CATEGORY);
-    expect(forwarded.action).toBe("booked");
+    expect(forwarded.action).toBe("success");
   });
 
   it("does not throw when etracker is missing", () => {
     expect(() =>
-      trackAppointmentEvent({ event: "appointment_confirmed" })
+      trackAppointmentEvent({ object: "confirmed", action: "success" })
     ).not.toThrow();
   });
 
@@ -84,26 +97,25 @@ describe("trackAppointmentEvent", () => {
     };
 
     expect(() =>
-      trackAppointmentEvent({ event: "appointment_cancelled" })
+      trackAppointmentEvent({ object: "cancelled", action: "success" })
     ).not.toThrow();
   });
 });
 
-describe("trackAppointmentStepFromView", () => {
-  it("maps stepper views to English step names", () => {
+describe("trackAppointmentScreenFromView", () => {
+  it("maps stepper views after service finder", () => {
     const handler = vi.fn();
     document.addEventListener(APPOINTMENT_TRACK_EVENT, handler);
 
-    trackAppointmentStepFromView(0);
-    trackAppointmentStepFromView(1);
-    trackAppointmentStepFromView(2);
-    trackAppointmentStepFromView(3);
+    trackAppointmentScreenFromView(0);
+    trackAppointmentScreenFromView(1);
+    trackAppointmentScreenFromView(2);
+    trackAppointmentScreenFromView(3);
 
     expect(handler.mock.calls.map((call) => call[0].detail)).toEqual([
-      { event: "appointment_step", step: "service" },
-      { event: "appointment_step", step: "timeslot" },
-      { event: "appointment_step", step: "contact" },
-      { event: "appointment_step", step: "summary" },
+      { object: "appointment_selection", action: "view" },
+      { object: "contact", action: "view" },
+      { object: "summary", action: "view" },
     ]);
 
     document.removeEventListener(APPOINTMENT_TRACK_EVENT, handler);
@@ -113,10 +125,33 @@ describe("trackAppointmentStepFromView", () => {
     const handler = vi.fn();
     document.addEventListener(APPOINTMENT_TRACK_EVENT, handler);
 
-    trackAppointmentStepFromView(4);
-    trackAppointmentStepFromView(5);
+    trackAppointmentScreenFromView(4);
+    trackAppointmentScreenFromView(5);
 
     expect(handler).not.toHaveBeenCalled();
     document.removeEventListener(APPOINTMENT_TRACK_EVENT, handler);
+  });
+});
+
+describe("trackWidgetView", () => {
+  it("emits a view for the web component", () => {
+    const handler = vi.fn();
+    document.addEventListener(APPOINTMENT_TRACK_EVENT, handler);
+
+    trackWidgetView("appointment_detail");
+
+    expect(handler.mock.calls[0][0].detail).toEqual({
+      object: "appointment_detail",
+      action: "view",
+    });
+
+    document.removeEventListener(APPOINTMENT_TRACK_EVENT, handler);
+  });
+});
+
+describe("bookingFlow", () => {
+  it("maps rebooking flag to flow", () => {
+    expect(bookingFlow(false)).toBe("new");
+    expect(bookingFlow(true)).toBe("rebooking");
   });
 });

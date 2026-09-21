@@ -364,6 +364,7 @@
 
 <script setup lang="ts">
 import type { ApiErrorTranslation, ErrorStateMap } from "@/utils/errorHandler";
+import type { AppointmentTrackSlotUi } from "@/utils/trackAppointmentEvent";
 
 import {
   MucButton,
@@ -458,8 +459,9 @@ import {
 import { resolveOfficeById, toOfficeImpl } from "@/utils/resolveOfficeById";
 import { isExpired } from "@/utils/timestampInPast";
 import {
+  bookingFlow,
   trackAppointmentEvent,
-  trackAppointmentStepFromView,
+  trackAppointmentScreenFromView,
 } from "@/utils/trackAppointmentEvent";
 
 const props = defineProps<{
@@ -908,7 +910,9 @@ const setRebookData = () => {
   }
 };
 
-const nextReserveAppointment = () => {
+const nextReserveAppointment = (
+  slotUi: AppointmentTrackSlotUi = "calendar"
+) => {
   if (isReservingAppointment.value) {
     return;
   }
@@ -934,6 +938,12 @@ const nextReserveAppointment = () => {
         }
         appointment.value = data as AppointmentDTO;
         reservationStartMs.value = Date.now();
+        trackAppointmentEvent({
+          object: "reserved",
+          action: "success",
+          flow: bookingFlow(isRebooking.value),
+          slot_ui: slotUi,
+        });
         if (isRebooking.value) {
           continueRebookingAfterReserve();
         } else {
@@ -995,6 +1005,11 @@ const nextUpdateAppointment = () => {
             ...updated,
             status: updated.status ?? appointment.value?.status,
           };
+          trackAppointmentEvent({
+            object: "updated",
+            action: "success",
+            flow: bookingFlow(isRebooking.value),
+          });
           increaseCurrentView();
         } else {
           handleErrorApiResponse(
@@ -1051,7 +1066,11 @@ const nextBookAppointment = () => {
             currentContext.value = "cancel";
             cancelAppointment(props.globalState, rebookedAppointment.value);
           }
-          trackAppointmentEvent({ event: "appointment_booked" });
+          trackAppointmentEvent({
+            object: "preconfirmed",
+            action: "success",
+            flow: bookingFlow(isRebooking.value),
+          });
           increaseCurrentView();
         }
       })
@@ -1083,7 +1102,11 @@ const nextCancelAppointment = () => {
 
         if ((data as AppointmentDTO).processId != undefined) {
           cancelAppointmentSuccess.value = true;
-          trackAppointmentEvent({ event: "appointment_cancelled" });
+          trackAppointmentEvent({
+            object: "cancelled",
+            action: "success",
+            flow: bookingFlow(isRebooking.value),
+          });
         } else {
           cancelAppointmentError.value = true;
         }
@@ -1108,6 +1131,7 @@ const nextRescheduleAppointment = () => {
   // normal rebooking flow
   isRebooking.value = true;
   rebookedAppointment.value = appointment.value;
+  trackAppointmentEvent({ object: "rebooking", action: "started" });
   setServices();
   currentView.value = 1;
 };
@@ -1116,6 +1140,7 @@ const nextCancelReschedule = () => {
   clearContextErrors(errorStateMap.value);
   isRebooking.value = false;
   rebookOrCancelDialog.value = true;
+  trackAppointmentEvent({ object: "rebooking", action: "abandoned" });
   currentView.value = 3;
 };
 
@@ -1126,7 +1151,7 @@ watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
   goToTop();
   focusActiveStepperItem();
-  trackAppointmentStepFromView(newCurrentView);
+  trackAppointmentScreenFromView(newCurrentView);
 });
 
 /**
@@ -1152,6 +1177,11 @@ const requestLogin = () => {
     appointment.value?.processId,
     appointment.value?.authKey
   );
+  trackAppointmentEvent({
+    object: "login",
+    action: "click",
+    widget: "appointment",
+  });
   document.dispatchEvent(
     new CustomEvent("authorization-request", {
       detail: {
@@ -1593,7 +1623,11 @@ function nextConfirmAppointment(
       if ((data as AppointmentDTO).processId != undefined) {
         confirmAppointmentSuccess.value = true;
         appointment.value = data as AppointmentDTO;
-        trackAppointmentEvent({ event: "appointment_confirmed" });
+        trackAppointmentEvent({
+          object: "confirmed",
+          action: "success",
+          flow: bookingFlow(isRebooking.value),
+        });
         clearContextErrors(errorStateMap.value);
         if (isRebooking.value && rebookedAppointment.value) {
           currentContext.value = "cancel";
