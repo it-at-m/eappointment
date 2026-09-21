@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-21T10:38:45.321Z",
+  "publishedAt": "2026-09-21T14:34:15.102Z",
   "branches": [
     {
       "name": "next",
@@ -88,8 +88,8 @@
     {
       "name": "feature-zmskvr-343-unify-secuess-callout-for-appointments",
       "slug": "feature-zmskvr-343-unify-secuess-callout-for-appointments",
-      "runId": "35204523412",
-      "runStartedAt": "2026-09-17T09:19:54Z"
+      "runId": "35600608796",
+      "runStartedAt": "2026-09-21T12:37:25Z"
     },
     {
       "name": "fix-zmsclient-psalm-alerts",
