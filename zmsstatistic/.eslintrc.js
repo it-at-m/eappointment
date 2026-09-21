@@ -17,9 +17,7 @@ module.exports = {
         "Promise": true
     },
     "extends": [
-        "eslint:recommended",
-        "plugin:import/warnings",
-        "plugin:import/errors"
+        "eslint:recommended"
     ],
     "rules": {
         "complexity": [

@@ -37,7 +37,6 @@
     "immutable": "^5.1.9",
     "minimatch": "^10.2.5",
     "picomatch": "^4.0.4",
-    "eslint-plugin-import": "^2.20.1",
     "jquery": "^4.0.0",
     "parcel": "^2.16.4",
     "react-datepicker": "^9.1.0",
