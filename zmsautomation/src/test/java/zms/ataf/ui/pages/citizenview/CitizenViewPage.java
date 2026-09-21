@@ -743,7 +743,9 @@ public class CitizenViewPage extends BasePage {
                         + "var tag=(n.tagName||'').toUpperCase();var isBtn=(tag==='BUTTON'||tag==='A'||tag==='MUC-BUTTON');"
                         + "if(isBtn){var t=(n.textContent||'').trim();"
                         + "if(t.indexOf('Zurück zu Schritt')>=0)return false;"
-                        + "if(t.indexOf(label)>=0&&!n.disabled&&visible(n)){n.scrollIntoView({block:'center'});n.click();return true;}}"
+                        + "if(t.indexOf(label)>=0&&!n.disabled&&!(n.hasAttribute&&n.hasAttribute('disabled'))"
+                        + "&&n.getAttribute&&n.getAttribute('aria-disabled')!=='true'&&visible(n))"
+                        + "{n.scrollIntoView({block:'center'});n.click();return true;}}"
                         + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walkClick(c[i]))return true;return false;}"
                         + "return walkClick(document.body);";
         Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
@@ -1876,9 +1878,59 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: Kontakt — required Bemerkung filled for rebooking");
     }
 
+    /**
+     * Pattern Lab hides {@code #checkbox-electronic-communication} ({@code opacity: 0}); the visible
+     * target is {@code label[for=...]}. {@link #deepClick} can hit a non-visible match and leave
+     * {@code electronicCommunication} false, so Termin verschieben stays disabled.
+     */
     public void acceptCommunication() {
         CONTEXT.set();
-        deepClick("#checkbox-electronic-communication");
+        ScenarioLogManager.getLogger().info("zmscitizenview: accept electronic communication (visible label)");
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> clickVisibleElectronicCommunicationLabel());
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> isElectronicCommunicationChecked());
+        Assert.assertTrue(
+                isElectronicCommunicationChecked(),
+                "Electronic communication checkbox was not checked (visible label click).");
+    }
+
+    private boolean clickVisibleElectronicCommunicationLabel() {
+        String script =
+                "function vis(el){if(!el||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
+                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function walk(root){if(!root)return null;"
+                        + "var labels=root.querySelectorAll?root.querySelectorAll('label[for=\"checkbox-electronic-communication\"]'):[];"
+                        + "for(var i=0;i<labels.length;i++)if(vis(labels[i]))return labels[i];"
+                        + "var all=root.querySelectorAll?root.querySelectorAll('*'):[];"
+                        + "for(var j=0;j<all.length;j++)if(all[j].shadowRoot){var f=walk(all[j].shadowRoot);if(f)return f;}"
+                        + "return null;}"
+                        + "var lab=walk(document.body);if(!lab)return false;"
+                        + "var root=lab.getRootNode?lab.getRootNode():document;"
+                        + "var input=root.querySelector?root.querySelector('#checkbox-electronic-communication'):null;"
+                        + "if(input&&input.checked)return true;"
+                        + "lab.scrollIntoView({block:'center'});lab.click();return true;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
+    }
+
+    private boolean isElectronicCommunicationChecked() {
+        String script =
+                "function vis(el){if(!el||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
+                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function walk(root){if(!root)return null;"
+                        + "var labels=root.querySelectorAll?root.querySelectorAll('label[for=\"checkbox-electronic-communication\"]'):[];"
+                        + "for(var i=0;i<labels.length;i++)if(vis(labels[i])){"
+                        + "var rn=labels[i].getRootNode?labels[i].getRootNode():document;"
+                        + "return rn.querySelector?rn.querySelector('#checkbox-electronic-communication'):null;}"
+                        + "var all=root.querySelectorAll?root.querySelectorAll('*'):[];"
+                        + "for(var j=0;j<all.length;j++)if(all[j].shadowRoot){var f=walk(all[j].shadowRoot);if(f)return f;}"
+                        + "return null;}"
+                        + "var input=walk(document.body);return !!(input&&input.checked);";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
     }
 
     /**
