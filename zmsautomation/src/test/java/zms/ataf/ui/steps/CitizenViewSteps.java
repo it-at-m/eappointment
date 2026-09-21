@@ -313,6 +313,22 @@ public class CitizenViewSteps {
         page.confirmRebookingFromSummary();
     }
 
+    /** ZMSKVR-955: logged-in Termin reservieren confirms immediately without an activation mail. */
+    @When("I confirm the logged-in booking from the summary in the citizen view")
+    public void iConfirmTheLoggedInBookingFromTheSummaryInTheCitizenView() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: confirm logged-in booking from summary (Termin reservieren)");
+        page.confirmLoggedInBookingFromSummary();
+    }
+
+    /** ZMSKVR-965: heading, mail-confirmation text, Termin ansehen, Weiteren Termin vereinbaren. */
+    @Then("the confirmation success callout should show the logged-in confirmation details in the citizen view")
+    public void theConfirmationSuccessCalloutShouldShowTheLoggedInConfirmationDetails() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert logged-in confirmation success details");
+        page.assertLoggedInConfirmationSuccessDetailsVisible();
+    }
+
     @Then("the preconfirmation callout should not be visible in the citizen view")
     public void thePreconfirmationCalloutShouldNotBeVisibleInTheCitizenView() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert activation callout is hidden");
