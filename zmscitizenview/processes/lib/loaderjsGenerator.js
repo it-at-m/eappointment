@@ -26,18 +26,23 @@ export function generateLoaderJs(filename, suffix) {
   );
 }
 
+export function compatRootLoaderSource(template, nestedLoaderPath) {
+  return template
+    .replaceAll("{{path}}", nestedLoaderPath)
+    .replaceAll("./../wrapper.js", "./wrapper.js");
+}
+
 export function generateSingleLoaderJs(loaderPath) {
-  // read contents of loader.js.template.template as string
   const loaderJsTemplate = fs.readFileSync(`${__dirname}/loader.js.template`, {
     encoding: "utf-8",
   });
 
-  const loaderContent = loaderJsTemplate
-    .replaceAll("{{path}}", `${loaderPath}`)
-    .replaceAll("/../src/wrapper.js", "/src/wrapper.js");
-
-  fs.writeFileSync(path.resolve('./dist/loader.js'), loaderContent, {
-    encoding: 'utf-8',
-  });
+  fs.writeFileSync(
+    path.resolve("./dist/loader.js"),
+    compatRootLoaderSource(loaderJsTemplate, loaderPath),
+    {
+      encoding: "utf-8",
+    }
+  );
 }
 

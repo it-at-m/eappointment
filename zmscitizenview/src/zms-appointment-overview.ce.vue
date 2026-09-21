@@ -76,6 +76,8 @@ onMounted(() => {
 @import "@muenchen/muc-patternlab-vue/style.css";
 
 :host {
+  display: block;
+  position: relative;
   font-family:
     Open Sans,
     sans-serif;
