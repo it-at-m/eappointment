@@ -12,7 +12,7 @@ class MailTemplatesCopyTest extends Base
     {
         $this->setApiCalls($this->getApiCallsForPage());
 
-        $response = $this->render([], ['sourceScopeId' => 143]);
+        $response = $this->render([], ['sourceScopeId' => 141]);
         $body = (string) $response->getBody();
 
         self::assertSame(200, $response->getStatusCode());
@@ -62,7 +62,7 @@ class MailTemplatesCopyTest extends Base
         $response = $this->render(
             [],
             [
-                'sourceScopeId' => 143,
+                'sourceScopeId' => 141,
                 'success' => 'mailtemplates_copied',
                 'copiedCount' => 1,
             ]
@@ -83,7 +83,7 @@ class MailTemplatesCopyTest extends Base
         $response = $this->render(
             [],
             [
-                'sourceScopeId' => 143,
+                'sourceScopeId' => 141,
                 'success' => 'mailtemplates_copied',
                 'copiedCount' => 2,
             ]
@@ -110,7 +110,7 @@ class MailTemplatesCopyTest extends Base
         $response = $this->render(
             [],
             [
-                'sourceScopeId' => 143,
+                'sourceScopeId' => 141,
                 'sourceTemplateId' => 901,
                 'targetScopeIds' => [380],
                 'copy' => '1',
@@ -122,7 +122,7 @@ class MailTemplatesCopyTest extends Base
         self::assertSame(302, $response->getStatusCode());
         $location = $response->getHeaderLine('Location');
         self::assertStringContainsString(
-            'sourceScopeId=143',
+            'sourceScopeId=141',
             $location
         );
         self::assertStringContainsString(
@@ -139,7 +139,7 @@ class MailTemplatesCopyTest extends Base
         $response = $this->render(
             [],
             [
-                'sourceScopeId' => 143,
+                'sourceScopeId' => 141,
                 'sourceTemplateId' => 901,
                 'targetScopeIds' => [],
                 'copy' => '1',
@@ -156,20 +156,14 @@ class MailTemplatesCopyTest extends Base
 
     public function testShowsDistinctErrorForDifferentScopeWithSameProvider(): void
     {
-        $this->setApiCalls(
-            $this->getApiCallsForPage(
-                false,
-                true,
-                '122251'
-            )
-        );
+        $this->setApiCalls($this->getApiCallsForPage());
 
         $response = $this->render(
             [],
             [
-                'sourceScopeId' => 146,
+                'sourceScopeId' => 141,
                 'sourceTemplateId' => 901,
-                'targetScopeIds' => [456],
+                'targetScopeIds' => [1],
                 'copy' => '1',
             ],
             [],
@@ -198,7 +192,7 @@ class MailTemplatesCopyTest extends Base
     public function testHidesCopyActionWhenNoEligibleTargetScopesExist(): void
     {
         $this->setApiCalls(
-            $this->getApiCallsForPage(true)
+            $this->getApiCallsForPage(true, true, '122280')
         );
 
         $response = $this->render([], ['sourceScopeId' => 143]);
@@ -226,7 +220,7 @@ class MailTemplatesCopyTest extends Base
     {
         $this->setApiCalls($this->getApiCallsForPage(false, false));
 
-        $response = $this->render([], ['sourceScopeId' => 143]);
+        $response = $this->render([], ['sourceScopeId' => 141]);
         $body = (string) $response->getBody();
 
         self::assertStringContainsString(
@@ -261,7 +255,7 @@ class MailTemplatesCopyTest extends Base
     private function getApiCallsForPage(
         bool $withoutEligibleTargets = false,
         bool $hasCustomTemplates = true,
-        string $sourceProviderId = '122280'
+        string $sourceProviderId = '122217'
     ): array {
         return [
             [
@@ -270,14 +264,6 @@ class MailTemplatesCopyTest extends Base
                 'parameters' => ['resolveReferences' => 3],
                 'response' => $this->workstationResponse(
                     $withoutEligibleTargets
-                ),
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/owner/',
-                'parameters' => ['resolveReferences' => 4],
-                'response' => $this->readFixture(
-                    'GET_ownerlist.json'
                 ),
             ],
             [

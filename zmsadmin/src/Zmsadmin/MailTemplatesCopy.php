@@ -25,7 +25,7 @@ class MailTemplatesCopy extends BaseController
     ): ResponseInterface {
         $workstation = $this->readAuthorizedWorkstation();
         $queryParameters = $this->readQueryParameters($request);
-        $scopeList = $this->readScopeList();
+        $scopeList = $this->readScopeList($workstation);
 
         $input = (array) ($request->getParsedBody() ?? []);
         $isPostRequest = strtoupper($request->getMethod()) === 'POST';
@@ -142,20 +142,17 @@ class MailTemplatesCopy extends BaseController
         ];
     }
 
-    private function readScopeList(): ScopeList
+    private function readScopeList(Workstation $workstation): ScopeList
     {
         /*
-         * Das Backend filtert die Owner-Liste bereits anhand
-         * der Zugriffsrechte.
+         * Dieselbe Menge wie backend EntityAccess/hasScope():
+         * zugewiesene Departments inklusive Cluster-Standorte.
          */
-        $ownerList = \App::$http
-            ->readGetResult(
-                '/owner/',
-                ['resolveReferences' => 4]
-            )
-            ->getCollection();
-
-        return $this->buildScopeList($ownerList);
+        return $workstation
+            ->getUseraccount()
+            ->getDepartmentList()
+            ->getUniqueScopeList()
+            ->sortByContactName();
     }
 
     private function resolveSourceScopeId(
@@ -430,30 +427,6 @@ class MailTemplatesCopy extends BaseController
                 'copiedCount' => count($targetScopeIds),
             ]
         );
-    }
-
-    private function buildScopeList(
-        iterable $ownerList
-    ): ScopeList {
-        $scopeList = new ScopeList();
-
-        foreach ($ownerList as $owner) {
-            foreach (
-                $owner->getOrganisationList() as $organisation
-            ) {
-                foreach (
-                    $organisation->getDepartmentList() as $department
-                ) {
-                    $scopeList->addScopeList(
-                        $department->getScopeList()
-                    );
-                }
-            }
-        }
-
-        return $scopeList
-            ->withUniqueScopes()
-            ->sortByContactName();
     }
 
     private function readPositiveInt(mixed $value): ?int
