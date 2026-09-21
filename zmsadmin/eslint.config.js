@@ -15,12 +15,7 @@ module.exports = defineConfig([
                 }
             },
             globals: {
-                ...globals.browser,
-                console: "readonly",
-                setTimeout: "readonly",
-                clearTimeout: "readonly",
-                document: "readonly",
-                Promise: "readonly"
+                ...globals.browser
             }
         },
         rules: {
