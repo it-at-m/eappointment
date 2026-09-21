@@ -25,7 +25,7 @@ class User
         'audit_viewer',
     ];
 
-    public function __construct($request, $resolveReferences = 0)
+    public function __construct($request, int $resolveReferences = 0)
     {
         static::$request = $request;
         static::readWorkstation($resolveReferences);
@@ -60,7 +60,7 @@ class User
      *
      * @return void
      */
-    public static function testWorkstationAssigend(\BO\Zmsentities\Workstation $entity, $resolveReferences = 0)
+    public static function testWorkstationAssigend(\BO\Zmsentities\Workstation $entity, int $resolveReferences = 0)
     {
         if (! static::$assignedWorkstation && $entity->name) {
             static::$assignedWorkstation = (new \BO\Zmsbackend\Workstation\Service\Workstation())->readWorkstationByScopeAndName(

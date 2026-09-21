@@ -11,7 +11,7 @@ class AnonymizeStatisticDataByCron
 
     protected $timespan = '-90 days';
 
-    public function __construct($verbose = false)
+    public function __construct(bool $verbose = false)
     {
         $this->verbose = $verbose;
 
@@ -33,7 +33,7 @@ class AnonymizeStatisticDataByCron
         }
     }
 
-    public function startAnonymizing(\DateTimeImmutable $currentDate, $commit = false): void
+    public function startAnonymizing(\DateTimeImmutable $currentDate, bool $commit = false): void
     {
         // Adjust the currentDate based on the numeric timespan
         $targetDate = $currentDate->modify("-{$this->timespan} days");

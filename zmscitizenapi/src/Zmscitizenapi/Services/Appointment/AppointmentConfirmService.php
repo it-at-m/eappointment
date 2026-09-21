@@ -28,7 +28,17 @@ class AppointmentConfirmService
             return $errors;
         }
 
-        $reservedProcess = $this->getReservedProcess($clientData->processId, $clientData->authKey, $authenticatedUser);
+        $sourceProcess = $this->loadSourceProcessForRebooking($clientData);
+        if (is_array($sourceProcess) && !empty($sourceProcess['errors'])) {
+            return $sourceProcess;
+        }
+
+        $reservedProcess = $this->getReservedProcess(
+            $clientData->processId,
+            $clientData->authKey,
+            $authenticatedUser,
+            $sourceProcess instanceof ThinnedProcess ? $sourceProcess : null
+        );
         if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
             return $reservedProcess;
         }
@@ -58,17 +68,55 @@ class AppointmentConfirmService
                 : null,
             'authKey' => isset($body['authKey']) && is_string($body['authKey']) && trim($body['authKey']) !== ''
                 ? htmlspecialchars(trim($body['authKey']), ENT_QUOTES, 'UTF-8')
-                : null
+                : null,
+            'sourceProcessId' => isset($body['sourceProcessId']) && is_numeric($body['sourceProcessId'])
+                ? (int) $body['sourceProcessId']
+                : null,
+            'sourceAuthKey' => isset($body['sourceAuthKey']) && is_string($body['sourceAuthKey'])
+                && trim($body['sourceAuthKey']) !== ''
+                ? htmlspecialchars(trim($body['sourceAuthKey']), ENT_QUOTES, 'UTF-8')
+                : null,
         ];
+    }
+
+    private function isRebookingConfirm(object $data): bool
+    {
+        return ($data->sourceProcessId ?? null) !== null
+            && ($data->sourceAuthKey ?? null) !== null;
     }
 
     private function validateClientData(object $data): array
     {
-        return ValidationService::validateGetProcessById($data->processId, $data->authKey);
+        $errors = ValidationService::validateGetProcessById($data->processId, $data->authKey);
+        if ($errors['errors'] !== [] || !$this->isRebookingConfirm($data)) {
+            return $errors;
+        }
+
+        return ValidationService::validateGetProcessById($data->sourceProcessId, $data->sourceAuthKey);
     }
 
-    private function getReservedProcess(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
+    /**
+     * @return ThinnedProcess|array{errors: array}|null
+     */
+    private function loadSourceProcessForRebooking(object $clientData): ThinnedProcess|array|null
     {
+        if (!$this->isRebookingConfirm($clientData)) {
+            return null;
+        }
+
+        return ZmsApiFacadeService::getThinnedProcessById(
+            $clientData->sourceProcessId,
+            $clientData->sourceAuthKey,
+            null
+        );
+    }
+
+    private function getReservedProcess(
+        int $processId,
+        ?string $authKey,
+        ?AuthenticatedUser $user,
+        ?ThinnedProcess $sourceProcess
+    ): ThinnedProcess|array {
         $process = ZmsApiFacadeService::getProcessById($processId, $authKey, $user);
         $notFound = ValidationService::validateGetProcessNotFound($process);
         if (!empty($notFound['errors'])) {
@@ -76,7 +124,11 @@ class AppointmentConfirmService
         }
 
         $thinned = MapperService::processToThinnedProcess($process);
-        $confirmErrors = ValidationService::validateAppointmentConfirm($thinned, $process->getExternalUserId());
+        $confirmErrors = ValidationService::validateAppointmentConfirm(
+            $thinned,
+            $process->getExternalUserId(),
+            $sourceProcess
+        );
         if ($confirmErrors['errors'] !== []) {
             return $confirmErrors;
         }

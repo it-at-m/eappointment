@@ -3,7 +3,7 @@
 require_once(__DIR__."/script_bootstrap.php");
 
 $verbose = (preg_grep('#^--?v(erbose)?$#', $argv)) ? true : false;
-$commit = preg_grep('#^--commit$#', $argv);
+$commit = (bool) preg_grep('#^--commit$#', $argv);
 
 if ($verbose) {
     \App::$log->debug('deleteUnconfirmedAppointmentData started', ['cwd' => getcwd()]);

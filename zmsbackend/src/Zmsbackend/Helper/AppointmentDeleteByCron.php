@@ -67,17 +67,17 @@ class AppointmentDeleteByCron
         return $this->count;
     }
 
-    public function setLimit($limit): void
+    public function setLimit(int $limit): void
     {
         $this->limit = $limit;
     }
 
-    public function setLoopCount($loopCount): void
+    public function setLoopCount(int $loopCount): void
     {
         $this->loopCount = $loopCount;
     }
 
-    public function startProcessing($commit, $pending = false): void
+    public function startProcessing(bool $commit, bool $pending = false): void
     {
         if ($pending) {
             $this->statuslist[] = "pending";
@@ -88,7 +88,7 @@ class AppointmentDeleteByCron
         $this->log("\nSUMMARY: Deleted processes: " . var_export($this->count, true));
     }
 
-    protected function deleteExpiredProcesses($commit): void
+    protected function deleteExpiredProcesses(bool $commit): void
     {
         foreach ($this->statuslist as $status) {
             $this->log("\nDelete expired processes with status $status:");
@@ -101,7 +101,7 @@ class AppointmentDeleteByCron
         }
     }
 
-    protected function deleteBlockedProcesses($commit): void
+    protected function deleteBlockedProcesses(bool $commit): void
     {
         $this->log("\nDelete blocked processes in the future:");
         $count = $this->deleteByCallback($commit, function ($limit, $offset) {
@@ -112,7 +112,7 @@ class AppointmentDeleteByCron
         $this->count["blocked"] += $count;
     }
 
-    protected function deleteByCallback($commit, \Closure $callback): int
+    protected function deleteByCallback(bool $commit, \Closure $callback): int
     {
         $processCount = 0;
         $startposition = 0;
@@ -131,7 +131,7 @@ class AppointmentDeleteByCron
         return $processCount;
     }
 
-    protected function removeProcess(\BO\Zmsentities\Process $process, $commit, int $processCount): int
+    protected function removeProcess(\BO\Zmsentities\Process $process, bool $commit, int $processCount): int
     {
         $verbose = $this->verbose;
         if (in_array($process->status, $this->statuslist)) {

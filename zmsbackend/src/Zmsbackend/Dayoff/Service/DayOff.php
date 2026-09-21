@@ -25,12 +25,12 @@ class DayOff extends \BO\Zmsbackend\Base
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function readOnlyByDepartmentId($departmentId = 0, $disableCache = false)
+    public function readOnlyByDepartmentId($departmentId = 0, bool $disableCache = false)
     {
         return new Collection();
     }
 
-    public function readCommon($disableCache = false)
+    public function readCommon(bool $disableCache = false)
     {
         $cacheKey = "dayOffs";
 
@@ -64,12 +64,12 @@ class DayOff extends \BO\Zmsbackend\Base
    /**
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-    public function readByScopeId($scopeId = 0, $disableCache = false)
+    public function readByScopeId($scopeId = 0, bool $disableCache = false)
     {
         return $this->readCommon();
     }
 
-    public function readByYear($year): Collection
+    public function readByYear(int $year): Collection
     {
         $dayOffList = new Collection();
         $query = new \BO\Zmsbackend\Dayoff\Repository\DayOff(\BO\Zmsbackend\Query\Base::SELECT);
@@ -87,7 +87,7 @@ class DayOff extends \BO\Zmsbackend\Base
         return $dayOffList;
     }
 
-    public function readCommonByYear($year): Collection
+    public function readCommonByYear(int $year): Collection
     {
         $dayOffList = new Collection();
         $query = new \BO\Zmsbackend\Dayoff\Repository\DayOff(\BO\Zmsbackend\Query\Base::SELECT);
@@ -116,7 +116,7 @@ class DayOff extends \BO\Zmsbackend\Base
      *
      * @return \BO\Zmsentities\Collection\DayoffList
      */
-    public function writeCommonDayoffsByYear($dayoffList, $year = null, bool $drop = true)
+    public function writeCommonDayoffsByYear($dayoffList, ?int $year = null, bool $drop = true)
     {
         if ($drop && $year) {
             static::$commonList = null;
@@ -151,7 +151,7 @@ class DayOff extends \BO\Zmsbackend\Base
      *
      * @return boolean
      */
-    public function deleteByTimeInterval($deleteInSeconds)
+    public function deleteByTimeInterval(int $deleteInSeconds)
     {
         $selectQuery = new \BO\Zmsbackend\Dayoff\Repository\DayOff(\BO\Zmsbackend\Query\Base::SELECT);
         $selectQuery

@@ -10,9 +10,8 @@ class ClusterTest extends \BO\Zmsbackend\Tests\Service\Base
 {
     public function testBasic()
     {
-        $now = static::$now;
         $query = new Query();
-        $entity = $query->readEntity(4, 0, $now);
+        $entity = $query->readEntity(4, 0, true);
         $this->assertEntity("\\BO\\Zmsentities\\Cluster", $entity);
 
         $entity = $query->readEntity(999);

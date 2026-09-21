@@ -193,7 +193,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
     }
 
     /** @psalm-api */
-    public function readProperty($property, $forUpdate = false)
+    public function readProperty($property, bool $forUpdate = false)
     {
         $sql = \BO\Zmsbackend\Mail\Repository\Mailtemplate::QUERY_SELECT_PROPERTY;
         if ($forUpdate) {

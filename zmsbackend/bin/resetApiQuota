@@ -7,8 +7,8 @@ if (class_exists('\App') && isset(\App::$now)) {
     $now = \App::$now;
 }
 if (preg_grep('#^--commit$#', $argv)) {
-    $expiredQuota = new \BO\Zmsbackend\Helper\ApiQuotaDeleteByCron($now, preg_grep('#^--?v(erbose)?$#', $argv));
-    $expiredQuota->startProcessing(preg_grep('#^--commit$#', $argv));
+    $expiredQuota = new \BO\Zmsbackend\Helper\ApiQuotaDeleteByCron($now, (bool) preg_grep('#^--?v(erbose)?$#', $argv));
+    $expiredQuota->startProcessing(true);
 } else {
     \App::$log->notice('resetApiQuota usage', ['usage' => 'Usage: resetApiQuota --commit [--verbose]']);
 }
