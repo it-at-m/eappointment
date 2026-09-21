@@ -621,7 +621,7 @@ public class AdminSteps {
     
             // Dialog bestätigen
             try {
-                wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Ok");
+                wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Schließen");
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -692,7 +692,7 @@ public class AdminSteps {
     public void es_erscheint_ein_popup_fenster_und_der_termin_ist_auch_in_der_warteschlange_sichtbar(String popUpName) {
         Assert.assertTrue(ADMIN_PAGE.isPopUpVisible(popUpName), String.format("Popup '%s' is not visible!", popUpName));
         try {
-            wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Ok");
+            wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Schließen");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
