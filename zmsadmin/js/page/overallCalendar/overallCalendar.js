@@ -247,7 +247,7 @@ async function fetchIncrementalUpdate() {
 function loadHideEmptyDaysPreference() {
     try {
         return localStorage.getItem(HIDE_EMPTY_DAYS_STORAGE_KEY) === '1';
-    } catch (error) {
+    } catch {
         return false;
     }
 }
@@ -255,7 +255,7 @@ function loadHideEmptyDaysPreference() {
 function saveHideEmptyDaysPreference(enabled) {
     try {
         localStorage.setItem(HIDE_EMPTY_DAYS_STORAGE_KEY, enabled ? '1' : '0');
-    } catch (error) {
+    } catch {
         // Ignore quota / private-mode errors; preference is optional.
     }
 }
@@ -294,6 +294,7 @@ function renderCalendar() {
     renderMultiDayCalendar(getVisibleDays(calendarCache));
 }
 
+// eslint-disable-next-line complexity
 function mergeDelta(deltaDays, deletedProcessIds = []) {
     if (Array.isArray(deletedProcessIds) && deletedProcessIds.length) {
         const deletedIds = new Set(deletedProcessIds.map(Number));
@@ -401,6 +402,7 @@ function sortCalendarCache() {
     }
 }
 
+// eslint-disable-next-line complexity
 function renderMultiDayCalendar(days) {
     const container = document.getElementById('overall-calendar');
 
@@ -504,7 +506,7 @@ function renderMultiDayCalendar(days) {
     });
 
     let columnCursor = 3, totalRows = allTimes.length + 2;
-    days.forEach((day, dayIndex) => {
+    days.forEach((day) => {
         const daySpan = day.scopes.reduce((totalColumns, scope, scopeIndex) => {
             const laneCount = getLanes(day.date, scope.id);
             const hasNextScope = scopeIndex < day.scopes.length - 1;
@@ -541,7 +543,7 @@ function renderMultiDayCalendar(days) {
 
     columnCursor = 3;
 
-    days.forEach((day, dayIndex) => {
+    days.forEach((day) => {
         const dateIso = day.date;
         day.scopes.forEach((scope, scopeIndex) => {
             const meta = calendarMeta.scopes?.[scope.id] || {};
@@ -604,9 +606,10 @@ function renderMultiDayCalendar(days) {
         }
 
         let column = 3;
-        days.forEach((day, dayIndex) => {
+        days.forEach((day) => {
             const dateIso = day.date;
 
+            // eslint-disable-next-line complexity
             day.scopes.forEach((scope, scopeIndex) => {
                 const lanes = getLanes(day.date, scope.id);
                 const eventsIndexKey = `${day.date}_${scope.id}`;

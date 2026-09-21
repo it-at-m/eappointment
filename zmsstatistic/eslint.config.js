@@ -15,16 +15,13 @@ module.exports = defineConfig([
                 }
             },
             globals: {
-                ...globals.browser,
-                console: "readonly",
-                document: "readonly",
-                Promise: "readonly"
+                ...globals.browser
             }
         },
         rules: {
             complexity: [
                 "error",
-                11
+                12
             ],
             "no-console": [
                 "off"

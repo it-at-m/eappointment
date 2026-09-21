@@ -15,7 +15,7 @@ npm install
 The `prepare` script runs automatically and points Git at `.husky/`.
 
 > [!NOTE]
-> Husky lives in the **root** `package.json` because hooks apply to the **entire monorepo**. Vue lint still uses `zmscitizenview`; docs formatting uses `docs/`.
+> Husky lives in the **root** `package.json` because hooks apply to the **entire monorepo**. Vue lint still uses `zmscitizenview`; frontend ESLint uses `zmsadmin`, `zmsstatistic`, `zmscalldisplay`, and `zmsticketprinter`; docs formatting uses `docs/`.
 
 After cloning, run `npm install` once at the repo root (also in the [root README](https://github.com/it-at-m/eappointment/blob/main/README.md)). For doc changes, install docs dependencies once: `cd docs && npm install`.
 
@@ -23,7 +23,7 @@ After cloning, run `npm install` once at the repo root (also in the [root README
 
 ### `pre-commit`
 
-No-op placeholder. Git always runs `pre-commit` before `commit-msg`; the real checks are in `commit-msg` so the **commit subject is validated before** Vue/docs/PHP.
+No-op placeholder. Git always runs `pre-commit` before `commit-msg`; the real checks are in `commit-msg` so the **commit subject is validated before** Vue/docs/ESLint/PHP.
 
 ### `commit-msg`
 
@@ -32,21 +32,24 @@ All checks run in this hook, in **fail-fast** order:
 1. **Commit message** — subject line from the message file Git passes to this hook
 2. **Vue code style** — Prettier check in `zmscitizenview` (`npm run lint`)
 3. **Docs formatting** — Prettier check in `docs/` (`npm run format:check`)
-4. **PHP code style** — PHP CodeSniffer (PSR-12) across PHP modules via the `zms-web` container
-5. **PHP Mess Detector** — PHPMD with root `phpmd.rules.xml` (complexity, size, unused) via `zms-web` — same as CI `php-code-quality`
+4. **Frontend ESLint** — `npm run lint` in staged `zmsadmin`, `zmsstatistic`, `zmscalldisplay`, and `zmsticketprinter` JS (via `zms-web` when that container is running, otherwise on the host)
+5. **PHP code style** — PHP CodeSniffer (PSR-12) across PHP modules via the `zms-web` container
+6. **PHP Mess Detector** — PHPMD with root `phpmd.rules.xml` (complexity, size, unused) via `zms-web` — same as CI `php-code-quality`
 
 **Container detection**
 
-The PHP checks detect your runtime automatically:
+ESLint and the PHP checks detect your runtime automatically:
 
 - **Podman** — if a container named `zms-web` is running
 - **Docker** — fallback when Podman is unavailable
-- **Skip** — if no container is running (warning only, non-blocking)
+- **ESLint fallback** — if no container is running, ESLint runs on the host
+- **PHP skip** — if no container is running (warning only, non-blocking)
 
 **Behavior**
 
-- Commit message, Vue, and docs checks **block** the commit on failure
-- PHP checks (PHPCS + PHPMD) run only when `zms-web` is up; otherwise they are skipped with a warning
+- Commit message, Vue, docs, and ESLint checks **block** the commit on failure
+- ESLint runs only when JS, `eslint.config.*`, or `package.json` / `package-lock.json` is staged in those four modules
+- PHP checks (PHPCS + PHPMD) run only when a `.php` file or `phpmd.rules.xml` is staged **and** `zms-web` is up; JS-only files in PHP modules do not trigger phpcs/phpmd
 
 See also [Code formatting](./code-formatting.md) for manual PHPCS/Prettier commands.
 
@@ -88,6 +91,16 @@ npm run format
 ```
 
 Install dependencies first if needed: `cd docs && npm install`.
+
+### Frontend ESLint fails
+
+Fix the staged module (replace `zmsadmin` as needed):
+
+```bash
+podman exec -it zms-web bash -lc "cd zmsadmin && npm run fix"
+```
+
+Or on the host: `cd zmsadmin && npm run fix`. Then commit again.
 
 ### PHP CodeSniffer fails
 

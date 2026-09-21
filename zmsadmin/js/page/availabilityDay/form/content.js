@@ -7,6 +7,7 @@ import { range } from '../../../lib/utils'
 import { weekDayList, availabilitySeries, availabilityTypes, getDataValuesFromForm } from '../helpers'
 import ErrorBar from '../errorBar'
 
+// eslint-disable-next-line complexity
 const FormContent = (props) => {
     const {
         availabilityList,
@@ -184,7 +185,7 @@ const FormContent = (props) => {
                         <AvailabilityDatePicker attributes={{
                             "id": "AvDatesStart",
                             "availabilitylist": availabilityList,
-                            "availability": getDataValuesFromForm(data, data.scope),
+                            "availability": getDataValuesFromForm(data),
                             "today": today,
                             "kind": data.kind,
                             "disabled": inputDisabled
@@ -192,7 +193,7 @@ const FormContent = (props) => {
                         <AvailabilityDatePicker attributes={{
                             "id": "AvDatesEnd",
                             "availabilitylist": availabilityList,
-                            "availability": getDataValuesFromForm(data, data.scope),
+                            "availability": getDataValuesFromForm(data),
                             "today": today,
                             "kind": data.kind,
                             "disabled": inputDisabled

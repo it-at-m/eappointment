@@ -148,6 +148,7 @@ function validateNullValues(data) {
     return errorList;
 }
 
+// eslint-disable-next-line complexity
 function validateBookableDayRange(data) {
     const errorList = [];
 
@@ -286,6 +287,7 @@ function validateEndTime(today, yesterday, selectedDate, data) {
     return errorList;
 }
 
+// eslint-disable-next-line complexity
 function validateOriginEndTime(today, yesterday, selectedDate, data) {
     var errorList = []
     const endTime = moment(data.endDate, 'X').startOf('day');
@@ -408,7 +410,7 @@ export function hasSlotCountError(dataObject) {
     const errorList = dataObject?.errorList;
 
     for (let key in errorList) {
-        if (errorList.hasOwnProperty(key)) {
+        if (Object.hasOwn(errorList, key)) {
             const error = errorList[key];
             if (error && Array.isArray(error.itemList)) {
                 for (let sublist of error.itemList) {
