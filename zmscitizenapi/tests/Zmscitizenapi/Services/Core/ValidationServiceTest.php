@@ -592,6 +592,33 @@ class ValidationServiceTest extends TestCase
             ValidationService::validateAppointmentConfirm($reservedGuest, null)['errors']
         );
 
+        $confirmedSource = new ThinnedProcess(processId: 2, authKey: 'abcd', familyName: 'Doe', email: 'doe@example.com', status: 'confirmed');
+        $this->assertEmpty(ValidationService::validateAppointmentConfirm($reservedGuest, null, $confirmedSource)['errors']);
+
+        $sameProcessSource = new ThinnedProcess(processId: 1, authKey: 'abcd', familyName: 'Doe', email: 'doe@example.com', status: 'confirmed');
+        $this->assertContains(
+            ErrorMessages::get('processNotPreconfirmedAnymore'),
+            ValidationService::validateAppointmentConfirm($reservedGuest, null, $sameProcessSource)['errors']
+        );
+
+        $unconfirmedSource = new ThinnedProcess(processId: 2, authKey: 'abcd', familyName: 'Doe', email: 'doe@example.com', status: 'reserved');
+        $this->assertContains(
+            ErrorMessages::get('processNotPreconfirmedAnymore'),
+            ValidationService::validateAppointmentConfirm($reservedGuest, null, $unconfirmedSource)['errors']
+        );
+
+        $placeholderSource = new ThinnedProcess(processId: 2, authKey: 'abcd', familyName: 'Doe', email: \App::getPlaceholderEmail(), status: 'confirmed');
+        $this->assertContains(
+            ErrorMessages::get('processNotPreconfirmedAnymore'),
+            ValidationService::validateAppointmentConfirm($reservedGuest, null, $placeholderSource)['errors']
+        );
+
+        $changedEmailSource = new ThinnedProcess(processId: 2, authKey: 'abcd', familyName: 'Doe', email: 'other@example.com', status: 'confirmed');
+        $this->assertContains(
+            ErrorMessages::get('processNotPreconfirmedAnymore'),
+            ValidationService::validateAppointmentConfirm($reservedGuest, null, $changedEmailSource)['errors']
+        );
+
         $placeholder = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: \App::getPlaceholderEmail(), status: 'preconfirmed');
         $this->assertContains(
             ErrorMessages::get('placeholderEmailNotAllowed'),
