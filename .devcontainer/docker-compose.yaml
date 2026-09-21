@@ -108,7 +108,7 @@ services:
     restart: unless-stopped
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.7.3@sha256:29be7252db0a106f1cd2ac17b9a56ff2668073da645638a38b9fc67deeb2d6c4
+    image: quay.io/keycloak/keycloak:26.7.4@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c
     container_name: zms-keycloak
     hostname: keycloak
     command:
@@ -150,7 +150,7 @@ services:
 
   # 0.2.131 JAR is Java 24; upstream image still ships a 23 JRE.
   init-keycloak-jar:
-    image: klg71/keycloakmigration:0.2.131@sha256:a311cce3b961062000e6e9ef08ecb5712f3ea81859beeee8cd0c836fe8e4f2cf
+    image: klg71/keycloakmigration:0.3.1@sha256:9ddc34b452c29d00506bf4e935123a6bd354561ba87b84b2c3c760a13794d173
     # Image is amd64-only. Apple Silicon (arm64) still works: Podman emulates this
     # one-shot `cp`. Java itself runs natively on Temurin below.
     platform: linux/amd64
@@ -163,7 +163,7 @@ services:
     restart: "no"
 
   init-keycloak:
-    image: eclipse-temurin:25-jre-alpine@sha256:3137541deb3cac6626b5d9a4a2187bc0d6a34312f858bd2c67dd01e732e6b682
+    image: eclipse-temurin:25-jre-alpine@sha256:2ca9adf44f5c29d28ecd26cf92d75cc0c66b7f32bfd839a4439e363a8b428af8
     container_name: zms-init-keycloak
     # Jar volume is :ro. keycloakmigration Log4j writes logs/logfile.log under cwd,
     # so run from /tmp (entrypoint.sh uses java -jar keycloakmigration.jar).

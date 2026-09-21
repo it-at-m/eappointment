@@ -14,7 +14,7 @@ class EventLogCleanUpByCron
 {
     protected $verbose = false;
 
-    public function __construct($verbose = false)
+    public function __construct(bool $verbose = false)
     {
         if ($verbose) {
             $this->verbose = true;
@@ -29,7 +29,7 @@ class EventLogCleanUpByCron
         }
     }
 
-    public static function startProcessing($commit = false): void
+    public static function startProcessing(bool $commit = false): void
     {
         $eventLogRepo  = new EventLogRepository();
         if ($commit) {

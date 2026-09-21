@@ -19,6 +19,7 @@ import {
   syncCucumberFeatureFromHash,
   toggleCucumberFeature,
 } from "./cucumberAccordion.js";
+import CucumberBrowserIcon from "./CucumberBrowserIcon.vue";
 import CucumberStatusIcon from "./CucumberStatusIcon.vue";
 
 const props = defineProps({
@@ -78,26 +79,40 @@ const sourceLabel = computed(() => (isDe.value ? "Quelle" : "Source"));
 
 const runResult = computed(() => cucumberFeatureRunResult(props.id));
 
+const statusWord = (status) => {
+  if (status === "failed") {
+    return isDe.value ? "Fehlgeschlagen" : "Failed";
+  }
+  if (status === "skipped") {
+    return isDe.value ? "Übersprungen" : "Skipped";
+  }
+  return isDe.value ? "Bestanden" : "Passed";
+};
+
 const resultLabel = computed(() => {
   const result = runResult.value;
   if (!result) {
     return "";
   }
   const when = formatBerlinDateTime(result.at, isDe.value ? "de" : "en");
-  const statusWord =
-    result.status === "failed"
-      ? isDe.value
-        ? "Fehlgeschlagen"
-        : "Failed"
-      : result.status === "skipped"
-        ? isDe.value
-          ? "Übersprungen"
-          : "Skipped"
-        : isDe.value
-          ? "Bestanden"
-          : "Passed";
-  return when ? `${statusWord} ${when}` : statusWord;
+  const aggregate = statusWord(result.status);
+  const browsers = Array.isArray(result.browsers) ? result.browsers : [];
+  const browserSummary = browsers
+    .map((browser) => `${browser.label}: ${statusWord(browser.status)}`)
+    .join(isDe.value ? "; " : "; ");
+  const parts = [aggregate];
+  if (browserSummary && (browsers.length > 1 || browsers[0]?.name)) {
+    parts.push(browserSummary);
+  }
+  if (when) {
+    parts.push(when);
+  }
+  return parts.join(". ");
 });
+
+const browsersHeading = computed(() =>
+  isDe.value ? "Browser im letzten Lauf" : "Browsers in the last run"
+);
 
 const toggleLabel = computed(() => {
   const title = meta.value.title || props.id;
@@ -389,6 +404,39 @@ onUnmounted(() => {
           >{{ meta.fileName }}</a
         >
       </p>
+      <section
+        v-if="runResult?.browsers?.length"
+        class="cucumber-feature__browsers"
+        :aria-label="browsersHeading"
+      >
+        <p class="cucumber-feature__browsers-heading">{{ browsersHeading }}</p>
+        <ul class="cucumber-feature__browser-list">
+          <li
+            v-for="browser in runResult.browsers"
+            :key="browser.name"
+            class="cucumber-feature__browser"
+          >
+            <CucumberStatusIcon :status="browser.status" />
+            <CucumberBrowserIcon :browser="browser.name" />
+            <a
+              v-if="browser.runUrl"
+              class="cucumber-feature__browser-name"
+              :href="browser.runUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              >{{ browser.label }}</a
+            >
+            <span
+              v-else
+              class="cucumber-feature__browser-name"
+              >{{ browser.label }}</span
+            >
+            <span class="cucumber-feature__browser-status">{{
+              statusWord(browser.status)
+            }}</span>
+          </li>
+        </ul>
+      </section>
       <slot />
       <pre
         v-if="!$slots.default && meta.body"
@@ -660,6 +708,45 @@ onUnmounted(() => {
 .cucumber-feature__source {
   margin: 0 0 0.75rem;
   font-size: 0.9rem;
+}
+
+.cucumber-feature__browsers {
+  margin: 0 0 0.85rem;
+}
+
+.cucumber-feature__browsers-heading {
+  margin: 0 0 0.4rem;
+  color: var(--vp-c-text-2);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.cucumber-feature__browser-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cucumber-feature__browser {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+  min-height: 1.25rem;
+}
+
+.cucumber-feature__browser-name {
+  color: var(--vp-c-text-1);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.cucumber-feature__browser-status {
+  color: var(--vp-c-text-2);
+  font-size: 0.82rem;
+  font-weight: 400;
 }
 
 .cucumber-feature__gherkin {

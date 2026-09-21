@@ -47,7 +47,7 @@ class WorkstationOAuth extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    protected function getLoggedInWorkstationByOidc(\Psr\Http\Message\RequestInterface $request, UseraccountEntity $entity, $resolveReferences)
+    protected function getLoggedInWorkstationByOidc(\Psr\Http\Message\RequestInterface $request, UseraccountEntity $entity, int $resolveReferences)
     {
         \BO\Zmsbackend\Helper\UserAuth::testUseraccountExists($entity->getId());
 

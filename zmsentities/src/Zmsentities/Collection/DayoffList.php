@@ -63,6 +63,23 @@ class DayoffList extends Base
         return true;
     }
 
+    /**
+     * @return true
+     */
+    public function testUniqueDates(): bool
+    {
+        $seen = [];
+        foreach ($this as $data) {
+            $entity = new \BO\Zmsentities\Dayoff($data);
+            $day = $entity->getDateTime()->format('Y-m-d');
+            if (isset($seen[$day])) {
+                throw new \BO\Zmsentities\Exception\DayoffDuplicateDate();
+            }
+            $seen[$day] = true;
+        }
+        return true;
+    }
+
     public function withNew(DayoffList $dayoffList): self
     {
         $list = new self();

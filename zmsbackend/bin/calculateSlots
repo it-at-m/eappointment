@@ -15,10 +15,10 @@ if (preg_grep('#^--repair$#', $argv)) {
 }
 if (preg_grep('#^--commit$#', $argv)) {
     \App::$log->info('Start slot calculation', ['time' => $now->format('c')]);
-    $calculator = new \BO\Zmsbackend\Helper\CalculateSlots(preg_grep('#^--?v(erbose)?$#', $argv));
+    $calculator = new \BO\Zmsbackend\Helper\CalculateSlots((bool) preg_grep('#^--?v(erbose)?$#', $argv));
     try {
         $stepStart = microtime(true);
-        $delete = preg_grep('#^--delete$#', $argv);
+        $delete = (bool) preg_grep('#^--delete$#', $argv);
         $calculator->writeCalculations($now, $delete);
         \App::$log->info('Slot calculation finished', [
             'duration_seconds' => round(microtime(true) - $stepStart, 2),

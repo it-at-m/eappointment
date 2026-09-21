@@ -18,8 +18,8 @@ EOS;
 $timeIntervalList = preg_grep('#^\d+$#', $argv);
 $timeInterval = array_shift($timeIntervalList);
 $verbose = (preg_grep('#^--?v(erbose)?$#', $argv)) ? true : false;
-$commit = preg_grep('#^--commit$#', $argv);
-$pending = preg_grep('#^--pending$#', $argv);
+$commit = (bool) preg_grep('#^--commit$#', $argv);
+$pending = (bool) preg_grep('#^--pending$#', $argv);
 if ($verbose) {
     \App::$log->debug('deleteAppointmentData started', ['cwd' => getcwd()]);
 }

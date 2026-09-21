@@ -116,7 +116,7 @@ class AppointmentFormHelper
         }
     }
 
-    protected static function readProcessListByScopeAndDate($validator, $scopeList, $slotType, $slotsRequired)
+    protected static function readProcessListByScopeAndDate($validator, $scopeList, $slotType, int $slotsRequired)
     {
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $calendar = new Calendar($selectedDate);

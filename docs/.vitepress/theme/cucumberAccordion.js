@@ -710,21 +710,76 @@ export function formatBerlinDateTime(iso, locale) {
   }
 }
 
+const BROWSER_ORDER = ["chrome", "firefox", "edge"];
+const BROWSER_LABELS = {
+  chrome: "Chrome",
+  firefox: "Firefox",
+  edge: "Edge",
+};
+
+export function cucumberBrowserLabel(name) {
+  return BROWSER_LABELS[name] || name;
+}
+
+const browsersFromRunEntry = (entry, fallback) => {
+  const records = [];
+  const mapped =
+    entry?.browsers && typeof entry.browsers === "object"
+      ? Object.entries(entry.browsers)
+      : [];
+  if (mapped.length) {
+    for (const [name, info] of mapped) {
+      if (!name || !info || typeof info !== "object") {
+        continue;
+      }
+      records.push({
+        name,
+        label: cucumberBrowserLabel(name),
+        status: info.status || entry.status,
+        shard: info.shard || entry.shard || "",
+        runUrl: info.runUrl || fallback.runUrl,
+        at: info.runStartedAt || fallback.at,
+      });
+    }
+  } else if (entry?.browser) {
+    records.push({
+      name: entry.browser,
+      label: cucumberBrowserLabel(entry.browser),
+      status: entry.status,
+      shard: entry.shard || "",
+      runUrl: fallback.runUrl,
+      at: fallback.at,
+    });
+  }
+  records.sort((a, b) => {
+    const ai = BROWSER_ORDER.indexOf(a.name);
+    const bi = BROWSER_ORDER.indexOf(b.name);
+    const av = ai === -1 ? 99 : ai;
+    const bv = bi === -1 ? 99 : bi;
+    return av - bv || a.name.localeCompare(b.name);
+  });
+  return records;
+};
+
 export function cucumberFeatureRunResult(id) {
   const entry = cucumberRunStatus.value?.features?.[id];
   if (!entry?.status) {
     return null;
   }
+  const runUrl = entry.runUrl || cucumberRunStatus.value?.runUrl || "";
+  const at =
+    entry.runStartedAt ||
+    cucumberRunStatus.value?.runStartedAt ||
+    cucumberRunStatus.value?.publishedAt ||
+    "";
+  const browsers = browsersFromRunEntry(entry, { runUrl, at });
   return {
     status: entry.status,
     shard: entry.shard || "",
-    browser: entry.browser || "",
-    runUrl: entry.runUrl || cucumberRunStatus.value?.runUrl || "",
-    at:
-      entry.runStartedAt ||
-      cucumberRunStatus.value?.runStartedAt ||
-      cucumberRunStatus.value?.publishedAt ||
-      "",
+    browser: entry.browser || browsers[0]?.name || "",
+    browsers,
+    runUrl,
+    at,
   };
 }
 
