@@ -1022,7 +1022,10 @@ const nextBookAppointment = () => {
     const canDirectConfirm =
       !!appointment.value?.processId && !!appointment.value?.authKey;
 
-    if (canDirectConfirm && props.globalState.isLoggedIn) {
+    if (
+      canDirectConfirm &&
+      (isRebooking.value || props.globalState.isLoggedIn)
+    ) {
       nextConfirmAppointment({
         id: appointment.value.processId,
         authKey: appointment.value.authKey,
@@ -1573,9 +1576,17 @@ function showAlreadyActivatedAppointment(hash: string): void {
 
 function nextConfirmAppointment(
   appointmentData: AppointmentHash,
-  hash: string
+  hash?: string
 ) {
-  confirmAppointment(props.globalState, appointmentData)
+  const sourceAppointment =
+    isRebooking.value && rebookedAppointment.value
+      ? rebookedAppointment.value
+      : undefined;
+  const confirmPromise = sourceAppointment
+    ? confirmAppointment(props.globalState, appointmentData, sourceAppointment)
+    : confirmAppointment(props.globalState, appointmentData);
+
+  confirmPromise
     .then((data) => {
       currentView.value = 5;
 
@@ -1595,7 +1606,7 @@ function nextConfirmAppointment(
           Promise.resolve(
             fetchAppointment(props.globalState, appointmentData)
           ).then((fetched) => {
-            if ((fetched as AppointmentDTO)?.processId != undefined) {
+            if (hash && (fetched as AppointmentDTO)?.processId != undefined) {
               showAlreadyActivatedAppointment(hash);
               return;
             }

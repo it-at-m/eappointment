@@ -267,6 +267,33 @@ class ZmsApiClientServiceTest extends TestCase
         ZmsApiClientService::getScopes();
     }
 
+    public function testGetScopesSkipsScopesWithoutProvider(): void
+    {
+        $provider = new Provider(['id' => 1, 'source' => 'unittest', 'name' => 'Office']);
+        $validScope = new Scope([
+            'id' => 10,
+            'source' => 'unittest',
+            'provider' => $provider,
+        ]);
+        $orphanedScope = new Scope([
+            'id' => 29,
+            'source' => 'unittest',
+            'provider' => new Provider(),
+        ]);
+
+        $this->source->providers->addEntity($provider);
+        $this->source->scopes->addEntity($validScope);
+        $this->source->scopes->addEntity($orphanedScope);
+
+        $this->cacheMock->method('get')
+            ->with('source_unittest')
+            ->willReturn($this->source);
+
+        $result = ZmsApiClientService::getScopes();
+        $this->assertCount(1, $result);
+        $this->assertSame(10, (int) $result->getIterator()->current()->id);
+    }
+
     public function testGetServicesCacheHit(): void
     {
         $this->cacheMock->method('get')

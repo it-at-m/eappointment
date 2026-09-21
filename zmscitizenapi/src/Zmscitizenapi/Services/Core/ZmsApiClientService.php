@@ -7,6 +7,7 @@ namespace BO\Zmscitizenapi\Services\Core;
 use BO\Slim\LoggerService;
 use BO\Zmscitizenapi\Utils\ClientIpHelper;
 use BO\Zmsentities\Calendar;
+use BO\Zmsentities\Exception\ScopeMissingProvider;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Source;
 use BO\Zmsentities\Collection\ProcessList;
@@ -171,7 +172,11 @@ class ZmsApiClientService
                     return;
                 }
                 foreach ($list as $scope) {
-                    $prov = $scope->getProvider();
+                    try {
+                        $prov = $scope->getProvider();
+                    } catch (ScopeMissingProvider) {
+                        continue;
+                    }
                     $key = (($prov->source ?? '') . '_' . $prov->id);
                     if (isset($providerMap[$key])) {
                         $scope->provider = $providerMap[$key];

@@ -34,10 +34,9 @@ class CalendarTest extends \BO\Zmsbackend\Tests\Service\Base
     public function testDayOffBASpandau()
     {
         //Bürgeramt Spandau with Day Off on 2016-05-25
-        $freeProcessesDate = new \DateTimeImmutable("2016-05-25");
         $input = $this->getTestEntity();
         $input->addCluster(109); // Bürgeramt Heerstr.
-        $entity = (new Query())->readResolvedEntity($input, static::$now, $freeProcessesDate);
+        $entity = (new Query())->readResolvedEntity($input, static::$now, true);
         $this->assertEquals(0, count($entity['freeProcesses']));
     }
 
@@ -159,7 +158,7 @@ class CalendarTest extends \BO\Zmsbackend\Tests\Service\Base
         foreach ($this->fullProviderIdList as $providerId) {
             $input->addProvider('dldb', $providerId);
         }
-        $entity = (new Query())->readResolvedEntity($input, $freeProcessesDate, $freeProcessesDate);
+        $entity = (new Query())->readResolvedEntity($input, $freeProcessesDate, true);
         $this->assertEquals(0, count($entity['freeProcesses']));
     }
 
