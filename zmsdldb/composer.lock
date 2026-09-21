@@ -312,7 +312,7 @@
                 "reference": "02cf2589eed0b48e7498ba88358b63b75c913a56"
             },
             "require": {
-                "aura/sql": "^5",
+                "aura/sql": "^6",
                 "eappointment/mellon": "@dev",
                 "eappointment/zmsclient": "@dev",
                 "eappointment/zmsdldb": "@dev",
@@ -325,7 +325,7 @@
                 "ext-pdo": "*",
                 "league/climate": "^3.2",
                 "monolog/monolog": "^2.0",
-                "php": ">=8.3",
+                "php": ">=8.4",
                 "psr/simple-cache": "^3.0",
                 "roave/security-advisories": "dev-latest",
                 "symfony/cache": "^6.0"
