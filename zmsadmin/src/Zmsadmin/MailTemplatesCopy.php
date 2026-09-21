@@ -405,11 +405,18 @@ class MailTemplatesCopy extends BaseController
                     ]
                 )
                 ->getEntity();
-        } catch (Exception) {
+        } catch (Exception $exception) {
+            $backendMessage = trim(
+                (string) $exception->originalMessage
+            );
+
+            if ($backendMessage !== '') {
+                return $backendMessage;
+            }
+
             return
                 'Beim Kopieren des E-Mail-Templates ist ein '
-                . 'Fehler aufgetreten. Es wurden keine '
-                . 'Änderungen übernommen.';
+                . 'Fehler aufgetreten.';
         }
 
         if ($copiedTemplate === null) {

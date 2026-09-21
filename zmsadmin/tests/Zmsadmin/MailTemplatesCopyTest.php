@@ -132,6 +132,45 @@ class MailTemplatesCopyTest extends Base
         self::assertStringContainsString('copiedCount=1', $location);
     }
 
+    public function testShowsBackendErrorWhenCopyFails(): void
+    {
+        $exception = new \BO\Zmsclient\Exception(
+            'API-Error: missing rights'
+        );
+        $exception->originalMessage =
+            'Sie verfügen nicht über die notwendigen Rechte.';
+
+        $apiCalls = $this->getApiCallsForPage();
+        $apiCalls[] = [
+            'function' => 'readPostResult',
+            'url' => '/mailtemplates/copy/',
+            'exception' => $exception,
+        ];
+        $this->setApiCalls($apiCalls);
+
+        $response = $this->render(
+            [],
+            [
+                'sourceScopeId' => 141,
+                'sourceTemplateId' => 901,
+                'targetScopeIds' => [380],
+                'copy' => '1',
+            ],
+            [],
+            'POST'
+        );
+        $body = (string) $response->getBody();
+
+        self::assertStringContainsString(
+            'Sie verfügen nicht über die notwendigen Rechte.',
+            $body
+        );
+        self::assertStringNotContainsString(
+            'Es wurden keine Änderungen übernommen.',
+            $body
+        );
+    }
+
     public function testShowsValidationErrorWhenNoTargetWasSelected(): void
     {
         $this->setApiCalls($this->getApiCallsForPage());
