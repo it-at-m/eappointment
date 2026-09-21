@@ -43,6 +43,8 @@ public class CitizenViewPage extends BasePage {
             "Sie haben Ihren Termin bereits aktiviert.";
     private static final String RESCHEDULE_APPOINTMENT_BUTTON = "Termin verschieben";
     private static final String CANCEL_RESCHEDULE_BUTTON = "Verschieben abbrechen";
+    private static final String ACTIVATION_CALLOUT_HEADING = "Aktivieren Sie Ihren Termin.";
+    private static final String CONFIRMATION_SUCCESS_HEADING = "Ihr Termin wurde gebucht.";
 
     /** German invalid jump-in callout ({@code de-DE.json}). */
     public static final String DE_INVALID_JUMPIN_HEADER = "Diese Ansicht kann nicht geladen werden.";
@@ -1902,10 +1904,9 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm → Termin reservieren (activation callout)");
         waitForAndClickButtonContaining(DE_RESERVE, DEFAULT_EXPLICIT_WAIT_TIME);
-        String marker = "Aktivieren Sie Ihren Termin.";
-        waitWithThreeWindows(() -> shadowDomContainsText(marker), "Activation callout");
+        waitWithThreeWindows(() -> shadowDomContainsText(ACTIVATION_CALLOUT_HEADING), "Activation callout");
         Assert.assertTrue(
-                shadowDomContainsText(marker),
+                shadowDomContainsText(ACTIVATION_CALLOUT_HEADING),
                 "Activation callout (Aktivieren Sie Ihren Termin.) not visible after Termin reservieren with retries.");
         ScenarioLogManager.getLogger().info("zmscitizenview: activation callout appeared");
         trySyncBookingProcessFromLocalStorageOnce();
@@ -1918,10 +1919,10 @@ public class CitizenViewPage extends BasePage {
                 .info(
                         "zmscitizenview: waiting in 5s + 10s + 15s windows (30s total) for activation callout (Aktivieren Sie Ihren Termin., {} Minuten)",
                         activationMinutes);
-        String heading = "Aktivieren Sie Ihren Termin.";
-        waitWithThreeWindows(() -> shadowDomContainsText(heading), "Preconfirmation callout heading");
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(ACTIVATION_CALLOUT_HEADING), "Preconfirmation callout heading");
         Assert.assertTrue(
-                shadowDomContainsText(heading),
+                shadowDomContainsText(ACTIVATION_CALLOUT_HEADING),
                 "Preconfirmation warning callout (Aktivieren Sie Ihren Termin.) not found after reserve with retries.");
         String timeText = activationMinutes + " Minuten";
         Assert.assertTrue(shadowDomContainsText(timeText),
@@ -1932,9 +1933,39 @@ public class CitizenViewPage extends BasePage {
     public void assertConfirmationSuccessCalloutVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: checking for confirmation success callout (Ihr Termin wurde gebucht.)");
         assertShadowContains(
-                "Ihr Termin wurde gebucht.",
+                CONFIRMATION_SUCCESS_HEADING,
                 "Confirmation success callout not found after opening confirm link.");
         ScenarioLogManager.getLogger().info("zmscitizenview: confirmation success callout found");
+    }
+
+    /**
+     * ZMSKVR-353: guest rebooking summary books via Termin verschieben and must land on success,
+     * not the activation callout.
+     */
+    public void confirmRebookingFromSummary() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: rebooking summary → accept communication and confirm (Termin verschieben)");
+        acceptCommunication();
+        waitForAndClickButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON, DEFAULT_EXPLICIT_WAIT_TIME);
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING), "Rebooking confirmation success");
+        Assert.assertTrue(
+                shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING),
+                "Confirmation success callout (Ihr Termin wurde gebucht.) not visible after guest rebooking.");
+        Assert.assertFalse(
+                shadowDomContainsText(ACTIVATION_CALLOUT_HEADING),
+                "Guest rebooking must not show the activation callout (Aktivieren Sie Ihren Termin.).");
+        trySyncBookingProcessFromLocalStorageOnce();
+    }
+
+    public void assertPreconfirmationCalloutNotVisible() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: asserting activation callout is hidden ({})", ACTIVATION_CALLOUT_HEADING);
+        Assert.assertFalse(
+                shadowDomContainsText(ACTIVATION_CALLOUT_HEADING),
+                "Activation callout (Aktivieren Sie Ihren Termin.) must not be visible after guest rebooking confirm.");
     }
 
     /** ZMSKVR-1500: MucBanner success after reopening an already-used confirm deep link. */
