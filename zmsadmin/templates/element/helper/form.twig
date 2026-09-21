@@ -49,7 +49,7 @@
 ############## FORM ELEMENT MACROS ##############
 #}
 
-{% macro formelements(elements, fieldId, groupargs) %}
+{% macro formelements(elements, fieldId = null, groupargs = {}) %}
     {% import _self as self %}
     {% for element in elements -%}
         {% if 1 < elements|length %}
@@ -124,7 +124,7 @@
 {% endmacro %}
 
 
-{% macro inputfield(args, fieldId, groupargs) %}
+{% macro inputfield(args, fieldId = null, groupargs = {}) %}
     {% import _self as self %}
     <input
         type="{% if args.integer|default(false) %}number{% else %}{{ args.type|default('text') }}{% endif %}"
@@ -161,7 +161,7 @@
 {% endmacro %}
 
 
-{% macro filefield(args, fieldId, groupargs) %}
+{% macro filefield(args, fieldId = null, groupargs = {}) %}
     {% import _self as self %}
     {% if args.file.type == 'image' and args.file.data %}
         <img alt="{{ args.file.alt }}" width="60" src="data:image/{{ args.file.data.mime }};base64,{{ args.file.data.content }}" class="thumbnail" />
@@ -194,7 +194,7 @@
     >
 {% endmacro %}
 
-{% macro datepickerfield(args, fieldId, groupargs) %}
+{% macro datepickerfield(args, fieldId = null, groupargs = {}) %}
     {% import _self as self %}
     <div class="add-date-picker">
         <input
@@ -214,7 +214,7 @@
 {% endmacro %}
 
 
-{% macro selectfield(args, fieldId, groupargs) %}
+{% macro selectfield(args, fieldId = null, groupargs = {}) %}
     {% import _self as self %}
 	<select
         name="{{ args.name }}"
@@ -257,14 +257,14 @@
     {% endfor %}
 {% endmacro %}
 
-{% macro checkboxselectfield(args, fieldId, groupargs) %}
+{% macro checkboxselectfield(args, fieldId = null, groupargs = {}) %}
     {% import _self as self %}
         <div{% if args.ariaLive %} aria-live="{{ args.ariaLive }}"{% endif %} class="checkboxselect" {% if fieldId %} id="{{ fieldId }}" {% endif %}>
             {{- self._checkboxselectinner(args) -}}
         </div>
 {% endmacro %}
 
-{% macro checkboxdeselectfield(args, fieldId, groupargs) %}
+{% macro checkboxdeselectfield(args, fieldId = null, groupargs = {}) %}
     {% import _self as self %}
         <div{% if args.ariaLive %} aria-live="{{ args.ariaLive }}"{% endif %} class="checkboxdeselect" {% if fieldId %} id="{{ fieldId }}" {% endif %}>
             {{- self._checkboxselectinner(args) -}}
@@ -319,7 +319,7 @@
     </ul>
 {% endmacro %}
 
-{% macro textareafield(args, fieldId, groupargs) %}
+{% macro textareafield(args, fieldId = null, groupargs = {}) %}
     {% import _self as self %}
     <textarea
         tabindex="{{ args.tabindex|default(0)}}"
@@ -341,7 +341,7 @@
     </div>
 {% endmacro %}
 
-{% macro ariaDescribedBy(args, fieldId, groupargs) %}
+{% macro ariaDescribedBy(args, fieldId = null, groupargs = {}) %}
     {% set describeId = args.id %}
     {% if fieldId %} 
         {% set describeId = fieldId %}        
@@ -362,7 +362,7 @@ aria-describedby="{%
 {% endif %}
 {% endmacro %}
 
-{% macro eventHandler(args, fieldId, groupargs) %}
+{% macro eventHandler(args, fieldId = null, groupargs = {}) %}
     {% set domEvents = ['blur', 'change', 'click', 'dblclick', 'focus', 'input', 'keydown', 'keypress', 'keyup',
         'mousedown', 'mousemove', 'mouseout', 'mouseover', 'mouseup', 'wheel',
         'drag', 'dragend', 'dragenter', 'dragleave', 'dragover', 'dragstart', 'drop',
@@ -416,7 +416,7 @@ aria-describedby="{%
     {% endfor %}
 {% endmacro %}
 
-{% macro checkboxfield(args, fieldId, groupargs) %}
+{% macro checkboxfield(args, fieldId = null, groupargs = {}) %}
     {% if args.inline %}
     {% else %}
     {% endif %}
@@ -454,7 +454,7 @@ aria-describedby="{%
     </div>
 {% endmacro %}
 
-{% macro radiobuttonfield(args, fieldId, groupargs) %}
+{% macro radiobuttonfield(args, fieldId = null, groupargs = {}) %}
     {% set inline = args.inline is defined ? args.inline : true %}
     <div class="form-check{% if inline %} form-check-inline{% endif %}">
         <label class="form-check-label radio-label{% if inline %} radio-inline{% endif %}">
@@ -475,7 +475,7 @@ aria-describedby="{%
     </div>
 {% endmacro %}
 
-{% macro counterfield(args, fieldId) %}
+{% macro counterfield(args, fieldId = null) %}
         <div class="form-input-counter">
             <label for="counter_{{ fieldId }}">{{ args.label -}}</label>
             <div class="input-counter">
@@ -529,7 +529,7 @@ aria-describedby="{%
     >{{ args.label|raw }}</a>
 {% endmacro %}
 
-{% macro errormessage(messages, fieldId) %}
+{% macro errormessage(messages, fieldId = null) %}
     <div id="error_{{ fieldId }}" class="message message--error" role="alert">
     <ul class="list--clean">
         {% for message in messages %}
@@ -541,7 +541,7 @@ aria-describedby="{%
 {% endmacro %}
 
 
-{% macro groupdescription(description, fieldId) %}
+{% macro groupdescription(description, fieldId = null) %}
     {% if description is iterable %}
         {% for key, entry in description %}
             <p class="formgroup__help" {{ fieldId ? ('id="help_' ~ fieldId ~ '_' ~ key ~ '"')|raw }}>
