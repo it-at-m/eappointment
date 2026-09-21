@@ -51,10 +51,9 @@ onMounted(async () => {
 
 <style scoped>
 .build-info {
-  position: fixed;
+  position: absolute;
   right: 12px;
   bottom: 8px;
-  z-index: 1000;
   margin: 0;
   font-size: 11px;
   line-height: 1.2;
