@@ -469,7 +469,7 @@ class View extends BaseView {
                             window.print();
                             window.close();
                         }
-                    <\/script>`
+                    </script>`
                 );
                 printWindow.document.close();
             },
