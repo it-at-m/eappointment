@@ -596,8 +596,11 @@ class ValidationService
         return ['errors' => []];
     }
 
-    public static function validateAppointmentConfirm(ThinnedProcess $process, mixed $externalUserId): array
-    {
+    public static function validateAppointmentConfirm(
+        ThinnedProcess $process,
+        mixed $externalUserId,
+        ?ThinnedProcess $sourceProcess = null
+    ): array {
         if (self::isMissingClientContactData($process)) {
             return ['errors' => [self::getError('placeholderEmailNotAllowed')]];
         }
@@ -611,7 +614,32 @@ class ValidationService
             return ['errors' => []];
         }
 
+        if ($process->status === 'reserved' && self::isConfirmedRebookingSource($process, $sourceProcess)) {
+            return ['errors' => []];
+        }
+
         return ['errors' => [self::getError('processNotPreconfirmedAnymore')]];
+    }
+
+    /**
+     * Guest rebooking may skip email activation only when the original appointment
+     * is already confirmed and proven with processId + authKey.
+     */
+    private static function isConfirmedRebookingSource(
+        ThinnedProcess $process,
+        ?ThinnedProcess $sourceProcess
+    ): bool {
+        if (!$sourceProcess instanceof ThinnedProcess) {
+            return false;
+        }
+        if ($sourceProcess->processId === null || $sourceProcess->processId === $process->processId) {
+            return false;
+        }
+        if ($sourceProcess->status !== Process::STATUS_CONFIRMED) {
+            return false;
+        }
+
+        return !self::isMissingClientContactData($sourceProcess);
     }
 
     private static function isValidOfficeId(?int $officeId): bool
