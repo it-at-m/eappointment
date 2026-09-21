@@ -291,6 +291,9 @@ const getServiceInfoId = (selectedService: Service | ServiceImpl | undefined) =>
 watch(
   () => Boolean(service.value),
   (hasService) => {
+    if (!hasService && props.preselectedServiceId) {
+      return;
+    }
     trackAppointmentEvent({
       object: hasService ? "service_combination" : "service_finder",
       action: "view",
