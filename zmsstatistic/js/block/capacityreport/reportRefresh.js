@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { readJsonPayload } from './exchangeData';
+import { readJsonPayload, readPairedJsonPayload } from './exchangeData';
 
 export default class ReportRefresh {
     constructor(view) {
@@ -15,96 +15,93 @@ export default class ReportRefresh {
     }
 
     parsePayload($newBoard) {
-        const hasChartPayload = $newBoard.find('.chartist, script.report-board--chart-data, script.report-board--chart-data-sparse').length > 0;
+        const hasChartPayload = $newBoard.find(
+            '.chartist, script.report-board--chart-data, script.report-board--chart-data-sparse'
+        ).length > 0;
         if (!hasChartPayload) {
             return null;
         }
 
-        const payload = {};
-        const sparseData = readJsonPayload(
+        const payload = this.readRefreshChartPayload($newBoard);
+        if (!payload) {
+            return null;
+        }
+
+        this.assignPairedTablePayload($newBoard, payload);
+        this.assignHourlyRefreshPayload($newBoard, payload);
+        this.assignRefreshMeta($newBoard, payload);
+        return payload;
+    }
+
+    readRefreshChartPayload($newBoard) {
+        const paired = readPairedJsonPayload(
             $newBoard,
-            'script.report-board--chart-data-sparse',
-            'data-chartist-sparse',
-            'refresh-chart-sparse'
+            ['script.report-board--chart-data-sparse', 'data-chartist-sparse', 'refresh-chart-sparse'],
+            ['script.report-board--chart-data-full', 'data-chartist-full', 'refresh-chart-full']
         );
-        const fullData = readJsonPayload(
-            $newBoard,
-            'script.report-board--chart-data-full',
-            'data-chartist-full',
-            'refresh-chart-full'
-        );
+        if (paired) {
+            return {
+                chartDataSparse: paired.sparse,
+                chartDataFull: paired.full,
+            };
+        }
+
         const chartData = readJsonPayload(
             $newBoard,
             'script.report-board--chart-data',
             'data-chartist',
             'refresh-chart'
         );
-
-        if (sparseData && fullData) {
-            payload.chartDataSparse = sparseData;
-            payload.chartDataFull = fullData;
-        } else if (chartData) {
-            payload.chartDataSparse = null;
-            payload.chartDataFull = chartData;
-        } else {
+        if (!chartData) {
             return null;
         }
 
-        const $table = $newBoard.find('.report-board--capacity-table').first();
-        const tableSparseData = readJsonPayload(
+        return {
+            chartDataSparse: null,
+            chartDataFull: chartData,
+        };
+    }
+
+    assignPairedTablePayload($newBoard, payload) {
+        const paired = readPairedJsonPayload(
             $newBoard,
-            'script.report-board--table-data-sparse',
-            'data-table-sparse',
-            'refresh-table-sparse'
+            ['script.report-board--table-data-sparse', 'data-table-sparse', 'refresh-table-sparse'],
+            ['script.report-board--table-data-full', 'data-table-full', 'refresh-table-full']
         );
-        const tableFullData = readJsonPayload(
-            $newBoard,
-            'script.report-board--table-data-full',
-            'data-table-full',
-            'refresh-table-full'
-        );
-        if (tableSparseData && tableFullData) {
-            payload.dailyTableDataSparse = tableSparseData;
-            payload.dailyTableDataFull = tableFullData;
-            payload.tableDataSparse = tableSparseData;
-            payload.tableDataFull = tableFullData;
+        if (!paired) {
+            return;
         }
 
-        const hourlyChartSparse = readJsonPayload(
+        payload.dailyTableDataSparse = paired.sparse;
+        payload.dailyTableDataFull = paired.full;
+        payload.tableDataSparse = paired.sparse;
+        payload.tableDataFull = paired.full;
+    }
+
+    assignHourlyRefreshPayload($newBoard, payload) {
+        const hourlyChart = readPairedJsonPayload(
             $newBoard,
-            'script.report-board--chart-data-sparse-hourly',
-            'data-chartist-sparse-hourly',
-            'refresh-chart-sparse-hourly'
+            ['script.report-board--chart-data-sparse-hourly', 'data-chartist-sparse-hourly', 'refresh-chart-sparse-hourly'],
+            ['script.report-board--chart-data-full-hourly', 'data-chartist-full-hourly', 'refresh-chart-full-hourly']
         );
-        const hourlyChartFull = readJsonPayload(
-            $newBoard,
-            'script.report-board--chart-data-full-hourly',
-            'data-chartist-full-hourly',
-            'refresh-chart-full-hourly'
-        );
-        if (hourlyChartSparse && hourlyChartFull) {
-            payload.hourlyChartDataSparse = hourlyChartSparse;
-            payload.hourlyChartDataFull = hourlyChartFull;
+        if (hourlyChart) {
+            payload.hourlyChartDataSparse = hourlyChart.sparse;
+            payload.hourlyChartDataFull = hourlyChart.full;
         }
 
-        const hourlyTableSparse = readJsonPayload(
+        const hourlyTable = readPairedJsonPayload(
             $newBoard,
-            'script.report-board--table-data-sparse-hourly',
-            'data-table-sparse-hourly',
-            'refresh-table-sparse-hourly'
+            ['script.report-board--table-data-sparse-hourly', 'data-table-sparse-hourly', 'refresh-table-sparse-hourly'],
+            ['script.report-board--table-data-full-hourly', 'data-table-full-hourly', 'refresh-table-full-hourly']
         );
-        const hourlyTableFull = readJsonPayload(
-            $newBoard,
-            'script.report-board--table-data-full-hourly',
-            'data-table-full-hourly',
-            'refresh-table-full-hourly'
-        );
-        if (hourlyTableSparse && hourlyTableFull) {
-            payload.hourlyTableDataSparse = hourlyTableSparse;
-            payload.hourlyTableDataFull = hourlyTableFull;
+        if (hourlyTable) {
+            payload.hourlyTableDataSparse = hourlyTable.sparse;
+            payload.hourlyTableDataFull = hourlyTable.full;
         }
+    }
 
-        const summaryLabel = $table.attr('data-label-summary');
+    assignRefreshMeta($newBoard, payload) {
+        const summaryLabel = $newBoard.find('.report-board--capacity-table').first().attr('data-label-summary');
         if (summaryLabel) {
             payload.tableLabelSummary = summaryLabel;
         }
@@ -113,72 +110,84 @@ export default class ReportRefresh {
         if ($slotHint.length) {
             payload.slotTimeHint = $slotHint.text();
         }
-
-        return payload;
     }
 
     applySoftPayload(payload) {
-        if (!payload || !payload.chartDataFull) {
+        if (!payload?.chartDataFull) {
             return false;
         }
 
         try {
-            this.view.dailyChartDataSparse = payload.chartDataSparse ?? null;
-            this.view.dailyChartDataFull = payload.chartDataFull;
-            this.view.chartDataSparse = payload.chartDataSparse ?? null;
-            this.view.chartDataFull = payload.chartDataFull;
-
-            if (payload.hourlyChartDataSparse && payload.hourlyChartDataFull) {
-                this.view.hourlyChartDataSparse = payload.hourlyChartDataSparse;
-                this.view.hourlyChartDataFull = payload.hourlyChartDataFull;
-            } else {
-                this.view.hourlyChartDataSparse = null;
-                this.view.hourlyChartDataFull = null;
-            }
-
-            if (payload.dailyTableDataSparse && payload.dailyTableDataFull) {
-                this.view.dailyTableDataSparse = payload.dailyTableDataSparse;
-                this.view.dailyTableDataFull = payload.dailyTableDataFull;
-                this.view.tableDataSparse = payload.tableDataSparse;
-                this.view.tableDataFull = payload.tableDataFull;
-            } else if (payload.tableDataSparse && payload.tableDataFull) {
-                this.view.tableDataSparse = payload.tableDataSparse;
-                this.view.tableDataFull = payload.tableDataFull;
-            }
-
-            if (payload.hourlyTableDataSparse && payload.hourlyTableDataFull) {
-                this.view.hourlyTableDataSparse = payload.hourlyTableDataSparse;
-                this.view.hourlyTableDataFull = payload.hourlyTableDataFull;
-            } else {
-                this.view.hourlyTableDataSparse = null;
-                this.view.hourlyTableDataFull = null;
-            }
-
-            if (payload.tableLabelSummary) {
-                this.view.tableLabelSummary = payload.tableLabelSummary;
-            }
-
-            const previousGranularity = this.view.chartGranularity;
-            this.view.chartController.applyGranularity();
-            this.view.chartController.syncGranularityButton();
-            this.view.chartController.syncTableDownloadLink();
-            if (previousGranularity !== this.view.chartGranularity) {
-                this.view.chartController.render();
-            } else {
-                this.view.chartController.updateInPlace();
-            }
-            this.view.tableController.syncHeaders();
-            this.view.tableController.render();
-
-            if (payload.slotTimeHint) {
-                this.view.$main.find('.report-board--chart-hint-slot-times').text(payload.slotTimeHint);
-            }
-
+            this.assignSoftChartData(payload);
+            this.assignSoftTableData(payload);
+            this.rerenderAfterSoftPayload();
+            this.applySlotTimeHint(payload);
             return true;
         } catch (error) {
             console.error('Soft report refresh failed', error);
             return false;
         }
+    }
+
+    assignSoftChartData(payload) {
+        this.view.dailyChartDataSparse = payload.chartDataSparse ?? null;
+        this.view.dailyChartDataFull = payload.chartDataFull;
+        this.view.chartDataSparse = payload.chartDataSparse ?? null;
+        this.view.chartDataFull = payload.chartDataFull;
+
+        if (payload.hourlyChartDataSparse && payload.hourlyChartDataFull) {
+            this.view.hourlyChartDataSparse = payload.hourlyChartDataSparse;
+            this.view.hourlyChartDataFull = payload.hourlyChartDataFull;
+            return;
+        }
+
+        this.view.hourlyChartDataSparse = null;
+        this.view.hourlyChartDataFull = null;
+    }
+
+    assignSoftTableData(payload) {
+        if (payload.dailyTableDataSparse && payload.dailyTableDataFull) {
+            this.view.dailyTableDataSparse = payload.dailyTableDataSparse;
+            this.view.dailyTableDataFull = payload.dailyTableDataFull;
+            this.view.tableDataSparse = payload.tableDataSparse;
+            this.view.tableDataFull = payload.tableDataFull;
+        } else if (payload.tableDataSparse && payload.tableDataFull) {
+            this.view.tableDataSparse = payload.tableDataSparse;
+            this.view.tableDataFull = payload.tableDataFull;
+        }
+
+        if (payload.hourlyTableDataSparse && payload.hourlyTableDataFull) {
+            this.view.hourlyTableDataSparse = payload.hourlyTableDataSparse;
+            this.view.hourlyTableDataFull = payload.hourlyTableDataFull;
+        } else {
+            this.view.hourlyTableDataSparse = null;
+            this.view.hourlyTableDataFull = null;
+        }
+
+        if (payload.tableLabelSummary) {
+            this.view.tableLabelSummary = payload.tableLabelSummary;
+        }
+    }
+
+    rerenderAfterSoftPayload() {
+        const previousGranularity = this.view.chartGranularity;
+        this.view.chartController.applyGranularity();
+        this.view.chartController.syncGranularityButton();
+        this.view.chartController.syncTableDownloadLink();
+        if (previousGranularity !== this.view.chartGranularity) {
+            this.view.chartController.render();
+        } else {
+            this.view.chartController.updateInPlace();
+        }
+        this.view.tableController.syncHeaders();
+        this.view.tableController.render();
+    }
+
+    applySlotTimeHint(payload) {
+        if (!payload.slotTimeHint) {
+            return;
+        }
+        this.view.$main.find('.report-board--chart-hint-slot-times').text(payload.slotTimeHint);
     }
 
     // eslint-disable-next-line complexity

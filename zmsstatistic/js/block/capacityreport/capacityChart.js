@@ -36,6 +36,31 @@ export default class CapacityChart {
             return;
         }
 
+        const dailyPayload = this.readDailyChartPayload($chartist);
+        if (!dailyPayload) {
+            return;
+        }
+
+        $chartist.text('[Initializing chart...]');
+        this.readChartPeriodFromDom($chartist);
+        this.view.dailyChartDataSparse = dailyPayload.sparse;
+        this.view.dailyChartDataFull = dailyPayload.full;
+        this.loadHourlyChartData();
+
+        if (this.view.chartGranularity === 'hour' && !this.supportsHourlyGranularity()) {
+            this.view.chartGranularity = 'day';
+        }
+
+        this.applyGranularity();
+        this.syncModeButton();
+        this.syncSparseTimelineButton();
+        this.syncGranularityButton();
+        this.syncDownloadButton();
+        this.syncTableDownloadLink();
+        this.render();
+    }
+
+    readDailyChartPayload($chartist) {
         const sparseData = readJsonPayload(
             this.view.$main,
             'script.report-board--chart-data-sparse',
@@ -55,57 +80,44 @@ export default class CapacityChart {
             'chart'
         );
 
-        if (!sparseData && !fullData && !chartData) {
-            return;
+        if (sparseData && fullData) {
+            return { sparse: sparseData, full: fullData };
+        }
+        if (chartData) {
+            return { sparse: null, full: chartData };
+        }
+        if (!sparseData && !fullData) {
+            return null;
         }
 
-        $chartist.text('[Initializing chart...]');
+        $chartist.text('Diagrammdaten konnten nicht geladen werden.');
+        console.error('Capacity report: incomplete chart payload', {
+            sparseData: Boolean(sparseData),
+            fullData: Boolean(fullData),
+            chartData: Boolean(chartData),
+        });
+        return null;
+    }
+
+    readChartPeriodFromDom($chartist) {
         this.view.chartPeriod = $chartist.attr('data-chart-period') || '';
         this.view.chartDateFrom = $chartist.attr('data-chart-date-from') || '';
         this.view.chartDateTo = $chartist.attr('data-chart-date-to') || '';
+    }
 
-        if (sparseData && fullData) {
-            this.view.dailyChartDataSparse = sparseData;
-            this.view.dailyChartDataFull = fullData;
-        } else if (chartData) {
-            this.view.dailyChartDataSparse = null;
-            this.view.dailyChartDataFull = chartData;
-        } else {
-            $chartist.text('Diagrammdaten konnten nicht geladen werden.');
-            console.error('Capacity report: incomplete chart payload', {
-                sparseData: Boolean(sparseData),
-                fullData: Boolean(fullData),
-                chartData: Boolean(chartData),
-            });
-            return;
-        }
-
-        const hourlySparseData = readJsonPayload(
+    loadHourlyChartData() {
+        this.view.hourlyChartDataSparse = readJsonPayload(
             this.view.$main,
             'script.report-board--chart-data-sparse-hourly',
             'data-chartist-sparse-hourly',
             'chart-sparse-hourly'
-        );
-        const hourlyFullData = readJsonPayload(
+        ) || null;
+        this.view.hourlyChartDataFull = readJsonPayload(
             this.view.$main,
             'script.report-board--chart-data-full-hourly',
             'data-chartist-full-hourly',
             'chart-full-hourly'
-        );
-        this.view.hourlyChartDataSparse = hourlySparseData || null;
-        this.view.hourlyChartDataFull = hourlyFullData || null;
-
-        if (this.view.chartGranularity === 'hour' && !this.supportsHourlyGranularity()) {
-            this.view.chartGranularity = 'day';
-        }
-
-        this.applyGranularity();
-        this.syncModeButton();
-        this.syncSparseTimelineButton();
-        this.syncGranularityButton();
-        this.syncDownloadButton();
-        this.syncTableDownloadLink();
-        this.render();
+        ) || null;
     }
 
     initChannelFromDom() {
