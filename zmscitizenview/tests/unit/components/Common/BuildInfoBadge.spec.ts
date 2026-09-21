@@ -43,16 +43,18 @@ describe("BuildInfoBadge", () => {
     vi.stubEnv("VITE_GIT_COMMIT", "a1b2c3d");
     vi.stubEnv("VITE_GIT_REF", "next");
     vi.stubEnv("VITE_NODE_ENV", "production");
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({ ZMS_ENV: "test" }),
-      })
-    );
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ ZMS_ENV: "test" }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
 
     const wrapper = mount(BuildInfoBadge);
     await flushPromises();
     expect(wrapper.text()).toBe("a1b2c3d · next");
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringMatching(/runtime-config\.json$/),
+      expect.objectContaining({ cache: "no-store" })
+    );
   });
 });

@@ -5,7 +5,18 @@
  * - local `npm run dev` uses VITE_NODE_ENV=development
  * - deployed images read ZMS_ENV from the same runtime-config.json
  *   as SHOW_CITIZEN_LOGIN
+ *
+ * Magnolia embeds (e.g. lhm-i) run the WC on another origin. Resolve the
+ * JSON from the script URL (`…/buergeransicht/src/entry-*.js`), not `./`
+ * on the host page — that would hit Magnolia and miss ZMS_ENV.
  */
+export function runtimeConfigUrl(moduleUrl: string): string {
+  try {
+    return new URL("../runtime-config.json", moduleUrl).href;
+  } catch {
+    return "./runtime-config.json";
+  }
+}
 
 export function isProductionBuild(nodeEnv: string | undefined): boolean {
   return (nodeEnv ?? "").trim().toLowerCase() === "production";
