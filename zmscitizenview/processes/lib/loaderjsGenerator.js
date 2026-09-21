@@ -26,11 +26,6 @@ export function generateLoaderJs(filename, suffix) {
   );
 }
 
-/**
- * Root dist/loader.js sits next to public/wrapper.js. Nested loaders use
- * ../wrapper.js; that same relative URL from /buergeransicht/loader.js
- * becomes /wrapper.js (ZMSKVR-1245).
- */
 export function compatRootLoaderSource(template, nestedLoaderPath) {
   return template
     .replaceAll("{{path}}", nestedLoaderPath)
