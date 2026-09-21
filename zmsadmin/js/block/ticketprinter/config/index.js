@@ -235,6 +235,7 @@ class TicketPrinterConfigView extends Component {
         }
     }
 
+    // eslint-disable-next-line complexity
     buildUrl() {
         const rawBase = this.props.config?.ticketprinter?.baseUrl
         if (typeof rawBase !== 'string' || !rawBase.trim()) {
