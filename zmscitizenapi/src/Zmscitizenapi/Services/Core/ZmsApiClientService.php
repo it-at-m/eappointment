@@ -265,9 +265,9 @@ class ZmsApiClientService
 
             $processEntity = new Process();
             $processEntity->appointments = $appointmentProcess->appointments ?? [];
-            $processEntity->authKey = $appointmentProcess->authKey ?? null;
+            $processEntity->authKey = $appointmentProcess->authKey;
             $processEntity->clients = $appointmentProcess->clients ?? [];
-            $processEntity->scope = $appointmentProcess->scope ?? null;
+            $processEntity->scope = $appointmentProcess->scope;
             $processEntity->requests = $requests;
             $processEntity->lastChange = $appointmentProcess->lastChange ?? time();
             $processEntity->createIP = ClientIpHelper::getClientIp();
@@ -552,7 +552,7 @@ class ZmsApiClientService
 
     private static function isSourceNotFoundException(\Throwable $e): bool
     {
-        if ($e instanceof \BO\Zmsclient\Exception && is_string($e->template ?? null)) {
+        if ($e instanceof \BO\Zmsclient\Exception && is_string($e->template)) {
             if (str_contains($e->template, 'SourceNotFound')) {
                 return true;
             }

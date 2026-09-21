@@ -27,8 +27,8 @@ class DialogHandler extends \BO\Zmsadmin\BaseController
 
         if (isset($parameter['id'])) {
             $result = \App::$http->readGetResult('/process/' . $parameter['id'] . '/');
-            if ($result) {
-                $process = $result->getEntity();
+            $process = $result instanceof \BO\Zmsclient\Result ? $result->getEntity() : null;
+            if ($process !== null) {
                 $parameter['settings']['isWithAppointment'] = $process->isWithAppointment();
                 $parameter['settings']['hasMail'] = (
                     $process->getFirstClient()->hasEmail() && $process->scope->hasEmailFrom()
