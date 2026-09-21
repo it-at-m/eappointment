@@ -22,13 +22,13 @@
             "php-http/discovery": true
         },
         "platform": {
-            "php": "8.3.0"
+            "php": "8.4.0"
         }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.4",
         "ext-mbstring": ">=0",
         "ext-intl": "*",
         "ext-json": ">=1.0",
