@@ -9,17 +9,40 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { onMounted, ref } from "vue";
 
-import { resolveBuildInfoLabel } from "@/utils/buildInfo";
+import { isProductionBuild, resolveBuildInfoLabel } from "@/utils/buildInfo";
 
-const label = computed(() =>
-  resolveBuildInfoLabel(
-    import.meta.env.VITE_GIT_COMMIT,
-    import.meta.env.VITE_GIT_REF,
-    import.meta.env.VITE_NODE_ENV
-  )
-);
+const label = ref<string | null>(null);
+
+async function readZmsEnv(): Promise<string | undefined> {
+  try {
+    const response = await fetch("./runtime-config.json", {
+      cache: "no-store",
+      signal: AbortSignal.timeout(2000),
+    });
+    if (!response.ok) {
+      return undefined;
+    }
+    const data = (await response.json()) as { ZMS_ENV?: unknown };
+    return typeof data.ZMS_ENV === "string" && data.ZMS_ENV.trim()
+      ? data.ZMS_ENV.trim()
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+onMounted(async () => {
+  const commit = import.meta.env.VITE_GIT_COMMIT;
+  const gitRef = import.meta.env.VITE_GIT_REF;
+  const viteNodeEnv = import.meta.env.VITE_NODE_ENV;
+
+  const zmsEnv = isProductionBuild(viteNodeEnv)
+    ? await readZmsEnv()
+    : undefined;
+  label.value = resolveBuildInfoLabel(commit, gitRef, viteNodeEnv, zmsEnv);
+});
 </script>
 
 <style scoped>
