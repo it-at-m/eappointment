@@ -113,6 +113,7 @@ class CallDisplayConfigView extends Component {
         return this.buildAppUrlFromPath(baseUrl, true, 'webcalldisplay')
     }
 
+    // eslint-disable-next-line complexity
     buildParameters(hashParameters, target = 'calldisplay', displayNumber = 1) {
         const collections = this.getSelectedItemsCollection(this.state)
         let queryParts = []

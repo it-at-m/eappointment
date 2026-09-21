@@ -7,6 +7,7 @@ import { range } from '../../../lib/utils'
 import { weekDayList, availabilitySeries, availabilityTypes, getDataValuesFromForm } from '../helpers'
 import ErrorBar from '../errorBar'
 
+// eslint-disable-next-line complexity
 const FormContent = (props) => {
     const {
         availabilityList,

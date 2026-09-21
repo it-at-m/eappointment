@@ -7,11 +7,9 @@ const FooterButtons = (props) => {
         hasConflicts, 
         hasErrors, 
         stateChanged, 
-        data, 
         onNew, 
         onPublish, 
         onAbort, 
-        hasSlotCountError, 
         availabilitylist,
         selectedDate 
     } = props;
