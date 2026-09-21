@@ -7,7 +7,7 @@ Frontend for ticket printers in the ZMS queue system.
 
 ## Requirements
 
-* PHP 8.3+
+* PHP 8.4+
 
 ## Installation
 
