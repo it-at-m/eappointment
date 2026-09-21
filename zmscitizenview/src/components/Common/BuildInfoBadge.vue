@@ -11,13 +11,17 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 
-import { isProductionBuild, resolveBuildInfoLabel } from "@/utils/buildInfo";
+import {
+  isProductionBuild,
+  resolveBuildInfoLabel,
+  runtimeConfigUrl,
+} from "@/utils/buildInfo";
 
 const label = ref<string | null>(null);
 
 async function readZmsEnv(): Promise<string | undefined> {
   try {
-    const response = await fetch("./runtime-config.json", {
+    const response = await fetch(runtimeConfigUrl(import.meta.url), {
       cache: "no-store",
       signal: AbortSignal.timeout(2000),
     });

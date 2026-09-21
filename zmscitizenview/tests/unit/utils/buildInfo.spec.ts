@@ -5,8 +5,25 @@ import {
   isProductionBuild,
   isProductionZmsEnv,
   resolveBuildInfoLabel,
+  runtimeConfigUrl,
   shouldShowBuildInfo,
 } from "@/utils/buildInfo";
+
+describe("runtimeConfigUrl", () => {
+  it("resolves next to the citizenview root from the hashed entry script", () => {
+    expect(
+      runtimeConfigUrl(
+        "https://zms-dev.muenchen.de/buergeransicht/src/entry-zms-appointment-abc123.js"
+      )
+    ).toBe(
+      "https://zms-dev.muenchen.de/buergeransicht/runtime-config.json"
+    );
+  });
+
+  it("falls back to a page-relative path for an invalid module URL", () => {
+    expect(runtimeConfigUrl("not-a-url")).toBe("./runtime-config.json");
+  });
+});
 
 describe("isProductionBuild", () => {
   it("treats VITE_NODE_ENV=production as production", () => {
