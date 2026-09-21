@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @ZMSKVR-833 @ZMSKVR-1025 @executeLocally @jumpin @sharedBooking
+@web @zmscitizenview @dldb-special-cases @citizen @ZMSKVR-833 @ZMSKVR-1025 @executeLocally @jumpin @sharedBooking
 Feature: ZMSKVR-833 / ZMSKVR-1025 Rebooking onto a Bürgerbüro that requires custom text
   As a citizen
   I want to rebook from a Bürgerbüro where custom text is optional onto one where it is required
