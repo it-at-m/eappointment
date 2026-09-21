@@ -590,12 +590,22 @@ public class CitizenApiSteps {
 
     @When("I attempt to confirm the reserved appointment")
     public void iAttemptToConfirmTheReservedAppointment() {
-        postConfirmFromCurrentProcess(false, false);
+        postConfirmFromCurrentProcess(false, false, false);
     }
 
     @When("I confirm the reserved appointment as the logged-in citizen")
     public void iConfirmTheReservedAppointmentAsTheLoggedInCitizen() {
-        postConfirmFromCurrentProcess(true, true);
+        postConfirmFromCurrentProcess(true, true, false);
+    }
+
+    @When("I confirm the reserved appointment using the rebooking source")
+    public void iConfirmTheReservedAppointmentUsingTheRebookingSource() {
+        postConfirmFromCurrentProcess(true, false, true);
+    }
+
+    @When("I attempt to confirm the reserved appointment using the rebooking source")
+    public void iAttemptToConfirmTheReservedAppointmentUsingTheRebookingSource() {
+        postConfirmFromCurrentProcess(false, false, true);
     }
 
     private void postAppointmentUpdate(
@@ -655,14 +665,27 @@ public class CitizenApiSteps {
         setLastReserveProcess(updated);
     }
 
-    private void postConfirmFromCurrentProcess(boolean expectSuccess, boolean asLoggedInCitizen) {
+    private void postConfirmFromCurrentProcess(
+            boolean expectSuccess,
+            boolean asLoggedInCitizen,
+            boolean includeRebookingSource) {
         ThinnedProcess process = requireCurrentProcess();
         Integer pid = process.getProcessId();
         String auth = process.getAuthKey();
+        Map<String, Object> body = new java.util.LinkedHashMap<>();
+        body.put("processId", pid);
+        body.put("authKey", auth);
+        if (includeRebookingSource) {
+            if (rebookingSourceProcessId == null || rebookingSourceAuthKey == null) {
+                throw new IllegalStateException("Reserve with a source appointment first.");
+            }
+            body.put("sourceProcessId", rebookingSourceProcessId);
+            body.put("sourceAuthKey", rebookingSourceAuthKey);
+        }
         RequestSpecification spec = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
             .contentType("application/json")
-            .body(Map.of("processId", pid, "authKey", auth));
+            .body(body);
         if (asLoggedInCitizen) {
             spec = spec.header("Authorization", "Bearer " + requireCitizenAccessToken());
         }

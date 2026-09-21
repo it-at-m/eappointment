@@ -662,4 +662,162 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
         $this->assertEquals('confirmed', $responseBody['status']);
     }
 
+    public function testAllowsReservedWithConfirmedSourceProcess(): void
+    {
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/100001/abcd/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->processFixtureWith([
+                    'id' => 100001,
+                    'authKey' => 'abcd',
+                    'status' => 'confirmed',
+                ])
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/100001/abcd/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_process_reserved.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
+            ],
+            [
+                'function' => 'readPostResult',
+                'url' => '/process/status/confirmed/',
+                'response' => $this->readFixture("POST_confirm_appointment.json")
+            ],
+            [
+                'function' => 'readPostResult',
+                'url' => '/process/101002/fb43/confirmation/mail/',
+                'response' => $this->readFixture("POST_confirm_appointment.json")
+            ]
+        ]);
+
+        $response = $this->render([], [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'sourceProcessId' => '100001',
+            'sourceAuthKey' => 'abcd',
+        ], [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('confirmed', $responseBody['status']);
+    }
+
+    public function testRejectsReservedWithUnconfirmedSourceProcess(): void
+    {
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/100001/abcd/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->processFixtureWith([
+                    'id' => 100001,
+                    'authKey' => 'abcd',
+                    'status' => 'reserved',
+                ])
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/100001/abcd/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_process_reserved.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
+            ]
+        ]);
+
+        $response = $this->render([], [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'sourceProcessId' => '100001',
+            'sourceAuthKey' => 'abcd',
+        ], [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(ErrorMessages::get('processNotPreconfirmedAnymore')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing(
+            ['errors' => [ErrorMessages::get('processNotPreconfirmedAnymore')]],
+            $responseBody
+        );
+    }
+
+    public function testRejectsReservedWithChangedSourceContact(): void
+    {
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/100001/abcd/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->processFixtureWith([
+                    'id' => 100001,
+                    'authKey' => 'abcd',
+                    'status' => 'confirmed',
+                    'email' => 'other@example.com',
+                ])
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/100001/abcd/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_process_reserved.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
+            ]
+        ]);
+
+        $response = $this->render([], [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'sourceProcessId' => '100001',
+            'sourceAuthKey' => 'abcd',
+        ], [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(ErrorMessages::get('processNotPreconfirmedAnymore')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing(
+            ['errors' => [ErrorMessages::get('processNotPreconfirmedAnymore')]],
+            $responseBody
+        );
+    }
+
 }
