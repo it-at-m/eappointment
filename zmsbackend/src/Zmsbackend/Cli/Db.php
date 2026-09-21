@@ -103,7 +103,7 @@ class Db
         (new \BO\Zmsbackend\Config\Service\Config())->updateEntity($defaults);
     }
 
-    public static function startMigrations($migrationList, $commit = true, ?string $phase = null): int
+    public static function startMigrations($migrationList, bool $commit = true, ?string $phase = null): int
     {
         $migrationFiles = self::resolveMigrationFileList($migrationList);
         $migrationFiles = self::filterMigrationFilesByPhase($migrationFiles, $phase);

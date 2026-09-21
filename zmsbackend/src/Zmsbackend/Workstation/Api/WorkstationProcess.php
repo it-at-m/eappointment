@@ -136,7 +136,7 @@ class WorkstationProcess extends \BO\Zmsbackend\Api\BaseController
     /**
      * @return void
      */
-    protected function testProcess(\BO\Zmsentities\Process $process, $workstation, $allowClusterWideCall)
+    protected function testProcess(\BO\Zmsentities\Process $process, $workstation, bool $allowClusterWideCall)
     {
         if ('called' == $process->status || 'processing' == $process->status) {
             throw new \BO\Zmsbackend\Process\Exception\ProcessAlreadyCalled();

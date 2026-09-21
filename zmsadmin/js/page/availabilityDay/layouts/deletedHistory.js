@@ -102,6 +102,7 @@ const DeletedAvailabilityHistory = ({ historyUrl, refreshKey }) => {
                                 </tr>
                             </thead>
                             <tbody>
+                                {/* eslint-disable-next-line complexity */}
                                 {rows.map((row) => {
                                     const availabilityId = row.availabilityId
                                     const canExpand = Boolean(historyUrl && availabilityId)

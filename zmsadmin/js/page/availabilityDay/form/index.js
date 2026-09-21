@@ -31,7 +31,7 @@ class AvailabilityForm extends Component {
                 __modified: true
             }))
         }), () => {
-            this.props.handleChange(getDataValuesFromForm(this.state.data, this.props.data.scope))
+            this.props.handleChange(getDataValuesFromForm(this.state.data))
         })
     }
 

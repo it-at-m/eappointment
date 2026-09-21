@@ -34,7 +34,7 @@ class Zmsdldb extends \BO\Zmsbackend\Base
     /**
      * @return void
      */
-    public function startImport($verbose = true, $updateAvailability = true)
+    public function startImport(bool $verbose = true, bool $updateAvailability = true)
     {
         if (!static::$importPath) {
             throw new \Exception('No data path given');

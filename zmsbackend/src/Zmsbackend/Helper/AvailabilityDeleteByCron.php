@@ -10,7 +10,7 @@ class AvailabilityDeleteByCron
     protected $verbose = false;
     protected $query;
 
-    public function __construct($verbose = false)
+    public function __construct(bool $verbose = false)
     {
         $this->query = new \BO\Zmsbackend\Availability\Service\Availability();
         if ($verbose) {
@@ -18,7 +18,7 @@ class AvailabilityDeleteByCron
         }
     }
 
-    public function startProcessing(\DateTimeImmutable $datetime, $commit = false): void
+    public function startProcessing(\DateTimeImmutable $datetime, bool $commit = false): void
     {
         $availabilityList = $this->query->readAvailabilityListBefore($datetime);
         if ($this->verbose) {
