@@ -623,7 +623,8 @@ class ValidationService
 
     /**
      * Guest rebooking may skip email activation only when the original appointment
-     * is already confirmed and proven with processId + authKey.
+     * is already confirmed, proven with processId + authKey, and has the same
+     * permitted contact data as the reserved process.
      */
     private static function isConfirmedRebookingSource(
         ThinnedProcess $process,
@@ -638,8 +639,18 @@ class ValidationService
         if ($sourceProcess->status !== Process::STATUS_CONFIRMED) {
             return false;
         }
+        if (self::isMissingClientContactData($sourceProcess)) {
+            return false;
+        }
 
-        return !self::isMissingClientContactData($sourceProcess);
+        return self::validateUnchangedStoredContact(
+            $sourceProcess,
+            $process->familyName,
+            $process->email,
+            $process->telephone,
+            $process->customTextfield,
+            $process->customTextfield2
+        )['errors'] === [];
     }
 
     private static function isValidOfficeId(?int $officeId): bool
