@@ -305,6 +305,20 @@ public class CitizenViewSteps {
         page.assertCancelRescheduleButtonVisible();
     }
 
+    /** ZMSKVR-353: confirm guest rebooking from the summary without an activation mail. */
+    @When("I confirm the rebooking from the summary in the citizen view")
+    public void iConfirmTheRebookingFromTheSummaryInTheCitizenView() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: confirm rebooking from summary (Termin verschieben)");
+        page.confirmRebookingFromSummary();
+    }
+
+    @Then("the preconfirmation callout should not be visible in the citizen view")
+    public void thePreconfirmationCalloutShouldNotBeVisibleInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert activation callout is hidden");
+        page.assertPreconfirmationCalloutNotVisible();
+    }
+
     /** ZMSKVR-1500: Verschieben abbrechen → back to overview with already-activated banner. */
     @When("I cancel the reschedule in the citizen view")
     public void iCancelTheRescheduleInTheCitizenView() {

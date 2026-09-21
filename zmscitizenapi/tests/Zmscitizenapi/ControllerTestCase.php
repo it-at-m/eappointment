@@ -22,7 +22,7 @@ abstract class ControllerTestCase extends \BO\Zmsclient\PhpUnit\Base
     }
 
     /**
-     * @param array{status?: string, email?: string|null, familyName?: string|null, externalUserId?: string|null} $overrides
+     * @param array{status?: string, email?: string|null, familyName?: string|null, externalUserId?: string|null, id?: int|string, authKey?: string} $overrides
      */
     protected function processFixtureWith(array $overrides, string $baseFixture = 'GET_process.json'): string
     {
@@ -39,6 +39,13 @@ abstract class ControllerTestCase extends \BO\Zmsclient\PhpUnit\Base
         }
         if (array_key_exists('externalUserId', $overrides)) {
             $data['data']['externalUserId'] = $overrides['externalUserId'];
+        }
+        if (isset($overrides['id'])) {
+            $data['data']['id'] = (string) $overrides['id'];
+            $data['data']['queue']['number'] = (string) $overrides['id'];
+        }
+        if (isset($overrides['authKey'])) {
+            $data['data']['authKey'] = $overrides['authKey'];
         }
 
         return json_encode($data, JSON_THROW_ON_ERROR);
