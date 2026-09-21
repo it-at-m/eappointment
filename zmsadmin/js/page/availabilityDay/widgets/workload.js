@@ -32,7 +32,7 @@ const options = {
             barPercentage: 1,
             categoryPercentage: 1,
             ticks: {
-                callback: function (val, index, ticks) {
+                callback: function (val) {
                     // Assuming this is your previously configured x-axis callback
                     const label = this.getLabelForValue(val);
                     if (label && label.endsWith(':00')) {

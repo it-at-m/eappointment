@@ -175,7 +175,7 @@ class AvailabilityPage extends Component {
                     method: 'POST',
                     data: JSON.stringify(payload),
                     contentType: 'application/json'
-                }).done((success) => {
+                }).done(() => {
                     this.refreshData()
                         .then(() => this.getConflictList({ scrollToErrors: false }))
                         .then((conflictList) => {
@@ -697,7 +697,7 @@ class AvailabilityPage extends Component {
         return fetch(url, requestOptions)
             .then(async (res) => {
                 const responseText = await res.text();
-                let data = {};
+                let data;
 
                 try {
                     data = responseText ? JSON.parse(responseText) : {};

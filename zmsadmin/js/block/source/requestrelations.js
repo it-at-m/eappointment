@@ -198,6 +198,7 @@ class RequestRelationView extends Component {
             this.calculateSlotsByProviderGcd()
         }
 
+        // eslint-disable-next-line complexity
         const onDeleteClick = (index) => {
             const rel = this.props.source.requestrelation[index] || {};
             if (rel?.__isNew === true) {

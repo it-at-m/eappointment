@@ -91,11 +91,13 @@ class View extends BaseView {
         } 
         let $decrementBtn = $(ev.currentTarget).find('.decrement');
         //let $incrementBtn = $(ev.currentTarget).find('.increment');
-        let number = $input.val();
+        let number = Number($input.val());
         if ($(ev.target).hasClass('decrement')) {
-            $input.val(number > 0 ? --number : 0);
+            number = number > 0 ? number - 1 : 0;
+            $input.val(number);
         } else if ($(ev.target).hasClass('increment')) {
-            $input.val(++number);
+            number += 1;
+            $input.val(number);
         }
         // Enable / Disable decrement button if on 0 
         if ($input.val() == 0) {
