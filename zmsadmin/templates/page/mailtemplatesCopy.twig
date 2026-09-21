@@ -118,67 +118,11 @@
             'class': 'board--spaceless config-view',
             'messages': 'hide'
         } %}
-            {% from 'element/helper/form.twig' import providername %}
-
             {% block board_title %}
                 Template und Zielstandorte auswählen
             {% endblock %}
 
             {% block board_body %}
-                {% set targetScopeOptions = [] %}
-
-                {% for department in workstation.useraccount.departments %}
-                    {% set departmentScopeOptions = [] %}
-
-                    {% for scope in department.scopes %}
-                        {% if
-                            scope.id != selectedSourceScope.id
-                            and scope.provider.id
-                                != selectedSourceScope.provider.id
-                        %}
-                            {% set departmentScopeOptions =
-                                departmentScopeOptions|merge([
-                                    {
-                                        'value': scope.id,
-                                        'name': providername(scope)
-                                    }
-                                ])
-                            %}
-                        {% endif %}
-                    {% endfor %}
-
-                    {% for cluster in department.clusters %}
-                        {% for scope in cluster.scopes %}
-                            {% if
-                                scope.id != selectedSourceScope.id
-                                and scope.provider.id
-                                    != selectedSourceScope.provider.id
-                            %}
-                                {% set departmentScopeOptions =
-                                    departmentScopeOptions|merge([
-                                        {
-                                            'value': scope.id,
-                                            'name': providername(scope)
-                                        }
-                                    ])
-                                %}
-                            {% endif %}
-                        {% endfor %}
-                    {% endfor %}
-
-                    {% if departmentScopeOptions|length > 0 %}
-                        {% set targetScopeOptions =
-                            targetScopeOptions|merge([
-                                {
-                                    'name': department.name,
-                                    'options':
-                                        departmentScopeOptions|msort('name')
-                                }
-                            ])
-                        %}
-                    {% endif %}
-                {% endfor %}
-
                 {% if customTemplates|length > 0 %}
                     {% if targetScopeOptions|length == 0 %}
                         <div

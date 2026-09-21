@@ -96,6 +96,12 @@ class MailTemplatesCopy extends BaseController
                 'success' => $queryParameters['success'],
                 'copiedCount' =>
                     $queryParameters['copiedCount'],
+                'targetScopeOptions' =>
+                    $this->buildTargetScopeOptions(
+                        $workstation,
+                        $scopeList,
+                        $selectedSourceScope
+                    ),
             ]
         );
     }
@@ -513,5 +519,102 @@ class MailTemplatesCopy extends BaseController
         }
 
         return count(array_unique($providerIds));
+    }
+
+    /**
+     * @return array<int, array{name: string, options: array<int, array{value: int, name: string}>}>
+     */
+    private function buildTargetScopeOptions(
+        Workstation $workstation,
+        ScopeList $scopeList,
+        ?Scope $selectedSourceScope
+    ): array {
+        if ($selectedSourceScope === null) {
+            return [];
+        }
+
+        $departments = $workstation
+            ->getUseraccount()
+            ->getDepartmentList()
+            ->withMatchingScopes($scopeList);
+
+        $targetScopeOptions = [];
+
+        foreach ($departments as $department) {
+            $departmentScopeOptions =
+                $this->buildDepartmentTargetOptions(
+                    $department->scopes,
+                    $selectedSourceScope
+                );
+
+            if ($departmentScopeOptions === []) {
+                continue;
+            }
+
+            $targetScopeOptions[] = [
+                'name' => (string) $department->name,
+                'options' => $departmentScopeOptions,
+            ];
+        }
+
+        return $targetScopeOptions;
+    }
+
+    /**
+     * @return array<int, array{value: int, name: string}>
+     */
+    private function buildDepartmentTargetOptions(
+        ScopeList $scopes,
+        Scope $selectedSourceScope
+    ): array {
+        $sourceScopeId = (int) $selectedSourceScope->getId();
+        $sourceProviderId = (string)
+            $selectedSourceScope->getProviderId();
+        $departmentScopeOptions = [];
+
+        foreach ($scopes as $scope) {
+            $scopeId = (int) $scope->getId();
+
+            if (
+                $scopeId === $sourceScopeId
+                || (string) $scope->getProviderId()
+                    === $sourceProviderId
+            ) {
+                continue;
+            }
+
+            $departmentScopeOptions[] = [
+                'value' => $scopeId,
+                'name' => $this->formatScopeName($scope),
+            ];
+        }
+
+        usort(
+            $departmentScopeOptions,
+            static function (array $left, array $right): int {
+                return strnatcasecmp(
+                    (string) $left['name'],
+                    (string) $right['name']
+                );
+            }
+        );
+
+        return $departmentScopeOptions;
+    }
+
+    private function formatScopeName(Scope $scope): string
+    {
+        $contactName = trim((string) $scope->getName());
+        $shortName = trim((string) $scope->getShortName());
+
+        if ($contactName !== '') {
+            return trim($contactName . ' ' . $shortName);
+        }
+
+        return sprintf(
+            '(Standort gelöscht, ehemals: %s-%s)',
+            (string) ($scope->provider['source'] ?? ''),
+            (string) $scope->getProviderId()
+        );
     }
 }

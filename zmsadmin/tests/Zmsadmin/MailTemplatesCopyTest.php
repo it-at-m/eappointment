@@ -367,7 +367,7 @@ class MailTemplatesCopyTest extends Base
         if ($withoutEligibleTargets) {
             /*
             * Die Department-Liste enthält bewusst nur den
-            * ausgewählten Quellstandort. Dieser wird in Twig
+            * ausgewählten Quellstandort. Dieser wird in PHP
             * aus der Zielauswahl ausgeschlossen.
             */
             $response['data']['useraccount']['departments'] = [
