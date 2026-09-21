@@ -363,7 +363,9 @@
 											{% set waitingTimeMinutes = waitingTime %}
 										{% endif %}
 										{% set waitingTimeMinutes = waitingTimeMinutes|round(0, 'floor') %}
-										{% if waitingTimeMinutes > 0 and isToday %}
+										{% if waitingTimeMinutes > 0 and isToday
+											and item.queue.status != "reserved"
+											and item.queue.status != "preconfirmed" %}
 											<p class="queue-table-amendment-time">+{{ waitingTimeMinutes }}&nbsp;Min.</p>
 										{% endif %}
 									</td>
