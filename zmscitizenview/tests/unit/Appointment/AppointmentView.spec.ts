@@ -512,6 +512,43 @@ describe("AppointmentView", () => {
         flow: "new",
       });
     });
+
+    it("tracks cancelled after a successful cancel", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.appointment = {
+        processId: "p1",
+        authKey: "k1",
+      } as any;
+      vi.mocked(ZMSAppointmentAPI.cancelAppointment).mockResolvedValueOnce({
+        processId: "p1",
+      } as any);
+
+      await wrapper.vm.nextCancelAppointment();
+      await nextTick();
+
+      expect(trackAppointmentEvent).toHaveBeenCalledWith({
+        object: "cancelled",
+        action: "success",
+        flow: "new",
+      });
+    });
+
+    it("tracks confirmed after a successful confirm", async () => {
+      const wrapper = createWrapper();
+      vi.mocked(ZMSAppointmentAPI.confirmAppointment).mockResolvedValueOnce({
+        processId: "p1",
+        status: "confirmed",
+      } as any);
+
+      await wrapper.vm.nextConfirmAppointment({ id: "p1", authKey: "k1" });
+      await nextTick();
+
+      expect(trackAppointmentEvent).toHaveBeenCalledWith({
+        object: "confirmed",
+        action: "success",
+        flow: "new",
+      });
+    });
   });
 
   describe("Additional Error Callouts", () => {
