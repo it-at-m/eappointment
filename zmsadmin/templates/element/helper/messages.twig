@@ -78,13 +78,7 @@
 
             {{ block('success_start') }}
                 Das E-Mail-Template wurde {{ timeString }} erfolgreich
-                auf {{ copiedScopeCount }}
-                {% if copiedScopeCount == 1 %}
-                    Standort
-                {% else %}
-                    Standorte
-                {% endif %}
-                übertragen.
+                auf {{ copiedScopeCount }} Dienstleister übertragen.
             {{ block('success_end') }}
         {% endblock %}
 

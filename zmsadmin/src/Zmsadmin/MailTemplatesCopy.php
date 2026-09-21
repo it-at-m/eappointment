@@ -332,7 +332,8 @@ class MailTemplatesCopy extends BaseController
         $copyResult = $this->copyTemplate(
             $sourceScopeId,
             $sourceTemplateId,
-            $normalizedTargetScopeIds
+            $normalizedTargetScopeIds,
+            $scopeList
         );
 
         if ($copyResult instanceof ResponseInterface) {
@@ -391,7 +392,8 @@ class MailTemplatesCopy extends BaseController
     private function copyTemplate(
         int $sourceScopeId,
         int $sourceTemplateId,
-        array $targetScopeIds
+        array $targetScopeIds,
+        ScopeList $scopeList
     ): ResponseInterface|string {
         try {
             $copiedTemplate = \App::$http
@@ -431,7 +433,10 @@ class MailTemplatesCopy extends BaseController
             [
                 'sourceScopeId' => $sourceScopeId,
                 'success' => 'mailtemplates_copied',
-                'copiedCount' => count($targetScopeIds),
+                'copiedCount' => $this->countUniqueProviders(
+                    $targetScopeIds,
+                    $scopeList
+                ),
             ]
         );
     }
@@ -482,5 +487,31 @@ class MailTemplatesCopy extends BaseController
         }
 
         return array_values(array_unique($scopeIds));
+    }
+
+    private function countUniqueProviders(
+        array $targetScopeIds,
+        ScopeList $scopeList
+    ): int {
+        $providerIds = [];
+
+        foreach ($targetScopeIds as $targetScopeId) {
+            $targetScope = $scopeList->getEntity(
+                $targetScopeId
+            );
+
+            if ($targetScope === null) {
+                continue;
+            }
+
+            $providerId = (string)
+                $targetScope->getProviderId();
+
+            if ($providerId !== '') {
+                $providerIds[] = $providerId;
+            }
+        }
+
+        return count(array_unique($providerIds));
     }
 }

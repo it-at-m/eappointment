@@ -71,7 +71,7 @@ class MailTemplatesCopyTest extends Base
 
         self::assertSame(1, substr_count($body, 'Kopieren erfolgreich'));
         self::assertStringContainsString(
-            'auf 1 Standort',
+            'auf 1 Dienstleister',
             preg_replace('/\s+/', ' ', $body) ?? $body
         );
     }
@@ -94,7 +94,7 @@ class MailTemplatesCopyTest extends Base
             (string) $response->getBody()
         ) ?? '';
 
-        self::assertStringContainsString('auf 2 Standorte', $body);
+        self::assertStringContainsString('auf 2 Dienstleister', $body);
     }
 
     public function testRedirectsAfterSuccessfulCopy(): void
@@ -130,6 +130,39 @@ class MailTemplatesCopyTest extends Base
             $location
         );
         self::assertStringContainsString('copiedCount=1', $location);
+    }
+
+    public function testCountsUniqueProvidersAfterCopy(): void
+    {
+        $apiCalls = $this->getApiCallsForPage(
+            false,
+            true,
+            '122210'
+        );
+        $apiCalls[] = [
+            'function' => 'readPostResult',
+            'url' => '/mailtemplates/copy/',
+            'response' => $this->mailtemplateResponse(),
+        ];
+        $this->setApiCalls($apiCalls);
+
+        $response = $this->render(
+            [],
+            [
+                'sourceScopeId' => 380,
+                'sourceTemplateId' => 901,
+                'targetScopeIds' => [141, 1],
+                'copy' => '1',
+            ],
+            [],
+            'POST'
+        );
+
+        self::assertSame(302, $response->getStatusCode());
+        self::assertStringContainsString(
+            'copiedCount=1',
+            $response->getHeaderLine('Location')
+        );
     }
 
     public function testShowsBackendErrorWhenCopyFails(): void
