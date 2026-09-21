@@ -1,10 +1,10 @@
 {
   "branch": "fix-zmskvr-353-rebooking-no-activation",
   "branchSlug": "fix-zmskvr-353-rebooking-no-activation",
-  "runId": "35586140217",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35586140217",
-  "runStartedAt": "2026-09-21T09:57:40Z",
-  "publishedAt": "2026-09-21T10:30:02.582Z",
+  "runId": "35588898698",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35588898698",
+  "runStartedAt": "2026-09-21T10:28:05Z",
+  "publishedAt": "2026-09-21T10:38:45.321Z",
   "features": {
     "feature-rest-zmscitizenapi-dldb-special-cases-zmskvr-1046-booking-ruppertstrasse-shared-booking-ausbildung-citizenapi": {
       "status": "passed",
@@ -133,20 +133,20 @@
       }
     },
     "feature-ui-zmscitizenview-booking-zmskvr-353-rebooking-no-activation": {
-      "status": "failed",
-      "shard": "zmscitizenview",
+      "status": "passed",
+      "shard": "custom",
       "browser": "chrome",
       "rel": "ui/zmscitizenview/booking/zmskvr-353_rebooking_no_activation.feature",
-      "runId": "35586140217",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35586140217",
-      "runStartedAt": "2026-09-21T09:57:40Z",
+      "runId": "35588898698",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35588898698",
+      "runStartedAt": "2026-09-21T10:28:05Z",
       "browsers": {
         "chrome": {
-          "status": "failed",
-          "shard": "zmscitizenview",
-          "runId": "35586140217",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35586140217",
-          "runStartedAt": "2026-09-21T09:57:40Z"
+          "status": "passed",
+          "shard": "custom",
+          "runId": "35588898698",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35588898698",
+          "runStartedAt": "2026-09-21T10:28:05Z"
         }
       }
     },
