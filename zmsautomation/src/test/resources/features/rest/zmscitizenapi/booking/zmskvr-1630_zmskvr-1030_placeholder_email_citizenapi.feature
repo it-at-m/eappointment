@@ -1,4 +1,4 @@
-@rest @zmscitizenapi @citizen @ZMSKVR-1630 @ZMSKVR-1030 @pickupCalendar
+@rest @zmscitizenapi @booking @citizen @ZMSKVR-1630 @ZMSKVR-1030 @pickupCalendar
 Feature: ZMSKVR-1630 / ZMSKVR-1030 Placeholder email and reserved-only update — Citizen API
   As a citizen API client
   I want reserve to keep an undeliverable placeholder email, update only while reserved, and confirm without preconfirm only for a logged-in reserved process
