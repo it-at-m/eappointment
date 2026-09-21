@@ -13,6 +13,26 @@ podman exec -it zms-web bash -lc "./cli modules loop 'vendor/bin/phpcs --standar
 podman exec -it zms-web bash -lc "./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src'"
 ```
 
+## Frontend-ESLint (zmsadmin, zmsstatistic, zmscalldisplay, zmsticketprinter)
+
+Diese vier Module nutzen ESLint 10 (`npm run lint` → `eslint js/`). GitHub Actions führt dieselbe Prüfung aus. Lokal im Container `zms-web` ausführen.
+
+Alle vier (`./cli modules loop` begrenzt `npm` bereits auf diese Module):
+
+```bash
+podman exec -it zms-web bash -lc "./cli modules loop npm run lint"
+podman exec -it zms-web bash -lc "./cli modules loop npm run fix"
+```
+
+Ein Modul:
+
+```bash
+podman exec -it zms-web bash -lc "cd zmsadmin && npm run lint"
+podman exec -it zms-web bash -lc "cd zmsstatistic && npm run lint"
+podman exec -it zms-web bash -lc "cd zmscalldisplay && npm run lint"
+podman exec -it zms-web bash -lc "cd zmsticketprinter && npm run lint"
+```
+
 ## JS-Formatierung von zmscitizenview
 
 Wir nutzen `prettier-codeformat` zum Prüfen und Formatieren des Codestils in zmscitizenview. Die format-Funktion behebt Codestil-/Lint-Probleme:
