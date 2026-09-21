@@ -15,7 +15,7 @@ podman exec -it zms-web bash -lc "./cli modules loop 'vendor/bin/phpcbf --standa
 
 ## Frontend ESLint (zmsadmin, zmsstatistic, zmscalldisplay, zmsticketprinter)
 
-These four modules use ESLint 10 (`npm run lint` → `eslint js/`). GitHub Actions runs the same check. Run it locally inside the `zms-web` container.
+These four modules use ESLint 10 (`npm run lint` → `eslint js/`). GitHub Actions runs the same check. The commit-msg hook runs it **before PHP** when those modules’ JS is staged. Run it locally inside the `zms-web` container.
 
 All four (`./cli modules loop` already limits `npm` to these modules):
 
