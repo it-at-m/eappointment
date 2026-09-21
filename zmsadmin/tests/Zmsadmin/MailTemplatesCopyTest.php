@@ -48,6 +48,10 @@ class MailTemplatesCopyTest extends Base
             'Eine bereits vorhandene Anpassung desselben',
             $body
         );
+        self::assertStringContainsString(
+            'Weitere Standorte desselben Dienstleisters',
+            $body
+        );
         self::assertStringContainsString('Template kopieren', $body);
         self::assertSame(
             1,
@@ -130,6 +134,24 @@ class MailTemplatesCopyTest extends Base
             $location
         );
         self::assertStringContainsString('copiedCount=1', $location);
+    }
+
+    public function testDeduplicatesTargetScopesByProvider(): void
+    {
+        $this->setApiCalls(
+            $this->getApiCallsForPage(false, true, '122210')
+        );
+
+        $response = $this->render([], ['sourceScopeId' => 380]);
+        $body = (string) $response->getBody();
+
+        $hasScope141 = str_contains($body, 'value="141"');
+        $hasScope1 = str_contains($body, 'value="1"');
+
+        self::assertTrue(
+            $hasScope141 xor $hasScope1,
+            'Sibling locations of the same provider must appear once.'
+        );
     }
 
     public function testCountsUniqueProvidersAfterCopy(): void

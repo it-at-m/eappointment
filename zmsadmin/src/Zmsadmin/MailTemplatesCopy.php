@@ -538,18 +538,45 @@ class MailTemplatesCopy extends BaseController
             ->getDepartmentList()
             ->withMatchingScopes($scopeList);
 
+        $seenProviderIds = [];
         $targetScopeOptions = [];
 
         foreach ($departments as $department) {
-            $departmentScopeOptions =
-                $this->buildDepartmentTargetOptions(
-                    $department->scopes,
-                    $selectedSourceScope
-                );
+            $departmentScopeOptions = [];
+
+            foreach ($department->scopes as $scope) {
+                $providerId = (string) $scope->getProviderId();
+
+                if (
+                    !$this->isEligibleCopyTarget(
+                        $scope,
+                        $selectedSourceScope
+                    )
+                    || isset($seenProviderIds[$providerId])
+                ) {
+                    continue;
+                }
+
+                $seenProviderIds[$providerId] = true;
+                $departmentScopeOptions[] = [
+                    'value' => (int) $scope->getId(),
+                    'name' => $this->formatScopeName($scope),
+                ];
+            }
 
             if ($departmentScopeOptions === []) {
                 continue;
             }
+
+            usort(
+                $departmentScopeOptions,
+                static function (array $left, array $right): int {
+                    return strnatcasecmp(
+                        (string) $left['name'],
+                        (string) $right['name']
+                    );
+                }
+            );
 
             $targetScopeOptions[] = [
                 'name' => (string) $department->name,
@@ -560,46 +587,19 @@ class MailTemplatesCopy extends BaseController
         return $targetScopeOptions;
     }
 
-    /**
-     * @return array<int, array{value: int, name: string}>
-     */
-    private function buildDepartmentTargetOptions(
-        ScopeList $scopes,
+    private function isEligibleCopyTarget(
+        Scope $scope,
         Scope $selectedSourceScope
-    ): array {
-        $sourceScopeId = (int) $selectedSourceScope->getId();
-        $sourceProviderId = (string)
-            $selectedSourceScope->getProviderId();
-        $departmentScopeOptions = [];
-
-        foreach ($scopes as $scope) {
-            $scopeId = (int) $scope->getId();
-
-            if (
-                $scopeId === $sourceScopeId
-                || (string) $scope->getProviderId()
-                    === $sourceProviderId
-            ) {
-                continue;
-            }
-
-            $departmentScopeOptions[] = [
-                'value' => $scopeId,
-                'name' => $this->formatScopeName($scope),
-            ];
+    ): bool {
+        if (
+            (int) $scope->getId()
+            === (int) $selectedSourceScope->getId()
+        ) {
+            return false;
         }
 
-        usort(
-            $departmentScopeOptions,
-            static function (array $left, array $right): int {
-                return strnatcasecmp(
-                    (string) $left['name'],
-                    (string) $right['name']
-                );
-            }
-        );
-
-        return $departmentScopeOptions;
+        return (string) $scope->getProviderId()
+            !== (string) $selectedSourceScope->getProviderId();
     }
 
     private function formatScopeName(Scope $scope): string
