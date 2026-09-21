@@ -41,6 +41,25 @@ class AppointmentConfirmServiceTest extends MiddlewareTestCase
 
         $this->assertEquals(12345, $result->processId);
         $this->assertEquals('fb43', $result->authKey);
+        $this->assertNull($result->sourceProcessId);
+        $this->assertNull($result->sourceAuthKey);
+    }
+
+    public function testExtractClientDataWithSourceAppointment(): void
+    {
+        $body = [
+            'processId' => '12345',
+            'authKey' => 'fb43',
+            'sourceProcessId' => '100001',
+            'sourceAuthKey' => 'abcd'
+        ];
+
+        $result = $this->invokePrivateMethod('extractClientData', [$body]);
+
+        $this->assertEquals(12345, $result->processId);
+        $this->assertEquals('fb43', $result->authKey);
+        $this->assertEquals(100001, $result->sourceProcessId);
+        $this->assertEquals('abcd', $result->sourceAuthKey);
     }
 
     public function testExtractClientDataWithInvalidProcessId(): void
