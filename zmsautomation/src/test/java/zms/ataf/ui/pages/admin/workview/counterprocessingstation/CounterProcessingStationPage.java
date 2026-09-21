@@ -773,7 +773,7 @@ public class CounterProcessingStationPage extends AdminPage {
 
     public void clickOnPrintAppointmentNumberButton() {
         ScenarioLogManager.getLogger().info("Trying to click on \"print appointment number\"  button...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(text(),'Vorgangsnummer drucken')]", LocatorType.XPATH, false);
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(text(),'Wartenummer drucken')]", LocatorType.XPATH, false, CONTEXT);
     }
 
     public void checkAppointmentConfirmationPrint() {
