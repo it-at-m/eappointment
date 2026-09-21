@@ -65,7 +65,7 @@ services:
     restart: unless-stopped
 
   db:
-    image: mariadb:10.11
+    image: mariadb:13.0
     container_name: zms-db
     restart: unless-stopped
     environment:

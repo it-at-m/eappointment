@@ -18,7 +18,7 @@ jobs:
       image: "ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev@sha256:5743860e7e9bf5755d75e9f2cd6b0f8986a779a0ef02e8cffee2bfd21fdd85fc"
     services:
       mariadb:
-        image: mariadb:10.11@sha256:7f22313fc130a377a44999965bcb0a08dd5b21e8502824c1b864f792f9bc66ab
+        image: mariadb:13.0@sha256:d4fdec0510ad498e4f3127da30a99df3745bd6d5e611ae6ac5f76403d9284a8d
         env:
           MYSQL_ROOT_PASSWORD: zmsbackend
           MYSQL_DATABASE: zmsbo
