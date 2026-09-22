@@ -11,6 +11,6 @@ Funktionalität: Spontankunden lassen sich am Tresen ebenso wie Terminkunden in 
 		Wenn Sie einen Spontankunden für die Dienstleistung "<beliebig>" buchen.
 		Dann wird der Spontankunden in der Warteschlange angezeigt.
 		Wenn Sie einen Terminkunden mit ausgewählter Dienstleistung, Uhrzeit, name und gültige E-Mail-Adresse buchen.
-		Dann Es erscheint ein Pop-Up-Fenster "Termin erfolgreich eingetragen" und der Termin ist auch in der Warteschlange sichtbar.
+		Dann Es erscheint ein Pop-Up-Fenster "Termin wurde erfolgreich eingetragen" und der Termin ist auch in der Warteschlange sichtbar.
 		Wenn Sie einen Terminkunden mit ausgewählter Dienstleistung und Uhrzeit buchen.
 		Dann erscheinen zwei Fehlermeldungen die bei Name und E-Mail-Adresse rot hinterlegt sind.
