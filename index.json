@@ -1,17 +1,17 @@
 {
-  "publishedAt": "2026-09-22T01:46:34.591Z",
+  "publishedAt": "2026-09-22T07:55:11.423Z",
   "branches": [
     {
       "name": "next",
       "slug": "next",
-      "runId": "35648197789",
-      "runStartedAt": "2026-09-21T19:58:59Z"
+      "runId": "35692635952",
+      "runStartedAt": "2026-09-22T05:55:43Z"
     },
     {
       "name": "main",
       "slug": "main",
-      "runId": "35648197789",
-      "runStartedAt": "2026-09-21T19:58:59Z"
+      "runId": "35692635952",
+      "runStartedAt": "2026-09-22T05:55:43Z"
     },
     {
       "name": "bugfix-zmskvr-167-ticketprinter-missing-scope-ids",
