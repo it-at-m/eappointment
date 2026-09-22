@@ -60,9 +60,12 @@
                             <i class="fas fa-filter" aria-hidden="true"></i>
                         </button>
                         {% if exchangeCapacityHourly and exchangeCapacityChartHourly and exchangeCapacityChartSparseHourly %}
-                        <button type="button" class="button button--diamond report-board--chart-hourly" title="{% trans %}Stundenansicht anzeigen{% endtrans %}" aria-label="{% trans %}Stundenansicht anzeigen{% endtrans %}" aria-pressed="false">
-                            <i class="fas fa-calendar-week" aria-hidden="true"></i>
-                        </button>
+                        <label class="report-board--capacity-granularity button button--diamond" title="{% trans %}Ansicht{% endtrans %}">
+                            <select class="report-board--capacity-granularity-select" aria-label="{% trans %}Ansicht{% endtrans %}">
+                                <option value="day">{% trans %}Tagessumme{% endtrans %}</option>
+                                <option value="hour">{% trans %}Stundenansicht{% endtrans %}</option>
+                            </select>
+                        </label>
                         {% endif %}
                         <label class="report-board--capacity-channel button button--diamond" title="Kapazitätskanal">
                             <select class="report-board--capacity-channel-select" aria-label="Kapazitätskanal">
@@ -71,9 +74,12 @@
                                 <option value="intern_only">Nur intern</option>
                             </select>
                         </label>
-                        <button type="button" class="button button--diamond report-board--chart-minutes" title="{% trans %}Als Slotzeit in Minuten anzeigen{% endtrans %}" aria-label="{% trans %}Als Slotzeit in Minuten anzeigen{% endtrans %}" aria-pressed="false">
-                            <i class="fas fa-clock" aria-hidden="true"></i>
-                        </button>
+                        <label class="report-board--capacity-unit button button--diamond" title="{% trans %}Einheit{% endtrans %}">
+                            <select class="report-board--capacity-unit-select" aria-label="{% trans %}Einheit{% endtrans %}">
+                                <option value="slots">{% trans %}Zeitschlitze{% endtrans %}</option>
+                                <option value="minutes">{% trans %}Minuten{% endtrans %}</option>
+                            </select>
+                        </label>
                         <button type="button" class="button button--diamond report-board--refresh" title="{% trans %}Daten aktualisieren{% endtrans %}" aria-label="{% trans %}Daten aktualisieren{% endtrans %}">
                             <i class="fas fa-sync" aria-hidden="true"></i>
                         </button>
