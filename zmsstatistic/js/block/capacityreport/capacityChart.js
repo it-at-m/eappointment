@@ -10,6 +10,7 @@ import {
     getChannelCapacityMetric,
 } from './capacityMetrics';
 import {
+    formatCapacityTableDate,
     getChartDateRangeLabel,
     getChartDownloadFilename,
     syncCapacityTableDownloadHref,
@@ -35,6 +36,31 @@ export default class CapacityChart {
             return;
         }
 
+        const dailyPayload = this.readDailyChartPayload($chartist);
+        if (!dailyPayload) {
+            return;
+        }
+
+        $chartist.text('[Initializing chart...]');
+        this.readChartPeriodFromDom($chartist);
+        this.view.dailyChartDataSparse = dailyPayload.sparse;
+        this.view.dailyChartDataFull = dailyPayload.full;
+        this.loadHourlyChartData();
+
+        if (this.view.chartGranularity === 'hour' && !this.supportsHourlyGranularity()) {
+            this.view.chartGranularity = 'day';
+        }
+
+        this.applyGranularity();
+        this.syncModeButton();
+        this.syncSparseTimelineButton();
+        this.syncGranularityButton();
+        this.syncDownloadButton();
+        this.syncTableDownloadLink();
+        this.render();
+    }
+
+    readDailyChartPayload($chartist) {
         const sparseData = readJsonPayload(
             this.view.$main,
             'script.report-board--chart-data-sparse',
@@ -54,37 +80,44 @@ export default class CapacityChart {
             'chart'
         );
 
-        if (!sparseData && !fullData && !chartData) {
-            return;
+        if (sparseData && fullData) {
+            return { sparse: sparseData, full: fullData };
+        }
+        if (chartData) {
+            return { sparse: null, full: chartData };
+        }
+        if (!sparseData && !fullData) {
+            return null;
         }
 
-        $chartist.text('[Initializing chart...]');
+        $chartist.text('Diagrammdaten konnten nicht geladen werden.');
+        console.error('Capacity report: incomplete chart payload', {
+            sparseData: Boolean(sparseData),
+            fullData: Boolean(fullData),
+            chartData: Boolean(chartData),
+        });
+        return null;
+    }
+
+    readChartPeriodFromDom($chartist) {
         this.view.chartPeriod = $chartist.attr('data-chart-period') || '';
         this.view.chartDateFrom = $chartist.attr('data-chart-date-from') || '';
         this.view.chartDateTo = $chartist.attr('data-chart-date-to') || '';
+    }
 
-        if (sparseData && fullData) {
-            this.view.chartDataSparse = sparseData;
-            this.view.chartDataFull = fullData;
-        } else if (chartData) {
-            this.view.chartDataSparse = null;
-            this.view.chartDataFull = chartData;
-        } else {
-            $chartist.text('Diagrammdaten konnten nicht geladen werden.');
-            console.error('Capacity report: incomplete chart payload', {
-                sparseData: Boolean(sparseData),
-                fullData: Boolean(fullData),
-                chartData: Boolean(chartData),
-            });
-            return;
-        }
-
-        this.applyDataSelection();
-        this.syncModeButton();
-        this.syncSparseTimelineButton();
-        this.syncDownloadButton();
-        this.syncTableDownloadLink();
-        this.render();
+    loadHourlyChartData() {
+        this.view.hourlyChartDataSparse = readJsonPayload(
+            this.view.$main,
+            'script.report-board--chart-data-sparse-hourly',
+            'data-chartist-sparse-hourly',
+            'chart-sparse-hourly'
+        ) || null;
+        this.view.hourlyChartDataFull = readJsonPayload(
+            this.view.$main,
+            'script.report-board--chart-data-full-hourly',
+            'data-chartist-full-hourly',
+            'chart-full-hourly'
+        ) || null;
     }
 
     initChannelFromDom() {
@@ -163,6 +196,53 @@ export default class CapacityChart {
         return this.view.chartHideEmptySlots && this.supportsSparseChartTimeline();
     }
 
+    supportsHourlyGranularity() {
+        return Boolean(
+            this.view.hourlyChartDataSparse
+            && this.view.hourlyChartDataFull
+            && this.view.hourlyTableDataSparse
+            && this.view.hourlyTableDataFull
+        );
+    }
+
+    applyGranularity() {
+        const useHourly = this.view.chartGranularity === 'hour' && this.supportsHourlyGranularity();
+        this.view.chartGranularity = useHourly ? 'hour' : 'day';
+        this.view.tableIsHourly = useHourly;
+        this.view.chartPlotsHourly = useHourly;
+
+        this.view.chartDataSparse = useHourly
+            ? this.view.hourlyChartDataSparse
+            : this.view.dailyChartDataSparse;
+        this.view.chartDataFull = useHourly
+            ? this.view.hourlyChartDataFull
+            : this.view.dailyChartDataFull;
+
+        if (this.view.dailyTableDataSparse && this.view.dailyTableDataFull) {
+            this.view.tableDataSparse = useHourly
+                ? this.view.hourlyTableDataSparse
+                : this.view.dailyTableDataSparse;
+            this.view.tableDataFull = useHourly
+                ? this.view.hourlyTableDataFull
+                : this.view.dailyTableDataFull;
+        }
+
+        this.applyDataSelection();
+    }
+
+    toggleGranularity() {
+        if (!this.supportsHourlyGranularity()) {
+            return;
+        }
+        this.view.chartGranularity = this.view.chartGranularity === 'hour' ? 'day' : 'hour';
+        this.applyGranularity();
+        this.syncGranularityButton();
+        this.syncTableDownloadLink();
+        this.view.tableController.syncHeaders();
+        this.render();
+        this.view.tableController.render();
+    }
+
     applyDataSelection() {
         if (this.view.chartDataSparse && this.view.chartDataFull) {
             this.view.data = this.shouldHideEmptyChartSlots()
@@ -220,6 +300,29 @@ export default class CapacityChart {
         );
     }
 
+    syncGranularityButton() {
+        const $button = this.view.$main.find('.report-board--chart-hourly');
+        if (!$button.length) {
+            return;
+        }
+        if (!this.supportsHourlyGranularity()) {
+            $button.hide();
+            return;
+        }
+        $button.show();
+        const showHourly = this.view.chartGranularity === 'hour';
+        $button.attr('aria-pressed', showHourly ? 'true' : 'false');
+        $button.toggleClass('is-active', showHourly);
+        $button.attr(
+            'title',
+            showHourly ? 'Tagessumme anzeigen' : 'Stundenansicht anzeigen'
+        );
+        $button.attr(
+            'aria-label',
+            showHourly ? 'Tagessumme anzeigen' : 'Stundenansicht anzeigen'
+        );
+    }
+
     syncModeButton() {
         const $button = this.view.$main.find('.report-board--chart-minutes');
         if (!$button.length) {
@@ -248,7 +351,8 @@ export default class CapacityChart {
         syncCapacityTableDownloadHref(
             this.view.$main.find('.report-board--table-download').first(),
             this.view.chartValueMode,
-            this.view.chartChannelMode
+            this.view.chartChannelMode,
+            this.view.chartGranularity
         );
     }
 
@@ -305,6 +409,39 @@ export default class CapacityChart {
             this.view.chart.destroy();
             this.view.chart = null;
         }
+    }
+
+    getRawChartLabels() {
+        return getListByLabel(this.view.data, this.view.data.visualization.xlabel[0]);
+    }
+
+    getChartDisplayLabels(rawLabels) {
+        if (this.view.chartPlotsHourly) {
+            return rawLabels;
+        }
+
+        return rawLabels.map((label) => formatCapacityTableDate(label, false));
+    }
+
+    shouldCenterSingleDailyPoint(labels) {
+        return !this.view.chartPlotsHourly && labels.length === 1;
+    }
+
+    withCenteredSinglePoint(labels, datasets) {
+        if (!this.shouldCenterSingleDailyPoint(labels)) {
+            return { labels, datasets };
+        }
+
+        return {
+            labels: ['', ...labels, ''],
+            datasets: datasets.map((dataset) => ({
+                ...dataset,
+                data: [null, ...dataset.data, null],
+                spanGaps: false,
+                pointRadius: 5,
+                hoverRadius: 7,
+            })),
+        };
     }
 
     buildChartDatasets() {
@@ -461,6 +598,9 @@ export default class CapacityChart {
             target.pointBackgroundColor = source.pointBackgroundColor;
             target.pointBorderColor = source.pointBorderColor;
             target.fill = source.fill;
+            target.spanGaps = source.spanGaps ?? false;
+            target.pointRadius = source.pointRadius ?? 3;
+            target.hoverRadius = source.hoverRadius ?? 5;
 
             if (!Array.isArray(target.data)) {
                 target.data = source.data.slice();
@@ -479,8 +619,13 @@ export default class CapacityChart {
             return;
         }
 
-        const labels = getListByLabel(this.view.data, this.view.data.visualization.xlabel[0]);
-        const datasets = this.buildChartDatasets();
+        const rawLabels = this.getRawChartLabels();
+        const padded = this.withCenteredSinglePoint(
+            this.getChartDisplayLabels(rawLabels),
+            this.buildChartDatasets()
+        );
+        const labels = padded.labels;
+        const datasets = padded.datasets;
 
         if (!this.hasChartDataChanged(labels, datasets)) {
             return;
@@ -539,6 +684,10 @@ export default class CapacityChart {
     }
 
     shouldShowXTickLabel(label, index, labels) {
+        if (label === '') {
+            return false;
+        }
+
         const intervalHours = this.getChartLabelIntervalHours();
 
         if (this.usesSparseChartData() || intervalHours === null) {
@@ -562,7 +711,8 @@ export default class CapacityChart {
         const labelIntervalHours = this.getChartLabelIntervalHours();
         const useTickCallback = this.usesSparseChartData()
             || labelIntervalHours !== null
-            || labels.length > 31;
+            || labels.length > 31
+            || labels.some((label) => label === '');
 
         if (!useTickCallback) {
             return {
@@ -618,6 +768,7 @@ export default class CapacityChart {
             },
             scales: {
                 x: {
+                    offset: true,
                     ticks: this.getXAxisTickOptions(labels),
                 },
                 y: {
@@ -641,6 +792,9 @@ export default class CapacityChart {
                 },
                 tooltip: {
                     mode: 'index',
+                    filter(item) {
+                        return item.parsed.y !== null && item.parsed.y !== undefined;
+                    },
                 },
             },
         };
@@ -653,8 +807,13 @@ export default class CapacityChart {
 
         this.destroy();
 
-        const labels = getListByLabel(this.view.data, this.view.data.visualization.xlabel[0]);
-        const datasets = this.buildChartDatasets();
+        const rawLabels = this.getRawChartLabels();
+        const padded = this.withCenteredSinglePoint(
+            this.getChartDisplayLabels(rawLabels),
+            this.buildChartDatasets()
+        );
+        const labels = padded.labels;
+        const datasets = padded.datasets;
         const maxY = this.getMaxYValue(datasets);
         this.view.$.find('.chartist').html('<canvas></canvas>&nbsp;');
         this.view.$.find('.chartist').css({
