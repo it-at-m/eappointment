@@ -58,6 +58,18 @@ class View extends BaseView {
             ev.preventDefault();
             this.chartController.downloadPng();
         });
+        this.$main.on('click', '.report-board--table-download', (ev) => {
+            this.chartController.syncTableDownloadLink();
+            if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey || ev.button !== 0) {
+                return;
+            }
+            const href = ev.currentTarget.getAttribute('href');
+            if (!href) {
+                return;
+            }
+            ev.preventDefault();
+            window.location.assign(href);
+        });
         this.$main.on('click', '.report-board--chart-sparse', (ev) => {
             ev.preventDefault();
             this.chartController.toggleSparseTimeline();

@@ -94,7 +94,8 @@ export function syncCapacityTableDownloadHref(
     $link,
     chartValueMode,
     chartChannelMode = 'total',
-    chartGranularity = 'day'
+    chartGranularity = 'day',
+    chartHideEmptySlots = true
 ) {
     if (!$link || !$link.length) {
         return;
@@ -122,6 +123,12 @@ export function syncCapacityTableDownloadHref(
         url.searchParams.set('granularity', 'hour');
     } else {
         url.searchParams.delete('granularity');
+    }
+
+    if (chartHideEmptySlots) {
+        url.searchParams.delete('timeline');
+    } else {
+        url.searchParams.set('timeline', 'full');
     }
 
     $link.attr('href', `${url.pathname}${url.search}`);

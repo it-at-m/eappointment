@@ -138,6 +138,7 @@ export default class CapacityChart {
         this.view.$main.find('.report-board--capacity-channel-select').first().val(normalized);
         window.sessionStorage.setItem(CAPACITY_CHANNEL_STORAGE_KEY, normalized);
         this.syncChannelSelect();
+        this.syncTableDownloadLink();
         this.view.tableController.syncHeaders();
         this.render();
         this.view.tableController.render();
@@ -261,6 +262,7 @@ export default class CapacityChart {
         this.view.chartHideEmptySlots = !this.view.chartHideEmptySlots;
         this.applyDataSelection();
         this.syncSparseTimelineButton();
+        this.syncTableDownloadLink();
         this.render();
         this.view.tableController.render();
     }
@@ -352,7 +354,8 @@ export default class CapacityChart {
             this.view.$main.find('.report-board--table-download').first(),
             this.view.chartValueMode,
             this.view.chartChannelMode,
-            this.view.chartGranularity
+            this.view.chartGranularity,
+            this.view.chartHideEmptySlots
         );
     }
 

@@ -59,6 +59,7 @@ class ReportCapacityIndex extends BaseController
         $exchangeCapacityHourly = null;
         $exchangeCapacityChartHourly = null;
         $exchangeCapacityChartSparseHourly = null;
+        $displayExchanges = null;
 
         if ($fetchedCapacity instanceof Exchange) {
             $period = $args['period'] ?? null;
@@ -78,9 +79,14 @@ class ReportCapacityIndex extends BaseController
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
             $granularity = $validator->getParameter('granularity')->isString()->getValue();
-            $downloadExchange = $exchangeCapacityHourly !== null && $granularity === 'hour'
-                ? $exchangeCapacityHourly
-                : $exchangeCapacityDaily;
+            $timeline = $validator->getParameter('timeline')->isString()->getValue();
+            $downloadExchange = is_array($displayExchanges)
+                ? $reportCapacityService->selectDownloadExchange(
+                    $displayExchanges,
+                    $granularity,
+                    $timeline
+                )
+                : null;
 
             return $this->handleDownloadRequest(
                 $request,

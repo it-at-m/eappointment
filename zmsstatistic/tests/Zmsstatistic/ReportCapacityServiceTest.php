@@ -234,6 +234,48 @@ class ReportCapacityServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(1, $display['hourlyChartFull']['visualization']['labelIntervalHours']);
     }
 
+    public function testSelectDownloadExchangeFollowsGranularityAndTimeline(): void
+    {
+        $exchange = new Exchange();
+        $exchange->period = 'hour';
+        $exchange->data = [
+            ['141', '2026-06-01 08:00', 1, 2, 10, 20, 0, 1, 0, 10],
+            ['141', '2026-06-01 09:00', 3, 4, 30, 40, 1, 2, 10, 20],
+        ];
+        $range = ['from' => '2026-06-01', 'to' => '2026-06-02'];
+        $display = $this->service->buildCapacityDisplayExchanges($exchange, $range, null);
+
+        $dailySparse = $this->service->selectDownloadExchange($display, null, null);
+        $this->assertSame('day', $dailySparse->period);
+        $this->assertCount(1, $dailySparse->data);
+        $this->assertSame('2026-06-01', $dailySparse->data[0][1]);
+
+        $dailyFull = $this->service->selectDownloadExchange($display, 'day', 'full');
+        $this->assertSame('day', $dailyFull->period);
+        $this->assertCount(2, $dailyFull->data);
+        $this->assertSame('2026-06-02', $dailyFull->data[1][1]);
+        $this->assertSame(0, $dailyFull->data[1][3]);
+
+        $hourlySparse = $this->service->selectDownloadExchange($display, 'hour', null);
+        $this->assertSame('hour', $hourlySparse->period);
+        $this->assertCount(2, $hourlySparse->data);
+        $this->assertSame('2026-06-01 08:00', $hourlySparse->data[0][1]);
+
+        $hourlyFull = $this->service->selectDownloadExchange($display, 'hour', 'full');
+        $this->assertSame('hour', $hourlyFull->period);
+        $this->assertSame('2026-06-01 00:00', $hourlyFull->data[0][1]);
+        $this->assertGreaterThan(2, count($hourlyFull->data));
+
+        $hourlySheet = $this->service->buildDownloadExchange($hourlySparse);
+        $this->assertSame('Zeitpunkt', $hourlySheet->dictionary[0]['description']);
+        $this->assertSame('2026-06-01 08:00', $hourlySheet->data[0][0]);
+
+        $fullDaySheet = $this->service->buildDownloadExchange($dailyFull);
+        $this->assertSame('Datum', $fullDaySheet->dictionary[0]['description']);
+        $this->assertSame('02.06.2026', $fullDaySheet->data[1][0]);
+        $this->assertSame('0', $fullDaySheet->data[1][1]);
+    }
+
     public function testFormatScopeSlotTimeHintForSingleScope(): void
     {
         $hint = $this->service->formatScopeSlotTimeHint([
