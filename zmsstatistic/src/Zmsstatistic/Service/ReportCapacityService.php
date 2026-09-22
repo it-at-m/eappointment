@@ -302,15 +302,6 @@ class ReportCapacityService
 
     /**
      * Daily totals for the default table/chart, plus hourly payloads for the optional Stundenansicht.
-     *
-     * @return array{
-     *     dailyTable: Exchange,
-     *     dailyChartSparse: Exchange,
-     *     dailyChartFull: Exchange,
-     *     hourlyTable: Exchange|null,
-     *     hourlyChartSparse: Exchange|null,
-     *     hourlyChartFull: Exchange|null
-     * }
      */
     public function buildCapacityDisplayExchanges(
         Exchange $exchange,
