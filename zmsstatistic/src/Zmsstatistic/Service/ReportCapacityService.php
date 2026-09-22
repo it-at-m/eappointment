@@ -330,6 +330,36 @@ class ReportCapacityService
         ];
     }
 
+    /**
+     * Excel rows for the view on screen: daily or hourly, sparse API rows or the full timeline.
+     */
+    public function selectDownloadExchange(
+        array $displayExchanges,
+        ?string $granularity,
+        ?string $timeline
+    ): ?Exchange {
+        $useFullTimeline = $timeline === 'full';
+
+        if ($granularity === 'hour') {
+            $hourlyFull = $displayExchanges['hourlyChartFull'] ?? null;
+            $hourlySparse = $displayExchanges['hourlyTable'] ?? null;
+            $hourly = $useFullTimeline && $hourlyFull instanceof Exchange
+                ? $hourlyFull
+                : $hourlySparse;
+            if ($hourly instanceof Exchange) {
+                return $hourly;
+            }
+        }
+
+        $dailyFull = $displayExchanges['dailyChartFull'] ?? null;
+        $dailySparse = $displayExchanges['dailyTable'] ?? null;
+        $daily = $useFullTimeline && $dailyFull instanceof Exchange
+            ? $dailyFull
+            : $dailySparse;
+
+        return $daily instanceof Exchange ? $daily : null;
+    }
+
     public function withDailyAggregation(Exchange $exchange): Exchange
     {
         $daily = clone $exchange;
