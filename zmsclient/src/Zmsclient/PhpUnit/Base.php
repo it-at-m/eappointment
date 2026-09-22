@@ -72,6 +72,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
                         $options['url'],
                         Argument::that(function (mixed $value): bool {
                             return
+                                is_array($value) ||
                                 ($value instanceof \BO\Zmsentities\Schema\Entity) ||
                                 ($value instanceof \BO\Zmsentities\Collection\Base);
                         }),

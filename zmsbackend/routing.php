@@ -1215,6 +1215,12 @@
 )
         ->setName("MailTemplatesCreateCustomization");
 
+\App::$slim->post(
+    '/mailtemplates/copy/',
+    \BO\Zmsbackend\Mail\Api\MailTemplatesCopy::class
+)
+        ->setName('MailTemplatesCopy');
+
 \App::$slim->get(
     '/custom-mailtemplates/{providerId}/',
     \BO\Zmsbackend\Mail\Api\MailCustomTemplatesGet::class
