@@ -35,14 +35,8 @@
     min-width:       10em;
 }
 
-.board__actions .report-board--auto-refresh,
-.board__actions .report-board--capacity-channel,
-.board__actions .report-board--capacity-granularity,
-.board__actions .report-board--capacity-unit {
-    .report-board--auto-refresh-interval,
-    .report-board--capacity-channel-select,
-    .report-board--capacity-granularity-select,
-    .report-board--capacity-unit-select {
+.board__actions .report-board--auto-refresh {
+    .report-board--auto-refresh-interval {
         margin:      0;
         padding:     0;
         border:      0;
@@ -54,5 +48,42 @@
         cursor:      pointer;
         appearance:  none;
         text-align:  center;
+    }
+}
+
+.board__actions .report-board--capacity-channel,
+.board__actions .report-board--capacity-granularity,
+.board__actions .report-board--capacity-unit {
+    position: relative;
+
+    .report-board--capacity-channel-value,
+    .report-board--capacity-granularity-value,
+    .report-board--capacity-unit-value {
+        font-weight:    700;
+        line-height:    1.2;
+        pointer-events: none;
+        user-select:    none;
+    }
+
+    .report-board--capacity-channel-select,
+    .report-board--capacity-granularity-select,
+    .report-board--capacity-unit-select {
+        position:                absolute;
+        inset:                   0;
+        z-index:                 1;
+        width:                   100%;
+        height:                  100%;
+        margin:                  0;
+        padding:                 0;
+        border:                  0;
+        opacity:                 0;
+        font-size:               0;
+        color:                   transparent;
+        -webkit-text-fill-color: transparent;
+        background:              transparent;
+        cursor:                  pointer;
+        -webkit-appearance:      none;
+        -moz-appearance:         none;
+        appearance:              none;
     }
 }
