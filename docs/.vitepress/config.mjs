@@ -64,6 +64,23 @@ const listFeatureFilesInDir = (dir) => {
     .sort((a, b) => a.localeCompare(b));
 };
 
+const listFeatureFilesRecursive = (dir) => {
+  const files = listFeatureFilesInDir(dir);
+  for (const name of listSubdirs(dir)) {
+    files.push(...listFeatureFilesRecursive(path.join(dir, name)));
+  }
+  return files.sort((a, b) => a.localeCompare(b));
+};
+
+const emptyCategoryNode = () => ({ files: [], submodules: new Map() });
+
+const categoryNodeCount = (node) =>
+  node.files.length +
+  [...node.submodules.values()].reduce((sum, items) => sum + items.length, 0);
+
+const countedHeading = (level, count, title) =>
+  `${"#".repeat(level)} (${count}) ${title}`;
+
 const cucumberStrings = {
   en: {
     title: "Current Cucumber Tests in zmsautomation",
@@ -81,6 +98,7 @@ const cucumberStrings = {
       "Click a feature to view its Gherkin. Only one feature is expanded at a time. Pick a branch below the search to load that branch's `.feature` files, status, and run command. The play icon copies a command to start the test on the selected branch and opens [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). The title status is green only when every browser in the latest published run passed, and red if any browser failed. Expand a feature to see each browser result.",
     noFiles: "No `.feature` files found.",
     uncategorized: "Uncategorized",
+    total: "All",
     emptyCategory:
       "> No scenarios yet for this category — add the first `.feature` file here.",
   },
@@ -100,6 +118,7 @@ const cucumberStrings = {
       "Klicke auf ein Feature, um das Gherkin anzuzeigen. Es ist immer nur ein Feature aufgeklappt. Wähle unter der Suche einen Branch, um dessen `.feature`-Dateien, Status und Startbefehl zu laden. Das Play-Symbol kopiert einen Befehl, um den Test auf dem gewählten Branch zu starten, und öffnet [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). Das Status-Icon in der Titelzeile ist grün nur wenn jeder Browser im letzten veröffentlichten Lauf bestanden hat, und rot wenn ein Browser fehlgeschlagen ist. Im aufgeklappten Feature stehen die einzelnen Browser-Ergebnisse.",
     noFiles: "Keine `.feature`-Dateien gefunden.",
     uncategorized: "Unkategorisiert",
+    total: "Alle",
     emptyCategory:
       "> Noch keine Szenarien für diese Kategorie – lege hier die erste `.feature`-Datei an.",
   },
@@ -123,7 +142,7 @@ const collectCucumberFeatures = () => {
   const featureFiles = [];
   const navigation = [];
 
-  const registerFeature = (file, { testType, module, category }) => {
+  const registerFeature = (file, { testType, module, category, submodule }) => {
     featureFiles.push(file);
     const rel = toPosix(path.relative(FEATURES_ROOT, file));
     const raw = fs.readFileSync(file, "utf8");
@@ -147,8 +166,9 @@ const collectCucumberFeatures = () => {
       testType,
       module,
       category,
+      submodule: submodule || "",
     };
-    return { abs: file, rel, id, category };
+    return { abs: file, rel, id, category, submodule: submodule || "" };
   };
 
   for (const testType of listSubdirs(FEATURES_ROOT)) {
@@ -161,21 +181,53 @@ const collectCucumberFeatures = () => {
       modules.set(module, categories);
       for (const category of listSubdirs(moduleDir)) {
         const categoryDir = path.join(moduleDir, category);
-        const items = listFeatureFilesInDir(categoryDir).map((file) =>
-          registerFeature(file, { testType, module, category })
+        const node = emptyCategoryNode();
+        node.files = listFeatureFilesInDir(categoryDir).map((file) =>
+          registerFeature(file, { testType, module, category, submodule: "" })
         );
-        categories.set(category, items);
-        navigation.push({ testType, module, category, count: items.length });
+        for (const submodule of listSubdirs(categoryDir)) {
+          const submoduleDir = path.join(categoryDir, submodule);
+          const items = listFeatureFilesRecursive(submoduleDir).map((file) =>
+            registerFeature(file, { testType, module, category, submodule })
+          );
+          if (items.length) {
+            node.submodules.set(submodule, items);
+          }
+        }
+        categories.set(category, node);
+        navigation.push({
+          testType,
+          module,
+          category,
+          submodule: "",
+          count: categoryNodeCount(node),
+        });
+        for (const [submodule, items] of node.submodules) {
+          navigation.push({
+            testType,
+            module,
+            category,
+            submodule,
+            count: items.length,
+          });
+        }
       }
-      const rootItems = listFeatureFilesInDir(moduleDir).map((file) =>
-        registerFeature(file, { testType, module, category: "" })
+      const rootNode = emptyCategoryNode();
+      rootNode.files = listFeatureFilesInDir(moduleDir).map((file) =>
+        registerFeature(file, {
+          testType,
+          module,
+          category: "",
+          submodule: "",
+        })
       );
-      categories.set("", rootItems);
+      categories.set("", rootNode);
       navigation.push({
         testType,
         module,
         category: "",
-        count: rootItems.length,
+        submodule: "",
+        count: rootNode.files.length,
       });
     }
   }
@@ -190,7 +242,7 @@ const renderCucumberDocFor = (locale, catalog) => {
   const lines = [
     "---",
     "outline:",
-    "  level: [2, 4]",
+    "  level: [2, 5]",
     "---",
     "",
     `# ${t.title}`,
@@ -220,6 +272,9 @@ const renderCucumberDocFor = (locale, catalog) => {
     "",
   ];
 
+  lines.push(countedHeading(2, featureFiles.length, t.total));
+  lines.push("");
+
   if (!featureFiles.length) {
     lines.push(t.noFiles);
   } else {
@@ -229,10 +284,13 @@ const renderCucumberDocFor = (locale, catalog) => {
       const testTypeCount = [...modules.values()].reduce(
         (sum, categories) =>
           sum +
-          [...categories.values()].reduce((n, items) => n + items.length, 0),
+          [...categories.values()].reduce(
+            (n, node) => n + categoryNodeCount(node),
+            0
+          ),
         0
       );
-      lines.push(`## ${testType.toUpperCase()} (${testTypeCount})`);
+      lines.push(countedHeading(2, testTypeCount, testType.toUpperCase()));
       lines.push("");
       for (const [module, categories] of sortModuleEntries(modules)) {
         const moduleTitle =
@@ -240,14 +298,14 @@ const renderCucumberDocFor = (locale, catalog) => {
             ? `${module} ${t.deprecatedSuffix}`
             : module;
         const moduleCount = [...categories.values()].reduce(
-          (sum, items) => sum + items.length,
+          (sum, node) => sum + categoryNodeCount(node),
           0
         );
         lines.push(
           `<CucumberFeatureGroup test-type="${testType}" module="${module}">`
         );
         lines.push("");
-        lines.push(`### ${moduleTitle} (${moduleCount})`);
+        lines.push(countedHeading(3, moduleCount, moduleTitle));
         lines.push("");
         if (testType === "ui" && module === "buergeransicht") {
           lines.push(t.deprecated);
@@ -267,28 +325,41 @@ const renderCucumberDocFor = (locale, catalog) => {
           lines.push("</CucumberFeatureRow>");
           lines.push("");
         };
-        const uncategorized = categories.get("") ?? [];
+        const uncategorized = categories.get("") ?? emptyCategoryNode();
         const sortedCategories = [...categories.entries()].sort(([a], [b]) =>
           a.localeCompare(b)
         );
-        for (const [category, items] of sortedCategories) {
+        for (const [category, node] of sortedCategories) {
           if (!category) {
             continue;
           }
-          lines.push(`#### ${category} (${items.length})`);
+          const count = categoryNodeCount(node);
+          lines.push(countedHeading(4, count, category));
           lines.push("");
-          if (!items.length) {
+          if (!count) {
             lines.push(t.emptyCategory);
             lines.push("");
           }
-          for (const item of items) {
+          for (const item of node.files) {
             renderFeatureRow(item);
           }
+          const sortedSubmodules = [...node.submodules.entries()].sort(
+            ([a], [b]) => a.localeCompare(b)
+          );
+          for (const [submodule, items] of sortedSubmodules) {
+            lines.push(countedHeading(5, items.length, submodule));
+            lines.push("");
+            for (const item of items) {
+              renderFeatureRow(item);
+            }
+          }
         }
-        if (uncategorized.length) {
-          lines.push(`#### ${t.uncategorized} (${uncategorized.length})`);
+        if (uncategorized.files.length) {
+          lines.push(
+            countedHeading(4, uncategorized.files.length, t.uncategorized)
+          );
           lines.push("");
-          for (const item of uncategorized) {
+          for (const item of uncategorized.files) {
             renderFeatureRow(item);
           }
         }
@@ -912,7 +983,7 @@ export default {
         ...sharedThemeConfig,
         nav: buildNav("/de", "de"),
         sidebar: buildSidebar("/de", "de"),
-        outline: { label: "Auf dieser Seite", level: [2, 4] },
+        outline: { label: "Auf dieser Seite", level: [2, 5] },
         darkModeSwitchLabel: "Darstellung",
         langMenuLabel: "Sprache wechseln",
         returnToTopLabel: "Zurück nach oben",
