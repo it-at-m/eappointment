@@ -24,6 +24,7 @@
         :t="t"
       />
     </div>
+    <build-info-badge />
   </main>
 </template>
 
@@ -34,6 +35,7 @@ import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import AppointmentSliderView from "@/components/AppointmentOverview/AppointmentSliderView.vue";
+import BuildInfoBadge from "@/components/Common/BuildInfoBadge.vue";
 import { useGlobalState } from "./utils/useGlobalState";
 
 const props = defineProps({
@@ -86,6 +88,8 @@ onMounted(() => {
 @import "@muenchen/muc-patternlab-vue/style.css";
 
 :host {
+  display: block;
+  position: relative;
   font-family:
     Open Sans,
     sans-serif;

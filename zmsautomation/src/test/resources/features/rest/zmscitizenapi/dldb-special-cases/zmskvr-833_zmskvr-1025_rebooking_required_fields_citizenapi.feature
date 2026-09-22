@@ -1,4 +1,4 @@
-@rest @zmscitizenapi @ZMSKVR-833 @ZMSKVR-1025
+@rest @zmscitizenapi @dldb-special-cases @citizen @ZMSKVR-833 @ZMSKVR-1025
 Feature: ZMSKVR-833 / ZMSKVR-1025 Rebooking onto a Bürgerbüro that requires custom text — Citizen API
   As a citizen API client
   I want rebooking from Ausbildung (optional remarks) onto Haupt (required remarks) to copy stored contact and reject changes to filled fields

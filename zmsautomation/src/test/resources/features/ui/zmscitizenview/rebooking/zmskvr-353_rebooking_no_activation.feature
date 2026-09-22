@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @booking @citizen @ZMSKVR-353 @executeLocally @jumpin @pickupCalendar
+@web @zmscitizenview @rebooking @citizen @ZMSKVR-353 @ZMSKVR-951 @executeLocally @jumpin @pickupCalendar
 Feature: CitizenView: guest rebooking confirms without a second activation
   As a citizen who already activated an appointment
   I want rebooking to confirm the new slot immediately
