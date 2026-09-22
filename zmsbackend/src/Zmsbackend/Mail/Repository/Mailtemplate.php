@@ -18,13 +18,30 @@ class Mailtemplate extends \BO\Zmsbackend\Query\Base
                 value
             FROM mailtemplate
             WHERE name = ?
-            ';
+    ';
 
     const string QUERY_REPLACE_PROPERTY =
         'REPLACE INTO mailtemplate
             SET name  = :property, 
                 value = :value
-            ';
+    ';
+
+    const string QUERY_UPSERT_CUSTOMIZATION = '
+        INSERT INTO mailtemplate (
+            name,
+            value,
+            provider,
+            changeTimestamp
+        ) VALUES (
+            :name,
+            :value,
+            :provider,
+            CURRENT_TIMESTAMP
+        )
+        ON DUPLICATE KEY UPDATE
+            value = VALUES(value),
+            changeTimestamp = CURRENT_TIMESTAMP
+    ';
 
 
     protected $resolveLevel = 1;

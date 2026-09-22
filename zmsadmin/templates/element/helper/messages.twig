@@ -72,6 +72,15 @@
         {{ block('success_end') }}
     	{% endblock %}
 
+		{% block mailtemplates_copied %}
+            {% set successTitle = "Kopieren erfolgreich" %}
+            {% set copiedScopeCount = copiedCount|default(0) %}
+
+            {{ block('success_start') }}
+                Das E-Mail-Template wurde {{ timeString }} erfolgreich
+                auf {{ copiedScopeCount }} Dienstleister übertragen.
+            {{ block('success_end') }}
+        {% endblock %}
 
 		{% block cluster_deleted %}
     	{{ block('success_start') }}

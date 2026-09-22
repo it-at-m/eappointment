@@ -1,0 +1,250 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block headline %}
+    {{ headline1(pageTitle) }}
+{% endblock %}
+
+{% block content %}
+    {{ parent() }}
+
+    {% if formError %}
+        <div class="message message--error" role="alert">
+            <h2 class="message__heading title">
+                Kopieren nicht möglich
+            </h2>
+            <div class="message__body">
+                {{ formError }}
+            </div>
+        </div>
+    {% endif %}
+
+    {% embed "block/scaffholding/board.twig" with {
+        'class': 'board--spaceless config-view',
+        'messages': 'hide'
+    } %}
+        {% from 'element/helper/form.twig' import providername %}
+        
+        {% block board_title %}
+            Quellstandort auswählen
+        {% endblock %}
+
+        {% block board_body %}
+            <form
+                id="mailtemplates-copy-source-form"
+                method="get"
+                action="{{ urlGet('mailtemplatesCopy', {}, {}) }}"
+                class="form--base"
+            >
+                <div class="formgroup">
+                    <label
+                        class="formgroup__label"
+                        for="sourceScopeId"
+                    >
+                        Quellstandort
+                    </label>
+
+                    <select
+                        id="sourceScopeId"
+                        name="sourceScopeId"
+                        required
+                        aria-required="true"
+                        aria-describedby="sourceScopeIdHelp"
+                    >
+                        <option value="">
+                            Bitte auswählen
+                        </option>
+
+                        {% for scope in scopeList %}
+                            <option
+                                value="{{ scope.id }}"
+                                {% if scope.id == sourceScopeId %}
+                                    selected="selected"
+                                {% endif %}
+                            >
+                                {{ providername(scope) }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <p
+                        id="sourceScopeIdHelp"
+                        class="formgroup__help"
+                    >
+                        Nach der Auswahl eines Quellstandorts werden
+                        dessen angepasste E-Mail-Templates automatisch
+                        geladen.
+                    </p>
+                </div>
+
+                <noscript>
+                    <div class="form-actions">
+                        <button
+                            type="submit"
+                            class="button button-submit"
+                        >
+                            Angepasste Templates anzeigen
+                        </button>
+                    </div>
+                </noscript>
+            </form>
+
+            <script>
+                (function () {
+                    const sourceScopeSelect =
+                        document.getElementById('sourceScopeId');
+
+                    if (!sourceScopeSelect) {
+                        return;
+                    }
+
+                    sourceScopeSelect.addEventListener(
+                        'change',
+                        function () {
+                            if (sourceScopeSelect.value === '') {
+                                return;
+                            }
+
+                            sourceScopeSelect.form.requestSubmit();
+                        }
+                    );
+                }());
+            </script>
+        {% endblock %}
+    {% endembed %}
+
+    {% if selectedSourceScope %}
+        {% embed "block/scaffholding/board.twig" with {
+            'class': 'board--spaceless config-view',
+            'messages': 'hide'
+        } %}
+            {% block board_title %}
+                Template und Zielstandorte auswählen
+            {% endblock %}
+
+            {% block board_body %}
+                {% if customTemplates|length > 0 %}
+                    {% if targetScopeOptions|length == 0 %}
+                        <div
+                            class="message message--info"
+                            role="status"
+                        >
+                            <h2 class="message__heading title">
+                                Keine Zielstandorte verfügbar
+                            </h2>
+
+                            <div class="message__body">
+                                Für den ausgewählten Quellstandort stehen keine
+                                geeigneten Zielstandorte zur Verfügung. Der
+                                Quellstandort kann nicht als Ziel ausgewählt werden.
+                            </div>
+                        </div>
+
+                        {% include 'block/mail/mailtemplateCopyActions.twig' with {
+                            'scopeId': selectedSourceScope.id,
+                            'showCopyButton': false
+                        } only %}
+                    {% else %}
+                        <form
+                            method="post"
+                            action="{{ urlGet(
+                                'mailtemplatesCopy',
+                                {},
+                                {}
+                            ) }}"
+                            class="form--base"
+                        >
+                            <input
+                                type="hidden"
+                                name="sourceScopeId"
+                                value="{{ selectedSourceScope.id }}"
+                            >
+
+                            <div class="formgroup">
+                                <label
+                                    class="formgroup__label"
+                                    for="sourceTemplateId"
+                                >
+                                    Angepasstes E-Mail-Template
+                                </label>
+
+                                <select
+                                    id="sourceTemplateId"
+                                    name="sourceTemplateId"
+                                    required
+                                >
+                                    <option value="">
+                                        Bitte auswählen
+                                    </option>
+
+                                    {% for template in customTemplates %}
+                                        <option
+                                            value="{{ template.id }}"
+                                            {% if
+                                                template.id
+                                                == selectedSourceTemplateId
+                                            %}
+                                                selected="selected"
+                                            {% endif %}
+                                        >
+                                            {{ template.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            {% set targetScopeDescription %}
+                                Wählen Sie mindestens einen Zielstandort aus.<br>
+                                Halten Sie die <strong>Strg-Taste</strong> gedrückt, um einzelne
+                                Standorte auszuwählen oder abzuwählen. Mit der
+                                <strong>Shift-Taste</strong> können Sie einen zusammenhängenden
+                                Bereich auswählen.<br>
+                                Das E-Mail-Template wird dem Dienstleister zugeordnet.
+                                Weitere Standorte desselben Dienstleisters erhalten dieselbe
+                                Anpassung, auch wenn sie nicht einzeln ausgewählt wurden.<br>
+                                Eine bereits vorhandene Anpassung desselben
+                                Templates wird überschrieben.
+                            {% endset %}
+
+                            {% include 'block/scope/multiselect.twig' with {
+                                'scopeSelectId': 'targetScopeIds',
+                                'scopeSelectName': 'targetScopeIds[]',
+                                'scopeSelectLabel': 'Zielstandorte',
+                                'scopeSelectToggleId':
+                                    'select-all-target-scopes',
+                                'scopeSelectHelpId':
+                                    'targetScopeIdsHelp',
+                                'scopeSelectDescription':
+                                    targetScopeDescription,
+                                'scopeSelectOptions':
+                                    targetScopeOptions,
+                                'scopeSelectSelectedValues':
+                                    selectedTargetScopeIds|default([]),
+                                'scopeSelectErrors': [],
+                                'scopeSelectRequired': true,
+                                'scopeSelectSize': 28,
+                                'scopeSelectClass':
+                                    'mailtemplates-copy-location-selector'
+                            } only %}
+
+                            {% include 'block/mail/mailtemplateCopyActions.twig' with {
+                                'scopeId': selectedSourceScope.id,
+                                'showCopyButton': true
+                            } only %}
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <p>
+                        Für den ausgewählten Standort sind keine
+                        angepassten E-Mail-Templates vorhanden.
+                    </p>
+
+                    {% include 'block/mail/mailtemplateCopyActions.twig' with {
+                        'scopeId': selectedSourceScope.id,
+                        'showCopyButton': false
+                    } only %}
+                {% endif %}
+            {% endblock %}
+        {% endembed %}
+    {% endif %}
+{% endblock %}
