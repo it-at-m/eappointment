@@ -169,6 +169,71 @@ class ReportCapacityServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(0, $full->data[0][3]);
     }
 
+    public function testWithDailyAggregationSumsHourlyRowsAndSetsDayPeriod(): void
+    {
+        $exchange = new Exchange();
+        $exchange->period = 'hour';
+        $exchange->data = [
+            ['141', '2016-04-01 08:00', 5, 10, 50, 100, 3, 6, 30, 60],
+            ['141', '2016-04-01 09:00', 8, 12, 80, 120, 5, 7, 50, 70],
+        ];
+
+        $daily = $this->service->withDailyAggregation($exchange);
+
+        $this->assertSame('hour', $exchange->period);
+        $this->assertCount(2, $exchange->data);
+        $this->assertSame('day', $daily->period);
+        $this->assertCount(1, $daily->data);
+        $this->assertSame('2016-04-01', $daily->data[0][1]);
+        $this->assertSame(13, $daily->data[0][2]);
+        $this->assertSame(22, $daily->data[0][3]);
+        $this->assertSame(130, $daily->data[0][4]);
+        $this->assertSame(220, $daily->data[0][5]);
+    }
+
+    public function testShortRangeDailyDisplayDoesNotFillHourlyTimeline(): void
+    {
+        $exchange = new Exchange();
+        $exchange->period = 'hour';
+        $exchange->data = [
+            ['141', '2026-06-01 08:00', 1, 2, 10, 20, 0, 1, 0, 10],
+            ['141', '2026-06-01 09:00', 3, 4, 30, 40, 1, 2, 10, 20],
+        ];
+        $range = ['from' => '2026-06-01', 'to' => '2026-06-01'];
+
+        $daily = $this->service->withDailyAggregation($exchange);
+        $chart = $this->service->buildChartExchange($daily, $range, null);
+        $hourlyChart = $this->service->buildChartExchange($exchange, $range, null);
+
+        $this->assertCount(1, $chart->data);
+        $this->assertSame('2026-06-01', $chart->data[0][1]);
+        $this->assertSame(4, $chart->data[0][2]);
+        $this->assertSame(6, $chart->data[0][3]);
+        $this->assertNull($chart['visualization']['labelIntervalHours']);
+        $this->assertGreaterThan(1, count($hourlyChart->data));
+        $this->assertSame(1, $hourlyChart['visualization']['labelIntervalHours']);
+    }
+
+    public function testBuildCapacityDisplayExchangesDefaultsToDailyAndKeepsHourlyPayload(): void
+    {
+        $exchange = new Exchange();
+        $exchange->period = 'hour';
+        $exchange->data = [
+            ['141', '2026-06-01 08:00', 1, 2, 10, 20, 0, 1, 0, 10],
+            ['141', '2026-06-01 09:00', 3, 4, 30, 40, 1, 2, 10, 20],
+        ];
+        $range = ['from' => '2026-06-01', 'to' => '2026-06-01'];
+
+        $display = $this->service->buildCapacityDisplayExchanges($exchange, $range, null);
+
+        $this->assertSame('day', $display['dailyTable']->period);
+        $this->assertSame('2026-06-01', $display['dailyTable']->data[0][1]);
+        $this->assertSame('hour', $display['hourlyTable']->period);
+        $this->assertCount(2, $display['hourlyTable']->data);
+        $this->assertNull($display['dailyChartFull']['visualization']['labelIntervalHours']);
+        $this->assertSame(1, $display['hourlyChartFull']['visualization']['labelIntervalHours']);
+    }
+
     public function testFormatScopeSlotTimeHintForSingleScope(): void
     {
         $hint = $this->service->formatScopeSlotTimeHint([

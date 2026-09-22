@@ -134,9 +134,10 @@ class ReportCapacityScopeTest extends Base
         $this->assertStringNotContainsString('15.03.2016', (string) $response->getBody());
         $this->assertStringContainsString('Kapazität laut Öffnungszeiten – Auswertung für Bürgeramt Heerstraße im Zeitraum April 2016', (string) $response->getBody());
         $this->assertStringContainsString('Zeitschlitzdauer laut Öffnungszeit: 12 Min.', (string) $response->getBody());
-        $this->assertStringContainsString('Summe ·', (string) $response->getBody());
+        $this->assertStringContainsString('Summe · April 2016', (string) $response->getBody());
         $this->assertStringContainsString('report-board--capacity-summary', (string) $response->getBody());
         $this->assertStringContainsString('50 %', (string) $response->getBody());
+        $this->assertStringNotContainsString('report-board--chart-hourly', (string) $response->getBody());
         $this->assertStringContainsString('report-board--chart-data-sparse', (string) $response->getBody());
         $this->assertStringContainsString('report-board--chart-data-full', (string) $response->getBody());
         $this->assertStringContainsString('report-board--chart-minutes', (string) $response->getBody());
@@ -150,6 +151,67 @@ class ReportCapacityScopeTest extends Base
         $this->assertStringContainsString('report-board--table-download', (string) $response->getBody());
         $this->assertStringContainsString('type=xlsx', (string) $response->getBody());
         $this->assertStringContainsString('ylabelMinutes', (string) $response->getBody());
+    }
+
+    public function testYearPeriodShowsYearInSummaryLabel()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/74/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture("GET_owner_23.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/',
+                    'response' => $this->readFixture("GET_scope_list.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/141/',
+                    'response' => $this->readFixture("GET_slotscope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/141/_/',
+                    'response' => $this->readFixture("GET_slotscope_141_report.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/',
+                    'response' => $this->readFixture("GET_warehouse_slotscope.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/141/2016/',
+                    'parameters' => ['groupby' => 'day'],
+                    'response' => $this->readFixture("GET_slotscope_141_report.json")
+                ],
+            ]
+        );
+        $response = $this->render(['period' => '2016'], [], []);
+        $body = (string) $response->getBody();
+        $this->assertStringContainsString('Summe · 2016', $body);
+        $this->assertStringNotContainsString('Januar 1970', $body);
+        $this->assertStringNotContainsString('Summe · Januar', $body);
+        $this->assertStringContainsString('Kalenderjahr 2016', $body);
     }
 
     public function testWithMultipleScopes()
@@ -569,12 +631,18 @@ class ReportCapacityScopeTest extends Base
             []
         );
         $body = (string) $response->getBody();
-        $this->assertStringContainsString('Zeitpunkt', $body);
+        $this->assertStringContainsString('report-board--capacity-date', $body);
+        $this->assertStringContainsString('Datum', $body);
+        $this->assertStringContainsString('01.04.2016', $body);
         $this->assertStringContainsString('2016-04-01 08:00', $body);
         $this->assertStringContainsString('2016-04-01 09:00', $body);
+        $this->assertStringContainsString('report-board--chart-hourly', $body);
+        $this->assertStringContainsString('report-board--table-data-sparse-hourly', $body);
+        $this->assertStringContainsString('report-board--chart-data-sparse-hourly', $body);
         $this->assertStringContainsString('report-board--chart-data-sparse', $body);
         $this->assertStringContainsString('report-board--chart-data-full', $body);
-        $this->assertStringContainsString('50 %', $body);
+        $this->assertStringContainsString('59.1 %', $body);
+        $this->assertStringNotContainsString('>Zeitpunkt<', $body);
     }
 
     public function testWithoutCapacityReportPermission()
