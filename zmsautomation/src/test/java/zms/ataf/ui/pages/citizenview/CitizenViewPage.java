@@ -45,6 +45,10 @@ public class CitizenViewPage extends BasePage {
     private static final String CANCEL_RESCHEDULE_BUTTON = "Verschieben abbrechen";
     private static final String ACTIVATION_CALLOUT_HEADING = "Aktivieren Sie Ihren Termin.";
     private static final String CONFIRMATION_SUCCESS_HEADING = "Ihr Termin wurde gebucht.";
+    private static final String CONFIRMATION_SUCCESS_TEXT =
+            "Eine Bestätigung und weitere Informationen zu Ihrem Termin erhalten Sie per E-Mail. Wir freuen uns auf Ihren Besuch.";
+    private static final String VIEW_APPOINTMENT_BUTTON = "Termin ansehen";
+    private static final String BOOK_ANOTHER_APPOINTMENT_BUTTON = "Weiteren Termin vereinbaren";
 
     /** German invalid jump-in callout ({@code de-DE.json}). */
     public static final String DE_INVALID_JUMPIN_HEADER = "Diese Ansicht kann nicht geladen werden.";
@@ -1991,6 +1995,48 @@ public class CitizenViewPage extends BasePage {
     }
 
     /**
+     * ZMSKVR-955: logged-in Übersicht books via Termin reservieren and must land on success,
+     * not the activation callout. Communication is accepted in the previous Gherkin step so the
+     * ATAF 250ms AfterStep delay can enable the button, same as guest preconfirm.
+     */
+    public void confirmLoggedInBookingFromSummary() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: logged-in summary → confirm (Termin reservieren)");
+        waitForAndClickButtonContaining(DE_RESERVE, DEFAULT_EXPLICIT_WAIT_TIME);
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING),
+                "Logged-in confirmation success");
+        Assert.assertTrue(
+                shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING),
+                "Confirmation success callout (Ihr Termin wurde gebucht.) not visible after logged-in booking.");
+        Assert.assertFalse(
+                shadowDomContainsText(ACTIVATION_CALLOUT_HEADING),
+                "Logged-in booking must not show the activation callout (Aktivieren Sie Ihren Termin.).");
+        trySyncBookingProcessFromLocalStorageOnce();
+    }
+
+    /**
+     * ZMSKVR-965: green success callout after logged-in booking — heading, mail-confirmation
+     * body, Termin ansehen, Weiteren Termin vereinbaren.
+     */
+    public void assertLoggedInConfirmationSuccessDetailsVisible() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert logged-in confirmation success details");
+        assertConfirmationSuccessCalloutVisible();
+        Assert.assertTrue(
+                shadowDomContainsText(CONFIRMATION_SUCCESS_TEXT),
+                "Confirmation success callout must include the booking-confirmation mail text.");
+        Assert.assertTrue(
+                shadowDomContainsText(VIEW_APPOINTMENT_BUTTON),
+                "Logged-in confirmation must show primary action 'Termin ansehen'.");
+        Assert.assertTrue(
+                shadowDomContainsText(BOOK_ANOTHER_APPOINTMENT_BUTTON),
+                "Logged-in confirmation must show secondary action 'Weiteren Termin vereinbaren'.");
+    }
+
+    /**
      * ZMSKVR-353: guest rebooking summary books via Termin verschieben and must land on success,
      * not the activation callout. Communication is accepted in the previous Gherkin step so the
      * ATAF 250ms AfterStep delay can enable the button, same as first-booking preconfirm.
@@ -2017,7 +2063,7 @@ public class CitizenViewPage extends BasePage {
                 .info("zmscitizenview: asserting activation callout is hidden ({})", ACTIVATION_CALLOUT_HEADING);
         Assert.assertFalse(
                 shadowDomContainsText(ACTIVATION_CALLOUT_HEADING),
-                "Activation callout (Aktivieren Sie Ihren Termin.) must not be visible after guest rebooking confirm.");
+                "Activation callout (Aktivieren Sie Ihren Termin.) must not be visible.");
     }
 
     /** ZMSKVR-1500: MucBanner success after reopening an already-used confirm deep link. */
