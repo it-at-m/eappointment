@@ -156,6 +156,12 @@ export default class CapacityChart {
         }
 
         $label.show();
+        this.syncOverlaySelectLabel(
+            $label,
+            '.report-board--capacity-channel-select',
+            '.report-board--capacity-channel-value',
+            this.view.chartChannelMode
+        );
     }
 
     supportsMinutesChartMode() {
@@ -322,7 +328,12 @@ export default class CapacityChart {
             return;
         }
         $label.show();
-        $label.find('.report-board--capacity-granularity-select').val(this.view.chartGranularity);
+        this.syncOverlaySelectLabel(
+            $label,
+            '.report-board--capacity-granularity-select',
+            '.report-board--capacity-granularity-value',
+            this.view.chartGranularity
+        );
     }
 
     syncValueModeSelect() {
@@ -335,7 +346,18 @@ export default class CapacityChart {
             return;
         }
         $label.show();
-        $label.find('.report-board--capacity-unit-select').val(this.view.chartValueMode);
+        this.syncOverlaySelectLabel(
+            $label,
+            '.report-board--capacity-unit-select',
+            '.report-board--capacity-unit-value',
+            this.view.chartValueMode
+        );
+    }
+
+    syncOverlaySelectLabel($label, selectSelector, valueSelector, value) {
+        const $select = $label.find(selectSelector);
+        $select.val(value);
+        $label.find(valueSelector).text($select.find('option:selected').text());
     }
 
     syncTableDownloadLink() {
