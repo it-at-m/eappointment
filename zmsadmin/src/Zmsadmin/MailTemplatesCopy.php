@@ -6,6 +6,7 @@ use BO\Slim\Render;
 use BO\Zmsclient\Exception;
 use BO\Zmsentities\Collection\MailtemplateList;
 use BO\Zmsentities\Collection\ScopeList;
+use BO\Zmsentities\Exception\ScopeMissingProvider;
 use BO\Zmsentities\Exception\UserAccountMissingRights;
 use BO\Zmsentities\Scope;
 use BO\Zmsentities\Workstation;
@@ -154,11 +155,44 @@ class MailTemplatesCopy extends BaseController
          * Dieselbe Menge wie backend EntityAccess/hasScope():
          * zugewiesene Departments inklusive Cluster-Standorte.
          */
-        return $workstation
+        $scopeList = $workstation
             ->getUseraccount()
             ->getDepartmentList()
             ->getUniqueScopeList()
             ->sortByContactName();
+
+        return $this->withScopesThatHaveProvider($scopeList);
+    }
+
+    private function withScopesThatHaveProvider(
+        ScopeList $scopeList
+    ): ScopeList {
+        $authorizedScopeList = new ScopeList();
+
+        foreach ($scopeList as $scope) {
+            if ($this->readProviderId($scope) === '') {
+                continue;
+            }
+
+            $authorizedScopeList->addEntity($scope);
+        }
+
+        return $authorizedScopeList;
+    }
+
+    private function readProviderId(Scope $scope): string
+    {
+        try {
+            $providerId = (string) $scope->getProviderId();
+        } catch (ScopeMissingProvider) {
+            return '';
+        }
+
+        if ($providerId === '' || $providerId === '0') {
+            return '';
+        }
+
+        return $providerId;
     }
 
     private function resolveSourceScopeId(
@@ -236,8 +270,13 @@ class MailTemplatesCopy extends BaseController
             return $customTemplates;
         }
 
-        $providerId = (string)
-            $selectedSourceScope->getProviderId();
+        $providerId = $this->readProviderId(
+            $selectedSourceScope
+        );
+
+        if ($providerId === '') {
+            return $customTemplates;
+        }
 
         $loadedTemplates = \App::$http
             ->readGetResult(
@@ -379,9 +418,9 @@ class MailTemplatesCopy extends BaseController
             }
 
             $hasSameProvider =
-                (string) $targetScope->getProviderId()
+                $this->readProviderId($targetScope)
                 ===
-                (string) $selectedSourceScope->getProviderId();
+                $this->readProviderId($selectedSourceScope);
 
             if ($hasSameProvider) {
                 return
@@ -510,8 +549,7 @@ class MailTemplatesCopy extends BaseController
                 continue;
             }
 
-            $providerId = (string)
-                $targetScope->getProviderId();
+            $providerId = $this->readProviderId($targetScope);
 
             if ($providerId !== '') {
                 $providerIds[] = $providerId;
@@ -545,7 +583,7 @@ class MailTemplatesCopy extends BaseController
             $departmentScopeOptions = [];
 
             foreach ($department->scopes as $scope) {
-                $providerId = (string) $scope->getProviderId();
+                $providerId = $this->readProviderId($scope);
 
                 if (
                     !$this->isEligibleCopyTarget(
@@ -598,8 +636,16 @@ class MailTemplatesCopy extends BaseController
             return false;
         }
 
-        return (string) $scope->getProviderId()
-            !== (string) $selectedSourceScope->getProviderId();
+        $scopeProviderId = $this->readProviderId($scope);
+        $sourceProviderId = $this->readProviderId(
+            $selectedSourceScope
+        );
+
+        if ($scopeProviderId === '' || $sourceProviderId === '') {
+            return false;
+        }
+
+        return $scopeProviderId !== $sourceProviderId;
     }
 
     private function formatScopeName(Scope $scope): string
@@ -614,7 +660,7 @@ class MailTemplatesCopy extends BaseController
         return sprintf(
             '(Standort gelöscht, ehemals: %s-%s)',
             (string) ($scope->provider['source'] ?? ''),
-            (string) $scope->getProviderId()
+            $this->readProviderId($scope)
         );
     }
 }

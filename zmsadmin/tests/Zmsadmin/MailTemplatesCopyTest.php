@@ -338,6 +338,27 @@ class MailTemplatesCopyTest extends Base
         );
     }
 
+    public function testIgnoresScopesWithoutProvider(): void
+    {
+        $this->setApiCalls(
+            $this->getApiCallsForPage(false, true, '122217', true)
+        );
+
+        $response = $this->render([], ['sourceScopeId' => 141]);
+        $body = (string) $response->getBody();
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertStringContainsString(
+            'E-Mail-Template kopieren',
+            $body
+        );
+        self::assertStringNotContainsString(
+            'kein Dienstleister zugeordnet',
+            $body
+        );
+        self::assertStringNotContainsString('value="29"', $body);
+    }
+
     public function testRequiresMailtemplatePermission(): void
     {
         $this->setApiCalls([
@@ -359,7 +380,8 @@ class MailTemplatesCopyTest extends Base
     private function getApiCallsForPage(
         bool $withoutEligibleTargets = false,
         bool $hasCustomTemplates = true,
-        string $sourceProviderId = '122217'
+        string $sourceProviderId = '122217',
+        bool $withMissingProviderScope = false
     ): array {
         return [
             [
@@ -367,7 +389,8 @@ class MailTemplatesCopyTest extends Base
                 'url' => '/workstation/',
                 'parameters' => ['resolveReferences' => 3],
                 'response' => $this->workstationResponse(
-                    $withoutEligibleTargets
+                    $withoutEligibleTargets,
+                    $withMissingProviderScope
                 ),
             ],
             [
@@ -385,7 +408,8 @@ class MailTemplatesCopyTest extends Base
     }
 
     private function workstationResponse(
-        bool $withoutEligibleTargets
+        bool $withoutEligibleTargets,
+        bool $withMissingProviderScope = false
     ): string {
         $response = json_decode(
             $this->readFixture(
@@ -488,6 +512,19 @@ class MailTemplatesCopyTest extends Base
                         ??= $cluster['name'] ?? '';
                 }
             }
+        }
+
+        if ($withMissingProviderScope) {
+            array_unshift(
+                $response['data']['useraccount']
+                    ['departments'][0]['scopes'],
+                [
+                    'id' => 29,
+                    'contact' => [
+                        'name' => 'Ohne Dienstleister',
+                    ],
+                ]
+            );
         }
 
         return json_encode(
