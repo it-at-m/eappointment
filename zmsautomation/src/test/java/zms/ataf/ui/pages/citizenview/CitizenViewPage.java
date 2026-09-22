@@ -43,6 +43,12 @@ public class CitizenViewPage extends BasePage {
             "Sie haben Ihren Termin bereits aktiviert.";
     private static final String RESCHEDULE_APPOINTMENT_BUTTON = "Termin verschieben";
     private static final String CANCEL_RESCHEDULE_BUTTON = "Verschieben abbrechen";
+    private static final String ACTIVATION_CALLOUT_HEADING = "Aktivieren Sie Ihren Termin.";
+    private static final String CONFIRMATION_SUCCESS_HEADING = "Ihr Termin wurde gebucht.";
+    private static final String CONFIRMATION_SUCCESS_TEXT =
+            "Eine Bestätigung und weitere Informationen zu Ihrem Termin erhalten Sie per E-Mail. Wir freuen uns auf Ihren Besuch.";
+    private static final String VIEW_APPOINTMENT_BUTTON = "Termin ansehen";
+    private static final String BOOK_ANOTHER_APPOINTMENT_BUTTON = "Weiteren Termin vereinbaren";
 
     /** German invalid jump-in callout ({@code de-DE.json}). */
     public static final String DE_INVALID_JUMPIN_HEADER = "Diese Ansicht kann nicht geladen werden.";
@@ -741,7 +747,9 @@ public class CitizenViewPage extends BasePage {
                         + "var tag=(n.tagName||'').toUpperCase();var isBtn=(tag==='BUTTON'||tag==='A'||tag==='MUC-BUTTON');"
                         + "if(isBtn){var t=(n.textContent||'').trim();"
                         + "if(t.indexOf('Zurück zu Schritt')>=0)return false;"
-                        + "if(t.indexOf(label)>=0&&!n.disabled&&visible(n)){n.scrollIntoView({block:'center'});n.click();return true;}}"
+                        + "if(t.indexOf(label)>=0&&!n.disabled&&!(n.hasAttribute&&n.hasAttribute('disabled'))"
+                        + "&&n.getAttribute&&n.getAttribute('aria-disabled')!=='true'&&visible(n))"
+                        + "{n.scrollIntoView({block:'center'});n.click();return true;}}"
                         + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walkClick(c[i]))return true;return false;}"
                         + "return walkClick(document.body);";
         Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
@@ -1874,9 +1882,59 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: Kontakt — required Bemerkung filled for rebooking");
     }
 
+    /**
+     * Pattern Lab hides {@code #checkbox-electronic-communication} ({@code opacity: 0}); the visible
+     * target is {@code label[for=...]}. {@link #deepClick} can hit a non-visible match and leave
+     * {@code electronicCommunication} false, so Termin verschieben stays disabled.
+     */
     public void acceptCommunication() {
         CONTEXT.set();
-        deepClick("#checkbox-electronic-communication");
+        ScenarioLogManager.getLogger().info("zmscitizenview: accept electronic communication (visible label)");
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> clickVisibleElectronicCommunicationLabel());
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> isElectronicCommunicationChecked());
+        Assert.assertTrue(
+                isElectronicCommunicationChecked(),
+                "Electronic communication checkbox was not checked (visible label click).");
+    }
+
+    private boolean clickVisibleElectronicCommunicationLabel() {
+        String script =
+                "function vis(el){if(!el||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
+                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function walk(root){if(!root)return null;"
+                        + "var labels=root.querySelectorAll?root.querySelectorAll('label[for=\"checkbox-electronic-communication\"]'):[];"
+                        + "for(var i=0;i<labels.length;i++)if(vis(labels[i]))return labels[i];"
+                        + "var all=root.querySelectorAll?root.querySelectorAll('*'):[];"
+                        + "for(var j=0;j<all.length;j++)if(all[j].shadowRoot){var f=walk(all[j].shadowRoot);if(f)return f;}"
+                        + "return null;}"
+                        + "var lab=walk(document.body);if(!lab)return false;"
+                        + "var root=lab.getRootNode?lab.getRootNode():document;"
+                        + "var input=root.querySelector?root.querySelector('#checkbox-electronic-communication'):null;"
+                        + "if(input&&input.checked)return true;"
+                        + "lab.scrollIntoView({block:'center'});lab.click();return true;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
+    }
+
+    private boolean isElectronicCommunicationChecked() {
+        String script =
+                "function vis(el){if(!el||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
+                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function walk(root){if(!root)return null;"
+                        + "var labels=root.querySelectorAll?root.querySelectorAll('label[for=\"checkbox-electronic-communication\"]'):[];"
+                        + "for(var i=0;i<labels.length;i++)if(vis(labels[i])){"
+                        + "var rn=labels[i].getRootNode?labels[i].getRootNode():document;"
+                        + "return rn.querySelector?rn.querySelector('#checkbox-electronic-communication'):null;}"
+                        + "var all=root.querySelectorAll?root.querySelectorAll('*'):[];"
+                        + "for(var j=0;j<all.length;j++)if(all[j].shadowRoot){var f=walk(all[j].shadowRoot);if(f)return f;}"
+                        + "return null;}"
+                        + "var input=walk(document.body);return !!(input&&input.checked);";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
     }
 
     /**
@@ -1902,10 +1960,9 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm → Termin reservieren (activation callout)");
         waitForAndClickButtonContaining(DE_RESERVE, DEFAULT_EXPLICIT_WAIT_TIME);
-        String marker = "Aktivieren Sie Ihren Termin.";
-        waitWithThreeWindows(() -> shadowDomContainsText(marker), "Activation callout");
+        waitWithThreeWindows(() -> shadowDomContainsText(ACTIVATION_CALLOUT_HEADING), "Activation callout");
         Assert.assertTrue(
-                shadowDomContainsText(marker),
+                shadowDomContainsText(ACTIVATION_CALLOUT_HEADING),
                 "Activation callout (Aktivieren Sie Ihren Termin.) not visible after Termin reservieren with retries.");
         ScenarioLogManager.getLogger().info("zmscitizenview: activation callout appeared");
         trySyncBookingProcessFromLocalStorageOnce();
@@ -1918,10 +1975,10 @@ public class CitizenViewPage extends BasePage {
                 .info(
                         "zmscitizenview: waiting in 5s + 10s + 15s windows (30s total) for activation callout (Aktivieren Sie Ihren Termin., {} Minuten)",
                         activationMinutes);
-        String heading = "Aktivieren Sie Ihren Termin.";
-        waitWithThreeWindows(() -> shadowDomContainsText(heading), "Preconfirmation callout heading");
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(ACTIVATION_CALLOUT_HEADING), "Preconfirmation callout heading");
         Assert.assertTrue(
-                shadowDomContainsText(heading),
+                shadowDomContainsText(ACTIVATION_CALLOUT_HEADING),
                 "Preconfirmation warning callout (Aktivieren Sie Ihren Termin.) not found after reserve with retries.");
         String timeText = activationMinutes + " Minuten";
         Assert.assertTrue(shadowDomContainsText(timeText),
@@ -1932,9 +1989,81 @@ public class CitizenViewPage extends BasePage {
     public void assertConfirmationSuccessCalloutVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: checking for confirmation success callout (Ihr Termin wurde gebucht.)");
         assertShadowContains(
-                "Ihr Termin wurde gebucht.",
+                CONFIRMATION_SUCCESS_HEADING,
                 "Confirmation success callout not found after opening confirm link.");
         ScenarioLogManager.getLogger().info("zmscitizenview: confirmation success callout found");
+    }
+
+    /**
+     * ZMSKVR-955: logged-in Übersicht books via Termin reservieren and must land on success,
+     * not the activation callout. Communication is accepted in the previous Gherkin step so the
+     * ATAF 250ms AfterStep delay can enable the button, same as guest preconfirm.
+     */
+    public void confirmLoggedInBookingFromSummary() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: logged-in summary → confirm (Termin reservieren)");
+        waitForAndClickButtonContaining(DE_RESERVE, DEFAULT_EXPLICIT_WAIT_TIME);
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING),
+                "Logged-in confirmation success");
+        Assert.assertTrue(
+                shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING),
+                "Confirmation success callout (Ihr Termin wurde gebucht.) not visible after logged-in booking.");
+        Assert.assertFalse(
+                shadowDomContainsText(ACTIVATION_CALLOUT_HEADING),
+                "Logged-in booking must not show the activation callout (Aktivieren Sie Ihren Termin.).");
+        trySyncBookingProcessFromLocalStorageOnce();
+    }
+
+    /**
+     * ZMSKVR-965: green success callout after logged-in booking — heading, mail-confirmation
+     * body, Termin ansehen, Weiteren Termin vereinbaren.
+     */
+    public void assertLoggedInConfirmationSuccessDetailsVisible() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert logged-in confirmation success details");
+        assertConfirmationSuccessCalloutVisible();
+        Assert.assertTrue(
+                shadowDomContainsText(CONFIRMATION_SUCCESS_TEXT),
+                "Confirmation success callout must include the booking-confirmation mail text.");
+        Assert.assertTrue(
+                shadowDomContainsText(VIEW_APPOINTMENT_BUTTON),
+                "Logged-in confirmation must show primary action 'Termin ansehen'.");
+        Assert.assertTrue(
+                shadowDomContainsText(BOOK_ANOTHER_APPOINTMENT_BUTTON),
+                "Logged-in confirmation must show secondary action 'Weiteren Termin vereinbaren'.");
+    }
+
+    /**
+     * ZMSKVR-353: guest rebooking summary books via Termin verschieben and must land on success,
+     * not the activation callout. Communication is accepted in the previous Gherkin step so the
+     * ATAF 250ms AfterStep delay can enable the button, same as first-booking preconfirm.
+     */
+    public void confirmRebookingFromSummary() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: rebooking summary → confirm (Termin verschieben)");
+        waitForAndClickButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON, DEFAULT_EXPLICIT_WAIT_TIME);
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING), "Rebooking confirmation success");
+        Assert.assertTrue(
+                shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING),
+                "Confirmation success callout (Ihr Termin wurde gebucht.) not visible after guest rebooking.");
+        Assert.assertFalse(
+                shadowDomContainsText(ACTIVATION_CALLOUT_HEADING),
+                "Guest rebooking must not show the activation callout (Aktivieren Sie Ihren Termin.).");
+        trySyncBookingProcessFromLocalStorageOnce();
+    }
+
+    public void assertPreconfirmationCalloutNotVisible() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: asserting activation callout is hidden ({})", ACTIVATION_CALLOUT_HEADING);
+        Assert.assertFalse(
+                shadowDomContainsText(ACTIVATION_CALLOUT_HEADING),
+                "Activation callout (Aktivieren Sie Ihren Termin.) must not be visible.");
     }
 
     /** ZMSKVR-1500: MucBanner success after reopening an already-used confirm deep link. */

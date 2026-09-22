@@ -55,6 +55,7 @@ class Accordion extends Component
                 return aTime.localeCompare(bTime);
             });
 
+            // eslint-disable-next-line complexity
             return sortedAvailabilityList.map((availability, index) => {
                 if (! availability.id && ! availability.tempId) {
                     availability.tempId = `spontaneous_ID_${index}`

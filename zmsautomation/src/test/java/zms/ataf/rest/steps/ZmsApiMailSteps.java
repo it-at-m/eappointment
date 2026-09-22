@@ -99,7 +99,37 @@ public class ZmsApiMailSteps {
         ScenarioLogManager.getLogger().info("zmsapi: preconfirmation mail found for process {}, confirm credentials set for deep link", match.process().id());
     }
 
-    /** Second mail fetch: run after the user has opened the /appointment/confirm/*** link. The confirmation mail (with link to /appointment/***) is only sent once the appointment is confirmed. */
+    /**
+     * ZMSKVR-955 / ZMSKVR-965: logged-in (or already-confirmed) booking must not send the
+     * activation mail whose HTML contains {@code appointment/confirm/}.
+     */
+    @Then("there should be no preconfirmation mail for the current process")
+    public void thereShouldBeNoPreconfirmationMailForTheCurrentProcess() {
+        ThinnedProcess booking = CitizenApiSteps.getBookingProcess();
+        if (booking == null || booking.getProcessId() == null) {
+            throw new IllegalStateException("No booking process; confirm the appointment first.");
+        }
+        Integer processId = booking.getProcessId();
+        String authKey = getOrLoginXAuthKey();
+        ScenarioLogManager.getLogger()
+                .info("zmsapi: asserting no preconfirmation/activation mail for process {}", processId);
+        Response response = given()
+            .baseUri(TestConfig.getBaseUri())
+            .header("X-Authkey", authKey)
+            .queryParam("limit", 500)
+        .when()
+            .get("/mails/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+                .as("GET /mails/ for activation-mail absence")
+                .isEqualTo(200);
+        String confirmUrl = extractConfirmUrlFromMailResponse(response.asString(), processId);
+        Assertions.assertThat(confirmUrl)
+                .as("process %s must not have an activation mail (appointment/confirm/)", processId)
+                .isNull();
+    }
+
+    /** Second mail fetch: run after the appointment is confirmed. The confirmation mail (with link to /appointment/***) is only sent once the appointment is confirmed. */
     @When("I fetch the confirmation mail for the current process")
     public void iFetchTheConfirmationMailForTheCurrentProcess() {
         ThinnedProcess booking = CitizenApiSteps.getBookingProcess();

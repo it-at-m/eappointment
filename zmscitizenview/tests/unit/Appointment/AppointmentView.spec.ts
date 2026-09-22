@@ -2228,10 +2228,43 @@ describe("AppointmentView", () => {
       ).toBe("success");
     });
 
-    it("uses preconfirm when rebooking while logged out", async () => {
+    it("calls confirmAppointment when rebooking while logged out", async () => {
       const wrapper = createWrapperWithAppointmentHash();
 
       wrapper.vm.isRebooking = true;
+      wrapper.vm.rebookedAppointment = {
+        processId: "old",
+        authKey: "oldkey",
+      } as any;
+      wrapper.vm.appointment = {
+        processId: "p1",
+        authKey: "k1",
+      } as any;
+
+      mockConfirm.mockResolvedValueOnce({
+        processId: "p1",
+        status: "confirmed",
+      } as any);
+
+      await wrapper.vm.nextBookAppointment();
+      await nextTick();
+
+      expect(mockConfirm).toHaveBeenCalledWith(
+        { baseUrl: "https://www.muenchen.de" },
+        { id: "p1", authKey: "k1" },
+        expect.objectContaining({ processId: "old", authKey: "oldkey" })
+      );
+      expect(mockPreconfirm).not.toHaveBeenCalled();
+      expect(wrapper.vm.confirmAppointmentSuccess).toBe(true);
+      expect(mockCancel).toHaveBeenCalledWith(
+        { baseUrl: "https://www.muenchen.de" },
+        expect.objectContaining({ processId: "old" })
+      );
+    });
+
+    it("uses preconfirm for a new booking while logged out", async () => {
+      const wrapper = createWrapperWithAppointmentHash();
+
       wrapper.vm.appointment = {
         processId: "p1",
         authKey: "k1",
@@ -2930,8 +2963,8 @@ describe("AppointmentView", () => {
       });
       expect(wrapper.vm.currentView).toBe(3);
 
-      const fetchCount =
-        vi.mocked(ZMSAppointmentAPI.fetchAppointment).mock.calls.length;
+      const fetchCount = vi.mocked(ZMSAppointmentAPI.fetchAppointment).mock
+        .calls.length;
 
       wrapper.vm.decreaseCurrentView();
       await nextTick();
