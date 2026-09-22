@@ -23,12 +23,19 @@
 <script lang="ts" setup>
 import { MucButton, MucIntro } from "@muenchen/muc-patternlab-vue";
 
+import { trackAppointmentEvent } from "@/utils/trackAppointmentEvent";
+
 defineProps<{
   appointmentId: string | null | undefined;
   t: (key: string) => string;
 }>();
 
 const requestLogin = () => {
+  trackAppointmentEvent({
+    object: "login",
+    action: "click",
+    widget: "appointment_detail",
+  });
   document.dispatchEvent(
     new CustomEvent("authorization-request", {
       detail: {

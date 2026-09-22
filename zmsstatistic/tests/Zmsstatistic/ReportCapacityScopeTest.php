@@ -72,7 +72,7 @@ class ReportCapacityScopeTest extends Base
             (string) $response->getBody()
         );
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
-        $this->assertStringNotContainsString('report-board--chart-minutes', (string) $response->getBody());
+        $this->assertStringNotContainsString('report-board--capacity-unit', (string) $response->getBody());
     }
 
     public function testWithPeriod()
@@ -134,12 +134,15 @@ class ReportCapacityScopeTest extends Base
         $this->assertStringNotContainsString('15.03.2016', (string) $response->getBody());
         $this->assertStringContainsString('Kapazität laut Öffnungszeiten – Auswertung für Bürgeramt Heerstraße im Zeitraum April 2016', (string) $response->getBody());
         $this->assertStringContainsString('Zeitschlitzdauer laut Öffnungszeit: 12 Min.', (string) $response->getBody());
-        $this->assertStringContainsString('Summe ·', (string) $response->getBody());
+        $this->assertStringContainsString('Summe · April 2016', (string) $response->getBody());
         $this->assertStringContainsString('report-board--capacity-summary', (string) $response->getBody());
         $this->assertStringContainsString('50 %', (string) $response->getBody());
+        $this->assertStringNotContainsString('report-board--capacity-granularity', (string) $response->getBody());
         $this->assertStringContainsString('report-board--chart-data-sparse', (string) $response->getBody());
         $this->assertStringContainsString('report-board--chart-data-full', (string) $response->getBody());
-        $this->assertStringContainsString('report-board--chart-minutes', (string) $response->getBody());
+        $this->assertStringContainsString('report-board--capacity-unit-select', (string) $response->getBody());
+        $this->assertStringContainsString('>Zeitschlitze</option>', (string) $response->getBody());
+        $this->assertStringContainsString('>Minuten</option>', (string) $response->getBody());
         $this->assertStringContainsString('report-board--chart-download', (string) $response->getBody());
         $this->assertStringContainsString('report-board--auto-refresh-interval', (string) $response->getBody());
         $this->assertStringContainsString('report-board--capacity-channel-select', (string) $response->getBody());
@@ -150,6 +153,67 @@ class ReportCapacityScopeTest extends Base
         $this->assertStringContainsString('report-board--table-download', (string) $response->getBody());
         $this->assertStringContainsString('type=xlsx', (string) $response->getBody());
         $this->assertStringContainsString('ylabelMinutes', (string) $response->getBody());
+    }
+
+    public function testYearPeriodShowsYearInSummaryLabel()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/74/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture("GET_owner_23.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/',
+                    'response' => $this->readFixture("GET_scope_list.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/141/',
+                    'response' => $this->readFixture("GET_slotscope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/141/_/',
+                    'response' => $this->readFixture("GET_slotscope_141_report.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/',
+                    'response' => $this->readFixture("GET_warehouse_slotscope.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/141/2016/',
+                    'parameters' => ['groupby' => 'day'],
+                    'response' => $this->readFixture("GET_slotscope_141_report.json")
+                ],
+            ]
+        );
+        $response = $this->render(['period' => '2016'], [], []);
+        $body = (string) $response->getBody();
+        $this->assertStringContainsString('Summe · 2016', $body);
+        $this->assertStringNotContainsString('Januar 1970', $body);
+        $this->assertStringNotContainsString('Summe · Januar', $body);
+        $this->assertStringContainsString('Kalenderjahr 2016', $body);
     }
 
     public function testWithMultipleScopes()
@@ -569,12 +633,229 @@ class ReportCapacityScopeTest extends Base
             []
         );
         $body = (string) $response->getBody();
-        $this->assertStringContainsString('Zeitpunkt', $body);
+        $this->assertStringContainsString('report-board--capacity-date', $body);
+        $this->assertStringContainsString('Datum', $body);
+        $this->assertStringContainsString('01.04.2016', $body);
         $this->assertStringContainsString('2016-04-01 08:00', $body);
         $this->assertStringContainsString('2016-04-01 09:00', $body);
+        $this->assertStringContainsString('report-board--capacity-granularity-select', $body);
+        $this->assertStringContainsString('Tagessumme', $body);
+        $this->assertStringContainsString('Stundenansicht', $body);
+        $this->assertStringContainsString('report-board--table-data-sparse-hourly', $body);
+        $this->assertStringContainsString('report-board--chart-data-sparse-hourly', $body);
         $this->assertStringContainsString('report-board--chart-data-sparse', $body);
         $this->assertStringContainsString('report-board--chart-data-full', $body);
-        $this->assertStringContainsString('50 %', $body);
+        $this->assertStringContainsString('59.1 %', $body);
+        $this->assertStringNotContainsString('>Zeitpunkt<', $body);
+    }
+
+    public function testDownloadXlsxUsesHourlyRowsWhenGranularityIsHour()
+    {
+        ob_start();
+
+        try {
+            $this->setHourlyCapacityApiCalls();
+            $sheet = $this->loadCapacityDownloadSheet([
+                '__uri' => '/report/capacity/scope/',
+                'from' => '2016-04-01',
+                'to' => '2016-04-01',
+                'type' => 'xlsx',
+                'granularity' => 'hour',
+            ]);
+            $this->assertSame('Zeitpunkt', $sheet->getCell('A5')->getValue());
+            $this->assertSame('2016-04-01 08:00', $sheet->getCell('A6')->getValue());
+            $this->assertSame(10, $sheet->getCell('B6')->getValue());
+            $this->assertSame(5, $sheet->getCell('C6')->getValue());
+            $this->assertSame('2016-04-01 09:00', $sheet->getCell('A7')->getValue());
+            $this->assertSame('Summe', $sheet->getCell('A8')->getValue());
+            $this->assertNull($sheet->getCell('A9')->getValue());
+        } finally {
+            if (ob_get_level() > 0) {
+                ob_end_clean();
+            }
+        }
+    }
+
+    public function testDownloadXlsxUsesFullHourlyTimelineWhenEmptySlotsAreShown()
+    {
+        ob_start();
+
+        try {
+            $this->setHourlyCapacityApiCalls();
+            $sheet = $this->loadCapacityDownloadSheet([
+                '__uri' => '/report/capacity/scope/',
+                'from' => '2016-04-01',
+                'to' => '2016-04-01',
+                'type' => 'xlsx',
+                'granularity' => 'hour',
+                'timeline' => 'full',
+            ]);
+            $this->assertSame('Zeitpunkt', $sheet->getCell('A5')->getValue());
+            $this->assertSame('2016-04-01 00:00', $sheet->getCell('A6')->getValue());
+            $this->assertSame(0, $sheet->getCell('B6')->getValue());
+            $this->assertSame(0, $sheet->getCell('C6')->getValue());
+            $this->assertSame('2016-04-01 08:00', $sheet->getCell('A14')->getValue());
+            $this->assertSame(10, $sheet->getCell('B14')->getValue());
+            $this->assertSame('Summe', $sheet->getCell('A30')->getValue());
+        } finally {
+            if (ob_get_level() > 0) {
+                ob_end_clean();
+            }
+        }
+    }
+
+    public function testDownloadXlsxUsesFullDailyTimelineWhenEmptySlotsAreShown()
+    {
+        ob_start();
+
+        try {
+            $this->setDailyCapacityApiCalls();
+            $sheet = $this->loadCapacityDownloadSheet([
+                '__uri' => '/report/capacity/scope/2016-04/',
+                'type' => 'xlsx',
+                'timeline' => 'full',
+            ], ['period' => '2016-04']);
+            $this->assertSame('Datum', $sheet->getCell('A5')->getValue());
+            $this->assertSame('01.04.2016', $sheet->getCell('A6')->getValue());
+            $this->assertSame(20, $sheet->getCell('B6')->getValue());
+            $this->assertSame('03.04.2016', $sheet->getCell('A8')->getValue());
+            $this->assertSame(0, $sheet->getCell('B8')->getValue());
+            $this->assertSame(0, $sheet->getCell('C8')->getValue());
+            $this->assertSame('Summe', $sheet->getCell('A36')->getValue());
+        } finally {
+            if (ob_get_level() > 0) {
+                ob_end_clean();
+            }
+        }
+    }
+
+    private function setHourlyCapacityApiCalls(): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture('GET_Workstation_Resolved2.json')
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture('GET_department_74.json')
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/74/organisation/',
+                    'response' => $this->readFixture('GET_organisation_71_resolved3.json')
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture('GET_owner_23.json')
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/',
+                    'response' => $this->readFixture('GET_scope_list.json')
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/141/',
+                    'response' => $this->readFixture('GET_slotscope_141.json')
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/141/_/',
+                    'response' => $this->readFixture('GET_slotscope_141_report.json')
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/',
+                    'response' => $this->readFixture('GET_warehouse_slotscope.json')
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/141/2016-04-01/',
+                    'parameters' => [
+                        'fromDate' => '2016-04-01',
+                        'toDate' => '2016-04-01',
+                        'groupby' => 'hour',
+                    ],
+                    'response' => $this->readFixture('GET_slotscope_141_hourly_report.json')
+                ],
+            ]
+        );
+    }
+
+    private function setDailyCapacityApiCalls(): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture('GET_Workstation_Resolved2.json')
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture('GET_department_74.json')
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/74/organisation/',
+                    'response' => $this->readFixture('GET_organisation_71_resolved3.json')
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture('GET_owner_23.json')
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/',
+                    'response' => $this->readFixture('GET_scope_list.json')
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/141/',
+                    'response' => $this->readFixture('GET_slotscope_141.json')
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/141/_/',
+                    'response' => $this->readFixture('GET_slotscope_141_report.json')
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/',
+                    'response' => $this->readFixture('GET_warehouse_slotscope.json')
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/capacityscope/141/2016-04/',
+                    'parameters' => ['groupby' => 'day'],
+                    'response' => $this->readFixture('GET_slotscope_141_report.json')
+                ],
+            ]
+        );
+    }
+
+    private function loadCapacityDownloadSheet(array $parameters, array $arguments = []): \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet
+    {
+        $response = $this->render($arguments, $parameters, []);
+        if (method_exists($response->getBody(), 'rewind')) {
+            $response->getBody()->rewind();
+        }
+
+        $tmp = tempnam(sys_get_temp_dir(), 'capacity_xlsx_');
+        file_put_contents($tmp, (string) $response->getBody());
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($tmp);
+        @unlink($tmp);
+
+        return $spreadsheet->getActiveSheet();
     }
 
     public function testWithoutCapacityReportPermission()

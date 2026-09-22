@@ -290,10 +290,12 @@ const props = defineProps<{
   t: (key: string) => string;
 }>();
 
-const emit =
-  defineEmits<
-    (e: "next" | "back" | "cancelReschedule" | "clearBookingError") => void
-  >();
+const emit = defineEmits<{
+  (e: "next", slotUi: "list" | "calendar"): void;
+  (e: "back"): void;
+  (e: "cancelReschedule"): void;
+  (e: "clearBookingError"): void;
+}>();
 
 const { selectedService } = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
@@ -1206,7 +1208,7 @@ const isSlotSelected = (officeId: number | string, time: number) => {
   );
 };
 
-const nextStep = () => emit("next");
+const nextStep = () => emit("next", isListView.value ? "list" : "calendar");
 const previousStep = () => {
   captchaSessionExpired.value = false;
   clearVisibleErrors();
