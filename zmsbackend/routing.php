@@ -3747,7 +3747,7 @@
  *  @swagger
  *  "/process/status/finished/":
  *      post:
- *          summary: set process to finished or pending status. (other status settings are not allowed)
+ *          summary: archive a finished process. (other status settings are not allowed)
  *          x-since: 2.12
  *          tags:
  *              - process
@@ -3765,7 +3765,7 @@
  *                      $ref: "schema/process.json"
  *          responses:
  *              200:
- *                  description: process has finished or pending status now
+ *                  description: process is archived
  *                  schema:
  *                      type: object
  *                      properties:
