@@ -93,22 +93,22 @@
                 {% endblock %}
                 {% block board_body %}
                 {% if selected or dateRange %}
-                    {% set hasCapacityChart = (exchangeCapacityChartSparse and exchangeCapacityChart and exchangeCapacityChartSparse.visualization)
-                        or (exchangeCapacityChart and exchangeCapacityChart.visualization)
-                        or (exchangeCapacity and exchangeCapacity.visualization) %}
-                    {% if exchangeCapacityChartSparse and exchangeCapacityChart and exchangeCapacityChartSparse.visualization %}
-                        <script type="application/json" class="report-board--chart-data-sparse">{{ exchangeCapacityChartSparse|json_encode(64)|raw }}</script>
-                        <script type="application/json" class="report-board--chart-data-full">{{ exchangeCapacityChart|json_encode(64)|raw }}</script>
+                    {% set hasCapacityChart = (exchangeCapacityChartSparseDaily and exchangeCapacityChartDaily and exchangeCapacityChartSparseDaily.visualization)
+                        or (exchangeCapacityChartDaily and exchangeCapacityChartDaily.visualization)
+                        or (exchangeCapacityDaily and exchangeCapacityDaily.visualization) %}
+                    {% if exchangeCapacityChartSparseDaily and exchangeCapacityChartDaily and exchangeCapacityChartSparseDaily.visualization %}
+                        <script type="application/json" class="report-board--chart-data-sparse">{{ exchangeCapacityChartSparseDaily|json_encode(64)|raw }}</script>
+                        <script type="application/json" class="report-board--chart-data-full">{{ exchangeCapacityChartDaily|json_encode(64)|raw }}</script>
                         {% if exchangeCapacityChartSparseHourly and exchangeCapacityChartHourly %}
                         <script type="application/json" class="report-board--chart-data-sparse-hourly">{{ exchangeCapacityChartSparseHourly|json_encode(64)|raw }}</script>
                         <script type="application/json" class="report-board--chart-data-full-hourly">{{ exchangeCapacityChartHourly|json_encode(64)|raw }}</script>
                         {% endif %}
                         <div class="chartist table--base" data-chart-period="{{ selected|default('')|e('html_attr') }}"{% if dateRange %} data-chart-date-from="{{ dateRange.from|e('html_attr') }}" data-chart-date-to="{{ dateRange.to|e('html_attr') }}"{% endif %}>(loading chart...)</div>
-                    {% elseif exchangeCapacityChart and exchangeCapacityChart.visualization %}
-                        <script type="application/json" class="report-board--chart-data">{{ exchangeCapacityChart|json_encode(64)|raw }}</script>
+                    {% elseif exchangeCapacityChartDaily and exchangeCapacityChartDaily.visualization %}
+                        <script type="application/json" class="report-board--chart-data">{{ exchangeCapacityChartDaily|json_encode(64)|raw }}</script>
                         <div class="chartist table--base" data-chart-period="{{ selected|default('')|e('html_attr') }}"{% if dateRange %} data-chart-date-from="{{ dateRange.from|e('html_attr') }}" data-chart-date-to="{{ dateRange.to|e('html_attr') }}"{% endif %}>(loading chart...)</div>
-                    {% elseif exchangeCapacity and exchangeCapacity.visualization %}
-                        <script type="application/json" class="report-board--chart-data">{{ exchangeCapacity|json_encode(64)|raw }}</script>
+                    {% elseif exchangeCapacityDaily and exchangeCapacityDaily.visualization %}
+                        <script type="application/json" class="report-board--chart-data">{{ exchangeCapacityDaily|json_encode(64)|raw }}</script>
                         <div class="chartist table--base" data-chart-period="{{ selected|default('')|e('html_attr') }}"{% if dateRange %} data-chart-date-from="{{ dateRange.from|e('html_attr') }}" data-chart-date-to="{{ dateRange.to|e('html_attr') }}"{% endif %}>(loading chart...)</div>
                     {% endif %}
                     {% if hasCapacityChart or scopeSlotTimeHint %}
@@ -125,7 +125,7 @@
                             </span>
                         </p>
                     {% endif %}
-                    {% set isHourly = exchangeCapacity.period is defined and exchangeCapacity.period == 'hour' %}
+                    {% set isHourly = exchangeCapacityDaily.period is defined and exchangeCapacityDaily.period == 'hour' %}
                     {% if dateRange %}
                         {% set capacitySummaryLabel = 'Summe · Zeitraum ' ~ dateRange.from|date('d.m.Y') ~ ' – ' ~ dateRange.to|date('d.m.Y') %}
                     {% elseif period and 4 == period|length %}
@@ -135,9 +135,9 @@
                     {% else %}
                         {% set capacitySummaryLabel = 'Summe' %}
                     {% endif %}
-                    {% if exchangeCapacity.data and exchangeCapacityChart and exchangeCapacityChart.data %}
-                        <script type="application/json" class="report-board--table-data-sparse">{{ exchangeCapacity.data|json_encode(64)|raw }}</script>
-                        <script type="application/json" class="report-board--table-data-full">{{ exchangeCapacityChart.data|json_encode(64)|raw }}</script>
+                    {% if exchangeCapacityDaily.data and exchangeCapacityChartDaily and exchangeCapacityChartDaily.data %}
+                        <script type="application/json" class="report-board--table-data-sparse">{{ exchangeCapacityDaily.data|json_encode(64)|raw }}</script>
+                        <script type="application/json" class="report-board--table-data-full">{{ exchangeCapacityChartDaily.data|json_encode(64)|raw }}</script>
                         {% if exchangeCapacityHourly and exchangeCapacityHourly.data and exchangeCapacityChartHourly and exchangeCapacityChartHourly.data %}
                         <script type="application/json" class="report-board--table-data-sparse-hourly">{{ exchangeCapacityHourly.data|json_encode(64)|raw }}</script>
                         <script type="application/json" class="report-board--table-data-full-hourly">{{ exchangeCapacityChartHourly.data|json_encode(64)|raw }}</script>
@@ -153,10 +153,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% if exchangeCapacity.data %}
+                            {% if exchangeCapacityDaily.data %}
                                 {% set totalPlanned = 0 %}
                                 {% set totalBooked = 0 %}
-                                {% for row in exchangeCapacity.data %}
+                                {% for row in exchangeCapacityDaily.data %}
                                     {% set planned = row[3]|default(0) %}
                                     {% set booked = row[2]|default(0) %}
                                     {% set totalPlanned = totalPlanned + planned %}

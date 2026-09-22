@@ -304,9 +304,9 @@ class ReportCapacityService
      * Daily totals for the default table/chart, plus hourly payloads for the optional Stundenansicht.
      *
      * @return array{
-     *     table: Exchange,
-     *     chartSparse: Exchange,
-     *     chartFull: Exchange,
+     *     dailyTable: Exchange,
+     *     dailyChartSparse: Exchange,
+     *     dailyChartFull: Exchange,
      *     hourlyTable: Exchange|null,
      *     hourlyChartSparse: Exchange|null,
      *     hourlyChartFull: Exchange|null
@@ -320,19 +320,19 @@ class ReportCapacityService
         $hourlyTable = null;
         $hourlyChartSparse = null;
         $hourlyChartFull = null;
-        $table = $exchange;
+        $dailyTable = $exchange;
 
         if ($exchange->period === 'hour') {
             $hourlyTable = clone $exchange;
             $hourlyChartSparse = $this->buildSparseChartExchange($hourlyTable, $dateRange, $period);
             $hourlyChartFull = $this->buildChartExchange($hourlyTable, $dateRange, $period);
-            $table = $this->withDailyAggregation($exchange);
+            $dailyTable = $this->withDailyAggregation($exchange);
         }
 
         return [
-            'table' => $table,
-            'chartSparse' => $this->buildSparseChartExchange($table, $dateRange, $period),
-            'chartFull' => $this->buildChartExchange($table, $dateRange, $period),
+            'dailyTable' => $dailyTable,
+            'dailyChartSparse' => $this->buildSparseChartExchange($dailyTable, $dateRange, $period),
+            'dailyChartFull' => $this->buildChartExchange($dailyTable, $dateRange, $period),
             'hourlyTable' => $hourlyTable,
             'hourlyChartSparse' => $hourlyChartSparse,
             'hourlyChartFull' => $hourlyChartFull,

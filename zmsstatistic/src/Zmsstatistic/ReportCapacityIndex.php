@@ -52,23 +52,24 @@ class ReportCapacityIndex extends BaseController
             $validator->getParameter('to')->isString()->getValue()
         );
 
-        $exchangeCapacity = $reportCapacityService->getExchangeCapacityData($scopeId, $dateRange, $args);
-        $exchangeCapacityChart = null;
-        $exchangeCapacityChartSparse = null;
+        $fetchedCapacity = $reportCapacityService->getExchangeCapacityData($scopeId, $dateRange, $args);
+        $exchangeCapacityDaily = null;
+        $exchangeCapacityChartDaily = null;
+        $exchangeCapacityChartSparseDaily = null;
         $exchangeCapacityHourly = null;
         $exchangeCapacityChartHourly = null;
         $exchangeCapacityChartSparseHourly = null;
 
-        if ($exchangeCapacity instanceof Exchange) {
+        if ($fetchedCapacity instanceof Exchange) {
             $period = $args['period'] ?? null;
             $displayExchanges = $reportCapacityService->buildCapacityDisplayExchanges(
-                $exchangeCapacity,
+                $fetchedCapacity,
                 $dateRange,
                 $period
             );
-            $exchangeCapacity = $displayExchanges['table'];
-            $exchangeCapacityChartSparse = $displayExchanges['chartSparse'];
-            $exchangeCapacityChart = $displayExchanges['chartFull'];
+            $exchangeCapacityDaily = $displayExchanges['dailyTable'];
+            $exchangeCapacityChartSparseDaily = $displayExchanges['dailyChartSparse'];
+            $exchangeCapacityChartDaily = $displayExchanges['dailyChartFull'];
             $exchangeCapacityHourly = $displayExchanges['hourlyTable'];
             $exchangeCapacityChartSparseHourly = $displayExchanges['hourlyChartSparse'];
             $exchangeCapacityChartHourly = $displayExchanges['hourlyChartFull'];
@@ -79,7 +80,7 @@ class ReportCapacityIndex extends BaseController
             $granularity = $validator->getParameter('granularity')->isString()->getValue();
             $downloadExchange = $exchangeCapacityHourly !== null && $granularity === 'hour'
                 ? $exchangeCapacityHourly
-                : $exchangeCapacity;
+                : $exchangeCapacityDaily;
 
             return $this->handleDownloadRequest(
                 $request,
@@ -106,9 +107,9 @@ class ReportCapacityIndex extends BaseController
             $args,
             $capacityPeriod,
             $dateRange,
-            $exchangeCapacity,
-            $exchangeCapacityChart,
-            $exchangeCapacityChartSparse,
+            $exchangeCapacityDaily,
+            $exchangeCapacityChartDaily,
+            $exchangeCapacityChartSparseDaily,
             $selectedScopes,
             $scopeDateBounds,
             $scopeSlotTimeHint,
@@ -123,7 +124,7 @@ class ReportCapacityIndex extends BaseController
         ResponseInterface $response,
         array $args,
         string $scopeId,
-        mixed $exchangeCapacity,
+        mixed $downloadExchange,
         ?array $dateRange,
         array $selectedScopes = [],
         ?ReportCapacityService $reportCapacityService = null
@@ -144,7 +145,7 @@ class ReportCapacityIndex extends BaseController
         $args = $reportCapacityService->prepareDownloadArgs(
             $args,
             $scopeId,
-            $exchangeCapacity,
+            $downloadExchange,
             $dateRange,
             $selectedScopes,
             $valueMode,
@@ -162,9 +163,9 @@ class ReportCapacityIndex extends BaseController
         array $args,
         mixed $capacityPeriod,
         array|null $dateRange,
-        mixed $exchangeCapacity,
-        Exchange|null $exchangeCapacityChart,
-        Exchange|null $exchangeCapacityChartSparse,
+        mixed $exchangeCapacityDaily,
+        Exchange|null $exchangeCapacityChartDaily,
+        Exchange|null $exchangeCapacityChartSparseDaily,
         array $selectedScopes = [],
         array $scopeDateBounds = [],
         ?string $scopeSlotTimeHint = null,
@@ -186,9 +187,9 @@ class ReportCapacityIndex extends BaseController
                 'showAll' => 1,
                 'period' => $args['period'] ?? null,
                 'dateRange' => $dateRange,
-                'exchangeCapacity' => $exchangeCapacity,
-                'exchangeCapacityChart' => $exchangeCapacityChart,
-                'exchangeCapacityChartSparse' => $exchangeCapacityChartSparse,
+                'exchangeCapacityDaily' => $exchangeCapacityDaily,
+                'exchangeCapacityChartDaily' => $exchangeCapacityChartDaily,
+                'exchangeCapacityChartSparseDaily' => $exchangeCapacityChartSparseDaily,
                 'exchangeCapacityHourly' => $exchangeCapacityHourly,
                 'exchangeCapacityChartHourly' => $exchangeCapacityChartHourly,
                 'exchangeCapacityChartSparseHourly' => $exchangeCapacityChartSparseHourly,

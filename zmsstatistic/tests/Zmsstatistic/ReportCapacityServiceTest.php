@@ -226,11 +226,11 @@ class ReportCapacityServiceTest extends \PHPUnit\Framework\TestCase
 
         $display = $this->service->buildCapacityDisplayExchanges($exchange, $range, null);
 
-        $this->assertSame('day', $display['table']->period);
-        $this->assertSame('2026-06-01', $display['table']->data[0][1]);
+        $this->assertSame('day', $display['dailyTable']->period);
+        $this->assertSame('2026-06-01', $display['dailyTable']->data[0][1]);
         $this->assertSame('hour', $display['hourlyTable']->period);
         $this->assertCount(2, $display['hourlyTable']->data);
-        $this->assertNull($display['chartFull']['visualization']['labelIntervalHours']);
+        $this->assertNull($display['dailyChartFull']['visualization']['labelIntervalHours']);
         $this->assertSame(1, $display['hourlyChartFull']['visualization']['labelIntervalHours']);
     }
 
