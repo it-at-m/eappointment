@@ -50,9 +50,9 @@ class View extends BaseView {
             ev.preventDefault();
             this.chartController.setChannelMode(ev.target.value);
         });
-        this.$main.on('click', '.report-board--chart-minutes', (ev) => {
+        this.$main.on('change', '.report-board--capacity-unit-select', (ev) => {
             ev.preventDefault();
-            this.chartController.toggleValueMode();
+            this.chartController.setValueMode(ev.target.value);
         });
         this.$main.on('click', '.report-board--chart-download', (ev) => {
             ev.preventDefault();
@@ -74,9 +74,9 @@ class View extends BaseView {
             ev.preventDefault();
             this.chartController.toggleSparseTimeline();
         });
-        this.$main.on('click', '.report-board--chart-hourly', (ev) => {
+        this.$main.on('change', '.report-board--capacity-granularity-select', (ev) => {
             ev.preventDefault();
-            this.chartController.toggleGranularity();
+            this.chartController.setGranularity(ev.target.value);
         });
     }
 }

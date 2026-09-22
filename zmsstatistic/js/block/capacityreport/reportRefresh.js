@@ -172,7 +172,7 @@ export default class ReportRefresh {
     rerenderAfterSoftPayload() {
         const previousGranularity = this.view.chartGranularity;
         this.view.chartController.applyGranularity();
-        this.view.chartController.syncGranularityButton();
+        this.view.chartController.syncGranularitySelect();
         this.view.chartController.syncTableDownloadLink();
         if (previousGranularity !== this.view.chartGranularity) {
             this.view.chartController.render();

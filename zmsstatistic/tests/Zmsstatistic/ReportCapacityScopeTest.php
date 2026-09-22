@@ -72,7 +72,7 @@ class ReportCapacityScopeTest extends Base
             (string) $response->getBody()
         );
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
-        $this->assertStringNotContainsString('report-board--chart-minutes', (string) $response->getBody());
+        $this->assertStringNotContainsString('report-board--capacity-unit', (string) $response->getBody());
     }
 
     public function testWithPeriod()
@@ -137,10 +137,12 @@ class ReportCapacityScopeTest extends Base
         $this->assertStringContainsString('Summe · April 2016', (string) $response->getBody());
         $this->assertStringContainsString('report-board--capacity-summary', (string) $response->getBody());
         $this->assertStringContainsString('50 %', (string) $response->getBody());
-        $this->assertStringNotContainsString('report-board--chart-hourly', (string) $response->getBody());
+        $this->assertStringNotContainsString('report-board--capacity-granularity', (string) $response->getBody());
         $this->assertStringContainsString('report-board--chart-data-sparse', (string) $response->getBody());
         $this->assertStringContainsString('report-board--chart-data-full', (string) $response->getBody());
-        $this->assertStringContainsString('report-board--chart-minutes', (string) $response->getBody());
+        $this->assertStringContainsString('report-board--capacity-unit-select', (string) $response->getBody());
+        $this->assertStringContainsString('>Zeitschlitze</option>', (string) $response->getBody());
+        $this->assertStringContainsString('>Minuten</option>', (string) $response->getBody());
         $this->assertStringContainsString('report-board--chart-download', (string) $response->getBody());
         $this->assertStringContainsString('report-board--auto-refresh-interval', (string) $response->getBody());
         $this->assertStringContainsString('report-board--capacity-channel-select', (string) $response->getBody());
@@ -636,7 +638,9 @@ class ReportCapacityScopeTest extends Base
         $this->assertStringContainsString('01.04.2016', $body);
         $this->assertStringContainsString('2016-04-01 08:00', $body);
         $this->assertStringContainsString('2016-04-01 09:00', $body);
-        $this->assertStringContainsString('report-board--chart-hourly', $body);
+        $this->assertStringContainsString('report-board--capacity-granularity-select', $body);
+        $this->assertStringContainsString('Tagessumme', $body);
+        $this->assertStringContainsString('Stundenansicht', $body);
         $this->assertStringContainsString('report-board--table-data-sparse-hourly', $body);
         $this->assertStringContainsString('report-board--chart-data-sparse-hourly', $body);
         $this->assertStringContainsString('report-board--chart-data-sparse', $body);

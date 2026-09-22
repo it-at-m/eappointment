@@ -52,9 +52,9 @@ export default class CapacityChart {
         }
 
         this.applyGranularity();
-        this.syncModeButton();
+        this.syncValueModeSelect();
         this.syncSparseTimelineButton();
-        this.syncGranularityButton();
+        this.syncGranularitySelect();
         this.syncDownloadButton();
         this.syncTableDownloadLink();
         this.render();
@@ -231,13 +231,17 @@ export default class CapacityChart {
         this.applyDataSelection();
     }
 
-    toggleGranularity() {
-        if (!this.supportsHourlyGranularity()) {
+    setGranularity(granularity) {
+        const nextGranularity = granularity === 'hour' && this.supportsHourlyGranularity()
+            ? 'hour'
+            : 'day';
+        if (nextGranularity === this.view.chartGranularity) {
+            this.syncGranularitySelect();
             return;
         }
-        this.view.chartGranularity = this.view.chartGranularity === 'hour' ? 'day' : 'hour';
+        this.view.chartGranularity = nextGranularity;
         this.applyGranularity();
-        this.syncGranularityButton();
+        this.syncGranularitySelect();
         this.syncTableDownloadLink();
         this.view.tableController.syncHeaders();
         this.render();
@@ -267,12 +271,18 @@ export default class CapacityChart {
         this.view.tableController.render();
     }
 
-    toggleValueMode() {
+    setValueMode(valueMode) {
         if (!this.supportsMinutesChartMode()) {
+            this.syncValueModeSelect();
             return;
         }
-        this.view.chartValueMode = this.view.chartValueMode === 'minutes' ? 'slots' : 'minutes';
-        this.syncModeButton();
+        const nextValueMode = valueMode === 'minutes' ? 'minutes' : 'slots';
+        if (nextValueMode === this.view.chartValueMode) {
+            this.syncValueModeSelect();
+            return;
+        }
+        this.view.chartValueMode = nextValueMode;
+        this.syncValueModeSelect();
         this.syncTableDownloadLink();
         this.view.tableController.syncHeaders();
         this.render();
@@ -302,51 +312,30 @@ export default class CapacityChart {
         );
     }
 
-    syncGranularityButton() {
-        const $button = this.view.$main.find('.report-board--chart-hourly');
-        if (!$button.length) {
+    syncGranularitySelect() {
+        const $label = this.view.$main.find('.report-board--capacity-granularity').first();
+        if (!$label.length) {
             return;
         }
         if (!this.supportsHourlyGranularity()) {
-            $button.hide();
+            $label.hide();
             return;
         }
-        $button.show();
-        const showHourly = this.view.chartGranularity === 'hour';
-        $button.attr('aria-pressed', showHourly ? 'true' : 'false');
-        $button.toggleClass('is-active', showHourly);
-        $button.attr(
-            'title',
-            showHourly ? 'Tagessumme anzeigen' : 'Stundenansicht anzeigen'
-        );
-        $button.attr(
-            'aria-label',
-            showHourly ? 'Tagessumme anzeigen' : 'Stundenansicht anzeigen'
-        );
+        $label.show();
+        $label.find('.report-board--capacity-granularity-select').val(this.view.chartGranularity);
     }
 
-    syncModeButton() {
-        const $button = this.view.$main.find('.report-board--chart-minutes');
-        if (!$button.length) {
+    syncValueModeSelect() {
+        const $label = this.view.$main.find('.report-board--capacity-unit').first();
+        if (!$label.length) {
             return;
         }
         if (!this.supportsMinutesChartMode()) {
-            $button.hide();
+            $label.hide();
             return;
         }
-        $button.show();
-        const showMinutes = this.view.chartValueMode === 'minutes';
-        $button.attr('aria-pressed', showMinutes ? 'true' : 'false');
-        $button.toggleClass('is-active', showMinutes);
-        $button.attr(
-            'title',
-            showMinutes ? 'Als Terminanzahl anzeigen' : 'Als Slotzeit in Minuten anzeigen'
-        );
-        $button.attr(
-            'aria-label',
-            showMinutes ? 'Als Terminanzahl anzeigen' : 'Als Slotzeit in Minuten anzeigen'
-        );
-        this.syncTableDownloadLink();
+        $label.show();
+        $label.find('.report-board--capacity-unit-select').val(this.view.chartValueMode);
     }
 
     syncTableDownloadLink() {

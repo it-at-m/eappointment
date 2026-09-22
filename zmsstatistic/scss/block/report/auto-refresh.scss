@@ -7,7 +7,9 @@
 }
 
 .board__actions .report-board--auto-refresh,
-.board__actions .report-board--capacity-channel {
+.board__actions .report-board--capacity-channel,
+.board__actions .report-board--capacity-granularity,
+.board__actions .report-board--capacity-unit {
     display:         inline-flex;
     align-items:     center;
     justify-content: center;
@@ -25,10 +27,22 @@
     min-width:       6.75em;
 }
 
+.board__actions .report-board--capacity-granularity {
+    min-width:       12em;
+}
+
+.board__actions .report-board--capacity-unit {
+    min-width:       10em;
+}
+
 .board__actions .report-board--auto-refresh,
-.board__actions .report-board--capacity-channel {
+.board__actions .report-board--capacity-channel,
+.board__actions .report-board--capacity-granularity,
+.board__actions .report-board--capacity-unit {
     .report-board--auto-refresh-interval,
-    .report-board--capacity-channel-select {
+    .report-board--capacity-channel-select,
+    .report-board--capacity-granularity-select,
+    .report-board--capacity-unit-select {
         margin:      0;
         padding:     0;
         border:      0;
