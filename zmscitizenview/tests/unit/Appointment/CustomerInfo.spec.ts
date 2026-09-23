@@ -388,11 +388,14 @@ describe("CustomerInfo", () => {
 
       expect(wrapper.html()).toContain("apiErrorSessionTimeoutHeader");
       expect(wrapper.html()).toContain("apiErrorSessionTimeoutText");
+      expect(wrapper.text()).toContain("restartBooking");
 
       // form and next-button sre not displayed
       expect(wrapper.find(".m-form").exists()).toBe(false);
       const buttons = wrapper.findAll(".m-button-group .muc-button");
-      expect(buttons.length).toBe(1); // only back-button
+      expect(buttons.length).toBe(2);
+      wrapper.vm.restartBooking();
+      expect(wrapper.emitted("restartBooking")).toHaveLength(1);
     });
   });
 

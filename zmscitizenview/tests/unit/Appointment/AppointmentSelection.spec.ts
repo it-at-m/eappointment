@@ -2407,6 +2407,9 @@ describe("AppointmentSelection", () => {
       expect(errorCallout).toBeDefined();
       expect(errorCallout!.html()).toContain("apiErrorCaptchaInvalidHeader");
       expect(errorCallout!.html()).toContain("apiErrorCaptchaInvalidText");
+      expect(errorCallout!.text()).toContain("restartBooking");
+      wrapper.vm.restartBooking();
+      expect(wrapper.emitted("restartBooking")).toHaveLength(1);
       // Captcha session errors hide provider selection and calendar
       expect(
         wrapper.findComponent({ name: "ProviderSelection" }).exists()
@@ -2509,6 +2512,10 @@ describe("AppointmentSelection", () => {
       expect(errorCallout).toBeDefined();
       expect(errorCallout!.html()).toContain("apiErrorCaptchaExpiredHeader");
       expect(errorCallout!.html()).toContain("apiErrorCaptchaExpiredText");
+      expect(errorCallout!.text()).toContain("restartBooking");
+      wrapper.vm.restartBooking();
+      expect(wrapper.vm.captchaSessionExpired).toBe(false);
+      expect(wrapper.emitted("restartBooking")).toHaveLength(1);
     });
 
     it("shows no appointment error info callout when no appointment error is set", async () => {

@@ -131,6 +131,7 @@
                 @cancel-reschedule="nextCancelReschedule"
                 @clearBookingError="clearBookingError"
                 @next="nextReserveAppointment"
+                @restart-booking="restartBookingToServices"
               />
             </div>
             <div v-if="currentView === 2">
@@ -146,6 +147,7 @@
                 @back="decreaseCurrentView"
                 @next="nextUpdateAppointment"
                 @login="requestLogin"
+                @restart-booking="restartBookingToServices"
               />
             </div>
             <div v-if="currentView === 3">
@@ -161,6 +163,7 @@
                 :t="t"
                 @back="decreaseCurrentView"
                 @book-appointment="nextBookAppointment"
+                @restart-booking="restartBookingToServices"
                 @cancel-appointment="nextCancelAppointment"
                 @cancel-reschedule="nextCancelReschedule"
                 @reschedule-appointment="nextRescheduleAppointment"
@@ -755,6 +758,13 @@ const increaseCurrentView = () => currentView.value++;
 const decreaseCurrentView = (): void => {
   clearAllErrors();
   currentView.value--;
+};
+
+const restartBookingToServices = (): void => {
+  clearAllErrors();
+  captchaToken.value = undefined;
+  reservationStartMs.value = null;
+  currentView.value = 0;
 };
 
 /**

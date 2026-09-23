@@ -162,6 +162,18 @@
           <p>{{ t(apiErrorTranslation.textKey) }}</p>
         </div>
         <div
+          v-if="isCaptchaSessionExpired"
+          class="m-button-group"
+          style="margin-top: 1rem"
+        >
+          <muc-button
+            icon="arrow-right"
+            @click="restartBooking"
+          >
+            <template #default>{{ t("restartBooking") }}</template>
+          </muc-button>
+        </div>
+        <div
           class="m-content"
           style="margin-top: 8px"
           v-if="
@@ -295,6 +307,7 @@ const emit = defineEmits<{
   (e: "back"): void;
   (e: "cancelReschedule"): void;
   (e: "clearBookingError"): void;
+  (e: "restartBooking"): void;
 }>();
 
 const { selectedService } = inject<SelectedServiceProvider>(
@@ -1213,6 +1226,11 @@ const previousStep = () => {
   captchaSessionExpired.value = false;
   clearVisibleErrors();
   emit("back");
+};
+const restartBooking = () => {
+  captchaSessionExpired.value = false;
+  clearVisibleErrors();
+  emit("restartBooking");
 };
 const cancelReschedule = () => {
   captchaSessionExpired.value = false;

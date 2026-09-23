@@ -3,6 +3,17 @@
     <muc-callout type="error">
       <template #content>
         <p>{{ t("apiErrorSessionTimeoutText") }}</p>
+        <div
+          class="m-button-group"
+          style="margin-top: 1rem"
+        >
+          <muc-button
+            icon="arrow-right"
+            @click="restartBooking"
+          >
+            <template #default>{{ t("restartBooking") }}</template>
+          </muc-button>
+        </div>
       </template>
       <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
     </muc-callout>
@@ -270,7 +281,8 @@ const props = defineProps<{
   t: (key: string, params?: Record<string, unknown>) => string;
 }>();
 
-const emit = defineEmits<(e: "next" | "back" | "login") => void>();
+const emit =
+  defineEmits<(e: "next" | "back" | "login" | "restartBooking") => void>();
 
 const { customerData } = inject<CustomerDataProvider>(
   "customerData"
@@ -486,6 +498,7 @@ const nextStep = () => {
   }
 };
 const previousStep = () => emit("back");
+const restartBooking = () => emit("restartBooking");
 </script>
 
 <style lang="scss" scoped>
