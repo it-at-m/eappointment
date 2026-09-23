@@ -104,9 +104,17 @@ class ReportCapacityIndex extends BaseController
         if ($displayScopeIds === [] && $workstationScopeId !== null) {
             $displayScopeIds = [(string) $workstationScopeId];
         }
-        $scopeSlotTimeHint = $reportCapacityService->formatScopeSlotTimeHint(
-            $reportCapacityService->getSelectedScopeSlotTimes($displayScopeIds)
-        );
+        $scopeSlotTimes = [];
+        $visualization = $fetchedCapacity instanceof Exchange
+            ? ($fetchedCapacity['visualization'] ?? null)
+            : null;
+        if (is_array($visualization) && is_array($visualization['scopeSlotTimes'] ?? null)) {
+            $scopeSlotTimes = $visualization['scopeSlotTimes'];
+        }
+        if ($scopeSlotTimes === []) {
+            $scopeSlotTimes = $reportCapacityService->getSelectedScopeSlotTimes($displayScopeIds);
+        }
+        $scopeSlotTimeHint = $reportCapacityService->formatScopeSlotTimeHint($scopeSlotTimes);
 
         return $this->renderHtmlResponse(
             $response,
