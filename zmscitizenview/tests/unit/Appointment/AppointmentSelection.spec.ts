@@ -2405,8 +2405,8 @@ describe("AppointmentSelection", () => {
       );
 
       expect(errorCallout).toBeDefined();
-      expect(errorCallout!.html()).toContain("apiErrorCaptchaInvalidHeader");
-      expect(errorCallout!.html()).toContain("apiErrorCaptchaInvalidText");
+      expect(errorCallout!.html()).toContain("apiErrorSessionTimeoutHeader");
+      expect(errorCallout!.html()).toContain("apiErrorSessionTimeoutText");
       expect(errorCallout!.text()).toContain("restartBooking");
       wrapper.vm.restartBooking();
       expect(wrapper.emitted("restartBooking")).toHaveLength(1);
@@ -2510,12 +2510,46 @@ describe("AppointmentSelection", () => {
         (c) => c.attributes("data-type") === "error"
       );
       expect(errorCallout).toBeDefined();
-      expect(errorCallout!.html()).toContain("apiErrorCaptchaExpiredHeader");
-      expect(errorCallout!.html()).toContain("apiErrorCaptchaExpiredText");
+      expect(errorCallout!.html()).toContain("apiErrorSessionTimeoutHeader");
+      expect(errorCallout!.html()).toContain("apiErrorSessionTimeoutText");
       expect(errorCallout!.text()).toContain("restartBooking");
       wrapper.vm.restartBooking();
       expect(wrapper.vm.captchaSessionExpired).toBe(false);
       expect(wrapper.emitted("restartBooking")).toHaveLength(1);
+    });
+
+    it("shows the restart callout when the captcha token is already expired", async () => {
+      const payload = btoa(JSON.stringify({ exp: 1 }))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/g, "");
+      const wrapper = createWrapper({
+        props: { captchaToken: `header.${payload}.sig` },
+        selectedService: {
+          id: "service1",
+          providers: [
+            {
+              name: "Office A",
+              id: 1,
+              address: { street: "Main", house_number: "1" },
+              scope: { id: "1" },
+            },
+          ],
+        },
+      });
+      await nextTick();
+
+      expect(wrapper.vm.captchaSessionExpired).toBe(true);
+      expect(
+        wrapper.findComponent({ name: "ProviderSelection" }).exists()
+      ).toBe(false);
+      const errorCallout = wrapper
+        .findAll('[data-test="muc-callout"]')
+        .find((c) => c.attributes("data-type") === "error");
+      expect(errorCallout).toBeDefined();
+      expect(errorCallout!.text()).toContain("restartBooking");
+      expect(errorCallout!.text()).toContain("apiErrorSessionTimeoutText");
+      expect(wrapper.find("h2").exists()).toBe(false);
     });
 
     it("shows no appointment error info callout when no appointment error is set", async () => {

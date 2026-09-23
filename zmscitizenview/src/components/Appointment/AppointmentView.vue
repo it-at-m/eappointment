@@ -191,6 +191,18 @@
                 >
                   <template #content>
                     <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                    <div
+                      v-if="canRestartFromError"
+                      class="m-button-group"
+                      style="margin-top: 1rem"
+                    >
+                      <muc-button
+                        icon="arrow-right"
+                        @click="restartBookingToServices"
+                      >
+                        <template #default>{{ t("restartBooking") }}</template>
+                      </muc-button>
+                    </div>
                   </template>
 
                   <template #header>
@@ -204,6 +216,18 @@
                 >
                   <template #content>
                     <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                    <div
+                      v-if="canRestartFromError"
+                      class="m-button-group"
+                      style="margin-top: 1rem"
+                    >
+                      <muc-button
+                        icon="arrow-right"
+                        @click="restartBookingToServices"
+                      >
+                        <template #default>{{ t("restartBooking") }}</template>
+                      </muc-button>
+                    </div>
                   </template>
 
                   <template #header>
@@ -654,6 +678,16 @@ const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
     currentErrorData.value
   );
 });
+
+const canRestartFromError = computed(() =>
+  [
+    "apiErrorSessionTimeoutText",
+    "apiErrorCaptchaExpiredText",
+    "apiErrorCaptchaInvalidText",
+    "apiErrorCaptchaMissingText",
+    "altcha.invalidCaptchaText",
+  ].includes(apiErrorTranslation.value.textKey)
+);
 
 type StepperInstance = ComponentPublicInstance | HTMLElement | null;
 const stepperRef = ref<StepperInstance>(null);
