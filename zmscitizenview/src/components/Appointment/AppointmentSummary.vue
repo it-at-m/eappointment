@@ -6,6 +6,17 @@
     <muc-callout type="error">
       <template #content>
         <p>{{ t("apiErrorSessionTimeoutText") }}</p>
+        <div
+          class="m-button-group"
+          style="margin-top: 1rem"
+        >
+          <muc-button
+            icon="arrow-right"
+            @click="restartBooking"
+          >
+            <template #default>{{ t("restartBooking") }}</template>
+          </muc-button>
+        </div>
       </template>
       <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
     </muc-callout>
@@ -406,6 +417,7 @@ const emit =
         | "cancelAppointment"
         | "cancelReschedule"
         | "rescheduleAppointment"
+        | "restartBooking"
     ) => void
   >();
 
@@ -476,6 +488,7 @@ const validForm = computed(
 
 const bookAppointment = () => emit("bookAppointment");
 const previousStep = () => emit("back");
+const restartBooking = () => emit("restartBooking");
 const cancelAppointment = () => emit("cancelAppointment");
 const cancelReschedule = () => emit("cancelReschedule");
 const rescheduleAppointment = () => emit("rescheduleAppointment");

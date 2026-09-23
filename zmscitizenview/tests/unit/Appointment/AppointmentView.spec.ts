@@ -297,6 +297,24 @@ describe("AppointmentView", () => {
       );
     });
 
+    it("returns to the service step and keeps the selected services", async () => {
+      const wrapper = createWrapper({ appointmentHash: undefined });
+      wrapper.vm.currentView = 3;
+      wrapper.vm.captchaToken = "expired-token";
+      wrapper.vm.reservationStartMs = Date.now();
+      wrapper.vm.selectedServiceMap = new Map([["service1", 2]]);
+      await nextTick();
+
+      wrapper.vm.restartBookingToServices();
+      await nextTick();
+
+      expect(wrapper.vm.currentView).toBe(0);
+      expect(wrapper.vm.captchaToken).toBeUndefined();
+      expect(wrapper.vm.reservationStartMs).toBeNull();
+      expect(wrapper.vm.selectedServiceMap.get("service1")).toBe(2);
+      expect(wrapper.find('[data-test="service-finder"]').exists()).toBe(true);
+    });
+
     it("shows customer info after calendar selection", async () => {
       const wrapper = createWrapper({ appointmentHash: undefined });
       wrapper.vm.currentView = 2;
