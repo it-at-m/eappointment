@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-23T15:30:23.407Z",
+  "publishedAt": "2026-09-23T16:49:54.954Z",
   "branches": [
     {
       "name": "next",
@@ -24,6 +24,12 @@
       "slug": "bugfix-zmskvr-1411-opening-hours-weekend-range",
       "runId": "35858146317",
       "runStartedAt": "2026-09-23T12:03:37Z"
+    },
+    {
+      "name": "bugfix-zmskvr-157-redirect-disable-client-actions",
+      "slug": "bugfix-zmskvr-157-redirect-disable-client-actions",
+      "runId": "35877798946",
+      "runStartedAt": "2026-09-23T14:55:51Z"
     },
     {
       "name": "bugfix-zmskvr-167-ticketprinter-missing-scope-ids",
