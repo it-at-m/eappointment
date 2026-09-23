@@ -1,10 +1,10 @@
 {
   "branch": "feature-zmskvr-1440-captcha-restart-booking",
   "branchSlug": "feature-zmskvr-1440-captcha-restart-booking",
-  "runId": "35877684854",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35877684854",
-  "runStartedAt": "2026-09-23T14:54:58Z",
-  "publishedAt": "2026-09-23T15:30:23.407Z",
+  "runId": "35911737594",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35911737594",
+  "runStartedAt": "2026-09-23T19:48:12Z",
+  "publishedAt": "2026-09-23T20:03:55.942Z",
   "features": {
     "feature-rest-zmscitizenapi-booking-zmskvr-1630-zmskvr-1030-placeholder-email-citizenapi": {
       "status": "passed",
@@ -255,6 +255,24 @@
           "runId": "35877684854",
           "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35877684854",
           "runStartedAt": "2026-09-23T14:54:58Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-callouts-zmskvr-1440-session-and-reservation-callouts": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/callouts/zmskvr-1440_session_and_reservation_callouts.feature",
+      "runId": "35911737594",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35911737594",
+      "runStartedAt": "2026-09-23T19:48:12Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "35911737594",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35911737594",
+          "runStartedAt": "2026-09-23T19:48:12Z"
         }
       }
     }
