@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-23T07:31:49.698Z",
+  "publishedAt": "2026-09-23T14:06:55.467Z",
   "branches": [
     {
       "name": "next",
@@ -18,6 +18,12 @@
       "slug": "bugfix-zmskvr-1246-zmskvr-319-cleanup-pending",
       "runId": "35757030911",
       "runStartedAt": "2026-09-22T16:52:57Z"
+    },
+    {
+      "name": "bugfix-zmskvr-1411-opening-hours-weekend-range",
+      "slug": "bugfix-zmskvr-1411-opening-hours-weekend-range",
+      "runId": "35858146317",
+      "runStartedAt": "2026-09-23T12:03:37Z"
     },
     {
       "name": "bugfix-zmskvr-167-ticketprinter-missing-scope-ids",
