@@ -797,6 +797,11 @@ const decreaseCurrentView = (): void => {
 
 const restartBookingToServices = (): void => {
   clearAllErrors();
+  // A reschedule or confirmed-appointment link cannot show Leistung at view 0.
+  if (isRebooking.value || isExistingAppointmentDeepLink.value) {
+    redirectToAppointmentStart();
+    return;
+  }
   captchaToken.value = undefined;
   reservationStartMs.value = null;
   currentView.value = 0;

@@ -315,6 +315,28 @@ describe("AppointmentView", () => {
       expect(wrapper.find('[data-test="service-finder"]').exists()).toBe(true);
     });
 
+    it("restarts a reschedule at the clean appointment start", async () => {
+      const originalLocation = window.location;
+      delete (window as any).location;
+      (window as any).location = {
+        href: "http://localhost:8082/#/appointment/abc",
+        origin: "http://localhost:8082",
+        pathname: "/",
+      };
+
+      const wrapper = createWrapper({ appointmentHash: "abc" });
+      wrapper.vm.currentView = 1;
+      wrapper.vm.isRebooking = true;
+      await nextTick();
+
+      wrapper.vm.restartBookingToServices();
+
+      expect(window.location.href).toBe("http://localhost:8082/");
+      expect(wrapper.vm.currentView).toBe(1);
+
+      (window as any).location = originalLocation;
+    });
+
     it("offers restart booking when the reservation is no longer reserved", async () => {
       const wrapper = createWrapper({ appointmentHash: undefined });
       wrapper.vm.currentView = 3;
