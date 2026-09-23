@@ -74,6 +74,11 @@ export MYSQL_PASSWORD="${MYSQL_PASSWORD:-db}"
 export MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD:-root}"
 export CACHE_DIR="${CACHE_DIR:-/var/www/html/cache}"
 
+# xdebug.mode in the mounted ini is debug,develop with start_with_request=yes.
+# XDEBUG_MODE overrides that for every PHP process this script starts.
+export XDEBUG_MODE=off
+XDEBUG_OFF_INI="/usr/local/etc/php/conf.d/zz-zmsautomation-xdebug-off.ini"
+
 export BASE_URI="${BASE_URI:-http://web/terminvereinbarung/api/2}"
 export CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://web/terminvereinbarung/api/citizen}"
 export ADMIN_BASE_URI="${ADMIN_BASE_URI:-http://localhost/terminvereinbarung/admin/}"
@@ -253,9 +258,55 @@ disable_citizenview_secure_context() {
   fi
 }
 
+reload_php_service() {
+  local master=""
+  if [[ -r /usr/local/var/run/php-fpm.pid ]]; then
+    master="$(cat /usr/local/var/run/php-fpm.pid)"
+  elif [[ -r /run/php-fpm.pid ]]; then
+    master="$(cat /run/php-fpm.pid)"
+  elif [[ -r /var/run/php-fpm.pid ]]; then
+    master="$(cat /var/run/php-fpm.pid)"
+  else
+    master="$(pgrep -o -x php-fpm 2>/dev/null || true)"
+  fi
+  if [[ -n "$master" ]]; then
+    kill -USR2 "$master"
+    info "Reloaded php-fpm"
+    return 0
+  fi
+  if command -v apachectl >/dev/null 2>&1; then
+    apachectl graceful
+    info "Reloaded Apache"
+    return 0
+  fi
+  return 1
+}
+
+# Web workers are already running, so they do not see this script's environment.
+# An ini loaded after 99-xdebug.ini turns the debugger off until cleanup.
+disable_xdebug_for_web() {
+  info "Xdebug disabled for this run (XDEBUG_MODE=off)"
+  if [[ ! -d /usr/local/etc/php/conf.d || ! -w /usr/local/etc/php/conf.d ]]; then
+    warn "PHP conf.d is not writable; already-running web workers may still start Xdebug"
+    return 0
+  fi
+  printf '%s\n' 'xdebug.mode=off' > "$XDEBUG_OFF_INI"
+  reload_php_service || warn "PHP service was not reloaded; web requests may still start Xdebug"
+}
+
+restore_xdebug_for_web() {
+  if [[ -n "${XDEBUG_OFF_INI:-}" && -f "$XDEBUG_OFF_INI" ]]; then
+    rm -f "$XDEBUG_OFF_INI"
+    info "Restored Xdebug for the web SAPI"
+    reload_php_service || warn "PHP service was not reloaded; Xdebug stays off until zms-web restarts"
+  fi
+}
+
 cleanup_on_exit() {
   info "Running cleanup..."
-  
+
+  restore_xdebug_for_web || true
+
   # 1. Restore time first (most critical for developer environment)
   restore_firefox_binary  || true
   disable_citizenview_secure_context || true
@@ -378,6 +429,8 @@ run_hourly_with_retries() {
 
 # Ensure cleanup on exit
 trap 'cleanup_on_exit' EXIT INT TERM
+
+disable_xdebug_for_web
 
 # Remove stale dumps from earlier runs right away, so each run starts clean.
 cleanup_qemu_geckodriver_cores
