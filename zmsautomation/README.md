@@ -241,7 +241,7 @@ Additional REST features (availability, offices-and-services, etc.) may be added
 - `dldb-special-cases/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature` - zmscitizenview Ruppertstraße UI booking (Kalenderansicht); Ort = checkbox list or single-provider teaser; slot wait until **MucSpinner** (`.m-spinner-container`) cleared after day load + timeslot in DOM; `#provider-*` on reserve, preconfirm, confirm
 - `booking/zmskvr-955_zmskvr-965_logged_in_booking_no_activation.feature` - Bürger-Login booking skips activation and shows the confirmation callout
 - `rebooking/zmskvr-353_rebooking_no_activation.feature` - guest Umbuchung confirms immediately without a second activation
-- `callouts/zmskvr-1440_session_and_reservation_callouts.feature` - captcha session callout on Termin and reservation callout on Kontakt and Übersicht (office 10427, 5-minute clocks)
+- `callouts/zmskvr-1440_session_and_reservation_callouts.feature` - captcha session callout on Termin and reservation callout on Kontakt and Übersicht (office 10427, 2-minute clocks)
 
 #### Statistik UI (`ui/zmsstatistic/`)
 - Features for the Statistik web UI (Dienstleistungsstatistik, Kundenstatistik, CSV export, etc.)

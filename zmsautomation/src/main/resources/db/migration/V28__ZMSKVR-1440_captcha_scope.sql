@@ -3,20 +3,20 @@
 -- Standort 74, Kommunale Verkehrsüberwachung (KVR-I/31), officeId 10427.
 -- Not a Bürgerbüro, and no other ATAF feature books it.
 --
--- Captcha JWT TTL is not stored per scope. The stack already uses
--- CAPTCHA_TOKEN_TTL=300 (5 minutes) from .devcontainer/.env.template.
+-- Captcha JWT TTL is not stored per scope. The stack uses
+-- CAPTCHA_TOKEN_TTL=120 (2 minutes) from .devcontainer/.env.template.
 -- V14 turns captcha off for every location; this migration turns it back on
 -- for scope 74 only.
 --
 -- CURDATE()/CURTIME() follow zms-db TZ=Europe/Berlin (same calendar day as zms-web).
 
 UPDATE `standort`
-SET `reservierungsdauer` = 5,
+SET `reservierungsdauer` = 2,
     `captcha_activated_required` = 1
 WHERE `StandortID` = 74;
 
 UPDATE `preferences`
-SET `value` = '5',
+SET `value` = '2',
     `updateTimestamp` = NOW()
 WHERE `entity` = 'scope'
   AND `id` = 74
