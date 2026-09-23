@@ -383,17 +383,6 @@ public class CitizenApiSteps {
             .isFalse();
     }
 
-    @Then("office {int} should have a reservation duration of {int} minutes")
-    public void officeShouldHaveAReservationDurationOfMinutes(int officeId, int minutes) {
-        Object value = scopeValue(officeId, "reservationDuration");
-        Assertions.assertThat(value)
-            .as("office %d scope.reservationDuration", officeId)
-            .isNotNull();
-        Assertions.assertThat(((Number) value).intValue())
-            .as("office %d scope.reservationDuration", officeId)
-            .isEqualTo(minutes);
-    }
-
     @When("I reserve an appointment with the first available slot")
     public void iReserveAnAppointmentWithTheFirstAvailableSlot() {
         reserveFirstAvailableSlot(false, true);
