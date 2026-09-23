@@ -231,11 +231,34 @@ restore_firefox_binary() {
   fi
 }
 
+# Altcha needs crypto.subtle. http://citizenview is not a secure context; localhost is.
+# Debian's /usr/bin/chromium sources /etc/chromium.d before it starts the browser.
+CHROMIUM_SECURE_CONTEXT_DROPIN="/etc/chromium.d/zms-secure-context"
+enable_citizenview_secure_context() {
+  local origin="http://citizenview:${CITIZENVIEW_PORT:-8082}"
+  if [[ ! -d /etc/chromium.d ]]; then
+    warn "No /etc/chromium.d; cannot mark ${origin} as a secure context"
+    return 0
+  fi
+  cat >"$CHROMIUM_SECURE_CONTEXT_DROPIN" <<EOF
+export CHROMIUM_FLAGS="\$CHROMIUM_FLAGS --unsafely-treat-insecure-origin-as-secure=${origin}"
+EOF
+  info "Chromium will treat ${origin} as a secure context (Altcha)"
+}
+
+disable_citizenview_secure_context() {
+  if [[ -f "$CHROMIUM_SECURE_CONTEXT_DROPIN" ]]; then
+    rm -f "$CHROMIUM_SECURE_CONTEXT_DROPIN"
+    info "Removed Chromium secure-context drop-in"
+  fi
+}
+
 cleanup_on_exit() {
   info "Running cleanup..."
   
   # 1. Restore time first (most critical for developer environment)
   restore_firefox_binary  || true
+  disable_citizenview_secure_context || true
   
   # 2. Restore database
   restore_db
@@ -577,6 +600,8 @@ if command -v chromedriver >/dev/null 2>&1; then
 else
   warn "Chromedriver not found in PATH"
 fi
+
+enable_citizenview_secure_context
 
 # Ensure Xvfb is running
 if pgrep -x Xvfb > /dev/null; then
