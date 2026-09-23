@@ -15,7 +15,15 @@ import {
     getChartDownloadFilename,
     syncCapacityTableDownloadHref,
 } from './formatting';
-import { CAPACITY_CHANNEL_MODES, CAPACITY_CHANNEL_STORAGE_KEY } from './constants';
+import {
+    CAPACITY_CHANNEL_MODES,
+    CAPACITY_CHANNEL_STORAGE_KEY,
+    CAPACITY_GRANULARITIES,
+    CAPACITY_GRANULARITY_STORAGE_KEY,
+    CAPACITY_HIDE_EMPTY_STORAGE_KEY,
+    CAPACITY_VALUE_MODES,
+    CAPACITY_VALUE_MODE_STORAGE_KEY,
+} from './constants';
 
 export default class CapacityChart {
     constructor(view) {
@@ -23,11 +31,31 @@ export default class CapacityChart {
     }
 
     initSparseTimelineFromDom() {
+        const storedValue = window.sessionStorage.getItem(CAPACITY_HIDE_EMPTY_STORAGE_KEY);
+        if (storedValue === '0' || storedValue === '1') {
+            this.view.chartHideEmptySlots = storedValue === '1';
+            return;
+        }
+
         const $button = this.view.$main.find('.report-board--chart-sparse');
         if (!$button.length) {
             return;
         }
         this.view.chartHideEmptySlots = $button.attr('aria-pressed') !== 'false';
+    }
+
+    initGranularityFromDom() {
+        const storedValue = window.sessionStorage.getItem(CAPACITY_GRANULARITY_STORAGE_KEY);
+        if (CAPACITY_GRANULARITIES.includes(storedValue)) {
+            this.view.chartGranularity = storedValue;
+        }
+    }
+
+    initValueModeFromDom() {
+        const storedValue = window.sessionStorage.getItem(CAPACITY_VALUE_MODE_STORAGE_KEY);
+        if (CAPACITY_VALUE_MODES.includes(storedValue)) {
+            this.view.chartValueMode = storedValue;
+        }
     }
 
     initFromDom() {
@@ -46,10 +74,6 @@ export default class CapacityChart {
         this.view.dailyChartDataSparse = dailyPayload.sparse;
         this.view.dailyChartDataFull = dailyPayload.full;
         this.loadHourlyChartData();
-
-        if (this.view.chartGranularity === 'hour' && !this.supportsHourlyGranularity()) {
-            this.view.chartGranularity = 'day';
-        }
 
         this.applyGranularity();
         this.syncValueModeSelect();
@@ -246,6 +270,7 @@ export default class CapacityChart {
             return;
         }
         this.view.chartGranularity = nextGranularity;
+        window.sessionStorage.setItem(CAPACITY_GRANULARITY_STORAGE_KEY, nextGranularity);
         this.applyGranularity();
         this.syncGranularitySelect();
         this.syncTableDownloadLink();
@@ -270,6 +295,10 @@ export default class CapacityChart {
             return;
         }
         this.view.chartHideEmptySlots = !this.view.chartHideEmptySlots;
+        window.sessionStorage.setItem(
+            CAPACITY_HIDE_EMPTY_STORAGE_KEY,
+            this.view.chartHideEmptySlots ? '1' : '0'
+        );
         this.applyDataSelection();
         this.syncSparseTimelineButton();
         this.syncTableDownloadLink();
@@ -288,6 +317,7 @@ export default class CapacityChart {
             return;
         }
         this.view.chartValueMode = nextValueMode;
+        window.sessionStorage.setItem(CAPACITY_VALUE_MODE_STORAGE_KEY, nextValueMode);
         this.syncValueModeSelect();
         this.syncTableDownloadLink();
         this.view.tableController.syncHeaders();
