@@ -2,7 +2,7 @@
   <div v-if="isExpired">
     <muc-callout type="error">
       <template #content>
-        <p>{{ t("apiErrorSessionTimeoutText") }}</p>
+        <p>{{ t("apiErrorProcessNotReservedAnymoreText") }}</p>
         <div
           class="m-button-group"
           style="margin-top: 1rem"
@@ -15,7 +15,9 @@
           </muc-button>
         </div>
       </template>
-      <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
+      <template #header>{{
+        t("apiErrorProcessNotReservedAnymoreHeader")
+      }}</template>
     </muc-callout>
   </div>
   <div
@@ -205,7 +207,10 @@
       />
     </fieldset>
   </form>
-  <div class="m-button-group">
+  <div
+    v-if="!isExpired"
+    class="m-button-group"
+  >
     <muc-button
       icon="arrow-left"
       icon-shown-left

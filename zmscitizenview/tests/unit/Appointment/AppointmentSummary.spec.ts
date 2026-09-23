@@ -440,16 +440,19 @@ describe("AppointmentSummary", () => {
       await nextTick();
 
       // message visible
-      expect(wrapper.text()).toContain("apiErrorSessionTimeoutHeader");
-      expect(wrapper.text()).toContain("apiErrorSessionTimeoutText");
+      expect(wrapper.text()).toContain(
+        "apiErrorProcessNotReservedAnymoreHeader"
+      );
+      expect(wrapper.text()).toContain("apiErrorProcessNotReservedAnymoreText");
       expect(wrapper.text()).toContain("restartBooking");
 
       // main content not visible
       expect(wrapper.find(".m-component").exists()).toBe(false);
 
-      // restart stays in the callout, back stays below it
+      // restart stays in the callout, back is hidden
       const anyButtons = wrapper.findAll(".muc-button");
-      expect(anyButtons.length).toBe(2);
+      expect(anyButtons.length).toBe(1);
+      expect(wrapper.text()).not.toContain("back");
       wrapper.vm.restartBooking();
       expect(wrapper.emitted("restartBooking")).toHaveLength(1);
     });
@@ -461,7 +464,9 @@ describe("AppointmentSummary", () => {
       const wrapper = createWrapper({ appointmentAlreadyActivated: true });
       await nextTick();
 
-      expect(wrapper.text()).toContain("apiErrorSessionTimeoutHeader");
+      expect(wrapper.text()).toContain(
+        "apiErrorProcessNotReservedAnymoreHeader"
+      );
       expect(
         wrapper
           .find('[data-test="appointment-already-activated-banner"]')

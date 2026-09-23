@@ -682,6 +682,7 @@ const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
 const canRestartFromError = computed(() =>
   [
     "apiErrorSessionTimeoutText",
+    "apiErrorProcessNotReservedAnymoreText",
     "apiErrorCaptchaExpiredText",
     "apiErrorCaptchaInvalidText",
     "apiErrorCaptchaMissingText",
