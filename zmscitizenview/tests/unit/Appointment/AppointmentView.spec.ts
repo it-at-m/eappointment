@@ -341,6 +341,8 @@ describe("AppointmentView", () => {
       const wrapper = createWrapper({ appointmentHash: undefined });
       wrapper.vm.currentView = 3;
       wrapper.vm.currentContext = "preconfirm";
+      wrapper.vm.captchaToken = "expired-token";
+      wrapper.vm.reservationStartMs = Date.now();
       wrapper.vm.errorStates.errorStateMap.apiErrorProcessNotReservedAnymore.value = true;
       await nextTick();
 
@@ -349,6 +351,11 @@ describe("AppointmentView", () => {
         de.apiErrorProcessNotReservedAnymoreText
       );
       expect(callout.text()).toContain(de.restartBooking);
+
+      await callout.find('[data-test="muc-button"]').trigger("click");
+      expect(wrapper.vm.currentView).toBe(0);
+      expect(wrapper.vm.captchaToken).toBeUndefined();
+      expect(wrapper.vm.reservationStartMs).toBeNull();
     });
 
     it("shows customer info after calendar selection", async () => {
