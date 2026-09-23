@@ -26,6 +26,8 @@ class WorkstationProcess extends BaseController
         array $args
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $validator = $request->getAttribute('validator');
+        $lockClientActions = (bool) $validator->getParameter('lockClientActions')->isNumber()->getValue();
         $template = ($workstation->process->hasId() && 'processing' == $workstation->process->status) ? 'info' : 'next';
         $selectedDate = (new DateTime())->format('Y-m-d');
         if ($workstation->process->hasId() && 'called' == $workstation->process->getStatus()) {
@@ -43,7 +45,8 @@ class WorkstationProcess extends BaseController
             array(
                 'workstation' => $workstation,
                 'workstationInfo' => $workstationInfo,
-                'selectedDate' => $selectedDate
+                'selectedDate' => $selectedDate,
+                'lockClientActions' => $lockClientActions
             )
         );
     }

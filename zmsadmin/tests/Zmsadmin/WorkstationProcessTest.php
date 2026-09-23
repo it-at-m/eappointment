@@ -131,6 +131,68 @@ class WorkstationProcessTest extends Base
         $this->assertStringContainsString('<span class="color-blue"><i class="fas fa-info-circle" aria-hidden="true"></i></span> 
  Kundeninformationen', (string)$response->getBody());
         $this->assertStringContainsString('Personalausweis beantragen', (string)$response->getBody());
+        $this->assertStringContainsString('/workstation/process/finished/', (string)$response->getBody());
+        $this->assertStringContainsString('/workstation/process/redirect/', (string)$response->getBody());
+        $this->assertStringNotContainsString('disabled="disabled"', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testRenderingWithProcessingProcessLocksClientActions()
+    {
+        $date = (new DateTime())->format('Y-m-d');
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_with_process.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/workstationcount/',
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_Workstation_cluster_scopelist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141_workstationlist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/process/' . $date . '/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
+                    'response' => $this->readFixture("GET_scope_141_freeProcessList.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/process/' . $date . '/',
+                    'parameters' => [
+                        'gql' => ''
+                    ],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, ['lockClientActions' => 1], []);
+        $body = (string) $response->getBody();
+        $this->assertStringContainsString('Fertig stellen', $body);
+        $this->assertStringContainsString('Weiterleiten', $body);
+        $this->assertStringContainsString('Parken', $body);
+        $this->assertStringContainsString('Abbrechen', $body);
+        $this->assertStringContainsString('data-actions-locked="1"', $body);
+        $this->assertStringNotContainsString('/workstation/process/finished/', $body);
+        $this->assertStringNotContainsString('/workstation/process/redirect/', $body);
+        $this->assertEquals(4, substr_count($body, 'disabled="disabled"'));
         $this->assertEquals(200, $response->getStatusCode());
     }
 
