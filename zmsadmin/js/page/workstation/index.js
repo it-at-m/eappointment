@@ -555,6 +555,7 @@ class View extends BaseView {
             selectedDate: this.selectedDate,
             includeUrl: this.includeUrl,
             calledProcess: loadProcess ? this.calledProcess : null,
+            lockClientActions: this.page === 'redirect',
             onNextProcess: this.onNextProcess,
             onCallNextProcess: this.onCallNextProcess,
             onCancelNextProcess: this.onCancelNextProcess,
