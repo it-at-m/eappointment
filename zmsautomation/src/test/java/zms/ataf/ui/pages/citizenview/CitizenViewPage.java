@@ -38,6 +38,14 @@ public class CitizenViewPage extends BasePage {
     public static final String LOCALSTORAGE_APPOINTMENT_KEY = "lhm-appointment-data";
 
     private static final String DE_WEITER = "Weiter";
+    private static final String DE_BACK = "Zurück";
+    private static final String DE_RESTART_BOOKING = "Buchung neu starten";
+    private static final String DE_SESSION_TIMEOUT_HEADER = "Ihre Sitzung ist abgelaufen.";
+    private static final String DE_SESSION_TIMEOUT_TEXT =
+            "Seit Ihrer Bot-Überprüfung ist zu viel Zeit vergangen. Bitte starten Sie erneut mit der Terminbuchung, um die Prüfung zu aktualisieren.";
+    private static final String DE_RESERVATION_EXPIRED_HEADER = "Ihr Termin kann nicht mehr reserviert werden.";
+    private static final String DE_RESERVATION_EXPIRED_TEXT =
+            "Leider ist die Zeit für die Reservierung Ihres Termins abgelaufen. Bitte vereinbaren Sie den Termin erneut.";
     private static final String DE_RESERVE = "Termin reservieren";
     private static final String ALREADY_ACTIVATED_BANNER_MARKER =
             "Sie haben Ihren Termin bereits aktiviert.";
@@ -754,6 +762,42 @@ public class CitizenViewPage extends BasePage {
                         + "return walkClick(document.body);";
         Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
         return Boolean.TRUE.equals(o);
+    }
+
+    /** True when a visible button's own text is exactly {@code label}, ignoring stepper "Zurück zu Schritt". */
+    private boolean visibleButtonTextEquals(String label) {
+        CONTEXT.set();
+        String esc = label.replace("\\", "\\\\").replace("'", "\\'");
+        String script =
+                "var label='" + esc + "';"
+                        + "function visible(el){if(!el||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
+                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function walk(n){if(!n)return false;if(n.shadowRoot&&walk(n.shadowRoot))return true;"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='BUTTON'||tag==='A'||tag==='MUC-BUTTON'){"
+                        + "var t=(n.innerText||n.textContent||'').trim();"
+                        + "if(t===label&&visible(n))return true;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;return false;}"
+                        + "return walk(document.body);";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
+    }
+
+    private String firstCounterValue() {
+        CONTEXT.set();
+        String script =
+                "function walk(n, acc){if(!n)return;var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='MUC-COUNTER')acc.push(n);"
+                        + "if(n.shadowRoot)walk(n.shadowRoot, acc);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i], acc);}"
+                        + "var found=[];walk(document.body, found);if(!found.length)return null;"
+                        + "var el=found[0];"
+                        + "var input=el.shadowRoot?el.shadowRoot.querySelector('input'):null;"
+                        + "var raw=input&&input.value!=null?input.value:(el.value!=null?el.value:el.getAttribute('value'));"
+                        + "return raw==null?null:String(raw).trim();";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return o == null ? null : String.valueOf(o);
     }
 
     public void clickWeiter() {
@@ -2700,6 +2744,50 @@ public class CitizenViewPage extends BasePage {
         Assert.assertFalse(
                 shadowDomContainsText(CANCEL_RESCHEDULE_BUTTON),
                 "Reserved hash resume must not show Verschieben abbrechen (rebooking).");
+    }
+
+    public void assertCaptchaSessionCalloutVisible() {
+        CONTEXT.set();
+        waitUntilShadowContains(DE_SESSION_TIMEOUT_HEADER, DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(
+                shadowDomContainsText(DE_SESSION_TIMEOUT_TEXT),
+                "Captcha session callout text missing.");
+        Assert.assertTrue(
+                shadowDomContainsText(DE_RESTART_BOOKING),
+                "Captcha session callout must offer Buchung neu starten.");
+    }
+
+    public void assertReservationExpiredCalloutVisible() {
+        CONTEXT.set();
+        waitUntilShadowContains(DE_RESERVATION_EXPIRED_HEADER, DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(
+                shadowDomContainsText(DE_RESERVATION_EXPIRED_TEXT),
+                "Reservation expired callout text missing.");
+        Assert.assertTrue(
+                shadowDomContainsText(DE_RESTART_BOOKING),
+                "Reservation expired callout must offer Buchung neu starten.");
+    }
+
+    public void clickRestartBooking() {
+        waitForAndClickButtonContaining(DE_RESTART_BOOKING, DEFAULT_EXPLICIT_WAIT_TIME);
+    }
+
+    public void assertBackButtonNotVisible() {
+        CONTEXT.set();
+        Assert.assertFalse(
+                visibleButtonTextEquals(DE_BACK),
+                "Zurück must be hidden while the restart callout is showing.");
+    }
+
+    public void assertSelectedServiceQuantity(String serviceName, int quantity) {
+        CONTEXT.set();
+        waitUntilShadowContains(serviceName, DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(shadowDomContainsText(serviceName), "Expected selected service " + serviceName);
+        String counter = firstCounterValue();
+        Assert.assertEquals(
+                counter,
+                String.valueOf(quantity),
+                "Expected quantity " + quantity + " for " + serviceName + " but the counter was " + counter);
     }
 
     public void assertElectronicCommunicationCheckboxVisible() {

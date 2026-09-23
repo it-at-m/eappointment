@@ -533,4 +533,36 @@ public class CitizenViewSteps {
                 .info("zmscitizenview: assert electronic communication checkbox on book overview");
         page.assertElectronicCommunicationCheckboxVisible();
     }
+
+    @Then("the captcha session callout should be visible in the citizen view")
+    public void theCaptchaSessionCalloutShouldBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert captcha session callout");
+        page.assertCaptchaSessionCalloutVisible();
+    }
+
+    @Then("the reservation expired callout should be visible in the citizen view")
+    public void theReservationExpiredCalloutShouldBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert reservation expired callout");
+        page.assertReservationExpiredCalloutVisible();
+    }
+
+    @When("I restart the booking in the citizen view")
+    public void iRestartTheBooking() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Buchung neu starten");
+        page.clickRestartBooking();
+    }
+
+    @Then("the Zurück button should not be visible in the citizen view")
+    public void theBackButtonShouldNotBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Zurück is hidden");
+        page.assertBackButtonNotVisible();
+    }
+
+    @Then("service {string} should still be selected with quantity {int} in the citizen view")
+    public void serviceShouldStillBeSelectedWithQuantity(String serviceName, int quantity) {
+        String label = TestDataHelper.transformTestData(serviceName);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert service '{}' still selected with quantity {}", label, quantity);
+        page.assertSelectedServiceQuantity(label, quantity);
+    }
 }
