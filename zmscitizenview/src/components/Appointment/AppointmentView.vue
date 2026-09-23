@@ -236,43 +236,57 @@
                 </template>
               </muc-callout>
 
-              <muc-callout
+              <div
                 v-if="cancelAppointmentSuccess"
-                type="success"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
               >
-                <template #content>
-                  <p>{{ t("appointmentSuccessfullyCanceledText") }}</p>
-                </template>
-                <template #header>
-                  {{ t("appointmentSuccessfullyCanceledHeader") }}
-                </template>
-              </muc-callout>
+                <muc-callout type="success">
+                  <template #content>
+                    <p>{{ t("appointmentSuccessfullyCanceledText") }}</p>
+                  </template>
+                  <template #header>
+                    {{ t("appointmentSuccessfullyCanceledHeader") }}
+                  </template>
+                </muc-callout>
+              </div>
 
-              <muc-callout
+              <div
                 v-if="hasCancelAppointmentError"
-                :type="toCalloutType(apiErrorTranslation.errorType)"
+                role="alert"
+                aria-live="assertive"
+                aria-atomic="true"
               >
-                <template #content>
-                  <p>{{ t(apiErrorTranslation.textKey) }}</p>
-                </template>
-                <template #header>
-                  {{ t(apiErrorTranslation.headerKey) }}
-                </template>
-              </muc-callout>
+                <muc-callout
+                  :type="toCalloutType(apiErrorTranslation.errorType)"
+                >
+                  <template #content>
+                    <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                  </template>
+                  <template #header>
+                    {{ t(apiErrorTranslation.headerKey) }}
+                  </template>
+                </muc-callout>
+              </div>
             </template>
 
             <template v-else>
-              <muc-callout
+              <div
                 v-if="confirmAppointmentSuccess"
-                type="success"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
               >
-                <template #content>
-                  <p>{{ t("appointmentSuccessfullyBookedText") }}</p>
-                </template>
-                <template #header>
-                  {{ t("appointmentSuccessfullyBookedHeader") }}
-                </template>
-              </muc-callout>
+                <muc-callout type="success">
+                  <template #content>
+                    <p>{{ t("appointmentSuccessfullyBookedText") }}</p>
+                  </template>
+                  <template #header>
+                    {{ t("appointmentSuccessfullyBookedHeader") }}
+                  </template>
+                </muc-callout>
+              </div>
 
               <div
                 v-if="confirmAppointmentSuccess"
@@ -301,21 +315,27 @@
                 </muc-button>
               </div>
 
-              <muc-callout
+              <div
                 v-if="
                   !confirmAppointmentSuccess &&
                   !appointmentAlreadyActivated &&
                   hasConfirmAppointmentError
                 "
-                :type="toCalloutType(apiErrorTranslation.errorType)"
+                role="alert"
+                aria-live="assertive"
+                aria-atomic="true"
               >
-                <template #content>
-                  <p>{{ t(apiErrorTranslation.textKey) }}</p>
-                </template>
-                <template #header>
-                  {{ t(apiErrorTranslation.headerKey) }}
-                </template>
-              </muc-callout>
+                <muc-callout
+                  :type="toCalloutType(apiErrorTranslation.errorType)"
+                >
+                  <template #content>
+                    <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                  </template>
+                  <template #header>
+                    {{ t(apiErrorTranslation.headerKey) }}
+                  </template>
+                </muc-callout>
+              </div>
 
               <muc-callout
                 v-if="hasInitializationError"
