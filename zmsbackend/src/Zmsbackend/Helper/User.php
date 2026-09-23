@@ -49,8 +49,23 @@ class User
         if ($resolveReferences > static::$workstationResolved && static::$workstation->hasId()) {
             static::$workstation = (new \BO\Zmsbackend\Workstation\Service\Workstation())
                 ->readResolvedReferences(static::$workstation, $resolveReferences);
+            static::$workstationResolved = $resolveReferences;
         }
         return static::$workstation;
+    }
+
+    /**
+     * Statistic reports only need the full department tree to filter rows.
+     * A superuser sees every row, so that load is skipped.
+     */
+    public static function readStatisticWorkstation(\Psr\Http\Message\RequestInterface $request): \BO\Zmsentities\Workstation
+    {
+        $workstation = (new self($request, 0))->checkPermissions('statistic');
+        if ($workstation->getUseraccount()->isSuperUser()) {
+            return $workstation;
+        }
+
+        return static::readWorkstation(2);
     }
 
     /**
