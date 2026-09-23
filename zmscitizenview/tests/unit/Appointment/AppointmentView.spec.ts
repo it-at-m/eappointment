@@ -315,6 +315,20 @@ describe("AppointmentView", () => {
       expect(wrapper.find('[data-test="service-finder"]').exists()).toBe(true);
     });
 
+    it("offers restart booking when the reservation is no longer reserved", async () => {
+      const wrapper = createWrapper({ appointmentHash: undefined });
+      wrapper.vm.currentView = 3;
+      wrapper.vm.currentContext = "preconfirm";
+      wrapper.vm.errorStates.errorStateMap.apiErrorProcessNotReservedAnymore.value = true;
+      await nextTick();
+
+      const callout = wrapper.find('[data-test="muc-callout"]');
+      expect(callout.text()).toContain(
+        de.apiErrorProcessNotReservedAnymoreText
+      );
+      expect(callout.text()).toContain(de.restartBooking);
+    });
+
     it("shows customer info after calendar selection", async () => {
       const wrapper = createWrapper({ appointmentHash: undefined });
       wrapper.vm.currentView = 2;

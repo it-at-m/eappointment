@@ -1,9 +1,11 @@
 <template>
   <div v-if="isExpired">
     <muc-callout type="error">
-      <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
+      <template #header>{{
+        t("apiErrorProcessNotReservedAnymoreHeader")
+      }}</template>
       <template #content>
-        <p>{{ t("apiErrorSessionTimeoutText") }}</p>
+        <p>{{ t("apiErrorProcessNotReservedAnymoreText") }}</p>
       </template>
       <template #buttons>
         <div
@@ -346,7 +348,7 @@
     </muc-button>
   </div>
   <div
-    v-if="!rebookOrCancelDialog && !isRebooking"
+    v-if="!isExpired && !rebookOrCancelDialog && !isRebooking"
     class="m-button-group"
   >
     <muc-button
