@@ -1,11 +1,11 @@
 <template>
-  <div
-    v-if="isExpired"
-    :id="`process-${appointment?.processId}-displayNumber-${appointment?.displayNumber}`"
-  >
+  <div v-if="isExpired">
     <muc-callout type="error">
+      <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
       <template #content>
         <p>{{ t("apiErrorSessionTimeoutText") }}</p>
+      </template>
+      <template #buttons>
         <div
           class="m-button-group"
           style="margin-top: 1rem"
@@ -18,7 +18,6 @@
           </muc-button>
         </div>
       </template>
-      <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
     </muc-callout>
   </div>
   <div

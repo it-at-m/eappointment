@@ -1,168 +1,9 @@
 <template>
-  <ProviderSelection
-    v-if="!isCaptchaSessionExpired"
-    :t="t"
-    :selectableProviders="providerSelectionProviders"
-    :providersWithAppointments="providersWithAppointments"
-    :selectedProvider="selectedProvider"
-    :selectedProviders="selectedProviders"
-    @update:selectedProviders="onUpdateSelectedProviders"
-    :providerSelectionError="providerSelectionError"
-  />
-  <div
-    v-if="
-      !isCaptchaSessionExpired &&
-      availableDaysFetched &&
-      (noProviderSelected || !hasSelectedProviderWithAppointments) &&
-      !isSwitchingProvider
-    "
-    class="m-component"
-  >
-    <h2>{{ t("time") }}</h2>
-    <muc-callout type="info">
-      <template #header>
-        <h3>{{ t("apiErrorNoAppointmentForThisScopeHeader") }}</h3>
-      </template>
+  <div v-if="isCaptchaSessionExpired">
+    <muc-callout type="error">
       <template #content>
-        <div class="m-content">
-          <p>{{ t("apiErrorNoAppointmentForThisScopeText") }}</p>
-        </div>
+        <p>{{ t("apiErrorSessionTimeoutText") }}</p>
         <div
-          class="m-content"
-          style="margin-top: 8px"
-          v-if="emptyStateAvailabilityInfoHtml"
-        >
-          <p>
-            <muc-button
-              variant="ghost"
-              icon="information"
-              icon-shown-left
-              class="no-bottom-margin"
-              @click="openEmptyStateInfoModal"
-            >
-              <template #default>{{ t("newAppointmentsInfoLink") }}</template>
-            </muc-button>
-          </p>
-        </div>
-      </template>
-    </muc-callout>
-  </div>
-  <div
-    v-else-if="
-      !isCaptchaSessionExpired &&
-      (!error || isNoAppointmentForThisDayError) &&
-      (hasSelectedProviderWithAppointments ||
-        !availableDaysFetched ||
-        isSwitchingProvider)
-    "
-    class="m-component"
-  >
-    <CalendarListToggle
-      :t="t"
-      :isListView="isListView"
-      @update:isListView="onListViewToggle"
-    />
-    <div
-      v-if="!availableDaysFetched || isSwitchingProvider"
-      class="m-spinner-container"
-    >
-      <MucSpinner :text="t('spinnerText')" />
-    </div>
-    <CalendarView
-      ref="calendarViewRef"
-      v-else-if="!isListView"
-      :t="t"
-      :selectedDay="selectedDay"
-      :calendarKey="calendarKey"
-      :allowedDates="allowedDates"
-      :minDate="minDate"
-      :maxDate="maxDate"
-      :viewMonth="viewMonth"
-      :prevBookableDate="prevBookableDate"
-      :nextBookableDate="nextBookableDate"
-      :timeSlotsInHoursByOffice="timeSlotsInHoursByOffice"
-      :timeSlotsInDayPartByOffice="timeSlotsInDayPartByOffice"
-      :currentHour="currentHour"
-      :firstHour="firstHour"
-      :lastHour="lastHour"
-      :currentDayPart="currentDayPart"
-      :firstDayPart="firstDayPart"
-      :lastDayPart="lastDayPart"
-      :selectableProviders="selectableProviders"
-      :selectedProviders="selectedProvidersForCalendar"
-      :providersWithAppointments="providersWithAppointments"
-      :appointmentsCount="appointmentsCount"
-      :isLoadingAppointments="isLoadingAppointments"
-      :isLoadingComplete="isLoadingComplete"
-      :availabilityInfoHtml="availabilityInfoHtml"
-      :officeNameById="officeNameById"
-      :isSlotSelected="isSlotSelected"
-      :officeIdForTime="officeIdForTime"
-      @update:selectedDay="handleDaySelection"
-      @jumpToBookableDate="jumpToBookableDate"
-      @selectTimeSlot="
-        ({ officeId, time }) =>
-          handleTimeSlotSelection(officeId as number, time)
-      "
-      @setSelectedHour="(h) => (selectedHour = h as number | null)"
-      @setSelectedDayPart="(p) => (selectedDayPart = p as any)"
-      @openInfo="openAvailabilityInfoModal"
-    />
-
-    <ListView
-      ref="listViewRef"
-      v-else-if="isListView"
-      :t="t"
-      :isLoadingAppointments="isLoadingAppointments"
-      :availabilityInfoHtml="availabilityInfoHtml"
-      :selectableProviders="selectableProviders"
-      :selectedProviders="selectedProvidersForCalendar"
-      :providersWithAppointments="providersWithAppointments"
-      :officeNameById="officeNameById"
-      :isSlotSelected="isSlotSelected"
-      :officeIdForTime="officeIdForTime"
-      :availableDays="availableDays"
-      :appointmentsByDay="appointmentsByDayForDisplay"
-      :officeOrder="officeOrder"
-      :hasMoreDaysAhead="hasMoreListDaysAhead"
-      :isLoadingMoreDays="isLoadingMoreListDays"
-      @update:selectedDay="handleDaySelection"
-      @requestMoreDays="loadMoreListViewDays"
-      @selectTimeSlot="
-        ({ officeId, time }) =>
-          handleTimeSlotSelection(officeId as number, time)
-      "
-      @openInfo="openAvailabilityInfoModal"
-    />
-    <div ref="summary">
-      <AppointmentPreview
-        :t="t"
-        :selectedProvider="selectedProvider"
-        :selectedDay="selectedDay"
-        :selectedTimeslot="selectedTimeslot"
-        :selectedService="selectedService"
-      />
-    </div>
-  </div>
-  <div
-    v-if="
-      showError &&
-      !isSwitchingProvider &&
-      (isCaptchaSessionExpired || !noProviderSelected)
-    "
-    class="m-component"
-  >
-    <h2>{{ t("time") }}</h2>
-    <muc-callout :type="toCalloutType(apiErrorTranslation.errorType)">
-      <template #header>
-        <h3>{{ t(apiErrorTranslation.headerKey) }}</h3>
-      </template>
-      <template #content>
-        <div class="m-content">
-          <p>{{ t(apiErrorTranslation.textKey) }}</p>
-        </div>
-        <div
-          v-if="isCaptchaSessionExpired"
           class="m-button-group"
           style="margin-top: 1rem"
         >
@@ -173,71 +14,239 @@
             <template #default>{{ t("restartBooking") }}</template>
           </muc-button>
         </div>
-        <div
-          class="m-content"
-          style="margin-top: 8px"
-          v-if="
-            (apiErrorTranslation.textKey ===
-              'apiErrorNoAppointmentForThisScopeText' ||
-              apiErrorTranslation.textKey ===
-                'apiErrorNoAppointmentForThisDayText') &&
-            availabilityInfoHtml
-          "
-        >
-          <p>
-            <muc-button
-              variant="ghost"
-              icon="information"
-              icon-shown-left
-              class="no-bottom-margin"
-              @click="openAvailabilityInfoModal"
-            >
-              <template #default>{{ t("newAppointmentsInfoLink") }}</template>
-            </muc-button>
-          </p>
-        </div>
       </template>
+      <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
     </muc-callout>
   </div>
-  <div class="m-button-group">
-    <muc-button
-      v-if="!isRebooking"
-      icon="arrow-left"
-      icon-shown-left
-      variant="secondary"
-      @click="previousStep"
-    >
-      <template #default>{{ t("back") }}</template>
-    </muc-button>
-    <muc-button
-      ref="nextButton"
-      :disabled="
-        selectedTimeslot === 0 ||
-        !selectedDay ||
-        loadingStates.isReservingAppointment.value
+  <template v-else>
+    <ProviderSelection
+      v-if="!isCaptchaSessionExpired"
+      :t="t"
+      :selectableProviders="providerSelectionProviders"
+      :providersWithAppointments="providersWithAppointments"
+      :selectedProvider="selectedProvider"
+      :selectedProviders="selectedProviders"
+      @update:selectedProviders="onUpdateSelectedProviders"
+      :providerSelectionError="providerSelectionError"
+    />
+    <div
+      v-if="
+        !isCaptchaSessionExpired &&
+        availableDaysFetched &&
+        (noProviderSelected || !hasSelectedProviderWithAppointments) &&
+        !isSwitchingProvider
       "
-      :icon="'arrow-right'"
-      @click="nextStep"
+      class="m-component"
     >
-      <template #default>
-        <span>{{ t("next") }}</span>
-      </template>
-    </muc-button>
-    <muc-button
-      v-if="isRebooking"
-      icon="close"
-      variant="secondary"
-      @click="cancelReschedule"
+      <h2>{{ t("time") }}</h2>
+      <muc-callout type="info">
+        <template #header>
+          <h3>{{ t("apiErrorNoAppointmentForThisScopeHeader") }}</h3>
+        </template>
+        <template #content>
+          <div class="m-content">
+            <p>{{ t("apiErrorNoAppointmentForThisScopeText") }}</p>
+          </div>
+          <div
+            class="m-content"
+            style="margin-top: 8px"
+            v-if="emptyStateAvailabilityInfoHtml"
+          >
+            <p>
+              <muc-button
+                variant="ghost"
+                icon="information"
+                icon-shown-left
+                class="no-bottom-margin"
+                @click="openEmptyStateInfoModal"
+              >
+                <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+              </muc-button>
+            </p>
+          </div>
+        </template>
+      </muc-callout>
+    </div>
+    <div
+      v-else-if="
+        !isCaptchaSessionExpired &&
+        (!error || isNoAppointmentForThisDayError) &&
+        (hasSelectedProviderWithAppointments ||
+          !availableDaysFetched ||
+          isSwitchingProvider)
+      "
+      class="m-component"
     >
-      <template #default>{{ t("cancelReschedule") }}</template>
-    </muc-button>
-  </div>
-  <AvailabilityInfoModal
-    v-model:open="showAvailabilityInfoModal"
-    :html="availabilityInfoHtmlForModal"
-    :closeAriaLabel="t('closeDialog')"
-    :t="t"
-  />
+      <CalendarListToggle
+        :t="t"
+        :isListView="isListView"
+        @update:isListView="onListViewToggle"
+      />
+      <div
+        v-if="!availableDaysFetched || isSwitchingProvider"
+        class="m-spinner-container"
+      >
+        <MucSpinner :text="t('spinnerText')" />
+      </div>
+      <CalendarView
+        ref="calendarViewRef"
+        v-else-if="!isListView"
+        :t="t"
+        :selectedDay="selectedDay"
+        :calendarKey="calendarKey"
+        :allowedDates="allowedDates"
+        :minDate="minDate"
+        :maxDate="maxDate"
+        :viewMonth="viewMonth"
+        :prevBookableDate="prevBookableDate"
+        :nextBookableDate="nextBookableDate"
+        :timeSlotsInHoursByOffice="timeSlotsInHoursByOffice"
+        :timeSlotsInDayPartByOffice="timeSlotsInDayPartByOffice"
+        :currentHour="currentHour"
+        :firstHour="firstHour"
+        :lastHour="lastHour"
+        :currentDayPart="currentDayPart"
+        :firstDayPart="firstDayPart"
+        :lastDayPart="lastDayPart"
+        :selectableProviders="selectableProviders"
+        :selectedProviders="selectedProvidersForCalendar"
+        :providersWithAppointments="providersWithAppointments"
+        :appointmentsCount="appointmentsCount"
+        :isLoadingAppointments="isLoadingAppointments"
+        :isLoadingComplete="isLoadingComplete"
+        :availabilityInfoHtml="availabilityInfoHtml"
+        :officeNameById="officeNameById"
+        :isSlotSelected="isSlotSelected"
+        :officeIdForTime="officeIdForTime"
+        @update:selectedDay="handleDaySelection"
+        @jumpToBookableDate="jumpToBookableDate"
+        @selectTimeSlot="
+          ({ officeId, time }) =>
+            handleTimeSlotSelection(officeId as number, time)
+        "
+        @setSelectedHour="(h) => (selectedHour = h as number | null)"
+        @setSelectedDayPart="(p) => (selectedDayPart = p as any)"
+        @openInfo="openAvailabilityInfoModal"
+      />
+
+      <ListView
+        ref="listViewRef"
+        v-else-if="isListView"
+        :t="t"
+        :isLoadingAppointments="isLoadingAppointments"
+        :availabilityInfoHtml="availabilityInfoHtml"
+        :selectableProviders="selectableProviders"
+        :selectedProviders="selectedProvidersForCalendar"
+        :providersWithAppointments="providersWithAppointments"
+        :officeNameById="officeNameById"
+        :isSlotSelected="isSlotSelected"
+        :officeIdForTime="officeIdForTime"
+        :availableDays="availableDays"
+        :appointmentsByDay="appointmentsByDayForDisplay"
+        :officeOrder="officeOrder"
+        :hasMoreDaysAhead="hasMoreListDaysAhead"
+        :isLoadingMoreDays="isLoadingMoreListDays"
+        @update:selectedDay="handleDaySelection"
+        @requestMoreDays="loadMoreListViewDays"
+        @selectTimeSlot="
+          ({ officeId, time }) =>
+            handleTimeSlotSelection(officeId as number, time)
+        "
+        @openInfo="openAvailabilityInfoModal"
+      />
+      <div ref="summary">
+        <AppointmentPreview
+          :t="t"
+          :selectedProvider="selectedProvider"
+          :selectedDay="selectedDay"
+          :selectedTimeslot="selectedTimeslot"
+          :selectedService="selectedService"
+        />
+      </div>
+    </div>
+    <div
+      v-if="
+        showError &&
+        (isCaptchaSessionExpired ||
+          (!isSwitchingProvider && !noProviderSelected))
+      "
+      class="m-component"
+    >
+      <h2>{{ t("time") }}</h2>
+      <muc-callout :type="toCalloutType(apiErrorTranslation.errorType)">
+        <template #header>
+          <h3>{{ t(apiErrorTranslation.headerKey) }}</h3>
+        </template>
+        <template #content>
+          <div class="m-content">
+            <p>{{ t(apiErrorTranslation.textKey) }}</p>
+          </div>
+          <div
+            class="m-content"
+            style="margin-top: 8px"
+            v-if="
+              (apiErrorTranslation.textKey ===
+                'apiErrorNoAppointmentForThisScopeText' ||
+                apiErrorTranslation.textKey ===
+                  'apiErrorNoAppointmentForThisDayText') &&
+              availabilityInfoHtml
+            "
+          >
+            <p>
+              <muc-button
+                variant="ghost"
+                icon="information"
+                icon-shown-left
+                class="no-bottom-margin"
+                @click="openAvailabilityInfoModal"
+              >
+                <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+              </muc-button>
+            </p>
+          </div>
+        </template>
+      </muc-callout>
+    </div>
+    <div class="m-button-group">
+      <muc-button
+        v-if="!isRebooking"
+        icon="arrow-left"
+        icon-shown-left
+        variant="secondary"
+        @click="previousStep"
+      >
+        <template #default>{{ t("back") }}</template>
+      </muc-button>
+      <muc-button
+        ref="nextButton"
+        :disabled="
+          selectedTimeslot === 0 ||
+          !selectedDay ||
+          loadingStates.isReservingAppointment.value
+        "
+        :icon="'arrow-right'"
+        @click="nextStep"
+      >
+        <template #default>
+          <span>{{ t("next") }}</span>
+        </template>
+      </muc-button>
+      <muc-button
+        v-if="isRebooking"
+        icon="close"
+        variant="secondary"
+        @click="cancelReschedule"
+      >
+        <template #default>{{ t("cancelReschedule") }}</template>
+      </muc-button>
+    </div>
+    <AvailabilityInfoModal
+      v-model:open="showAvailabilityInfoModal"
+      :html="availabilityInfoHtmlForModal"
+      :closeAriaLabel="t('closeDialog')"
+      :t="t"
+    />
+  </template>
 </template>
 <script setup lang="ts">
 import type { CalloutType } from "@/utils/callout";
@@ -270,6 +279,7 @@ import {
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 import { toCalloutType } from "@/utils/callout";
+import { captchaTokenExpiryMs } from "@/utils/captchaTokenExpiry";
 import {
   createErrorStates,
   getApiErrorTranslation,
@@ -1260,6 +1270,33 @@ const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
   return getApiErrorTranslation(errorStateMap.value, currentErrorData.value);
 });
 
+let captchaExpiryTimer: number | undefined;
+
+const showCaptchaSessionExpiredCallout = (): void => {
+  if (captchaSessionExpired.value) return;
+  error.value = true;
+  handleApiError("captchaExpired", errorStateMap.value, currentErrorData.value);
+  lockUiForCaptchaSessionExpiry();
+};
+
+const armCaptchaExpiry = (): void => {
+  if (captchaExpiryTimer) {
+    window.clearTimeout(captchaExpiryTimer);
+    captchaExpiryTimer = undefined;
+  }
+  const expiryMs = captchaTokenExpiryMs(props.captchaToken);
+  if (expiryMs == null) return;
+  const remainingMs = expiryMs - Date.now();
+  if (remainingMs <= 0) {
+    showCaptchaSessionExpiredCallout();
+    return;
+  }
+  captchaExpiryTimer = window.setTimeout(() => {
+    captchaExpiryTimer = undefined;
+    showCaptchaSessionExpiredCallout();
+  }, remainingMs);
+};
+
 const lockUiForCaptchaSessionExpiry = (): void => {
   captchaSessionExpired.value = true;
   availableDays.value = [];
@@ -1563,6 +1600,9 @@ const reloadCalendarAvailability = async (options?: {
   /** Bypass same-key cache / in-flight join (tests or forced refresh). */
   force?: boolean;
 }): Promise<boolean> => {
+  if (captchaSessionExpired.value) {
+    return false;
+  }
   const allowSlotsFollowUp = options?.allowSlotsFollowUp !== false;
   const replaceAvailableDays =
     options?.replaceAvailableDays ?? !options?.preserveSelectedDay;
@@ -2231,8 +2271,23 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (refetchTimer) clearTimeout(refetchTimer);
+  if (captchaExpiryTimer) window.clearTimeout(captchaExpiryTimer);
   calendarFetchAbort?.abort();
 });
+
+watch(() => props.captchaToken, armCaptchaExpiry, { immediate: true });
+
+watch(
+  () =>
+    Boolean(
+      props.bookingError &&
+      props.bookingErrorKey &&
+      CAPTCHA_SESSION_BOOKING_KEYS.has(props.bookingErrorKey)
+    ),
+  (expired) => {
+    if (expired) showCaptchaSessionExpiredCallout();
+  }
+);
 
 watch(isLoadingAppointments, (loading) => {
   if (loading) {

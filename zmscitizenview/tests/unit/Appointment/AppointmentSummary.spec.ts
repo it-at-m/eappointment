@@ -99,7 +99,7 @@ describe("AppointmentSummary", () => {
           },
           "muc-callout": {
             template:
-              '<div class="muc-callout"><div class="header"><slot name="header" /></div><div class="content"><slot name="content" /></div></div>',
+              '<div class="muc-callout"><div class="header"><slot name="header" /></div><div class="content"><slot name="content" /><slot name="buttons" /></div></div>',
             props: ["type"],
           },
         },
