@@ -1,0 +1,118 @@
+{
+  "branch": "renovate/next-cucumber.version",
+  "branchSlug": "renovate-next-cucumber.version",
+  "runId": "35829984655",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35829984655",
+  "runStartedAt": "2026-09-23T07:06:18Z",
+  "publishedAt": "2026-09-23T07:19:24.268Z",
+  "features": {
+    "feature-rest-zmsapi-booking-zmsadmin-zmskvr-1049": {
+      "status": "passed",
+      "shard": "zmsapi",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/booking/zmsadmin/ZMSKVR-1049.feature",
+      "runId": "35829984655",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35829984655",
+      "runStartedAt": "2026-09-23T07:06:18Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmsapi",
+          "runId": "35829984655",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35829984655",
+          "runStartedAt": "2026-09-23T07:06:18Z"
+        }
+      }
+    },
+    "feature-rest-zmsapi-booking-zmsticketprinter-zmskvr-167": {
+      "status": "passed",
+      "shard": "zmsapi",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/booking/zmsticketprinter/ZMSKVR-167.feature",
+      "runId": "35829984655",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35829984655",
+      "runStartedAt": "2026-09-23T07:06:18Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmsapi",
+          "runId": "35829984655",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35829984655",
+          "runStartedAt": "2026-09-23T07:06:18Z"
+        }
+      }
+    },
+    "feature-rest-zmsapi-customer-call-zmsadmin-zmskvr-1328": {
+      "status": "passed",
+      "shard": "zmsapi",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/customer-call/zmsadmin/ZMSKVR-1328.feature",
+      "runId": "35829984655",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35829984655",
+      "runStartedAt": "2026-09-23T07:06:18Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmsapi",
+          "runId": "35829984655",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35829984655",
+          "runStartedAt": "2026-09-23T07:06:18Z"
+        }
+      }
+    },
+    "feature-rest-zmsapi-status": {
+      "status": "passed",
+      "shard": "zmsapi",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/status.feature",
+      "runId": "35829984655",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35829984655",
+      "runStartedAt": "2026-09-23T07:06:18Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmsapi",
+          "runId": "35829984655",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35829984655",
+          "runStartedAt": "2026-09-23T07:06:18Z"
+        }
+      }
+    },
+    "feature-rest-zmsapi-workstation-login": {
+      "status": "passed",
+      "shard": "zmsapi",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/workstation-login.feature",
+      "runId": "35829984655",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35829984655",
+      "runStartedAt": "2026-09-23T07:06:18Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmsapi",
+          "runId": "35829984655",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35829984655",
+          "runStartedAt": "2026-09-23T07:06:18Z"
+        }
+      }
+    },
+    "feature-ui-zmsticketprinter-booking-zmskvr-167": {
+      "status": "passed",
+      "shard": "zmsticketprinter",
+      "browser": "chrome",
+      "rel": "ui/zmsticketprinter/booking/ZMSKVR-167.feature",
+      "runId": "35829984655",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35829984655",
+      "runStartedAt": "2026-09-23T07:06:18Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmsticketprinter",
+          "runId": "35829984655",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/35829984655",
+          "runStartedAt": "2026-09-23T07:06:18Z"
+        }
+      }
+    }
+  }
+}
