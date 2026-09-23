@@ -102,9 +102,10 @@ class ExchangeCapacityscope extends \BO\Zmsbackend\Base
             if ($scopeId === '' || $minutes <= 0 || isset($slotTimes[$scopeId])) {
                 continue;
             }
+            $name = trim((string) ($entry['scopename'] ?? ''));
             $slotTimes[$scopeId] = [
                 'id' => $scopeId,
-                'name' => 'Standort ' . $scopeId,
+                'name' => $name !== '' ? $name : 'Standort ' . $scopeId,
                 'slotTimeInMinutes' => $minutes,
             ];
         }

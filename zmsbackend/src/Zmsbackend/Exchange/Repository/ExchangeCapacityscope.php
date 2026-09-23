@@ -101,7 +101,7 @@ class ExchangeCapacityscope extends \BO\Zmsbackend\Query\Base
             WHERE ' . $bookedFilter . '
             GROUP BY ' . $groupBy . '
         ) AS booked ON booked.subjectid = planned.subjectid AND booked.date = planned.date
-        ORDER BY planned.date ASC, FIELD(planned.subjectid, ' . implode(', ', $scopeIds) . ')
+        ORDER BY planned.date ASC, FIELD(planned.subjectid, ' . implode(', ', array_map('intval', $scopeIds)) . ')
         ';
     }
 
@@ -121,10 +121,18 @@ class ExchangeCapacityscope extends \BO\Zmsbackend\Query\Base
         $filter = self::slotFilterSql('s', 't', $scopeIds, $dateStart, $dateEnd, $parameters);
 
         return '
-            SELECT s.scopeID as subjectid, s.slotTimeInMinutes as slotminutes
+            SELECT
+                s.scopeID as subjectid,
+                s.slotTimeInMinutes as slotminutes,
+                TRIM(CONCAT(IFNULL(scopeprovider.name, ""), " ", IFNULL(scope.standortkuerzel, ""))) as scopename
             FROM slot AS s
+            INNER JOIN ' . \BO\Zmsbackend\Query\Scope::TABLE . ' AS scope
+                ON scope.StandortID = s.scopeID
+            LEFT JOIN ' . \BO\Zmsbackend\Provider\Repository\Provider::TABLE . ' AS scopeprovider
+                ON scope.InfoDienstleisterID = scopeprovider.id
+                AND scope.source = scopeprovider.source
             WHERE ' . $filter . '
-            GROUP BY s.scopeID, s.slotTimeInMinutes
+            GROUP BY s.scopeID, s.slotTimeInMinutes, scopename
         ';
     }
 
