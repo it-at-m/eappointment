@@ -226,6 +226,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 - `dldb-special-cases/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature` - Ruppertstraße Citizen API booking (10502 / 10489 / 10492, jump-in)
 - `booking/zmskvr-955_zmskvr-965_logged_in_booking_no_activation_citizenapi.feature` - logged-in confirm without preconfirm / activation mail
 - `rebooking/zmskvr-353_rebooking_no_activation_citizenapi.feature` - guest rebooking confirm with original process, no second activation
+- `callouts/zmskvr-1440_captcha_expiry_citizenapi.feature` - expired captcha token (`captchaExpired`) on the calendar and on reserve
 
 Additional REST features (availability, offices-and-services, etc.) may be added over time; this list reflects files currently present under `features/rest/`.
 
