@@ -5,7 +5,7 @@ Feature: CitizenView: captcha session and reservation callouts
   I want an expired captcha session and an expired reservation to replace the step
   So that I can restart the booking without a stale hold
 
-  # Scope 74 only: captcha on, reservation duration 5 minutes, captcha JWT TTL 5 minutes.
+  # Scope 74 only: captcha on, reservation duration 2 minutes, captcha JWT TTL 2 minutes.
   # Service 1072015 Parkausweis für Handelsvertretungen. Combinable only with itself, so the
   # restart check is that this service is still selected.
   # Captcha sits on Leistung and keeps Weiter disabled until Altcha finishes. The test
@@ -26,7 +26,7 @@ Feature: CitizenView: captcha session and reservation callouts
     And I continue from the service combination step
     Then provider checkbox 10427 should be visible in the citizen view
     When I select office 10427 in the citizen view
-    And I wait 5 minutes in the citizen view
+    And I wait 2 minutes in the citizen view
     Then the captcha session callout should be visible in the citizen view
     And the Zurück button should not be visible in the citizen view
     When I restart the booking in the citizen view
@@ -48,7 +48,7 @@ Feature: CitizenView: captcha session and reservation callouts
     When I enter contact details without optional remarks in the citizen view
     Then the contact form should be visible in the citizen view
     And the Zurück button should be visible in the citizen view
-    When I wait 5 minutes in the citizen view
+    When I wait 2 minutes in the citizen view
     Then the reservation expired callout should be visible in the citizen view
     And the Zurück button should not be visible in the citizen view
     When I restart the booking in the citizen view
@@ -70,7 +70,7 @@ Feature: CitizenView: captcha session and reservation callouts
     When I enter default contact details in the citizen view
     Then the booking summary should show "Kommunale Verkehrsüberwachung" for provider 10427 in the citizen view
     And the Zurück button should be visible in the citizen view
-    When I wait 5 minutes in the citizen view
+    When I wait 2 minutes in the citizen view
     Then the reservation expired callout should be visible in the citizen view
     And the Zurück button should not be visible in the citizen view
     When I restart the booking in the citizen view
