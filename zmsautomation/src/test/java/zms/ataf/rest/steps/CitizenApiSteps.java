@@ -1406,6 +1406,7 @@ public class CitizenApiSteps {
         private String confirmAuthKey;
         private String confirmUrl;
         private String appointmentUrl;
+        private String contactEmail;
 
         private void clear() {
             process = null;
@@ -1413,6 +1414,7 @@ public class CitizenApiSteps {
             confirmAuthKey = null;
             confirmUrl = null;
             appointmentUrl = null;
+            contactEmail = null;
         }
     }
 
@@ -1428,6 +1430,14 @@ public class CitizenApiSteps {
 
     public static void setBookingProcess(ThinnedProcess process) {
         booking().process = process;
+    }
+
+    public static String getBookingContactEmail() {
+        return booking().contactEmail;
+    }
+
+    public static void setBookingContactEmail(String email) {
+        booking().contactEmail = email;
     }
 
     public static String getBookingConfirmProcessId() {
