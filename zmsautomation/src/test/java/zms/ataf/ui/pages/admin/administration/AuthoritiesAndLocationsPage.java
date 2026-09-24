@@ -24,6 +24,7 @@ import org.testng.Assert;
 import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.model.LocatorType;
+import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.ui.pages.admin.AdminPage;
@@ -236,6 +237,7 @@ public void saveLocationChanges() {
 
     public void clickOnOpeningHoursEntryBy(String location) {
         ScenarioLogManager.getLogger().info("Trying to click on opening hours by location \"" + location + "\"");
+        AccountCheckout.checkout("scope:" + location);
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//a[contains(text(),'" + location + "')]/../a[text()='Öffnungszeiten']", LocatorType.XPATH, false,
                 CONTEXT);
     }

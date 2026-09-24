@@ -18,6 +18,7 @@ import ataf.core.helpers.TestPropertiesHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
+import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.ui.pages.admin.AdminPageContext;
 
 /**
@@ -317,6 +318,7 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
 
     public void selectLocationForAppointmentForwarding(String location) {
         ScenarioLogManager.getLogger().info("Trying to select location for appointment forwarding...");
+        AccountCheckout.checkout("scope:" + location);
         String xpath = "//select[@name='location']";
         WebElement competentBody = findElementByLocatorType(xpath, LocatorType.XPATH, true);
         Assert.assertNotNull(competentBody, "Location dropdown element not found!");
