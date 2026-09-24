@@ -4,7 +4,7 @@ namespace BO\Zmsentities\Helper;
 
 class DateTime extends \DateTimeImmutable implements \JsonSerializable
 {
-    public static function create(string|\DateTimeInterface|false $time = 'now', \DateTimeZone $timezone = null): self
+    public static function create(string|\DateTimeInterface|false $time = 'now', ?\DateTimeZone $timezone = null): self
     {
         if ($time instanceof \BO\Zmsentities\Helper\DateTime) {
             $dateTime = $time;

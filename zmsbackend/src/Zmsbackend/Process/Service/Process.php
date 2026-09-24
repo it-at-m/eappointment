@@ -440,7 +440,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      *
      * @return Collection
      */
-    public function readConflictListByScopeAndTime(\BO\Zmsentities\Scope $scope, \DateTimeInterface $startDate = null, \DateTimeInterface $endDate = null, \DateTimeInterface $now = null, int $resolveReferences = 1)
+    public function readConflictListByScopeAndTime(\BO\Zmsentities\Scope $scope, ?\DateTimeInterface $startDate = null, ?\DateTimeInterface $endDate = null, ?\DateTimeInterface $now = null, int $resolveReferences = 1)
     {
         $availabilityList = (new \BO\Zmsbackend\Availability\Service\Availability())
             ->readAvailabilityListByScope($scope, 0, $startDate, $endDate)
@@ -536,7 +536,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      *
      * @return Collection
      */
-    public function readProcessListByMailAddress(string $mailAddress, int $scopeId = null, int $resolveReferences = 0, int $limit = 2000): Collection
+    public function readProcessListByMailAddress(string $mailAddress, ?int $scopeId = null, int $resolveReferences = 0, int $limit = 2000): Collection
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $query
