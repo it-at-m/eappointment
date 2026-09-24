@@ -21,7 +21,7 @@ jobs:
   module-test:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment/zmsbase:${{ matrix.php_version }}-dev@sha256:cdf964fa2e02d11b1309f1006d0d71d0afef6a550d5722c7634860e5c594d4cb"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:${{ matrix.php_version }}-dev@sha256:39fa5ce4b22791e56d4c7d723190301748f2df7839dc1d79470a2c44008ff1fa"
     env:
       XDEBUG_MODE: coverage
       PHP_INI_SCAN_DIR: "/usr/local/etc/php/conf.d:/tmp/php/conf.d"
@@ -90,30 +90,30 @@ jobs:
       matrix:
         include:
           - module: mellon
-            php_version: "8.3"      
+            php_version: "8.4"      
           - module: zmsadmin
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmscalldisplay
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmscitizenapi
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsdldb
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsentities
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsmessaging
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsslim
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsstatistic
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsticketprinter
-            php_version: "8.3"
+            php_version: "8.4"
 
   zmsbackend-test:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev@sha256:26ebcf8156898148e1435af9e4fc28165062f08ce6fd1a49edeb5102a9d63851"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.4-dev@sha256:39fa5ce4b22791e56d4c7d723190301748f2df7839dc1d79470a2c44008ff1fa"
     services:
       mariadb:
         image: mariadb:10.11@sha256:7f22313fc130a377a44999965bcb0a08dd5b21e8502824c1b864f792f9bc66ab
@@ -195,7 +195,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
-          php-version: "8.3"
+          php-version: "8.4"
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
           coverage: xdebug
 

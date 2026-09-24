@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "be3f9e6d3b3e7e8b5650f88a6fdc9ad0",
+    "content-hash": "5fcfd7ca6b309f8a117530c4d4bba80c",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -11346,7 +11346,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.3"
+        "php": ">=8.4"
     },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"
