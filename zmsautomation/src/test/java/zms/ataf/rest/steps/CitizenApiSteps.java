@@ -69,7 +69,7 @@ public class CitizenApiSteps {
         }
     }
     
-    /** Reset static booking state and instance reserve state before each scenario so each test uses its own process and mails. */
+    /** Reset this thread's booking state and instance reserve state before each scenario. */
     @Before
     public void clearBookingStateBeforeScenario() {
         clearBookingState();
@@ -96,11 +96,7 @@ public class CitizenApiSteps {
 
     /** Clear shared booking/confirm state (process, credentials, URLs). Call before each scenario to avoid cross-scenario leakage. */
     public static void clearBookingState() {
-        bookingProcess = null;
-        bookingConfirmProcessId = null;
-        bookingConfirmAuthKey = null;
-        bookingConfirmUrl = null;
-        bookingAppointmentUrl = null;
+        booking().clear();
     }
 
     /* Section: Sequential steps assertions for thinned booking process */
@@ -1376,48 +1372,65 @@ public class CitizenApiSteps {
         return lastAvailableAppointmentsResponse;
     }
 
-    /** Static booking context so other step classes (e.g. ZmsApiMailSteps) can read/write reserve and confirm state. */
-    private static ThinnedProcess bookingProcess;
-    private static String bookingConfirmProcessId;
-    private static String bookingConfirmAuthKey;
-    private static String bookingConfirmUrl;
-    private static String bookingAppointmentUrl;
+    /** Booking context for this scenario's thread, shared with mail and confirm steps. */
+    private static final class BookingContext {
+        private ThinnedProcess process;
+        private String confirmProcessId;
+        private String confirmAuthKey;
+        private String confirmUrl;
+        private String appointmentUrl;
+
+        private void clear() {
+            process = null;
+            confirmProcessId = null;
+            confirmAuthKey = null;
+            confirmUrl = null;
+            appointmentUrl = null;
+        }
+    }
+
+    private static final ThreadLocal<BookingContext> BOOKING = ThreadLocal.withInitial(BookingContext::new);
+
+    private static BookingContext booking() {
+        return BOOKING.get();
+    }
 
     public static ThinnedProcess getBookingProcess() {
-        return bookingProcess;
+        return booking().process;
     }
 
     public static void setBookingProcess(ThinnedProcess process) {
-        bookingProcess = process;
+        booking().process = process;
     }
 
     public static String getBookingConfirmProcessId() {
-        return bookingConfirmProcessId;
+        return booking().confirmProcessId;
     }
 
     public static String getBookingConfirmAuthKey() {
-        return bookingConfirmAuthKey;
+        return booking().confirmAuthKey;
     }
 
     public static void setBookingConfirmCredentials(String processId, String authKey) {
-        bookingConfirmProcessId = processId;
-        bookingConfirmAuthKey = authKey;
+        BookingContext context = booking();
+        context.confirmProcessId = processId;
+        context.confirmAuthKey = authKey;
     }
 
     public static String getBookingConfirmUrl() {
-        return bookingConfirmUrl;
+        return booking().confirmUrl;
     }
 
     public static void setBookingConfirmUrl(String url) {
-        bookingConfirmUrl = url;
+        booking().confirmUrl = url;
     }
 
     public static String getBookingAppointmentUrl() {
-        return bookingAppointmentUrl;
+        return booking().appointmentUrl;
     }
 
     public static void setBookingAppointmentUrl(String url) {
-        bookingAppointmentUrl = url;
+        booking().appointmentUrl = url;
     }
 
     public ThinnedProcess getLastReserveProcess() {
