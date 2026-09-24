@@ -52,6 +52,7 @@
             ) }}
 
             <button class="button button--positive button-submit process-reserve" accesskey="h">{{ "%s"|format("Termin buchen")|trans }}</button>
+            <a class="button button-redirect-cancel" href="{{ urlGet('workstation', {}, {}) }}" style="margin-left: 0.5em;">Abbrechen der Weiterleitung</a>
         </form>
     {% endblock %}
 {% endembed %}

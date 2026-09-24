@@ -125,13 +125,15 @@ class AvailabilityDatePicker extends Component
             return;
         }
         if ('startDate' == name) {
-            if (this.state.availability.startDate != moment(date).startOf('day').unix()) {
-                this.props.onChange("startDate", moment(date).unix());
+            const startOfDay = moment(date).startOf('day').unix();
+            if (this.state.availability.startDate != startOfDay) {
+                this.props.onChange("startDate", startOfDay);
             }
         }
         if ('endDate' == name) {
-            if (this.state.availability.endDate != moment(date).startOf('day').unix()) {
-                this.props.onChange("endDate", moment(date).unix());
+            const startOfDay = moment(date).startOf('day').unix();
+            if (this.state.availability.endDate != startOfDay) {
+                this.props.onChange("endDate", startOfDay);
             }
         }
         this.closeDatePicker();
