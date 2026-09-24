@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9b826b01cdd0a68c967efdf16486190e",
+    "content-hash": "dbd4e309b12935d45198afd5915ce4d7",
     "packages": [
         {
             "name": "roave/security-advisories",
@@ -6472,7 +6472,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.3",
+        "php": ">=8.4",
         "ext-json": ">=0",
         "ext-pcre": ">=0"
     },

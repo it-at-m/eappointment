@@ -175,11 +175,11 @@ class SlotList extends \BO\Zmsbackend\Query\Base
 
     public function __construct(
         array $slotData = ['availability__id' => null],
-        \DateTimeImmutable $start = null,
-        \DateTimeImmutable $stop = null,
-        \DateTimeInterface $now = null,
-        \BO\Zmsentities\Availability $availability = null,
-        \BO\Zmsentities\Scope $scope = null
+        ?\DateTimeImmutable $start = null,
+        ?\DateTimeImmutable $stop = null,
+        ?\DateTimeInterface $now = null,
+        ?\BO\Zmsentities\Availability $availability = null,
+        ?\BO\Zmsentities\Scope $scope = null
     ) {
         $this->availability = $availability;
         $this->scope = $scope;
@@ -365,7 +365,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
      */
     public function getFreeProcesses(
         \BO\Zmsentities\Calendar $calendar,
-        \DateTimeImmutable $freeProcessesDate = null,
+        ?\DateTimeImmutable $freeProcessesDate = null,
         $slotType = 'public',
         int $slotsRequired = 1
     ) {
