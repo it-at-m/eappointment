@@ -53,6 +53,7 @@ public class CitizenApiSteps {
     private int lastOfficeId;
     private int lastServiceId;
     private int lastServiceCount = 1;
+    private String lastAppointmentDate;
     private String lastDisplayNumberBeforeCancel;
     private OfficesAndServicesResponse lastOfficesAndServicesResponse;
     private Integer rebookingSourceProcessId;
@@ -77,6 +78,7 @@ public class CitizenApiSteps {
         cachedCalendarServiceId = null;
         cachedCalendarServiceCount = null;
         lastAvailableAppointmentsResponse = null;
+        lastAppointmentDate = null;
         lastOfficesAndServicesResponse = null;
         rebookingSourceProcessId = null;
         rebookingSourceAuthKey = null;
@@ -330,6 +332,7 @@ public class CitizenApiSteps {
         lastOfficeId = officeId;
         lastServiceId = serviceId;
         lastServiceCount = serviceCount;
+        lastAppointmentDate = date;
 
         String requestedKey = String.valueOf(officeId);
         boolean cacheMatchesRequest = lastAvailableCalendarResponse != null
@@ -374,6 +377,12 @@ public class CitizenApiSteps {
         }
         List<Long> timestamps = new ArrayList<>(
             lastAvailableAppointmentsResponse.futureAppointmentTimestamps());
+        for (int day = 0; timestamps.isEmpty() && day < 3; day++) {
+            if (!loadNextCalendarDayWithSlots()) {
+                break;
+            }
+            timestamps = new ArrayList<>(lastAvailableAppointmentsResponse.futureAppointmentTimestamps());
+        }
         if (timestamps.isEmpty()) {
             ScenarioLogManager.getLogger().error("No appointment timestamps found in lastAvailableAppointmentsResponse "
                 + "for officeId=" + lastOfficeId + ", serviceId=" + lastServiceId);
@@ -456,6 +465,13 @@ public class CitizenApiSteps {
                     i++;
                     continue;
                 }
+                if (loadNextCalendarDayWithSlots()) {
+                    int fromNextDay = appendFreshTimestamps(timestamps);
+                    if (fromNextDay > 0) {
+                        i++;
+                        continue;
+                    }
+                }
             }
             response.then().statusCode(200);
             i++;
@@ -490,6 +506,46 @@ public class CitizenApiSteps {
         if (lastReserveProcess != null) {
             setLastReserveProcess(lastReserveProcess);
         }
+    }
+
+    /** Use the next calendar day that still has slots for the current office. */
+    private boolean loadNextCalendarDayWithSlots() {
+        if (lastAvailableCalendarResponse == null || lastAvailableCalendarResponse.getAvailableDays() == null) {
+            return false;
+        }
+        String current = lastAppointmentDate;
+        String nextDate = null;
+        for (AvailableCalendarResponse.CalendarDay day : lastAvailableCalendarResponse.getAvailableDays()) {
+            if (day == null || day.getDate() == null || day.getOffices() == null) {
+                continue;
+            }
+            if (current != null && day.getDate().compareTo(current) <= 0) {
+                continue;
+            }
+            for (AvailableCalendarResponse.OfficeSlot office : day.getOffices()) {
+                if (office != null
+                        && office.matchesOfficeId(lastOfficeId)
+                        && office.getAppointments() != null
+                        && !office.getAppointments().isEmpty()) {
+                    nextDate = day.getDate();
+                    break;
+                }
+            }
+            if (nextDate != null) {
+                break;
+            }
+        }
+        if (nextDate == null) {
+            return false;
+        }
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API day %s has no free slot for office %d; using %s",
+            current,
+            lastOfficeId,
+            nextDate));
+        iRequestAvailableAppointmentsForDateOfficeAndService(
+            nextDate, lastOfficeId, lastServiceId, lastServiceCount);
+        return true;
     }
 
     /** Ask the calendar again and append timestamps this scenario has not tried yet. */

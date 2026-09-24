@@ -533,6 +533,7 @@ public class CitizenViewPage extends BasePage {
         for (int officeId : officeIds) {
             remaining.add(officeId);
         }
+        int dayMoves = 0;
         for (int attempt = 1; attempt <= 10 && !remaining.isEmpty(); attempt++) {
             Set<Integer> foundThisPass = new HashSet<>();
             for (int officeId : remaining) {
@@ -551,16 +552,20 @@ public class CitizenViewPage extends BasePage {
                             "zmscitizenview: still missing timeslots for providers {} (attempt {}); try Später",
                             remaining,
                             attempt);
-            if (!clickCitizenViewLaterOnceIfAvailable()) {
+            if (clickCitizenViewLaterOnceIfAvailable()) {
+                sleepQuiet(1200L);
+                try {
+                    waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
+                } catch (Exception e) {
+                    ScenarioLogManager.getLogger()
+                            .warn("zmscitizenview slot wait after Später (assert providers): {}", e.toString());
+                }
+                continue;
+            }
+            if (dayMoves >= 3 || !openNextCalendarDayAndWaitForSlots()) {
                 break;
             }
-            sleepQuiet(1200L);
-            try {
-                waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
-            } catch (Exception e) {
-                ScenarioLogManager.getLogger()
-                        .warn("zmscitizenview slot wait after Später (assert providers): {}", e.toString());
-            }
+            dayMoves++;
         }
         Assert.assertTrue(
                 remaining.isEmpty(),
@@ -1262,6 +1267,82 @@ public class CitizenViewPage extends BasePage {
         return Boolean.TRUE.equals(clicked);
     }
 
+    /**
+     * Opens the next bookable day on the citizen calendar. Später only moves within the open day,
+     * so an empty evening grid uses the calendar's next-day control instead.
+     */
+    private boolean openNextCalendarDayAndWaitForSlots() {
+        if (!clickNextBookableCalendarDay()) {
+            return false;
+        }
+        sleepQuiet(1200L);
+        try {
+            waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview slot wait after next calendar day: {}", e.toString());
+        }
+        return true;
+    }
+
+    private boolean clickNextBookableCalendarDay() {
+        CONTEXT.set();
+        String script =
+                "function walk(root, visit){"
+                        + "if(!root||!root.querySelectorAll)return false;"
+                        + "var nodes=root.querySelectorAll('*');"
+                        + "for(var i=0;i<nodes.length;i++){"
+                        + "if(visit(nodes[i]))return true;"
+                        + "if(nodes[i].shadowRoot&&walk(nodes[i].shadowRoot,visit))return true;"
+                        + "}"
+                        + "return false;"
+                        + "}"
+                        + "function enabled(btn){"
+                        + "return btn&&!btn.disabled&&btn.getAttribute('aria-disabled')!=='true';"
+                        + "}"
+                        + "var wrap=document.querySelector('.muc-calendar-wrap');"
+                        + "if(!wrap)return false;"
+                        + "var clicked=false;"
+                        + "walk(wrap,function(el){"
+                        + "if(clicked||el.tagName!=='BUTTON'||!enabled(el))return false;"
+                        + "var useEl=el.querySelector('use');"
+                        + "var href=(useEl&&(useEl.getAttribute('href')||useEl.getAttribute('xlink:href')))||'';"
+                        + "if(href.indexOf('chevron-right')<0)return false;"
+                        + "el.click();"
+                        + "clicked=true;"
+                        + "return true;"
+                        + "});"
+                        + "if(clicked)return true;"
+                        + "var buttons=[];"
+                        + "walk(wrap,function(el){"
+                        + "if(el.tagName==='BUTTON')buttons.push(el);"
+                        + "return false;"
+                        + "});"
+                        + "var selected=-1;"
+                        + "for(var i=0;i<buttons.length;i++){"
+                        + "var b=buttons[i];"
+                        + "var marked=b.getAttribute('aria-pressed')==='true'||b.getAttribute('aria-selected')==='true'"
+                        + "||b.className.indexOf('selected')>=0;"
+                        + "if(marked)selected=i;"
+                        + "}"
+                        + "if(selected<0)return false;"
+                        + "for(var j=selected+1;j<buttons.length;j++){"
+                        + "var day=buttons[j];"
+                        + "if(!enabled(day))continue;"
+                        + "var label=(day.textContent||'').replace(/\\s+/g,' ').trim();"
+                        + "if(!/^\\d{1,2}$/.test(label))continue;"
+                        + "day.click();"
+                        + "return true;"
+                        + "}"
+                        + "return false;";
+        Object clicked = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        if (Boolean.TRUE.equals(clicked)) {
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: opened the next calendar day");
+        }
+        return Boolean.TRUE.equals(clicked);
+    }
+
     /** Wait until slot buttons exist and MucSpinner cleared (calendar day / office fetch). */
     public void waitUntilAppointmentSlotsReady(int maxSeconds) {
         CONTEXT.set();
@@ -1299,10 +1380,16 @@ public class CitizenViewPage extends BasePage {
     public void waitUntilSlotsReadyForBooking() {
         CONTEXT.set();
         int timeout = slotBookingWaitTimeoutSeconds();
-        try {
-            waitUntilAppointmentSlotsReady(timeout);
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger().warn("zmscitizenview slot wait: {}", e.toString());
+        for (int day = 0; day < 4; day++) {
+            try {
+                waitUntilAppointmentSlotsReady(day == 0 ? timeout : Math.min(45, timeout));
+                break;
+            } catch (Exception e) {
+                ScenarioLogManager.getLogger().warn("zmscitizenview slot wait: {}", e.toString());
+                if (deepTimeslotClickablePresent() || !openNextCalendarDayAndWaitForSlots()) {
+                    break;
+                }
+            }
         }
         scrollTimeSlotGridIntoViewForScreenshots();
     }
@@ -1463,6 +1550,7 @@ public class CitizenViewPage extends BasePage {
                 officeId,
                 skippedTimestamps);
         boolean highlighted = false;
+        int dayMoves = 0;
         for (int attempt = 1; attempt <= 8 && !highlighted; attempt++) {
             try {
                 highlighted =
@@ -1481,16 +1569,20 @@ public class CitizenViewPage extends BasePage {
                             "zmscitizenview: no timeslot for provider {} in current view (attempt {}); try Später",
                             officeId,
                             attempt);
-            if (!clickCitizenViewLaterOnceIfAvailable()) {
+            if (clickCitizenViewLaterOnceIfAvailable()) {
+                sleepQuiet(1200L);
+                try {
+                    waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
+                } catch (Exception e) {
+                    ScenarioLogManager.getLogger()
+                            .warn("zmscitizenview slot wait after Später (highlight): {}", e.toString());
+                }
+                continue;
+            }
+            if (dayMoves >= 3 || !openNextCalendarDayAndWaitForSlots()) {
                 break;
             }
-            sleepQuiet(1200L);
-            try {
-                waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
-            } catch (Exception e) {
-                ScenarioLogManager.getLogger()
-                        .warn("zmscitizenview slot wait after Später (highlight): {}", e.toString());
-            }
+            dayMoves++;
         }
         Assert.assertTrue(
                 highlighted,
