@@ -43,8 +43,14 @@ RUN ln -snf "/usr/share/zoneinfo/${TZ}" /etc/localtime \
 # --------------------------------------------------
 # System dependencies + PHP extensions
 # --------------------------------------------------
+# ATAF 0.3.4 ships Selenium 4.46, which speaks Chrome DevTools protocol 148-150.
+# Debian security ships a newer Chromium (153). That mismatch makes ChromeDriver
+# time out with "Timed out receiving message from renderer" on the first navigation.
+# Hold this pin until ATAF moves to a Selenium release that speaks a newer protocol.
+# Same version as .github/workflows/zmsautomation-workflow.yaml.
+ARG CHROMIUM_VERSION=150.0.7871.181-1~deb13u1
 RUN apt-get update \
- && apt-get install -y --no-install-recommends \
+ && apt-get install -y --no-install-recommends --allow-downgrades \
       ca-certificates \
       curl \
       git \
@@ -67,8 +73,10 @@ RUN apt-get update \
       xvfb \
       x11-utils \
       x11-xserver-utils \
-      chromium \
-      chromium-driver \
+      "chromium=${CHROMIUM_VERSION}" \
+      "chromium-driver=${CHROMIUM_VERSION}" \
+      "chromium-common=${CHROMIUM_VERSION}" \
+ && apt-mark hold chromium chromium-driver chromium-common \
  && docker-php-ext-configure gd --with-freetype --with-jpeg \
  && docker-php-ext-install -j"$(nproc)" \
       intl \
