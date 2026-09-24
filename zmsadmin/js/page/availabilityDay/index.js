@@ -467,13 +467,13 @@ class AvailabilityPage extends Component {
 
         newAvailabilities.forEach(availability => {
             if (availability.startDate && availability.endDate) {
-                const startDate = moment.unix(availability.startDate);
-                const endDate = moment.unix(availability.endDate);
+                const startDate = moment.unix(availability.startDate).startOf('day');
+                const endDate = moment.unix(availability.endDate).startOf('day');
                 const currentDate = startDate.clone();
                 const validWeekdays = new Set();
 
                 // Find all weekdays that occur in this availability's range
-                while (currentDate <= endDate) {
+                while (currentDate.isSameOrBefore(endDate, 'day')) {
                     const dayIndex = currentDate.day();
                     const weekDayName = weekdayNames[dayIndex];
                     validWeekdays.add(weekDayName);
